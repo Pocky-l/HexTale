@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:archaeology",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:raw_hextech_crystal",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 6
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
