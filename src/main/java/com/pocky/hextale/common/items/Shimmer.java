@@ -59,6 +59,11 @@ public class Shimmer extends Item {
     }
 
     @Override
+    public boolean isFoil(@NotNull ItemStack stack) {
+        return true;
+    }
+
+    @Override
     public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity) {
         Player player = entity instanceof Player ? (Player)entity : null;
         if (player instanceof ServerPlayer) {
