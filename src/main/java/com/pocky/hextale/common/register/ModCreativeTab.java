@@ -18,6 +18,12 @@ public class ModCreativeTab {
                     .displayItems((displayParameters, output) -> {
                         output.accept(ModItems.RAW_HEXTECH_CRYSTAL.get());
                         output.accept(ModItems.SHIMMER.get());
+
+                        output.accept(ModItems.HEXTECH_HELMET.get());
+                        output.accept(ModItems.HEXTECH_CHESTPLATE.get());
+                        output.accept(ModItems.HEXTECH_LEGGINGS.get());
+                        output.accept(ModItems.HEXTECH_BOOTS.get());
+
                         output.accept(ModBlocks.SUSPICIOUS_REMAINS_GRAVEL_ITEM.get());
                     })
                     .build());
