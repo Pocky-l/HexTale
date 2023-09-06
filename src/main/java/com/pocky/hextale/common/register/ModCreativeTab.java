@@ -13,7 +13,7 @@ public class ModCreativeTab {
 
     public static final RegistryObject<CreativeModeTab> HEXTALE_TAB = CREATIVE_MODE_TABS.register("hextale_tab",
             () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup.hextale_tab"))
+                    .title(Component.translatable("itemGroup.hextale.hextale_tab"))
                     .icon(ModItems.RAW_HEXTECH_CRYSTAL.get()::getDefaultInstance)
                     .displayItems((displayParameters, output) -> {
                         output.accept(ModItems.RAW_HEXTECH_CRYSTAL.get());

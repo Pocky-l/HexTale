@@ -1,0 +1,13 @@
+{
+  "itemGroup.hextale.hextale_tab": "Hextale Mod",
+
+  "item.hextale.raw_hextech_crystal": "Raw Hextech Crystal",
+  "item.hextale.shimmer": "Shimmer",
+  "item.hextale.hextech_pickaxe": "Hextech Pickaxe",
+  "item.hextale.hextech_helmet": "Hextech Helmet",
+  "item.hextale.hextech_chestplate": "Hextech Chestplate",
+  "item.hextale.hextech_leggings": "Hextech Leggings",
+  "item.hextale.hextech_boots": "Hextech Boots",
+
+  "block.hextale.suspicious_remains_gravel": "Suspicious Remains Gravel"
+}
