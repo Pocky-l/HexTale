@@ -1,4 +1,4 @@
-package com.pocky.hextale.client.entity.armor;
+package com.pocky.hextale.client.render.item;
 
 import com.pocky.hextale.HexTaleMod;
 import com.pocky.hextale.common.items.HextechPickaxeItem;

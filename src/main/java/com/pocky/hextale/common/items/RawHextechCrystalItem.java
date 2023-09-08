@@ -1,6 +1,6 @@
 package com.pocky.hextale.common.items;
 
-import com.pocky.hextale.client.entity.armor.RawHextechCrystalRenderer;
+import com.pocky.hextale.client.render.item.RawHextechCrystalRenderer;
 import com.pocky.hextale.common.world.entity.projectile.ThrownHextech;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.sounds.SoundEvents;

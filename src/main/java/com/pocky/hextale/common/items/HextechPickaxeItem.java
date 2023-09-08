@@ -1,14 +1,10 @@
 package com.pocky.hextale.common.items;
 
-import com.pocky.hextale.client.entity.armor.HextechPickaxeRenderer;
+import com.pocky.hextale.client.render.item.HextechPickaxeRenderer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.PickaxeItem;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import software.bernie.example.client.renderer.item.JackInTheBoxRenderer;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;

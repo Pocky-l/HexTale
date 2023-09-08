@@ -1,6 +1,6 @@
 package com.pocky.hextale.common.items.armor;
 
-import com.pocky.hextale.client.entity.armor.HextechArmorRenderer;
+import com.pocky.hextale.client.render.entity.armor.HextechArmorRenderer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
