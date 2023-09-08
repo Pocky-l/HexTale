@@ -1,6 +1,8 @@
 package com.pocky.hextale.common.items;
 
+import com.pocky.hextale.client.entity.armor.RawHextechCrystalRenderer;
 import com.pocky.hextale.common.world.entity.projectile.ThrownHextech;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -11,8 +13,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class RawHextechCrystalItem extends Item {
+import java.util.function.Consumer;
+
+public class RawHextechCrystalItem extends Item implements GeoItem {
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public RawHextechCrystalItem() {
         super(new Item.Properties().fireResistant().rarity(Rarity.COMMON));
@@ -36,5 +47,32 @@ public class RawHextechCrystalItem extends Item {
         }
 
         return InteractionResultHolder.success(player.getItemInHand(interactionHand));
+    }
+
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new IClientItemExtensions() {
+            private RawHextechCrystalRenderer renderer;
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                if (this.renderer == null)
+                    this.renderer = new RawHextechCrystalRenderer();
+
+                return this.renderer;
+            }
+        });
+    }
+
+
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
+
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 }
