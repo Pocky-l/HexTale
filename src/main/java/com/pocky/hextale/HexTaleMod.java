@@ -1,6 +1,7 @@
 package com.pocky.hextale;
 
 import com.mojang.logging.LogUtils;
+import com.pocky.hextale.client.events.BlockEntityRendererRegisterEvent;
 import com.pocky.hextale.client.events.EntityRendererRegisterEvent;
 import com.pocky.hextale.common.events.RightClickBlockEvent;
 import com.pocky.hextale.common.register.*;
@@ -32,6 +33,7 @@ public class HexTaleMod {
         ModCreativeTab.CREATIVE_MODE_TABS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(new EntityRendererRegisterEvent());
+        MinecraftForge.EVENT_BUS.register(new BlockEntityRendererRegisterEvent());
         MinecraftForge.EVENT_BUS.register(new RightClickBlockEvent());
         MinecraftForge.EVENT_BUS.register(this);
     }

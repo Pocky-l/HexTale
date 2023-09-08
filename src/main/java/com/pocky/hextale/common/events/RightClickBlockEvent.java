@@ -1,11 +1,11 @@
 package com.pocky.hextale.common.events;
 
 import com.pocky.hextale.HexTaleMod;
+import com.pocky.hextale.common.blocks.SuspiciousRemainsGravelEntity;
 import com.pocky.hextale.common.register.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.entity.BrushableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,6 +20,7 @@ public class RightClickBlockEvent {
 
     private final Set<BlockPos> cacheBlockPos = new HashSet<>();
 
+
     /**
      * Костыль, в будущем нужно убрать.
      * Выдаёт лут-таблицу блоку SUSPICIOUS_REMAINS_GRAVEL, при нажатии пкм
@@ -29,17 +30,15 @@ public class RightClickBlockEvent {
     public void onPlayerInteractRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         if (event.getLevel().isClientSide()) return;
 
-        if (event.getItemStack().is(Items.BRUSH)) {
+        BlockState blockState = event.getLevel().getBlockState(event.getPos());
 
-            if (cacheBlockPos.contains(event.getPos())) return;
-            cacheBlockPos.add(event.getPos());
-
-            BlockState blockState = event.getLevel().getBlockState(event.getPos());
-
-            if (blockState.is(ModBlocks.SUSPICIOUS_REMAINS_GRAVEL.get())) {
-                BrushableBlockEntity brushableBlockEntity = (BrushableBlockEntity) event.getLevel().getBlockEntity(event.getPos());
+        if (event.getItemStack().is(Items.BRUSH) && blockState.is(ModBlocks.SUSPICIOUS_REMAINS_GRAVEL.get())) {
+            if (!cacheBlockPos.contains(event.getPos())) {
+                cacheBlockPos.add(event.getPos());
+                SuspiciousRemainsGravelEntity brushableBlockEntity = (SuspiciousRemainsGravelEntity) event.getLevel().getBlockEntity(event.getPos());
                 brushableBlockEntity.setLootTable(new ResourceLocation(HexTaleMod.MODID, "blocks/suspicious_remains_gravel"), Random.newSeed());
             }
         }
     }
+
 }

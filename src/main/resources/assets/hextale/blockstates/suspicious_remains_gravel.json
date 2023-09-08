@@ -1,16 +1,16 @@
 {
   "variants": {
     "dusted=0": {
-      "model": "hextale:block/suspicious_remains_gravel_0"
+      "model": "hextale:block/suspicious_crystal"
     },
     "dusted=1": {
-      "model": "hextale:block/suspicious_remains_gravel_1"
+      "model": "hextale:block/suspicious_crystal"
     },
     "dusted=2": {
-      "model": "hextale:block/suspicious_remains_gravel_2"
+      "model": "hextale:block/suspicious_crystal"
     },
     "dusted=3": {
-      "model": "hextale:block/suspicious_remains_gravel_3"
+      "model": "hextale:block/suspicious_crystal"
     }
   }
 }
