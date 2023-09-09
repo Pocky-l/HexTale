@@ -20,6 +20,7 @@ public class ModCreativeTab {
                         output.accept(ModItems.SHIMMER.get());
 
                         output.accept(ModItems.HEXTECH_PICKAXE.get());
+                        output.accept(ModItems.HEXTECH_AXE.get());
 
                         output.accept(ModItems.HEXTECH_HELMET.get());
                         output.accept(ModItems.HEXTECH_CHESTPLATE.get());
