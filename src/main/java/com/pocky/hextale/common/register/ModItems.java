@@ -1,10 +1,7 @@
 package com.pocky.hextale.common.register;
 
 import com.pocky.hextale.HexTaleMod;
-import com.pocky.hextale.common.items.HextechAxeItem;
-import com.pocky.hextale.common.items.HextechPickaxeItem;
-import com.pocky.hextale.common.items.RawHextechCrystalItem;
-import com.pocky.hextale.common.items.Shimmer;
+import com.pocky.hextale.common.items.*;
 import com.pocky.hextale.common.items.armor.HextechArmorItem;
 import com.pocky.hextale.common.items.armor.ModArmorMaterials;
 import net.minecraft.world.item.ArmorItem;
@@ -21,6 +18,8 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, HexTaleMod.MODID);
 
     public static final RegistryObject<Item> RAW_HEXTECH_CRYSTAL = ITEMS.register("raw_hextech_crystal", RawHextechCrystalItem::new);
+    public static final RegistryObject<Item> CUBE_HEXTECH_CRYSTAL = ITEMS.register("cube_hextech_crystal", HextechCrystalItem.Cube::new);
+    public static final RegistryObject<Item> RECTANGLE_HEXTECH_CRYSTAL = ITEMS.register("rectangle_hextech_crystal", HextechCrystalItem.Rectangle::new);
 
     public static final RegistryObject<Item> SHIMMER = ITEMS.register("shimmer", Shimmer::new);
 

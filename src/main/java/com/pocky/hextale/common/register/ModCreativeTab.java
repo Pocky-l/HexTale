@@ -17,6 +17,8 @@ public class ModCreativeTab {
                     .icon(ModItems.RAW_HEXTECH_CRYSTAL.get()::getDefaultInstance)
                     .displayItems((displayParameters, output) -> {
                         output.accept(ModItems.RAW_HEXTECH_CRYSTAL.get());
+                        output.accept(ModItems.CUBE_HEXTECH_CRYSTAL.get());
+                        output.accept(ModItems.RECTANGLE_HEXTECH_CRYSTAL.get());
                         output.accept(ModItems.SHIMMER.get());
 
                         output.accept(ModItems.HEXTECH_PICKAXE.get());
@@ -28,6 +30,7 @@ public class ModCreativeTab {
                         output.accept(ModItems.HEXTECH_BOOTS.get());
 
                         output.accept(ModBlocks.SUSPICIOUS_REMAINS_GRAVEL_ITEM.get());
+                        output.accept(ModBlocks.BASE_CUTTING_MACHINE_ITEM.get());
                     })
                     .build());
 

@@ -2,6 +2,8 @@
   "itemGroup.hextale.hextale_tab": "Hextale Mod",
 
   "item.hextale.raw_hextech_crystal": "Raw Hextech Crystal",
+  "item.hextale.cube_hextech_crystal": "Cube Hextech Crystal",
+  "item.hextale.rectangle_hextech_crystal": "Rectangle Hextech Crystal",
   "item.hextale.shimmer": "Shimmer",
   "item.hextale.hextech_pickaxe": "Hextech Pickaxe",
   "item.hextale.hextech_axe": "Hextech Axe",
@@ -10,5 +12,8 @@
   "item.hextale.hextech_leggings": "Hextech Leggings",
   "item.hextale.hextech_boots": "Hextech Boots",
 
-  "block.hextale.suspicious_remains_gravel": "Suspicious Remains Gravel"
+  "block.hextale.suspicious_remains_gravel": "Suspicious Remains Gravel",
+  "block.hextale.base_cutting_machine": "Base Cutting Machine",
+
+  "container.base_cutting_machine": "Base Cutting Machine"
 }

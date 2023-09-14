@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:stone"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "A": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "pattern": [
+    "AIA",
+    "###"
+  ],
+  "result": {
+    "item": "hextale:base_cutting_machine"
+  },
+  "show_notification": true
+}
