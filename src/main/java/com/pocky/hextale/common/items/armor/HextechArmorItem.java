@@ -1,12 +1,18 @@
 package com.pocky.hextale.common.items.armor;
 
 import com.pocky.hextale.client.render.entity.armor.HextechArmorRenderer;
+import com.pocky.hextale.common.register.ModItems;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -43,6 +49,25 @@ public class HextechArmorItem extends ArmorItem implements GeoItem {
                 return this.renderer;
             }
         });
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int n, boolean inHand) {
+        if (inHand) {
+            if (entity instanceof ServerPlayer player) {
+                ItemStack s0 = player.getInventory().armor.get(0);
+                ItemStack s1 = player.getInventory().armor.get(1);
+                ItemStack s2 = player.getInventory().armor.get(2);
+                ItemStack s3 = player.getInventory().armor.get(3);
+
+                if (s0.is(ModItems.HEXTECH_BOOTS.get())
+                        && s1.is(ModItems.HEXTECH_LEGGINGS.get())
+                        && s2.is(ModItems.HEXTECH_CHESTPLATE.get())
+                        && s3.is(ModItems.HEXTECH_HELMET.get())) {
+                    player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST));
+                }
+            }
+        }
     }
 
     // Let's add our animation controller
