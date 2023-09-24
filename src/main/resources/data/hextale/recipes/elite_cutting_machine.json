@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "hextale:advanced_cutting_machine"
+    },
+    "A": {
+      "item": "minecraft:glow_inc_sac"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "S": {
+      "item": "minecraft:netherite_scrap"
+    }
+  },
+  "pattern": [
+    "SAS",
+    "G#G",
+    "GGG"
+  ],
+  "result": {
+    "item": "hextale:elite_cutting_machine"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "hextale:base_cutting_machine"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "A": {
+      "item": "minecraft:ender_pearl"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "S": {
+      "item": "minecraft:blaze_rod"
+    }
+  },
+  "pattern": [
+    "SAS",
+    "I#G",
+    "III"
+  ],
+  "result": {
+    "item": "hextale:advanced_cutting_machine"
+  },
+  "show_notification": true
+}

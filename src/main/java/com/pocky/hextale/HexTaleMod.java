@@ -3,8 +3,10 @@ package com.pocky.hextale;
 import com.mojang.logging.LogUtils;
 import com.pocky.hextale.client.events.BlockEntityRendererRegisterEvent;
 import com.pocky.hextale.client.events.EntityRendererRegisterEvent;
+import com.pocky.hextale.client.events.ScreenRegisterEvent;
 import com.pocky.hextale.client.screens.BaseCuttingMachineScreen;
 import com.pocky.hextale.common.events.RightClickBlockEvent;
+import com.pocky.hextale.common.events.points.PointProgressEvent;
 import com.pocky.hextale.common.recipe.ModRecipeSerializer;
 import com.pocky.hextale.common.register.*;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -49,12 +51,10 @@ public class HexTaleMod {
 
         MinecraftForge.EVENT_BUS.register(new EntityRendererRegisterEvent());
         MinecraftForge.EVENT_BUS.register(new BlockEntityRendererRegisterEvent());
+        MinecraftForge.EVENT_BUS.register(new ScreenRegisterEvent());
         MinecraftForge.EVENT_BUS.register(new RightClickBlockEvent());
-        MinecraftForge.EVENT_BUS.register(this);
-    }
 
-    @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {
-        MenuScreens.register(ModMenuTypes.BASE_CUTTING_MACHINE.get(), BaseCuttingMachineScreen::new);
+        MinecraftForge.EVENT_BUS.register(new PointProgressEvent());
+        MinecraftForge.EVENT_BUS.register(this);
     }
 }

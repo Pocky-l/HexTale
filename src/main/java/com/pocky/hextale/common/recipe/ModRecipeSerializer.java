@@ -12,5 +12,11 @@ public class ModRecipeSerializer {
 
     public static final RegistryObject<RecipeSerializer<BaseCuttingMachineRecipe>> BASE_CUTTING_MACHINE = REGISTRY_RECIPE_SERIALIZERS
             .register("base_cutting_machine_recipe", () -> new BaseCuttingMachineRecipe.Serializer<>(BaseCuttingMachineRecipe::new));
+    public static final RegistryObject<RecipeSerializer<AdvancedCuttingMachineRecipe>> ADVANCED_CUTTING_MACHINE = REGISTRY_RECIPE_SERIALIZERS
+            .register("advanced_cutting_machine_recipe", () -> new AdvancedCuttingMachineRecipe.Serializer<>(AdvancedCuttingMachineRecipe::new));
+    public static final RegistryObject<RecipeSerializer<EliteCuttingMachineRecipe>> ELITE_CUTTING_MACHINE = REGISTRY_RECIPE_SERIALIZERS
+            .register("elite_cutting_machine_recipe", () -> new EliteCuttingMachineRecipe.Serializer<>(EliteCuttingMachineRecipe::new));
+    public static final RegistryObject<RecipeSerializer<MasterCuttingMachineRecipe>> MASTER_CUTTING_MACHINE = REGISTRY_RECIPE_SERIALIZERS
+            .register("master_cutting_machine_recipe", () -> new MasterCuttingMachineRecipe.Serializer<>(MasterCuttingMachineRecipe::new));
 
 }

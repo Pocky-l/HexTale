@@ -1,7 +1,10 @@
 package com.pocky.hextale.common.register;
 
 import com.pocky.hextale.HexTaleMod;
+import com.pocky.hextale.common.recipe.AdvancedCuttingMachineRecipe;
 import com.pocky.hextale.common.recipe.BaseCuttingMachineRecipe;
+import com.pocky.hextale.common.recipe.EliteCuttingMachineRecipe;
+import com.pocky.hextale.common.recipe.MasterCuttingMachineRecipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -13,5 +16,12 @@ public class ModRecipeTypes {
 
     public static final RegistryObject<RecipeType<BaseCuttingMachineRecipe>> BASE_CUTTING_MACHINE = REGISTRY_RECIPE
             .register("base_cutting_machine_recipe", () -> new RecipeType<>() {});
+
+    public static final RegistryObject<RecipeType<AdvancedCuttingMachineRecipe>> ADVANCED_CUTTING_MACHINE = REGISTRY_RECIPE
+            .register("advanced_cutting_machine_recipe", () -> new RecipeType<>() {});
+    public static final RegistryObject<RecipeType<EliteCuttingMachineRecipe>> ELITE_CUTTING_MACHINE = REGISTRY_RECIPE
+            .register("elite_cutting_machine_recipe", () -> new RecipeType<>() {});
+    public static final RegistryObject<RecipeType<MasterCuttingMachineRecipe>> MASTER_CUTTING_MACHINE = REGISTRY_RECIPE
+            .register("master_cutting_machine_recipe", () -> new RecipeType<>() {});
 
 }

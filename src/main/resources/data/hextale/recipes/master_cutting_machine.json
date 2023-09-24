@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "hextale:elite_cutting_machine"
+    },
+    "A": {
+      "item": "minecraft:ghast_tear"
+    },
+    "G": {
+      "item": "minecraft:diamond"
+    },
+    "S": {
+      "item": "minecraft:echo_shard"
+    }
+  },
+  "pattern": [
+    "SAS",
+    "G#G",
+    "GGG"
+  ],
+  "result": {
+    "item": "hextale:master_cutting_machine"
+  },
+  "show_notification": true
+}

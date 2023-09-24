@@ -3,18 +3,25 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "minecraft:stone"
+      "item": "minecraft:stonecutter"
     },
     "I": {
-      "item": "minecraft:iron_ingot"
+      "item": "minecraft:copper_ingot"
     },
     "A": {
-      "item": "minecraft:diamond"
+      "item": "minecraft:glass_plane"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "S": {
+      "item": "minecraft:amethyst_shard"
     }
   },
   "pattern": [
-    "AIA",
-    "###"
+    "SAS",
+    "I#G",
+    "III"
   ],
   "result": {
     "item": "hextale:base_cutting_machine"

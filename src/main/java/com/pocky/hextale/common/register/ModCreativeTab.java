@@ -17,12 +17,23 @@ public class ModCreativeTab {
                     .icon(ModItems.RAW_HEXTECH_CRYSTAL.get()::getDefaultInstance)
                     .displayItems((displayParameters, output) -> {
                         output.accept(ModItems.RAW_HEXTECH_CRYSTAL.get());
-                        output.accept(ModItems.CUBE_HEXTECH_CRYSTAL.get());
-                        output.accept(ModItems.RECTANGLE_HEXTECH_CRYSTAL.get());
+                        output.accept(ModItems.PROCESSED_HEXTECH_CRYSTAL.get());
+                        output.accept(ModItems.METICULOUSLY_PROCESSED_HEXTECH_CRYSTAL.get());
+                        output.accept(ModItems.EXPERTLY_PROCESSED_HEXTECH_CRYSTAL.get());
+                        output.accept(ModItems.PURIFIED_HEXTECH_CRYSTAL.get());
+                        output.accept(ModItems.METICULOUSLY_PURIFIED_HEXTECH_CRYSTAL.get());
+                        output.accept(ModItems.EXPERTLY_PURIFIED_HEXTECH_CRYSTAL.get());
+                        output.accept(ModItems.POLISHED_HEXTECH_CRYSTAL.get());
+                        output.accept(ModItems.METICULOUSLY_POLISHED_HEXTECH_CRYSTAL.get());
+                        output.accept(ModItems.EXPERTLY_POLISHED_HEXTECH_CRYSTAL.get());
+                        output.accept(ModItems.FLAWLESS_HEXTECH_CRYSTAL.get());
+
                         output.accept(ModItems.SHIMMER.get());
 
+                        output.accept(ModItems.HEXTECH_SWORD.get());
                         output.accept(ModItems.HEXTECH_PICKAXE.get());
                         output.accept(ModItems.HEXTECH_AXE.get());
+                        output.accept(ModItems.HEXTECH_SHOVEL.get());
 
                         output.accept(ModItems.HEXTECH_HELMET.get());
                         output.accept(ModItems.HEXTECH_CHESTPLATE.get());
@@ -31,6 +42,9 @@ public class ModCreativeTab {
 
                         output.accept(ModBlocks.SUSPICIOUS_REMAINS_GRAVEL_ITEM.get());
                         output.accept(ModBlocks.BASE_CUTTING_MACHINE_ITEM.get());
+                        output.accept(ModBlocks.ADVANCED_CUTTING_MACHINE_ITEM.get());
+                        output.accept(ModBlocks.ELITE_CUTTING_MACHINE_ITEM.get());
+                        output.accept(ModBlocks.MASTER_CUTTING_MACHINE_ITEM.get());
                     })
                     .build());
 

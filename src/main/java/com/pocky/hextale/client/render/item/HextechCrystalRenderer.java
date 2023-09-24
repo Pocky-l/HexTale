@@ -17,6 +17,6 @@ public class HextechCrystalRenderer<T extends Item & GeoAnimatable> extends GeoI
 
     @Override
     public RenderType getRenderType(T animatable, ResourceLocation texture, @Nullable MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(texture);
+        return RenderType.dragonExplosionAlpha(texture);
     }
 }

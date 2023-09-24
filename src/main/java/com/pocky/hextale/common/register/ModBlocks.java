@@ -1,9 +1,8 @@
 package com.pocky.hextale.common.register;
 
 import com.pocky.hextale.HexTaleMod;
-import com.pocky.hextale.common.blocks.BaseCuttingMachine;
-import com.pocky.hextale.common.blocks.SuspiciousRemainsGravel;
-import com.pocky.hextale.common.items.BaseCuttingMachineItem;
+import com.pocky.hextale.common.blocks.*;
+import com.pocky.hextale.common.items.CuttingMachineItem;
 import com.pocky.hextale.common.items.SuspiciousRemainsGravelItem;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
@@ -28,6 +27,16 @@ public class ModBlocks {
     public static final RegistryObject<BlockItem> SUSPICIOUS_REMAINS_GRAVEL_ITEM = ITEMS.register("suspicious_remains_gravel", () -> new SuspiciousRemainsGravelItem(SUSPICIOUS_REMAINS_GRAVEL.get(), new Item.Properties()));
 
     public static final RegistryObject<Block> BASE_CUTTING_MACHINE = BLOCKS.register("base_cutting_machine", () -> new BaseCuttingMachine(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noOcclusion().strength(0.25F).sound(SoundType.STONE)));
-    public static final RegistryObject<BlockItem> BASE_CUTTING_MACHINE_ITEM = ITEMS.register("base_cutting_machine", () -> new BaseCuttingMachineItem(BASE_CUTTING_MACHINE.get(), new Item.Properties()));
+    public static final RegistryObject<BlockItem> BASE_CUTTING_MACHINE_ITEM = ITEMS.register("base_cutting_machine", () -> new CuttingMachineItem(BASE_CUTTING_MACHINE.get(), new Item.Properties(), "base_cutting_machine"));
+
+    public static final RegistryObject<Block> ADVANCED_CUTTING_MACHINE = BLOCKS.register("advanced_cutting_machine", () -> new AdvancedCuttingMachine(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noOcclusion().strength(0.25F).sound(SoundType.STONE)));
+    public static final RegistryObject<BlockItem> ADVANCED_CUTTING_MACHINE_ITEM = ITEMS.register("advanced_cutting_machine", () -> new CuttingMachineItem(ADVANCED_CUTTING_MACHINE.get(), new Item.Properties(), "advanced_cutting_machine"));
+
+    public static final RegistryObject<Block> ELITE_CUTTING_MACHINE = BLOCKS.register("elite_cutting_machine", () -> new EliteCuttingMachine(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noOcclusion().strength(0.25F).sound(SoundType.STONE)));
+    public static final RegistryObject<BlockItem> ELITE_CUTTING_MACHINE_ITEM = ITEMS.register("elite_cutting_machine", () -> new CuttingMachineItem(ELITE_CUTTING_MACHINE.get(), new Item.Properties(), "elite_cutting_machine"));
+
+    public static final RegistryObject<Block> MASTER_CUTTING_MACHINE = BLOCKS.register("master_cutting_machine", () -> new MasterCuttingMachine(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noOcclusion().strength(0.25F).sound(SoundType.STONE)));
+    public static final RegistryObject<BlockItem> MASTER_CUTTING_MACHINE_ITEM = ITEMS.register("master_cutting_machine", () -> new CuttingMachineItem(MASTER_CUTTING_MACHINE.get(), new Item.Properties(), "master_cutting_machine"));
+
 
 }
