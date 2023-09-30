@@ -4,23 +4,14 @@ import com.mojang.logging.LogUtils;
 import com.pocky.hextale.client.events.BlockEntityRendererRegisterEvent;
 import com.pocky.hextale.client.events.EntityRendererRegisterEvent;
 import com.pocky.hextale.client.events.ScreenRegisterEvent;
-import com.pocky.hextale.client.screens.BaseCuttingMachineScreen;
 import com.pocky.hextale.common.events.RightClickBlockEvent;
 import com.pocky.hextale.common.events.points.PointProgressEvent;
 import com.pocky.hextale.common.recipe.ModRecipeSerializer;
 import com.pocky.hextale.common.register.*;
-import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.Registry;
-import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.NewRegistryEvent;
-import net.minecraftforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 
 @Mod(HexTaleMod.MODID)

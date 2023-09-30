@@ -1,8 +1,0 @@
-{
-  "type": "hextale:elite_cutting_machine_recipe",
-  "ingredient": {
-    "item": "hextale:raw_hextech_crystal"
-  },
-  "result": "hextale:polished_hextech_crystal",
-  "count": 1
-}

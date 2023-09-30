@@ -51,6 +51,7 @@ public class AdvancedCuttingMachineMenu extends AbstractContainerMenu {
 
     public AdvancedCuttingMachineMenu(int p_40297_, Inventory p_40298_, final ContainerLevelAccess p_40299_) {
         super(ModMenuTypes.ADVANCED_CUTTING_MACHINE.get(), p_40297_);
+
         this.access = p_40299_;
         this.level = p_40298_.player.level();
         this.inputSlot = this.addSlot(new Slot(this.container, 0, 20, 33));

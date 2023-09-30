@@ -6,7 +6,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +21,8 @@ public abstract class AbstractHextechCrystalItem extends Item implements GeoItem
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public AbstractHextechCrystalItem() {
-        super(new Properties().fireResistant().rarity(Rarity.COMMON));
+    public AbstractHextechCrystalItem(Properties properties) {
+        super(properties);
     }
 
     @Override

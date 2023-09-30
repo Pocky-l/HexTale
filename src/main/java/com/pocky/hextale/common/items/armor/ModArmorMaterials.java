@@ -21,7 +21,17 @@ public enum ModArmorMaterials implements StringRepresentable, ArmorMaterial {
         p_266654_.put(ArmorItem.Type.CHESTPLATE, 6);
         p_266654_.put(ArmorItem.Type.HELMET, 2);
     }), 9, SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F,
-            () -> Ingredient.of(Items.IRON_INGOT));
+            () -> Ingredient.of(Items.IRON_INGOT)),
+
+    HEX_JETPACK("hex_jetpack", 15, Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266654_) -> {
+        p_266654_.put(ArmorItem.Type.CHESTPLATE, 2);
+    }), 9, SoundEvents.ARMOR_EQUIP_ELYTRA, 0.0F, 0.0F,
+            () -> Ingredient.of(Items.GOLD_INGOT)),
+
+    HEX_ELYTRA("hex_elytra", 15, Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266654_) -> {
+        p_266654_.put(ArmorItem.Type.CHESTPLATE, 1);
+    }), 9, SoundEvents.ARMOR_EQUIP_ELYTRA, 0.0F, 0.0F,
+            () -> Ingredient.of(Items.GOLD_INGOT));
 
     public static final StringRepresentable.EnumCodec<net.minecraft.world.item.ArmorMaterials> CODEC = StringRepresentable.fromEnum(net.minecraft.world.item.ArmorMaterials::values);
 

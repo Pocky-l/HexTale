@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:feather"
+    },
+    "A": {
+      "item": "minecraft:phantom_membrane"
+    },
+    "B": {
+      "item": "minecraft:gold_ingot"
+    },
+    "C": {
+      "item": "hextale:meticulously_processed_hextech_crystal"
+    }
+  },
+  "pattern": [
+    "BCB",
+    "ABA",
+    "# #"
+  ],
+  "result": {
+    "item": "hextale:hex_elytra"
+  },
+  "show_notification": true
+}

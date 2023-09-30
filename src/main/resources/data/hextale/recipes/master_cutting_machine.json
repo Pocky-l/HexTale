@@ -5,20 +5,20 @@
     "#": {
       "item": "hextale:elite_cutting_machine"
     },
-    "A": {
-      "item": "minecraft:ghast_tear"
-    },
-    "G": {
+    "I": {
       "item": "minecraft:diamond"
     },
+    "A": {
+      "item": "hextale:diamond_disk"
+    },
     "S": {
-      "item": "minecraft:echo_shard"
+      "item": "hextale:expertly_lens"
     }
   },
   "pattern": [
-    "SAS",
-    "G#G",
-    "GGG"
+    "SAI",
+    "I#I",
+    "III"
   ],
   "result": {
     "item": "hextale:master_cutting_machine"

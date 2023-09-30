@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:leather"
+    },
+    "N": {
+      "item": "minecraft:feather"
+    },
+    "A": {
+      "item": "minecraft:gold_ingot"
+    },
+    "B": {
+      "item": "minecraft:gold_block"
+    },
+    "C": {
+      "item": "hextale:expertly_processed_hextech_crystal"
+    }
+  },
+  "pattern": [
+    "#A#",
+    "BCB",
+    "NAN"
+  ],
+  "result": {
+    "item": "hextale:hex_jetpack"
+  },
+  "show_notification": true
+}

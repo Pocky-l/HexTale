@@ -5,20 +5,20 @@
     "#": {
       "item": "hextale:advanced_cutting_machine"
     },
-    "A": {
-      "item": "minecraft:glow_inc_sac"
-    },
-    "G": {
+    "I": {
       "item": "minecraft:gold_ingot"
     },
+    "A": {
+      "item": "hextale:gold_disk"
+    },
     "S": {
-      "item": "minecraft:netherite_scrap"
+      "item": "hextale:master_lens"
     }
   },
   "pattern": [
-    "SAS",
-    "G#G",
-    "GGG"
+    "SAI",
+    "I#I",
+    "III"
   ],
   "result": {
     "item": "hextale:elite_cutting_machine"

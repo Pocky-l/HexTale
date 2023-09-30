@@ -9,18 +9,15 @@
       "item": "minecraft:iron_ingot"
     },
     "A": {
-      "item": "minecraft:ender_pearl"
-    },
-    "G": {
-      "item": "minecraft:gold_ingot"
+      "item": "hextale:iron_disk"
     },
     "S": {
-      "item": "minecraft:blaze_rod"
+      "item": "hextale:base_lens"
     }
   },
   "pattern": [
-    "SAS",
-    "I#G",
+    "SAI",
+    "I#I",
     "III"
   ],
   "result": {

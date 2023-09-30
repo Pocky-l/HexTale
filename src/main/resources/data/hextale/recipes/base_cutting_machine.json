@@ -9,18 +9,15 @@
       "item": "minecraft:copper_ingot"
     },
     "A": {
-      "item": "minecraft:glass_plane"
-    },
-    "G": {
-      "item": "minecraft:gold_ingot"
+      "item": "hextale:copper_disk"
     },
     "S": {
-      "item": "minecraft:amethyst_shard"
+      "item": "hextale:cloudy_lens"
     }
   },
   "pattern": [
-    "SAS",
-    "I#G",
+    "SAI",
+    "I#I",
     "III"
   ],
   "result": {

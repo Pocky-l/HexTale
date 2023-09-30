@@ -2,12 +2,19 @@ package com.pocky.hextale.common.items;
 
 import com.pocky.hextale.client.render.item.HextechCrystalRenderer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
 public class HextechCrystalItem {
     public static class Processed extends AbstractHextechCrystalItem {
+        public Processed() {
+            super(new Properties().fireResistant().rarity(Rarity.COMMON));
+        }
+
         @Override
         public void initializeClient(Consumer<IClientItemExtensions> consumer) {
             consumer.accept(new IClientItemExtensions() {
@@ -22,6 +29,10 @@ public class HextechCrystalItem {
     }
 
     public static class MeticulouslyProcessed extends AbstractHextechCrystalItem {
+        public MeticulouslyProcessed() {
+            super(new Properties().fireResistant().rarity(Rarity.UNCOMMON));
+        }
+
         @Override
         public void initializeClient(Consumer<IClientItemExtensions> consumer) {
             consumer.accept(new IClientItemExtensions() {
@@ -36,6 +47,10 @@ public class HextechCrystalItem {
     }
 
     public static class ExpertlyProcessed extends AbstractHextechCrystalItem {
+        public ExpertlyProcessed() {
+            super(new Properties().fireResistant().rarity(Rarity.RARE));
+        }
+
         @Override
         public void initializeClient(Consumer<IClientItemExtensions> consumer) {
             consumer.accept(new IClientItemExtensions() {
@@ -49,91 +64,16 @@ public class HextechCrystalItem {
         }
     }
 
-    public static class Purified extends AbstractHextechCrystalItem {
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
-                private HextechCrystalRenderer<HextechCrystalItem.Purified> renderer;
-
-                @Override
-                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                    return (this.renderer == null) ? (this.renderer = new HextechCrystalRenderer<>("purified_hextech_crystal")) : this.renderer;
-                }
-            });
-        }
-    }
-
-    public static class MeticulouslyPurified extends AbstractHextechCrystalItem {
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
-                private HextechCrystalRenderer<HextechCrystalItem.MeticulouslyPurified> renderer;
-
-                @Override
-                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                    return (this.renderer == null) ? (this.renderer = new HextechCrystalRenderer<>("meticulously_purified_hextech_crystal")) : this.renderer;
-                }
-            });
-        }
-    }
-
-    public static class ExpertlyPurified extends AbstractHextechCrystalItem {
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
-                private HextechCrystalRenderer<HextechCrystalItem.ExpertlyPurified> renderer;
-
-                @Override
-                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                    return (this.renderer == null) ? (this.renderer = new HextechCrystalRenderer<>("expertly_purified_hextech_crystal")) : this.renderer;
-                }
-            });
-        }
-    }
-
-    public static class Polished extends AbstractHextechCrystalItem {
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
-                private HextechCrystalRenderer<HextechCrystalItem.Polished> renderer;
-
-                @Override
-                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                    return (this.renderer == null) ? (this.renderer = new HextechCrystalRenderer<>("polished_hextech_crystal")) : this.renderer;
-                }
-            });
-        }
-    }
-
-    public static class MeticulouslyPolished extends AbstractHextechCrystalItem {
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
-                private HextechCrystalRenderer<HextechCrystalItem.MeticulouslyPolished> renderer;
-
-                @Override
-                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                    return (this.renderer == null) ? (this.renderer = new HextechCrystalRenderer<>("meticulously_polished_hextech_crystal")) : this.renderer;
-                }
-            });
-        }
-    }
-
-    public static class ExpertlyPolished extends AbstractHextechCrystalItem {
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
-                private HextechCrystalRenderer<HextechCrystalItem.ExpertlyPolished> renderer;
-
-                @Override
-                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                    return (this.renderer == null) ? (this.renderer = new HextechCrystalRenderer<>("expertly_polished_hextech_crystal")) : this.renderer;
-                }
-            });
-        }
-    }
-
     public static class Flawless extends AbstractHextechCrystalItem {
+        public Flawless() {
+            super(new Properties().fireResistant().rarity(Rarity.EPIC));
+        }
+
+        @Override
+        public boolean isFoil(@NotNull ItemStack stack) {
+            return true;
+        }
+
         @Override
         public void initializeClient(Consumer<IClientItemExtensions> consumer) {
             consumer.accept(new IClientItemExtensions() {

@@ -1,0 +1,8 @@
+{
+  "type": "hextale:advanced_cutting_machine_recipe",
+  "ingredient": {
+    "item": "hextale:meticulously_processed_hextech_crystal"
+  },
+  "result": "hextale:master_hex_glass",
+  "count": 1
+}

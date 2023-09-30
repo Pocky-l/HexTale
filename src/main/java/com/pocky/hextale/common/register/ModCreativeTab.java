@@ -20,25 +20,37 @@ public class ModCreativeTab {
                         output.accept(ModItems.PROCESSED_HEXTECH_CRYSTAL.get());
                         output.accept(ModItems.METICULOUSLY_PROCESSED_HEXTECH_CRYSTAL.get());
                         output.accept(ModItems.EXPERTLY_PROCESSED_HEXTECH_CRYSTAL.get());
-                        output.accept(ModItems.PURIFIED_HEXTECH_CRYSTAL.get());
-                        output.accept(ModItems.METICULOUSLY_PURIFIED_HEXTECH_CRYSTAL.get());
-                        output.accept(ModItems.EXPERTLY_PURIFIED_HEXTECH_CRYSTAL.get());
-                        output.accept(ModItems.POLISHED_HEXTECH_CRYSTAL.get());
-                        output.accept(ModItems.METICULOUSLY_POLISHED_HEXTECH_CRYSTAL.get());
-                        output.accept(ModItems.EXPERTLY_POLISHED_HEXTECH_CRYSTAL.get());
                         output.accept(ModItems.FLAWLESS_HEXTECH_CRYSTAL.get());
 
                         output.accept(ModItems.SHIMMER.get());
+
+                        output.accept(ModItems.HEX_GLASS.get());
+                        output.accept(ModItems.MASTER_HEX_GLASS.get());
+                        output.accept(ModItems.EXPERTLY_HEX_GLASS.get());
+                        output.accept(ModItems.CLOUDY_LENS.get());
+                        output.accept(ModItems.BASE_LENS.get());
+                        output.accept(ModItems.MASTER_LENS.get());
+                        output.accept(ModItems.EXPERTLY_LENS.get());
+
+                        output.accept(ModItems.COPPER_DISK.get());
+                        output.accept(ModItems.IRON_DISK.get());
+                        output.accept(ModItems.GOLD_DISK.get());
+                        output.accept(ModItems.DIAMOND_DISK.get());
 
                         output.accept(ModItems.HEXTECH_SWORD.get());
                         output.accept(ModItems.HEXTECH_PICKAXE.get());
                         output.accept(ModItems.HEXTECH_AXE.get());
                         output.accept(ModItems.HEXTECH_SHOVEL.get());
+                        output.accept(ModItems.HEX_HAMMER.get());
+                        output.accept(ModItems.HEX_PICKAXE.get());
 
                         output.accept(ModItems.HEXTECH_HELMET.get());
                         output.accept(ModItems.HEXTECH_CHESTPLATE.get());
                         output.accept(ModItems.HEXTECH_LEGGINGS.get());
                         output.accept(ModItems.HEXTECH_BOOTS.get());
+
+                        output.accept(ModItems.HEX_JETPACK.get());
+                        output.accept(ModItems.HEX_ELYTRA.get());
 
                         output.accept(ModBlocks.SUSPICIOUS_REMAINS_GRAVEL_ITEM.get());
                         output.accept(ModBlocks.BASE_CUTTING_MACHINE_ITEM.get());

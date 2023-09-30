@@ -1,8 +1,0 @@
-{
-  "type": "hextale:master_cutting_machine_recipe",
-  "ingredient": {
-    "item": "hextale:raw_hextech_crystal"
-  },
-  "result": "hextale:purified_hextech_crystal",
-  "count": 1
-}
