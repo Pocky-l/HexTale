@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:stick"
+    },
+    "A": {
+      "item": "minecraft:iron_block"
+    },
+    "C": {
+      "item": "hextale:meticulously_processed_hextech_crystal"
+    }
+  },
+  "pattern": [
+    "AAA",
+    " CA",
+    " # "
+  ],
+  "result": {
+    "item": "hextale:hex_axe"
+  },
+  "show_notification": true
+}

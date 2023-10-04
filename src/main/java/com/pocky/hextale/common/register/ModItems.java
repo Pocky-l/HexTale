@@ -45,6 +45,7 @@ public class ModItems {
     public static final RegistryObject<Item> HEXTECH_SHOVEL = ITEMS.register("hextech_shovel", () -> new HextechShovelItem(Tiers.NETHERITE, 4, -2.8F, new Item.Properties()));
     public static final RegistryObject<Item> HEX_HAMMER = ITEMS.register("hex_hammer", () -> new HexHammerItem(Tiers.NETHERITE, 4, -2.8F, new Item.Properties()));
     public static final RegistryObject<Item> HEX_PICKAXE = ITEMS.register("hex_pickaxe", () -> new HexPickaxeItem(Tiers.NETHERITE, 4, -2.8F, new Item.Properties()));
+    public static final RegistryObject<Item> HEX_AXE = ITEMS.register("hex_axe", () -> new HexAxeItem(Tiers.NETHERITE, 4, -2.8F, new Item.Properties()));
 
 
     public static final RegistryObject<Item> HEXTECH_HELMET = ITEMS.register("hextech_helmet", () -> new HextechArmorItem(ModArmorMaterials.HEXTECH, ArmorItem.Type.HELMET, new Item.Properties()));

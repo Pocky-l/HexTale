@@ -34,6 +34,7 @@
   "item.hextale.hex_jetpack": "Hex-Jetpack",
   "item.hextale.hex_elytra": "Hex-Elytra",
   "item.hextale.hex_pickaxe": "Hex-Pickaxe",
+  "item.hextale.hex_axe": "Hex-Axe",
 
   "block.hextale.suspicious_remains_gravel": "Suspicious Remains Gravel",
   "block.hextale.base_cutting_machine": "Base Cutting Machine",
@@ -69,6 +70,7 @@
 
   "tooltip.item.hextale.hex_hammer": "Digs blocks in a 3x3x1 area.",
   "tooltip.item.hextale.hex_pickaxe": "Mines an entire vein (up to 7 blocks at once).",
+  "tooltip.item.hextale.hex_axe": "Chop down the entire tree trunk (maximum of 128 blocks).",
   "tooltip.item.hextale.hex_jetpack": "Allows you to fly as if you were in creative mode.",
   "tooltip.item.hextale.hex_elytra": "Enables hovering similar to Elytra flight.",
 
