@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -58,7 +59,7 @@ public class HextechSwordItem extends SwordItem implements GeoItem {
     public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity, int n, boolean inHand) {
         if (inHand) {
             if (entity instanceof ServerPlayer player) {
-                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION));
+                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60));
             }
         }
     }

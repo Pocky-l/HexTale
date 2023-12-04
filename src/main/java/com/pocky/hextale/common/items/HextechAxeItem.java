@@ -60,7 +60,7 @@ public class HextechAxeItem extends AxeItem implements GeoItem {
     public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity, int n, boolean inHand) {
         if (inHand) {
             if (entity instanceof ServerPlayer player) {
-                player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED));
+                player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 60));
             }
         }
     }
