@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "minecraft:iron_pickaxe"
+      "item": "minecraft:iron_sword"
     },
     {
       "item": "hextale:processed_hextech_crystal"
     }
   ],
   "result": {
-    "item": "hextale:hextech_pickaxe"
+    "item": "hextale:crystal_sword"
   }
 }

@@ -8,17 +8,20 @@
     "A": {
       "item": "minecraft:iron_block"
     },
+    "B": {
+      "item": "minecraft:gold_ingot"
+    },
     "C": {
       "item": "hextale:meticulously_processed_hextech_crystal"
     }
   },
   "pattern": [
-    "AAA",
-    " C ",
+    "ACA",
+    "B#B",
     " # "
   ],
   "result": {
-    "item": "hextale:hex_pickaxe"
+    "item": "hextale:crystal_hammer"
   },
   "show_notification": true
 }

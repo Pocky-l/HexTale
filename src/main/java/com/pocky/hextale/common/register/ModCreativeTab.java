@@ -37,13 +37,11 @@ public class ModCreativeTab {
                         output.accept(ModItems.GOLD_DISK.get());
                         output.accept(ModItems.DIAMOND_DISK.get());
 
-                        output.accept(ModItems.HEXTECH_SWORD.get());
-                        output.accept(ModItems.HEXTECH_PICKAXE.get());
-                        output.accept(ModItems.HEXTECH_AXE.get());
-                        output.accept(ModItems.HEXTECH_SHOVEL.get());
-                        output.accept(ModItems.HEX_HAMMER.get());
-                        output.accept(ModItems.HEX_PICKAXE.get());
-                        output.accept(ModItems.HEX_AXE.get());
+                        output.accept(ModItems.CRYSTAL_SWORD.get());
+                        output.accept(ModItems.CRYSTAL_PICKAXE.get());
+                        output.accept(ModItems.CRYSTAL_AXE.get());
+                        output.accept(ModItems.CRYSTAL_SHOVEL.get());
+                        output.accept(ModItems.CRYSTAL_HAMMER.get());
 
                         output.accept(ModItems.HEXTECH_HELMET.get());
                         output.accept(ModItems.HEXTECH_CHESTPLATE.get());

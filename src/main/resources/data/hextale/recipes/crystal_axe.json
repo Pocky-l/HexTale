@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "minecraft:iron_shovel"
+      "item": "minecraft:iron_axe"
     },
     {
       "item": "hextale:processed_hextech_crystal"
     }
   ],
   "result": {
-    "item": "hextale:hextech_shovel"
+    "item": "hextale:crystal_axe"
   }
 }

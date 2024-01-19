@@ -1,7 +1,6 @@
 package com.pocky.hextale.client.render.entity.armor;
 
 import com.pocky.hextale.HexTaleMod;
-import com.pocky.hextale.common.items.HexHammerItem;
 import com.pocky.hextale.common.items.armor.HexElytraItem;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;

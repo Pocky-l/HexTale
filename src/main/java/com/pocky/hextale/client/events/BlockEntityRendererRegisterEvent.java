@@ -31,14 +31,4 @@ public class BlockEntityRendererRegisterEvent {
         event.registerBlockEntityRenderer(ModBlockEntities.MASTER_CUTTING_MACHINE.get(),
                 context -> new CuttingMachineRenderer<>(new CuttingMachineModel<>("master_cutting_machine")));
     }
-
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public static void registerRenderers(final FMLClientSetupEvent event) {
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.SUSPICIOUS_REMAINS_GRAVEL.get(), RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.BASE_CUTTING_MACHINE.get(), RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.ADVANCED_CUTTING_MACHINE.get(), RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.ELITE_CUTTING_MACHINE.get(), RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.MASTER_CUTTING_MACHINE.get(), RenderType.translucent());
-    }
 }

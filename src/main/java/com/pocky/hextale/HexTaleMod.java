@@ -5,7 +5,6 @@ import com.pocky.hextale.client.events.BlockEntityRendererRegisterEvent;
 import com.pocky.hextale.client.events.EntityRendererRegisterEvent;
 import com.pocky.hextale.client.events.ScreenRegisterEvent;
 import com.pocky.hextale.common.events.RightClickBlockEvent;
-import com.pocky.hextale.common.events.points.PointProgressEvent;
 import com.pocky.hextale.common.recipe.ModRecipeSerializer;
 import com.pocky.hextale.common.register.*;
 import net.minecraftforge.common.MinecraftForge;
@@ -45,7 +44,6 @@ public class HexTaleMod {
         MinecraftForge.EVENT_BUS.register(new ScreenRegisterEvent());
         MinecraftForge.EVENT_BUS.register(new RightClickBlockEvent());
 
-        MinecraftForge.EVENT_BUS.register(new PointProgressEvent());
         MinecraftForge.EVENT_BUS.register(this);
     }
 }

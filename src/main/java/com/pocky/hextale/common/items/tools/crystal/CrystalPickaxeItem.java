@@ -1,22 +1,18 @@
-package com.pocky.hextale.common.items;
+package com.pocky.hextale.common.items.tools.crystal;
 
-import com.pocky.hextale.client.render.item.HexAxeRenderer;
-import com.pocky.hextale.client.render.item.HexPickaxeRenderer;
+import com.pocky.hextale.client.render.item.CrystalClientItemExtensions;
 import com.pocky.hextale.utils.ExcavateUtils;
 import com.pocky.hextale.utils.ModColors;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
@@ -31,37 +27,37 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class HexAxeItem extends AxeItem implements GeoItem {
+public class CrystalPickaxeItem extends PickaxeItem implements GeoItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public HexAxeItem(Tier p_42961_, int p_42962_, float p_42963_, Properties p_42964_) {
-        super(p_42961_, p_42962_, p_42963_, p_42964_);
+    public static final String ID = "crystal_pickaxe";
+
+    public CrystalPickaxeItem() {
+        super(Tiers.NETHERITE, 4, -2.8F, new Item.Properties());
     }
 
     @Override
     public boolean mineBlock(@NotNull ItemStack item, @NotNull Level level, @NotNull BlockState blockState,
                              @NotNull BlockPos blockPos, @NotNull LivingEntity entity) {
-        if (entity instanceof ServerPlayer player && !player.isShiftKeyDown() && blockState.is(BlockTags.LOGS)) {
-            ExcavateUtils.veinMineArea(level, blockPos, player, item, item.getItem(), 128);
+        if (entity instanceof ServerPlayer player && !player.isShiftKeyDown() && blockState.is(Tags.Blocks.ORES)) {
+            ExcavateUtils.veinMineArea(level, blockPos, player, item, item.getItem(), 7);
         }
         return super.mineBlock(item, level, blockState, blockPos, entity);
     }
 
     @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            private HexAxeRenderer renderer;
-
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (this.renderer == null)
-                    this.renderer = new HexAxeRenderer();
-
-                return this.renderer;
+    public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity, int n, boolean inHand) {
+        if (inHand) {
+            if (entity instanceof ServerPlayer player) {
+                player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 60));
             }
-        });
+        }
+    }
+
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new CrystalClientItemExtensions<>(ID));
     }
 
     @Override

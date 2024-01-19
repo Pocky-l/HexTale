@@ -1,9 +1,7 @@
-package com.pocky.hextale.common.items;
+package com.pocky.hextale.common.items.tools.crystal;
 
-import com.pocky.hextale.client.render.item.HextechAxeRenderer;
-import com.pocky.hextale.client.render.item.HextechShovelRenderer;
+import com.pocky.hextale.client.render.item.CrystalClientItemExtensions;
 import com.pocky.hextale.utils.ModColors;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -24,27 +22,19 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class HextechShovelItem extends ShovelItem implements GeoItem {
+public class CrystalSwordItem extends SwordItem implements GeoItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public HextechShovelItem(Tier p_42961_, int p_42962_, float p_42963_, Properties p_42964_) {
-        super(p_42961_, p_42962_, p_42963_, p_42964_);
+    public static final String ID = "crystal_sword";
+
+    public CrystalSwordItem() {
+        super(Tiers.NETHERITE, 8, -2.0F, new Item.Properties());
     }
 
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            private HextechShovelRenderer renderer;
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (this.renderer == null)
-                    this.renderer = new HextechShovelRenderer();
-
-                return this.renderer;
-            }
-        });
+        consumer.accept(new CrystalClientItemExtensions<>(ID));
     }
 
     @Override
@@ -58,7 +48,7 @@ public class HextechShovelItem extends ShovelItem implements GeoItem {
     public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity, int n, boolean inHand) {
         if (inHand) {
             if (entity instanceof ServerPlayer player) {
-                player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 60));
+                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60));
             }
         }
     }
