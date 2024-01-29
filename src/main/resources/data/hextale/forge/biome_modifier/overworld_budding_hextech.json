@@ -1,6 +1,6 @@
 {
   "type": "forge:add_features",
-  "features": "hextale:overworld_suspicious_remains_gravel",
+  "features": "hextale:overworld_budding_hextech",
   "biomes": "#minecraft:is_overworld",
   "step": "underground_ores"
 }

@@ -1,9 +1,9 @@
 {
-  "feature": "hextale:overworld_suspicious_remains_gravel",
+  "feature": "hextale:overworld_budding_hextech",
   "placement": [
     {
       "type": "minecraft:count",
-      "count": 200
+      "count": 256
     },
     {
       "type": "minecraft:in_square"
@@ -13,12 +13,15 @@
       "height": {
         "type": "minecraft:trapezoid",
         "min_inclusive": {
-          "absolute": -40
+          "absolute": -50
         },
         "max_inclusive": {
-          "absolute": 160
+          "absolute": 10
         }
       }
+    },
+    {
+      "type": "minecraft:biome"
     }
   ]
 }

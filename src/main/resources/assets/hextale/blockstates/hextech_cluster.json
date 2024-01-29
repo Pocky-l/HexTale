@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "hextale:block/hextech_cluster",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "hextale:block/hextech_cluster",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "hextale:block/hextech_cluster",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/hextech_cluster",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "hextale:block/hextech_cluster"
+    },
+    "facing=west": {
+      "model": "hextale:block/hextech_cluster",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

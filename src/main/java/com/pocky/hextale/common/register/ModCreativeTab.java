@@ -22,6 +22,13 @@ public class ModCreativeTab {
                         output.accept(ModItems.EXPERTLY_PROCESSED_HEXTECH_CRYSTAL.get());
                         output.accept(ModItems.FLAWLESS_HEXTECH_CRYSTAL.get());
 
+                        output.accept(ModItems.HEXTECH_SHARD.get());
+                        output.accept(ModBlocks.BUDDING_HEXTECH_ITEM.get());
+                        output.accept(ModBlocks.HEXTECH_CLUSTER_ITEM.get());
+                        output.accept(ModBlocks.LARGE_HEXTECH_BUD_ITEM.get());
+                        output.accept(ModBlocks.MEDIUM_HEXTECH_BUD_ITEM.get());
+                        output.accept(ModBlocks.SMALL_HEXTECH_BUD_ITEM.get());
+
                         output.accept(ModItems.SHIMMER.get());
 
                         output.accept(ModItems.HEX_GLASS.get());

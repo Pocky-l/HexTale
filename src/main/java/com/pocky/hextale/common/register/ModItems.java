@@ -36,6 +36,8 @@ public class ModItems {
     public static final RegistryObject<Item> GOLD_DISK = ITEMS.register("gold_disk", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> DIAMOND_DISK = ITEMS.register("diamond_disk", () -> new Item(new Item.Properties()));
 
+    public static final RegistryObject<Item> HEXTECH_SHARD = ITEMS.register("hextech_shard", () -> new Item(new Item.Properties()));
+
 
     public static final RegistryObject<Item> SHIMMER = ITEMS.register("shimmer", Shimmer::new);
 

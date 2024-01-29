@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "hextale:block/medium_hextech_bud",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "hextale:block/medium_hextech_bud",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "hextale:block/medium_hextech_bud",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/medium_hextech_bud",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "hextale:block/medium_hextech_bud"
+    },
+    "facing=west": {
+      "model": "hextale:block/medium_hextech_bud",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

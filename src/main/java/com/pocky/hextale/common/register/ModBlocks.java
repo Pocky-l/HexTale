@@ -7,9 +7,7 @@ import com.pocky.hextale.common.items.SuspiciousRemainsGravelItem;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
@@ -38,5 +36,18 @@ public class ModBlocks {
     public static final RegistryObject<Block> MASTER_CUTTING_MACHINE = BLOCKS.register("master_cutting_machine", () -> new MasterCuttingMachine(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noOcclusion().strength(0.25F).sound(SoundType.STONE)));
     public static final RegistryObject<BlockItem> MASTER_CUTTING_MACHINE_ITEM = ITEMS.register("master_cutting_machine", () -> new CuttingMachineItem(MASTER_CUTTING_MACHINE.get(), new Item.Properties(), "master_cutting_machine"));
 
+
+
+    public static final RegistryObject<Block> BUDDING_HEXTECH = BLOCKS.register("budding_hextech", () -> new BuddingHextechBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).randomTicks().strength(0.2F).sound(SoundType.SCULK).requiresCorrectToolForDrops().pushReaction(PushReaction.DESTROY)));
+    public static final RegistryObject<Block> HEXTECH_CLUSTER = BLOCKS.register("hextech_cluster", () -> new HextechClusterBlock(7, 3, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).forceSolidOn().noOcclusion().randomTicks().sound(SoundType.AMETHYST_CLUSTER).strength(1.5F).lightLevel((p_152632_) -> 5).pushReaction(PushReaction.DESTROY)));
+    public static final RegistryObject<Block> LARGE_HEXTECH_BUD = BLOCKS.register("large_hextech_bud", () -> new HextechClusterBlock(5, 3, BlockBehaviour.Properties.copy(HEXTECH_CLUSTER.get()).sound(SoundType.MEDIUM_AMETHYST_BUD).forceSolidOn().lightLevel((p_152629_) -> 4).pushReaction(PushReaction.DESTROY)));
+    public static final RegistryObject<Block> MEDIUM_HEXTECH_BUD = BLOCKS.register("medium_hextech_bud", () -> new HextechClusterBlock(4, 3, BlockBehaviour.Properties.copy(HEXTECH_CLUSTER.get()).sound(SoundType.LARGE_AMETHYST_BUD).forceSolidOn().lightLevel((p_152617_) -> 2).pushReaction(PushReaction.DESTROY)));
+    public static final RegistryObject<Block> SMALL_HEXTECH_BUD = BLOCKS.register("small_hextech_bud", () -> new HextechClusterBlock(3, 4, BlockBehaviour.Properties.copy(HEXTECH_CLUSTER.get()).sound(SoundType.SMALL_AMETHYST_BUD).forceSolidOn().lightLevel((p_187409_) -> 1).pushReaction(PushReaction.DESTROY)));
+
+    public static final RegistryObject<BlockItem> BUDDING_HEXTECH_ITEM = ITEMS.register("budding_hextech", () -> new BlockItem(BUDDING_HEXTECH.get(), new Item.Properties()));
+    public static final RegistryObject<BlockItem> HEXTECH_CLUSTER_ITEM = ITEMS.register("hextech_cluster", () -> new BlockItem(HEXTECH_CLUSTER.get(), new Item.Properties()));
+    public static final RegistryObject<BlockItem> LARGE_HEXTECH_BUD_ITEM = ITEMS.register("large_hextech_bud", () -> new BlockItem(LARGE_HEXTECH_BUD.get(), new Item.Properties()));
+    public static final RegistryObject<BlockItem> MEDIUM_HEXTECH_BUD_ITEM = ITEMS.register("medium_hextech_bud", () -> new BlockItem(MEDIUM_HEXTECH_BUD.get(), new Item.Properties()));
+    public static final RegistryObject<BlockItem> SMALL_HEXTECH_BUD_ITEM = ITEMS.register("small_hextech_bud", () -> new BlockItem(SMALL_HEXTECH_BUD.get(), new Item.Properties()));
 
 }
