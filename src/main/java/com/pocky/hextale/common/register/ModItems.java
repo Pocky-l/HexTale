@@ -1,20 +1,32 @@
 package com.pocky.hextale.common.register;
 
 import com.pocky.hextale.HexTaleMod;
-import com.pocky.hextale.common.items.*;
+import com.pocky.hextale.common.items.HextechCrystalItem;
+import com.pocky.hextale.common.items.RawHextechCrystalItem;
+import com.pocky.hextale.common.items.Shimmer;
 import com.pocky.hextale.common.items.armor.HexElytraItem;
 import com.pocky.hextale.common.items.armor.HexJetpackItem;
 import com.pocky.hextale.common.items.armor.HextechArmorItem;
 import com.pocky.hextale.common.items.armor.ModArmorMaterials;
 import com.pocky.hextale.common.items.tools.crystal.*;
-import net.minecraft.world.item.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 public class ModItems {
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, HexTaleMod.MODID);
+
+    public static final List<RegistryObject<Item>> EGGS = new LinkedList<>();
 
     public static final RegistryObject<Item> RAW_HEXTECH_CRYSTAL = ITEMS.register("raw_hextech_crystal", RawHextechCrystalItem::new);
     public static final RegistryObject<Item> PROCESSED_HEXTECH_CRYSTAL = ITEMS.register("processed_hextech_crystal", HextechCrystalItem.Processed::new);

@@ -7,6 +7,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -31,7 +34,10 @@ public class ModEntities {
         RegistryObject<EntityType<T>> entityType = ENTITY_TYPES.register(name,
                 () -> EntityType.Builder.of(entity, MobCategory.CREATURE).sized(width, height).build(name));
 
-        // todo item register
+        RegistryObject<Item> spawnEgg = ModItems.ITEMS.register(name + "_spawn_egg",
+                () -> new ForgeSpawnEggItem(entityType, primaryEggColor, secondaryEggColor, new Item.Properties()));
+
+        ModItems.EGGS.add(spawnEgg);
 
         return entityType;
     }
