@@ -79,7 +79,7 @@ public class HexJetpackItem extends ArmorItem implements GeoItem {
             if (s2.is(ModItems.HEX_JETPACK.get())) {
                 player.getAbilities().mayfly = true;
             } else {
-                if (!player.isCreative()) {
+                if (!player.isCreative() || !player.isSpectator()) {
                     player.getAbilities().mayfly = false;
                 }
             }
