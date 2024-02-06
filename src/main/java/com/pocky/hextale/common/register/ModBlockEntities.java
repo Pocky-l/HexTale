@@ -2,6 +2,7 @@ package com.pocky.hextale.common.register;
 
 import com.pocky.hextale.HexTaleMod;
 import com.pocky.hextale.common.blocks.CuttingMachineEntity;
+import com.pocky.hextale.common.blocks.HexcoreEntity;
 import com.pocky.hextale.common.blocks.SuspiciousRemainsGravelEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
@@ -33,8 +34,8 @@ public class ModBlockEntities {
             .register("master_cutting_machine", () -> BlockEntityType.Builder
                     .of(CuttingMachineEntity.Master::new, ModBlocks.MASTER_CUTTING_MACHINE.get()).build(null));
 
-
-
-
+    public static final RegistryObject<BlockEntityType<HexcoreEntity>> HEXCORE = BLOCK_ENTITIES
+            .register("hexcore", () -> BlockEntityType.Builder
+                    .of(HexcoreEntity::new, ModBlocks.HEXCORE.get()).build(null));
 
 }

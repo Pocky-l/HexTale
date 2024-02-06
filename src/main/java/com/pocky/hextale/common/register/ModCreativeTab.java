@@ -64,6 +64,8 @@ public class ModCreativeTab {
                         output.accept(ModBlocks.ELITE_CUTTING_MACHINE_ITEM.get());
                         output.accept(ModBlocks.MASTER_CUTTING_MACHINE_ITEM.get());
 
+                        output.accept(ModBlocks.HEXCORE.get());
+
                         ModItems.EGGS.forEach((e) -> output.accept(e.get()));
                     })
                     .build());

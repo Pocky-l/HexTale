@@ -3,6 +3,7 @@ package com.pocky.hextale.common.register;
 import com.pocky.hextale.HexTaleMod;
 import com.pocky.hextale.common.blocks.*;
 import com.pocky.hextale.common.items.CuttingMachineItem;
+import com.pocky.hextale.common.items.HexcoreItem;
 import com.pocky.hextale.common.items.SuspiciousRemainsGravelItem;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
@@ -36,6 +37,8 @@ public class ModBlocks {
     public static final RegistryObject<Block> MASTER_CUTTING_MACHINE = BLOCKS.register("master_cutting_machine", () -> new MasterCuttingMachine(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noOcclusion().strength(0.25F).sound(SoundType.STONE)));
     public static final RegistryObject<BlockItem> MASTER_CUTTING_MACHINE_ITEM = ITEMS.register("master_cutting_machine", () -> new CuttingMachineItem(MASTER_CUTTING_MACHINE.get(), new Item.Properties(), "master_cutting_machine"));
 
+    public static final RegistryObject<Block> HEXCORE = BLOCKS.register("hexcore", () -> new HexcoreBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noOcclusion().strength(0.25F)/*.lightLevel((e) -> 12)*/.sound(SoundType.STONE)));
+    public static final RegistryObject<BlockItem> HEXCORE_ITEM = ITEMS.register("hexcore", () -> new HexcoreItem(HEXCORE.get(), new Item.Properties(), "hexcore"));
 
 
     public static final RegistryObject<Block> BUDDING_HEXTECH = BLOCKS.register("budding_hextech", () -> new BuddingHextechBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).randomTicks().strength(0.2F).sound(SoundType.SCULK).requiresCorrectToolForDrops().pushReaction(PushReaction.DESTROY)));

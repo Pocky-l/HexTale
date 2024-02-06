@@ -1,9 +1,7 @@
 package com.pocky.hextale.client.events;
 
 import com.pocky.hextale.HexTaleMod;
-import com.pocky.hextale.client.render.block.CuttingMachineModel;
-import com.pocky.hextale.client.render.block.CuttingMachineRenderer;
-import com.pocky.hextale.client.render.block.SuspiciousRemainsGravelRenderer;
+import com.pocky.hextale.client.render.block.*;
 import com.pocky.hextale.common.register.ModBlockEntities;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -26,5 +24,7 @@ public class BlockEntityRendererRegisterEvent {
                 context -> new CuttingMachineRenderer<>(new CuttingMachineModel<>("elite_cutting_machine")));
         event.registerBlockEntityRenderer(ModBlockEntities.MASTER_CUTTING_MACHINE.get(),
                 context -> new CuttingMachineRenderer<>(new CuttingMachineModel<>("master_cutting_machine")));
+
+        event.registerBlockEntityRenderer(ModBlockEntities.HEXCORE.get(), context -> new HexcoreRenderer());
     }
 }

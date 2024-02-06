@@ -1,0 +1,27 @@
+{
+  "type": "hextale:hexcore_recipe",
+  "ingredients": [
+    {
+      "item" : "minecraft:coal",
+      "count": 1
+    },
+    {
+      "item" : "minecraft:coal",
+      "count": 1
+    },
+    {
+      "item" : "minecraft:coal",
+      "count": 1
+    },
+    {
+      "item" : "minecraft:apple",
+      "count": 1
+    },
+    {
+      "item" : "minecraft:apple",
+      "count": 1
+    }
+  ],
+  "result": "minecraft:diamond_block",
+  "count": 1
+}

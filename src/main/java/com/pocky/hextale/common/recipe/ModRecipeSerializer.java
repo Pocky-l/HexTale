@@ -18,5 +18,7 @@ public class ModRecipeSerializer {
             .register("elite_cutting_machine_recipe", () -> new EliteCuttingMachineRecipe.Serializer<>(EliteCuttingMachineRecipe::new));
     public static final RegistryObject<RecipeSerializer<MasterCuttingMachineRecipe>> MASTER_CUTTING_MACHINE = REGISTRY_RECIPE_SERIALIZERS
             .register("master_cutting_machine_recipe", () -> new MasterCuttingMachineRecipe.Serializer<>(MasterCuttingMachineRecipe::new));
+    public static final RegistryObject<RecipeSerializer<HexcoreRecipe>> HEXCORE = REGISTRY_RECIPE_SERIALIZERS
+            .register("hexcore_recipe", () -> new HexcoreRecipe.Serializer<>(HexcoreRecipe::new));
 
 }

@@ -19,7 +19,7 @@ public class HexTaleMod {
 
     public static final String MODID = "hextale";
 
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public HexTaleMod() {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
