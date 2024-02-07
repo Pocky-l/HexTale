@@ -6,11 +6,13 @@ import com.pocky.hextale.common.entity.GeoVoidlingEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
+import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 public class VoidlingEntityRenderer extends GeoEntityRenderer<GeoVoidlingEntity> {
 
     public VoidlingEntityRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new VoidlingEntityModel());
+        addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
 
     @Override
