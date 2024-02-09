@@ -1,0 +1,146 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.crystal_bow.stringing": {
+			"animation_length": 0.5,
+			"bones": {
+				"bone2": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.5": {
+							"vector": [0, 0, -12.5]
+						}
+					}
+				},
+				"bone3": {
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.5": {
+							"vector": [-4, 0, 0]
+						}
+					}
+				},
+				"bone4": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.5": {
+							"vector": [0, 0, 12.5]
+						}
+					}
+				},
+				"bone8": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.5": {
+							"vector": [0, 0, -22.5]
+						}
+					}
+				},
+				"bone7": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.5": {
+							"vector": [0, 0, 22.5]
+						}
+					}
+				},
+				"bone10": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.5": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"bone": {
+					"rotation": {
+						"vector": [0, 0, -7.5]
+					}
+				},
+				"bone11": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.5": {
+							"vector": [0, 0, 17.5]
+						}
+					}
+				},
+				"bone9": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.5": {
+							"vector": [0, 0, -17.5]
+						}
+					}
+				}
+			}
+		},
+		"animation.crystal_bow.stringing_idle": {
+			"loop": true,
+			"bones": {
+				"bone2": {
+					"rotation": {
+						"vector": [0, 0, -12.5]
+					}
+				},
+				"bone3": {
+					"position": {
+						"vector": [-4, 0, 0]
+					}
+				},
+				"bone4": {
+					"rotation": {
+						"vector": [0, 0, 12.5]
+					}
+				},
+				"bone8": {
+					"rotation": {
+						"vector": [0, 0, -22.5]
+					}
+				},
+				"bone7": {
+					"rotation": {
+						"vector": [0, 0, 22.5]
+					}
+				},
+				"bone10": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"bone11": {
+					"rotation": {
+						"vector": [0, 0, 17.5]
+					}
+				},
+				"bone9": {
+					"rotation": {
+						"vector": [0, 0, -17.5]
+					}
+				},
+				"bone": {
+					"rotation": {
+						"vector": [0, 0, -7.5]
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

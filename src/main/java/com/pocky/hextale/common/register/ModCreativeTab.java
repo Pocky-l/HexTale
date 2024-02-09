@@ -49,6 +49,7 @@ public class ModCreativeTab {
                         output.accept(ModItems.CRYSTAL_AXE.get());
                         output.accept(ModItems.CRYSTAL_SHOVEL.get());
                         output.accept(ModItems.CRYSTAL_HAMMER.get());
+                        output.accept(ModItems.CRYSTAL_BOW.get());
 
                         output.accept(ModItems.HEXTECH_HELMET.get());
                         output.accept(ModItems.HEXTECH_CHESTPLATE.get());

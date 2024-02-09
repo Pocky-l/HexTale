@@ -58,6 +58,7 @@ public class ModItems {
     public static final RegistryObject<Item> CRYSTAL_SWORD = ITEMS.register(CrystalSwordItem.ID, CrystalSwordItem::new);
     public static final RegistryObject<Item> CRYSTAL_SHOVEL = ITEMS.register(CrystalShovelItem.ID, CrystalShovelItem::new);
     public static final RegistryObject<Item> CRYSTAL_HAMMER = ITEMS.register(CrystalHammerItem.ID, CrystalHammerItem::new);
+    public static final RegistryObject<Item> CRYSTAL_BOW = ITEMS.register(CrystalBowItem.ID, CrystalBowItem::new);
 
     public static final RegistryObject<Item> HEXTECH_HELMET = ITEMS.register("hextech_helmet", () -> new HextechArmorItem(ModArmorMaterials.HEXTECH, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final RegistryObject<Item> HEXTECH_CHESTPLATE = ITEMS.register("hextech_chestplate", () -> new HextechArmorItem(ModArmorMaterials.HEXTECH, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
