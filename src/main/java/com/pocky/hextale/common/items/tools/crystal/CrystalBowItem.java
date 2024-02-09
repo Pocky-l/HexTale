@@ -33,7 +33,7 @@ public class CrystalBowItem extends BowItem implements GeoItem {
     public static final String ID = "crystal_bow";
 
     public CrystalBowItem() {
-        super((new Item.Properties()).durability(384).stacksTo(1));
+        super((new Item.Properties()).durability(384));
     }
 
     @Override
