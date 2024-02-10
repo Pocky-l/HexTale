@@ -62,6 +62,8 @@ public class CrystalBowItem extends BowItem implements GeoItem {
 
     @Override
     public void appendHoverText(@NotNull ItemStack item, @Nullable Level level, List<Component> tooltip, TooltipFlag tooltipFlag) {
+        tooltip.add(Component.translatable("tooltip.hextale.crystal_tool_description")
+                .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(ModColors.HEXTECH))));
         tooltip.add(Component.translatable("tooltip." + item.getDescriptionId())
                 .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(ModColors.HEXTECH))));
         super.appendHoverText(item, level, tooltip, tooltipFlag);

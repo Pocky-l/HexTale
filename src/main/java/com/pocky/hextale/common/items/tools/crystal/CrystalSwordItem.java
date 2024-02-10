@@ -1,6 +1,7 @@
 package com.pocky.hextale.common.items.tools.crystal;
 
 import com.pocky.hextale.client.render.item.CrystalClientItemExtensions;
+import com.pocky.hextale.common.tiers.ModTiers;
 import com.pocky.hextale.utils.ModColors;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -29,7 +30,7 @@ public class CrystalSwordItem extends SwordItem implements GeoItem {
     public static final String ID = "crystal_sword";
 
     public CrystalSwordItem() {
-        super(Tiers.NETHERITE, 8, -2.0F, new Item.Properties());
+        super(ModTiers.CRYSTAL, 3, -2.0F, new Item.Properties());
     }
 
     @Override
@@ -39,6 +40,8 @@ public class CrystalSwordItem extends SwordItem implements GeoItem {
 
     @Override
     public void appendHoverText(@NotNull ItemStack item, @Nullable Level level, List<Component> tooltip, TooltipFlag tooltipFlag) {
+        tooltip.add(Component.translatable("tooltip.hextale.crystal_tool_description")
+                .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(ModColors.HEXTECH))));
         tooltip.add(Component.translatable("tooltip." + item.getDescriptionId())
                 .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(ModColors.HEXTECH))));
         super.appendHoverText(item, level, tooltip, tooltipFlag);
@@ -46,9 +49,11 @@ public class CrystalSwordItem extends SwordItem implements GeoItem {
 
     @Override
     public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity, int n, boolean inHand) {
-        if (inHand) {
-            if (entity instanceof ServerPlayer player) {
-                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60));
+        if (entity.tickCount % 35 == 0) {
+            if (inHand) {
+                if (entity instanceof ServerPlayer player) {
+                    player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60, 0, false, false));
+                }
             }
         }
     }

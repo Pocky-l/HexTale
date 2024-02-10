@@ -1,6 +1,7 @@
 package com.pocky.hextale.common.items.tools.crystal;
 
 import com.pocky.hextale.client.render.item.CrystalClientItemExtensions;
+import com.pocky.hextale.common.tiers.ModTiers;
 import com.pocky.hextale.utils.ExcavateUtils;
 import com.pocky.hextale.utils.ModColors;
 import net.minecraft.core.BlockPos;
@@ -8,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
@@ -30,14 +32,14 @@ public class CrystalHammerItem extends PickaxeItem implements GeoItem {
     public static final String ID = "crystal_hammer";
 
     public CrystalHammerItem() {
-        super(Tiers.NETHERITE, 4, -2.8F, new Item.Properties());
+        super(ModTiers.CRYSTAL, 4, -2.8F, new Item.Properties());
     }
 
     @Override
     public boolean mineBlock(@NotNull ItemStack item, @NotNull Level level, @NotNull BlockState blockState,
                              @NotNull BlockPos blockPos, @NotNull LivingEntity entity) {
-        if (entity instanceof ServerPlayer player && !player.isShiftKeyDown()) {
-            ExcavateUtils.excavateArea(level, blockPos, player, item, item.getItem(), 3, 3, 1);
+        if (entity instanceof ServerPlayer player && !player.isShiftKeyDown() && blockState.is(BlockTags.MINEABLE_WITH_PICKAXE)) {
+            ExcavateUtils.excavateArea(level, blockPos, player, item, item.getItem(), 1, 3, 1);
         }
         return super.mineBlock(item, level, blockState, blockPos, entity);
     }
@@ -49,6 +51,8 @@ public class CrystalHammerItem extends PickaxeItem implements GeoItem {
 
     @Override
     public void appendHoverText(@NotNull ItemStack item, @Nullable Level level, List<Component> tooltip, TooltipFlag tooltipFlag) {
+        tooltip.add(Component.translatable("tooltip.hextale.crystal_tool_description")
+                .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(ModColors.HEXTECH))));
         tooltip.add(Component.translatable("tooltip." + item.getDescriptionId())
                 .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(ModColors.HEXTECH))));
         super.appendHoverText(item, level, tooltip, tooltipFlag);

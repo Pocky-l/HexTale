@@ -1,8 +1,8 @@
 package com.pocky.hextale.utils;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
@@ -25,7 +25,10 @@ public class ExcavateUtils {
 
     public static void excavateArea(Level world, BlockPos centerPos, ServerPlayer player, ItemStack stack, Item usedTool,
                                     int width, int height, int depth) {
-        final Set<BlockPos> positions = findPositions(centerPos, player.getDirection(), width, height, depth);
+
+        spawnParticle(world, centerPos);
+
+        final Set<BlockPos> positions = findPositions(centerPos, player.getDirection(), player.xRotO, width, height, depth);
 
         assert positions != null;
         for (BlockPos foundPos : positions) {
@@ -64,10 +67,14 @@ public class ExcavateUtils {
                     block.popExperience((ServerLevel) world, foundPos, exp);
                 }
             }
+
+            spawnParticle(world, foundPos);
         }
     }
 
     public static void veinMineArea(Level world, BlockPos pos, ServerPlayer player, ItemStack stack, Item usedTool, int maxVein) {
+
+        spawnParticle(world, pos);
 
         Set<BlockPos> found = findVeinPositions(world, pos, world.getBlockState(pos).getBlock(), maxVein);
 
@@ -99,6 +106,9 @@ public class ExcavateUtils {
                 //Harvest the block allowing it to handle block drops, incrementing block mined count, and adding exhaustion
                 block.playerDestroy(world, player, foundEntry, targetState, tileEntity, stack);
                 player.awardStat(Stats.ITEM_USED.get(usedTool));
+
+                spawnParticle(world, foundEntry);
+
                 if (exp > 0) {
                     //If we have xp drop it
                     block.popExperience((ServerLevel) world, foundEntry, exp);
@@ -107,11 +117,35 @@ public class ExcavateUtils {
         }
     }
 
-    public static Set<BlockPos> findPositions(BlockPos center, Direction direction, int width, int height, int depth) {
+    public static void spawnParticle(Level world, BlockPos foundPos) {
+        if (world instanceof ServerLevel serverLevel) {
+
+            int i = 0;
+            while (i++ < 2) {
+                serverLevel.sendParticles(
+                        ParticleTypes.GLOW,
+                        foundPos.getX() + 0.25D + (serverLevel.random.nextDouble()*0.4D),
+                        foundPos.getY() + 0.25D + (serverLevel.random.nextDouble()*0.4D),
+                        foundPos.getZ() + 0.25D + (serverLevel.random.nextDouble()*0.4D),
+                        1,  // Number of particles
+                        0, 0, 0,  // Motion
+                        0  // Scale
+                );
+            }
+        }
+    }
+
+    public static Set<BlockPos> findPositions(BlockPos center, Direction direction, double xRot, int width, int height, int depth) {
         if (width % 2 == 0 || height % 2 == 0 || depth % 2 == 0) return null;
 
         int w = (width - 1) / 2;
         int h = (height - 1) / 2;
+
+        if (xRot > 45 || xRot < -45) {
+            int fl = w;
+            w = h;
+            h = fl;
+        }
 
         AABB aabb = switch (direction) {
             case NORTH -> new AABB(center.getX() - w, center.getY() - h, center.getZ(), center.getX() + w, center.getY() + h, center.getZ() + (depth - 1));
