@@ -1,4 +1,4 @@
-package com.pocky.hextale.client.model.entity;
+package com.pocky.hextale.client.render.entity;
 
 import com.pocky.hextale.HexTaleMod;
 import com.pocky.hextale.common.entity.GeoVoidlingEntity;

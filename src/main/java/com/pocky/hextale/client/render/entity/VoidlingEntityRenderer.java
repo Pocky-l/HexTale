@@ -1,7 +1,6 @@
 package com.pocky.hextale.client.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.pocky.hextale.client.model.entity.VoidlingEntityModel;
 import com.pocky.hextale.common.entity.GeoVoidlingEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
