@@ -1,7 +1,7 @@
 package com.pocky.hextale.client.events;
 
 import com.pocky.hextale.HexTaleMod;
-import com.pocky.hextale.client.renderer.entity.VoidlingEntityRenderer;
+import com.pocky.hextale.client.render.entity.VoidlingEntityRenderer;
 import com.pocky.hextale.common.register.ModEntities;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;

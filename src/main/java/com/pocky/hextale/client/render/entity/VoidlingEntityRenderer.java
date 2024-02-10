@@ -1,4 +1,4 @@
-package com.pocky.hextale.client.renderer.entity;
+package com.pocky.hextale.client.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.pocky.hextale.client.model.entity.VoidlingEntityModel;
