@@ -40,6 +40,9 @@ public class ModBlocks {
     public static final RegistryObject<Block> HEXCORE = BLOCKS.register("hexcore", () -> new HexcoreBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noOcclusion().strength(0.25F)/*.lightLevel((e) -> 12)*/.sound(SoundType.STONE)));
     public static final RegistryObject<BlockItem> HEXCORE_ITEM = ITEMS.register("hexcore", () -> new HexcoreItem(HEXCORE.get(), new Item.Properties(), "hexcore"));
 
+    public static final RegistryObject<Block> RUNIC_STONE = BLOCKS.register("runic_stone", () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE).lightLevel((e) -> 10)));
+    public static final RegistryObject<BlockItem> RUNIC_STONE_ITEM = ITEMS.register("runic_stone", () -> new BlockItem(RUNIC_STONE.get(), new Item.Properties()));
+
 
     public static final RegistryObject<Block> BUDDING_HEXTECH = BLOCKS.register("budding_hextech", () -> new BuddingHextechBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).randomTicks().strength(0.2F).sound(SoundType.SCULK).requiresCorrectToolForDrops().pushReaction(PushReaction.DESTROY)));
     public static final RegistryObject<Block> HEXTECH_CLUSTER = BLOCKS.register("hextech_cluster", () -> new HextechClusterBlock(7, 3, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).forceSolidOn().noOcclusion().randomTicks().sound(SoundType.AMETHYST_CLUSTER).strength(1.5F).lightLevel((p_152632_) -> 5).pushReaction(PushReaction.DESTROY)));

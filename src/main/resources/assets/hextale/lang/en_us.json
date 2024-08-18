@@ -30,6 +30,8 @@
   "item.hextale.hex_elytra": "Hex-Elytra",
 
   "item.hextale.hextech_shard": "Hextech Shard",
+  "item.hextale.clear_hextech": "Clear Hextech",
+  "item.hextale.jewelry_tool": "Jewelry Tool",
 
   "item.hextale.crystal_pickaxe": "Crystal Pickaxe",
   "item.hextale.crystal_axe": "Crystal Axe",
@@ -51,6 +53,8 @@
   "block.hextale.medium_hextech_bud": "Medium Hextech Bud",
   "block.hextale.small_hextech_bud": "Small Hextech Bud",
 
+  "block.hextale.runic_stone": "Runic Stone",
+
   "container.base_cutting_machine": "Base Cutting Machine",
   "container.advanced_cutting_machine": "Advanced Cutting Machine",
   "container.elite_cutting_machine": "Elite Cutting Machine",
@@ -58,6 +62,8 @@
 
   "tooltip.item.hextale.raw_hextech_crystal": "W.I.P",
   "tooltip.hextale.crystal_tool_description": "Very fragile, needs awaken to become more effective",
+
+  "tooltip.item.hextale.jewelry_tool": "Processes Hextech Shard. Hit the Shard lying on the ground to craft",
 
   "tooltip.item.hextale.crystal_sword": "Effect when used: Regeneration",
   "tooltip.item.hextale.crystal_pickaxe": "Digs a vein 4 blocks in size",

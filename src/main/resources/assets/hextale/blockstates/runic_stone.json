@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "hextale:block/runic_stone"
+      },
+      {
+        "model": "hextale:block/runic_stone",
+        "y": 90
+      },
+      {
+        "model": "hextale:block/runic_stone",
+        "y": 180
+      },
+      {
+        "model": "hextale:block/runic_stone",
+        "y": 270
+      }
+    ]
+  }
+}

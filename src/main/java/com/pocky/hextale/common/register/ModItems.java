@@ -9,6 +9,7 @@ import com.pocky.hextale.common.items.armor.HexJetpackItem;
 import com.pocky.hextale.common.items.armor.HextechArmorItem;
 import com.pocky.hextale.common.items.armor.ModArmorMaterials;
 import com.pocky.hextale.common.items.tools.crystal.*;
+import com.pocky.hextale.common.items.tools.misc.JewelryToolItem;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ArmorItem;
@@ -49,7 +50,8 @@ public class ModItems {
     public static final RegistryObject<Item> DIAMOND_DISK = ITEMS.register("diamond_disk", () -> new Item(new Item.Properties()));
 
     public static final RegistryObject<Item> HEXTECH_SHARD = ITEMS.register("hextech_shard", () -> new Item(new Item.Properties()));
-
+    public static final RegistryObject<Item> CLEAR_HEXTECH = ITEMS.register("clear_hextech", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> JEWELRY_TOOL = ITEMS.register("jewelry_tool", JewelryToolItem::new);
 
     public static final RegistryObject<Item> SHIMMER = ITEMS.register("shimmer", Shimmer::new);
 

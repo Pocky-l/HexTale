@@ -14,8 +14,10 @@ public class ModCreativeTab {
     public static final RegistryObject<CreativeModeTab> HEXTALE_TAB = CREATIVE_MODE_TABS.register("hextale_tab",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.hextale.hextale_tab"))
-                    .icon(ModItems.RAW_HEXTECH_CRYSTAL.get()::getDefaultInstance)
+                    .icon(ModItems.CRYSTAL_AXE.get()::getDefaultInstance)
                     .displayItems((displayParameters, output) -> {
+                        output.accept(ModItems.CLEAR_HEXTECH.get());
+                        output.accept(ModItems.JEWELRY_TOOL.get());
                         output.accept(ModItems.RAW_HEXTECH_CRYSTAL.get());
                         output.accept(ModItems.PROCESSED_HEXTECH_CRYSTAL.get());
                         output.accept(ModItems.METICULOUSLY_PROCESSED_HEXTECH_CRYSTAL.get());
@@ -65,7 +67,8 @@ public class ModCreativeTab {
                         output.accept(ModBlocks.ELITE_CUTTING_MACHINE_ITEM.get());
                         output.accept(ModBlocks.MASTER_CUTTING_MACHINE_ITEM.get());
 
-                        output.accept(ModBlocks.HEXCORE.get());
+                        output.accept(ModBlocks.HEXCORE_ITEM.get());
+                        output.accept(ModBlocks.RUNIC_STONE_ITEM.get());
 
                         ModItems.EGGS.forEach((e) -> output.accept(e.get()));
                     })
