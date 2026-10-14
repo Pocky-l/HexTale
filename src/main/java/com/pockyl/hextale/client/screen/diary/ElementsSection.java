@@ -1,23 +1,35 @@
 package com.pockyl.hextale.client.screen.diary;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.client.render.InkRenderer;
+import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.client.render.RuneDrawing;
+import com.pockyl.hextale.research.HexGrid;
+import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.ResearchItems;
+import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.RuneCategory;
 import com.pockyl.hextale.rune.SimpleRune;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
- * The nine simple runes, one to a page and drawn large on a calligraphy practice grid, then a page on how they
- * combine into complex runes.
+ * The nine elements (simple runes), one to a page: the radical drawn large, the element's corner of the research
+ * parchment, what it means as an action and as a target, and the tried items that carry it. A last page shows how two
+ * elements make a complex rune.
  */
-final class SimpleRunesSection implements DiarySection {
+final class ElementsSection implements DiarySection {
     private static final String KEY = "diary.hextale.simple.";
-    private static final int BOX = 58;
+    private static final int BOX = 54;
 
     @Override
     public Component title() {
@@ -52,23 +64,65 @@ final class SimpleRunesSection implements DiarySection {
     private static void entry(DiaryContext context, Page page, SimpleRune rune) {
         Component name = Component.translatable(rune.translationKey()).withStyle(ChatFormatting.BOLD);
         context.graphics.drawString(context.font, name, page.x + (page.width - context.font.width(name)) / 2, page.y,
-                0xFF000000 | RuneDrawing.darken(rune.color(), 0.5F), false);
+                0xFF000000 | PixelArt.onParchment(rune.color()), false);
         page.y += 12;
-        float boxX = page.x + (page.width - BOX) / 2.0F;
-        float boxY = page.y;
+        int boxX = page.x + 14;
+        int boxY = page.y;
         InkRenderer ink = InkRenderer.begin(context.graphics);
         practiceGrid(ink, boxX, boxY, BOX);
-        RuneDrawing.radical(ink, rune, boxX + BOX / 2.0F, boxY + BOX / 2.0F, BOX - 12, RuneDrawing.Style.INK, 1);
         ink.end();
-        page.y += BOX + 3;
-        page.centered(Component.translatable("diary.hextale.strokes", rune.strokeCount()), DiaryContext.MUTED);
-        page.space(2);
-        page.text(Component.translatable(rune.translationKey() + ".hint").withStyle(ChatFormatting.ITALIC), DiaryContext.MUTED);
+        PixelArt.radical(context.graphics, rune, boxX + 7, boxY + 7, BOX - 14, 0xFF000000 | PixelArt.onParchment(rune.color()), 0x30000000);
+        corner(context, rune, page.x + page.width - 30, boxY + BOX / 2);
+        page.y += BOX + 4;
         page.text(Component.translatable(KEY + "as_action").withStyle(ChatFormatting.BOLD)
                 .append(" ").append(Component.translatable(rune.translationKey() + ".action").withStyle(style -> style.withBold(false))));
         page.y -= 2;
         page.text(Component.translatable(KEY + "as_target").withStyle(ChatFormatting.BOLD)
                 .append(" ").append(Component.translatable(rune.translationKey() + ".target").withStyle(style -> style.withBold(false))));
+        List<Item> carriers = new ArrayList<>();
+        for (String id : context.knowledge.items()) {
+            ResourceLocation key = ResourceLocation.tryParse(id);
+            Item item = key == null ? null : BuiltInRegistries.ITEM.get(key);
+            ItemElements elements = item == null ? null : ResearchItems.of(item);
+            if (elements != null && elements.elements().containsKey(rune)) {
+                carriers.add(item);
+            }
+        }
+        page.text(Component.translatable(carriers.isEmpty() ? KEY + "carriers.none" : KEY + "carriers"), DiaryContext.MUTED);
+        int x = page.x;
+        for (Item item : carriers) {
+            if (x + 16 > page.x + page.width || page.y + 16 > page.bottom) {
+                break;
+            }
+            context.item(new ItemStack(item), x, page.y - 2);
+            x += 17;
+        }
+    }
+
+    /** The parchment's nine corners as dots, this element's one lit: items carrying it pull symbols that way. */
+    private static void corner(DiaryContext context, SimpleRune rune, int cx, int cy) {
+        for (int i = 0; i < HexGrid.RING.length; i++) {
+            double[] u = HexGrid.unit(HexGrid.RING[i]);
+            int x = cx + (int) Math.round(u[0] * 18);
+            int y = cy + (int) Math.round(u[1] * 18);
+            double[] v = HexGrid.unit(HexGrid.RING[(i + 1) % HexGrid.RING.length]);
+            PixelArt.line(context.graphics, x, y, cx + (int) Math.round(v[0] * 18), cy + (int) Math.round(v[1] * 18), 0x667A6648);
+        }
+        for (SimpleRune element : HexGrid.RING) {
+            double[] u = HexGrid.unit(element);
+            int x = cx + (int) Math.round(u[0] * 18);
+            int y = cy + (int) Math.round(u[1] * 18);
+            boolean self = element == rune;
+            context.graphics.fill(x - (self ? 2 : 1), y - (self ? 2 : 1), x + (self ? 3 : 2), y + (self ? 3 : 2),
+                    0xFF000000 | (self ? PixelArt.onParchment(rune.color()) : 0xB09C78));
+        }
+        double[] u = HexGrid.unit(rune);
+        PixelArt.line(context.graphics, cx, cy, cx + (int) Math.round(u[0] * 13), cy + (int) Math.round(u[1] * 13),
+                0xFF000000 | PixelArt.onParchment(rune.color()));
+        context.graphics.fill(cx - 1, cy - 1, cx + 2, cy + 2, 0xFF2B8FB8);
+        if (context.hovered(cx - 20, cy - 20, 40, 40)) {
+            context.tooltip(Component.translatable(KEY + "corner", Component.translatable(rune.translationKey())));
+        }
     }
 
     /** A square with its centre lines and diagonals, as on calligraphy practice paper. */
@@ -101,12 +155,11 @@ final class SimpleRunesSection implements DiarySection {
                 {SimpleRune.WATER, SimpleRune.FIRE}, {SimpleRune.LIGHT, SimpleRune.EARTH}};
         int cell = page.width / layouts.length;
         int y = page.y + 11;
-        InkRenderer ink = InkRenderer.begin(context.graphics);
         for (int i = 0; i < layouts.length; i++) {
-            RuneDrawing.glyph(ink, ComplexRunes.of(examples[i][0], examples[i][1]), page.x + cell * i + cell / 2.0F, y, 20,
-                    RuneDrawing.Style.INK, 1);
+            ComplexRune rune = ComplexRunes.of(examples[i][0], examples[i][1]);
+            PixelArt.glyph(context.graphics, rune, page.x + cell * i + cell / 2 - 10, y - 10, 20,
+                    0xFF000000 | PixelArt.onParchment(rune.color()));
         }
-        ink.end();
         for (int i = 0; i < layouts.length; i++) {
             Component label = Component.translatable(KEY + "layout." + layouts[i].name().toLowerCase(Locale.ROOT));
             context.graphics.pose().pushPose();

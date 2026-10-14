@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "type": "neoforge:components",
+      "items": "hextale:rune_scroll",
+      "components": {
+        "hextale:rune": "earth_spark"
+      },
+      "strict": false
+    },
+    {
+      "item": "hextale:brass_ingot"
+    },
+    {
+      "item": "minecraft:copper_ingot"
+    }
+  ],
+  "result": {
+    "id": "hextale:brass_scraper",
+    "count": 1
+  }
+}

@@ -30,10 +30,15 @@ public class RuneScrollItem extends Item {
         super(properties);
     }
 
-    public static ItemStack of(ComplexRune rune, Item item) {
+    public static ItemStack of(ComplexRune rune, int stars, Item item) {
         ItemStack stack = new ItemStack(item);
         stack.set(ModDataComponents.RUNE.get(), rune);
+        stack.set(ModDataComponents.STARS.get(), Math.max(1, Math.min(3, stars)));
         return stack;
+    }
+
+    public static int stars(ItemStack stack) {
+        return stack.getOrDefault(ModDataComponents.STARS.get(), 1);
     }
 
     @Nullable
@@ -57,7 +62,10 @@ public class RuneScrollItem extends Item {
         }
         tooltip.add(Component.translatable("rune.hextale.formula", Component.translatable(rune.action().translationKey()),
                 Component.translatable(rune.target().translationKey())).withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.add(Component.translatable(rune.category().translationKey()).withColor(rune.color()));
+        int stars = stars(stack);
+        tooltip.add(Component.translatable(rune.category().translationKey()).withColor(rune.color())
+                .append(Component.literal("  " + "★".repeat(stars)).withStyle(ChatFormatting.GOLD))
+                .append(Component.literal("★".repeat(3 - stars)).withStyle(ChatFormatting.DARK_GRAY)));
         tooltip.add(Component.translatable(rune.translationKey() + ".effect").withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable(rune.translationKey() + ".use").withStyle(ChatFormatting.DARK_AQUA, ChatFormatting.ITALIC));
         tooltip.add(Component.translatable("item.hextale.rune_scroll.study").withStyle(ChatFormatting.DARK_GRAY));
@@ -76,7 +84,7 @@ public class RuneScrollItem extends Item {
                 serverPlayer.displayClientMessage(Component.translatable("item.hextale.rune_scroll.known", name), true);
                 return InteractionResultHolder.fail(stack);
             }
-            Research.learn(serverPlayer, rune);
+            Research.learn(serverPlayer, rune, 1, 0);
             stack.consume(1, player);
             serverPlayer.displayClientMessage(Component.translatable("item.hextale.rune_scroll.studied", name), true);
             level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.9F);

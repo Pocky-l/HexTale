@@ -4,9 +4,9 @@ import net.minecraft.client.Minecraft;
 
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
 import com.pockyl.hextale.client.screen.diary.DiaryScreen;
-import com.pockyl.hextale.network.FusionResultPayload;
 import com.pockyl.hextale.network.KnowledgeSyncPayload;
 import com.pockyl.hextale.network.OpenDiaryPayload;
+import com.pockyl.hextale.network.ResearchMessagePayload;
 
 /** Handlers of the client-bound payloads; run on the client thread. */
 public final class ClientPayloads {
@@ -17,13 +17,16 @@ public final class ClientPayloads {
         ClientKnowledge.set(payload.knowledge());
     }
 
-    public static void fusionResult(FusionResultPayload payload) {
+    public static void researchMessage(ResearchMessagePayload payload) {
         if (Minecraft.getInstance().screen instanceof ResearchTableScreen screen) {
-            screen.onFusionResult(payload.result());
+            screen.onMessage(payload.text(), payload.tone());
         }
     }
 
     public static void openDiary(OpenDiaryPayload payload) {
-        Minecraft.getInstance().setScreen(new DiaryScreen(payload.owner()));
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player != null) {
+            minecraft.setScreen(new DiaryScreen(payload.owner(), minecraft.player.getUUID()));
+        }
     }
 }

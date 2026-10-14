@@ -9,6 +9,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.item.HextechInkItem;
+import com.pockyl.hextale.item.ResearchToolItem;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneBrushItem;
 import com.pockyl.hextale.item.RuneScrollItem;
@@ -30,7 +31,17 @@ public final class ModItems {
     public static final DeferredItem<ResearchersDiaryItem> RESEARCHERS_DIARY = ITEMS.registerItem("researchers_diary",
             properties -> new ResearchersDiaryItem(properties.stacksTo(1)));
 
+    public static final DeferredItem<ResearchToolItem> RESEARCHERS_LENS = tool("researchers_lens");
+    public static final DeferredItem<ResearchToolItem> FORK_QUILL = tool("fork_quill");
+    public static final DeferredItem<ResearchToolItem> MORTAR = tool("mortar");
+    public static final DeferredItem<ResearchToolItem> BRASS_SCRAPER = tool("brass_scraper");
+    public static final DeferredItem<ResearchToolItem> PARCHMENT_STRETCHER = tool("parchment_stretcher");
+
     private ModItems() {
+    }
+
+    private static DeferredItem<ResearchToolItem> tool(String name) {
+        return ITEMS.registerItem(name, properties -> new ResearchToolItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
     }
 
     public static void register(IEventBus modBus) {

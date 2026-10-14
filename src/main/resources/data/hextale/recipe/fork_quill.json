@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "type": "neoforge:components",
+      "items": "hextale:rune_scroll",
+      "components": {
+        "hextale:rune": "light_earth"
+      },
+      "strict": false
+    },
+    {
+      "item": "minecraft:feather"
+    },
+    {
+      "item": "hextale:brass_nugget"
+    }
+  ],
+  "result": {
+    "id": "hextale:fork_quill",
+    "count": 1
+  }
+}

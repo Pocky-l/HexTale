@@ -36,7 +36,7 @@ import com.pockyl.hextale.rune.RuneGlyphs;
  * Shows what lies on the Research Table - the open diary on its rest, parchment, ink and brush, a finished scroll - and
  * the unstable hextech hanging from the brass arm: a faceted crystal turning inside two spinning gimbal rings, wrapped in
  * a soft glow with motes circling it. While someone draws, the rings and motes speed up and the orb brightens; a fusion
- * flares in the rune's colour and lifts the new rune's hieroglyph over the desk; a crack shakes the orb and greys it.
+ * flares in the rune's colour and lifts the new rune's hieroglyph over the desk; a lost sheet shakes the orb and greys it for a moment.
  * Glow sprites use real alpha (not additive blending over black), so they look right with shader packs too.
  */
 public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableBlockEntity> {
@@ -145,7 +145,7 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
     private static void renderOrb(ResearchTableBlockEntity table, PoseStack poseStack, MultiBufferSource buffers, TableAnimation animation,
                                   float time, float flare) {
         boolean present = !table.getItem(ResearchTableBlockEntity.HEXTECH).isEmpty();
-        float crack = fade(time - table.crackTime, CRACK_TICKS);
+        float crack = 0.5F * fade(time - table.fizzleTime, CRACK_TICKS);
         float sinceFizzle = time - table.fizzleTime;
         float fizzle = sinceFizzle >= 0 && sinceFizzle < 12 ? (sinceFizzle % 4 < 2 ? 0.3F : 1) : 1;
         if (!present && flare <= 0 && crack <= 0) {

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "type": "neoforge:components",
+      "items": "hextale:rune_scroll",
+      "components": {
+        "hextale:rune": "water_earth"
+      },
+      "strict": false
+    },
+    {
+      "item": "minecraft:bowl"
+    },
+    {
+      "item": "minecraft:flint"
+    }
+  ],
+  "result": {
+    "id": "hextale:mortar",
+    "count": 1
+  }
+}

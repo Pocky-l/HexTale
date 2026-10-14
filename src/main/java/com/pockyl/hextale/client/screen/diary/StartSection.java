@@ -9,12 +9,13 @@ import net.minecraft.world.level.ItemLike;
 
 import com.pockyl.hextale.client.render.InkRenderer;
 import com.pockyl.hextale.client.render.RuneDrawing;
+import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.SimpleRune;
 
-/** Getting started: where the orbs come from, the table, how drawing works and the recipes of the tools. */
+/** Getting started: where the orbs come from, the table, how research works and the recipes of the tools. */
 final class StartSection implements DiarySection {
     private static final String KEY = "diary.hextale.start.";
 
@@ -30,7 +31,7 @@ final class StartSection implements DiarySection {
 
     @Override
     public int spreads(DiaryContext context) {
-        return 4;
+        return 5;
     }
 
     @Override
@@ -45,8 +46,12 @@ final class StartSection implements DiarySection {
                 slots(context, context.right());
             }
             case 2 -> {
-                drawing(context, context.left());
-                order(context, context.right());
+                research(context, context.left());
+                stars(context, context.right());
+            }
+            case 3 -> {
+                order(context, context.left());
+                toolRecipes(context, context.right());
             }
             default -> {
                 tools(context, context.left());
@@ -115,11 +120,18 @@ final class StartSection implements DiarySection {
         page.text(Component.translatable(KEY + "slots.output"), DiaryContext.MUTED);
     }
 
-    private static void drawing(DiaryContext context, Page page) {
-        page.heading(Component.translatable(KEY + "drawing.title"));
-        page.text(Component.translatable(KEY + "drawing.text"));
-        page.text(Component.translatable(KEY + "drawing.reference"));
-        page.text(Component.translatable(KEY + "drawing.tips"), DiaryContext.MUTED);
+    private static void research(DiaryContext context, Page page) {
+        page.heading(Component.translatable(KEY + "research.title"));
+        page.text(Component.translatable(KEY + "research.text"));
+        page.text(Component.translatable(KEY + "research.points"));
+        page.text(Component.translatable(KEY + "research.walls"), DiaryContext.MUTED);
+    }
+
+    private static void stars(DiaryContext context, Page page) {
+        page.heading(Component.translatable(KEY + "stars.title"));
+        page.text(Component.translatable(KEY + "stars.text"));
+        page.text(Component.translatable(KEY + "stars.tools"));
+        page.text(Component.translatable(KEY + "stars.sheet"), DiaryContext.MUTED);
     }
 
     private static void order(DiaryContext context, Page page) {
@@ -127,8 +139,20 @@ final class StartSection implements DiarySection {
         page.text(Component.translatable(KEY + "order.text"));
         example(context, page, ComplexRunes.of(SimpleRune.FIRE, SimpleRune.EARTH));
         example(context, page, ComplexRunes.of(SimpleRune.EARTH, SimpleRune.FIRE));
-        page.space(2);
-        page.text(Component.translatable(KEY + "order.same"), DiaryContext.RED);
+    }
+
+    private static void toolRecipes(DiaryContext context, Page page) {
+        page.heading(Component.translatable(KEY + "research_tools.title"));
+        page.text(Component.translatable(KEY + "research_tools.text"), DiaryContext.MUTED);
+        ItemStack scroll = RuneScrollItem.of(ComplexRunes.byKey("water_light"), 1, ModItems.RUNE_SCROLL.get());
+        int y = page.y;
+        context.slot(scroll, page.x + 2, y);
+        context.slot(new ItemStack(Items.GLASS_PANE), page.x + 20, y);
+        context.slot(new ItemStack(ModItems.BRASS_INGOT.get()), page.x + 38, y);
+        resultArrow(context, page.x + 58, y);
+        context.slot(new ItemStack(ModItems.RESEARCHERS_LENS.get()), page.x + 82, y);
+        page.space(22);
+        page.text(Component.translatable(KEY + "research_tools.others"), DiaryContext.MUTED);
     }
 
     /** One line "radical -> radical = hieroglyph Name". */

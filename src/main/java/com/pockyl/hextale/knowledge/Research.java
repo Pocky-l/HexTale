@@ -12,7 +12,6 @@ import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModTriggers;
 import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.SimpleRune;
 
 import java.util.Collection;
 
@@ -28,28 +27,31 @@ public final class Research {
         return player.getData(ModAttachments.KNOWLEDGE);
     }
 
-    /** @return whether the rune was new to the player */
-    public static boolean learn(ServerPlayer player, ComplexRune rune) {
+    /**
+     * Records a finished sheet: the rune is learned (or its stars improve).
+     *
+     * @return whether the rune was new to the player
+     */
+    public static boolean learn(ServerPlayer player, ComplexRune rune, int stars, int symbols) {
         RuneKnowledge knowledge = of(player);
         int before = knowledge.runeCount();
-        if (!knowledge.learn(rune)) {
-            return false;
+        boolean fresh = knowledge.learn(rune, stars, symbols);
+        if (stars >= 3) {
+            unlockNote(player, DiaryNote.THREE_STARS);
         }
         progress(player, before, knowledge.runeCount());
         sync(player);
-        return true;
+        return fresh;
     }
 
     /** @return how many of the runes were new */
-    public static int learnAll(ServerPlayer player, Collection<ComplexRune> runes) {
+    public static int learnAll(ServerPlayer player, Collection<ComplexRune> runes, int stars) {
         RuneKnowledge knowledge = of(player);
         int before = knowledge.runeCount();
-        runes.forEach(knowledge::learn);
+        runes.forEach(rune -> knowledge.learn(rune, stars, 0));
         int added = knowledge.runeCount() - before;
-        if (added > 0) {
-            progress(player, before, knowledge.runeCount());
-            sync(player);
-        }
+        progress(player, before, knowledge.runeCount());
+        sync(player);
         return added;
     }
 
@@ -62,26 +64,8 @@ public final class Research {
                 removed++;
             }
         }
-        if (removed > 0) {
-            sync(player);
-        }
+        sync(player);
         return removed;
-    }
-
-    public static void recordDrawn(ServerPlayer player, SimpleRune element) {
-        of(player).recordDrawn(element);
-    }
-
-    /** A drawing the orb did not recognise: the first one is worth a note with drawing tips. */
-    public static void recordFailure(ServerPlayer player) {
-        RuneKnowledge knowledge = of(player);
-        knowledge.recordFailure();
-        unlockNote(player, DiaryNote.FIRST_FAILURE);
-    }
-
-    public static void recordCrack(ServerPlayer player) {
-        of(player).recordCrack();
-        unlockNote(player, DiaryNote.ORB_CRACKED);
     }
 
     /** Writes a note into the diary (once); the player sees a hint and hears a page turn. */

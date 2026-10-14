@@ -1,7 +1,9 @@
 package com.pockyl.hextale.registry;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -19,6 +21,10 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ComplexRune>> RUNE =
             COMPONENTS.registerComponentType("rune", builder -> builder
                     .persistent(ComplexRunes.CODEC).networkSynchronized(ComplexRunes.STREAM_CODEC));
+    /** Stars the rune on a scroll was studied with (1-3). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> STARS =
+            COMPONENTS.registerComponentType("stars", builder -> builder
+                    .persistent(Codec.intRange(1, 3)).networkSynchronized(ByteBufCodecs.VAR_INT));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<DiaryOwner>> DIARY_OWNER =
             COMPONENTS.registerComponentType("diary_owner", builder -> builder
                     .persistent(DiaryOwner.CODEC).networkSynchronized(DiaryOwner.STREAM_CODEC));

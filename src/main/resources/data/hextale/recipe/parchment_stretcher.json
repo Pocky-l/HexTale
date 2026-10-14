@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "type": "neoforge:components",
+      "items": "hextale:rune_scroll",
+      "components": {
+        "hextale:rune": "earth_fire"
+      },
+      "strict": false
+    },
+    {
+      "item": "minecraft:stick"
+    },
+    {
+      "item": "minecraft:stick"
+    },
+    {
+      "item": "minecraft:leather"
+    }
+  ],
+  "result": {
+    "id": "hextale:parchment_stretcher",
+    "count": 1
+  }
+}

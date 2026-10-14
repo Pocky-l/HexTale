@@ -7,7 +7,6 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.knowledge.RuneKnowledge;
-import com.pockyl.hextale.rune.ComplexRune;
 
 import java.util.List;
 
@@ -33,11 +32,11 @@ final class DiaryContext {
     final RuneKnowledge knowledge;
     final String owner;
     final long seed;
-    private final DiaryScreen screen;
+    private final DiaryBook screen;
     private final int mouseX;
     private final int mouseY;
 
-    DiaryContext(DiaryScreen screen, GuiGraphics graphics, Font font, int bookLeft, int bookTop, RuneKnowledge knowledge,
+    DiaryContext(DiaryBook screen, GuiGraphics graphics, Font font, int bookLeft, int bookTop, RuneKnowledge knowledge,
                  String owner, long seed, int mouseX, int mouseY) {
         this.screen = screen;
         this.graphics = graphics;
@@ -82,15 +81,20 @@ final class DiaryContext {
 
     /** A recipe slot: a sunken square with the item in it. */
     void slot(@Nullable ItemStack stack, int x, int y) {
-        graphics.blit(DiaryScreen.TEXTURE, x - 1, y - 1, DiaryScreen.SLOT_U, DiaryScreen.SLOT_V, 18, 18,
-                DiaryScreen.SHEET_WIDTH, DiaryScreen.SHEET_HEIGHT);
+        graphics.blit(DiaryBook.TEXTURE, x - 1, y - 1, DiaryBook.SLOT_U, DiaryBook.SLOT_V, 18, 18,
+                DiaryBook.SHEET_WIDTH, DiaryBook.SHEET_HEIGHT);
         if (stack != null) {
             item(stack, x, y);
         }
     }
 
-    void openCodex(ComplexRune rune) {
-        screen.openCodex(rune);
+    @Nullable
+    DiaryBook.Host host() {
+        return screen.host();
+    }
+
+    void turnTo(int spread) {
+        screen.turnTo(spread);
     }
 
     void notesSeen() {

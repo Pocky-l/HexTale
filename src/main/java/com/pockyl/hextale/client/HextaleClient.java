@@ -22,6 +22,7 @@ import com.pockyl.hextale.client.screen.ResearchTableScreen;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModMenus;
+import com.pockyl.hextale.research.RuneBoards;
 
 @Mod(value = Hextale.MOD_ID, dist = Dist.CLIENT)
 public final class HextaleClient {
@@ -32,6 +33,7 @@ public final class HextaleClient {
         modBus.addListener(HextaleClient::registerClientExtensions);
         modBus.addListener(TableModels::register);
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());
+        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> RuneBoards.warmUp());
     }
 
     private static void registerScreens(RegisterMenuScreensEvent event) {

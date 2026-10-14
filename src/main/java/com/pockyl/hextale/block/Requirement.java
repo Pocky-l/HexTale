@@ -13,8 +13,8 @@ import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * What the Research Table needs before the brush may touch the parchment, in the order the canvas asks for it.
- * Checked by the screen (to say exactly what to put where) and again by the server before every fusion.
+ * What the Research Table needs before a new sheet, in the order the screen asks for it. Checked by the screen (to
+ * say exactly what to put where) and again by the server.
  */
 public enum Requirement {
     DIARY,
@@ -24,6 +24,16 @@ public enum Requirement {
     PAPER,
     HEXTECH;
 
+    /** The player's own (or an unsigned) diary must lie on the table for any research. */
+    @Nullable
+    public static Requirement diary(Container table, Player player) {
+        ItemStack diary = table.getItem(ResearchTableBlockEntity.DIARY);
+        if (!diary.is(ModItems.RESEARCHERS_DIARY.get())) {
+            return DIARY;
+        }
+        return ResearchersDiaryItem.canResearchWith(diary, player) ? null : OWN_DIARY;
+    }
+
     public String translationKey() {
         return "gui.hextale.research_table.need." + name().toLowerCase(Locale.ROOT);
     }
@@ -31,12 +41,9 @@ public enum Requirement {
     /** The first unmet requirement for this player, or null when everything is in place. */
     @Nullable
     public static Requirement firstMissing(Container table, Player player) {
-        ItemStack diary = table.getItem(ResearchTableBlockEntity.DIARY);
-        if (!diary.is(ModItems.RESEARCHERS_DIARY.get())) {
-            return DIARY;
-        }
-        if (!ResearchersDiaryItem.canResearchWith(diary, player)) {
-            return OWN_DIARY;
+        Requirement diary = diary(table, player);
+        if (diary != null) {
+            return diary;
         }
         if (!table.getItem(ResearchTableBlockEntity.BRUSH).is(ModItems.RUNE_BRUSH.get())) {
             return BRUSH;

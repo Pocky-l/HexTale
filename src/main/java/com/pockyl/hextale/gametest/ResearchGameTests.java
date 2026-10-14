@@ -2,14 +2,18 @@ package com.pockyl.hextale.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -22,7 +26,6 @@ import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import com.pockyl.hextale.Hextale;
-import com.pockyl.hextale.block.FusionResult;
 import com.pockyl.hextale.block.Requirement;
 import com.pockyl.hextale.block.ResearchTableBlock;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
@@ -31,112 +34,287 @@ import com.pockyl.hextale.item.DiaryOwner;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.knowledge.DiaryNote;
-import com.pockyl.hextale.knowledge.Discoveries;
-import com.pockyl.hextale.knowledge.Milestone;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.research.HexGrid;
+import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.ResearchBook;
+import com.pockyl.hextale.research.ResearchItems;
+import com.pockyl.hextale.research.ResearchSheet;
+import com.pockyl.hextale.research.ResearchTool;
+import com.pockyl.hextale.research.RuneBoard;
+import com.pockyl.hextale.research.RuneBoards;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.rune.RuneStrokes;
 import com.pockyl.hextale.rune.SimpleRune;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 import java.util.UUID;
 
 /**
- * The research loop on a server: fusing at the table, the orb cracking, lightning making orbs, knowledge kept on the
- * player. Every test runs in its own batch: lightning and mock players must not reach the neighbouring tests.
+ * The research loop on a server: boards, sheets at the table, lightning making orbs, knowledge kept on the player.
+ * Every test runs in its own batch: lightning and mock players must not reach the neighbouring tests.
  */
 @GameTestHolder(Hextale.MOD_ID)
 @PrefixGameTestTemplate(false)
 public final class ResearchGameTests {
     private static final BlockPos TABLE = new BlockPos(0, 1, 0);
+    private static final ComplexRune SMELTING = ComplexRunes.byKey("fire_earth");
 
     private ResearchGameTests() {
     }
 
-    @GameTest(template = "empty", batch = "fusionConsumesExactlyTheMaterials")
-    public static void fusionConsumesExactlyTheMaterials(GameTestHelper helper) {
-        ServerPlayer player = player(helper);
+    // ---- Boards ---------------------------------------------------------------------------------------------------
+
+    /** Reference values printed by the approved prototype (walls: count and hash of the sorted "q,r:element" list). */
+    @GameTest(template = "empty", batch = "boardsMatchThePrototype")
+    public static void boardsMatchThePrototype(GameTestHelper helper) {
+        expect(helper, "fire_earth", 21, 3624390768L, "fire@-6,2 earth@-3,6", 4, 6, 8, 4);
+        expect(helper, "water_light", 21, 1644978348L, "water@-5,5 light@-1,4", 4, 6, 8, 4);
+        expect(helper, "air_water", 42, 903288142L, "air@-2,7 water@-3,-1 light@2,5 metal@-3,4", 7, 10, 13, 9);
+        expect(helper, "shadow_fire", 59, 1897287124L, "shadow@6,-5 fire@-8,5 metal@5,-8 metal@7,0 shadow@4,-2 water@-4,2", 10, 14, 18, 13);
+        expect(helper, "spark_metal", 50, 4208863995L, "spark@2,6 metal@-3,0 fire@-2,5 light@-5,-1 life@4,-2 spark@-6,8", 11, 13, 17, 12);
+        expect(helper, "life_shadow", 56, 4014118940L, "life@-6,-2 shadow@3,2 metal@-4,0 air@-2,-5 metal@-6,3 water@5,-1", 9, 11, 15, 10);
+        helper.succeed();
+    }
+
+    private static void expect(GameTestHelper helper, String key, int walls, long wallHash, String points, int three, int two,
+                               int sheet, int plain) {
+        RuneBoard board = RuneBoards.get(ComplexRunes.byKey(key));
+        List<String> list = new ArrayList<>();
+        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+            if (board.walls()[cell] != null) {
+                list.add(HexGrid.q(cell) + "," + HexGrid.r(cell) + ":" + board.walls()[cell].id());
+            }
+        }
+        Collections.sort(list);
+        helper.assertTrue(list.size() == walls, key + ": " + list.size() + " dark runes, the prototype has " + walls);
+        helper.assertTrue(hash(String.join(";", list)) == wallHash, key + ": the dark runes lie where the prototype has them");
+        List<String> found = board.points().stream().map(p -> p.element().id() + "@" + HexGrid.q(p.cell()) + "," + HexGrid.r(p.cell())).toList();
+        helper.assertTrue(String.join(" ", found).equals(points), key + ": points " + found + ", the prototype has " + points);
+        RuneBoard.Par par = board.par();
+        helper.assertTrue(par.three() == three && par.two() == two && par.sheet() == sheet && par.plain() == plain,
+                key + ": thresholds " + par + ", the prototype has " + three + "/" + two + "/" + sheet + "/" + plain);
+    }
+
+    private static long hash(String text) {
+        int h = (int) 2166136261L;
+        for (int i = 0; i < text.length(); i++) {
+            h = (h ^ text.charAt(i)) * 16777619;
+        }
+        return h & 0xFFFFFFFFL;
+    }
+
+    @GameTest(template = "empty", batch = "everyBoardCanBeFinished", timeoutTicks = 400)
+    public static void everyBoardCanBeFinished(GameTestHelper helper) {
+        long start = System.nanoTime();
+        for (ComplexRune rune : ComplexRunes.all()) {
+            RuneBoard board = RuneBoards.get(rune);
+            int tier = board.tier();
+            RuneBoard.Par par = board.par();
+            helper.assertTrue(board.points().size() == tier * 2, rune.key() + " has " + tier * 2 + " points");
+            helper.assertTrue(board.points().get(0).element() == rune.action() && board.points().get(1).element() == rune.target(),
+                    rune.key() + ": the first points are its action and target");
+            helper.assertTrue(par.three() >= 1 && par.three() <= par.plain() && par.plain() < par.two() + 1 && par.two() < par.sheet(),
+                    rune.key() + ": sane thresholds " + par);
+            helper.assertTrue(route(board) != null, rune.key() + ": a plain route exists");
+            helper.assertTrue(board.walls()[HexGrid.CENTRE] == null, rune.key() + ": the orb is never walled in");
+        }
+        Hextale.LOGGER.info("Checked {} research boards in {} ms", ComplexRunes.COUNT, (System.nanoTime() - start) / 1_000_000);
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "filledPointsDissolveTheirDarkRunes")
+    public static void filledPointsDissolveTheirDarkRunes(GameTestHelper helper) {
+        RuneBoard board = RuneBoards.get(ComplexRunes.byKey("air_water"));
+        SimpleRune element = board.points().get(0).element();
+        boolean[] before = board.activeWalls(0);
+        boolean[] after = board.activeWalls(1);
+        int gone = 0;
+        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+            if (board.walls()[cell] == element) {
+                helper.assertTrue(before[cell] && !after[cell], "a dark rune of the filled point's element dissolves");
+                gone++;
+            } else if (board.walls()[cell] != null) {
+                helper.assertTrue(before[cell] == after[cell], "other dark runes stay");
+            }
+        }
+        helper.assertTrue(gone > 0, "the board has dark runes of " + element.id());
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "chaptersOpenInOrder")
+    public static void chaptersOpenInOrder(GameTestHelper helper) {
+        RuneKnowledge knowledge = new RuneKnowledge();
+        helper.assertTrue(ResearchBook.runes(1).size() == 6, "chapter I has Smelting and the five tool runes");
+        helper.assertTrue(ResearchBook.open(knowledge, SMELTING), "Smelting is open from the start");
+        helper.assertFalse(ResearchBook.open(knowledge, ResearchTool.LENS.rune()), "the tool runes wait for Smelting");
+        knowledge.learn(SMELTING, 1, 8);
+        helper.assertTrue(ResearchBook.open(knowledge, ResearchTool.LENS.rune()), "after Smelting the tool runes open");
+        helper.assertFalse(ResearchBook.chapterOpen(knowledge, 2), "chapter II needs four runes of chapter I");
+        for (ResearchTool tool : List.of(ResearchTool.LENS, ResearchTool.FORK, ResearchTool.MORTAR)) {
+            knowledge.learn(tool.rune(), 1, 0);
+        }
+        helper.assertTrue(ResearchBook.chapterOpen(knowledge, 2), "four runes of chapter I open chapter II");
+        helper.assertFalse(ResearchBook.chapterOpen(knowledge, 3), "chapter III is still closed");
+        ResearchBook.runes(2).subList(0, ResearchBook.CHAPTER_III_AFTER).forEach(rune -> knowledge.learn(rune, 2, 0));
+        helper.assertTrue(ResearchBook.chapterOpen(knowledge, 3), "ten runes of chapter II open chapter III");
+        helper.assertTrue(ResearchBook.runes(1).size() + ResearchBook.runes(2).size() + ResearchBook.runes(3).size() == 72,
+                "the chapters hold all 72 runes");
+        helper.succeed();
+    }
+
+    // ---- The table ------------------------------------------------------------------------------------------------
+
+    @GameTest(template = "empty", batch = "aFinishedSheetTeachesTheRune")
+    public static void aFinishedSheetTeachesTheRune(GameTestHelper helper) {
+        ServerPlayer player = survivalPlayer(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
+        RuneBoard board = RuneBoards.get(SMELTING);
+        List<Step> route = route(board);
+        helper.assertTrue(route != null, "Smelting can be finished");
+        Map<Item, Integer> needed = new HashMap<>();
+        route.forEach(step -> needed.merge(step.item(), 1, Integer::sum));
+        needed.forEach((item, count) -> player.getInventory().add(new ItemStack(item, count)));
 
-        FusionResult result = table.fuse(player, strokes(SimpleRune.FIRE), strokes(SimpleRune.EARTH));
-
-        ComplexRune smelting = ComplexRunes.byKey("fire_earth");
-        helper.assertTrue(result.status() == FusionResult.Status.FUSED, "fire -> earth fuses, got " + result.status());
-        helper.assertTrue(result.rune() == smelting && result.fresh(), "the new rune is Smelting");
+        table.select(player, SMELTING);
+        helper.assertTrue(table.sheet().rune() == SMELTING && !table.sheet().isOpen(), "Smelting lies on the table, no sheet yet");
+        table.newSheet(player);
+        helper.assertTrue(table.sheet().isActive() && table.sheet().cap() == board.par().sheet(), "a fresh sheet");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 4, "one sheet of paper used");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "one orb used");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.INK).getDamageValue() == 1, "one dose of ink used");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.BRUSH).getDamageValue() == 1, "the brush wears by one");
-        ItemStack scroll = table.getItem(ResearchTableBlockEntity.OUTPUT);
-        helper.assertTrue(scroll.is(ModItems.RUNE_SCROLL.get()) && scroll.getCount() == 1, "a scroll lies in the output slot");
-        helper.assertTrue(RuneScrollItem.rune(scroll) == smelting, "the scroll carries Smelting");
+
+        play(table, player, route);
+
+        ResearchSheet sheet = table.sheet();
+        helper.assertTrue(sheet.isOver() && sheet.complete(board), "every point is filled");
+        int stars = board.stars(sheet.used());
         RuneKnowledge knowledge = Research.of(player);
-        helper.assertTrue(knowledge.knows(smelting) && knowledge.runeCount() == 1, "the player learned Smelting");
+        helper.assertTrue(knowledge.stars(SMELTING) == stars && stars >= 1, "Smelting is learned with " + stars + " stars");
+        helper.assertTrue(knowledge.best(SMELTING) == sheet.used(), "the best sheet is remembered");
         helper.assertTrue(knowledge.hasNote(DiaryNote.FIRST_RUNE), "the diary notes the first rune");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "the orb went into the rune");
+        ItemStack scroll = table.getItem(ResearchTableBlockEntity.OUTPUT);
+        helper.assertTrue(RuneScrollItem.rune(scroll) == SMELTING && RuneScrollItem.stars(scroll) == stars, "a scroll of Smelting comes out");
+        helper.assertFalse(player.getInventory().hasAnyMatching(stack -> needed.containsKey(stack.getItem())), "every lever was used up");
+        for (Step step : route) {
+            if (step.point() < 0) {
+                ItemElements elements = ResearchItems.of(step.item());
+                helper.assertTrue(elements != null && knowledge.knowsItem(BuiltInRegistries.ITEM.getKey(step.item())),
+                        "a tried item's elements are known");
+            }
+        }
         DiaryOwner owner = ResearchersDiaryItem.owner(table.getItem(ResearchTableBlockEntity.DIARY));
         helper.assertTrue(owner != null && owner.is(player), "the unsigned diary is signed by the researcher");
-
-        FusionResult again = table.fuse(player, strokes(SimpleRune.FIRE), strokes(SimpleRune.EARTH));
-        helper.assertTrue(again.status() == FusionResult.Status.FUSED && !again.fresh(), "a known rune still fuses, but is not fresh");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.OUTPUT).getCount() == 2, "equal scrolls stack in the output slot");
         player.discard();
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "orderChangesTheRune")
-    public static void orderChangesTheRune(GameTestHelper helper) {
+    @GameTest(template = "empty", batch = "aFullSheetWithoutTheRuneIsLost")
+    public static void aFullSheetWithoutTheRuneIsLost(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
-        FusionResult forward = table.fuse(player, strokes(SimpleRune.FIRE), strokes(SimpleRune.EARTH));
-        FusionResult reversed = table.fuse(player, strokes(SimpleRune.EARTH), strokes(SimpleRune.FIRE));
-        helper.assertTrue(forward.rune() == ComplexRunes.byKey("fire_earth"), "fire -> earth is Smelting");
-        helper.assertTrue(reversed.rune() == ComplexRunes.byKey("earth_fire"), "earth -> fire is Tempering");
-        helper.assertTrue(Research.of(player).runeCount() == 2, "both are learned");
+        table.select(player, SMELTING);
+        table.newSheet(player);
+        RuneBoard board = RuneBoards.get(SMELTING);
+        // Coal pulls towards fire at the top, away from both points (left and down): it never covers one.
+        for (int i = 0; i < board.par().sheet(); i++) {
+            table.write(player, Items.COAL, false);
+        }
+        ResearchSheet sheet = table.sheet();
+        helper.assertTrue(sheet.used() == sheet.cap() && sheet.failed(board), "the full sheet is lost");
+        table.write(player, Items.COAL, false);
+        helper.assertTrue(sheet.used() == sheet.cap(), "nothing more can be written on it");
+        helper.assertFalse(Research.of(player).knows(SMELTING), "nothing is learned");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 3, "the orb is kept");
+        helper.assertTrue(Research.of(player).hasNote(DiaryNote.SHEET_FAILED), "the diary notes the lost sheet");
         player.discard();
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "sameElementCracksTheOrb")
-    public static void sameElementCracksTheOrb(GameTestHelper helper) {
+    @GameTest(template = "empty", batch = "toolsFollowTheirRunesStars")
+    public static void toolsFollowTheirRunesStars(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
-
-        FusionResult result = table.fuse(player, strokes(SimpleRune.WATER), strokes(SimpleRune.WATER));
-
-        helper.assertTrue(result.status() == FusionResult.Status.CRACKED, "water twice cracks the orb, got " + result.status());
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "the orb is gone");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 5, "the paper is kept");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.INK).getDamageValue() == 0, "the ink is kept");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.BRUSH).getDamageValue() == 0, "the brush is kept");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.OUTPUT).isEmpty(), "no scroll");
-        helper.assertTrue(player.getHealth() == player.getMaxHealth(), "the crack hurts nobody");
-        RuneKnowledge knowledge = Research.of(player);
-        helper.assertTrue(knowledge.runeCount() == 0, "nothing is learned");
-        helper.assertTrue(knowledge.hasNote(DiaryNote.ORB_CRACKED), "the diary explains why the orb cracked");
+        int slot = ResearchTableBlockEntity.TOOLS + ResearchTool.STRETCHER.ordinal();
+        helper.assertTrue(table.canPlaceItem(slot, new ItemStack(ModItems.PARCHMENT_STRETCHER.get())), "the stretcher has its slot");
+        helper.assertFalse(table.canPlaceItem(slot, new ItemStack(ModItems.MORTAR.get())), "other tools do not fit there");
+        table.setItem(slot, new ItemStack(ModItems.PARCHMENT_STRETCHER.get()));
+        helper.assertTrue(table.toolLevel(player, ResearchTool.STRETCHER) == 0, "without its rune the tool does nothing");
+        Research.learnAll(player, List.of(ResearchTool.STRETCHER.rune(), SMELTING), 2);
+        helper.assertTrue(table.toolLevel(player, ResearchTool.STRETCHER) == 2, "two stars, strength two");
+        table.select(player, SMELTING);
+        table.newSheet(player);
+        helper.assertTrue(table.sheet().cap() == RuneBoards.get(SMELTING).par().sheet() + 2, "the stretched sheet holds two more symbols");
+        helper.assertTrue(table.toolLevel(player, ResearchTool.LENS) == 0, "a tool not on the table does nothing");
         player.discard();
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "unrecognisedDrawingsCostNothing")
-    public static void unrecognisedDrawingsCostNothing(GameTestHelper helper) {
+    @GameTest(template = "empty", batch = "theScraperGivesThePlaceBack")
+    public static void theScraperGivesThePlaceBack(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
-        RuneStrokes scribble = new RuneStrokes(RuneSamples.scribble(new Random(3)));
-        RuneStrokes forged = new RuneStrokes(List.of(new float[]{0, 0, Float.NaN, 1}));
+        table.setItem(ResearchTableBlockEntity.TOOLS + ResearchTool.SCRAPER.ordinal(), new ItemStack(ModItems.BRASS_SCRAPER.get()));
+        Research.learnAll(player, List.of(ResearchTool.SCRAPER.rune()), 1);
+        table.select(player, SMELTING);
+        table.newSheet(player);
+        table.write(player, Items.COAL, false);
+        helper.assertTrue(table.sheet().used() == 1 && table.sheet().from() != HexGrid.CENTRE, "coal wrote a symbol");
+        table.scrape(player);
+        helper.assertTrue(table.sheet().used() == 0 && table.sheet().from() == HexGrid.CENTRE, "the symbol is scraped off");
+        table.write(player, Items.COAL, false);
+        table.scrape(player);
+        helper.assertTrue(table.sheet().used() == 1, "one star scrapes once per sheet");
+        player.discard();
+        helper.succeed();
+    }
 
-        FusionResult result = table.fuse(player, scribble, strokes(SimpleRune.AIR));
-        FusionResult invalid = table.fuse(player, strokes(SimpleRune.AIR), forged);
+    @GameTest(template = "empty", batch = "missingMaterialsAreNamed")
+    public static void missingMaterialsAreNamed(GameTestHelper helper) {
+        ServerPlayer player = player(helper);
+        ResearchTableBlock.place(helper.getLevel(), helper.absolutePos(TABLE), ModBlocks.RESEARCH_TABLE.get().defaultBlockState());
+        ResearchTableBlockEntity table = helper.getBlockEntity(TABLE);
+        helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.DIARY, "an empty table asks for the diary first");
 
-        helper.assertTrue(result.status() == FusionResult.Status.UNRECOGNISED, "a scribble is not fused, got " + result.status());
-        helper.assertTrue(invalid.status() == FusionResult.Status.UNRECOGNISED, "malformed strokes are refused");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 5
-                && table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 3, "nothing is used up");
+        ItemStack foreign = new ItemStack(ModItems.RESEARCHERS_DIARY.get());
+        foreign.set(ModDataComponents.DIARY_OWNER.get(), new DiaryOwner(UUID.randomUUID(), "Someone"));
+        table.setItem(ResearchTableBlockEntity.DIARY, foreign);
+        helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.OWN_DIARY, "someone else's diary does not count");
+        table.select(player, SMELTING);
+        helper.assertTrue(table.sheet().rune() == null, "nothing is studied with someone else's diary");
+
+        table.setItem(ResearchTableBlockEntity.DIARY, new ItemStack(ModItems.RESEARCHERS_DIARY.get()));
+        table.setItem(ResearchTableBlockEntity.BRUSH, new ItemStack(ModItems.RUNE_BRUSH.get()));
+        table.setItem(ResearchTableBlockEntity.INK, new ItemStack(Items.GLASS_BOTTLE));
+        helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.INK, "an empty bottle is no ink");
+        table.select(player, SMELTING);
+        table.newSheet(player);
+        helper.assertFalse(table.sheet().isOpen(), "no sheet without ink");
+        player.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "lastDoseLeavesAnEmptyBottle")
+    public static void lastDoseLeavesAnEmptyBottle(GameTestHelper helper) {
+        ServerPlayer player = player(helper);
+        ResearchTableBlockEntity table = stockedTable(helper);
+        table.getItem(ResearchTableBlockEntity.INK).setDamageValue(table.getItem(ResearchTableBlockEntity.INK).getMaxDamage() - 1);
+        table.getItem(ResearchTableBlockEntity.BRUSH).setDamageValue(table.getItem(ResearchTableBlockEntity.BRUSH).getMaxDamage() - 1);
+        table.select(player, SMELTING);
+        table.newSheet(player);
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.INK).is(Items.GLASS_BOTTLE), "the last dose leaves the glass bottle");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.BRUSH).isEmpty(), "a worn-out brush breaks");
         player.discard();
         helper.succeed();
     }
@@ -165,43 +343,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "missingMaterialsAreNamed")
-    public static void missingMaterialsAreNamed(GameTestHelper helper) {
-        ServerPlayer player = player(helper);
-        ResearchTableBlock.place(helper.getLevel(), helper.absolutePos(TABLE), ModBlocks.RESEARCH_TABLE.get().defaultBlockState());
-        ResearchTableBlockEntity table = helper.getBlockEntity(TABLE);
-        helper.assertTrue(table.fuse(player, strokes(SimpleRune.FIRE), strokes(SimpleRune.AIR)).missing() == Requirement.DIARY,
-                "an empty table asks for the diary first");
-
-        ItemStack foreign = new ItemStack(ModItems.RESEARCHERS_DIARY.get());
-        foreign.set(ModDataComponents.DIARY_OWNER.get(), new DiaryOwner(UUID.randomUUID(), "Someone"));
-        table.setItem(ResearchTableBlockEntity.DIARY, foreign);
-        helper.assertTrue(table.fuse(player, strokes(SimpleRune.FIRE), strokes(SimpleRune.AIR)).missing() == Requirement.OWN_DIARY,
-                "someone else's diary does not count");
-
-        table.setItem(ResearchTableBlockEntity.DIARY, new ItemStack(ModItems.RESEARCHERS_DIARY.get()));
-        table.setItem(ResearchTableBlockEntity.BRUSH, new ItemStack(ModItems.RUNE_BRUSH.get()));
-        table.setItem(ResearchTableBlockEntity.INK, new ItemStack(Items.GLASS_BOTTLE));
-        helper.assertTrue(table.fuse(player, strokes(SimpleRune.FIRE), strokes(SimpleRune.AIR)).missing() == Requirement.INK,
-                "an empty bottle is no ink");
-        player.discard();
-        helper.succeed();
-    }
-
-    @GameTest(template = "empty", batch = "lastDoseLeavesAnEmptyBottle")
-    public static void lastDoseLeavesAnEmptyBottle(GameTestHelper helper) {
-        ServerPlayer player = player(helper);
-        ResearchTableBlockEntity table = stockedTable(helper);
-        table.getItem(ResearchTableBlockEntity.INK).setDamageValue(table.getItem(ResearchTableBlockEntity.INK).getMaxDamage() - 1);
-        table.getItem(ResearchTableBlockEntity.BRUSH).setDamageValue(table.getItem(ResearchTableBlockEntity.BRUSH).getMaxDamage() - 1);
-
-        table.fuse(player, strokes(SimpleRune.LIFE), strokes(SimpleRune.METAL));
-
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.INK).is(Items.GLASS_BOTTLE), "the last dose leaves the glass bottle");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.BRUSH).isEmpty(), "a worn-out brush breaks");
-        player.discard();
-        helper.succeed();
-    }
+    // ---- Lightning ------------------------------------------------------------------------------------------------
 
     @GameTest(template = "empty", timeoutTicks = 60, batch = "lightningOnRodAndAmethystMakesOrbs")
     public static void lightningOnRodAndAmethystMakesOrbs(GameTestHelper helper) {
@@ -252,60 +394,150 @@ public final class ResearchGameTests {
         });
     }
 
+    // ---- Knowledge ------------------------------------------------------------------------------------------------
+
     @GameTest(template = "empty", batch = "knowledgeSurvivesDeath")
     public static void knowledgeSurvivesDeath(GameTestHelper helper) {
         ServerPlayer before = player(helper);
-        Research.learn(before, ComplexRunes.byKey("water_life"));
-        Research.learn(before, ComplexRunes.byKey("life_metal"));
+        Research.learn(before, ComplexRunes.byKey("water_life"), 3, 9);
+        Research.learn(before, ComplexRunes.byKey("life_metal"), 1, 20);
+        Research.of(before).learnItem(ResourceLocation.withDefaultNamespace("coal"));
+        Research.of(before).see(SMELTING, new int[]{HexGrid.CENTRE, 5});
         Research.unlockNote(before, DiaryNote.FIRST_HEXTECH);
-        Research.recordFailure(before);
 
         ServerPlayer after = player(helper);
         after.restoreFrom(before, false);
 
         RuneKnowledge knowledge = Research.of(after);
-        helper.assertTrue(knowledge.runeCount() == 2 && knowledge.knows(ComplexRunes.byKey("water_life")), "the runes are kept");
-        helper.assertTrue(knowledge.hasNote(DiaryNote.FIRST_HEXTECH) && knowledge.hasNote(DiaryNote.FIRST_FAILURE), "the notes are kept");
-        helper.assertTrue(knowledge.failures() == 1, "the attempts are kept");
+        helper.assertTrue(knowledge.runeCount() == 2 && knowledge.stars(ComplexRunes.byKey("water_life")) == 3, "the runes and stars are kept");
+        helper.assertTrue(knowledge.best(ComplexRunes.byKey("water_life")) == 9, "the best sheets are kept");
+        helper.assertTrue(knowledge.knowsItem(ResourceLocation.withDefaultNamespace("coal")), "tried items are kept");
+        helper.assertTrue(knowledge.seen(SMELTING).get(5), "explored parchment is kept");
+        helper.assertTrue(knowledge.hasNote(DiaryNote.FIRST_HEXTECH), "the notes are kept");
         helper.assertTrue(knowledge != Research.of(before), "the new player has its own copy");
+        RuneKnowledge decoded = RuneKnowledge.CODEC.parse(NbtOps.INSTANCE,
+                RuneKnowledge.CODEC.encodeStart(NbtOps.INSTANCE, knowledge).getOrThrow()).getOrThrow();
+        helper.assertTrue(decoded.stars(ComplexRunes.byKey("life_metal")) == 1 && decoded.seen(SMELTING).get(5), "knowledge saves and loads");
         before.discard();
         after.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "starsOnlyGetBetter")
+    public static void starsOnlyGetBetter(GameTestHelper helper) {
+        RuneKnowledge knowledge = new RuneKnowledge();
+        helper.assertTrue(knowledge.learn(SMELTING, 2, 9), "the first sheet teaches the rune");
+        helper.assertFalse(knowledge.learn(SMELTING, 1, 12), "a later sheet is not a new rune");
+        helper.assertTrue(knowledge.stars(SMELTING) == 2 && knowledge.best(SMELTING) == 9, "a worse sheet changes nothing");
+        knowledge.learn(SMELTING, 3, 7);
+        helper.assertTrue(knowledge.stars(SMELTING) == 3 && knowledge.best(SMELTING) == 7, "a better sheet raises the stars");
         helper.succeed();
     }
 
     @GameTest(template = "empty", batch = "milestonesWriteNotes")
     public static void milestonesWriteNotes(GameTestHelper helper) {
         ServerPlayer player = player(helper);
-        List<ComplexRune> first = Discoveries.suggest(Research.of(player), 1L, 3);
-        helper.assertTrue(first.containsAll(Milestone.FIRST_DEVICES.featured()), "a beginner is pointed at the first devices' runes");
-
-        Research.learnAll(player, ComplexRunes.all().subList(0, 12));
+        Research.learnAll(player, ComplexRunes.all().subList(0, 12), 1);
         RuneKnowledge knowledge = Research.of(player);
         helper.assertTrue(knowledge.hasNote(DiaryNote.MILESTONE_3) && knowledge.hasNote(DiaryNote.MILESTONE_12), "both milestones noted");
         helper.assertFalse(knowledge.hasNote(DiaryNote.MILESTONE_24), "24 is not reached yet");
-        List<ComplexRune> next = Discoveries.suggest(knowledge, 1L, 3);
-        helper.assertTrue(next.size() == 3 && next.stream().noneMatch(knowledge::knows), "suggestions are three unknown runes");
         player.discard();
         helper.succeed();
     }
 
     @GameTest(template = "empty", batch = "scrollsTeachOtherResearchers")
     public static void scrollsTeachOtherResearchers(GameTestHelper helper) {
-        ServerPlayer reader = player(helper);
-        // Creative players keep their scrolls, like any other consumed item.
-        reader.setGameMode(GameType.SURVIVAL);
+        ServerPlayer reader = survivalPlayer(helper);
         ComplexRune lens = ComplexRunes.byKey("water_light");
-        ItemStack scroll = RuneScrollItem.of(lens, ModItems.RUNE_SCROLL.get());
+        ItemStack scroll = RuneScrollItem.of(lens, 3, ModItems.RUNE_SCROLL.get());
         scroll.setCount(2);
         reader.setItemInHand(InteractionHand.MAIN_HAND, scroll);
 
         scroll.use(helper.getLevel(), reader, InteractionHand.MAIN_HAND);
-        helper.assertTrue(Research.of(reader).knows(lens), "studying the scroll teaches the rune");
+        helper.assertTrue(Research.of(reader).stars(lens) == 1, "studying a scroll teaches the rune with one star");
         helper.assertTrue(reader.getMainHandItem().getCount() == 1, "one scroll is used up");
         scroll.use(helper.getLevel(), reader, InteractionHand.MAIN_HAND);
         helper.assertTrue(reader.getMainHandItem().getCount() == 1, "a known rune's scroll is kept");
         reader.discard();
         helper.succeed();
+    }
+
+    // ---- Helpers --------------------------------------------------------------------------------------------------
+
+    /** One move of a route: write with {@code item}, or leave the resource of {@code point}. */
+    private record Step(Item item, int point) {
+    }
+
+    /** A shortest plain route (no tools) that fills every point, found by breadth-first search; null if none. */
+    private static List<Step> route(RuneBoard board) {
+        int n = board.points().size();
+        int states = HexGrid.COUNT * (int) Math.pow(3, n);
+        int[] pow = new int[n];
+        for (int i = 0; i < n; i++) {
+            pow[i] = (int) Math.pow(3, i);
+        }
+        int[] parent = new int[states];
+        Step[] how = new Step[states];
+        Arrays.fill(parent, -2);
+        int start = HexGrid.CENTRE * (states / HexGrid.COUNT);
+        parent[start] = -1;
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
+        queue.add(start);
+        int goal = -1;
+        int per = states / HexGrid.COUNT;
+        while (!queue.isEmpty()) {
+            int state = queue.poll();
+            int cell = state / per;
+            int p = state % per;
+            if (p == per - 1) {
+                goal = state;
+                break;
+            }
+            int filled = 0;
+            for (int i = 0; i < n; i++) {
+                int digit = p / pow[i] % 3;
+                if (digit == 2) {
+                    filled |= 1 << i;
+                }
+                if (digit == 1) {
+                    visit(queue, parent, how, state, cell * per + p + pow[i], new Step(board.points().get(i).resource(), i));
+                }
+            }
+            boolean[] walls = board.activeWalls(filled);
+            for (Map.Entry<Item, ItemElements> entry : ResearchItems.canonical().entrySet()) {
+                int end = HexGrid.walk(walls, cell, entry.getValue().offset(false)).end();
+                int point = board.pointAt(end);
+                int np = point >= 0 && p / pow[point] % 3 == 0 ? p + pow[point] : p;
+                visit(queue, parent, how, state, end * per + np, new Step(entry.getKey(), -1));
+            }
+        }
+        if (goal < 0) {
+            return null;
+        }
+        List<Step> steps = new ArrayList<>();
+        for (int s = goal; parent[s] >= 0; s = parent[s]) {
+            steps.add(how[s]);
+        }
+        Collections.reverse(steps);
+        return steps;
+    }
+
+    private static void visit(ArrayDeque<Integer> queue, int[] parent, Step[] how, int from, int to, Step step) {
+        if (parent[to] == -2) {
+            parent[to] = from;
+            how[to] = step;
+            queue.add(to);
+        }
+    }
+
+    private static void play(ResearchTableBlockEntity table, ServerPlayer player, List<Step> route) {
+        for (Step step : route) {
+            if (step.point() >= 0) {
+                table.leave(player, step.point());
+            } else {
+                table.write(player, step.item(), false);
+            }
+        }
     }
 
     /** Orbs lying around a position; tests clean them up, since the test area is reused by later batches. */
@@ -325,8 +557,11 @@ public final class ResearchGameTests {
         return table;
     }
 
-    private static RuneStrokes strokes(SimpleRune rune) {
-        return new RuneStrokes(RuneSamples.clean(rune));
+    private static ServerPlayer survivalPlayer(GameTestHelper helper) {
+        ServerPlayer player = player(helper);
+        player.setGameMode(GameType.SURVIVAL);
+        player.getInventory().clearContent();
+        return player;
     }
 
     @SuppressWarnings("removal")

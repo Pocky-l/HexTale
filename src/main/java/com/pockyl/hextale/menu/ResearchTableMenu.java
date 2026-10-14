@@ -17,28 +17,33 @@ import com.pockyl.hextale.registry.ModMenus;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The Research Table: diary, parchment, orb, ink and brush in a column on the left of the board, the drawing canvas in
- * the middle (client only, see the screen), the finished scroll on the right and the player's inventory below. The
- * diary's rune reference page lies left of the board.
+ * The Research Table. Its screen has three tabs - the research book, the parchment and the table itself; slots (the
+ * materials, the research tools, the output and the player's inventory) exist on every tab but are only shown and
+ * clickable on the table tab.
  */
 public class ResearchTableMenu extends AbstractContainerMenu {
-    /** The table board starts here; left of it lies the diary's rune reference page (client only). */
-    public static final int BOARD_X = 100;
-    public static final int IMAGE_WIDTH = BOARD_X + 276;
-    public static final int IMAGE_HEIGHT = 246;
-    public static final int COLUMN_X = BOARD_X + 10;
-    public static final int[] COLUMN_Y = {20, 42, 64, 86, 108};
-    public static final int OUTPUT_X = BOARD_X + 250;
-    public static final int OUTPUT_Y = 65;
-    public static final int INVENTORY_X = BOARD_X + 57;
-    public static final int INVENTORY_Y = 166;
+    public static final int IMAGE_WIDTH = 468;
+    public static final int IMAGE_HEIGHT = 262;
+    /** Materials in a row: diary, paper, orb, ink, brush; the scroll comes out right of them. */
+    public static final int MATERIALS_X = 154;
+    public static final int MATERIALS_Y = 50;
+    public static final int OUTPUT_X = 298;
+    public static final int TOOLS_X = 182;
+    public static final int TOOLS_Y = 104;
+    public static final int SLOT_SPACING = 22;
+    public static final int INVENTORY_X = 153;
+    public static final int INVENTORY_Y = 164;
 
     private static final int TABLE_SLOTS = ResearchTableBlockEntity.SLOTS;
     private static final int INVENTORY_START = TABLE_SLOTS;
     private static final int INVENTORY_END = INVENTORY_START + 36;
+    private static final int[] MATERIALS = {ResearchTableBlockEntity.DIARY, ResearchTableBlockEntity.PAPER,
+            ResearchTableBlockEntity.HEXTECH, ResearchTableBlockEntity.INK, ResearchTableBlockEntity.BRUSH};
 
     private final Container container;
     private final BlockPos pos;
+    /** Client side: whether the table tab is open (slots are hidden on the other tabs). */
+    private boolean slotsVisible = true;
 
     public ResearchTableMenu(int containerId, Inventory inventory, RegistryFriendlyByteBuf buf) {
         this(containerId, inventory, new SimpleContainer(TABLE_SLOTS), buf.readBlockPos());
@@ -51,20 +56,20 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         this.pos = pos;
         container.startOpen(inventory.player);
 
-        int[] column = {ResearchTableBlockEntity.DIARY, ResearchTableBlockEntity.PAPER, ResearchTableBlockEntity.HEXTECH,
-                ResearchTableBlockEntity.INK, ResearchTableBlockEntity.BRUSH};
-        for (int i = 0; i < column.length; i++) {
-            addSlot(new TableSlot(container, column[i], COLUMN_X, COLUMN_Y[i]));
+        for (int i = 0; i < MATERIALS.length; i++) {
+            addSlot(new TableSlot(container, MATERIALS[i], MATERIALS_X + i * SLOT_SPACING, MATERIALS_Y));
         }
-        addSlot(new TableSlot(container, ResearchTableBlockEntity.OUTPUT, OUTPUT_X, OUTPUT_Y));
-
+        addSlot(new TableSlot(container, ResearchTableBlockEntity.OUTPUT, OUTPUT_X, MATERIALS_Y));
+        for (int i = 0; i < TABLE_SLOTS - ResearchTableBlockEntity.TOOLS; i++) {
+            addSlot(new TableSlot(container, ResearchTableBlockEntity.TOOLS + i, TOOLS_X + i * SLOT_SPACING, TOOLS_Y));
+        }
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                addSlot(new Slot(inventory, col + row * 9 + 9, INVENTORY_X + col * 18, INVENTORY_Y + row * 18));
+                addSlot(new HiddenSlot(inventory, col + row * 9 + 9, INVENTORY_X + col * 18, INVENTORY_Y + row * 18));
             }
         }
         for (int col = 0; col < 9; col++) {
-            addSlot(new Slot(inventory, col, INVENTORY_X + col * 18, INVENTORY_Y + 58));
+            addSlot(new HiddenSlot(inventory, col, INVENTORY_X + col * 18, INVENTORY_Y + 58));
         }
     }
 
@@ -85,6 +90,10 @@ public class ResearchTableMenu extends AbstractContainerMenu {
     /** The table's slots in container order (on the client: the synced copy). */
     public Container table() {
         return container;
+    }
+
+    public void setSlotsVisible(boolean visible) {
+        slotsVisible = visible;
     }
 
     @Override
@@ -134,8 +143,20 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         container.stopOpen(player);
     }
 
+    /** A player inventory slot shown only on the table tab. */
+    private class HiddenSlot extends Slot {
+        HiddenSlot(Container container, int index, int x, int y) {
+            super(container, index, x, y);
+        }
+
+        @Override
+        public boolean isActive() {
+            return slotsVisible;
+        }
+    }
+
     /** A table slot: accepts only what the table accepts there (nothing in the output slot). */
-    private static class TableSlot extends Slot {
+    private class TableSlot extends HiddenSlot {
         TableSlot(Container container, int index, int x, int y) {
             super(container, index, x, y);
         }
@@ -143,6 +164,11 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         @Override
         public boolean mayPlace(ItemStack stack) {
             return ResearchTableBlockEntity.accepts(getContainerSlot(), stack);
+        }
+
+        @Override
+        public int getMaxStackSize(ItemStack stack) {
+            return getContainerSlot() >= ResearchTableBlockEntity.TOOLS ? 1 : super.getMaxStackSize(stack);
         }
     }
 }

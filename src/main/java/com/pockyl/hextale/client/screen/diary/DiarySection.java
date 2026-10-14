@@ -19,6 +19,11 @@ interface DiarySection {
         return false;
     }
 
+    /** Whether the footer shows page numbers. */
+    default boolean numberedPages() {
+        return true;
+    }
+
     /** Called when the player turns to this section. */
     default void opened(DiaryContext context) {
     }

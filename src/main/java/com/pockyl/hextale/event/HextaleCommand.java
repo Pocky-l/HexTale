@@ -1,6 +1,7 @@
 package com.pockyl.hextale.event;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
@@ -27,7 +28,7 @@ import com.pockyl.hextale.rune.ComplexRunes;
 import java.util.List;
 import java.util.stream.Stream;
 
-/** {@code /hextale runes list|learn <rune|all>|forget <rune|all>}: test helpers for operators. */
+/** {@code /hextale runes list|learn <rune|all> [stars]|forget <rune|all>}: test helpers for operators. */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class HextaleCommand {
     private static final String ALL = "all";
@@ -52,7 +53,10 @@ public final class HextaleCommand {
                                 .executes(context -> list(context.getSource(), context.getSource().getPlayerOrException())))
                         .then(Commands.literal("learn")
                                 .then(Commands.argument("rune", StringArgumentType.word()).suggests(RUNES)
-                                        .executes(context -> learn(context.getSource(), StringArgumentType.getString(context, "rune")))))
+                                        .executes(context -> learn(context.getSource(), StringArgumentType.getString(context, "rune"), 1))
+                                        .then(Commands.argument("stars", IntegerArgumentType.integer(1, 3))
+                                                .executes(context -> learn(context.getSource(), StringArgumentType.getString(context, "rune"),
+                                                        IntegerArgumentType.getInteger(context, "stars"))))))
                         .then(Commands.literal("forget")
                                 .then(Commands.argument("rune", StringArgumentType.word()).suggests(RUNES)
                                         .executes(context -> forget(context.getSource(), StringArgumentType.getString(context, "rune")))))));
@@ -77,9 +81,9 @@ public final class HextaleCommand {
         return knowledge.runeCount();
     }
 
-    private static int learn(CommandSourceStack source, String key) throws CommandSyntaxException {
+    private static int learn(CommandSourceStack source, String key, int stars) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
-        int added = Research.learnAll(player, runes(key));
+        int added = Research.learnAll(player, runes(key), stars);
         source.sendSuccess(() -> Component.translatable("commands.hextale.runes.learned", added, player.getDisplayName(),
                 Research.of(player).runeCount(), ComplexRunes.COUNT), true);
         return added;

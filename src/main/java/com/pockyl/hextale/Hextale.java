@@ -17,6 +17,7 @@ import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.registry.ModDataMaps;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModMenus;
 import com.pockyl.hextale.registry.ModSounds;
@@ -39,6 +40,7 @@ public final class Hextale {
         ModSounds.register(modBus);
         ModTriggers.register(modBus);
         modBus.addListener(ModNetwork::register);
+        modBus.addListener(ModDataMaps::register);
         modBus.addListener(Hextale::addToVanillaTabs);
         PockyModsTab.register(modBus, () -> new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), output -> {
             output.accept(ModItems.RESEARCH_TABLE);
@@ -46,6 +48,11 @@ public final class Hextale {
             output.accept(ModItems.UNSTABLE_HEXTECH);
             output.accept(ModItems.HEXTECH_INK);
             output.accept(ModItems.RUNE_BRUSH);
+            output.accept(ModItems.RESEARCHERS_LENS);
+            output.accept(ModItems.FORK_QUILL);
+            output.accept(ModItems.MORTAR);
+            output.accept(ModItems.BRASS_SCRAPER);
+            output.accept(ModItems.PARCHMENT_STRETCHER);
             output.accept(ModItems.BRASS_INGOT);
             output.accept(ModItems.BRASS_NUGGET);
             output.accept(exampleScroll());
@@ -56,7 +63,7 @@ public final class Hextale {
 
     /** A scroll of "Smelting" shows players what scrolls look like; real ones come from the Research Table. */
     private static ItemStack exampleScroll() {
-        return RuneScrollItem.of(ComplexRunes.byKey("fire_earth"), ModItems.RUNE_SCROLL.get());
+        return RuneScrollItem.of(ComplexRunes.byKey("fire_earth"), 1, ModItems.RUNE_SCROLL.get());
     }
 
     private static void addToVanillaTabs(BuildCreativeModeTabContentsEvent event) {
