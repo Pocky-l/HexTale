@@ -523,13 +523,9 @@ final class BoardView {
     }
 
     /** What the hovered section of a rune's parchment is, for a tooltip. */
-    List<Component> describe(RuneBoard board, ResearchSheet sheet, int cell, int forkLevel, @Nullable Move move) {
+    List<Component> describe(RuneBoard board, ResearchSheet sheet, int cell) {
         List<Component> lines = new ArrayList<>();
         String key = "gui.hextale.research_table.cell.";
-        if (move != null) {
-            lines.add(Component.translatable(key + "write", move.item().getDescription()));
-            lines.add(ResearchText.elements(move.elements()));
-        }
         int point = board.pointAt(cell);
         SimpleRune wall = board.walls()[cell];
         int dissolved = board.dissolved(sheet.isOpen() ? sheet.filledMask() : 0);
@@ -538,10 +534,8 @@ final class BoardView {
             lines.add(Component.translatable(key + "point", ResearchText.element(p.element())));
             if (sheet.isOpen() && sheet.isFilled(point)) {
                 lines.add(Component.translatable(key + "point.filled").withStyle(ChatFormatting.GREEN));
-            } else if (sheet.isActive() && sheet.ready(board, point)) {
-                lines.add(Component.translatable(key + "point.leave", p.resource().getDescription()).withStyle(ChatFormatting.GOLD));
             } else {
-                lines.add(Component.translatable(key + "point.needs", p.resource().getDescription()).withStyle(ChatFormatting.GRAY));
+                lines.add(p.resource().getDescription().copy().withStyle(ChatFormatting.GRAY));
             }
         } else if (wall != null) {
             boolean gone = (dissolved & 1 << wall.ordinal()) != 0;
@@ -549,22 +543,15 @@ final class BoardView {
                 lines.add(Component.translatable(key + "wall.gone", ResearchText.element(wall)));
             } else if (visible[cell]) {
                 lines.add(Component.translatable(key + "wall", ResearchText.element(wall)));
-                lines.add(Component.translatable(key + "wall.dissolve", ResearchText.element(wall)).withStyle(ChatFormatting.GRAY));
             } else {
                 lines.add(Component.translatable(key + "wall.unknown"));
-                lines.add(Component.translatable(key + "wall.fog").withStyle(ChatFormatting.GRAY));
             }
-        } else if (cell == HexGrid.CENTRE) {
-            lines.add(Component.translatable(key + "orb"));
-        }
-        if (forkLevel > 0 && sheet.canJump(board, cell, forkLevel)) {
-            lines.add(Component.translatable(move != null ? key + "fork.shift" : key + "fork").withStyle(ChatFormatting.AQUA));
         }
         return lines;
     }
 
     /** What a section of an item's resonance is, for a tooltip. */
-    List<Component> describeStudy(ItemStudy study, ItemElements elements, int cell) {
+    List<Component> describeStudy(ItemStudy study, int cell) {
         List<Component> lines = new ArrayList<>();
         String key = "gui.hextale.research_table.string.";
         int string = ItemStudy.stringOf(cell);
@@ -586,14 +573,8 @@ final class BoardView {
             lines.add(Component.translatable(key + "silent").withStyle(ChatFormatting.GRAY));
         } else if (!study.possible(string, index)) {
             lines.add(Component.translatable(key + "excluded").withStyle(ChatFormatting.GRAY));
-        } else {
-            if (presence == ItemStudy.Presence.PRESENT) {
-                lines.add(Component.translatable(key + "shimmers").withStyle(ChatFormatting.AQUA));
-            }
-            if (study.canGuess(cell, elements)) {
-                lines.add(Component.translatable(key + "guess").withStyle(ChatFormatting.YELLOW));
-                lines.add(Component.translatable(key + "stirs").withStyle(ChatFormatting.DARK_GRAY));
-            }
+        } else if (presence == ItemStudy.Presence.PRESENT) {
+            lines.add(Component.translatable(key + "shimmers").withStyle(ChatFormatting.AQUA));
         }
         return lines;
     }

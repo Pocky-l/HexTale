@@ -405,6 +405,7 @@ public final class ResearchGameTests {
         ServerPlayer player = player(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
         Research.study(player, Items.COAL);
+        player.getInventory().add(new ItemStack(Items.COAL, 64));
         table.select(player, SMELTING);
         RuneBoard board = RuneBoards.get(SMELTING);
         // Coal pulls towards fire at the top, away from both points (left and down): it never covers one.
@@ -449,6 +450,7 @@ public final class ResearchGameTests {
         table.setItem(ResearchTableBlockEntity.TOOLS + ResearchTool.SCRAPER.ordinal(), new ItemStack(ModItems.BRASS_SCRAPER.get()));
         Research.learnAll(player, List.of(ResearchTool.SCRAPER.rune()), 1);
         Research.study(player, Items.COAL);
+        player.getInventory().add(new ItemStack(Items.COAL, 64));
         table.select(player, SMELTING);
         RuneBoard board = RuneBoards.get(SMELTING);
         table.write(player, Items.COAL, false, landing(table, board, Items.COAL));

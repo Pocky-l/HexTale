@@ -425,7 +425,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             board.renderEmpty(graphics);
             graphics.drawString(font, Component.translatable(KEY + "goal.none"), leftPos + PANEL_X + 6, topPos + 28, 0xFF000000 | TEXT_MUTED, false);
             renderLevers(graphics, mouseX, mouseY);
-            renderMessage(graphics, message.getString().isEmpty() ? Component.translatable(KEY + "hint.book") : message);
+            renderMessage(graphics, message);
             return;
         }
         ResearchSheet sheet = table.sheet();
@@ -447,8 +447,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         BoardView.Move chosen = chosenMove(cell);
         int fork = toolLevel(ResearchTool.FORK);
         board.renderRune(graphics, font, current, sheet, moves, cell, chosen, choice, fork);
-        if (cell >= 0) {
-            pendingTooltip = board.describe(current, sheet, cell, fork, chosen);
+        if (cell >= 0 && chosen == null) {
+            pendingTooltip = board.describe(current, sheet, cell);
         }
         renderRunePanel(graphics, current, sheet, mouseX, mouseY);
     }
@@ -589,13 +589,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (!message.getString().isEmpty()) {
             return message;
         }
-        if (levers.isEmpty()) {
-            return Component.translatable(KEY + "hint.no_levers");
-        }
-        if (sheet.isOver()) {
-            return Component.translatable(KEY + "hint.over");
-        }
-        return Component.translatable(sheet.isOpen() ? KEY + "hint.write" : KEY + "hint.start");
+        return levers.isEmpty() ? Component.translatable(KEY + "hint.no_levers") : Component.empty();
     }
 
     /** The studied items in the inventory, for reference: hover one to see its elements. */
@@ -644,7 +638,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         int cell = overBoard(mouseX, mouseY) ? board.cellAt(mouseX, mouseY) : -1;
         board.renderStudy(graphics, item, elements, study, cell);
         if (cell >= 0) {
-            List<Component> lines = board.describeStudy(study, elements, cell);
+            List<Component> lines = board.describeStudy(study, cell);
             if (!lines.isEmpty()) {
                 pendingTooltip = lines;
             }
@@ -721,17 +715,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         PixelArt.hex(graphics, lx, ly + 46, 11, PixelArt.argb(0xFFE08A, 1), PixelArt.argb(0xC88A12, 1));
         graphics.drawString(font, Component.translatable(KEY + "study.legend.exact"), lx + 10, ly + 42, 0xFF000000 | TEXT, false);
 
-        Component hint;
-        if (!message.getString().isEmpty()) {
-            hint = message;
-        } else if (study.won(elements)) {
-            hint = Component.translatable(KEY + "study.hint.won");
-        } else if (study.lost(elements)) {
-            hint = Component.translatable(KEY + "study.hint.lost");
-        } else {
-            hint = Component.translatable(KEY + "study.hint");
-        }
-        renderMessage(graphics, hint);
+        renderMessage(graphics, message);
     }
 
     // ---- Shared panel parts ---------------------------------------------------------------------------------------
@@ -770,9 +754,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private int count(Item item) {
         if (minecraft.player == null) {
             return 0;
-        }
-        if (minecraft.player.getAbilities().instabuild) {
-            return 99;
         }
         int total = 0;
         Inventory inventory = minecraft.player.getInventory();
@@ -906,6 +887,14 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (tab == Tab.BOOK && book.mouseScrolled(mouseX, mouseY, scrollY)) {
+            return true;
+        }
+        if (tab == Tab.PARCHMENT && overBoard(mouseX, mouseY) && scrollY != 0) {
+            List<BoardView.Move> options = moves.get(board.cellAt(mouseX, mouseY));
+            if (options != null && options.size() > 1) {
+                choice = Math.floorMod(choice - (int) Math.signum(scrollY), options.size());
+                click();
+            }
             return true;
         }
         if (tab == Tab.PARCHMENT && isOver(mouseX, mouseY, leftPos + PANEL_X, topPos + ITEMS_Y - 3, PANEL_W, 58)) {
