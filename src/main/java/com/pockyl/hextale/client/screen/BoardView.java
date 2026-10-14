@@ -58,6 +58,8 @@ final class BoardView {
     private long fadeStart;
     private int fadeElement = -1;
     private int lastFilled;
+    /** False until the first look at the sheet: what was already there when the screen opened is not animated. */
+    private boolean primed;
 
     void layout(int left, int top) {
         this.left = left;
@@ -104,6 +106,12 @@ final class BoardView {
     /** Notices new symbols and filled points to animate them. */
     void observe(RuneBoard board, ResearchSheet sheet) {
         long now = Util.getMillis();
+        if (!primed) {
+            primed = true;
+            inkMarks = sheet.used();
+            lastFilled = sheet.filledMask();
+            return;
+        }
         if (sheet.used() > inkMarks) {
             inkStart = now;
         }
