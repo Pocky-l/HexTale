@@ -211,6 +211,76 @@
         "light": 2
       },
       "tier": 3
+    },
+    "minecraft:glass": {
+      "elements": {
+        "light": 2,
+        "earth": 1
+      },
+      "tier": 1
+    },
+    "minecraft:paper": {
+      "elements": {
+        "air": 2,
+        "life": 1
+      },
+      "tier": 1
+    },
+    "minecraft:book": {
+      "elements": {
+        "light": 2,
+        "life": 1
+      },
+      "tier": 1
+    },
+    "minecraft:brick": {
+      "elements": {
+        "earth": 2,
+        "fire": 1
+      },
+      "tier": 1
+    },
+    "minecraft:ender_pearl": {
+      "elements": {
+        "shadow": 2,
+        "spark": 2
+      },
+      "tier": 2
+    },
+    "minecraft:gunpowder": {
+      "elements": {
+        "fire": 2,
+        "spark": 1
+      },
+      "tier": 1
+    },
+    "minecraft:string": {
+      "elements": {
+        "air": 1,
+        "life": 1
+      },
+      "tier": 1
+    },
+    "minecraft:leather": {
+      "elements": {
+        "life": 1,
+        "earth": 1
+      },
+      "tier": 1
+    },
+    "minecraft:slime_ball": {
+      "elements": {
+        "life": 2,
+        "water": 1
+      },
+      "tier": 1
+    },
+    "minecraft:bone": {
+      "elements": {
+        "life": 1,
+        "shadow": 1
+      },
+      "tier": 1
     }
   }
 }

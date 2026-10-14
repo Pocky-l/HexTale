@@ -39,6 +39,7 @@ import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.HexGrid;
+import com.pockyl.hextale.research.ItemElementResolver;
 import com.pockyl.hextale.research.ItemElements;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.research.ResearchItems;
@@ -169,6 +170,33 @@ public final class ResearchGameTests {
         helper.assertTrue(ResearchBook.chapterOpen(knowledge, 3), "ten runes of chapter II open chapter III");
         helper.assertTrue(ResearchBook.runes(1).size() + ResearchBook.runes(2).size() + ResearchBook.runes(3).size() == 72,
                 "the chapters hold all 72 runes");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "everyItemCarriesElements")
+    public static void everyItemCarriesElements(GameTestHelper helper) {
+        var server = helper.getLevel().getServer();
+        Map<Item, ItemElements> all = ItemElementResolver.resolve(server.getRecipeManager(), server.registryAccess());
+        for (Item item : BuiltInRegistries.ITEM) {
+            if (item == Items.AIR) {
+                continue;
+            }
+            ItemElements elements = all.get(item);
+            helper.assertTrue(elements != null, BuiltInRegistries.ITEM.getKey(item) + " carries elements");
+            helper.assertTrue(!elements.elements().isEmpty() && elements.elements().size() <= 3, item + ": one to three elements");
+            elements.elements().values().forEach(points -> helper.assertTrue(points >= 1 && points <= 9, item + ": strength 1-9"));
+        }
+        for (Map.Entry<Item, ItemElements> entry : ResearchItems.canonical().entrySet()) {
+            helper.assertTrue(entry.getValue().equals(all.get(entry.getKey())), entry.getKey() + " keeps its base elements");
+        }
+        StringBuilder sample = new StringBuilder();
+        for (Item item : List.of(Items.OAK_LOG, Items.OAK_PLANKS, Items.STICK, Items.CRAFTING_TABLE, Items.IRON_PICKAXE, Items.IRON_BLOCK,
+                Items.GLASS, Items.BREAD, Items.TNT, Items.PISTON, Items.ENDER_EYE, Items.WHITE_WOOL, Items.DIAMOND_SWORD,
+                Items.COOKED_BEEF, Items.NETHERITE_SWORD, Items.SPONGE, Items.BOOKSHELF, Items.LANTERN, Items.SHULKER_BOX,
+                Items.ELYTRA, Items.DRAGON_EGG, Items.MUSIC_DISC_CAT, Items.ZOMBIE_SPAWN_EGG, Items.DIRT, Items.STONE_BRICKS)) {
+            sample.append(BuiltInRegistries.ITEM.getKey(item).getPath()).append('=').append(all.get(item)).append("; ");
+        }
+        Hextale.LOGGER.info("Item elements sample: {}", sample);
         helper.succeed();
     }
 
@@ -342,12 +370,12 @@ public final class ResearchGameTests {
 
     // ---- Lightning ------------------------------------------------------------------------------------------------
 
-    @GameTest(template = "empty", timeoutTicks = 200, batch = "lightningOnRodAndAmethystMakesOrbs")
+    @GameTest(template = "empty", timeoutTicks = 4000, batch = "lightningOnRodAndAmethystMakesOrbs")
     public static void lightningOnRodAndAmethystMakesOrbs(GameTestHelper helper) {
         strikeRodOnAmethyst(helper, 1);
     }
 
-    @GameTest(template = "empty", timeoutTicks = 200, batch = "boltInsideTheRodAlsoWorks")
+    @GameTest(template = "empty", timeoutTicks = 4000, batch = "boltInsideTheRodAlsoWorks")
     public static void boltInsideTheRodAlsoWorks(GameTestHelper helper) {
         // A Channeling trident or /summon at the rod's own block puts the bolt inside the rod instead of on top.
         strikeRodOnAmethyst(helper, 0);
@@ -358,12 +386,17 @@ public final class ResearchGameTests {
         BlockPos rod = amethyst.above();
         helper.setBlock(amethyst, Blocks.AMETHYST_BLOCK);
         helper.setBlock(rod, Blocks.LIGHTNING_ROD.defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
-        LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel());
-        helper.assertTrue(bolt != null, "a bolt can be created");
-        bolt.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above(boltAboveRod))));
-        helper.getLevel().addFreshEntity(bolt);
-        // Polled every tick: a bolt in a freshly loaded test area may start ticking a few ticks late.
+        boolean[] struck = {false};
+        // The test server ticks without pausing while far test chunks still generate: strike once entities tick there.
         helper.succeedWhen(() -> {
+            if (!struck[0]) {
+                helper.assertTrue(helper.getLevel().isPositionEntityTicking(helper.absolutePos(rod)), "waiting for the test area to tick");
+                LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel());
+                helper.assertTrue(bolt != null, "a bolt can be created");
+                bolt.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above(boltAboveRod))));
+                helper.getLevel().addFreshEntity(bolt);
+                struck[0] = true;
+            }
             helper.assertBlockPresent(Blocks.AIR, amethyst);
             helper.assertBlockPresent(Blocks.LIGHTNING_ROD, rod);
             List<ItemEntity> found = orbs(helper, amethyst);

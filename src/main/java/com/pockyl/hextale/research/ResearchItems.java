@@ -30,8 +30,8 @@ import static com.pockyl.hextale.rune.SimpleRune.SPARK;
 import static com.pockyl.hextale.rune.SimpleRune.WATER;
 
 /**
- * Items as levers on the parchment. In game the elements of an item come from the {@code hextale:elements} data map
- * (data packs may add items); boards and star thresholds are computed from the {@link #canonical()} set below, which
+ * Items as levers on the parchment. In game the elements of every item come from {@link ItemElementTable} (the
+ * {@code hextale:elements} data map plus what is derived from recipes and names); boards and star thresholds are computed from the {@link #canonical()} set below, which
  * is also the default data map, so a board never changes with the items a pack adds.
  */
 public final class ResearchItems {
@@ -104,9 +104,16 @@ public final class ResearchItems {
         return RESOURCES.get(element)[tier - 1];
     }
 
-    /** What an item carries in this world (data map), or null when it cannot write on the parchment. */
+    /**
+     * What an item carries in this world: every item carries something once the server has resolved the table (see
+     * {@link ItemElementResolver}); before that only the data map's base materials do. Null for air.
+     */
     @Nullable
     public static ItemElements of(Item item) {
+        ItemElements resolved = ItemElementTable.get(item);
+        if (resolved != null) {
+            return resolved;
+        }
         @SuppressWarnings("deprecation")
         Holder<Item> holder = item.builtInRegistryHolder();
         return holder.getData(ModDataMaps.ELEMENTS);
