@@ -435,12 +435,12 @@ public final class ResearchGameTests {
 
     // ---- Lightning ------------------------------------------------------------------------------------------------
 
-    @GameTest(template = "empty", timeoutTicks = 4000, batch = "lightningOnRodAndAmethystMakesOrbs")
+    @GameTest(template = "empty", timeoutTicks = 60, batch = "lightningOnRodAndAmethystMakesOrbs")
     public static void lightningOnRodAndAmethystMakesOrbs(GameTestHelper helper) {
         strikeRodOnAmethyst(helper, 1);
     }
 
-    @GameTest(template = "empty", timeoutTicks = 4000, batch = "boltInsideTheRodAlsoWorks")
+    @GameTest(template = "empty", timeoutTicks = 60, batch = "boltInsideTheRodAlsoWorks")
     public static void boltInsideTheRodAlsoWorks(GameTestHelper helper) {
         // A Channeling trident or /summon at the rod's own block puts the bolt inside the rod instead of on top.
         strikeRodOnAmethyst(helper, 0);
@@ -451,17 +451,13 @@ public final class ResearchGameTests {
         BlockPos rod = amethyst.above();
         helper.setBlock(amethyst, Blocks.AMETHYST_BLOCK);
         helper.setBlock(rod, Blocks.LIGHTNING_ROD.defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
-        boolean[] struck = {false};
-        // The test server ticks without pausing while far test chunks still generate: strike once entities tick there.
+        LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel());
+        helper.assertTrue(bolt != null, "a bolt can be created");
+        bolt.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above(boltAboveRod))));
+        helper.getLevel().addFreshEntity(bolt);
+        // The test server may not tick entities in a freshly generated test chunk yet: strike by hand.
+        bolt.tick();
         helper.succeedWhen(() -> {
-            if (!struck[0]) {
-                helper.assertTrue(helper.getLevel().isPositionEntityTicking(helper.absolutePos(rod)), "waiting for the test area to tick");
-                LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel());
-                helper.assertTrue(bolt != null, "a bolt can be created");
-                bolt.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above(boltAboveRod))));
-                helper.getLevel().addFreshEntity(bolt);
-                struck[0] = true;
-            }
             helper.assertBlockPresent(Blocks.AIR, amethyst);
             helper.assertBlockPresent(Blocks.LIGHTNING_ROD, rod);
             List<ItemEntity> found = orbs(helper, amethyst);
@@ -482,6 +478,7 @@ public final class ResearchGameTests {
         helper.assertTrue(bolt != null, "a bolt can be created");
         bolt.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above())));
         helper.getLevel().addFreshEntity(bolt);
+        bolt.tick();
         helper.runAfterDelay(10, () -> {
             helper.assertBlockPresent(Blocks.STONE, base);
             helper.assertTrue(orbs(helper, base).isEmpty(), "no orbs without amethyst");

@@ -1,6 +1,9 @@
 package com.pockyl.hextale.client.render;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
+import org.joml.Matrix4f;
 
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.RuneGlyphs;
@@ -19,6 +22,23 @@ public final class PixelArt {
     private static final Map<String, int[][]> MASKS = new ConcurrentHashMap<>();
 
     private PixelArt() {
+    }
+
+    /**
+     * A filled rectangle added to the GUI batch without flushing it. {@code GuiGraphics.fill} draws every rectangle at
+     * once (outside managed drawing), which turns a parchment of thousands of pixel runs into thousands of draw calls;
+     * these quads are drawn together with the next flush instead.
+     */
+    public static void fill(GuiGraphics graphics, int x0, int y0, int x1, int y1, int argb) {
+        if (x0 >= x1 || y0 >= y1 || (argb >>> 24) == 0) {
+            return;
+        }
+        Matrix4f pose = graphics.pose().last().pose();
+        VertexConsumer buffer = graphics.bufferSource().getBuffer(RenderType.gui());
+        buffer.addVertex(pose, x0, y0, 0).setColor(argb);
+        buffer.addVertex(pose, x0, y1, 0).setColor(argb);
+        buffer.addVertex(pose, x1, y1, 0).setColor(argb);
+        buffer.addVertex(pose, x1, y0, 0).setColor(argb);
     }
 
     /** A simple rune's radical in a {@code size} x {@code size} box at {@code x, y} (top left). */
@@ -45,7 +65,7 @@ public final class PixelArt {
     private static void strokes(GuiGraphics graphics, String key, List<float[]> strokes, int x, int y, int size, int argb) {
         int[][] runs = MASKS.computeIfAbsent(key + "@" + size, k -> rasterise(strokes, size));
         for (int[] run : runs) {
-            graphics.fill(x + run[1], y + run[0], x + run[2], y + run[0] + 1, argb);
+            fill(graphics, x + run[1], y + run[0], x + run[2], y + run[0] + 1, argb);
         }
     }
 
@@ -113,7 +133,7 @@ public final class PixelArt {
         int sy = y0 < y1 ? 1 : -1;
         int error = dx + dy;
         while (true) {
-            graphics.fill(x0, y0, x0 + 1, y0 + 1, argb);
+            fill(graphics, x0, y0, x0 + 1, y0 + 1, argb);
             if (x0 == x1 && y0 == y1) {
                 return;
             }
@@ -136,7 +156,7 @@ public final class PixelArt {
             if ((i + phase) % (on + off) < on) {
                 int x = Math.round(x0 + (x1 - x0) * (steps == 0 ? 0 : (float) i / steps));
                 int y = Math.round(y0 + (y1 - y0) * (steps == 0 ? 0 : (float) i / steps));
-                graphics.fill(x, y, x + 1, y + 1, argb);
+                fill(graphics, x, y, x + 1, y + 1, argb);
             }
         }
     }
@@ -149,12 +169,12 @@ public final class PixelArt {
         Hex hex = Hex.of(width);
         if (outline != 0) {
             for (int[] run : hex.outer) {
-                graphics.fill(cx + run[1], cy + run[0], cx + run[2], cy + run[0] + 1, outline);
+                fill(graphics, cx + run[1], cy + run[0], cx + run[2], cy + run[0] + 1, outline);
             }
         }
         if (fill != 0) {
             for (int[] run : outline != 0 ? hex.inner : hex.outer) {
-                graphics.fill(cx + run[1], cy + run[0], cx + run[2], cy + run[0] + 1, fill);
+                fill(graphics, cx + run[1], cy + run[0], cx + run[2], cy + run[0] + 1, fill);
             }
         }
     }
@@ -162,7 +182,7 @@ public final class PixelArt {
     /** Only the one-pixel rim of a hexagon. */
     public static void hexRing(GuiGraphics graphics, int cx, int cy, int width, int argb) {
         for (int[] run : Hex.of(width).ring) {
-            graphics.fill(cx + run[1], cy + run[0], cx + run[2], cy + run[0] + 1, argb);
+            fill(graphics, cx + run[1], cy + run[0], cx + run[2], cy + run[0] + 1, argb);
         }
     }
 

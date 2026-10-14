@@ -183,7 +183,7 @@ final class BoardView {
                     PixelArt.hex(graphics, x, y, CELL, argb(WALL, 1), argb(WALL_RIM, 1));
                     if (visible[cell]) {
                         PixelArt.radical(graphics, wall, x - 3, y - 3, 7, argb(0x9A86C8, 1));
-                        graphics.fill(x + 3, y + 3, x + 5, y + 5, argb(wall.color(), 1));
+                        PixelArt.fill(graphics, x + 3, y + 3, x + 5, y + 5, argb(wall.color(), 1));
                     } else {
                         graphics.drawString(font, "?", x - 2, y - 4, 0xFF6A5890, false);
                     }
@@ -227,7 +227,7 @@ final class BoardView {
             int y = top + py(cell);
             int color = board.pointAt(cell) >= 0 ? 0xE0A21C : GOLD;
             PixelArt.hexRing(graphics, x, y, CELL - 4, argb(color, 0.45F + 0.4F * pulse));
-            graphics.fill(x, y, x + 1, y + 1, argb(color, 0.9F));
+            PixelArt.fill(graphics, x, y, x + 1, y + 1, argb(color, 0.9F));
         }
         if (chosen != null) {
             renderMove(graphics, font, board, sheet, chosen, now, moves.getOrDefault(hovered, List.of()).size(), choice);
@@ -271,7 +271,7 @@ final class BoardView {
         PixelArt.hexRing(graphics, left + px(end), top + py(end), CELL + 2, color);
         int ix = left + px(end) + 6;
         int iy = top + py(end) - 20;
-        graphics.fill(ix - 1, iy - 1, ix + 17, iy + 17, 0xD0140C06);
+        PixelArt.fill(graphics, ix - 1, iy - 1, ix + 17, iy + 17, 0xD0140C06);
         graphics.renderItem(new ItemStack(move.item()), ix, iy);
         if (move.ground()) {
             graphics.drawString(font, "½", ix, iy, 0xFF7EF0FF, true);

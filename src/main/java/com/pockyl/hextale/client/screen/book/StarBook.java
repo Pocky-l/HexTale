@@ -196,7 +196,7 @@ public final class StarBook {
         int y0 = skyTop();
         int w = skyWidth();
         int h = skyHeight();
-        graphics.fill(x0, y0, x0 + w, y0 + h, 0xFF06050D);
+        PixelArt.fill(graphics, x0, y0, x0 + w, y0 + h, 0xFF06050D);
         int offsetX = Math.floorMod((int) (cameraX * 0.25F), COSMOS_SIZE);
         int offsetY = Math.floorMod((int) (cameraY * 0.25F), COSMOS_SIZE);
         for (int ty = -offsetY; ty < h; ty += COSMOS_SIZE) {
@@ -221,13 +221,13 @@ public final class StarBook {
                 float twinkle = 0.55F + 0.45F * Mth.sin(now / (700.0F + hash(seed + 3) % 900) + i);
                 int tint = layer == 2 ? 0xFFF6E0 : hash(seed + 5) % 3 == 0 ? 0xB8C8FF : 0xE0D8F0;
                 int argb = PixelArt.argb(tint, (0.25F + 0.25F * layer) * twinkle);
-                graphics.fill(x0 + sx, y0 + sy, x0 + sx + 1, y0 + sy + 1, argb);
+                PixelArt.fill(graphics, x0 + sx, y0 + sy, x0 + sx + 1, y0 + sy + 1, argb);
                 if (layer == 2 && hash(seed + 11) % 4 == 0) {
                     int dim = PixelArt.argb(tint, 0.25F * twinkle);
-                    graphics.fill(x0 + sx - 1, y0 + sy, x0 + sx, y0 + sy + 1, dim);
-                    graphics.fill(x0 + sx + 1, y0 + sy, x0 + sx + 2, y0 + sy + 1, dim);
-                    graphics.fill(x0 + sx, y0 + sy - 1, x0 + sx + 1, y0 + sy, dim);
-                    graphics.fill(x0 + sx, y0 + sy + 1, x0 + sx + 1, y0 + sy + 2, dim);
+                    PixelArt.fill(graphics, x0 + sx - 1, y0 + sy, x0 + sx, y0 + sy + 1, dim);
+                    PixelArt.fill(graphics, x0 + sx + 1, y0 + sy, x0 + sx + 2, y0 + sy + 1, dim);
+                    PixelArt.fill(graphics, x0 + sx, y0 + sy - 1, x0 + sx + 1, y0 + sy, dim);
+                    PixelArt.fill(graphics, x0 + sx, y0 + sy + 1, x0 + sx + 1, y0 + sy + 2, dim);
                 }
             }
         }
@@ -280,8 +280,8 @@ public final class StarBook {
         if (!open) {
             // An unknown star: a faint point of light, no shape yet.
             int argb = PixelArt.argb(0x9A90B8, 0.35F + 0.2F * pulse);
-            graphics.fill(x, y - 1, x + 1, y + 2, argb);
-            graphics.fill(x - 1, y, x + 2, y + 1, argb);
+            PixelArt.fill(graphics, x, y - 1, x + 1, y + 2, argb);
+            PixelArt.fill(graphics, x - 1, y, x + 2, y + 1, argb);
             return;
         }
         boolean onTable = host != null && host.studying() == rune;
@@ -305,7 +305,7 @@ public final class StarBook {
         PixelArt.glyph(graphics, rune, x - GLYPH / 2, y - GLYPH / 2, GLYPH, PixelArt.argb(glyph, 1));
         for (int s = 0; s < 3; s++) {
             int dot = s < stars ? PixelArt.argb(GOLD, 1) : PixelArt.argb(0x3A3460, 1);
-            graphics.fill(x - 4 + s * 3, y + 10, x - 2 + s * 3, y + 12, dot);
+            PixelArt.fill(graphics, x - 4 + s * 3, y + 10, x - 2 + s * 3, y + 12, dot);
         }
         if (rune == selected) {
             PixelArt.hexRing(graphics, x, y, NODE + 4, PixelArt.argb(GOLD, 0.5F + 0.5F * pulse));
@@ -367,14 +367,14 @@ public final class StarBook {
         int h = plateHeight(rune);
         int w = PLATE_WIDTH;
         boolean open = ResearchBook.open(knowledge, rune);
-        graphics.fill(x, y, x + w, y + h, 0xE0080614);
+        PixelArt.fill(graphics, x, y, x + w, y + h, 0xE0080614);
         int rim = PixelArt.argb(GOLD, 0.8F);
-        graphics.fill(x, y, x + w, y + 1, rim);
-        graphics.fill(x, y + h - 1, x + w, y + h, rim);
-        graphics.fill(x, y, x + 1, y + h, rim);
-        graphics.fill(x + w - 1, y, x + w, y + h, rim);
+        PixelArt.fill(graphics, x, y, x + w, y + 1, rim);
+        PixelArt.fill(graphics, x, y + h - 1, x + w, y + h, rim);
+        PixelArt.fill(graphics, x, y, x + 1, y + h, rim);
+        PixelArt.fill(graphics, x + w - 1, y, x + w, y + h, rim);
         for (int[] corner : new int[][]{{x, y}, {x + w - 1, y}, {x, y + h - 1}, {x + w - 1, y + h - 1}}) {
-            graphics.fill(corner[0] - 1, corner[1] - 1, corner[0] + 2, corner[1] + 2, PixelArt.argb(0x5CC8F2, 1));
+            PixelArt.fill(graphics, corner[0] - 1, corner[1] - 1, corner[0] + 2, corner[1] + 2, PixelArt.argb(0x5CC8F2, 1));
         }
         int stars = knowledge.stars(rune);
         int cx = x + w / 2;
@@ -413,13 +413,13 @@ public final class StarBook {
     private void magicButton(GuiGraphics graphics, int x, int y, int w, Component label, boolean active, boolean hovered, long now) {
         float pulse = 0.5F + 0.5F * Mth.sin(now / 300.0F);
         int rim = !active ? 0x4A4468 : hovered ? PixelArt.mix(0x7EF0FF, 0xFFFFFF, 0.3F * pulse) : PixelArt.mix(0x2B8FB8, 0x5CC8F2, pulse);
-        graphics.fill(x, y, x + w, y + BUTTON_HEIGHT, PixelArt.argb(hovered ? 0x123048 : 0x0C1426, 0.95F));
-        graphics.fill(x + 1, y, x + w - 1, y + 1, PixelArt.argb(rim, 1));
-        graphics.fill(x + 1, y + BUTTON_HEIGHT - 1, x + w - 1, y + BUTTON_HEIGHT, PixelArt.argb(rim, 1));
-        graphics.fill(x, y + 1, x + 1, y + BUTTON_HEIGHT - 1, PixelArt.argb(rim, 1));
-        graphics.fill(x + w - 1, y + 1, x + w, y + BUTTON_HEIGHT - 1, PixelArt.argb(rim, 1));
+        PixelArt.fill(graphics, x, y, x + w, y + BUTTON_HEIGHT, PixelArt.argb(hovered ? 0x123048 : 0x0C1426, 0.95F));
+        PixelArt.fill(graphics, x + 1, y, x + w - 1, y + 1, PixelArt.argb(rim, 1));
+        PixelArt.fill(graphics, x + 1, y + BUTTON_HEIGHT - 1, x + w - 1, y + BUTTON_HEIGHT, PixelArt.argb(rim, 1));
+        PixelArt.fill(graphics, x, y + 1, x + 1, y + BUTTON_HEIGHT - 1, PixelArt.argb(rim, 1));
+        PixelArt.fill(graphics, x + w - 1, y + 1, x + w, y + BUTTON_HEIGHT - 1, PixelArt.argb(rim, 1));
         if (active) {
-            graphics.fill(x + 2, y + 2, x + w - 2, y + 3, PixelArt.argb(rim, 0.25F));
+            PixelArt.fill(graphics, x + 2, y + 2, x + w - 2, y + 3, PixelArt.argb(rim, 0.25F));
             PixelArt.hex(graphics, x + 7, y + BUTTON_HEIGHT / 2, 5, PixelArt.argb(rim, 1), 0);
             PixelArt.hex(graphics, x + w - 8, y + BUTTON_HEIGHT / 2, 5, PixelArt.argb(rim, 1), 0);
         }
