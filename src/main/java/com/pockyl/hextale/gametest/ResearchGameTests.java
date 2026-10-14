@@ -312,7 +312,8 @@ public final class ResearchGameTests {
 
     @GameTest(template = "empty", batch = "studyingAnItemAtTheTable")
     public static void studyingAnItemAtTheTable(GameTestHelper helper) {
-        ServerPlayer player = player(helper);
+        ServerPlayer player = survivalPlayer(helper);
+        player.getInventory().add(new ItemStack(Items.PAPER, 2));
         ResearchTableBlockEntity table = stockedTable(helper);
         table.setItem(ResearchTableBlockEntity.HEXTECH, ItemStack.EMPTY);
         table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.GLASS, 3));
@@ -327,6 +328,7 @@ public final class ResearchGameTests {
         ResourceLocation glass = BuiltInRegistries.ITEM.getKey(Items.GLASS);
         helper.assertTrue(Research.of(player).hasStudied(glass), "glass is studied");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 2, "one glass went into the study");
+        helper.assertTrue(player.getInventory().countItem(Items.PAPER) == 1, "the study took one paper");
         table.selectItem(player);
         helper.assertTrue(table.study().won(elements), "a studied item is not studied again");
 
@@ -374,6 +376,7 @@ public final class ResearchGameTests {
         Map<Item, Integer> needed = new HashMap<>();
         route.forEach(step -> needed.merge(step.item(), 1, Integer::sum));
         needed.forEach((item, count) -> player.getInventory().add(new ItemStack(item, count)));
+        player.getInventory().add(new ItemStack(Items.PAPER, 2));
 
         table.select(player, SMELTING);
         helper.assertTrue(table.sheet().rune() == SMELTING && !table.sheet().isOpen(), "Smelting lies on the table, no sheet yet");
@@ -383,6 +386,7 @@ public final class ResearchGameTests {
         needed.keySet().forEach(item -> Research.study(player, item));
 
         play(table, player, board, route);
+        helper.assertTrue(player.getInventory().countItem(Items.PAPER) == 1, "the sheet took one paper");
 
         ResearchSheet sheet = table.sheet();
         helper.assertTrue(sheet.isOver() && sheet.complete(board), "every point is filled");
@@ -420,6 +424,21 @@ public final class ResearchGameTests {
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 3, "the orb is kept");
         table.newSheet(player);
         helper.assertTrue(table.sheet().isActive() && table.sheet().used() == 0, "a new sheet is free");
+        player.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "creativeResearchersHaveEverything")
+    public static void creativeResearchersHaveEverything(GameTestHelper helper) {
+        ServerPlayer player = player(helper);
+        player.setGameMode(GameType.CREATIVE);
+        player.getInventory().clearContent();
+        ResearchTableBlockEntity table = stockedTable(helper);
+        table.select(player, SMELTING);
+        RuneBoard board = RuneBoards.get(SMELTING);
+        table.write(player, Items.BLAZE_ROD, false, landing(table, board, Items.BLAZE_ROD));
+        helper.assertTrue(table.sheet().used() == 1, "an unstudied item not in the inventory writes in creative mode");
+        helper.assertTrue(player.getInventory().isEmpty(), "nothing was needed, nothing was taken");
         player.discard();
         helper.succeed();
     }

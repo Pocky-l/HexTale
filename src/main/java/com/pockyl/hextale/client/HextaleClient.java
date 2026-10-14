@@ -1,6 +1,7 @@
 package com.pockyl.hextale.client;
 
 import com.mojang.datafixers.util.Either;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
@@ -47,10 +48,12 @@ public final class HextaleClient {
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> RuneBoards.warmUp());
     }
 
-    /** A studied item shows its elements under its name. */
+    /** A studied item shows its elements under its name; in creative mode every item does. */
     private static void addElementsToTooltip(RenderTooltipEvent.GatherComponents event) {
         ItemStack stack = event.getItemStack();
-        if (stack.isEmpty() || !ClientKnowledge.get().hasStudied(BuiltInRegistries.ITEM.getKey(stack.getItem()))) {
+        Minecraft minecraft = Minecraft.getInstance();
+        boolean creative = minecraft.player != null && minecraft.player.getAbilities().instabuild;
+        if (stack.isEmpty() || !creative && !ClientKnowledge.get().hasStudied(BuiltInRegistries.ITEM.getKey(stack.getItem()))) {
             return;
         }
         ItemElements elements = ResearchItems.of(stack);

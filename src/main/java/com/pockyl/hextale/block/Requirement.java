@@ -3,6 +3,7 @@ package com.pockyl.hextale.block;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.registry.ModItems;
@@ -12,13 +13,14 @@ import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * What the Research Table needs to learn a rune, in the order the screen asks for it. Checked by the screen (to
+ * What the Research Table needs to learn a rune (the diary, the orb and paper), in the order the screen asks for it. Checked by the screen (to
  * say exactly what to put where) and again by the server.
  */
 public enum Requirement {
     DIARY,
     OWN_DIARY,
-    HEXTECH;
+    HEXTECH,
+    PAPER;
 
     /** The player's own (or an unsigned) diary must lie on the table for any research. */
     @Nullable
@@ -44,6 +46,12 @@ public enum Requirement {
         if (table.getItem(ResearchTableBlockEntity.HEXTECH).isEmpty()) {
             return HEXTECH;
         }
-        return null;
+        return paper(player);
+    }
+
+    /** Every sheet - a rune's or an item study's - is written on a paper from the researcher's inventory. */
+    @Nullable
+    public static Requirement paper(Player player) {
+        return player.getAbilities().instabuild || player.getInventory().contains(stack -> stack.is(Items.PAPER)) ? null : PAPER;
     }
 }

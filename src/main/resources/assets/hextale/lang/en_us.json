@@ -442,5 +442,6 @@
   "gui.hextale.research_table.string.found": "Found",
   "gui.hextale.research_table.string.silent": "Silent string: the item has no such element",
   "gui.hextale.research_table.string.excluded": "Ruled out by your guesses",
-  "gui.hextale.research_table.string.shimmers": "The string shimmers: the element is somewhere on it"
+  "gui.hextale.research_table.string.shimmers": "The string shimmers: the element is somewhere on it",
+  "gui.hextale.research_table.need.paper": "No paper in your inventory: every study is written on a sheet."
 }

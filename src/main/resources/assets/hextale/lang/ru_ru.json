@@ -442,5 +442,6 @@
   "gui.hextale.research_table.string.found": "Найдено",
   "gui.hextale.research_table.string.silent": "Струна молчит: этой стихии в предмете нет",
   "gui.hextale.research_table.string.excluded": "Исключено вашими метками",
-  "gui.hextale.research_table.string.shimmers": "Струна мерцает: стихия где-то на ней"
+  "gui.hextale.research_table.string.shimmers": "Струна мерцает: стихия где-то на ней",
+  "gui.hextale.research_table.need.paper": "В инвентаре нет бумаги: каждое исследование записывается на лист."
 }

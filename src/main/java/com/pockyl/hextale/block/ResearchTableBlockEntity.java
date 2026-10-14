@@ -192,8 +192,9 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return table.getItem(TOOLS + tool.ordinal()).is(tool.item()) ? knowledge.stars(tool.rune()) : 0;
     }
 
+    /** In creative mode every item counts as studied, as if the researcher carried them all. */
     private static boolean studied(ServerPlayer player, Item item) {
-        return Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(item));
+        return player.getAbilities().instabuild || Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(item));
     }
 
     // ---- Learning a rune ------------------------------------------------------------------------------------------
@@ -230,7 +231,9 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         setChanged();
     }
 
+    /** A new sheet: the research is written on a paper from the inventory. */
     private void begin(ServerPlayer player, RuneBoard board) {
+        take(player, Items.PAPER);
         ResearchersDiaryItem.sign(items.get(DIARY), player);
         sheet.begin(board.par().sheet() + toolLevel(player, ResearchTool.STRETCHER));
         if (Research.of(player).see(board.rune(), new int[]{HexGrid.CENTRE})) {
@@ -439,7 +442,15 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
                 message(player, Component.translatable("research.hextale.study.missing", item.getDescription()), ResearchMessagePayload.Tone.BAD);
                 return;
             }
-            items.get(STUDY).shrink(1);
+            Requirement paper = Requirement.paper(player);
+            if (paper != null) {
+                message(player, Component.translatable(paper.translationKey()), ResearchMessagePayload.Tone.BAD);
+                return;
+            }
+            take(player, Items.PAPER);
+            if (!player.getAbilities().instabuild) {
+                items.get(STUDY).shrink(1);
+            }
         }
         ItemStudy.Answer answer = study.guess(cell, elements);
         if (answer == null) {
@@ -484,8 +495,11 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         setChanged();
     }
 
-    /** Takes one of the item from the player's inventory. */
+    /** Takes one of the item from the player's inventory; creative players have everything and keep it. */
     private static boolean take(ServerPlayer player, Item item) {
+        if (player.getAbilities().instabuild) {
+            return true;
+        }
         Inventory inventory = player.getInventory();
         for (int i = 0; i < inventory.getContainerSize(); i++) {
             ItemStack stack = inventory.getItem(i);

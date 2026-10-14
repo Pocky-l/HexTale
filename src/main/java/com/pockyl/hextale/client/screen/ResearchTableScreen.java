@@ -106,6 +106,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private final List<Lever> levers = new ArrayList<>();
     private final List<PanelButton> buttons = new ArrayList<>();
     private Map<Integer, List<BoardView.Move>> moves = Map.of();
+    private String movesKey = "";
     /** Which of several items reaching the hovered section is shown (right click switches). */
     private int choice;
     private int choiceCell = -1;
@@ -171,8 +172,13 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         return ResearchTableBlockEntity.toolLevel(menu.table(), tool, ClientKnowledge.get());
     }
 
-    private static boolean studied(Item item) {
-        return ClientKnowledge.get().hasStudied(BuiltInRegistries.ITEM.getKey(item));
+    /** Studied, or anything in creative mode. */
+    private boolean studied(Item item) {
+        return creative() || ClientKnowledge.get().hasStudied(BuiltInRegistries.ITEM.getKey(item));
+    }
+
+    private boolean creative() {
+        return minecraft != null && minecraft.player != null && minecraft.player.getAbilities().instabuild;
     }
 
     private void send(ResearchActionPayload payload) {
@@ -438,7 +444,12 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             fogLens = lens;
         }
         board.observe(current, sheet, null);
-        moves = computeMoves(current, sheet);
+        String movesKey = rune.key() + "|" + sheet.isOpen() + "|" + sheet.isOver() + "|" + sheet.from() + "|" + sheet.used() + "|"
+                + sheet.filledMask() + "|" + levers.size() + "|" + creative() + "|" + toolLevel(ResearchTool.MORTAR) + "|" + (missing() == null);
+        if (!movesKey.equals(this.movesKey)) {
+            this.movesKey = movesKey;
+            moves = computeMoves(current, sheet);
+        }
         int cell = overBoard(mouseX, mouseY) ? board.cellAt(mouseX, mouseY) : -1;
         if (cell != choiceCell) {
             choiceCell = cell;
@@ -466,16 +477,28 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return;
         }
         Map<Item, Integer> counts = new LinkedHashMap<>();
+        if (creative()) {
+            for (Item item : ResearchItems.canonical().keySet()) {
+                counts.put(item, 1);
+            }
+            for (Item item : BuiltInRegistries.ITEM) {
+                if (ResearchItems.of(item) != null) {
+                    counts.putIfAbsent(item, 1);
+                }
+            }
+        }
         Inventory inventory = minecraft.player.getInventory();
-        for (int i = 0; i < inventory.getContainerSize(); i++) {
+        for (int i = 0; i < inventory.getContainerSize() && !creative(); i++) {
             ItemStack stack = inventory.getItem(i);
             if (!stack.isEmpty() && studied(stack.getItem()) && ResearchItems.of(stack) != null) {
                 counts.merge(stack.getItem(), stack.getCount(), Integer::sum);
             }
         }
         counts.forEach((item, count) -> levers.add(new Lever(item, ResearchItems.of(item), count)));
-        levers.sort((a, b) -> a.elements().tier() != b.elements().tier() ? a.elements().tier() - b.elements().tier()
-                : b.count() - a.count());
+        if (!creative()) {
+            levers.sort((a, b) -> a.elements().tier() != b.elements().tier() ? a.elements().tier() - b.elements().tier()
+                    : b.count() - a.count());
+        }
         int pages = Math.max(0, (levers.size() - 1) / ITEM_COLUMNS - ITEM_ROWS + 1);
         leverScroll = Mth.clamp(leverScroll, 0, pages);
     }
@@ -549,7 +572,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             PixelArt.radical(graphics, point.element(), px, py + 4, 9, PixelArt.argb(point.element().color(), filled ? 0.5F : 1));
             graphics.renderItem(new ItemStack(point.resource()), px + 12, py);
             int have = count(point.resource());
-            graphics.drawString(font, String.valueOf(have), px + 30, py + 5, have > 0 ? 0xFFE8D9B5 : 0xFFE06A5A, false);
+            graphics.drawString(font, creative() ? "∞" : String.valueOf(have), px + 30, py + 5,
+                    have > 0 || creative() ? 0xFFE8D9B5 : 0xFFE06A5A, false);
             Component status = filled ? Component.literal("✔").withColor(0x8FE07A)
                     : !known ? Component.translatable(KEY + "point.unstudied").withColor(0xE06A5A)
                     : ready ? Component.translatable(KEY + "point.ready").withColor(0xFFD36E)
