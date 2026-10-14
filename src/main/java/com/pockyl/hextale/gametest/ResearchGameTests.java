@@ -216,30 +216,98 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "resonanceAnswersEachMark")
-    public static void resonanceAnswersEachMark(GameTestHelper helper) {
+    @GameTest(template = "empty", batch = "resonanceAnswersEachGuess")
+    public static void resonanceAnswersEachGuess(GameTestHelper helper) {
         ItemElements elements = ItemElements.of(1, SimpleRune.FIRE, 3, SimpleRune.WATER, 1);
         ItemStudy study = new ItemStudy();
         study.begin(Items.STICK, elements);
         int fire = ring(SimpleRune.FIRE);
-        int water = ring(SimpleRune.WATER);
-        int air = ring(SimpleRune.AIR);
-        helper.assertTrue(study.maxListens() == 7, "five listens plus one per element");
-        study.toggle(ItemStudy.string(fire)[0], elements);
-        study.toggle(ItemStudy.string(water)[2], elements);
-        study.toggle(ItemStudy.string(air)[1], elements);
-        helper.assertFalse(study.toggle(ItemStudy.string(ring(SimpleRune.METAL))[0], elements), "three marks at most");
-        Map<Integer, ItemStudy.Echo> heard = study.listen(elements);
-        helper.assertTrue(heard != null && heard.size() == 3, "every mark answers");
-        helper.assertTrue(heard.get(ItemStudy.string(fire)[0]) == ItemStudy.Echo.FARTHER, "fire 3 is farther than the first section");
-        helper.assertTrue(heard.get(ItemStudy.string(water)[2]) == ItemStudy.Echo.NEARER, "water 1 is nearer than the third section");
-        helper.assertTrue(heard.get(ItemStudy.string(air)[1]) == ItemStudy.Echo.SILENT, "a stick has no air");
-        helper.assertTrue(study.markCount() == 0, "the marks are taken off after listening");
-        study.toggle(ItemStudy.string(fire)[2], elements);
-        study.toggle(ItemStudy.string(water)[0], elements);
-        study.listen(elements);
+        int spark = ring(SimpleRune.SPARK);
+        int metal = ring(SimpleRune.METAL);
+        helper.assertTrue(study.maxGuesses() == 7, "three guesses plus two per element");
+        ItemStudy.Answer first = study.guess(ItemStudy.string(fire)[0], elements);
+        helper.assertTrue(first != null && first.echo() == ItemStudy.Echo.FARTHER, "fire 3 is farther than the first section");
+        helper.assertTrue(study.presence(spark) == ItemStudy.Presence.ABSENT && study.presence(metal) == ItemStudy.Presence.ABSENT,
+                "the neighbouring strings answered: no lightning, no metal");
+        helper.assertFalse(study.possible(fire, 0), "the guessed section is ruled out");
+        helper.assertFalse(study.canGuess(ItemStudy.string(spark)[2], elements), "a dark string takes no guesses");
+        ItemStudy.Answer second = study.guess(ItemStudy.string(fire)[3], elements);
+        helper.assertTrue(second != null && second.echo() == ItemStudy.Echo.NEARER, "fire 3 is nearer than the fourth section");
+        ItemStudy.Answer third = study.guess(ItemStudy.string(fire)[1], elements);
+        helper.assertTrue(third != null && third.echo() == ItemStudy.Echo.FARTHER && third.selfRevealed().contains(fire),
+                "one section left: fire reveals itself for free");
+        helper.assertTrue(study.isRevealed(SimpleRune.FIRE) && study.guesses() == 3, "three guesses so far");
+        study.guess(ItemStudy.string(ring(SimpleRune.WATER))[0], elements);
         helper.assertTrue(study.won(elements) && !study.isActive(elements), "both elements found: the item is studied");
         helper.succeed();
+    }
+
+    /** A sensible player - spread guesses around the ring, then halve the range - studies almost every item in time. */
+    @GameTest(template = "empty", batch = "resonanceIsFairForEveryItem")
+    public static void resonanceIsFairForEveryItem(GameTestHelper helper) {
+        int items = 0;
+        int won = 0;
+        int used = 0;
+        for (Item item : BuiltInRegistries.ITEM) {
+            ItemElements elements = ResearchItems.of(item);
+            if (elements == null) {
+                continue;
+            }
+            ItemStudy study = new ItemStudy();
+            study.begin(item, elements);
+            while (study.isActive(elements)) {
+                int cell = sensibleGuess(study);
+                helper.assertTrue(cell >= 0 && study.guess(cell, elements) != null, item + ": there is always a guess to make");
+            }
+            items++;
+            if (study.won(elements)) {
+                won++;
+                used += study.guesses();
+            }
+        }
+        Hextale.LOGGER.info("Resonance: a sensible player studies {}/{} items, {} guesses on average", won, items,
+                won == 0 ? "-" : String.format("%.1f", used / (double) won));
+        helper.assertTrue(won >= items * 0.9, "a sensible player studies at least 90% of the items, got " + won + "/" + items);
+        helper.succeed();
+    }
+
+    private static int sensibleGuess(ItemStudy study) {
+        // A shimmering string first: halve what is left of it.
+        for (int string = 0; string < HexGrid.RING.length; string++) {
+            if (study.presence(string) == ItemStudy.Presence.PRESENT && !study.isRevealed(string)) {
+                return middle(study, string);
+            }
+        }
+        // Otherwise the unknown string whose neighbours are unknown too: one guess asks three strings.
+        int best = -1;
+        int bestScore = -1;
+        for (int string = 0; string < HexGrid.RING.length; string++) {
+            if (study.presence(string) != ItemStudy.Presence.UNKNOWN) {
+                continue;
+            }
+            int score = 0;
+            for (int side : new int[]{-1, 1}) {
+                if (study.presence(Math.floorMod(string + side, HexGrid.RING.length)) == ItemStudy.Presence.UNKNOWN) {
+                    score++;
+                }
+            }
+            if (score > bestScore) {
+                best = string;
+                bestScore = score;
+            }
+        }
+        return best < 0 ? -1 : middle(study, best);
+    }
+
+    private static int middle(ItemStudy study, int string) {
+        int[] cells = ItemStudy.string(string);
+        List<Integer> open = new ArrayList<>();
+        for (int i = 0; i < cells.length; i++) {
+            if (study.possible(string, i)) {
+                open.add(cells[i]);
+            }
+        }
+        return open.isEmpty() ? -1 : open.get((open.size() - 1) / 2);
     }
 
     @GameTest(template = "empty", batch = "studyingAnItemAtTheTable")
@@ -252,27 +320,35 @@ public final class ResearchGameTests {
         helper.assertTrue(table.isStudyingItem() && table.study().item() == Items.GLASS, "glass lies on the parchment, no orb needed");
         ItemElements elements = ResearchItems.of(Items.GLASS);
         for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
-            table.mark(player, ItemStudy.string(ring(entry.getKey()))[ItemStudy.answer(entry.getKey(), entry.getValue())]);
+            if (!table.study().isRevealed(entry.getKey())) {
+                table.guess(player, ItemStudy.string(ring(entry.getKey()))[ItemStudy.answer(entry.getKey(), entry.getValue())]);
+            }
         }
-        table.listen(player);
         ResourceLocation glass = BuiltInRegistries.ITEM.getKey(Items.GLASS);
         helper.assertTrue(Research.of(player).hasStudied(glass), "glass is studied");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 2, "one glass went into the study");
         table.selectItem(player);
         helper.assertTrue(table.study().won(elements), "a studied item is not studied again");
 
-        // A lost study: wrong marks until the listens run out; the item is used once.
-        table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.COBBLESTONE, 2));
+        // A lost study: guesses everywhere but on the answers, until they run out; the item is used once.
+        table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.FEATHER, 2));
         table.selectItem(player);
-        int wrong = ring(SimpleRune.LIGHT);
-        for (int i = 0; i < 20; i++) {
-            table.mark(player, ItemStudy.string(wrong)[0]);
-            table.listen(player);
+        ItemElements feather = ResearchItems.of(Items.FEATHER);
+        for (int string = 0; string < HexGrid.RING.length; string++) {
+            SimpleRune element = HexGrid.RING[string];
+            Integer strength = feather.elements().get(element);
+            for (int cell : ItemStudy.string(string)) {
+                boolean answer = strength != null && ItemStudy.indexOf(cell) == ItemStudy.answer(element, strength);
+                if (!answer && table.study().isActive(feather)) {
+                    table.guess(player, cell);
+                }
+            }
         }
-        ItemElements stone = ResearchItems.of(Items.COBBLESTONE);
-        helper.assertTrue(table.study().lost(stone), "out of listens: the study is lost");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 1, "a lost study used one cobblestone");
-        helper.assertFalse(Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(Items.COBBLESTONE)), "cobblestone is not studied");
+        helper.assertTrue(table.study().guesses() > 0, "guesses were made");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 1, "the study used one feather");
+        if (table.study().lost(feather)) {
+            helper.assertFalse(Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(Items.FEATHER)), "a lost study teaches nothing");
+        }
         player.discard();
         helper.succeed();
     }

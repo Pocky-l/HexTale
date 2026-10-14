@@ -641,7 +641,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         int cell = overBoard(mouseX, mouseY) ? board.cellAt(mouseX, mouseY) : -1;
         board.renderStudy(graphics, item, elements, study, cell);
         if (cell >= 0) {
-            List<Component> lines = board.describeStudy(study, cell);
+            List<Component> lines = board.describeStudy(study, elements, cell);
             if (!lines.isEmpty()) {
                 pendingTooltip = lines;
             }
@@ -658,17 +658,23 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         graphics.pose().popPose();
         graphics.drawString(font, stack.getHoverName().copy().withStyle(ChatFormatting.BOLD), x0 + 40, y0 + 28, 0xFFE8D9B5, true);
         graphics.drawString(font, Component.translatable(KEY + "study.goal"), x0 + 40, y0 + 38, 0xFF000000 | TEXT_MUTED, false);
-        graphics.drawString(font, Component.translatable(KEY + "study.marks", study.markCount(), ItemStudy.MAX_MARKS), x0 + 40, y0 + 48,
+        int found = 0;
+        for (SimpleRune element : elements.elements().keySet()) {
+            if (study.isRevealed(element)) {
+                found++;
+            }
+        }
+        graphics.drawString(font, Component.translatable(KEY + "study.found", found, elements.elements().size()), x0 + 40, y0 + 48,
                 0xFF9FE3FF, false);
 
-        // Listens: cyan for the ones left.
-        int total = study.maxListens();
+        // Guesses: brass tokens for the ones left.
+        int total = study.maxGuesses();
         for (int i = 0; i < total; i++) {
-            boolean left = i >= study.listens();
-            PixelArt.hex(graphics, x0 + 11 + i * 12, y0 + 69, 9, PixelArt.argb(left ? 0x5CC8F2 : 0x2A2240, 1),
-                    PixelArt.argb(left ? 0x2B8FB8 : 0x4A3A66, 1));
+            boolean left = i >= study.guesses();
+            PixelArt.hex(graphics, x0 + 11 + i * 12, y0 + 69, 9, PixelArt.argb(left ? 0xD6AB52 : 0x2A2018, 1),
+                    PixelArt.argb(left ? 0x6E4A16 : 0x4A3A28, 1));
         }
-        graphics.drawString(font, Component.translatable(KEY + "study.listens", study.listensLeft(), total), x0 + 6, y0 + 76,
+        graphics.drawString(font, Component.translatable(KEY + "study.guesses", study.guessesLeft(), total), x0 + 6, y0 + 76,
                 0xFF000000 | TEXT, false);
 
         // The hidden elements: revealed ones by sign and strength.
@@ -687,11 +693,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             i++;
         }
 
-        if (study.isActive(elements)) {
-            buttons.add(new PanelButton(x0 + 6, y0 + BUTTONS_Y, 90, Component.translatable(KEY + "study.listen"), study.markCount() > 0,
-                    () -> send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.LISTEN, 0)),
-                    Component.translatable(study.started() ? KEY + "study.listen.tooltip" : KEY + "study.listen.first")));
-        } else {
+        if (!study.isActive(elements)) {
             ItemStack slot = menu.table().getItem(ResearchTableBlockEntity.STUDY);
             boolean again = !slot.isEmpty() && !studied(slot.getItem());
             buttons.add(new PanelButton(x0 + 6, y0 + BUTTONS_Y, 90, Component.translatable(KEY + "study.again"), again,
@@ -701,16 +703,19 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             renderButton(graphics, button, mouseX, mouseY);
         }
 
-        // A small legend of the echoes.
-        int lx = x0 + 8;
-        int ly = topPos + ITEMS_Y + 1;
-        PixelArt.hex(graphics, lx + 5, ly + 4, 11, PixelArt.argb(0xFFE08A, 1), PixelArt.argb(0xC88A12, 1));
-        graphics.drawString(font, Component.translatable(KEY + "study.legend.exact"), lx + 14, ly, 0xFF000000 | TEXT, false);
-        PixelArt.hexRing(graphics, lx + 5, ly + 22, 11, PixelArt.argb(0x9FE3FF, 1));
-        graphics.drawString(font, "›", lx + 3, ly + 17, 0xFF9FE3FF, false);
-        graphics.drawString(font, Component.translatable(KEY + "study.legend.hum"), lx + 14, ly + 18, 0xFF000000 | TEXT, false);
-        graphics.drawString(font, "×", lx + 3, ly + 35, 0xFF9A8A80, false);
-        graphics.drawString(font, Component.translatable(KEY + "study.legend.silent"), lx + 14, ly + 36, 0xFF000000 | TEXT, false);
+        // A small legend: what the marks and strings say.
+        int lx = x0 + 10;
+        int ly = topPos + ITEMS_Y;
+        PixelArt.hex(graphics, lx, ly + 4, 11, PixelArt.argb(0xD6AB52, 1), PixelArt.argb(0x6E4A16, 1));
+        graphics.drawString(font, "›", lx - 1, ly, 0xFF3B2208, false);
+        graphics.drawString(font, Component.translatable(KEY + "study.legend.hum"), lx + 10, ly, 0xFF000000 | TEXT, false);
+        PixelArt.hex(graphics, lx, ly + 18, 11, PixelArt.argb(0x8A8078, 1), PixelArt.argb(0x4A4440, 1));
+        graphics.drawString(font, "×", lx - 2, ly + 14, 0xFF2A2420, false);
+        graphics.drawString(font, Component.translatable(KEY + "study.legend.silent"), lx + 10, ly + 14, 0xFF000000 | TEXT, false);
+        PixelArt.hexRing(graphics, lx, ly + 32, 11, PixelArt.argb(0x9FE3FF, 0.6F + 0.4F * Mth.sin(Util.getMillis() / 180.0F)));
+        graphics.drawString(font, Component.translatable(KEY + "study.legend.shimmer"), lx + 10, ly + 28, 0xFF000000 | TEXT, false);
+        PixelArt.hex(graphics, lx, ly + 46, 11, PixelArt.argb(0xFFE08A, 1), PixelArt.argb(0xC88A12, 1));
+        graphics.drawString(font, Component.translatable(KEY + "study.legend.exact"), lx + 10, ly + 42, 0xFF000000 | TEXT, false);
 
         Component hint;
         if (!message.getString().isEmpty()) {
@@ -822,8 +827,11 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
         int cell = board.cellAt(mouseX, mouseY);
         if (table.isStudyingItem()) {
-            if (button == 0 && cell >= 0 && ItemStudy.stringOf(cell) >= 0) {
-                send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.MARK, cell));
+            ItemStudy study = table.study();
+            ItemElements elements = study.item() == null ? null : ResearchItems.of(study.item());
+            if (button == 0 && cell >= 0 && elements != null && study.canGuess(cell, elements)) {
+                send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.GUESS, cell));
+                message = Component.empty();
             }
             return;
         }

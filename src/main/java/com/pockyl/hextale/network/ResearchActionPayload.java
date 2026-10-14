@@ -19,7 +19,7 @@ import com.pockyl.hextale.rune.ComplexRunes;
 /**
  * Client to server: something the researcher does at the open table. The server checks everything again.
  *
- * @param value the rune index (SELECT), point index (LEAVE) or parchment section (WRITE target, JUMP, MARK)
+ * @param value the rune index (SELECT), point index (LEAVE) or parchment section (WRITE target, JUMP, GUESS)
  * @param item  the item that writes (WRITE)
  * @param ground whether the item is ground in the mortar first (WRITE)
  */
@@ -45,8 +45,7 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, Reso
         SCRAPE,
         JUMP,
         STUDY_ITEM,
-        MARK,
-        LISTEN
+        GUESS
     }
 
     public static ResearchActionPayload of(BlockPos pos, Action action, int value) {
@@ -83,8 +82,7 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, Reso
             case SCRAPE -> table.scrape(player);
             case JUMP -> table.jump(player, payload.value());
             case STUDY_ITEM -> table.selectItem(player);
-            case MARK -> table.mark(player, payload.value());
-            case LISTEN -> table.listen(player);
+            case GUESS -> table.guess(player, payload.value());
         }
     }
 }

@@ -59,6 +59,7 @@ import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.SimpleRune;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
@@ -451,28 +452,15 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         study.begin(stack.getItem(), elements);
         studyingItem = true;
         message(player, Component.translatable("research.hextale.study.selected", stack.getHoverName(), elements.elements().size(),
-                study.maxListens()), ResearchMessagePayload.Tone.INFO);
+                study.maxGuesses()), ResearchMessagePayload.Tone.INFO);
         setChanged();
     }
 
-    /** Puts a tuning mark on a string section, moves it or takes it off. */
-    public void mark(ServerPlayer player, int cell) {
-        ItemElements elements = study.item() == null ? null : ResearchItems.of(study.item());
-        if (!studyingItem || elements == null || Requirement.diary(this, player) != null) {
-            return;
-        }
-        if (study.toggle(cell, elements)) {
-            level.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.6F, 1.6F);
-            setChanged();
-        }
-    }
-
-    /** Listens to the marks. The first listen takes one of the item from the study slot. */
-    public void listen(ServerPlayer player) {
+    /** Places a guess mark on a string section; it answers at once. The first guess takes one of the item from the slot. */
+    public void guess(ServerPlayer player, int cell) {
         Item item = study.item();
         ItemElements elements = item == null ? null : ResearchItems.of(item);
-        if (!studyingItem || elements == null || Requirement.diary(this, player) != null || study.markCount() == 0
-                || !study.isActive(elements)) {
+        if (!studyingItem || elements == null || Requirement.diary(this, player) != null || !study.canGuess(cell, elements)) {
             return;
         }
         if (!study.started()) {
@@ -482,23 +470,34 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             }
             items.get(STUDY).shrink(1);
         }
-        Map<Integer, ItemStudy.Echo> heard = study.listen(elements);
-        if (heard == null) {
+        ItemStudy.Answer answer = study.guess(cell, elements);
+        if (answer == null) {
             return;
         }
-        int exact = 0;
-        int humming = 0;
-        for (Map.Entry<Integer, ItemStudy.Echo> entry : heard.entrySet()) {
-            if (entry.getValue() == ItemStudy.Echo.EXACT) {
-                exact++;
-                SimpleRune element = HexGrid.RING[ItemStudy.stringOf(entry.getKey())];
-                pointEffects(element);
-            } else if (entry.getValue() != ItemStudy.Echo.SILENT) {
-                humming++;
-            }
+        SimpleRune element = HexGrid.RING[answer.string()];
+        MutableComponent text = Component.translatable("research.hextale.study.echo." + answer.echo().name().toLowerCase(Locale.ROOT),
+                ResearchText.element(element));
+        for (int stirred : answer.stirred()) {
+            SimpleRune neighbour = HexGrid.RING[stirred];
+            boolean present = study.presence(stirred) == ItemStudy.Presence.PRESENT;
+            text.append(" ").append(Component.translatable(present ? "research.hextale.study.shimmers" : "research.hextale.study.dark",
+                    ResearchText.element(neighbour)));
         }
-        level.playSound(null, worldPosition, exact > 0 ? SoundEvents.AMETHYST_BLOCK_RESONATE : SoundEvents.AMETHYST_BLOCK_CHIME,
-                SoundSource.BLOCKS, 1.0F, exact > 0 ? 1.2F : 0.8F + humming * 0.15F);
+        for (int self : answer.selfRevealed()) {
+            text.append(" ").append(Component.translatable("research.hextale.study.self", ResearchText.element(HexGrid.RING[self])));
+        }
+        boolean found = answer.echo() == ItemStudy.Echo.EXACT || !answer.selfRevealed().isEmpty();
+        if (found) {
+            pointEffects(element);
+        }
+        float pitch = switch (answer.echo()) {
+            case EXACT -> 1.4F;
+            case FARTHER -> 1.1F;
+            case NEARER -> 0.9F;
+            case SILENT -> 0.6F;
+        };
+        level.playSound(null, worldPosition, found ? SoundEvents.AMETHYST_BLOCK_RESONATE : SoundEvents.AMETHYST_BLOCK_CHIME,
+                SoundSource.BLOCKS, 1.0F, pitch);
         if (study.won(elements)) {
             Research.study(player, item);
             MutableComponent all = Component.empty();
@@ -517,11 +516,12 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
                 serverLevel.sendParticles(ParticleTypes.END_ROD, orb.x, orb.y, orb.z, 10, 0.15, 0.1, 0.15, 0.03);
             }
         } else if (study.lost(elements)) {
-            message(player, Component.translatable("research.hextale.study.lost", item.getDescription()), ResearchMessagePayload.Tone.BAD);
+            message(player, text.append(" ").append(Component.translatable("research.hextale.study.lost", item.getDescription())),
+                    ResearchMessagePayload.Tone.BAD);
             fizzle();
         } else {
-            message(player, Component.translatable("research.hextale.study.heard", exact, humming, study.listensLeft()),
-                    exact > 0 ? ResearchMessagePayload.Tone.GOOD : ResearchMessagePayload.Tone.INFO);
+            message(player, text, found ? ResearchMessagePayload.Tone.WIN : answer.echo() == ItemStudy.Echo.SILENT
+                    ? ResearchMessagePayload.Tone.INFO : ResearchMessagePayload.Tone.GOOD);
         }
         setChanged();
     }

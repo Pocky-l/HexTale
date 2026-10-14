@@ -20,14 +20,16 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Studying an item: "resonance". The item lies in the centre of the parchment; nine strings run from it to the
  * corners, one per element. Each element the item carries hides on its string, as many sections out as it is strong.
- * The researcher puts up to three tuning marks on strings and listens: a mark on the exact spot rings gold and reveals
- * the element; a mark on a string the item carries hums and points nearer or farther; a mark on a silent string stays
- * silent. Listening is limited, so it pays to cover several strings at once and to halve the distance each time.
+ * <p>
+ * The researcher places guess marks, one click at a time, and every mark answers at once: exact (the element is
+ * revealed), farther or nearer (the sections it rules out go dark), or silent (the whole string goes dark). A mark also
+ * stirs the two neighbouring strings: they shimmer when they hold an element and go dark when they do not, so marks
+ * spread around the ring find the elements fastest. A string with a single section left reveals itself for free.
+ * Guesses are limited: three plus two per element.
  * <p>
  * Pure rules shared by the table (server) and its screen (client copy).
  */
 public final class ItemStudy {
-    public static final int MAX_MARKS = 3;
     /** Strings start two sections out: near the centre nine directions would share six neighbours. */
     private static final int FIRST_STEP = 2;
     private static final int LAST_STEP = 12;
@@ -67,7 +69,7 @@ public final class ItemStudy {
         }
     }
 
-    /** What a mark heard. */
+    /** What a guess mark heard. */
     public enum Echo {
         EXACT,
         NEARER,
@@ -75,20 +77,35 @@ public final class ItemStudy {
         SILENT
     }
 
+    /** What is known about a whole string. */
+    public enum Presence {
+        UNKNOWN,
+        /** It shimmered: the item has this element. */
+        PRESENT,
+        /** It went dark: the item has no such element. */
+        ABSENT
+    }
+
+    /** One guess and everything it taught, for messages and effects. */
+    public record Answer(int cell, int string, Echo echo, List<Integer> stirred, List<Integer> selfRevealed) {
+    }
+
     @Nullable
     private Item item;
-    /** Per string (ring order): index of the mark on it, or -1. */
-    private final int[] marks = new int[HexGrid.RING.length];
-    /** What each listened section answered, in order. */
-    private final Map<Integer, Echo> echoes = new LinkedHashMap<>();
+    private final Presence[] presence = new Presence[HexGrid.RING.length];
+    /** Per string: the first and last section the element can still be on. */
+    private final int[] low = new int[HexGrid.RING.length];
+    private final int[] high = new int[HexGrid.RING.length];
     /** Revealed elements, bit per ring index. */
     private int revealed;
-    private int listens;
-    private int maxListens;
+    /** Every guess mark and its answer, in order. */
+    private final Map<Integer, Echo> marks = new LinkedHashMap<>();
+    private int guesses;
+    private int maxGuesses;
     private boolean started;
 
     public ItemStudy() {
-        Arrays.fill(marks, -1);
+        clear();
     }
 
     /** The sections of an element's string, from the centre out. */
@@ -108,7 +125,22 @@ public final class ItemStudy {
         return -1;
     }
 
-    private static int ringIndex(SimpleRune element) {
+    /** The section's place on its string (0 = nearest the item), or -1. */
+    public static int indexOf(int cell) {
+        int string = stringOf(cell);
+        if (string < 0) {
+            return -1;
+        }
+        int[] cells = STRINGS[string];
+        for (int i = 0; i < cells.length; i++) {
+            if (cells[i] == cell) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static int ringIndex(SimpleRune element) {
         for (int i = 0; i < HexGrid.RING.length; i++) {
             if (HexGrid.RING[i] == element) {
                 return i;
@@ -128,65 +160,69 @@ public final class ItemStudy {
         return item;
     }
 
-    /** A fresh study of this item: as many listens as elements plus five. */
+    /** A fresh study of this item. */
     public void begin(Item item, ItemElements elements) {
+        clear();
         this.item = item;
-        Arrays.fill(marks, -1);
-        echoes.clear();
-        revealed = 0;
-        listens = 0;
-        maxListens = 5 + elements.elements().size();
-        started = false;
+        maxGuesses = 3 + 2 * elements.elements().size();
     }
 
     public void clear() {
         item = null;
-        Arrays.fill(marks, -1);
-        echoes.clear();
+        Arrays.fill(presence, Presence.UNKNOWN);
+        Arrays.fill(low, 0);
+        for (int i = 0; i < high.length; i++) {
+            high[i] = STRINGS[i].length - 1;
+        }
         revealed = 0;
-        listens = 0;
-        maxListens = 0;
+        marks.clear();
+        guesses = 0;
+        maxGuesses = 0;
         started = false;
     }
 
-    /** The first listen uses up one of the item: the study has begun. */
+    /** The first guess uses up one of the item: the study has begun. */
     public boolean started() {
         return started;
     }
 
-    public int listens() {
-        return listens;
+    public int guesses() {
+        return guesses;
     }
 
-    public int maxListens() {
-        return maxListens;
+    public int maxGuesses() {
+        return maxGuesses;
     }
 
-    public int listensLeft() {
-        return maxListens - listens;
+    public int guessesLeft() {
+        return maxGuesses - guesses;
+    }
+
+    public boolean isRevealed(int string) {
+        return (revealed & 1 << string) != 0;
     }
 
     public boolean isRevealed(SimpleRune element) {
-        return (revealed & 1 << ringIndex(element)) != 0;
+        return isRevealed(ringIndex(element));
     }
 
-    public int markCount() {
-        int count = 0;
-        for (int mark : marks) {
-            if (mark >= 0) {
-                count++;
-            }
-        }
-        return count;
+    public Presence presence(int string) {
+        return isRevealed(string) ? Presence.PRESENT : presence[string];
     }
 
-    /** The mark on a string (ring index), or -1. */
-    public int mark(int ringIndex) {
-        return marks[ringIndex];
+    public Map<Integer, Echo> marks() {
+        return marks;
     }
 
-    public Map<Integer, Echo> echoes() {
-        return echoes;
+    /** Whether the element of this string could still be on this section. */
+    public boolean possible(int string, int index) {
+        return presence[string] != Presence.ABSENT && !isRevealed(string) && index >= low[string] && index <= high[string];
+    }
+
+    /** Whether a guess on this section would teach anything (and cost a guess). */
+    public boolean canGuess(int cell, ItemElements elements) {
+        int string = stringOf(cell);
+        return isActive(elements) && string >= 0 && !marks.containsKey(cell) && possible(string, indexOf(cell));
     }
 
     public boolean won(ItemElements elements) {
@@ -199,85 +235,66 @@ public final class ItemStudy {
     }
 
     public boolean lost(ItemElements elements) {
-        return listens >= maxListens && !won(elements);
+        return guesses >= maxGuesses && !won(elements);
     }
 
     public boolean isActive(ItemElements elements) {
         return item != null && !won(elements) && !lost(elements);
     }
 
-    /**
-     * Puts a mark on a section, moves the string's mark there, or takes it off when it is already there.
-     *
-     * @return whether anything changed
-     */
-    public boolean toggle(int cell, ItemElements elements) {
-        if (!isActive(elements)) {
-            return false;
-        }
-        int string = stringOf(cell);
-        if (string < 0 || (revealed & 1 << string) != 0) {
-            return false;
-        }
-        int index = indexOn(string, cell);
-        if (marks[string] == index) {
-            marks[string] = -1;
-            return true;
-        }
-        if (marks[string] < 0 && markCount() >= MAX_MARKS) {
-            return false;
-        }
-        marks[string] = index;
-        return true;
-    }
-
-    private static int indexOn(int string, int cell) {
-        int[] cells = STRINGS[string];
-        for (int i = 0; i < cells.length; i++) {
-            if (cells[i] == cell) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * Listens to the marks: every mark answers, exact ones reveal their element.
-     *
-     * @return the echoes of this listen by section, or null when nothing could be heard
-     */
+    /** Places a guess mark: it answers at once and stirs the neighbouring strings. Null when the guess is not allowed. */
     @Nullable
-    public Map<Integer, Echo> listen(ItemElements elements) {
-        if (!isActive(elements) || markCount() == 0) {
+    public Answer guess(int cell, ItemElements elements) {
+        if (!canGuess(cell, elements)) {
             return null;
         }
         started = true;
-        listens++;
-        Map<Integer, Echo> heard = new LinkedHashMap<>();
-        for (int string = 0; string < marks.length; string++) {
-            int index = marks[string];
-            if (index < 0) {
-                continue;
-            }
-            SimpleRune element = HexGrid.RING[string];
-            Integer strength = elements.elements().get(element);
-            Echo echo;
-            if (strength == null) {
-                echo = Echo.SILENT;
-            } else {
-                int target = answer(element, strength);
-                echo = index == target ? Echo.EXACT : index < target ? Echo.FARTHER : Echo.NEARER;
-            }
-            if (echo == Echo.EXACT) {
+        guesses++;
+        int string = stringOf(cell);
+        int index = indexOf(cell);
+        SimpleRune element = HexGrid.RING[string];
+        Integer strength = elements.elements().get(element);
+        Echo echo;
+        if (strength == null) {
+            echo = Echo.SILENT;
+            presence[string] = Presence.ABSENT;
+        } else {
+            presence[string] = Presence.PRESENT;
+            int target = answer(element, strength);
+            if (index == target) {
+                echo = Echo.EXACT;
                 revealed |= 1 << string;
+            } else if (index < target) {
+                echo = Echo.FARTHER;
+                low[string] = Math.max(low[string], index + 1);
+            } else {
+                echo = Echo.NEARER;
+                high[string] = Math.min(high[string], index - 1);
             }
-            int cell = STRINGS[string][index];
-            echoes.remove(cell);
-            echoes.put(cell, echo);
-            heard.put(cell, echo);
-            marks[string] = -1;
         }
-        return heard;
+        marks.put(cell, echo);
+        List<Integer> stirred = new ArrayList<>();
+        for (int side : new int[]{-1, 1}) {
+            int neighbour = Math.floorMod(string + side, STRINGS.length);
+            if (presence[neighbour] == Presence.UNKNOWN && !isRevealed(neighbour)) {
+                presence[neighbour] = elements.elements().containsKey(HexGrid.RING[neighbour]) ? Presence.PRESENT : Presence.ABSENT;
+                stirred.add(neighbour);
+            }
+        }
+        return new Answer(cell, string, echo, stirred, revealCertain());
+    }
+
+    /** Strings known to hold an element with one section left reveal themselves. */
+    private List<Integer> revealCertain() {
+        List<Integer> out = new ArrayList<>();
+        for (int string = 0; string < STRINGS.length; string++) {
+            if (presence[string] == Presence.PRESENT && !isRevealed(string) && low[string] == high[string]) {
+                revealed |= 1 << string;
+                marks.put(STRINGS[string][low[string]], Echo.EXACT);
+                out.add(string);
+            }
+        }
+        return out;
     }
 
     public CompoundTag save() {
@@ -285,38 +302,55 @@ public final class ItemStudy {
         if (item != null) {
             tag.putString("item", BuiltInRegistries.ITEM.getKey(item).toString());
         }
-        tag.putIntArray("marks", marks);
+        int[] known = new int[presence.length];
+        for (int i = 0; i < presence.length; i++) {
+            known[i] = presence[i].ordinal();
+        }
+        tag.putIntArray("presence", known);
+        tag.putIntArray("low", low);
+        tag.putIntArray("high", high);
         tag.putInt("revealed", revealed);
-        tag.putInt("listens", listens);
-        tag.putInt("max_listens", maxListens);
+        tag.putInt("guesses", guesses);
+        tag.putInt("max_guesses", maxGuesses);
         tag.putBoolean("started", started);
         ListTag list = new ListTag();
-        echoes.forEach((cell, echo) -> {
+        marks.forEach((cell, echo) -> {
             CompoundTag entry = new CompoundTag();
             entry.putInt("cell", cell);
             entry.putInt("echo", echo.ordinal());
             list.add(entry);
         });
-        tag.put("echoes", list);
+        tag.put("marks", list);
         return tag;
     }
 
     public void load(CompoundTag tag) {
+        clear();
         ResourceLocation id = tag.contains("item") ? ResourceLocation.tryParse(tag.getString("item")) : null;
         item = id == null ? null : BuiltInRegistries.ITEM.getOptional(id).orElse(null);
-        Arrays.fill(marks, -1);
-        int[] saved = tag.getIntArray("marks");
-        System.arraycopy(saved, 0, marks, 0, Math.min(saved.length, marks.length));
+        int[] known = tag.getIntArray("presence");
+        for (int i = 0; i < Math.min(known.length, presence.length); i++) {
+            presence[i] = Presence.values()[Math.floorMod(known[i], Presence.values().length)];
+        }
+        int[] savedLow = tag.getIntArray("low");
+        int[] savedHigh = tag.getIntArray("high");
+        for (int i = 0; i < STRINGS.length; i++) {
+            if (i < savedLow.length) {
+                low[i] = savedLow[i];
+            }
+            if (i < savedHigh.length) {
+                high[i] = savedHigh[i];
+            }
+        }
         revealed = tag.getInt("revealed");
-        listens = tag.getInt("listens");
-        maxListens = tag.getInt("max_listens");
+        guesses = tag.getInt("guesses");
+        maxGuesses = tag.getInt("max_guesses");
         started = tag.getBoolean("started");
-        echoes.clear();
-        for (Tag element : tag.getList("echoes", Tag.TAG_COMPOUND)) {
+        for (Tag element : tag.getList("marks", Tag.TAG_COMPOUND)) {
             CompoundTag entry = (CompoundTag) element;
             int echo = entry.getInt("echo");
             if (echo >= 0 && echo < Echo.values().length) {
-                echoes.put(entry.getInt("cell"), Echo.values()[echo]);
+                marks.put(entry.getInt("cell"), Echo.values()[echo]);
             }
         }
     }

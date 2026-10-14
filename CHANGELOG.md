@@ -20,8 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   constellations - Smelting and the tool runes in the centre, the other runes on the rays of their elements. Click a
   star to see the rune; on the Research Table it goes to the parchment with one click.
 - Every item carries elements of different strength (base materials, then names and recipes for everything else).
-  Study an item at the Research Table by resonance: its elements hide on nine strings, as far out as they are strong;
-  place tuning marks and listen - exact, nearer, farther or silent - before the listens run out. Only studied items
+  Study an item at the Research Table by resonance: its elements hide on nine strings, as far out as they are strong.
+  Click a string to place a guess mark: it answers at once (found, farther, nearer or silent), ruled-out sections go
+  dark and the neighbouring strings shimmer or go dark too. Find every element before the guesses run out. Only studied items
   can write on the parchment, and a studied item shows its elements in its tooltip.
 - Five research tools crafted from the scrolls of the first runes - Researcher's Lens, Fork Quill, Mortar, Brass
   Scraper and Parchment Stretcher. They sit in the table's tool slots and grow stronger with their rune's stars.
