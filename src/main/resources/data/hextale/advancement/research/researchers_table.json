@@ -1,0 +1,31 @@
+{
+  "parent": "hextale:research/born_of_storm",
+  "display": {
+    "icon": {
+      "id": "hextale:research_table"
+    },
+    "title": {
+      "translate": "advancements.hextale.researchers_table.title"
+    },
+    "description": {
+      "translate": "advancements.hextale.researchers_table.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "placed": {
+      "trigger": "minecraft:placed_block",
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:block_state_property",
+            "block": "hextale:research_table"
+          }
+        ]
+      }
+    }
+  }
+}

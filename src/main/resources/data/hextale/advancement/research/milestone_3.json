@@ -1,0 +1,26 @@
+{
+  "parent": "hextale:research/first_rune",
+  "display": {
+    "icon": {
+      "id": "minecraft:lantern"
+    },
+    "title": {
+      "translate": "advancements.hextale.milestone_3.title"
+    },
+    "description": {
+      "translate": "advancements.hextale.milestone_3.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "learned": {
+      "trigger": "hextale:runes_learned",
+      "conditions": {
+        "count": 3
+      }
+    }
+  }
+}

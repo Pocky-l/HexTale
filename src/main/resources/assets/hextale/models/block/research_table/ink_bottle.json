@@ -1,0 +1,218 @@
+{
+  "textures": {
+    "particle": "hextale:block/research_table/ink_glass",
+    "glass": "hextale:block/research_table/ink_glass",
+    "cork": "hextale:block/research_table/cork",
+    "empty": "hextale:block/research_table/empty_glass"
+  },
+  "elements": [
+    {
+      "from": [
+        10.0,
+        14.4,
+        2.8
+      ],
+      "to": [
+        12.8,
+        16.9,
+        5.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glass",
+          "uv": [
+            3.2,
+            13.5,
+            6.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#glass",
+          "uv": [
+            10.0,
+            13.5,
+            12.8,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#glass",
+          "uv": [
+            10.4,
+            13.5,
+            13.2,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#glass",
+          "uv": [
+            2.8,
+            13.5,
+            5.6,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#glass",
+          "uv": [
+            10.0,
+            2.8,
+            12.8,
+            5.6
+          ]
+        },
+        "down": {
+          "texture": "#glass",
+          "uv": [
+            10.0,
+            10.4,
+            12.8,
+            13.2
+          ]
+        }
+      },
+      "neoforge_data": {
+        "block_light": 12,
+        "sky_light": 12
+      }
+    },
+    {
+      "from": [
+        10.7,
+        16.9,
+        3.5
+      ],
+      "to": [
+        12.1,
+        17.6,
+        4.9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        10.8,
+        17.6,
+        3.6
+      ],
+      "to": [
+        12.0,
+        18.3,
+        4.8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cork",
+          "uv": [
+            4.0,
+            13.7,
+            5.2,
+            14.4
+          ]
+        },
+        "south": {
+          "texture": "#cork",
+          "uv": [
+            10.8,
+            13.7,
+            12.0,
+            14.4
+          ]
+        },
+        "east": {
+          "texture": "#cork",
+          "uv": [
+            11.2,
+            13.7,
+            12.4,
+            14.4
+          ]
+        },
+        "west": {
+          "texture": "#cork",
+          "uv": [
+            3.6,
+            13.7,
+            4.8,
+            14.4
+          ]
+        },
+        "up": {
+          "texture": "#cork",
+          "uv": [
+            10.8,
+            3.6,
+            12.0,
+            4.8
+          ]
+        },
+        "down": {
+          "texture": "#cork",
+          "uv": [
+            10.8,
+            11.2,
+            12.0,
+            12.4
+          ]
+        }
+      }
+    }
+  ]
+}

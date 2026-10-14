@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "brass_ingot",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {"item": "hextale:brass_nugget"}
+  },
+  "result": {"id": "hextale:brass_ingot", "count": 1}
+}

@@ -1,0 +1,163 @@
+{
+  "textures": {
+    "particle": "hextale:block/research_table/parchment",
+    "paper": "hextale:block/research_table/parchment",
+    "edge": "hextale:block/research_table/parchment_roll"
+  },
+  "elements": [
+    {
+      "from": [
+        -15.2,
+        14.0,
+        10.6
+      ],
+      "to": [
+        -11.6,
+        15.1,
+        14.6
+      ],
+      "rotation": {
+        "origin": [
+          -13.4,
+          14.0,
+          12.6
+        ],
+        "axis": "y",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            0,
+            16,
+            1.2
+          ]
+        },
+        "south": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            0,
+            16,
+            1.2
+          ]
+        },
+        "east": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            0,
+            6,
+            1.2
+          ]
+        },
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            0,
+            6,
+            1.2
+          ]
+        },
+        "up": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#edge",
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        -15.1,
+        15.1,
+        10.5
+      ],
+      "to": [
+        -11.5,
+        15.2,
+        14.5
+      ],
+      "rotation": {
+        "origin": [
+          -13.4,
+          14.0,
+          12.6
+        ],
+        "axis": "y",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#paper",
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#paper",
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#paper",
+          "uv": [
+            0,
+            15,
+            6,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#paper",
+          "uv": [
+            0,
+            15,
+            6,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#paper",
+          "uv": [
+            0,
+            2,
+            16,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#paper",
+          "uv": [
+            0,
+            2,
+            16,
+            14
+          ]
+        }
+      }
+    }
+  ]
+}

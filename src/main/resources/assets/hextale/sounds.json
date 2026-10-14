@@ -1,0 +1,62 @@
+{
+  "brush.stroke": {
+    "subtitle": "subtitles.hextale.brush.stroke",
+    "sounds": [
+      {
+        "name": "hextale:brush_stroke1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:brush_stroke2",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:brush_stroke3",
+        "volume": 0.7
+      }
+    ]
+  },
+  "rune.recognised": {
+    "subtitle": "subtitles.hextale.rune.recognised",
+    "sounds": [
+      {
+        "name": "hextale:rune_recognised",
+        "volume": 0.8
+      }
+    ]
+  },
+  "rune.failed": {
+    "subtitle": "subtitles.hextale.rune.failed",
+    "sounds": [
+      {
+        "name": "hextale:rune_failed",
+        "volume": 0.7
+      }
+    ]
+  },
+  "rune.fused": {
+    "subtitle": "subtitles.hextale.rune.fused",
+    "sounds": [
+      {
+        "name": "hextale:rune_fused"
+      }
+    ]
+  },
+  "orb.crack": {
+    "subtitle": "subtitles.hextale.orb.crack",
+    "sounds": [
+      {
+        "name": "hextale:orb_crack"
+      }
+    ]
+  },
+  "orb.awaken": {
+    "subtitle": "subtitles.hextale.orb.awaken",
+    "sounds": [
+      {
+        "name": "hextale:orb_awaken",
+        "attenuation_distance": 32
+      }
+    ]
+  }
+}

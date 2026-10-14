@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "PSP",
+    "P P"
+  ],
+  "key": {
+    "B": {"item": "hextale:brass_ingot"},
+    "P": {"tag": "minecraft:planks"},
+    "S": {"item": "minecraft:bookshelf"}
+  },
+  "result": {"id": "hextale:research_table", "count": 1}
+}

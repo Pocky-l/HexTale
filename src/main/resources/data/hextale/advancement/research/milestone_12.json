@@ -1,0 +1,26 @@
+{
+  "parent": "hextale:research/milestone_3",
+  "display": {
+    "icon": {
+      "id": "minecraft:iron_pickaxe"
+    },
+    "title": {
+      "translate": "advancements.hextale.milestone_12.title"
+    },
+    "description": {
+      "translate": "advancements.hextale.milestone_12.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "learned": {
+      "trigger": "hextale:runes_learned",
+      "conditions": {
+        "count": 12
+      }
+    }
+  }
+}

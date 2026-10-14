@@ -1,0 +1,30 @@
+{
+  "parent": "hextale:research/root",
+  "display": {
+    "icon": {
+      "id": "hextale:unstable_hextech"
+    },
+    "title": {
+      "translate": "advancements.hextale.born_of_storm.title"
+    },
+    "description": {
+      "translate": "advancements.hextale.born_of_storm.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "hextech": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "hextale:unstable_hextech"
+          }
+        ]
+      }
+    }
+  }
+}

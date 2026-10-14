@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {"item": "hextale:brass_ingot"}
+  ],
+  "result": {"id": "hextale:brass_nugget", "count": 9}
+}

@@ -1,0 +1,26 @@
+{
+  "parent": "hextale:research/researchers_table",
+  "display": {
+    "icon": {
+      "id": "hextale:rune_brush"
+    },
+    "title": {
+      "translate": "advancements.hextale.first_rune.title"
+    },
+    "description": {
+      "translate": "advancements.hextale.first_rune.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "learned": {
+      "trigger": "hextale:runes_learned",
+      "conditions": {
+        "count": 1
+      }
+    }
+  }
+}

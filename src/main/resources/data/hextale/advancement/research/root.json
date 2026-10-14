@@ -1,0 +1,57 @@
+{
+  "display": {
+    "icon": {
+      "id": "hextale:unstable_hextech"
+    },
+    "title": {
+      "translate": "advancements.hextale.root.title"
+    },
+    "description": {
+      "translate": "advancements.hextale.root.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false,
+    "background": "minecraft:textures/block/amethyst_block.png"
+  },
+  "criteria": {
+    "brass": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "hextale:brass_ingot"
+          }
+        ]
+      }
+    },
+    "hextech": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "hextale:unstable_hextech"
+          }
+        ]
+      }
+    },
+    "table": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "hextale:research_table"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "brass",
+      "hextech",
+      "table"
+    ]
+  ]
+}

@@ -2,17 +2,27 @@ package com.pockyl.hextale;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import org.slf4j.Logger;
 
+import com.pockyl.hextale.item.RuneScrollItem;
+import com.pockyl.hextale.network.ModNetwork;
+import com.pockyl.hextale.registry.ModAttachments;
+import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModBlocks;
+import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModMenus;
+import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.registry.ModTriggers;
 import com.pockyl.hextale.registry.PockyModsTab;
+import com.pockyl.hextale.rune.ComplexRunes;
 
 @Mod(Hextale.MOD_ID)
 public final class Hextale {
@@ -22,11 +32,45 @@ public final class Hextale {
     public Hextale(IEventBus modBus, ModContainer container) {
         ModBlocks.register(modBus);
         ModItems.register(modBus);
-        // Add this mod's items to the shared "Pocky Mods" creative tab, e.g. output.accept(ModItems.FOO).
-        PockyModsTab.register(modBus, () -> new ItemStack(Items.SLIME_BALL), output -> {
+        ModDataComponents.register(modBus);
+        ModBlockEntities.register(modBus);
+        ModMenus.register(modBus);
+        ModAttachments.register(modBus);
+        ModSounds.register(modBus);
+        ModTriggers.register(modBus);
+        modBus.addListener(ModNetwork::register);
+        modBus.addListener(Hextale::addToVanillaTabs);
+        PockyModsTab.register(modBus, () -> new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), output -> {
+            output.accept(ModItems.RESEARCH_TABLE);
+            output.accept(ModItems.RESEARCHERS_DIARY);
+            output.accept(ModItems.UNSTABLE_HEXTECH);
+            output.accept(ModItems.HEXTECH_INK);
+            output.accept(ModItems.RUNE_BRUSH);
+            output.accept(ModItems.BRASS_INGOT);
+            output.accept(ModItems.BRASS_NUGGET);
+            output.accept(exampleScroll());
         });
 
         container.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
+
+    /** A scroll of "Smelting" shows players what scrolls look like; real ones come from the Research Table. */
+    private static ItemStack exampleScroll() {
+        return RuneScrollItem.of(ComplexRunes.byKey("fire_earth"), ModItems.RUNE_SCROLL.get());
+    }
+
+    private static void addToVanillaTabs(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+            event.accept(ModItems.RESEARCH_TABLE);
+        } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            event.accept(ModItems.BRASS_INGOT);
+            event.accept(ModItems.BRASS_NUGGET);
+            event.accept(ModItems.UNSTABLE_HEXTECH);
+        } else if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.accept(ModItems.RESEARCHERS_DIARY);
+            event.accept(ModItems.HEXTECH_INK);
+            event.accept(ModItems.RUNE_BRUSH);
+        }
     }
 
     public static ResourceLocation id(String path) {
