@@ -3,7 +3,7 @@ package com.pockyl.hextale.client;
 import net.minecraft.client.Minecraft;
 
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
-import com.pockyl.hextale.client.screen.diary.DiaryScreen;
+import com.pockyl.hextale.client.screen.book.StarBookScreen;
 import com.pockyl.hextale.network.KnowledgeSyncPayload;
 import com.pockyl.hextale.network.OpenDiaryPayload;
 import com.pockyl.hextale.network.ResearchMessagePayload;
@@ -24,9 +24,6 @@ public final class ClientPayloads {
     }
 
     public static void openDiary(OpenDiaryPayload payload) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player != null) {
-            minecraft.setScreen(new DiaryScreen(payload.owner(), minecraft.player.getUUID()));
-        }
+        Minecraft.getInstance().setScreen(new StarBookScreen(payload.owner()));
     }
 }

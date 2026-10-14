@@ -13,7 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
-import com.pockyl.hextale.knowledge.DiaryNote;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.network.OpenDiaryPayload;
@@ -49,7 +48,6 @@ public class ResearchersDiaryItem extends Item {
             return false;
         }
         diary.set(ModDataComponents.DIARY_OWNER.get(), DiaryOwner.of(player));
-        Research.unlockNote(player, DiaryNote.DIARY_BOUND);
         return true;
     }
 

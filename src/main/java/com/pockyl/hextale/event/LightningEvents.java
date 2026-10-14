@@ -26,7 +26,6 @@ import org.joml.Vector3f;
 
 import com.pockyl.hextale.Config;
 import com.pockyl.hextale.Hextale;
-import com.pockyl.hextale.knowledge.DiaryNote;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
@@ -42,10 +41,6 @@ import org.jetbrains.annotations.Nullable;
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class LightningEvents {
-    /** Players this close to a notable strike get a diary note about it. */
-    private static final double WITNESS_RANGE = 48;
-    private static final int CRYSTAL_SEARCH_RADIUS = 3;
-
     private LightningEvents() {
     }
 
@@ -61,14 +56,7 @@ public final class LightningEvents {
             BlockPos base = rod.relative(level.getBlockState(rod).getValue(LightningRodBlock.FACING).getOpposite());
             if (level.getBlockState(base).is(ModTags.AWAKENS_INTO_HEXTECH)) {
                 awaken(level, base);
-                witnesses(level, base, DiaryNote.LIGHTNING_NEAR_AMETHYST);
-                return;
             }
-            witnesses(level, rod, DiaryNote.ROD_WITHOUT_AMETHYST);
-        }
-        BlockPos strike = BlockPos.containing(position);
-        if (crystalsNear(level, strike)) {
-            witnesses(level, strike, DiaryNote.LIGHTNING_NEAR_AMETHYST);
         }
     }
 
@@ -116,23 +104,5 @@ public final class LightningEvents {
                 24, 0.35, 0.35, 0.35, 0.02);
         level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.BLOCKS, 1.6F, 0.8F);
         level.playSound(null, pos, ModSounds.ORB_AWAKEN.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
-    }
-
-    private static boolean crystalsNear(ServerLevel level, BlockPos centre) {
-        for (BlockPos pos : BlockPos.betweenClosed(centre.offset(-CRYSTAL_SEARCH_RADIUS, -CRYSTAL_SEARCH_RADIUS, -CRYSTAL_SEARCH_RADIUS),
-                centre.offset(CRYSTAL_SEARCH_RADIUS, CRYSTAL_SEARCH_RADIUS, CRYSTAL_SEARCH_RADIUS))) {
-            if (level.getBlockState(pos).is(ModTags.RESONANT_CRYSTALS)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static void witnesses(ServerLevel level, BlockPos pos, DiaryNote note) {
-        for (ServerPlayer player : level.players()) {
-            if (player.distanceToSqr(Vec3.atCenterOf(pos)) <= WITNESS_RANGE * WITNESS_RANGE) {
-                Research.unlockNote(player, note);
-            }
-        }
     }
 }

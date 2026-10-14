@@ -17,7 +17,6 @@ public final class ModNetwork {
     public static void register(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
         registrar.playToServer(ResearchActionPayload.TYPE, ResearchActionPayload.STREAM_CODEC, ResearchActionPayload::handle);
-        registrar.playToServer(NotesReadPayload.TYPE, NotesReadPayload.STREAM_CODEC, NotesReadPayload::handle);
         // Client-bound handlers live in client code; the lambdas only resolve it when a packet arrives on a client.
         registrar.playToClient(KnowledgeSyncPayload.TYPE, KnowledgeSyncPayload.STREAM_CODEC,
                 (payload, context) -> ClientPayloads.knowledge(payload));

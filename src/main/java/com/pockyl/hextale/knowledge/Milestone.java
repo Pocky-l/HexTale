@@ -15,33 +15,27 @@ import org.jetbrains.annotations.Nullable;
  * suggests them first. Texts: {@code diary.hextale.milestone.<count>} and {@code .unlocks}.
  */
 public enum Milestone {
-    FIRST_DEVICES(3, DiaryNote.MILESTONE_3, "fire_light", "air_water", "air_earth"),
-    RUNE_TOOLS(12, DiaryNote.MILESTONE_12, "fire_earth", "metal_earth", "water_earth", "fire_shadow", "earth_fire",
+    FIRST_DEVICES(3, "fire_light", "air_water", "air_earth"),
+    RUNE_TOOLS(12, "fire_earth", "metal_earth", "water_earth", "fire_shadow", "earth_fire",
             "life_metal", "earth_light", "fire_life", "shadow_life"),
-    MECHANISMS(24, DiaryNote.MILESTONE_24, "metal_fire", "air_spark", "metal_water", "metal_spark", "spark_metal",
+    MECHANISMS(24, "metal_fire", "air_spark", "metal_water", "metal_spark", "spark_metal",
             "air_fire", "light_spark", "life_water", "air_metal"),
-    RUNE_CHAINS(36, DiaryNote.MILESTONE_36, "spark_air", "fire_spark", "spark_shadow", "shadow_earth", "light_fire",
+    RUNE_CHAINS(36, "spark_air", "fire_spark", "spark_shadow", "shadow_earth", "light_fire",
             "water_spark", "earth_spark", "life_spark"),
-    HEXCORE(54, DiaryNote.MILESTONE_54, "light_metal", "metal_life", "life_light", "light_air", "metal_light",
+    HEXCORE(54, "light_metal", "metal_life", "life_light", "light_air", "metal_light",
             "metal_shadow"),
-    FULL_CODEX(72, DiaryNote.MILESTONE_72);
+    FULL_CODEX(72);
 
     private final int count;
-    private final DiaryNote note;
     private final List<ComplexRune> featured;
 
-    Milestone(int count, DiaryNote note, String... featured) {
+    Milestone(int count, String... featured) {
         this.count = count;
-        this.note = note;
         this.featured = Arrays.stream(featured).map(ComplexRunes::byKey).map(Objects::requireNonNull).toList();
     }
 
     public int count() {
         return count;
-    }
-
-    public DiaryNote note() {
-        return note;
     }
 
     public List<ComplexRune> featured() {

@@ -12,17 +12,13 @@ import com.pockyl.hextale.rune.ComplexRunes;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * What a researcher has found out. Lives on the player (a data attachment copied on death), not on the diary item: a
@@ -38,9 +34,7 @@ public final class RuneKnowledge {
             INT_MAP.optionalFieldOf("stars", Map.of()).forGetter(k -> k.starsByKey()),
             INT_MAP.optionalFieldOf("best", Map.of()).forGetter(k -> k.bestByKey()),
             Codec.STRING.listOf().optionalFieldOf("items", List.of()).forGetter(k -> List.copyOf(k.items)),
-            BITS_MAP.optionalFieldOf("seen", Map.of()).forGetter(RuneKnowledge::seenByKey),
-            Codec.STRING.listOf().optionalFieldOf("notes", List.of()).forGetter(k -> keys(k.notes, DiaryNote::id)),
-            Codec.STRING.listOf().optionalFieldOf("read_notes", List.of()).forGetter(k -> keys(k.readNotes, DiaryNote::id))
+            BITS_MAP.optionalFieldOf("seen", Map.of()).forGetter(RuneKnowledge::seenByKey)
     ).apply(instance, RuneKnowledge::new));
 
     private static final StreamCodec<ByteBuf, List<String>> STRINGS = ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list(4096));
@@ -53,8 +47,6 @@ public final class RuneKnowledge {
             INTS, RuneKnowledge::bestByKey,
             STRINGS, k -> List.copyOf(k.items),
             BITS, RuneKnowledge::seenByKey,
-            STRINGS, k -> keys(k.notes, DiaryNote::id),
-            STRINGS, k -> keys(k.readNotes, DiaryNote::id),
             RuneKnowledge::new);
 
     /** Learned runes in the order of discovery, with their stars (1-3). */
@@ -65,15 +57,12 @@ public final class RuneKnowledge {
     private final Set<String> items = new LinkedHashSet<>();
     /** Per rune: parchment sections the ink has passed. */
     private final Map<ComplexRune, BitSet> seen = new HashMap<>();
-    /** Unlocked diary notes in the order they were written. */
-    private final Set<DiaryNote> notes = new LinkedHashSet<>();
-    private final Set<DiaryNote> readNotes = EnumSet.noneOf(DiaryNote.class);
 
     public RuneKnowledge() {
     }
 
     private RuneKnowledge(Map<String, Integer> stars, Map<String, Integer> best, List<String> items,
-                          Map<String, List<Long>> seen, List<String> notes, List<String> readNotes) {
+                          Map<String, List<Long>> seen) {
         stars.forEach((key, value) -> {
             ComplexRune rune = ComplexRunes.byKey(key);
             if (rune != null && value > 0) {
@@ -93,12 +82,6 @@ public final class RuneKnowledge {
                 this.seen.put(rune, BitSet.valueOf(value.stream().mapToLong(Long::longValue).toArray()));
             }
         });
-        notes.stream().map(DiaryNote::byId).filter(Objects::nonNull).forEach(this.notes::add);
-        readNotes.stream().map(DiaryNote::byId).filter(Objects::nonNull).forEach(this.readNotes::add);
-    }
-
-    private static <T> List<String> keys(Collection<T> values, Function<T, String> key) {
-        return values.stream().map(key).toList();
     }
 
     private Map<String, Integer> starsByKey() {
@@ -204,43 +187,7 @@ public final class RuneKnowledge {
         return changed;
     }
 
-    public boolean hasNote(DiaryNote note) {
-        return notes.contains(note);
-    }
-
-    /** @return whether the note was new */
-    public boolean addNote(DiaryNote note) {
-        return notes.add(note);
-    }
-
-    /** Unlocked notes, newest first. */
-    public List<DiaryNote> notesNewestFirst() {
-        List<DiaryNote> list = new ArrayList<>(notes);
-        Collections.reverse(list);
-        return list;
-    }
-
-    public boolean isRead(DiaryNote note) {
-        return readNotes.contains(note);
-    }
-
-    public int unreadNotes() {
-        int count = 0;
-        for (DiaryNote note : notes) {
-            if (!readNotes.contains(note)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /** @return whether anything changed */
-    public boolean markNotesRead() {
-        return readNotes.addAll(notes);
-    }
-
     public RuneKnowledge copy() {
-        return new RuneKnowledge(starsByKey(), bestByKey(), List.copyOf(items), seenByKey(), keys(notes, DiaryNote::id),
-                keys(readNotes, DiaryNote::id));
+        return new RuneKnowledge(starsByKey(), bestByKey(), List.copyOf(items), seenByKey());
     }
 }

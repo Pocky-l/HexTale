@@ -33,7 +33,6 @@ import com.pockyl.hextale.block.TablePart;
 import com.pockyl.hextale.item.DiaryOwner;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneScrollItem;
-import com.pockyl.hextale.knowledge.DiaryNote;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.registry.ModBlocks;
@@ -202,7 +201,6 @@ public final class ResearchGameTests {
         RuneKnowledge knowledge = Research.of(player);
         helper.assertTrue(knowledge.stars(SMELTING) == stars && stars >= 1, "Smelting is learned with " + stars + " stars");
         helper.assertTrue(knowledge.best(SMELTING) == sheet.used(), "the best sheet is remembered");
-        helper.assertTrue(knowledge.hasNote(DiaryNote.FIRST_RUNE), "the diary notes the first rune");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "the orb went into the rune");
         ItemStack scroll = table.getItem(ResearchTableBlockEntity.OUTPUT);
         helper.assertTrue(RuneScrollItem.rune(scroll) == SMELTING && RuneScrollItem.stars(scroll) == stars, "a scroll of Smelting comes out");
@@ -237,7 +235,6 @@ public final class ResearchGameTests {
         helper.assertTrue(sheet.used() == sheet.cap(), "nothing more can be written on it");
         helper.assertFalse(Research.of(player).knows(SMELTING), "nothing is learned");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 3, "the orb is kept");
-        helper.assertTrue(Research.of(player).hasNote(DiaryNote.SHEET_FAILED), "the diary notes the lost sheet");
         player.discard();
         helper.succeed();
     }
@@ -403,7 +400,6 @@ public final class ResearchGameTests {
         Research.learn(before, ComplexRunes.byKey("life_metal"), 1, 20);
         Research.of(before).learnItem(ResourceLocation.withDefaultNamespace("coal"));
         Research.of(before).see(SMELTING, new int[]{HexGrid.CENTRE, 5});
-        Research.unlockNote(before, DiaryNote.FIRST_HEXTECH);
 
         ServerPlayer after = player(helper);
         after.restoreFrom(before, false);
@@ -413,7 +409,6 @@ public final class ResearchGameTests {
         helper.assertTrue(knowledge.best(ComplexRunes.byKey("water_life")) == 9, "the best sheets are kept");
         helper.assertTrue(knowledge.knowsItem(ResourceLocation.withDefaultNamespace("coal")), "tried items are kept");
         helper.assertTrue(knowledge.seen(SMELTING).get(5), "explored parchment is kept");
-        helper.assertTrue(knowledge.hasNote(DiaryNote.FIRST_HEXTECH), "the notes are kept");
         helper.assertTrue(knowledge != Research.of(before), "the new player has its own copy");
         RuneKnowledge decoded = RuneKnowledge.CODEC.parse(NbtOps.INSTANCE,
                 RuneKnowledge.CODEC.encodeStart(NbtOps.INSTANCE, knowledge).getOrThrow()).getOrThrow();
@@ -434,13 +429,12 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "milestonesWriteNotes")
-    public static void milestonesWriteNotes(GameTestHelper helper) {
+    @GameTest(template = "empty", batch = "learnAllCountsRunes")
+    public static void learnAllCountsRunes(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         Research.learnAll(player, ComplexRunes.all().subList(0, 12), 1);
         RuneKnowledge knowledge = Research.of(player);
-        helper.assertTrue(knowledge.hasNote(DiaryNote.MILESTONE_3) && knowledge.hasNote(DiaryNote.MILESTONE_12), "both milestones noted");
-        helper.assertFalse(knowledge.hasNote(DiaryNote.MILESTONE_24), "24 is not reached yet");
+        helper.assertTrue(knowledge.runeCount() == 12, "twelve runes learned at once");
         player.discard();
         helper.succeed();
     }

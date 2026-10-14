@@ -8,7 +8,6 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import com.pockyl.hextale.Hextale;
-import com.pockyl.hextale.knowledge.DiaryNote;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.RuneBoards;
@@ -43,15 +42,6 @@ public final class PlayerEvents {
     public static void onChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             Research.sync(player);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (event.getEntity() instanceof ServerPlayer player && player.tickCount % 20 == 0
-                && !Research.of(player).hasNote(DiaryNote.FIRST_HEXTECH)
-                && player.getInventory().contains(stack -> stack.is(ModItems.UNSTABLE_HEXTECH.get()))) {
-            Research.unlockNote(player, DiaryNote.FIRST_HEXTECH);
         }
     }
 }

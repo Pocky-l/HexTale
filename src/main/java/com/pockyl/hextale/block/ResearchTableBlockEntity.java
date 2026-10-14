@@ -39,7 +39,6 @@ import com.pockyl.hextale.item.HextechInkItem;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneBrushItem;
 import com.pockyl.hextale.item.RuneScrollItem;
-import com.pockyl.hextale.knowledge.DiaryNote;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.menu.ResearchTableMenu;
@@ -226,7 +225,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         if (Research.of(player).see(board.rune(), new int[]{HexGrid.CENTRE})) {
             Research.sync(player);
         }
-        Research.unlockNote(player, DiaryNote.FIRST_SHEET);
         level.playSound(null, worldPosition, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 1.0F, 0.8F);
         message(player, Component.translatable("research.hextale.sheet", cap, board.par().three()), ResearchMessagePayload.Tone.INFO);
         setChanged();
@@ -313,7 +311,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
                 ResearchText.element(p.element()));
         if ((dissolvedBefore & 1 << p.element().ordinal()) == 0 && hasWalls(board, p.element())) {
             text.append(" ").append(Component.translatable("research.hextale.dissolved", ResearchText.element(p.element())));
-            Research.unlockNote(player, DiaryNote.WALLS_DISSOLVED);
         }
         pointEffects(p);
         switch (result) {
@@ -360,7 +357,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     private void failed(ServerPlayer player, MutableComponent text) {
         message(player, text.append(" ").append(Component.translatable("research.hextale.failed")), ResearchMessagePayload.Tone.BAD);
-        Research.unlockNote(player, DiaryNote.SHEET_FAILED);
         if (level instanceof ServerLevel serverLevel) {
             Vec3 orb = orbPosition();
             serverLevel.sendParticles(ParticleTypes.SMOKE, orb.x, orb.y, orb.z, 6, 0.08, 0.05, 0.08, 0.01);

@@ -25,9 +25,7 @@ import com.pockyl.hextale.block.Requirement;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
 import com.pockyl.hextale.client.ClientKnowledge;
 import com.pockyl.hextale.client.render.PixelArt;
-import com.pockyl.hextale.client.screen.diary.DiaryBook;
-import com.pockyl.hextale.item.DiaryOwner;
-import com.pockyl.hextale.item.ResearchersDiaryItem;
+import com.pockyl.hextale.client.screen.book.StarBook;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.network.ResearchActionPayload;
@@ -53,7 +51,7 @@ import org.jetbrains.annotations.Nullable;
  * The Research Table, in three tabs: the research book (choose a rune), the parchment (the mini-game: items from the
  * inventory write symbols, resources fill the points) and the table itself (materials, research tools, the scroll).
  */
-public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMenu> implements DiaryBook.Host {
+public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMenu> implements StarBook.Host {
     private static final ResourceLocation BOOK_TEXTURE = Hextale.id("textures/gui/research_book.png");
     private static final ResourceLocation PARCHMENT_TEXTURE = Hextale.id("textures/gui/research_parchment.png");
     private static final ResourceLocation TABLE_TEXTURE = Hextale.id("textures/gui/research_table.png");
@@ -90,7 +88,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     private final BoardView board = new BoardView();
-    private DiaryBook book;
+    private StarBook book;
     private Tab tab;
     private Component message = Component.empty();
     private ResearchMessagePayload.Tone tone = ResearchMessagePayload.Tone.INFO;
@@ -117,9 +115,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     protected void init() {
         super.init();
         if (book == null) {
-            String owner = owner();
-            long seed = minecraft.player.getUUID().getMostSignificantBits() ^ minecraft.player.getUUID().getLeastSignificantBits();
-            book = new DiaryBook(owner, seed, this);
+            book = new StarBook(this);
             ResearchTableBlockEntity table = table();
             if (missingDiary() != null) {
                 setTab(Tab.TABLE);
@@ -127,14 +123,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 setTab(table != null && table.sheet().rune() != null ? Tab.PARCHMENT : Tab.BOOK);
             }
         }
-        book.layout(leftPos + (imageWidth - DiaryBook.FULL_WIDTH) / 2, topPos + 24 + (234 - DiaryBook.BOOK_HEIGHT) / 2);
+        book.layout(leftPos + 4, topPos + 24, imageWidth - 8, imageHeight - 28);
         board.layout(leftPos, topPos);
         setTab(tab);
-    }
-
-    private String owner() {
-        DiaryOwner owner = ResearchersDiaryItem.owner(menu.table().getItem(ResearchTableBlockEntity.DIARY));
-        return owner != null ? owner.name() : minecraft.player.getGameProfile().getName();
     }
 
     private void setTab(Tab tab) {
@@ -177,7 +168,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         this.tone = tone;
     }
 
-    // ---- DiaryBook.Host -------------------------------------------------------------------------------------------
+    // ---- StarBook.Host -------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -746,7 +737,26 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (tab == Tab.BOOK && book.mouseDragged(mouseX, mouseY, button)) {
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (tab == Tab.BOOK && book.mouseReleased(mouseX, mouseY, button)) {
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (tab == Tab.BOOK && book.mouseScrolled(mouseX, mouseY, scrollY)) {
+            return true;
+        }
         if (tab == Tab.PARCHMENT && isOver(mouseX, mouseY, leftPos + PANEL_X, topPos + ITEMS_Y - 3, PANEL_W, 58)) {
             itemScroll = Math.max(0, itemScroll - (int) Math.signum(scrollY));
             return true;
@@ -756,9 +766,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (tab == Tab.BOOK && book.keyPressed(keyCode)) {
-            return true;
-        }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 }

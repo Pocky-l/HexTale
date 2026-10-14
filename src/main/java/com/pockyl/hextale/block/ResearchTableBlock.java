@@ -37,7 +37,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import com.pockyl.hextale.knowledge.DiaryNote;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.registry.ModBlockEntities;
 
@@ -104,9 +103,6 @@ public class ResearchTableBlock extends BaseEntityBlock implements WorldlyContai
                     Block.UPDATE_ALL);
             level.blockUpdated(pos, Blocks.AIR);
             state.updateNeighbourShapes(level, pos, Block.UPDATE_ALL);
-            if (placer instanceof ServerPlayer player) {
-                Research.unlockNote(player, DiaryNote.FIRST_TABLE);
-            }
         }
     }
 

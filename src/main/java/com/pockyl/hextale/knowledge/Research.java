@@ -36,9 +36,6 @@ public final class Research {
         RuneKnowledge knowledge = of(player);
         int before = knowledge.runeCount();
         boolean fresh = knowledge.learn(rune, stars, symbols);
-        if (stars >= 3) {
-            unlockNote(player, DiaryNote.THREE_STARS);
-        }
         progress(player, before, knowledge.runeCount());
         sync(player);
         return fresh;
@@ -68,36 +65,14 @@ public final class Research {
         return removed;
     }
 
-    /** Writes a note into the diary (once); the player sees a hint and hears a page turn. */
-    public static boolean unlockNote(ServerPlayer player, DiaryNote note) {
-        if (!of(player).addNote(note)) {
-            return false;
-        }
-        player.displayClientMessage(Component.translatable("diary.hextale.note.unlocked",
-                Component.translatable(note.translationKey()).withStyle(ChatFormatting.GOLD)), true);
-        player.playNotifySound(SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 1.0F);
-        sync(player);
-        return true;
-    }
-
-    public static void markNotesRead(ServerPlayer player) {
-        if (of(player).markNotesRead()) {
-            sync(player);
-        }
-    }
-
     public static void sync(ServerPlayer player) {
         ModNetwork.sendToPlayer(player, new KnowledgeSyncPayload(of(player).copy()));
         ModTriggers.RUNES_LEARNED.get().trigger(player, of(player).runeCount());
     }
 
     private static void progress(ServerPlayer player, int before, int after) {
-        if (before == 0 && after > 0) {
-            unlockNote(player, DiaryNote.FIRST_RUNE);
-        }
         for (Milestone milestone : Milestone.values()) {
             if (before < milestone.count() && after >= milestone.count()) {
-                unlockNote(player, milestone.note());
                 player.sendSystemMessage(Component.translatable("diary.hextale.milestone.reached",
                         Component.translatable(milestone.translationKey()).withStyle(ChatFormatting.GOLD), milestone.count()));
             }
