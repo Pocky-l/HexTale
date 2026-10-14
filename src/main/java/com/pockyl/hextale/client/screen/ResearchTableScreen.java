@@ -268,7 +268,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     private int tabX(int index) {
-        return leftPos + imageWidth - 8 - (3 - index) * (TAB_WIDTH + 2);
+        return leftPos + imageWidth - 20 - (3 - index) * (TAB_WIDTH + 2);
     }
 
     private void renderTabs(GuiGraphics graphics, int mouseX, int mouseY) {
@@ -422,6 +422,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             for (int i = 0; i < lines.size(); i++) {
                 graphics.drawCenteredString(font, lines.get(i), leftPos + BoardView.CX, topPos + BoardView.CY - 10 + i * 10, 0xFF3B2A1A);
             }
+            board.renderEmpty(graphics);
             graphics.drawString(font, Component.translatable(KEY + "goal.none"), leftPos + PANEL_X + 6, topPos + 28, 0xFF000000 | TEXT_MUTED, false);
             renderLevers(graphics, mouseX, mouseY);
             renderMessage(graphics, message.getString().isEmpty() ? Component.translatable(KEY + "hint.book") : message);
@@ -623,9 +624,11 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             }
         }
         int pages = Math.max(0, (levers.size() - 1) / ITEM_COLUMNS - ITEM_ROWS + 1);
-        Component label = pages > 0 ? Component.translatable(KEY + "levers").append(" " + (leverScroll + 1) + "/" + (pages + 1))
-                : Component.translatable(KEY + "levers");
-        graphics.drawString(font, label, leftPos + PANEL_X + PANEL_W - 4 - font.width(label), topPos + ITEMS_Y - 21, 0xFF000000 | TEXT_MUTED, true);
+        if (pages > 0) {
+            Component label = Component.literal((leverScroll + 1) + "/" + (pages + 1));
+            graphics.drawString(font, label, leftPos + PANEL_X + PANEL_W - 6 - font.width(label), topPos + BUTTONS_Y + 4,
+                    0xFF000000 | TEXT_MUTED, true);
+        }
     }
 
     // ---- The item study -------------------------------------------------------------------------------------------
@@ -703,7 +706,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             renderButton(graphics, button, mouseX, mouseY);
         }
 
-        // A small legend: what the marks and strings say.
+        // A small legend: what the marks and strings say, over the (unused) slot grid of the well.
+        graphics.fill(x0 + 5, topPos + ITEMS_Y - 2, x0 + PANEL_W - 5, topPos + ITEMS_Y + 54, 0xFF2A1B0C);
         int lx = x0 + 10;
         int ly = topPos + ITEMS_Y;
         PixelArt.hex(graphics, lx, ly + 4, 11, PixelArt.argb(0xD6AB52, 1), PixelArt.argb(0x6E4A16, 1));

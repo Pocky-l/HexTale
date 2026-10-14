@@ -318,7 +318,8 @@ final class BoardView {
                 int cell = cells[i];
                 int x = left + px(cell);
                 int y = top + py(cell);
-                float lineAlpha = absent ? 0.12F : revealed ? 0.7F : shimmering ? 0.35F + 0.35F * shimmer(now, i) : 0.28F;
+                boolean beyond = revealed && !study.marks().containsKey(cell) && i > foundIndex(study, string);
+                float lineAlpha = absent || beyond ? 0.12F : revealed ? 0.7F : shimmering ? 0.35F + 0.35F * shimmer(now, i) : 0.28F;
                 int lineColor = absent ? 0x6A6058 : stirredByHover ? 0x2B8FB8 : ink;
                 if (stirredByHover) {
                     PixelArt.dotted(graphics, x0, y0, x, y, 2, 2, (int) (now / 120 % 4), argb(lineColor, 0.8F));
@@ -389,6 +390,17 @@ final class BoardView {
         renderSigns(graphics);
     }
 
+    /** The section a found element sits on (its gold mark), or the end of the string. */
+    private static int foundIndex(ItemStudy study, int string) {
+        int[] cells = ItemStudy.string(string);
+        for (int i = 0; i < cells.length; i++) {
+            if (study.marks().get(cells[i]) == ItemStudy.Echo.EXACT) {
+                return i;
+            }
+        }
+        return cells.length;
+    }
+
     /** A shimmer travelling along a string, section by section. */
     private static float shimmer(long now, int index) {
         return 0.5F + 0.5F * Mth.sin(now / 180.0F - index * 0.9F);
@@ -446,6 +458,11 @@ final class BoardView {
     }
 
     // ---- Shared -----------------------------------------------------------------------------------------------------
+
+    /** The parchment with nothing on it yet: only the element signs in their corners. */
+    void renderEmpty(GuiGraphics graphics) {
+        renderSigns(graphics);
+    }
 
     private void renderSigns(GuiGraphics graphics) {
         for (SimpleRune element : HexGrid.RING) {

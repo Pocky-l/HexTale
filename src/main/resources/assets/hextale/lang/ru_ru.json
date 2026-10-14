@@ -363,7 +363,7 @@
   "gui.hextale.research_table.tab.parchment": "Пергамент: изучать руну",
   "gui.hextale.research_table.tab.table": "Стол: материалы и инструменты",
   "gui.hextale.research_table.materials": "Материалы",
-  "gui.hextale.research_table.tools": "Инструменты исследователя",
+  "gui.hextale.research_table.tools": "Инструменты",
   "gui.hextale.research_table.slot.tool": "Инструмент из руны «%s»",
   "gui.hextale.research_table.slot.tool.no_rune": "Не работает, пока не изучена его руна",
   "gui.hextale.research_table.no_rune": "На столе нет руны. Откройте книгу исследований и выберите руну.",

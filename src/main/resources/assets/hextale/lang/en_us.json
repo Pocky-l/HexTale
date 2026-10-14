@@ -363,7 +363,7 @@
   "gui.hextale.research_table.tab.parchment": "Parchment: study the rune",
   "gui.hextale.research_table.tab.table": "The table: materials and research tools",
   "gui.hextale.research_table.materials": "Materials",
-  "gui.hextale.research_table.tools": "Research tools",
+  "gui.hextale.research_table.tools": "Tools",
   "gui.hextale.research_table.slot.tool": "A research tool from the rune %s",
   "gui.hextale.research_table.slot.tool.no_rune": "Does nothing until you learn its rune",
   "gui.hextale.research_table.no_rune": "No rune on the table. Open the research book and choose one.",

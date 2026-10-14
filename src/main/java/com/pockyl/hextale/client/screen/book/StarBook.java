@@ -174,6 +174,8 @@ public final class StarBook {
         if (selected != null) {
             renderPlate(graphics, selected, knowledge, mouseX, mouseY, now);
         }
+        // The pixel art is batched: draw it while the scissor still clips it to the sky.
+        graphics.flush();
         graphics.disableScissor();
         renderFrame(graphics);
 
