@@ -162,6 +162,27 @@ public final class ResearchSheet {
         return HexGrid.walk(board.activeWalls(filled), from, elements.offset(ground));
     }
 
+    /** Why a symbol may not be written. */
+    public enum Refusal {
+        /** It would land where a symbol (or the orb) already is, or not move at all. */
+        OCCUPIED,
+        /** The previous symbol has the same element: two equal symbols never follow each other. */
+        SAME_ELEMENT
+    }
+
+    /** Whether the item's symbol may go where {@code walk} takes it: null when it may. */
+    @Nullable
+    public Refusal refusal(ItemElements elements, HexGrid.Walk walk) {
+        int end = walk.end();
+        if (end == from || end == HexGrid.CENTRE || markAt(end) != null) {
+            return Refusal.OCCUPIED;
+        }
+        if (!marks.isEmpty() && marks.get(marks.size() - 1).element() == elements.main()) {
+            return Refusal.SAME_ELEMENT;
+        }
+        return null;
+    }
+
     /** Writes the item's symbol; the returned walk says where it landed (null when not allowed). */
     @Nullable
     public HexGrid.Walk write(RuneBoard board, ItemElements elements, ResourceLocation item, boolean ground) {
@@ -169,6 +190,9 @@ public final class ResearchSheet {
             return null;
         }
         HexGrid.Walk walk = preview(board, elements, ground);
+        if (refusal(elements, walk) != null) {
+            return null;
+        }
         marks.add(new Mark(walk.end(), elements.main(), from, walk.cells(), item));
         from = walk.end();
         checkFailed(board);

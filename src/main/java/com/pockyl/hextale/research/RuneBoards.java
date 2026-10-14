@@ -139,7 +139,7 @@ public final class RuneBoards {
                 continue;
             }
             RuneBoard draft = new RuneBoard(rune, walls, List.copyOf(points), null);
-            int plain = solve(draft, false, PLAIN_LIMIT[tier]);
+            int plain = solve(draft, false, PLAIN_LIMIT[tier], false);
             if (plain == Integer.MAX_VALUE) {
                 continue;
             }
@@ -160,8 +160,8 @@ public final class RuneBoards {
     }
 
     private static RuneBoard withPar(RuneBoard draft) {
-        int plain = solve(draft, false, SEARCH_LIMIT);
-        int tools = Math.min(plain, solve(draft, true, plain));
+        int plain = solve(draft, false, SEARCH_LIMIT, true);
+        int tools = Math.min(plain, solve(draft, true, plain, true));
         int two = Math.max(plain + 1, tools + 2);
         return new RuneBoard(draft.rune(), draft.walls(), draft.points(),
                 new RuneBoard.Par(tools, two, two + 1 + draft.tier(), plain));
@@ -195,10 +195,15 @@ public final class RuneBoards {
      * Fewest symbols that fill every point. Each point is open, covered (a symbol lies on it) or filled (base-3 digit);
      * filling is free and may wait, and a filled point dissolves the dark runes of its element. With tools the mortar
      * adds half steps and the fork may restart from the orb or a filled point three times.
+     * <p>
+     * {@code strict} applies the table's rules on top of the prototype's: two symbols of the same element never follow
+     * each other, and a symbol never lands where it started or on the orb. (Landing on an older symbol is not tracked:
+     * the shortest routes hardly ever cross themselves.) Board generation uses the prototype's rules, so the boards stay
+     * the prototype's; star thresholds use the strict ones.
      *
      * @return the number of symbols, or {@link Integer#MAX_VALUE} when not possible within {@code limit}
      */
-    static int solve(RuneBoard board, boolean tools, int limit) {
+    static int solve(RuneBoard board, boolean tools, int limit, boolean strict) {
         int n = board.points().size();
         int[] pow = new int[n + 1];
         pow[0] = 1;
@@ -208,6 +213,9 @@ public final class RuneBoards {
         int p3 = pow[n];
         int forks = tools ? FULL_FORKS : 0;
         int f1 = forks + 1;
+        // The element of the last symbol (strict rules), or NONE before the first one.
+        int none = SimpleRune.values().length;
+        int lasts = strict ? none + 1 : 1;
         int goal = p3 - 1;
         int cells = HexGrid.COUNT;
         int[] pointIndex = new int[cells];
@@ -217,12 +225,12 @@ public final class RuneBoards {
             pointCell[i] = board.points().get(i).cell();
             pointIndex[pointCell[i]] = i;
         }
-        List<int[]> offsets = ResearchItems.canonicalOffsets(tools);
-        int rays = offsets.size();
+        List<ResearchItems.Step> steps = ResearchItems.canonicalSteps(tools, strict);
+        int rays = steps.size();
         int[][][] ray = new int[rays][cells][];
         for (int i = 0; i < rays; i++) {
             for (int c = 0; c < cells; c++) {
-                ray[i][c] = HexGrid.ray(c, offsets.get(i));
+                ray[i][c] = HexGrid.ray(c, steps.get(i).offset());
             }
         }
         int[] dissolvedOf = new int[p3];
@@ -237,25 +245,27 @@ public final class RuneBoards {
         }
         Map<Integer, boolean[]> wallSets = new HashMap<>();
         Map<Integer, int[]> memos = new HashMap<>();
-        boolean[] seen = new boolean[cells * p3 * f1];
+        boolean[] seen = new boolean[cells * p3 * f1 * lasts];
         int[] current = new int[64];
         int size = 0;
-        int start = (HexGrid.CENTRE * p3) * f1;
+        int start = encode(HexGrid.CENTRE, 0, 0, strict ? none : 0, p3, f1, lasts);
         seen[start] = true;
         current[size++] = start;
         for (int cost = 0; cost < limit && size > 0; cost++) {
             for (int x = 0; x < size; x++) {
                 int st = current[x];
-                int f = st % f1;
-                int t = (st - f) / f1;
+                int last = st % lasts;
+                int rest = st / lasts;
+                int f = rest % f1;
+                int t = rest / f1;
                 int p = t % p3;
-                int c = (t - p) / p3;
+                int c = t / p3;
                 if (p == goal) {
                     return cost;
                 }
                 for (int i = 0; i < n; i++) {
                     if (digit(p, i, pow) == 1) {
-                        int k = ((c * p3) + p + pow[i]) * f1 + f;
+                        int k = encode(c, p + pow[i], f, last, p3, f1, lasts);
                         if (!seen[k]) {
                             seen[k] = true;
                             if (size == current.length) {
@@ -275,7 +285,7 @@ public final class RuneBoards {
                         }
                     }
                     for (int j = 0; j < count; j++) {
-                        int k = ((targets[j] * p3) + p) * f1 + f + 1;
+                        int k = encode(targets[j], p, f + 1, last, p3, f1, lasts);
                         if (!seen[k]) {
                             seen[k] = true;
                             if (size == current.length) {
@@ -290,10 +300,12 @@ public final class RuneBoards {
             int nextSize = 0;
             for (int x = 0; x < size; x++) {
                 int st = current[x];
-                int f = st % f1;
-                int t = (st - f) / f1;
+                int last = st % lasts;
+                int rest = st / lasts;
+                int f = rest % f1;
+                int t = rest / f1;
                 int p = t % p3;
-                int c = (t - p) / p3;
+                int c = t / p3;
                 int d = dissolvedOf[p];
                 boolean[] wall = wallSets.computeIfAbsent(d, mask -> {
                     boolean[] w = new boolean[cells];
@@ -308,6 +320,10 @@ public final class RuneBoards {
                     return m;
                 });
                 for (int i = 0; i < rays; i++) {
+                    int element = steps.get(i).element();
+                    if (strict && element == last) {
+                        continue;
+                    }
                     int e = memo[c * rays + i];
                     if (e < 0) {
                         int[] line = ray[i][c];
@@ -317,9 +333,12 @@ public final class RuneBoards {
                         }
                         memo[c * rays + i] = e;
                     }
+                    if (strict && (e == c || e == HexGrid.CENTRE)) {
+                        continue;
+                    }
                     int pi = pointIndex[e];
                     int np = pi >= 0 && digit(p, pi, pow) == 0 ? p + pow[pi] : p;
-                    int k = ((e * p3) + np) * f1 + f;
+                    int k = encode(e, np, f, strict ? element : 0, p3, f1, lasts);
                     if (!seen[k]) {
                         seen[k] = true;
                         if (nextSize == next.length) {
@@ -333,6 +352,10 @@ public final class RuneBoards {
             size = nextSize;
         }
         return Integer.MAX_VALUE;
+    }
+
+    private static int encode(int cell, int points, int forks, int last, int p3, int f1, int lasts) {
+        return ((cell * p3 + points) * f1 + forks) * lasts + last;
     }
 
     private static int digit(int p, int i, int[] pow) {

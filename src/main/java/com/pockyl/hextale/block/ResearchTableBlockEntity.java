@@ -267,7 +267,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             }
             begin(player, board);
         }
-        if (!sheet.canWrite() || sheet.preview(board, elements, ground).end() != target) {
+        HexGrid.Walk planned = sheet.preview(board, elements, ground);
+        if (!sheet.canWrite() || planned.end() != target || sheet.refusal(elements, planned) != null) {
             setChanged();
             return;
         }

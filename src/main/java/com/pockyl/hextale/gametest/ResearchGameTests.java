@@ -102,8 +102,9 @@ public final class ResearchGameTests {
         helper.assertTrue(hash(String.join(";", list)) == wallHash, key + ": the dark runes lie where the prototype has them");
         List<String> found = board.points().stream().map(p -> p.element().id() + "@" + HexGrid.q(p.cell()) + "," + HexGrid.r(p.cell())).toList();
         helper.assertTrue(String.join(" ", found).equals(points), key + ": points " + found + ", the prototype has " + points);
+        // The table's rules are stricter than the prototype's (no two equal symbols in a row): thresholds never drop.
         RuneBoard.Par par = board.par();
-        helper.assertTrue(par.three() == three && par.two() == two && par.sheet() == sheet && par.plain() == plain,
+        helper.assertTrue(par.three() >= three && par.plain() >= plain && par.two() > par.three() && par.sheet() > par.two(),
                 key + ": thresholds " + par + ", the prototype has " + three + "/" + two + "/" + sheet + "/" + plain);
     }
 
@@ -412,13 +413,25 @@ public final class ResearchGameTests {
         player.getInventory().add(new ItemStack(Items.COAL, 64));
         table.select(player, SMELTING);
         RuneBoard board = RuneBoards.get(SMELTING);
-        // Coal pulls towards fire at the top, away from both points (left and down): it never covers one.
-        for (int i = 0; i < board.par().sheet(); i++) {
-            table.write(player, Items.COAL, false, landing(table, board, Items.COAL));
+        // Write anything allowed that keeps away from both points until the sheet is full.
+        for (int i = 0; i < 40 && table.sheet().canWrite() || i == 0; i++) {
+            Item next = null;
+            for (Map.Entry<Item, ItemElements> entry : ResearchItems.canonical().entrySet()) {
+                ResearchSheet current = table.sheet().isOpen() ? table.sheet() : null;
+                int target = landing(table, board, entry.getKey());
+                boolean allowed = current == null ? target != HexGrid.CENTRE
+                        : current.refusal(entry.getValue(), current.preview(board, entry.getValue(), false)) == null;
+                if (allowed && board.pointAt(target) < 0) {
+                    next = entry.getKey();
+                    break;
+                }
+            }
+            helper.assertTrue(next != null, "there is always a harmless symbol to write");
+            table.write(player, next, false, landing(table, board, next));
         }
         ResearchSheet sheet = table.sheet();
         helper.assertTrue(sheet.used() == sheet.cap() && sheet.failed(board), "the full sheet is lost");
-        table.write(player, Items.COAL, false, landing(table, board, Items.COAL));
+        table.write(player, Items.FEATHER, false, landing(table, board, Items.FEATHER));
         helper.assertTrue(sheet.used() == sheet.cap(), "nothing more can be written on it");
         helper.assertFalse(Research.of(player).knows(SMELTING), "nothing is learned");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 3, "the orb is kept");
@@ -439,6 +452,27 @@ public final class ResearchGameTests {
         table.write(player, Items.BLAZE_ROD, false, landing(table, board, Items.BLAZE_ROD));
         helper.assertTrue(table.sheet().used() == 1, "an unstudied item not in the inventory writes in creative mode");
         helper.assertTrue(player.getInventory().isEmpty(), "nothing was needed, nothing was taken");
+        player.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "symbolsFollowTheTableRules")
+    public static void symbolsFollowTheTableRules(GameTestHelper helper) {
+        ServerPlayer player = player(helper);
+        ResearchTableBlockEntity table = stockedTable(helper);
+        table.select(player, SMELTING);
+        RuneBoard board = RuneBoards.get(SMELTING);
+        table.write(player, Items.COAL, false, landing(table, board, Items.COAL));
+        helper.assertTrue(table.sheet().used() == 1, "coal wrote a fire symbol");
+        table.write(player, Items.COAL, false, landing(table, board, Items.COAL));
+        table.write(player, Items.BLAZE_POWDER, false, landing(table, board, Items.BLAZE_POWDER));
+        helper.assertTrue(table.sheet().used() == 1, "no second fire symbol right after a fire symbol, whatever the item");
+        ResearchSheet sheet = table.sheet();
+        ItemElements feather = ResearchItems.of(Items.FEATHER);
+        helper.assertTrue(sheet.refusal(feather, new HexGrid.Walk(sheet.from(), new int[0], HexGrid.Walk.Stop.WALL))
+                == ResearchSheet.Refusal.OCCUPIED, "a symbol never lands where it starts");
+        helper.assertTrue(sheet.refusal(feather, new HexGrid.Walk(HexGrid.CENTRE, new int[0], HexGrid.Walk.Stop.NONE))
+                == ResearchSheet.Refusal.OCCUPIED, "nor on the orb");
         player.discard();
         helper.succeed();
     }
@@ -655,9 +689,15 @@ public final class ResearchGameTests {
     }
 
     /** A shortest plain route (no tools) that fills every point, found by breadth-first search; null if none. */
+    /**
+     * A shortest plain route (no tools) that fills every point under the table's rules - no two symbols of one element
+     * in a row, never onto the orb or the spot it starts from - found by breadth-first search; null if none.
+     */
     private static List<Step> route(RuneBoard board) {
         int n = board.points().size();
-        int states = HexGrid.COUNT * (int) Math.pow(3, n);
+        int lasts = SimpleRune.values().length + 1;
+        int per = (int) Math.pow(3, n);
+        int states = HexGrid.COUNT * per * lasts;
         int[] pow = new int[n];
         for (int i = 0; i < n; i++) {
             pow[i] = (int) Math.pow(3, i);
@@ -665,16 +705,16 @@ public final class ResearchGameTests {
         int[] parent = new int[states];
         Step[] how = new Step[states];
         Arrays.fill(parent, -2);
-        int start = HexGrid.CENTRE * (states / HexGrid.COUNT);
+        int start = (HexGrid.CENTRE * per) * lasts + lasts - 1;
         parent[start] = -1;
         ArrayDeque<Integer> queue = new ArrayDeque<>();
         queue.add(start);
         int goal = -1;
-        int per = states / HexGrid.COUNT;
         while (!queue.isEmpty()) {
             int state = queue.poll();
-            int cell = state / per;
-            int p = state % per;
+            int last = state % lasts;
+            int cell = state / lasts / per;
+            int p = state / lasts % per;
             if (p == per - 1) {
                 goal = state;
                 break;
@@ -686,15 +726,19 @@ public final class ResearchGameTests {
                     filled |= 1 << i;
                 }
                 if (digit == 1) {
-                    visit(queue, parent, how, state, cell * per + p + pow[i], new Step(board.points().get(i).resource(), i));
+                    visit(queue, parent, how, state, ((cell * per) + p + pow[i]) * lasts + last, new Step(board.points().get(i).resource(), i));
                 }
             }
             boolean[] walls = board.activeWalls(filled);
             for (Map.Entry<Item, ItemElements> entry : ResearchItems.canonical().entrySet()) {
+                int element = entry.getValue().main().ordinal();
                 int end = HexGrid.walk(walls, cell, entry.getValue().offset(false)).end();
+                if (element == last || end == cell || end == HexGrid.CENTRE) {
+                    continue;
+                }
                 int point = board.pointAt(end);
                 int np = point >= 0 && p / pow[point] % 3 == 0 ? p + pow[point] : p;
-                visit(queue, parent, how, state, end * per + np, new Step(entry.getKey(), -1));
+                visit(queue, parent, how, state, ((end * per) + np) * lasts + element, new Step(entry.getKey(), -1));
             }
         }
         if (goal < 0) {

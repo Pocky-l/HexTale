@@ -241,9 +241,7 @@ final class BoardView {
         if (chosen != null) {
             renderMove(graphics, font, board, sheet, chosen, now, moves.getOrDefault(hovered, List.of()).size(), choice);
         }
-        if (sheet.isActive() && sheet.from() != HexGrid.CENTRE) {
-            PixelArt.hexRing(graphics, left + px(sheet.from()), top + py(sheet.from()), CELL + 2, argb(0x2B8FB8, 0.6F + 0.4F * pulse));
-        }
+
         int ox = left + px(HexGrid.CENTRE);
         int oy = top + py(HexGrid.CENTRE);
         PixelArt.hex(graphics, ox, oy, CELL + 2, argb(0x5CC8F2, 0.25F + 0.2F * pulse), argb(0x2B8FB8, 1));
@@ -251,11 +249,31 @@ final class BoardView {
         if (forkLevel > 0 && sheet.canJump(board, HexGrid.CENTRE, forkLevel) && hovered == HexGrid.CENTRE) {
             PixelArt.hexRing(graphics, ox, oy, CELL + 4, argb(0xE0A21C, 1));
         }
+        if (!sheet.isOver()) {
+            here(graphics, sheet.isActive() ? sheet.from() : HexGrid.CENTRE, now);
+        }
         renderSigns(graphics);
         renderBurst(graphics, now);
         if (hovered >= 0 && chosen == null) {
             PixelArt.hexRing(graphics, left + px(hovered), top + py(hovered), CELL, argb(0xFFFFFF, 0.6F));
         }
+    }
+
+    /**
+     * Where the next symbol starts: a bright double ring around the section and a small marker bobbing above it.
+     */
+    private void here(GuiGraphics graphics, int cell, long now) {
+        int x = left + px(cell);
+        int y = top + py(cell);
+        float pulse = 0.5F + 0.5F * Mth.sin(now / 200.0F);
+        PixelArt.hexRing(graphics, x, y, CELL + 2, argb(0x7EF0FF, 0.7F + 0.3F * pulse));
+        PixelArt.hexRing(graphics, x, y, CELL + 4, argb(0x2B8FB8, 0.4F + 0.4F * pulse));
+        int bob = Math.round(pulse * 2);
+        int ty = y - 12 - bob;
+        for (int row = 0; row < 4; row++) {
+            PixelArt.fill(graphics, x - 3 + row, ty + row, x + 4 - row, ty + row + 1, argb(row == 0 ? 0xD2F6FF : 0x5CC8F2, 1));
+        }
+        PixelArt.fill(graphics, x - 4, ty - 1, x + 5, ty, argb(0x1A557F, 1));
     }
 
     /** The chosen move: its ink path, a ghost symbol and the item that writes it, hovering above the section. */

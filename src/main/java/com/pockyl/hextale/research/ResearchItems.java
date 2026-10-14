@@ -124,15 +124,24 @@ public final class ResearchItems {
         return stack.isEmpty() ? null : of(stack.getItem());
     }
 
-    /** Distinct non-zero steps of the canonical items, plain and (with a mortar) ground. */
-    static List<int[]> canonicalOffsets(boolean ground) {
-        List<int[]> out = new ArrayList<>();
+    /** A canonical lever's step and the element of the symbol it writes (ordinal). */
+    record Step(int[] offset, int element) {
+    }
+
+    /**
+     * Distinct non-zero steps of the canonical items, plain and (with a mortar) ground; with {@code byElement} the same
+     * step written by symbols of different elements counts once per element.
+     */
+    static List<Step> canonicalSteps(boolean ground, boolean byElement) {
+        List<Step> out = new ArrayList<>();
         Set<String> seen = new HashSet<>();
         for (ItemElements elements : CANONICAL.values()) {
             for (boolean half : ground ? new boolean[]{false, true} : new boolean[]{false}) {
                 int[] offset = elements.offset(half);
-                if ((offset[0] != 0 || offset[1] != 0) && seen.add(offset[0] + "," + offset[1])) {
-                    out.add(offset);
+                int element = elements.main().ordinal();
+                String key = offset[0] + "," + offset[1] + (byElement ? "," + element : "");
+                if ((offset[0] != 0 || offset[1] != 0) && seen.add(key)) {
+                    out.add(new Step(offset, element));
                 }
             }
         }

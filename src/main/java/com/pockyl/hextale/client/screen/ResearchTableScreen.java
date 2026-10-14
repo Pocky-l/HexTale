@@ -524,7 +524,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                     continue;
                 }
                 HexGrid.Walk walk = from.preview(current, lever.elements(), ground);
-                if (walk.end() == from.from()) {
+                if (from.refusal(lever.elements(), walk) != null) {
                     continue;
                 }
                 out.computeIfAbsent(walk.end(), k -> new ArrayList<>()).add(new BoardView.Move(lever.item(), lever.elements(), ground, walk));
