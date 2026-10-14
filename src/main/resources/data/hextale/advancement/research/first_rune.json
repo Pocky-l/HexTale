@@ -2,7 +2,7 @@
   "parent": "hextale:research/researchers_table",
   "display": {
     "icon": {
-      "id": "hextale:rune_brush"
+      "id": "hextale:rune_scroll"
     },
     "title": {
       "translate": "advancements.hextale.first_rune.title"

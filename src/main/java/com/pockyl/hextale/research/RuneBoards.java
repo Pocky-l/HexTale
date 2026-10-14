@@ -1,8 +1,5 @@
 package com.pockyl.hextale.research;
 
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.Item;
-
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
@@ -33,9 +30,6 @@ public final class RuneBoards {
     /** Fork restarts a fully upgraded researcher has per sheet. */
     private static final int FULL_FORKS = 3;
     private static final Map<ComplexRune, CompletableFuture<RuneBoard>> CACHE = new ConcurrentHashMap<>();
-    private static final Map<String, RuneBoard> ITEM_BOARDS = new ConcurrentHashMap<>();
-    /** An item's parchment must be finishable within this many symbols. */
-    private static final int ITEM_LIMIT = 12;
     /**
      * One low-priority daemon thread of our own: the game's background pool also loads chunks, and 72 boards queued
      * there at world start would hold the world back.
@@ -72,79 +66,6 @@ public final class RuneBoards {
         CompletableFuture.allOf(ComplexRunes.all().stream().map(RuneBoards::request).toArray(CompletableFuture[]::new))
                 .thenRun(() -> Hextale.LOGGER.debug("Generated {} research boards in {} ms", ComplexRunes.COUNT,
                         (System.nanoTime() - start) / 1_000_000));
-    }
-
-    /** An item's parchment: its elements hidden as points, a few dark runes, cached until its elements change. */
-    public static RuneBoard forItem(Item item, ItemElements elements) {
-        String key = BuiltInRegistries.ITEM.getKey(item) + "=" + elements;
-        return ITEM_BOARDS.computeIfAbsent(key, k -> generateForItem(item, elements));
-    }
-
-    private static RuneBoard generateForItem(Item item, ItemElements elements) {
-        int tier = elements.tier();
-        String key = "item:" + BuiltInRegistries.ITEM.getKey(item);
-        List<RuneBoard.Point> points = new ArrayList<>();
-        for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
-            int cell = elementCell(entry.getKey(), entry.getValue(), points);
-            if (cell >= 0) {
-                points.add(new RuneBoard.Point(entry.getKey(), cell, null, entry.getValue()));
-            }
-        }
-        RuneBoard best = null;
-        for (int attempt = 0; attempt < 60; attempt++) {
-            Random32 random = new Random32(hash(key + "#" + attempt));
-            SimpleRune[] walls = new SimpleRune[HexGrid.COUNT];
-            for (int c = 0; c < 2 + tier * 2; c++) {
-                int cell = random.pick(HexGrid.COUNT);
-                SimpleRune element = HexGrid.RING[random.pick(HexGrid.RING.length)];
-                for (int n = 2 + (int) Math.floor(random.next() * 3); n > 0; n--) {
-                    int point = cell;
-                    if (HexGrid.radius(cell) > 0.22 && points.stream().noneMatch(p -> p.cell() == point)) {
-                        walls[cell] = element;
-                    }
-                    int[] neighbours = HexGrid.neighbours(cell);
-                    cell = neighbours[random.pick(neighbours.length)];
-                }
-            }
-            RuneBoard draft = new RuneBoard(null, item, walls, List.copyOf(points), null);
-            int plain = solve(draft, false, ITEM_LIMIT);
-            if (plain != Integer.MAX_VALUE) {
-                best = withItemPar(draft, plain);
-                break;
-            }
-        }
-        if (best == null) {
-            RuneBoard open = new RuneBoard(null, item, new SimpleRune[HexGrid.COUNT], List.copyOf(points), null);
-            best = withItemPar(open, solve(open, false, SEARCH_LIMIT));
-        }
-        return best;
-    }
-
-    /** Studying has no stars: the sheet only has to hold the shortest route and a little room for mistakes. */
-    private static RuneBoard withItemPar(RuneBoard draft, int plain) {
-        int symbols = plain == Integer.MAX_VALUE ? 1 : plain;
-        return new RuneBoard(null, draft.item(), draft.walls(), draft.points(),
-                new RuneBoard.Par(symbols, symbols, symbols + 3 + draft.tier(), symbols));
-    }
-
-    /**
-     * Where an element of this strength shows: as far towards its corner as a symbol of that element alone would go.
-     * A free section nearer (or farther) is used when that one is off the parchment or taken.
-     */
-    private static int elementCell(SimpleRune element, int strength, List<RuneBoard.Point> taken) {
-        for (int delta = 0; delta < 9; delta++) {
-            for (int n : new int[]{strength - delta, strength + delta}) {
-                if (n < 1 || n > 9) {
-                    continue;
-                }
-                int[] offset = ItemElements.of(1, element, n).offset(false);
-                int cell = HexGrid.index(HexGrid.q(HexGrid.CENTRE) + offset[0], HexGrid.r(HexGrid.CENTRE) + offset[1]);
-                if (cell >= 0 && cell != HexGrid.CENTRE && taken.stream().noneMatch(p -> p.cell() == cell)) {
-                    return cell;
-                }
-            }
-        }
-        return -1;
     }
 
     /** The prototype's mulberry32. */
@@ -212,12 +133,12 @@ public final class RuneBoards {
                 if (ok.isEmpty()) {
                     break;
                 }
-                points.add(new RuneBoard.Point(element, ok.get(random.pick(ok.size())), ResearchItems.resource(element, tier), 0));
+                points.add(new RuneBoard.Point(element, ok.get(random.pick(ok.size())), ResearchItems.resource(element, tier)));
             }
             if (points.size() < POINTS[tier]) {
                 continue;
             }
-            RuneBoard draft = new RuneBoard(rune, null, walls, List.copyOf(points), null);
+            RuneBoard draft = new RuneBoard(rune, walls, List.copyOf(points), null);
             int plain = solve(draft, false, PLAIN_LIMIT[tier]);
             if (plain == Integer.MAX_VALUE) {
                 continue;
@@ -242,7 +163,7 @@ public final class RuneBoards {
         int plain = solve(draft, false, SEARCH_LIMIT);
         int tools = Math.min(plain, solve(draft, true, plain));
         int two = Math.max(plain + 1, tools + 2);
-        return new RuneBoard(draft.rune(), null, draft.walls(), draft.points(),
+        return new RuneBoard(draft.rune(), draft.walls(), draft.points(),
                 new RuneBoard.Par(tools, two, two + 1 + draft.tier(), plain));
     }
 

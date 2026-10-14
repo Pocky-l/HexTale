@@ -26,7 +26,6 @@ import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
 import com.pockyl.hextale.block.TableAnimation;
 import com.pockyl.hextale.block.TableGeometry;
-import com.pockyl.hextale.item.HextechInkItem;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
@@ -88,22 +87,12 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         poseStack.popPose();
     }
 
+    /** The parchment, the inkwell and the brush always lie on the desk; a finished scroll waits beside them. */
     private static void renderProps(ResearchTableBlockEntity table, PoseStack poseStack, MultiBufferSource buffers, int light, int overlay) {
-        ItemStack paper = table.getItem(ResearchTableBlockEntity.PAPER);
-        if (!paper.isEmpty()) {
-            TableModels.render(poseStack, buffers, TableModels.PARCHMENT, light, overlay);
-            if (paper.getCount() > 1) {
-                TableModels.render(poseStack, buffers, TableModels.PARCHMENT_STACK, light, overlay);
-            }
-        }
-        ItemStack ink = table.getItem(ResearchTableBlockEntity.INK);
-        if (!ink.isEmpty()) {
-            TableModels.render(poseStack, buffers, HextechInkItem.hasInk(ink) ? TableModels.INK_BOTTLE : TableModels.EMPTY_BOTTLE, light,
-                    overlay);
-        }
-        if (!table.getItem(ResearchTableBlockEntity.BRUSH).isEmpty()) {
-            TableModels.render(poseStack, buffers, ink.isEmpty() ? TableModels.BRUSH_LYING : TableModels.BRUSH_IN_BOTTLE, light, overlay);
-        }
+        TableModels.render(poseStack, buffers, TableModels.PARCHMENT, light, overlay);
+        TableModels.render(poseStack, buffers, TableModels.PARCHMENT_STACK, light, overlay);
+        TableModels.render(poseStack, buffers, TableModels.INK_BOTTLE, light, overlay);
+        TableModels.render(poseStack, buffers, TableModels.BRUSH_IN_BOTTLE, light, overlay);
         if (table.getItem(ResearchTableBlockEntity.OUTPUT).is(ModItems.RUNE_SCROLL.get())) {
             TableModels.render(poseStack, buffers, TableModels.SCROLL, light, overlay);
         }

@@ -4,7 +4,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import com.pockyl.hextale.item.HextechInkItem;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.registry.ModItems;
 
@@ -13,15 +12,12 @@ import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * What the Research Table needs before a new sheet, in the order the screen asks for it. Checked by the screen (to
+ * What the Research Table needs to learn a rune, in the order the screen asks for it. Checked by the screen (to
  * say exactly what to put where) and again by the server.
  */
 public enum Requirement {
     DIARY,
     OWN_DIARY,
-    BRUSH,
-    INK,
-    PAPER,
     HEXTECH;
 
     /** The player's own (or an unsigned) diary must lie on the table for any research. */
@@ -44,15 +40,6 @@ public enum Requirement {
         Requirement diary = diary(table, player);
         if (diary != null) {
             return diary;
-        }
-        if (!table.getItem(ResearchTableBlockEntity.BRUSH).is(ModItems.RUNE_BRUSH.get())) {
-            return BRUSH;
-        }
-        if (!HextechInkItem.hasInk(table.getItem(ResearchTableBlockEntity.INK))) {
-            return INK;
-        }
-        if (table.getItem(ResearchTableBlockEntity.PAPER).isEmpty()) {
-            return PAPER;
         }
         if (table.getItem(ResearchTableBlockEntity.HEXTECH).isEmpty()) {
             return HEXTECH;

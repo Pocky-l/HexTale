@@ -24,10 +24,10 @@ import org.jetbrains.annotations.Nullable;
 public class ResearchTableMenu extends AbstractContainerMenu {
     public static final int IMAGE_WIDTH = 468;
     public static final int IMAGE_HEIGHT = 262;
-    /** Materials in a row: diary, paper, orb, ink, brush; the scroll comes out right of them. */
-    public static final int MATERIALS_X = 154;
+    /** The diary and the orb in a row; the scroll comes out right of them. */
+    public static final int MATERIALS_X = 189;
     public static final int MATERIALS_Y = 50;
-    public static final int OUTPUT_X = 298;
+    public static final int OUTPUT_X = 255;
     public static final int TOOLS_X = 182;
     public static final int TOOLS_Y = 104;
     public static final int SLOT_SPACING = 22;
@@ -38,8 +38,7 @@ public class ResearchTableMenu extends AbstractContainerMenu {
     private static final int TABLE_SLOTS = ResearchTableBlockEntity.SLOTS;
     private static final int INVENTORY_START = TABLE_SLOTS;
     private static final int INVENTORY_END = INVENTORY_START + 36;
-    private static final int[] MATERIALS = {ResearchTableBlockEntity.DIARY, ResearchTableBlockEntity.PAPER,
-            ResearchTableBlockEntity.HEXTECH, ResearchTableBlockEntity.INK, ResearchTableBlockEntity.BRUSH};
+    private static final int[] MATERIALS = {ResearchTableBlockEntity.DIARY, ResearchTableBlockEntity.HEXTECH};
 
     private final Container container;
     private final BlockPos pos;

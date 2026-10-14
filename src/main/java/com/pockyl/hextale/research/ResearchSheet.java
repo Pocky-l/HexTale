@@ -1,11 +1,9 @@
 package com.pockyl.hextale.research;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
@@ -17,7 +15,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * One attempt at a rune or an item = one sheet of parchment. Items write symbols in a chain: each one starts where the previous
+ * One attempt at a rune = one sheet of parchment. Items write symbols in a chain: each one starts where the previous
  * one landed (the first at the orb in the centre). A symbol on a point lets its resource be left there at any time; a
  * filled point dissolves every dark rune of its element. The rune is learned when every point is filled; the sheet is
  * lost when it is full while nothing covered is left to fill.
@@ -27,8 +25,6 @@ import org.jetbrains.annotations.Nullable;
 public final class ResearchSheet {
     @Nullable
     private ComplexRune rune;
-    @Nullable
-    private Item item;
     private boolean open;
     private boolean over;
     private final List<Mark> marks = new ArrayList<>();
@@ -60,27 +56,15 @@ public final class ResearchSheet {
         return rune;
     }
 
-    /** The item whose elements are studied, or null. */
-    @Nullable
-    public Item item() {
-        return item;
-    }
-
-    public boolean hasSubject() {
-        return rune != null || item != null;
-    }
-
     /** Chooses the rune to study; drops any sheet in progress. */
     public void select(ComplexRune rune) {
         this.rune = rune;
-        this.item = null;
         reset(false, 0);
     }
 
-    /** Chooses an item to study; drops any sheet in progress. */
-    public void selectItem(Item item) {
+    /** Takes the rune off the table. */
+    public void clear() {
         this.rune = null;
-        this.item = item;
         reset(false, 0);
     }
 
@@ -187,15 +171,6 @@ public final class ResearchSheet {
         HexGrid.Walk walk = preview(board, elements, ground);
         marks.add(new Mark(walk.end(), elements.main(), from, walk.cells(), item));
         from = walk.end();
-        // On an item's parchment a covered point reveals itself at once: there is nothing to leave on it.
-        int point = board.pointAt(walk.end());
-        if (board.isItemStudy() && point >= 0 && !isFilled(point)) {
-            filled |= 1 << point;
-            if (complete(board)) {
-                over = true;
-                return walk;
-            }
-        }
         checkFailed(board);
         return walk;
     }
@@ -271,9 +246,6 @@ public final class ResearchSheet {
         if (rune != null) {
             tag.putString("rune", rune.key());
         }
-        if (item != null) {
-            tag.putString("item", BuiltInRegistries.ITEM.getKey(item).toString());
-        }
         tag.putBoolean("open", open);
         tag.putBoolean("over", over);
         tag.putInt("from", from);
@@ -297,8 +269,6 @@ public final class ResearchSheet {
 
     public void load(CompoundTag tag) {
         rune = tag.contains("rune") ? ComplexRunes.byKey(tag.getString("rune")) : null;
-        ResourceLocation itemId = tag.contains("item") ? ResourceLocation.tryParse(tag.getString("item")) : null;
-        item = itemId == null ? null : BuiltInRegistries.ITEM.getOptional(itemId).orElse(null);
         open = tag.getBoolean("open");
         over = tag.getBoolean("over");
         from = valid(tag.contains("from") ? tag.getInt("from") : HexGrid.CENTRE);
@@ -315,7 +285,7 @@ public final class ResearchSheet {
                 marks.add(new Mark(valid(entry.getInt("cell")), rune, valid(entry.getInt("from")), entry.getIntArray("cells"), item));
             }
         }
-        if (this.rune == null && this.item == null) {
+        if (this.rune == null) {
             reset(false, 0);
         }
     }

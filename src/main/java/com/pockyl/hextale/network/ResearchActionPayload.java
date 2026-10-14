@@ -19,7 +19,7 @@ import com.pockyl.hextale.rune.ComplexRunes;
 /**
  * Client to server: something the researcher does at the open table. The server checks everything again.
  *
- * @param value the rune index (SELECT), point index (LEAVE) or parchment section (JUMP)
+ * @param value the rune index (SELECT), point index (LEAVE) or parchment section (WRITE target, JUMP, MARK)
  * @param item  the item that writes (WRITE)
  * @param ground whether the item is ground in the mortar first (WRITE)
  */
@@ -44,15 +44,17 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, Reso
         LEAVE,
         SCRAPE,
         JUMP,
-        STUDY_ITEM
+        STUDY_ITEM,
+        MARK,
+        LISTEN
     }
 
     public static ResearchActionPayload of(BlockPos pos, Action action, int value) {
         return new ResearchActionPayload(pos, action, value, NONE, false);
     }
 
-    public static ResearchActionPayload write(BlockPos pos, Item item, boolean ground) {
-        return new ResearchActionPayload(pos, Action.WRITE, 0, BuiltInRegistries.ITEM.getKey(item), ground);
+    public static ResearchActionPayload write(BlockPos pos, Item item, boolean ground, int target) {
+        return new ResearchActionPayload(pos, Action.WRITE, target, BuiltInRegistries.ITEM.getKey(item), ground);
     }
 
     @Override
@@ -76,11 +78,13 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, Reso
             }
             case NEW_SHEET -> table.newSheet(player);
             case WRITE -> BuiltInRegistries.ITEM.getOptional(payload.item())
-                    .ifPresent(item -> table.write(player, item, payload.ground()));
+                    .ifPresent(item -> table.write(player, item, payload.ground(), payload.value()));
             case LEAVE -> table.leave(player, payload.value());
             case SCRAPE -> table.scrape(player);
             case JUMP -> table.jump(player, payload.value());
             case STUDY_ITEM -> table.selectItem(player);
+            case MARK -> table.mark(player, payload.value());
+            case LISTEN -> table.listen(player);
         }
     }
 }

@@ -11,19 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the diary, an inkwell and a leather writing pad. Unstable hextech hangs over the parchment from a brass arm, turning
   inside spinning gimbal rings with motes circling it; while someone writes, glyphs stream from the parchment into the
   orb, and a freshly learned rune rises over the desk as a glowing hieroglyph. The desk glows faintly while an orb lies on it.
-- Rune research: choose one of 72 runes in the research book, then study it on a nine-cornered parchment of hexagonal
-  sections. Items from your inventory are levers: each writes a symbol a fixed step towards the corners of its
-  elements (coal pulls to fire, feathers to air...), every symbol starting where the last one landed. Cover the rune's
-  points and leave the resources they ask for; dark runes block the ink, and a filled point dissolves the dark runes
-  of its element. One sheet is one attempt; finish in fewer symbols for up to three stars.
+- Rune research: choose one of 72 runes in the star book, then study it on a nine-cornered parchment of hexagonal
+  sections, right on its sections: every section a studied item from your inventory can reach glows; click one and the
+  item writes a symbol there (each symbol starts where the last one landed). Cover the rune's points and click them to
+  leave the resources they ask for; dark runes block the ink, and a filled point dissolves the dark runes of its
+  element. Sheets are free; finish in fewer symbols for up to three stars.
 - The Researcher's Diary is a star book: a dark sky to drag around and zoom, where the 72 runes hang as stars in
   constellations - Smelting and the tool runes in the centre, the other runes on the rays of their elements. Click a
   star to see the rune; on the Research Table it goes to the parchment with one click.
 - Every item carries elements of different strength (base materials, then names and recipes for everything else).
-  Study an item at the Research Table: its elements hide as "?" on a small parchment, as far towards their corners as
-  they are strong - cover them all with symbols. A studied item shows its elements in its tooltip.
+  Study an item at the Research Table by resonance: its elements hide on nine strings, as far out as they are strong;
+  place tuning marks and listen - exact, nearer, farther or silent - before the listens run out. Only studied items
+  can write on the parchment, and a studied item shows its elements in its tooltip.
 - Five research tools crafted from the scrolls of the first runes - Researcher's Lens, Fork Quill, Mortar, Brass
   Scraper and Parchment Stretcher. They sit in the table's tool slots and grow stronger with their rune's stars.
 - Unstable hextech from lightning striking a lightning rod on an amethyst block.
-- Brass, hextech ink, rune brush and rune scrolls.
+- Brass and rune scrolls.
 - Base item elements come from a data map (`hextale:elements`), so data packs can change them.

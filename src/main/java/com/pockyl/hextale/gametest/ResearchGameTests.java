@@ -41,6 +41,7 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemElementResolver;
 import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
@@ -200,46 +201,89 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "itemParchmentsHideEveryElement")
-    public static void itemParchmentsHideEveryElement(GameTestHelper helper) {
-        for (Item item : List.of(Items.GLASS, Items.IRON_BLOCK, Items.TNT, Items.OAK_LOG, Items.ELYTRA, Items.BOOKSHELF)) {
-            ItemElements elements = ResearchItems.of(item);
-            helper.assertTrue(elements != null, item + " carries elements");
-            RuneBoard board = RuneBoards.forItem(item, elements);
-            helper.assertTrue(board.isItemStudy() && board.points().size() == elements.elements().size(),
-                    item + ": one hidden point per element");
-            for (RuneBoard.Point point : board.points()) {
-                helper.assertTrue(point.resource() == null && elements.elements().get(point.element()) == point.strength(),
-                        item + ": the point holds the element's strength");
+    @GameTest(template = "empty", batch = "resonanceStringsAreDistinct")
+    public static void resonanceStringsAreDistinct(GameTestHelper helper) {
+        java.util.Set<Integer> used = new java.util.HashSet<>();
+        for (int string = 0; string < HexGrid.RING.length; string++) {
+            int[] cells = ItemStudy.string(string);
+            helper.assertTrue(cells.length >= 5, HexGrid.RING[string].id() + " has a string of at least five sections, got " + cells.length);
+            for (int cell : cells) {
+                helper.assertTrue(used.add(cell), "strings never share a section");
+                helper.assertTrue(ItemStudy.stringOf(cell) == string, "a section knows its string");
             }
-            helper.assertTrue(route(board) != null, item + ": every hidden element can be reached");
-            helper.assertTrue(board.par().sheet() > board.par().plain(), item + ": the sheet leaves room for mistakes");
         }
+        helper.assertTrue(ItemStudy.stringOf(HexGrid.CENTRE) < 0, "the centre belongs to no string");
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "studyingAnItemRevealsItsElements")
-    public static void studyingAnItemRevealsItsElements(GameTestHelper helper) {
+    @GameTest(template = "empty", batch = "resonanceAnswersEachMark")
+    public static void resonanceAnswersEachMark(GameTestHelper helper) {
+        ItemElements elements = ItemElements.of(1, SimpleRune.FIRE, 3, SimpleRune.WATER, 1);
+        ItemStudy study = new ItemStudy();
+        study.begin(Items.STICK, elements);
+        int fire = ring(SimpleRune.FIRE);
+        int water = ring(SimpleRune.WATER);
+        int air = ring(SimpleRune.AIR);
+        helper.assertTrue(study.maxListens() == 7, "five listens plus one per element");
+        study.toggle(ItemStudy.string(fire)[0], elements);
+        study.toggle(ItemStudy.string(water)[2], elements);
+        study.toggle(ItemStudy.string(air)[1], elements);
+        helper.assertFalse(study.toggle(ItemStudy.string(ring(SimpleRune.METAL))[0], elements), "three marks at most");
+        Map<Integer, ItemStudy.Echo> heard = study.listen(elements);
+        helper.assertTrue(heard != null && heard.size() == 3, "every mark answers");
+        helper.assertTrue(heard.get(ItemStudy.string(fire)[0]) == ItemStudy.Echo.FARTHER, "fire 3 is farther than the first section");
+        helper.assertTrue(heard.get(ItemStudy.string(water)[2]) == ItemStudy.Echo.NEARER, "water 1 is nearer than the third section");
+        helper.assertTrue(heard.get(ItemStudy.string(air)[1]) == ItemStudy.Echo.SILENT, "a stick has no air");
+        helper.assertTrue(study.markCount() == 0, "the marks are taken off after listening");
+        study.toggle(ItemStudy.string(fire)[2], elements);
+        study.toggle(ItemStudy.string(water)[0], elements);
+        study.listen(elements);
+        helper.assertTrue(study.won(elements) && !study.isActive(elements), "both elements found: the item is studied");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "studyingAnItemAtTheTable")
+    public static void studyingAnItemAtTheTable(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
+        table.setItem(ResearchTableBlockEntity.HEXTECH, ItemStack.EMPTY);
         table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.GLASS, 3));
         table.selectItem(player);
-        helper.assertTrue(table.sheet().item() == Items.GLASS && table.sheet().rune() == null, "glass lies on the table");
-        table.newSheet(player);
-        RuneBoard board = table.board();
-        helper.assertTrue(board != null && board.isItemStudy(), "an item's parchment");
-        List<Step> route = route(board);
-        helper.assertTrue(route != null, "glass can be studied");
-        play(table, player, route);
+        helper.assertTrue(table.isStudyingItem() && table.study().item() == Items.GLASS, "glass lies on the parchment, no orb needed");
+        ItemElements elements = ResearchItems.of(Items.GLASS);
+        for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
+            table.mark(player, ItemStudy.string(ring(entry.getKey()))[ItemStudy.answer(entry.getKey(), entry.getValue())]);
+        }
+        table.listen(player);
         ResourceLocation glass = BuiltInRegistries.ITEM.getKey(Items.GLASS);
-        helper.assertTrue(table.sheet().complete(board), "every hidden element is revealed");
-        helper.assertTrue(Research.of(player).hasStudied(glass) && Research.of(player).knowsItem(glass), "glass is studied");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 2, "one glass went into the orb");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 3, "the orb stays");
+        helper.assertTrue(Research.of(player).hasStudied(glass), "glass is studied");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 2, "one glass went into the study");
         table.selectItem(player);
-        helper.assertTrue(table.sheet().item() == Items.GLASS && table.sheet().isOver(), "a studied item is not studied again");
+        helper.assertTrue(table.study().won(elements), "a studied item is not studied again");
+
+        // A lost study: wrong marks until the listens run out; the item is used once.
+        table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.COBBLESTONE, 2));
+        table.selectItem(player);
+        int wrong = ring(SimpleRune.LIGHT);
+        for (int i = 0; i < 20; i++) {
+            table.mark(player, ItemStudy.string(wrong)[0]);
+            table.listen(player);
+        }
+        ItemElements stone = ResearchItems.of(Items.COBBLESTONE);
+        helper.assertTrue(table.study().lost(stone), "out of listens: the study is lost");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 1, "a lost study used one cobblestone");
+        helper.assertFalse(Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(Items.COBBLESTONE)), "cobblestone is not studied");
         player.discard();
         helper.succeed();
+    }
+
+    private static int ring(SimpleRune element) {
+        for (int i = 0; i < HexGrid.RING.length; i++) {
+            if (HexGrid.RING[i] == element) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException(element.id());
     }
 
     // ---- The table ------------------------------------------------------------------------------------------------
@@ -257,13 +301,12 @@ public final class ResearchGameTests {
 
         table.select(player, SMELTING);
         helper.assertTrue(table.sheet().rune() == SMELTING && !table.sheet().isOpen(), "Smelting lies on the table, no sheet yet");
-        table.newSheet(player);
-        helper.assertTrue(table.sheet().isActive() && table.sheet().cap() == board.par().sheet(), "a fresh sheet");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 4, "one sheet of paper used");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.INK).getDamageValue() == 1, "one dose of ink used");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.BRUSH).getDamageValue() == 1, "the brush wears by one");
+        Step first = route.get(0);
+        table.write(player, first.item(), false, landing(table, board, first.item()));
+        helper.assertFalse(table.sheet().isOpen(), "unstudied items cannot write");
+        needed.keySet().forEach(item -> Research.study(player, item));
 
-        play(table, player, route);
+        play(table, player, board, route);
 
         ResearchSheet sheet = table.sheet();
         helper.assertTrue(sheet.isOver() && sheet.complete(board), "every point is filled");
@@ -275,13 +318,6 @@ public final class ResearchGameTests {
         ItemStack scroll = table.getItem(ResearchTableBlockEntity.OUTPUT);
         helper.assertTrue(RuneScrollItem.rune(scroll) == SMELTING && RuneScrollItem.stars(scroll) == stars, "a scroll of Smelting comes out");
         helper.assertFalse(player.getInventory().hasAnyMatching(stack -> needed.containsKey(stack.getItem())), "every lever was used up");
-        for (Step step : route) {
-            if (step.point() < 0) {
-                ItemElements elements = ResearchItems.of(step.item());
-                helper.assertTrue(elements != null && knowledge.knowsItem(BuiltInRegistries.ITEM.getKey(step.item())),
-                        "a tried item's elements are known");
-            }
-        }
         DiaryOwner owner = ResearchersDiaryItem.owner(table.getItem(ResearchTableBlockEntity.DIARY));
         helper.assertTrue(owner != null && owner.is(player), "the unsigned diary is signed by the researcher");
         player.discard();
@@ -292,19 +328,21 @@ public final class ResearchGameTests {
     public static void aFullSheetWithoutTheRuneIsLost(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
+        Research.study(player, Items.COAL);
         table.select(player, SMELTING);
-        table.newSheet(player);
         RuneBoard board = RuneBoards.get(SMELTING);
         // Coal pulls towards fire at the top, away from both points (left and down): it never covers one.
         for (int i = 0; i < board.par().sheet(); i++) {
-            table.write(player, Items.COAL, false);
+            table.write(player, Items.COAL, false, landing(table, board, Items.COAL));
         }
         ResearchSheet sheet = table.sheet();
         helper.assertTrue(sheet.used() == sheet.cap() && sheet.failed(board), "the full sheet is lost");
-        table.write(player, Items.COAL, false);
+        table.write(player, Items.COAL, false, landing(table, board, Items.COAL));
         helper.assertTrue(sheet.used() == sheet.cap(), "nothing more can be written on it");
         helper.assertFalse(Research.of(player).knows(SMELTING), "nothing is learned");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 3, "the orb is kept");
+        table.newSheet(player);
+        helper.assertTrue(table.sheet().isActive() && table.sheet().used() == 0, "a new sheet is free");
         player.discard();
         helper.succeed();
     }
@@ -334,13 +372,14 @@ public final class ResearchGameTests {
         ResearchTableBlockEntity table = stockedTable(helper);
         table.setItem(ResearchTableBlockEntity.TOOLS + ResearchTool.SCRAPER.ordinal(), new ItemStack(ModItems.BRASS_SCRAPER.get()));
         Research.learnAll(player, List.of(ResearchTool.SCRAPER.rune()), 1);
+        Research.study(player, Items.COAL);
         table.select(player, SMELTING);
-        table.newSheet(player);
-        table.write(player, Items.COAL, false);
-        helper.assertTrue(table.sheet().used() == 1 && table.sheet().from() != HexGrid.CENTRE, "coal wrote a symbol");
+        RuneBoard board = RuneBoards.get(SMELTING);
+        table.write(player, Items.COAL, false, landing(table, board, Items.COAL));
+        helper.assertTrue(table.sheet().used() == 1 && table.sheet().from() != HexGrid.CENTRE, "the first click wrote a symbol");
         table.scrape(player);
         helper.assertTrue(table.sheet().used() == 0 && table.sheet().from() == HexGrid.CENTRE, "the symbol is scraped off");
-        table.write(player, Items.COAL, false);
+        table.write(player, Items.COAL, false, landing(table, board, Items.COAL));
         table.scrape(player);
         helper.assertTrue(table.sheet().used() == 1, "one star scrapes once per sheet");
         player.discard();
@@ -362,26 +401,10 @@ public final class ResearchGameTests {
         helper.assertTrue(table.sheet().rune() == null, "nothing is studied with someone else's diary");
 
         table.setItem(ResearchTableBlockEntity.DIARY, new ItemStack(ModItems.RESEARCHERS_DIARY.get()));
-        table.setItem(ResearchTableBlockEntity.BRUSH, new ItemStack(ModItems.RUNE_BRUSH.get()));
-        table.setItem(ResearchTableBlockEntity.INK, new ItemStack(Items.GLASS_BOTTLE));
-        helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.INK, "an empty bottle is no ink");
+        helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.HEXTECH, "then the orb");
         table.select(player, SMELTING);
         table.newSheet(player);
-        helper.assertFalse(table.sheet().isOpen(), "no sheet without ink");
-        player.discard();
-        helper.succeed();
-    }
-
-    @GameTest(template = "empty", batch = "lastDoseLeavesAnEmptyBottle")
-    public static void lastDoseLeavesAnEmptyBottle(GameTestHelper helper) {
-        ServerPlayer player = player(helper);
-        ResearchTableBlockEntity table = stockedTable(helper);
-        table.getItem(ResearchTableBlockEntity.INK).setDamageValue(table.getItem(ResearchTableBlockEntity.INK).getMaxDamage() - 1);
-        table.getItem(ResearchTableBlockEntity.BRUSH).setDamageValue(table.getItem(ResearchTableBlockEntity.BRUSH).getMaxDamage() - 1);
-        table.select(player, SMELTING);
-        table.newSheet(player);
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.INK).is(Items.GLASS_BOTTLE), "the last dose leaves the glass bottle");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.BRUSH).isEmpty(), "a worn-out brush breaks");
+        helper.assertFalse(table.sheet().isOpen(), "no sheet without the orb");
         player.discard();
         helper.succeed();
     }
@@ -473,7 +496,7 @@ public final class ResearchGameTests {
         ServerPlayer before = player(helper);
         Research.learn(before, ComplexRunes.byKey("water_life"), 3, 9);
         Research.learn(before, ComplexRunes.byKey("life_metal"), 1, 20);
-        Research.of(before).learnItem(ResourceLocation.withDefaultNamespace("coal"));
+        Research.of(before).study(ResourceLocation.withDefaultNamespace("coal"));
         Research.of(before).see(SMELTING, new int[]{HexGrid.CENTRE, 5});
 
         ServerPlayer after = player(helper);
@@ -482,7 +505,7 @@ public final class ResearchGameTests {
         RuneKnowledge knowledge = Research.of(after);
         helper.assertTrue(knowledge.runeCount() == 2 && knowledge.stars(ComplexRunes.byKey("water_life")) == 3, "the runes and stars are kept");
         helper.assertTrue(knowledge.best(ComplexRunes.byKey("water_life")) == 9, "the best sheets are kept");
-        helper.assertTrue(knowledge.knowsItem(ResourceLocation.withDefaultNamespace("coal")), "tried items are kept");
+        helper.assertTrue(knowledge.hasStudied(ResourceLocation.withDefaultNamespace("coal")), "studied items are kept");
         helper.assertTrue(knowledge.seen(SMELTING).get(5), "explored parchment is kept");
         helper.assertTrue(knowledge != Research.of(before), "the new player has its own copy");
         RuneKnowledge decoded = RuneKnowledge.CODEC.parse(NbtOps.INSTANCE,
@@ -599,14 +622,25 @@ public final class ResearchGameTests {
         }
     }
 
-    private static void play(ResearchTableBlockEntity table, ServerPlayer player, List<Step> route) {
+    private static void play(ResearchTableBlockEntity table, ServerPlayer player, RuneBoard board, List<Step> route) {
         for (Step step : route) {
             if (step.point() >= 0) {
                 table.leave(player, step.point());
             } else {
-                table.write(player, step.item(), false);
+                table.write(player, step.item(), false, landing(table, board, step.item()));
             }
         }
+    }
+
+    /** Where the item's next symbol would land, as the screen shows it (from the orb when no sheet is open). */
+    private static int landing(ResearchTableBlockEntity table, RuneBoard board, Item item) {
+        ResearchSheet sheet = table.sheet();
+        if (!sheet.isOpen()) {
+            ResearchSheet fresh = new ResearchSheet();
+            fresh.begin(board.par().sheet());
+            sheet = fresh;
+        }
+        return sheet.preview(board, ResearchItems.of(item), false).end();
     }
 
     /** Orbs lying around a position; tests clean them up, since the test area is reused by later batches. */
@@ -619,10 +653,7 @@ public final class ResearchGameTests {
         ResearchTableBlock.place(helper.getLevel(), helper.absolutePos(TABLE), ModBlocks.RESEARCH_TABLE.get().defaultBlockState());
         ResearchTableBlockEntity table = helper.getBlockEntity(TABLE);
         table.setItem(ResearchTableBlockEntity.DIARY, new ItemStack(ModItems.RESEARCHERS_DIARY.get()));
-        table.setItem(ResearchTableBlockEntity.PAPER, new ItemStack(Items.PAPER, 5));
         table.setItem(ResearchTableBlockEntity.HEXTECH, new ItemStack(ModItems.UNSTABLE_HEXTECH.get(), 3));
-        table.setItem(ResearchTableBlockEntity.INK, new ItemStack(ModItems.HEXTECH_INK.get()));
-        table.setItem(ResearchTableBlockEntity.BRUSH, new ItemStack(ModItems.RUNE_BRUSH.get()));
         return table;
     }
 

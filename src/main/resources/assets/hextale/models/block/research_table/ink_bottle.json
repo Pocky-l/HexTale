@@ -2,8 +2,7 @@
   "textures": {
     "particle": "hextale:block/research_table/ink_glass",
     "glass": "hextale:block/research_table/ink_glass",
-    "cork": "hextale:block/research_table/cork",
-    "empty": "hextale:block/research_table/empty_glass"
+    "cork": "hextale:block/research_table/cork"
   },
   "elements": [
     {

@@ -46,8 +46,6 @@ public final class Hextale {
             output.accept(ModItems.RESEARCH_TABLE);
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
-            output.accept(ModItems.HEXTECH_INK);
-            output.accept(ModItems.RUNE_BRUSH);
             output.accept(ModItems.RESEARCHERS_LENS);
             output.accept(ModItems.FORK_QUILL);
             output.accept(ModItems.MORTAR);
@@ -75,8 +73,6 @@ public final class Hextale {
             event.accept(ModItems.UNSTABLE_HEXTECH);
         } else if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(ModItems.RESEARCHERS_DIARY);
-            event.accept(ModItems.HEXTECH_INK);
-            event.accept(ModItems.RUNE_BRUSH);
         }
     }
 

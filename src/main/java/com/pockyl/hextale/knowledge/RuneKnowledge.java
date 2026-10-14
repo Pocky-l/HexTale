@@ -24,7 +24,7 @@ import java.util.Set;
  * What a researcher has found out. Lives on the player (a data attachment copied on death), not on the diary item: a
  * lost diary loses nothing. The server copy is authoritative; clients get a copy through {@code KnowledgeSyncPayload}.
  * <p>
- * A rune is learned with 1-3 stars (the best sheet counts). Tried items reveal their elements, and the parchment of
+ * A rune is learned with 1-3 stars (the best sheet counts). Studied items show their elements, and the parchment of
  * each rune remembers the sections the ink has passed, so walls stay known from sheet to sheet.
  */
 public final class RuneKnowledge {
@@ -33,7 +33,6 @@ public final class RuneKnowledge {
     public static final Codec<RuneKnowledge> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             INT_MAP.optionalFieldOf("stars", Map.of()).forGetter(k -> k.starsByKey()),
             INT_MAP.optionalFieldOf("best", Map.of()).forGetter(k -> k.bestByKey()),
-            Codec.STRING.listOf().optionalFieldOf("items", List.of()).forGetter(k -> List.copyOf(k.items)),
             BITS_MAP.optionalFieldOf("seen", Map.of()).forGetter(RuneKnowledge::seenByKey),
             Codec.STRING.listOf().optionalFieldOf("studied", List.of()).forGetter(k -> List.copyOf(k.studied))
     ).apply(instance, RuneKnowledge::new));
@@ -46,7 +45,6 @@ public final class RuneKnowledge {
     public static final StreamCodec<ByteBuf, RuneKnowledge> STREAM_CODEC = StreamCodec.composite(
             INTS, RuneKnowledge::starsByKey,
             INTS, RuneKnowledge::bestByKey,
-            STRINGS, k -> List.copyOf(k.items),
             BITS, RuneKnowledge::seenByKey,
             STRINGS, k -> List.copyOf(k.studied),
             RuneKnowledge::new);
@@ -55,8 +53,6 @@ public final class RuneKnowledge {
     private final Map<ComplexRune, Integer> stars = new LinkedHashMap<>();
     /** Fewest symbols of a finished sheet per rune. */
     private final Map<ComplexRune, Integer> best = new HashMap<>();
-    /** Ids of items the researcher has written with: their elements are known. */
-    private final Set<String> items = new LinkedHashSet<>();
     /** Ids of items whose elements the researcher has studied at the table: their tooltips show the elements. */
     private final Set<String> studied = new LinkedHashSet<>();
     /** Per rune: parchment sections the ink has passed. */
@@ -65,7 +61,7 @@ public final class RuneKnowledge {
     public RuneKnowledge() {
     }
 
-    private RuneKnowledge(Map<String, Integer> stars, Map<String, Integer> best, List<String> items,
+    private RuneKnowledge(Map<String, Integer> stars, Map<String, Integer> best,
                           Map<String, List<Long>> seen, List<String> studied) {
         stars.forEach((key, value) -> {
             ComplexRune rune = ComplexRunes.byKey(key);
@@ -79,7 +75,6 @@ public final class RuneKnowledge {
                 this.best.put(rune, value);
             }
         });
-        this.items.addAll(items);
         this.studied.addAll(studied);
         seen.forEach((key, value) -> {
             ComplexRune rune = ComplexRunes.byKey(key);
@@ -156,33 +151,22 @@ public final class RuneKnowledge {
         return List.copyOf(stars.keySet());
     }
 
-    /** Whether the item's step on the parchment is known (tried or studied). */
-    public boolean knowsItem(ResourceLocation item) {
-        return items.contains(item.toString());
-    }
-
-    /** @return whether the item was new */
-    public boolean learnItem(ResourceLocation item) {
-        return items.add(item.toString());
-    }
-
-    public void forgetItems() {
-        items.clear();
-        studied.clear();
-    }
-
+    /** Whether the item's elements are studied: only studied items show their step and can write on the parchment. */
     public boolean hasStudied(ResourceLocation item) {
         return studied.contains(item.toString());
     }
 
-    /** @return whether the item was new; a studied item counts as tried too */
+    /** @return whether the item was new */
     public boolean study(ResourceLocation item) {
-        items.add(item.toString());
         return studied.add(item.toString());
     }
 
-    public Set<String> items() {
-        return Collections.unmodifiableSet(items);
+    public void forgetItems() {
+        studied.clear();
+    }
+
+    public Set<String> studied() {
+        return Collections.unmodifiableSet(studied);
     }
 
     /** Sections of this rune's parchment the ink has passed (a copy). */
@@ -205,6 +189,6 @@ public final class RuneKnowledge {
     }
 
     public RuneKnowledge copy() {
-        return new RuneKnowledge(starsByKey(), bestByKey(), List.copyOf(items), seenByKey(), List.copyOf(studied));
+        return new RuneKnowledge(starsByKey(), bestByKey(), seenByKey(), List.copyOf(studied));
     }
 }

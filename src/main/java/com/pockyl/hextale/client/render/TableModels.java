@@ -23,15 +23,13 @@ public final class TableModels {
     public static final ModelResourceLocation PARCHMENT = standalone("block/research_table/parchment");
     public static final ModelResourceLocation PARCHMENT_STACK = standalone("block/research_table/parchment_stack");
     public static final ModelResourceLocation INK_BOTTLE = standalone("block/research_table/ink_bottle");
-    public static final ModelResourceLocation EMPTY_BOTTLE = standalone("block/research_table/empty_bottle");
-    public static final ModelResourceLocation BRUSH_LYING = standalone("block/research_table/brush_lying");
     public static final ModelResourceLocation BRUSH_IN_BOTTLE = standalone("block/research_table/brush_in_bottle");
     public static final ModelResourceLocation SCROLL = standalone("block/research_table/scroll");
     public static final ModelResourceLocation RING_OUTER = standalone("block/research_table/ring_outer");
     public static final ModelResourceLocation RING_INNER = standalone("block/research_table/ring_inner");
     /** The plain parchment of a rune scroll item, under the hieroglyph its renderer adds. */
     public static final ModelResourceLocation SCROLL_ITEM = ModelResourceLocation.standalone(Hextale.id("item/rune_scroll_base"));
-    private static final List<ModelResourceLocation> ALL = List.of(PARCHMENT, PARCHMENT_STACK, INK_BOTTLE, EMPTY_BOTTLE, BRUSH_LYING,
+    private static final List<ModelResourceLocation> ALL = List.of(PARCHMENT, PARCHMENT_STACK, INK_BOTTLE,
             BRUSH_IN_BOTTLE, SCROLL, RING_OUTER, RING_INNER, SCROLL_ITEM);
 
     private TableModels() {

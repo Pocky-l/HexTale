@@ -6,12 +6,14 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchText;
 import com.pockyl.hextale.research.RuneBoard;
@@ -21,14 +23,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Draws the research parchment in pixel art: hexagonal sections on the nonagon of the background texture, dark runes,
- * points, the symbols written so far with their ink lines, the orb in the centre and a preview of the next symbol.
- * Sections are laid out {@value #COL_STEP} pixels apart in a row and {@value #ROW_STEP} between rows (the background
- * texture uses the same numbers, see the texture generator).
+ * Draws the research parchment in pixel art, for both games: a rune's parchment (dark runes, points, the symbols written
+ * so far, the sections the next symbol can reach) and an item's resonance (the item in the centre, the nine element
+ * strings, tuning marks and their echoes). Sections are laid out {@value #COL_STEP} pixels apart in a row and
+ * {@value #ROW_STEP} between rows (the background texture uses the same numbers, see the texture generator).
  */
 final class BoardView {
     static final int CX = 126;
@@ -43,13 +47,17 @@ final class BoardView {
     private static final int INK = 0x3B2A1A;
     private static final int WALL = 0x1E1628;
     private static final int WALL_RIM = 0x4A3A66;
+    private static final int GOLD = 0xC88A12;
     private static final long INK_MILLIS = 380;
     private static final long BURST_MILLIS = 800;
+
+    /** A symbol the researcher can write now: which studied item, ground or not, and where its ink goes. */
+    record Move(Item item, ItemElements elements, boolean ground, HexGrid.Walk walk) {
+    }
 
     private int left;
     private int top;
     private final boolean[] visible = new boolean[HexGrid.COUNT];
-    /** Animation of the newest symbol's ink line and of a filled point. */
     private long inkStart;
     private int inkMarks;
     private long burstStart;
@@ -58,6 +66,7 @@ final class BoardView {
     private long fadeStart;
     private int fadeElement = -1;
     private int lastFilled;
+    private int lastEchoes;
     /** False until the first look at the sheet: what was already there when the screen opened is not animated. */
     private boolean primed;
 
@@ -99,28 +108,26 @@ final class BoardView {
         visible[HexGrid.CENTRE] = true;
     }
 
-    boolean visible(int cell) {
-        return visible[cell];
-    }
-
-    /** Notices new symbols and filled points to animate them. */
-    void observe(RuneBoard board, ResearchSheet sheet) {
+    /** Notices new symbols, filled points and echoes to animate them. */
+    void observe(@Nullable RuneBoard board, @Nullable ResearchSheet sheet, @Nullable ItemStudy study) {
         long now = Util.getMillis();
+        int used = sheet == null ? 0 : sheet.used();
+        int filled = sheet == null ? 0 : sheet.filledMask();
+        int echoes = study == null ? 0 : study.echoes().size() + study.listens() * 100;
         if (!primed) {
             primed = true;
-            inkMarks = sheet.used();
-            lastFilled = sheet.filledMask();
+            inkMarks = used;
+            lastFilled = filled;
+            lastEchoes = echoes;
             return;
         }
-        if (sheet.used() > inkMarks) {
+        if (used > inkMarks) {
             inkStart = now;
         }
-        inkMarks = sheet.used();
-        int filled = sheet.filledMask();
+        inkMarks = used;
         int added = filled & ~lastFilled;
-        if (added != 0 && sheet.isOpen()) {
-            int point = Integer.numberOfTrailingZeros(added);
-            RuneBoard.Point p = board.points().get(point);
+        if (added != 0 && board != null) {
+            RuneBoard.Point p = board.points().get(Integer.numberOfTrailingZeros(added));
             burstCell = p.cell();
             burstColor = p.element().color();
             burstStart = now;
@@ -128,14 +135,23 @@ final class BoardView {
             fadeStart = now;
         }
         lastFilled = filled;
+        if (echoes != lastEchoes && study != null) {
+            burstCell = HexGrid.CENTRE;
+            burstColor = 0x5CC8F2;
+            burstStart = now;
+        }
+        lastEchoes = echoes;
     }
 
-    /** The preview of the next symbol: where a known item lands, or only the direction of an untried one. */
-    record Preview(ItemElements elements, boolean known, boolean ground) {
-    }
+    // ---- A rune's parchment ---------------------------------------------------------------------------------------
 
-    void render(GuiGraphics graphics, Font font, RuneBoard board, ResearchSheet sheet, @Nullable Preview preview,
-                int hoveredCell, int forkLevel) {
+    /**
+     * @param moves   where the next symbol can go, by landing section (empty when nothing can be written)
+     * @param hovered the section under the mouse, or -1
+     * @param chosen  the move shown for the hovered section, or null
+     */
+    void renderRune(GuiGraphics graphics, Font font, RuneBoard board, ResearchSheet sheet, Map<Integer, List<Move>> moves,
+                    int hovered, @Nullable Move chosen, int choice, int forkLevel) {
         long now = Util.getMillis();
         float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
         int filled = sheet.isOpen() ? sheet.filledMask() : 0;
@@ -147,14 +163,10 @@ final class BoardView {
             int y = top + py(cell);
             SimpleRune wall = board.walls()[cell];
             int point = board.pointAt(cell);
-            if (point >= 0 && board.isItemStudy() && !sheet.isFilled(point)) {
-                // A hidden element: only its place is known.
-                PixelArt.hex(graphics, x, y, CELL, argb(0x2A2240, 0.85F), argb(PixelArt.mix(0x8A7AB8, 0xFFFFFF, 0.4F * pulse), 1));
-                graphics.drawString(font, "?", x - 2, y - 4, 0xFFD8CCF8, false);
-            } else if (point >= 0) {
+            if (point >= 0) {
                 RuneBoard.Point p = board.points().get(point);
                 int color = PixelArt.onParchment(p.element().color());
-                if (sheet.isFilled(point)) {
+                if (sheet.isOpen() && sheet.isFilled(point)) {
                     PixelArt.hex(graphics, x, y, CELL, argb(PixelArt.mix(p.element().color(), 0xFFFFFF, 0.1F), 1), argb(color, 1));
                     PixelArt.radical(graphics, p.element(), x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(color, 0x000000, 0.55F));
                 } else {
@@ -208,28 +220,151 @@ final class BoardView {
             }
         }
 
-        if (preview != null && sheet.canWrite()) {
-            renderPreview(graphics, font, board, sheet, preview, now);
+        // Where the next symbol can go: a gold spark on every reachable section.
+        for (Map.Entry<Integer, List<Move>> entry : moves.entrySet()) {
+            int cell = entry.getKey();
+            int x = left + px(cell);
+            int y = top + py(cell);
+            int color = board.pointAt(cell) >= 0 ? 0xE0A21C : GOLD;
+            PixelArt.hexRing(graphics, x, y, CELL - 4, argb(color, 0.45F + 0.4F * pulse));
+            graphics.fill(x, y, x + 1, y + 1, argb(color, 0.9F));
+        }
+        if (chosen != null) {
+            renderMove(graphics, font, board, sheet, chosen, now, moves.getOrDefault(hovered, List.of()).size(), choice);
         }
         if (sheet.isActive() && sheet.from() != HexGrid.CENTRE) {
             PixelArt.hexRing(graphics, left + px(sheet.from()), top + py(sheet.from()), CELL + 2, argb(0x2B8FB8, 0.6F + 0.4F * pulse));
         }
-        // The orb lies in the centre.
         int ox = left + px(HexGrid.CENTRE);
         int oy = top + py(HexGrid.CENTRE);
         PixelArt.hex(graphics, ox, oy, CELL + 2, argb(0x5CC8F2, 0.25F + 0.2F * pulse), argb(0x2B8FB8, 1));
         graphics.renderItem(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), ox - 8, oy - 8);
-        if (forkLevel > 0 && sheet.isActive() && sheet.canJump(board, HexGrid.CENTRE, forkLevel) && hoveredCell == HexGrid.CENTRE) {
+        if (forkLevel > 0 && sheet.canJump(board, HexGrid.CENTRE, forkLevel) && hovered == HexGrid.CENTRE) {
             PixelArt.hexRing(graphics, ox, oy, CELL + 4, argb(0xE0A21C, 1));
         }
+        renderSigns(graphics);
+        renderBurst(graphics, now);
+        if (hovered >= 0 && chosen == null) {
+            PixelArt.hexRing(graphics, left + px(hovered), top + py(hovered), CELL, argb(0xFFFFFF, 0.6F));
+        }
+    }
 
+    /** The chosen move: its ink path, a ghost symbol and the item that writes it, hovering above the section. */
+    private void renderMove(GuiGraphics graphics, Font font, RuneBoard board, ResearchSheet sheet, Move move, long now, int options,
+                            int choice) {
+        int phase = (int) (now / 90 % 6);
+        int from = sheet.isActive() ? sheet.from() : HexGrid.CENTRE;
+        int x0 = left + px(from);
+        int y0 = top + py(from);
+        int point = board.pointAt(move.walk().end());
+        boolean good = point >= 0 && !(sheet.isOpen() && sheet.isFilled(point));
+        int color = good ? 0xFFC88A12 : 0xCC3B2A1A;
+        for (int cell : move.walk().cells()) {
+            int x1 = left + px(cell);
+            int y1 = top + py(cell);
+            PixelArt.dotted(graphics, x0, y0, x1, y1, 3, 3, phase, color);
+            x0 = x1;
+            y0 = y1;
+        }
+        int end = move.walk().end();
+        symbol(graphics, end, move.elements().main(), 0.55F);
+        PixelArt.hexRing(graphics, left + px(end), top + py(end), CELL + 2, color);
+        int ix = left + px(end) + 6;
+        int iy = top + py(end) - 20;
+        graphics.fill(ix - 1, iy - 1, ix + 17, iy + 17, 0xD0140C06);
+        graphics.renderItem(new ItemStack(move.item()), ix, iy);
+        if (move.ground()) {
+            graphics.drawString(font, "½", ix, iy, 0xFF7EF0FF, true);
+        }
+        if (options > 1) {
+            graphics.drawString(font, (choice % options + 1) + "/" + options, ix + 18, iy + 5, 0xFFF0E3C2, true);
+        }
+    }
+
+    // ---- An item's resonance --------------------------------------------------------------------------------------
+
+    void renderStudy(GuiGraphics graphics, Item item, ItemElements elements, ItemStudy study, int hovered) {
+        long now = Util.getMillis();
+        float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
+        boolean active = study.isActive(elements);
+        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+            PixelArt.hex(graphics, left + px(cell), top + py(cell), CELL, argb(0x5E4526, 0.08F), argb(0x5E4526, 0.12F));
+        }
+        for (int string = 0; string < HexGrid.RING.length; string++) {
+            SimpleRune element = HexGrid.RING[string];
+            boolean revealed = study.isRevealed(element);
+            int ink = PixelArt.onParchment(element.color());
+            int[] cells = ItemStudy.string(string);
+            int x0 = left + px(HexGrid.CENTRE);
+            int y0 = top + py(HexGrid.CENTRE);
+            for (int i = 0; i < cells.length; i++) {
+                int cell = cells[i];
+                int x = left + px(cell);
+                int y = top + py(cell);
+                PixelArt.line(graphics, x0, y0, x, y, argb(ink, revealed ? 0.6F : 0.22F));
+                x0 = x;
+                y0 = y;
+                ItemStudy.Echo echo = study.echoes().get(cell);
+                int fill = PixelArt.mix(element.color(), 0xFFF8E8, revealed ? 0.75F : 0.88F);
+                PixelArt.hex(graphics, x, y, CELL, argb(fill, revealed ? 0.8F : 0.55F), argb(ink, revealed ? 0.7F : 0.35F));
+                if (echo == ItemStudy.Echo.EXACT) {
+                    PixelArt.hex(graphics, x, y, CELL, argb(element.color(), 1), argb(GOLD, 1));
+                    PixelArt.hexRing(graphics, x, y, CELL + 2, argb(0xFFD36E, 0.6F + 0.4F * pulse));
+                    PixelArt.radical(graphics, element, x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(element.color(), 0x000000, 0.6F));
+                } else if (echo == ItemStudy.Echo.SILENT) {
+                    PixelArt.line(graphics, x - 3, y - 3, x + 3, y + 3, 0xC0605048);
+                    PixelArt.line(graphics, x - 3, y + 3, x + 3, y - 3, 0xC0605048);
+                } else if (echo != null) {
+                    // It hums: the element is on this string, nearer to or farther from the item.
+                    PixelArt.hexRing(graphics, x, y, CELL, argb(ink, 1));
+                    arrow(graphics, x, y, element, echo == ItemStudy.Echo.FARTHER, ink);
+                }
+                if (study.mark(string) == i) {
+                    PixelArt.hex(graphics, x, y, CELL - 4, argb(0x5CC8F2, 0.55F + 0.35F * pulse), argb(0x2B8FB8, 1));
+                    PixelArt.hexRing(graphics, x, y, CELL + 2, argb(0x5CC8F2, 0.5F + 0.5F * pulse));
+                }
+                if (cell == hovered && active && !revealed) {
+                    PixelArt.hexRing(graphics, x, y, CELL, argb(0xFFFFFF, 0.8F));
+                }
+            }
+        }
+        int ox = left + px(HexGrid.CENTRE);
+        int oy = top + py(HexGrid.CENTRE);
+        PixelArt.hex(graphics, ox, oy, CELL + 4, argb(0xFFF8E8, 0.6F), argb(GOLD, 0.6F + 0.4F * pulse));
+        graphics.renderItem(new ItemStack(item), ox - 8, oy - 8);
+        renderSigns(graphics);
+        renderBurst(graphics, now);
+    }
+
+    /** A small pixel arrow along the string: outwards (farther) or towards the item (nearer). */
+    private void arrow(GuiGraphics graphics, int x, int y, SimpleRune element, boolean outwards, int color) {
+        double[] u = HexGrid.unit(element);
+        double dx = u[0] * (outwards ? 1 : -1);
+        double dy = u[1] * (outwards ? 1 : -1);
+        int tipX = x + (int) Math.round(dx * 4);
+        int tipY = y + (int) Math.round(dy * 4);
+        int argb = argb(color, 1);
+        PixelArt.line(graphics, x - (int) Math.round(dx * 3), y - (int) Math.round(dy * 3), tipX, tipY, argb);
+        int sideX = (int) Math.round(-dy * 3);
+        int sideY = (int) Math.round(dx * 3);
+        int baseX = tipX - (int) Math.round(dx * 3);
+        int baseY = tipY - (int) Math.round(dy * 3);
+        PixelArt.line(graphics, tipX, tipY, baseX + sideX, baseY + sideY, argb);
+        PixelArt.line(graphics, tipX, tipY, baseX - sideX, baseY - sideY, argb);
+    }
+
+    // ---- Shared -----------------------------------------------------------------------------------------------------
+
+    private void renderSigns(GuiGraphics graphics) {
         for (SimpleRune element : HexGrid.RING) {
             double[] u = HexGrid.unit(element);
             int sx = left + CX + (int) Math.round(u[0] * KX * 1.03);
             int sy = top + CY + (int) Math.round(u[1] * KY * 1.03);
             PixelArt.radical(graphics, element, sx - 4, sy - 4, 9, argb(element.color(), 1));
         }
+    }
 
+    private void renderBurst(GuiGraphics graphics, long now) {
         if (burstCell >= 0) {
             float t = (now - burstStart) / (float) BURST_MILLIS;
             if (t < 1) {
@@ -238,50 +373,6 @@ final class BoardView {
             } else {
                 burstCell = -1;
             }
-        }
-        if (hoveredCell >= 0) {
-            PixelArt.hexRing(graphics, left + px(hoveredCell), top + py(hoveredCell), CELL, argb(0xFFFFFF, 0.6F));
-        }
-    }
-
-    private void renderPreview(GuiGraphics graphics, Font font, RuneBoard board, ResearchSheet sheet, Preview preview, long now) {
-        int phase = (int) (now / 90 % 6);
-        int fx = left + px(sheet.from());
-        int fy = top + py(sheet.from());
-        if (preview.known()) {
-            HexGrid.Walk walk = sheet.preview(board, preview.elements(), preview.ground());
-            int point = board.pointAt(walk.end());
-            boolean good = point >= 0 && !sheet.isFilled(point);
-            int color = good ? 0xFFC88A12 : 0xCC3B2A1A;
-            int x0 = fx;
-            int y0 = fy;
-            for (int cell : walk.cells()) {
-                int x1 = left + px(cell);
-                int y1 = top + py(cell);
-                PixelArt.dotted(graphics, x0, y0, x1, y1, 3, 3, phase, color);
-                x0 = x1;
-                y0 = y1;
-            }
-            symbol(graphics, walk.end(), preview.elements().main(), 0.45F);
-            PixelArt.hexRing(graphics, left + px(walk.end()), top + py(walk.end()), CELL + 2, color);
-        } else {
-            double[] v = preview.elements().vector(preview.ground());
-            double length = Math.hypot(v[0] * KX, v[1] * KY);
-            if (length < 0.01) {
-                return;
-            }
-            double ux = v[0] * KX / length;
-            double uy = v[1] * KY / length;
-            int ex = fx + (int) Math.round(ux * 30);
-            int ey = fy + (int) Math.round(uy * 30);
-            PixelArt.dotted(graphics, fx, fy, ex, ey, 2, 3, phase, 0xCC3B2A1A);
-            int ax = (int) Math.round(-uy * 4);
-            int ay = (int) Math.round(ux * 4);
-            int bx = ex - (int) Math.round(ux * 5);
-            int by = ey - (int) Math.round(uy * 5);
-            PixelArt.line(graphics, ex, ey, bx + ax, by + ay, 0xCC3B2A1A);
-            PixelArt.line(graphics, ex, ey, bx - ax, by - ay, 0xCC3B2A1A);
-            graphics.drawString(font, "?", ex + (int) Math.round(ux * 6) - 2, ey + (int) Math.round(uy * 6) - 4, 0xFF3B2A1A, false);
         }
     }
 
@@ -322,33 +413,26 @@ final class BoardView {
         return best;
     }
 
-    /** What the hovered section is, for a tooltip. */
-    List<Component> describe(RuneBoard board, ResearchSheet sheet, int cell, int forkLevel) {
+    /** What the hovered section of a rune's parchment is, for a tooltip. */
+    List<Component> describe(RuneBoard board, ResearchSheet sheet, int cell, int forkLevel, @Nullable Move move) {
         List<Component> lines = new ArrayList<>();
+        String key = "gui.hextale.research_table.cell.";
+        if (move != null) {
+            lines.add(Component.translatable(key + "write", move.item().getDescription()));
+            lines.add(ResearchText.elements(move.elements()));
+        }
         int point = board.pointAt(cell);
         SimpleRune wall = board.walls()[cell];
         int dissolved = board.dissolved(sheet.isOpen() ? sheet.filledMask() : 0);
-        String key = "gui.hextale.research_table.cell.";
-        if (point >= 0 && board.isItemStudy()) {
-            RuneBoard.Point p = board.points().get(point);
-            if (sheet.isOpen() && sheet.isFilled(point)) {
-                lines.add(Component.translatable(key + "element", ResearchText.element(p.element()), p.strength()));
-            } else {
-                lines.add(Component.translatable(key + "hidden"));
-                lines.add(Component.translatable(key + "hidden.cover").withStyle(ChatFormatting.GRAY));
-            }
-        } else if (point >= 0) {
+        if (point >= 0) {
             RuneBoard.Point p = board.points().get(point);
             lines.add(Component.translatable(key + "point", ResearchText.element(p.element())));
             if (sheet.isOpen() && sheet.isFilled(point)) {
                 lines.add(Component.translatable(key + "point.filled").withStyle(ChatFormatting.GREEN));
-                if (forkLevel >= 2 && sheet.canJump(board, cell, forkLevel)) {
-                    lines.add(Component.translatable(key + "fork").withStyle(ChatFormatting.GOLD));
-                }
+            } else if (sheet.isActive() && sheet.ready(board, point)) {
+                lines.add(Component.translatable(key + "point.leave", p.resource().getDescription()).withStyle(ChatFormatting.GOLD));
             } else {
                 lines.add(Component.translatable(key + "point.needs", p.resource().getDescription()).withStyle(ChatFormatting.GRAY));
-                lines.add(Component.translatable(sheet.isOpen() && sheet.markAt(cell) != null ? key + "point.ready" : key + "point.cover")
-                        .withStyle(ChatFormatting.DARK_GRAY));
             }
         } else if (wall != null) {
             boolean gone = (dissolved & 1 << wall.ordinal()) != 0;
@@ -363,14 +447,37 @@ final class BoardView {
             }
         } else if (cell == HexGrid.CENTRE) {
             lines.add(Component.translatable(key + "orb"));
-            if (forkLevel > 0 && sheet.canJump(board, cell, forkLevel)) {
-                lines.add(Component.translatable(key + "fork").withStyle(ChatFormatting.GOLD));
+        }
+        if (forkLevel > 0 && sheet.canJump(board, cell, forkLevel)) {
+            lines.add(Component.translatable(move != null ? key + "fork.shift" : key + "fork").withStyle(ChatFormatting.AQUA));
+        }
+        return lines;
+    }
+
+    /** What a section of an item's resonance is, for a tooltip. */
+    List<Component> describeStudy(ItemStudy study, int cell) {
+        List<Component> lines = new ArrayList<>();
+        String key = "gui.hextale.research_table.string.";
+        int string = ItemStudy.stringOf(cell);
+        if (string < 0) {
+            return lines;
+        }
+        SimpleRune element = HexGrid.RING[string];
+        int index = -1;
+        int[] cells = ItemStudy.string(string);
+        for (int i = 0; i < cells.length; i++) {
+            if (cells[i] == cell) {
+                index = i;
             }
-        } else {
-            ResearchSheet.Mark mark = sheet.isOpen() ? sheet.markAt(cell) : null;
-            if (mark != null) {
-                lines.add(Component.translatable(key + "symbol", ResearchText.element(mark.element())));
-            }
+        }
+        lines.add(Component.translatable(key + "name", ResearchText.element(element), index + 1));
+        ItemStudy.Echo echo = study.echoes().get(cell);
+        if (echo != null) {
+            ChatFormatting style = echo == ItemStudy.Echo.EXACT ? ChatFormatting.GOLD
+                    : echo == ItemStudy.Echo.SILENT ? ChatFormatting.GRAY : ChatFormatting.AQUA;
+            lines.add(Component.translatable(key + "echo." + echo.name().toLowerCase(Locale.ROOT)).withStyle(style));
+        } else if (!study.isRevealed(element)) {
+            lines.add(Component.translatable(study.mark(string) == index ? key + "marked" : key + "mark").withStyle(ChatFormatting.GRAY));
         }
         return lines;
     }

@@ -35,9 +35,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import com.pockyl.hextale.item.HextechInkItem;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
-import com.pockyl.hextale.item.RuneBrushItem;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
@@ -49,6 +47,7 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
@@ -60,37 +59,39 @@ import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.SimpleRune;
 
+import java.util.Map;
+
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The Research Table's contents and the server side of the research mini-game: every action a client asks for is
- * checked here against the sheet, the materials on the table and the researcher's inventory before it happens.
- * Contents, the sheet and a "someone is writing" flag are synced to clients; finishing a rune reaches every nearby
- * client as a block event so the orb can flare for all of them.
+ * The Research Table's contents and the server side of both mini-games - learning a rune on its parchment and
+ * studying an item by resonance. Every action a client asks for is checked here against the sheet, the table and the
+ * researcher's knowledge and inventory before it happens. Contents, both games and a "someone is writing" flag are
+ * synced to clients; finishing a rune reaches every nearby client as a block event so the orb can flare for all.
  */
 public class ResearchTableBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
     public static final int DIARY = 0;
-    public static final int PAPER = 1;
-    public static final int HEXTECH = 2;
-    public static final int INK = 3;
-    public static final int BRUSH = 4;
-    public static final int OUTPUT = 5;
+    public static final int HEXTECH = 1;
+    public static final int OUTPUT = 2;
     /** Research tools, one slot each in {@link ResearchTool} order. */
-    public static final int TOOLS = 6;
+    public static final int TOOLS = 3;
     /** The item whose elements are being studied. */
-    public static final int STUDY = TOOLS + ResearchTool.values().length;
-    public static final int SLOTS = STUDY + 1;
+    public static final int STUDY = 8;
+    public static final int SLOTS = 9;
 
     public static final int EVENT_FUSED = 1;
     public static final int EVENT_FIZZLE = 3;
 
-    private static final int[] SIDE_SLOTS = {PAPER, HEXTECH};
+    private static final int[] SIDE_SLOTS = {HEXTECH, STUDY};
     private static final int[] BOTTOM_SLOTS = {OUTPUT};
     /** How long the orb keeps stirring after the last symbol. */
     private static final int DRAWING_TICKS = 30;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
     private final ResearchSheet sheet = new ResearchSheet();
+    private final ItemStudy study = new ItemStudy();
+    /** Which game lies on the parchment: the item study (true) or the rune (false). */
+    private boolean studyingItem;
     private boolean drawing;
     private long drawingUntil;
 
@@ -130,7 +131,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             level.addParticle(ParticleTypes.ELECTRIC_SPARK, orb.x, orb.y, orb.z,
                     Math.cos(angle) * speed, (random.nextDouble() - 0.3) * speed, Math.sin(angle) * speed);
         }
-        if (table.drawing && !table.items.get(PAPER).isEmpty() && random.nextInt(2) == 0) {
+        if (table.drawing && random.nextInt(2) == 0) {
             Vec3 from = TableGeometry.toWorld(pos, table.facing(), TableGeometry.PARCHMENT.add(
                     (random.nextDouble() - 0.5) * 9, 0.4, (random.nextDouble() - 0.5) * 6));
             level.addParticle(ParticleTypes.ENCHANT, orb.x, orb.y, orb.z, from.x - orb.x, from.y - orb.y, from.z - orb.z);
@@ -165,47 +166,20 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return sheet;
     }
 
-    /** The parchment of the rune or item being studied, or null (none chosen). */
+    public ItemStudy study() {
+        return study;
+    }
+
+    /** Whether the parchment shows the item study rather than a rune. */
+    public boolean isStudyingItem() {
+        return studyingItem;
+    }
+
+    /** The board of the rune being learned, or null (none chosen). */
     @Nullable
     public RuneBoard board() {
-        return boardOf(sheet);
-    }
-
-    /** Same, for a client copy of the sheet. */
-    @Nullable
-    public static RuneBoard boardOf(ResearchSheet sheet) {
         ComplexRune rune = sheet.rune();
-        if (rune != null) {
-            return RuneBoards.get(rune);
-        }
-        Item item = sheet.item();
-        ItemElements elements = item == null ? null : ResearchItems.of(item);
-        return elements == null ? null : RuneBoards.forItem(item, elements);
-    }
-
-    /** Lays the item from the study slot on the table: its elements are hidden on the parchment. */
-    public void selectItem(ServerPlayer player) {
-        Requirement missing = Requirement.diary(this, player);
-        if (missing != null) {
-            message(player, Component.translatable(missing.translationKey()), ResearchMessagePayload.Tone.BAD);
-            return;
-        }
-        ItemStack stack = items.get(STUDY);
-        ItemElements elements = ResearchItems.of(stack);
-        if (elements == null) {
-            message(player, Component.translatable("research.hextale.study.empty"), ResearchMessagePayload.Tone.BAD);
-            return;
-        }
-        if (Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(stack.getItem()))) {
-            message(player, Component.translatable("research.hextale.study.known", stack.getHoverName()), ResearchMessagePayload.Tone.BAD);
-            return;
-        }
-        ResearchersDiaryItem.sign(items.get(DIARY), player);
-        sheet.selectItem(stack.getItem());
-        RuneBoard board = RuneBoards.forItem(stack.getItem(), elements);
-        message(player, Component.translatable("research.hextale.study.selected", stack.getHoverName(), board.points().size()),
-                ResearchMessagePayload.Tone.INFO);
-        setChanged();
+        return rune == null ? null : RuneBoards.get(rune);
     }
 
     /** A tool's strength for this researcher: 0 without the tool in its slot, else the stars of its rune. */
@@ -217,6 +191,12 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     public static int toolLevel(Container table, ResearchTool tool, RuneKnowledge knowledge) {
         return table.getItem(TOOLS + tool.ordinal()).is(tool.item()) ? knowledge.stars(tool.rune()) : 0;
     }
+
+    private static boolean studied(ServerPlayer player, Item item) {
+        return Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(item));
+    }
+
+    // ---- Learning a rune ------------------------------------------------------------------------------------------
 
     /** Lays the book's rune on the table: a new rune, a clean parchment. */
     public void select(ServerPlayer player, ComplexRune rune) {
@@ -231,6 +211,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         }
         ResearchersDiaryItem.sign(items.get(DIARY), player);
         sheet.select(rune);
+        studyingItem = false;
         RuneBoard board = RuneBoards.get(rune);
         RuneBoard.Par par = board.par();
         message(player, Component.translatable("research.hextale.selected", name(rune), board.points().size(),
@@ -238,11 +219,10 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         setChanged();
     }
 
-    /** Takes a fresh sheet (burning the one in progress): one paper, one dose of ink, one use of the brush. */
+    /** A clean sheet: free, it only wipes the symbols written so far. */
     public void newSheet(ServerPlayer player) {
         RuneBoard board = board();
-        if (board == null) {
-            message(player, Component.translatable("research.hextale.no_rune"), ResearchMessagePayload.Tone.BAD);
+        if (board == null || studyingItem) {
             return;
         }
         Requirement missing = Requirement.firstMissing(this, player);
@@ -250,83 +230,75 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             message(player, Component.translatable(missing.translationKey()), ResearchMessagePayload.Tone.BAD);
             return;
         }
-        ResearchersDiaryItem.sign(items.get(DIARY), player);
-        items.get(PAPER).shrink(1);
-        items.set(INK, HextechInkItem.useDose(items.get(INK)));
-        ItemStack brush = RuneBrushItem.wear(items.get(BRUSH));
-        if (brush.isEmpty()) {
-            level.playSound(null, worldPosition, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 0.8F, 1.0F);
-        }
-        items.set(BRUSH, brush);
-        int cap = board.par().sheet() + toolLevel(player, ResearchTool.STRETCHER);
-        sheet.begin(cap);
-        if (board.rune() != null && Research.of(player).see(board.rune(), new int[]{HexGrid.CENTRE})) {
-            Research.sync(player);
-        }
-        level.playSound(null, worldPosition, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 1.0F, 0.8F);
-        message(player, board.isItemStudy() ? Component.translatable("research.hextale.study.sheet", cap)
-                : Component.translatable("research.hextale.sheet", cap, board.par().three()), ResearchMessagePayload.Tone.INFO);
+        begin(player, board);
+        message(player, Component.translatable("research.hextale.sheet", sheet.cap(), board.par().three()), ResearchMessagePayload.Tone.INFO);
         setChanged();
     }
 
-    /** Writes the next symbol with one item from the researcher's inventory. */
-    public void write(ServerPlayer player, Item item, boolean ground) {
+    private void begin(ServerPlayer player, RuneBoard board) {
+        ResearchersDiaryItem.sign(items.get(DIARY), player);
+        sheet.begin(board.par().sheet() + toolLevel(player, ResearchTool.STRETCHER));
+        if (Research.of(player).see(board.rune(), new int[]{HexGrid.CENTRE})) {
+            Research.sync(player);
+        }
+        level.playSound(null, worldPosition, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 1.0F, 0.8F);
+    }
+
+    /**
+     * Writes the next symbol into {@code target} with one studied item from the researcher's inventory. The first symbol
+     * starts a sheet by itself.
+     */
+    public void write(ServerPlayer player, Item item, boolean ground, int target) {
         RuneBoard board = board();
         ItemElements elements = ResearchItems.of(item);
-        if (board == null || elements == null || !sheet.canWrite() || Requirement.diary(this, player) != null) {
+        if (board == null || studyingItem || elements == null || Requirement.diary(this, player) != null) {
+            return;
+        }
+        if (!studied(player, item)) {
+            message(player, Component.translatable("research.hextale.not_studied", item.getDescription()), ResearchMessagePayload.Tone.BAD);
             return;
         }
         if (ground && toolLevel(player, ResearchTool.MORTAR) < elements.tier()) {
+            return;
+        }
+        if (!sheet.isOpen()) {
+            Requirement missing = Requirement.firstMissing(this, player);
+            if (missing != null) {
+                message(player, Component.translatable(missing.translationKey()), ResearchMessagePayload.Tone.BAD);
+                return;
+            }
+            begin(player, board);
+        }
+        if (!sheet.canWrite() || sheet.preview(board, elements, ground).end() != target) {
+            setChanged();
             return;
         }
         if (!take(player, item)) {
             message(player, Component.translatable("research.hextale.no_item", item.getDescription()), ResearchMessagePayload.Tone.BAD);
             return;
         }
-        ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
-        int filledBefore = sheet.filledMask();
-        HexGrid.Walk walk = sheet.write(board, elements, id, ground);
+        HexGrid.Walk walk = sheet.write(board, elements, BuiltInRegistries.ITEM.getKey(item), ground);
         if (walk == null) {
             return;
         }
-        RuneKnowledge knowledge = Research.of(player);
-        boolean fresh = knowledge.learnItem(id);
         int[] passed = new int[walk.cells().length + 1];
         System.arraycopy(walk.cells(), 0, passed, 0, walk.cells().length);
         passed[walk.cells().length] = walk.end();
-        if (board.rune() != null) {
-            knowledge.see(board.rune(), passed);
+        if (Research.of(player).see(board.rune(), passed)) {
+            Research.sync(player);
         }
-        Research.sync(player);
 
         MutableComponent text = Component.translatable(ground ? "research.hextale.written.ground" : "research.hextale.written",
                 item.getDescription());
-        if (fresh) {
-            text.append(" ").append(Component.translatable("research.hextale.written.fresh", ResearchText.elements(elements)));
-        }
         switch (walk.stop()) {
             case WALL -> text.append(" ").append(Component.translatable("research.hextale.stop.wall"));
             case EDGE -> text.append(" ").append(Component.translatable("research.hextale.stop.edge"));
             default -> {
             }
         }
-        if (walk.cells().length == 0) {
-            text.append(" ").append(Component.translatable("research.hextale.stop.same"));
-        }
         ResearchMessagePayload.Tone tone = ResearchMessagePayload.Tone.INFO;
         int point = board.pointAt(walk.end());
-        if (board.isItemStudy() && point >= 0 && (filledBefore & 1 << point) == 0) {
-            RuneBoard.Point p = board.points().get(point);
-            text.append(" ").append(Component.translatable("research.hextale.study.revealed", ResearchText.element(p.element()), p.strength()));
-            tone = ResearchMessagePayload.Tone.GOOD;
-            pointEffects(p);
-            if (sheet.complete(board)) {
-                completeItem(player, board, text);
-                markDrawing(player);
-                setChanged();
-                return;
-            }
-        } else if (point >= 0 && !sheet.isFilled(point)) {
+        if (point >= 0 && !sheet.isFilled(point)) {
             RuneBoard.Point p = board.points().get(point);
             text.append(" ").append(Component.translatable("research.hextale.covered", ResearchText.element(p.element()),
                     p.resource().getDescription()));
@@ -345,15 +317,19 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         setChanged();
     }
 
-    /** Leaves a point's resource from the researcher's inventory. */
+    /** Leaves a covered point's resource (a studied item) from the researcher's inventory. */
     public void leave(ServerPlayer player, int point) {
         RuneBoard board = board();
-        if (board == null || board.isItemStudy() || point < 0 || point >= board.points().size() || !sheet.isActive()
-                || !sheet.ready(board, point)
-                || Requirement.diary(this, player) != null) {
+        if (board == null || studyingItem || point < 0 || point >= board.points().size() || !sheet.isActive()
+                || !sheet.ready(board, point) || Requirement.diary(this, player) != null) {
             return;
         }
         RuneBoard.Point p = board.points().get(point);
+        if (!studied(player, p.resource())) {
+            message(player, Component.translatable("research.hextale.not_studied", p.resource().getDescription()),
+                    ResearchMessagePayload.Tone.BAD);
+            return;
+        }
         if (!take(player, p.resource())) {
             message(player, Component.translatable("research.hextale.no_item", p.resource().getDescription()),
                     ResearchMessagePayload.Tone.BAD);
@@ -366,7 +342,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         if ((dissolvedBefore & 1 << p.element().ordinal()) == 0 && hasWalls(board, p.element())) {
             text.append(" ").append(Component.translatable("research.hextale.dissolved", ResearchText.element(p.element())));
         }
-        pointEffects(p);
+        pointEffects(p.element());
         switch (result) {
             case COMPLETE -> complete(player, board, text);
             case FAILED -> failed(player, text);
@@ -390,7 +366,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     public void scrape(ServerPlayer player) {
         RuneBoard board = board();
-        if (board != null && Requirement.diary(this, player) == null
+        if (board != null && !studyingItem && Requirement.diary(this, player) == null
                 && sheet.scrape(board, toolLevel(player, ResearchTool.SCRAPER))) {
             level.playSound(null, worldPosition, SoundEvents.BRUSH_GENERIC, SoundSource.BLOCKS, 0.8F, 1.2F);
             message(player, Component.translatable("research.hextale.scraped"), ResearchMessagePayload.Tone.INFO);
@@ -401,7 +377,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     public void jump(ServerPlayer player, int cell) {
         RuneBoard board = board();
         int fork = toolLevel(player, ResearchTool.FORK);
-        if (board != null && Requirement.diary(this, player) == null && cell >= 0 && cell < HexGrid.COUNT
+        if (board != null && !studyingItem && Requirement.diary(this, player) == null && cell >= 0 && cell < HexGrid.COUNT
                 && sheet.jump(board, cell, fork)) {
             message(player, Component.translatable(cell == HexGrid.CENTRE ? "research.hextale.fork.orb" : "research.hextale.fork.point",
                     fork - sheet.jumps()), ResearchMessagePayload.Tone.INFO);
@@ -411,6 +387,10 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     private void failed(ServerPlayer player, MutableComponent text) {
         message(player, text.append(" ").append(Component.translatable("research.hextale.failed")), ResearchMessagePayload.Tone.BAD);
+        fizzle();
+    }
+
+    private void fizzle() {
         if (level instanceof ServerLevel serverLevel) {
             Vec3 orb = orbPosition();
             serverLevel.sendParticles(ParticleTypes.SMOKE, orb.x, orb.y, orb.z, 6, 0.08, 0.05, 0.08, 0.01);
@@ -448,33 +428,102 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         completeEffects(rune);
     }
 
-    /** Every hidden element revealed: the item is studied; one of it goes into the orb. */
-    private void completeItem(ServerPlayer player, RuneBoard board, MutableComponent text) {
-        Item item = board.item();
-        ItemStack stack = items.get(STUDY);
-        if (!stack.is(item)) {
-            message(player, text.append(" ").append(Component.translatable("research.hextale.study.missing", item.getDescription())),
-                    ResearchMessagePayload.Tone.BAD);
+    // ---- Studying an item -----------------------------------------------------------------------------------------
+
+    /** Lays the item from the study slot on the parchment: resonance begins. */
+    public void selectItem(ServerPlayer player) {
+        Requirement missing = Requirement.diary(this, player);
+        if (missing != null) {
+            message(player, Component.translatable(missing.translationKey()), ResearchMessagePayload.Tone.BAD);
             return;
         }
-        stack.shrink(1);
-        Research.study(player, item);
-        MutableComponent all = Component.empty();
-        boolean first = true;
-        for (RuneBoard.Point p : board.points()) {
-            if (!first) {
-                all.append(", ");
+        ItemStack stack = items.get(STUDY);
+        ItemElements elements = ResearchItems.of(stack);
+        if (elements == null) {
+            message(player, Component.translatable("research.hextale.study.empty"), ResearchMessagePayload.Tone.BAD);
+            return;
+        }
+        if (studied(player, stack.getItem())) {
+            message(player, Component.translatable("research.hextale.study.known", stack.getHoverName()), ResearchMessagePayload.Tone.BAD);
+            return;
+        }
+        ResearchersDiaryItem.sign(items.get(DIARY), player);
+        study.begin(stack.getItem(), elements);
+        studyingItem = true;
+        message(player, Component.translatable("research.hextale.study.selected", stack.getHoverName(), elements.elements().size(),
+                study.maxListens()), ResearchMessagePayload.Tone.INFO);
+        setChanged();
+    }
+
+    /** Puts a tuning mark on a string section, moves it or takes it off. */
+    public void mark(ServerPlayer player, int cell) {
+        ItemElements elements = study.item() == null ? null : ResearchItems.of(study.item());
+        if (!studyingItem || elements == null || Requirement.diary(this, player) != null) {
+            return;
+        }
+        if (study.toggle(cell, elements)) {
+            level.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.6F, 1.6F);
+            setChanged();
+        }
+    }
+
+    /** Listens to the marks. The first listen takes one of the item from the study slot. */
+    public void listen(ServerPlayer player) {
+        Item item = study.item();
+        ItemElements elements = item == null ? null : ResearchItems.of(item);
+        if (!studyingItem || elements == null || Requirement.diary(this, player) != null || study.markCount() == 0
+                || !study.isActive(elements)) {
+            return;
+        }
+        if (!study.started()) {
+            if (!items.get(STUDY).is(item)) {
+                message(player, Component.translatable("research.hextale.study.missing", item.getDescription()), ResearchMessagePayload.Tone.BAD);
+                return;
             }
-            all.append(ResearchText.element(p.element())).append(" " + p.strength());
-            first = false;
+            items.get(STUDY).shrink(1);
         }
-        message(player, text.append(" ").append(Component.translatable("research.hextale.study.complete", item.getDescription(), all)),
-                ResearchMessagePayload.Tone.WIN);
-        if (level instanceof ServerLevel serverLevel) {
-            Vec3 orb = orbPosition();
-            serverLevel.sendParticles(ParticleTypes.END_ROD, orb.x, orb.y, orb.z, 10, 0.15, 0.1, 0.15, 0.03);
-            level.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0F, 1.2F);
+        Map<Integer, ItemStudy.Echo> heard = study.listen(elements);
+        if (heard == null) {
+            return;
         }
+        int exact = 0;
+        int humming = 0;
+        for (Map.Entry<Integer, ItemStudy.Echo> entry : heard.entrySet()) {
+            if (entry.getValue() == ItemStudy.Echo.EXACT) {
+                exact++;
+                SimpleRune element = HexGrid.RING[ItemStudy.stringOf(entry.getKey())];
+                pointEffects(element);
+            } else if (entry.getValue() != ItemStudy.Echo.SILENT) {
+                humming++;
+            }
+        }
+        level.playSound(null, worldPosition, exact > 0 ? SoundEvents.AMETHYST_BLOCK_RESONATE : SoundEvents.AMETHYST_BLOCK_CHIME,
+                SoundSource.BLOCKS, 1.0F, exact > 0 ? 1.2F : 0.8F + humming * 0.15F);
+        if (study.won(elements)) {
+            Research.study(player, item);
+            MutableComponent all = Component.empty();
+            boolean first = true;
+            for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
+                if (!first) {
+                    all.append(", ");
+                }
+                all.append(ResearchText.element(entry.getKey())).append(" " + entry.getValue());
+                first = false;
+            }
+            message(player, Component.translatable("research.hextale.study.complete", item.getDescription(), all),
+                    ResearchMessagePayload.Tone.WIN);
+            if (level instanceof ServerLevel serverLevel) {
+                Vec3 orb = orbPosition();
+                serverLevel.sendParticles(ParticleTypes.END_ROD, orb.x, orb.y, orb.z, 10, 0.15, 0.1, 0.15, 0.03);
+            }
+        } else if (study.lost(elements)) {
+            message(player, Component.translatable("research.hextale.study.lost", item.getDescription()), ResearchMessagePayload.Tone.BAD);
+            fizzle();
+        } else {
+            message(player, Component.translatable("research.hextale.study.heard", exact, humming, study.listensLeft()),
+                    exact > 0 ? ResearchMessagePayload.Tone.GOOD : ResearchMessagePayload.Tone.INFO);
+        }
+        setChanged();
     }
 
     /** Takes one of the item from the player (creative players keep theirs). */
@@ -514,15 +563,15 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         }
     }
 
-    private void pointEffects(RuneBoard.Point point) {
+    private void pointEffects(SimpleRune element) {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
         Vec3 orb = orbPosition();
-        serverLevel.sendParticles(new DustParticleOptions(rgb(point.element().color()), 1.0F), orb.x, orb.y, orb.z, 10,
+        serverLevel.sendParticles(new DustParticleOptions(rgb(element.color()), 1.0F), orb.x, orb.y, orb.z, 10,
                 0.2, 0.15, 0.2, 0.01);
         level.playSound(null, worldPosition, ModSounds.RUNE_RECOGNISED.get(), SoundSource.BLOCKS, 0.8F,
-                0.8F + point.element().ordinal() * 0.06F);
+                0.8F + element.ordinal() * 0.06F);
     }
 
     private void completeEffects(ComplexRune rune) {
@@ -619,12 +668,9 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     public static boolean accepts(int slot, ItemStack stack) {
         return switch (slot) {
             case DIARY -> stack.is(ModItems.RESEARCHERS_DIARY.get());
-            case PAPER -> stack.is(Items.PAPER);
             case HEXTECH -> stack.is(ModItems.UNSTABLE_HEXTECH.get());
-            case INK -> stack.is(ModItems.HEXTECH_INK.get());
-            case BRUSH -> stack.is(ModItems.RUNE_BRUSH.get());
-            default -> slot == STUDY ? ResearchItems.of(stack) != null
-                    : slot >= TOOLS && slot < STUDY && stack.is(ResearchTool.values()[slot - TOOLS].item());
+            case STUDY -> ResearchItems.of(stack) != null;
+            default -> slot >= TOOLS && slot < STUDY && stack.is(ResearchTool.values()[slot - TOOLS].item());
         };
     }
 
@@ -650,6 +696,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         ContainerHelper.loadAllItems(tag, items, registries);
         drawing = tag.getBoolean("drawing");
         sheet.load(tag.getCompound("sheet"));
+        study.load(tag.getCompound("study"));
+        studyingItem = tag.getBoolean("studying_item");
     }
 
     @Override
@@ -657,6 +705,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         super.saveAdditional(tag, registries);
         ContainerHelper.saveAllItems(tag, items, registries);
         tag.put("sheet", sheet.save());
+        tag.put("study", study.save());
+        tag.putBoolean("studying_item", studyingItem);
     }
 
     @Override

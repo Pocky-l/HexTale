@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -31,7 +32,9 @@ import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.network.ResearchActionPayload;
 import com.pockyl.hextale.network.ResearchMessagePayload;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchText;
@@ -39,9 +42,9 @@ import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.research.RuneBoard;
 import com.pockyl.hextale.research.RuneBoards;
 import com.pockyl.hextale.rune.ComplexRune;
+import com.pockyl.hextale.rune.SimpleRune;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +52,10 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The Research Table, in three tabs: the research book (choose a rune), the parchment (the mini-game: items from the
- * inventory write symbols, resources fill the points) and the table itself (materials, research tools, the scroll).
+ * The Research Table, in three tabs: the star book (choose a rune), the parchment and the table itself (diary, orb,
+ * research tools, the item to study). The parchment holds one of two games, both played right on its sections: learning
+ * a rune (click a glowing section to write the next symbol with a studied item, click a covered point to leave its
+ * resource) or studying an item by resonance (click string sections to place tuning marks, then listen).
  */
 public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMenu> implements StarBook.Host {
     private static final ResourceLocation BOOK_TEXTURE = Hextale.id("textures/gui/research_book.png");
@@ -74,6 +79,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private static final int ITEM_COLUMNS = 11;
     private static final int ITEM_ROWS = 3;
     private static final int MESSAGE_Y = 229;
+    private static final int BOARD_X = 4;
+    private static final int BOARD_Y = 24;
+    private static final int BOARD_W = 244;
+    private static final int BOARD_H = 234;
 
     private enum Tab {
         BOOK,
@@ -81,7 +90,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         TABLE
     }
 
-    private record ItemEntry(Item item, ItemElements elements, int count) {
+    private record Lever(Item item, ItemElements elements, int count) {
     }
 
     /** A small brass button of the side panel. */
@@ -93,14 +102,21 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private Tab tab;
     private Component message = Component.empty();
     private ResearchMessagePayload.Tone tone = ResearchMessagePayload.Tone.INFO;
-    private boolean grind;
-    private int itemScroll;
-    private final List<ItemEntry> items = new ArrayList<>();
+    private int leverScroll;
+    private final List<Lever> levers = new ArrayList<>();
     private final List<PanelButton> buttons = new ArrayList<>();
+    private Map<Integer, List<BoardView.Move>> moves = Map.of();
+    /** Which of several items reaching the hovered section is shown (right click switches). */
+    private int choice;
+    private int choiceCell = -1;
     private int fogVersion = -1;
     @Nullable
     private ComplexRune fogRune;
     private int fogLens = -1;
+    @Nullable
+    private List<Component> pendingTooltip;
+    private int lastMouseX;
+    private int lastMouseY;
 
     public ResearchTableScreen(ResearchTableMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -121,7 +137,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             if (missingDiary() != null) {
                 setTab(Tab.TABLE);
             } else {
-                setTab(table != null && table.sheet().hasSubject() ? Tab.PARCHMENT : Tab.BOOK);
+                boolean subject = table != null && (table.isStudyingItem() ? table.study().item() != null : table.sheet().rune() != null);
+                setTab(subject ? Tab.PARCHMENT : Tab.BOOK);
             }
         }
         book.layout(leftPos + 4, topPos + 24, imageWidth - 8, imageHeight - 28);
@@ -145,18 +162,17 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         return minecraft == null || minecraft.player == null ? null : Requirement.diary(menu.table(), minecraft.player);
     }
 
+    @Nullable
+    private Requirement missing() {
+        return minecraft == null || minecraft.player == null ? null : Requirement.firstMissing(menu.table(), minecraft.player);
+    }
+
     private int toolLevel(ResearchTool tool) {
         return ResearchTableBlockEntity.toolLevel(menu.table(), tool, ClientKnowledge.get());
     }
 
-    @Nullable
-    private RuneBoard currentBoard() {
-        ResearchTableBlockEntity table = table();
-        if (table == null) {
-            return null;
-        }
-        ComplexRune rune = table.sheet().rune();
-        return rune != null ? RuneBoards.request(rune).getNow(null) : ResearchTableBlockEntity.boardOf(table.sheet());
+    private static boolean studied(Item item) {
+        return ClientKnowledge.get().hasStudied(BuiltInRegistries.ITEM.getKey(item));
     }
 
     private void send(ResearchActionPayload payload) {
@@ -172,13 +188,13 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         this.tone = tone;
     }
 
-    // ---- StarBook.Host -------------------------------------------------------------------------------------------
+    // ---- StarBook.Host --------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
     public ComplexRune studying() {
         ResearchTableBlockEntity table = table();
-        return table == null ? null : table.sheet().rune();
+        return table == null || table.isStudyingItem() ? null : table.sheet().rune();
     }
 
     @Override
@@ -189,6 +205,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return;
         }
         send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.SELECT, rune.index()));
+        message = Component.empty();
         click();
         setTab(Tab.PARCHMENT);
     }
@@ -197,21 +214,25 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+        pendingTooltip = null;
         super.render(graphics, mouseX, mouseY, partialTick);
         if (tab == Tab.BOOK) {
             List<FormattedCharSequence> tooltip = book.render(graphics, mouseX, mouseY);
             if (tooltip != null) {
                 graphics.renderTooltip(font, tooltip, mouseX, mouseY);
             }
-        } else if (tab == Tab.PARCHMENT) {
-            renderParchmentTooltips(graphics, mouseX, mouseY);
-        } else {
+        } else if (tab == Tab.TABLE) {
             renderTooltip(graphics, mouseX, mouseY);
             renderSlotHints(graphics, mouseX, mouseY);
-            if (pendingTooltip != null) {
-                graphics.renderComponentTooltip(font, pendingTooltip, mouseX, mouseY);
-                pendingTooltip = null;
+        }
+        if (pendingTooltip != null && !pendingTooltip.isEmpty()) {
+            List<FormattedCharSequence> lines = new ArrayList<>();
+            for (Component line : pendingTooltip) {
+                lines.addAll(font.split(line, 220));
             }
+            graphics.renderTooltip(font, lines, mouseX, mouseY);
         }
         renderTabTooltips(graphics, mouseX, mouseY);
     }
@@ -225,6 +246,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         };
         graphics.blit(texture, leftPos, topPos, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
         renderTabs(graphics, mouseX, mouseY);
+        buttons.clear();
         if (tab == Tab.PARCHMENT) {
             renderParchment(graphics, mouseX, mouseY);
         } else if (tab == Tab.TABLE) {
@@ -239,7 +261,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         graphics.drawString(font, codex, imageWidth - 92 - font.width(codex), titleLabelY, 0xFF000000 | TEXT_MUTED, true);
         if (tab == Tab.TABLE) {
             graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0xFF000000 | TEXT, true);
-            graphics.drawString(font, Component.translatable(KEY + "materials"), 144, 39, 0xFF000000 | TEXT, true);
+            graphics.drawString(font, Component.translatable(KEY + "materials"), ResearchTableMenu.MATERIALS_X - 10, 39, 0xFF000000 | TEXT, true);
             graphics.drawString(font, Component.translatable(KEY + "tools"), 172, 93, 0xFF000000 | TEXT, true);
             graphics.drawString(font, Component.translatable(KEY + "study"), ResearchTableMenu.STUDY_X - 10, 93, 0xFF000000 | TEXT, true);
         }
@@ -275,24 +297,24 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
 
+    private boolean overBoard(double mouseX, double mouseY) {
+        return isOver(mouseX, mouseY, leftPos + BOARD_X, topPos + BOARD_Y, BOARD_W, BOARD_H);
+    }
+
     // ---- The table tab --------------------------------------------------------------------------------------------
 
-    private static final int[] GHOSTS = {0, 1, 2, 3, 4};
-
     private void renderTableTab(GuiGraphics graphics, int mouseX, int mouseY) {
-        buttons.clear();
-        buttons.add(studyButton());
-        renderButton(graphics, buttons.get(0), mouseX, mouseY);
-        int[] materials = {ResearchTableBlockEntity.DIARY, ResearchTableBlockEntity.PAPER, ResearchTableBlockEntity.HEXTECH,
-                ResearchTableBlockEntity.INK, ResearchTableBlockEntity.BRUSH};
-        Requirement missing = minecraft.player == null ? null : Requirement.firstMissing(menu.table(), minecraft.player);
+        int[] materials = {ResearchTableBlockEntity.DIARY, ResearchTableBlockEntity.HEXTECH};
+        int[] ghosts = {0, 2};
+        Requirement missing = missing();
         for (int i = 0; i < materials.length; i++) {
             int x = leftPos + ResearchTableMenu.MATERIALS_X + i * ResearchTableMenu.SLOT_SPACING;
             int y = topPos + ResearchTableMenu.MATERIALS_Y;
             if (menu.table().getItem(materials[i]).isEmpty()) {
-                graphics.blit(WIDGETS, x, y, GHOSTS[i] * 16, 24, 16, 16, WIDGETS_SIZE_X, WIDGETS_SIZE_Y);
+                graphics.blit(WIDGETS, x, y, ghosts[i] * 16, 24, 16, 16, WIDGETS_SIZE_X, WIDGETS_SIZE_Y);
             }
-            if (missing != null && slotOf(missing) == materials[i]) {
+            boolean wanted = missing != null && (missing == Requirement.HEXTECH ? i == 1 : i == 0);
+            if (wanted) {
                 highlight(graphics, x, y);
             }
         }
@@ -308,29 +330,29 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 }
             }
         }
+        ItemStack study = menu.table().getItem(ResearchTableBlockEntity.STUDY);
+        if (!study.isEmpty() && studied(study.getItem())) {
+            graphics.drawString(font, "✔", leftPos + ResearchTableMenu.STUDY_X + 11, topPos + ResearchTableMenu.TOOLS_Y - 3, 0xFF8FE07A, true);
+        }
+        PanelButton button = studyButton();
+        buttons.add(button);
+        renderButton(graphics, button, mouseX, mouseY);
     }
 
-    /** The button next to the study slot (its area is reused for clicks). */
+    /** The button next to the study slot. */
     private PanelButton studyButton() {
         ItemStack stack = menu.table().getItem(ResearchTableBlockEntity.STUDY);
-        boolean studied = !stack.isEmpty() && ClientKnowledge.get().hasStudied(BuiltInRegistries.ITEM.getKey(stack.getItem()));
+        boolean known = !stack.isEmpty() && studied(stack.getItem());
         Component tooltip = stack.isEmpty() ? Component.translatable(KEY + "study.button.empty")
-                : studied ? Component.translatable(KEY + "study.button.known") : Component.translatable(KEY + "study.button.tooltip");
+                : known ? Component.translatable(KEY + "study.button.known") : Component.translatable(KEY + "study.button.tooltip");
         return new PanelButton(leftPos + ResearchTableMenu.STUDY_X + 22, topPos + ResearchTableMenu.TOOLS_Y, 64,
-                Component.translatable(KEY + "study.button"), !stack.isEmpty() && !studied, () -> {
-            send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.STUDY_ITEM, 0));
-            setTab(Tab.PARCHMENT);
-        }, tooltip);
+                Component.translatable(KEY + "study.button"), !stack.isEmpty() && !known, this::startStudy, tooltip);
     }
 
-    private static int slotOf(Requirement requirement) {
-        return switch (requirement) {
-            case DIARY, OWN_DIARY -> ResearchTableBlockEntity.DIARY;
-            case BRUSH -> ResearchTableBlockEntity.BRUSH;
-            case INK -> ResearchTableBlockEntity.INK;
-            case PAPER -> ResearchTableBlockEntity.PAPER;
-            case HEXTECH -> ResearchTableBlockEntity.HEXTECH;
-        };
+    private void startStudy() {
+        send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.STUDY_ITEM, 0));
+        message = Component.empty();
+        setTab(Tab.PARCHMENT);
     }
 
     /** A pulsing brass frame around a slot that needs something. */
@@ -375,56 +397,70 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (slot.hasItem()) {
             return;
         }
-        String[] hints = {"diary", "paper", "hextech", "ink", "brush", "output"};
-        if (index < hints.length) {
-            graphics.renderTooltip(font, font.split(Component.translatable(KEY + "slot." + hints[index]), 180), mouseX, mouseY);
-        }
+        String hint = switch (index) {
+            case ResearchTableBlockEntity.DIARY -> "diary";
+            case ResearchTableBlockEntity.HEXTECH -> "hextech";
+            default -> "output";
+        };
+        graphics.renderTooltip(font, font.split(Component.translatable(KEY + "slot." + hint), 180), mouseX, mouseY);
     }
 
     // ---- The parchment tab ----------------------------------------------------------------------------------------
 
     private void renderParchment(GuiGraphics graphics, int mouseX, int mouseY) {
         ResearchTableBlockEntity table = table();
-        boolean subject = table != null && table.sheet().hasSubject();
+        if (table != null && table.isStudyingItem() && table.study().item() != null) {
+            renderStudy(graphics, table, mouseX, mouseY);
+            return;
+        }
         ComplexRune rune = table == null ? null : table.sheet().rune();
-        RuneBoard current = currentBoard();
-        collectItems();
-        buttons.clear();
-        if (!subject || current == null) {
-            Component text = Component.translatable(!subject ? KEY + "no_rune" : KEY + "preparing");
+        RuneBoard current = rune == null ? null : RuneBoards.request(rune).getNow(null);
+        collectLevers();
+        if (current == null) {
+            Component text = Component.translatable(rune == null ? KEY + "no_rune" : KEY + "preparing");
             List<FormattedCharSequence> lines = font.split(text, 190);
             for (int i = 0; i < lines.size(); i++) {
                 graphics.drawCenteredString(font, lines.get(i), leftPos + BoardView.CX, topPos + BoardView.CY - 10 + i * 10, 0xFF3B2A1A);
             }
-            renderPanelEmpty(graphics);
+            graphics.drawString(font, Component.translatable(KEY + "goal.none"), leftPos + PANEL_X + 6, topPos + 28, 0xFF000000 | TEXT_MUTED, false);
+            renderLevers(graphics, mouseX, mouseY);
+            renderMessage(graphics, message.getString().isEmpty() ? Component.translatable(KEY + "hint.book") : message);
             return;
         }
         ResearchSheet sheet = table.sheet();
         RuneKnowledge knowledge = ClientKnowledge.get();
-        // An item's parchment is small and has no fog.
-        int lens = rune == null ? 3 : toolLevel(ResearchTool.LENS);
+        int lens = toolLevel(ResearchTool.LENS);
         if (fogVersion != ClientKnowledge.version() || fogRune != rune || fogLens != lens) {
-            board.updateFog(rune == null ? new BitSet() : knowledge.seen(rune), lens);
+            board.updateFog(knowledge.seen(rune), lens);
             fogVersion = ClientKnowledge.version();
             fogRune = rune;
             fogLens = lens;
         }
-        board.observe(current, sheet);
-        ItemEntry hovered = hoveredItem(mouseX, mouseY);
-        BoardView.Preview preview = hovered == null ? null : new BoardView.Preview(hovered.elements(),
-                knowledge.knowsItem(BuiltInRegistries.ITEM.getKey(hovered.item())), canGrind(hovered.elements()));
-        int cell = isOver(mouseX, mouseY, leftPos + 4, topPos + 24, 244, 234) ? board.cellAt(mouseX, mouseY) : -1;
-        board.render(graphics, font, current, sheet, preview, cell, toolLevel(ResearchTool.FORK));
-        renderPanel(graphics, current, sheet, mouseX, mouseY);
+        board.observe(current, sheet, null);
+        moves = computeMoves(current, sheet);
+        int cell = overBoard(mouseX, mouseY) ? board.cellAt(mouseX, mouseY) : -1;
+        if (cell != choiceCell) {
+            choiceCell = cell;
+            choice = 0;
+        }
+        BoardView.Move chosen = chosenMove(cell);
+        int fork = toolLevel(ResearchTool.FORK);
+        board.renderRune(graphics, font, current, sheet, moves, cell, chosen, choice, fork);
+        if (cell >= 0) {
+            pendingTooltip = board.describe(current, sheet, cell, fork, chosen);
+        }
+        renderRunePanel(graphics, current, sheet, mouseX, mouseY);
     }
 
-    private boolean canGrind(ItemElements elements) {
-        return grind && toolLevel(ResearchTool.MORTAR) >= elements.tier();
+    @Nullable
+    private BoardView.Move chosenMove(int cell) {
+        List<BoardView.Move> options = moves.get(cell);
+        return options == null || options.isEmpty() ? null : options.get(choice % options.size());
     }
 
-    /** Items in the inventory that can write on the parchment, one entry per item, simple ones first. */
-    private void collectItems() {
-        items.clear();
+    /** Studied items in the inventory, one entry per item, simple ones first. */
+    private void collectLevers() {
+        levers.clear();
         if (minecraft.player == null) {
             return;
         }
@@ -432,60 +468,52 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         Inventory inventory = minecraft.player.getInventory();
         for (int i = 0; i < inventory.getContainerSize(); i++) {
             ItemStack stack = inventory.getItem(i);
-            if (ResearchItems.of(stack) != null) {
+            if (!stack.isEmpty() && studied(stack.getItem()) && ResearchItems.of(stack) != null) {
                 counts.merge(stack.getItem(), stack.getCount(), Integer::sum);
             }
         }
-        counts.forEach((item, count) -> items.add(new ItemEntry(item, ResearchItems.of(item), count)));
-        items.sort((a, b) -> a.elements().tier() != b.elements().tier() ? a.elements().tier() - b.elements().tier()
-                : Integer.compare(order(a.item()), order(b.item())));
-        int pages = Math.max(0, (items.size() - 1) / ITEM_COLUMNS - ITEM_ROWS + 1);
-        itemScroll = Mth.clamp(itemScroll, 0, pages);
+        counts.forEach((item, count) -> levers.add(new Lever(item, ResearchItems.of(item), count)));
+        levers.sort((a, b) -> a.elements().tier() != b.elements().tier() ? a.elements().tier() - b.elements().tier()
+                : b.count() - a.count());
+        int pages = Math.max(0, (levers.size() - 1) / ITEM_COLUMNS - ITEM_ROWS + 1);
+        leverScroll = Mth.clamp(leverScroll, 0, pages);
     }
 
-    private static int order(Item item) {
-        int i = 0;
-        for (Item canonical : ResearchItems.canonical().keySet()) {
-            if (canonical == item) {
-                return i;
-            }
-            i++;
+    /** Every section the next symbol can reach with a studied item from the inventory, plain or ground in the mortar. */
+    private Map<Integer, List<BoardView.Move>> computeMoves(RuneBoard current, ResearchSheet sheet) {
+        Map<Integer, List<BoardView.Move>> out = new LinkedHashMap<>();
+        if (missingDiary() != null || sheet.isOver() || (!sheet.isOpen() && missing() != null)) {
+            return out;
         }
-        return Integer.MAX_VALUE;
-    }
-
-    @Nullable
-    private ItemEntry hoveredItem(double mouseX, double mouseY) {
-        for (int i = 0; i < ITEM_COLUMNS * ITEM_ROWS; i++) {
-            int index = itemScroll * ITEM_COLUMNS + i;
-            if (index >= items.size()) {
-                break;
-            }
-            int x = leftPos + ITEMS_X + i % ITEM_COLUMNS * 18;
-            int y = topPos + ITEMS_Y + i / ITEM_COLUMNS * 18;
-            if (isOver(mouseX, mouseY, x - 1, y - 1, 18, 18)) {
-                return items.get(index);
+        ResearchSheet from = sheet;
+        if (!sheet.isOpen()) {
+            from = new ResearchSheet();
+            from.begin(current.par().sheet() + toolLevel(ResearchTool.STRETCHER));
+        }
+        if (!from.canWrite()) {
+            return out;
+        }
+        int mortar = toolLevel(ResearchTool.MORTAR);
+        for (Lever lever : levers) {
+            for (boolean ground : new boolean[]{false, true}) {
+                if (ground && mortar < lever.elements().tier()) {
+                    continue;
+                }
+                HexGrid.Walk walk = from.preview(current, lever.elements(), ground);
+                if (walk.end() == from.from()) {
+                    continue;
+                }
+                out.computeIfAbsent(walk.end(), k -> new ArrayList<>()).add(new BoardView.Move(lever.item(), lever.elements(), ground, walk));
             }
         }
-        return null;
+        return out;
     }
 
-    private void renderPanelEmpty(GuiGraphics graphics) {
-        graphics.drawString(font, Component.translatable(KEY + "goal.none"), leftPos + PANEL_X + 6, topPos + 28, 0xFF000000 | TEXT_MUTED, false);
-        renderItems(graphics, null, null, -1, -1);
-        renderMessage(graphics, message.getString().isEmpty() ? Component.translatable(KEY + "hint.book") : message);
-    }
-
-    private void renderPanel(GuiGraphics graphics, RuneBoard current, ResearchSheet sheet, int mouseX, int mouseY) {
-        if (current.isItemStudy()) {
-            renderItemPanel(graphics, current, sheet, mouseX, mouseY);
-            return;
-        }
+    private void renderRunePanel(GuiGraphics graphics, RuneBoard current, ResearchSheet sheet, int mouseX, int mouseY) {
         ComplexRune rune = current.rune();
         RuneKnowledge knowledge = ClientKnowledge.get();
         int x0 = leftPos + PANEL_X;
         int y0 = topPos;
-        // Goal: the rune, its kind and stars.
         graphics.fill(x0 + 4, y0 + 27, x0 + 34, y0 + 57, PixelArt.argb(PixelArt.mix(rune.color(), 0x1C130B, 0.75F), 1));
         PixelArt.glyph(graphics, rune, x0 + 6, y0 + 29, 26, PixelArt.argb(rune.color(), 1), 0xFF000000);
         graphics.drawString(font, Component.translatable(rune.translationKey()).withStyle(ChatFormatting.BOLD), x0 + 40, y0 + 28,
@@ -494,7 +522,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 Component.translatable(rune.target().translationKey())), x0 + 40, y0 + 38, 0xFF000000 | TEXT_MUTED, false);
         graphics.drawString(font, starsText(knowledge.stars(rune)), x0 + 40, y0 + 48, 0xFFFFFFFF, false);
 
-        // Meter: one pip per symbol the sheet holds, tinted by the star they still allow.
         RuneBoard.Par par = current.par();
         int cap = sheet.isOpen() ? sheet.cap() : par.sheet() + toolLevel(ResearchTool.STRETCHER);
         int used = sheet.isOpen() ? sheet.used() : 0;
@@ -503,8 +530,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             int color = i < par.three() ? 0xD6AB52 : i < par.two() ? 0xB8C4CC : 0x6E4D2A;
             int px = x0 + 6 + i * step;
             int py = y0 + 65;
-            boolean done = i < used;
-            graphics.fill(px, py, px + step - 1, py + 7, PixelArt.argb(done ? 0xF0E3C2 : PixelArt.mix(color, 0x1C130B, 0.45F), 1));
+            graphics.fill(px, py, px + step - 1, py + 7, PixelArt.argb(i < used ? 0xF0E3C2 : PixelArt.mix(color, 0x1C130B, 0.45F), 1));
             graphics.fill(px, py + 7, px + step - 1, py + 8, PixelArt.argb(color, 1));
         }
         MutableComponent meter = Component.translatable(KEY + "meter", used, cap).withColor(TEXT).append("  ")
@@ -512,38 +538,33 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 .append(Component.literal("★★≤" + par.two()).withColor(0xC8D2DA));
         graphics.drawString(font, meter, x0 + 6, y0 + 75, 0xFFFFFFFF, false);
 
-        // Points: radical, resource and its button.
         for (int i = 0; i < current.points().size(); i++) {
             RuneBoard.Point point = current.points().get(i);
             int px = x0 + 6 + i % 2 * 104;
             int py = y0 + POINTS_Y + i / 2 * 19;
             boolean filled = sheet.isOpen() && sheet.isFilled(i);
             boolean ready = sheet.isActive() && sheet.ready(current, i);
+            boolean known = studied(point.resource());
             PixelArt.radical(graphics, point.element(), px, py + 4, 9, PixelArt.argb(point.element().color(), filled ? 0.5F : 1));
-            ItemStack resource = new ItemStack(point.resource());
-            graphics.renderItem(resource, px + 12, py);
+            graphics.renderItem(new ItemStack(point.resource()), px + 12, py);
             int have = count(point.resource());
             graphics.drawString(font, String.valueOf(have), px + 30, py + 5, have > 0 ? 0xFFE8D9B5 : 0xFFE06A5A, false);
-            if (filled) {
-                graphics.drawString(font, "✔", px + 50, py + 5, 0xFF8FE07A, false);
-            } else {
-                Component label = Component.translatable(KEY + "leave");
-                buttons.add(new PanelButton(px + 46, py + 1, 50, label, ready && have > 0,
-                        leaveAction(i), Component.translatable(ready ? KEY + "leave.tooltip" : KEY + "leave.cover",
-                        point.resource().getDescription(), ResearchText.element(point.element()))));
-            }
-            if (isOver(mouseX, mouseY, px, py, 44, 17)) {
+            Component status = filled ? Component.literal("✔").withColor(0x8FE07A)
+                    : !known ? Component.translatable(KEY + "point.unstudied").withColor(0xE06A5A)
+                    : ready ? Component.translatable(KEY + "point.ready").withColor(0xFFD36E)
+                    : Component.translatable(KEY + "point.open").withColor(TEXT_MUTED);
+            graphics.drawString(font, status, px + 46, py + 5, 0xFFFFFFFF, false);
+            if (isOver(mouseX, mouseY, px, py, 100, 17)) {
                 pendingTooltip = List.of(Component.translatable(KEY + "point", ResearchText.element(point.element())),
-                        point.resource().getDescription().copy().withStyle(ChatFormatting.GRAY));
+                        point.resource().getDescription().copy().withStyle(ChatFormatting.GRAY),
+                        Component.translatable(!known ? KEY + "point.unstudied.tooltip" : ready ? KEY + "point.ready.tooltip"
+                                : KEY + "point.open.tooltip").withStyle(ChatFormatting.DARK_GRAY));
             }
         }
 
-        // Buttons: a new sheet, the scraper, the mortar.
-        Requirement missing = minecraft.player == null ? null : Requirement.firstMissing(menu.table(), minecraft.player);
-        Component sheetLabel = Component.translatable(sheet.isActive() ? KEY + "sheet.burn" : KEY + "sheet.take");
-        buttons.add(new PanelButton(x0 + 6, y0 + BUTTONS_Y, 80, sheetLabel, missing == null,
+        buttons.add(new PanelButton(x0 + 6, y0 + BUTTONS_Y, 80, Component.translatable(KEY + "sheet.new"), sheet.isOpen(),
                 () -> send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.NEW_SHEET, 0)),
-                missing != null ? Component.translatable(missing.translationKey()) : Component.translatable(KEY + "sheet.tooltip")));
+                Component.translatable(KEY + "sheet.tooltip")));
         int scraper = toolLevel(ResearchTool.SCRAPER);
         if (scraper > 0) {
             int left = Math.max(0, scraper - sheet.scrapes());
@@ -552,154 +573,162 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                     () -> send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.SCRAPE, 0)),
                     Component.translatable(KEY + "scrape.tooltip")));
         }
-        if (toolLevel(ResearchTool.MORTAR) > 0) {
-            buttons.add(new PanelButton(x0 + 152, y0 + BUTTONS_Y, 54, Component.translatable(grind ? KEY + "grind.on" : KEY + "grind.off"),
-                    true, () -> grind = !grind, Component.translatable(KEY + "grind.tooltip", toolLevel(ResearchTool.MORTAR))));
-        }
         for (PanelButton button : buttons) {
             renderButton(graphics, button, mouseX, mouseY);
         }
-
-        renderItems(graphics, current, sheet, mouseX, mouseY);
-        renderMessage(graphics, messageFor(current, sheet, missing));
+        renderLevers(graphics, mouseX, mouseY);
+        renderMessage(graphics, runeMessage(sheet));
     }
 
-    /** The panel of an item's parchment: the item, the sheet's room and its hidden elements. */
-    private void renderItemPanel(GuiGraphics graphics, RuneBoard current, ResearchSheet sheet, int mouseX, int mouseY) {
+    private Component runeMessage(ResearchSheet sheet) {
+        Requirement missing = missing();
+        if (missing != null && !sheet.isActive()) {
+            return Component.translatable(missing.translationKey());
+        }
+        if (!message.getString().isEmpty()) {
+            return message;
+        }
+        if (levers.isEmpty()) {
+            return Component.translatable(KEY + "hint.no_levers");
+        }
+        if (sheet.isOver()) {
+            return Component.translatable(KEY + "hint.over");
+        }
+        return Component.translatable(sheet.isOpen() ? KEY + "hint.write" : KEY + "hint.start");
+    }
+
+    /** The studied items in the inventory, for reference: hover one to see its elements. */
+    private void renderLevers(GuiGraphics graphics, int mouseX, int mouseY) {
+        for (int i = 0; i < ITEM_COLUMNS * ITEM_ROWS; i++) {
+            int index = leverScroll * ITEM_COLUMNS + i;
+            if (index >= levers.size()) {
+                break;
+            }
+            Lever lever = levers.get(index);
+            int x = leftPos + ITEMS_X + i % ITEM_COLUMNS * 18;
+            int y = topPos + ITEMS_Y + i / ITEM_COLUMNS * 18;
+            ItemStack stack = new ItemStack(lever.item(), lever.count());
+            graphics.renderItem(stack, x, y);
+            graphics.renderItemDecorations(font, stack, x, y);
+            if (isOver(mouseX, mouseY, x - 1, y - 1, 18, 18)) {
+                graphics.fill(x, y, x + 16, y + 16, 0x60FFFFFF);
+                pendingTooltip = List.of(lever.item().getDescription(), ResearchText.elements(lever.elements()),
+                        Component.translatable(KEY + "item.tier." + lever.elements().tier()).withStyle(ChatFormatting.DARK_GRAY));
+            }
+        }
+        if (levers.isEmpty()) {
+            List<FormattedCharSequence> lines = font.split(Component.translatable(KEY + "levers.none"), 196);
+            for (int i = 0; i < lines.size() && i < 5; i++) {
+                graphics.drawString(font, lines.get(i), leftPos + PANEL_X + 8, topPos + ITEMS_Y + 1 + i * 10, 0xFF000000 | TEXT_MUTED, false);
+            }
+        }
+        int pages = Math.max(0, (levers.size() - 1) / ITEM_COLUMNS - ITEM_ROWS + 1);
+        Component label = pages > 0 ? Component.translatable(KEY + "levers").append(" " + (leverScroll + 1) + "/" + (pages + 1))
+                : Component.translatable(KEY + "levers");
+        graphics.drawString(font, label, leftPos + PANEL_X + PANEL_W - 4 - font.width(label), topPos + ITEMS_Y - 21, 0xFF000000 | TEXT_MUTED, true);
+    }
+
+    // ---- The item study -------------------------------------------------------------------------------------------
+
+    private void renderStudy(GuiGraphics graphics, ResearchTableBlockEntity table, int mouseX, int mouseY) {
+        ItemStudy study = table.study();
+        Item item = study.item();
+        ItemElements elements = ResearchItems.of(item);
+        if (elements == null) {
+            return;
+        }
+        board.observe(null, null, study);
+        int cell = overBoard(mouseX, mouseY) ? board.cellAt(mouseX, mouseY) : -1;
+        board.renderStudy(graphics, item, elements, study, cell);
+        if (cell >= 0) {
+            List<Component> lines = board.describeStudy(study, cell);
+            if (!lines.isEmpty()) {
+                pendingTooltip = lines;
+            }
+        }
+
         int x0 = leftPos + PANEL_X;
         int y0 = topPos;
-        ItemStack studied = new ItemStack(current.item());
+        ItemStack stack = new ItemStack(item);
         graphics.fill(x0 + 4, y0 + 27, x0 + 34, y0 + 57, 0xFF1C2A3A);
         graphics.pose().pushPose();
         graphics.pose().translate(x0 + 7, y0 + 30, 0);
         graphics.pose().scale(1.5F, 1.5F, 1);
-        graphics.renderItem(studied, 0, 0);
+        graphics.renderItem(stack, 0, 0);
         graphics.pose().popPose();
-        graphics.drawString(font, studied.getHoverName().copy().withStyle(ChatFormatting.BOLD), x0 + 40, y0 + 28, 0xFFE8D9B5, true);
+        graphics.drawString(font, stack.getHoverName().copy().withStyle(ChatFormatting.BOLD), x0 + 40, y0 + 28, 0xFFE8D9B5, true);
         graphics.drawString(font, Component.translatable(KEY + "study.goal"), x0 + 40, y0 + 38, 0xFF000000 | TEXT_MUTED, false);
-        int inSlot = menu.table().getItem(ResearchTableBlockEntity.STUDY).is(current.item())
-                ? menu.table().getItem(ResearchTableBlockEntity.STUDY).getCount() : 0;
-        graphics.drawString(font, Component.translatable(KEY + "study.in_slot", inSlot), x0 + 40, y0 + 48,
-                inSlot > 0 ? 0xFFB8A27A : 0xFFE06A5A, false);
+        graphics.drawString(font, Component.translatable(KEY + "study.marks", study.markCount(), ItemStudy.MAX_MARKS), x0 + 40, y0 + 48,
+                0xFF9FE3FF, false);
 
-        int cap = sheet.isOpen() ? sheet.cap() : current.par().sheet() + toolLevel(ResearchTool.STRETCHER);
-        int used = sheet.isOpen() ? sheet.used() : 0;
-        int step = cap > 40 ? 4 : 5;
-        for (int i = 0; i < cap; i++) {
-            int px = x0 + 6 + i * step;
-            graphics.fill(px, y0 + 65, px + step - 1, y0 + 72, PixelArt.argb(i < used ? 0xF0E3C2 : 0x3A2E40, 1));
-            graphics.fill(px, y0 + 72, px + step - 1, y0 + 73, PixelArt.argb(0x8A7AB8, 1));
+        // Listens: cyan for the ones left.
+        int total = study.maxListens();
+        for (int i = 0; i < total; i++) {
+            boolean left = i >= study.listens();
+            PixelArt.hex(graphics, x0 + 11 + i * 12, y0 + 69, 9, PixelArt.argb(left ? 0x5CC8F2 : 0x2A2240, 1),
+                    PixelArt.argb(left ? 0x2B8FB8 : 0x4A3A66, 1));
         }
-        graphics.drawString(font, Component.translatable(KEY + "meter", used, cap), x0 + 6, y0 + 75, 0xFF000000 | TEXT, false);
+        graphics.drawString(font, Component.translatable(KEY + "study.listens", study.listensLeft(), total), x0 + 6, y0 + 76,
+                0xFF000000 | TEXT, false);
 
-        for (int i = 0; i < current.points().size(); i++) {
-            RuneBoard.Point point = current.points().get(i);
+        // The hidden elements: revealed ones by sign and strength.
+        int i = 0;
+        for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
             int px = x0 + 6 + i % 2 * 104;
             int py = y0 + POINTS_Y + i / 2 * 19;
-            boolean revealed = sheet.isOpen() && sheet.isFilled(i);
-            if (revealed) {
-                PixelArt.radical(graphics, point.element(), px, py + 4, 9, PixelArt.argb(point.element().color(), 1));
-                graphics.drawString(font, ResearchText.element(point.element()).append(" " + point.strength()), px + 13, py + 5, 0xFFFFFFFF, false);
+            if (study.isRevealed(entry.getKey())) {
+                PixelArt.radical(graphics, entry.getKey(), px, py + 4, 9, PixelArt.argb(entry.getKey().color(), 1));
+                graphics.drawString(font, ResearchText.element(entry.getKey()).append(" " + entry.getValue()), px + 13, py + 5, 0xFFFFFFFF, false);
             } else {
-                graphics.drawString(font, "?", px + 2, py + 5, 0xFF9A90B8, false);
+                PixelArt.hex(graphics, px + 4, py + 8, 11, PixelArt.argb(0x2A2240, 1), PixelArt.argb(0x8A7AB8, 1));
+                graphics.drawString(font, "?", px + 2, py + 4, 0xFFD8CCF8, false);
                 graphics.drawString(font, Component.translatable(KEY + "study.hidden"), px + 13, py + 5, 0xFF8A7AB8, false);
             }
+            i++;
         }
 
-        Requirement missing = minecraft.player == null ? null : Requirement.firstMissing(menu.table(), minecraft.player);
-        Component sheetLabel = Component.translatable(sheet.isActive() ? KEY + "sheet.burn" : KEY + "sheet.take");
-        buttons.add(new PanelButton(x0 + 6, y0 + BUTTONS_Y, 80, sheetLabel, missing == null,
-                () -> send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.NEW_SHEET, 0)),
-                missing != null ? Component.translatable(missing.translationKey()) : Component.translatable(KEY + "sheet.tooltip")));
-        int scraper = toolLevel(ResearchTool.SCRAPER);
-        if (scraper > 0) {
-            int left = Math.max(0, scraper - sheet.scrapes());
-            buttons.add(new PanelButton(x0 + 90, y0 + BUTTONS_Y, 58, Component.translatable(KEY + "scrape", left),
-                    sheet.isActive() && left > 0 && !sheet.marks().isEmpty(),
-                    () -> send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.SCRAPE, 0)),
-                    Component.translatable(KEY + "scrape.tooltip")));
-        }
-        if (toolLevel(ResearchTool.MORTAR) > 0) {
-            buttons.add(new PanelButton(x0 + 152, y0 + BUTTONS_Y, 54, Component.translatable(grind ? KEY + "grind.on" : KEY + "grind.off"),
-                    true, () -> grind = !grind, Component.translatable(KEY + "grind.tooltip", toolLevel(ResearchTool.MORTAR))));
+        if (study.isActive(elements)) {
+            buttons.add(new PanelButton(x0 + 6, y0 + BUTTONS_Y, 90, Component.translatable(KEY + "study.listen"), study.markCount() > 0,
+                    () -> send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.LISTEN, 0)),
+                    Component.translatable(study.started() ? KEY + "study.listen.tooltip" : KEY + "study.listen.first")));
+        } else {
+            ItemStack slot = menu.table().getItem(ResearchTableBlockEntity.STUDY);
+            boolean again = !slot.isEmpty() && !studied(slot.getItem());
+            buttons.add(new PanelButton(x0 + 6, y0 + BUTTONS_Y, 90, Component.translatable(KEY + "study.again"), again,
+                    this::startStudy, Component.translatable(again ? KEY + "study.button.tooltip" : KEY + "study.button.empty")));
         }
         for (PanelButton button : buttons) {
             renderButton(graphics, button, mouseX, mouseY);
         }
-        renderItems(graphics, current, sheet, mouseX, mouseY);
-        renderMessage(graphics, !message.getString().isEmpty() ? message
-                : Component.translatable(sheet.isOpen() ? KEY + "study.hint.write" : KEY + "hint.take"));
-    }
 
-    private Runnable leaveAction(int point) {
-        return () -> send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.LEAVE, point));
-    }
+        // A small legend of the echoes.
+        int lx = x0 + 8;
+        int ly = topPos + ITEMS_Y + 1;
+        PixelArt.hex(graphics, lx + 5, ly + 4, 11, PixelArt.argb(0xFFE08A, 1), PixelArt.argb(0xC88A12, 1));
+        graphics.drawString(font, Component.translatable(KEY + "study.legend.exact"), lx + 14, ly, 0xFF000000 | TEXT, false);
+        PixelArt.hexRing(graphics, lx + 5, ly + 22, 11, PixelArt.argb(0x9FE3FF, 1));
+        graphics.drawString(font, "›", lx + 3, ly + 17, 0xFF9FE3FF, false);
+        graphics.drawString(font, Component.translatable(KEY + "study.legend.hum"), lx + 14, ly + 18, 0xFF000000 | TEXT, false);
+        graphics.drawString(font, "×", lx + 3, ly + 35, 0xFF9A8A80, false);
+        graphics.drawString(font, Component.translatable(KEY + "study.legend.silent"), lx + 14, ly + 36, 0xFF000000 | TEXT, false);
 
-    @Nullable
-    private List<Component> pendingTooltip;
-
-    private Component messageFor(RuneBoard current, ResearchSheet sheet, @Nullable Requirement missing) {
+        Component hint;
         if (!message.getString().isEmpty()) {
-            return message;
+            hint = message;
+        } else if (study.won(elements)) {
+            hint = Component.translatable(KEY + "study.hint.won");
+        } else if (study.lost(elements)) {
+            hint = Component.translatable(KEY + "study.hint.lost");
+        } else {
+            hint = Component.translatable(KEY + "study.hint");
         }
-        if (!sheet.isOpen()) {
-            return missing != null ? Component.translatable(missing.translationKey()) : Component.translatable(KEY + "hint.take");
-        }
-        return Component.translatable(KEY + "hint.write");
+        renderMessage(graphics, hint);
     }
 
-    private void renderItems(GuiGraphics graphics, @Nullable RuneBoard current, @Nullable ResearchSheet sheet, int mouseX, int mouseY) {
-        RuneKnowledge knowledge = ClientKnowledge.get();
-        boolean canWrite = sheet != null && sheet.canWrite();
-        for (int i = 0; i < ITEM_COLUMNS * ITEM_ROWS; i++) {
-            int index = itemScroll * ITEM_COLUMNS + i;
-            if (index >= items.size()) {
-                break;
-            }
-            ItemEntry entry = items.get(index);
-            int x = leftPos + ITEMS_X + i % ITEM_COLUMNS * 18;
-            int y = topPos + ITEMS_Y + i / ITEM_COLUMNS * 18;
-            ItemStack stack = new ItemStack(entry.item(), entry.count());
-            graphics.renderItem(stack, x, y);
-            graphics.renderItemDecorations(font, stack, x, y);
-            if (!canWrite) {
-                graphics.fill(x, y, x + 16, y + 16, 0x80140C06);
-            } else if (canGrind(entry.elements())) {
-                graphics.drawString(font, "½", x, y, 0xFF7EF0FF, true);
-            }
-            if (!knowledge.knowsItem(BuiltInRegistries.ITEM.getKey(entry.item()))) {
-                graphics.drawString(font, "?", x + 11, y - 1, 0xFFE0A21C, true);
-            }
-            if (isOver(mouseX, mouseY, x - 1, y - 1, 18, 18)) {
-                graphics.fill(x, y, x + 16, y + 16, 0x60FFFFFF);
-                List<Component> lines = new ArrayList<>();
-                lines.add(entry.item().getDescription());
-                if (knowledge.knowsItem(BuiltInRegistries.ITEM.getKey(entry.item()))) {
-                    lines.add(ResearchText.elements(entry.elements()));
-                } else {
-                    lines.add(Component.translatable(KEY + "item.unknown").withStyle(ChatFormatting.GRAY));
-                }
-                lines.add(Component.translatable(KEY + "item.tier." + entry.elements().tier()).withStyle(ChatFormatting.DARK_GRAY));
-                lines.add(Component.translatable(canWrite ? KEY + "item.write" : KEY + "item.no_sheet").withStyle(ChatFormatting.DARK_GRAY));
-                pendingTooltip = lines;
-            }
-        }
-        if (items.isEmpty()) {
-            List<FormattedCharSequence> lines = font.split(Component.translatable(KEY + "items.none"), 196);
-            for (int i = 0; i < lines.size(); i++) {
-                graphics.drawString(font, lines.get(i), leftPos + PANEL_X + 8, topPos + ITEMS_Y + 4 + i * 10, 0xFF000000 | TEXT_MUTED, false);
-            }
-        }
-        int pages = Math.max(0, (items.size() - 1) / ITEM_COLUMNS - ITEM_ROWS + 1);
-        if (pages > 0) {
-            Component scroll = Component.literal((itemScroll + 1) + "/" + (pages + 1));
-            graphics.drawString(font, scroll, leftPos + PANEL_X + PANEL_W - 4 - font.width(scroll), topPos + ITEMS_Y - 10,
-                    0xFF000000 | TEXT_MUTED, true);
-        }
-    }
+    // ---- Shared panel parts ---------------------------------------------------------------------------------------
 
     private void renderMessage(GuiGraphics graphics, Component text) {
-        int color = switch (tone) {
+        int color = text != message ? TEXT : switch (tone) {
             case GOOD -> 0x9FE3FF;
             case BAD -> 0xF3A59B;
             case WIN -> 0xFFD36E;
@@ -711,13 +740,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         for (int i = start; i < lines.size(); i++) {
             graphics.drawString(font, lines.get(i), leftPos + PANEL_X + 5, topPos + MESSAGE_Y + (i - start) * 9, 0xFF000000 | color, false);
         }
-        if (lines.size() > max && isOver(mouseXLast, mouseYLast, leftPos + PANEL_X, topPos + MESSAGE_Y - 3, PANEL_W, 32)) {
+        if (lines.size() > max && isOver(lastMouseX, lastMouseY, leftPos + PANEL_X, topPos + MESSAGE_Y - 3, PANEL_W, 32)) {
             pendingTooltip = List.of(text);
         }
     }
-
-    private int mouseXLast;
-    private int mouseYLast;
 
     private void renderButton(GuiGraphics graphics, PanelButton button, int mouseX, int mouseY) {
         int x = button.x();
@@ -729,32 +755,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         graphics.drawCenteredString(font, button.label(), x + button.width() / 2, y + 4, button.active() ? 0xFF2A1B0C : 0xFF5E4C34);
         if (hovered && button.tooltip() != null) {
             pendingTooltip = List.of(button.tooltip());
-        }
-    }
-
-    private void renderParchmentTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
-        mouseXLast = mouseX;
-        mouseYLast = mouseY;
-        if (pendingTooltip != null) {
-            List<FormattedCharSequence> lines = new ArrayList<>();
-            for (Component line : pendingTooltip) {
-                lines.addAll(font.split(line, 220));
-            }
-            graphics.renderTooltip(font, lines, mouseX, mouseY);
-            pendingTooltip = null;
-            return;
-        }
-        RuneBoard current = currentBoard();
-        ResearchTableBlockEntity table = table();
-        if (current == null || table == null || !isOver(mouseX, mouseY, leftPos + 4, topPos + 24, 244, 234)) {
-            return;
-        }
-        int cell = board.cellAt(mouseX, mouseY);
-        if (cell >= 0) {
-            List<Component> lines = board.describe(current, table.sheet(), cell, toolLevel(ResearchTool.FORK));
-            if (!lines.isEmpty()) {
-                graphics.renderComponentTooltip(font, lines, mouseX, mouseY);
-            }
         }
     }
 
@@ -793,60 +793,86 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 return true;
             }
         }
-        if (tab == Tab.BOOK) {
-            if (book.mouseClicked(mouseX, mouseY, button)) {
-                return true;
-            }
-        } else if (tab == Tab.PARCHMENT && button == 0 && parchmentClicked(mouseX, mouseY)) {
+        if (tab == Tab.BOOK && book.mouseClicked(mouseX, mouseY, button)) {
             return true;
-        } else if (tab == Tab.TABLE && button == 0) {
-            PanelButton study = studyButton();
-            if (isOver(mouseX, mouseY, study.x(), study.y(), study.width(), 16)) {
-                if (study.active()) {
-                    study.action().run();
-                    click();
+        }
+        if (tab != Tab.BOOK && button == 0) {
+            for (PanelButton panelButton : buttons) {
+                if (isOver(mouseX, mouseY, panelButton.x(), panelButton.y(), panelButton.width(), 16)) {
+                    if (panelButton.active()) {
+                        panelButton.action().run();
+                        click();
+                    }
+                    return true;
                 }
-                return true;
             }
+        }
+        if (tab == Tab.PARCHMENT && overBoard(mouseX, mouseY)) {
+            boardClicked(mouseX, mouseY, button);
+            return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    private boolean parchmentClicked(double mouseX, double mouseY) {
-        for (PanelButton panelButton : buttons) {
-            if (isOver(mouseX, mouseY, panelButton.x(), panelButton.y(), panelButton.width(), 16)) {
-                if (panelButton.active()) {
-                    panelButton.action().run();
-                    click();
-                }
-                return true;
-            }
-        }
+    /** A click on the parchment: write, leave, fork, or place a tuning mark. */
+    private void boardClicked(double mouseX, double mouseY, int button) {
         ResearchTableBlockEntity table = table();
-        RuneBoard current = currentBoard();
-        if (table == null || current == null) {
-            return false;
+        if (table == null) {
+            return;
         }
-        ItemEntry entry = hoveredItem(mouseX, mouseY);
-        if (entry != null) {
-            if (table.sheet().canWrite()) {
-                send(ResearchActionPayload.write(menu.pos(), entry.item(), canGrind(entry.elements())));
-            } else {
-                onMessage(Component.translatable(table.sheet().isOpen() ? KEY + "sheet.over" : KEY + "hint.take"),
-                        ResearchMessagePayload.Tone.BAD);
+        int cell = board.cellAt(mouseX, mouseY);
+        if (table.isStudyingItem()) {
+            if (button == 0 && cell >= 0 && ItemStudy.stringOf(cell) >= 0) {
+                send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.MARK, cell));
             }
-            return true;
+            return;
         }
-        if (isOver(mouseX, mouseY, leftPos + 4, topPos + 24, 244, 234)) {
-            int cell = board.cellAt(mouseX, mouseY);
-            int fork = toolLevel(ResearchTool.FORK);
-            if (cell >= 0 && table.sheet().canJump(current, cell, fork)) {
-                send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.JUMP, cell));
+        ComplexRune rune = table.sheet().rune();
+        RuneBoard current = rune == null ? null : RuneBoards.request(rune).getNow(null);
+        if (current == null || cell < 0) {
+            return;
+        }
+        ResearchSheet sheet = table.sheet();
+        if (button == 1) {
+            // Right click: the next of several items that reach this section.
+            List<BoardView.Move> options = moves.get(cell);
+            if (options != null && options.size() > 1) {
+                choice = (choice + 1) % options.size();
                 click();
             }
-            return true;
+            return;
         }
-        return false;
+        if (button != 0) {
+            return;
+        }
+        if (sheet.isOver()) {
+            send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.NEW_SHEET, 0));
+            message = Component.empty();
+            click();
+            return;
+        }
+        int point = current.pointAt(cell);
+        int fork = toolLevel(ResearchTool.FORK);
+        boolean canJump = fork > 0 && sheet.canJump(current, cell, fork);
+        if (point >= 0 && sheet.isActive() && sheet.ready(current, point)) {
+            send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.LEAVE, point));
+            return;
+        }
+        if (canJump && Screen.hasShiftDown()) {
+            send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.JUMP, cell));
+            click();
+            return;
+        }
+        BoardView.Move move = chosenMove(cell);
+        if (move != null) {
+            send(ResearchActionPayload.write(menu.pos(), move.item(), move.ground(), cell));
+            message = Component.empty();
+            return;
+        }
+        if (canJump) {
+            send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.JUMP, cell));
+            click();
+        }
     }
 
     @Override
@@ -871,14 +897,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return true;
         }
         if (tab == Tab.PARCHMENT && isOver(mouseX, mouseY, leftPos + PANEL_X, topPos + ITEMS_Y - 3, PANEL_W, 58)) {
-            itemScroll = Math.max(0, itemScroll - (int) Math.signum(scrollY));
+            leverScroll = Math.max(0, leverScroll - (int) Math.signum(scrollY));
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 }
