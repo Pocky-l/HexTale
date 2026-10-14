@@ -16,11 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   elements (coal pulls to fire, feathers to air...), every symbol starting where the last one landed. Cover the rune's
   points and leave the resources they ask for; dark runes block the ink, and a filled point dissolves the dark runes
   of its element. One sheet is one attempt; finish in fewer symbols for up to three stars.
-- Research book in the diary, in three chapters: First Signs, Craft and Depths. Each rune shows what it does, its star
-  thresholds and its resources; on the table it is sent to the parchment with one click.
+- The Researcher's Diary is a star book: a dark sky to drag around and zoom, where the 72 runes hang as stars in
+  constellations - Smelting and the tool runes in the centre, the other runes on the rays of their elements. Click a
+  star to see the rune; on the Research Table it goes to the parchment with one click.
+- Every item carries elements of different strength (base materials, then names and recipes for everything else).
+  Study an item at the Research Table: its elements hide as "?" on a small parchment, as far towards their corners as
+  they are strong - cover them all with symbols. A studied item shows its elements in its tooltip.
 - Five research tools crafted from the scrolls of the first runes - Researcher's Lens, Fork Quill, Mortar, Brass
   Scraper and Parchment Stretcher. They sit in the table's tool slots and grow stronger with their rune's stars.
 - Unstable hextech from lightning striking a lightning rod on an amethyst block.
-- Researcher's Diary with getting started pages, the nine elements, the research book, notes and milestones; brass,
-  hextech ink, rune brush and rune scrolls.
-- Item elements come from a data map (`hextale:elements`), so data packs can make more items into levers.
+- Brass, hextech ink, rune brush and rune scrolls.
+- Base item elements come from a data map (`hextale:elements`), so data packs can change them.

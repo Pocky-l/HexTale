@@ -200,6 +200,48 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = "empty", batch = "itemParchmentsHideEveryElement")
+    public static void itemParchmentsHideEveryElement(GameTestHelper helper) {
+        for (Item item : List.of(Items.GLASS, Items.IRON_BLOCK, Items.TNT, Items.OAK_LOG, Items.ELYTRA, Items.BOOKSHELF)) {
+            ItemElements elements = ResearchItems.of(item);
+            helper.assertTrue(elements != null, item + " carries elements");
+            RuneBoard board = RuneBoards.forItem(item, elements);
+            helper.assertTrue(board.isItemStudy() && board.points().size() == elements.elements().size(),
+                    item + ": one hidden point per element");
+            for (RuneBoard.Point point : board.points()) {
+                helper.assertTrue(point.resource() == null && elements.elements().get(point.element()) == point.strength(),
+                        item + ": the point holds the element's strength");
+            }
+            helper.assertTrue(route(board) != null, item + ": every hidden element can be reached");
+            helper.assertTrue(board.par().sheet() > board.par().plain(), item + ": the sheet leaves room for mistakes");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", batch = "studyingAnItemRevealsItsElements")
+    public static void studyingAnItemRevealsItsElements(GameTestHelper helper) {
+        ServerPlayer player = player(helper);
+        ResearchTableBlockEntity table = stockedTable(helper);
+        table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.GLASS, 3));
+        table.selectItem(player);
+        helper.assertTrue(table.sheet().item() == Items.GLASS && table.sheet().rune() == null, "glass lies on the table");
+        table.newSheet(player);
+        RuneBoard board = table.board();
+        helper.assertTrue(board != null && board.isItemStudy(), "an item's parchment");
+        List<Step> route = route(board);
+        helper.assertTrue(route != null, "glass can be studied");
+        play(table, player, route);
+        ResourceLocation glass = BuiltInRegistries.ITEM.getKey(Items.GLASS);
+        helper.assertTrue(table.sheet().complete(board), "every hidden element is revealed");
+        helper.assertTrue(Research.of(player).hasStudied(glass) && Research.of(player).knowsItem(glass), "glass is studied");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 2, "one glass went into the orb");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 3, "the orb stays");
+        table.selectItem(player);
+        helper.assertTrue(table.sheet().item() == Items.GLASS && table.sheet().isOver(), "a studied item is not studied again");
+        player.discard();
+        helper.succeed();
+    }
+
     // ---- The table ------------------------------------------------------------------------------------------------
 
     @GameTest(template = "empty", batch = "aFinishedSheetTeachesTheRune")

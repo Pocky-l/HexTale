@@ -5,7 +5,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 
 import com.pockyl.hextale.network.KnowledgeSyncPayload;
 import com.pockyl.hextale.network.ModNetwork;
@@ -37,6 +39,13 @@ public final class Research {
         int before = knowledge.runeCount();
         boolean fresh = knowledge.learn(rune, stars, symbols);
         progress(player, before, knowledge.runeCount());
+        sync(player);
+        return fresh;
+    }
+
+    /** Records a studied item: its tooltip shows its elements from now on. */
+    public static boolean study(ServerPlayer player, Item item) {
+        boolean fresh = of(player).study(BuiltInRegistries.ITEM.getKey(item));
         sync(player);
         return fresh;
     }

@@ -147,7 +147,11 @@ final class BoardView {
             int y = top + py(cell);
             SimpleRune wall = board.walls()[cell];
             int point = board.pointAt(cell);
-            if (point >= 0) {
+            if (point >= 0 && board.isItemStudy() && !sheet.isFilled(point)) {
+                // A hidden element: only its place is known.
+                PixelArt.hex(graphics, x, y, CELL, argb(0x2A2240, 0.85F), argb(PixelArt.mix(0x8A7AB8, 0xFFFFFF, 0.4F * pulse), 1));
+                graphics.drawString(font, "?", x - 2, y - 4, 0xFFD8CCF8, false);
+            } else if (point >= 0) {
                 RuneBoard.Point p = board.points().get(point);
                 int color = PixelArt.onParchment(p.element().color());
                 if (sheet.isFilled(point)) {
@@ -325,7 +329,15 @@ final class BoardView {
         SimpleRune wall = board.walls()[cell];
         int dissolved = board.dissolved(sheet.isOpen() ? sheet.filledMask() : 0);
         String key = "gui.hextale.research_table.cell.";
-        if (point >= 0) {
+        if (point >= 0 && board.isItemStudy()) {
+            RuneBoard.Point p = board.points().get(point);
+            if (sheet.isOpen() && sheet.isFilled(point)) {
+                lines.add(Component.translatable(key + "element", ResearchText.element(p.element()), p.strength()));
+            } else {
+                lines.add(Component.translatable(key + "hidden"));
+                lines.add(Component.translatable(key + "hidden.cover").withStyle(ChatFormatting.GRAY));
+            }
+        } else if (point >= 0) {
             RuneBoard.Point p = board.points().get(point);
             lines.add(Component.translatable(key + "point", ResearchText.element(p.element())));
             if (sheet.isOpen() && sheet.isFilled(point)) {

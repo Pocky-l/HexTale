@@ -7,16 +7,28 @@ import com.pockyl.hextale.rune.SimpleRune;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
- * The parchment of one rune: dark-rune walls (one element each), the points to cover and their resources, and the
- * star thresholds in symbols.
+ * A research parchment: dark-rune walls (one element each), the points to cover and their resources, and the star
+ * thresholds in symbols. It belongs either to a rune (learning it) or to an item (studying its elements).
  *
+ * @param rune   the rune studied, or null on an item's parchment
+ * @param item   the item studied, or null on a rune's parchment
  * @param walls  per section: the dark rune's element, or null for open parchment
- * @param points the rune's points; the first two are its action and target elements
+ * @param points the points; on a rune's parchment the first two are its action and target elements, on an item's
+ *               parchment one per element of the item, as far from the orb as the element is strong
  */
-public record RuneBoard(ComplexRune rune, SimpleRune[] walls, List<Point> points, Par par) {
-    /** A point to cover with a symbol; {@code resource} is left on it to fill it. */
-    public record Point(SimpleRune element, int cell, Item resource) {
+public record RuneBoard(@Nullable ComplexRune rune, @Nullable Item item, SimpleRune[] walls, List<Point> points, Par par) {
+    /**
+     * A point to cover with a symbol; {@code resource} is left on it to fill it. On an item's parchment there is no
+     * resource: covering the point reveals the element and its {@code strength}.
+     */
+    public record Point(SimpleRune element, int cell, @Nullable Item resource, int strength) {
+    }
+
+    public boolean isItemStudy() {
+        return item != null;
     }
 
     /**
@@ -31,7 +43,11 @@ public record RuneBoard(ComplexRune rune, SimpleRune[] walls, List<Point> points
     }
 
     public int tier() {
-        return ResearchBook.chapter(rune);
+        if (rune != null) {
+            return ResearchBook.chapter(rune);
+        }
+        ItemElements elements = ResearchItems.of(item);
+        return elements == null ? 1 : elements.tier();
     }
 
     /** Index of the point in this section, or -1. */

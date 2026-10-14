@@ -43,7 +43,8 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, Reso
         WRITE,
         LEAVE,
         SCRAPE,
-        JUMP
+        JUMP,
+        STUDY_ITEM
     }
 
     public static ResearchActionPayload of(BlockPos pos, Action action, int value) {
@@ -79,6 +80,7 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, Reso
             case LEAVE -> table.leave(player, payload.value());
             case SCRAPE -> table.scrape(player);
             case JUMP -> table.jump(player, payload.value());
+            case STUDY_ITEM -> table.selectItem(player);
         }
     }
 }
