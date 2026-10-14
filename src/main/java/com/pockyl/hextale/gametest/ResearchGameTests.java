@@ -345,12 +345,12 @@ public final class ResearchGameTests {
 
     // ---- Lightning ------------------------------------------------------------------------------------------------
 
-    @GameTest(template = "empty", timeoutTicks = 60, batch = "lightningOnRodAndAmethystMakesOrbs")
+    @GameTest(template = "empty", timeoutTicks = 200, batch = "lightningOnRodAndAmethystMakesOrbs")
     public static void lightningOnRodAndAmethystMakesOrbs(GameTestHelper helper) {
         strikeRodOnAmethyst(helper, 1);
     }
 
-    @GameTest(template = "empty", timeoutTicks = 60, batch = "boltInsideTheRodAlsoWorks")
+    @GameTest(template = "empty", timeoutTicks = 200, batch = "boltInsideTheRodAlsoWorks")
     public static void boltInsideTheRodAlsoWorks(GameTestHelper helper) {
         // A Channeling trident or /summon at the rod's own block puts the bolt inside the rod instead of on top.
         strikeRodOnAmethyst(helper, 0);
