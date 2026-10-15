@@ -9,14 +9,13 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
 
-@SuppressWarnings("DataFlowIssue")
 public final class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Hextale.MOD_ID);
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ResearchTableBlockEntity>> RESEARCH_TABLE =
             BLOCK_ENTITIES.register("research_table",
-                    () -> BlockEntityType.Builder.of(ResearchTableBlockEntity::new, ModBlocks.RESEARCH_TABLE.get()).build(null));
+                    () -> new BlockEntityType<>(ResearchTableBlockEntity::new, ModBlocks.RESEARCH_TABLE.get()));
 
     private ModBlockEntities() {
     }

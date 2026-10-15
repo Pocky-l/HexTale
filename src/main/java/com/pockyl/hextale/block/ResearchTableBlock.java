@@ -1,10 +1,8 @@
 package com.pockyl.hextale.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.WorldlyContainer;
@@ -16,6 +14,8 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -30,17 +30,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.registry.ModBlockEntities;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A two-block dark oak writing desk with brass trim: a drawer cabinet and a bookshelf under the top, a book rest for
@@ -49,8 +47,7 @@ import org.jetbrains.annotations.Nullable;
  * drawing screen and feed hoppers. Halves are placed and broken together, like a bed.
  */
 public class ResearchTableBlock extends BaseEntityBlock implements WorldlyContainerHolder {
-    public static final MapCodec<ResearchTableBlock> CODEC = simpleCodec(ResearchTableBlock::new);
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final EnumProperty<TablePart> PART = EnumProperty.create("part", TablePart.class);
     /** The main half glows faintly while an orb of unstable hextech lies on the desk. */
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
@@ -59,11 +56,6 @@ public class ResearchTableBlock extends BaseEntityBlock implements WorldlyContai
     public ResearchTableBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(PART, TablePart.MAIN).setValue(LIT, false));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override
@@ -83,9 +75,8 @@ public class ResearchTableBlock extends BaseEntityBlock implements WorldlyContai
                 Block.UPDATE_ALL);
     }
 
-    @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction facing = context.getHorizontalDirection().getOpposite();
         BlockPos side = context.getClickedPos().relative(TablePart.MAIN.toOther(facing));
         Level level = context.getLevel();
@@ -98,30 +89,30 @@ public class ResearchTableBlock extends BaseEntityBlock implements WorldlyContai
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             level.setBlock(pos.relative(TablePart.MAIN.toOther(state.getValue(FACING))), state.setValue(PART, TablePart.SIDE).setValue(LIT, false),
                     Block.UPDATE_ALL);
-            level.blockUpdated(pos, Blocks.AIR);
+            level.updateNeighborsAt(pos, Blocks.AIR);
             state.updateNeighbourShapes(level, pos, Block.UPDATE_ALL);
         }
     }
 
     /** A half whose partner is gone turns to air (the main half then drops the desk and its contents). */
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour, LevelAccessor level, BlockPos pos,
-                                     BlockPos neighbourPos) {
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
+                                     BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
         TablePart part = state.getValue(PART);
         if (direction == part.toOther(state.getValue(FACING))) {
             boolean partner = neighbour.is(this) && neighbour.getValue(PART) != part && neighbour.getValue(FACING) == state.getValue(FACING);
             return partner ? state : Blocks.AIR.defaultBlockState();
         }
-        return super.updateShape(state, direction, neighbour, level, pos, neighbourPos);
+        return super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbour, random);
     }
 
     /** In creative, breaking the side half must not let the main half drop the desk. */
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide && player.isCreative() && state.getValue(PART) == TablePart.SIDE) {
+        if (!level.isClientSide() && player.isCreative() && state.getValue(PART) == TablePart.SIDE) {
             BlockPos main = mainPos(state, pos);
             BlockState mainState = level.getBlockState(main);
             if (mainState.is(this) && mainState.getValue(PART) == TablePart.MAIN) {
@@ -157,19 +148,17 @@ public class ResearchTableBlock extends BaseEntityBlock implements WorldlyContai
         return RenderShape.MODEL;
     }
 
-    @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return state.getValue(PART) == TablePart.MAIN ? new ResearchTableBlockEntity(pos, state) : null;
     }
 
-    @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (state.getValue(PART) != TablePart.MAIN) {
             return null;
         }
-        return level.isClientSide
+        return level.isClientSide()
                 ? createTickerHelper(type, ModBlockEntities.RESEARCH_TABLE.get(), ResearchTableBlockEntity::clientTick)
                 : createTickerHelper(type, ModBlockEntities.RESEARCH_TABLE.get(), ResearchTableBlockEntity::serverTick);
     }
@@ -177,24 +166,15 @@ public class ResearchTableBlock extends BaseEntityBlock implements WorldlyContai
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         BlockPos main = mainPos(state, pos);
-        if (!level.isClientSide && level.getBlockEntity(main) instanceof MenuProvider menu) {
+        if (!level.isClientSide() && level.getBlockEntity(main) instanceof MenuProvider menu) {
             player.openMenu(menu, buf -> buf.writeBlockPos(main));
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     /** Hoppers and droppers reach the table's slots through either half. */
-    @Nullable
     @Override
-    public WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
+    public @Nullable WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
         return level.getBlockEntity(mainPos(state, pos)) instanceof ResearchTableBlockEntity table ? table : null;
-    }
-
-    @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof ResearchTableBlockEntity table) {
-            Containers.dropContents(level, pos, table);
-        }
-        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 }

@@ -22,7 +22,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
-import org.joml.Vector3f;
 
 import com.pockyl.hextale.Config;
 import com.pockyl.hextale.Hextale;
@@ -86,7 +85,7 @@ public final class LightningEvents {
     public static void awaken(ServerLevel level, BlockPos pos) {
         BlockState crystal = level.getBlockState(pos);
         level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-        RandomSource random = level.random;
+        RandomSource random = level.getRandom();
         int min = Config.MIN_ORBS.get();
         int max = Math.max(min, Config.MAX_ORBS.get());
         int count = min + random.nextInt(max - min + 1);
@@ -100,7 +99,7 @@ public final class LightningEvents {
         }
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, crystal), centre.x, centre.y, centre.z, 40, 0.3, 0.3, 0.3, 0.15);
         level.sendParticles(ParticleTypes.ELECTRIC_SPARK, centre.x, centre.y, centre.z, 30, 0.4, 0.4, 0.4, 0.4);
-        level.sendParticles(new DustParticleOptions(new Vector3f(0.36F, 0.78F, 0.95F), 1.4F), centre.x, centre.y, centre.z,
+        level.sendParticles(new DustParticleOptions(0x5CC7F2, 1.4F), centre.x, centre.y, centre.z,
                 24, 0.35, 0.35, 0.35, 0.02);
         level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.BLOCKS, 1.6F, 0.8F);
         level.playSound(null, pos, ModSounds.ORB_AWAKEN.get(), SoundSource.BLOCKS, 2.0F, 1.0F);

@@ -16,7 +16,7 @@ public final class ModAttachments {
 
     /** A researcher's runes and diary notes; survives death. */
     public static final Supplier<AttachmentType<RuneKnowledge>> KNOWLEDGE = ATTACHMENT_TYPES.register("knowledge",
-            () -> AttachmentType.builder(() -> new RuneKnowledge()).serialize(RuneKnowledge.CODEC).copyOnDeath().build());
+            () -> AttachmentType.builder(() -> new RuneKnowledge()).serialize(RuneKnowledge.MAP_CODEC).copyOnDeath().build());
 
     private ModAttachments() {
     }

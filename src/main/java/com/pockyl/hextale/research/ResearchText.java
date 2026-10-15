@@ -2,6 +2,7 @@ package com.pockyl.hextale.research;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.Item;
 
 import com.pockyl.hextale.rune.SimpleRune;
 
@@ -10,6 +11,11 @@ import java.util.Map;
 /** Small text helpers shared by server messages and the screens. */
 public final class ResearchText {
     private ResearchText() {
+    }
+
+    /** An item's plain name (no stack data), as items had it before names became components. */
+    public static Component item(Item item) {
+        return item.getName(item.getDefaultInstance());
     }
 
     /** The element's name in its colour. */

@@ -1,7 +1,7 @@
 package com.pockyl.hextale;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
@@ -11,6 +11,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import org.slf4j.Logger;
 
+import com.pockyl.hextale.gametest.GameTests;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.registry.ModAttachments;
@@ -40,6 +41,7 @@ public final class Hextale {
         ModSounds.register(modBus);
         ModTriggers.register(modBus);
         modBus.addListener(ModNetwork::register);
+        GameTests.register(modBus);
         modBus.addListener(ModDataMaps::register);
         modBus.addListener(Hextale::addToVanillaTabs);
         PockyModsTab.register(modBus, () -> new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), output -> {
@@ -56,7 +58,7 @@ public final class Hextale {
             output.accept(exampleScroll());
         });
 
-        container.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        container.registerConfig(ModConfig.Type.SYNCED, Config.SPEC);
     }
 
     /** A scroll of "Smelting" shows players what scrolls look like; real ones come from the Research Table. */
@@ -76,7 +78,7 @@ public final class Hextale {
         }
     }
 
-    public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 }

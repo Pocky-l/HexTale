@@ -6,11 +6,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
 import com.pockyl.hextale.knowledge.Research;
@@ -18,9 +19,9 @@ import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.network.OpenDiaryPayload;
 import com.pockyl.hextale.registry.ModDataComponents;
 
-import java.util.List;
+import java.util.function.Consumer;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The researcher's diary. It is signed by the first player who opens it; everything in it is that player's knowledge,
@@ -31,8 +32,7 @@ public class ResearchersDiaryItem extends Item {
         super(properties);
     }
 
-    @Nullable
-    public static DiaryOwner owner(ItemStack stack) {
+    public static @Nullable DiaryOwner owner(ItemStack stack) {
         return stack.get(ModDataComponents.DIARY_OWNER.get());
     }
 
@@ -58,15 +58,16 @@ public class ResearchersDiaryItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
+                                TooltipFlag flag) {
         DiaryOwner owner = owner(stack);
-        tooltip.add((owner == null ? Component.translatable("item.hextale.researchers_diary.unsigned")
+        tooltip.accept((owner == null ? Component.translatable("item.hextale.researchers_diary.unsigned")
                 : Component.translatable("item.hextale.researchers_diary.signed", owner.name())).withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("item.hextale.researchers_diary.read").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("item.hextale.researchers_diary.read").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player instanceof ServerPlayer serverPlayer) {
             if (sign(stack, serverPlayer)) {
@@ -74,11 +75,11 @@ public class ResearchersDiaryItem extends Item {
             }
             DiaryOwner owner = owner(stack);
             if (owner != null && !owner.is(player)) {
-                serverPlayer.displayClientMessage(Component.translatable("item.hextale.researchers_diary.foreign", owner.name()), true);
-                return InteractionResultHolder.fail(stack);
+                serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.researchers_diary.foreign", owner.name()));
+                return InteractionResult.FAIL;
             }
-            ModNetwork.sendToPlayer(serverPlayer, new OpenDiaryPayload(owner == null ? player.getGameProfile().getName() : owner.name()));
+            ModNetwork.sendToPlayer(serverPlayer, new OpenDiaryPayload(owner == null ? player.getGameProfile().name() : owner.name()));
         }
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 }

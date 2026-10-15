@@ -6,7 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -23,17 +23,17 @@ import com.pockyl.hextale.rune.ComplexRunes;
  * @param item  the item that writes (WRITE)
  * @param ground whether the item is ground in the mortar first (WRITE)
  */
-public record ResearchActionPayload(BlockPos pos, Action action, int value, ResourceLocation item, boolean ground)
+public record ResearchActionPayload(BlockPos pos, Action action, int value, Identifier item, boolean ground)
         implements CustomPacketPayload {
     public static final Type<ResearchActionPayload> TYPE = new Type<>(Hextale.id("research_action"));
-    private static final ResourceLocation NONE = ResourceLocation.withDefaultNamespace("air");
+    private static final Identifier NONE = Identifier.withDefaultNamespace("air");
 
     public static final StreamCodec<ByteBuf, ResearchActionPayload> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, ResearchActionPayload::pos,
             ByteBufCodecs.VAR_INT.map(i -> Action.values()[Math.floorMod(i, Action.values().length)], Action::ordinal),
             ResearchActionPayload::action,
             ByteBufCodecs.VAR_INT, ResearchActionPayload::value,
-            ResourceLocation.STREAM_CODEC, ResearchActionPayload::item,
+            Identifier.STREAM_CODEC, ResearchActionPayload::item,
             ByteBufCodecs.BOOL, ResearchActionPayload::ground,
             ResearchActionPayload::new);
 

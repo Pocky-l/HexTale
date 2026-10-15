@@ -5,8 +5,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /** A lumpy orb of lightning-awakened amethyst; it listens to runes drawn next to it. */
 public class UnstableHextechItem extends Item {
@@ -15,7 +16,8 @@ public class UnstableHextechItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.hextale.unstable_hextech.tooltip").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
+                                TooltipFlag flag) {
+        tooltip.accept(Component.translatable("item.hextale.unstable_hextech.tooltip").withStyle(ChatFormatting.GRAY));
     }
 }

@@ -1,11 +1,12 @@
 package com.pockyl.hextale.knowledge;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
@@ -30,12 +31,13 @@ import java.util.Set;
 public final class RuneKnowledge {
     private static final Codec<Map<String, Integer>> INT_MAP = Codec.unboundedMap(Codec.STRING, Codec.INT);
     private static final Codec<Map<String, List<Long>>> BITS_MAP = Codec.unboundedMap(Codec.STRING, Codec.LONG.listOf());
-    public static final Codec<RuneKnowledge> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<RuneKnowledge> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             INT_MAP.optionalFieldOf("stars", Map.of()).forGetter(k -> k.starsByKey()),
             INT_MAP.optionalFieldOf("best", Map.of()).forGetter(k -> k.bestByKey()),
             BITS_MAP.optionalFieldOf("seen", Map.of()).forGetter(RuneKnowledge::seenByKey),
             Codec.STRING.listOf().optionalFieldOf("studied", List.of()).forGetter(k -> List.copyOf(k.studied))
     ).apply(instance, RuneKnowledge::new));
+    public static final Codec<RuneKnowledge> CODEC = MAP_CODEC.codec();
 
     private static final StreamCodec<ByteBuf, List<String>> STRINGS = ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list(4096));
     private static final StreamCodec<ByteBuf, Map<String, Integer>> INTS =
@@ -152,12 +154,12 @@ public final class RuneKnowledge {
     }
 
     /** Whether the item's elements are studied: only studied items show their step and can write on the parchment. */
-    public boolean hasStudied(ResourceLocation item) {
+    public boolean hasStudied(Identifier item) {
         return studied.contains(item.toString());
     }
 
     /** @return whether the item was new */
-    public boolean study(ResourceLocation item) {
+    public boolean study(Identifier item) {
         return studied.add(item.toString());
     }
 

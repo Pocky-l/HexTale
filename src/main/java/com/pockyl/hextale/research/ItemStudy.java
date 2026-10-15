@@ -1,10 +1,9 @@
 package com.pockyl.hextale.research;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 
 import com.pockyl.hextale.rune.SimpleRune;
@@ -297,8 +296,7 @@ public final class ItemStudy {
         return out;
     }
 
-    public CompoundTag save() {
-        CompoundTag tag = new CompoundTag();
+    public void save(ValueOutput tag) {
         if (item != null) {
             tag.putString("item", BuiltInRegistries.ITEM.getKey(item).toString());
         }
@@ -313,27 +311,24 @@ public final class ItemStudy {
         tag.putInt("guesses", guesses);
         tag.putInt("max_guesses", maxGuesses);
         tag.putBoolean("started", started);
-        ListTag list = new ListTag();
+        ValueOutput.ValueOutputList list = tag.childrenList("marks");
         marks.forEach((cell, echo) -> {
-            CompoundTag entry = new CompoundTag();
+            ValueOutput entry = list.addChild();
             entry.putInt("cell", cell);
             entry.putInt("echo", echo.ordinal());
-            list.add(entry);
         });
-        tag.put("marks", list);
-        return tag;
     }
 
-    public void load(CompoundTag tag) {
+    public void load(ValueInput tag) {
         clear();
-        ResourceLocation id = tag.contains("item") ? ResourceLocation.tryParse(tag.getString("item")) : null;
+        Identifier id = tag.getString("item").map(Identifier::tryParse).orElse(null);
         item = id == null ? null : BuiltInRegistries.ITEM.getOptional(id).orElse(null);
-        int[] known = tag.getIntArray("presence");
+        int[] known = tag.getIntArray("presence").orElse(new int[0]);
         for (int i = 0; i < Math.min(known.length, presence.length); i++) {
             presence[i] = Presence.values()[Math.floorMod(known[i], Presence.values().length)];
         }
-        int[] savedLow = tag.getIntArray("low");
-        int[] savedHigh = tag.getIntArray("high");
+        int[] savedLow = tag.getIntArray("low").orElse(new int[0]);
+        int[] savedHigh = tag.getIntArray("high").orElse(new int[0]);
         for (int i = 0; i < STRINGS.length; i++) {
             if (i < savedLow.length) {
                 low[i] = savedLow[i];
@@ -342,15 +337,14 @@ public final class ItemStudy {
                 high[i] = savedHigh[i];
             }
         }
-        revealed = tag.getInt("revealed");
-        guesses = tag.getInt("guesses");
-        maxGuesses = tag.getInt("max_guesses");
-        started = tag.getBoolean("started");
-        for (Tag element : tag.getList("marks", Tag.TAG_COMPOUND)) {
-            CompoundTag entry = (CompoundTag) element;
-            int echo = entry.getInt("echo");
+        revealed = tag.getIntOr("revealed", 0);
+        guesses = tag.getIntOr("guesses", 0);
+        maxGuesses = tag.getIntOr("max_guesses", 0);
+        started = tag.getBooleanOr("started", false);
+        for (ValueInput entry : tag.childrenListOrEmpty("marks")) {
+            int echo = entry.getIntOr("echo", -1);
             if (echo >= 0 && echo < Echo.values().length) {
-                marks.put(entry.getInt("cell"), Echo.values()[echo]);
+                marks.put(entry.getIntOr("cell", 0), Echo.values()[echo]);
             }
         }
     }

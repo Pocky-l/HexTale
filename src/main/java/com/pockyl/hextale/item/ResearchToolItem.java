@@ -5,10 +5,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 import com.pockyl.hextale.research.ResearchTool;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /** A research tool: lies in its slot of the Research Table; its strength follows the stars of its rune. */
 public class ResearchToolItem extends Item {
@@ -26,13 +27,14 @@ public class ResearchToolItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
+                                TooltipFlag flag) {
         ResearchTool tool = tool();
-        tooltip.add(Component.translatable("item.hextale.research_tool.slot").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("item.hextale.research_tool.strength",
+        tooltip.accept(Component.translatable("item.hextale.research_tool.slot").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("item.hextale.research_tool.strength",
                 Component.translatable(tool.rune().translationKey()).withColor(tool.rune().color())).withStyle(ChatFormatting.GRAY));
         for (int level = 1; level <= 3; level++) {
-            tooltip.add(Component.literal("★".repeat(level) + " ").withStyle(ChatFormatting.GOLD)
+            tooltip.accept(Component.literal("★".repeat(level) + " ").withStyle(ChatFormatting.GOLD)
                     .append(Component.translatable(tool.translationKey() + ".level." + level).withStyle(ChatFormatting.DARK_GRAY)));
         }
     }

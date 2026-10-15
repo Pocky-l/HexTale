@@ -47,7 +47,7 @@ public final class HextaleCommand {
 
     private static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal(Hextale.MOD_ID)
-                .requires(source -> source.hasPermission(2))
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("runes")
                         .then(Commands.literal("list")
                                 .executes(context -> list(context.getSource(), context.getSource().getPlayerOrException())))
@@ -102,6 +102,6 @@ public final class HextaleCommand {
         MutableComponent hover = Component.literal(rune.key()).withStyle(ChatFormatting.GRAY).append("\n")
                 .append(Component.translatable(rune.translationKey() + ".effect").withStyle(ChatFormatting.WHITE));
         return Component.translatable(rune.translationKey())
-                .withStyle(style -> style.withColor(rune.color()).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover)));
+                .withStyle(style -> style.withColor(rune.color()).withHoverEvent(new HoverEvent.ShowText(hover)));
     }
 }

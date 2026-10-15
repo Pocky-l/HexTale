@@ -15,11 +15,11 @@ import com.pockyl.hextale.block.ResearchTableBlock;
 public final class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Hextale.MOD_ID);
 
-    public static final DeferredBlock<ResearchTableBlock> RESEARCH_TABLE = BLOCKS.register("research_table",
-            () -> new ResearchTableBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).instrument(NoteBlockInstrument.BASS)
+    public static final DeferredBlock<ResearchTableBlock> RESEARCH_TABLE = BLOCKS.registerBlock("research_table",
+            ResearchTableBlock::new, () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).instrument(NoteBlockInstrument.BASS)
                     .strength(2.5F).sound(SoundType.WOOD).noOcclusion().ignitedByLava()
                     .lightLevel(state -> state.getValue(ResearchTableBlock.LIT) ? ResearchTableBlock.LIGHT : 0)
-                    .pushReaction(PushReaction.BLOCK)));
+                    .pushReaction(PushReaction.IMMOVEABLE));
 
     private ModBlocks() {
     }

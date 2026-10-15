@@ -1,9 +1,8 @@
 package com.pockyl.hextale.research;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.resources.Identifier;
 
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
@@ -39,7 +38,7 @@ public final class ResearchSheet {
      *
      * @param cells the sections its ink line crossed, ending where it landed
      */
-    public record Mark(int cell, SimpleRune element, int from, int[] cells, ResourceLocation item) {
+    public record Mark(int cell, SimpleRune element, int from, int[] cells, Identifier item) {
     }
 
     public enum Result {
@@ -185,7 +184,7 @@ public final class ResearchSheet {
 
     /** Writes the item's symbol; the returned walk says where it landed (null when not allowed). */
     @Nullable
-    public HexGrid.Walk write(RuneBoard board, ItemElements elements, ResourceLocation item, boolean ground) {
+    public HexGrid.Walk write(RuneBoard board, ItemElements elements, Identifier item, boolean ground) {
         if (!canWrite()) {
             return null;
         }
@@ -265,8 +264,7 @@ public final class ResearchSheet {
         return true;
     }
 
-    public CompoundTag save() {
-        CompoundTag tag = new CompoundTag();
+    public void save(ValueOutput tag) {
         if (rune != null) {
             tag.putString("rune", rune.key());
         }
@@ -277,36 +275,33 @@ public final class ResearchSheet {
         tag.putInt("filled", filled);
         tag.putInt("scrapes", scrapes);
         tag.putInt("jumps", jumps);
-        ListTag list = new ListTag();
+        ValueOutput.ValueOutputList list = tag.childrenList("marks");
         for (Mark mark : marks) {
-            CompoundTag entry = new CompoundTag();
+            ValueOutput entry = list.addChild();
             entry.putInt("cell", mark.cell);
             entry.putString("element", mark.element.id());
             entry.putInt("from", mark.from);
             entry.putIntArray("cells", mark.cells);
             entry.putString("item", mark.item.toString());
-            list.add(entry);
         }
-        tag.put("marks", list);
-        return tag;
     }
 
-    public void load(CompoundTag tag) {
-        rune = tag.contains("rune") ? ComplexRunes.byKey(tag.getString("rune")) : null;
-        open = tag.getBoolean("open");
-        over = tag.getBoolean("over");
-        from = valid(tag.contains("from") ? tag.getInt("from") : HexGrid.CENTRE);
-        cap = tag.getInt("cap");
-        filled = tag.getInt("filled");
-        scrapes = tag.getInt("scrapes");
-        jumps = tag.getInt("jumps");
+    public void load(ValueInput tag) {
+        rune = tag.getString("rune").map(ComplexRunes::byKey).orElse(null);
+        open = tag.getBooleanOr("open", false);
+        over = tag.getBooleanOr("over", false);
+        from = valid(tag.getIntOr("from", HexGrid.CENTRE));
+        cap = tag.getIntOr("cap", 0);
+        filled = tag.getIntOr("filled", 0);
+        scrapes = tag.getIntOr("scrapes", 0);
+        jumps = tag.getIntOr("jumps", 0);
         marks.clear();
-        for (Tag element : tag.getList("marks", Tag.TAG_COMPOUND)) {
-            CompoundTag entry = (CompoundTag) element;
-            SimpleRune rune = SimpleRune.byId(entry.getString("element"));
-            ResourceLocation item = ResourceLocation.tryParse(entry.getString("item"));
+        for (ValueInput entry : tag.childrenListOrEmpty("marks")) {
+            SimpleRune rune = SimpleRune.byId(entry.getStringOr("element", ""));
+            Identifier item = Identifier.tryParse(entry.getStringOr("item", ""));
             if (rune != null && item != null) {
-                marks.add(new Mark(valid(entry.getInt("cell")), rune, valid(entry.getInt("from")), entry.getIntArray("cells"), item));
+                marks.add(new Mark(valid(entry.getIntOr("cell", HexGrid.CENTRE)), rune, valid(entry.getIntOr("from", HexGrid.CENTRE)),
+                        entry.getIntArray("cells").orElse(new int[0]), item));
             }
         }
         if (this.rune == null) {

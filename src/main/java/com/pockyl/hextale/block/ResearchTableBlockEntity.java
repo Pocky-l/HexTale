@@ -13,11 +13,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -32,8 +33,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneScrollItem;
@@ -61,7 +63,7 @@ import com.pockyl.hextale.rune.SimpleRune;
 
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The Research Table's contents and the server side of both mini-games - learning a rune on its parchment and
@@ -123,7 +125,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         if (table.items.get(HEXTECH).isEmpty()) {
             return;
         }
-        RandomSource random = level.random;
+        RandomSource random = level.getRandom();
         Vec3 orb = table.orbPosition();
         if (random.nextInt(table.drawing ? 4 : 50) == 0) {
             double angle = random.nextDouble() * Math.PI * 2;
@@ -157,7 +159,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             return;
         }
         level.playSound(null, worldPosition, ModSounds.BRUSH_STROKE.get(), SoundSource.BLOCKS, 0.5F,
-                0.9F + level.random.nextFloat() * 0.2F);
+                0.9F + level.getRandom().nextFloat() * 0.2F);
         drawingUntil = level.getGameTime() + DRAWING_TICKS;
         drawing = true;
     }
@@ -253,7 +255,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             return;
         }
         if (!studied(player, item)) {
-            message(player, Component.translatable("research.hextale.not_studied", item.getDescription()), ResearchMessagePayload.Tone.BAD);
+            message(player, Component.translatable("research.hextale.not_studied", ResearchText.item(item)), ResearchMessagePayload.Tone.BAD);
             return;
         }
         if (ground && toolLevel(player, ResearchTool.MORTAR) < elements.tier()) {
@@ -273,7 +275,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             return;
         }
         if (!take(player, item)) {
-            message(player, Component.translatable("research.hextale.no_item", item.getDescription()), ResearchMessagePayload.Tone.BAD);
+            message(player, Component.translatable("research.hextale.no_item", ResearchText.item(item)), ResearchMessagePayload.Tone.BAD);
             return;
         }
         HexGrid.Walk walk = sheet.write(board, elements, BuiltInRegistries.ITEM.getKey(item), ground);
@@ -307,12 +309,12 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         }
         RuneBoard.Point p = board.points().get(point);
         if (!studied(player, p.resource())) {
-            message(player, Component.translatable("research.hextale.not_studied", p.resource().getDescription()),
+            message(player, Component.translatable("research.hextale.not_studied", ResearchText.item(p.resource())),
                     ResearchMessagePayload.Tone.BAD);
             return;
         }
         if (!take(player, p.resource())) {
-            message(player, Component.translatable("research.hextale.no_item", p.resource().getDescription()),
+            message(player, Component.translatable("research.hextale.no_item", ResearchText.item(p.resource())),
                     ResearchMessagePayload.Tone.BAD);
             return;
         }
@@ -383,9 +385,9 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
                 continue;
             }
             if (fresh) {
-                text.append(" ").append(Component.translatable("research.hextale.tool_unlocked", tool.item().getDescription()));
+                text.append(" ").append(Component.translatable("research.hextale.tool_unlocked", ResearchText.item(tool.item())));
             } else if (stars > before) {
-                text.append(" ").append(Component.translatable("research.hextale.tool_stronger", tool.item().getDescription()));
+                text.append(" ").append(Component.translatable("research.hextale.tool_stronger", ResearchText.item(tool.item())));
             }
         }
         message(player, text, ResearchMessagePayload.Tone.WIN);
@@ -427,7 +429,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         }
         if (!study.started()) {
             if (!items.get(STUDY).is(item)) {
-                message(player, Component.translatable("research.hextale.study.missing", item.getDescription()), ResearchMessagePayload.Tone.BAD);
+                message(player, Component.translatable("research.hextale.study.missing", ResearchText.item(item)), ResearchMessagePayload.Tone.BAD);
                 return;
             }
             Requirement paper = Requirement.paper(player);
@@ -468,14 +470,14 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
                 all.append(ResearchText.element(entry.getKey())).append(" " + entry.getValue());
                 first = false;
             }
-            message(player, Component.translatable("research.hextale.study.complete", item.getDescription(), all),
+            message(player, Component.translatable("research.hextale.study.complete", ResearchText.item(item), all),
                     ResearchMessagePayload.Tone.WIN);
             if (level instanceof ServerLevel serverLevel) {
                 Vec3 orb = orbPosition();
                 serverLevel.sendParticles(ParticleTypes.END_ROD, orb.x, orb.y, orb.z, 10, 0.15, 0.1, 0.15, 0.03);
             }
         } else if (study.lost(elements)) {
-            message(player, Component.translatable("research.hextale.study.lost", item.getDescription()), ResearchMessagePayload.Tone.BAD);
+            message(player, Component.translatable("research.hextale.study.lost", ResearchText.item(item)), ResearchMessagePayload.Tone.BAD);
             fizzle();
         } else {
             message(player, Component.empty(), ResearchMessagePayload.Tone.INFO);
@@ -516,7 +518,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         } else if (ItemStack.isSameItemSameComponents(output, scroll) && output.getCount() < output.getMaxStackSize()) {
             output.grow(1);
         } else if (!player.getInventory().add(scroll)) {
-            player.drop(scroll, false);
+            player.drop(scroll, false, Prediction.SERVER_ONLY);
         }
     }
 
@@ -525,7 +527,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             return;
         }
         Vec3 orb = orbPosition();
-        serverLevel.sendParticles(new DustParticleOptions(rgb(element.color()), 1.0F), orb.x, orb.y, orb.z, 10,
+        serverLevel.sendParticles(new DustParticleOptions(element.color(), 1.0F), orb.x, orb.y, orb.z, 10,
                 0.2, 0.15, 0.2, 0.01);
         level.playSound(null, worldPosition, ModSounds.RUNE_RECOGNISED.get(), SoundSource.BLOCKS, 0.8F,
                 0.8F + element.ordinal() * 0.06F);
@@ -536,20 +538,17 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             return;
         }
         Vec3 orb = orbPosition();
-        serverLevel.sendParticles(new DustParticleOptions(rgb(rune.color()), 1.2F), orb.x, orb.y, orb.z, 28, 0.25, 0.2, 0.25, 0.02);
+        serverLevel.sendParticles(new DustParticleOptions(rune.color(), 1.2F), orb.x, orb.y, orb.z, 28, 0.25, 0.2, 0.25, 0.02);
         serverLevel.sendParticles(ParticleTypes.ELECTRIC_SPARK, orb.x, orb.y, orb.z, 14, 0.15, 0.15, 0.15, 0.25);
         serverLevel.sendParticles(ParticleTypes.END_ROD, orb.x, orb.y, orb.z, 6, 0.1, 0.1, 0.1, 0.05);
         level.playSound(null, worldPosition, ModSounds.RUNE_FUSED.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_FUSED, rune.index());
     }
 
-    private static Vector3f rgb(int color) {
-        return new Vector3f((color >> 16 & 0xFF) / 255.0F, (color >> 8 & 0xFF) / 255.0F, (color & 0xFF) / 255.0F);
-    }
 
     @Override
     public boolean triggerEvent(int id, int param) {
-        if (level != null && level.isClientSide) {
+        if (level != null && level.isClientSide()) {
             long now = level.getGameTime();
             switch (id) {
                 case EVENT_FUSED -> {
@@ -575,7 +574,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     /** Keeps the desk's faint glow in step with the orb lying on it. */
     private void updateLight() {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return;
         }
         BlockState state = getBlockState();
@@ -586,7 +585,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     private void sync() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
         }
     }
@@ -647,23 +646,23 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
         items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(tag, items, registries);
-        drawing = tag.getBoolean("drawing");
-        sheet.load(tag.getCompound("sheet"));
-        study.load(tag.getCompound("study"));
-        studyingItem = tag.getBoolean("studying_item");
+        ContainerHelper.loadAllItems(input, items);
+        drawing = input.getBooleanOr("drawing", false);
+        sheet.load(input.childOrEmpty("sheet"));
+        study.load(input.childOrEmpty("study"));
+        studyingItem = input.getBooleanOr("studying_item", false);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        ContainerHelper.saveAllItems(tag, items, registries);
-        tag.put("sheet", sheet.save());
-        tag.put("study", study.save());
-        tag.putBoolean("studying_item", studyingItem);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        ContainerHelper.saveAllItems(output, items);
+        sheet.save(output.child("sheet"));
+        study.save(output.child("study"));
+        output.putBoolean("studying_item", studyingItem);
     }
 
     @Override
