@@ -12,7 +12,8 @@ base {
     archivesName = "${mod_id}-neoforge-${minecraft_version}"
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+// Minecraft 26.x runs on Java 25.
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 sourceSets.main.resources {
     srcDir('src/generated/resources')
@@ -25,11 +26,6 @@ repositories {
 
 neoForge {
     version = project.neo_version
-
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
 
     runs {
         client {
@@ -51,7 +47,7 @@ neoForge {
         }
 
         data {
-            data()
+            clientData()
             programArguments.addAll '--mod', project.mod_id, '--all',
                     '--output', file('src/generated/resources/').absolutePath,
                     '--existing', file('src/main/resources/').absolutePath
@@ -181,7 +177,7 @@ publishMods {
         projectId = curseforge_project_id
         accessToken = curseforgeToken
         minecraftVersions.add(minecraft_version)
-        javaVersions.add(JavaVersion.VERSION_21)
+        javaVersions.add(JavaVersion.VERSION_25)
         client = curseforge_client.toBoolean()
         server = curseforge_server.toBoolean()
         curseforge_requires.split(',')*.trim().findAll().each { requires(it) }
