@@ -1,0 +1,18 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "hextale:item/rune_scroll_base"
+      },
+      {
+        "type": "minecraft:special",
+        "base": "hextale:item/rune_scroll_base",
+        "model": {
+          "type": "hextale:rune_scroll"
+        }
+      }
+    ]
+  }
+}

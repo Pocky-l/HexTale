@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "hextale:researchers_lens"
+        "recipes": "hextale:researchers_lens"
       }
     }
   },

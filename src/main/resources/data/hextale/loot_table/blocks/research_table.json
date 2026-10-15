@@ -2,35 +2,30 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "rolls": 1,
-      "bonus_rolls": 0,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "hextale:research_table",
-          "functions": [
-            {
-              "function": "minecraft:copy_components",
-              "source": "block_entity",
-              "include": [
-                "minecraft:custom_name"
-              ]
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "hextale:research_table",
+            "state": {
+              "part": "main"
             }
-          ]
+          },
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "minecraft:custom_name"
+            ],
+            "source": "block_entity"
+          },
+          "name": "hextale:research_table"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        },
-        {
-          "condition": "minecraft:block_state_property",
-          "block": "hextale:research_table",
-          "properties": {
-            "part": "main"
-          }
-        }
-      ]
+      "rolls": 1
     }
   ],
   "random_sequence": "hextale:blocks/research_table"

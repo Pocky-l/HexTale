@@ -7,9 +7,11 @@
     "P P"
   ],
   "key": {
-    "B": {"item": "hextale:brass_ingot"},
-    "P": {"tag": "minecraft:planks"},
-    "S": {"item": "minecraft:bookshelf"}
+    "B": "hextale:brass_ingot",
+    "P": "#minecraft:planks",
+    "S": "minecraft:bookshelf"
   },
-  "result": {"id": "hextale:research_table", "count": 1}
+  "result": {
+    "id": "hextale:research_table"
+  }
 }

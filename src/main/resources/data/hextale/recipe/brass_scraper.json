@@ -3,22 +3,16 @@
   "category": "misc",
   "ingredients": [
     {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "items": "hextale:rune_scroll",
       "components": {
         "hextale:rune": "earth_spark"
-      },
-      "strict": false
+      }
     },
-    {
-      "item": "hextale:brass_ingot"
-    },
-    {
-      "item": "minecraft:copper_ingot"
-    }
+    "hextale:brass_ingot",
+    "minecraft:copper_ingot"
   ],
   "result": {
-    "id": "hextale:brass_scraper",
-    "count": 1
+    "id": "hextale:brass_scraper"
   }
 }

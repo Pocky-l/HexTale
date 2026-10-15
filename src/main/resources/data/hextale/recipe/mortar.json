@@ -3,22 +3,16 @@
   "category": "misc",
   "ingredients": [
     {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "items": "hextale:rune_scroll",
       "components": {
         "hextale:rune": "water_earth"
-      },
-      "strict": false
+      }
     },
-    {
-      "item": "minecraft:bowl"
-    },
-    {
-      "item": "minecraft:flint"
-    }
+    "minecraft:bowl",
+    "minecraft:flint"
   ],
   "result": {
-    "id": "hextale:mortar",
-    "count": 1
+    "id": "hextale:mortar"
   }
 }

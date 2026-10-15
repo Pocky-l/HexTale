@@ -3,25 +3,17 @@
   "category": "misc",
   "ingredients": [
     {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "items": "hextale:rune_scroll",
       "components": {
         "hextale:rune": "earth_fire"
-      },
-      "strict": false
+      }
     },
-    {
-      "item": "minecraft:stick"
-    },
-    {
-      "item": "minecraft:stick"
-    },
-    {
-      "item": "minecraft:leather"
-    }
+    "minecraft:stick",
+    "minecraft:stick",
+    "minecraft:leather"
   ],
   "result": {
-    "id": "hextale:parchment_stretcher",
-    "count": 1
+    "id": "hextale:parchment_stretcher"
   }
 }

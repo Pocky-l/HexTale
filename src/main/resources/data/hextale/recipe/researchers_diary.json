@@ -2,9 +2,11 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {"item": "minecraft:book"},
-    {"item": "hextale:brass_ingot"},
-    {"item": "hextale:unstable_hextech"}
+    "minecraft:book",
+    "hextale:brass_ingot",
+    "hextale:unstable_hextech"
   ],
-  "result": {"id": "hextale:researchers_diary", "count": 1}
+  "result": {
+    "id": "hextale:researchers_diary"
+  }
 }

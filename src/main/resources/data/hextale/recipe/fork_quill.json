@@ -3,22 +3,16 @@
   "category": "misc",
   "ingredients": [
     {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "items": "hextale:rune_scroll",
       "components": {
         "hextale:rune": "light_earth"
-      },
-      "strict": false
+      }
     },
-    {
-      "item": "minecraft:feather"
-    },
-    {
-      "item": "hextale:brass_nugget"
-    }
+    "minecraft:feather",
+    "hextale:brass_nugget"
   ],
   "result": {
-    "id": "hextale:fork_quill",
-    "count": 1
+    "id": "hextale:fork_quill"
   }
 }

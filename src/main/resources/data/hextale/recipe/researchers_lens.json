@@ -3,22 +3,16 @@
   "category": "misc",
   "ingredients": [
     {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "items": "hextale:rune_scroll",
       "components": {
         "hextale:rune": "water_light"
-      },
-      "strict": false
+      }
     },
-    {
-      "item": "minecraft:glass_pane"
-    },
-    {
-      "item": "hextale:brass_ingot"
-    }
+    "minecraft:glass_pane",
+    "hextale:brass_ingot"
   ],
   "result": {
-    "id": "hextale:researchers_lens",
-    "count": 1
+    "id": "hextale:researchers_lens"
   }
 }

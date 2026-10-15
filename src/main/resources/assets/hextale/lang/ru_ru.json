@@ -23,6 +23,7 @@
   "subtitles.hextale.rune.failed": "Руна гаснет",
   "subtitles.hextale.rune.fused": "Руны сплавляются",
   "subtitles.hextale.orb.awaken": "Аметист раскалывается на хекстек",
+  "subtitles.hextale.orb.crack": "Нестабильный хекстек трескается",
   "commands.hextale.runes.unknown": "Неизвестная руна: %s",
   "commands.hextale.runes.list": "Руны игрока %1$s (%2$s/%3$s): %4$s",
   "commands.hextale.runes.learned": "Игрок %2$s выучил рун: %1$s (теперь %3$s/%4$s)",

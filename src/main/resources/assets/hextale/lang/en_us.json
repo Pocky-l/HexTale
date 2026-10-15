@@ -23,6 +23,7 @@
   "subtitles.hextale.rune.failed": "Rune fizzles",
   "subtitles.hextale.rune.fused": "Runes fuse",
   "subtitles.hextale.orb.awaken": "Amethyst shatters into hextech",
+  "subtitles.hextale.orb.crack": "Unstable hextech cracks",
   "commands.hextale.runes.unknown": "Unknown rune: %s",
   "commands.hextale.runes.list": "%1$s knows %2$s/%3$s runes: %4$s",
   "commands.hextale.runes.learned": "Taught %1$s runes to %2$s (now %3$s/%4$s)",

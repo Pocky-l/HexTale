@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "hextale:parchment_stretcher"
+        "recipes": "hextale:parchment_stretcher"
       }
     }
   },
