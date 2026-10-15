@@ -3,16 +3,18 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -22,8 +24,6 @@ import net.minecraft.world.level.block.LightningRodBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.Requirement;
@@ -65,8 +65,6 @@ import java.util.UUID;
  * The research loop on a server: boards, sheets at the table, lightning making orbs, knowledge kept on the player.
  * Every test runs in its own batch: lightning and mock players must not reach the neighbouring tests.
  */
-@GameTestHolder(Hextale.MOD_ID)
-@PrefixGameTestTemplate(false)
 public final class ResearchGameTests {
     private static final BlockPos TABLE = new BlockPos(0, 1, 0);
     private static final ComplexRune SMELTING = ComplexRunes.byKey("fire_earth");
@@ -76,7 +74,7 @@ public final class ResearchGameTests {
 
     // ---- Boards ---------------------------------------------------------------------------------------------------
 
-    @GameTest(template = "empty", batch = "boardsHaveBothDarkRunes")
+    @HexTest
     public static void boardsHaveBothDarkRunes(GameTestHelper helper) {
         int stones = 0;
         int mirrors = 0;
@@ -94,7 +92,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "darkRunesStopOrTurnTheInk")
+    @HexTest
     public static void darkRunesStopOrTurnTheInk(GameTestHelper helper) {
         int from = HexGrid.CENTRE;
         int[] east = {4, 0};
@@ -122,7 +120,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "everyBoardCanBeFinished", timeoutTicks = 400)
+    @HexTest(maxTicks = 400)
     public static void everyBoardCanBeFinished(GameTestHelper helper) {
         long start = System.nanoTime();
         for (ComplexRune rune : ComplexRunes.all()) {
@@ -143,7 +141,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "chaptersOpenInOrder")
+    @HexTest
     public static void chaptersOpenInOrder(GameTestHelper helper) {
         RuneKnowledge knowledge = new RuneKnowledge();
         helper.assertTrue(ResearchBook.runes(1).size() == 6, "chapter I has Smelting and the five tool runes");
@@ -164,7 +162,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "everyItemCarriesElements")
+    @HexTest
     public static void everyItemCarriesElements(GameTestHelper helper) {
         var server = helper.getLevel().getServer();
         Map<Item, ItemElements> all = ItemElementResolver.resolve(server.getRecipeManager(), server.registryAccess());
@@ -182,7 +180,7 @@ public final class ResearchGameTests {
         }
         StringBuilder sample = new StringBuilder();
         for (Item item : List.of(Items.OAK_LOG, Items.OAK_PLANKS, Items.STICK, Items.CRAFTING_TABLE, Items.IRON_PICKAXE, Items.IRON_BLOCK,
-                Items.GLASS, Items.BREAD, Items.TNT, Items.PISTON, Items.ENDER_EYE, Items.WHITE_WOOL, Items.DIAMOND_SWORD,
+                Items.GLASS, Items.BREAD, Items.TNT, Items.PISTON, Items.ENDER_EYE, Items.WOOL.pick(DyeColor.WHITE), Items.DIAMOND_SWORD,
                 Items.COOKED_BEEF, Items.NETHERITE_SWORD, Items.SPONGE, Items.BOOKSHELF, Items.LANTERN, Items.SHULKER_BOX,
                 Items.ELYTRA, Items.DRAGON_EGG, Items.MUSIC_DISC_CAT, Items.ZOMBIE_SPAWN_EGG, Items.DIRT, Items.STONE_BRICKS)) {
             sample.append(BuiltInRegistries.ITEM.getKey(item).getPath()).append('=').append(all.get(item)).append("; ");
@@ -191,7 +189,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "resonanceStringsAreDistinct")
+    @HexTest
     public static void resonanceStringsAreDistinct(GameTestHelper helper) {
         java.util.Set<Integer> used = new java.util.HashSet<>();
         for (int string = 0; string < HexGrid.RING.length; string++) {
@@ -206,7 +204,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "resonanceAnswersEachGuess")
+    @HexTest
     public static void resonanceAnswersEachGuess(GameTestHelper helper) {
         ItemElements elements = ItemElements.of(1, SimpleRune.FIRE, 3, SimpleRune.WATER, 1);
         ItemStudy study = new ItemStudy();
@@ -233,7 +231,7 @@ public final class ResearchGameTests {
     }
 
     /** A sensible player - spread guesses around the ring, then halve the range - studies almost every item in time. */
-    @GameTest(template = "empty", batch = "resonanceIsFairForEveryItem")
+    @HexTest
     public static void resonanceIsFairForEveryItem(GameTestHelper helper) {
         int items = 0;
         int won = 0;
@@ -300,7 +298,7 @@ public final class ResearchGameTests {
         return open.isEmpty() ? -1 : open.get((open.size() - 1) / 2);
     }
 
-    @GameTest(template = "empty", batch = "studyingAnItemAtTheTable")
+    @HexTest
     public static void studyingAnItemAtTheTable(GameTestHelper helper) {
         ServerPlayer player = survivalPlayer(helper);
         player.getInventory().add(new ItemStack(Items.PAPER, 2));
@@ -315,7 +313,7 @@ public final class ResearchGameTests {
                 table.guess(player, ItemStudy.string(ring(entry.getKey()))[ItemStudy.answer(entry.getKey(), entry.getValue())]);
             }
         }
-        ResourceLocation glass = BuiltInRegistries.ITEM.getKey(Items.GLASS);
+        Identifier glass = BuiltInRegistries.ITEM.getKey(Items.GLASS);
         helper.assertTrue(Research.of(player).hasStudied(glass), "glass is studied");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 2, "one glass went into the study");
         helper.assertTrue(player.getInventory().countItem(Items.PAPER) == 1, "the study took one paper");
@@ -356,7 +354,7 @@ public final class ResearchGameTests {
 
     // ---- The table ------------------------------------------------------------------------------------------------
 
-    @GameTest(template = "empty", batch = "aFinishedSheetTeachesTheRune")
+    @HexTest
     public static void aFinishedSheetTeachesTheRune(GameTestHelper helper) {
         ServerPlayer player = survivalPlayer(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
@@ -394,7 +392,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "aFullSheetWithoutTheRuneIsLost")
+    @HexTest
     public static void aFullSheetWithoutTheRuneIsLost(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
@@ -430,7 +428,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "creativeResearchersHaveEverything")
+    @HexTest
     public static void creativeResearchersHaveEverything(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         player.setGameMode(GameType.CREATIVE);
@@ -445,7 +443,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "symbolsFollowTheTableRules")
+    @HexTest
     public static void symbolsFollowTheTableRules(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
@@ -466,7 +464,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "toolsFollowTheirRunesStars")
+    @HexTest
     public static void toolsFollowTheirRunesStars(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
@@ -485,7 +483,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "theScraperGivesThePlaceBack")
+    @HexTest
     public static void theScraperGivesThePlaceBack(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
@@ -506,11 +504,11 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "missingMaterialsAreNamed")
+    @HexTest
     public static void missingMaterialsAreNamed(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         ResearchTableBlock.place(helper.getLevel(), helper.absolutePos(TABLE), ModBlocks.RESEARCH_TABLE.get().defaultBlockState());
-        ResearchTableBlockEntity table = helper.getBlockEntity(TABLE);
+        ResearchTableBlockEntity table = helper.getBlockEntity(TABLE, ResearchTableBlockEntity.class);
         helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.DIARY, "an empty table asks for the diary first");
 
         ItemStack foreign = new ItemStack(ModItems.RESEARCHERS_DIARY.get());
@@ -529,7 +527,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "tableIsTwoBlocks")
+    @HexTest
     public static void tableIsTwoBlocks(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos main = helper.absolutePos(TABLE);
@@ -555,12 +553,12 @@ public final class ResearchGameTests {
 
     // ---- Lightning ------------------------------------------------------------------------------------------------
 
-    @GameTest(template = "empty", timeoutTicks = 60, batch = "lightningOnRodAndAmethystMakesOrbs")
+    @HexTest(maxTicks = 60)
     public static void lightningOnRodAndAmethystMakesOrbs(GameTestHelper helper) {
         strikeRodOnAmethyst(helper, 1);
     }
 
-    @GameTest(template = "empty", timeoutTicks = 60, batch = "boltInsideTheRodAlsoWorks")
+    @HexTest(maxTicks = 60)
     public static void boltInsideTheRodAlsoWorks(GameTestHelper helper) {
         // A Channeling trident or /summon at the rod's own block puts the bolt inside the rod instead of on top.
         strikeRodOnAmethyst(helper, 0);
@@ -570,16 +568,16 @@ public final class ResearchGameTests {
         BlockPos amethyst = new BlockPos(1, 1, 1);
         BlockPos rod = amethyst.above();
         helper.setBlock(amethyst, Blocks.AMETHYST_BLOCK);
-        helper.setBlock(rod, Blocks.LIGHTNING_ROD.defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
-        LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel());
+        helper.setBlock(rod, Blocks.LIGHTNING_ROD.weathering().unaffected().defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
+        LightningBolt bolt = EntityTypes.LIGHTNING_BOLT.create(helper.getLevel(), EntitySpawnReason.TRIGGERED);
         helper.assertTrue(bolt != null, "a bolt can be created");
-        bolt.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above(boltAboveRod))));
+        bolt.snapTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above(boltAboveRod))));
         helper.getLevel().addFreshEntity(bolt);
         // The test server may not tick entities in a freshly generated test chunk yet: strike by hand.
         bolt.tick();
         helper.succeedWhen(() -> {
             helper.assertBlockPresent(Blocks.AIR, amethyst);
-            helper.assertBlockPresent(Blocks.LIGHTNING_ROD, rod);
+            helper.assertBlockPresent(Blocks.LIGHTNING_ROD.weathering().unaffected(), rod);
             List<ItemEntity> found = orbs(helper, amethyst);
             int orbs = found.stream().mapToInt(item -> item.getItem().getCount()).sum();
             helper.assertTrue(orbs >= 1 && orbs <= 3, "the amethyst shattered into 1-3 orbs, got " + orbs);
@@ -587,16 +585,16 @@ public final class ResearchGameTests {
         });
     }
 
-    @GameTest(template = "empty", timeoutTicks = 60, batch = "rodWithoutAmethystMakesNothing")
+    @HexTest(maxTicks = 60)
     public static void rodWithoutAmethystMakesNothing(GameTestHelper helper) {
         BlockPos base = new BlockPos(1, 1, 1);
         BlockPos rod = base.above();
         helper.setBlock(base, Blocks.STONE);
-        helper.setBlock(rod, Blocks.LIGHTNING_ROD.defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
+        helper.setBlock(rod, Blocks.LIGHTNING_ROD.weathering().unaffected().defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
         orbs(helper, base).forEach(ItemEntity::discard);
-        LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel());
+        LightningBolt bolt = EntityTypes.LIGHTNING_BOLT.create(helper.getLevel(), EntitySpawnReason.TRIGGERED);
         helper.assertTrue(bolt != null, "a bolt can be created");
-        bolt.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above())));
+        bolt.snapTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above())));
         helper.getLevel().addFreshEntity(bolt);
         bolt.tick();
         helper.runAfterDelay(10, () -> {
@@ -608,12 +606,12 @@ public final class ResearchGameTests {
 
     // ---- Knowledge ------------------------------------------------------------------------------------------------
 
-    @GameTest(template = "empty", batch = "knowledgeSurvivesDeath")
+    @HexTest
     public static void knowledgeSurvivesDeath(GameTestHelper helper) {
         ServerPlayer before = player(helper);
         Research.learn(before, ComplexRunes.byKey("water_life"), 3, 9);
         Research.learn(before, ComplexRunes.byKey("life_metal"), 1, 20);
-        Research.of(before).study(ResourceLocation.withDefaultNamespace("coal"));
+        Research.of(before).study(Identifier.withDefaultNamespace("coal"));
         Research.of(before).see(SMELTING, new int[]{HexGrid.CENTRE, 5});
 
         ServerPlayer after = player(helper);
@@ -622,7 +620,7 @@ public final class ResearchGameTests {
         RuneKnowledge knowledge = Research.of(after);
         helper.assertTrue(knowledge.runeCount() == 2 && knowledge.stars(ComplexRunes.byKey("water_life")) == 3, "the runes and stars are kept");
         helper.assertTrue(knowledge.best(ComplexRunes.byKey("water_life")) == 9, "the best sheets are kept");
-        helper.assertTrue(knowledge.hasStudied(ResourceLocation.withDefaultNamespace("coal")), "studied items are kept");
+        helper.assertTrue(knowledge.hasStudied(Identifier.withDefaultNamespace("coal")), "studied items are kept");
         helper.assertTrue(knowledge.seen(SMELTING).get(5), "explored parchment is kept");
         helper.assertTrue(knowledge != Research.of(before), "the new player has its own copy");
         RuneKnowledge decoded = RuneKnowledge.CODEC.parse(NbtOps.INSTANCE,
@@ -633,7 +631,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "starsOnlyGetBetter")
+    @HexTest
     public static void starsOnlyGetBetter(GameTestHelper helper) {
         RuneKnowledge knowledge = new RuneKnowledge();
         helper.assertTrue(knowledge.learn(SMELTING, 2, 9), "the first sheet teaches the rune");
@@ -644,7 +642,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "learnAllCountsRunes")
+    @HexTest
     public static void learnAllCountsRunes(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         Research.learnAll(player, ComplexRunes.all().subList(0, 12), 1);
@@ -654,7 +652,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", batch = "scrollsTeachOtherResearchers")
+    @HexTest
     public static void scrollsTeachOtherResearchers(GameTestHelper helper) {
         ServerPlayer reader = survivalPlayer(helper);
         ComplexRune lens = ComplexRunes.byKey("water_light");
@@ -735,7 +733,7 @@ public final class ResearchGameTests {
 
     private static ResearchTableBlockEntity stockedTable(GameTestHelper helper) {
         ResearchTableBlock.place(helper.getLevel(), helper.absolutePos(TABLE), ModBlocks.RESEARCH_TABLE.get().defaultBlockState());
-        ResearchTableBlockEntity table = helper.getBlockEntity(TABLE);
+        ResearchTableBlockEntity table = helper.getBlockEntity(TABLE, ResearchTableBlockEntity.class);
         table.setItem(ResearchTableBlockEntity.DIARY, new ItemStack(ModItems.RESEARCHERS_DIARY.get()));
         table.setItem(ResearchTableBlockEntity.HEXTECH, new ItemStack(ModItems.UNSTABLE_HEXTECH.get(), 3));
         return table;
@@ -752,7 +750,7 @@ public final class ResearchGameTests {
     private static ServerPlayer player(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Vec3 pos = helper.absoluteVec(new Vec3(0.5, 1, 2.5));
-        player.moveTo(pos.x, pos.y, pos.z, 0, 0);
+        player.snapTo(pos.x, pos.y, pos.z, 0, 0);
         return player;
     }
 }
