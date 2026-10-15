@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img alt="Minecraft 1.21.1" src="https://img.shields.io/badge/Minecraft-1.21.1-62B47A">
+  <img alt="Minecraft 26.3" src="https://img.shields.io/badge/Minecraft-26.3-62B47A">
   <img alt="NeoForge" src="https://img.shields.io/badge/Loader-NeoForge-F16436">
   <img alt="License MIT" src="https://img.shields.io/badge/License-MIT-blue">
 </p>
@@ -34,7 +34,7 @@ TBD
 
 ## Installation
 
-1. Install [NeoForge](https://neoforged.net) for Minecraft 1.21.1.
+1. Install [NeoForge](https://neoforged.net) for Minecraft 26.3 (Java 25).
 2. Put this mod into the `mods` folder.
 
 ## Building

@@ -8,7 +8,7 @@ Hextech magic and Chemtech mutations from the world of Arcane.
 
 ## Requirements
 
-[NeoForge](https://neoforged.net) 1.21.1.
+[NeoForge](https://neoforged.net) for Minecraft 26.3.
 
 ## Credits
 
