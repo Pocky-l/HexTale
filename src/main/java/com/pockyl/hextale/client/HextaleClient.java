@@ -2,7 +2,6 @@ package com.pockyl.hextale.client;
 
 import com.mojang.datafixers.util.Either;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -14,8 +13,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
@@ -26,7 +24,6 @@ import com.pockyl.hextale.client.render.RuneScrollRenderer;
 import com.pockyl.hextale.client.render.TableModels;
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
 import com.pockyl.hextale.registry.ModBlockEntities;
-import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModMenus;
 import com.pockyl.hextale.research.ElementsTooltip;
 import com.pockyl.hextale.research.ItemElements;
@@ -39,7 +36,9 @@ public final class HextaleClient {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         modBus.addListener(HextaleClient::registerScreens);
         modBus.addListener(HextaleClient::registerRenderers);
-        modBus.addListener(HextaleClient::registerClientExtensions);
+        modBus.addListener((RegisterSpecialModelRendererEvent event) ->
+                event.register(RuneScrollRenderer.ID, RuneScrollRenderer.Unbaked.MAP_CODEC));
+        modBus.addListener(ClientPayloads::register);
         modBus.addListener(TableModels::register);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
                 event.register(ElementsTooltip.class, ClientElementsTooltip::new));
@@ -68,19 +67,5 @@ public final class HextaleClient {
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.RESEARCH_TABLE.get(), ResearchTableRenderer::new);
-    }
-
-    private static void registerClientExtensions(RegisterClientExtensionsEvent event) {
-        event.registerItem(new IClientItemExtensions() {
-            private BlockEntityWithoutLevelRenderer renderer;
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (renderer == null) {
-                    renderer = new RuneScrollRenderer();
-                }
-                return renderer;
-            }
-        }, ModItems.RUNE_SCROLL.get());
     }
 }

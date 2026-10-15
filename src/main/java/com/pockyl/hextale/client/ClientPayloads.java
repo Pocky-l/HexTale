@@ -1,6 +1,7 @@
 package com.pockyl.hextale.client;
 
 import net.minecraft.client.Minecraft;
+import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
 import com.pockyl.hextale.client.screen.book.StarBookScreen;
@@ -15,6 +16,13 @@ public final class ClientPayloads {
     private ClientPayloads() {
     }
 
+    public static void register(RegisterClientPayloadHandlersEvent event) {
+        event.register(KnowledgeSyncPayload.TYPE, (payload, context) -> knowledge(payload));
+        event.register(ItemElementsPayload.TYPE, (payload, context) -> itemElements(payload));
+        event.register(ResearchMessagePayload.TYPE, (payload, context) -> researchMessage(payload));
+        event.register(OpenDiaryPayload.TYPE, (payload, context) -> openDiary(payload));
+    }
+
     public static void knowledge(KnowledgeSyncPayload payload) {
         ClientKnowledge.set(payload.knowledge());
     }
@@ -24,12 +32,12 @@ public final class ClientPayloads {
     }
 
     public static void researchMessage(ResearchMessagePayload payload) {
-        if (Minecraft.getInstance().screen instanceof ResearchTableScreen screen) {
+        if (Minecraft.getInstance().gui.screen() instanceof ResearchTableScreen screen) {
             screen.onMessage(payload.text(), payload.tone());
         }
     }
 
     public static void openDiary(OpenDiaryPayload payload) {
-        Minecraft.getInstance().setScreen(new StarBookScreen(payload.owner()));
+        Minecraft.getInstance().gui.setScreen(new StarBookScreen(payload.owner()));
     }
 }

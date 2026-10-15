@@ -1,9 +1,9 @@
 package com.pockyl.hextale.client.screen;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Draws the research parchment in pixel art, for both games: a rune's parchment (dark runes, points, the symbols written
@@ -158,7 +158,7 @@ final class BoardView {
      * @param hovered the section under the mouse, or -1
      * @param chosen  the move shown for the hovered section, or null
      */
-    void renderRune(GuiGraphics graphics, Font font, RuneBoard board, ResearchSheet sheet, Map<Integer, List<Move>> moves,
+    void renderRune(GuiGraphicsExtractor graphics, Font font, RuneBoard board, ResearchSheet sheet, Map<Integer, List<Move>> moves,
                     int hovered, @Nullable Move chosen, int choice, int forkLevel) {
         long now = Util.getMillis();
         float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
@@ -228,7 +228,8 @@ final class BoardView {
         int ox = left + px(HexGrid.CENTRE);
         int oy = top + py(HexGrid.CENTRE);
         PixelArt.hex(graphics, ox, oy, CELL + 2, argb(0x5CC8F2, 0.25F + 0.2F * pulse), argb(0x2B8FB8, 1));
-        graphics.renderItem(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), ox - 8, oy - 8);
+        PixelArt.flush(graphics);
+        graphics.item(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), ox - 8, oy - 8);
         if (forkLevel > 0 && sheet.canJump(board, HexGrid.CENTRE, forkLevel) && hovered == HexGrid.CENTRE) {
             PixelArt.hexRing(graphics, ox, oy, CELL + 4, argb(0xE0A21C, 1));
         }
@@ -245,7 +246,7 @@ final class BoardView {
     /**
      * Where the next symbol starts: a bright double ring around the section and a small marker bobbing above it.
      */
-    private void here(GuiGraphics graphics, int cell, long now) {
+    private void here(GuiGraphicsExtractor graphics, int cell, long now) {
         int x = left + px(cell);
         int y = top + py(cell);
         float pulse = 0.5F + 0.5F * Mth.sin(now / 200.0F);
@@ -260,7 +261,7 @@ final class BoardView {
     }
 
     /** The chosen move: its ink path, a ghost symbol and the item that writes it, hovering above the section. */
-    private void renderMove(GuiGraphics graphics, Font font, RuneBoard board, ResearchSheet sheet, Move move, long now, int options,
+    private void renderMove(GuiGraphicsExtractor graphics, Font font, RuneBoard board, ResearchSheet sheet, Move move, long now, int options,
                             int choice) {
         int phase = (int) (now / 90 % 6);
         int from = sheet.isActive() ? sheet.from() : HexGrid.CENTRE;
@@ -282,18 +283,21 @@ final class BoardView {
         int ix = left + px(end) + 6;
         int iy = top + py(end) - 20;
         PixelArt.fill(graphics, ix - 1, iy - 1, ix + 17, iy + 17, 0xD0140C06);
-        graphics.renderItem(new ItemStack(move.item()), ix, iy);
+        PixelArt.flush(graphics);
+        graphics.item(new ItemStack(move.item()), ix, iy);
         if (move.ground()) {
-            graphics.drawString(font, "½", ix, iy, 0xFF7EF0FF, true);
+            PixelArt.flush(graphics);
+            graphics.text(font, "½", ix, iy, 0xFF7EF0FF, true);
         }
         if (options > 1) {
-            graphics.drawString(font, (choice % options + 1) + "/" + options, ix + 18, iy + 5, 0xFFF0E3C2, true);
+            PixelArt.flush(graphics);
+            graphics.text(font, (choice % options + 1) + "/" + options, ix + 18, iy + 5, 0xFFF0E3C2, true);
         }
     }
 
     // ---- An item's resonance --------------------------------------------------------------------------------------
 
-    void renderStudy(GuiGraphics graphics, Item item, ItemElements elements, ItemStudy study, int hovered) {
+    void renderStudy(GuiGraphicsExtractor graphics, Item item, ItemElements elements, ItemStudy study, int hovered) {
         long now = Util.getMillis();
         float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
         boolean active = study.isActive(elements);
@@ -387,7 +391,8 @@ final class BoardView {
         int ox = left + px(HexGrid.CENTRE);
         int oy = top + py(HexGrid.CENTRE);
         PixelArt.hex(graphics, ox, oy, CELL + 4, argb(0xFFF8E8, 0.6F), argb(GOLD, 0.6F + 0.4F * pulse));
-        graphics.renderItem(new ItemStack(item), ox - 8, oy - 8);
+        PixelArt.flush(graphics);
+        graphics.item(new ItemStack(item), ox - 8, oy - 8);
         renderSigns(graphics);
     }
 
@@ -407,7 +412,7 @@ final class BoardView {
         return 0.5F + 0.5F * Mth.sin(now / 180.0F - index * 0.9F);
     }
 
-    private void sparkle(GuiGraphics graphics, int x, int y, long now, int seed) {
+    private void sparkle(GuiGraphicsExtractor graphics, int x, int y, long now, int seed) {
         for (int k = 0; k < 3; k++) {
             float t = ((now + seed * 137L + k * 333L) % 1000) / 1000.0F;
             double angle = (seed * 1.7 + k * 2.1) % (Math.PI * 2);
@@ -421,7 +426,7 @@ final class BoardView {
      * A guess mark: a brass token on the section. Its face tells the answer - an arrow along the string (the element is
      * farther out or nearer the item) or a cross (the item has no such element); a question mark before it is placed.
      */
-    private void guessToken(GuiGraphics graphics, int x, int y, SimpleRune element, @Nullable ItemStudy.Echo echo, float alpha) {
+    private void guessToken(GuiGraphicsExtractor graphics, int x, int y, SimpleRune element, ItemStudy.@Nullable Echo echo, float alpha) {
         boolean silent = echo == ItemStudy.Echo.SILENT;
         int body = silent ? 0x8A8078 : 0xD6AB52;
         int rim = silent ? 0x4A4440 : 0x6E4A16;
@@ -443,7 +448,7 @@ final class BoardView {
     }
 
     /** A small pixel arrow along the string: outwards (farther) or towards the item (nearer). */
-    private void arrow(GuiGraphics graphics, int x, int y, SimpleRune element, boolean outwards, int argb) {
+    private void arrow(GuiGraphicsExtractor graphics, int x, int y, SimpleRune element, boolean outwards, int argb) {
         double[] u = HexGrid.unit(element);
         double dx = u[0] * (outwards ? 1 : -1);
         double dy = u[1] * (outwards ? 1 : -1);
@@ -461,11 +466,11 @@ final class BoardView {
     // ---- Shared -----------------------------------------------------------------------------------------------------
 
     /** The parchment with nothing on it yet: only the element signs in their corners. */
-    void renderEmpty(GuiGraphics graphics) {
+    void renderEmpty(GuiGraphicsExtractor graphics) {
         renderSigns(graphics);
     }
 
-    private void renderSigns(GuiGraphics graphics) {
+    private void renderSigns(GuiGraphicsExtractor graphics) {
         for (SimpleRune element : HexGrid.RING) {
             double[] u = HexGrid.unit(element);
             int sx = left + CX + (int) Math.round(u[0] * KX * 1.03);
@@ -474,7 +479,7 @@ final class BoardView {
         }
     }
 
-    private void renderBurst(GuiGraphics graphics, long now) {
+    private void renderBurst(GuiGraphicsExtractor graphics, long now) {
         if (burstCell >= 0) {
             float t = (now - burstStart) / (float) BURST_MILLIS;
             if (t < 1) {
@@ -487,14 +492,14 @@ final class BoardView {
     }
 
     /** A written symbol: a section washed with ink and the element's radical in pale parchment. */
-    private void symbol(GuiGraphics graphics, int cell, SimpleRune element, float alpha) {
+    private void symbol(GuiGraphicsExtractor graphics, int cell, SimpleRune element, float alpha) {
         int x = left + px(cell);
         int y = top + py(cell);
         PixelArt.hex(graphics, x, y, CELL, argb(INK, 0.9F * alpha), argb(0x1E140A, alpha));
         PixelArt.radical(graphics, element, x - 4, y - 4, 9, argb(PixelArt.mix(0xF4E6C4, element.color(), 0.35F), alpha));
     }
 
-    private void inkLine(GuiGraphics graphics, int from, int[] cells, float progress, int color) {
+    private void inkLine(GuiGraphicsExtractor graphics, int from, int[] cells, float progress, int color) {
         int shown = Math.round(cells.length * progress);
         int x0 = left + px(from);
         int y0 = top + py(from);
@@ -509,7 +514,7 @@ final class BoardView {
     }
 
     /** A dark rune: dark stone, a light mirror with a glint, or (in the fog) a dark hex with a question mark. */
-    private static void wall(GuiGraphics graphics, Font font, int x, int y, @Nullable WallKind kind, float pulse) {
+    private static void wall(GuiGraphicsExtractor graphics, Font font, int x, int y, @Nullable WallKind kind, float pulse) {
         if (kind == WallKind.MIRROR) {
             PixelArt.hex(graphics, x, y, CELL, argb(MIRROR, 1), argb(MIRROR_RIM, 1));
             PixelArt.line(graphics, x - 3, y + 2, x + 1, y - 2, argb(0xFFFFFF, 0.55F + 0.45F * pulse));
@@ -523,12 +528,12 @@ final class BoardView {
             PixelArt.line(graphics, x, y + 1, x + 3, y - 1, argb(0x0C0812, 1));
             PixelArt.fill(graphics, x - 2, y + 2, x - 1, y + 3, argb(0x6A5890, 1));
         } else {
-            graphics.drawString(font, "?", x - 2, y - 4, 0xFF6A5890, false);
+            PixelArt.flush(graphics);
+            graphics.text(font, "?", x - 2, y - 4, 0xFF6A5890, false);
         }
     }
 
-    @Nullable
-    private static SimpleRune nearestCorner(int cell) {
+    private static @Nullable SimpleRune nearestCorner(int cell) {
         SimpleRune best = null;
         double distance = 0.55;
         for (SimpleRune element : HexGrid.RING) {
@@ -554,7 +559,7 @@ final class BoardView {
             if (sheet.isOpen() && sheet.isFilled(point)) {
                 lines.add(Component.translatable(key + "point.filled").withStyle(ChatFormatting.GREEN));
             } else {
-                lines.add(p.resource().getDescription().copy().withStyle(ChatFormatting.GRAY));
+                lines.add(ResearchText.item(p.resource()).copy().withStyle(ChatFormatting.GRAY));
             }
         } else if (wall != null) {
             lines.add(Component.translatable(key + "wall." + (visible[cell] ? wall.id() : "unknown")));

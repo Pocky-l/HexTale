@@ -3,60 +3,60 @@ package com.pockyl.hextale.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.standalone.SimpleUnbakedStandaloneModel;
+import net.neoforged.neoforge.client.model.standalone.StandaloneModelKey;
 
 import com.pockyl.hextale.Hextale;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Props on the Research Table and its gimbal rings, baked as separate models (props in place on the north-facing desk,
- * rings centred on their own block) and drawn by its renderer.
+ * Props on the Research Table and its gimbal rings, baked as standalone models (props in place on the north-facing
+ * desk, rings centred on their own block) and submitted by its renderer.
  */
 public final class TableModels {
-    public static final ModelResourceLocation PARCHMENT = standalone("block/research_table/parchment");
-    public static final ModelResourceLocation PARCHMENT_STACK = standalone("block/research_table/parchment_stack");
-    public static final ModelResourceLocation INK_BOTTLE = standalone("block/research_table/ink_bottle");
-    public static final ModelResourceLocation BRUSH_IN_BOTTLE = standalone("block/research_table/brush_in_bottle");
-    public static final ModelResourceLocation SCROLL = standalone("block/research_table/scroll");
-    public static final ModelResourceLocation RING_OUTER = standalone("block/research_table/ring_outer");
-    public static final ModelResourceLocation RING_INNER = standalone("block/research_table/ring_inner");
-    /** The plain parchment of a rune scroll item, under the hieroglyph its renderer adds. */
-    public static final ModelResourceLocation SCROLL_ITEM = ModelResourceLocation.standalone(Hextale.id("item/rune_scroll_base"));
-    private static final List<ModelResourceLocation> ALL = List.of(PARCHMENT, PARCHMENT_STACK, INK_BOTTLE,
-            BRUSH_IN_BOTTLE, SCROLL, RING_OUTER, RING_INNER, SCROLL_ITEM);
+    private static final Map<StandaloneModelKey<BlockStateModelPart>, Identifier> MODELS = new LinkedHashMap<>();
+    private static final int[] NO_TINTS = new int[0];
+
+    public static final StandaloneModelKey<BlockStateModelPart> PARCHMENT = prop("parchment");
+    public static final StandaloneModelKey<BlockStateModelPart> PARCHMENT_STACK = prop("parchment_stack");
+    public static final StandaloneModelKey<BlockStateModelPart> INK_BOTTLE = prop("ink_bottle");
+    public static final StandaloneModelKey<BlockStateModelPart> BRUSH_IN_BOTTLE = prop("brush_in_bottle");
+    public static final StandaloneModelKey<BlockStateModelPart> SCROLL = prop("scroll");
+    public static final StandaloneModelKey<BlockStateModelPart> RING_OUTER = prop("ring_outer");
+    public static final StandaloneModelKey<BlockStateModelPart> RING_INNER = prop("ring_inner");
 
     private TableModels() {
     }
 
-    private static ModelResourceLocation standalone(String path) {
-        return ModelResourceLocation.standalone(Hextale.id(path));
+    private static StandaloneModelKey<BlockStateModelPart> prop(String name) {
+        Identifier id = Hextale.id("block/research_table/" + name);
+        StandaloneModelKey<BlockStateModelPart> key = new StandaloneModelKey<>(id::toString);
+        MODELS.put(key, id);
+        return key;
     }
 
-    public static void register(ModelEvent.RegisterAdditional event) {
-        ALL.forEach(event::register);
-    }
-
-    public static BakedModel get(ModelResourceLocation location) {
-        return Minecraft.getInstance().getModelManager().getModel(location);
+    public static void register(ModelEvent.RegisterStandalone event) {
+        MODELS.forEach((key, id) -> event.register(key, SimpleUnbakedStandaloneModel.simpleModelWrapper(id)));
     }
 
     /** Turns the pose like a blockstate "y" rotation of a model built facing north. */
     public static void rotateToFacing(PoseStack poseStack, Direction facing) {
         poseStack.translate(0.5, 0, 0.5);
-        poseStack.mulPose(Axis.YP.rotationDegrees(-((facing.toYRot() + 180) % 360)));
+        poseStack.rotate(Axis.YP.rotationDegrees(-((facing.toYRot() + 180) % 360)));
         poseStack.translate(-0.5, 0, -0.5);
     }
 
-    public static void render(PoseStack poseStack, MultiBufferSource buffers, ModelResourceLocation location, int light, int overlay) {
-        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(),
-                buffers.getBuffer(Sheets.cutoutBlockSheet()), null, get(location), 1, 1, 1, light, overlay, ModelData.EMPTY,
-                Sheets.cutoutBlockSheet());
+    public static void submit(PoseStack poseStack, SubmitNodeCollector collector, StandaloneModelKey<BlockStateModelPart> key, int light) {
+        BlockStateModelPart part = Minecraft.getInstance().getModelManager().getStandaloneModel(key);
+        collector.submitMultiLayerBlockModel(poseStack, List.of(part), false, NO_TINTS, light, OverlayTexture.NO_OVERLAY, 0);
     }
 }

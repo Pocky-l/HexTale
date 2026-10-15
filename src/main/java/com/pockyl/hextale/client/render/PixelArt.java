@@ -1,68 +1,78 @@
 package com.pockyl.hextale.client.render;
 
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
-import org.joml.Matrix4f;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
+import org.joml.Matrix3x2f;
+import org.joml.Matrix3x2fc;
+import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.RuneGlyphs;
 import com.pockyl.hextale.rune.SimpleRune;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Pixel-art drawing for screens: runes rasterised into crisp GUI pixels (no smoothing, like vanilla icons), hexagons
  * and lines. Masks are computed once per shape and size and drawn as horizontal runs.
+ *
+ * <p>A parchment is thousands of one-pixel runs. Each {@code GuiGraphicsExtractor.fill} becomes its own GUI element that
+ * the GUI renderer sorts into layers by overlap, so the runs are collected into one batch element instead. A batch is
+ * submitted by {@link #flush}, which callers do before anything that must appear above it (text, items, sprites) and at
+ * the end of a frame; a change of pose or scissor flushes it on its own.
  */
 public final class PixelArt {
     private static final Map<String, int[][]> MASKS = new ConcurrentHashMap<>();
+    private static final Batch BATCH = new Batch();
 
     private PixelArt() {
     }
 
-    /**
-     * A filled rectangle added to the GUI batch without flushing it. {@code GuiGraphics.fill} draws every rectangle at
-     * once (outside managed drawing), which turns a parchment of thousands of pixel runs into thousands of draw calls;
-     * these quads are drawn together with the next flush instead.
-     */
-    public static void fill(GuiGraphics graphics, int x0, int y0, int x1, int y1, int argb) {
+    /** A filled rectangle, added to the current batch. */
+    public static void fill(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1, int argb) {
         if (x0 >= x1 || y0 >= y1 || (argb >>> 24) == 0) {
             return;
         }
-        Matrix4f pose = graphics.pose().last().pose();
-        VertexConsumer buffer = graphics.bufferSource().getBuffer(RenderType.gui());
-        buffer.addVertex(pose, x0, y0, 0).setColor(argb);
-        buffer.addVertex(pose, x0, y1, 0).setColor(argb);
-        buffer.addVertex(pose, x1, y1, 0).setColor(argb);
-        buffer.addVertex(pose, x1, y0, 0).setColor(argb);
+        BATCH.add(graphics, x0, y0, x1, y1, argb);
+    }
+
+    /** Submits the collected pixels, so whatever is drawn next lies above them. */
+    public static void flush(GuiGraphicsExtractor graphics) {
+        BATCH.submit(graphics);
     }
 
     /** A simple rune's radical in a {@code size} x {@code size} box at {@code x, y} (top left). */
-    public static void radical(GuiGraphics graphics, SimpleRune rune, int x, int y, int size, int argb) {
+    public static void radical(GuiGraphicsExtractor graphics, SimpleRune rune, int x, int y, int size, int argb) {
         strokes(graphics, "r" + rune.ordinal(), rune.radical(), x, y, size, argb);
     }
 
     /** A complex rune's hieroglyph in a {@code size} x {@code size} box. */
-    public static void glyph(GuiGraphics graphics, ComplexRune rune, int x, int y, int size, int argb) {
+    public static void glyph(GuiGraphicsExtractor graphics, ComplexRune rune, int x, int y, int size, int argb) {
         strokes(graphics, "g" + rune.index(), RuneGlyphs.glyph(rune), x, y, size, argb);
     }
 
     /** Same with a one-pixel drop shadow down-right, like vanilla text. */
-    public static void glyph(GuiGraphics graphics, ComplexRune rune, int x, int y, int size, int argb, int shadow) {
+    public static void glyph(GuiGraphicsExtractor graphics, ComplexRune rune, int x, int y, int size, int argb, int shadow) {
         glyph(graphics, rune, x + 1, y + 1, size, shadow);
         glyph(graphics, rune, x, y, size, argb);
     }
 
-    public static void radical(GuiGraphics graphics, SimpleRune rune, int x, int y, int size, int argb, int shadow) {
+    public static void radical(GuiGraphicsExtractor graphics, SimpleRune rune, int x, int y, int size, int argb, int shadow) {
         radical(graphics, rune, x + 1, y + 1, size, shadow);
         radical(graphics, rune, x, y, size, argb);
     }
 
-    private static void strokes(GuiGraphics graphics, String key, List<float[]> strokes, int x, int y, int size, int argb) {
+    private static void strokes(GuiGraphicsExtractor graphics, String key, List<float[]> strokes, int x, int y, int size, int argb) {
         int[][] runs = MASKS.computeIfAbsent(key + "@" + size, k -> rasterise(strokes, size));
         for (int[] run : runs) {
             fill(graphics, x + run[1], y + run[0], x + run[2], y + run[0] + 1, argb);
@@ -126,7 +136,7 @@ public final class PixelArt {
     }
 
     /** A pixel line between two points (inclusive), one pixel wide. */
-    public static void line(GuiGraphics graphics, int x0, int y0, int x1, int y1, int argb) {
+    public static void line(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1, int argb) {
         int dx = Math.abs(x1 - x0);
         int dy = -Math.abs(y1 - y0);
         int sx = x0 < x1 ? 1 : -1;
@@ -150,7 +160,7 @@ public final class PixelArt {
     }
 
     /** A dotted pixel line: {@code on} pixels drawn, {@code off} skipped, starting {@code phase} pixels in. */
-    public static void dotted(GuiGraphics graphics, int x0, int y0, int x1, int y1, int on, int off, int phase, int argb) {
+    public static void dotted(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1, int on, int off, int phase, int argb) {
         int steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
         for (int i = 0; i <= steps; i++) {
             if ((i + phase) % (on + off) < on) {
@@ -165,7 +175,7 @@ public final class PixelArt {
      * A pointy-top pixel hexagon {@code width} wide (odd) centred on {@code cx, cy}: filled, then an outline.
      * Either colour may be 0 to skip it.
      */
-    public static void hex(GuiGraphics graphics, int cx, int cy, int width, int fill, int outline) {
+    public static void hex(GuiGraphicsExtractor graphics, int cx, int cy, int width, int fill, int outline) {
         Hex hex = Hex.of(width);
         if (outline != 0) {
             for (int[] run : hex.outer) {
@@ -180,7 +190,7 @@ public final class PixelArt {
     }
 
     /** Only the one-pixel rim of a hexagon. */
-    public static void hexRing(GuiGraphics graphics, int cx, int cy, int width, int argb) {
+    public static void hexRing(GuiGraphicsExtractor graphics, int cx, int cy, int width, int argb) {
         for (int[] run : Hex.of(width).ring) {
             fill(graphics, cx + run[1], cy + run[0], cx + run[2], cy + run[0] + 1, argb);
         }
@@ -265,5 +275,95 @@ public final class PixelArt {
         int b = rgb & 0xFF;
         float luma = (0.3F * r + 0.59F * g + 0.11F * b) / 255;
         return mix(rgb, 0x1E140A, Math.max(0.15F, luma - 0.35F));
+    }
+
+    /** The pixels collected for one GUI element: quads in screen space under one pose and scissor. */
+    private static final class Batch {
+        private @Nullable GuiGraphicsExtractor owner;
+        private final Matrix3x2f pose = new Matrix3x2f();
+        private @Nullable ScreenRectangle scissor;
+        private int[] quads = new int[5 * 256];
+        private int size;
+        private int minX;
+        private int minY;
+        private int maxX;
+        private int maxY;
+
+        void add(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1, int argb) {
+            Matrix3x2fc current = graphics.pose();
+            ScreenRectangle currentScissor = graphics.peekScissorStack();
+            if (owner != graphics || !pose.equals(current, 0) || !Objects.equals(scissor, currentScissor)) {
+                if (owner == graphics) {
+                    submit(graphics);
+                } else {
+                    size = 0;
+                }
+                owner = graphics;
+                pose.set(current);
+                scissor = currentScissor;
+            }
+            if (size == 0) {
+                minX = x0;
+                minY = y0;
+                maxX = x1;
+                maxY = y1;
+            } else {
+                minX = Math.min(minX, x0);
+                minY = Math.min(minY, y0);
+                maxX = Math.max(maxX, x1);
+                maxY = Math.max(maxY, y1);
+            }
+            if (size + 5 > quads.length) {
+                quads = Arrays.copyOf(quads, quads.length * 2);
+            }
+            quads[size++] = x0;
+            quads[size++] = y0;
+            quads[size++] = x1;
+            quads[size++] = y1;
+            quads[size++] = argb;
+        }
+
+        void submit(GuiGraphicsExtractor graphics) {
+            if (owner != graphics || size == 0) {
+                size = 0;
+                return;
+            }
+            ScreenRectangle bounds = new ScreenRectangle(minX, minY, maxX - minX, maxY - minY).transformMaxBounds(pose);
+            if (scissor != null) {
+                bounds = scissor.intersection(bounds);
+            }
+            if (bounds != null) {
+                graphics.submitGuiElementRenderState(new Element(new Matrix3x2f(pose), Arrays.copyOf(quads, size), scissor, bounds));
+            }
+            size = 0;
+        }
+    }
+
+    private record Element(Matrix3x2fc pose, int[] quads, @Nullable ScreenRectangle scissorArea, ScreenRectangle bounds)
+            implements GuiElementRenderState {
+        @Override
+        public void buildVertices(VertexConsumer consumer) {
+            for (int i = 0; i < quads.length; i += 5) {
+                int x0 = quads[i];
+                int y0 = quads[i + 1];
+                int x1 = quads[i + 2];
+                int y1 = quads[i + 3];
+                int color = quads[i + 4];
+                consumer.addVertexWith2DPose(pose, x0, y0).setColor(color);
+                consumer.addVertexWith2DPose(pose, x0, y1).setColor(color);
+                consumer.addVertexWith2DPose(pose, x1, y1).setColor(color);
+                consumer.addVertexWith2DPose(pose, x1, y0).setColor(color);
+            }
+        }
+
+        @Override
+        public RenderPipeline pipeline() {
+            return RenderPipelines.GUI;
+        }
+
+        @Override
+        public TextureSetup textureSetup() {
+            return TextureSetup.noTexture();
+        }
     }
 }

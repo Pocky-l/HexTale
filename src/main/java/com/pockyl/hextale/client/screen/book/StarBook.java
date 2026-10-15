@@ -1,12 +1,13 @@
 package com.pockyl.hextale.client.screen.book;
 
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The Researcher's Diary: a magic book whose pages are a dark sky. Runes are its quests, hanging as stars in
@@ -33,8 +34,8 @@ import org.jetbrains.annotations.Nullable;
  * Shown by {@link StarBookScreen} in hand and inside the table's screen.
  */
 public final class StarBook {
-    private static final ResourceLocation COSMOS = Hextale.id("textures/gui/cosmos.png");
-    private static final ResourceLocation FRAME = Hextale.id("textures/gui/star_book_frame.png");
+    private static final Identifier COSMOS = Hextale.id("textures/gui/cosmos.png");
+    private static final Identifier FRAME = Hextale.id("textures/gui/star_book_frame.png");
     private static final int COSMOS_SIZE = 256;
     private static final int FRAME_SIZE = 48;
     private static final int FRAME_CORNER = 16;
@@ -152,32 +153,33 @@ public final class StarBook {
 
     /** Draws the book; returns the tooltip to show on top of everything, or null. */
     @Nullable
-    public List<FormattedCharSequence> render(GuiGraphics graphics, int mouseX, int mouseY) {
+    public List<FormattedCharSequence> render(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         long now = Util.getMillis();
         RuneKnowledge knowledge = ClientKnowledge.get();
         graphics.enableScissor(skyLeft(), skyTop(), skyLeft() + skyWidth(), skyTop() + skyHeight());
         renderSpace(graphics, now);
 
-        graphics.pose().pushPose();
-        graphics.pose().translate(centreX(), centreY(), 0);
-        graphics.pose().scale(zoom(), zoom(), 1);
-        graphics.pose().translate(-cameraX, -cameraY, 0);
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(centreX(), centreY());
+        graphics.pose().scale(zoom(), zoom());
+        graphics.pose().translate(-cameraX, -cameraY);
         renderSigns(graphics, knowledge);
         renderLinks(graphics, knowledge);
         ComplexRune hovered = !dragging && overSky(mouseX, mouseY) && !overPlate(mouseX, mouseY) ? starAt(mouseX, mouseY) : null;
         for (Map.Entry<ComplexRune, int[]> entry : StarMap.positions().entrySet()) {
             renderStar(graphics, entry.getKey(), entry.getValue()[0], entry.getValue()[1], knowledge, now, entry.getKey() == hovered);
         }
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
 
         List<FormattedCharSequence> tooltip = null;
         if (selected != null) {
             renderPlate(graphics, selected, knowledge, mouseX, mouseY, now);
         }
         // The pixel art is batched: draw it while the scissor still clips it to the sky.
-        graphics.flush();
+        PixelArt.flush(graphics);
         graphics.disableScissor();
         renderFrame(graphics);
+        PixelArt.flush(graphics);
 
         if (hovered != null && tooltip == null) {
             List<FormattedCharSequence> lines = new ArrayList<>();
@@ -193,7 +195,7 @@ public final class StarBook {
     }
 
     /** The nebula drifts slower than the stars of the map; three layers of small stars drift at their own speeds. */
-    private void renderSpace(GuiGraphics graphics, long now) {
+    private void renderSpace(GuiGraphicsExtractor graphics, long now) {
         int x0 = skyLeft();
         int y0 = skyTop();
         int w = skyWidth();
@@ -203,7 +205,8 @@ public final class StarBook {
         int offsetY = Math.floorMod((int) (cameraY * 0.25F), COSMOS_SIZE);
         for (int ty = -offsetY; ty < h; ty += COSMOS_SIZE) {
             for (int tx = -offsetX; tx < w; tx += COSMOS_SIZE) {
-                graphics.blit(COSMOS, x0 + tx, y0 + ty, 0, 0, COSMOS_SIZE, COSMOS_SIZE, COSMOS_SIZE, COSMOS_SIZE);
+                PixelArt.flush(graphics);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, COSMOS, x0 + tx, y0 + ty, 0, 0, COSMOS_SIZE, COSMOS_SIZE, COSMOS_SIZE, COSMOS_SIZE);
             }
         }
         float[] speeds = {0.12F, 0.3F, 0.55F};
@@ -244,7 +247,7 @@ public final class StarBook {
     }
 
     /** The nine elements' signs far out on their rays, like the names of constellations. */
-    private void renderSigns(GuiGraphics graphics, RuneKnowledge knowledge) {
+    private void renderSigns(GuiGraphicsExtractor graphics, RuneKnowledge knowledge) {
         for (SimpleRune element : HexGrid.RING) {
             double[] u = HexGrid.unit(element);
             int x = (int) Math.round(u[0] * StarMap.SIGN_RADIUS);
@@ -260,7 +263,7 @@ public final class StarBook {
         }
     }
 
-    private void renderLinks(GuiGraphics graphics, RuneKnowledge knowledge) {
+    private void renderLinks(GuiGraphicsExtractor graphics, RuneKnowledge knowledge) {
         for (StarMap.Link link : StarMap.links()) {
             int[] a = StarMap.position(link.from());
             int[] b = StarMap.position(link.to());
@@ -275,7 +278,7 @@ public final class StarBook {
         }
     }
 
-    private void renderStar(GuiGraphics graphics, ComplexRune rune, int x, int y, RuneKnowledge knowledge, long now, boolean hovered) {
+    private void renderStar(GuiGraphicsExtractor graphics, ComplexRune rune, int x, int y, RuneKnowledge knowledge, long now, boolean hovered) {
         boolean open = ResearchBook.open(knowledge, rune);
         int stars = knowledge.stars(rune);
         float pulse = 0.5F + 0.5F * Mth.sin(now / 420.0F + rune.index());
@@ -362,7 +365,7 @@ public final class StarBook {
                 && y < plateTop() + plateHeight(selected);
     }
 
-    private void renderPlate(GuiGraphics graphics, ComplexRune rune, RuneKnowledge knowledge, int mouseX, int mouseY,
+    private void renderPlate(GuiGraphicsExtractor graphics, ComplexRune rune, RuneKnowledge knowledge, int mouseX, int mouseY,
                                                     long now) {
         int x = plateLeft();
         int y = plateTop();
@@ -388,15 +391,18 @@ public final class StarBook {
             }
             PixelArt.glyph(graphics, rune, cx - 13, y + 8, 27, PixelArt.argb(PixelArt.mix(color, 0xFFFFFF, 0.15F), 1), 0xFF000000);
         } else {
-            graphics.drawCenteredString(font, "?", cx, y + 17, 0xFF9A90B8);
+            PixelArt.flush(graphics);
+            graphics.centeredText(font, "?", cx, y + 17, 0xFF9A90B8);
         }
         int ty = y + 40;
         Component name = plateName(rune);
         for (FormattedCharSequence line : font.split(name, w - 12)) {
-            graphics.drawCenteredString(font, line, cx, ty, 0xFF000000 | (open ? PixelArt.mix(color, 0xFFFFFF, 0.25F) : 0x9A90B8));
+            PixelArt.flush(graphics);
+            graphics.centeredText(font, line, cx, ty, 0xFF000000 | (open ? PixelArt.mix(color, 0xFFFFFF, 0.25F) : 0x9A90B8));
             ty += 10;
         }
-        graphics.drawCenteredString(font, stars(stars), cx, ty + 1, 0xFFFFFFFF);
+        PixelArt.flush(graphics);
+        graphics.centeredText(font, stars(stars), cx, ty + 1, 0xFFFFFFFF);
         ty += 13;
         if (host != null) {
             boolean onTable = host.studying() == rune;
@@ -412,7 +418,7 @@ public final class StarBook {
     }
 
     /** A rune-plate button: dark glass in a glowing rim, no vanilla stone. */
-    private void magicButton(GuiGraphics graphics, int x, int y, int w, Component label, boolean active, boolean hovered, long now) {
+    private void magicButton(GuiGraphicsExtractor graphics, int x, int y, int w, Component label, boolean active, boolean hovered, long now) {
         float pulse = 0.5F + 0.5F * Mth.sin(now / 300.0F);
         int rim = !active ? 0x4A4468 : hovered ? PixelArt.mix(0x7EF0FF, 0xFFFFFF, 0.3F * pulse) : PixelArt.mix(0x2B8FB8, 0x5CC8F2, pulse);
         PixelArt.fill(graphics, x, y, x + w, y + BUTTON_HEIGHT, PixelArt.argb(hovered ? 0x123048 : 0x0C1426, 0.95F));
@@ -425,25 +431,34 @@ public final class StarBook {
             PixelArt.hex(graphics, x + 7, y + BUTTON_HEIGHT / 2, 5, PixelArt.argb(rim, 1), 0);
             PixelArt.hex(graphics, x + w - 8, y + BUTTON_HEIGHT / 2, 5, PixelArt.argb(rim, 1), 0);
         }
-        graphics.drawCenteredString(font, label, x + w / 2, y + 4, active ? 0xFFE8FAFF : 0xFF7A7498);
+        PixelArt.flush(graphics);
+        graphics.centeredText(font, label, x + w / 2, y + 4, active ? 0xFFE8FAFF : 0xFF7A7498);
     }
 
-    private void renderFrame(GuiGraphics graphics) {
+    private void renderFrame(GuiGraphicsExtractor graphics) {
         int c = FRAME_CORNER;
         int mid = FRAME_SIZE - 2 * c;
-        graphics.blit(FRAME, left, top, 0, 0, c, c, FRAME_SIZE, FRAME_SIZE);
-        graphics.blit(FRAME, left + width - c, top, FRAME_SIZE - c, 0, c, c, FRAME_SIZE, FRAME_SIZE);
-        graphics.blit(FRAME, left, top + height - c, 0, FRAME_SIZE - c, c, c, FRAME_SIZE, FRAME_SIZE);
-        graphics.blit(FRAME, left + width - c, top + height - c, FRAME_SIZE - c, FRAME_SIZE - c, c, c, FRAME_SIZE, FRAME_SIZE);
+        PixelArt.flush(graphics);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, FRAME, left, top, 0, 0, c, c, FRAME_SIZE, FRAME_SIZE);
+        PixelArt.flush(graphics);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, FRAME, left + width - c, top, FRAME_SIZE - c, 0, c, c, FRAME_SIZE, FRAME_SIZE);
+        PixelArt.flush(graphics);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, FRAME, left, top + height - c, 0, FRAME_SIZE - c, c, c, FRAME_SIZE, FRAME_SIZE);
+        PixelArt.flush(graphics);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, FRAME, left + width - c, top + height - c, FRAME_SIZE - c, FRAME_SIZE - c, c, c, FRAME_SIZE, FRAME_SIZE);
         for (int x = left + c; x < left + width - c; x += mid) {
             int piece = Math.min(mid, left + width - c - x);
-            graphics.blit(FRAME, x, top, c, 0, piece, c, FRAME_SIZE, FRAME_SIZE);
-            graphics.blit(FRAME, x, top + height - c, c, FRAME_SIZE - c, piece, c, FRAME_SIZE, FRAME_SIZE);
+            PixelArt.flush(graphics);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, FRAME, x, top, c, 0, piece, c, FRAME_SIZE, FRAME_SIZE);
+            PixelArt.flush(graphics);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, FRAME, x, top + height - c, c, FRAME_SIZE - c, piece, c, FRAME_SIZE, FRAME_SIZE);
         }
         for (int y = top + c; y < top + height - c; y += mid) {
             int piece = Math.min(mid, top + height - c - y);
-            graphics.blit(FRAME, left, y, 0, c, c, piece, FRAME_SIZE, FRAME_SIZE);
-            graphics.blit(FRAME, left + width - c, y, FRAME_SIZE - c, c, c, piece, FRAME_SIZE, FRAME_SIZE);
+            PixelArt.flush(graphics);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, FRAME, left, y, 0, c, c, piece, FRAME_SIZE, FRAME_SIZE);
+            PixelArt.flush(graphics);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, FRAME, left + width - c, y, FRAME_SIZE - c, c, c, piece, FRAME_SIZE, FRAME_SIZE);
         }
     }
 

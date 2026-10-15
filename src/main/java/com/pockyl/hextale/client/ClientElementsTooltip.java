@@ -1,7 +1,7 @@
 package com.pockyl.hextale.client;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 
 import com.pockyl.hextale.client.render.PixelArt;
@@ -22,7 +22,7 @@ public final class ClientElementsTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight() {
+    public int getHeight(Font font) {
         return SIGN + 3;
     }
 
@@ -36,14 +36,16 @@ public final class ClientElementsTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderImage(Font font, int x, int y, GuiGraphics graphics) {
+    public void extractImage(Font font, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
         int cx = x;
         for (Map.Entry<SimpleRune, Integer> entry : data.elements().elements().entrySet()) {
             SimpleRune element = entry.getKey();
             PixelArt.radical(graphics, element, cx, y, SIGN, PixelArt.argb(element.color(), 1), 0xFF000000);
             String strength = String.valueOf(entry.getValue());
-            graphics.drawString(font, strength, cx + SIGN + 2, y + 1, 0xFF000000 | element.color(), true);
+            PixelArt.flush(graphics);
+            graphics.text(font, strength, cx + SIGN + 2, y + 1, 0xFF000000 | element.color(), true);
             cx += SIGN + 2 + font.width(strength) + GAP;
         }
+        PixelArt.flush(graphics);
     }
 }
