@@ -17,6 +17,7 @@ import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchText;
 import com.pockyl.hextale.research.RuneBoard;
+import com.pockyl.hextale.research.WallKind;
 import com.pockyl.hextale.rune.SimpleRune;
 
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ final class BoardView {
     private static final int INK = 0x3B2A1A;
     private static final int WALL = 0x1E1628;
     private static final int WALL_RIM = 0x4A3A66;
+    private static final int MIRROR = 0xC9D3E3;
+    private static final int MIRROR_RIM = 0x6E7FA0;
     private static final int GOLD = 0xC88A12;
     private static final long INK_MILLIS = 380;
     private static final long BURST_MILLIS = 800;
@@ -63,8 +66,6 @@ final class BoardView {
     private long burstStart;
     private int burstCell = -1;
     private int burstColor;
-    private long fadeStart;
-    private int fadeElement = -1;
     private int lastFilled;
     private int lastEchoes;
     /** The newest guess mark: a wave runs from the item along its string to it. */
@@ -135,8 +136,6 @@ final class BoardView {
             burstCell = p.cell();
             burstColor = p.element().color();
             burstStart = now;
-            fadeElement = p.element().ordinal();
-            fadeStart = now;
         }
         lastFilled = filled;
         if (echoes > lastEchoes && study != null) {
@@ -163,14 +162,11 @@ final class BoardView {
                     int hovered, @Nullable Move chosen, int choice, int forkLevel) {
         long now = Util.getMillis();
         float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
-        int filled = sheet.isOpen() ? sheet.filledMask() : 0;
-        int dissolved = board.dissolved(filled);
-        float fade = fadeElement >= 0 ? Math.min(1, (now - fadeStart) / 900.0F) : 1;
 
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
             int x = left + px(cell);
             int y = top + py(cell);
-            SimpleRune wall = board.walls()[cell];
+            WallKind wall = board.walls()[cell];
             int point = board.pointAt(cell);
             if (point >= 0) {
                 RuneBoard.Point p = board.points().get(point);
@@ -183,20 +179,7 @@ final class BoardView {
                     PixelArt.radical(graphics, p.element(), x - 4, y - 4, 9, argb(color, 0.75F));
                 }
             } else if (wall != null) {
-                boolean gone = (dissolved & 1 << wall.ordinal()) != 0;
-                if (gone) {
-                    float alpha = fadeElement == wall.ordinal() ? 1 - fade * 0.8F : 0.2F;
-                    PixelArt.hex(graphics, x, y, CELL, argb(WALL, alpha * 0.6F), argb(wall.color(), alpha));
-                    PixelArt.radical(graphics, wall, x - 3, y - 3, 7, argb(PixelArt.onParchment(wall.color()), Math.max(0.35F, alpha)));
-                } else {
-                    PixelArt.hex(graphics, x, y, CELL, argb(WALL, 1), argb(WALL_RIM, 1));
-                    if (visible[cell]) {
-                        PixelArt.radical(graphics, wall, x - 3, y - 3, 7, argb(0x9A86C8, 1));
-                        PixelArt.fill(graphics, x + 3, y + 3, x + 5, y + 5, argb(wall.color(), 1));
-                    } else {
-                        graphics.drawString(font, "?", x - 2, y - 4, 0xFF6A5890, false);
-                    }
-                }
+                wall(graphics, font, x, y, visible[cell] ? wall : null, pulse);
             } else if (visible[cell]) {
                 SimpleRune near = nearestCorner(cell);
                 int tint = near == null ? 0xFFF8E8 : PixelArt.mix(0xFFF8E8, near.color(), 0.25F);
@@ -525,6 +508,25 @@ final class BoardView {
         }
     }
 
+    /** A dark rune: dark stone, a light mirror with a glint, or (in the fog) a dark hex with a question mark. */
+    private static void wall(GuiGraphics graphics, Font font, int x, int y, @Nullable WallKind kind, float pulse) {
+        if (kind == WallKind.MIRROR) {
+            PixelArt.hex(graphics, x, y, CELL, argb(MIRROR, 1), argb(MIRROR_RIM, 1));
+            PixelArt.line(graphics, x - 3, y + 2, x + 1, y - 2, argb(0xFFFFFF, 0.55F + 0.45F * pulse));
+            PixelArt.line(graphics, x - 1, y + 3, x + 3, y - 1, argb(0xFFFFFF, 0.35F + 0.3F * pulse));
+            return;
+        }
+        PixelArt.hex(graphics, x, y, CELL, argb(WALL, 1), argb(WALL_RIM, 1));
+        if (kind == WallKind.STONE) {
+            // Cracks in the stone.
+            PixelArt.line(graphics, x - 3, y - 2, x, y + 1, argb(0x0C0812, 1));
+            PixelArt.line(graphics, x, y + 1, x + 3, y - 1, argb(0x0C0812, 1));
+            PixelArt.fill(graphics, x - 2, y + 2, x - 1, y + 3, argb(0x6A5890, 1));
+        } else {
+            graphics.drawString(font, "?", x - 2, y - 4, 0xFF6A5890, false);
+        }
+    }
+
     @Nullable
     private static SimpleRune nearestCorner(int cell) {
         SimpleRune best = null;
@@ -545,8 +547,7 @@ final class BoardView {
         List<Component> lines = new ArrayList<>();
         String key = "gui.hextale.research_table.cell.";
         int point = board.pointAt(cell);
-        SimpleRune wall = board.walls()[cell];
-        int dissolved = board.dissolved(sheet.isOpen() ? sheet.filledMask() : 0);
+        WallKind wall = board.walls()[cell];
         if (point >= 0) {
             RuneBoard.Point p = board.points().get(point);
             lines.add(Component.translatable(key + "point", ResearchText.element(p.element())));
@@ -556,14 +557,7 @@ final class BoardView {
                 lines.add(p.resource().getDescription().copy().withStyle(ChatFormatting.GRAY));
             }
         } else if (wall != null) {
-            boolean gone = (dissolved & 1 << wall.ordinal()) != 0;
-            if (gone) {
-                lines.add(Component.translatable(key + "wall.gone", ResearchText.element(wall)));
-            } else if (visible[cell]) {
-                lines.add(Component.translatable(key + "wall", ResearchText.element(wall)));
-            } else {
-                lines.add(Component.translatable(key + "wall.unknown"));
-            }
+            lines.add(Component.translatable(key + "wall." + (visible[cell] ? wall.id() : "unknown")));
         }
         return lines;
     }

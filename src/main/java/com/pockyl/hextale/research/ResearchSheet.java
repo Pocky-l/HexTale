@@ -16,8 +16,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * One attempt at a rune = one sheet of parchment. Items write symbols in a chain: each one starts where the previous
- * one landed (the first at the orb in the centre). A symbol on a point lets its resource be left there at any time; a
- * filled point dissolves every dark rune of its element. The rune is learned when every point is filled; the sheet is
+ * one landed (the first at the orb in the centre); dark runes stop or turn back the ink (see {@link WallKind}). A symbol
+ * on a point lets its resource be left there at any time. The rune is learned when every point is filled; the sheet is
  * lost when it is full while nothing covered is left to fill.
  * <p>
  * Pure rules shared by the table (server) and its screen (client copy for previews). Tool strengths are passed in.
@@ -159,7 +159,7 @@ public final class ResearchSheet {
 
     /** Where an item's symbol would land now. */
     public HexGrid.Walk preview(RuneBoard board, ItemElements elements, boolean ground) {
-        return HexGrid.walk(board.activeWalls(filled), from, elements.offset(ground));
+        return HexGrid.walk(board.walls(), from, elements.offset(ground));
     }
 
     /** Why a symbol may not be written. */

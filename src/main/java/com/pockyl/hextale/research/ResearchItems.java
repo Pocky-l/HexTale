@@ -129,17 +129,17 @@ public final class ResearchItems {
     }
 
     /**
-     * Distinct non-zero steps of the canonical items, plain and (with a mortar) ground; with {@code byElement} the same
-     * step written by symbols of different elements counts once per element.
+     * Distinct non-zero steps of the canonical items, plain and (with a mortar) ground; the same step written by symbols
+     * of different elements counts once per element.
      */
-    static List<Step> canonicalSteps(boolean ground, boolean byElement) {
+    static List<Step> canonicalSteps(boolean ground) {
         List<Step> out = new ArrayList<>();
         Set<String> seen = new HashSet<>();
         for (ItemElements elements : CANONICAL.values()) {
             for (boolean half : ground ? new boolean[]{false, true} : new boolean[]{false}) {
                 int[] offset = elements.offset(half);
                 int element = elements.main().ordinal();
-                String key = offset[0] + "," + offset[1] + (byElement ? "," + element : "");
+                String key = offset[0] + "," + offset[1] + "," + element;
                 if ((offset[0] != 0 || offset[1] != 0) && seen.add(key)) {
                     out.add(new Step(offset, element));
                 }

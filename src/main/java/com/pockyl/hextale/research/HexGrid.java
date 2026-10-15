@@ -203,37 +203,70 @@ public final class HexGrid {
         return Arrays.copyOf(out, n);
     }
 
-    /** Where an ink line from {@code from} ends: the last open section before a dark rune or the edge. */
-    public static Walk walk(boolean[] walls, int from, int[] offset) {
-        int[] ray = ray(from, offset);
+    /**
+     * Where an ink line from {@code from} ends. It runs section by section along the item's step; the edge and a stone
+     * rune stop it in the last open section; a mirror rune turns it back for the steps it has left (on the way back any
+     * rune or the edge stops it).
+     *
+     * @param walls per section: the dark rune there, or null
+     */
+    public static Walk walk(WallKind[] walls, int from, int[] offset) {
+        int steps = length(offset);
+        int[] cells = new int[steps];
+        int count = 0;
         int last = from;
-        int n = 0;
         Walk.Stop stop = Walk.Stop.NONE;
-        for (int cell : ray) {
-            if (walls[cell]) {
+        int[][] line = line(from, offset);
+        int travelled = 0;
+        for (int[] axial : line) {
+            int cell = index(axial[0], axial[1]);
+            if (cell < 0) {
+                stop = Walk.Stop.EDGE;
+                break;
+            }
+            if (walls[cell] == WallKind.MIRROR) {
+                stop = Walk.Stop.BOUNCE;
+                break;
+            }
+            if (walls[cell] != null) {
                 stop = Walk.Stop.WALL;
                 break;
             }
+            cells[count++] = cell;
             last = cell;
-            n++;
+            travelled++;
         }
-        if (stop == Walk.Stop.NONE && ray.length < length(offset)) {
-            stop = Walk.Stop.EDGE;
+        if (stop == Walk.Stop.BOUNCE) {
+            int left = steps - travelled;
+            int[][] back = line(last, new int[]{-offset[0], -offset[1]});
+            for (int i = 0; i < left && i < back.length; i++) {
+                int cell = index(back[i][0], back[i][1]);
+                if (cell < 0 || walls[cell] != null) {
+                    break;
+                }
+                if (count == cells.length) {
+                    cells = Arrays.copyOf(cells, count * 2 + 1);
+                }
+                cells[count++] = cell;
+                last = cell;
+            }
         }
-        return new Walk(last, Arrays.copyOf(ray, n), stop);
+        return new Walk(last, Arrays.copyOf(cells, count), stop);
     }
 
     /**
      * An ink line.
      *
      * @param end   the section the symbol lands in
-     * @param cells the sections the line crossed, ending with {@code end} (empty when it did not move)
+     * @param cells the sections the line crossed in order (back over itself after a mirror), ending with {@code end}
+     *              (empty when it did not move)
      */
     public record Walk(int end, int[] cells, Stop stop) {
         public enum Stop {
             NONE,
             WALL,
-            EDGE
+            EDGE,
+            BOUNCE
         }
     }
 }

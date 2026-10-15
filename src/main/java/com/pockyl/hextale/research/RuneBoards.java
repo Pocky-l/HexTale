@@ -5,10 +5,10 @@ import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.SimpleRune;
 
-import java.util.ArrayDeque;
+import net.minecraft.world.item.Item;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -16,16 +16,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Builds and caches the 72 boards. Generation is deterministic (the rune's key seeds it) and identical on client and
- * server, so boards never travel over the network. Ported from the prototype: same random generator, same hash, same
- * order of picks, same solver.
+ * server, so boards never travel over the network. Points and dark-rune chains are placed like in the prototype; every
+ * board is checked to be finishable under the table's rules, and its star thresholds are the shortest routes.
  */
 public final class RuneBoards {
     private static final int[] POINTS = {0, 2, 4, 6};
     private static final int[] WALL_CHAINS = {0, 7, 14, 20};
-    /** Generation rejects boards a plain player cannot finish within this many symbols. */
+    /** Share of dark-rune chains that are mirrors. */
+    private static final double[] MIRRORS = {0, 0.2, 0.3, 0.35};
+    /** A plain player must be able to finish within this many symbols ... */
     private static final int[] PLAIN_LIMIT = {0, 8, 14, 20};
+    /** ... and must need at least this many: harder runes are longer. */
+    private static final int[] PLAIN_MIN = {0, 3, 6, 9};
     private static final int SEARCH_LIMIT = 60;
     /** Fork restarts a fully upgraded researcher has per sheet. */
     private static final int FULL_FORKS = 3;
@@ -48,9 +54,7 @@ public final class RuneBoards {
     public static RuneBoard get(ComplexRune rune) {
         CompletableFuture<RuneBoard> future = request(rune);
         if (!future.isDone()) {
-            RuneBoard board = generate(rune);
-            future.complete(board);
-            return future.join();
+            future.complete(generate(rune));
         }
         return future.join();
     }
@@ -101,20 +105,20 @@ public final class RuneBoards {
         int tier = ResearchBook.chapter(rune);
         String key = rune.action().id() + ">" + rune.target().id();
         RuneBoard fallback = null;
-        for (int attempt = 0; attempt < 150; attempt++) {
-            Random32 random = new Random32(hash(key + "#" + attempt));
+        int fallbackPlain = Integer.MAX_VALUE;
+        for (int attempt = 0; attempt < 200; attempt++) {
+            Random32 random = new Random32(hash(key + "#walls#" + attempt));
             List<SimpleRune> elements = new ArrayList<>(List.of(rune.action(), rune.target()));
             while (elements.size() < POINTS[tier]) {
                 elements.add(HexGrid.RING[random.pick(HexGrid.RING.length)]);
             }
-            SimpleRune[] walls = new SimpleRune[HexGrid.COUNT];
+            WallKind[] walls = new WallKind[HexGrid.COUNT];
             for (int c = 0; c < WALL_CHAINS[tier]; c++) {
                 int cell = random.pick(HexGrid.COUNT);
-                SimpleRune element = random.next() < 0.65 ? elements.get(random.pick(elements.size()))
-                        : HexGrid.RING[random.pick(HexGrid.RING.length)];
+                WallKind kind = random.next() < MIRRORS[tier] ? WallKind.MIRROR : WallKind.STONE;
                 for (int n = 2 + (int) Math.floor(random.next() * 4); n > 0; n--) {
                     if (HexGrid.radius(cell) > 0.22) {
-                        walls[cell] = element;
+                        walls[cell] = kind;
                     }
                     int[] neighbours = HexGrid.neighbours(cell);
                     cell = neighbours[random.pick(neighbours.length)];
@@ -139,84 +143,48 @@ public final class RuneBoards {
                 continue;
             }
             RuneBoard draft = new RuneBoard(rune, walls, List.copyOf(points), null);
-            int plain = solve(draft, false, PLAIN_LIMIT[tier], false);
-            if (plain == Integer.MAX_VALUE) {
+            List<Item> route = route(draft, PLAIN_LIMIT[tier]);
+            if (route == null) {
                 continue;
             }
-            boolean[] reach = reachablePlain(draft);
-            boolean gated = points.stream().anyMatch(p -> !reach[p.cell()]);
-            if (tier > 1 && !gated) {
-                if (fallback == null) {
-                    fallback = draft;
-                }
-                continue;
+            int plain = route.size();
+            if (plain >= PLAIN_MIN[tier]) {
+                return withPar(draft, plain);
             }
-            return withPar(draft);
+            if (fallback == null || plain > fallbackPlain) {
+                fallback = draft;
+                fallbackPlain = plain;
+            }
         }
         if (fallback == null) {
             throw new IllegalStateException("No board for rune " + rune.key());
         }
-        return withPar(fallback);
+        return withPar(fallback, fallbackPlain);
     }
 
-    private static RuneBoard withPar(RuneBoard draft) {
-        int plain = solve(draft, false, SEARCH_LIMIT, true);
-        int tools = Math.min(plain, solve(draft, true, plain, true));
+    private static RuneBoard withPar(RuneBoard draft, int plain) {
+        int tools = Math.min(plain, solve(draft, true, plain));
         int two = Math.max(plain + 1, tools + 2);
-        return new RuneBoard(draft.rune(), draft.walls(), draft.points(),
-                new RuneBoard.Par(tools, two, two + 1 + draft.tier(), plain));
-    }
-
-    /** Sections a plain sheet can reach from the orb without filling any point. */
-    private static boolean[] reachablePlain(RuneBoard board) {
-        boolean[] walls = board.activeWalls(0);
-        boolean[] reach = new boolean[HexGrid.COUNT];
-        ArrayDeque<Integer> queue = new ArrayDeque<>();
-        reach[HexGrid.CENTRE] = true;
-        queue.add(HexGrid.CENTRE);
-        List<int[]> offsets = new ArrayList<>();
-        for (ItemElements elements : ResearchItems.canonical().values()) {
-            offsets.add(elements.offset(false));
-        }
-        while (!queue.isEmpty()) {
-            int cell = queue.poll();
-            for (int[] offset : offsets) {
-                int end = HexGrid.walk(walls, cell, offset).end();
-                if (!reach[end]) {
-                    reach[end] = true;
-                    queue.add(end);
-                }
-            }
-        }
-        return reach;
+        return new RuneBoard(draft.rune(), draft.walls(), draft.points(), new RuneBoard.Par(tools, two, two + 1 + draft.tier(), plain));
     }
 
     /**
-     * Fewest symbols that fill every point. Each point is open, covered (a symbol lies on it) or filled (base-3 digit);
-     * filling is free and may wait, and a filled point dissolves the dark runes of its element. With tools the mortar
-     * adds half steps and the fork may restart from the orb or a filled point three times.
-     * <p>
-     * {@code strict} applies the table's rules on top of the prototype's: two symbols of the same element never follow
-     * each other, and a symbol never lands where it started or on the orb. (Landing on an older symbol is not tracked:
-     * the shortest routes hardly ever cross themselves.) Board generation uses the prototype's rules, so the boards stay
-     * the prototype's; star thresholds use the strict ones.
+     * Fewest symbols that cover every point under the table's rules: two symbols of the same element never follow each
+     * other, and a symbol never lands where it started or on the orb. (Leaving resources is free and changes nothing on
+     * the parchment, so covering is what counts; landing on an older symbol is not tracked - the shortest routes hardly
+     * ever cross themselves.) With tools the mortar adds half steps and the fork may restart from the orb or a covered
+     * point three times.
      *
      * @return the number of symbols, or {@link Integer#MAX_VALUE} when not possible within {@code limit}
      */
-    static int solve(RuneBoard board, boolean tools, int limit, boolean strict) {
+    static int solve(RuneBoard board, boolean tools, int limit) {
         int n = board.points().size();
-        int[] pow = new int[n + 1];
-        pow[0] = 1;
-        for (int i = 1; i <= n; i++) {
-            pow[i] = pow[i - 1] * 3;
-        }
-        int p3 = pow[n];
+        int masks = 1 << n;
+        int goal = masks - 1;
         int forks = tools ? FULL_FORKS : 0;
         int f1 = forks + 1;
-        // The element of the last symbol (strict rules), or NONE before the first one.
-        int none = SimpleRune.values().length;
-        int lasts = strict ? none + 1 : 1;
-        int goal = p3 - 1;
+        int lasts = SimpleRune.values().length + 1;
+        int none = lasts - 1;
         int cells = HexGrid.COUNT;
         int[] pointIndex = new int[cells];
         Arrays.fill(pointIndex, -1);
@@ -225,67 +193,38 @@ public final class RuneBoards {
             pointCell[i] = board.points().get(i).cell();
             pointIndex[pointCell[i]] = i;
         }
-        List<ResearchItems.Step> steps = ResearchItems.canonicalSteps(tools, strict);
+        List<ResearchItems.Step> steps = ResearchItems.canonicalSteps(tools);
         int rays = steps.size();
-        int[][][] ray = new int[rays][cells][];
-        for (int i = 0; i < rays; i++) {
-            for (int c = 0; c < cells; c++) {
-                ray[i][c] = HexGrid.ray(c, steps.get(i).offset());
+        int[] end = new int[cells * rays];
+        for (int c = 0; c < cells; c++) {
+            for (int i = 0; i < rays; i++) {
+                end[c * rays + i] = HexGrid.walk(board.walls(), c, steps.get(i).offset()).end();
             }
         }
-        int[] dissolvedOf = new int[p3];
-        for (int p = 0; p < p3; p++) {
-            int filled = 0;
-            for (int i = 0; i < n; i++) {
-                if (digit(p, i, pow) == 2) {
-                    filled |= 1 << i;
-                }
-            }
-            dissolvedOf[p] = board.dissolved(filled);
-        }
-        Map<Integer, boolean[]> wallSets = new HashMap<>();
-        Map<Integer, int[]> memos = new HashMap<>();
-        boolean[] seen = new boolean[cells * p3 * f1 * lasts];
+        boolean[] seen = new boolean[cells * masks * f1 * lasts];
         int[] current = new int[64];
         int size = 0;
-        int start = encode(HexGrid.CENTRE, 0, 0, strict ? none : 0, p3, f1, lasts);
+        int start = encode(HexGrid.CENTRE, 0, 0, none, masks, f1, lasts);
         seen[start] = true;
         current[size++] = start;
-        for (int cost = 0; cost < limit && size > 0; cost++) {
+        for (int cost = 0; cost <= limit && size > 0; cost++) {
+            // Free moves first: a fork restart.
             for (int x = 0; x < size; x++) {
                 int st = current[x];
                 int last = st % lasts;
-                int rest = st / lasts;
-                int f = rest % f1;
-                int t = rest / f1;
-                int p = t % p3;
-                int c = t / p3;
-                if (p == goal) {
+                int f = st / lasts % f1;
+                int mask = st / lasts / f1 % masks;
+                int c = st / lasts / f1 / masks;
+                if (mask == goal) {
                     return cost;
                 }
-                for (int i = 0; i < n; i++) {
-                    if (digit(p, i, pow) == 1) {
-                        int k = encode(c, p + pow[i], f, last, p3, f1, lasts);
-                        if (!seen[k]) {
-                            seen[k] = true;
-                            if (size == current.length) {
-                                current = Arrays.copyOf(current, size * 2);
-                            }
-                            current[size++] = k;
-                        }
-                    }
-                }
                 if (f < forks) {
-                    int[] targets = new int[n + 1];
-                    int count = 0;
-                    targets[count++] = HexGrid.CENTRE;
-                    for (int i = 0; i < n; i++) {
-                        if (digit(p, i, pow) == 2) {
-                            targets[count++] = pointCell[i];
+                    for (int j = -1; j < n; j++) {
+                        if (j >= 0 && (mask & 1 << j) == 0) {
+                            continue;
                         }
-                    }
-                    for (int j = 0; j < count; j++) {
-                        int k = encode(targets[j], p, f + 1, last, p3, f1, lasts);
+                        int target = j < 0 ? HexGrid.CENTRE : pointCell[j];
+                        int k = encode(target, mask, f + 1, last, masks, f1, lasts);
                         if (!seen[k]) {
                             seen[k] = true;
                             if (size == current.length) {
@@ -295,50 +234,27 @@ public final class RuneBoards {
                         }
                     }
                 }
+            }
+            if (cost == limit) {
+                break;
             }
             int[] next = new int[Math.max(64, size * 2)];
             int nextSize = 0;
             for (int x = 0; x < size; x++) {
                 int st = current[x];
                 int last = st % lasts;
-                int rest = st / lasts;
-                int f = rest % f1;
-                int t = rest / f1;
-                int p = t % p3;
-                int c = t / p3;
-                int d = dissolvedOf[p];
-                boolean[] wall = wallSets.computeIfAbsent(d, mask -> {
-                    boolean[] w = new boolean[cells];
-                    for (int i = 0; i < cells; i++) {
-                        w[i] = board.walls()[i] != null && (mask & 1 << board.walls()[i].ordinal()) == 0;
-                    }
-                    return w;
-                });
-                int[] memo = memos.computeIfAbsent(d, mask -> {
-                    int[] m = new int[cells * rays];
-                    Arrays.fill(m, -1);
-                    return m;
-                });
+                int f = st / lasts % f1;
+                int mask = st / lasts / f1 % masks;
+                int c = st / lasts / f1 / masks;
                 for (int i = 0; i < rays; i++) {
                     int element = steps.get(i).element();
-                    if (strict && element == last) {
-                        continue;
-                    }
-                    int e = memo[c * rays + i];
-                    if (e < 0) {
-                        int[] line = ray[i][c];
-                        e = c;
-                        for (int j = 0; j < line.length && !wall[line[j]]; j++) {
-                            e = line[j];
-                        }
-                        memo[c * rays + i] = e;
-                    }
-                    if (strict && (e == c || e == HexGrid.CENTRE)) {
+                    int e = end[c * rays + i];
+                    if (element == last || e == c || e == HexGrid.CENTRE) {
                         continue;
                     }
                     int pi = pointIndex[e];
-                    int np = pi >= 0 && digit(p, pi, pow) == 0 ? p + pow[pi] : p;
-                    int k = encode(e, np, f, strict ? element : 0, p3, f1, lasts);
+                    int nm = pi >= 0 ? mask | 1 << pi : mask;
+                    int k = encode(e, nm, f, element, masks, f1, lasts);
                     if (!seen[k]) {
                         seen[k] = true;
                         if (nextSize == next.length) {
@@ -354,11 +270,161 @@ public final class RuneBoards {
         return Integer.MAX_VALUE;
     }
 
-    private static int encode(int cell, int points, int forks, int last, int p3, int f1, int lasts) {
-        return ((cell * p3 + points) * f1 + forks) * lasts + last;
+    /**
+     * A plain route that really finishes the board: canonical items whose symbols cover every point within
+     * {@code limit} symbols under all the table's rules, including that a symbol never lands on an older one (which
+     * {@link #solve} does not track). Iterative deepening depth-first search, pruned by the distances under solve's
+     * rules (never longer than the real ones). Leaving resources is free and left out.
+     *
+     * @return the items in writing order, a shortest such route; null when none is found within {@code limit}
+     */
+    @Nullable
+    public static List<Item> route(RuneBoard board, int limit) {
+        List<Item> items = new ArrayList<>();
+        List<int[]> offsets = new ArrayList<>();
+        for (Map.Entry<Item, ItemElements> entry : ResearchItems.canonical().entrySet()) {
+            int[] offset = entry.getValue().offset(false);
+            if (offset[0] != 0 || offset[1] != 0) {
+                items.add(entry.getKey());
+                offsets.add(offset);
+            }
+        }
+        Route search = new Route(board, items, offsets);
+        int start = search.state(HexGrid.CENTRE, 0, search.none);
+        if (search.distance[start] == Integer.MAX_VALUE) {
+            return null;
+        }
+        for (int budget = search.distance[start]; budget <= limit; budget++) {
+            Arrays.fill(search.taken, false);
+            search.taken[HexGrid.CENTRE] = true;
+            if (search.deepen(HexGrid.CENTRE, 0, search.none, 0, budget)) {
+                List<Item> out = new ArrayList<>();
+                for (int i = 0; i < budget; i++) {
+                    out.add(items.get(search.path[i]));
+                }
+                return out;
+            }
+            if (search.nodes > Route.NODE_LIMIT) {
+                return null;
+            }
+        }
+        return null;
     }
 
-    private static int digit(int p, int i, int[] pow) {
-        return p / pow[i] % 3;
+    /** The search behind {@link #route}. */
+    private static final class Route {
+        static final int NODE_LIMIT = 2_000_000;
+        final int cells = HexGrid.COUNT;
+        final int k;
+        final int masks;
+        final int goal;
+        final int lasts = SimpleRune.values().length + 1;
+        final int none = lasts - 1;
+        final int[] element;
+        final int[] end;
+        final int[] pointIndex = new int[HexGrid.COUNT];
+        /** Fewest symbols to cover every point from (cell, covered, last element) under solve's rules. */
+        final int[] distance;
+        final boolean[] taken = new boolean[HexGrid.COUNT];
+        final int[] path = new int[SEARCH_LIMIT + 1];
+        long nodes;
+
+        Route(RuneBoard board, List<Item> items, List<int[]> offsets) {
+            k = items.size();
+            int n = board.points().size();
+            masks = 1 << n;
+            goal = masks - 1;
+            element = new int[k];
+            end = new int[cells * k];
+            Arrays.fill(pointIndex, -1);
+            for (int i = 0; i < n; i++) {
+                pointIndex[board.points().get(i).cell()] = i;
+            }
+            List<List<int[]>> into = new ArrayList<>();
+            for (int c = 0; c < cells; c++) {
+                into.add(new ArrayList<>());
+            }
+            for (int i = 0; i < k; i++) {
+                element[i] = ResearchItems.of(items.get(i)).main().ordinal();
+                for (int c = 0; c < cells; c++) {
+                    int e = HexGrid.walk(board.walls(), c, offsets.get(i)).end();
+                    end[c * k + i] = e;
+                    if (e != c && e != HexGrid.CENTRE) {
+                        into.get(e).add(new int[]{c, i});
+                    }
+                }
+            }
+            // Breadth-first backwards from every state with all points covered.
+            distance = new int[cells * masks * lasts];
+            Arrays.fill(distance, Integer.MAX_VALUE);
+            int[] queue = new int[distance.length];
+            int head = 0;
+            int tail = 0;
+            for (int c = 0; c < cells; c++) {
+                for (int last = 0; last < lasts; last++) {
+                    int st = state(c, goal, last);
+                    distance[st] = 0;
+                    queue[tail++] = st;
+                }
+            }
+            while (head < tail) {
+                int st = queue[head++];
+                int last = st % lasts;
+                int mask = st / lasts % masks;
+                int e = st / lasts / masks;
+                int point = pointIndex[e];
+                if (last == none || point >= 0 && (mask & 1 << point) == 0) {
+                    continue;
+                }
+                int[] befores = point >= 0 ? new int[]{mask, mask & ~(1 << point)} : new int[]{mask};
+                for (int[] move : into.get(e)) {
+                    if (element[move[1]] != last) {
+                        continue;
+                    }
+                    for (int before : befores) {
+                        for (int l = 0; l < lasts; l++) {
+                            int from = state(move[0], before, l);
+                            if (l != last && distance[from] == Integer.MAX_VALUE) {
+                                distance[from] = distance[st] + 1;
+                                queue[tail++] = from;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        int state(int cell, int mask, int last) {
+            return (cell * masks + mask) * lasts + last;
+        }
+
+        boolean deepen(int cell, int mask, int last, int depth, int budget) {
+            if (mask == goal) {
+                return true;
+            }
+            int left = distance[state(cell, mask, last)];
+            if (left == Integer.MAX_VALUE || depth + left > budget || ++nodes > NODE_LIMIT) {
+                return false;
+            }
+            for (int i = 0; i < k; i++) {
+                int e = end[cell * k + i];
+                if (element[i] == last || e == cell || taken[e]) {
+                    continue;
+                }
+                int point = pointIndex[e];
+                taken[e] = true;
+                path[depth] = i;
+                boolean found = deepen(e, point >= 0 ? mask | 1 << point : mask, element[i], depth + 1, budget);
+                taken[e] = false;
+                if (found) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private static int encode(int cell, int mask, int forks, int last, int masks, int f1, int lasts) {
+        return ((cell * masks + mask) * f1 + forks) * lasts + last;
     }
 }

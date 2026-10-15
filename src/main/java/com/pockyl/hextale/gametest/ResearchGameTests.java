@@ -48,11 +48,11 @@ import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.research.RuneBoard;
 import com.pockyl.hextale.research.RuneBoards;
+import com.pockyl.hextale.research.WallKind;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.SimpleRune;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -76,44 +76,50 @@ public final class ResearchGameTests {
 
     // ---- Boards ---------------------------------------------------------------------------------------------------
 
-    /** Reference values printed by the approved prototype (walls: count and hash of the sorted "q,r:element" list). */
-    @GameTest(template = "empty", batch = "boardsMatchThePrototype")
-    public static void boardsMatchThePrototype(GameTestHelper helper) {
-        expect(helper, "fire_earth", 21, 3624390768L, "fire@-6,2 earth@-3,6", 4, 6, 8, 4);
-        expect(helper, "water_light", 21, 1644978348L, "water@-5,5 light@-1,4", 4, 6, 8, 4);
-        expect(helper, "air_water", 42, 903288142L, "air@-2,7 water@-3,-1 light@2,5 metal@-3,4", 7, 10, 13, 9);
-        expect(helper, "shadow_fire", 59, 1897287124L, "shadow@6,-5 fire@-8,5 metal@5,-8 metal@7,0 shadow@4,-2 water@-4,2", 10, 14, 18, 13);
-        expect(helper, "spark_metal", 50, 4208863995L, "spark@2,6 metal@-3,0 fire@-2,5 light@-5,-1 life@4,-2 spark@-6,8", 11, 13, 17, 12);
-        expect(helper, "life_shadow", 56, 4014118940L, "life@-6,-2 shadow@3,2 metal@-4,0 air@-2,-5 metal@-6,3 water@5,-1", 9, 11, 15, 10);
+    @GameTest(template = "empty", batch = "boardsHaveBothDarkRunes")
+    public static void boardsHaveBothDarkRunes(GameTestHelper helper) {
+        int stones = 0;
+        int mirrors = 0;
+        for (ComplexRune rune : ComplexRunes.all()) {
+            RuneBoard board = RuneBoards.get(rune);
+            for (WallKind wall : board.walls()) {
+                if (wall == WallKind.STONE) {
+                    stones++;
+                } else if (wall == WallKind.MIRROR) {
+                    mirrors++;
+                }
+            }
+        }
+        helper.assertTrue(stones > mirrors && mirrors > 0, stones + " stone and " + mirrors + " mirror runes");
         helper.succeed();
     }
 
-    private static void expect(GameTestHelper helper, String key, int walls, long wallHash, String points, int three, int two,
-                               int sheet, int plain) {
-        RuneBoard board = RuneBoards.get(ComplexRunes.byKey(key));
-        List<String> list = new ArrayList<>();
-        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-            if (board.walls()[cell] != null) {
-                list.add(HexGrid.q(cell) + "," + HexGrid.r(cell) + ":" + board.walls()[cell].id());
-            }
-        }
-        Collections.sort(list);
-        helper.assertTrue(list.size() == walls, key + ": " + list.size() + " dark runes, the prototype has " + walls);
-        helper.assertTrue(hash(String.join(";", list)) == wallHash, key + ": the dark runes lie where the prototype has them");
-        List<String> found = board.points().stream().map(p -> p.element().id() + "@" + HexGrid.q(p.cell()) + "," + HexGrid.r(p.cell())).toList();
-        helper.assertTrue(String.join(" ", found).equals(points), key + ": points " + found + ", the prototype has " + points);
-        // The table's rules are stricter than the prototype's (no two equal symbols in a row): thresholds never drop.
-        RuneBoard.Par par = board.par();
-        helper.assertTrue(par.three() >= three && par.plain() >= plain && par.two() > par.three() && par.sheet() > par.two(),
-                key + ": thresholds " + par + ", the prototype has " + three + "/" + two + "/" + sheet + "/" + plain);
-    }
+    @GameTest(template = "empty", batch = "darkRunesStopOrTurnTheInk")
+    public static void darkRunesStopOrTurnTheInk(GameTestHelper helper) {
+        int from = HexGrid.CENTRE;
+        int[] east = {4, 0};
+        int[] ray = HexGrid.ray(from, east);
+        WallKind[] walls = new WallKind[HexGrid.COUNT];
+        HexGrid.Walk open = HexGrid.walk(walls, from, east);
+        helper.assertTrue(open.end() == ray[3] && open.stop() == HexGrid.Walk.Stop.NONE, "open parchment: four sections");
 
-    private static long hash(String text) {
-        int h = (int) 2166136261L;
-        for (int i = 0; i < text.length(); i++) {
-            h = (h ^ text.charAt(i)) * 16777619;
-        }
-        return h & 0xFFFFFFFFL;
+        walls[ray[2]] = WallKind.STONE;
+        HexGrid.Walk stopped = HexGrid.walk(walls, from, east);
+        helper.assertTrue(stopped.end() == ray[1] && stopped.stop() == HexGrid.Walk.Stop.WALL, "a stone rune stops the ink before it");
+
+        walls[ray[2]] = WallKind.MIRROR;
+        HexGrid.Walk bounced = HexGrid.walk(walls, from, east);
+        // Two steps out, two back: the ink ends where it started, which the table refuses.
+        helper.assertTrue(bounced.end() == from && bounced.stop() == HexGrid.Walk.Stop.BOUNCE, "a mirror turns the ink back");
+        helper.assertTrue(Arrays.equals(bounced.cells(), new int[]{ray[0], ray[1], ray[0], from}), "the ink runs back over its path");
+
+        walls[ray[2]] = null;
+        walls[ray[3]] = WallKind.MIRROR;
+        HexGrid.Walk turned = HexGrid.walk(walls, from, new int[]{5, 0});
+        helper.assertTrue(turned.end() == ray[0], "three steps out, two back: one section east of the orb");
+        walls[ray[1]] = WallKind.STONE;
+        helper.assertTrue(HexGrid.walk(walls, from, new int[]{5, 0}).end() == ray[0], "on the way out a stone still stops it");
+        helper.succeed();
     }
 
     @GameTest(template = "empty", batch = "everyBoardCanBeFinished", timeoutTicks = 400)
@@ -128,29 +134,12 @@ public final class ResearchGameTests {
                     rune.key() + ": the first points are its action and target");
             helper.assertTrue(par.three() >= 1 && par.three() <= par.plain() && par.plain() < par.two() + 1 && par.two() < par.sheet(),
                     rune.key() + ": sane thresholds " + par);
-            helper.assertTrue(route(board) != null, rune.key() + ": a plain route exists");
+            List<Step> route = route(board);
+            helper.assertTrue(route != null, rune.key() + ": a plain route exists");
+            helper.assertTrue(replays(board, route), rune.key() + ": the plain route is allowed by the table");
             helper.assertTrue(board.walls()[HexGrid.CENTRE] == null, rune.key() + ": the orb is never walled in");
         }
         Hextale.LOGGER.info("Checked {} research boards in {} ms", ComplexRunes.COUNT, (System.nanoTime() - start) / 1_000_000);
-        helper.succeed();
-    }
-
-    @GameTest(template = "empty", batch = "filledPointsDissolveTheirDarkRunes")
-    public static void filledPointsDissolveTheirDarkRunes(GameTestHelper helper) {
-        RuneBoard board = RuneBoards.get(ComplexRunes.byKey("air_water"));
-        SimpleRune element = board.points().get(0).element();
-        boolean[] before = board.activeWalls(0);
-        boolean[] after = board.activeWalls(1);
-        int gone = 0;
-        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-            if (board.walls()[cell] == element) {
-                helper.assertTrue(before[cell] && !after[cell], "a dark rune of the filled point's element dissolves");
-                gone++;
-            } else if (board.walls()[cell] != null) {
-                helper.assertTrue(before[cell] == after[cell], "other dark runes stay");
-            }
-        }
-        helper.assertTrue(gone > 0, "the board has dark runes of " + element.id());
         helper.succeed();
     }
 
@@ -688,76 +677,33 @@ public final class ResearchGameTests {
     private record Step(Item item, int point) {
     }
 
-    /** A shortest plain route (no tools) that fills every point, found by breadth-first search; null if none. */
-    /**
-     * A shortest plain route (no tools) that fills every point under the table's rules - no two symbols of one element
-     * in a row, never onto the orb or the spot it starts from - found by breadth-first search; null if none.
-     */
+    /** The board's shortest plain route (no tools): its symbols, then every resource; null if none. */
     private static List<Step> route(RuneBoard board) {
-        int n = board.points().size();
-        int lasts = SimpleRune.values().length + 1;
-        int per = (int) Math.pow(3, n);
-        int states = HexGrid.COUNT * per * lasts;
-        int[] pow = new int[n];
-        for (int i = 0; i < n; i++) {
-            pow[i] = (int) Math.pow(3, i);
-        }
-        int[] parent = new int[states];
-        Step[] how = new Step[states];
-        Arrays.fill(parent, -2);
-        int start = (HexGrid.CENTRE * per) * lasts + lasts - 1;
-        parent[start] = -1;
-        ArrayDeque<Integer> queue = new ArrayDeque<>();
-        queue.add(start);
-        int goal = -1;
-        while (!queue.isEmpty()) {
-            int state = queue.poll();
-            int last = state % lasts;
-            int cell = state / lasts / per;
-            int p = state / lasts % per;
-            if (p == per - 1) {
-                goal = state;
-                break;
-            }
-            int filled = 0;
-            for (int i = 0; i < n; i++) {
-                int digit = p / pow[i] % 3;
-                if (digit == 2) {
-                    filled |= 1 << i;
-                }
-                if (digit == 1) {
-                    visit(queue, parent, how, state, ((cell * per) + p + pow[i]) * lasts + last, new Step(board.points().get(i).resource(), i));
-                }
-            }
-            boolean[] walls = board.activeWalls(filled);
-            for (Map.Entry<Item, ItemElements> entry : ResearchItems.canonical().entrySet()) {
-                int element = entry.getValue().main().ordinal();
-                int end = HexGrid.walk(walls, cell, entry.getValue().offset(false)).end();
-                if (element == last || end == cell || end == HexGrid.CENTRE) {
-                    continue;
-                }
-                int point = board.pointAt(end);
-                int np = point >= 0 && p / pow[point] % 3 == 0 ? p + pow[point] : p;
-                visit(queue, parent, how, state, ((end * per) + np) * lasts + element, new Step(entry.getKey(), -1));
-            }
-        }
-        if (goal < 0) {
+        List<Item> items = RuneBoards.route(board, board.par().plain());
+        if (items == null) {
             return null;
         }
         List<Step> steps = new ArrayList<>();
-        for (int s = goal; parent[s] >= 0; s = parent[s]) {
-            steps.add(how[s]);
+        items.forEach(item -> steps.add(new Step(item, -1)));
+        for (int i = 0; i < board.points().size(); i++) {
+            steps.add(new Step(board.points().get(i).resource(), i));
         }
-        Collections.reverse(steps);
         return steps;
     }
 
-    private static void visit(ArrayDeque<Integer> queue, int[] parent, Step[] how, int from, int to, Step step) {
-        if (parent[to] == -2) {
-            parent[to] = from;
-            how[to] = step;
-            queue.add(to);
+    /** Plays a route on a bare sheet: true when the table accepts every symbol and the rune is finished. */
+    private static boolean replays(RuneBoard board, List<Step> route) {
+        ResearchSheet sheet = new ResearchSheet();
+        sheet.select(board.rune());
+        sheet.begin(route.size() + 1);
+        for (Step step : route) {
+            if (step.point() >= 0) {
+                sheet.leave(board, step.point());
+            } else if (sheet.write(board, ResearchItems.of(step.item()), BuiltInRegistries.ITEM.getKey(step.item()), false) == null) {
+                return false;
+            }
         }
+        return sheet.complete(board);
     }
 
     private static void play(ResearchTableBlockEntity table, ServerPlayer player, RuneBoard board, List<Step> route) {

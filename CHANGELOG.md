@@ -14,8 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rune research: choose one of 72 runes in the star book, then study it on a nine-cornered parchment of hexagonal
   sections, right on its sections: every section a studied item from your inventory can reach glows; click one and the
   item writes a symbol there (each symbol starts where the last one landed). Cover the rune's points and click them to
-  leave the resources they ask for; dark runes block the ink, and a filled point dissolves the dark runes of its
-  element. Sheets are free; finish in fewer symbols for up to three stars.
+  leave the resources they ask for. Dark stone runes stop the ink, mirror runes bounce it back for the steps it has
+  left. Sheets are free; finish in fewer symbols for up to three stars.
 - The Researcher's Diary is a star book: a dark sky to drag around and zoom, where the 72 runes hang as stars in
   constellations - Smelting and the tool runes in the centre, the other runes on the rays of their elements. Click a
   star to see the rune; on the Research Table it goes to the parchment with one click.

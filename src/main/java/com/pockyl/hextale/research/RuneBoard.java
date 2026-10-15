@@ -8,13 +8,13 @@ import com.pockyl.hextale.rune.SimpleRune;
 import java.util.List;
 
 /**
- * The parchment of one rune: dark-rune walls (one element each), the points to cover and their resources, and the
+ * The parchment of one rune: dark runes (walls, see {@link WallKind}), the points to cover and their resources, and the
  * star thresholds in symbols.
  *
- * @param walls  per section: the dark rune's element, or null for open parchment
+ * @param walls  per section: the dark rune there, or null for open parchment
  * @param points the rune's points; the first two are its action and target elements
  */
-public record RuneBoard(ComplexRune rune, SimpleRune[] walls, List<Point> points, Par par) {
+public record RuneBoard(ComplexRune rune, WallKind[] walls, List<Point> points, Par par) {
     /** A point to cover with a symbol; {@code resource} is left on it to fill it. */
     public record Point(SimpleRune element, int cell, Item resource) {
     }
@@ -46,26 +46,5 @@ public record RuneBoard(ComplexRune rune, SimpleRune[] walls, List<Point> points
 
     public int stars(int symbols) {
         return symbols <= par.three ? 3 : symbols <= par.two ? 2 : 1;
-    }
-
-    /** Elements dissolved by filled points (bit per element ordinal). */
-    public int dissolved(int filledMask) {
-        int mask = 0;
-        for (int i = 0; i < points.size(); i++) {
-            if ((filledMask & 1 << i) != 0) {
-                mask |= 1 << points.get(i).element().ordinal();
-            }
-        }
-        return mask;
-    }
-
-    /** Sections that stop ink: dark runes whose element no filled point has dissolved. */
-    public boolean[] activeWalls(int filledMask) {
-        int dissolved = dissolved(filledMask);
-        boolean[] out = new boolean[walls.length];
-        for (int i = 0; i < walls.length; i++) {
-            out[i] = walls[i] != null && (dissolved & 1 << walls[i].ordinal()) == 0;
-        }
-        return out;
     }
 }

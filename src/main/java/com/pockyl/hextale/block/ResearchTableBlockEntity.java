@@ -316,12 +316,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
                     ResearchMessagePayload.Tone.BAD);
             return;
         }
-        int dissolvedBefore = board.dissolved(sheet.filledMask());
         ResearchSheet.Result result = sheet.leave(board, point);
         MutableComponent text = Component.empty();
-        if ((dissolvedBefore & 1 << p.element().ordinal()) == 0 && hasWalls(board, p.element())) {
-            text.append(Component.translatable("research.hextale.dissolved", ResearchText.element(p.element())));
-        }
         pointEffects(p.element());
         switch (result) {
             case COMPLETE -> complete(player, board, text);
@@ -329,15 +325,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             default -> message(player, text, ResearchMessagePayload.Tone.GOOD);
         }
         setChanged();
-    }
-
-    private static boolean hasWalls(RuneBoard board, SimpleRune element) {
-        for (SimpleRune wall : board.walls()) {
-            if (wall == element) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void scrape(ServerPlayer player) {
