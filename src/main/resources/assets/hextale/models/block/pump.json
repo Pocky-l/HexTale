@@ -1,76 +1,77 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "hextale:block/brass",
+    "particle": "hextale:block/pump",
+    "pump": "hextale:block/pump",
     "brass": "hextale:block/brass",
     "pipe": "hextale:block/brass_pipe"
   },
   "elements": [
     {
       "from": [
-        3.0,
+        2.0,
         0.0,
-        3.0
+        2.0
       ],
       "to": [
-        13.0,
-        2.0,
-        13.0
+        14.0,
+        1.0,
+        14.0
       ],
-      "name": "intake",
+      "name": "foot",
       "faces": {
         "north": {
           "texture": "#brass",
           "uv": [
-            3,
+            2,
+            15,
             14,
-            13,
             16
           ]
         },
         "south": {
           "texture": "#brass",
           "uv": [
-            3,
+            2,
+            15,
             14,
-            13,
             16
           ]
         },
         "east": {
           "texture": "#brass",
           "uv": [
-            3,
+            2,
+            15,
             14,
-            13,
             16
           ]
         },
         "west": {
           "texture": "#brass",
           "uv": [
-            3,
+            2,
+            15,
             14,
-            13,
             16
           ]
         },
         "up": {
           "texture": "#brass",
           "uv": [
-            3,
-            3,
-            13,
-            13
+            2,
+            2,
+            14,
+            14
           ]
         },
         "down": {
           "texture": "#brass",
           "uv": [
-            3,
-            3,
-            13,
-            13
+            2,
+            2,
+            14,
+            14
           ],
           "cullface": "down"
         }
@@ -79,12 +80,63 @@
     {
       "from": [
         4.0,
-        2.0,
+        1.0,
         4.0
       ],
       "to": [
         12.0,
-        10.0,
+        4.0,
+        12.0
+      ],
+      "name": "intake",
+      "faces": {
+        "north": {
+          "texture": "#pump",
+          "uv": [
+            0,
+            8,
+            8,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#pump",
+          "uv": [
+            0,
+            8,
+            8,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#pump",
+          "uv": [
+            0,
+            8,
+            8,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#pump",
+          "uv": [
+            0,
+            8,
+            8,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.0,
+        4.0,
+        4.0
+      ],
+      "to": [
+        13.0,
+        11.0,
         12.0
       ],
       "name": "body",
@@ -92,46 +144,307 @@
         "north": {
           "texture": "#brass",
           "uv": [
-            4,
-            6,
-            12,
-            14
+            3,
+            5,
+            13,
+            12
           ]
         },
         "south": {
           "texture": "#brass",
           "uv": [
-            4,
-            6,
-            12,
-            14
+            3,
+            5,
+            13,
+            12
           ]
         },
         "east": {
-          "texture": "#brass",
+          "texture": "#pump",
           "uv": [
-            4,
-            6,
-            12,
-            14
+            0,
+            0,
+            8,
+            7
           ]
         },
         "west": {
+          "texture": "#pump",
+          "uv": [
+            0,
+            0,
+            8,
+            7
+          ]
+        },
+        "up": {
           "texture": "#brass",
           "uv": [
+            3,
             4,
-            6,
-            12,
-            14
+            13,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            4,
+            13,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.0,
+        4.0,
+        3.0
+      ],
+      "to": [
+        12.0,
+        11.0,
+        4.0
+      ],
+      "name": "body_front",
+      "faces": {
+        "north": {
+          "texture": "#pump",
+          "uv": [
+            0,
+            0,
+            8,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#pump",
+          "uv": [
+            8,
+            0,
+            9,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#pump",
+          "uv": [
+            8,
+            0,
+            9,
+            7
           ]
         },
         "up": {
           "texture": "#brass",
           "uv": [
             4,
+            3,
+            12,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
             4,
             12,
-            12
+            12,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.0,
+        4.0,
+        12.0
+      ],
+      "to": [
+        12.0,
+        11.0,
+        13.0
+      ],
+      "name": "body_back",
+      "faces": {
+        "south": {
+          "texture": "#pump",
+          "uv": [
+            0,
+            0,
+            8,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#pump",
+          "uv": [
+            8,
+            0,
+            9,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#pump",
+          "uv": [
+            8,
+            0,
+            9,
+            7
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            12,
+            12,
+            13
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            3,
+            12,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.0,
+        11.0,
+        5.0
+      ],
+      "to": [
+        11.0,
+        13.0,
+        11.0
+      ],
+      "name": "cap",
+      "faces": {
+        "north": {
+          "texture": "#pump",
+          "uv": [
+            10,
+            0,
+            16,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#pump",
+          "uv": [
+            10,
+            0,
+            16,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#pump",
+          "uv": [
+            10,
+            0,
+            16,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#pump",
+          "uv": [
+            10,
+            0,
+            16,
+            2
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13.0,
+        8.0,
+        7.0
+      ],
+      "to": [
+        14.0,
+        13.0,
+        9.0
+      ],
+      "name": "lever",
+      "__lint_allow": [
+        "intersect"
+      ],
+      "rotation": {
+        "origin": [
+          13.5,
+          8.5,
+          8.0
+        ],
+        "axis": "z",
+        "angle": -22.5
+      },
+      "faces": {
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            2,
+            3,
+            3,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            13,
+            3,
+            14,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            7,
+            3,
+            9,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            13,
+            7,
+            14,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            13,
+            7,
+            14,
+            9
           ]
         }
       }
