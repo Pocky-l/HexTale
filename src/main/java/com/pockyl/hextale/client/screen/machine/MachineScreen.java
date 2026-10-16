@@ -101,7 +101,16 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
         int filled = Math.round(height * tank.amount() / (float) tank.capacity());
         int bottom = y + height;
         int used = 0;
+        if (contents.isUnknown() && filled > 0) {
+            // An unknown essence shows as one murky liquid, not its layers.
+            graphics.fill(x, bottom - filled, x + TANK_W, bottom, 0xFF000000 | contents.color());
+            graphics.fill(x, bottom - filled, x + 2, bottom, 0x40FFFFFF);
+            used = filled;
+        }
         for (SimpleRune element : SimpleRune.values()) {
+            if (used >= filled) {
+                break;
+            }
             int drops = contents.get(element);
             if (drops == 0) {
                 continue;

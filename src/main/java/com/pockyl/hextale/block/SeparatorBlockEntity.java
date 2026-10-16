@@ -38,7 +38,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Separator splits a mixture in two. The mixture comes in (from a bottle, or through pipes at the back and the
  * sides) and is worked off {@value #STEP_DROPS} drops at a time: the drops of the reagent's element go into the
- * concentrate vessel, all the others into the rest vessel. Each side has a mode set in the screen or on the block: the
+ * concentrate vessel, all the others into the rest vessel as an unknown essence (it holds its drops, but is never a
+ * concentrate). Each side has a mode set in the screen or on the block: the
  * mixture comes in through inlets, the concentrate (the wanted product) and the rest (the by-product) leave through
  * their outlets; by default the mixture comes in at the back and the left, the concentrate leaves at the right and the
  * rest at the front. The top is the gas vent. Both products can be bottled. Without a reagent nothing is split. One
@@ -259,7 +260,8 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
                 chargeElement = -1;
             }
         }
-        rest.fill(portion.minus(Essence.pure(element, drawn)), false);
+        // What is left is no longer known for what it is: an unknown essence, never a concentrate.
+        rest.fill(portion.minus(Essence.pure(element, drawn)).asUnknown(), false);
         level.playSound(null, worldPosition, SoundEvents.BUBBLE_COLUMN_BUBBLE_POP, SoundSource.BLOCKS, 0.5F, 1.2F);
         return true;
     }

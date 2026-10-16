@@ -497,7 +497,8 @@ public final class ResearchGameTests {
         helper.succeedWhen(() -> {
             Essence rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
             Essence drawn = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.EXTRACT_OUT));
-            helper.assertTrue(rest.equals(Essence.pure(SimpleRune.LIFE, 8)), "clay leaves pure life, got " + rest);
+            helper.assertTrue(rest.equals(Essence.pure(SimpleRune.LIFE, 8).asUnknown()) && rest.pureElement() == null,
+                    "clay leaves the life as an unknown essence, no concentrate, got " + rest);
             helper.assertTrue(drawn.equals(Essence.pure(SimpleRune.EARTH, 8)), "and draws out pure earth, got " + drawn);
             helper.assertTrue(separator.getItem(SeparatorBlockEntity.REAGENT).getCount() == 2, "one clay ball binds eight drops");
         });
@@ -543,7 +544,7 @@ public final class ResearchGameTests {
         separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 4));
         helper.succeedWhen(() -> {
             helper.assertTrue(source.tank().isEmpty() && separator.mix().isEmpty(), "the mixture was worked off");
-            helper.assertTrue(sink.tank().contents().equals(Essence.pure(SimpleRune.LIFE, 12)),
+            helper.assertTrue(sink.tank().contents().equals(Essence.pure(SimpleRune.LIFE, 12).asUnknown()),
                     "the rest ran on into the tank in front, got " + sink.tank().contents() + ", separator rest " + separator.rest().contents());
             helper.assertTrue(separator.extract().contents().equals(Essence.pure(SimpleRune.EARTH, 12)),
                     "the concentrate waits in the separator, got " + separator.extract().contents());
@@ -566,7 +567,7 @@ public final class ResearchGameTests {
         separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 2));
         helper.runAfterDelay(200, () -> {
             helper.assertTrue(separator.mix().isEmpty(), "the mixture was worked off, left " + separator.mix().contents());
-            helper.assertTrue(separator.rest().contents().equals(Essence.pure(SimpleRune.AIR, 8)),
+            helper.assertTrue(separator.rest().contents().equals(Essence.pure(SimpleRune.AIR, 8).asUnknown()),
                     "the air stays in the separator, got rest " + separator.rest().contents() + ", tank " + tank.tank().contents());
             helper.assertTrue(tank.tank().isEmpty(), "the tank feeding back into the same pipes takes nothing");
             helper.succeed();

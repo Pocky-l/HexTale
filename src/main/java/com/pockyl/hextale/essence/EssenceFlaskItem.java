@@ -58,6 +58,9 @@ public class EssenceFlaskItem extends Item {
         if (pure != null) {
             return Component.translatable("item.hextale.essence_flask.concentrate", ResearchText.element(pure));
         }
+        if (essence.isUnknown()) {
+            return Component.translatable("item.hextale.essence_flask.unknown");
+        }
         return essence.isEmpty() ? super.getName(stack) : Component.translatable("item.hextale.essence_flask.mixture");
     }
 
@@ -70,7 +73,9 @@ public class EssenceFlaskItem extends Item {
         }
         tooltip.accept(essence.describe());
         tooltip.accept(Component.translatable("item.hextale.essence_flask.drops", essence.total(), CAPACITY).withStyle(ChatFormatting.GRAY));
-        if (essence.pureElement() == null) {
+        if (essence.isUnknown()) {
+            tooltip.accept(Component.translatable("item.hextale.essence_flask.unknown.hint").withStyle(ChatFormatting.DARK_GRAY));
+        } else if (essence.pureElement() == null) {
             tooltip.accept(Component.translatable("item.hextale.essence_flask.mixture.hint").withStyle(ChatFormatting.DARK_GRAY));
         }
     }

@@ -68,12 +68,13 @@ public final class EssenceTank {
 
     public void save(ValueOutput output, String key) {
         output.putIntArray(key, contents.drops());
+        output.putBoolean(key + "_unknown", contents.isUnknown());
     }
 
     public void load(ValueInput input, String key) {
         int[] saved = input.getIntArray(key).orElse(new int[0]);
         int[] drops = new int[Essence.EMPTY.drops().length];
         System.arraycopy(saved, 0, drops, 0, Math.min(saved.length, drops.length));
-        contents = Essence.of(drops);
+        contents = Essence.of(drops, input.getBooleanOr(key + "_unknown", false));
     }
 }

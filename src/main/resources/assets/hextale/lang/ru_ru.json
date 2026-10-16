@@ -429,5 +429,8 @@
   "gui.hextale.port.none.hint": "",
   "gui.hextale.port.click": "Нажмите, чтобы сменить",
   "gui.hextale.separator.vent": "Газоотвод",
-  "gui.hextale.separator.vent.hint": "Сверху выходит газ разделения"
+  "gui.hextale.separator.vent.hint": "Сверху выходит газ разделения",
+  "essence.hextale.unknown": "Неизвестная эссенция",
+  "item.hextale.essence_flask.unknown": "Пузырёк неизвестной эссенции",
+  "item.hextale.essence_flask.unknown.hint": "Остаток после разделения: это не чернила, но сепаратор с другим реагентом ещё может выделить из него эссенцию"
 }
