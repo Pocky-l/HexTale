@@ -85,15 +85,15 @@
     "sounds": [
       {
         "name": "hextale:separator_drip1",
-        "volume": 0.5
+        "volume": 0.3
       },
       {
         "name": "hextale:separator_drip2",
-        "volume": 0.5
+        "volume": 0.3
       },
       {
         "name": "hextale:separator_drip3",
-        "volume": 0.5
+        "volume": 0.3
       }
     ]
   },

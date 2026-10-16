@@ -269,10 +269,10 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         // What is left goes on as the rest, and drawing an essence out leaves a dark unknown essence on top of it.
         EssenceMix left = portion.minus(EssenceMix.pure(element, drawn));
         rest.fill(drawn > 0 ? left.plus(EssenceMix.unknown(UNKNOWN_PER_STEP)) : left, false);
-        if (drawn > 0) {
-            level.playSound(null, worldPosition, ModSounds.SEPARATOR_DRIP.get(), SoundSource.BLOCKS, 0.5F, 0.85F + level.getRandom().nextFloat() * 0.3F);
-        } else {
-            level.playSound(null, worldPosition, SoundEvents.BUBBLE_COLUMN_BUBBLE_POP, SoundSource.BLOCKS, 0.5F, 1.2F);
+        // A drop through the stopcock now and then: often enough to hear it work, rarely enough not to tire.
+        if (drawn > 0 && level.getRandom().nextInt(3) == 0) {
+            level.playSound(null, worldPosition, ModSounds.SEPARATOR_DRIP.get(), SoundSource.BLOCKS, 0.6F,
+                    0.9F + level.getRandom().nextFloat() * 0.2F);
         }
         return true;
     }
