@@ -34,7 +34,12 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
     private List<Component> pendingTooltip;
 
     protected MachineScreen(M menu, Inventory inventory, Component title, Identifier background) {
-        super(menu, inventory, title, 176, 166);
+        this(menu, inventory, title, background, 176);
+    }
+
+    /** A screen wider than its 176 px background, for a panel at its right. */
+    protected MachineScreen(M menu, Inventory inventory, Component title, Identifier background, int width) {
+        super(menu, inventory, title, width, 166);
         this.background = background;
         inventoryLabelY = MachineMenu.INVENTORY_Y - 11;
     }
@@ -49,7 +54,7 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         pendingTooltip = null;
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, background, leftPos, topPos, 0, 0, imageWidth, imageHeight, 176, 166);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, background, leftPos, topPos, 0, 0, 176, 166, 176, 166);
         renderMachine(graphics, mouseX, mouseY);
         PixelArt.flush(graphics);
     }

@@ -9,6 +9,7 @@ import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
@@ -30,48 +31,108 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 
 import org.jspecify.annotations.Nullable;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 /**
  * The Separator: draws one element out of a mixture with a reagent. Its front (facing the player who placed it) lets the
  * rest of the mixture out, its top the drawn-out concentrate; pipes bring the mixture in at the back and the sides.
  */
 public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerHolder, EssenceMachine {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
-    private static final Direction[] PORT_FACES = {Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP};
+    /** What each face shows: nothing without a pipe, else the joint of the face's mode (see {@link PortMode}). */
+    public static final Map<Direction, EnumProperty<PortMode>> LOOKS = looks();
 
     public SeparatorBlock(Properties properties) {
         super(properties);
         BlockState state = stateDefinition.any().setValue(FACING, Direction.NORTH);
-        for (Direction face : PORT_FACES) {
-            state = state.setValue(PORTS.get(face), false);
+        for (EnumProperty<PortMode> look : LOOKS.values()) {
+            state = state.setValue(look, PortMode.NONE);
         }
         registerDefaultState(state);
+    }
+
+    private static Map<Direction, EnumProperty<PortMode>> looks() {
+        Map<Direction, EnumProperty<PortMode>> looks = new EnumMap<>(Direction.class);
+        for (Direction face : new Direction[]{Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP}) {
+            looks.put(face, EnumProperty.create(face.getSerializedName(), PortMode.class));
+        }
+        return looks;
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
-        for (Direction face : PORT_FACES) {
-            builder.add(PORTS.get(face));
+        LOOKS.values().forEach(builder::add);
+    }
+
+    /** The faces of a separator as seen by someone standing in front of it. */
+    public enum Side {
+        FRONT, BACK, LEFT, RIGHT, TOP;
+
+        /** The modes of a new separator: the mixture in at the back and the sides, the rest out at the front, the
+         * concentrate out at the top. */
+        public PortMode defaultMode() {
+            return this == FRONT ? PortMode.WASTE : this == TOP ? PortMode.PRODUCT : PortMode.INLET;
+        }
+
+        public Direction face(Direction facing) {
+            return switch (this) {
+                case FRONT -> facing;
+                case BACK -> facing.getOpposite();
+                // Standing in front and looking at the separator, its left is the viewer's left.
+                case LEFT -> facing.getClockWise();
+                case RIGHT -> facing.getCounterClockWise();
+                case TOP -> Direction.UP;
+            };
+        }
+
+        @Nullable
+        public static Side of(Direction face, Direction facing) {
+            for (Side side : values()) {
+                if (side.face(facing) == face) {
+                    return side;
+                }
+            }
+            return null;
         }
     }
 
-    /** Every face but the bottom: the mixture comes in at the back and the sides, the rest leaves at the front, the
-     * concentrate at the top. */
+    /** Every face but the bottom; what a face does is set in the separator's screen. */
     @Override
     public boolean isPort(BlockState state, Direction face) {
         return face != Direction.DOWN;
     }
 
+    /** The state with the look of {@code face} set for the neighbour there and the face's mode. */
+    public static BlockState withLook(BlockState state, Direction face, BlockState neighbour, BlockGetter level, BlockPos pos) {
+        EnumProperty<PortMode> look = LOOKS.get(face);
+        if (look == null) {
+            return state;
+        }
+        Side side = Side.of(face, state.getValue(FACING));
+        PortMode mode = level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator ? separator.mode(side) : side.defaultMode();
+        return state.setValue(look, neighbour.getBlock() instanceof BrassPipeBlock ? mode : PortMode.NONE);
+    }
+
+    /** The state with every face's look set. */
+    public static BlockState withLooks(BlockState state, BlockGetter level, BlockPos pos) {
+        for (Direction face : LOOKS.keySet()) {
+            state = withLook(state, face, level.getBlockState(pos.relative(face)), level, pos);
+        }
+        return state;
+    }
+
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
                                      BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
-        return EssenceMachine.connect(state, direction, neighbour);
+        return withLook(state, direction, neighbour, level, pos);
     }
 
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
-        return EssenceMachine.connectAll(context.getLevel(), context.getClickedPos(),
-                defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()));
+        return withLooks(defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()),
+                context.getLevel(), context.getClickedPos());
     }
 
     @Override
@@ -84,7 +145,11 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
 
     @Override
     protected BlockState rotate(BlockState state, Rotation rotation) {
-        return EssenceMachine.rotatePorts(state.setValue(FACING, rotation.rotate(state.getValue(FACING))), rotation);
+        BlockState rotated = state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+        for (Direction face : Direction.Plane.HORIZONTAL) {
+            rotated = rotated.setValue(LOOKS.get(rotation.rotate(face)), state.getValue(LOOKS.get(face)));
+        }
+        return rotated;
     }
 
     @Override

@@ -11,13 +11,15 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import com.pockyl.hextale.block.PortMode;
+import com.pockyl.hextale.block.SeparatorBlock;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.registry.ModMenus;
 
 /**
  * The Separator, read from left to right: a bottle of mixture to pour in and glass bottles, the mixture's tank, the
  * reagent, and the two products - the concentrate (top) and the rest (bottom) - each with the slot it is bottled into.
- * Data = the reagent's charge, its element and the step progress.
+ * Data = the reagent's charge, its element, the step progress and the mode of each face (the port panel).
  */
 public class SeparatorMenu extends MachineMenu {
     public static final int POUR_X = 12;
@@ -31,7 +33,7 @@ public class SeparatorMenu extends MachineMenu {
     public static final int REST_OUT_Y = 50;
 
     public SeparatorMenu(int containerId, Inventory inventory, RegistryFriendlyByteBuf buf) {
-        this(containerId, inventory, new SimpleContainer(5), new SimpleContainerData(3), buf.readBlockPos());
+        this(containerId, inventory, new SimpleContainer(5), new SimpleContainerData(SeparatorBlockEntity.DATA_COUNT), buf.readBlockPos());
     }
 
     public SeparatorMenu(int containerId, Inventory inventory, Container container, ContainerData data, BlockPos pos) {
@@ -66,5 +68,19 @@ public class SeparatorMenu extends MachineMenu {
 
     public int step() {
         return data(2);
+    }
+
+    public PortMode mode(SeparatorBlock.Side side) {
+        return PortMode.values()[data(3 + side.ordinal())];
+    }
+
+    /** A click on a face of the port panel: the server cycles that face's mode. */
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (id >= 0 && id < SeparatorBlock.Side.values().length && container instanceof SeparatorBlockEntity separator) {
+            separator.cycle(SeparatorBlock.Side.values()[id]);
+            return true;
+        }
+        return false;
     }
 }

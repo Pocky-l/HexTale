@@ -37,8 +37,15 @@
     },
     {
       "when": {
-        "facing": "north",
-        "east": "true"
+        "north": "inlet"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet"
+      }
+    },
+    {
+      "when": {
+        "east": "inlet"
       },
       "apply": {
         "model": "hextale:block/separator_inlet",
@@ -47,8 +54,7 @@
     },
     {
       "when": {
-        "facing": "north",
-        "south": "true"
+        "south": "inlet"
       },
       "apply": {
         "model": "hextale:block/separator_inlet",
@@ -57,8 +63,7 @@
     },
     {
       "when": {
-        "facing": "north",
-        "west": "true"
+        "west": "inlet"
       },
       "apply": {
         "model": "hextale:block/separator_inlet",
@@ -67,89 +72,99 @@
     },
     {
       "when": {
-        "facing": "east",
-        "north": "true"
-      },
-      "apply": {
-        "model": "hextale:block/separator_inlet"
-      }
-    },
-    {
-      "when": {
-        "facing": "east",
-        "south": "true"
+        "up": "inlet"
       },
       "apply": {
         "model": "hextale:block/separator_inlet",
-        "y": 180
+        "x": 270
       }
     },
     {
       "when": {
-        "facing": "east",
-        "west": "true"
+        "north": "product"
       },
       "apply": {
-        "model": "hextale:block/separator_inlet",
-        "y": 270
+        "model": "hextale:block/separator_product"
       }
     },
     {
       "when": {
-        "facing": "south",
-        "north": "true"
+        "east": "product"
       },
       "apply": {
-        "model": "hextale:block/separator_inlet"
-      }
-    },
-    {
-      "when": {
-        "facing": "south",
-        "east": "true"
-      },
-      "apply": {
-        "model": "hextale:block/separator_inlet",
+        "model": "hextale:block/separator_product",
         "y": 90
       }
     },
     {
       "when": {
-        "facing": "south",
-        "west": "true"
+        "south": "product"
       },
       "apply": {
-        "model": "hextale:block/separator_inlet",
+        "model": "hextale:block/separator_product",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "product"
+      },
+      "apply": {
+        "model": "hextale:block/separator_product",
         "y": 270
       }
     },
     {
       "when": {
-        "facing": "west",
-        "north": "true"
+        "up": "product"
       },
       "apply": {
-        "model": "hextale:block/separator_inlet"
+        "model": "hextale:block/separator_product",
+        "x": 270
       }
     },
     {
       "when": {
-        "facing": "west",
-        "east": "true"
+        "north": "waste"
       },
       "apply": {
-        "model": "hextale:block/separator_inlet",
+        "model": "hextale:block/separator_waste"
+      }
+    },
+    {
+      "when": {
+        "east": "waste"
+      },
+      "apply": {
+        "model": "hextale:block/separator_waste",
         "y": 90
       }
     },
     {
       "when": {
-        "facing": "west",
-        "south": "true"
+        "south": "waste"
       },
       "apply": {
-        "model": "hextale:block/separator_inlet",
+        "model": "hextale:block/separator_waste",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "waste"
+      },
+      "apply": {
+        "model": "hextale:block/separator_waste",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "waste"
+      },
+      "apply": {
+        "model": "hextale:block/separator_waste",
+        "x": 270
       }
     }
   ]

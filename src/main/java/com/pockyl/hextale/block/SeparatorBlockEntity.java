@@ -38,9 +38,10 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Separator splits a mixture in two. The mixture comes in (from a bottle, or through pipes at the back and the
  * sides) and is worked off {@value #STEP_DROPS} drops at a time: the drops of the reagent's element go into the
- * concentrate vessel, all the others into the rest vessel. The concentrate leaves through the top, the rest through the
- * front; both can be bottled. Without a reagent nothing is split. One reagent item binds {@value Reagents#BINDS} drops
- * of its element.
+ * concentrate vessel, all the others into the rest vessel. Each face but the bottom has a mode set in the screen: the
+ * mixture comes in through inlets, the concentrate (the wanted product) and the rest (the by-product) leave through
+ * their outlets; by default the rest leaves at the front and the concentrate at the top. Both can be bottled. Without a
+ * reagent nothing is split. One reagent item binds {@value Reagents#BINDS} drops of its element.
  */
 public class SeparatorBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.Receiver {
     public static final int POUR = 0;
@@ -49,6 +50,8 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     public static final int REST_OUT = 3;
     public static final int EXTRACT_OUT = 4;
     public static final int CAPACITY = 64;
+    /** Synced numbers: charge, its element, step, then the five face modes. */
+    public static final int DATA_COUNT = 3 + SeparatorBlock.Side.values().length;
     /** Ticks per separating step, and drops of the mixture worked off per step. */
     public static final int STEP_TICKS = 10;
     private static final int STEP_DROPS = 4;
@@ -67,6 +70,8 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     private int chargeElement = -1;
     private int step;
     private long lastReceived = Long.MIN_VALUE / 2;
+    /** The mode of each face, in {@link SeparatorBlock.Side} order. */
+    private final PortMode[] modes = defaultModes();
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -74,7 +79,8 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             return switch (index) {
                 case 0 -> charge;
                 case 1 -> chargeElement;
-                default -> step;
+                case 2 -> step;
+                default -> modes[index - 3].ordinal();
             };
         }
 
@@ -83,13 +89,14 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             switch (index) {
                 case 0 -> charge = value;
                 case 1 -> chargeElement = value;
-                default -> step = value;
+                case 2 -> step = value;
+                default -> modes[index - 3] = PortMode.values()[value];
             }
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return DATA_COUNT;
         }
     };
 
@@ -110,6 +117,37 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     /** Everything else of the mixture. */
     public EssenceTank rest() {
         return rest;
+    }
+
+    private static PortMode[] defaultModes() {
+        PortMode[] modes = new PortMode[SeparatorBlock.Side.values().length];
+        for (SeparatorBlock.Side side : SeparatorBlock.Side.values()) {
+            modes[side.ordinal()] = side.defaultMode();
+        }
+        return modes;
+    }
+
+    public PortMode mode(SeparatorBlock.Side side) {
+        return modes[side.ordinal()];
+    }
+
+    /** The mode of a face of the block (none for the bottom). */
+    public PortMode mode(Direction face) {
+        SeparatorBlock.Side side = SeparatorBlock.Side.of(face, facing());
+        return side == null ? PortMode.NONE : modes[side.ordinal()];
+    }
+
+    /** The next mode for a face: inlet, concentrate out, rest out. The joint on the block follows. */
+    public void cycle(SeparatorBlock.Side side) {
+        modes[side.ordinal()] = modes[side.ordinal()].next();
+        if (level != null) {
+            BlockState now = getBlockState();
+            BlockState looks = SeparatorBlock.withLooks(now, level, worldPosition);
+            if (looks != now) {
+                level.setBlock(worldPosition, looks, Block.UPDATE_ALL);
+            }
+        }
+        setChanged();
     }
 
     private Direction facing() {
@@ -250,10 +288,17 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         return true;
     }
 
-    /** The rest leaves through the front, the concentrate through the top. */
+    /** The concentrate leaves through its outlets, the rest through theirs. */
     private boolean pushToPipes() {
-        boolean moved = push(rest, facing());
-        moved |= push(extract, Direction.UP);
+        boolean moved = false;
+        for (SeparatorBlock.Side side : SeparatorBlock.Side.values()) {
+            PortMode mode = modes[side.ordinal()];
+            if (mode == PortMode.PRODUCT) {
+                moved |= push(extract, side.face(facing()));
+            } else if (mode == PortMode.WASTE) {
+                moved |= push(rest, side.face(facing()));
+            }
+        }
         return moved;
     }
 
@@ -270,17 +315,16 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         return false;
     }
 
-    /** The rest leaves through the front, the concentrate through the top. */
     @Override
     public boolean isOutlet(Direction face) {
-        return face == facing() || face == Direction.UP;
+        PortMode mode = mode(face);
+        return mode == PortMode.PRODUCT || mode == PortMode.WASTE;
     }
 
-    /** Pipes bring the mixture in at the back and the sides. */
+    /** Pipes bring the mixture in through the inlets. */
     @Override
     public int receive(Direction side, Essence offer, boolean simulate) {
-        Direction front = facing();
-        if (side == front || side.getAxis() == Direction.Axis.Y) {
+        if (mode(side) != PortMode.INLET) {
             return 0;
         }
         int taken = mix.fill(offer, simulate);
@@ -361,6 +405,11 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         mix.load(input, "mix");
         extract.load(input, "extract");
         rest.load(input, "rest");
+        int[] saved = input.getIntArray("ports").orElse(new int[0]);
+        PortMode[] defaults = defaultModes();
+        for (int i = 0; i < modes.length; i++) {
+            modes[i] = i < saved.length && saved[i] > 0 && saved[i] < PortMode.values().length ? PortMode.values()[saved[i]] : defaults[i];
+        }
         charge = input.getIntOr("charge", 0);
         chargeElement = input.getIntOr("charge_element", -1);
     }
@@ -372,6 +421,11 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         mix.save(output, "mix");
         extract.save(output, "extract");
         rest.save(output, "rest");
+        int[] ports = new int[modes.length];
+        for (int i = 0; i < modes.length; i++) {
+            ports[i] = modes[i].ordinal();
+        }
+        output.putIntArray("ports", ports);
         output.putInt("charge", charge);
         output.putInt("charge_element", chargeElement);
     }

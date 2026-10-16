@@ -29,7 +29,7 @@ import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.AlembicBlock;
 import com.pockyl.hextale.block.AlembicBlockEntity;
 import com.pockyl.hextale.block.BrassPipeBlock;
-import com.pockyl.hextale.block.EssenceMachine;
+import com.pockyl.hextale.block.PortMode;
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.block.InkSupply;
 import com.pockyl.hextale.block.SeparatorBlock;
@@ -580,12 +580,19 @@ public final class ResearchGameTests {
         helper.setBlock(at.east(), ModBlocks.BRASS_PIPE.get());
         helper.setBlock(at.below(), ModBlocks.BRASS_PIPE.get());
         BlockState separator = helper.getBlockState(at);
-        helper.assertTrue(separator.getValue(EssenceMachine.PORTS.get(Direction.EAST)), "the separator shows its east port");
+        helper.assertTrue(separator.getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.INLET, "the separator shows an inlet on its east side");
         helper.assertTrue(helper.getBlockState(at.east()).getValue(BrassPipeBlock.SIDES.get(Direction.WEST)), "and the pipe joins it");
         helper.assertFalse(helper.getBlockState(at.below()).getValue(BrassPipeBlock.SIDES.get(Direction.UP)),
                 "the bottom is no port: the pipe below stays apart");
+        // Facing north, the east face is the separator's left: make it a concentrate outlet.
+        SeparatorBlockEntity entity = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        entity.cycle(SeparatorBlock.Side.LEFT);
+        helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.PRODUCT,
+                "the joint follows the face's new mode");
+        helper.assertTrue(entity.receive(Direction.EAST, Essence.pure(SimpleRune.FIRE, 4), true) == 0, "an outlet takes nothing in");
         helper.setBlock(at.east(), Blocks.AIR);
-        helper.assertFalse(helper.getBlockState(at).getValue(EssenceMachine.PORTS.get(Direction.EAST)), "the port closes without a pipe");
+        helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.NONE,
+                "the joint goes without a pipe");
         helper.succeed();
     }
 
