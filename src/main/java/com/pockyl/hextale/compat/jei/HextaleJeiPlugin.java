@@ -52,7 +52,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         for (Essence essence : Essence.values()) {
             bottles.add(concentrate(essence));
         }
-        bottles.add(EssenceFlaskItem.filled(EssenceMix.pure(Essence.FIRE, EssenceFlaskItem.CAPACITY).asUnknown()));
+        bottles.add(EssenceFlaskItem.filled(EssenceMix.unknown(EssenceFlaskItem.CAPACITY)));
         registration.addExtraItemStacks(bottles);
     }
 

@@ -46,7 +46,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Alembic's contents: the items waiting to boil, glass bottles and the bottle it filled, the water in its flask and
  * the essence boiled so far. An item boils in {@value #WATER_PER_ITEM} mB of water for {@value #BOIL_TICKS} ticks over
- * heat into {@value #DROPS_PER_POINT} drops per point of each of its elements - all of them at once, a mixture. Water
+ * heat into {@value #DROPS_PER_POINT} mB per point of each of its elements - all of them at once, a mixture. Water
  * comes in through pipes at the back and the sides (from a pump) or from a bucket; the essence goes into bottles and out
  * of the spout (the front) into a pipe.
  * <p>
@@ -58,8 +58,9 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
     public static final int FLASK_IN = 1;
     public static final int FLASK_OUT = 2;
     public static final int BOIL_TICKS = 80;
-    public static final int DROPS_PER_POINT = 2;
-    public static final int CAPACITY = 64;
+    /** Millibuckets of essence per point of each of the item's essences. */
+    public static final int DROPS_PER_POINT = 30;
+    public static final int CAPACITY = 1000;
     /** Millibuckets of water the flask holds, and how much one boiled item takes. */
     public static final int WATER_CAPACITY = 2000;
     public static final int WATER_PER_ITEM = 250;

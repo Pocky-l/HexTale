@@ -544,8 +544,8 @@ public final class ResearchGameTests {
         helper.succeedWhen(() -> {
             EssenceMix rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
             EssenceMix drawn = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.EXTRACT_OUT));
-            helper.assertTrue(rest.equals(EssenceMix.pure(Essence.LIFE, 8).asUnknown()) && rest.pureEssence() == null,
-                    "clay leaves the life as an unknown essence, no concentrate, got " + rest);
+            helper.assertTrue(rest.equals(EssenceMix.pure(Essence.LIFE, 8).plus(EssenceMix.unknown(SeparatorBlockEntity.UNKNOWN_PER_STEP)))
+                    && rest.pureEssence() == null, "clay leaves the life with a dark unknown essence on top, no concentrate, got " + rest);
             helper.assertTrue(drawn.equals(EssenceMix.pure(Essence.EARTH, 8)), "and draws out pure earth, got " + drawn);
             helper.assertTrue(separator.getItem(SeparatorBlockEntity.REAGENT).getCount() == 2, "one clay ball binds eight drops");
         });
@@ -591,7 +591,8 @@ public final class ResearchGameTests {
         separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 4));
         helper.succeedWhen(() -> {
             helper.assertTrue(source.tank().isEmpty() && separator.mix().isEmpty(), "the mixture was worked off");
-            helper.assertTrue(sink.tank().contents().equals(EssenceMix.pure(Essence.LIFE, 12).asUnknown()),
+            helper.assertTrue(sink.tank().contents().get(Essence.LIFE) == 12 && sink.tank().contents().isUnknown()
+                    && sink.tank().contents().get(Essence.EARTH) == 0,
                     "the rest ran on into the tank in front, got " + sink.tank().contents() + ", separator rest " + separator.rest().contents());
             helper.assertTrue(separator.extract().contents().equals(EssenceMix.pure(Essence.EARTH, 12)),
                     "the concentrate waits in the separator, got " + separator.extract().contents());
@@ -614,7 +615,7 @@ public final class ResearchGameTests {
         separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 2));
         helper.runAfterDelay(200, () -> {
             helper.assertTrue(separator.mix().isEmpty(), "the mixture was worked off, left " + separator.mix().contents());
-            helper.assertTrue(separator.rest().contents().equals(EssenceMix.pure(Essence.AIR, 8).asUnknown()),
+            helper.assertTrue(separator.rest().contents().get(Essence.AIR) == 8 && separator.rest().contents().isUnknown(),
                     "the air stays in the separator, got rest " + separator.rest().contents() + ", tank " + tank.tank().contents());
             helper.assertTrue(tank.tank().isEmpty(), "the tank feeding back into the same pipes takes nothing");
             helper.succeed();
@@ -672,6 +673,21 @@ public final class ResearchGameTests {
         placed.applyComponentsFromItemStack(item);
         helper.assertTrue(placed.tank().contents().equals(EssenceMix.pure(Essence.LIGHT, 40)), "and a tank placed from it holds it again");
         helper.succeed();
+    }
+
+    @HexTest(maxTicks = 200)
+    public static void aDrainValveDrainsTanksBesideIt(GameTestHelper helper) {
+        BlockPos valveAt = new BlockPos(2, 2, 2);
+        helper.setBlock(valveAt, ModBlocks.DRAIN_VALVE.get().defaultBlockState().setValue(DrainValveBlock.OPEN, true));
+        helper.setBlock(valveAt.west(), ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(valveAt.east(), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(valveAt.east(2), ModBlocks.ESSENCE_TANK.get());
+        EssenceTankBlockEntity beside = helper.getBlockEntity(valveAt.west(), EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity piped = helper.getBlockEntity(valveAt.east(2), EssenceTankBlockEntity.class);
+        beside.tank().set(EssenceMix.pure(Essence.FIRE, 300));
+        piped.tank().set(EssenceMix.unknown(300));
+        helper.assertTrue(helper.getBlockState(valveAt).getValue(EssenceMachine.PORTS.get(Direction.WEST)), "the valve shows its joint to the tank beside it");
+        helper.succeedWhen(() -> helper.assertTrue(beside.tank().isEmpty() && piped.tank().isEmpty(), "the open valve drains both tanks"));
     }
 
     @HexTest
@@ -762,11 +778,11 @@ public final class ResearchGameTests {
         table.select(player, SMELTING);
         table.thread(player, thread);
         helper.assertTrue(table.sheet().length() == 0, "no thread without ink");
-        Map<Essence, EssenceTankBlockEntity> tanks = inkTanks(helper, 64);
+        Map<Essence, EssenceTankBlockEntity> tanks = inkTanks(helper, EssenceTankBlockEntity.CAPACITY);
         int[] part = Arrays.copyOf(thread, 3);
         table.thread(player, part);
         helper.assertTrue(table.sheet().length() == 2 && !table.sheet().isDone(), "a part of the thread is kept");
-        helper.assertTrue(tanks.get(SMELTING.action()).tank().amount() == 64, "no ink is spent yet");
+        helper.assertTrue(tanks.get(SMELTING.action()).tank().amount() == EssenceTankBlockEntity.CAPACITY, "no ink is spent yet");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "the started attempt took a paper");
         table.thread(player, new int[]{HexGrid.CENTRE});
         table.thread(player, part);
@@ -781,7 +797,8 @@ public final class ResearchGameTests {
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "the orb went into the rune");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "finishing takes no more paper"); 
         for (Essence element : Essence.values()) {
-            helper.assertTrue(tanks.get(element).tank().amount() == 64 - trace.ink()[element.ordinal()],
+            helper.assertTrue(tanks.get(element).tank().amount()
+                            == EssenceTankBlockEntity.CAPACITY - trace.ink()[element.ordinal()] * InkSupply.MB_PER_SECTION,
                     element.id() + " ink was spent from its tank by the thread");
         }
         ItemStack scroll = table.getItem(ResearchTableBlockEntity.OUTPUT);
@@ -848,7 +865,7 @@ public final class ResearchGameTests {
         player.getInventory().add(new ItemStack(Items.PAPER));
         helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.PAPER, "paper in the pocket does not count");
         table.select(player, SMELTING);
-        inkTanks(helper, 64);
+        inkTanks(helper, EssenceTankBlockEntity.CAPACITY);
         table.thread(player, Arrays.copyOf(RuneBoards.plainThread(RuneBoards.get(SMELTING)), 3));
         helper.assertTrue(table.sheet().length() == 0, "no thread without paper");
         player.discard();

@@ -16,12 +16,13 @@ import com.pockyl.hextale.rune.Essence;
 import java.util.function.Consumer;
 
 /**
- * A bottle of essence: a vanilla glass bottle filled with up to {@value #CAPACITY} drops of one liquid (it does not
+ * A bottle of essence: a vanilla glass bottle filled with up to {@value #CAPACITY} mB of one liquid (it does not
  * stack, like a potion); emptied, it turns back into a glass bottle. A bottle of a single element is a concentrate -
  * the only ink the Research Table takes. "Flask" in the code means either: a glass bottle or a bottle of essence.
  */
 public class EssenceFlaskItem extends Item {
-    public static final int CAPACITY = 16;
+    /** Millibuckets, like a vanilla bottle. */
+    public static final int CAPACITY = 250;
 
     public EssenceFlaskItem(Properties properties) {
         super(properties);
@@ -58,7 +59,7 @@ public class EssenceFlaskItem extends Item {
         if (pure != null) {
             return Component.translatable("item.hextale.essence_flask.concentrate", ResearchText.essence(pure));
         }
-        if (essence.isUnknown()) {
+        if (essence.isUnknown() && essence.unknown() == essence.total()) {
             return Component.translatable("item.hextale.essence_flask.unknown");
         }
         return essence.isEmpty() ? super.getName(stack) : Component.translatable("item.hextale.essence_flask.mixture");

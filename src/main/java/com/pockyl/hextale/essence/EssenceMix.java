@@ -14,181 +14,184 @@ import com.pockyl.hextale.rune.Essence;
 
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * A liquid of the elements: how many drops of each element it holds. Boiled out of an item it carries all the item's
- * elements at once (a mixture); only a liquid of a single element - a concentrate - can be used at the Research Table.
- * What is left after a separation is an unknown essence: it still holds its drops (another reagent can draw them out),
- * but it shows only as "unknown essence" and is never a concentrate. Immutable.
+ * A liquid of essences, measured in millibuckets: how much of each essence it holds, plus the unknown essence - the dark
+ * by-product every separation adds to what it leaves behind. It is one mixed liquid: poured or piped, any part of it
+ * keeps its proportions. Boiled out of an item it carries all the item's essences (a mixture); only a liquid of a
+ * single essence and nothing unknown - a concentrate - is ink for the Research Table. Immutable.
  */
 public final class EssenceMix {
-    public static final EssenceMix EMPTY = new EssenceMix(new int[Essence.values().length], false);
-    /** The map key that marks an unknown essence in the saved form. */
+    /** Slots: one per essence ({@link Essence#ordinal()}), then the unknown essence. */
+    private static final int UNKNOWN = Essence.values().length;
+    private static final int SLOTS = UNKNOWN + 1;
+    public static final EssenceMix EMPTY = new EssenceMix(new int[SLOTS]);
+    /** The unknown essence's colour: dark and murky. */
+    public static final int UNKNOWN_COLOR = 0x2A2433;
     private static final String UNKNOWN_KEY = "unknown";
-    private static final Codec<Essence> ELEMENT = Codec.STRING.comapFlatMap(id -> {
-        Essence rune = Essence.byId(id);
-        return rune != null ? DataResult.success(rune) : DataResult.error(() -> "Unknown element: " + id);
-    }, Essence::id);
     public static final Codec<EssenceMix> CODEC = Codec.unboundedMap(Codec.STRING, Codec.intRange(1, Integer.MAX_VALUE))
             .comapFlatMap(EssenceMix::fromSaved, EssenceMix::toSaved);
-    public static final StreamCodec<ByteBuf, EssenceMix> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list(Essence.values().length)),
-            essence -> Arrays.stream(essence.drops).boxed().toList(),
-            ByteBufCodecs.BOOL, EssenceMix::isUnknown,
-            (list, unknown) -> new EssenceMix(list.stream().mapToInt(Integer::intValue).toArray(), unknown));
+    public static final StreamCodec<ByteBuf, EssenceMix> STREAM_CODEC = ByteBufCodecs.VAR_INT
+            .apply(ByteBufCodecs.list(SLOTS))
+            .map(list -> new EssenceMix(list.stream().mapToInt(Integer::intValue).toArray()),
+                    mix -> Arrays.stream(mix.amounts).boxed().toList());
 
-    private final int[] drops;
-    private final boolean unknown;
+    private final int[] amounts;
 
-    private EssenceMix(int[] drops, boolean unknown) {
-        this.drops = Arrays.copyOf(drops, Essence.values().length);
-        this.unknown = unknown && total(this.drops) > 0;
+    private EssenceMix(int[] amounts) {
+        this.amounts = Arrays.copyOf(amounts, SLOTS);
+        for (int i = 0; i < SLOTS; i++) {
+            this.amounts[i] = Math.max(0, this.amounts[i]);
+        }
     }
 
     private static DataResult<EssenceMix> fromSaved(Map<String, Integer> saved) {
-        int[] out = new int[Essence.values().length];
+        int[] out = new int[SLOTS];
         for (Map.Entry<String, Integer> entry : saved.entrySet()) {
             if (entry.getKey().equals(UNKNOWN_KEY)) {
+                out[UNKNOWN] = entry.getValue();
                 continue;
             }
-            Essence rune = Essence.byId(entry.getKey());
-            if (rune == null) {
-                return DataResult.error(() -> "Unknown element: " + entry.getKey());
+            Essence essence = Essence.byId(entry.getKey());
+            if (essence == null) {
+                return DataResult.error(() -> "Unknown essence: " + entry.getKey());
             }
-            out[rune.ordinal()] = entry.getValue();
+            out[essence.ordinal()] = entry.getValue();
         }
-        return DataResult.success(new EssenceMix(out, saved.containsKey(UNKNOWN_KEY)));
+        return DataResult.success(new EssenceMix(out));
     }
 
     private Map<String, Integer> toSaved() {
-        Map<String, Integer> out = new java.util.LinkedHashMap<>();
-        asMap().forEach((element, drops) -> out.put(element.id(), drops));
-        if (unknown) {
-            out.put(UNKNOWN_KEY, 1);
+        Map<String, Integer> out = new LinkedHashMap<>();
+        asMap().forEach((essence, amount) -> out.put(essence.id(), amount));
+        if (amounts[UNKNOWN] > 0) {
+            out.put(UNKNOWN_KEY, amounts[UNKNOWN]);
         }
         return out;
     }
 
-    /** Drops per element, indexed by {@link Essence#ordinal()} (copied). */
-    public static EssenceMix of(int[] drops) {
-        return new EssenceMix(drops, false);
+    /** Millibuckets per essence, indexed by {@link Essence#ordinal()}, then the unknown essence (copied; shorter arrays
+     * are padded with zeroes). */
+    public static EssenceMix of(int[] amounts) {
+        return new EssenceMix(amounts);
     }
 
-    /** Drops per element as {@link #of(int[])}, marked unknown when {@code unknown}. */
-    public static EssenceMix of(int[] drops, boolean unknown) {
-        return new EssenceMix(drops, unknown);
+    public static EssenceMix of(Map<Essence, Integer> amounts) {
+        int[] out = new int[SLOTS];
+        amounts.forEach((essence, amount) -> out[essence.ordinal()] = amount);
+        return new EssenceMix(out);
     }
 
-    public static EssenceMix of(Map<Essence, Integer> drops) {
-        int[] out = new int[Essence.values().length];
-        drops.forEach((element, amount) -> out[element.ordinal()] = Math.max(0, amount));
-        return new EssenceMix(out, false);
+    public static EssenceMix pure(Essence essence, int amount) {
+        int[] out = new int[SLOTS];
+        out[essence.ordinal()] = amount;
+        return new EssenceMix(out);
     }
 
-    public static EssenceMix pure(Essence element, int drops) {
-        int[] out = new int[Essence.values().length];
-        out[element.ordinal()] = drops;
-        return new EssenceMix(out, false);
+    /** Only the unknown essence. */
+    public static EssenceMix unknown(int amount) {
+        int[] out = new int[SLOTS];
+        out[UNKNOWN] = amount;
+        return new EssenceMix(out);
     }
 
-    /** Whether this is an unknown essence (what is left after a separation). */
-    public boolean isUnknown() {
-        return unknown;
+    /** What an item boils down to: {@code perPoint} mB for every point of each of its essences. */
+    public static EssenceMix boiled(ItemEssences essences, int perPoint) {
+        int[] out = new int[SLOTS];
+        essences.essences().forEach((essence, strength) -> out[essence.ordinal()] += strength * perPoint);
+        return new EssenceMix(out);
     }
 
-    /** The same drops as an unknown essence. */
-    public EssenceMix asUnknown() {
-        return new EssenceMix(drops, true);
-    }
-
-    private static int total(int[] drops) {
-        int total = 0;
-        for (int d : drops) {
-            total += d;
-        }
-        return total;
-    }
-
-    /** What an item boils down to: {@code perPoint} drops for every point of each of its elements. */
-    public static EssenceMix boiled(ItemEssences elements, int perPoint) {
-        int[] out = new int[Essence.values().length];
-        elements.essences().forEach((element, strength) -> out[element.ordinal()] += strength * perPoint);
-        return new EssenceMix(out, false);
-    }
-
+    /** The known essences in it (the unknown essence left out). */
     public Map<Essence, Integer> asMap() {
         Map<Essence, Integer> out = new EnumMap<>(Essence.class);
-        for (Essence element : Essence.values()) {
-            if (drops[element.ordinal()] > 0) {
-                out.put(element, drops[element.ordinal()]);
+        for (Essence essence : Essence.values()) {
+            if (amounts[essence.ordinal()] > 0) {
+                out.put(essence, amounts[essence.ordinal()]);
             }
         }
         return out;
     }
 
-    public int get(Essence element) {
-        return drops[element.ordinal()];
+    public int get(Essence essence) {
+        return amounts[essence.ordinal()];
     }
 
-    public int[] drops() {
-        return drops.clone();
+    /** Millibuckets of the unknown essence. */
+    public int unknown() {
+        return amounts[UNKNOWN];
     }
 
+    public boolean isUnknown() {
+        return amounts[UNKNOWN] > 0;
+    }
+
+    /** All the slots, the unknown essence last (copied). */
+    public int[] amounts() {
+        return amounts.clone();
+    }
+
+    /** Millibuckets of the whole liquid. */
     public int total() {
-        return total(drops);
+        int total = 0;
+        for (int a : amounts) {
+            total += a;
+        }
+        return total;
     }
 
     public boolean isEmpty() {
         return total() == 0;
     }
 
-    /** How many elements it holds. */
+    /** How many essences it holds (the unknown one counts). */
     public int kinds() {
         int kinds = 0;
-        for (int d : drops) {
-            if (d > 0) {
+        for (int a : amounts) {
+            if (a > 0) {
                 kinds++;
             }
         }
         return kinds;
     }
 
-    /** The only element of a concentrate, or null for a mixture, an unknown essence or nothing. */
+    /** The only essence of a concentrate, or null for a mixture, anything with unknown essence in it, or nothing. */
     @Nullable
     public Essence pureEssence() {
-        if (unknown || kinds() != 1) {
+        if (amounts[UNKNOWN] > 0 || kinds() != 1) {
             return null;
         }
-        for (Essence element : Essence.values()) {
-            if (drops[element.ordinal()] > 0) {
-                return element;
+        for (Essence essence : Essence.values()) {
+            if (amounts[essence.ordinal()] > 0) {
+                return essence;
             }
         }
         return null;
     }
 
     public EssenceMix plus(EssenceMix other) {
-        int[] out = drops.clone();
-        for (int i = 0; i < out.length; i++) {
-            out[i] += other.drops[i];
+        int[] out = amounts.clone();
+        for (int i = 0; i < SLOTS; i++) {
+            out[i] += other.amounts[i];
         }
-        return new EssenceMix(out, unknown || other.unknown);
+        return new EssenceMix(out);
     }
 
     public EssenceMix minus(EssenceMix other) {
-        int[] out = drops.clone();
-        for (int i = 0; i < out.length; i++) {
-            out[i] = Math.max(0, out[i] - other.drops[i]);
+        int[] out = amounts.clone();
+        for (int i = 0; i < SLOTS; i++) {
+            out[i] = Math.max(0, out[i] - other.amounts[i]);
         }
-        return new EssenceMix(out, unknown);
+        return new EssenceMix(out);
     }
 
     /**
-     * A part of {@code amount} drops with the same proportions (largest remainders get the rounding), so pouring a
-     * mixture never changes what it is made of.
+     * A part of {@code amount} mB with the same proportions (largest remainders get the rounding), so pouring a mixture
+     * never changes what it is made of.
      */
     public EssenceMix part(int amount) {
         int total = total();
@@ -198,19 +201,19 @@ public final class EssenceMix {
         if (amount <= 0) {
             return EMPTY;
         }
-        int[] out = new int[drops.length];
-        double[] rest = new double[drops.length];
+        int[] out = new int[SLOTS];
+        double[] rest = new double[SLOTS];
         int given = 0;
-        for (int i = 0; i < drops.length; i++) {
-            double exact = drops[i] * (double) amount / total;
+        for (int i = 0; i < SLOTS; i++) {
+            double exact = amounts[i] * (double) amount / total;
             out[i] = (int) Math.floor(exact);
             rest[i] = exact - out[i];
             given += out[i];
         }
         while (given < amount) {
             int best = -1;
-            for (int i = 0; i < drops.length; i++) {
-                if (out[i] < drops[i] && (best < 0 || rest[i] > rest[best])) {
+            for (int i = 0; i < SLOTS; i++) {
+                if (out[i] < amounts[i] && (best < 0 || rest[i] > rest[best])) {
                     best = i;
                 }
             }
@@ -218,10 +221,10 @@ public final class EssenceMix {
             rest[best] = -1;
             given++;
         }
-        return new EssenceMix(out, unknown);
+        return new EssenceMix(out);
     }
 
-    /** The colour of the liquid: its elements' colours mixed by their drops. */
+    /** The colour of the liquid: its essences' colours (the unknown one dark) mixed by their amounts. */
     public int color() {
         int total = total();
         if (total == 0) {
@@ -230,26 +233,18 @@ public final class EssenceMix {
         double r = 0;
         double g = 0;
         double b = 0;
-        for (Essence element : Essence.values()) {
-            double w = drops[element.ordinal()] / (double) total;
-            r += (element.color() >> 16 & 0xFF) * w;
-            g += (element.color() >> 8 & 0xFF) * w;
-            b += (element.color() & 0xFF) * w;
-        }
-        if (unknown) {
-            // Murky: halfway to a muddy grey.
-            r = (r + 0x6A) / 2;
-            g = (g + 0x66) / 2;
-            b = (b + 0x5C) / 2;
+        for (int i = 0; i < SLOTS; i++) {
+            int color = i == UNKNOWN ? UNKNOWN_COLOR : Essence.values()[i].color();
+            double w = amounts[i] / (double) total;
+            r += (color >> 16 & 0xFF) * w;
+            g += (color >> 8 & 0xFF) * w;
+            b += (color & 0xFF) * w;
         }
         return (int) r << 16 | (int) g << 8 | (int) b;
     }
 
-    /** "Life 8, Earth 8" with coloured names; "Unknown essence 8" for an unknown essence. */
+    /** "Life 250, Earth 250, Unknown essence 30" with coloured names (millibuckets). */
     public MutableComponent describe() {
-        if (unknown) {
-            return Component.translatable("essence.hextale.unknown").withColor(color()).append(" " + total());
-        }
         MutableComponent out = Component.empty();
         boolean first = true;
         for (Map.Entry<Essence, Integer> entry : asMap().entrySet()) {
@@ -259,21 +254,27 @@ public final class EssenceMix {
             out.append(ResearchText.essence(entry.getKey())).append(" " + entry.getValue());
             first = false;
         }
+        if (amounts[UNKNOWN] > 0) {
+            if (!first) {
+                out.append(", ");
+            }
+            out.append(Component.translatable("essence.hextale.unknown").withColor(0x6A5A7A)).append(" " + amounts[UNKNOWN]);
+        }
         return out;
     }
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof EssenceMix other && unknown == other.unknown && Arrays.equals(drops, other.drops);
+        return o instanceof EssenceMix other && Arrays.equals(amounts, other.amounts);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(drops) * 2 + (unknown ? 1 : 0);
+        return Arrays.hashCode(amounts);
     }
 
     @Override
     public String toString() {
-        return (unknown ? "unknown " : "") + asMap();
+        return asMap() + (amounts[UNKNOWN] > 0 ? " + unknown " + amounts[UNKNOWN] : "");
     }
 }

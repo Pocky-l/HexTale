@@ -30,10 +30,11 @@ import com.pockyl.hextale.rune.Essence;
  * takes nothing in.
  */
 public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwork.Receiver {
-    public static final int CAPACITY = 256;
-    /** Ticks between pushes, and drops per push. */
+    /** Millibuckets: sixteen bottles. */
+    public static final int CAPACITY = 4000;
+    /** Ticks between pushes, and millibuckets per push. */
     static final int FLOW_EVERY = 5;
-    static final int FLOW = 4;
+    static final int FLOW = 60;
 
     private final EssenceTank tank = new EssenceTank(CAPACITY);
 
@@ -77,7 +78,6 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     public void removeComponentsFromTag(ValueOutput output) {
         super.removeComponentsFromTag(output);
         output.discard("essence");
-        output.discard("essence_unknown");
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, EssenceTankBlockEntity tank) {

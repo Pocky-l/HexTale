@@ -45,8 +45,8 @@ public class SeparationCategory extends AbstractRecipeCategory<SeparationCategor
         builder.addOutputSlot(96, 1).setOutputSlotBackground().addItemStack(HextaleJeiPlugin.concentrate(recipe.essence()))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("gui.hextale.port.product.hint")));
         builder.addOutputSlot(96, 21).setOutputSlotBackground()
-                .addItemStack(EssenceFlaskItem.filled(EssenceMix.pure(recipe.essence() == Essence.FIRE ? Essence.WATER : Essence.FIRE,
-                        EssenceFlaskItem.CAPACITY).asUnknown()))
+                .addItemStack(EssenceFlaskItem.filled(EssenceMix.pure(recipe.essence() == Essence.FIRE ? Essence.WATER : Essence.FIRE, 200)
+                        .plus(EssenceMix.unknown(50))))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("gui.hextale.port.waste.hint")));
     }
 

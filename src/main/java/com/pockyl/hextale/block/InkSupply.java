@@ -17,6 +17,8 @@ import java.util.List;
  */
 public final class InkSupply {
     public static final int REACH = 2;
+    /** Millibuckets of ink one section of a thread costs (a bottle is about sixteen sections). */
+    public static final int MB_PER_SECTION = 15;
 
     private final List<List<EssenceTankBlockEntity>> tanks = new ArrayList<>();
     private final int[] available = new int[Essence.values().length];
@@ -47,7 +49,7 @@ public final class InkSupply {
         return supply;
     }
 
-    /** Drops of each element's concentrate around the desk ({@link Essence#ordinal()}). */
+    /** Millibuckets of each essence's concentrate around the desk ({@link Essence#ordinal()}). */
     public int[] available() {
         return available;
     }
@@ -57,7 +59,25 @@ public final class InkSupply {
         return capacity;
     }
 
-    /** Takes {@code ink} (drops per element) out of the tanks, tank by tank; there must be enough. */
+    /** How many sections of each essence the ink around pays for. */
+    public int[] sections() {
+        int[] out = new int[available.length];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = available[i] / MB_PER_SECTION;
+        }
+        return out;
+    }
+
+    /** Takes the ink of {@code sections} (sections per essence) out of the tanks. */
+    public void spendSections(int[] sections) {
+        int[] ink = new int[sections.length];
+        for (int i = 0; i < ink.length; i++) {
+            ink[i] = sections[i] * MB_PER_SECTION;
+        }
+        spend(ink);
+    }
+
+    /** Takes {@code ink} (mB per essence) out of the tanks, tank by tank; there must be enough. */
     public void spend(int[] ink) {
         for (int e = 0; e < ink.length; e++) {
             int left = ink[e];

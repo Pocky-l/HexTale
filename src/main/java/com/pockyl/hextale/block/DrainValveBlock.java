@@ -18,6 +18,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -27,12 +29,14 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import com.pockyl.hextale.registry.ModBlockEntities;
+
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Drain Valve: pipes join it at its sides, and while it is open whatever they bring - essence or water - pours out
- * of its spout into the world (what that spilled essence does to the world comes later). Using it turns the handwheel:
- * open or shut.
+ * The Drain Valve: pipes (or a tank right beside it) join it at its sides, and while it is open whatever they bring -
+ * essence or water - pours out of its spout into the world, and it drains the Essence Tanks it is joined to (what that
+ * spilled essence does to the world comes later). Using it turns the handwheel: open or shut.
  */
 public class DrainValveBlock extends BaseEntityBlock implements EssenceMachine {
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
@@ -113,5 +117,10 @@ public class DrainValveBlock extends BaseEntityBlock implements EssenceMachine {
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new DrainValveBlockEntity(pos, state);
+    }
+
+    @Override
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.DRAIN_VALVE.get(), DrainValveBlockEntity::serverTick);
     }
 }

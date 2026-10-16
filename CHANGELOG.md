@@ -28,15 +28,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     spout at the front.
   - The Separator splits a mixture in two with a reagent (charcoal - fire, sugar - water, clay - earth, feather - air,
     glow ink sac - light, ink sac - shadow, bone meal - life, iron nugget - metal, redstone - lightning; item tags, so
-    packs can change them): the reagent's essence becomes a concentrate, all the rest an unknown essence that is never
-    ink but can be split again. Each side takes the mixture in or lets the concentrate or the rest out - chosen on the
+    packs can change them): the reagent's essence becomes a concentrate, all the rest goes on with a dark unknown
+    essence added - never ink, best poured away. Each side takes the mixture in or lets the concentrate or the rest out - chosen on the
     port panel of its screen or by sneak-using that side; the top is a gas vent. Without a reagent it waits, and its
     screen shows what is missing.
-  - Essence Tanks store essence (in at the top and the sides, out at the bottom). The Research Table keeps no ink of its
+  - Essence is one mixed liquid measured in millibuckets: a bottle holds 250 mB, a tank 4000 mB. Essence Tanks store
+    it (in at the top and the sides, out at the bottom; separator inlets and drain valves draw from them). The Research Table keeps no ink of its
     own: it draws each essence's ink from tanks of that concentrate within two blocks of the desk.
   - Brass Pipes carry essence and water and join a machine only where it has a port - the machine's model grows a
     joint there; no vessel takes back what its own outlet lets out. The Drain Valve pours whatever reaches it out into
-    the world while its handwheel is open.
+    the world while its handwheel is open, and drains tanks beside it or piped to it.
 - Every research takes a paper from the table's paper slot when it starts.
 - Integrations: [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) shows boiling and separation, a bottle of each
   concentrate and an info page for every block of the essence works; [Jade](https://www.curseforge.com/minecraft/mc-mods/jade)

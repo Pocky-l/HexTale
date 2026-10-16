@@ -4,7 +4,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 /**
- * A vessel inside a machine: holds up to {@code capacity} drops of essence; whatever is poured in mixes with what is
+ * Amounts are millibuckets. A vessel inside a machine: holds up to {@code capacity} drops of essence; whatever is poured in mixes with what is
  * already there.
  */
 public final class EssenceTank {
@@ -67,14 +67,11 @@ public final class EssenceTank {
     }
 
     public void save(ValueOutput output, String key) {
-        output.putIntArray(key, contents.drops());
-        output.putBoolean(key + "_unknown", contents.isUnknown());
+        output.putIntArray(key, contents.amounts());
     }
 
     public void load(ValueInput input, String key) {
         int[] saved = input.getIntArray(key).orElse(new int[0]);
-        int[] drops = new int[EssenceMix.EMPTY.drops().length];
-        System.arraycopy(saved, 0, drops, 0, Math.min(saved.length, drops.length));
-        contents = EssenceMix.of(drops, input.getBooleanOr(key + "_unknown", false));
+        contents = EssenceMix.of(saved);
     }
 }

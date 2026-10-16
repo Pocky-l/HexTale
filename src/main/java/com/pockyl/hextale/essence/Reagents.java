@@ -16,7 +16,7 @@ import org.jspecify.annotations.Nullable;
  */
 public final class Reagents {
     /** Drops of its element one reagent item binds. */
-    public static final int BINDS = 8;
+    public static final int BINDS = 125;
     private static final TagKey<Item>[] TAGS = tags();
 
     private Reagents() {

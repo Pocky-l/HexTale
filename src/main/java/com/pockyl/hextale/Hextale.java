@@ -64,7 +64,7 @@ public final class Hextale {
             for (Essence essence : Essence.values()) {
                 output.accept(EssenceFlaskItem.filled(EssenceMix.pure(essence, EssenceFlaskItem.CAPACITY)));
             }
-            output.accept(EssenceFlaskItem.filled(EssenceMix.pure(Essence.FIRE, EssenceFlaskItem.CAPACITY).asUnknown()));
+            output.accept(EssenceFlaskItem.filled(EssenceMix.unknown(EssenceFlaskItem.CAPACITY)));
             output.accept(ModItems.BRASS_PIPE);
             output.accept(ModItems.PUMP);
             output.accept(ModItems.DRAIN_VALVE);

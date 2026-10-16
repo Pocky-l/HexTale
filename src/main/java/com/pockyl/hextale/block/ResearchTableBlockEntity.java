@@ -250,7 +250,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         ResearchSheet.Trace trace = ResearchSheet.trace(board, cells, allowance(player));
         boolean creative = player.getAbilities().instabuild;
         boolean fresh = sheet.isDone() || !sheet.paid();
-        if (Requirement.firstMissing(this, player, !fresh) != null || trace == null || !creative && !trace.affordable(inkSupply().available())) {
+        if (Requirement.firstMissing(this, player, !fresh) != null || trace == null || !creative && !trace.affordable(inkSupply().sections())) {
             sheet.touch();
             setChanged();
             return;
@@ -283,7 +283,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         ComplexRune rune = board.rune();
         int stars = board.stars(sheet.length());
         if (!player.getAbilities().instabuild) {
-            inkSupply().spend(trace.ink());
+            inkSupply().spendSections(trace.ink());
         }
         items.get(HEXTECH).shrink(1);
         sheet.finish();

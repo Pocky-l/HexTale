@@ -91,8 +91,8 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
     }
 
     /**
-     * A glass tank {@code height} pixels tall at screen position {@code x, y}: its liquid layered by element from the
-     * bottom, a wobbling surface, and a tooltip with what it holds plus {@code extra} lines.
+     * A glass tank {@code height} pixels tall at screen position {@code x, y}: its liquid in its mixed colour with a
+     * wobbling surface, and a tooltip with what it holds (mB) plus {@code extra} lines.
      */
     protected void tank(GuiGraphicsExtractor graphics, int x, int y, int height, EssenceTank tank, int mouseX, int mouseY,
                         Component... extra) {
@@ -100,29 +100,10 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
         EssenceMix contents = tank.contents();
         int filled = Math.round(height * tank.amount() / (float) tank.capacity());
         int bottom = y + height;
-        int used = 0;
-        if (contents.isUnknown() && filled > 0) {
-            // An unknown essence shows as one murky liquid, not its layers.
+        if (filled > 0) {
+            // One mixed liquid in its own colour.
             graphics.fill(x, bottom - filled, x + TANK_W, bottom, 0xFF000000 | contents.color());
             graphics.fill(x, bottom - filled, x + 2, bottom, 0x40FFFFFF);
-            used = filled;
-        }
-        for (Essence element : Essence.values()) {
-            if (used >= filled) {
-                break;
-            }
-            int drops = contents.get(element);
-            if (drops == 0) {
-                continue;
-            }
-            int layer = Math.max(1, Math.round(filled * drops / (float) Math.max(1, contents.total())));
-            layer = Math.min(layer, filled - used);
-            if (layer <= 0) {
-                continue;
-            }
-            graphics.fill(x, bottom - used - layer, x + TANK_W, bottom - used, 0xFF000000 | element.color());
-            graphics.fill(x, bottom - used - layer, x + 2, bottom - used, 0x40FFFFFF);
-            used += layer;
         }
         if (filled > 0) {
             for (int col = 0; col < TANK_W; col++) {
@@ -140,7 +121,7 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
             List<Component> lines = new ArrayList<>();
             lines.add(tank.isEmpty() ? Component.translatable("block.hextale.essence.empty").withStyle(ChatFormatting.GRAY)
                     : contents.describe());
-            lines.add(Component.literal(tank.amount() + "/" + tank.capacity()).withStyle(ChatFormatting.DARK_GRAY));
+            lines.add(Component.literal(tank.amount() + "/" + tank.capacity() + " mB").withStyle(ChatFormatting.DARK_GRAY));
             for (Component line : extra) {
                 lines.add(line.copy().withStyle(ChatFormatting.DARK_GRAY));
             }

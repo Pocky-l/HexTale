@@ -38,8 +38,9 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Separator splits a mixture in two. The mixture comes in (from a bottle, through pipes pushing into an inlet, or
  * drawn by an inlet out of the Essence Tanks piped to it) and is worked off {@value #STEP_DROPS} drops at a time: the drops of the reagent's element go into the
- * concentrate vessel, all the others into the rest vessel as an unknown essence (it holds its drops, but is never a
- * concentrate). Each side has a mode set in the screen or on the block: the
+ * concentrate vessel, all the others into the rest vessel, and every step that drew something out adds
+ * {@value #UNKNOWN_PER_STEP} mB of dark unknown essence to the rest (so the rest is never a concentrate). Amounts are
+ * millibuckets. Each side has a mode set in the screen or on the block: the
  * mixture comes in through inlets, the concentrate (the wanted product) and the rest (the by-product) leave through
  * their outlets; by default the mixture comes in at the back and the left, the concentrate leaves at the right and the
  * rest at the front. The top is the gas vent. Both products can be bottled. Without a reagent nothing is split. One
@@ -51,12 +52,14 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     public static final int SUPPLY = 2;
     public static final int REST_OUT = 3;
     public static final int EXTRACT_OUT = 4;
-    public static final int CAPACITY = 64;
+    public static final int CAPACITY = 1000;
     /** Synced numbers: charge, its element, step, then the four side modes. */
     public static final int DATA_COUNT = 3 + SeparatorBlock.Side.values().length;
-    /** Ticks per separating step, and drops of the mixture worked off per step. */
-    public static final int STEP_TICKS = 10;
-    private static final int STEP_DROPS = 4;
+    /** Ticks per separating step, millibuckets of the mixture worked off per step, and of unknown essence each step
+     * that drew something out adds to the rest. */
+    public static final int STEP_TICKS = 20;
+    private static final int STEP_DROPS = 60;
+    public static final int UNKNOWN_PER_STEP = 15;
     /** A partly filled bottle is filled once nothing has come in for this long. */
     private static final int IDLE_TICKS = 40;
     private static final int[] TOP = {REAGENT};
@@ -232,7 +235,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
                 return "extract_full";
             }
         }
-        return rest.space() < portion.total() - drawn ? "rest_full" : null;
+        return rest.space() < portion.total() - drawn + (drawn > 0 ? UNKNOWN_PER_STEP : 0) ? "rest_full" : null;
     }
 
     private boolean separate() {
@@ -262,8 +265,9 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
                 chargeEssence = -1;
             }
         }
-        // What is left is no longer known for what it is: an unknown essence, never a concentrate.
-        rest.fill(portion.minus(EssenceMix.pure(element, drawn)).asUnknown(), false);
+        // What is left goes on as the rest, and drawing an essence out leaves a dark unknown essence on top of it.
+        EssenceMix left = portion.minus(EssenceMix.pure(element, drawn));
+        rest.fill(drawn > 0 ? left.plus(EssenceMix.unknown(UNKNOWN_PER_STEP)) : left, false);
         level.playSound(null, worldPosition, SoundEvents.BUBBLE_COLUMN_BUBBLE_POP, SoundSource.BLOCKS, 0.5F, 1.2F);
         return true;
     }

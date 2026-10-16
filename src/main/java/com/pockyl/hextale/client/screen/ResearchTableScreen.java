@@ -263,7 +263,14 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         return supply;
     }
 
+    /** Sections the ink around pays for, per essence. */
     private int[] ink() {
+        InkSupply ink = inkSupply();
+        return ink == null ? new int[Essence.values().length] : ink.sections();
+    }
+
+    /** Millibuckets of ink around, per essence. */
+    private int[] inkMb() {
         InkSupply ink = inkSupply();
         return ink == null ? new int[Essence.values().length] : ink.available();
     }
@@ -477,7 +484,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 syncThread(table, current);
                 renderRune(graphics, table, current, hovered, mouseX, mouseY);
                 if (trace != null && !done(table)) {
-                    reserved = trace.ink();
+                    reserved = trace.ink().clone();
+                    for (int i = 0; i < reserved.length; i++) {
+                        reserved[i] *= InkSupply.MB_PER_SECTION;
+                    }
                 }
             }
         }
@@ -590,7 +600,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     /** The nine ink vials: liquid rises as items dissolve; the part the current thread would spend shimmers. */
     private void renderVials(GuiGraphicsExtractor graphics, int[] reserved, int mouseX, int mouseY) {
         long now = Util.getMillis();
-        int[] ink = ink();
+        int[] ink = inkMb();
         int[] capacity = inkCapacity();
         boolean infinite = creative();
         for (int i = 0; i < HexGrid.RING.length; i++) {
@@ -645,7 +655,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             graphics.fill(x + 1, y + 1, x + 2, y + VIAL_H - 2, 0x40FFFFFF);
             PixelArt.radical(graphics, element, x + VIAL_W / 2 - 4, y + VIAL_H + 4, 9, PixelArt.argb(color, 1));
             if (isOver(mouseX, mouseY, x - 2, y - 2, VIAL_W + 4, VIAL_H + 16)) {
-                Component count = infinite ? Component.literal("∞") : Component.literal(ink[e] + "/" + capacity[e]);
+                Component count = infinite ? Component.literal("∞") : Component.literal(ink[e] + "/" + capacity[e] + " mB");
                 boolean noStorage = !infinite && capacity[e] == 0;
                 pendingTooltip = List.of(Component.translatable(KEY + "ink", ResearchText.essence(element)),
                         count.copy().withStyle(noStorage ? ChatFormatting.RED : ChatFormatting.GRAY),

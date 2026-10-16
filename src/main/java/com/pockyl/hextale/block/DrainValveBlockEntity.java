@@ -7,6 +7,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -15,12 +16,12 @@ import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.registry.ModBlockEntities;
 
 /**
- * An open Drain Valve takes what the pipes bring - up to {@value #DROPS_PER_TICK} drops of essence and
+ * An open Drain Valve takes what the pipes bring - up to {@value #DROPS_PER_TICK} mB of essence and
  * {@value #WATER_PER_TICK} mB of water a tick - and pours it out of its spout. The spilled essence is gone for now;
  * later it will taint the world around.
  */
 public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork.Receiver, EssenceNetwork.WaterReceiver {
-    public static final int DROPS_PER_TICK = 4;
+    public static final int DROPS_PER_TICK = 60;
     public static final int WATER_PER_TICK = 100;
     /** Block event: a splash of this colour pours out (param = RGB). */
     private static final int EVENT_POUR = 1;
@@ -33,6 +34,19 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
 
     public DrainValveBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.DRAIN_VALVE.get(), pos, state);
+    }
+
+    /** An open valve drains the tanks at its sides (piped or right beside it). */
+    public static void serverTick(Level level, BlockPos pos, BlockState state, DrainValveBlockEntity valve) {
+        if (!state.getValue(DrainValveBlock.OPEN) || level.getGameTime() % EssenceTankBlockEntity.FLOW_EVERY != 0) {
+            return;
+        }
+        for (Direction side : Direction.Plane.HORIZONTAL) {
+            EssenceMix drawn = EssenceNetwork.draw(level, pos, side, EssenceTankBlockEntity.FLOW, valve);
+            if (!drawn.isEmpty()) {
+                valve.splash(drawn.color());
+            }
+        }
     }
 
     private boolean open() {

@@ -35,7 +35,10 @@ public interface EssenceMachine {
         if (!state.hasProperty(property) || !(state.getBlock() instanceof EssenceMachine machine)) {
             return state;
         }
-        return state.setValue(property, neighbour.getBlock() instanceof BrassPipeBlock && machine.isPort(state, face));
+        boolean joined = neighbour.getBlock() instanceof BrassPipeBlock
+                // A drain valve right at a tank takes from it directly, and shows the joint.
+                || state.getBlock() instanceof DrainValveBlock && neighbour.getBlock() instanceof EssenceTankBlock;
+        return state.setValue(property, joined && machine.isPort(state, face));
     }
 
     /** Turns the port properties with the block (a pipe that was connected stays connected). */
