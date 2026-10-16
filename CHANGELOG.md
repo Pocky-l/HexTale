@@ -20,17 +20,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Runes are learned by studying their scrolls: the knowledge stays with the researcher, with the scroll's stars. A
   scroll of a rune that is not open to you in the research book yet cannot be studied.
 - Ink: the desk holds nine vials, one per element; the part the current thread would spend shimmers in them.
-- Essence works: ink is made, not found, and carried in plain glass bottles. The Alembic (set over fire, a lit
-  campfire, lava or magma) boils studied items into essence - a mixture of all their elements (oak planks: life and
-  earth) - and bottles it or lets it out of its spout, the front. The Separator splits a mixture in two: the element of
-  its reagent (charcoal - fire, sugar - water, clay - earth, feather - air, glow ink sac - light, ink sac - shadow, bone
-  meal - life, iron nugget - metal, redstone - lightning; item tags, so packs can change them) becomes a concentrate
-  that leaves through the top, all the rest leaves through the front; without a reagent it waits, and its screen shows
-  what is missing. Essence Tanks store essence (in at the top and the sides, out at the bottom). Brass Pipes join a
-  machine only where it has a port, and the machine's model grows a joint there. Only bottles of concentrate go into
-  the Research Table's bottle slot and fill the vial of their element. Every research takes a paper from the table's
-  paper slot when it starts. The Separator is a glass separating funnel in brass where the concentrate floats on the
-  mixture, the Essence Tank a brass-framed glass tank with a gauge that shows how full it is.
+- Essence works: ink is made, not found, and carried in plain glass bottles. The nine signs - fire, water, earth, air,
+  light, shadow, life, metal, lightning - are essences.
+  - The Alembic (set over fire, a lit campfire, lava or magma) boils studied items in water into essence - a mixture
+    of all their essences. Every item takes 250 mB of water: pour a bucket in, or pipe it from a Pump standing in water.
+    The flask shows the water, the bubbles and the item turning inside; the essence is bottled or leaves through the
+    spout at the front.
+  - The Separator splits a mixture in two with a reagent (charcoal - fire, sugar - water, clay - earth, feather - air,
+    glow ink sac - light, ink sac - shadow, bone meal - life, iron nugget - metal, redstone - lightning; item tags, so
+    packs can change them): the reagent's essence becomes a concentrate, all the rest an unknown essence that is never
+    ink but can be split again. Each side takes the mixture in or lets the concentrate or the rest out - chosen on the
+    port panel of its screen or by sneak-using that side; the top is a gas vent. Without a reagent it waits, and its
+    screen shows what is missing.
+  - Essence Tanks store essence (in at the top and the sides, out at the bottom). The Research Table keeps no ink of its
+    own: it draws each essence's ink from tanks of that concentrate within two blocks of the desk.
+  - Brass Pipes carry essence and water and join a machine only where it has a port - the machine's model grows a
+    joint there; no vessel takes back what its own outlet lets out. The Drain Valve pours whatever reaches it out into
+    the world while its handwheel is open.
+- Every research takes a paper from the table's paper slot when it starts.
+- Integrations: [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) shows boiling and separation, a bottle of each
+  concentrate and an info page for every block of the essence works; [Jade](https://www.curseforge.com/minecraft/mc-mods/jade)
+  shows what the tanks, separators, alembics, pumps and valves hold and do.
 - The Researcher's Diary is a star book: a dark sky to drag around and zoom, where the 72 runes hang as stars in
   constellations - Smelting and the tool runes in the centre, the other runes on the rays of their elements. Click a
   star to see the rune; on the Research Table it goes to the parchment with one click.

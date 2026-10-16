@@ -22,6 +22,24 @@ sourceSets.main.resources {
 }
 
 repositories {
+    maven {
+        // JEI (optional integration).
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com/'
+        content {
+            includeGroup 'mezz.jei'
+        }
+    }
+    exclusiveContent {
+        // Jade (optional integration).
+        forRepository {
+            maven {
+                name = 'Modrinth'
+                url = 'https://api.modrinth.com/maven'
+            }
+        }
+        filter { includeGroup('maven.modrinth') }
+    }
 }
 
 neoForge {
@@ -72,6 +90,10 @@ configurations {
 }
 
 dependencies {
+    // Optional integrations, compiled against their APIs only; the playtest-26.3 client runs the mods themselves.
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    compileOnly "maven.modrinth:jade:${jade_version}"
 }
 
 var generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
