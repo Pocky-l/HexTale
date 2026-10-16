@@ -18,7 +18,7 @@ import java.util.List;
 public final class InkSupply {
     public static final int REACH = 2;
     /** Millibuckets of ink one section of a thread costs (a bottle is about sixteen sections). */
-    public static final int MB_PER_SECTION = 15;
+    public static final int MB_PER_SECTION = 1;
 
     private final List<List<EssenceTankBlockEntity>> tanks = new ArrayList<>();
     private final int[] available = new int[Essence.values().length];

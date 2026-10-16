@@ -32,7 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     essence added - never ink, best poured away. Each side takes the mixture in or lets the concentrate or the rest out - chosen on the
     port panel of its screen or by sneak-using that side; the top is a gas vent. Without a reagent it waits, and its
     screen shows what is missing.
-  - Essence is one mixed liquid measured in millibuckets: a bottle holds 250 mB, a tank 4000 mB. Essence Tanks store
+  - Essence is one mixed liquid measured in millibuckets, one millibucket per point of an item's essence (the
+    number in its tooltip): a bottle holds 16 mB, a tank 256 mB, and every step of a rune's thread costs 1 mB of ink. Essence Tanks store
     it (in at the top and the sides, out at the bottom; separator inlets and drain valves draw from them). The Research Table keeps no ink of its
     own: it draws each essence's ink from tanks of that concentrate within two blocks of the desk.
   - Brass Pipes carry essence and water and join a machine only where it has a port - the machine's model grows a

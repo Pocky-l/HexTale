@@ -243,7 +243,7 @@ public final class EssenceMix {
         return (int) r << 16 | (int) g << 8 | (int) b;
     }
 
-    /** "Life 250, Earth 250, Unknown essence 30" with coloured names (millibuckets). */
+    /** "Life 8, Earth 6, Unknown essence 2" with coloured names (millibuckets). */
     public MutableComponent describe() {
         MutableComponent out = Component.empty();
         boolean first = true;

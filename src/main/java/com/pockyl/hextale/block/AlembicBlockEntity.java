@@ -60,8 +60,8 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
     public static final int FLASK_OUT = 2;
     public static final int BOIL_TICKS = 80;
     /** Millibuckets of essence per point of each of the item's essences. */
-    public static final int DROPS_PER_POINT = 30;
-    public static final int CAPACITY = 1000;
+    public static final int DROPS_PER_POINT = 1;
+    public static final int CAPACITY = 64;
     /** Millibuckets of water the flask holds, and how much one boiled item takes. */
     public static final int WATER_CAPACITY = 2000;
     public static final int WATER_PER_ITEM = 250;

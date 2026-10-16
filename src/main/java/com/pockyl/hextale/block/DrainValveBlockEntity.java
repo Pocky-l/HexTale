@@ -21,7 +21,7 @@ import com.pockyl.hextale.registry.ModBlockEntities;
  * later it will taint the world around.
  */
 public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork.Receiver, EssenceNetwork.WaterReceiver {
-    public static final int DROPS_PER_TICK = 60;
+    public static final int DROPS_PER_TICK = 4;
     public static final int WATER_PER_TICK = 100;
     /** Block event: a splash of this colour pours out (param = RGB). */
     private static final int EVENT_POUR = 1;

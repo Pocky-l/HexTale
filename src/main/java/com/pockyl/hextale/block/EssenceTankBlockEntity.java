@@ -31,10 +31,10 @@ import com.pockyl.hextale.rune.Essence;
  */
 public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwork.Receiver {
     /** Millibuckets: sixteen bottles. */
-    public static final int CAPACITY = 4000;
+    public static final int CAPACITY = 256;
     /** Ticks between pushes, and millibuckets per push. */
     static final int FLOW_EVERY = 5;
-    static final int FLOW = 60;
+    static final int FLOW = 4;
 
     private final EssenceTank tank = new EssenceTank(CAPACITY);
 

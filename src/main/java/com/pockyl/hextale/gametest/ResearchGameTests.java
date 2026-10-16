@@ -557,7 +557,8 @@ public final class ResearchGameTests {
         helper.succeedWhen(() -> {
             EssenceMix rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
             EssenceMix drawn = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.EXTRACT_OUT));
-            helper.assertTrue(rest.equals(EssenceMix.pure(Essence.LIFE, 8).plus(EssenceMix.unknown(SeparatorBlockEntity.UNKNOWN_PER_STEP)))
+            // 16 mB of mixture take four steps of 4 mB, each drawing earth and adding its unknown essence.
+            helper.assertTrue(rest.equals(EssenceMix.pure(Essence.LIFE, 8).plus(EssenceMix.unknown(4 * SeparatorBlockEntity.UNKNOWN_PER_STEP)))
                     && rest.pureEssence() == null, "clay leaves the life with a dark unknown essence on top, no concentrate, got " + rest);
             helper.assertTrue(drawn.equals(EssenceMix.pure(Essence.EARTH, 8)), "and draws out pure earth, got " + drawn);
             helper.assertTrue(separator.getItem(SeparatorBlockEntity.REAGENT).getCount() == 2, "one clay ball binds eight drops");
@@ -697,8 +698,8 @@ public final class ResearchGameTests {
         helper.setBlock(valveAt.east(2), ModBlocks.ESSENCE_TANK.get());
         EssenceTankBlockEntity beside = helper.getBlockEntity(valveAt.west(), EssenceTankBlockEntity.class);
         EssenceTankBlockEntity piped = helper.getBlockEntity(valveAt.east(2), EssenceTankBlockEntity.class);
-        beside.tank().set(EssenceMix.pure(Essence.FIRE, 300));
-        piped.tank().set(EssenceMix.unknown(300));
+        beside.tank().set(EssenceMix.pure(Essence.FIRE, 40));
+        piped.tank().set(EssenceMix.unknown(40));
         helper.assertTrue(helper.getBlockState(valveAt).getValue(EssenceMachine.PORTS.get(Direction.WEST)), "the valve shows its joint to the tank beside it");
         helper.succeedWhen(() -> helper.assertTrue(beside.tank().isEmpty() && piped.tank().isEmpty(), "the open valve drains both tanks"));
     }

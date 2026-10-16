@@ -52,14 +52,14 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     public static final int SUPPLY = 2;
     public static final int REST_OUT = 3;
     public static final int EXTRACT_OUT = 4;
-    public static final int CAPACITY = 1000;
+    public static final int CAPACITY = 64;
     /** Synced numbers: charge, its element, step, then the four side modes. */
     public static final int DATA_COUNT = 3 + SeparatorBlock.Side.values().length;
     /** Ticks per separating step, millibuckets of the mixture worked off per step, and of unknown essence each step
      * that drew something out adds to the rest. */
     public static final int STEP_TICKS = 20;
-    private static final int STEP_DROPS = 60;
-    public static final int UNKNOWN_PER_STEP = 15;
+    private static final int STEP_DROPS = 4;
+    public static final int UNKNOWN_PER_STEP = 1;
     /** A partly filled bottle is filled once nothing has come in for this long. */
     private static final int IDLE_TICKS = 40;
     private static final int[] TOP = {REAGENT};

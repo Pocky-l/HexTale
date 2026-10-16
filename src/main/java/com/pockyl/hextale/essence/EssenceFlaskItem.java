@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  */
 public class EssenceFlaskItem extends Item {
     /** Millibuckets, like a vanilla bottle. */
-    public static final int CAPACITY = 250;
+    public static final int CAPACITY = 16;
 
     public EssenceFlaskItem(Properties properties) {
         super(properties);
