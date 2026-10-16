@@ -386,7 +386,7 @@
   "gui.hextale.research_table.slot.paper": "Бумага: каждое исследование начинается на новом листе",
   "item.hextale.rune_scroll.too_early": "Слишком рано: руна «%s» ещё не открыта вам в книге исследований.",
   "block.hextale.alembic": "Перегонный куб",
-  "gui.hextale.research_table.ink.hint": "Пополняется пузырьками концентрата",
+  "gui.hextale.research_table.ink.hint": "Берётся из баков эссенции с концентратом: %s, стоящих вокруг стола",
   "block.hextale.separator": "Сепаратор",
   "block.hextale.essence_tank": "Бак эссенции",
   "block.hextale.brass_pipe": "Латунная труба",
@@ -401,8 +401,6 @@
   "gui.hextale.separator.mix": "Смесь: входит сзади и с боков или из пузырька",
   "gui.hextale.separator.extract": "Концентрат стихии реагента: выходит сверху",
   "gui.hextale.separator.binds": "Реагент связывает: %s",
-  "gui.hextale.research_table.slot.flask": "Пузырёк концентрата: наполняет колбу своей стихии",
-  "gui.hextale.research_table.slot.flask.mixture": "Смесь — не чернила: сначала разделите её на концентраты",
   "gui.hextale.alembic.out": "Выходит через носик спереди или в стеклянные пузырьки",
   "gui.hextale.separator.rest": "Остаток смеси: выходит спереди",
   "gui.hextale.separator.no_reagent": "Нужен реагент",
@@ -413,5 +411,6 @@
   "gui.hextale.slot.separator.pour": "Пузырёк смеси, которую нужно разделить",
   "gui.hextale.slot.separator.reagent": "Реагент: уголь - огонь, сахар - вода, глина - земля, перо - воздух, светящийся чернильный мешок - свет, чернильный мешок - тень, костная мука - жизнь, железный самородок - металл, редстоун - молния",
   "gui.hextale.slot.separator.extract": "Сюда выходит пузырёк концентрата",
-  "gui.hextale.slot.separator.rest": "Сюда выходит пузырёк с остатком смеси"
+  "gui.hextale.slot.separator.rest": "Сюда выходит пузырёк с остатком смеси",
+  "gui.hextale.research_table.ink.no_storage": "Нет хранилища: поставьте рядом со столом бак эссенции с концентратом: %s"
 }

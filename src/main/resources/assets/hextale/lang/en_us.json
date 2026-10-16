@@ -386,7 +386,7 @@
   "gui.hextale.research_table.slot.paper": "Paper: every research starts on a fresh sheet",
   "item.hextale.rune_scroll.too_early": "Too early: %s is not open to you in the research book yet.",
   "block.hextale.alembic": "Alembic",
-  "gui.hextale.research_table.ink.hint": "Bring bottles of concentrate to fill it",
+  "gui.hextale.research_table.ink.hint": "Drawn from Essence Tanks of %s concentrate around the table",
   "block.hextale.separator": "Separator",
   "block.hextale.essence_tank": "Essence Tank",
   "block.hextale.brass_pipe": "Brass Pipe",
@@ -401,8 +401,6 @@
   "gui.hextale.separator.mix": "Mixture: comes in at the back and the sides, or from a bottle",
   "gui.hextale.separator.extract": "Concentrate of the reagent's element: leaves through the top",
   "gui.hextale.separator.binds": "The reagent binds %s",
-  "gui.hextale.research_table.slot.flask": "Bottle of concentrate: it fills the vial of its element",
-  "gui.hextale.research_table.slot.flask.mixture": "A mixture is no ink: separate it into concentrates first",
   "gui.hextale.alembic.out": "Leaves through the spout at the front, or into glass bottles",
   "gui.hextale.separator.rest": "The rest of the mixture: leaves through the front",
   "gui.hextale.separator.no_reagent": "Needs a reagent",
@@ -413,5 +411,6 @@
   "gui.hextale.slot.separator.pour": "A bottle of mixture to pour in",
   "gui.hextale.slot.separator.reagent": "A reagent: charcoal - fire, sugar - water, clay - earth, feather - air, glow ink sac - light, ink sac - shadow, bone meal - life, iron nugget - metal, redstone - lightning",
   "gui.hextale.slot.separator.extract": "The bottled concentrate comes out here",
-  "gui.hextale.slot.separator.rest": "The bottled rest of the mixture comes out here"
+  "gui.hextale.slot.separator.rest": "The bottled rest of the mixture comes out here",
+  "gui.hextale.research_table.ink.no_storage": "No storage: place an Essence Tank of %s concentrate next to the table"
 }

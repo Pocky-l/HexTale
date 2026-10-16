@@ -25,12 +25,11 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.Requirement;
+import com.pockyl.hextale.block.InkSupply;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
 import com.pockyl.hextale.client.ClientKnowledge;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.client.screen.book.StarBook;
-import com.pockyl.hextale.essence.Essence;
-import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.network.ResearchActionPayload;
 import com.pockyl.hextale.network.ResearchMessagePayload;
@@ -88,7 +87,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private static final int GHOST_PAPER = 1;
     private static final int GHOST_ORB = 2;
     private static final int GHOST_TOOLS = 5;
-    private static final int GHOST_FLASK = 10;
     private static final int GHOST_STUDY = 11;
 
     private enum Tab {
@@ -117,6 +115,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private long toastStart;
     private final long[] vialFlash = new long[SimpleRune.values().length];
     private final float[] vialLevel = new float[SimpleRune.values().length];
+    @Nullable
+    private InkSupply supply;
+    private long supplyFrame;
     private long requirementFlash;
     private int lastStepSound;
 
@@ -249,9 +250,27 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
     }
 
-    private int[] ink() {
+    /** The ink in the Essence Tanks around the desk, read once per frame. */
+    private InkSupply inkSupply() {
         ResearchTableBlockEntity table = table();
-        return table == null ? new int[SimpleRune.values().length] : table.ink();
+        if (table == null || table.getLevel() == null) {
+            return null;
+        }
+        if (supplyFrame != Util.getMillis() || supply == null) {
+            supply = table.inkSupply();
+            supplyFrame = Util.getMillis();
+        }
+        return supply;
+    }
+
+    private int[] ink() {
+        InkSupply ink = inkSupply();
+        return ink == null ? new int[SimpleRune.values().length] : ink.available();
+    }
+
+    private int[] inkCapacity() {
+        InkSupply ink = inkSupply();
+        return ink == null ? new int[SimpleRune.values().length] : ink.capacity();
     }
 
     private boolean done(ResearchTableBlockEntity table) {
@@ -572,21 +591,23 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private void renderVials(GuiGraphicsExtractor graphics, int[] reserved, int mouseX, int mouseY) {
         long now = Util.getMillis();
         int[] ink = ink();
+        int[] capacity = inkCapacity();
         boolean infinite = creative();
         for (int i = 0; i < HexGrid.RING.length; i++) {
             SimpleRune element = HexGrid.RING[i];
             int e = element.ordinal();
             int x = leftPos + VIAL_X + i * VIAL_STEP;
             int y = topPos + VIAL_Y;
-            int amount = infinite ? ResearchTableBlockEntity.INK_CAPACITY : ink[e];
+            int full = infinite ? 1 : Math.max(1, capacity[e]);
+            int amount = infinite ? 1 : ink[e];
             if (vialLevel[e] < 0) {
                 vialLevel[e] = amount;
             }
             boolean rising = vialLevel[e] < amount - 0.5F;
             vialLevel[e] += (amount - vialLevel[e]) * 0.12F;
-            float level = vialLevel[e] / ResearchTableBlockEntity.INK_CAPACITY;
+            float level = Math.min(1, vialLevel[e] / full);
             int liquid = Math.round(level * VIAL_H);
-            int spend = Math.min(liquid, Math.round(Math.min(reserved[e], amount) / (float) ResearchTableBlockEntity.INK_CAPACITY * VIAL_H));
+            int spend = infinite ? 0 : Math.min(liquid, Math.round(Math.min(reserved[e], amount) / (float) full * VIAL_H));
             int color = element.color();
             float flash = Math.max(0, 1 - (now - vialFlash[e]) / (float) FLASH_MILLIS);
             int shake = flash > 0 ? Math.round(Mth.sin(now / 25.0F) * 2 * flash) : 0;
@@ -624,10 +645,12 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             graphics.fill(x + 1, y + 1, x + 2, y + VIAL_H - 2, 0x40FFFFFF);
             PixelArt.radical(graphics, element, x + VIAL_W / 2 - 4, y + VIAL_H + 4, 9, PixelArt.argb(color, 1));
             if (isOver(mouseX, mouseY, x - 2, y - 2, VIAL_W + 4, VIAL_H + 16)) {
-                Component count = infinite ? Component.literal("∞") : Component.literal(ink[e] + "/" + ResearchTableBlockEntity.INK_CAPACITY);
+                Component count = infinite ? Component.literal("∞") : Component.literal(ink[e] + "/" + capacity[e]);
+                boolean noStorage = !infinite && capacity[e] == 0;
                 pendingTooltip = List.of(Component.translatable(KEY + "ink", ResearchText.element(element)),
-                        count.copy().withStyle(ChatFormatting.GRAY),
-                        Component.translatable(KEY + "ink.hint").withStyle(ChatFormatting.DARK_GRAY));
+                        count.copy().withStyle(noStorage ? ChatFormatting.RED : ChatFormatting.GRAY),
+                        Component.translatable(KEY + (noStorage ? "ink.no_storage" : "ink.hint"), ResearchText.element(element))
+                                .withStyle(noStorage ? ChatFormatting.GOLD : ChatFormatting.DARK_GRAY));
             }
         }
     }
@@ -637,7 +660,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         ghost(graphics, ResearchTableBlockEntity.DIARY, ResearchTableMenu.DIARY_X, ResearchTableMenu.ROW_Y, GHOST_DIARY);
         ghost(graphics, ResearchTableBlockEntity.HEXTECH, ResearchTableMenu.HEXTECH_X, ResearchTableMenu.ROW_Y, GHOST_ORB);
         ghost(graphics, ResearchTableBlockEntity.PAPER, ResearchTableMenu.PAPER_X, ResearchTableMenu.ROW_Y, GHOST_PAPER);
-        ghost(graphics, ResearchTableBlockEntity.FLASK, ResearchTableMenu.FLASK_X, ResearchTableMenu.ROW_Y, GHOST_FLASK);
         ghost(graphics, ResearchTableBlockEntity.STUDY, ResearchTableMenu.STUDY_X, ResearchTableMenu.ROW_Y, GHOST_STUDY);
         for (ResearchTool tool : ResearchTool.values()) {
             int x = ResearchTableMenu.TOOLS_X + tool.ordinal() * ResearchTableMenu.TOOL_SPACING;
@@ -655,10 +677,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 case PAPER -> ResearchTableMenu.PAPER_X;
             };
             highlight(graphics, leftPos + x, topPos + ResearchTableMenu.ROW_Y, 0xFFD36E, strong);
-        }
-        Essence inFlask = EssenceFlaskItem.contents(menu.table().getItem(ResearchTableBlockEntity.FLASK));
-        if (inFlask.kinds() > 1) {
-            highlight(graphics, leftPos + ResearchTableMenu.FLASK_X, topPos + ResearchTableMenu.ROW_Y, 0xE06A5A, 0);
         }
     }
 
@@ -719,10 +737,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             graphics.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
             return;
         }
-        if (index == ResearchTableBlockEntity.FLASK && EssenceFlaskItem.contents(slot.getItem()).kinds() > 1) {
-            graphics.setTooltipForNextFrame(font, font.split(Component.translatable(KEY + "slot.flask.mixture"), 180), mouseX, mouseY);
-            return;
-        }
         if (slot.hasItem()) {
             return;
         }
@@ -731,7 +745,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             case ResearchTableBlockEntity.HEXTECH -> "hextech";
             case ResearchTableBlockEntity.PAPER -> "paper";
             case ResearchTableBlockEntity.STUDY -> "study";
-            case ResearchTableBlockEntity.FLASK -> "flask";
             default -> "output";
         };
         graphics.setTooltipForNextFrame(font, font.split(Component.translatable(KEY + "slot." + hint), 180), mouseX, mouseY);

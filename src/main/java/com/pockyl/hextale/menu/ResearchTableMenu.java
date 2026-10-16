@@ -24,12 +24,11 @@ import org.jetbrains.annotations.Nullable;
 public class ResearchTableMenu extends AbstractContainerMenu {
     public static final int IMAGE_WIDTH = 468;
     public static final int IMAGE_HEIGHT = 262;
-    /** The materials row on the side panel: diary, orb, paper, then a flask of concentrate and the item to study. */
+    /** The materials row on the side panel: diary, orb, paper, then the item to study. */
     public static final int ROW_Y = 116;
     public static final int DIARY_X = 258;
     public static final int HEXTECH_X = 278;
     public static final int PAPER_X = 298;
-    public static final int FLASK_X = 330;
     public static final int STUDY_X = 358;
     public static final int TOOLS_X = 258;
     public static final int TOOLS_Y = 138;
@@ -64,7 +63,6 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         addSlot(new TableSlot(container, ResearchTableBlockEntity.DIARY, DIARY_X, ROW_Y));
         addSlot(new TableSlot(container, ResearchTableBlockEntity.HEXTECH, HEXTECH_X, ROW_Y));
         addSlot(new TableSlot(container, ResearchTableBlockEntity.PAPER, PAPER_X, ROW_Y));
-        addSlot(new TableSlot(container, ResearchTableBlockEntity.FLASK, FLASK_X, ROW_Y));
         addSlot(new TableSlot(container, ResearchTableBlockEntity.STUDY, STUDY_X, ROW_Y));
         addSlot(new TableSlot(container, ResearchTableBlockEntity.OUTPUT, OUTPUT_X, OUTPUT_Y));
         for (int i = 0; i < ResearchTableBlockEntity.STUDY - ResearchTableBlockEntity.TOOLS; i++) {

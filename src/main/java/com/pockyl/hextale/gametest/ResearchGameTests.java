@@ -31,6 +31,7 @@ import com.pockyl.hextale.block.AlembicBlockEntity;
 import com.pockyl.hextale.block.BrassPipeBlock;
 import com.pockyl.hextale.block.EssenceMachine;
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
+import com.pockyl.hextale.block.InkSupply;
 import com.pockyl.hextale.block.SeparatorBlock;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.essence.Essence;
@@ -606,19 +607,28 @@ public final class ResearchGameTests {
         });
     }
 
-    @HexTest(maxTicks = 60)
-    public static void theTableTakesOnlyConcentrates(GameTestHelper helper) {
+    @HexTest
+    public static void theTableDrawsInkFromTanksAround(GameTestHelper helper) {
         ResearchTableBlockEntity table = stockedTable(helper);
-        table.setItem(ResearchTableBlockEntity.FLASK, EssenceFlaskItem.filled(Essence.of(java.util.Map.of(SimpleRune.LIFE, 8, SimpleRune.EARTH, 8))));
-        helper.runAfterDelay(5, () -> {
-            helper.assertTrue(Arrays.stream(table.ink()).sum() == 0, "a mixture is not ink");
-            table.setItem(ResearchTableBlockEntity.FLASK, EssenceFlaskItem.filled(Essence.pure(SimpleRune.FIRE, 16)));
-            helper.runAfterDelay(5, () -> {
-                helper.assertTrue(table.ink()[SimpleRune.FIRE.ordinal()] == 16, "a fire concentrate fills the fire vial");
-                helper.assertTrue(table.getItem(ResearchTableBlockEntity.FLASK).is(Items.GLASS_BOTTLE), "a glass bottle is left");
-                helper.succeed();
-            });
-        });
+        int[] none = table.inkSupply().capacity();
+        helper.assertTrue(Arrays.stream(none).sum() == 0, "no tanks around: no ink and no storage (0/0)");
+        BlockPos mixture = new BlockPos(0, 1, 2);
+        BlockPos fire = new BlockPos(1, 1, 2);
+        BlockPos farAway = new BlockPos(0, 1, 6);
+        for (BlockPos pos : new BlockPos[]{mixture, fire, farAway}) {
+            helper.setBlock(pos, ModBlocks.ESSENCE_TANK.get());
+        }
+        helper.getBlockEntity(mixture, EssenceTankBlockEntity.class).tank().set(Essence.of(java.util.Map.of(SimpleRune.LIFE, 8, SimpleRune.EARTH, 8)));
+        helper.getBlockEntity(fire, EssenceTankBlockEntity.class).tank().set(Essence.pure(SimpleRune.FIRE, 16));
+        helper.getBlockEntity(farAway, EssenceTankBlockEntity.class).tank().set(Essence.pure(SimpleRune.WATER, 16));
+        InkSupply supply = table.inkSupply();
+        helper.assertTrue(supply.available()[SimpleRune.FIRE.ordinal()] == 16
+                && supply.capacity()[SimpleRune.FIRE.ordinal()] == EssenceTankBlockEntity.CAPACITY, "a fire concentrate next to the desk is fire ink");
+        helper.assertTrue(supply.available()[SimpleRune.LIFE.ordinal()] == 0, "a mixture is no ink");
+        helper.assertTrue(supply.capacity()[SimpleRune.WATER.ordinal()] == 0, "a tank too far away does not count");
+        supply.spend(ink(SimpleRune.FIRE, 5));
+        helper.assertTrue(helper.getBlockEntity(fire, EssenceTankBlockEntity.class).tank().amount() == 11, "spent ink leaves the tank");
+        helper.succeed();
     }
 
     @HexTest
@@ -633,11 +643,11 @@ public final class ResearchGameTests {
         table.select(player, SMELTING);
         table.thread(player, thread);
         helper.assertTrue(table.sheet().length() == 0, "no thread without ink");
-        Arrays.fill(table.ink(), ResearchTableBlockEntity.INK_CAPACITY);
+        Map<SimpleRune, EssenceTankBlockEntity> tanks = inkTanks(helper, 64);
         int[] part = Arrays.copyOf(thread, 3);
         table.thread(player, part);
         helper.assertTrue(table.sheet().length() == 2 && !table.sheet().isDone(), "a part of the thread is kept");
-        helper.assertTrue(table.ink()[SMELTING.action().ordinal()] == ResearchTableBlockEntity.INK_CAPACITY, "no ink is spent yet");
+        helper.assertTrue(tanks.get(SMELTING.action()).tank().amount() == 64, "no ink is spent yet");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "the started attempt took a paper");
         table.thread(player, new int[]{HexGrid.CENTRE});
         table.thread(player, part);
@@ -652,8 +662,8 @@ public final class ResearchGameTests {
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "the orb went into the rune");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "finishing takes no more paper"); 
         for (SimpleRune element : SimpleRune.values()) {
-            helper.assertTrue(table.ink()[element.ordinal()] == ResearchTableBlockEntity.INK_CAPACITY - trace.ink()[element.ordinal()],
-                    element.id() + " ink was spent by the thread");
+            helper.assertTrue(tanks.get(element).tank().amount() == 64 - trace.ink()[element.ordinal()],
+                    element.id() + " ink was spent from its tank by the thread");
         }
         ItemStack scroll = table.getItem(ResearchTableBlockEntity.OUTPUT);
         helper.assertTrue(RuneScrollItem.rune(scroll) == SMELTING && RuneScrollItem.stars(scroll) == 3 && stars == 3,
@@ -677,7 +687,6 @@ public final class ResearchGameTests {
         table.select(player, SMELTING);
         table.thread(player, RuneBoards.plainThread(RuneBoards.get(SMELTING)));
         helper.assertTrue(table.sheet().isDone(), "no ink and no paper are needed in creative mode");
-        helper.assertTrue(Arrays.stream(table.ink()).sum() == 0, "and nothing was taken");
         player.discard();
         helper.succeed();
     }
@@ -720,7 +729,7 @@ public final class ResearchGameTests {
         player.getInventory().add(new ItemStack(Items.PAPER));
         helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.PAPER, "paper in the pocket does not count");
         table.select(player, SMELTING);
-        Arrays.fill(table.ink(), ResearchTableBlockEntity.INK_CAPACITY);
+        inkTanks(helper, 64);
         table.thread(player, Arrays.copyOf(RuneBoards.plainThread(RuneBoards.get(SMELTING)), 3));
         helper.assertTrue(table.sheet().length() == 0, "no thread without paper");
         player.discard();
@@ -912,6 +921,26 @@ public final class ResearchGameTests {
         table.setItem(ResearchTableBlockEntity.DIARY, new ItemStack(ModItems.RESEARCHERS_DIARY.get()));
         table.setItem(ResearchTableBlockEntity.HEXTECH, new ItemStack(ModItems.UNSTABLE_HEXTECH.get(), 3));
         return table;
+    }
+
+    /** An Essence Tank of each element's concentrate next to the test table, {@code drops} in each. */
+    private static Map<SimpleRune, EssenceTankBlockEntity> inkTanks(GameTestHelper helper, int drops) {
+        Map<SimpleRune, EssenceTankBlockEntity> tanks = new java.util.EnumMap<>(SimpleRune.class);
+        SimpleRune[] elements = SimpleRune.values();
+        for (int i = 0; i < elements.length; i++) {
+            BlockPos pos = new BlockPos(-2 + i % 5, TABLE.getY() + i / 5, TABLE.getZ() + 2);
+            helper.setBlock(pos, ModBlocks.ESSENCE_TANK.get());
+            EssenceTankBlockEntity tank = helper.getBlockEntity(pos, EssenceTankBlockEntity.class);
+            tank.tank().set(Essence.pure(elements[i], drops));
+            tanks.put(elements[i], tank);
+        }
+        return tanks;
+    }
+
+    private static int[] ink(SimpleRune element, int drops) {
+        int[] ink = new int[SimpleRune.values().length];
+        ink[element.ordinal()] = drops;
+        return ink;
     }
 
     private static ServerPlayer survivalPlayer(GameTestHelper helper) {

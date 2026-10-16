@@ -37,8 +37,6 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
-import com.pockyl.hextale.essence.Essence;
-import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.knowledge.Research;
@@ -83,24 +81,19 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     public static final int STUDY = 8;
     /** Paper: every finished research is written on one. */
     public static final int PAPER = 9;
-    /** A flask of concentrate: it empties into the vial of its element. */
-    public static final int FLASK = 10;
-    public static final int SLOTS = 11;
-    /** Drops each vial holds. */
-    public static final int INK_CAPACITY = 64;
+    public static final int SLOTS = 10;
 
     public static final int EVENT_FUSED = 1;
     public static final int EVENT_FIZZLE = 3;
 
-    private static final int[] SIDE_SLOTS = {HEXTECH, STUDY, PAPER, FLASK};
-    private static final int[] BOTTOM_SLOTS = {OUTPUT, FLASK};
+    private static final int[] SIDE_SLOTS = {HEXTECH, STUDY, PAPER};
+    private static final int[] BOTTOM_SLOTS = {OUTPUT};
     /** How long the orb keeps stirring after the last symbol. */
     private static final int DRAWING_TICKS = 30;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
     private final ResearchSheet sheet = new ResearchSheet();
     private final ItemStudy study = new ItemStudy();
-    private int[] ink = new int[SimpleRune.values().length];
     /** Which game lies on the parchment: the item study (true) or the rune (false). */
     private boolean studyingItem;
     private boolean drawing;
@@ -120,7 +113,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ResearchTableBlockEntity table) {
-        table.pourFlask();
         if (table.drawing && level.getGameTime() > table.drawingUntil) {
             table.drawing = false;
             table.sync();
@@ -211,30 +203,9 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     // ---- Ink ------------------------------------------------------------------------------------------------------
 
-    /** Drops of each element's ink in the table's vials ({@link SimpleRune#ordinal()}). */
-    public int[] ink() {
-        return ink;
-    }
-
-    /**
-     * Empties a bottle of concentrate from the bottle slot into the vial of its element, as far as the vial has room,
-     * leaving a glass bottle. A mixture stays in its bottle: only a single element is ink.
-     */
-    private void pourFlask() {
-        ItemStack flask = items.get(FLASK);
-        Essence essence = EssenceFlaskItem.contents(flask);
-        SimpleRune element = essence.pureElement();
-        if (element == null) {
-            return;
-        }
-        int poured = Math.min(essence.get(element), INK_CAPACITY - ink[element.ordinal()]);
-        if (poured <= 0) {
-            return;
-        }
-        ink[element.ordinal()] += poured;
-        items.set(FLASK, EssenceFlaskItem.filled(essence.minus(Essence.pure(element, poured))));
-        level.playSound(null, worldPosition, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 0.7F, 1.0F);
-        setChanged();
+    /** The ink around the desk: Essence Tanks of concentrate (the table keeps none itself). */
+    public InkSupply inkSupply() {
+        return InkSupply.around(level, worldPosition, facing());
     }
 
     // ---- Learning a rune ------------------------------------------------------------------------------------------
@@ -263,7 +234,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     /**
-     * The researcher's new thread. It is checked against the rules, the table and the ink in the vials; a thread through
+     * The researcher's new thread. It is checked against the rules, the table and the ink in the tanks around; a thread through
      * every point binds the rune at once.
      */
     public void thread(ServerPlayer player, int[] cells) {
@@ -279,7 +250,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         ResearchSheet.Trace trace = ResearchSheet.trace(board, cells, allowance(player));
         boolean creative = player.getAbilities().instabuild;
         boolean fresh = sheet.isDone() || !sheet.paid();
-        if (Requirement.firstMissing(this, player, !fresh) != null || trace == null || !creative && !trace.affordable(ink)) {
+        if (Requirement.firstMissing(this, player, !fresh) != null || trace == null || !creative && !trace.affordable(inkSupply().available())) {
             sheet.touch();
             setChanged();
             return;
@@ -312,9 +283,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         ComplexRune rune = board.rune();
         int stars = board.stars(sheet.length());
         if (!player.getAbilities().instabuild) {
-            for (int i = 0; i < ink.length; i++) {
-                ink[i] -= trace.ink()[i];
-            }
+            inkSupply().spend(trace.ink());
         }
         items.get(HEXTECH).shrink(1);
         sheet.finish();
@@ -540,7 +509,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             case DIARY -> stack.is(ModItems.RESEARCHERS_DIARY.get());
             case HEXTECH -> stack.is(ModItems.UNSTABLE_HEXTECH.get());
             case STUDY -> ResearchItems.of(stack) != null && !stack.is(ModItems.ESSENCE_FLASK.get());
-            case FLASK -> stack.is(ModItems.ESSENCE_FLASK.get());
             case PAPER -> stack.is(Items.PAPER);
             default -> slot >= TOOLS && slot < STUDY && stack.is(ResearchTool.values()[slot - TOOLS].item());
         };
@@ -558,7 +526,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction direction) {
-        return slot == OUTPUT || slot == FLASK && EssenceFlaskItem.isEmptyFlask(stack);
+        return slot == OUTPUT;
     }
 
     @Override
@@ -570,9 +538,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         sheet.load(input.childOrEmpty("sheet"));
         study.load(input.childOrEmpty("study"));
         studyingItem = input.getBooleanOr("studying_item", false);
-        int[] saved = input.getIntArray("ink").orElse(new int[0]);
-        ink = new int[SimpleRune.values().length];
-        System.arraycopy(saved, 0, ink, 0, Math.min(saved.length, ink.length));
     }
 
     @Override
@@ -582,7 +547,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         sheet.save(output.child("sheet"));
         study.save(output.child("study"));
         output.putBoolean("studying_item", studyingItem);
-        output.putIntArray("ink", ink);
     }
 
     @Override
