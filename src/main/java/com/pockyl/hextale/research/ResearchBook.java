@@ -6,6 +6,7 @@ import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.List;
+import java.util.stream.Stream;
 import java.util.Objects;
 
 /**
@@ -18,6 +19,10 @@ public final class ResearchBook {
     public static final int CHAPTER_II_AFTER = 4;
     public static final int CHAPTER_III_AFTER = 10;
 
+    /** The five runes of chapter I around Smelting. */
+    public static final List<ComplexRune> FIRST_RING = Stream.of("water_light", "light_earth", "water_earth", "earth_spark", "earth_fire")
+            .map(ComplexRunes::byKey).toList();
+
     private ResearchBook() {
     }
 
@@ -26,10 +31,8 @@ public final class ResearchBook {
         if (rune == FIRST) {
             return 1;
         }
-        for (ResearchTool tool : ResearchTool.values()) {
-            if (tool.rune() == rune) {
-                return 1;
-            }
+        if (FIRST_RING.contains(rune)) {
+            return 1;
         }
         Essence action = rune.action();
         return action == Essence.SHADOW || action == Essence.SPARK || rune.target() == Essence.SHADOW ? 3 : 2;

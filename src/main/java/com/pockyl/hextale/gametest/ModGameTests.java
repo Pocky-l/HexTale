@@ -27,8 +27,8 @@ import java.util.Set;
  * Tests use the 1x1x1 {@code empty} structure unless they need a prepared one.
  */
 public final class ModGameTests {
-    private static final List<String> RECIPES = List.of("brass_ingot", "brass_ingot_from_nuggets", "brass_nugget", "brass_scraper",
-            "fork_quill", "mortar", "parchment_stretcher", "research_table", "researchers_diary", "researchers_lens");
+    private static final List<String> RECIPES = List.of("brass_ingot", "brass_ingot_from_nuggets", "brass_nugget", "research_table",
+            "researchers_diary");
     private static final List<String> ADVANCEMENTS = List.of("root", "born_of_storm", "researchers_table", "first_rune", "milestone_3",
             "milestone_12", "milestone_24", "milestone_36", "milestone_54", "milestone_72");
 
@@ -57,23 +57,6 @@ public final class ModGameTests {
         LootTable table = server.reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE,
                 Hextale.id("blocks/research_table")));
         helper.assertTrue(table != LootTable.EMPTY, "the research table drops itself");
-        helper.succeed();
-    }
-
-    /** A tool recipe takes the scroll of its own rune only (a NeoForge components ingredient). */
-    @HexTest
-    public static void toolRecipesWantTheirRune(GameTestHelper helper) {
-        RecipeHolder<?> holder = helper.getLevel().getServer().getRecipeManager()
-                .byKey(ResourceKey.create(Registries.RECIPE, Hextale.id("mortar"))).orElseThrow();
-        @SuppressWarnings("unchecked")
-        Recipe<CraftingInput> mortar = (Recipe<CraftingInput>) holder.value();
-        ItemStack right = RuneScrollItem.of(ComplexRunes.byKey("water_earth"), 1, ModItems.RUNE_SCROLL.get());
-        ItemStack wrong = RuneScrollItem.of(ComplexRunes.byKey("fire_earth"), 3, ModItems.RUNE_SCROLL.get());
-        CraftingInput good = CraftingInput.of(3, 1, List.of(right, new ItemStack(Items.BOWL), new ItemStack(Items.FLINT)));
-        CraftingInput bad = CraftingInput.of(3, 1, List.of(wrong, new ItemStack(Items.BOWL), new ItemStack(Items.FLINT)));
-        helper.assertTrue(mortar.matches(good, helper.getLevel()), "the mortar is made from the scroll of its rune");
-        helper.assertFalse(mortar.matches(bad, helper.getLevel()), "another rune's scroll does not make a mortar");
-        helper.assertTrue(mortar.assemble(good).is(ModItems.MORTAR.get()), "the recipe makes a mortar");
         helper.succeed();
     }
 

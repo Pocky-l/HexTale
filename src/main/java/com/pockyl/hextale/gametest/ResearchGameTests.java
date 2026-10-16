@@ -58,7 +58,6 @@ import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
-import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.research.RuneBoard;
 import com.pockyl.hextale.research.RuneBoards;
 import com.pockyl.hextale.rune.ComplexRune;
@@ -106,7 +105,7 @@ public final class ResearchGameTests {
             helper.assertTrue(!board.wall(HexGrid.CENTRE), rune.key() + ": the orb is never walled in");
             int[] thread = RuneBoards.plainThread(board);
             helper.assertTrue(thread != null, rune.key() + ": a plain thread exists");
-            ResearchSheet.Trace trace = ResearchSheet.trace(board, thread, ResearchSheet.Allowance.NONE);
+            ResearchSheet.Trace trace = ResearchSheet.trace(board, thread);
             helper.assertTrue(trace != null && trace.complete(board), rune.key() + ": the plain thread follows the rules and passes every point");
             helper.assertTrue(thread.length - 1 == par.plain(), rune.key() + ": the thresholds come from that thread");
             lengths[tier][0] = Math.min(lengths[tier][0], par.plain());
@@ -122,9 +121,8 @@ public final class ResearchGameTests {
     public static void theThreadFollowsTheRules(GameTestHelper helper) {
         RuneBoard board = RuneBoards.get(SMELTING);
         int[] plain = RuneBoards.plainThread(board);
-        ResearchSheet.Allowance none = ResearchSheet.Allowance.NONE;
-        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE}, none) != null, "a bare orb is a thread");
-        helper.assertTrue(ResearchSheet.trace(board, new int[]{plain[1]}, none) == null, "a thread starts at the orb");
+        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE}) != null, "a bare orb is a thread");
+        helper.assertTrue(ResearchSheet.trace(board, new int[]{plain[1]}) == null, "a thread starts at the orb");
         int jump = -1;
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
             if (HexGrid.steps(HexGrid.CENTRE, cell) == 3 && !board.wall(cell)) {
@@ -132,8 +130,8 @@ public final class ResearchGameTests {
                 break;
             }
         }
-        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE, jump}, none) == null, "a thread never jumps");
-        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE, plain[1], HexGrid.CENTRE}, none) == null,
+        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE, jump}) == null, "a thread never jumps");
+        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE, plain[1], HexGrid.CENTRE}) == null,
                 "a thread never returns to the orb");
 
         // A small loop back onto itself needs the fork quill.
@@ -150,10 +148,9 @@ public final class ResearchGameTests {
         }
         helper.assertTrue(b >= 0, "there is a small loop next to the orb");
         int[] loop = {HexGrid.CENTRE, a, b, c, a};
-        helper.assertTrue(ResearchSheet.trace(board, loop, none) == null, "a thread never crosses itself");
-        helper.assertTrue(ResearchSheet.trace(board, loop, new ResearchSheet.Allowance(1, 0, 0, 0)) != null, "the fork quill lets it cross once");
+        helper.assertTrue(ResearchSheet.trace(board, loop) == null, "a thread never crosses itself");
 
-        // Through a dark rune only with the scraper.
+        // Never through a dark rune.
         int wall = -1;
         int before = -1;
         for (int cell = 0; cell < HexGrid.COUNT && wall < 0; cell++) {
@@ -170,9 +167,8 @@ public final class ResearchGameTests {
         int[] path = pathTo(board, before);
         int[] through = Arrays.copyOf(path, path.length + 1);
         through[path.length] = wall;
-        helper.assertTrue(ResearchSheet.trace(board, path, none) != null, "the way to the dark rune is open");
-        helper.assertTrue(ResearchSheet.trace(board, through, none) == null, "a dark rune blocks the thread");
-        helper.assertTrue(ResearchSheet.trace(board, through, new ResearchSheet.Allowance(0, 1, 0, 0)) != null, "the scraper passes one");
+        helper.assertTrue(ResearchSheet.trace(board, path) != null, "the way to the dark rune is open");
+        helper.assertTrue(ResearchSheet.trace(board, through) == null, "a dark rune blocks the thread");
         helper.succeed();
     }
 
@@ -180,7 +176,7 @@ public final class ResearchGameTests {
     public static void stepsPayTheInkOfTheirDirection(GameTestHelper helper) {
         RuneBoard board = RuneBoards.get(SMELTING);
         int[] thread = RuneBoards.plainThread(board);
-        ResearchSheet.Trace trace = ResearchSheet.trace(board, thread, ResearchSheet.Allowance.NONE);
+        ResearchSheet.Trace trace = ResearchSheet.trace(board, thread);
         int[] ink = new int[Essence.values().length];
         for (int i = 1; i < thread.length; i++) {
             Essence colour = ResearchSheet.toward(thread[i - 1], thread[i]);
@@ -200,26 +196,19 @@ public final class ResearchGameTests {
         helper.assertTrue(fromCentre.size() == 6, "the six steps from the orb pay six different inks, got " + fromCentre);
         helper.assertTrue(anywhere.size() == 9, "every ink is needed somewhere on the parchment");
         helper.assertTrue(Arrays.equals(ink, trace.ink()), "the ink needed is the sum of the sections");
-        ResearchSheet.Trace stretched = ResearchSheet.trace(board, thread, ResearchTool.allowance(0, 0, 2, 0));
-        helper.assertTrue(Arrays.stream(stretched.ink()).sum() == thread.length - 1 - 8, "a two-star stretcher saves eight sections");
-        ResearchSheet.Trace ground = ResearchSheet.trace(board, thread, ResearchTool.allowance(0, 0, 0, 3));
-        helper.assertTrue(Arrays.stream(ground.ink()).sum() == thread.length - 1 - (thread.length - 1) / 2,
-                "a three-star mortar makes every second section free");
         helper.succeed();
     }
 
     @HexTest
     public static void chaptersOpenInOrder(GameTestHelper helper) {
         RuneKnowledge knowledge = new RuneKnowledge();
-        helper.assertTrue(ResearchBook.runes(1).size() == 6, "chapter I has Smelting and the five tool runes");
+        helper.assertTrue(ResearchBook.runes(1).size() == 6, "chapter I has Smelting and its ring of five runes");
         helper.assertTrue(ResearchBook.open(knowledge, SMELTING), "Smelting is open from the start");
-        helper.assertFalse(ResearchBook.open(knowledge, ResearchTool.LENS.rune()), "the tool runes wait for Smelting");
+        helper.assertFalse(ResearchBook.open(knowledge, ResearchBook.FIRST_RING.get(0)), "the ring waits for Smelting");
         knowledge.learn(SMELTING, 1, 8);
-        helper.assertTrue(ResearchBook.open(knowledge, ResearchTool.LENS.rune()), "after Smelting the tool runes open");
+        helper.assertTrue(ResearchBook.open(knowledge, ResearchBook.FIRST_RING.get(0)), "after Smelting the ring opens");
         helper.assertFalse(ResearchBook.chapterOpen(knowledge, 2), "chapter II needs four runes of chapter I");
-        for (ResearchTool tool : List.of(ResearchTool.LENS, ResearchTool.FORK, ResearchTool.MORTAR)) {
-            knowledge.learn(tool.rune(), 1, 0);
-        }
+        ResearchBook.FIRST_RING.subList(0, 3).forEach(rune -> knowledge.learn(rune, 1, 0));
         helper.assertTrue(ResearchBook.chapterOpen(knowledge, 2), "four runes of chapter I open chapter II");
         helper.assertFalse(ResearchBook.chapterOpen(knowledge, 3), "chapter III is still closed");
         ResearchBook.runes(2).subList(0, ResearchBook.CHAPTER_III_AFTER).forEach(rune -> knowledge.learn(rune, 2, 0));
@@ -773,7 +762,7 @@ public final class ResearchGameTests {
         table.setItem(ResearchTableBlockEntity.PAPER, new ItemStack(Items.PAPER, 2));
         RuneBoard board = RuneBoards.get(SMELTING);
         int[] thread = RuneBoards.plainThread(board);
-        ResearchSheet.Trace trace = ResearchSheet.trace(board, thread, ResearchSheet.Allowance.NONE);
+        ResearchSheet.Trace trace = ResearchSheet.trace(board, thread);
 
         table.select(player, SMELTING);
         table.thread(player, thread);
@@ -823,23 +812,6 @@ public final class ResearchGameTests {
         table.select(player, SMELTING);
         table.thread(player, RuneBoards.plainThread(RuneBoards.get(SMELTING)));
         helper.assertTrue(table.sheet().isDone(), "no ink and no paper are needed in creative mode");
-        player.discard();
-        helper.succeed();
-    }
-
-    @HexTest
-    public static void toolsFollowTheirRunesStars(GameTestHelper helper) {
-        ServerPlayer player = player(helper);
-        ResearchTableBlockEntity table = stockedTable(helper);
-        int slot = ResearchTableBlockEntity.TOOLS + ResearchTool.STRETCHER.ordinal();
-        helper.assertTrue(table.canPlaceItem(slot, new ItemStack(ModItems.PARCHMENT_STRETCHER.get())), "the stretcher has its slot");
-        helper.assertFalse(table.canPlaceItem(slot, new ItemStack(ModItems.MORTAR.get())), "other tools do not fit there");
-        table.setItem(slot, new ItemStack(ModItems.PARCHMENT_STRETCHER.get()));
-        helper.assertTrue(table.toolLevel(player, ResearchTool.STRETCHER) == 0, "without its rune the tool does nothing");
-        Research.learnAll(player, List.of(ResearchTool.STRETCHER.rune(), SMELTING), 2);
-        helper.assertTrue(table.toolLevel(player, ResearchTool.STRETCHER) == 2, "two stars, strength two");
-        helper.assertTrue(table.allowance(player).free() == 8, "the stretched parchment gives eight free sections");
-        helper.assertTrue(table.toolLevel(player, ResearchTool.LENS) == 0, "a tool not on the table does nothing");
         player.discard();
         helper.succeed();
     }

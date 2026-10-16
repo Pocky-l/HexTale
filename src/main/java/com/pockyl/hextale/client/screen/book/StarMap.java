@@ -2,7 +2,6 @@ package com.pockyl.hextale.client.screen.book;
 
 import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ResearchBook;
-import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
@@ -27,7 +26,7 @@ final class StarMap {
     static final int SIGN_RADIUS = 392;
     static final int EXTENT = 430;
 
-    /** A line between two stars; {@code chain} lines link a ray, the others lead from Smelting to the tools. */
+    /** A line between two stars; {@code chain} lines link a ray, the others lead from Smelting to its first ring. */
     record Link(ComplexRune from, ComplexRune to, boolean chain) {
     }
 
@@ -38,12 +37,12 @@ final class StarMap {
 
     static {
         POSITIONS.put(ResearchBook.FIRST, new int[]{0, 0});
-        ResearchTool[] tools = ResearchTool.values();
-        for (int i = 0; i < tools.length; i++) {
-            double angle = -Math.PI / 2 + i * 2 * Math.PI / tools.length;
-            POSITIONS.put(tools[i].rune(), new int[]{(int) Math.round(Math.cos(angle) * TOOL_RING),
+        List<ComplexRune> ring = ResearchBook.FIRST_RING;
+        for (int i = 0; i < ring.size(); i++) {
+            double angle = -Math.PI / 2 + i * 2 * Math.PI / ring.size();
+            POSITIONS.put(ring.get(i), new int[]{(int) Math.round(Math.cos(angle) * TOOL_RING),
                     (int) Math.round(Math.sin(angle) * TOOL_RING)});
-            LINKS.add(new Link(ResearchBook.FIRST, tools[i].rune(), false));
+            LINKS.add(new Link(ResearchBook.FIRST, ring.get(i), false));
         }
         for (Essence action : HexGrid.RING) {
             List<ComplexRune> ray = new ArrayList<>();

@@ -41,7 +41,6 @@ import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchText;
-import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.research.RuneBoard;
 import com.pockyl.hextale.research.RuneBoards;
 import com.pockyl.hextale.rune.ComplexRune;
@@ -86,7 +85,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private static final int GHOST_DIARY = 0;
     private static final int GHOST_PAPER = 1;
     private static final int GHOST_ORB = 2;
-    private static final int GHOST_TOOLS = 5;
     private static final int GHOST_STUDY = 11;
 
     private enum Tab {
@@ -167,15 +165,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         return minecraft == null || minecraft.player == null ? null : Requirement.firstMissing(menu.table(), minecraft.player, paid);
     }
 
-    private int toolLevel(ResearchTool tool) {
-        return ResearchTableBlockEntity.toolLevel(menu.table(), tool, ClientKnowledge.get());
-    }
-
-    private ResearchSheet.Allowance allowance() {
-        return ResearchTool.allowance(toolLevel(ResearchTool.FORK), toolLevel(ResearchTool.SCRAPER), toolLevel(ResearchTool.STRETCHER),
-                toolLevel(ResearchTool.MORTAR));
-    }
-
     /** Studied, or anything in creative mode. */
     private boolean studied(Item item) {
         return creative() || ClientKnowledge.get().hasStudied(BuiltInRegistries.ITEM.getKey(item));
@@ -242,10 +231,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             trace = null;
         }
         if (trace == null) {
-            trace = ResearchSheet.trace(current, thread, allowance());
+            trace = ResearchSheet.trace(current, thread);
             if (trace == null) {
                 thread = new int[]{HexGrid.CENTRE};
-                trace = ResearchSheet.trace(current, thread, allowance());
+                trace = ResearchSheet.trace(current, thread);
             }
         }
     }
@@ -292,7 +281,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
         int[] candidate = Arrays.copyOf(thread, thread.length + 1);
         candidate[thread.length] = cell;
-        ResearchSheet.Trace next = ResearchSheet.trace(current, candidate, allowance());
+        ResearchSheet.Trace next = ResearchSheet.trace(current, candidate);
         if (next == null) {
             refuse(cell, 0.6F);
             return false;
@@ -325,7 +314,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             trace = null;
             RuneBoard current = currentBoard();
             if (current != null) {
-                trace = ResearchSheet.trace(current, thread, allowance());
+                trace = ResearchSheet.trace(current, thread);
             }
         }
     }
@@ -500,11 +489,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private void renderRune(GuiGraphicsExtractor graphics, ResearchTableBlockEntity table, RuneBoard current, int hovered,
                             int mouseX, int mouseY) {
         ComplexRune rune = current.rune();
-        int lens = toolLevel(ResearchTool.LENS);
-        String key = rune.key() + "|" + thread.length + "|" + thread[thread.length - 1] + "|" + ClientKnowledge.version() + "|" + lens;
+        String key = rune.key() + "|" + thread.length + "|" + thread[thread.length - 1] + "|" + ClientKnowledge.version();
         if (!key.equals(fogKey)) {
             fogKey = key;
-            board.updateFog(ClientKnowledge.get().seen(rune), thread, lens);
+            board.updateFog(ClientKnowledge.get().seen(rune), thread);
         }
         boolean done = done(table);
         boolean ready = !table.getItem(ResearchTableBlockEntity.HEXTECH).isEmpty() || done;
@@ -513,7 +501,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 && missing() == null) {
             int[] candidate = Arrays.copyOf(thread, thread.length + 1);
             candidate[thread.length] = hovered;
-            ResearchSheet.Trace next = ResearchSheet.trace(current, candidate, allowance());
+            ResearchSheet.Trace next = ResearchSheet.trace(current, candidate);
             if (next != null && (creative() || next.affordable(ink()))) {
                 preview = hovered;
             }
@@ -671,10 +659,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         ghost(graphics, ResearchTableBlockEntity.HEXTECH, ResearchTableMenu.HEXTECH_X, ResearchTableMenu.ROW_Y, GHOST_ORB);
         ghost(graphics, ResearchTableBlockEntity.PAPER, ResearchTableMenu.PAPER_X, ResearchTableMenu.ROW_Y, GHOST_PAPER);
         ghost(graphics, ResearchTableBlockEntity.STUDY, ResearchTableMenu.STUDY_X, ResearchTableMenu.ROW_Y, GHOST_STUDY);
-        for (ResearchTool tool : ResearchTool.values()) {
-            int x = ResearchTableMenu.TOOLS_X + tool.ordinal() * ResearchTableMenu.TOOL_SPACING;
-            ghost(graphics, ResearchTableBlockEntity.TOOLS + tool.ordinal(), x, ResearchTableMenu.TOOLS_Y, GHOST_TOOLS + tool.ordinal());
-        }
 
         ResearchTableBlockEntity table = table();
         boolean wantsRune = table != null && !table.isStudyingItem() && table.sheet().rune() != null;
@@ -708,19 +692,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         graphics.fill(x + 15 + g, y - g + 1, x + 16 + g, y + 15 + g, color);
     }
 
-    /** Star pips under tools, a check mark on studied items, and slot hints. */
+    /** A check mark on studied items, and slot hints. */
     private void renderSlotOverlays(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        for (ResearchTool tool : ResearchTool.values()) {
-            if (menu.table().getItem(ResearchTableBlockEntity.TOOLS + tool.ordinal()).isEmpty()) {
-                continue;
-            }
-            int x = leftPos + ResearchTableMenu.TOOLS_X + tool.ordinal() * ResearchTableMenu.TOOL_SPACING;
-            int y = topPos + ResearchTableMenu.TOOLS_Y;
-            int level = toolLevel(tool);
-            for (int s = 0; s < 3; s++) {
-                graphics.fill(x + 2 + s * 5, y + 17, x + 5 + s * 5, y + 19, s < level ? 0xFFE0A21C : 0xFF3A2712);
-            }
-        }
         ItemStack study = menu.table().getItem(ResearchTableBlockEntity.STUDY);
         if (!study.isEmpty() && studied(study.getItem())) {
             PixelArt.flush(graphics);
@@ -732,21 +705,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return;
         }
         int index = slot.getContainerSlot();
-        if (index >= ResearchTableBlockEntity.TOOLS && index < ResearchTableBlockEntity.STUDY) {
-            ResearchTool tool = ResearchTool.values()[index - ResearchTableBlockEntity.TOOLS];
-            int level = toolLevel(tool);
-            List<Component> lines = new ArrayList<>();
-            lines.add(ResearchText.item(tool.item()).copy().withStyle(ChatFormatting.GOLD));
-            if (slot.hasItem() && level > 0) {
-                lines.add(Component.literal("★".repeat(level) + " ").withStyle(ChatFormatting.GOLD)
-                        .append(Component.translatable(tool.translationKey() + ".level." + level).withStyle(ChatFormatting.WHITE)));
-            } else {
-                lines.add(Component.translatable(KEY + "slot.tool", Component.translatable(tool.rune().translationKey())
-                        .withColor(tool.rune().color())).withStyle(ChatFormatting.GRAY));
-            }
-            graphics.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
-            return;
-        }
         if (slot.hasItem()) {
             return;
         }
@@ -864,7 +822,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                     }
                 }
                 thread = Arrays.copyOf(thread, keep);
-                trace = ResearchSheet.trace(current, thread, allowance());
+                trace = ResearchSheet.trace(current, thread);
                 sound(ModSounds.BRUSH_STROKE.get(), 0.6F, 0.4F);
                 release();
             }
@@ -876,7 +834,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (done(table)) {
             if (cell == HexGrid.CENTRE) {
                 thread = new int[]{HexGrid.CENTRE};
-                trace = ResearchSheet.trace(current, thread, allowance());
+                trace = ResearchSheet.trace(current, thread);
                 dragging = true;
             }
             return;
@@ -891,7 +849,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (index >= 0) {
             if (index < thread.length - 1) {
                 thread = Arrays.copyOf(thread, index + 1);
-                trace = ResearchSheet.trace(current, thread, allowance());
+                trace = ResearchSheet.trace(current, thread);
                 sound(ModSounds.BRUSH_STROKE.get(), 0.7F, 0.3F);
             }
             dragging = true;

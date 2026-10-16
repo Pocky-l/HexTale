@@ -54,7 +54,6 @@ import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchText;
-import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.research.RuneBoard;
 import com.pockyl.hextale.research.RuneBoards;
 import com.pockyl.hextale.rune.ComplexRune;
@@ -75,13 +74,11 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     public static final int DIARY = 0;
     public static final int HEXTECH = 1;
     public static final int OUTPUT = 2;
-    /** Research tools, one slot each in {@link ResearchTool} order. */
-    public static final int TOOLS = 3;
-    /** The item whose elements are being studied. */
-    public static final int STUDY = 8;
+    /** The item whose essences are being studied. */
+    public static final int STUDY = 3;
     /** Paper: every finished research is written on one. */
-    public static final int PAPER = 9;
-    public static final int SLOTS = 10;
+    public static final int PAPER = 4;
+    public static final int SLOTS = 5;
 
     public static final int EVENT_FUSED = 1;
     public static final int EVENT_FIZZLE = 3;
@@ -186,16 +183,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return rune == null ? null : RuneBoards.get(rune);
     }
 
-    /** A tool's strength for this researcher: 0 without the tool in its slot, else the stars of its rune. */
-    public int toolLevel(Player player, ResearchTool tool) {
-        return toolLevel(this, tool, Research.of(player));
-    }
-
-    /** Same, for a client copy of the slots and of the knowledge. */
-    public static int toolLevel(Container table, ResearchTool tool, RuneKnowledge knowledge) {
-        return table.getItem(TOOLS + tool.ordinal()).is(tool.item()) ? knowledge.stars(tool.rune()) : 0;
-    }
-
     /** In creative mode every item counts as studied, as if the researcher carried them all. */
     private static boolean studied(ServerPlayer player, Item item) {
         return player.getAbilities().instabuild || Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(item));
@@ -227,12 +214,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         setChanged();
     }
 
-    /** What this researcher's tools allow on a thread. */
-    public ResearchSheet.Allowance allowance(Player player) {
-        return ResearchTool.allowance(toolLevel(player, ResearchTool.FORK), toolLevel(player, ResearchTool.SCRAPER),
-                toolLevel(player, ResearchTool.STRETCHER), toolLevel(player, ResearchTool.MORTAR));
-    }
-
     /**
      * The researcher's new thread. It is checked against the rules, the table and the ink in the tanks around; a thread through
      * every point binds the rune at once.
@@ -247,7 +228,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             setChanged();
             return;
         }
-        ResearchSheet.Trace trace = ResearchSheet.trace(board, cells, allowance(player));
+        ResearchSheet.Trace trace = ResearchSheet.trace(board, cells);
         boolean creative = player.getAbilities().instabuild;
         boolean fresh = sheet.isDone() || !sheet.paid();
         if (Requirement.firstMissing(this, player, !fresh) != null || trace == null || !creative && !trace.affordable(inkSupply().sections())) {
@@ -510,7 +491,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             case HEXTECH -> stack.is(ModItems.UNSTABLE_HEXTECH.get());
             case STUDY -> ResearchItems.of(stack) != null && !stack.is(ModItems.ESSENCE_FLASK.get());
             case PAPER -> stack.is(Items.PAPER);
-            default -> slot >= TOOLS && slot < STUDY && stack.is(ResearchTool.values()[slot - TOOLS].item());
+            default -> false;
         };
     }
 

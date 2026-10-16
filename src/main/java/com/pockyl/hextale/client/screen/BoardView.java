@@ -13,7 +13,6 @@ import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchSheet;
-import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.research.RuneBoard;
 import com.pockyl.hextale.rune.Essence;
 
@@ -31,6 +30,8 @@ import org.jspecify.annotations.Nullable;
  * texture uses the same numbers, see the texture generator).
  */
 final class BoardView {
+    /** Sections the fog lifts around the thread and the sections passed before. */
+    private static final int SIGHT = 2;
     static final int CX = 126;
     static final int CY = 144;
     static final int COL_STEP = 14;
@@ -116,23 +117,18 @@ final class BoardView {
     // ---- The rune's parchment -------------------------------------------------------------------------------------
 
     /** Lifts the fog around the sections the researcher's threads have passed (and the thread being drawn). */
-    void updateFog(BitSet seen, int[] thread, int lens) {
+    void updateFog(BitSet seen, int[] thread) {
         long now = Util.getMillis();
         boolean[] next = new boolean[HexGrid.COUNT];
-        if (lens >= 3) {
-            Arrays.fill(next, true);
-        } else {
-            int sight = ResearchTool.SIGHT[lens];
-            BitSet sources = (BitSet) seen.clone();
-            sources.set(HexGrid.CENTRE);
-            for (int cell : thread) {
-                sources.set(cell);
-            }
-            for (int s = sources.nextSetBit(0); s >= 0; s = sources.nextSetBit(s + 1)) {
-                for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-                    if (!next[cell] && HexGrid.steps(s, cell) <= sight) {
-                        next[cell] = true;
-                    }
+        BitSet sources = (BitSet) seen.clone();
+        sources.set(HexGrid.CENTRE);
+        for (int cell : thread) {
+            sources.set(cell);
+        }
+        for (int s = sources.nextSetBit(0); s >= 0; s = sources.nextSetBit(s + 1)) {
+            for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+                if (!next[cell] && HexGrid.steps(s, cell) <= SIGHT) {
+                    next[cell] = true;
                 }
             }
         }

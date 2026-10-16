@@ -30,9 +30,6 @@ public class ResearchTableMenu extends AbstractContainerMenu {
     public static final int HEXTECH_X = 278;
     public static final int PAPER_X = 298;
     public static final int STUDY_X = 358;
-    public static final int TOOLS_X = 258;
-    public static final int TOOLS_Y = 138;
-    public static final int TOOL_SPACING = 20;
     public static final int OUTPUT_X = 434;
     public static final int OUTPUT_Y = 127;
     public static final int INVENTORY_X = 277;
@@ -65,9 +62,6 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         addSlot(new TableSlot(container, ResearchTableBlockEntity.PAPER, PAPER_X, ROW_Y));
         addSlot(new TableSlot(container, ResearchTableBlockEntity.STUDY, STUDY_X, ROW_Y));
         addSlot(new TableSlot(container, ResearchTableBlockEntity.OUTPUT, OUTPUT_X, OUTPUT_Y));
-        for (int i = 0; i < ResearchTableBlockEntity.STUDY - ResearchTableBlockEntity.TOOLS; i++) {
-            addSlot(new TableSlot(container, ResearchTableBlockEntity.TOOLS + i, TOOLS_X + i * TOOL_SPACING, TOOLS_Y));
-        }
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 addSlot(new HiddenSlot(inventory, col + row * 9 + 9, INVENTORY_X + col * 18, INVENTORY_Y + row * 18));
@@ -187,12 +181,6 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         public void setChanged() {
             super.setChanged();
             tableSlotChanged(getContainerSlot());
-        }
-
-        @Override
-        public int getMaxStackSize(ItemStack stack) {
-            int index = getContainerSlot();
-            return index >= ResearchTableBlockEntity.TOOLS && index < ResearchTableBlockEntity.STUDY ? 1 : super.getMaxStackSize(stack);
         }
     }
 }

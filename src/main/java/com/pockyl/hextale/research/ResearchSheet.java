@@ -15,8 +15,8 @@ import org.jetbrains.annotations.Nullable;
  * Learning a rune: one ink thread drawn from the orb, section by section, through every point of the rune's parchment.
  * <p>
  * Every step costs one drop of the ink of the element whose corner of the parchment it heads towards (see
- * {@link #toward}), so the way the thread winds decides which inks it spends. Dark runes block it and it never crosses itself
- * (research tools allow a few exceptions, see {@link Allowance}). Winding the thread back is free: ink is only spent
+ * {@link #toward}), so the way the thread winds decides which inks it spends. Dark runes block it and it never crosses
+ * itself. Winding the thread back is free: ink is only spent
  * when the last point is reached and the rune binds. Stars count the sections of the finished thread. A paper is spent
  * when an attempt starts (its first section); winding back does not return it.
  * <p>
@@ -35,25 +35,13 @@ public final class ResearchSheet {
     private int revision;
 
     /**
-     * What the researcher's tools allow on one thread.
-     *
-     * @param crossings sections where the thread may cross itself (fork quill)
-     * @param passes    dark runes it may pass through (brass scraper)
-     * @param free      first sections that cost no ink (parchment stretcher)
-     * @param thrift    0-3: every 4th, 3rd or 2nd paid section costs no ink (mortar-ground ink)
-     */
-    public record Allowance(int crossings, int passes, int free, int thrift) {
-        public static final Allowance NONE = new Allowance(0, 0, 0, 0);
-    }
-
-    /**
      * A thread checked against the rules.
      *
      * @param ink    drops needed per element ({@link Essence#ordinal()})
      * @param lit    points passed, bit per point
      * @param paying per section: the element whose ink it costs, null for free sections and the orb
      */
-    public record Trace(int[] ink, int lit, int crossings, int passes, Essence[] paying) {
+    public record Trace(int[] ink, int lit, Essence[] paying) {
         public boolean complete(RuneBoard board) {
             return lit == (1 << board.points().size()) - 1;
         }
@@ -70,11 +58,11 @@ public final class ResearchSheet {
     }
 
     /**
-     * Checks a thread: it starts at the orb, steps to neighbouring sections only, never returns to the orb, and crosses
-     * itself and dark runes no more than allowed. Null when it breaks a rule.
+     * Checks a thread: it starts at the orb, steps to neighbouring sections only, never returns to the orb, never crosses
+     * itself and never enters a dark rune. Null when it breaks a rule.
      */
     @Nullable
-    public static Trace trace(RuneBoard board, int[] thread, Allowance allowance) {
+    public static Trace trace(RuneBoard board, int[] thread) {
         if (thread.length == 0 || thread[0] != HexGrid.CENTRE) {
             return null;
         }
@@ -83,33 +71,25 @@ public final class ResearchSheet {
         boolean[] used = new boolean[HexGrid.COUNT];
         used[HexGrid.CENTRE] = true;
         int lit = 0;
-        int paid = 0;
-        int crossings = 0;
-        int passes = 0;
         for (int i = 1; i < thread.length; i++) {
             int cell = thread[i];
             if (cell < 0 || cell >= HexGrid.COUNT || cell == HexGrid.CENTRE || !HexGrid.adjacent(thread[i - 1], cell)
                     || i >= 2 && thread[i - 2] == cell) {
                 return null;
             }
-            if (used[cell] && ++crossings > allowance.crossings()) {
-                return null;
-            }
-            if (board.wall(cell) && ++passes > allowance.passes()) {
+            if (used[cell] || board.wall(cell)) {
                 return null;
             }
             used[cell] = true;
-            if (i > allowance.free() && (allowance.thrift() <= 0 || ++paid % (5 - allowance.thrift()) != 0)) {
-                Essence colour = toward(thread[i - 1], cell);
-                ink[colour.ordinal()]++;
-                paying[i] = colour;
-            }
+            Essence colour = toward(thread[i - 1], cell);
+            ink[colour.ordinal()]++;
+            paying[i] = colour;
             int point = board.pointAt(cell);
             if (point >= 0) {
                 lit |= 1 << point;
             }
         }
-        return new Trace(ink, lit, crossings, passes, paying);
+        return new Trace(ink, lit, paying);
     }
 
     /**

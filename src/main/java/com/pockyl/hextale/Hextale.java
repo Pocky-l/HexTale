@@ -70,11 +70,6 @@ public final class Hextale {
             output.accept(ModItems.DRAIN_VALVE);
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
-            output.accept(ModItems.RESEARCHERS_LENS);
-            output.accept(ModItems.FORK_QUILL);
-            output.accept(ModItems.MORTAR);
-            output.accept(ModItems.BRASS_SCRAPER);
-            output.accept(ModItems.PARCHMENT_STRETCHER);
             output.accept(ModItems.BRASS_INGOT);
             output.accept(ModItems.BRASS_NUGGET);
             output.accept(exampleScroll());

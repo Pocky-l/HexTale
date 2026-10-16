@@ -19,7 +19,6 @@ import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.research.ResearchText;
-import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.rune.ComplexRune;
 
 import java.util.function.Consumer;
@@ -101,12 +100,6 @@ public class RuneScrollItem extends Item {
             stack.consume(1, player);
             serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.rune_scroll.studied", name,
                     "★".repeat(stars) + "☆".repeat(3 - stars)));
-            for (ResearchTool tool : ResearchTool.values()) {
-                if (tool.rune() == rune) {
-                    serverPlayer.sendSystemMessage(Component.translatable(before == 0 ? "research.hextale.tool_unlocked"
-                            : "research.hextale.tool_stronger", ResearchText.item(tool.item())).withStyle(ChatFormatting.GOLD));
-                }
-            }
             level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.9F);
             level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 1.2F);
         }
