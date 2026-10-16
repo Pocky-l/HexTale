@@ -49,9 +49,10 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Alembic's contents: the items waiting to boil, empty flasks and the flask it filled, and the essence boiled so
+ * The Alembic's contents: the items waiting to boil, glass bottles and the bottle it filled, and the essence boiled so
  * far. An item boils for {@value #BOIL_TICKS} ticks over heat into {@value #DROPS_PER_POINT} drops per point of each of
- * its elements - all of them at once, a mixture. The essence goes into flasks and into pipes on any side.
+ * its elements - all of them at once, a mixture. The essence goes into bottles and out of the spout (the front) into a
+ * pipe.
  * <p>
  * Only items the researcher has studied go in: checked against the player at the screen, and against the alembic's
  * owner (who placed it) for hoppers, while the owner is online.
@@ -164,7 +165,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return true;
     }
 
-    /** Fills an empty flask once a flask's worth is ready, or with the rest when nothing more is boiling. */
+    /** Fills a glass bottle once a bottle's worth is ready, or with the rest when nothing more is boiling. */
     private boolean fillFlask() {
         ItemStack empty = items.get(FLASK_IN);
         if (!EssenceFlaskItem.isEmptyFlask(empty) || !items.get(FLASK_OUT).isEmpty() || tank.isEmpty()) {
@@ -180,17 +181,16 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return true;
     }
 
+    /** Lets essence out of the spout into a pipe (or a vessel) in front. */
     private boolean pushToPipes() {
         if (tank.isEmpty()) {
             return false;
         }
-        for (Direction side : Direction.values()) {
-            Essence offer = tank.drain(EssenceTankBlockEntity.FLOW, true);
-            int moved = EssenceNetwork.push(level, worldPosition, side, offer);
-            if (moved > 0) {
-                tank.remove(offer.part(moved));
-                return true;
-            }
+        Essence offer = tank.drain(EssenceTankBlockEntity.FLOW, true);
+        int moved = EssenceNetwork.push(level, worldPosition, getBlockState().getValue(AlembicBlock.FACING), offer);
+        if (moved > 0) {
+            tank.remove(offer.part(moved));
+            return true;
         }
         return false;
     }

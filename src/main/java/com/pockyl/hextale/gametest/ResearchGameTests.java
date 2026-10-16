@@ -28,7 +28,10 @@ import net.minecraft.world.phys.Vec3;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.AlembicBlock;
 import com.pockyl.hextale.block.AlembicBlockEntity;
+import com.pockyl.hextale.block.BrassPipeBlock;
+import com.pockyl.hextale.block.EssenceMachine;
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
+import com.pockyl.hextale.block.SeparatorBlock;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.essence.Essence;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
@@ -459,12 +462,12 @@ public final class ResearchGameTests {
         helper.setBlock(at, ModBlocks.ALEMBIC.get().defaultBlockState().setValue(AlembicBlock.LIT, true));
         AlembicBlockEntity alembic = helper.getBlockEntity(at, AlembicBlockEntity.class);
         alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.OAK_PLANKS));
-        alembic.setItem(AlembicBlockEntity.FLASK_IN, new ItemStack(ModItems.ESSENCE_FLASK.get(), 2));
+        alembic.setItem(AlembicBlockEntity.FLASK_IN, new ItemStack(Items.GLASS_BOTTLE, 2));
         Essence expected = Essence.boiled(ResearchItems.of(Items.OAK_PLANKS), AlembicBlockEntity.DROPS_PER_POINT);
         helper.succeedWhen(() -> {
             Essence boiled = EssenceFlaskItem.contents(alembic.getItem(AlembicBlockEntity.FLASK_OUT));
             helper.assertTrue(boiled.equals(expected), "oak planks boil into " + expected + ", got " + boiled);
-            helper.assertTrue(alembic.getItem(AlembicBlockEntity.FLASK_IN).getCount() == 1, "one empty flask was used");
+            helper.assertTrue(alembic.getItem(AlembicBlockEntity.FLASK_IN).getCount() == 1, "one glass bottle was used");
         });
     }
 
@@ -489,14 +492,52 @@ public final class ResearchGameTests {
         Essence mixture = Essence.of(java.util.Map.of(SimpleRune.LIFE, 8, SimpleRune.EARTH, 8));
         separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(mixture));
         separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 3));
-        separator.setItem(SeparatorBlockEntity.SUPPLY, new ItemStack(ModItems.ESSENCE_FLASK.get(), 2));
+        separator.setItem(SeparatorBlockEntity.SUPPLY, new ItemStack(Items.GLASS_BOTTLE, 2));
         helper.succeedWhen(() -> {
-            Essence rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.MIX_OUT));
+            Essence rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
             Essence drawn = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.EXTRACT_OUT));
             helper.assertTrue(rest.equals(Essence.pure(SimpleRune.LIFE, 8)), "clay leaves pure life, got " + rest);
             helper.assertTrue(drawn.equals(Essence.pure(SimpleRune.EARTH, 8)), "and draws out pure earth, got " + drawn);
             helper.assertTrue(separator.getItem(SeparatorBlockEntity.REAGENT).getCount() == 2, "one clay ball binds eight drops");
         });
+    }
+
+    @HexTest(maxTicks = 300)
+    public static void withoutAReagentNothingIsSplit(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState());
+        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(Essence.of(java.util.Map.of(SimpleRune.LIFE, 8, SimpleRune.EARTH, 8))));
+        helper.runAfterDelay(80, () -> {
+            helper.assertTrue(separator.mix().amount() == 16 && separator.rest().isEmpty(), "the mixture waits for a reagent");
+            helper.assertTrue("no_reagent".equals(separator.blocked()), "and the screen says so");
+            separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.FEATHER));
+            helper.runAfterDelay(100, () -> {
+                // A feather binds air; the mixture has none, so all of it passes on as the rest - bottled in the glass
+                // bottle the poured one left.
+                Essence rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
+                helper.assertTrue(separator.mix().isEmpty() && rest.total() == 16 && separator.extract().isEmpty(),
+                        "a mixture without the reagent's element passes through, got rest " + rest);
+                helper.assertTrue(separator.getItem(SeparatorBlockEntity.REAGENT).getCount() == 1, "and spends no reagent");
+                helper.succeed();
+            });
+        });
+    }
+
+    @HexTest
+    public static void pipesJoinMachinesOnlyAtPorts(GameTestHelper helper) {
+        BlockPos at = new BlockPos(2, 2, 2);
+        helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState().setValue(SeparatorBlock.FACING, Direction.NORTH));
+        helper.setBlock(at.east(), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(at.below(), ModBlocks.BRASS_PIPE.get());
+        BlockState separator = helper.getBlockState(at);
+        helper.assertTrue(separator.getValue(EssenceMachine.PORTS.get(Direction.EAST)), "the separator shows its east port");
+        helper.assertTrue(helper.getBlockState(at.east()).getValue(BrassPipeBlock.SIDES.get(Direction.WEST)), "and the pipe joins it");
+        helper.assertFalse(helper.getBlockState(at.below()).getValue(BrassPipeBlock.SIDES.get(Direction.UP)),
+                "the bottom is no port: the pipe below stays apart");
+        helper.setBlock(at.east(), Blocks.AIR);
+        helper.assertFalse(helper.getBlockState(at).getValue(EssenceMachine.PORTS.get(Direction.EAST)), "the port closes without a pipe");
+        helper.succeed();
     }
 
     @HexTest(maxTicks = 200)
@@ -526,7 +567,7 @@ public final class ResearchGameTests {
             table.setItem(ResearchTableBlockEntity.FLASK, EssenceFlaskItem.filled(Essence.pure(SimpleRune.FIRE, 16)));
             helper.runAfterDelay(5, () -> {
                 helper.assertTrue(table.ink()[SimpleRune.FIRE.ordinal()] == 16, "a fire concentrate fills the fire vial");
-                helper.assertTrue(EssenceFlaskItem.isEmptyFlask(table.getItem(ResearchTableBlockEntity.FLASK)), "the flask is left empty");
+                helper.assertTrue(table.getItem(ResearchTableBlockEntity.FLASK).is(Items.GLASS_BOTTLE), "a glass bottle is left");
                 helper.succeed();
             });
         });

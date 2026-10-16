@@ -12,7 +12,7 @@ import com.pockyl.hextale.menu.AlembicMenu;
 
 import java.util.List;
 
-/** The Alembic: item -> boiling arrow -> the flask's essence -> flasks; a flame lights while there is heat below. */
+/** The Alembic: item -> boiling arrow -> the flask's essence -> bottles; a flame lights while there is heat below. */
 public class AlembicScreen extends MachineScreen<AlembicMenu> {
     public static final int TANK_X = 98;
     public static final int TANK_Y = 16;
@@ -32,9 +32,19 @@ public class AlembicScreen extends MachineScreen<AlembicMenu> {
         }
         arrow(graphics, x + 66, y + 39, 22, menu.progress() / (float) AlembicBlockEntity.BOIL_TICKS);
         if (alembic != null) {
-            tank(graphics, x + TANK_X, y + TANK_Y, alembic.tank(), mouseX, mouseY);
+            tank(graphics, x + TANK_X, y + TANK_Y, TANK_H, alembic.tank(), mouseX, mouseY,
+                    Component.translatable("gui.hextale.alembic.out"));
         }
         arrow(graphics, x + 118, y + 39, 10, 0);
+    }
+
+    @Override
+    protected String slotHint(int slot) {
+        return switch (slot) {
+            case AlembicBlockEntity.INPUT -> "alembic.input";
+            case AlembicBlockEntity.FLASK_IN -> "bottles";
+            default -> "alembic.output";
+        };
     }
 
     /** A small pixel flame: lively when heated, a grey ember otherwise. */

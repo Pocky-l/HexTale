@@ -20,16 +20,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Runes are learned by studying their scrolls: the knowledge stays with the researcher, with the scroll's stars. A
   scroll of a rune that is not open to you in the research book yet cannot be studied.
 - Ink: the desk holds nine vials, one per element; the part the current thread would spend shimmers in them.
-- Essence works: ink is made, not found. The Alembic (set over fire, a lit campfire, lava or magma) boils studied
-  items into essence - a mixture of all their elements (oak planks: life and earth). The Separator draws one element
-  out of a mixture with its reagent (charcoal - fire, sugar - water, clay - earth, feather - air, glow ink sac - light,
-  ink sac - shadow, bone meal - life, iron nugget - metal, redstone - lightning; item tags, so packs can change them):
-  the rest of the mixture leaves through its front, the drawn-out element - a concentrate - through its top. Flasks
-  carry essence by hand, Brass Pipes between machines, Essence Tanks store it. Only flasks of concentrate go into the
-  Research Table's flask slot and fill the vial of their element. Every research takes a paper from the
-  table's paper slot when it starts. The Separator is a glass separating funnel in brass where the concentrate floats
-  on the mixture, the Essence Tank a brass-framed glass tank with a gauge that shows how full it is, and Brass Pipes
-  join up with flanges at every machine port.
+- Essence works: ink is made, not found, and carried in plain glass bottles. The Alembic (set over fire, a lit
+  campfire, lava or magma) boils studied items into essence - a mixture of all their elements (oak planks: life and
+  earth) - and bottles it or lets it out of its spout, the front. The Separator splits a mixture in two: the element of
+  its reagent (charcoal - fire, sugar - water, clay - earth, feather - air, glow ink sac - light, ink sac - shadow, bone
+  meal - life, iron nugget - metal, redstone - lightning; item tags, so packs can change them) becomes a concentrate
+  that leaves through the top, all the rest leaves through the front; without a reagent it waits, and its screen shows
+  what is missing. Essence Tanks store essence (in at the top and the sides, out at the bottom). Brass Pipes join a
+  machine only where it has a port, and the machine's model grows a joint there. Only bottles of concentrate go into
+  the Research Table's bottle slot and fill the vial of their element. Every research takes a paper from the table's
+  paper slot when it starts. The Separator is a glass separating funnel in brass where the concentrate floats on the
+  mixture, the Essence Tank a brass-framed glass tank with a gauge that shows how full it is.
 - The Researcher's Diary is a star book: a dark sky to drag around and zoom, where the 72 runes hang as stars in
   constellations - Smelting and the tool runes in the centre, the other runes on the rays of their elements. Click a
   star to see the rune; on the Research Table it goes to the parchment with one click.

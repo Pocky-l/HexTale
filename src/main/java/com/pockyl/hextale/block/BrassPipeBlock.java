@@ -20,7 +20,8 @@ import java.util.Map;
 
 /**
  * A brass pipe for essence. Pipes carry no liquid themselves: a machine pushing into a pipe reaches every vessel the
- * connected pipes touch (see {@code EssenceNetwork}). Each side shows whether it joins a pipe or a machine.
+ * connected pipes touch (see {@code EssenceNetwork}). A side joins another pipe, or a machine where that machine has a
+ * port (its model then shows the joint too).
  */
 public class BrassPipeBlock extends Block {
     public static final Map<Direction, BooleanProperty> SIDES = PipeBlock.PROPERTY_BY_DIRECTION;
@@ -40,13 +41,15 @@ public class BrassPipeBlock extends Block {
         builder.add(SIDES.values().toArray(BooleanProperty[]::new));
     }
 
-    public static boolean connects(BlockState neighbour) {
-        return neighbour.getBlock() instanceof BrassPipeBlock || neighbour.getBlock() instanceof EssenceMachine;
+    /** Whether a pipe joins the neighbour in {@code direction}: another pipe, or a machine's port facing it. */
+    public static boolean connects(BlockState neighbour, Direction direction) {
+        return neighbour.getBlock() instanceof BrassPipeBlock
+                || neighbour.getBlock() instanceof EssenceMachine machine && machine.isPort(neighbour, direction.getOpposite());
     }
 
     private BlockState connected(LevelReader level, BlockPos pos, BlockState state) {
         for (Direction direction : Direction.values()) {
-            state = state.setValue(SIDES.get(direction), connects(level.getBlockState(pos.relative(direction))));
+            state = state.setValue(SIDES.get(direction), connects(level.getBlockState(pos.relative(direction)), direction));
         }
         return state;
     }
@@ -59,7 +62,7 @@ public class BrassPipeBlock extends Block {
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
                                      BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
-        return state.setValue(SIDES.get(direction), connects(neighbour));
+        return state.setValue(SIDES.get(direction), connects(neighbour, direction));
     }
 
     @Override

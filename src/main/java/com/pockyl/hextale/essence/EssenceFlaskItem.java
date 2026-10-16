@@ -1,10 +1,10 @@
 package com.pockyl.hextale.essence;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 
@@ -16,8 +16,9 @@ import com.pockyl.hextale.rune.SimpleRune;
 import java.util.function.Consumer;
 
 /**
- * A glass flask for essence. Empty flasks stack; a filled one holds up to {@value #CAPACITY} drops of one liquid and
- * stacks no more. A flask of a single element is a concentrate - the only ink the Research Table takes.
+ * A bottle of essence: a vanilla glass bottle filled with up to {@value #CAPACITY} drops of one liquid (it does not
+ * stack, like a potion); emptied, it turns back into a glass bottle. A bottle of a single element is a concentrate -
+ * the only ink the Research Table takes. "Flask" in the code means either: a glass bottle or a bottle of essence.
  */
 public class EssenceFlaskItem extends Item {
     public static final int CAPACITY = 16;
@@ -30,21 +31,23 @@ public class EssenceFlaskItem extends Item {
         return stack.getOrDefault(ModDataComponents.ESSENCE.get(), Essence.EMPTY);
     }
 
+    /** A glass bottle or a bottle of essence. */
     public static boolean isFlask(ItemStack stack) {
-        return stack.is(ModItems.ESSENCE_FLASK.get());
+        return stack.is(ModItems.ESSENCE_FLASK.get()) || isEmptyFlask(stack);
     }
 
+    /** An empty vanilla glass bottle. */
     public static boolean isEmptyFlask(ItemStack stack) {
-        return isFlask(stack) && contents(stack).isEmpty();
+        return stack.is(Items.GLASS_BOTTLE);
     }
 
-    /** A new flask holding this essence (an empty one for no essence). */
+    /** A bottle holding this essence (a glass bottle for no essence). */
     public static ItemStack filled(Essence essence) {
-        ItemStack stack = new ItemStack(ModItems.ESSENCE_FLASK.get());
-        if (!essence.isEmpty()) {
-            stack.set(ModDataComponents.ESSENCE.get(), essence);
-            stack.set(DataComponents.MAX_STACK_SIZE, 1);
+        if (essence.isEmpty()) {
+            return new ItemStack(Items.GLASS_BOTTLE);
         }
+        ItemStack stack = new ItemStack(ModItems.ESSENCE_FLASK.get());
+        stack.set(ModDataComponents.ESSENCE.get(), essence);
         return stack;
     }
 

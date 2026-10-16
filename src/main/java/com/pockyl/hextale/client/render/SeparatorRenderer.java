@@ -14,8 +14,9 @@ import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.essence.EssenceTank;
 
 /**
- * The liquids in the Separator's glass vessel, layered like in a separating funnel: the mixture at the bottom and the
- * drawn-out concentrate floating on it. The vessel holds both tanks; each layer is as high as its share of them.
+ * The liquids in the Separator's glass vessel, layered like in a separating funnel: the mixture and the rest at the
+ * bottom (in the mixture's colour while there is any), the drawn-out concentrate floating on them. Each layer is as
+ * high as its share of all three tanks.
  */
 public class SeparatorRenderer implements BlockEntityRenderer<SeparatorBlockEntity, SeparatorRenderer.State> {
     // Inside the vessel glass (model: x/z 3-13, y 1-12), inset so no face lies in the glass planes.
@@ -45,10 +46,11 @@ public class SeparatorRenderer implements BlockEntityRenderer<SeparatorBlockEnti
         BlockEntityRenderer.super.extractRenderState(separator, state, partialTick, cameraPosition, breakProgress);
         EssenceTank mix = separator.mix();
         EssenceTank extract = separator.extract();
-        float room = mix.capacity() + extract.capacity();
-        state.mix = mix.isEmpty() ? 0 : mix.amount() / room;
+        EssenceTank rest = separator.rest();
+        float room = mix.capacity() + extract.capacity() + rest.capacity();
+        state.mix = (mix.amount() + rest.amount()) / room;
         state.extract = extract.isEmpty() ? 0 : extract.amount() / room;
-        state.mixColor = mix.isEmpty() ? 0 : mix.contents().color();
+        state.mixColor = !mix.isEmpty() ? mix.contents().color() : rest.isEmpty() ? 0 : rest.contents().color();
         state.extractColor = extract.isEmpty() ? 0 : extract.contents().color();
     }
 

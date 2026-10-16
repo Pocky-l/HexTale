@@ -1,24 +1,11 @@
 {
   "model": {
-    "type": "minecraft:condition",
-    "property": "minecraft:has_component",
-    "component": "hextale:essence",
-    "on_true": {
-      "type": "minecraft:model",
-      "model": "hextale:item/essence_flask",
-      "tints": [
-        {
-          "type": "hextale:essence"
-        },
-        {
-          "type": "minecraft:constant",
-          "value": -1
-        }
-      ]
-    },
-    "on_false": {
-      "type": "minecraft:model",
-      "model": "hextale:item/essence_flask_empty"
-    }
+    "type": "minecraft:model",
+    "model": "minecraft:item/potion",
+    "tints": [
+      {
+        "type": "hextale:essence"
+      }
+    ]
   }
 }

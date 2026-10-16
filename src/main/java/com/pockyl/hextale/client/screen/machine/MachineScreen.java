@@ -60,7 +60,19 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
         if (pendingTooltip != null && hoveredSlot == null) {
             graphics.setComponentTooltipForNextFrame(font, pendingTooltip, mouseX, mouseY);
         }
+        // An empty machine slot says what goes into it.
+        if (hoveredSlot != null && !hoveredSlot.hasItem() && minecraft != null && minecraft.player != null
+                && hoveredSlot.container != minecraft.player.getInventory()) {
+            String hint = slotHint(hoveredSlot.getContainerSlot());
+            if (hint != null) {
+                graphics.setTooltipForNextFrame(font, font.split(Component.translatable("gui.hextale.slot." + hint), 180), mouseX, mouseY);
+            }
+        }
     }
+
+    /** The key suffix of the hint for an empty machine slot ({@code gui.hextale.slot.<hint>}), or null. */
+    @Nullable
+    protected abstract String slotHint(int slot);
 
     /** The machine's own drawing over the background (tanks, arrows, icons). */
     protected abstract void renderMachine(GuiGraphicsExtractor graphics, int mouseX, int mouseY);
@@ -74,28 +86,29 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
     }
 
     /**
-     * A glass tank at screen position {@code x, y}: its liquid layered by element from the bottom, a wobbling surface,
-     * and a tooltip with what it holds plus {@code extra} lines.
+     * A glass tank {@code height} pixels tall at screen position {@code x, y}: its liquid layered by element from the
+     * bottom, a wobbling surface, and a tooltip with what it holds plus {@code extra} lines.
      */
-    protected void tank(GuiGraphicsExtractor graphics, int x, int y, EssenceTank tank, int mouseX, int mouseY, Component... extra) {
+    protected void tank(GuiGraphicsExtractor graphics, int x, int y, int height, EssenceTank tank, int mouseX, int mouseY,
+                        Component... extra) {
         long now = Util.getMillis();
         Essence contents = tank.contents();
-        int filled = Math.round(TANK_H * tank.amount() / (float) tank.capacity());
-        int bottom = y + TANK_H;
+        int filled = Math.round(height * tank.amount() / (float) tank.capacity());
+        int bottom = y + height;
         int used = 0;
         for (SimpleRune element : SimpleRune.values()) {
             int drops = contents.get(element);
             if (drops == 0) {
                 continue;
             }
-            int height = Math.max(1, Math.round(filled * drops / (float) Math.max(1, contents.total())));
-            height = Math.min(height, filled - used);
-            if (height <= 0) {
+            int layer = Math.max(1, Math.round(filled * drops / (float) Math.max(1, contents.total())));
+            layer = Math.min(layer, filled - used);
+            if (layer <= 0) {
                 continue;
             }
-            graphics.fill(x, bottom - used - height, x + TANK_W, bottom - used, 0xFF000000 | element.color());
-            graphics.fill(x, bottom - used - height, x + 2, bottom - used, 0x40FFFFFF);
-            used += height;
+            graphics.fill(x, bottom - used - layer, x + TANK_W, bottom - used, 0xFF000000 | element.color());
+            graphics.fill(x, bottom - used - layer, x + 2, bottom - used, 0x40FFFFFF);
+            used += layer;
         }
         if (filled > 0) {
             for (int col = 0; col < TANK_W; col++) {
@@ -104,12 +117,12 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
                 graphics.fill(x + col, top, x + col + 1, top + 1, 0xFF000000 | PixelArt.mix(contents.color(), 0xFFFFFF, 0.5F));
             }
         }
-        graphics.fill(x + TANK_W - 3, y + 2, x + TANK_W - 2, y + TANK_H - 2, 0x50FFFFFF);
+        graphics.fill(x + TANK_W - 3, y + 2, x + TANK_W - 2, y + height - 2, 0x50FFFFFF);
         for (int mark = 1; mark < 4; mark++) {
-            int my = y + TANK_H * mark / 4;
+            int my = y + height * mark / 4;
             graphics.fill(x, my, x + 4, my + 1, 0x80140C06);
         }
-        if (isOver(mouseX, mouseY, x, y, TANK_W, TANK_H)) {
+        if (isOver(mouseX, mouseY, x, y, TANK_W, height)) {
             List<Component> lines = new ArrayList<>();
             lines.add(tank.isEmpty() ? Component.translatable("block.hextale.essence.empty").withStyle(ChatFormatting.GRAY)
                     : contents.describe());

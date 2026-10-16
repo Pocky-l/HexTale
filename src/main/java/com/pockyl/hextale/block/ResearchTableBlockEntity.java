@@ -217,8 +217,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     /**
-     * Empties a flask of concentrate from the flask slot into the vial of its element, as far as the vial has room. A
-     * mixture stays in the flask: only a single element is ink.
+     * Empties a bottle of concentrate from the bottle slot into the vial of its element, as far as the vial has room,
+     * leaving a glass bottle. A mixture stays in its bottle: only a single element is ink.
      */
     private void pourFlask() {
         ItemStack flask = items.get(FLASK);
@@ -539,8 +539,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return switch (slot) {
             case DIARY -> stack.is(ModItems.RESEARCHERS_DIARY.get());
             case HEXTECH -> stack.is(ModItems.UNSTABLE_HEXTECH.get());
-            case STUDY -> ResearchItems.of(stack) != null && !EssenceFlaskItem.isFlask(stack);
-            case FLASK -> EssenceFlaskItem.isFlask(stack);
+            case STUDY -> ResearchItems.of(stack) != null && !stack.is(ModItems.ESSENCE_FLASK.get());
+            case FLASK -> stack.is(ModItems.ESSENCE_FLASK.get());
             case PAPER -> stack.is(Items.PAPER);
             default -> slot >= TOOLS && slot < STUDY && stack.is(ResearchTool.values()[slot - TOOLS].item());
         };

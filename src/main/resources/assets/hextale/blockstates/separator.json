@@ -1,19 +1,156 @@
 {
-  "variants": {
-    "facing=north": {
-      "model": "hextale:block/separator"
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "hextale:block/separator"
+      }
     },
-    "facing=east": {
-      "model": "hextale:block/separator",
-      "y": 90
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "hextale:block/separator",
+        "y": 90
+      }
     },
-    "facing=south": {
-      "model": "hextale:block/separator",
-      "y": 180
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "hextale:block/separator",
+        "y": 180
+      }
     },
-    "facing=west": {
-      "model": "hextale:block/separator",
-      "y": 270
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "hextale:block/separator",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "east": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "south": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "west": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "north": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "south": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "west": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "north": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "east": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "west": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "north": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet"
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "east": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "south": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_inlet",
+        "y": 180
+      }
     }
-  }
+  ]
 }

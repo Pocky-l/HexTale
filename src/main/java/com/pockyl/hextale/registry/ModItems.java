@@ -23,7 +23,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ESSENCE_TANK = ITEMS.registerSimpleBlockItem(ModBlocks.ESSENCE_TANK);
     public static final DeferredItem<BlockItem> BRASS_PIPE = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_PIPE);
     public static final DeferredItem<EssenceFlaskItem> ESSENCE_FLASK = ITEMS.registerItem("essence_flask",
-            properties -> new EssenceFlaskItem(properties.stacksTo(16)));
+            properties -> new EssenceFlaskItem(properties.stacksTo(1)));
     public static final DeferredItem<Item> BRASS_INGOT = ITEMS.registerSimpleItem("brass_ingot");
     public static final DeferredItem<Item> BRASS_NUGGET = ITEMS.registerSimpleItem("brass_nugget");
     /** Lightning-born: neither fire nor further lightning harms it. */

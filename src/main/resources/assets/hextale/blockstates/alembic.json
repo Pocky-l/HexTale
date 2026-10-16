@@ -1,34 +1,78 @@
 {
-  "variants": {
-    "facing=north,lit=false": {
-      "model": "hextale:block/alembic"
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "hextale:block/alembic"
+      }
     },
-    "facing=north,lit=true": {
-      "model": "hextale:block/alembic"
+    {
+      "when": {
+        "facing": "north",
+        "north": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_port"
+      }
     },
-    "facing=east,lit=false": {
-      "model": "hextale:block/alembic",
-      "y": 90
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "hextale:block/alembic",
+        "y": 90
+      }
     },
-    "facing=east,lit=true": {
-      "model": "hextale:block/alembic",
-      "y": 90
+    {
+      "when": {
+        "facing": "east",
+        "east": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_port",
+        "y": 90
+      }
     },
-    "facing=south,lit=false": {
-      "model": "hextale:block/alembic",
-      "y": 180
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "hextale:block/alembic",
+        "y": 180
+      }
     },
-    "facing=south,lit=true": {
-      "model": "hextale:block/alembic",
-      "y": 180
+    {
+      "when": {
+        "facing": "south",
+        "south": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_port",
+        "y": 180
+      }
     },
-    "facing=west,lit=false": {
-      "model": "hextale:block/alembic",
-      "y": 270
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "hextale:block/alembic",
+        "y": 270
+      }
     },
-    "facing=west,lit=true": {
-      "model": "hextale:block/alembic",
-      "y": 270
+    {
+      "when": {
+        "facing": "west",
+        "west": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_port",
+        "y": 270
+      }
     }
-  }
+  ]
 }

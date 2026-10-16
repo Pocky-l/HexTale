@@ -43,8 +43,8 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Alembic: a glass flask on a brass stand over a fire (fire, a lit campfire, lava or magma below it). Studied items
- * put into it boil down into essence - a mixture of all their elements - which it pours into empty flasks or pushes into
- * brass pipes on any side.
+ * put into it boil down into essence - a mixture of all their elements - which it pours into glass bottles or lets out
+ * through its spout, the front: a brass pipe joins it there and only there.
  */
 public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHolder, EssenceMachine {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
@@ -54,12 +54,25 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
 
     public AlembicBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, false));
+        BlockState state = stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, false);
+        for (Direction face : Direction.Plane.HORIZONTAL) {
+            state = state.setValue(PORTS.get(face), false);
+        }
+        registerDefaultState(state);
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, LIT);
+        for (Direction face : Direction.Plane.HORIZONTAL) {
+            builder.add(PORTS.get(face));
+        }
+    }
+
+    /** The spout, at the front, is the only port. */
+    @Override
+    public boolean isPort(BlockState state, Direction face) {
+        return face == state.getValue(FACING);
     }
 
     /** Whether the block below heats an alembic. */
@@ -72,8 +85,9 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
 
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite())
+        BlockState state = defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite())
                 .setValue(LIT, isHeat(context.getLevel().getBlockState(context.getClickedPos().below())));
+        return EssenceMachine.connectAll(context.getLevel(), context.getClickedPos(), state);
     }
 
     @Override
@@ -90,7 +104,7 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
         if (direction == Direction.DOWN) {
             return state.setValue(LIT, isHeat(neighbour));
         }
-        return super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbour, random);
+        return EssenceMachine.connect(state, direction, neighbour);
     }
 
     /** Opens the alembic's screen. */
@@ -104,7 +118,7 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
 
     @Override
     protected BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+        return EssenceMachine.rotatePorts(state.setValue(FACING, rotation.rotate(state.getValue(FACING))), rotation);
     }
 
     @Override
