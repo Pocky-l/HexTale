@@ -39,6 +39,12 @@ public enum Requirement {
     /** The first unmet requirement for this player, or null when everything is in place. */
     @Nullable
     public static Requirement firstMissing(Container table, Player player) {
+        return firstMissing(table, player, false);
+    }
+
+    /** Same, for an attempt whose paper may be spent already ({@code paid}: no paper needed any more). */
+    @Nullable
+    public static Requirement firstMissing(Container table, Player player, boolean paid) {
         Requirement diary = diary(table, player);
         if (diary != null) {
             return diary;
@@ -46,10 +52,10 @@ public enum Requirement {
         if (table.getItem(ResearchTableBlockEntity.HEXTECH).isEmpty()) {
             return HEXTECH;
         }
-        return paper(table, player);
+        return paid ? null : paper(table, player);
     }
 
-    /** Every finished research - a rune or an item study - is written on a paper from the table's paper slot. */
+    /** Every research - a rune or an item study - is written on a paper from the table's paper slot when it starts. */
     @Nullable
     public static Requirement paper(Container table, Player player) {
         return player.getAbilities().instabuild || table.getItem(ResearchTableBlockEntity.PAPER).is(Items.PAPER) ? null : PAPER;

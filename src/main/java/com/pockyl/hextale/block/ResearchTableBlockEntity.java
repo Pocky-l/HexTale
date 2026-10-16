@@ -286,13 +286,22 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         }
         ResearchSheet.Trace trace = ResearchSheet.trace(board, cells, allowance(player));
         boolean creative = player.getAbilities().instabuild;
-        if (Requirement.firstMissing(this, player) != null || trace == null || !creative && !trace.affordable(ink)) {
+        boolean fresh = sheet.isDone() || !sheet.paid();
+        if (Requirement.firstMissing(this, player, !fresh) != null || trace == null || !creative && !trace.affordable(ink)) {
             sheet.touch();
             setChanged();
             return;
         }
         boolean longer = cells.length > sheet.thread().length;
         sheet.setThread(cells);
+        if (fresh) {
+            // The attempt starts: it is written on a paper from the table.
+            if (!creative) {
+                items.get(PAPER).shrink(1);
+            }
+            sheet.pay();
+            level.playSound(null, worldPosition, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 1.0F);
+        }
         ResearchersDiaryItem.sign(items.get(DIARY), player);
         Research.of(player).see(board.rune(), cells);
         if (trace.complete(board)) {
@@ -303,14 +312,14 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         setChanged();
     }
 
-    /** Every point passed: the orb binds the rune, the ink and a paper are spent, a scroll comes out. */
+    /**
+     * Every point passed: the orb binds the rune, the ink is spent and the rune's scroll comes out. The researcher learns
+     * the rune only by studying the scroll.
+     */
     private void complete(ServerPlayer player, RuneBoard board, ResearchSheet.Trace trace) {
         ComplexRune rune = board.rune();
-        int length = sheet.length();
-        int stars = board.stars(length);
-        int before = Research.of(player).stars(rune);
+        int stars = board.stars(sheet.length());
         if (!player.getAbilities().instabuild) {
-            items.get(PAPER).shrink(1);
             for (int i = 0; i < ink.length; i++) {
                 ink[i] -= trace.ink()[i];
             }
@@ -318,15 +327,9 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         items.get(HEXTECH).shrink(1);
         sheet.finish();
         deliver(player, RuneScrollItem.of(rune, stars, ModItems.RUNE_SCROLL.get()));
-        boolean fresh = Research.learn(player, rune, stars, length);
-        MutableComponent text = Component.translatable("research.hextale.complete", name(rune), "★".repeat(stars) + "☆".repeat(3 - stars));
-        for (ResearchTool tool : ResearchTool.values()) {
-            if (tool.rune() == rune && (fresh || stars > before)) {
-                text.append("\n").append(Component.translatable(fresh ? "research.hextale.tool_unlocked" : "research.hextale.tool_stronger",
-                        ResearchText.item(tool.item())));
-            }
-        }
-        message(player, text, ResearchMessagePayload.Tone.WIN);
+        Research.sync(player);
+        message(player, Component.translatable("research.hextale.complete", name(rune), "★".repeat(stars) + "☆".repeat(3 - stars)),
+                ResearchMessagePayload.Tone.WIN);
         completeEffects(rune);
         dissolve(player);
     }

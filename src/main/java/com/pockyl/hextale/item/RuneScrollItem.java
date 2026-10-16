@@ -15,7 +15,11 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
 import com.pockyl.hextale.knowledge.Research;
+import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.research.ResearchBook;
+import com.pockyl.hextale.research.ResearchText;
+import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.rune.ComplexRune;
 
 import java.util.function.Consumer;
@@ -23,8 +27,9 @@ import java.util.function.Consumer;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A complex rune written out by the Research Table. Another researcher can study it to copy the rune into their own
- * codex (the scroll is used up); its author already knows it.
+ * A complex rune written out by the Research Table. Runes are learned only by studying their scrolls (the scroll is used
+ * up): the knowledge lives in the researcher's head, with the scroll's stars. Any researcher can study a scroll, but
+ * only once the rune is open to them in the research book.
  */
 public class RuneScrollItem extends Item {
     public RuneScrollItem(Properties properties) {
@@ -81,14 +86,29 @@ public class RuneScrollItem extends Item {
         }
         if (player instanceof ServerPlayer serverPlayer) {
             Component name = Component.translatable(rune.translationKey()).withColor(rune.color());
-            if (Research.of(serverPlayer).knows(rune)) {
+            RuneKnowledge knowledge = Research.of(serverPlayer);
+            int stars = stars(stack);
+            if (!ResearchBook.open(knowledge, rune)) {
+                serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.rune_scroll.too_early", name));
+                return InteractionResult.FAIL;
+            }
+            int before = knowledge.stars(rune);
+            if (before >= stars) {
                 serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.rune_scroll.known", name));
                 return InteractionResult.FAIL;
             }
-            Research.learn(serverPlayer, rune, 1, 0);
+            Research.learn(serverPlayer, rune, stars, 0);
             stack.consume(1, player);
-            serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.rune_scroll.studied", name));
+            serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.rune_scroll.studied", name,
+                    "★".repeat(stars) + "☆".repeat(3 - stars)));
+            for (ResearchTool tool : ResearchTool.values()) {
+                if (tool.rune() == rune) {
+                    serverPlayer.sendSystemMessage(Component.translatable(before == 0 ? "research.hextale.tool_unlocked"
+                            : "research.hextale.tool_stronger", ResearchText.item(tool.item())).withStyle(ChatFormatting.GOLD));
+                }
+            }
             level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.9F);
+            level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 1.2F);
         }
         return InteractionResult.SUCCESS;
     }

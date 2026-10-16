@@ -17,7 +17,8 @@ import org.jetbrains.annotations.Nullable;
  * The thread starts on the ink of the rune's action element; every point it passes switches it to that point's element,
  * and each section costs one drop of the ink the thread runs on there. Dark runes block it and it never crosses itself
  * (research tools allow a few exceptions, see {@link Allowance}). Winding the thread back is free: ink is only spent
- * when the last point is reached and the rune binds. Stars count the sections of the finished thread.
+ * when the last point is reached and the rune binds. Stars count the sections of the finished thread. A paper is spent
+ * when an attempt starts (its first section); winding back does not return it.
  * <p>
  * Pure rules shared by the table (server) and its screen (client copy).
  */
@@ -28,6 +29,8 @@ public final class ResearchSheet {
     private int[] thread = {HexGrid.CENTRE};
     /** The thread bound its rune: it stays shown until a new one is started. */
     private boolean done;
+    /** A paper went into this attempt when its thread was started. */
+    private boolean paid;
     /** Bumped on every change the server makes, so screens know to take the server's thread. */
     private int revision;
 
@@ -127,6 +130,7 @@ public final class ResearchSheet {
     private void reset() {
         thread = new int[]{HexGrid.CENTRE};
         done = false;
+        paid = false;
         revision++;
     }
 
@@ -143,6 +147,15 @@ public final class ResearchSheet {
         return done;
     }
 
+    /** Whether this attempt's paper is spent already. */
+    public boolean paid() {
+        return paid;
+    }
+
+    public void pay() {
+        paid = true;
+    }
+
     public int revision() {
         return revision;
     }
@@ -154,9 +167,10 @@ public final class ResearchSheet {
         revision++;
     }
 
-    /** The thread bound its rune. */
+    /** The thread bound its rune; the next attempt takes a new paper. */
     public void finish() {
         done = true;
+        paid = false;
         revision++;
     }
 
@@ -171,6 +185,7 @@ public final class ResearchSheet {
         }
         tag.putIntArray("thread", thread);
         tag.putBoolean("done", done);
+        tag.putBoolean("paid", paid);
         tag.putInt("revision", revision);
     }
 
@@ -179,6 +194,7 @@ public final class ResearchSheet {
         int[] saved = tag.getIntArray("thread").orElse(new int[0]);
         thread = saved.length == 0 || Arrays.stream(saved).anyMatch(c -> c < 0 || c >= HexGrid.COUNT) ? new int[]{HexGrid.CENTRE} : saved;
         done = tag.getBooleanOr("done", false);
+        paid = tag.getBooleanOr("paid", false);
         revision = tag.getIntOr("revision", 0);
     }
 }

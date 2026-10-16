@@ -453,21 +453,29 @@ public final class ResearchGameTests {
         table.thread(player, part);
         helper.assertTrue(table.sheet().length() == 2 && !table.sheet().isDone(), "a part of the thread is kept");
         helper.assertTrue(table.ink()[SMELTING.action().ordinal()] == ResearchTableBlockEntity.INK_CAPACITY, "no ink is spent yet");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "the started attempt took a paper");
+        table.thread(player, new int[]{HexGrid.CENTRE});
+        table.thread(player, part);
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "winding back and on costs no new paper");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.OUTPUT).isEmpty(), "no scroll before the rune is finished");
         table.thread(player, thread);
 
         helper.assertTrue(table.sheet().isDone(), "the thread bound the rune");
         int stars = board.stars(thread.length - 1);
         RuneKnowledge knowledge = Research.of(player);
-        helper.assertTrue(knowledge.stars(SMELTING) == stars && stars == 3, "Smelting is learned with three stars, got " + stars);
-        helper.assertTrue(knowledge.best(SMELTING) == thread.length - 1, "the best thread is remembered");
+        helper.assertFalse(knowledge.knows(SMELTING), "the rune is not learned until its scroll is studied");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "the orb went into the rune");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "the rune took a paper");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "finishing takes no more paper"); 
         for (SimpleRune element : SimpleRune.values()) {
             helper.assertTrue(table.ink()[element.ordinal()] == ResearchTableBlockEntity.INK_CAPACITY - trace.ink()[element.ordinal()],
                     element.id() + " ink was spent by the thread");
         }
         ItemStack scroll = table.getItem(ResearchTableBlockEntity.OUTPUT);
-        helper.assertTrue(RuneScrollItem.rune(scroll) == SMELTING && RuneScrollItem.stars(scroll) == stars, "a scroll of Smelting comes out");
+        helper.assertTrue(RuneScrollItem.rune(scroll) == SMELTING && RuneScrollItem.stars(scroll) == 3 && stars == 3,
+                "a three-star scroll of Smelting comes out");
+        player.setItemInHand(InteractionHand.MAIN_HAND, scroll.copy());
+        player.getMainHandItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+        helper.assertTrue(knowledge.stars(SMELTING) == 3, "studying the scroll teaches Smelting with its three stars");
         helper.assertTrue(knowledge.seen(SMELTING).get(thread[thread.length - 1]), "the parchment the thread passed is remembered");
         DiaryOwner owner = ResearchersDiaryItem.owner(table.getItem(ResearchTableBlockEntity.DIARY));
         helper.assertTrue(owner != null && owner.is(player), "the unsigned diary is signed by the researcher");
@@ -663,15 +671,19 @@ public final class ResearchGameTests {
     public static void scrollsTeachOtherResearchers(GameTestHelper helper) {
         ServerPlayer reader = survivalPlayer(helper);
         ComplexRune lens = ComplexRunes.byKey("water_light");
-        ItemStack scroll = RuneScrollItem.of(lens, 3, ModItems.RUNE_SCROLL.get());
-        scroll.setCount(2);
+        ItemStack scroll = RuneScrollItem.of(lens, 2, ModItems.RUNE_SCROLL.get());
+        scroll.setCount(3);
         reader.setItemInHand(InteractionHand.MAIN_HAND, scroll);
 
         scroll.use(helper.getLevel(), reader, InteractionHand.MAIN_HAND);
-        helper.assertTrue(Research.of(reader).stars(lens) == 1, "studying a scroll teaches the rune with one star");
-        helper.assertTrue(reader.getMainHandItem().getCount() == 1, "one scroll is used up");
+        helper.assertFalse(Research.of(reader).knows(lens), "a tool rune is too early before Smelting");
+        helper.assertTrue(reader.getMainHandItem().getCount() == 3, "the early scroll is kept");
+        Research.learnAll(reader, List.of(SMELTING), 1);
         scroll.use(helper.getLevel(), reader, InteractionHand.MAIN_HAND);
-        helper.assertTrue(reader.getMainHandItem().getCount() == 1, "a known rune's scroll is kept");
+        helper.assertTrue(Research.of(reader).stars(lens) == 2, "studying the scroll teaches the rune with its stars");
+        helper.assertTrue(reader.getMainHandItem().getCount() == 2, "one scroll is used up");
+        scroll.use(helper.getLevel(), reader, InteractionHand.MAIN_HAND);
+        helper.assertTrue(reader.getMainHandItem().getCount() == 2, "a scroll that teaches nothing new is kept");
         reader.discard();
         helper.succeed();
     }

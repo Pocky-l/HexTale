@@ -88,7 +88,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private static final int GHOST_TOOLS = 5;
     private static final int GHOST_INK = 10;
     private static final int GHOST_STUDY = 11;
-    private static final int GHOST_SCROLL = 12;
 
     private enum Tab {
         BOOK,
@@ -157,9 +156,12 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         return minecraft == null || minecraft.player == null ? null : Requirement.diary(menu.table(), minecraft.player);
     }
 
+    /** What is missing to draw on: the paper only while the current attempt has not taken one yet. */
     @Nullable
     private Requirement missing() {
-        return minecraft == null || minecraft.player == null ? null : Requirement.firstMissing(menu.table(), minecraft.player);
+        ResearchTableBlockEntity table = table();
+        boolean paid = table != null && table.sheet().paid() && !done(table);
+        return minecraft == null || minecraft.player == null ? null : Requirement.firstMissing(menu.table(), minecraft.player, paid);
     }
 
     private int toolLevel(ResearchTool tool) {
@@ -633,7 +635,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         ghost(graphics, ResearchTableBlockEntity.PAPER, ResearchTableMenu.PAPER_X, ResearchTableMenu.ROW_Y, GHOST_PAPER);
         ghost(graphics, ResearchTableBlockEntity.INK, ResearchTableMenu.INK_X, ResearchTableMenu.ROW_Y, GHOST_INK);
         ghost(graphics, ResearchTableBlockEntity.STUDY, ResearchTableMenu.STUDY_X, ResearchTableMenu.ROW_Y, GHOST_STUDY);
-        ghost(graphics, ResearchTableBlockEntity.OUTPUT, ResearchTableMenu.OUTPUT_X, ResearchTableMenu.OUTPUT_Y, GHOST_SCROLL);
         for (ResearchTool tool : ResearchTool.values()) {
             int x = ResearchTableMenu.TOOLS_X + tool.ordinal() * ResearchTableMenu.TOOL_SPACING;
             ghost(graphics, ResearchTableBlockEntity.TOOLS + tool.ordinal(), x, ResearchTableMenu.TOOLS_Y, GHOST_TOOLS + tool.ordinal());

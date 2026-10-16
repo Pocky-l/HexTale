@@ -10,8 +10,8 @@
   "item.hextale.rune_scroll.named": "Rune Scroll: %s",
   "item.hextale.rune_scroll.blank": "A blank scroll.",
   "item.hextale.rune_scroll.study": "Use to learn the rune",
-  "item.hextale.rune_scroll.known": "%s is already in your codex.",
-  "item.hextale.rune_scroll.studied": "Rune learned: %s",
+  "item.hextale.rune_scroll.known": "You already know %s as well as this scroll can teach.",
+  "item.hextale.rune_scroll.studied": "Rune learned: %s %s",
   "item.hextale.researchers_diary": "Researcher's Diary",
   "item.hextale.researchers_diary.owned": "Researcher's Diary: %s",
   "item.hextale.researchers_diary.unsigned": "Signs itself with the name of whoever opens it first.",
@@ -362,8 +362,8 @@
   "research.hextale.tool.stretcher.level.3": "the first 12 sections of a thread cost no ink",
   "gui.hextale.research_table.slot.tool": "A research tool from the rune %s",
   "research.hextale.closed": "%s is still closed: open its chapter in the book.",
-  "research.hextale.complete": "%1$s %2$s",
-  "research.hextale.tool_unlocked": "Now you can craft the %s from its scroll.",
+  "research.hextale.complete": "Scroll written: %1$s %2$s",
+  "research.hextale.tool_unlocked": "Now you can craft the %s from a scroll of this rune.",
   "research.hextale.tool_stronger": "Your %s grew stronger.",
   "research.hextale.tool.lens": "Researcher's Lens",
   "research.hextale.tool.fork": "Fork Quill",
@@ -383,7 +383,8 @@
   "gui.hextale.research_table.tab.desk": "Desk",
   "gui.hextale.research_table.choose": "Choose a rune in the book",
   "gui.hextale.research_table.ink": "%s ink",
-  "gui.hextale.research_table.slot.paper": "Paper: every finished research is written on a sheet",
+  "gui.hextale.research_table.slot.paper": "Paper: every research starts on a fresh sheet",
   "gui.hextale.research_table.slot.ink": "Inkwell: studied items dissolve into ink",
-  "gui.hextale.research_table.slot.ink.unstudied": "Not studied yet: put it into the study slot first"
+  "gui.hextale.research_table.slot.ink.unstudied": "Not studied yet: put it into the study slot first",
+  "item.hextale.rune_scroll.too_early": "Too early: %s is not open to you in the research book yet."
 }
