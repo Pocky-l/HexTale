@@ -1,17 +1,14 @@
 {
   "model": {
-    "type": "minecraft:composite",
-    "models": [
+    "type": "minecraft:model",
+    "model": "hextale:item/rune_scroll",
+    "tints": [
       {
-        "type": "minecraft:model",
-        "model": "hextale:item/rune_scroll_base"
+        "type": "minecraft:constant",
+        "value": -1
       },
       {
-        "type": "minecraft:special",
-        "base": "hextale:item/rune_scroll_base",
-        "model": {
-          "type": "hextale:rune_scroll"
-        }
+        "type": "hextale:rune"
       }
     ]
   }
