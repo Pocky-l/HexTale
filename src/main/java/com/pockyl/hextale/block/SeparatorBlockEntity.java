@@ -270,6 +270,12 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         return false;
     }
 
+    /** The rest leaves through the front, the concentrate through the top. */
+    @Override
+    public boolean isOutlet(Direction face) {
+        return face == facing() || face == Direction.UP;
+    }
+
     /** Pipes bring the mixture in at the back and the sides. */
     @Override
     public int receive(Direction side, Essence offer, boolean simulate) {

@@ -524,6 +524,54 @@ public final class ResearchGameTests {
         });
     }
 
+    @HexTest(maxTicks = 400)
+    public static void aSeparatorChainLosesNoEssence(GameTestHelper helper) {
+        // tank (mixture) -> pipe -> separator (facing north, fed at its back) -> pipe in front -> tank (rest);
+        // the concentrate stays in the separator: nothing is above it.
+        BlockPos at = new BlockPos(2, 2, 2);
+        helper.setBlock(at.south(2).above(), ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(at.south(2), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(at.south(), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState().setValue(SeparatorBlock.FACING, Direction.NORTH));
+        helper.setBlock(at.north(), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(at.north(2), ModBlocks.ESSENCE_TANK.get());
+        EssenceTankBlockEntity source = helper.getBlockEntity(at.south(2).above(), EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity sink = helper.getBlockEntity(at.north(2), EssenceTankBlockEntity.class);
+        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        source.tank().set(Essence.of(java.util.Map.of(SimpleRune.LIFE, 12, SimpleRune.EARTH, 12)));
+        separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 4));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(source.tank().isEmpty() && separator.mix().isEmpty(), "the mixture was worked off");
+            helper.assertTrue(sink.tank().contents().equals(Essence.pure(SimpleRune.LIFE, 12)),
+                    "the rest ran on into the tank in front, got " + sink.tank().contents() + ", separator rest " + separator.rest().contents());
+            helper.assertTrue(separator.extract().contents().equals(Essence.pure(SimpleRune.EARTH, 12)),
+                    "the concentrate waits in the separator, got " + separator.extract().contents());
+        });
+    }
+
+    @HexTest(maxTicks = 400)
+    public static void theRestNeverFlowsBackIntoTheSeparator(GameTestHelper helper) {
+        // One pipe network touches the separator's front (rest out) and its east side (mixture in), and a tank that
+        // takes from it at its side and lets out at its bottom into the same pipes: the rest must not go round in circles.
+        BlockPos at = new BlockPos(2, 3, 2);
+        helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState().setValue(SeparatorBlock.FACING, Direction.NORTH));
+        for (BlockPos pipe : new BlockPos[]{at.north(), at.north().east(), at.east(), at.north().east().below(), at.north().east(2).below()}) {
+            helper.setBlock(pipe, ModBlocks.BRASS_PIPE.get());
+        }
+        helper.setBlock(at.north().east(2), ModBlocks.ESSENCE_TANK.get());
+        EssenceTankBlockEntity tank = helper.getBlockEntity(at.north().east(2), EssenceTankBlockEntity.class);
+        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(Essence.of(java.util.Map.of(SimpleRune.EARTH, 8, SimpleRune.AIR, 8))));
+        separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 2));
+        helper.runAfterDelay(200, () -> {
+            helper.assertTrue(separator.mix().isEmpty(), "the mixture was worked off, left " + separator.mix().contents());
+            helper.assertTrue(separator.rest().contents().equals(Essence.pure(SimpleRune.AIR, 8)),
+                    "the air stays in the separator, got rest " + separator.rest().contents() + ", tank " + tank.tank().contents());
+            helper.assertTrue(tank.tank().isEmpty(), "the tank feeding back into the same pipes takes nothing");
+            helper.succeed();
+        });
+    }
+
     @HexTest
     public static void pipesJoinMachinesOnlyAtPorts(GameTestHelper helper) {
         BlockPos at = new BlockPos(2, 2, 2);

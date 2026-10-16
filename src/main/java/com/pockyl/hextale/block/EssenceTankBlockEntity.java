@@ -49,6 +49,11 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     }
 
     @Override
+    public boolean isOutlet(Direction face) {
+        return face == Direction.DOWN;
+    }
+
+    @Override
     public int receive(Direction side, Essence offer, boolean simulate) {
         if (side == Direction.DOWN) {
             return 0;
