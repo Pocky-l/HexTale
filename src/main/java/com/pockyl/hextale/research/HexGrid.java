@@ -1,6 +1,6 @@
 package com.pockyl.hextale.research;
 
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,8 +13,8 @@ import java.util.List;
  */
 public final class HexGrid {
     /** Corner order around the rim, starting at the top. */
-    public static final SimpleRune[] RING = {SimpleRune.FIRE, SimpleRune.SPARK, SimpleRune.AIR, SimpleRune.LIGHT,
-            SimpleRune.LIFE, SimpleRune.WATER, SimpleRune.SHADOW, SimpleRune.EARTH, SimpleRune.METAL};
+    public static final Essence[] RING = {Essence.FIRE, Essence.SPARK, Essence.AIR, Essence.LIGHT,
+            Essence.LIFE, Essence.WATER, Essence.SHADOW, Essence.EARTH, Essence.METAL};
     /** Circumradius of one section. */
     public static final double HS = 0.072;
     public static final double SQ3 = Math.sqrt(3);
@@ -22,7 +22,7 @@ public final class HexGrid {
     public static final double CELL = HS * SQ3;
     private static final int SPAN = 16;
     private static final int[][] DIRECTIONS = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
-    private static final double[][] UNIT = new double[SimpleRune.values().length][];
+    private static final double[][] UNIT = new double[Essence.values().length][];
     private static final double[][] CORNERS = new double[RING.length][];
 
     private static final int[] Q;
@@ -99,7 +99,7 @@ public final class HexGrid {
     }
 
     /** Unit vector from the centre towards the element's corner. */
-    public static double[] unit(SimpleRune element) {
+    public static double[] unit(Essence element) {
         return UNIT[element.ordinal()];
     }
 

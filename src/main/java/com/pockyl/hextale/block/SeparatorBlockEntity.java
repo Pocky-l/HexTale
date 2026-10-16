@@ -24,14 +24,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-import com.pockyl.hextale.essence.Essence;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.essence.Reagents;
 import com.pockyl.hextale.menu.SeparatorMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import org.jspecify.annotations.Nullable;
 
@@ -69,7 +69,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     private final EssenceTank rest = new EssenceTank(CAPACITY);
     /** Drops the reagent already used can still bind, and its element (-1 for none). */
     private int charge;
-    private int chargeElement = -1;
+    private int chargeEssence = -1;
     private int step;
     private long lastReceived = Long.MIN_VALUE / 2;
     /** The mode of each face, in {@link SeparatorBlock.Side} order. */
@@ -80,7 +80,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         public int get(int index) {
             return switch (index) {
                 case 0 -> charge;
-                case 1 -> chargeElement;
+                case 1 -> chargeEssence;
                 case 2 -> step;
                 default -> modes[index - 3].ordinal();
             };
@@ -90,7 +90,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         public void set(int index, int value) {
             switch (index) {
                 case 0 -> charge = value;
-                case 1 -> chargeElement = value;
+                case 1 -> chargeEssence = value;
                 case 2 -> step = value;
                 default -> modes[index - 3] = PortMode.values()[value];
             }
@@ -159,11 +159,11 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
 
     /** The element being drawn out now: the bound one while charge is left, else the reagent's. */
     @Nullable
-    public SimpleRune separating() {
-        if (charge > 0 && chargeElement >= 0) {
-            return SimpleRune.values()[chargeElement];
+    public Essence separating() {
+        if (charge > 0 && chargeEssence >= 0) {
+            return Essence.values()[chargeEssence];
         }
-        return Reagents.element(items.get(REAGENT));
+        return Reagents.essence(items.get(REAGENT));
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, SeparatorBlockEntity separator) {
@@ -180,7 +180,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
 
     private boolean pourFlask() {
         ItemStack flask = items.get(POUR);
-        Essence inside = EssenceFlaskItem.contents(flask);
+        EssenceMix inside = EssenceFlaskItem.contents(flask);
         if (inside.isEmpty() || mix.space() <= 0) {
             return false;
         }
@@ -205,7 +205,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     }
 
     /** The drops the next step works off. */
-    private Essence portion() {
+    private EssenceMix portion() {
         return mix.contents().part(Math.min(STEP_DROPS, mix.amount()));
     }
 
@@ -215,18 +215,18 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         if (mix.isEmpty()) {
             return "empty";
         }
-        SimpleRune element = separating();
+        Essence element = separating();
         if (element == null) {
             return "no_reagent";
         }
-        Essence portion = portion();
+        EssenceMix portion = portion();
         int drawn = portion.get(element);
         if (drawn > 0) {
-            int binds = charge + (Reagents.element(items.get(REAGENT)) == element ? Reagents.BINDS : 0);
+            int binds = charge + (Reagents.essence(items.get(REAGENT)) == element ? Reagents.BINDS : 0);
             if (binds < drawn) {
                 return "no_reagent";
             }
-            if (extract.space() < drawn || !extract.isEmpty() && extract.contents().pureElement() != element) {
+            if (extract.space() < drawn || !extract.isEmpty() && extract.contents().pureEssence() != element) {
                 return "extract_full";
             }
         }
@@ -243,25 +243,25 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             return false;
         }
         step = 0;
-        SimpleRune element = separating();
-        Essence portion = portion();
+        Essence element = separating();
+        EssenceMix portion = portion();
         int drawn = portion.get(element);
         if (drawn > charge) {
             items.get(REAGENT).shrink(1);
             charge += Reagents.BINDS;
-            chargeElement = element.ordinal();
+            chargeEssence = element.ordinal();
         }
         mix.remove(portion);
         if (drawn > 0) {
-            extract.fill(Essence.pure(element, drawn), false);
+            extract.fill(EssenceMix.pure(element, drawn), false);
             charge -= drawn;
             if (charge <= 0) {
                 charge = 0;
-                chargeElement = -1;
+                chargeEssence = -1;
             }
         }
         // What is left is no longer known for what it is: an unknown essence, never a concentrate.
-        rest.fill(portion.minus(Essence.pure(element, drawn)).asUnknown(), false);
+        rest.fill(portion.minus(EssenceMix.pure(element, drawn)).asUnknown(), false);
         level.playSound(null, worldPosition, SoundEvents.BUBBLE_COLUMN_BUBBLE_POP, SoundSource.BLOCKS, 0.5F, 1.2F);
         return true;
     }
@@ -309,7 +309,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         if (tank.isEmpty()) {
             return false;
         }
-        Essence offer = tank.drain(EssenceTankBlockEntity.FLOW, true);
+        EssenceMix offer = tank.drain(EssenceTankBlockEntity.FLOW, true);
         int moved = EssenceNetwork.push(level, worldPosition, side, offer);
         if (moved > 0) {
             tank.remove(offer.part(moved));
@@ -326,7 +326,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
 
     /** Pipes bring the mixture in through the inlets. */
     @Override
-    public int receive(Direction side, Essence offer, boolean simulate) {
+    public int receive(Direction side, EssenceMix offer, boolean simulate) {
         if (mode(side) != PortMode.INLET) {
             return 0;
         }
@@ -374,7 +374,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     public static boolean accepts(int slot, ItemStack stack) {
         return switch (slot) {
             case POUR -> !EssenceFlaskItem.contents(stack).isEmpty();
-            case REAGENT -> Reagents.element(stack) != null;
+            case REAGENT -> Reagents.essence(stack) != null;
             case SUPPLY -> EssenceFlaskItem.isEmptyFlask(stack);
             default -> false;
         };
@@ -414,7 +414,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             modes[i] = i < saved.length && saved[i] > 0 && saved[i] < PortMode.values().length ? PortMode.values()[saved[i]] : defaults[i];
         }
         charge = input.getIntOr("charge", 0);
-        chargeElement = input.getIntOr("charge_element", -1);
+        chargeEssence = input.getIntOr("charge_element", -1);
     }
 
     @Override
@@ -430,7 +430,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         }
         output.putIntArray("ports", ports);
         output.putInt("charge", charge);
-        output.putInt("charge_element", chargeElement);
+        output.putInt("charge_element", chargeEssence);
     }
 
     @Override

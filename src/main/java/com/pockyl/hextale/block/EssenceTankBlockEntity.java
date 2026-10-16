@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-import com.pockyl.hextale.essence.Essence;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -40,7 +40,7 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
         if (level.getGameTime() % FLOW_EVERY != 0 || tank.tank.isEmpty()) {
             return;
         }
-        Essence offer = tank.tank.drain(FLOW, true);
+        EssenceMix offer = tank.tank.drain(FLOW, true);
         int moved = EssenceNetwork.push(level, pos, Direction.DOWN, offer);
         if (moved > 0) {
             tank.tank.remove(offer.part(moved));
@@ -54,7 +54,7 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     }
 
     @Override
-    public int receive(Direction side, Essence offer, boolean simulate) {
+    public int receive(Direction side, EssenceMix offer, boolean simulate) {
         if (side == Direction.DOWN) {
             return 0;
         }

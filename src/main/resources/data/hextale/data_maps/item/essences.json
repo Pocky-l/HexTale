@@ -1,98 +1,98 @@
 {
   "values": {
     "minecraft:coal": {
-      "elements": {
+      "essences": {
         "fire": 2
       },
       "tier": 1
     },
     "minecraft:kelp": {
-      "elements": {
+      "essences": {
         "water": 2,
         "life": 1
       },
       "tier": 1
     },
     "minecraft:cobblestone": {
-      "elements": {
+      "essences": {
         "earth": 2
       },
       "tier": 1
     },
     "minecraft:feather": {
-      "elements": {
+      "essences": {
         "air": 2
       },
       "tier": 1
     },
     "minecraft:glow_berries": {
-      "elements": {
+      "essences": {
         "light": 2,
         "life": 1
       },
       "tier": 1
     },
     "minecraft:ink_sac": {
-      "elements": {
+      "essences": {
         "shadow": 1,
         "water": 1
       },
       "tier": 1
     },
     "minecraft:wheat": {
-      "elements": {
+      "essences": {
         "life": 2
       },
       "tier": 1
     },
     "minecraft:copper_ingot": {
-      "elements": {
+      "essences": {
         "metal": 1,
         "spark": 1
       },
       "tier": 1
     },
     "minecraft:redstone": {
-      "elements": {
+      "essences": {
         "spark": 2
       },
       "tier": 1
     },
     "minecraft:stick": {
-      "elements": {
+      "essences": {
         "life": 1
       },
       "tier": 1
     },
     "minecraft:clay_ball": {
-      "elements": {
+      "essences": {
         "earth": 1,
         "water": 1
       },
       "tier": 1
     },
     "minecraft:torch": {
-      "elements": {
+      "essences": {
         "fire": 1,
         "light": 1
       },
       "tier": 1
     },
     "minecraft:blaze_powder": {
-      "elements": {
+      "essences": {
         "fire": 3
       },
       "tier": 2
     },
     "minecraft:prismarine_crystals": {
-      "elements": {
+      "essences": {
         "water": 2,
         "light": 2
       },
       "tier": 2
     },
     "minecraft:obsidian": {
-      "elements": {
+      "essences": {
         "earth": 2,
         "fire": 1,
         "shadow": 1
@@ -100,51 +100,51 @@
       "tier": 2
     },
     "minecraft:phantom_membrane": {
-      "elements": {
+      "essences": {
         "air": 3,
         "shadow": 1
       },
       "tier": 2
     },
     "minecraft:glowstone": {
-      "elements": {
+      "essences": {
         "light": 3
       },
       "tier": 2
     },
     "minecraft:sculk": {
-      "elements": {
+      "essences": {
         "shadow": 2
       },
       "tier": 2
     },
     "minecraft:honey_bottle": {
-      "elements": {
+      "essences": {
         "life": 3
       },
       "tier": 2
     },
     "minecraft:iron_ingot": {
-      "elements": {
+      "essences": {
         "metal": 2
       },
       "tier": 2
     },
     "minecraft:redstone_block": {
-      "elements": {
+      "essences": {
         "spark": 3
       },
       "tier": 2
     },
     "minecraft:gold_ingot": {
-      "elements": {
+      "essences": {
         "metal": 2,
         "light": 1
       },
       "tier": 2
     },
     "minecraft:amethyst_shard": {
-      "elements": {
+      "essences": {
         "light": 1,
         "earth": 1,
         "spark": 1
@@ -152,131 +152,131 @@
       "tier": 2
     },
     "minecraft:blaze_rod": {
-      "elements": {
+      "essences": {
         "fire": 4,
         "air": 1
       },
       "tier": 3
     },
     "minecraft:heart_of_the_sea": {
-      "elements": {
+      "essences": {
         "water": 4,
         "life": 1
       },
       "tier": 3
     },
     "minecraft:diamond": {
-      "elements": {
+      "essences": {
         "earth": 2,
         "light": 2
       },
       "tier": 3
     },
     "minecraft:wind_charge": {
-      "elements": {
+      "essences": {
         "air": 4
       },
       "tier": 3
     },
     "minecraft:beacon": {
-      "elements": {
+      "essences": {
         "light": 4,
         "metal": 1
       },
       "tier": 3
     },
     "minecraft:echo_shard": {
-      "elements": {
+      "essences": {
         "shadow": 4
       },
       "tier": 3
     },
     "minecraft:totem_of_undying": {
-      "elements": {
+      "essences": {
         "life": 4,
         "light": 1
       },
       "tier": 3
     },
     "minecraft:netherite_ingot": {
-      "elements": {
+      "essences": {
         "metal": 4,
         "fire": 1
       },
       "tier": 3
     },
     "minecraft:nether_star": {
-      "elements": {
+      "essences": {
         "spark": 3,
         "light": 2
       },
       "tier": 3
     },
     "minecraft:glass": {
-      "elements": {
+      "essences": {
         "light": 2,
         "earth": 1
       },
       "tier": 1
     },
     "minecraft:paper": {
-      "elements": {
+      "essences": {
         "air": 2,
         "life": 1
       },
       "tier": 1
     },
     "minecraft:book": {
-      "elements": {
+      "essences": {
         "light": 2,
         "life": 1
       },
       "tier": 1
     },
     "minecraft:brick": {
-      "elements": {
+      "essences": {
         "earth": 2,
         "fire": 1
       },
       "tier": 1
     },
     "minecraft:ender_pearl": {
-      "elements": {
+      "essences": {
         "shadow": 2,
         "spark": 2
       },
       "tier": 2
     },
     "minecraft:gunpowder": {
-      "elements": {
+      "essences": {
         "fire": 2,
         "spark": 1
       },
       "tier": 1
     },
     "minecraft:string": {
-      "elements": {
+      "essences": {
         "air": 1,
         "life": 1
       },
       "tier": 1
     },
     "minecraft:leather": {
-      "elements": {
+      "essences": {
         "life": 1,
         "earth": 1
       },
       "tier": 1
     },
     "minecraft:slime_ball": {
-      "elements": {
+      "essences": {
         "life": 2,
         "water": 1
       },
       "tier": 1
     },
     "minecraft:bone": {
-      "elements": {
+      "essences": {
         "life": 1,
         "shadow": 1
       },

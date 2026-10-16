@@ -5,7 +5,7 @@ import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +34,7 @@ final class StarMap {
     private static final Map<ComplexRune, int[]> POSITIONS = new LinkedHashMap<>();
     private static final List<Link> LINKS = new ArrayList<>();
     /** The first star of each element's ray, for the faint line from the centre. */
-    private static final Map<SimpleRune, ComplexRune> RAY_HEADS = new LinkedHashMap<>();
+    private static final Map<Essence, ComplexRune> RAY_HEADS = new LinkedHashMap<>();
 
     static {
         POSITIONS.put(ResearchBook.FIRST, new int[]{0, 0});
@@ -45,14 +45,14 @@ final class StarMap {
                     (int) Math.round(Math.sin(angle) * TOOL_RING)});
             LINKS.add(new Link(ResearchBook.FIRST, tools[i].rune(), false));
         }
-        for (SimpleRune action : HexGrid.RING) {
+        for (Essence action : HexGrid.RING) {
             List<ComplexRune> ray = new ArrayList<>();
             List<ComplexRune> outposts = new ArrayList<>();
             for (ComplexRune rune : ComplexRunes.all()) {
                 if (rune.action() != action || POSITIONS.containsKey(rune)) {
                     continue;
                 }
-                boolean outpost = ResearchBook.chapter(rune) == 3 && action != SimpleRune.SHADOW && action != SimpleRune.SPARK;
+                boolean outpost = ResearchBook.chapter(rune) == 3 && action != Essence.SHADOW && action != Essence.SPARK;
                 (outpost ? outposts : ray).add(rune);
             }
             // Chapter II before chapter III, so a ray grows outwards as the book opens.
@@ -99,7 +99,7 @@ final class StarMap {
         return Collections.unmodifiableList(LINKS);
     }
 
-    static Map<SimpleRune, ComplexRune> rayHeads() {
+    static Map<Essence, ComplexRune> rayHeads() {
         return Collections.unmodifiableMap(RAY_HEADS);
     }
 }

@@ -20,7 +20,7 @@ import org.jspecify.annotations.Nullable;
 import com.pockyl.hextale.block.AlembicBlock;
 import com.pockyl.hextale.block.AlembicBlockEntity;
 import com.pockyl.hextale.essence.EssenceTank;
-import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ResearchItems;
 
 /**
@@ -60,7 +60,7 @@ public class AlembicRenderer implements BlockEntityRenderer<AlembicBlockEntity, 
         BlockEntityRenderer.super.extractRenderState(alembic, state, partialTick, cameraPosition, breakProgress);
         Level level = alembic.getLevel();
         state.time = level == null ? 0 : level.getGameTime() + partialTick;
-        ItemElements elements = ResearchItems.of(alembic.input());
+        ItemEssences elements = ResearchItems.of(alembic.input());
         state.working = elements != null && alembic.getBlockState().getValue(AlembicBlock.LIT)
                 && alembic.water() >= AlembicBlockEntity.WATER_PER_ITEM;
         EssenceTank tank = alembic.tank();

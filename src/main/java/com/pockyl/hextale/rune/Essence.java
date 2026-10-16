@@ -8,7 +8,7 @@ import java.util.Locale;
  * brush strokes in a unit box ([0, 1] x [0, 1], y pointing down). The same radicals compose the complex runes.
  * Stroke geometry comes from the approved planning prototype and is shared by the recognizer and the renderers.
  */
-public enum SimpleRune {
+public enum Essence {
     FIRE("fire", 0xFF8A4C, strokes(
             line(0.5, 0.08, 0.5, 0.55),
             line(0.12, 0.95, 0.5, 0.55, 0.88, 0.95),
@@ -52,7 +52,7 @@ public enum SimpleRune {
     private final int color;
     private final List<float[]> radical;
 
-    SimpleRune(String id, int color, List<float[]> radical) {
+    Essence(String id, int color, List<float[]> radical) {
         this.id = id;
         this.color = color;
         this.radical = radical;
@@ -80,8 +80,8 @@ public enum SimpleRune {
         return "rune.hextale.element." + id;
     }
 
-    public static SimpleRune byId(String id) {
-        for (SimpleRune rune : values()) {
+    public static Essence byId(String id) {
+        for (Essence rune : values()) {
             if (rune.id.equals(id.toLowerCase(Locale.ROOT))) {
                 return rune;
             }

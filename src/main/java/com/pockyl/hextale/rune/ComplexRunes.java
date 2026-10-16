@@ -33,7 +33,7 @@ public final class ComplexRunes {
 
     private static final List<ComplexRune> ALL = new ArrayList<>();
     private static final Map<String, ComplexRune> BY_KEY = new HashMap<>();
-    private static final ComplexRune[][] BY_PAIR = new ComplexRune[SimpleRune.values().length][SimpleRune.values().length];
+    private static final ComplexRune[][] BY_PAIR = new ComplexRune[Essence.values().length][Essence.values().length];
 
     /** By key, e.g. {@code "fire_earth"}. */
     public static final Codec<ComplexRune> CODEC = Codec.STRING.comapFlatMap(key -> {
@@ -43,15 +43,15 @@ public final class ComplexRunes {
     public static final StreamCodec<ByteBuf, ComplexRune> STREAM_CODEC = ByteBufCodecs.VAR_INT.map(ALL::get, ComplexRune::index);
 
     static {
-        SimpleRune fire = SimpleRune.FIRE;
-        SimpleRune water = SimpleRune.WATER;
-        SimpleRune earth = SimpleRune.EARTH;
-        SimpleRune air = SimpleRune.AIR;
-        SimpleRune light = SimpleRune.LIGHT;
-        SimpleRune shadow = SimpleRune.SHADOW;
-        SimpleRune life = SimpleRune.LIFE;
-        SimpleRune metal = SimpleRune.METAL;
-        SimpleRune spark = SimpleRune.SPARK;
+        Essence fire = Essence.FIRE;
+        Essence water = Essence.WATER;
+        Essence earth = Essence.EARTH;
+        Essence air = Essence.AIR;
+        Essence light = Essence.LIGHT;
+        Essence shadow = Essence.SHADOW;
+        Essence life = Essence.LIFE;
+        Essence metal = Essence.METAL;
+        Essence spark = Essence.SPARK;
 
         rune(fire, water, ENERGY);
         rune(fire, earth, DESTRUCTION);
@@ -138,7 +138,7 @@ public final class ComplexRunes {
     private ComplexRunes() {
     }
 
-    private static void rune(SimpleRune action, SimpleRune target, RuneCategory category) {
+    private static void rune(Essence action, Essence target, RuneCategory category) {
         ComplexRune rune = new ComplexRune(ALL.size(), action, target, category);
         ALL.add(rune);
         BY_KEY.put(rune.key(), rune);
@@ -152,7 +152,7 @@ public final class ComplexRunes {
 
     /** The rune of an ordered pair, or null for the same element twice. */
     @Nullable
-    public static ComplexRune of(SimpleRune action, SimpleRune target) {
+    public static ComplexRune of(Essence action, Essence target) {
         return BY_PAIR[action.ordinal()][target.ordinal()];
     }
 

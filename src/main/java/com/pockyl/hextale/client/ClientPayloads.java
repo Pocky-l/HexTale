@@ -5,11 +5,11 @@ import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlers
 
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
 import com.pockyl.hextale.client.screen.book.StarBookScreen;
-import com.pockyl.hextale.network.ItemElementsPayload;
+import com.pockyl.hextale.network.ItemEssencesPayload;
 import com.pockyl.hextale.network.KnowledgeSyncPayload;
 import com.pockyl.hextale.network.OpenDiaryPayload;
 import com.pockyl.hextale.network.ResearchMessagePayload;
-import com.pockyl.hextale.research.ItemElementTable;
+import com.pockyl.hextale.research.ItemEssenceTable;
 
 /** Handlers of the client-bound payloads; run on the client thread. */
 public final class ClientPayloads {
@@ -18,7 +18,7 @@ public final class ClientPayloads {
 
     public static void register(RegisterClientPayloadHandlersEvent event) {
         event.register(KnowledgeSyncPayload.TYPE, (payload, context) -> knowledge(payload));
-        event.register(ItemElementsPayload.TYPE, (payload, context) -> itemElements(payload));
+        event.register(ItemEssencesPayload.TYPE, (payload, context) -> itemElements(payload));
         event.register(ResearchMessagePayload.TYPE, (payload, context) -> researchMessage(payload));
         event.register(OpenDiaryPayload.TYPE, (payload, context) -> openDiary(payload));
     }
@@ -27,8 +27,8 @@ public final class ClientPayloads {
         ClientKnowledge.set(payload.knowledge());
     }
 
-    public static void itemElements(ItemElementsPayload payload) {
-        ItemElementTable.setById(payload.elements());
+    public static void itemElements(ItemEssencesPayload payload) {
+        ItemEssenceTable.setById(payload.essences());
     }
 
     public static void researchMessage(ResearchMessagePayload payload) {

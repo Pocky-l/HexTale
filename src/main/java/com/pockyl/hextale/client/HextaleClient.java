@@ -32,8 +32,8 @@ import com.pockyl.hextale.client.screen.machine.AlembicScreen;
 import com.pockyl.hextale.client.screen.machine.SeparatorScreen;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModMenus;
-import com.pockyl.hextale.research.ElementsTooltip;
-import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.EssencesTooltip;
+import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.RuneBoards;
 
@@ -49,7 +49,7 @@ public final class HextaleClient {
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("essence"), EssenceTint.MAP_CODEC));
         modBus.addListener(TableModels::register);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
-                event.register(ElementsTooltip.class, ClientElementsTooltip::new));
+                event.register(EssencesTooltip.class, ClientEssencesTooltip::new));
         NeoForge.EVENT_BUS.addListener(HextaleClient::addElementsToTooltip);
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> RuneBoards.warmUp());
@@ -63,9 +63,9 @@ public final class HextaleClient {
         if (stack.isEmpty() || !creative && !ClientKnowledge.get().hasStudied(BuiltInRegistries.ITEM.getKey(stack.getItem()))) {
             return;
         }
-        ItemElements elements = ResearchItems.of(stack);
+        ItemEssences elements = ResearchItems.of(stack);
         if (elements != null) {
-            event.getTooltipElements().add(Math.min(1, event.getTooltipElements().size()), Either.right(new ElementsTooltip(elements)));
+            event.getTooltipElements().add(Math.min(1, event.getTooltipElements().size()), Either.right(new EssencesTooltip(elements)));
         }
     }
 

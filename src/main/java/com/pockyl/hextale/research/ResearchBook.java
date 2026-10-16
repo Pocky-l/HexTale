@@ -3,7 +3,7 @@ package com.pockyl.hextale.research;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,8 +31,8 @@ public final class ResearchBook {
                 return 1;
             }
         }
-        SimpleRune action = rune.action();
-        return action == SimpleRune.SHADOW || action == SimpleRune.SPARK || rune.target() == SimpleRune.SHADOW ? 3 : 2;
+        Essence action = rune.action();
+        return action == Essence.SHADOW || action == Essence.SPARK || rune.target() == Essence.SHADOW ? 3 : 2;
     }
 
     public static List<ComplexRune> runes(int chapter) {

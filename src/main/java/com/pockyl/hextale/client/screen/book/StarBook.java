@@ -20,7 +20,7 @@ import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -249,7 +249,7 @@ public final class StarBook {
 
     /** The nine elements' signs far out on their rays, like the names of constellations. */
     private void renderSigns(GuiGraphicsExtractor graphics, RuneKnowledge knowledge) {
-        for (SimpleRune element : HexGrid.RING) {
+        for (Essence element : HexGrid.RING) {
             double[] u = HexGrid.unit(element);
             int x = (int) Math.round(u[0] * StarMap.SIGN_RADIUS);
             int y = (int) Math.round(u[1] * StarMap.SIGN_RADIUS);

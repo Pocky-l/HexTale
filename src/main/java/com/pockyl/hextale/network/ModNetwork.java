@@ -17,7 +17,7 @@ public final class ModNetwork {
         registrar.playToServer(ResearchActionPayload.TYPE, ResearchActionPayload.STREAM_CODEC, ResearchActionPayload::handle);
         // Client-bound: their handlers are registered by the client (ClientPayloads.register).
         registrar.playToClient(KnowledgeSyncPayload.TYPE, KnowledgeSyncPayload.STREAM_CODEC);
-        registrar.playToClient(ItemElementsPayload.TYPE, ItemElementsPayload.STREAM_CODEC);
+        registrar.playToClient(ItemEssencesPayload.TYPE, ItemEssencesPayload.STREAM_CODEC);
         registrar.playToClient(ResearchMessagePayload.TYPE, ResearchMessagePayload.STREAM_CODEC);
         registrar.playToClient(OpenDiaryPayload.TYPE, OpenDiaryPayload.STREAM_CODEC);
     }

@@ -5,7 +5,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.Arrays;
 
@@ -49,11 +49,11 @@ public final class ResearchSheet {
     /**
      * A thread checked against the rules.
      *
-     * @param ink    drops needed per element ({@link SimpleRune#ordinal()})
+     * @param ink    drops needed per element ({@link Essence#ordinal()})
      * @param lit    points passed, bit per point
      * @param paying per section: the element whose ink it costs, null for free sections and the orb
      */
-    public record Trace(int[] ink, int lit, int crossings, int passes, SimpleRune[] paying) {
+    public record Trace(int[] ink, int lit, int crossings, int passes, Essence[] paying) {
         public boolean complete(RuneBoard board) {
             return lit == (1 << board.points().size()) - 1;
         }
@@ -78,8 +78,8 @@ public final class ResearchSheet {
         if (thread.length == 0 || thread[0] != HexGrid.CENTRE) {
             return null;
         }
-        int[] ink = new int[SimpleRune.values().length];
-        SimpleRune[] paying = new SimpleRune[thread.length];
+        int[] ink = new int[Essence.values().length];
+        Essence[] paying = new Essence[thread.length];
         boolean[] used = new boolean[HexGrid.COUNT];
         used[HexGrid.CENTRE] = true;
         int lit = 0;
@@ -100,7 +100,7 @@ public final class ResearchSheet {
             }
             used[cell] = true;
             if (i > allowance.free() && (allowance.thrift() <= 0 || ++paid % (5 - allowance.thrift()) != 0)) {
-                SimpleRune colour = toward(thread[i - 1], cell);
+                Essence colour = toward(thread[i - 1], cell);
                 ink[colour.ordinal()]++;
                 paying[i] = colour;
             }
@@ -116,13 +116,13 @@ public final class ResearchSheet {
      * The element a step pays with: the one whose corner lies most nearly in the step's direction, seen from where the
      * step starts. Near a corner its element covers a wide fan of directions; in the middle each direction has its own.
      */
-    public static SimpleRune toward(int from, int to) {
+    public static Essence toward(int from, int to) {
         double dx = HexGrid.cx(to) - HexGrid.cx(from);
         double dy = HexGrid.cy(to) - HexGrid.cy(from);
         double length = Math.hypot(dx, dy);
-        SimpleRune best = HexGrid.RING[0];
+        Essence best = HexGrid.RING[0];
         double bestCos = -2;
-        for (SimpleRune element : HexGrid.RING) {
+        for (Essence element : HexGrid.RING) {
             double[] u = HexGrid.unit(element);
             double cx = u[0] - HexGrid.cx(from);
             double cy = u[1] - HexGrid.cy(from);

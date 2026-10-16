@@ -13,7 +13,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.RuneGlyphs;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +52,7 @@ public final class PixelArt {
     }
 
     /** A simple rune's radical in a {@code size} x {@code size} box at {@code x, y} (top left). */
-    public static void radical(GuiGraphicsExtractor graphics, SimpleRune rune, int x, int y, int size, int argb) {
+    public static void radical(GuiGraphicsExtractor graphics, Essence rune, int x, int y, int size, int argb) {
         strokes(graphics, "r" + rune.ordinal(), rune.radical(), x, y, size, argb);
     }
 
@@ -67,7 +67,7 @@ public final class PixelArt {
         glyph(graphics, rune, x, y, size, argb);
     }
 
-    public static void radical(GuiGraphicsExtractor graphics, SimpleRune rune, int x, int y, int size, int argb, int shadow) {
+    public static void radical(GuiGraphicsExtractor graphics, Essence rune, int x, int y, int size, int argb, int shadow) {
         radical(graphics, rune, x + 1, y + 1, size, shadow);
         radical(graphics, rune, x, y, size, argb);
     }

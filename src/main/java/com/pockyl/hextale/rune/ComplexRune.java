@@ -7,7 +7,7 @@ package com.pockyl.hextale.rune;
  *
  * @param index position in {@link ComplexRunes#all()}, stable: action-major, the action's own element skipped
  */
-public record ComplexRune(int index, SimpleRune action, SimpleRune target, RuneCategory category) {
+public record ComplexRune(int index, Essence action, Essence target, RuneCategory category) {
     /** Persistent id, e.g. {@code fire_earth}. */
     public String key() {
         return action.id() + "_" + target.id();

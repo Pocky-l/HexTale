@@ -5,19 +5,19 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 
 import com.pockyl.hextale.client.render.PixelArt;
-import com.pockyl.hextale.research.ElementsTooltip;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.research.EssencesTooltip;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.Map;
 
 /** Draws a studied item's elements in its tooltip: each element's sign in its colour, then its strength. */
-public final class ClientElementsTooltip implements ClientTooltipComponent {
+public final class ClientEssencesTooltip implements ClientTooltipComponent {
     private static final int SIGN = 9;
     private static final int GAP = 6;
 
-    private final ElementsTooltip data;
+    private final EssencesTooltip data;
 
-    public ClientElementsTooltip(ElementsTooltip data) {
+    public ClientEssencesTooltip(EssencesTooltip data) {
         this.data = data;
     }
 
@@ -29,7 +29,7 @@ public final class ClientElementsTooltip implements ClientTooltipComponent {
     @Override
     public int getWidth(Font font) {
         int width = 0;
-        for (Map.Entry<SimpleRune, Integer> entry : data.elements().elements().entrySet()) {
+        for (Map.Entry<Essence, Integer> entry : data.essences().essences().entrySet()) {
             width += SIGN + 2 + font.width(String.valueOf(entry.getValue())) + GAP;
         }
         return Math.max(0, width - GAP);
@@ -38,8 +38,8 @@ public final class ClientElementsTooltip implements ClientTooltipComponent {
     @Override
     public void extractImage(Font font, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
         int cx = x;
-        for (Map.Entry<SimpleRune, Integer> entry : data.elements().elements().entrySet()) {
-            SimpleRune element = entry.getKey();
+        for (Map.Entry<Essence, Integer> entry : data.essences().essences().entrySet()) {
+            Essence element = entry.getKey();
             PixelArt.radical(graphics, element, cx, y, SIGN, PixelArt.argb(element.color(), 1), 0xFF000000);
             String strength = String.valueOf(entry.getValue());
             PixelArt.flush(graphics);

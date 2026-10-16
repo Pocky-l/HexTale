@@ -36,7 +36,7 @@ import com.pockyl.hextale.network.ResearchMessagePayload;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.HexGrid;
-import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
@@ -45,7 +45,7 @@ import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.research.RuneBoard;
 import com.pockyl.hextale.research.RuneBoards;
 import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -113,8 +113,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private Component toast = Component.empty();
     private ResearchMessagePayload.Tone toastTone = ResearchMessagePayload.Tone.INFO;
     private long toastStart;
-    private final long[] vialFlash = new long[SimpleRune.values().length];
-    private final float[] vialLevel = new float[SimpleRune.values().length];
+    private final long[] vialFlash = new long[Essence.values().length];
+    private final float[] vialLevel = new float[Essence.values().length];
     @Nullable
     private InkSupply supply;
     private long supplyFrame;
@@ -265,12 +265,12 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
 
     private int[] ink() {
         InkSupply ink = inkSupply();
-        return ink == null ? new int[SimpleRune.values().length] : ink.available();
+        return ink == null ? new int[Essence.values().length] : ink.available();
     }
 
     private int[] inkCapacity() {
         InkSupply ink = inkSupply();
-        return ink == null ? new int[SimpleRune.values().length] : ink.capacity();
+        return ink == null ? new int[Essence.values().length] : ink.capacity();
     }
 
     private boolean done(ResearchTableBlockEntity table) {
@@ -291,7 +291,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return false;
         }
         if (!creative() && !next.affordable(ink())) {
-            SimpleRune lacking = ResearchSheet.toward(thread[thread.length - 1], cell);
+            Essence lacking = ResearchSheet.toward(thread[thread.length - 1], cell);
             vialFlash[lacking.ordinal()] = Util.getMillis();
             refuse(cell, 0.8F);
             return false;
@@ -465,7 +465,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private void renderDesk(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         ResearchTableBlockEntity table = table();
         int hovered = overBoard(mouseX, mouseY) ? board.cellAt(mouseX, mouseY) : -1;
-        int[] reserved = new int[SimpleRune.values().length];
+        int[] reserved = new int[Essence.values().length];
         if (table != null && table.isStudyingItem() && table.study().item() != null) {
             renderStudy(graphics, table, hovered, mouseX, mouseY);
         } else {
@@ -512,7 +512,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (hovered >= 0 && !dragging) {
             int point = current.pointAt(hovered);
             if (point >= 0) {
-                pendingTooltip = List.of(ResearchText.element(current.points().get(point).element()));
+                pendingTooltip = List.of(ResearchText.essence(current.points().get(point).element()));
             }
         }
 
@@ -555,7 +555,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private void renderStudy(GuiGraphicsExtractor graphics, ResearchTableBlockEntity table, int hovered, int mouseX, int mouseY) {
         ItemStudy study = table.study();
         Item item = study.item();
-        ItemElements elements = ResearchItems.of(item);
+        ItemEssences elements = ResearchItems.of(item);
         if (elements == null) {
             return;
         }
@@ -580,7 +580,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (hovered >= 0) {
             int string = ItemStudy.stringOf(hovered);
             if (string >= 0) {
-                pendingTooltip = List.of(ResearchText.element(HexGrid.RING[string]));
+                pendingTooltip = List.of(ResearchText.essence(HexGrid.RING[string]));
             }
         }
     }
@@ -594,7 +594,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         int[] capacity = inkCapacity();
         boolean infinite = creative();
         for (int i = 0; i < HexGrid.RING.length; i++) {
-            SimpleRune element = HexGrid.RING[i];
+            Essence element = HexGrid.RING[i];
             int e = element.ordinal();
             int x = leftPos + VIAL_X + i * VIAL_STEP;
             int y = topPos + VIAL_Y;
@@ -647,9 +647,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             if (isOver(mouseX, mouseY, x - 2, y - 2, VIAL_W + 4, VIAL_H + 16)) {
                 Component count = infinite ? Component.literal("∞") : Component.literal(ink[e] + "/" + capacity[e]);
                 boolean noStorage = !infinite && capacity[e] == 0;
-                pendingTooltip = List.of(Component.translatable(KEY + "ink", ResearchText.element(element)),
+                pendingTooltip = List.of(Component.translatable(KEY + "ink", ResearchText.essence(element)),
                         count.copy().withStyle(noStorage ? ChatFormatting.RED : ChatFormatting.GRAY),
-                        Component.translatable(KEY + (noStorage ? "ink.no_storage" : "ink.hint"), ResearchText.element(element))
+                        Component.translatable(KEY + (noStorage ? "ink.no_storage" : "ink.hint"), ResearchText.essence(element))
                                 .withStyle(noStorage ? ChatFormatting.GOLD : ChatFormatting.DARK_GRAY));
             }
         }
@@ -820,7 +820,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         int cell = board.cellAt(mouseX, mouseY);
         if (table.isStudyingItem() && table.study().item() != null) {
             ItemStudy study = table.study();
-            ItemElements elements = ResearchItems.of(study.item());
+            ItemEssences elements = ResearchItems.of(study.item());
             if (button != InputConstants.MOUSE_BUTTON_LEFT || elements == null) {
                 return;
             }

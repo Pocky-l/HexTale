@@ -20,7 +20,7 @@ import net.minecraft.util.context.ContextMap;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.registry.ModDataMaps;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -31,15 +31,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.pockyl.hextale.rune.SimpleRune.AIR;
-import static com.pockyl.hextale.rune.SimpleRune.EARTH;
-import static com.pockyl.hextale.rune.SimpleRune.FIRE;
-import static com.pockyl.hextale.rune.SimpleRune.LIFE;
-import static com.pockyl.hextale.rune.SimpleRune.LIGHT;
-import static com.pockyl.hextale.rune.SimpleRune.METAL;
-import static com.pockyl.hextale.rune.SimpleRune.SHADOW;
-import static com.pockyl.hextale.rune.SimpleRune.SPARK;
-import static com.pockyl.hextale.rune.SimpleRune.WATER;
+import static com.pockyl.hextale.rune.Essence.AIR;
+import static com.pockyl.hextale.rune.Essence.EARTH;
+import static com.pockyl.hextale.rune.Essence.FIRE;
+import static com.pockyl.hextale.rune.Essence.LIFE;
+import static com.pockyl.hextale.rune.Essence.LIGHT;
+import static com.pockyl.hextale.rune.Essence.METAL;
+import static com.pockyl.hextale.rune.Essence.SHADOW;
+import static com.pockyl.hextale.rune.Essence.SPARK;
+import static com.pockyl.hextale.rune.Essence.WATER;
 
 /**
  * Gives every item its elements, in three passes:
@@ -54,7 +54,7 @@ import static com.pockyl.hextale.rune.SimpleRune.WATER;
  * Whatever is still left (circular recipes) falls back to its name, and at last to its kind. An item keeps at most
  * three elements, each 1-9.
  */
-public final class ItemElementResolver {
+public final class ItemEssenceResolver {
     private static final int MAX_ELEMENTS = 3;
     private static final int MAX_POINTS = 9;
     private static final int PASSES = 12;
@@ -299,7 +299,7 @@ public final class ItemElementResolver {
         word("ominous", SHADOW, 2, SPARK, 1);
     }
 
-    private ItemElementResolver() {
+    private ItemEssenceResolver() {
     }
 
     private static void word(String word, Object... pairs) {
@@ -307,13 +307,13 @@ public final class ItemElementResolver {
     }
 
     /** Resolves the elements of every registered item. */
-    public static Map<Item, ItemElements> resolve(RecipeManager recipes, RegistryAccess registries) {
+    public static Map<Item, ItemEssences> resolve(RecipeManager recipes, RegistryAccess registries) {
         long start = System.nanoTime();
-        Map<Item, ItemElements> out = new HashMap<>();
+        Map<Item, ItemEssences> out = new HashMap<>();
         for (Item item : BuiltInRegistries.ITEM) {
             @SuppressWarnings("deprecation")
             Holder<Item> holder = item.builtInRegistryHolder();
-            ItemElements base = holder.getData(ModDataMaps.ELEMENTS);
+            ItemEssences base = holder.getData(ModDataMaps.ESSENCES);
             if (base != null) {
                 out.put(item, base);
             }
@@ -348,7 +348,7 @@ public final class ItemElementResolver {
         // Raw materials: named.
         for (Item item : BuiltInRegistries.ITEM) {
             if (item != Items.AIR && !out.containsKey(item) && !makers.containsKey(item)) {
-                ItemElements named = byName(item);
+                ItemEssences named = byName(item);
                 if (named != null) {
                     out.put(item, named);
                 }
@@ -357,14 +357,14 @@ public final class ItemElementResolver {
 
         // Made things: from their ingredients, until nothing changes.
         for (int pass = 0; pass < PASSES; pass++) {
-            Map<Item, ItemElements> found = new HashMap<>();
+            Map<Item, ItemEssences> found = new HashMap<>();
             for (Map.Entry<Item, List<Made>> entry : makers.entrySet()) {
                 if (out.containsKey(entry.getKey())) {
                     continue;
                 }
-                ItemElements best = null;
+                ItemEssences best = null;
                 for (Made made : entry.getValue()) {
-                    ItemElements candidate = fromIngredients(made, out, entry.getKey());
+                    ItemEssences candidate = fromIngredients(made, out, entry.getKey());
                     if (candidate != null && (best == null || total(candidate) < total(best))) {
                         best = candidate;
                     }
@@ -384,7 +384,7 @@ public final class ItemElementResolver {
             if (item == Items.AIR || out.containsKey(item)) {
                 continue;
             }
-            ItemElements named = byName(item);
+            ItemEssences named = byName(item);
             out.put(item, named != null ? named : byKind(item));
         }
         Hextale.LOGGER.debug("Resolved the elements of {} items in {} ms", out.size(), (System.nanoTime() - start) / 1_000_000);
@@ -394,13 +394,13 @@ public final class ItemElementResolver {
     private record Made(List<Ingredient> ingredients, int count, boolean cooked) {
     }
 
-    private static ItemElements fromIngredients(Made made, Map<Item, ItemElements> known, Item result) {
-        Map<SimpleRune, Float> sum = new EnumMap<>(SimpleRune.class);
+    private static ItemEssences fromIngredients(Made made, Map<Item, ItemEssences> known, Item result) {
+        Map<Essence, Float> sum = new EnumMap<>(Essence.class);
         int tier = 1;
         for (Ingredient ingredient : made.ingredients()) {
-            ItemElements cheapest = null;
+            ItemEssences cheapest = null;
             for (Holder<Item> option : ingredient.items().toList()) {
-                ItemElements elements = option.value() == result ? null : known.get(option.value());
+                ItemEssences elements = option.value() == result ? null : known.get(option.value());
                 if (elements != null && (cheapest == null || total(elements) < total(cheapest))) {
                     cheapest = elements;
                 }
@@ -409,7 +409,7 @@ public final class ItemElementResolver {
                 return null;
             }
             tier = Math.max(tier, cheapest.tier());
-            cheapest.elements().forEach((element, points) -> sum.merge(element, (float) points, Float::sum));
+            cheapest.essences().forEach((element, points) -> sum.merge(element, (float) points, Float::sum));
         }
         if (made.cooked()) {
             sum.merge(FIRE, 1.0F, Float::sum);
@@ -420,16 +420,16 @@ public final class ItemElementResolver {
             total += points / made.count();
         }
         float scale = total <= SOFT_FROM ? 1 : SOFT_FROM * (float) Math.pow(total / SOFT_FROM, SOFTENING) / total;
-        Map<SimpleRune, Integer> soft = new EnumMap<>(SimpleRune.class);
+        Map<Essence, Integer> soft = new EnumMap<>(Essence.class);
         sum.forEach((element, points) -> soft.put(element,
                 Math.max(1, Math.min(MAX_POINTS, Math.round(points / made.count() * scale)))));
         return strongest(soft, Math.max(tier, rarityTier(result)));
     }
 
     /** Elements from the words of the item's id, or null when no word is known. */
-    static ItemElements byName(Item item) {
+    static ItemEssences byName(Item item) {
         String path = BuiltInRegistries.ITEM.getKey(item).getPath();
-        Map<SimpleRune, Integer> sum = new EnumMap<>(SimpleRune.class);
+        Map<Essence, Integer> sum = new EnumMap<>(Essence.class);
         Set<String> used = new HashSet<>();
         String[] tokens = path.split("_");
         for (String token : tokens) {
@@ -439,7 +439,7 @@ public final class ItemElementResolver {
                 if (match && used.add(key)) {
                     Object[] pairs = word.getValue();
                     for (int i = 0; i < pairs.length; i += 2) {
-                        sum.merge((SimpleRune) pairs[i], (Integer) pairs[i + 1], Integer::sum);
+                        sum.merge((Essence) pairs[i], (Integer) pairs[i + 1], Integer::sum);
                     }
                 }
             }
@@ -452,15 +452,15 @@ public final class ItemElementResolver {
         return strongest(sum, Math.max(rarityTier(item), total >= 6 ? 3 : total >= 4 ? 2 : 1));
     }
 
-    private static ItemElements byKind(Item item) {
+    private static ItemEssences byKind(Item item) {
         ItemStack stack = new ItemStack(item);
         if (stack.has(DataComponents.FOOD)) {
-            return ItemElements.of(rarityTier(item), LIFE, 1);
+            return ItemEssences.of(rarityTier(item), LIFE, 1);
         }
         if (item instanceof BlockItem) {
-            return ItemElements.of(rarityTier(item), EARTH, 1);
+            return ItemEssences.of(rarityTier(item), EARTH, 1);
         }
-        return ItemElements.of(rarityTier(item), METAL, 1, AIR, 1);
+        return ItemEssences.of(rarityTier(item), METAL, 1, AIR, 1);
     }
 
     @SuppressWarnings("deprecation")
@@ -470,17 +470,17 @@ public final class ItemElementResolver {
     }
 
     /** The three strongest elements, strongest first (ring order breaks ties). */
-    private static ItemElements strongest(Map<SimpleRune, Integer> all, int tier) {
-        List<SimpleRune> order = new ArrayList<>(all.keySet());
+    private static ItemEssences strongest(Map<Essence, Integer> all, int tier) {
+        List<Essence> order = new ArrayList<>(all.keySet());
         order.sort((a, b) -> all.get(b) - all.get(a) != 0 ? all.get(b) - all.get(a) : ring(a) - ring(b));
-        Map<SimpleRune, Integer> kept = new LinkedHashMap<>();
-        for (SimpleRune element : order.subList(0, Math.min(MAX_ELEMENTS, order.size()))) {
+        Map<Essence, Integer> kept = new LinkedHashMap<>();
+        for (Essence element : order.subList(0, Math.min(MAX_ELEMENTS, order.size()))) {
             kept.put(element, all.get(element));
         }
-        return new ItemElements(kept, Math.max(1, Math.min(3, tier)));
+        return new ItemEssences(kept, Math.max(1, Math.min(3, tier)));
     }
 
-    private static int ring(SimpleRune element) {
+    private static int ring(Essence element) {
         for (int i = 0; i < HexGrid.RING.length; i++) {
             if (HexGrid.RING[i] == element) {
                 return i;
@@ -489,7 +489,7 @@ public final class ItemElementResolver {
         return 0;
     }
 
-    private static int total(ItemElements elements) {
-        return elements.elements().values().stream().mapToInt(Integer::intValue).sum();
+    private static int total(ItemEssences elements) {
+        return elements.essences().values().stream().mapToInt(Integer::intValue).sum();
     }
 }

@@ -7,49 +7,49 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * The elements an item carries (roughly like aspects): each point pulls the symbol the item writes one section towards
+ * The essences an item carries (roughly like aspects): each point pulls the symbol the item writes one section towards
  * that element's corner. {@code tier} says how valuable the item is (1 simple, 2 valuable, 3 rare); the mortar can
  * only grind items up to its strength. Entry order matters (it breaks ties), so maps keep their insertion order.
  */
-public record ItemElements(Map<SimpleRune, Integer> elements, int tier) {
-    private static final Codec<SimpleRune> ELEMENT = Codec.STRING.comapFlatMap(id -> {
-        SimpleRune rune = SimpleRune.byId(id);
+public record ItemEssences(Map<Essence, Integer> essences, int tier) {
+    private static final Codec<Essence> ELEMENT = Codec.STRING.comapFlatMap(id -> {
+        Essence rune = Essence.byId(id);
         return rune != null ? DataResult.success(rune) : DataResult.error(() -> "Unknown element: " + id);
-    }, SimpleRune::id);
-    public static final Codec<ItemElements> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.unboundedMap(ELEMENT, Codec.intRange(1, 9)).fieldOf("elements").forGetter(ItemElements::elements),
-            Codec.intRange(1, 3).optionalFieldOf("tier", 1).forGetter(ItemElements::tier)
-    ).apply(instance, ItemElements::new));
-    public static final StreamCodec<ByteBuf, ItemElements> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.map(LinkedHashMap::new, ByteBufCodecs.VAR_INT.map(i -> SimpleRune.values()[i], SimpleRune::ordinal),
-                    ByteBufCodecs.VAR_INT), e -> new LinkedHashMap<>(e.elements),
-            ByteBufCodecs.VAR_INT, ItemElements::tier,
-            ItemElements::new);
+    }, Essence::id);
+    public static final Codec<ItemEssences> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.unboundedMap(ELEMENT, Codec.intRange(1, 9)).fieldOf("essences").forGetter(ItemEssences::essences),
+            Codec.intRange(1, 3).optionalFieldOf("tier", 1).forGetter(ItemEssences::tier)
+    ).apply(instance, ItemEssences::new));
+    public static final StreamCodec<ByteBuf, ItemEssences> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.map(LinkedHashMap::new, ByteBufCodecs.VAR_INT.map(i -> Essence.values()[i], Essence::ordinal),
+                    ByteBufCodecs.VAR_INT), e -> new LinkedHashMap<>(e.essences),
+            ByteBufCodecs.VAR_INT, ItemEssences::tier,
+            ItemEssences::new);
 
-    public ItemElements {
-        elements = new LinkedHashMap<>(elements);
+    public ItemEssences {
+        essences = new LinkedHashMap<>(essences);
     }
 
     /** Builds from alternating element/points pairs, keeping their order. */
-    public static ItemElements of(int tier, Object... pairs) {
-        Map<SimpleRune, Integer> map = new LinkedHashMap<>();
+    public static ItemEssences of(int tier, Object... pairs) {
+        Map<Essence, Integer> map = new LinkedHashMap<>();
         for (int i = 0; i < pairs.length; i += 2) {
-            map.put((SimpleRune) pairs[i], (Integer) pairs[i + 1]);
+            map.put((Essence) pairs[i], (Integer) pairs[i + 1]);
         }
-        return new ItemElements(map, tier);
+        return new ItemEssences(map, tier);
     }
 
     /** The pull in parchment units; ground in a mortar it is half as long. */
     public double[] vector(boolean ground) {
         double x = 0;
         double y = 0;
-        for (Map.Entry<SimpleRune, Integer> entry : elements.entrySet()) {
+        for (Map.Entry<Essence, Integer> entry : essences.entrySet()) {
             double[] u = HexGrid.unit(entry.getKey());
             double k = entry.getValue() * HexGrid.CELL * (ground ? 0.5 : 1);
             x = x + u[0] * k;
@@ -65,15 +65,15 @@ public record ItemElements(Map<SimpleRune, Integer> elements, int tier) {
     }
 
     /** The strongest element (the first of equals): it names the symbol the item writes. */
-    public SimpleRune main() {
-        SimpleRune best = null;
+    public Essence main() {
+        Essence best = null;
         int points = 0;
-        for (Map.Entry<SimpleRune, Integer> entry : elements.entrySet()) {
+        for (Map.Entry<Essence, Integer> entry : essences.entrySet()) {
             if (entry.getValue() > points) {
                 best = entry.getKey();
                 points = entry.getValue();
             }
         }
-        return best == null ? SimpleRune.FIRE : best;
+        return best == null ? Essence.FIRE : best;
     }
 }

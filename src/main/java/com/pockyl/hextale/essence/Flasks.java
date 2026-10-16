@@ -20,13 +20,13 @@ public final class Flasks {
         if (!EssenceFlaskItem.isFlask(held)) {
             return false;
         }
-        Essence inside = EssenceFlaskItem.contents(held);
+        EssenceMix inside = EssenceFlaskItem.contents(held);
         if (!inside.isEmpty()) {
             int poured = tank.fill(inside, false);
             if (poured <= 0) {
                 return false;
             }
-            Essence left = inside.minus(inside.part(poured));
+            EssenceMix left = inside.minus(inside.part(poured));
             ItemStack after = EssenceFlaskItem.filled(left);
             replace(player, hand, held, after);
             return true;
@@ -34,7 +34,7 @@ public final class Flasks {
         if (tank.isEmpty()) {
             return false;
         }
-        Essence drawn = tank.drain(EssenceFlaskItem.CAPACITY, false);
+        EssenceMix drawn = tank.drain(EssenceFlaskItem.CAPACITY, false);
         replace(player, hand, held, EssenceFlaskItem.filled(drawn));
         return true;
     }

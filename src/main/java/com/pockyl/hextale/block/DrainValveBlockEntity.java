@@ -10,7 +10,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-import com.pockyl.hextale.essence.Essence;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.registry.ModBlockEntities;
 
@@ -50,7 +50,7 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
     }
 
     @Override
-    public int receive(Direction side, Essence offer, boolean simulate) {
+    public int receive(Direction side, EssenceMix offer, boolean simulate) {
         if (!open() || !side.getAxis().isHorizontal()) {
             return 0;
         }

@@ -18,7 +18,7 @@ import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.essence.Reagents;
 import com.pockyl.hextale.menu.SeparatorMenu;
 import com.pockyl.hextale.research.ResearchText;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.List;
 
@@ -149,15 +149,15 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
                 warn(graphics, x + OUT_TANK_X, y + REST_Y, 16, OUT_TANK_H);
             }
         }
-        SimpleRune element = menu.charge() > 0 && menu.chargeElement() >= 0 ? SimpleRune.values()[menu.chargeElement()]
-                : separator == null ? null : Reagents.element(separator.getItem(SeparatorBlockEntity.REAGENT));
+        Essence element = menu.charge() > 0 && menu.chargeEssence() >= 0 ? Essence.values()[menu.chargeEssence()]
+                : separator == null ? null : Reagents.essence(separator.getItem(SeparatorBlockEntity.REAGENT));
         int rx = x + SeparatorMenu.REAGENT_X;
         int ry = y + SeparatorMenu.REAGENT_Y;
         // The element the reagent binds, above it; its charge under it.
         if (element != null) {
             PixelArt.radical(graphics, element, rx + 3, ry - 13, 9, PixelArt.argb(element.color(), 1));
             if (isOver(mouseX, mouseY, rx, ry - 14, 16, 12)) {
-                tooltip(List.of(Component.translatable("gui.hextale.separator.binds", ResearchText.element(element))));
+                tooltip(List.of(Component.translatable("gui.hextale.separator.binds", ResearchText.essence(element))));
             }
         }
         if ("no_reagent".equals(blocked)) {

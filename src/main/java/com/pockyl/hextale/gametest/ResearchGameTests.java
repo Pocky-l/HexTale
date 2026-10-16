@@ -37,7 +37,7 @@ import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.block.InkSupply;
 import com.pockyl.hextale.block.SeparatorBlock;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
-import com.pockyl.hextale.essence.Essence;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.block.Requirement;
 import com.pockyl.hextale.block.ResearchTableBlock;
@@ -52,8 +52,8 @@ import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.HexGrid;
-import com.pockyl.hextale.research.ItemElementResolver;
-import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.ItemEssenceResolver;
+import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.research.ResearchItems;
@@ -63,7 +63,7 @@ import com.pockyl.hextale.research.RuneBoard;
 import com.pockyl.hextale.research.RuneBoards;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -181,14 +181,14 @@ public final class ResearchGameTests {
         RuneBoard board = RuneBoards.get(SMELTING);
         int[] thread = RuneBoards.plainThread(board);
         ResearchSheet.Trace trace = ResearchSheet.trace(board, thread, ResearchSheet.Allowance.NONE);
-        int[] ink = new int[SimpleRune.values().length];
+        int[] ink = new int[Essence.values().length];
         for (int i = 1; i < thread.length; i++) {
-            SimpleRune colour = ResearchSheet.toward(thread[i - 1], thread[i]);
+            Essence colour = ResearchSheet.toward(thread[i - 1], thread[i]);
             helper.assertTrue(trace.paying()[i] == colour, "section " + i + " costs the ink of its direction");
             ink[colour.ordinal()]++;
         }
-        java.util.Set<SimpleRune> fromCentre = java.util.EnumSet.noneOf(SimpleRune.class);
-        java.util.Set<SimpleRune> anywhere = java.util.EnumSet.noneOf(SimpleRune.class);
+        java.util.Set<Essence> fromCentre = java.util.EnumSet.noneOf(Essence.class);
+        java.util.Set<Essence> anywhere = java.util.EnumSet.noneOf(Essence.class);
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
             for (int next : HexGrid.neighbours(cell)) {
                 anywhere.add(ResearchSheet.toward(cell, next));
@@ -232,17 +232,17 @@ public final class ResearchGameTests {
     @HexTest
     public static void everyItemCarriesElements(GameTestHelper helper) {
         var server = helper.getLevel().getServer();
-        Map<Item, ItemElements> all = ItemElementResolver.resolve(server.getRecipeManager(), server.registryAccess());
+        Map<Item, ItemEssences> all = ItemEssenceResolver.resolve(server.getRecipeManager(), server.registryAccess());
         for (Item item : BuiltInRegistries.ITEM) {
             if (item == Items.AIR) {
                 continue;
             }
-            ItemElements elements = all.get(item);
+            ItemEssences elements = all.get(item);
             helper.assertTrue(elements != null, BuiltInRegistries.ITEM.getKey(item) + " carries elements");
-            helper.assertTrue(!elements.elements().isEmpty() && elements.elements().size() <= 3, item + ": one to three elements");
-            elements.elements().values().forEach(points -> helper.assertTrue(points >= 1 && points <= 9, item + ": strength 1-9"));
+            helper.assertTrue(!elements.essences().isEmpty() && elements.essences().size() <= 3, item + ": one to three elements");
+            elements.essences().values().forEach(points -> helper.assertTrue(points >= 1 && points <= 9, item + ": strength 1-9"));
         }
-        for (Map.Entry<Item, ItemElements> entry : ResearchItems.canonical().entrySet()) {
+        for (Map.Entry<Item, ItemEssences> entry : ResearchItems.canonical().entrySet()) {
             helper.assertTrue(entry.getValue().equals(all.get(entry.getKey())), entry.getKey() + " keeps its base elements");
         }
         StringBuilder sample = new StringBuilder();
@@ -275,21 +275,21 @@ public final class ResearchGameTests {
 
     @HexTest
     public static void echoesStopAtTheNearestElement(GameTestHelper helper) {
-        ItemElements elements = ItemElements.of(1, SimpleRune.FIRE, 3, SimpleRune.WATER, 1);
+        ItemEssences elements = ItemEssences.of(1, Essence.FIRE, 3, Essence.WATER, 1);
         ItemStudy study = new ItemStudy();
         study.begin(Items.STICK, elements);
-        int fire = ItemStudy.hiding(SimpleRune.FIRE, 3);
-        int water = ItemStudy.hiding(SimpleRune.WATER, 1);
+        int fire = ItemStudy.hiding(Essence.FIRE, 3);
+        int water = ItemStudy.hiding(Essence.WATER, 1);
         helper.assertTrue(study.maxStrikes() == 9, "three strikes plus three per element");
-        int probe = ItemStudy.string(ring(SimpleRune.FIRE))[0];
+        int probe = ItemStudy.string(ring(Essence.FIRE))[0];
         ItemStudy.Echo first = study.strike(probe, elements);
         int nearest = Math.min(HexGrid.steps(probe, fire), HexGrid.steps(probe, water));
         helper.assertTrue(first != null && first.radius() == nearest, "the ripple stops at the nearest element");
         helper.assertFalse(study.possible(probe), "inside the ripple nothing hides");
         helper.assertTrue(study.strike(probe, elements) == null, "a section is struck once");
         ItemStudy.Echo hit = study.strike(fire, elements);
-        helper.assertTrue(hit != null && hit.radius() == 0 && study.isRevealed(SimpleRune.FIRE), "striking the element reveals it");
-        helper.assertFalse(study.possible(ItemStudy.string(ring(SimpleRune.FIRE))[0]), "a revealed string is quiet");
+        helper.assertTrue(hit != null && hit.radius() == 0 && study.isRevealed(Essence.FIRE), "striking the element reveals it");
+        helper.assertFalse(study.possible(ItemStudy.string(ring(Essence.FIRE))[0]), "a revealed string is quiet");
         int aside = -1;
         for (int n : HexGrid.neighbours(fire)) {
             if (aside < 0 && n != water && !study.struck(n)) {
@@ -311,7 +311,7 @@ public final class ResearchGameTests {
         int used = 0;
         Map<Integer, List<Integer>> byCount = new java.util.TreeMap<>();
         for (Item item : BuiltInRegistries.ITEM) {
-            ItemElements elements = ResearchItems.of(item);
+            ItemEssences elements = ResearchItems.of(item);
             if (elements == null) {
                 continue;
             }
@@ -325,7 +325,7 @@ public final class ResearchGameTests {
             if (study.won(elements)) {
                 won++;
                 used += study.strikes();
-                byCount.computeIfAbsent(elements.elements().size(), k -> new ArrayList<>()).add(study.strikes());
+                byCount.computeIfAbsent(elements.essences().size(), k -> new ArrayList<>()).add(study.strikes());
             }
         }
         Hextale.LOGGER.info("Echoes: a sensible player studies {}/{} items, {} strikes on average", won, items,
@@ -343,7 +343,7 @@ public final class ResearchGameTests {
      * What the table shows a player: the hot sections on the rim of the newest open echo (else every possible section)
      * are the suspects; strike the section whose answer splits them best, a suspect itself when two or fewer are left.
      */
-    private static int sensibleStrike(ItemStudy study, ItemElements elements) {
+    private static int sensibleStrike(ItemStudy study, ItemEssences elements) {
         List<Integer> suspects = new ArrayList<>();
         ItemStudy.Echo clue = null;
         for (ItemStudy.Echo echo : study.echoes()) {
@@ -400,8 +400,8 @@ public final class ResearchGameTests {
         table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.GLASS, 3));
         table.studySlotChanged(player);
         helper.assertTrue(table.isStudyingItem() && table.study().item() == Items.GLASS, "glass lies on the parchment, no orb needed");
-        ItemElements elements = ResearchItems.of(Items.GLASS);
-        for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
+        ItemEssences elements = ResearchItems.of(Items.GLASS);
+        for (Map.Entry<Essence, Integer> entry : elements.essences().entrySet()) {
             table.strike(player, ItemStudy.hiding(entry.getKey(), entry.getValue()));
         }
         Identifier glass = BuiltInRegistries.ITEM.getKey(Items.GLASS);
@@ -414,10 +414,10 @@ public final class ResearchGameTests {
         // A lost study: strikes away from the elements until they run out; the item is used once.
         table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.FEATHER, 2));
         table.studySlotChanged(player);
-        ItemElements feather = ResearchItems.of(Items.FEATHER);
+        ItemEssences feather = ResearchItems.of(Items.FEATHER);
         for (int cell = 0; cell < HexGrid.COUNT && table.study().isActive(feather); cell++) {
             boolean answer = false;
-            for (Map.Entry<SimpleRune, Integer> entry : feather.elements().entrySet()) {
+            for (Map.Entry<Essence, Integer> entry : feather.essences().entrySet()) {
                 answer |= ItemStudy.hiding(entry.getKey(), entry.getValue()) == cell;
             }
             if (!answer) {
@@ -433,7 +433,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    private static int ring(SimpleRune element) {
+    private static int ring(Essence element) {
         for (int i = 0; i < HexGrid.RING.length; i++) {
             if (HexGrid.RING[i] == element) {
                 return i;
@@ -448,13 +448,13 @@ public final class ResearchGameTests {
 
     @HexTest
     public static void essencePartsKeepTheirProportions(GameTestHelper helper) {
-        Essence mixture = Essence.of(java.util.Map.of(SimpleRune.LIFE, 12, SimpleRune.EARTH, 4));
-        Essence part = mixture.part(8);
-        helper.assertTrue(part.get(SimpleRune.LIFE) == 6 && part.get(SimpleRune.EARTH) == 2, "a part keeps three life to one earth: " + part);
+        EssenceMix mixture = EssenceMix.of(java.util.Map.of(Essence.LIFE, 12, Essence.EARTH, 4));
+        EssenceMix part = mixture.part(8);
+        helper.assertTrue(part.get(Essence.LIFE) == 6 && part.get(Essence.EARTH) == 2, "a part keeps three life to one earth: " + part);
         helper.assertTrue(mixture.minus(part).total() == 8, "what is left is the rest");
-        helper.assertTrue(mixture.pureElement() == null && mixture.kinds() == 2, "two elements make a mixture");
-        helper.assertTrue(Essence.pure(SimpleRune.FIRE, 3).pureElement() == SimpleRune.FIRE, "one element makes a concentrate");
-        Essence odd = Essence.of(java.util.Map.of(SimpleRune.FIRE, 1, SimpleRune.WATER, 1, SimpleRune.AIR, 1));
+        helper.assertTrue(mixture.pureEssence() == null && mixture.kinds() == 2, "two elements make a mixture");
+        helper.assertTrue(EssenceMix.pure(Essence.FIRE, 3).pureEssence() == Essence.FIRE, "one element makes a concentrate");
+        EssenceMix odd = EssenceMix.of(java.util.Map.of(Essence.FIRE, 1, Essence.WATER, 1, Essence.AIR, 1));
         helper.assertTrue(odd.part(2).total() == 2, "rounding never loses or makes drops");
         helper.succeed();
     }
@@ -468,9 +468,9 @@ public final class ResearchGameTests {
         alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.OAK_PLANKS));
         alembic.setItem(AlembicBlockEntity.FLASK_IN, new ItemStack(Items.GLASS_BOTTLE, 2));
         alembic.fillWater(1000, false);
-        Essence expected = Essence.boiled(ResearchItems.of(Items.OAK_PLANKS), AlembicBlockEntity.DROPS_PER_POINT);
+        EssenceMix expected = EssenceMix.boiled(ResearchItems.of(Items.OAK_PLANKS), AlembicBlockEntity.DROPS_PER_POINT);
         helper.succeedWhen(() -> {
-            Essence boiled = EssenceFlaskItem.contents(alembic.getItem(AlembicBlockEntity.FLASK_OUT));
+            EssenceMix boiled = EssenceFlaskItem.contents(alembic.getItem(AlembicBlockEntity.FLASK_OUT));
             helper.assertTrue(boiled.equals(expected), "oak planks boil into " + expected + ", got " + boiled);
             helper.assertTrue(alembic.getItem(AlembicBlockEntity.FLASK_IN).getCount() == 1, "one glass bottle was used");
             helper.assertTrue(alembic.water() == 1000 - AlembicBlockEntity.WATER_PER_ITEM, "and the item took its water");
@@ -511,7 +511,7 @@ public final class ResearchGameTests {
         helper.setBlock(tankAt.below(), ModBlocks.BRASS_PIPE.get());
         helper.setBlock(valveAt, ModBlocks.DRAIN_VALVE.get());
         EssenceTankBlockEntity tank = helper.getBlockEntity(tankAt, EssenceTankBlockEntity.class);
-        tank.tank().set(Essence.pure(SimpleRune.FIRE, 12));
+        tank.tank().set(EssenceMix.pure(Essence.FIRE, 12));
         helper.runAfterDelay(30, () -> {
             helper.assertTrue(tank.tank().amount() == 12, "a shut valve lets nothing out");
             helper.setBlock(valveAt, helper.getBlockState(valveAt).setValue(DrainValveBlock.OPEN, true));
@@ -537,16 +537,16 @@ public final class ResearchGameTests {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState());
         SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
-        Essence mixture = Essence.of(java.util.Map.of(SimpleRune.LIFE, 8, SimpleRune.EARTH, 8));
+        EssenceMix mixture = EssenceMix.of(java.util.Map.of(Essence.LIFE, 8, Essence.EARTH, 8));
         separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(mixture));
         separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 3));
         separator.setItem(SeparatorBlockEntity.SUPPLY, new ItemStack(Items.GLASS_BOTTLE, 2));
         helper.succeedWhen(() -> {
-            Essence rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
-            Essence drawn = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.EXTRACT_OUT));
-            helper.assertTrue(rest.equals(Essence.pure(SimpleRune.LIFE, 8).asUnknown()) && rest.pureElement() == null,
+            EssenceMix rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
+            EssenceMix drawn = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.EXTRACT_OUT));
+            helper.assertTrue(rest.equals(EssenceMix.pure(Essence.LIFE, 8).asUnknown()) && rest.pureEssence() == null,
                     "clay leaves the life as an unknown essence, no concentrate, got " + rest);
-            helper.assertTrue(drawn.equals(Essence.pure(SimpleRune.EARTH, 8)), "and draws out pure earth, got " + drawn);
+            helper.assertTrue(drawn.equals(EssenceMix.pure(Essence.EARTH, 8)), "and draws out pure earth, got " + drawn);
             helper.assertTrue(separator.getItem(SeparatorBlockEntity.REAGENT).getCount() == 2, "one clay ball binds eight drops");
         });
     }
@@ -556,7 +556,7 @@ public final class ResearchGameTests {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState());
         SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
-        separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(Essence.of(java.util.Map.of(SimpleRune.LIFE, 8, SimpleRune.EARTH, 8))));
+        separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(EssenceMix.of(java.util.Map.of(Essence.LIFE, 8, Essence.EARTH, 8))));
         helper.runAfterDelay(80, () -> {
             helper.assertTrue(separator.mix().amount() == 16 && separator.rest().isEmpty(), "the mixture waits for a reagent");
             helper.assertTrue("no_reagent".equals(separator.blocked()), "and the screen says so");
@@ -564,7 +564,7 @@ public final class ResearchGameTests {
             helper.runAfterDelay(100, () -> {
                 // A feather binds air; the mixture has none, so all of it passes on as the rest - bottled in the glass
                 // bottle the poured one left.
-                Essence rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
+                EssenceMix rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
                 helper.assertTrue(separator.mix().isEmpty() && rest.total() == 16 && separator.extract().isEmpty(),
                         "a mixture without the reagent's element passes through, got rest " + rest);
                 helper.assertTrue(separator.getItem(SeparatorBlockEntity.REAGENT).getCount() == 1, "and spends no reagent");
@@ -587,13 +587,13 @@ public final class ResearchGameTests {
         EssenceTankBlockEntity source = helper.getBlockEntity(at.south(2).above(), EssenceTankBlockEntity.class);
         EssenceTankBlockEntity sink = helper.getBlockEntity(at.north(2), EssenceTankBlockEntity.class);
         SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
-        source.tank().set(Essence.of(java.util.Map.of(SimpleRune.LIFE, 12, SimpleRune.EARTH, 12)));
+        source.tank().set(EssenceMix.of(java.util.Map.of(Essence.LIFE, 12, Essence.EARTH, 12)));
         separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 4));
         helper.succeedWhen(() -> {
             helper.assertTrue(source.tank().isEmpty() && separator.mix().isEmpty(), "the mixture was worked off");
-            helper.assertTrue(sink.tank().contents().equals(Essence.pure(SimpleRune.LIFE, 12).asUnknown()),
+            helper.assertTrue(sink.tank().contents().equals(EssenceMix.pure(Essence.LIFE, 12).asUnknown()),
                     "the rest ran on into the tank in front, got " + sink.tank().contents() + ", separator rest " + separator.rest().contents());
-            helper.assertTrue(separator.extract().contents().equals(Essence.pure(SimpleRune.EARTH, 12)),
+            helper.assertTrue(separator.extract().contents().equals(EssenceMix.pure(Essence.EARTH, 12)),
                     "the concentrate waits in the separator, got " + separator.extract().contents());
         });
     }
@@ -610,11 +610,11 @@ public final class ResearchGameTests {
         helper.setBlock(at.north().east(2), ModBlocks.ESSENCE_TANK.get());
         EssenceTankBlockEntity tank = helper.getBlockEntity(at.north().east(2), EssenceTankBlockEntity.class);
         SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
-        separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(Essence.of(java.util.Map.of(SimpleRune.EARTH, 8, SimpleRune.AIR, 8))));
+        separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(EssenceMix.of(java.util.Map.of(Essence.EARTH, 8, Essence.AIR, 8))));
         separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 2));
         helper.runAfterDelay(200, () -> {
             helper.assertTrue(separator.mix().isEmpty(), "the mixture was worked off, left " + separator.mix().contents());
-            helper.assertTrue(separator.rest().contents().equals(Essence.pure(SimpleRune.AIR, 8).asUnknown()),
+            helper.assertTrue(separator.rest().contents().equals(EssenceMix.pure(Essence.AIR, 8).asUnknown()),
                     "the air stays in the separator, got rest " + separator.rest().contents() + ", tank " + tank.tank().contents());
             helper.assertTrue(tank.tank().isEmpty(), "the tank feeding back into the same pipes takes nothing");
             helper.succeed();
@@ -637,7 +637,7 @@ public final class ResearchGameTests {
         entity.cycle(SeparatorBlock.Side.LEFT);
         helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.PRODUCT,
                 "the joint follows the face's new mode");
-        helper.assertTrue(entity.receive(Direction.EAST, Essence.pure(SimpleRune.FIRE, 4), true) == 0, "an outlet takes nothing in");
+        helper.assertTrue(entity.receive(Direction.EAST, EssenceMix.pure(Essence.FIRE, 4), true) == 0, "an outlet takes nothing in");
         helper.setBlock(at.east(), Blocks.AIR);
         helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.NONE,
                 "the joint goes without a pipe");
@@ -654,9 +654,9 @@ public final class ResearchGameTests {
         helper.setBlock(to, ModBlocks.ESSENCE_TANK.get());
         EssenceTankBlockEntity source = helper.getBlockEntity(from, EssenceTankBlockEntity.class);
         EssenceTankBlockEntity target = helper.getBlockEntity(to, EssenceTankBlockEntity.class);
-        source.tank().set(Essence.pure(SimpleRune.WATER, 12));
+        source.tank().set(EssenceMix.pure(Essence.WATER, 12));
         helper.succeedWhen(() -> {
-            helper.assertTrue(target.tank().contents().equals(Essence.pure(SimpleRune.WATER, 12)),
+            helper.assertTrue(target.tank().contents().equals(EssenceMix.pure(Essence.WATER, 12)),
                     "the water ran down the pipe into the other tank, got " + target.tank().contents());
             helper.assertTrue(source.tank().isEmpty(), "the first tank is empty");
         });
@@ -673,15 +673,15 @@ public final class ResearchGameTests {
         for (BlockPos pos : new BlockPos[]{mixture, fire, farAway}) {
             helper.setBlock(pos, ModBlocks.ESSENCE_TANK.get());
         }
-        helper.getBlockEntity(mixture, EssenceTankBlockEntity.class).tank().set(Essence.of(java.util.Map.of(SimpleRune.LIFE, 8, SimpleRune.EARTH, 8)));
-        helper.getBlockEntity(fire, EssenceTankBlockEntity.class).tank().set(Essence.pure(SimpleRune.FIRE, 16));
-        helper.getBlockEntity(farAway, EssenceTankBlockEntity.class).tank().set(Essence.pure(SimpleRune.WATER, 16));
+        helper.getBlockEntity(mixture, EssenceTankBlockEntity.class).tank().set(EssenceMix.of(java.util.Map.of(Essence.LIFE, 8, Essence.EARTH, 8)));
+        helper.getBlockEntity(fire, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.FIRE, 16));
+        helper.getBlockEntity(farAway, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.WATER, 16));
         InkSupply supply = table.inkSupply();
-        helper.assertTrue(supply.available()[SimpleRune.FIRE.ordinal()] == 16
-                && supply.capacity()[SimpleRune.FIRE.ordinal()] == EssenceTankBlockEntity.CAPACITY, "a fire concentrate next to the desk is fire ink");
-        helper.assertTrue(supply.available()[SimpleRune.LIFE.ordinal()] == 0, "a mixture is no ink");
-        helper.assertTrue(supply.capacity()[SimpleRune.WATER.ordinal()] == 0, "a tank too far away does not count");
-        supply.spend(ink(SimpleRune.FIRE, 5));
+        helper.assertTrue(supply.available()[Essence.FIRE.ordinal()] == 16
+                && supply.capacity()[Essence.FIRE.ordinal()] == EssenceTankBlockEntity.CAPACITY, "a fire concentrate next to the desk is fire ink");
+        helper.assertTrue(supply.available()[Essence.LIFE.ordinal()] == 0, "a mixture is no ink");
+        helper.assertTrue(supply.capacity()[Essence.WATER.ordinal()] == 0, "a tank too far away does not count");
+        supply.spend(ink(Essence.FIRE, 5));
         helper.assertTrue(helper.getBlockEntity(fire, EssenceTankBlockEntity.class).tank().amount() == 11, "spent ink leaves the tank");
         helper.succeed();
     }
@@ -698,7 +698,7 @@ public final class ResearchGameTests {
         table.select(player, SMELTING);
         table.thread(player, thread);
         helper.assertTrue(table.sheet().length() == 0, "no thread without ink");
-        Map<SimpleRune, EssenceTankBlockEntity> tanks = inkTanks(helper, 64);
+        Map<Essence, EssenceTankBlockEntity> tanks = inkTanks(helper, 64);
         int[] part = Arrays.copyOf(thread, 3);
         table.thread(player, part);
         helper.assertTrue(table.sheet().length() == 2 && !table.sheet().isDone(), "a part of the thread is kept");
@@ -716,7 +716,7 @@ public final class ResearchGameTests {
         helper.assertFalse(knowledge.knows(SMELTING), "the rune is not learned until its scroll is studied");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "the orb went into the rune");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "finishing takes no more paper"); 
-        for (SimpleRune element : SimpleRune.values()) {
+        for (Essence element : Essence.values()) {
             helper.assertTrue(tanks.get(element).tank().amount() == 64 - trace.ink()[element.ordinal()],
                     element.id() + " ink was spent from its tank by the thread");
         }
@@ -979,21 +979,21 @@ public final class ResearchGameTests {
     }
 
     /** An Essence Tank of each element's concentrate next to the test table, {@code drops} in each. */
-    private static Map<SimpleRune, EssenceTankBlockEntity> inkTanks(GameTestHelper helper, int drops) {
-        Map<SimpleRune, EssenceTankBlockEntity> tanks = new java.util.EnumMap<>(SimpleRune.class);
-        SimpleRune[] elements = SimpleRune.values();
+    private static Map<Essence, EssenceTankBlockEntity> inkTanks(GameTestHelper helper, int drops) {
+        Map<Essence, EssenceTankBlockEntity> tanks = new java.util.EnumMap<>(Essence.class);
+        Essence[] elements = Essence.values();
         for (int i = 0; i < elements.length; i++) {
             BlockPos pos = new BlockPos(-2 + i % 5, TABLE.getY() + i / 5, TABLE.getZ() + 2);
             helper.setBlock(pos, ModBlocks.ESSENCE_TANK.get());
             EssenceTankBlockEntity tank = helper.getBlockEntity(pos, EssenceTankBlockEntity.class);
-            tank.tank().set(Essence.pure(elements[i], drops));
+            tank.tank().set(EssenceMix.pure(elements[i], drops));
             tanks.put(elements[i], tank);
         }
         return tanks;
     }
 
-    private static int[] ink(SimpleRune element, int drops) {
-        int[] ink = new int[SimpleRune.values().length];
+    private static int[] ink(Essence element, int drops) {
+        int[] ink = new int[Essence.values().length];
         ink[element.ordinal()] = drops;
         return ink;
     }

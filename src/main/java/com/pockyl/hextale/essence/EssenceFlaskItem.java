@@ -11,7 +11,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.ResearchText;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.function.Consumer;
 
@@ -27,8 +27,8 @@ public class EssenceFlaskItem extends Item {
         super(properties);
     }
 
-    public static Essence contents(ItemStack stack) {
-        return stack.getOrDefault(ModDataComponents.ESSENCE.get(), Essence.EMPTY);
+    public static EssenceMix contents(ItemStack stack) {
+        return stack.getOrDefault(ModDataComponents.ESSENCE.get(), EssenceMix.EMPTY);
     }
 
     /** A glass bottle or a bottle of essence. */
@@ -42,7 +42,7 @@ public class EssenceFlaskItem extends Item {
     }
 
     /** A bottle holding this essence (a glass bottle for no essence). */
-    public static ItemStack filled(Essence essence) {
+    public static ItemStack filled(EssenceMix essence) {
         if (essence.isEmpty()) {
             return new ItemStack(Items.GLASS_BOTTLE);
         }
@@ -53,10 +53,10 @@ public class EssenceFlaskItem extends Item {
 
     @Override
     public Component getName(ItemStack stack) {
-        Essence essence = contents(stack);
-        SimpleRune pure = essence.pureElement();
+        EssenceMix essence = contents(stack);
+        Essence pure = essence.pureEssence();
         if (pure != null) {
-            return Component.translatable("item.hextale.essence_flask.concentrate", ResearchText.element(pure));
+            return Component.translatable("item.hextale.essence_flask.concentrate", ResearchText.essence(pure));
         }
         if (essence.isUnknown()) {
             return Component.translatable("item.hextale.essence_flask.unknown");
@@ -67,7 +67,7 @@ public class EssenceFlaskItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
                                 TooltipFlag flag) {
-        Essence essence = contents(stack);
+        EssenceMix essence = contents(stack);
         if (essence.isEmpty()) {
             return;
         }
@@ -75,7 +75,7 @@ public class EssenceFlaskItem extends Item {
         tooltip.accept(Component.translatable("item.hextale.essence_flask.drops", essence.total(), CAPACITY).withStyle(ChatFormatting.GRAY));
         if (essence.isUnknown()) {
             tooltip.accept(Component.translatable("item.hextale.essence_flask.unknown.hint").withStyle(ChatFormatting.DARK_GRAY));
-        } else if (essence.pureElement() == null) {
+        } else if (essence.pureEssence() == null) {
             tooltip.accept(Component.translatable("item.hextale.essence_flask.mixture.hint").withStyle(ChatFormatting.DARK_GRAY));
         }
     }

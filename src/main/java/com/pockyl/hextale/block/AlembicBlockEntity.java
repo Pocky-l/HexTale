@@ -29,14 +29,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-import com.pockyl.hextale.essence.Essence;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.menu.AlembicMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
-import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ResearchItems;
 
 import java.util.UUID;
@@ -168,13 +168,13 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
 
     private boolean boil() {
         ItemStack inside = input();
-        ItemElements elements = ResearchItems.of(inside);
+        ItemEssences elements = ResearchItems.of(inside);
         if (!heated() || elements == null || water < WATER_PER_ITEM) {
             boolean had = progress != 0;
             progress = 0;
             return had;
         }
-        Essence boiled = Essence.boiled(elements, DROPS_PER_POINT);
+        EssenceMix boiled = EssenceMix.boiled(elements, DROPS_PER_POINT);
         if (tank.space() < boiled.total()) {
             return false;
         }
@@ -211,7 +211,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         if (tank.isEmpty()) {
             return false;
         }
-        Essence offer = tank.drain(EssenceTankBlockEntity.FLOW, true);
+        EssenceMix offer = tank.drain(EssenceTankBlockEntity.FLOW, true);
         int moved = EssenceNetwork.push(level, worldPosition, getBlockState().getValue(AlembicBlock.FACING), offer);
         if (moved > 0) {
             tank.remove(offer.part(moved));

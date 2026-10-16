@@ -4,7 +4,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Item;
 
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.Map;
 
@@ -19,19 +19,19 @@ public final class ResearchText {
     }
 
     /** The element's name in its colour. */
-    public static MutableComponent element(SimpleRune element) {
+    public static MutableComponent essence(Essence element) {
         return Component.translatable(element.translationKey()).withColor(element.color());
     }
 
     /** "Fire 2, Air 1" with coloured names. */
-    public static MutableComponent elements(ItemElements elements) {
+    public static MutableComponent elements(ItemEssences elements) {
         MutableComponent out = Component.empty();
         boolean first = true;
-        for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
+        for (Map.Entry<Essence, Integer> entry : elements.essences().entrySet()) {
             if (!first) {
                 out.append(", ");
             }
-            out.append(element(entry.getKey())).append(" " + entry.getValue());
+            out.append(essence(entry.getKey())).append(" " + entry.getValue());
             first = false;
         }
         return out;

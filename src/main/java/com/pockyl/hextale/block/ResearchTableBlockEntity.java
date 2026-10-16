@@ -48,7 +48,7 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.HexGrid;
-import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.research.ResearchItems;
@@ -59,7 +59,7 @@ import com.pockyl.hextale.research.RuneBoard;
 import com.pockyl.hextale.research.RuneBoards;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.Map;
 
@@ -303,11 +303,11 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     public void studySlotChanged(ServerPlayer player) {
         ItemStack stack = items.get(STUDY);
         Item current = study.item();
-        ItemElements running = current == null ? null : ResearchItems.of(current);
+        ItemEssences running = current == null ? null : ResearchItems.of(current);
         if (studyingItem && running != null && study.started() && study.isActive(running)) {
             return;
         }
-        ItemElements elements = ResearchItems.of(stack);
+        ItemEssences elements = ResearchItems.of(stack);
         if (elements != null && !studied(player, stack.getItem()) && Requirement.diary(this, player) == null) {
             if (!studyingItem || current != stack.getItem() || study.started()) {
                 ResearchersDiaryItem.sign(items.get(DIARY), player);
@@ -325,7 +325,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     /** A click on a finished study: try a lost item again, or put the study away. */
     public void closeStudy(ServerPlayer player) {
         Item current = study.item();
-        ItemElements running = current == null ? null : ResearchItems.of(current);
+        ItemEssences running = current == null ? null : ResearchItems.of(current);
         if (!studyingItem || running != null && study.isActive(running)) {
             return;
         }
@@ -338,7 +338,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     /** Strikes a section of the item's parchment. The first strike takes one of the item and a paper. */
     public void strike(ServerPlayer player, int cell) {
         Item item = study.item();
-        ItemElements elements = item == null ? null : ResearchItems.of(item);
+        ItemEssences elements = item == null ? null : ResearchItems.of(item);
         if (!studyingItem || elements == null || Requirement.diary(this, player) != null || !study.canStrike(cell, elements)) {
             return;
         }
@@ -405,7 +405,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         }
     }
 
-    private void pointEffects(SimpleRune element) {
+    private void pointEffects(Essence element) {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }

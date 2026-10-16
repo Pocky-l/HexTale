@@ -9,7 +9,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
-import com.pockyl.hextale.essence.Essence;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.item.DiaryOwner;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
@@ -31,9 +31,9 @@ public final class ModDataComponents {
                     .persistent(DiaryOwner.CODEC).networkSynchronized(DiaryOwner.STREAM_CODEC));
 
     /** The essence in a flask. */
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Essence>> ESSENCE =
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<EssenceMix>> ESSENCE =
             COMPONENTS.registerComponentType("essence", builder -> builder
-                    .persistent(Essence.CODEC).networkSynchronized(Essence.STREAM_CODEC));
+                    .persistent(EssenceMix.CODEC).networkSynchronized(EssenceMix.STREAM_CODEC));
 
     private ModDataComponents() {
     }

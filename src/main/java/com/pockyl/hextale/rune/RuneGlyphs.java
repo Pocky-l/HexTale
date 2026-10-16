@@ -23,7 +23,7 @@ public final class RuneGlyphs {
     }
 
     /** The simple rune's radical in the unit box. */
-    public static List<float[]> radical(SimpleRune rune) {
+    public static List<float[]> radical(Essence rune) {
         return rune.radical();
     }
 

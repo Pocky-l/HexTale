@@ -6,7 +6,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.Hextale;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import org.jspecify.annotations.Nullable;
 
@@ -24,21 +24,21 @@ public final class Reagents {
 
     @SuppressWarnings("unchecked")
     private static TagKey<Item>[] tags() {
-        TagKey<Item>[] out = new TagKey[SimpleRune.values().length];
-        for (SimpleRune element : SimpleRune.values()) {
+        TagKey<Item>[] out = new TagKey[Essence.values().length];
+        for (Essence element : Essence.values()) {
             out[element.ordinal()] = TagKey.create(Registries.ITEM, Hextale.id("reagents/" + element.id()));
         }
         return out;
     }
 
-    public static TagKey<Item> tag(SimpleRune element) {
+    public static TagKey<Item> tag(Essence element) {
         return TAGS[element.ordinal()];
     }
 
     /** The element this item binds, or null when it is no reagent. */
     @Nullable
-    public static SimpleRune element(ItemStack stack) {
-        for (SimpleRune element : SimpleRune.values()) {
+    public static Essence essence(ItemStack stack) {
+        for (Essence element : Essence.values()) {
             if (stack.is(TAGS[element.ordinal()])) {
                 return element;
             }

@@ -4,8 +4,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
-import com.pockyl.hextale.essence.Essence;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +19,11 @@ public final class InkSupply {
     public static final int REACH = 2;
 
     private final List<List<EssenceTankBlockEntity>> tanks = new ArrayList<>();
-    private final int[] available = new int[SimpleRune.values().length];
-    private final int[] capacity = new int[SimpleRune.values().length];
+    private final int[] available = new int[Essence.values().length];
+    private final int[] capacity = new int[Essence.values().length];
 
     private InkSupply() {
-        for (int i = 0; i < SimpleRune.values().length; i++) {
+        for (int i = 0; i < Essence.values().length; i++) {
             tanks.add(new ArrayList<>());
         }
     }
@@ -36,7 +36,7 @@ public final class InkSupply {
         BlockPos max = new BlockPos(Math.max(main.getX(), side.getX()) + REACH, main.getY() + 1, Math.max(main.getZ(), side.getZ()) + REACH);
         for (BlockPos pos : BlockPos.betweenClosed(min, max)) {
             if (level.getBlockEntity(pos) instanceof EssenceTankBlockEntity tank) {
-                SimpleRune element = tank.tank().contents().pureElement();
+                Essence element = tank.tank().contents().pureEssence();
                 if (element != null) {
                     supply.tanks.get(element.ordinal()).add(tank);
                     supply.available[element.ordinal()] += tank.tank().amount();
@@ -47,7 +47,7 @@ public final class InkSupply {
         return supply;
     }
 
-    /** Drops of each element's concentrate around the desk ({@link SimpleRune#ordinal()}). */
+    /** Drops of each element's concentrate around the desk ({@link Essence#ordinal()}). */
     public int[] available() {
         return available;
     }
@@ -66,7 +66,7 @@ public final class InkSupply {
                     break;
                 }
                 int taken = Math.min(left, tank.tank().amount());
-                tank.tank().remove(Essence.pure(SimpleRune.values()[e], taken));
+                tank.tank().remove(EssenceMix.pure(Essence.values()[e], taken));
                 tank.setChanged();
                 left -= taken;
             }

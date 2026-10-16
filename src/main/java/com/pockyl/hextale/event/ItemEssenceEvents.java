@@ -8,15 +8,15 @@ import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 
 import com.pockyl.hextale.Hextale;
-import com.pockyl.hextale.network.ItemElementsPayload;
+import com.pockyl.hextale.network.ItemEssencesPayload;
 import com.pockyl.hextale.network.ModNetwork;
-import com.pockyl.hextale.research.ItemElementResolver;
-import com.pockyl.hextale.research.ItemElementTable;
+import com.pockyl.hextale.research.ItemEssenceResolver;
+import com.pockyl.hextale.research.ItemEssenceTable;
 
 /** Resolves the elements of every item when the server starts and when data packs reload, and tells the clients. */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
-public final class ItemElementEvents {
-    private ItemElementEvents() {
+public final class ItemEssenceEvents {
+    private ItemEssenceEvents() {
     }
 
     @SubscribeEvent
@@ -29,17 +29,17 @@ public final class ItemElementEvents {
         if (event.getPlayer() == null) {
             // /reload: recipes and the data map may have changed.
             resolve(event.getPlayerList().getServer());
-        } else if (ItemElementTable.isEmpty()) {
+        } else if (ItemEssenceTable.isEmpty()) {
             resolve(event.getPlayerList().getServer());
         }
-        event.getRelevantPlayers().forEach(ItemElementEvents::send);
+        event.getRelevantPlayers().forEach(ItemEssenceEvents::send);
     }
 
     private static void resolve(MinecraftServer server) {
-        ItemElementTable.set(ItemElementResolver.resolve(server.getRecipeManager(), server.registryAccess()));
+        ItemEssenceTable.set(ItemEssenceResolver.resolve(server.getRecipeManager(), server.registryAccess()));
     }
 
     private static void send(ServerPlayer player) {
-        ModNetwork.sendToPlayer(player, new ItemElementsPayload(ItemElementTable.byId()));
+        ModNetwork.sendToPlayer(player, new ItemEssencesPayload(ItemEssenceTable.byId()));
     }
 }

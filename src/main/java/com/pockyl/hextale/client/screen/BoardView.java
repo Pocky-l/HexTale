@@ -10,12 +10,12 @@ import net.minecraft.world.item.ItemStack;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.HexGrid;
-import com.pockyl.hextale.research.ItemElements;
+import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.research.RuneBoard;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -175,7 +175,7 @@ final class BoardView {
                 if (board.wall(cell)) {
                     stone(graphics, x, y, cell, fade);
                 } else {
-                    SimpleRune near = nearestCorner(cell);
+                    Essence near = nearestCorner(cell);
                     int tint = near == null ? 0xFFF8E8 : PixelArt.mix(0xFFF8E8, near.color(), 0.22F);
                     PixelArt.hex(graphics, x, y, CELL, argb(tint, 0.22F * fade), argb(0x8C7047, 0.28F * fade));
                 }
@@ -185,7 +185,7 @@ final class BoardView {
         // The thread: each section in the colour of the ink it costs, a glow running along it.
         int bound = done ? (int) Math.min(thread.length, (now - bindStart) / (float) BIND_MILLIS * thread.length * 1.5F) : 0;
         for (int i = 1; i < thread.length; i++) {
-            SimpleRune paying = trace == null ? null : trace.paying()[i];
+            Essence paying = trace == null ? null : trace.paying()[i];
             int rgb = paying == null ? FREE_INK : PixelArt.onParchment(paying.color());
             if (done && i <= bound) {
                 rgb = PixelArt.mix(rgb, GOLD, 0.65F);
@@ -244,7 +244,7 @@ final class BoardView {
             inkCompass(graphics, board, thread, head, now);
         }
         if (!done && thread.length > 1) {
-            SimpleRune last = trace == null ? null : trace.paying()[thread.length - 1];
+            Essence last = trace == null ? null : trace.paying()[thread.length - 1];
             head(graphics, head, last, now, drawing);
         } else if (!done && ready && !drawing) {
             PixelArt.hexRing(graphics, ox, oy, CELL + 8 + 2 * Math.round(pulse * 2), argb(0xFFFFFF, 0.3F + 0.4F * pulse));
@@ -302,7 +302,7 @@ final class BoardView {
             if (next == HexGrid.CENTRE || board.wall(next) && visible[next] || contains(thread, next)) {
                 continue;
             }
-            SimpleRune ink = ResearchSheet.toward(head, next);
+            Essence ink = ResearchSheet.toward(head, next);
             float breath = 0.6F + 0.4F * Mth.sin(now / 220.0F - k * 1.05F);
             int x = hx + Math.round((sx(next) - hx) * 0.55F);
             int y = hy + Math.round((sy(next) - hy) * 0.55F);
@@ -321,7 +321,7 @@ final class BoardView {
         return false;
     }
 
-    private void head(GuiGraphicsExtractor graphics, int cell, @Nullable SimpleRune colour, long now, boolean drawing) {
+    private void head(GuiGraphicsExtractor graphics, int cell, @Nullable Essence colour, long now, boolean drawing) {
         int x = sx(cell);
         int y = sy(cell);
         int rgb = colour == null ? 0xFFFFFF : colour.color();
@@ -373,7 +373,7 @@ final class BoardView {
 
     // ---- An item's echoes -----------------------------------------------------------------------------------------
 
-    void renderStudy(GuiGraphicsExtractor graphics, Font font, Item item, ItemElements elements, ItemStudy study, int hovered) {
+    void renderStudy(GuiGraphicsExtractor graphics, Font font, Item item, ItemEssences elements, ItemStudy study, int hovered) {
         long now = Util.getMillis();
         float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
         boolean active = study.isActive(elements);
@@ -404,7 +404,7 @@ final class BoardView {
             if (cleared) {
                 PixelArt.hex(graphics, x, y, CELL, argb(0x3B4A5A, 0.16F), argb(0x3B4A5A, 0.12F));
             } else if (string >= 0 && study.possible(cell)) {
-                SimpleRune element = HexGrid.RING[string];
+                Essence element = HexGrid.RING[string];
                 int heat = wave >= (newest == null ? 0 : newest.radius()) ? study.heat(cell, elements) : 0;
                 if (heat > 0) {
                     // On the rim of an open echo: an element may well sing here.
@@ -424,7 +424,7 @@ final class BoardView {
 
         // Strings, faint, from the item to the corners.
         for (int string = 0; string < HexGrid.RING.length; string++) {
-            SimpleRune element = HexGrid.RING[string];
+            Essence element = HexGrid.RING[string];
             int[] cells = ItemStudy.string(string);
             boolean found = study.isRevealed(string);
             int x0 = sx(HexGrid.CENTRE);
@@ -467,8 +467,8 @@ final class BoardView {
             String text = echo.radius() > 9 ? "+" : String.valueOf(echo.radius());
             graphics.text(font, text, x - font.width(text) / 2 + 1, y - 3, 0xFF2A1B0C, false);
         }
-        for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
-            SimpleRune element = entry.getKey();
+        for (Map.Entry<Essence, Integer> entry : elements.essences().entrySet()) {
+            Essence element = entry.getKey();
             if (!study.isRevealed(element)) {
                 continue;
             }
@@ -537,7 +537,7 @@ final class BoardView {
     }
 
     private void renderSigns(GuiGraphicsExtractor graphics) {
-        for (SimpleRune element : HexGrid.RING) {
+        for (Essence element : HexGrid.RING) {
             double[] u = HexGrid.unit(element);
             int sx = left + CX + (int) Math.round(u[0] * KX * 1.03);
             int sy = top + CY + (int) Math.round(u[1] * KY * 1.03);
@@ -545,10 +545,10 @@ final class BoardView {
         }
     }
 
-    private static @Nullable SimpleRune nearestCorner(int cell) {
-        SimpleRune best = null;
+    private static @Nullable Essence nearestCorner(int cell) {
+        Essence best = null;
         double distance = 0.55;
-        for (SimpleRune element : HexGrid.RING) {
+        for (Essence element : HexGrid.RING) {
             double[] u = HexGrid.unit(element);
             double d = Math.hypot(HexGrid.cx(cell) - u[0], HexGrid.cy(cell) - u[1]);
             if (d < distance) {

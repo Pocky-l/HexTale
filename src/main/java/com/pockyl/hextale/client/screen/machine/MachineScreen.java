@@ -12,10 +12,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import com.pockyl.hextale.client.render.PixelArt;
-import com.pockyl.hextale.essence.Essence;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.menu.MachineMenu;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +97,7 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
     protected void tank(GuiGraphicsExtractor graphics, int x, int y, int height, EssenceTank tank, int mouseX, int mouseY,
                         Component... extra) {
         long now = Util.getMillis();
-        Essence contents = tank.contents();
+        EssenceMix contents = tank.contents();
         int filled = Math.round(height * tank.amount() / (float) tank.capacity());
         int bottom = y + height;
         int used = 0;
@@ -107,7 +107,7 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
             graphics.fill(x, bottom - filled, x + 2, bottom, 0x40FFFFFF);
             used = filled;
         }
-        for (SimpleRune element : SimpleRune.values()) {
+        for (Essence element : Essence.values()) {
             if (used >= filled) {
                 break;
             }

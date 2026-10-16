@@ -31,7 +31,7 @@ public final class EssenceNetwork {
          * @param side the receiver's own face the liquid comes in through
          * @return drops taken
          */
-        int receive(Direction side, Essence offer, boolean simulate);
+        int receive(Direction side, EssenceMix offer, boolean simulate);
 
         /** Whether the receiver lets liquid out through this face of its own. */
         default boolean isOutlet(Direction face) {
@@ -58,7 +58,7 @@ public final class EssenceNetwork {
      *
      * @return the drops delivered (taken out of the offer in its proportions)
      */
-    public static int push(Level level, BlockPos from, Direction face, Essence offer) {
+    public static int push(Level level, BlockPos from, Direction face, EssenceMix offer) {
         if (offer.isEmpty()) {
             return 0;
         }

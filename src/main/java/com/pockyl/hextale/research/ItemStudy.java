@@ -6,7 +6,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +49,7 @@ public final class ItemStudy {
                 if (!alive[i]) {
                     continue;
                 }
-                int[] offset = ItemElements.of(1, HexGrid.RING[i], n).offset(false);
+                int[] offset = ItemEssences.of(1, HexGrid.RING[i], n).offset(false);
                 int cell = HexGrid.index(HexGrid.q(HexGrid.CENTRE) + offset[0], HexGrid.r(HexGrid.CENTRE) + offset[1]);
                 List<Integer> string = strings.get(i);
                 if (cell >= 0 && !string.isEmpty() && string.get(string.size() - 1) == cell) {
@@ -108,7 +108,7 @@ public final class ItemStudy {
         return INDEX_OF[cell];
     }
 
-    public static int ringIndex(SimpleRune element) {
+    public static int ringIndex(Essence element) {
         for (int i = 0; i < HexGrid.RING.length; i++) {
             if (HexGrid.RING[i] == element) {
                 return i;
@@ -118,13 +118,13 @@ public final class ItemStudy {
     }
 
     /** The section where an element of this strength hides (the last of its string for strengths beyond it). */
-    public static int hiding(SimpleRune element, int strength) {
+    public static int hiding(Essence element, int strength) {
         int[] string = STRINGS[ringIndex(element)];
         return string[Math.min(strength, string.length) - 1];
     }
 
-    public static int maxStrikes(ItemElements elements) {
-        return 3 + 3 * elements.elements().size();
+    public static int maxStrikes(ItemEssences elements) {
+        return 3 + 3 * elements.essences().size();
     }
 
     @Nullable
@@ -133,7 +133,7 @@ public final class ItemStudy {
     }
 
     /** A fresh study of this item. */
-    public void begin(Item item, ItemElements elements) {
+    public void begin(Item item, ItemEssences elements) {
         clear();
         this.item = item;
         maxStrikes = maxStrikes(elements);
@@ -171,7 +171,7 @@ public final class ItemStudy {
         return (revealed & 1 << string) != 0;
     }
 
-    public boolean isRevealed(SimpleRune element) {
+    public boolean isRevealed(Essence element) {
         return isRevealed(ringIndex(element));
     }
 
@@ -206,11 +206,11 @@ public final class ItemStudy {
      * Whether an echo is still a clue: its ripple stopped at an element that has not been revealed yet (no revealed
      * element sits on its rim).
      */
-    public boolean open(Echo echo, ItemElements elements) {
+    public boolean open(Echo echo, ItemEssences elements) {
         if (echo.radius() == 0) {
             return false;
         }
-        for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
+        for (Map.Entry<Essence, Integer> entry : elements.essences().entrySet()) {
             if (isRevealed(entry.getKey()) && HexGrid.steps(echo.cell(), hiding(entry.getKey(), entry.getValue())) == echo.radius()) {
                 return false;
             }
@@ -222,7 +222,7 @@ public final class ItemStudy {
      * How many open echoes point at this section: it is possible and lies on their rims. Revealing elements only closes
      * echoes, so this never needs the hidden answer beyond what the table shows.
      */
-    public int heat(int cell, ItemElements elements) {
+    public int heat(int cell, ItemEssences elements) {
         if (!possible(cell)) {
             return 0;
         }
@@ -235,12 +235,12 @@ public final class ItemStudy {
         return heat;
     }
 
-    public boolean canStrike(int cell, ItemElements elements) {
+    public boolean canStrike(int cell, ItemEssences elements) {
         return isActive(elements) && cell >= 0 && cell < HexGrid.COUNT && cell != HexGrid.CENTRE && !struck(cell);
     }
 
-    public boolean won(ItemElements elements) {
-        for (SimpleRune element : elements.elements().keySet()) {
+    public boolean won(ItemEssences elements) {
+        for (Essence element : elements.essences().keySet()) {
             if (!isRevealed(element)) {
                 return false;
             }
@@ -248,23 +248,23 @@ public final class ItemStudy {
         return true;
     }
 
-    public boolean lost(ItemElements elements) {
+    public boolean lost(ItemEssences elements) {
         return echoes.size() >= maxStrikes && !won(elements);
     }
 
-    public boolean isActive(ItemElements elements) {
+    public boolean isActive(ItemEssences elements) {
         return item != null && !won(elements) && !lost(elements);
     }
 
     /** Strikes a section: the ripple stops at the nearest hidden element (and reveals it when struck exactly). */
     @Nullable
-    public Echo strike(int cell, ItemElements elements) {
+    public Echo strike(int cell, ItemEssences elements) {
         if (!canStrike(cell, elements)) {
             return null;
         }
         int radius = Integer.MAX_VALUE;
         int found = -1;
-        for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
+        for (Map.Entry<Essence, Integer> entry : elements.essences().entrySet()) {
             int string = ringIndex(entry.getKey());
             if (isRevealed(string)) {
                 continue;

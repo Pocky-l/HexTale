@@ -62,7 +62,7 @@ public class SeparatorMenu extends MachineMenu {
         return data(0);
     }
 
-    public int chargeElement() {
+    public int chargeEssence() {
         return data(1);
     }
 

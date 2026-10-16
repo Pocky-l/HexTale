@@ -3,7 +3,7 @@ package com.pockyl.hextale.research;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,7 +101,7 @@ public final class RuneBoards {
         int fallbackMiss = Integer.MAX_VALUE;
         for (int attempt = 0; attempt < 300; attempt++) {
             Random32 random = new Random32(hash(key + "#thread#" + attempt));
-            List<SimpleRune> elements = new ArrayList<>(List.of(rune.action(), rune.target()));
+            List<Essence> elements = new ArrayList<>(List.of(rune.action(), rune.target()));
             while (elements.size() < POINTS[tier]) {
                 elements.add(HexGrid.RING[random.pick(HexGrid.RING.length)]);
             }
@@ -123,7 +123,7 @@ public final class RuneBoards {
                 }
             }
             List<RuneBoard.Point> points = new ArrayList<>();
-            for (SimpleRune element : elements) {
+            for (Essence element : elements) {
                 List<Integer> ok = candidates.stream()
                         .filter(cell -> points.stream().allMatch(p -> HexGrid.distance(p.cell(), cell) > 0.32)).toList();
                 if (ok.isEmpty()) {

@@ -13,23 +13,23 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
-import static com.pockyl.hextale.rune.SimpleRune.AIR;
-import static com.pockyl.hextale.rune.SimpleRune.EARTH;
-import static com.pockyl.hextale.rune.SimpleRune.FIRE;
-import static com.pockyl.hextale.rune.SimpleRune.LIFE;
-import static com.pockyl.hextale.rune.SimpleRune.LIGHT;
-import static com.pockyl.hextale.rune.SimpleRune.METAL;
-import static com.pockyl.hextale.rune.SimpleRune.SHADOW;
-import static com.pockyl.hextale.rune.SimpleRune.SPARK;
-import static com.pockyl.hextale.rune.SimpleRune.WATER;
+import static com.pockyl.hextale.rune.Essence.AIR;
+import static com.pockyl.hextale.rune.Essence.EARTH;
+import static com.pockyl.hextale.rune.Essence.FIRE;
+import static com.pockyl.hextale.rune.Essence.LIFE;
+import static com.pockyl.hextale.rune.Essence.LIGHT;
+import static com.pockyl.hextale.rune.Essence.METAL;
+import static com.pockyl.hextale.rune.Essence.SHADOW;
+import static com.pockyl.hextale.rune.Essence.SPARK;
+import static com.pockyl.hextale.rune.Essence.WATER;
 
 /**
  * Items and the elements they carry (their ink at the Research Table). In game the elements of every item come from
- * {@link ItemElementTable} (the {@code hextale:elements} data map plus what is derived from recipes and names); the
+ * {@link ItemEssenceTable} (the {@code hextale:elements} data map plus what is derived from recipes and names); the
  * {@link #canonical()} set below is the default data map.
  */
 public final class ResearchItems {
-    private static final Map<Item, ItemElements> CANONICAL = new LinkedHashMap<>();
+    private static final Map<Item, ItemEssences> CANONICAL = new LinkedHashMap<>();
 
     static {
         add(Items.COAL, 1, FIRE, 2);
@@ -71,31 +71,31 @@ public final class ResearchItems {
     }
 
     private static void add(Item item, int tier, Object... pairs) {
-        CANONICAL.put(item, ItemElements.of(tier, pairs));
+        CANONICAL.put(item, ItemEssences.of(tier, pairs));
     }
 
     /** The base materials of the default data map. */
-    public static Map<Item, ItemElements> canonical() {
+    public static Map<Item, ItemEssences> canonical() {
         return Collections.unmodifiableMap(CANONICAL);
     }
 
     /**
      * What an item carries in this world: every item carries something once the server has resolved the table (see
-     * {@link ItemElementResolver}); before that only the data map's base materials do. Null for air.
+     * {@link ItemEssenceResolver}); before that only the data map's base materials do. Null for air.
      */
     @Nullable
-    public static ItemElements of(Item item) {
-        ItemElements resolved = ItemElementTable.get(item);
+    public static ItemEssences of(Item item) {
+        ItemEssences resolved = ItemEssenceTable.get(item);
         if (resolved != null) {
             return resolved;
         }
         @SuppressWarnings("deprecation")
         Holder<Item> holder = item.builtInRegistryHolder();
-        return holder.getData(ModDataMaps.ELEMENTS);
+        return holder.getData(ModDataMaps.ESSENCES);
     }
 
     @Nullable
-    public static ItemElements of(ItemStack stack) {
+    public static ItemEssences of(ItemStack stack) {
         return stack.isEmpty() ? null : of(stack.getItem());
     }
 }

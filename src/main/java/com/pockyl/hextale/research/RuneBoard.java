@@ -1,7 +1,7 @@
 package com.pockyl.hextale.research;
 
 import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.SimpleRune;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
  */
 public record RuneBoard(ComplexRune rune, boolean[] walls, List<Point> points, Par par) {
     /** A point the thread must pass; after it the thread runs on this element's ink. */
-    public record Point(SimpleRune element, int cell) {
+    public record Point(Essence element, int cell) {
     }
 
     /**
