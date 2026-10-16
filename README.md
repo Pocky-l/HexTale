@@ -48,8 +48,6 @@ The jar is written to `build/libs/`.
 ## Credits
 
 - Author: **Pocky**.
-- Alembic bubbling: "Bubble Sound Effects" by BMacZero (Brian MacIntosh),
-  [OpenGameArt](https://opengameart.org/content/bubble-sound-effects), CC0 1.0 - converted to mono OGG and trimmed.
 
 <!-- more-mods:start -->
 <!-- more-mods:end -->

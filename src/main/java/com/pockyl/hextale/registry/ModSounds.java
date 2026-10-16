@@ -24,7 +24,7 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> ORB_CRACK = register("orb.crack");
     /** Lightning awakens amethyst into unstable hextech. */
     public static final DeferredHolder<SoundEvent, SoundEvent> ORB_AWAKEN = register("orb.awaken");
-    /** The alembic bubbles while it boils (CC0 samples, see the sound generator). */
+    /** The alembic simmers while it boils. */
     public static final DeferredHolder<SoundEvent, SoundEvent> ALEMBIC_BUBBLE = register("alembic.bubble");
     /** A drop of concentrate falls in the separator. */
     public static final DeferredHolder<SoundEvent, SoundEvent> SEPARATOR_DRIP = register("separator.drip");

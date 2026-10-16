@@ -158,13 +158,13 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
         return SHAPE;
     }
 
-    /** While it boils, the alembic bubbles now and then (heard by the client only). */
+    /** While it boils, the alembic simmers quietly now and then (heard by the client only). */
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        if (state.getValue(LIT) && random.nextInt(4) == 0 && level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic
+        if (state.getValue(LIT) && random.nextInt(12) == 0 && level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic
                 && ResearchItems.of(alembic.input()) != null && alembic.water() >= AlembicBlockEntity.WATER_PER_ITEM) {
-            level.playLocalSound(pos, ModSounds.ALEMBIC_BUBBLE.get(), SoundSource.BLOCKS, 0.35F + random.nextFloat() * 0.2F,
-                    0.85F + random.nextFloat() * 0.3F, false);
+            level.playLocalSound(pos, ModSounds.ALEMBIC_BUBBLE.get(), SoundSource.BLOCKS, 0.5F + random.nextFloat() * 0.2F,
+                    0.9F + random.nextFloat() * 0.2F, false);
         }
     }
 

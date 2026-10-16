@@ -63,24 +63,20 @@
     "subtitle": "subtitles.hextale.alembic.bubble",
     "sounds": [
       {
-        "name": "hextale:alembic_bubble1",
-        "volume": 0.45
+        "name": "hextale:alembic_simmer1",
+        "volume": 0.35
       },
       {
-        "name": "hextale:alembic_bubble2",
-        "volume": 0.45
+        "name": "hextale:alembic_simmer2",
+        "volume": 0.35
       },
       {
-        "name": "hextale:alembic_bubble3",
-        "volume": 0.45
+        "name": "hextale:alembic_simmer3",
+        "volume": 0.35
       },
       {
-        "name": "hextale:alembic_bubble4",
-        "volume": 0.45
-      },
-      {
-        "name": "hextale:alembic_bubble5",
-        "volume": 0.45
+        "name": "hextale:alembic_simmer4",
+        "volume": 0.35
       }
     ]
   },
@@ -153,19 +149,16 @@
     "subtitle": "subtitles.hextale.tank.glug",
     "sounds": [
       {
-        "name": "hextale:alembic_bubble1",
-        "volume": 0.6,
-        "pitch": 0.7
+        "name": "hextale:tank_glug1",
+        "volume": 0.5
       },
       {
-        "name": "hextale:alembic_bubble2",
-        "volume": 0.6,
-        "pitch": 0.7
+        "name": "hextale:tank_glug2",
+        "volume": 0.5
       },
       {
-        "name": "hextale:alembic_bubble3",
-        "volume": 0.6,
-        "pitch": 0.7
+        "name": "hextale:tank_glug3",
+        "volume": 0.5
       }
     ]
   }
