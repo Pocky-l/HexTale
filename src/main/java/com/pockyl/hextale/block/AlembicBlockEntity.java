@@ -17,12 +17,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -30,14 +31,16 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.world.phys.Vec3;
 
+import com.pockyl.hextale.essence.Essence;
+import com.pockyl.hextale.essence.EssenceFlaskItem;
+import com.pockyl.hextale.essence.EssenceNetwork;
+import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.knowledge.Research;
+import com.pockyl.hextale.menu.AlembicMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.research.ItemElements;
 import com.pockyl.hextale.research.ResearchItems;
-import com.pockyl.hextale.research.ResearchText;
-import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.rune.SimpleRune;
 
 import java.util.Map;
@@ -46,27 +49,50 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Alembic's flask: one stack of items waiting, the item being distilled, and nine small tanks of ink that drain
- * into a Research Table touching the alembic. Distilling needs heat below. Only items the alembic's owner (who placed it)
- * has studied go in: by hand they are checked against the hand's owner, from hoppers against the owner while online.
+ * The Alembic's contents: the items waiting to boil, empty flasks and the flask it filled, and the essence boiled so
+ * far. An item boils for {@value #BOIL_TICKS} ticks over heat into {@value #DROPS_PER_POINT} drops per point of each of
+ * its elements - all of them at once, a mixture. The essence goes into flasks and into pipes on any side.
+ * <p>
+ * Only items the researcher has studied go in: checked against the player at the screen, and against the alembic's
+ * owner (who placed it) for hoppers, while the owner is online.
  */
 public class AlembicBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
-    /** Ticks to distil one item. */
-    public static final int DISTIL_TICKS = 80;
-    /** Drops each of the alembic's own tanks holds. */
-    public static final int TANK = 32;
-    private static final int POUR_EVERY = 4;
-    private static final int[] SLOTS = {0};
+    public static final int INPUT = 0;
+    public static final int FLASK_IN = 1;
+    public static final int FLASK_OUT = 2;
+    public static final int BOIL_TICKS = 80;
+    public static final int DROPS_PER_POINT = 2;
+    public static final int CAPACITY = 64;
+    private static final int[] TOP = {INPUT};
+    private static final int[] SIDES = {INPUT, FLASK_IN};
+    private static final int[] BOTTOM = {FLASK_OUT};
 
-    private NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
-    private final int[] tank = new int[SimpleRune.values().length];
+    private NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
+    private final EssenceTank tank = new EssenceTank(CAPACITY);
     private int progress;
     @Nullable
     private UUID owner;
-    /** Game time of the last drop poured into a table (clients show the drip). */
-    private long pouredAt = Long.MIN_VALUE / 2;
-    /** Client side: smooth progress between syncs. */
+    /** Client side: smooth boiling progress between syncs. */
     public float clientProgress;
+
+    private final ContainerData data = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return index == 0 ? progress : heated() ? 1 : 0;
+        }
+
+        @Override
+        public void set(int index, int value) {
+            if (index == 0) {
+                progress = value;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+    };
 
     public AlembicBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ALEMBIC.get(), pos, state);
@@ -77,7 +103,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         setChanged();
     }
 
-    public int[] tank() {
+    public EssenceTank tank() {
         return tank;
     }
 
@@ -85,12 +111,8 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return progress;
     }
 
-    public long pouredAt() {
-        return pouredAt;
-    }
-
     public ItemStack input() {
-        return items.get(0);
+        return items.get(INPUT);
     }
 
     private boolean heated() {
@@ -98,7 +120,8 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return state.hasProperty(AlembicBlock.LIT) && state.getValue(AlembicBlock.LIT);
     }
 
-    private static boolean studied(Player player, ItemStack stack) {
+    /** Whether this player may boil the item: studied (or creative). */
+    public static boolean studied(Player player, ItemStack stack) {
         return player.getAbilities().instabuild || Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(stack.getItem()));
     }
 
@@ -107,68 +130,18 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return owner == null || !(level instanceof ServerLevel serverLevel) ? null : serverLevel.getServer().getPlayerList().getPlayer(owner);
     }
 
-    /** Puts the held items into the flask; says why when it cannot. */
-    public boolean insert(ServerPlayer player, ItemStack held) {
-        ItemElements elements = ResearchItems.of(held);
-        if (elements == null) {
-            return false;
-        }
-        if (!studied(player, held)) {
-            player.sendOverlayMessage(Component.translatable("block.hextale.alembic.unstudied", ResearchText.item(held.getItem())));
-            return false;
-        }
-        ItemStack inside = input();
-        if (!inside.isEmpty() && !ItemStack.isSameItemSameComponents(inside, held)) {
-            player.sendOverlayMessage(Component.translatable("block.hextale.alembic.busy", inside.getHoverName()));
-            return false;
-        }
-        if (owner == null) {
-            owner = player.getUUID();
-        }
-        int room = held.getMaxStackSize() - inside.getCount();
-        int moved = Math.min(room, held.getCount());
-        if (moved <= 0) {
-            return false;
-        }
-        if (inside.isEmpty()) {
-            items.set(0, held.copyWithCount(moved));
-        } else {
-            inside.grow(moved);
-        }
-        if (!player.getAbilities().instabuild) {
-            held.shrink(moved);
-        }
-        level.playSound(null, worldPosition, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 0.6F, 1.2F);
-        setChanged();
-        return true;
-    }
-
-    /** Gives the waiting items back. */
-    public void takeBack(Player player) {
-        ItemStack inside = input();
-        if (inside.isEmpty()) {
-            return;
-        }
-        items.set(0, ItemStack.EMPTY);
-        progress = 0;
-        if (!player.getInventory().add(inside)) {
-            player.drop(inside, false, Prediction.SERVER_ONLY);
-        }
-        setChanged();
-    }
-
     public static void serverTick(Level level, BlockPos pos, BlockState state, AlembicBlockEntity alembic) {
-        boolean changed = alembic.distil();
-        if (level.getGameTime() % POUR_EVERY == 0) {
-            changed |= alembic.pour();
+        boolean changed = alembic.boil();
+        changed |= alembic.fillFlask();
+        if (level.getGameTime() % EssenceTankBlockEntity.FLOW_EVERY == 0) {
+            changed |= alembic.pushToPipes();
         }
         if (changed) {
             alembic.setChanged();
         }
     }
 
-    /** Advances the item in the flask; a finished item turns into ink in the tanks. */
-    private boolean distil() {
+    private boolean boil() {
         ItemStack inside = input();
         ItemElements elements = ResearchItems.of(inside);
         if (!heated() || elements == null) {
@@ -176,79 +149,58 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
             progress = 0;
             return had;
         }
-        int perPoint = ResearchTool.inkPerPoint(mortar());
-        if (!fits(elements, perPoint)) {
+        Essence boiled = Essence.boiled(elements, DROPS_PER_POINT);
+        if (tank.space() < boiled.total()) {
             return false;
         }
         progress++;
-        if (progress < DISTIL_TICKS) {
+        if (progress < BOIL_TICKS) {
             return progress == 1;
         }
-        elements.elements().forEach((element, strength) -> tank[element.ordinal()] += strength * perPoint);
+        tank.fill(boiled, false);
         inside.shrink(1);
         progress = 0;
         level.playSound(null, worldPosition, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 0.5F, 1.4F);
         return true;
     }
 
-    private boolean fits(ItemElements elements, int perPoint) {
-        for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
-            if (tank[entry.getKey().ordinal()] + entry.getValue() * perPoint > TANK) {
-                return false;
-            }
+    /** Fills an empty flask once a flask's worth is ready, or with the rest when nothing more is boiling. */
+    private boolean fillFlask() {
+        ItemStack empty = items.get(FLASK_IN);
+        if (!EssenceFlaskItem.isEmptyFlask(empty) || !items.get(FLASK_OUT).isEmpty() || tank.isEmpty()) {
+            return false;
         }
+        boolean idle = progress == 0 && (input().isEmpty() || !heated());
+        if (tank.amount() < EssenceFlaskItem.CAPACITY && !idle) {
+            return false;
+        }
+        items.set(FLASK_OUT, EssenceFlaskItem.filled(tank.drain(EssenceFlaskItem.CAPACITY, false)));
+        empty.shrink(1);
+        level.playSound(null, worldPosition, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 0.6F, 1.0F);
         return true;
     }
 
-    /** The owner's mortar on the table the alembic pours into grinds items finer: more ink per item. */
-    private int mortar() {
-        ResearchTableBlockEntity table = table();
-        ServerPlayer player = onlineOwner();
-        return table == null || player == null ? 0 : table.toolLevel(player, ResearchTool.MORTAR);
-    }
-
-    /** A Research Table touching the alembic (any side, either half), or null. */
-    @Nullable
-    public ResearchTableBlockEntity table() {
-        if (level == null) {
-            return null;
-        }
-        for (Direction side : Direction.values()) {
-            BlockPos at = worldPosition.relative(side);
-            BlockState state = level.getBlockState(at);
-            if (state.getBlock() instanceof ResearchTableBlock
-                    && level.getBlockEntity(ResearchTableBlock.mainPos(state, at)) instanceof ResearchTableBlockEntity table) {
-                return table;
-            }
-        }
-        return null;
-    }
-
-    /** One drop of every ink the alembic holds runs into the table's vials, while they have room. */
-    private boolean pour() {
-        ResearchTableBlockEntity table = table();
-        if (table == null) {
+    private boolean pushToPipes() {
+        if (tank.isEmpty()) {
             return false;
         }
-        boolean poured = false;
-        for (int i = 0; i < tank.length; i++) {
-            if (tank[i] > 0 && table.receiveInk(i, 1)) {
-                tank[i]--;
-                poured = true;
+        for (Direction side : Direction.values()) {
+            Essence offer = tank.drain(EssenceTankBlockEntity.FLOW, true);
+            int moved = EssenceNetwork.push(level, worldPosition, side, offer);
+            if (moved > 0) {
+                tank.remove(offer.part(moved));
+                return true;
             }
         }
-        if (poured) {
-            pouredAt = level.getGameTime();
-        }
-        return poured;
+        return false;
     }
 
-    /** Bubbles of the item's colours rise in a working flask; steam leaves the cap; ink drips from the spout. */
+    /** Bubbles of the item's colours rise in a working flask; steam leaves the cap. */
     public static void clientTick(Level level, BlockPos pos, BlockState state, AlembicBlockEntity alembic) {
         RandomSource random = level.getRandom();
         ItemElements elements = ResearchItems.of(alembic.input());
         boolean working = state.getValue(AlembicBlock.LIT) && elements != null;
-        alembic.clientProgress = working ? Math.min(1, alembic.clientProgress + 1.0F / DISTIL_TICKS) : 0;
+        alembic.clientProgress = working ? Math.min(1, alembic.clientProgress + 1.0F / BOIL_TICKS) : 0;
         if (working && random.nextInt(3) == 0) {
             SimpleRune element = pick(elements, random);
             level.addParticle(new DustParticleOptions(element.color(), 0.5F), pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.35,
@@ -256,12 +208,6 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         }
         if (working && random.nextInt(12) == 0) {
             level.addParticle(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 0, 0.03, 0);
-        }
-        if (level.getGameTime() - alembic.pouredAt < 10 && random.nextInt(2) == 0) {
-            Direction facing = state.getValue(AlembicBlock.FACING);
-            Vec3 tip = Vec3.atCenterOf(pos).add(facing.getStepX() * 0.43, 0.15, facing.getStepZ() * 0.43);
-            int colour = alembic.strongestInk();
-            level.addParticle(new DustParticleOptions(colour, 0.7F), tip.x, tip.y, tip.z, 0, -0.05, 0);
         }
     }
 
@@ -275,30 +221,6 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
             }
         }
         return elements.main();
-    }
-
-    /** The colour of the ink the alembic holds most of (or of its item), for the flask and the drip. */
-    public int strongestInk() {
-        int best = -1;
-        for (int i = 0; i < tank.length; i++) {
-            if (tank[i] > 0 && (best < 0 || tank[i] > tank[best])) {
-                best = i;
-            }
-        }
-        if (best >= 0) {
-            return SimpleRune.values()[best].color();
-        }
-        ItemElements elements = ResearchItems.of(input());
-        return elements == null ? 0x7EC8E8 : elements.main().color();
-    }
-
-    /** All ink in the tanks, 0-1 of one full tank. */
-    public float fill() {
-        int total = 0;
-        for (int drops : tank) {
-            total += drops;
-        }
-        return Math.min(1, total / (float) TANK);
     }
 
     @Override
@@ -325,59 +247,71 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
     }
 
     @Override
-    protected @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
-        return null;
+    protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
+        return new AlembicMenu(containerId, inventory, this, data, worldPosition);
     }
 
     @Override
     public int getContainerSize() {
-        return 1;
+        return 3;
+    }
+
+    /** What each slot takes; studying is checked by the screen and for hoppers. */
+    public static boolean accepts(int slot, ItemStack stack) {
+        return switch (slot) {
+            case INPUT -> ResearchItems.of(stack) != null && !EssenceFlaskItem.isFlask(stack);
+            case FLASK_IN -> EssenceFlaskItem.isEmptyFlask(stack);
+            default -> false;
+        };
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return accepts(slot, stack);
     }
 
     @Override
     public int[] getSlotsForFace(Direction side) {
-        return SLOTS;
+        return side == Direction.UP ? TOP : side == Direction.DOWN ? BOTTOM : SIDES;
     }
 
-    /** Hoppers feed items the owner has studied (while the owner is online) and of the kind already inside. */
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction direction) {
+        if (!accepts(slot, stack)) {
+            return false;
+        }
+        if (slot != INPUT) {
+            return true;
+        }
         ServerPlayer player = onlineOwner();
-        ItemStack inside = input();
-        return player != null && ResearchItems.of(stack) != null && studied(player, stack)
-                && (inside.isEmpty() || ItemStack.isSameItemSameComponents(inside, stack));
+        return player != null && studied(player, stack);
     }
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction direction) {
-        return false;
+        return slot == FLASK_OUT;
     }
 
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        items = NonNullList.withSize(1, ItemStack.EMPTY);
-        net.minecraft.world.ContainerHelper.loadAllItems(input, items);
-        int[] saved = input.getIntArray("tank").orElse(new int[0]);
-        for (int i = 0; i < tank.length; i++) {
-            tank[i] = i < saved.length ? saved[i] : 0;
-        }
+        items = NonNullList.withSize(3, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(input, items);
+        tank.load(input, "essence");
         progress = input.getIntOr("progress", 0);
-        clientProgress = progress / (float) DISTIL_TICKS;
+        clientProgress = progress / (float) BOIL_TICKS;
         owner = input.read("owner", UUIDUtil.CODEC).orElse(null);
-        pouredAt = input.getLongOr("poured_at", Long.MIN_VALUE / 2);
     }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        net.minecraft.world.ContainerHelper.saveAllItems(output, items);
-        output.putIntArray("tank", tank);
+        ContainerHelper.saveAllItems(output, items);
+        tank.save(output, "essence");
         output.putInt("progress", progress);
         if (owner != null) {
             output.store("owner", UUIDUtil.CODEC, owner);
         }
-        output.putLong("poured_at", pouredAt);
     }
 
     @Override

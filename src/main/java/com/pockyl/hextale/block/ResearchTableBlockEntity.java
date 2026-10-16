@@ -37,6 +37,8 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
+import com.pockyl.hextale.essence.Essence;
+import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.knowledge.Research;
@@ -81,15 +83,17 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     public static final int STUDY = 8;
     /** Paper: every finished research is written on one. */
     public static final int PAPER = 9;
-    public static final int SLOTS = 10;
+    /** A flask of concentrate: it empties into the vial of its element. */
+    public static final int FLASK = 10;
+    public static final int SLOTS = 11;
     /** Drops each vial holds. */
     public static final int INK_CAPACITY = 64;
 
     public static final int EVENT_FUSED = 1;
     public static final int EVENT_FIZZLE = 3;
 
-    private static final int[] SIDE_SLOTS = {HEXTECH, STUDY, PAPER};
-    private static final int[] BOTTOM_SLOTS = {OUTPUT};
+    private static final int[] SIDE_SLOTS = {HEXTECH, STUDY, PAPER, FLASK};
+    private static final int[] BOTTOM_SLOTS = {OUTPUT, FLASK};
     /** How long the orb keeps stirring after the last symbol. */
     private static final int DRAWING_TICKS = 30;
 
@@ -116,6 +120,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ResearchTableBlockEntity table) {
+        table.pourFlask();
         if (table.drawing && level.getGameTime() > table.drawingUntil) {
             table.drawing = false;
             table.sync();
@@ -212,17 +217,24 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     /**
-     * Ink poured in by an alembic: {@code drops} of the element with this ordinal, if the vial has room.
-     *
-     * @return whether it was taken
+     * Empties a flask of concentrate from the flask slot into the vial of its element, as far as the vial has room. A
+     * mixture stays in the flask: only a single element is ink.
      */
-    public boolean receiveInk(int element, int drops) {
-        if (ink[element] + drops > INK_CAPACITY) {
-            return false;
+    private void pourFlask() {
+        ItemStack flask = items.get(FLASK);
+        Essence essence = EssenceFlaskItem.contents(flask);
+        SimpleRune element = essence.pureElement();
+        if (element == null) {
+            return;
         }
-        ink[element] += drops;
+        int poured = Math.min(essence.get(element), INK_CAPACITY - ink[element.ordinal()]);
+        if (poured <= 0) {
+            return;
+        }
+        ink[element.ordinal()] += poured;
+        items.set(FLASK, EssenceFlaskItem.filled(essence.minus(Essence.pure(element, poured))));
+        level.playSound(null, worldPosition, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 0.7F, 1.0F);
         setChanged();
-        return true;
     }
 
     // ---- Learning a rune ------------------------------------------------------------------------------------------
@@ -247,7 +259,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     /** What this researcher's tools allow on a thread. */
     public ResearchSheet.Allowance allowance(Player player) {
         return ResearchTool.allowance(toolLevel(player, ResearchTool.FORK), toolLevel(player, ResearchTool.SCRAPER),
-                toolLevel(player, ResearchTool.STRETCHER));
+                toolLevel(player, ResearchTool.STRETCHER), toolLevel(player, ResearchTool.MORTAR));
     }
 
     /**
@@ -527,7 +539,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return switch (slot) {
             case DIARY -> stack.is(ModItems.RESEARCHERS_DIARY.get());
             case HEXTECH -> stack.is(ModItems.UNSTABLE_HEXTECH.get());
-            case STUDY -> ResearchItems.of(stack) != null;
+            case STUDY -> ResearchItems.of(stack) != null && !EssenceFlaskItem.isFlask(stack);
+            case FLASK -> EssenceFlaskItem.isFlask(stack);
             case PAPER -> stack.is(Items.PAPER);
             default -> slot >= TOOLS && slot < STUDY && stack.is(ResearchTool.values()[slot - TOOLS].item());
         };
@@ -545,7 +558,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction direction) {
-        return slot == OUTPUT;
+        return slot == OUTPUT || slot == FLASK && EssenceFlaskItem.isEmptyFlask(stack);
     }
 
     @Override

@@ -40,9 +40,10 @@ public final class ResearchSheet {
      * @param crossings sections where the thread may cross itself (fork quill)
      * @param passes    dark runes it may pass through (brass scraper)
      * @param free      first sections that cost no ink (parchment stretcher)
+     * @param thrift    0-3: every 4th, 3rd or 2nd paid section costs no ink (mortar-ground ink)
      */
-    public record Allowance(int crossings, int passes, int free) {
-        public static final Allowance NONE = new Allowance(0, 0, 0);
+    public record Allowance(int crossings, int passes, int free, int thrift) {
+        public static final Allowance NONE = new Allowance(0, 0, 0, 0);
     }
 
     /**
@@ -82,6 +83,7 @@ public final class ResearchSheet {
         boolean[] used = new boolean[HexGrid.COUNT];
         used[HexGrid.CENTRE] = true;
         int lit = 0;
+        int paid = 0;
         int crossings = 0;
         int passes = 0;
         for (int i = 1; i < thread.length; i++) {
@@ -97,7 +99,7 @@ public final class ResearchSheet {
                 return null;
             }
             used[cell] = true;
-            if (i > allowance.free()) {
+            if (i > allowance.free() && (allowance.thrift() <= 0 || ++paid % (5 - allowance.thrift()) != 0)) {
                 SimpleRune colour = toward(thread[i - 1], cell);
                 ink[colour.ordinal()]++;
                 paying[i] = colour;

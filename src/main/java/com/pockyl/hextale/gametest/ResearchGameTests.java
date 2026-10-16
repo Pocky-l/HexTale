@@ -28,6 +28,10 @@ import net.minecraft.world.phys.Vec3;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.AlembicBlock;
 import com.pockyl.hextale.block.AlembicBlockEntity;
+import com.pockyl.hextale.block.EssenceTankBlockEntity;
+import com.pockyl.hextale.block.SeparatorBlockEntity;
+import com.pockyl.hextale.essence.Essence;
+import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.block.Requirement;
 import com.pockyl.hextale.block.ResearchTableBlock;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
@@ -140,7 +144,7 @@ public final class ResearchGameTests {
         helper.assertTrue(b >= 0, "there is a small loop next to the orb");
         int[] loop = {HexGrid.CENTRE, a, b, c, a};
         helper.assertTrue(ResearchSheet.trace(board, loop, none) == null, "a thread never crosses itself");
-        helper.assertTrue(ResearchSheet.trace(board, loop, new ResearchSheet.Allowance(1, 0, 0)) != null, "the fork quill lets it cross once");
+        helper.assertTrue(ResearchSheet.trace(board, loop, new ResearchSheet.Allowance(1, 0, 0, 0)) != null, "the fork quill lets it cross once");
 
         // Through a dark rune only with the scraper.
         int wall = -1;
@@ -161,7 +165,7 @@ public final class ResearchGameTests {
         through[path.length] = wall;
         helper.assertTrue(ResearchSheet.trace(board, path, none) != null, "the way to the dark rune is open");
         helper.assertTrue(ResearchSheet.trace(board, through, none) == null, "a dark rune blocks the thread");
-        helper.assertTrue(ResearchSheet.trace(board, through, new ResearchSheet.Allowance(0, 1, 0)) != null, "the scraper passes one");
+        helper.assertTrue(ResearchSheet.trace(board, through, new ResearchSheet.Allowance(0, 1, 0, 0)) != null, "the scraper passes one");
         helper.succeed();
     }
 
@@ -189,8 +193,11 @@ public final class ResearchGameTests {
         helper.assertTrue(fromCentre.size() == 6, "the six steps from the orb pay six different inks, got " + fromCentre);
         helper.assertTrue(anywhere.size() == 9, "every ink is needed somewhere on the parchment");
         helper.assertTrue(Arrays.equals(ink, trace.ink()), "the ink needed is the sum of the sections");
-        ResearchSheet.Trace stretched = ResearchSheet.trace(board, thread, ResearchTool.allowance(0, 0, 2));
+        ResearchSheet.Trace stretched = ResearchSheet.trace(board, thread, ResearchTool.allowance(0, 0, 2, 0));
         helper.assertTrue(Arrays.stream(stretched.ink()).sum() == thread.length - 1 - 8, "a two-star stretcher saves eight sections");
+        ResearchSheet.Trace ground = ResearchSheet.trace(board, thread, ResearchTool.allowance(0, 0, 0, 3));
+        helper.assertTrue(Arrays.stream(ground.ink()).sum() == thread.length - 1 - (thread.length - 1) / 2,
+                "a three-star mortar makes every second section free");
         helper.succeed();
     }
 
@@ -430,41 +437,98 @@ public final class ResearchGameTests {
 
     // ---- The table ------------------------------------------------------------------------------------------------
 
-    @HexTest(maxTicks = 400)
-    public static void anAlembicDistilsInkIntoTheTable(GameTestHelper helper) {
-        ServerPlayer player = survivalPlayer(helper);
-        ResearchTableBlockEntity table = stockedTable(helper);
-        BlockPos alembicPos = TABLE.south();
-        helper.setBlock(alembicPos.below(), Blocks.MAGMA_BLOCK);
-        helper.setBlock(alembicPos, ModBlocks.ALEMBIC.get().defaultBlockState().setValue(AlembicBlock.LIT, true));
-        AlembicBlockEntity alembic = helper.getBlockEntity(alembicPos, AlembicBlockEntity.class);
-        alembic.setOwner(player);
-        ItemStack coal = new ItemStack(Items.COAL, 3);
-        helper.assertFalse(alembic.insert(player, coal), "unstudied coal does not go in");
-        Research.study(player, Items.COAL);
-        helper.assertTrue(alembic.insert(player, coal) && coal.isEmpty(), "studied coal goes into the flask");
-        helper.assertTrue(alembic.table() == table, "the alembic pours into the table it touches");
+    // ---- Essence works --------------------------------------------------------------------------------------------
+
+    @HexTest
+    public static void essencePartsKeepTheirProportions(GameTestHelper helper) {
+        Essence mixture = Essence.of(java.util.Map.of(SimpleRune.LIFE, 12, SimpleRune.EARTH, 4));
+        Essence part = mixture.part(8);
+        helper.assertTrue(part.get(SimpleRune.LIFE) == 6 && part.get(SimpleRune.EARTH) == 2, "a part keeps three life to one earth: " + part);
+        helper.assertTrue(mixture.minus(part).total() == 8, "what is left is the rest");
+        helper.assertTrue(mixture.pureElement() == null && mixture.kinds() == 2, "two elements make a mixture");
+        helper.assertTrue(Essence.pure(SimpleRune.FIRE, 3).pureElement() == SimpleRune.FIRE, "one element makes a concentrate");
+        Essence odd = Essence.of(java.util.Map.of(SimpleRune.FIRE, 1, SimpleRune.WATER, 1, SimpleRune.AIR, 1));
+        helper.assertTrue(odd.part(2).total() == 2, "rounding never loses or makes drops");
+        helper.succeed();
+    }
+
+    @HexTest(maxTicks = 300)
+    public static void anAlembicBoilsAnItemIntoAMixture(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at.below(), Blocks.MAGMA_BLOCK);
+        helper.setBlock(at, ModBlocks.ALEMBIC.get().defaultBlockState().setValue(AlembicBlock.LIT, true));
+        AlembicBlockEntity alembic = helper.getBlockEntity(at, AlembicBlockEntity.class);
+        alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.OAK_PLANKS));
+        alembic.setItem(AlembicBlockEntity.FLASK_IN, new ItemStack(ModItems.ESSENCE_FLASK.get(), 2));
+        Essence expected = Essence.boiled(ResearchItems.of(Items.OAK_PLANKS), AlembicBlockEntity.DROPS_PER_POINT);
         helper.succeedWhen(() -> {
-            int fire = table.ink()[SimpleRune.FIRE.ordinal()];
-            helper.assertTrue(fire == 12, "three coal, two fire points, two drops each: 12 fire ink, got " + fire);
-            helper.assertTrue(alembic.input().isEmpty(), "the coal is used up");
-            player.discard();
+            Essence boiled = EssenceFlaskItem.contents(alembic.getItem(AlembicBlockEntity.FLASK_OUT));
+            helper.assertTrue(boiled.equals(expected), "oak planks boil into " + expected + ", got " + boiled);
+            helper.assertTrue(alembic.getItem(AlembicBlockEntity.FLASK_IN).getCount() == 1, "one empty flask was used");
         });
     }
 
     @HexTest(maxTicks = 120)
     public static void aColdAlembicDoesNothing(GameTestHelper helper) {
-        ServerPlayer player = survivalPlayer(helper);
-        Research.study(player, Items.COAL);
-        BlockPos alembicPos = new BlockPos(1, 1, 1);
-        helper.setBlock(alembicPos.below(), Blocks.STONE);
-        helper.setBlock(alembicPos, ModBlocks.ALEMBIC.get().defaultBlockState());
-        AlembicBlockEntity alembic = helper.getBlockEntity(alembicPos, AlembicBlockEntity.class);
-        alembic.insert(player, new ItemStack(Items.COAL, 2));
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at.below(), Blocks.STONE);
+        helper.setBlock(at, ModBlocks.ALEMBIC.get().defaultBlockState());
+        AlembicBlockEntity alembic = helper.getBlockEntity(at, AlembicBlockEntity.class);
+        alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.COAL, 2));
         helper.runAfterDelay(100, () -> {
-            helper.assertTrue(alembic.input().getCount() == 2 && alembic.progress() == 0, "no heat, no distilling");
-            player.discard();
+            helper.assertTrue(alembic.input().getCount() == 2 && alembic.progress() == 0, "no heat, no boiling");
             helper.succeed();
+        });
+    }
+
+    @HexTest(maxTicks = 400)
+    public static void aReagentSeparatesOneElement(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState());
+        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        Essence mixture = Essence.of(java.util.Map.of(SimpleRune.LIFE, 8, SimpleRune.EARTH, 8));
+        separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(mixture));
+        separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 3));
+        separator.setItem(SeparatorBlockEntity.SUPPLY, new ItemStack(ModItems.ESSENCE_FLASK.get(), 2));
+        helper.succeedWhen(() -> {
+            Essence rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.MIX_OUT));
+            Essence drawn = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.EXTRACT_OUT));
+            helper.assertTrue(rest.equals(Essence.pure(SimpleRune.LIFE, 8)), "clay leaves pure life, got " + rest);
+            helper.assertTrue(drawn.equals(Essence.pure(SimpleRune.EARTH, 8)), "and draws out pure earth, got " + drawn);
+            helper.assertTrue(separator.getItem(SeparatorBlockEntity.REAGENT).getCount() == 2, "one clay ball binds eight drops");
+        });
+    }
+
+    @HexTest(maxTicks = 200)
+    public static void pipesCarryEssenceBetweenTanks(GameTestHelper helper) {
+        BlockPos from = new BlockPos(1, 3, 1);
+        BlockPos pipe = new BlockPos(1, 2, 1);
+        BlockPos to = new BlockPos(2, 2, 1);
+        helper.setBlock(from, ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(pipe, ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(to, ModBlocks.ESSENCE_TANK.get());
+        EssenceTankBlockEntity source = helper.getBlockEntity(from, EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity target = helper.getBlockEntity(to, EssenceTankBlockEntity.class);
+        source.tank().set(Essence.pure(SimpleRune.WATER, 12));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(target.tank().contents().equals(Essence.pure(SimpleRune.WATER, 12)),
+                    "the water ran down the pipe into the other tank, got " + target.tank().contents());
+            helper.assertTrue(source.tank().isEmpty(), "the first tank is empty");
+        });
+    }
+
+    @HexTest(maxTicks = 60)
+    public static void theTableTakesOnlyConcentrates(GameTestHelper helper) {
+        ResearchTableBlockEntity table = stockedTable(helper);
+        table.setItem(ResearchTableBlockEntity.FLASK, EssenceFlaskItem.filled(Essence.of(java.util.Map.of(SimpleRune.LIFE, 8, SimpleRune.EARTH, 8))));
+        helper.runAfterDelay(5, () -> {
+            helper.assertTrue(Arrays.stream(table.ink()).sum() == 0, "a mixture is not ink");
+            table.setItem(ResearchTableBlockEntity.FLASK, EssenceFlaskItem.filled(Essence.pure(SimpleRune.FIRE, 16)));
+            helper.runAfterDelay(5, () -> {
+                helper.assertTrue(table.ink()[SimpleRune.FIRE.ordinal()] == 16, "a fire concentrate fills the fire vial");
+                helper.assertTrue(EssenceFlaskItem.isEmptyFlask(table.getItem(ResearchTableBlockEntity.FLASK)), "the flask is left empty");
+                helper.succeed();
+            });
         });
     }
 

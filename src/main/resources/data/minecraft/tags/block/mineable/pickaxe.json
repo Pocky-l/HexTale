@@ -1,5 +1,8 @@
 {
   "values": [
-    "hextale:alembic"
+    "hextale:alembic",
+    "hextale:separator",
+    "hextale:essence_tank",
+    "hextale:brass_pipe"
   ]
 }

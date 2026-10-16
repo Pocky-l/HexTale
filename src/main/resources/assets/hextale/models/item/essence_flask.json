@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "hextale:item/essence_flask_liquid",
+    "layer1": "hextale:item/essence_flask"
+  }
+}

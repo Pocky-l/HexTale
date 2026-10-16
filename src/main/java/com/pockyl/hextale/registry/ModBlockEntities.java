@@ -8,6 +8,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.AlembicBlockEntity;
+import com.pockyl.hextale.block.EssenceTankBlockEntity;
+import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
 
 public final class ModBlockEntities {
@@ -20,6 +22,11 @@ public final class ModBlockEntities {
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AlembicBlockEntity>> ALEMBIC =
             BLOCK_ENTITIES.register("alembic", () -> new BlockEntityType<>(AlembicBlockEntity::new, ModBlocks.ALEMBIC.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SeparatorBlockEntity>> SEPARATOR =
+            BLOCK_ENTITIES.register("separator", () -> new BlockEntityType<>(SeparatorBlockEntity::new, ModBlocks.SEPARATOR.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EssenceTankBlockEntity>> ESSENCE_TANK =
+            BLOCK_ENTITIES.register("essence_tank", () -> new BlockEntityType<>(EssenceTankBlockEntity::new, ModBlocks.ESSENCE_TANK.get()));
 
     private ModBlockEntities() {
     }

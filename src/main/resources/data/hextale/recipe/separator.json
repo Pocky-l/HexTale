@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BGB",
+    "G G",
+    "BBB"
+  ],
+  "key": {
+    "B": "hextale:brass_ingot",
+    "G": "minecraft:glass"
+  },
+  "result": {
+    "id": "hextale:separator"
+  }
+}

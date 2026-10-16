@@ -8,13 +8,20 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.menu.AlembicMenu;
 import com.pockyl.hextale.menu.ResearchTableMenu;
+import com.pockyl.hextale.menu.SeparatorMenu;
 
 public final class ModMenus {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, Hextale.MOD_ID);
 
     public static final DeferredHolder<MenuType<?>, MenuType<ResearchTableMenu>> RESEARCH_TABLE =
             MENUS.register("research_table", () -> IMenuTypeExtension.create(ResearchTableMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<AlembicMenu>> ALEMBIC =
+            MENUS.register("alembic", () -> IMenuTypeExtension.create(AlembicMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<SeparatorMenu>> SEPARATOR =
+            MENUS.register("separator", () -> IMenuTypeExtension.create(SeparatorMenu::new));
 
     private ModMenus() {
     }

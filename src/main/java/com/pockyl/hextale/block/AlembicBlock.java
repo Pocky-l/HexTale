@@ -2,10 +2,8 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.WorldlyContainerHolder;
@@ -44,11 +42,11 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Alembic: a glass flask on a brass stand that distils items into elemental ink. Put it on a heat source (fire,
- * a lit campfire, lava or magma) next to a Research Table: studied items given to it dissolve one by one, and the ink
- * runs from its spout into the table's vials. No screen: items go in by hand or by hopper, the flask shows the rest.
+ * The Alembic: a glass flask on a brass stand over a fire (fire, a lit campfire, lava or magma below it). Studied items
+ * put into it boil down into essence - a mixture of all their elements - which it pours into empty flasks or pushes into
+ * brass pipes on any side.
  */
-public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHolder {
+public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHolder, EssenceMachine {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     /** Heat below: the alembic works. */
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
@@ -72,17 +70,9 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
         return below.is(BlockTags.FIRE) || below.is(Blocks.LAVA) || below.is(Blocks.MAGMA_BLOCK);
     }
 
-    /** The spout turns to a Research Table beside it, else towards the player. */
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
-        Direction facing = context.getHorizontalDirection().getOpposite();
-        for (Direction side : Direction.Plane.HORIZONTAL) {
-            if (context.getLevel().getBlockState(context.getClickedPos().relative(side)).getBlock() instanceof ResearchTableBlock) {
-                facing = side;
-                break;
-            }
-        }
-        return defaultBlockState().setValue(FACING, facing)
+        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite())
                 .setValue(LIT, isHeat(context.getLevel().getBlockState(context.getClickedPos().below())));
     }
 
@@ -103,24 +93,11 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
         return super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbour, random);
     }
 
-    /** An item in hand goes into the flask (studied items only). */
-    @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
-                                          BlockHitResult hitResult) {
-        if (!(level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic)) {
-            return InteractionResult.PASS;
-        }
-        if (level.isClientSide()) {
-            return InteractionResult.SUCCESS;
-        }
-        return alembic.insert((ServerPlayer) player, stack) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
-    }
-
-    /** An empty hand takes back what waits in the flask. */
+    /** Opens the alembic's screen. */
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic) {
-            alembic.takeBack(player);
+            player.openMenu(alembic, buf -> buf.writeBlockPos(pos));
         }
         return InteractionResult.SUCCESS;
     }

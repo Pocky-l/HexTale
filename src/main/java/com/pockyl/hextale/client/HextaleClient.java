@@ -11,6 +11,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
@@ -20,10 +21,13 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.client.render.AlembicRenderer;
+import com.pockyl.hextale.client.render.EssenceTint;
 import com.pockyl.hextale.client.render.ResearchTableRenderer;
 import com.pockyl.hextale.client.render.RuneScrollRenderer;
 import com.pockyl.hextale.client.render.TableModels;
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
+import com.pockyl.hextale.client.screen.machine.AlembicScreen;
+import com.pockyl.hextale.client.screen.machine.SeparatorScreen;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModMenus;
 import com.pockyl.hextale.research.ElementsTooltip;
@@ -40,6 +44,7 @@ public final class HextaleClient {
         modBus.addListener((RegisterSpecialModelRendererEvent event) ->
                 event.register(RuneScrollRenderer.ID, RuneScrollRenderer.Unbaked.MAP_CODEC));
         modBus.addListener(ClientPayloads::register);
+        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("essence"), EssenceTint.MAP_CODEC));
         modBus.addListener(TableModels::register);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
                 event.register(ElementsTooltip.class, ClientElementsTooltip::new));
@@ -64,6 +69,8 @@ public final class HextaleClient {
 
     private static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenus.RESEARCH_TABLE.get(), ResearchTableScreen::new);
+        event.register(ModMenus.ALEMBIC.get(), AlembicScreen::new);
+        event.register(ModMenus.SEPARATOR.get(), SeparatorScreen::new);
     }
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {

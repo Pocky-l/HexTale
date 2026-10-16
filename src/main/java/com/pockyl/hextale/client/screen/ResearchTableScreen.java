@@ -29,6 +29,8 @@ import com.pockyl.hextale.block.ResearchTableBlockEntity;
 import com.pockyl.hextale.client.ClientKnowledge;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.client.screen.book.StarBook;
+import com.pockyl.hextale.essence.Essence;
+import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.network.ResearchActionPayload;
 import com.pockyl.hextale.network.ResearchMessagePayload;
@@ -86,6 +88,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private static final int GHOST_PAPER = 1;
     private static final int GHOST_ORB = 2;
     private static final int GHOST_TOOLS = 5;
+    private static final int GHOST_FLASK = 10;
     private static final int GHOST_STUDY = 11;
 
     private enum Tab {
@@ -168,7 +171,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     private ResearchSheet.Allowance allowance() {
-        return ResearchTool.allowance(toolLevel(ResearchTool.FORK), toolLevel(ResearchTool.SCRAPER), toolLevel(ResearchTool.STRETCHER));
+        return ResearchTool.allowance(toolLevel(ResearchTool.FORK), toolLevel(ResearchTool.SCRAPER), toolLevel(ResearchTool.STRETCHER),
+                toolLevel(ResearchTool.MORTAR));
     }
 
     /** Studied, or anything in creative mode. */
@@ -633,6 +637,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         ghost(graphics, ResearchTableBlockEntity.DIARY, ResearchTableMenu.DIARY_X, ResearchTableMenu.ROW_Y, GHOST_DIARY);
         ghost(graphics, ResearchTableBlockEntity.HEXTECH, ResearchTableMenu.HEXTECH_X, ResearchTableMenu.ROW_Y, GHOST_ORB);
         ghost(graphics, ResearchTableBlockEntity.PAPER, ResearchTableMenu.PAPER_X, ResearchTableMenu.ROW_Y, GHOST_PAPER);
+        ghost(graphics, ResearchTableBlockEntity.FLASK, ResearchTableMenu.FLASK_X, ResearchTableMenu.ROW_Y, GHOST_FLASK);
         ghost(graphics, ResearchTableBlockEntity.STUDY, ResearchTableMenu.STUDY_X, ResearchTableMenu.ROW_Y, GHOST_STUDY);
         for (ResearchTool tool : ResearchTool.values()) {
             int x = ResearchTableMenu.TOOLS_X + tool.ordinal() * ResearchTableMenu.TOOL_SPACING;
@@ -650,6 +655,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 case PAPER -> ResearchTableMenu.PAPER_X;
             };
             highlight(graphics, leftPos + x, topPos + ResearchTableMenu.ROW_Y, 0xFFD36E, strong);
+        }
+        Essence inFlask = EssenceFlaskItem.contents(menu.table().getItem(ResearchTableBlockEntity.FLASK));
+        if (inFlask.kinds() > 1) {
+            highlight(graphics, leftPos + ResearchTableMenu.FLASK_X, topPos + ResearchTableMenu.ROW_Y, 0xE06A5A, 0);
         }
     }
 
@@ -710,6 +719,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             graphics.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
             return;
         }
+        if (index == ResearchTableBlockEntity.FLASK && EssenceFlaskItem.contents(slot.getItem()).kinds() > 1) {
+            graphics.setTooltipForNextFrame(font, font.split(Component.translatable(KEY + "slot.flask.mixture"), 180), mouseX, mouseY);
+            return;
+        }
         if (slot.hasItem()) {
             return;
         }
@@ -718,6 +731,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             case ResearchTableBlockEntity.HEXTECH -> "hextech";
             case ResearchTableBlockEntity.PAPER -> "paper";
             case ResearchTableBlockEntity.STUDY -> "study";
+            case ResearchTableBlockEntity.FLASK -> "flask";
             default -> "output";
         };
         graphics.setTooltipForNextFrame(font, font.split(Component.translatable(KEY + "slot." + hint), 180), mouseX, mouseY);

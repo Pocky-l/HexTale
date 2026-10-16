@@ -19,12 +19,13 @@ import org.jspecify.annotations.Nullable;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.AlembicBlock;
 import com.pockyl.hextale.block.AlembicBlockEntity;
+import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.research.ItemElements;
 import com.pockyl.hextale.research.ResearchItems;
 
 /**
- * The ink inside the Alembic's flask: a glowing liquid in the colour of what is being distilled (or of the ink waiting
- * in its tanks), rising while an item dissolves and swaying a little on its surface.
+ * The essence inside the Alembic's flask: a glowing liquid in the colour of what it holds (or of the item boiling),
+ * rising while an item boils and swaying a little on its surface.
  */
 public class AlembicRenderer implements BlockEntityRenderer<AlembicBlockEntity, AlembicRenderer.State> {
     private static final Identifier WHITE_TEXTURE = Hextale.id("textures/misc/white.png");
@@ -56,9 +57,10 @@ public class AlembicRenderer implements BlockEntityRenderer<AlembicBlockEntity, 
         state.time = level == null ? 0 : level.getGameTime() + partialTick;
         ItemElements elements = ResearchItems.of(alembic.input());
         state.working = elements != null && alembic.getBlockState().getValue(AlembicBlock.LIT);
-        state.color = state.working ? RuneDrawing.mix(alembic.strongestInk(), elements.main().color(), alembic.clientProgress)
-                : alembic.strongestInk();
-        float fill = alembic.fill();
+        EssenceTank tank = alembic.tank();
+        int held = tank.isEmpty() ? elements == null ? 0x7EC8E8 : elements.main().color() : tank.contents().color();
+        state.color = state.working ? RuneDrawing.mix(held, elements.main().color(), alembic.clientProgress * 0.5F) : held;
+        float fill = tank.amount() / (float) tank.capacity();
         state.level = Math.max(fill, state.working ? 0.15F + 0.6F * alembic.clientProgress : 0);
     }
 

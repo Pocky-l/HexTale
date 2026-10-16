@@ -20,9 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Runes are learned by studying their scrolls: the knowledge stays with the researcher, with the scroll's stars. A
   scroll of a rune that is not open to you in the research book yet cannot be studied.
 - Ink: the desk holds nine vials, one per element; the part the current thread would spend shimmers in them.
-- Alembic: a glass flask on a brass stand. Set it over fire, a lit campfire, lava or magma next to the Research Table
-  and give it studied items (by hand or hopper): they dissolve one by one, the flask glows in their colours, and the ink
-  drips from the spout into the table's vials. Every research takes a paper from the
+- Essence works: ink is made, not found. The Alembic (set over fire, a lit campfire, lava or magma) boils studied
+  items into essence - a mixture of all their elements (oak planks: life and earth). The Separator draws one element
+  out of a mixture with its reagent (charcoal - fire, sugar - water, clay - earth, feather - air, glow ink sac - light,
+  ink sac - shadow, bone meal - life, iron nugget - metal, redstone - lightning; item tags, so packs can change them):
+  the rest of the mixture leaves through its front, the drawn-out element - a concentrate - through its top. Flasks
+  carry essence by hand, Brass Pipes between machines, Essence Tanks store it. Only flasks of concentrate go into the
+  Research Table's flask slot and fill the vial of their element. Every research takes a paper from the
   table's paper slot when it starts.
 - The Researcher's Diary is a star book: a dark sky to drag around and zoom, where the 72 runes hang as stars in
   constellations - Smelting and the tool runes in the centre, the other runes on the rays of their elements. Click a
@@ -33,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   inside it is empty and the sections on its rim that could hold an element glow. Strike an element's own section to
   reveal it. A studied item shows its elements in its tooltip and can be dissolved into ink.
 - Five research tools crafted from the scrolls of the first runes - Researcher's Lens (the fog lifts farther), Fork
-  Quill (the thread may cross itself), Mortar (the alembic gets more ink per item), Brass Scraper (the thread may pass dark runes) and
+  Quill (the thread may cross itself), Mortar (some sections of the thread cost no ink), Brass Scraper (the thread may pass dark runes) and
   Parchment Stretcher (the first sections cost no ink). They sit in the table's tool slots and grow stronger with their
   rune's stars.
 - Unstable hextech from lightning striking a lightning rod on an amethyst block.

@@ -20,7 +20,7 @@ public enum ResearchTool {
     LENS("water_light", ModItems.RESEARCHERS_LENS),
     /** The thread may cross itself 1-3 times. */
     FORK("light_earth", ModItems.FORK_QUILL),
-    /** Items dissolve into more ink: 3, 4 or 5 drops per element point instead of 2. */
+    /** Ground ink goes further: every 4th, 3rd or 2nd paid section of the thread costs no ink. */
     MORTAR("water_earth", ModItems.MORTAR),
     /** The thread may pass through 1-3 dark runes. */
     SCRAPER("earth_spark", ModItems.BRASS_SCRAPER),
@@ -38,14 +38,9 @@ public enum ResearchTool {
     /** Fog sight around the thread in sections, by lens strength 0-2 (3 sees everything). */
     public static final int[] SIGHT = {2, 3, 5};
 
-    /** What the fork, scraper and stretcher of these strengths allow on a thread. */
-    public static ResearchSheet.Allowance allowance(int fork, int scraper, int stretcher) {
-        return new ResearchSheet.Allowance(fork, scraper, stretcher * 4);
-    }
-
-    /** Drops of ink per element point an item dissolves into, by mortar strength. */
-    public static int inkPerPoint(int mortar) {
-        return 2 + mortar;
+    /** What the fork, scraper, stretcher and mortar of these strengths allow on a thread. */
+    public static ResearchSheet.Allowance allowance(int fork, int scraper, int stretcher, int mortar) {
+        return new ResearchSheet.Allowance(fork, scraper, stretcher * 4, mortar);
     }
 
     public ComplexRune rune() {
