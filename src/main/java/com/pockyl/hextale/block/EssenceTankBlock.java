@@ -22,7 +22,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 
+import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.Flasks;
+import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.registry.ModBlockEntities;
 
 import org.jspecify.annotations.Nullable;
@@ -78,6 +80,12 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             return InteractionResult.PASS;
         }
         if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+        Essence pure = EssenceFlaskItem.contents(stack).pureEssence();
+        if (tank.isCreative() && pure != null) {
+            tank.setCreativeEssence(pure);
+            player.sendOverlayMessage(Flasks.describe(tank.tank()));
             return InteractionResult.SUCCESS;
         }
         if (Flasks.use(player, hand, stack, tank.tank())) {

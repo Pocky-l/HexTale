@@ -8,7 +8,14 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "hextale:essence_tank"
+          "name": "hextale:essence_tank",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:essence"
+            ],
+            "source": "block_entity"
+          }
         }
       ],
       "rolls": 1

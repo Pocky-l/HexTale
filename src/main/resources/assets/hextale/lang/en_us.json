@@ -461,5 +461,7 @@
   "jade.hextale.boiling": "Boiling: %s%%",
   "jade.hextale.pump.working": "Pumping water",
   "jade.hextale.pump.dry": "Needs to stand in water",
-  "config.jade.plugin_hextale.essence_works": "HexTale essence works"
+  "config.jade.plugin_hextale.essence_works": "HexTale essence works",
+  "block.hextale.creative_essence_tank": "Creative Essence Tank",
+  "block.hextale.creative_essence_tank.holds": "Always full: %s"
 }

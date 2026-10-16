@@ -1,0 +1,7 @@
+{
+  "parent": "hextale:block/essence_tank",
+  "textures": {
+    "particle": "hextale:block/creative_brass",
+    "brass": "hextale:block/creative_brass"
+  }
+}

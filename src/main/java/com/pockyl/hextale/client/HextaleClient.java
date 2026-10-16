@@ -1,8 +1,10 @@
 package com.pockyl.hextale.client;
 
 import com.mojang.datafixers.util.Either;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -18,8 +20,10 @@ import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.client.render.AlembicRenderer;
 import com.pockyl.hextale.client.render.EssenceTankRenderer;
 import com.pockyl.hextale.client.render.EssenceTint;
@@ -30,7 +34,10 @@ import com.pockyl.hextale.client.render.TableModels;
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
 import com.pockyl.hextale.client.screen.machine.AlembicScreen;
 import com.pockyl.hextale.client.screen.machine.SeparatorScreen;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModMenus;
 import com.pockyl.hextale.research.EssencesTooltip;
 import com.pockyl.hextale.research.ItemEssences;
@@ -51,6 +58,16 @@ public final class HextaleClient {
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
                 event.register(EssencesTooltip.class, ClientEssencesTooltip::new));
         NeoForge.EVENT_BUS.addListener(HextaleClient::addElementsToTooltip);
+        NeoForge.EVENT_BUS.addListener((ItemTooltipEvent event) -> {
+            ItemStack stack = event.getItemStack();
+            EssenceMix contents = stack.get(ModDataComponents.ESSENCE.get());
+            if (contents != null && (stack.is(ModItems.ESSENCE_TANK.get()) || stack.is(ModItems.CREATIVE_ESSENCE_TANK.get()))) {
+                event.getToolTip().add(1, stack.is(ModItems.CREATIVE_ESSENCE_TANK.get())
+                        ? Component.translatable("block.hextale.creative_essence_tank.holds", contents.describe()).withStyle(ChatFormatting.GRAY)
+                        : contents.describe().append(Component.literal(" (" + contents.total() + "/" + EssenceTankBlockEntity.CAPACITY + ")")
+                        .withStyle(ChatFormatting.GRAY)));
+            }
+        });
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> RuneBoards.warmUp());
     }

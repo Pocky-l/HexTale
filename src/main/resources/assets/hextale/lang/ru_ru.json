@@ -461,5 +461,7 @@
   "jade.hextale.boiling": "Варка: %s%%",
   "jade.hextale.pump.working": "Качает воду",
   "jade.hextale.pump.dry": "Нужно поставить в воду",
-  "config.jade.plugin_hextale.essence_works": "HexTale: машины эссенции"
+  "config.jade.plugin_hextale.essence_works": "HexTale: машины эссенции",
+  "block.hextale.creative_essence_tank": "Творческий бак эссенции",
+  "block.hextale.creative_essence_tank.holds": "Всегда полон: %s"
 }

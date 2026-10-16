@@ -3,6 +3,7 @@ package com.pockyl.hextale;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -11,6 +12,9 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import org.slf4j.Logger;
 
+import com.pockyl.hextale.block.EssenceTankBlockEntity;
+import com.pockyl.hextale.essence.EssenceFlaskItem;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.gametest.GameTests;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.network.ModNetwork;
@@ -25,6 +29,7 @@ import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.registry.ModTriggers;
 import com.pockyl.hextale.registry.PockyModsTab;
 import com.pockyl.hextale.rune.ComplexRunes;
+import com.pockyl.hextale.rune.Essence;
 
 @Mod(Hextale.MOD_ID)
 public final class Hextale {
@@ -49,6 +54,17 @@ public final class Hextale {
             output.accept(ModItems.ALEMBIC);
             output.accept(ModItems.SEPARATOR);
             output.accept(ModItems.ESSENCE_TANK);
+            // For creative building: a full tank, an infinite tank and a bottle of every essence.
+            for (Essence essence : Essence.values()) {
+                output.accept(withEssence(ModItems.ESSENCE_TANK.get(), EssenceMix.pure(essence, EssenceTankBlockEntity.CAPACITY)));
+            }
+            for (Essence essence : Essence.values()) {
+                output.accept(withEssence(ModItems.CREATIVE_ESSENCE_TANK.get(), EssenceMix.pure(essence, EssenceTankBlockEntity.CAPACITY)));
+            }
+            for (Essence essence : Essence.values()) {
+                output.accept(EssenceFlaskItem.filled(EssenceMix.pure(essence, EssenceFlaskItem.CAPACITY)));
+            }
+            output.accept(EssenceFlaskItem.filled(EssenceMix.pure(Essence.FIRE, EssenceFlaskItem.CAPACITY).asUnknown()));
             output.accept(ModItems.BRASS_PIPE);
             output.accept(ModItems.PUMP);
             output.accept(ModItems.DRAIN_VALVE);
@@ -86,5 +102,11 @@ public final class Hextale {
 
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    }
+
+    private static ItemStack withEssence(Item item, EssenceMix contents) {
+        ItemStack stack = new ItemStack(item);
+        stack.set(ModDataComponents.ESSENCE.get(), contents);
+        return stack;
     }
 }

@@ -28,7 +28,8 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SeparatorBlockEntity>> SEPARATOR =
             BLOCK_ENTITIES.register("separator", () -> new BlockEntityType<>(SeparatorBlockEntity::new, ModBlocks.SEPARATOR.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EssenceTankBlockEntity>> ESSENCE_TANK =
-            BLOCK_ENTITIES.register("essence_tank", () -> new BlockEntityType<>(EssenceTankBlockEntity::new, ModBlocks.ESSENCE_TANK.get()));
+            BLOCK_ENTITIES.register("essence_tank", () -> new BlockEntityType<>(EssenceTankBlockEntity::new, ModBlocks.ESSENCE_TANK.get(),
+                    ModBlocks.CREATIVE_ESSENCE_TANK.get()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DrainValveBlockEntity>> DRAIN_VALVE =
             BLOCK_ENTITIES.register("drain_valve", () -> new BlockEntityType<>(DrainValveBlockEntity::new, ModBlocks.DRAIN_VALVE.get()));

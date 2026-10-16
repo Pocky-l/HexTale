@@ -641,6 +641,39 @@ public final class ResearchGameTests {
         });
     }
 
+    @HexTest(maxTicks = 60)
+    public static void aCreativeTankNeverRunsDry(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at, ModBlocks.CREATIVE_ESSENCE_TANK.get());
+        EssenceTankBlockEntity tank = helper.getBlockEntity(at, EssenceTankBlockEntity.class);
+        ItemStack fire = new ItemStack(ModItems.CREATIVE_ESSENCE_TANK.get());
+        fire.set(ModDataComponents.ESSENCE.get(), EssenceMix.pure(Essence.FIRE, EssenceTankBlockEntity.CAPACITY));
+        tank.applyComponentsFromItemStack(fire);
+        helper.assertTrue(tank.isCreative() && tank.tank().contents().pureEssence() == Essence.FIRE, "placed from the item, it holds fire");
+        tank.tank().drain(100, false);
+        helper.assertTrue(tank.receive(Direction.NORTH, EssenceMix.pure(Essence.WATER, 4), true) == 0, "it takes nothing in");
+        helper.runAfterDelay(2, () -> {
+            helper.assertTrue(tank.tank().amount() == EssenceTankBlockEntity.CAPACITY, "and is full again the next tick");
+            helper.succeed();
+        });
+    }
+
+    @HexTest
+    public static void aTankItemCarriesItsEssence(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at, ModBlocks.ESSENCE_TANK.get());
+        EssenceTankBlockEntity tank = helper.getBlockEntity(at, EssenceTankBlockEntity.class);
+        tank.tank().set(EssenceMix.pure(Essence.LIGHT, 40));
+        ItemStack item = new ItemStack(ModItems.ESSENCE_TANK.get());
+        item.applyComponents(tank.collectComponents());
+        helper.assertTrue(EssenceMix.pure(Essence.LIGHT, 40).equals(item.get(ModDataComponents.ESSENCE.get())), "the broken tank's item keeps its light");
+        helper.setBlock(at.east(), ModBlocks.ESSENCE_TANK.get());
+        EssenceTankBlockEntity placed = helper.getBlockEntity(at.east(), EssenceTankBlockEntity.class);
+        placed.applyComponentsFromItemStack(item);
+        helper.assertTrue(placed.tank().contents().equals(EssenceMix.pure(Essence.LIGHT, 40)), "and a tank placed from it holds it again");
+        helper.succeed();
+    }
+
     @HexTest
     public static void pipesJoinMachinesOnlyAtPorts(GameTestHelper helper) {
         BlockPos at = new BlockPos(2, 2, 2);
