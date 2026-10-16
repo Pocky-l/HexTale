@@ -3,7 +3,6 @@ package com.pockyl.hextale.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -33,7 +32,6 @@ import com.pockyl.hextale.essence.Flasks;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.runework.HextechTools;
 
 import org.jspecify.annotations.Nullable;
 
@@ -88,21 +86,6 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             return InteractionResult.PASS;
         }
         if (level.isClientSide()) {
-            return InteractionResult.SUCCESS;
-        }
-        if (HextechTools.isTool(stack)) {
-            int taken = HextechTools.fillFrom(stack, tank.tank());
-            if (taken < 0) {
-                player.sendOverlayMessage(Component.translatable("item.hextale.hextech_tool.unknown_essence"));
-                return InteractionResult.FAIL;
-            }
-            if (taken > 0) {
-                tank.setChanged();
-                level.playSound(null, pos, ModSounds.TANK_GLUG.get(), SoundSource.BLOCKS, 0.6F, 1.2F);
-                level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.6F, 1.4F);
-            }
-            player.sendOverlayMessage(Component.translatable("item.hextale.hextech_tool.cell",
-                    HextechTools.cell(stack).describe(), HextechTools.cell(stack).total(), HextechTools.CELL));
             return InteractionResult.SUCCESS;
         }
         Essence pure = EssenceFlaskItem.contents(stack).pureEssence();

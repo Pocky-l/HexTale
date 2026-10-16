@@ -27,6 +27,7 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModMenus;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.registry.ModTriggers;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.PockyModsTab;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
@@ -45,6 +46,7 @@ public final class Hextale {
         ModMenus.register(modBus);
         ModAttachments.register(modBus);
         ModSounds.register(modBus);
+        ModParticles.register(modBus);
         ModTriggers.register(modBus);
         modBus.addListener(ModNetwork::register);
         RuneFiring.register();
@@ -71,7 +73,9 @@ public final class Hextale {
             output.accept(ModItems.BRASS_PIPE);
             output.accept(ModItems.PUMP);
             output.accept(ModItems.DRAIN_VALVE);
-            output.accept(ModItems.RUNE_ENGRAVER);
+            output.accept(ModItems.HEXTECH_ALTAR);
+            output.accept(ModItems.PEDESTAL);
+            output.accept(ModItems.RUNE_STELE);
             output.accept(ModItems.HEXTECH_PICKAXE);
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
@@ -91,7 +95,9 @@ public final class Hextale {
     private static void addToVanillaTabs(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(ModItems.RESEARCH_TABLE);
-            event.accept(ModItems.RUNE_ENGRAVER);
+            event.accept(ModItems.HEXTECH_ALTAR);
+            event.accept(ModItems.PEDESTAL);
+            event.accept(ModItems.RUNE_STELE);
         } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItems.BRASS_INGOT);
             event.accept(ModItems.BRASS_NUGGET);

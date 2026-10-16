@@ -13,7 +13,9 @@ import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.block.PumpBlockEntity;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
-import com.pockyl.hextale.block.RuneEngraverBlockEntity;
+import com.pockyl.hextale.block.HextechAltarBlockEntity;
+import com.pockyl.hextale.block.PedestalBlockEntity;
+import com.pockyl.hextale.block.RuneSteleBlockEntity;
 
 public final class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
@@ -37,8 +39,12 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PumpBlockEntity>> PUMP =
             BLOCK_ENTITIES.register("pump", () -> new BlockEntityType<>(PumpBlockEntity::new, ModBlocks.PUMP.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneEngraverBlockEntity>> RUNE_ENGRAVER =
-            BLOCK_ENTITIES.register("rune_engraver", () -> new BlockEntityType<>(RuneEngraverBlockEntity::new, ModBlocks.RUNE_ENGRAVER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HextechAltarBlockEntity>> HEXTECH_ALTAR =
+            BLOCK_ENTITIES.register("hextech_altar", () -> new BlockEntityType<>(HextechAltarBlockEntity::new, ModBlocks.HEXTECH_ALTAR.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PedestalBlockEntity>> PEDESTAL =
+            BLOCK_ENTITIES.register("pedestal", () -> new BlockEntityType<>(PedestalBlockEntity::new, ModBlocks.PEDESTAL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneSteleBlockEntity>> RUNE_STELE =
+            BLOCK_ENTITIES.register("rune_stele", () -> new BlockEntityType<>(RuneSteleBlockEntity::new, ModBlocks.RUNE_STELE.get()));
 
     private ModBlockEntities() {
     }

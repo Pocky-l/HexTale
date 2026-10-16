@@ -8,7 +8,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "hextale:rune_engraver"
+          "name": "hextale:hextech_altar"
         }
       ],
       "rolls": 1

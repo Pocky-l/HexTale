@@ -16,7 +16,9 @@ import com.pockyl.hextale.block.CreativeEssenceTankBlock;
 import com.pockyl.hextale.block.DrainValveBlock;
 import com.pockyl.hextale.block.EssenceTankBlock;
 import com.pockyl.hextale.block.PumpBlock;
-import com.pockyl.hextale.block.RuneEngraverBlock;
+import com.pockyl.hextale.block.HextechAltarBlock;
+import com.pockyl.hextale.block.PedestalBlock;
+import com.pockyl.hextale.block.RuneSteleBlock;
 import com.pockyl.hextale.block.SeparatorBlock;
 import com.pockyl.hextale.block.ResearchTableBlock;
 
@@ -48,9 +50,15 @@ public final class ModBlocks {
     public static final DeferredBlock<PumpBlock> PUMP = BLOCKS.registerBlock("pump", PumpBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(SoundType.COPPER).noOcclusion());
 
-    public static final DeferredBlock<RuneEngraverBlock> RUNE_ENGRAVER = BLOCKS.registerBlock("rune_engraver", RuneEngraverBlock::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.5F, 6.0F).sound(SoundType.STONE).noOcclusion()
-                    .requiresCorrectToolForDrops());
+    public static final DeferredBlock<HextechAltarBlock> HEXTECH_ALTAR = BLOCKS.registerBlock("hextech_altar", HextechAltarBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(3.5F, 9.0F).sound(SoundType.POLISHED_DEEPSLATE)
+                    .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 6));
+    public static final DeferredBlock<PedestalBlock> PEDESTAL = BLOCKS.registerBlock("pedestal", PedestalBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
+                    .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 3));
+    public static final DeferredBlock<RuneSteleBlock> RUNE_STELE = BLOCKS.registerBlock("rune_stele", RuneSteleBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
+                    .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> state.getValue(RuneSteleBlock.LIT) ? 9 : 2));
 
     private ModBlocks() {
     }

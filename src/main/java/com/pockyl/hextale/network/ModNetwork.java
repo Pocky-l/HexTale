@@ -7,7 +7,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModNetwork {
-    private static final String PROTOCOL_VERSION = "3";
+    private static final String PROTOCOL_VERSION = "4";
 
     private ModNetwork() {
     }
@@ -20,6 +20,9 @@ public final class ModNetwork {
         registrar.playToClient(ItemEssencesPayload.TYPE, ItemEssencesPayload.STREAM_CODEC);
         registrar.playToClient(ResearchMessagePayload.TYPE, ResearchMessagePayload.STREAM_CODEC);
         registrar.playToClient(OpenDiaryPayload.TYPE, OpenDiaryPayload.STREAM_CODEC);
+        registrar.playToClient(InfusionRecipesPayload.TYPE, InfusionRecipesPayload.STREAM_CODEC);
+        registrar.playToClient(OpenStelePayload.TYPE, OpenStelePayload.STREAM_CODEC);
+        registrar.playToServer(SteleRunePayload.TYPE, SteleRunePayload.STREAM_CODEC, SteleRunePayload::handle);
     }
 
     /** Sends to the player if their client has this mod (fake and game-test players do not). */

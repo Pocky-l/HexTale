@@ -5,7 +5,11 @@ import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlers
 
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
 import com.pockyl.hextale.client.screen.book.StarBookScreen;
+import com.pockyl.hextale.infusion.InfusionRecipes;
+import com.pockyl.hextale.network.InfusionRecipesPayload;
 import com.pockyl.hextale.network.ItemEssencesPayload;
+import com.pockyl.hextale.network.OpenStelePayload;
+import com.pockyl.hextale.client.screen.SteleScreen;
 import com.pockyl.hextale.network.KnowledgeSyncPayload;
 import com.pockyl.hextale.network.OpenDiaryPayload;
 import com.pockyl.hextale.network.ResearchMessagePayload;
@@ -21,6 +25,8 @@ public final class ClientPayloads {
         event.register(ItemEssencesPayload.TYPE, (payload, context) -> itemElements(payload));
         event.register(ResearchMessagePayload.TYPE, (payload, context) -> researchMessage(payload));
         event.register(OpenDiaryPayload.TYPE, (payload, context) -> openDiary(payload));
+        event.register(InfusionRecipesPayload.TYPE, (payload, context) -> InfusionRecipes.setClient(payload.recipes()));
+        event.register(OpenStelePayload.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new SteleScreen(payload.pos())));
     }
 
     public static void knowledge(KnowledgeSyncPayload payload) {

@@ -1,0 +1,16 @@
+{
+  "center": "minecraft:iron_pickaxe",
+  "pedestals": [
+    "hextale:brass_ingot",
+    "hextale:brass_ingot",
+    "hextale:unstable_hextech",
+    "minecraft:amethyst_shard"
+  ],
+  "essences": {
+    "metal": 24,
+    "earth": 16,
+    "spark": 8
+  },
+  "result": "hextale:hextech_pickaxe",
+  "keep_components": true
+}

@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "fire_earth"
+  ],
+  "pedestals": [
+    "minecraft:furnace",
+    "minecraft:coal"
+  ],
+  "essences": {
+    "fire": 24,
+    "earth": 12
+  }
+}

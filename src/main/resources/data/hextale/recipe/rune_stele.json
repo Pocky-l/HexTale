@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " A ",
+    "BDB",
+    "DDD"
+  ],
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "B": "hextale:brass_ingot",
+    "D": "minecraft:polished_deepslate"
+  },
+  "result": {
+    "id": "hextale:rune_stele"
+  }
+}

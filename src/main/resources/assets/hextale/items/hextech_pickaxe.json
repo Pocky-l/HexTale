@@ -4,10 +4,6 @@
     "model": "hextale:item/hextech_pickaxe",
     "tints": [
       {
-        "type": "minecraft:constant",
-        "value": -1
-      },
-      {
         "type": "hextale:hextech_cell"
       }
     ]

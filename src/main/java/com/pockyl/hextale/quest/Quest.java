@@ -76,14 +76,21 @@ public enum Quest {
     DEPTHS(CRAFT, 224, 160, () -> new ItemStack(Items.ECHO_SHARD), Quests.knowledge(k -> ResearchBook.learnedIn(k, 3) > 0), null),
     FULL_CODEX(DEPTHS, 280, 160, () -> new ItemStack(Items.ENCHANTED_BOOK), Quests.knowledge(k -> k.runeCount() >= 72), null),
 
-    // Row 4, left to right: rune works - tools and devices directed by runes and fed with essence.
-    RUNE_ENGRAVER(FIRST_RUNE, 112, 216, () -> new ItemStack(ModItems.RUNE_ENGRAVER.get()), Quests.has(ModItems.RUNE_ENGRAVER),
-            QuestDisplay.shaped("hextale:rune_engraver", 1, new String[]{"B B", "DHD", "DDD"},
-                    "B=hextale:brass_ingot", "D=minecraft:polished_deepslate", "H=hextale:unstable_hextech")),
-    HEXTECH_PICKAXE(RUNE_ENGRAVER, 168, 216, () -> new ItemStack(ModItems.HEXTECH_PICKAXE.get()), Quests.has(ModItems.HEXTECH_PICKAXE),
-            QuestDisplay.shaped("hextale:hextech_pickaxe", 1, new String[]{"BHB", " S ", " S "},
-                    "B=hextale:brass_ingot", "H=hextale:unstable_hextech", "S=minecraft:stick")),
-    FIRST_ENGRAVING(HEXTECH_PICKAXE, 224, 216, () -> new ItemStack(ModItems.RUNE_SCROLL.get()), Quests::engravedTool, null);
+    // Row 4, left to right: rune works - the Hextech Altar, its circle, and the tools it makes.
+    HEXTECH_ALTAR(FIRST_RUNE, 112, 216, () -> new ItemStack(ModItems.HEXTECH_ALTAR.get()), Quests.has(ModItems.HEXTECH_ALTAR),
+            QuestDisplay.shaped("hextale:hextech_altar", 1, new String[]{" H ", "BAB", "DDD"},
+                    "H=hextale:unstable_hextech", "B=hextale:brass_ingot", "A=minecraft:amethyst_block", "D=minecraft:polished_deepslate")),
+    PEDESTAL(HEXTECH_ALTAR, 168, 216, () -> new ItemStack(ModItems.PEDESTAL.get()), Quests.has(ModItems.PEDESTAL),
+            QuestDisplay.shaped("hextale:pedestal", 2, new String[]{"BAB", " D ", "DDD"},
+                    "B=hextale:brass_ingot", "A=minecraft:amethyst_shard", "D=minecraft:polished_deepslate")),
+    RUNE_STELE(HEXTECH_ALTAR, 140, 258, () -> new ItemStack(ModItems.RUNE_STELE.get()), Quests.has(ModItems.RUNE_STELE),
+            QuestDisplay.shaped("hextale:rune_stele", 1, new String[]{" A ", "BDB", "DDD"},
+                    "A=minecraft:amethyst_shard", "B=hextale:brass_ingot", "D=minecraft:polished_deepslate")),
+    HEXTECH_PICKAXE(PEDESTAL, 224, 216, () -> new ItemStack(ModItems.HEXTECH_PICKAXE.get()), Quests.has(ModItems.HEXTECH_PICKAXE),
+            QuestDisplay.infusion("hextale:hextech_pickaxe")),
+    FIRST_ENGRAVING(HEXTECH_PICKAXE, 280, 216, () -> new ItemStack(ModItems.RUNE_SCROLL.get()), Quests::engravedTool,
+            QuestDisplay.infusion("hextale:engrave/fire_earth")),
+    CHARGED_TOOL(FIRST_ENGRAVING, 280, 258, () -> new ItemStack(ModItems.ESSENCE_TANK.get()), Quests::chargedTool, null);
 
     @Nullable
     private final Quest parent;

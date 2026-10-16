@@ -38,6 +38,20 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> QUEST_COMPLETE = register("quest.complete");
     /** Essence poured into or out of a tank. */
     public static final DeferredHolder<SoundEvent, SoundEvent> TANK_GLUG = register("tank.glug");
+    /** The ritual circle of a Hextech Altar wakes. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RITUAL_START = register("ritual.start");
+    /** The working circle throbs (every two seconds of a ritual). */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RITUAL_HUM = register("ritual.hum");
+    /** A pedestal item dissolves into the ritual; pitched up as the ritual goes on. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RITUAL_ABSORB = register("ritual.absorb");
+    /** A ritual closes and its result appears. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RITUAL_COMPLETE = register("ritual.complete");
+    /** A ritual waits for something missing. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RITUAL_STALL = register("ritual.stall");
+    /** A ritual breaks. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RITUAL_COLLAPSE = register("ritual.collapse");
+    /** A rune settles into a rune stele. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> STELE_SET = register("stele.set");
 
     private ModSounds() {
     }

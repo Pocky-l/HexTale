@@ -18,7 +18,9 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
         /** The nine essences' signs. */
         ESSENCES,
         /** One reagent per essence. */
-        REAGENTS
+        REAGENTS,
+        /** A Hextech Altar ritual; {@code result} is the altar recipe's id, drawn from the recipes the server sent. */
+        INFUSION
     }
 
     /** Rows of up to three cells, spaces for empty cells, keys as in the recipe JSON. */
@@ -56,6 +58,10 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
 
     static QuestDisplay reagents() {
         return new QuestDisplay(Kind.REAGENTS, List.of(), "", 0);
+    }
+
+    static QuestDisplay infusion(String recipe) {
+        return new QuestDisplay(Kind.INFUSION, List.of(), recipe, 1);
     }
 
     public boolean isRecipe() {

@@ -67,8 +67,13 @@ public final class Quests {
         return player -> test.test(Research.of(player));
     }
 
-    /** A hextech tool with at least one rune engraved, filled with essence, in the inventory. */
+    /** A hextech tool with at least one rune engraved in the inventory. */
     static boolean engravedTool(ServerPlayer player) {
+        return player.getInventory().contains(stack -> HextechTools.isTool(stack) && !HextechTools.runes(stack).isEmpty());
+    }
+
+    /** A hextech tool with runes and essence in its cell in the inventory. */
+    static boolean chargedTool(ServerPlayer player) {
         return player.getInventory().contains(stack -> HextechTools.isTool(stack) && !HextechTools.runes(stack).isEmpty()
                 && !HextechTools.cell(stack).isEmpty());
     }

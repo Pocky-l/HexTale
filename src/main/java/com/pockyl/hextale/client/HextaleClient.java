@@ -27,20 +27,24 @@ import com.pockyl.hextale.client.render.AlembicRenderer;
 import com.pockyl.hextale.client.render.EssenceTankRenderer;
 import com.pockyl.hextale.client.render.EssenceTint;
 import com.pockyl.hextale.client.render.HextechCellTint;
-import com.pockyl.hextale.client.render.RuneEngraverRenderer;
+import com.pockyl.hextale.client.render.FlowParticle;
+import com.pockyl.hextale.client.render.HextechAltarRenderer;
+import com.pockyl.hextale.client.render.PedestalRenderer;
+import com.pockyl.hextale.client.render.RuneSteleRenderer;
 import com.pockyl.hextale.client.render.ResearchTableRenderer;
 import com.pockyl.hextale.client.render.RuneTint;
 import com.pockyl.hextale.client.render.SeparatorRenderer;
 import com.pockyl.hextale.client.render.TableModels;
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
 import com.pockyl.hextale.client.screen.machine.AlembicScreen;
-import com.pockyl.hextale.client.screen.machine.RuneEngraverScreen;
 import com.pockyl.hextale.client.screen.machine.SeparatorScreen;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModMenus;
+import com.pockyl.hextale.registry.ModParticles;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import com.pockyl.hextale.research.EssencesTooltip;
 import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ResearchItems;
@@ -59,6 +63,7 @@ public final class HextaleClient {
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
                 event.register(Hextale.id("hextech_cell"), HextechCellTint.MAP_CODEC));
         modBus.addListener(TableModels::register);
+        modBus.addListener((RegisterParticleProvidersEvent event) -> event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new));
         modBus.addListener(GogglesView::registerLayer);
         NeoForge.EVENT_BUS.addListener(GogglesView::tick);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
@@ -102,7 +107,6 @@ public final class HextaleClient {
         event.register(ModMenus.RESEARCH_TABLE.get(), ResearchTableScreen::new);
         event.register(ModMenus.ALEMBIC.get(), AlembicScreen::new);
         event.register(ModMenus.SEPARATOR.get(), SeparatorScreen::new);
-        event.register(ModMenus.RUNE_ENGRAVER.get(), RuneEngraverScreen::new);
     }
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -110,6 +114,8 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.ALEMBIC.get(), AlembicRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SEPARATOR.get(), SeparatorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ESSENCE_TANK.get(), EssenceTankRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.RUNE_ENGRAVER.get(), RuneEngraverRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_ALTAR.get(), HextechAltarRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL.get(), PedestalRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.RUNE_STELE.get(), RuneSteleRenderer::new);
     }
 }

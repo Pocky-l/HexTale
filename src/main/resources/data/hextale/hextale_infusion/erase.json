@@ -1,0 +1,10 @@
+{
+  "kind": "erase",
+  "pedestals": [
+    "minecraft:flint",
+    "minecraft:flint"
+  ],
+  "essences": {
+    "shadow": 16
+  }
+}

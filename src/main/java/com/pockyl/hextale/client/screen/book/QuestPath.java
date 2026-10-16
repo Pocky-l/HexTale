@@ -15,6 +15,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import com.pockyl.hextale.infusion.InfusionRecipe;
+import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.infusion.InfusionRecipes;
+import com.pockyl.hextale.rune.ComplexRune;
+import com.pockyl.hextale.runework.HextechTools;
+import com.pockyl.hextale.runework.RuneSlots;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.Ingredient;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.essence.Reagents;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
@@ -235,6 +243,7 @@ final class QuestPath {
             case SCHEME -> SLOT + (Language.getInstance().has(captionKey(display)) ? 10 : 0);
             case ESSENCES -> SLOT;
             case REAGENTS -> 30;
+            case INFUSION -> INFUSION_RING * 2 + SLOT + 16;
         };
     }
 
@@ -403,8 +412,101 @@ final class QuestPath {
                     sx += SLOT;
                 }
             }
+            case INFUSION -> tooltip = renderInfusion(graphics, display, x, y, mouseX, mouseY, now);
         }
         return tooltip;
+    }
+
+    /** Radius of the pedestal ring in an altar picture. */
+    private static final int INFUSION_RING = 26;
+
+    /**
+     * An altar ritual: the centre item inside a ring of pedestal items, an arrow to the result, and under them the
+     * essences the altar draws (sign and mB) and the runes it needs on steles. Drawn from the recipes the server sent.
+     */
+    @Nullable
+    private List<FormattedCharSequence> renderInfusion(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX, int mouseY,
+                                                       long now) {
+        InfusionRecipe recipe = InfusionRecipes.get(true).get(Identifier.parse(display.result()));
+        if (recipe == null) {
+            PixelArt.flush(graphics);
+            graphics.centeredText(font, Component.translatable("book.hextale.quest.infusion.missing"), x + innerWidth() / 2, y + 30, 0xFF9A90B8);
+            return null;
+        }
+        List<FormattedCharSequence> tooltip = null;
+        int ringCentreX = x + innerWidth() / 2 - 22;
+        int ringCentreY = y + INFUSION_RING + SLOT / 2;
+        // Faint circle joining the pedestals.
+        for (int a = 0; a < 48; a++) {
+            double angle = a * Math.PI * 2 / 48;
+            int px = ringCentreX + (int) Math.round(Math.sin(angle) * INFUSION_RING);
+            int py = ringCentreY - (int) Math.round(Math.cos(angle) * INFUSION_RING);
+            PixelArt.fill(graphics, px, py, px + 1, py + 1, PixelArt.argb(0x5CC8F2, 0.35F));
+        }
+        List<Ingredient> pedestals = recipe.pedestals();
+        for (int i = 0; i < pedestals.size(); i++) {
+            double angle = i * Math.PI * 2 / pedestals.size();
+            int sx = ringCentreX + (int) Math.round(Math.sin(angle) * INFUSION_RING) - SLOT / 2;
+            int sy = ringCentreY - (int) Math.round(Math.cos(angle) * INFUSION_RING) - SLOT / 2;
+            tooltip = orTooltip(tooltip, slot(graphics, cycle(pedestals.get(i), now, i), sx, sy, mouseX, mouseY,
+                    Component.translatable("book.hextale.quest.infusion.pedestal").withColor(0x9FE6FF)));
+        }
+        ItemStack center = recipe.kind() == InfusionRecipe.Kind.INFUSE ? cycle(recipe.center().orElseThrow(), now, 99)
+                : new ItemStack(ModItems.HEXTECH_PICKAXE.get());
+        tooltip = orTooltip(tooltip, slot(graphics, center, ringCentreX - SLOT / 2, ringCentreY - SLOT / 2, mouseX, mouseY,
+                Component.translatable("book.hextale.quest.infusion.center").withColor(StarBook.GOLD)));
+        int ax = ringCentreX + INFUSION_RING + SLOT / 2 + 6;
+        arrow(graphics, ax, ringCentreY);
+        ItemStack result;
+        if (recipe.kind() == InfusionRecipe.Kind.INFUSE) {
+            result = recipe.resultFor(center);
+        } else {
+            result = center.copy();
+            if (recipe.kind() == InfusionRecipe.Kind.ENGRAVE) {
+                HextechTools.setRunes(result, RuneSlots.EMPTY.with(new RuneSlots.Engraving(0, recipe.rune(), 1)));
+            }
+        }
+        tooltip = orTooltip(tooltip, slot(graphics, result, ax + 22, ringCentreY - SLOT / 2, mouseX, mouseY, null));
+        // Essences and runes under the ring.
+        int rowY = y + INFUSION_RING * 2 + SLOT + 4;
+        List<Essence> essences = recipe.essences().asMap().keySet().stream().toList();
+        List<ComplexRune> runes = recipe.kind() == InfusionRecipe.Kind.ERASE ? List.of() : recipe.runes();
+        int width = 0;
+        for (Essence essence : essences) {
+            width += 11 + font.width(String.valueOf(recipe.essences().get(essence))) + 6;
+        }
+        width += runes.size() * 14;
+        int cx = x + (innerWidth() - width) / 2;
+        for (Essence essence : essences) {
+            int amount = recipe.essences().get(essence);
+            PixelArt.essence(graphics, essence, cx, rowY, PixelArt.ICON, PixelArt.argb(essence.color(), 1));
+            PixelArt.flush(graphics);
+            String text = String.valueOf(amount);
+            graphics.text(font, text, cx + 11, rowY + 1, 0xFF000000 | essence.color(), true);
+            if (over(mouseX, mouseY, cx, rowY, 11 + font.width(text), 10)) {
+                tooltip = List.of(Component.translatable("book.hextale.quest.infusion.essence", Component.translatable(essence.translationKey()), amount)
+                        .withColor(essence.color()).getVisualOrderText());
+            }
+            cx += 11 + font.width(text) + 6;
+        }
+        for (ComplexRune rune : runes) {
+            PixelArt.glyph(graphics, rune, cx, rowY - 1, 12, PixelArt.argb(rune.color(), 1), 0xFF000000);
+            if (over(mouseX, mouseY, cx, rowY - 1, 12, 12)) {
+                tooltip = List.of(Component.translatable("book.hextale.quest.infusion.rune", Component.translatable(rune.translationKey()))
+                        .withColor(rune.color()).getVisualOrderText());
+            }
+            cx += 14;
+        }
+        return tooltip;
+    }
+
+    /** One of an ingredient's items, changing every second. */
+    private static ItemStack cycle(Ingredient ingredient, long now, int salt) {
+        var items = ingredient.items().toList();
+        if (items.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        return new ItemStack(items.get((int) ((now / 1000 + salt) % items.size())));
     }
 
     @Nullable

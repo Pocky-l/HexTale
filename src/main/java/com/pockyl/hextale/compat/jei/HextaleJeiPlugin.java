@@ -17,6 +17,7 @@ import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.Reagents;
+import com.pockyl.hextale.infusion.InfusionRecipes;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.ResearchItems;
@@ -26,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * JEI: how essence is made - boiling in the Alembic and splitting in the Separator - one bottle per concentrate, and an
- * info page for every block of the essence works. What an item boils down to stays a secret of the research: the boiling
+ * JEI: how essence is made - boiling in the Alembic and splitting in the Separator - one bottle per concentrate, the
+ * Hextech Altar's rituals, and an info page for every block of the essence works and the ritual circle. What an item boils down to stays a secret of the research: the boiling
  * page shows no item's essences.
  */
 @JeiPlugin
@@ -59,7 +60,8 @@ public class HextaleJeiPlugin implements IModPlugin {
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(new BoilingCategory(registration.getJeiHelpers().getGuiHelper()),
-                new SeparationCategory(registration.getJeiHelpers().getGuiHelper()));
+                new SeparationCategory(registration.getJeiHelpers().getGuiHelper()),
+                new InfusionCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -81,6 +83,11 @@ public class HextaleJeiPlugin implements IModPlugin {
             }
         }
         registration.addRecipes(SeparationCategory.TYPE, separations);
+        registration.addRecipes(InfusionCategory.TYPE, InfusionRecipes.get(true).entrySet().stream()
+                .map(entry -> new InfusionCategory.Recipe(entry.getKey(), entry.getValue())).toList());
+        info(registration, ModItems.HEXTECH_ALTAR.get(), "hextech_altar");
+        info(registration, ModItems.PEDESTAL.get(), "pedestal");
+        info(registration, ModItems.RUNE_STELE.get(), "rune_stele");
         info(registration, ModItems.ALEMBIC.get(), "alembic");
         info(registration, ModItems.SEPARATOR.get(), "separator");
         info(registration, ModItems.ESSENCE_TANK.get(), "essence_tank");
@@ -99,6 +106,7 @@ public class HextaleJeiPlugin implements IModPlugin {
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addCraftingStation(BoilingCategory.TYPE, ModItems.ALEMBIC.get());
         registration.addCraftingStation(SeparationCategory.TYPE, ModItems.SEPARATOR.get());
+        registration.addCraftingStation(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.PEDESTAL.get(), ModItems.RUNE_STELE.get());
     }
 
     static ItemStack concentrate(Essence essence) {

@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "hextale:block/rune_engraver"
+    "model": "hextale:block/hextech_altar"
   }
 }

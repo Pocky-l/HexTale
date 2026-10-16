@@ -6,6 +6,8 @@
     "hextale:brass_pipe",
     "hextale:drain_valve",
     "hextale:pump",
-    "hextale:rune_engraver"
+    "hextale:hextech_altar",
+    "hextale:pedestal",
+    "hextale:rune_stele"
   ]
 }

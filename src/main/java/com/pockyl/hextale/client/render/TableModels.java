@@ -33,12 +33,19 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> SCROLL = prop("scroll");
     public static final StandaloneModelKey<BlockStateModelPart> RING_OUTER = prop("ring_outer");
     public static final StandaloneModelKey<BlockStateModelPart> RING_INNER = prop("ring_inner");
+    /** The Hextech Altar's gimbal, larger rings with hextech studs, centred on their block like the table's. */
+    public static final StandaloneModelKey<BlockStateModelPart> ALTAR_RING_OUTER = model("block/hextech_altar/ring_outer");
+    public static final StandaloneModelKey<BlockStateModelPart> ALTAR_RING_INNER = model("block/hextech_altar/ring_inner");
 
     private TableModels() {
     }
 
     private static StandaloneModelKey<BlockStateModelPart> prop(String name) {
-        Identifier id = Hextale.id("block/research_table/" + name);
+        return model("block/research_table/" + name);
+    }
+
+    private static StandaloneModelKey<BlockStateModelPart> model(String path) {
+        Identifier id = Hextale.id(path);
         StandaloneModelKey<BlockStateModelPart> key = new StandaloneModelKey<>(id::toString);
         MODELS.put(key, id);
         return key;

@@ -1,7 +1,6 @@
 package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.object.book.BookModel;
@@ -10,13 +9,11 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -31,7 +28,6 @@ import com.pockyl.hextale.block.TableGeometry;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.rune.RuneGlyphs;
 
 /**
  * Shows what lies on the Research Table - the open diary on its rest, parchment, ink and brush, a finished scroll - and
@@ -44,25 +40,12 @@ import com.pockyl.hextale.rune.RuneGlyphs;
  */
 public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableBlockEntity, ResearchTableRenderer.State> {
     private static final Identifier BOOK_TEXTURE = Hextale.id("textures/entity/researchers_diary.png");
-    private static final Identifier HALO_TEXTURE = Hextale.id("textures/misc/orb_halo.png");
-    private static final Identifier CORE_TEXTURE = Hextale.id("textures/misc/orb_core.png");
-    private static final Identifier MOTE_TEXTURE = Hextale.id("textures/misc/mote.png");
-    private static final Identifier WHITE_TEXTURE = Hextale.id("textures/misc/white.png");
     private static final int ORB_COLOR = 0x5CC8F2;
     private static final int CRACK_COLOR = 0x8A7F78;
     private static final int MOTES = 6;
     private static final float FLARE_TICKS = 40;
     private static final float GLYPH_TICKS = 70;
     private static final float CRACK_TICKS = 24;
-    private static final float[][] CUBE_FACES = {
-            {-1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1, 0, 0, 1},
-            {1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1, 0, 0, -1},
-            {1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1, 1, 1, 0, 0},
-            {-1, -1, -1, -1, -1, 1, -1, 1, 1, -1, 1, -1, -1, 0, 0},
-            {-1, 1, 1, 1, 1, 1, 1, 1, -1, -1, 1, -1, 0, 1, 0},
-            {-1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1, 0, -1, 0},
-    };
-    private static final float[][] CUBE_UVS = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
 
     private final BookModel book;
 
@@ -195,18 +178,18 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
 
         poseStack.pushPose();
         poseStack.translate(shake, bob, 0);
-        sprite(poseStack, collector, camera, HALO_TEXTURE, 0.42F + 0.16F * intensity, color, Math.min(0.9F, 0.25F + 0.4F * intensity));
+        HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.42F + 0.16F * intensity, color, Math.min(0.9F, 0.25F + 0.4F * intensity));
         if (state.orb && crack < 0.6F) {
             poseStack.pushPose();
             poseStack.rotate(Axis.YP.rotationDegrees(time * (drawing ? 4.5F : 1.4F)));
             poseStack.rotate(Axis.XP.rotationDegrees(35 + Mth.sin(time * 0.05F) * 12));
             poseStack.rotate(Axis.ZP.rotationDegrees(45));
-            cube(poseStack, collector, (2.6F + 0.3F * state.flare) / 16, RuneDrawing.lighten(color, 0.25F * intensity), 1);
+            HexFx.cube(poseStack, collector, (2.6F + 0.3F * state.flare) / 16, RuneDrawing.lighten(color, 0.25F * intensity), 1);
             poseStack.popPose();
             poseStack.pushPose();
             poseStack.rotate(Axis.YP.rotationDegrees(-time * (drawing ? 3 : 0.9F)));
             poseStack.rotate(Axis.ZP.rotationDegrees(30));
-            cube(poseStack, collector, (3.7F + 0.4F * intensity) / 16, color, 0.28F + 0.12F * intensity);
+            HexFx.cube(poseStack, collector, (3.7F + 0.4F * intensity) / 16, color, 0.28F + 0.12F * intensity);
             poseStack.popPose();
         }
         submitMotes(poseStack, collector, camera, time, drawing, color, intensity);
@@ -225,7 +208,7 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
             poseStack.pushPose();
             poseStack.translate(Mth.cos(angle) * radius, Mth.sin(angle) * radius * Mth.sin(tilt), Mth.sin(angle) * radius * Mth.cos(tilt));
             float twinkle = 0.6F + 0.4F * Mth.sin(time * 0.6F + i * 2.3F);
-            sprite(poseStack, collector, camera, MOTE_TEXTURE, 0.07F, RuneDrawing.lighten(color, 0.4F),
+            HexFx.sprite(poseStack, collector, camera, HexFx.MOTE, 0.07F, RuneDrawing.lighten(color, 0.4F),
                     Math.min(1, 0.55F * twinkle * (0.6F + intensity)));
             poseStack.popPose();
         }
@@ -245,86 +228,8 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         poseStack.pushPose();
         poseStack.translate(0, 0.32F + t * 0.18F, 0);
         poseStack.rotate(camera);
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(WHITE_TEXTURE), (pose, consumer) -> {
-            for (float[] stroke : RuneGlyphs.glyph(rune)) {
-                for (int i = 0; i + 3 < stroke.length; i += 2) {
-                    float x0 = (stroke[i] - 0.5F) * size;
-                    float y0 = (0.5F - stroke[i + 1]) * size;
-                    float x1 = (stroke[i + 2] - 0.5F) * size;
-                    float y1 = (0.5F - stroke[i + 3]) * size;
-                    segment(consumer, pose, x0, y0, x1, y1, size * 0.11F, color, alpha * 0.25F);
-                    segment(consumer, pose, x0, y0, x1, y1, size * 0.045F, RuneDrawing.lighten(color, 0.5F), alpha);
-                }
-            }
-        });
+        HexFx.glyph(poseStack, collector, rune, size, color, alpha);
         poseStack.popPose();
-    }
-
-    /** A line segment as a quad of the given width, with square caps that overlap the next segment; both windings. */
-    private static void segment(VertexConsumer consumer, PoseStack.Pose pose, float x0, float y0, float x1, float y1, float width, int color,
-                                float alpha) {
-        float dx = x1 - x0;
-        float dy = y1 - y0;
-        float length = Mth.sqrt(dx * dx + dy * dy);
-        if (length < 1.0E-4F) {
-            return;
-        }
-        float h = width / 2;
-        float nx = -dy / length * h;
-        float ny = dx / length * h;
-        float ex = dx / length * h;
-        float ey = dy / length * h;
-        x0 -= ex;
-        y0 -= ey;
-        x1 += ex;
-        y1 += ey;
-        vertex(consumer, pose, x0 + nx, y0 + ny, 0, 0, color, alpha);
-        vertex(consumer, pose, x0 - nx, y0 - ny, 0, 1, color, alpha);
-        vertex(consumer, pose, x1 - nx, y1 - ny, 1, 1, color, alpha);
-        vertex(consumer, pose, x1 + nx, y1 + ny, 1, 0, color, alpha);
-        vertex(consumer, pose, x1 + nx, y1 + ny, 1, 0, color, alpha);
-        vertex(consumer, pose, x1 - nx, y1 - ny, 1, 1, color, alpha);
-        vertex(consumer, pose, x0 - nx, y0 - ny, 0, 1, color, alpha);
-        vertex(consumer, pose, x0 + nx, y0 + ny, 0, 0, color, alpha);
-    }
-
-    /** A cube of edge {@code size} (blocks) centred on the pose origin, each face showing the whole core texture. */
-    private static void cube(PoseStack poseStack, SubmitNodeCollector collector, float size, int color, float alpha) {
-        float h = size / 2;
-        int argb = RuneDrawing.argb(color, alpha);
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(CORE_TEXTURE), (pose, consumer) -> {
-            for (float[] f : CUBE_FACES) {
-                for (int v = 0; v < 4; v++) {
-                    consumer.addVertex(pose, f[v * 3] * h, f[v * 3 + 1] * h, f[v * 3 + 2] * h).setColor(argb)
-                            .setUv(CUBE_UVS[v][0], CUBE_UVS[v][1]).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightCoordsUtil.FULL_BRIGHT)
-                            .setNormal(pose, f[12], f[13], f[14]);
-                }
-            }
-        });
-    }
-
-    /** A camera-facing sprite at the current pose origin, drawn with both windings. */
-    private static void sprite(PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera, Identifier texture, float size, int color,
-                               float alpha) {
-        poseStack.pushPose();
-        poseStack.rotate(camera);
-        float h = size / 2;
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(texture), (pose, consumer) -> {
-            vertex(consumer, pose, -h, -h, 0, 1, color, alpha);
-            vertex(consumer, pose, h, -h, 1, 1, color, alpha);
-            vertex(consumer, pose, h, h, 1, 0, color, alpha);
-            vertex(consumer, pose, -h, h, 0, 0, color, alpha);
-            vertex(consumer, pose, -h, h, 0, 0, color, alpha);
-            vertex(consumer, pose, h, h, 1, 0, color, alpha);
-            vertex(consumer, pose, h, -h, 1, 1, color, alpha);
-            vertex(consumer, pose, -h, -h, 0, 1, color, alpha);
-        });
-        poseStack.popPose();
-    }
-
-    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float u, float v, int color, float alpha) {
-        consumer.addVertex(pose, x, y, 0).setColor(RuneDrawing.argb(color, alpha)).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightCoordsUtil.FULL_BRIGHT).setNormal(pose, 0, 0, 1);
     }
 
     /** 0 when {@code since} is outside [0, duration), else falling linearly from 1 to 0. */

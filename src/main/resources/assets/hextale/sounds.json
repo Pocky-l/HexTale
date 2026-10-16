@@ -161,5 +161,80 @@
         "volume": 0.5
       }
     ]
+  },
+  "ritual.start": {
+    "subtitle": "subtitles.hextale.ritual.start",
+    "sounds": [
+      {
+        "name": "hextale:ritual_start",
+        "volume": 0.9
+      }
+    ]
+  },
+  "ritual.hum": {
+    "subtitle": "subtitles.hextale.ritual.hum",
+    "sounds": [
+      {
+        "name": "hextale:ritual_hum1",
+        "volume": 0.35
+      },
+      {
+        "name": "hextale:ritual_hum2",
+        "volume": 0.35
+      }
+    ]
+  },
+  "ritual.absorb": {
+    "subtitle": "subtitles.hextale.ritual.absorb",
+    "sounds": [
+      {
+        "name": "hextale:ritual_absorb1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:ritual_absorb2",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:ritual_absorb3",
+        "volume": 0.8
+      }
+    ]
+  },
+  "ritual.complete": {
+    "subtitle": "subtitles.hextale.ritual.complete",
+    "sounds": [
+      {
+        "name": "hextale:ritual_complete",
+        "volume": 1.0
+      }
+    ]
+  },
+  "ritual.stall": {
+    "subtitle": "subtitles.hextale.ritual.stall",
+    "sounds": [
+      {
+        "name": "hextale:ritual_stall",
+        "volume": 0.6
+      }
+    ]
+  },
+  "ritual.collapse": {
+    "subtitle": "subtitles.hextale.ritual.collapse",
+    "sounds": [
+      {
+        "name": "hextale:ritual_collapse",
+        "volume": 1.0
+      }
+    ]
+  },
+  "stele.set": {
+    "subtitle": "subtitles.hextale.stele.set",
+    "sounds": [
+      {
+        "name": "hextale:stele_set",
+        "volume": 0.8
+      }
+    ]
   }
 }
