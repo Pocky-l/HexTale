@@ -7,6 +7,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.item.equipment.Equippable;
@@ -19,6 +21,7 @@ import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.item.UnstableHextechItem;
+import com.pockyl.hextale.runework.HextechToolItem;
 
 public final class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Hextale.MOD_ID);
@@ -31,6 +34,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CREATIVE_ESSENCE_TANK = ITEMS.registerSimpleBlockItem(ModBlocks.CREATIVE_ESSENCE_TANK);
     public static final DeferredItem<BlockItem> DRAIN_VALVE = ITEMS.registerSimpleBlockItem(ModBlocks.DRAIN_VALVE);
     public static final DeferredItem<BlockItem> PUMP = ITEMS.registerSimpleBlockItem(ModBlocks.PUMP);
+    public static final DeferredItem<BlockItem> RUNE_ENGRAVER = ITEMS.registerSimpleBlockItem(ModBlocks.RUNE_ENGRAVER);
     public static final DeferredItem<EssenceFlaskItem> ESSENCE_FLASK = ITEMS.registerItem("essence_flask",
             properties -> new EssenceFlaskItem(properties.stacksTo(1)));
     public static final DeferredItem<Item> BRASS_INGOT = ITEMS.registerSimpleItem("brass_ingot");
@@ -48,6 +52,11 @@ public final class ModItems {
     public static final DeferredItem<ResearchersDiaryItem> RESEARCHERS_DIARY = ITEMS.registerItem("researchers_diary",
             properties -> new ResearchersDiaryItem(properties.stacksTo(1)));
 
+    /** Hextech tools: iron-tier mining, long-lived, repaired with brass. */
+    public static final ToolMaterial HEXTECH = new ToolMaterial(BlockTags.INCORRECT_FOR_IRON_TOOL, 900, 6.5F, 2.0F, 12,
+            ModTags.HEXTECH_TOOL_MATERIALS);
+    public static final DeferredItem<HextechToolItem> HEXTECH_PICKAXE = ITEMS.registerItem("hextech_pickaxe",
+            properties -> new HextechToolItem(properties.pickaxe(HEXTECH, 1.0F, -2.8F).rarity(Rarity.UNCOMMON)));
 
     private ModItems() {
     }

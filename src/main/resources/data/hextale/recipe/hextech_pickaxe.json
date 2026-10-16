@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "BHB",
+    " S ",
+    " S "
+  ],
+  "key": {
+    "B": "hextale:brass_ingot",
+    "H": "hextale:unstable_hextech",
+    "S": "minecraft:stick"
+  },
+  "result": {
+    "id": "hextale:hextech_pickaxe"
+  }
+}

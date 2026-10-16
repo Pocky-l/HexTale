@@ -26,12 +26,15 @@ import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.client.render.AlembicRenderer;
 import com.pockyl.hextale.client.render.EssenceTankRenderer;
 import com.pockyl.hextale.client.render.EssenceTint;
+import com.pockyl.hextale.client.render.HextechCellTint;
+import com.pockyl.hextale.client.render.RuneEngraverRenderer;
 import com.pockyl.hextale.client.render.ResearchTableRenderer;
 import com.pockyl.hextale.client.render.RuneTint;
 import com.pockyl.hextale.client.render.SeparatorRenderer;
 import com.pockyl.hextale.client.render.TableModels;
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
 import com.pockyl.hextale.client.screen.machine.AlembicScreen;
+import com.pockyl.hextale.client.screen.machine.RuneEngraverScreen;
 import com.pockyl.hextale.client.screen.machine.SeparatorScreen;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -42,6 +45,7 @@ import com.pockyl.hextale.research.EssencesTooltip;
 import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.RuneBoards;
+import com.pockyl.hextale.runework.HextechTools;
 
 @Mod(value = Hextale.MOD_ID, dist = Dist.CLIENT)
 public final class HextaleClient {
@@ -52,6 +56,8 @@ public final class HextaleClient {
         modBus.addListener(ClientPayloads::register);
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("essence"), EssenceTint.MAP_CODEC));
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("rune"), RuneTint.MAP_CODEC));
+        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
+                event.register(Hextale.id("hextech_cell"), HextechCellTint.MAP_CODEC));
         modBus.addListener(TableModels::register);
         modBus.addListener(GogglesView::registerLayer);
         NeoForge.EVENT_BUS.addListener(GogglesView::tick);
@@ -61,6 +67,12 @@ public final class HextaleClient {
         NeoForge.EVENT_BUS.addListener((ItemTooltipEvent event) -> {
             ItemStack stack = event.getItemStack();
             EssenceMix contents = stack.get(ModDataComponents.ESSENCE.get());
+            if (HextechTools.isTool(stack)) {
+                EssenceMix cell = HextechTools.cell(stack);
+                event.getToolTip().add(1, Component.translatable("item.hextale.hextech_tool.cell",
+                        cell.isEmpty() ? Component.translatable("block.hextale.essence.empty") : cell.describe(), cell.total(), HextechTools.CELL)
+                        .withStyle(ChatFormatting.GRAY));
+            }
             if (contents != null && (stack.is(ModItems.ESSENCE_TANK.get()) || stack.is(ModItems.CREATIVE_ESSENCE_TANK.get()))) {
                 event.getToolTip().add(1, stack.is(ModItems.CREATIVE_ESSENCE_TANK.get())
                         ? Component.translatable("block.hextale.creative_essence_tank.holds", contents.describe()).withStyle(ChatFormatting.GRAY)
@@ -90,6 +102,7 @@ public final class HextaleClient {
         event.register(ModMenus.RESEARCH_TABLE.get(), ResearchTableScreen::new);
         event.register(ModMenus.ALEMBIC.get(), AlembicScreen::new);
         event.register(ModMenus.SEPARATOR.get(), SeparatorScreen::new);
+        event.register(ModMenus.RUNE_ENGRAVER.get(), RuneEngraverScreen::new);
     }
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -97,5 +110,6 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.ALEMBIC.get(), AlembicRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SEPARATOR.get(), SeparatorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ESSENCE_TANK.get(), EssenceTankRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.RUNE_ENGRAVER.get(), RuneEngraverRenderer::new);
     }
 }

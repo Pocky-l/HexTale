@@ -13,6 +13,7 @@ import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.block.PumpBlockEntity;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
+import com.pockyl.hextale.block.RuneEngraverBlockEntity;
 
 public final class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
@@ -35,6 +36,9 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("drain_valve", () -> new BlockEntityType<>(DrainValveBlockEntity::new, ModBlocks.DRAIN_VALVE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PumpBlockEntity>> PUMP =
             BLOCK_ENTITIES.register("pump", () -> new BlockEntityType<>(PumpBlockEntity::new, ModBlocks.PUMP.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneEngraverBlockEntity>> RUNE_ENGRAVER =
+            BLOCK_ENTITIES.register("rune_engraver", () -> new BlockEntityType<>(RuneEngraverBlockEntity::new, ModBlocks.RUNE_ENGRAVER.get()));
 
     private ModBlockEntities() {
     }

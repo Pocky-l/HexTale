@@ -10,6 +10,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.menu.AlembicMenu;
 import com.pockyl.hextale.menu.ResearchTableMenu;
+import com.pockyl.hextale.menu.RuneEngraverMenu;
 import com.pockyl.hextale.menu.SeparatorMenu;
 
 public final class ModMenus {
@@ -22,6 +23,9 @@ public final class ModMenus {
             MENUS.register("alembic", () -> IMenuTypeExtension.create(AlembicMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<SeparatorMenu>> SEPARATOR =
             MENUS.register("separator", () -> IMenuTypeExtension.create(SeparatorMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<RuneEngraverMenu>> RUNE_ENGRAVER =
+            MENUS.register("rune_engraver", () -> IMenuTypeExtension.create(RuneEngraverMenu::new));
 
     private ModMenus() {
     }

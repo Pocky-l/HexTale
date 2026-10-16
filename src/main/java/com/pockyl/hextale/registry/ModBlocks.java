@@ -16,6 +16,7 @@ import com.pockyl.hextale.block.CreativeEssenceTankBlock;
 import com.pockyl.hextale.block.DrainValveBlock;
 import com.pockyl.hextale.block.EssenceTankBlock;
 import com.pockyl.hextale.block.PumpBlock;
+import com.pockyl.hextale.block.RuneEngraverBlock;
 import com.pockyl.hextale.block.SeparatorBlock;
 import com.pockyl.hextale.block.ResearchTableBlock;
 
@@ -46,6 +47,10 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.0F).sound(SoundType.COPPER).noOcclusion());
     public static final DeferredBlock<PumpBlock> PUMP = BLOCKS.registerBlock("pump", PumpBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(SoundType.COPPER).noOcclusion());
+
+    public static final DeferredBlock<RuneEngraverBlock> RUNE_ENGRAVER = BLOCKS.registerBlock("rune_engraver", RuneEngraverBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.5F, 6.0F).sound(SoundType.STONE).noOcclusion()
+                    .requiresCorrectToolForDrops());
 
     private ModBlocks() {
     }

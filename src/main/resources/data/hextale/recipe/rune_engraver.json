@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "B B",
+    "DHD",
+    "DDD"
+  ],
+  "key": {
+    "B": "hextale:brass_ingot",
+    "D": "minecraft:polished_deepslate",
+    "H": "hextale:unstable_hextech"
+  },
+  "result": {
+    "id": "hextale:rune_engraver"
+  }
+}

@@ -18,6 +18,7 @@ import com.pockyl.hextale.menu.SeparatorMenu;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.runework.HextechTools;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -64,6 +65,12 @@ public final class Quests {
 
     static Predicate<ServerPlayer> knowledge(Predicate<RuneKnowledge> test) {
         return player -> test.test(Research.of(player));
+    }
+
+    /** A hextech tool with at least one rune engraved, filled with essence, in the inventory. */
+    static boolean engravedTool(ServerPlayer player) {
+        return player.getInventory().contains(stack -> HextechTools.isTool(stack) && !HextechTools.runes(stack).isEmpty()
+                && !HextechTools.cell(stack).isEmpty());
     }
 
     /** A bottle of concentrate in the inventory, or a Separator open on the screen with concentrate in it. */

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hextale:block/rune_engraver"
+    },
+    "facing=east": {
+      "model": "hextale:block/rune_engraver",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/rune_engraver",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hextale:block/rune_engraver",
+      "y": 270
+    }
+  }
+}

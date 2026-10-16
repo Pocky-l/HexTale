@@ -13,6 +13,7 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.item.DiaryOwner;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
+import com.pockyl.hextale.runework.RuneSlots;
 
 public final class ModDataComponents {
     public static final DeferredRegister.DataComponents COMPONENTS =
@@ -30,7 +31,12 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("diary_owner", builder -> builder
                     .persistent(DiaryOwner.CODEC).networkSynchronized(DiaryOwner.STREAM_CODEC));
 
-    /** The essence in a flask. */
+    /** The runes engraved into a hextech tool. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<RuneSlots>> RUNE_SLOTS =
+            COMPONENTS.registerComponentType("rune_slots", builder -> builder
+                    .persistent(RuneSlots.CODEC).networkSynchronized(RuneSlots.STREAM_CODEC));
+
+    /** The essence in a flask, a tank item or a hextech tool's cell. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<EssenceMix>> ESSENCE =
             COMPONENTS.registerComponentType("essence", builder -> builder
                     .persistent(EssenceMix.CODEC).networkSynchronized(EssenceMix.STREAM_CODEC));

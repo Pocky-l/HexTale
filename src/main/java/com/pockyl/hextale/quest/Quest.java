@@ -74,7 +74,16 @@ public enum Quest {
     FIRST_SIGNS(FIRST_RUNE, 112, 160, () -> new ItemStack(Items.GLOW_INK_SAC), Quests.knowledge(k -> ResearchBook.chapterOpen(k, 2)), null),
     CRAFT(FIRST_SIGNS, 168, 160, () -> new ItemStack(Items.ANVIL), Quests.knowledge(k -> ResearchBook.chapterOpen(k, 3)), null),
     DEPTHS(CRAFT, 224, 160, () -> new ItemStack(Items.ECHO_SHARD), Quests.knowledge(k -> ResearchBook.learnedIn(k, 3) > 0), null),
-    FULL_CODEX(DEPTHS, 280, 160, () -> new ItemStack(Items.ENCHANTED_BOOK), Quests.knowledge(k -> k.runeCount() >= 72), null);
+    FULL_CODEX(DEPTHS, 280, 160, () -> new ItemStack(Items.ENCHANTED_BOOK), Quests.knowledge(k -> k.runeCount() >= 72), null),
+
+    // Row 4, left to right: rune works - tools and devices directed by runes and fed with essence.
+    RUNE_ENGRAVER(FIRST_RUNE, 112, 216, () -> new ItemStack(ModItems.RUNE_ENGRAVER.get()), Quests.has(ModItems.RUNE_ENGRAVER),
+            QuestDisplay.shaped("hextale:rune_engraver", 1, new String[]{"B B", "DHD", "DDD"},
+                    "B=hextale:brass_ingot", "D=minecraft:polished_deepslate", "H=hextale:unstable_hextech")),
+    HEXTECH_PICKAXE(RUNE_ENGRAVER, 168, 216, () -> new ItemStack(ModItems.HEXTECH_PICKAXE.get()), Quests.has(ModItems.HEXTECH_PICKAXE),
+            QuestDisplay.shaped("hextale:hextech_pickaxe", 1, new String[]{"BHB", " S ", " S "},
+                    "B=hextale:brass_ingot", "H=hextale:unstable_hextech", "S=minecraft:stick")),
+    FIRST_ENGRAVING(HEXTECH_PICKAXE, 224, 216, () -> new ItemStack(ModItems.RUNE_SCROLL.get()), Quests::engravedTool, null);
 
     @Nullable
     private final Quest parent;
@@ -131,7 +140,7 @@ public enum Quest {
 
     /** Rune quests lead on to the star map. */
     public boolean leadsToStars() {
-        return ordinal() >= RUNE_RESEARCH.ordinal();
+        return ordinal() >= RUNE_RESEARCH.ordinal() && ordinal() <= FULL_CODEX.ordinal();
     }
 
     public String translationKey() {
