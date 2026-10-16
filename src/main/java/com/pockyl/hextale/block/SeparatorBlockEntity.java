@@ -36,8 +36,8 @@ import com.pockyl.hextale.rune.Essence;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Separator splits a mixture in two. The mixture comes in (from a bottle, or through pipes at the back and the
- * sides) and is worked off {@value #STEP_DROPS} drops at a time: the drops of the reagent's element go into the
+ * The Separator splits a mixture in two. The mixture comes in (from a bottle, through pipes pushing into an inlet, or
+ * drawn by an inlet out of the Essence Tanks piped to it) and is worked off {@value #STEP_DROPS} drops at a time: the drops of the reagent's element go into the
  * concentrate vessel, all the others into the rest vessel as an unknown essence (it holds its drops, but is never a
  * concentrate). Each side has a mode set in the screen or on the block: the
  * mixture comes in through inlets, the concentrate (the wanted product) and the rest (the by-product) leave through
@@ -172,6 +172,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         changed |= separator.separate();
         changed |= separator.fillFlasks();
         if (level.getGameTime() % EssenceTankBlockEntity.FLOW_EVERY == 0) {
+            changed |= separator.drawFromTanks();
             changed |= separator.pushToPipes();
         }
         if (changed) {
@@ -290,6 +291,24 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         supply.shrink(1);
         level.playSound(null, worldPosition, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 0.6F, 1.0F);
         return true;
+    }
+
+    /** Each inlet draws the mixture from the Essence Tanks piped to it (or standing right at it). */
+    private boolean drawFromTanks() {
+        boolean drew = false;
+        for (SeparatorBlock.Side side : SeparatorBlock.Side.values()) {
+            if (modes[side.ordinal()] != PortMode.INLET || mix.space() <= 0) {
+                continue;
+            }
+            EssenceMix drawn = EssenceNetwork.draw(level, worldPosition, side.face(facing()),
+                    Math.min(EssenceTankBlockEntity.FLOW, mix.space()), this);
+            if (!drawn.isEmpty()) {
+                mix.fill(drawn, false);
+                lastReceived = level.getGameTime();
+                drew = true;
+            }
+        }
+        return drew;
     }
 
     /** The concentrate leaves through its outlets, the rest through theirs. */

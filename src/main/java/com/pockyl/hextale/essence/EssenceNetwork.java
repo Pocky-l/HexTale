@@ -6,6 +6,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import com.pockyl.hextale.block.BrassPipeBlock;
+import com.pockyl.hextale.block.EssenceTankBlockEntity;
 
 import java.util.ArrayDeque;
 import java.util.LinkedHashSet;
@@ -105,6 +106,49 @@ public final class EssenceNetwork {
             }
         }
         return 0;
+    }
+
+    /**
+     * Draws up to {@code amount} drops for the vessel at {@code to} through its face {@code face}: out of an Essence Tank
+     * right there, or out of the first non-empty tank on the pipes joined there - so a machine's inlet takes from the
+     * tanks it is piped to, whichever face of the tank the pipe meets. Never out of a network the vessel's own outlet
+     * runs into.
+     *
+     * @return the drops taken out of the tank
+     */
+    public static EssenceMix draw(Level level, BlockPos to, Direction face, int amount, Receiver vessel) {
+        if (amount <= 0) {
+            return EssenceMix.EMPTY;
+        }
+        BlockPos start = to.relative(face);
+        if (level.getBlockEntity(start) instanceof EssenceTankBlockEntity tank) {
+            return take(tank, amount);
+        }
+        if (!(level.getBlockState(start).getBlock() instanceof BrassPipeBlock)) {
+            return EssenceMix.EMPTY;
+        }
+        Set<BlockPos> pipes = network(level, start);
+        if (feedsBack(to, vessel, pipes)) {
+            return EssenceMix.EMPTY;
+        }
+        for (BlockPos pipe : pipes) {
+            for (Direction direction : Direction.values()) {
+                BlockPos at = pipe.relative(direction);
+                if (!at.equals(to) && !pipes.contains(at) && level.getBlockEntity(at) instanceof EssenceTankBlockEntity tank
+                        && !tank.tank().isEmpty()) {
+                    return take(tank, amount);
+                }
+            }
+        }
+        return EssenceMix.EMPTY;
+    }
+
+    private static EssenceMix take(EssenceTankBlockEntity tank, int amount) {
+        EssenceMix drawn = tank.tank().drain(amount, false);
+        if (!drawn.isEmpty()) {
+            tank.setChanged();
+        }
+        return drawn;
     }
 
     /** The pipes connected to {@code start}, nearest first. */

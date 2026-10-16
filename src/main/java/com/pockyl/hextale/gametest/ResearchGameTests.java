@@ -621,6 +621,26 @@ public final class ResearchGameTests {
         });
     }
 
+    @HexTest(maxTicks = 100)
+    public static void aSeparatorInletDrawsFromTanks(GameTestHelper helper) {
+        // Facing north: one tank stands right at its back (an inlet), another is piped to its left (east) side from the
+        // tank's own side - neither lets out at its bottom here, the inlets draw.
+        BlockPos at = new BlockPos(2, 2, 2);
+        helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState().setValue(SeparatorBlock.FACING, Direction.NORTH));
+        helper.setBlock(at.south(), ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(at.east(), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(at.east(2), ModBlocks.ESSENCE_TANK.get());
+        EssenceTankBlockEntity back = helper.getBlockEntity(at.south(), EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity piped = helper.getBlockEntity(at.east(2), EssenceTankBlockEntity.class);
+        back.tank().set(EssenceMix.pure(Essence.LIFE, 8));
+        piped.tank().set(EssenceMix.pure(Essence.EARTH, 8));
+        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(back.tank().isEmpty() && piped.tank().isEmpty(), "both tanks were drawn empty");
+            helper.assertTrue(separator.mix().amount() == 16, "into the separator's mixture, got " + separator.mix().contents());
+        });
+    }
+
     @HexTest
     public static void pipesJoinMachinesOnlyAtPorts(GameTestHelper helper) {
         BlockPos at = new BlockPos(2, 2, 2);
