@@ -1,9 +1,19 @@
 {
-  "multipart": [
-    {
-      "apply": {
-        "model": "minecraft:block/cauldron"
-      }
+  "variants": {
+    "facing=north": {
+      "model": "hextale:block/separator"
+    },
+    "facing=east": {
+      "model": "hextale:block/separator",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/separator",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hextale:block/separator",
+      "y": 270
     }
-  ]
+  }
 }

@@ -21,9 +21,11 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.client.render.AlembicRenderer;
+import com.pockyl.hextale.client.render.EssenceTankRenderer;
 import com.pockyl.hextale.client.render.EssenceTint;
 import com.pockyl.hextale.client.render.ResearchTableRenderer;
 import com.pockyl.hextale.client.render.RuneScrollRenderer;
+import com.pockyl.hextale.client.render.SeparatorRenderer;
 import com.pockyl.hextale.client.render.TableModels;
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
 import com.pockyl.hextale.client.screen.machine.AlembicScreen;
@@ -76,5 +78,7 @@ public final class HextaleClient {
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.RESEARCH_TABLE.get(), ResearchTableRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ALEMBIC.get(), AlembicRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.SEPARATOR.get(), SeparatorRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ESSENCE_TANK.get(), EssenceTankRenderer::new);
     }
 }

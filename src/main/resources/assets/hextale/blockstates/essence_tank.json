@@ -1,9 +1,7 @@
 {
-  "multipart": [
-    {
-      "apply": {
-        "model": "minecraft:block/glass"
-      }
+  "variants": {
+    "": {
+      "model": "hextale:block/essence_tank"
     }
-  ]
+  }
 }
