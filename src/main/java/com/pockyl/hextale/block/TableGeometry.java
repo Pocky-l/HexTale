@@ -18,24 +18,24 @@ import java.util.Map;
  */
 public final class TableGeometry {
     /** Centre of the floating orb, inside the gimbal rings that hang from the brass arm. */
-    public static final Vec3 ORB = new Vec3(-4, 20.6, 6.6);
+    public static final Vec3 ORB = new Vec3(-4.5, 20.6, 7.5);
     /** Centre of the parchment on the writing pad. */
-    public static final Vec3 PARCHMENT = new Vec3(-4, 14.15, 6.5);
+    public static final Vec3 PARCHMENT = new Vec3(-4.5, 14.25, 7.5);
     /** Centre of the open diary on the slanted book rest. */
-    public static final Vec3 DIARY = new Vec3(8.75, 17.2, 12.0);
+    public static final Vec3 DIARY = new Vec3(8.5, 17.2, 12.5);
 
     /** Collision and outline boxes in design space: {u0, y0, z0, u1, y1, z1}, z = 0 at the front. */
     private static final double[][] BOXES = {
-            {0, 12, 0.5, 32, 14, 15.5},          // top
-            {0.5, 0, 1, 3.5, 12, 4},              // legs
-            {28.5, 0, 1, 31.5, 12, 4},
-            {0.5, 0, 11.5, 3.5, 12, 14.5},
-            {28.5, 0, 11.5, 31.5, 12, 14.5},
-            {3.4, 1, 3.6, 13.6, 12, 14.4},        // drawer cabinet
-            {20, 1, 3.6, 28.5, 12, 14.4},         // bookshelf
-            {2.5, 14, 9, 12, 16, 15.5},           // book rest
-            {2.6, 14, 2.2, 6.6, 16, 6.2},         // inkwell
-            {18, 14, 12, 22, 16, 15},             // orb arm base
+            {0, 12, 1, 32, 14, 15},               // top
+            {0, 0, 1, 4, 12, 5},                  // legs
+            {28, 0, 1, 32, 12, 5},
+            {0, 0, 11, 4, 12, 15},
+            {28, 0, 11, 32, 12, 15},
+            {4, 0, 4, 14, 12, 15},                // drawer cabinet
+            {18, 0, 4, 28, 12, 15},               // bookshelf
+            {2, 14, 9, 13, 16, 16},               // book rest
+            {2, 14, 2, 7, 16, 7},                 // inkwell
+            {18, 14, 12, 23, 16, 15},             // orb arm base
     };
     private static final Map<Direction, VoxelShape> MAIN_SHAPES = new EnumMap<>(Direction.class);
     private static final Map<Direction, VoxelShape> SIDE_SHAPES = new EnumMap<>(Direction.class);

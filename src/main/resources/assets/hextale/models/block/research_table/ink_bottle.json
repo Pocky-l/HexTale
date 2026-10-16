@@ -1,214 +1,127 @@
 {
+  "__lint_allow": [
+    "outside"
+  ],
   "textures": {
     "particle": "hextale:block/research_table/ink_glass",
-    "glass": "hextale:block/research_table/ink_glass",
-    "cork": "hextale:block/research_table/cork"
+    "glass": "hextale:block/research_table/ink_glass"
   },
   "elements": [
     {
       "from": [
         10.0,
-        14.4,
-        2.8
+        15.0,
+        3.0
       ],
       "to": [
-        12.8,
-        16.9,
-        5.6
+        13.0,
+        18.0,
+        6.0
       ],
       "faces": {
         "north": {
           "texture": "#glass",
           "uv": [
-            3.2,
-            13.5,
-            6.0,
-            16.0
+            2,
+            5,
+            5,
+            8
           ]
         },
         "south": {
           "texture": "#glass",
           "uv": [
-            10.0,
-            13.5,
-            12.8,
-            16.0
+            2,
+            5,
+            5,
+            8
           ]
         },
         "east": {
           "texture": "#glass",
           "uv": [
-            10.4,
-            13.5,
-            13.2,
-            16.0
+            2,
+            5,
+            5,
+            8
           ]
         },
         "west": {
           "texture": "#glass",
           "uv": [
-            2.8,
-            13.5,
-            5.6,
-            16.0
+            2,
+            5,
+            5,
+            8
           ]
         },
         "up": {
           "texture": "#glass",
           "uv": [
-            10.0,
-            2.8,
-            12.8,
-            5.6
-          ]
-        },
-        "down": {
-          "texture": "#glass",
-          "uv": [
-            10.0,
-            10.4,
-            12.8,
-            13.2
+            6,
+            1,
+            9,
+            4
           ]
         }
       },
-      "neoforge_data": {
-        "block_light": 12,
-        "sky_light": 12
-      }
+      "light_emission": 12
     },
     {
       "from": [
-        10.7,
-        16.9,
-        3.5
-      ],
-      "to": [
-        12.1,
-        17.6,
-        4.9
-      ],
-      "faces": {
-        "north": {
-          "texture": "#glass",
-          "uv": [
-            0,
-            0,
-            16,
-            4
-          ]
-        },
-        "south": {
-          "texture": "#glass",
-          "uv": [
-            0,
-            0,
-            16,
-            4
-          ]
-        },
-        "east": {
-          "texture": "#glass",
-          "uv": [
-            0,
-            0,
-            16,
-            4
-          ]
-        },
-        "west": {
-          "texture": "#glass",
-          "uv": [
-            0,
-            0,
-            16,
-            4
-          ]
-        },
-        "up": {
-          "texture": "#glass",
-          "uv": [
-            0,
-            0,
-            16,
-            4
-          ]
-        },
-        "down": {
-          "texture": "#glass",
-          "uv": [
-            0,
-            0,
-            16,
-            4
-          ]
-        }
-      }
-    },
-    {
-      "from": [
-        10.8,
-        17.6,
-        3.6
+        11.0,
+        18.0,
+        4.0
       ],
       "to": [
         12.0,
-        18.3,
-        4.8
+        19.0,
+        5.0
       ],
       "faces": {
         "north": {
-          "texture": "#cork",
+          "texture": "#glass",
           "uv": [
-            4.0,
-            13.7,
-            5.2,
-            14.4
+            2,
+            2,
+            3,
+            3
           ]
         },
         "south": {
-          "texture": "#cork",
+          "texture": "#glass",
           "uv": [
-            10.8,
-            13.7,
-            12.0,
-            14.4
+            2,
+            2,
+            3,
+            3
           ]
         },
         "east": {
-          "texture": "#cork",
+          "texture": "#glass",
           "uv": [
-            11.2,
-            13.7,
-            12.4,
-            14.4
+            2,
+            2,
+            3,
+            3
           ]
         },
         "west": {
-          "texture": "#cork",
+          "texture": "#glass",
           "uv": [
-            3.6,
-            13.7,
-            4.8,
-            14.4
+            2,
+            2,
+            3,
+            3
           ]
         },
         "up": {
-          "texture": "#cork",
+          "texture": "#glass",
           "uv": [
-            10.8,
-            3.6,
-            12.0,
-            4.8
-          ]
-        },
-        "down": {
-          "texture": "#cork",
-          "uv": [
-            10.8,
-            11.2,
-            12.0,
-            12.4
+            2,
+            2,
+            3,
+            3
           ]
         }
       }

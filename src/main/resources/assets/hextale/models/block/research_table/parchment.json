@@ -1,74 +1,31 @@
 {
+  "__lint_allow": [
+    "offgrid"
+  ],
   "textures": {
     "particle": "hextale:block/research_table/parchment",
-    "paper": "hextale:block/research_table/parchment",
-    "edge": "hextale:block/research_table/parchment_roll"
+    "paper": "hextale:block/research_table/parchment"
   },
   "elements": [
     {
       "from": [
-        -9.0,
-        14.05,
-        3.0
+        -10.0,
+        14.25,
+        4.0
       ],
       "to": [
         1.0,
-        14.15,
-        10.0
+        14.25,
+        11.0
       ],
       "faces": {
-        "north": {
-          "texture": "#paper",
-          "uv": [
-            0,
-            15,
-            16,
-            16
-          ]
-        },
-        "south": {
-          "texture": "#paper",
-          "uv": [
-            0,
-            15,
-            16,
-            16
-          ]
-        },
-        "east": {
-          "texture": "#paper",
-          "uv": [
-            0,
-            15,
-            6,
-            16
-          ]
-        },
-        "west": {
-          "texture": "#paper",
-          "uv": [
-            0,
-            15,
-            6,
-            16
-          ]
-        },
         "up": {
           "texture": "#paper",
           "uv": [
             0,
-            2,
-            16,
-            14
-          ]
-        },
-        "down": {
-          "texture": "#paper",
-          "uv": [
             0,
-            2,
-            16,
-            14
+            11,
+            7
           ]
         }
       }
