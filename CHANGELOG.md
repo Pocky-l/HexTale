@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rune research: choose one of 72 runes in the star book, then draw it on a nine-cornered parchment of hexagonal
   sections: drag ink with the mouse from the hextech orb to every point of the rune. The ink branches: a new line may
   start at the orb or at any section already inked. Every step costs ink of the essence whose corner of the parchment
-  it heads towards, a step onto a point ten times as much; drops of colour around the line's end show what each
+  it heads towards, a step onto a point ten of the point's own essence; drops of colour around the line's end show what each
   direction costs. Right click takes a step back for free - ink is spent only when the last point binds the rune. A
   finished drawing writes the rune's scroll into the output slot; shorter drawings write scrolls with up to three stars.
 - Dark runes: in chapter I they are stone the ink cannot pass. From chapter II on they are dark fields the ink may

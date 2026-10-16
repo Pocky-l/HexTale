@@ -493,7 +493,7 @@
   "quest.hextale.ink.desc": "The table draws ink by itself from tanks of concentrate within two blocks. Runes need different essences - keep a tank of each. The supply shows on the \"Desk\" tab.",
   "quest.hextale.rune_research": "Researching Runes",
   "quest.hextale.rune_research.goal": "get a rune scroll",
-  "quest.hextale.rune_research.desc": "Pick a rune on the star map and send it to the table. Draw ink with the mouse from the orb to every point: a new line may start at the orb or at any inked section. A step spends the ink of the essence whose corner it heads to, a step onto a point ten times as much. Right click takes a step back. The shorter the drawing, the more stars.",
+  "quest.hextale.rune_research.desc": "Pick a rune on the star map and send it to the table. Draw ink with the mouse from the orb to every point: a new line may start at the orb or at any inked section. A step spends the ink of the essence whose corner it heads to, a step onto a point 10 mB of that point's own essence. Right click takes a step back. The shorter the drawing, the more stars.",
   "quest.hextale.first_rune": "First Rune: Smelting",
   "quest.hextale.first_rune.goal": "learn the rune Smelting",
   "quest.hextale.first_rune.desc": "Use the scroll (right click) to learn the rune - the scroll is spent. Smelting opens the other runes of chapter I.",

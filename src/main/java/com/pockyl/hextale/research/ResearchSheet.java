@@ -17,8 +17,8 @@ import org.jetbrains.annotations.Nullable;
  * rooted at the orb. It is kept as a flat list of steps, {@code [from, to, from, to, ...]}, in the order they were drawn;
  * {@code from} is the orb or an earlier step's {@code to}.
  * <p>
- * Every step costs ink of the element whose corner of the parchment it heads towards (see {@link #toward}); a step onto a
- * point costs {@value #POINT_COST} times as much. Stone dark runes block the ink and no section is inked twice. In
+ * Every step costs one section of ink of the element whose corner of the parchment it heads towards (see {@link #toward});
+ * a step onto a point costs {@value #POINT_COST} sections of that point's own essence instead (see {@link #paying}). Stone dark runes block the ink and no section is inked twice. In
  * chapters II and III the dark runes are fields the ink may cross, but a cursed section bursts the orb: the check stops
  * there ({@link Trace#burst}). Every inked section next to a dark field shows how many cursed sections touch it.
  * Removing steps is free: ink is only spent when the last point is reached (or the orb bursts). Stars count the sections.
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  * Pure rules shared by the table (server) and its screen (client copy).
  */
 public final class ResearchSheet {
-    /** A step onto a point costs this many sections of ink. */
+    /** A step onto a point costs this many sections of the point's essence. */
     public static final int POINT_COST = 10;
 
     @Nullable
@@ -110,7 +110,7 @@ public final class ResearchSheet {
                 return null;
             }
             inked[cell] = true;
-            Essence colour = toward(from, cell);
+            Essence colour = paying(board, from, cell);
             int point = board.pointAt(cell);
             ink[colour.ordinal()] += point >= 0 ? POINT_COST : 1;
             paying[i] = colour;
@@ -124,8 +124,14 @@ public final class ResearchSheet {
         return new Trace(ink, lit, paying, steps, -1);
     }
 
+    /** The essence a step pays with: a point's own essence when it steps onto a point, else that of its direction. */
+    public static Essence paying(RuneBoard board, int from, int to) {
+        int point = board.pointAt(to);
+        return point >= 0 ? board.points().get(point).element() : toward(from, to);
+    }
+
     /**
-     * The element a step pays with: the one whose corner lies most nearly in the step's direction, seen from where the
+     * The element a plain step pays with: the one whose corner lies most nearly in the step's direction, seen from where the
      * step starts. Near a corner its element covers a wide fan of directions; in the middle each direction has its own.
      */
     public static Essence toward(int from, int to) {

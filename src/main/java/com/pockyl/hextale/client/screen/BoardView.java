@@ -369,7 +369,7 @@ final class BoardView {
             if (inked[next] || board.wall(next) && visible[next]) {
                 continue;
             }
-            Essence ink = ResearchSheet.toward(head, next);
+            Essence ink = ResearchSheet.paying(board, head, next);
             float breath = 0.6F + 0.4F * Mth.sin(now / 220.0F - k * 1.05F);
             int x = hx + Math.round((sx(next) - hx) * 0.55F);
             int y = hy + Math.round((sy(next) - hy) * 0.55F);

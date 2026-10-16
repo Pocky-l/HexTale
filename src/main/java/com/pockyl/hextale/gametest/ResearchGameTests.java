@@ -219,9 +219,10 @@ public final class ResearchGameTests {
         ResearchSheet.Trace trace = ResearchSheet.trace(board, tree);
         int[] ink = new int[Essence.values().length];
         for (int i = 0; i < tree.length / 2; i++) {
-            Essence colour = ResearchSheet.toward(tree[2 * i], tree[2 * i + 1]);
-            helper.assertTrue(trace.paying()[i] == colour, "step " + i + " costs the ink of its direction");
-            ink[colour.ordinal()] += board.pointAt(tree[2 * i + 1]) >= 0 ? ResearchSheet.POINT_COST : 1;
+            int point = board.pointAt(tree[2 * i + 1]);
+            Essence colour = point >= 0 ? board.points().get(point).element() : ResearchSheet.toward(tree[2 * i], tree[2 * i + 1]);
+            helper.assertTrue(trace.paying()[i] == colour, "step " + i + " costs the ink of its direction, or of the point it reaches");
+            ink[colour.ordinal()] += point >= 0 ? ResearchSheet.POINT_COST : 1;
         }
         java.util.Set<Essence> fromCentre = java.util.EnumSet.noneOf(Essence.class);
         java.util.Set<Essence> anywhere = java.util.EnumSet.noneOf(Essence.class);
@@ -235,7 +236,7 @@ public final class ResearchGameTests {
         }
         helper.assertTrue(fromCentre.size() == 6, "the six steps from the orb pay six different inks, got " + fromCentre);
         helper.assertTrue(anywhere.size() == 9, "every ink is needed somewhere on the parchment");
-        helper.assertTrue(Arrays.equals(ink, trace.ink()), "the ink needed is the sum of the steps, a point ten times as much");
+        helper.assertTrue(Arrays.equals(ink, trace.ink()), "the ink needed is the sum of the steps, a point ten of its own essence");
         helper.succeed();
     }
 

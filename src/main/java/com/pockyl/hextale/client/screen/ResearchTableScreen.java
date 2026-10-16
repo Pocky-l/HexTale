@@ -336,7 +336,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return false;
         }
         if (!creative() && !next.affordable(ink())) {
-            vialFlash[ResearchSheet.toward(from, cell).ordinal()] = Util.getMillis();
+            vialFlash[ResearchSheet.paying(current, from, cell).ordinal()] = Util.getMillis();
             refuse(cell, 0.8F);
             return false;
         }
@@ -344,7 +344,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         tree = candidate;
         trace = next;
         head = cell;
-        Essence paying = ResearchSheet.toward(from, cell);
+        Essence paying = ResearchSheet.paying(current, from, cell);
         int point = current.pointAt(cell);
         if (next.burst() >= 0) {
             dragging = false;
