@@ -50,6 +50,8 @@ public final class Hextale {
             output.accept(ModItems.SEPARATOR);
             output.accept(ModItems.ESSENCE_TANK);
             output.accept(ModItems.BRASS_PIPE);
+            output.accept(ModItems.PUMP);
+            output.accept(ModItems.DRAIN_VALVE);
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
             output.accept(ModItems.RESEARCHERS_LENS);

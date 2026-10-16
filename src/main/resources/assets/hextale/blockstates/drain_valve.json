@@ -1,0 +1,55 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "open": "false"
+      },
+      "apply": {
+        "model": "hextale:block/drain_valve_shut"
+      }
+    },
+    {
+      "when": {
+        "open": "true"
+      },
+      "apply": {
+        "model": "hextale:block/drain_valve_open"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm",
+        "y": 270
+      }
+    }
+  ]
+}

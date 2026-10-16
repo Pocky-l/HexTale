@@ -432,5 +432,12 @@
   "gui.hextale.separator.vent.hint": "Сверху выходит газ разделения",
   "essence.hextale.unknown": "Неизвестная эссенция",
   "item.hextale.essence_flask.unknown": "Пузырёк неизвестной эссенции",
-  "item.hextale.essence_flask.unknown.hint": "Остаток после разделения: это не чернила, но сепаратор с другим реагентом ещё может выделить из него эссенцию"
+  "item.hextale.essence_flask.unknown.hint": "Остаток после разделения: это не чернила, но сепаратор с другим реагентом ещё может выделить из него эссенцию",
+  "block.hextale.drain_valve": "Сливной кран",
+  "block.hextale.pump": "Насос",
+  "block.hextale.drain_valve.open": "Кран открыт: всё, что приходит по трубам, выливается",
+  "block.hextale.drain_valve.shut": "Кран закрыт",
+  "gui.hextale.alembic.water": "Вода: %s/%s mB",
+  "gui.hextale.alembic.water.hint": "Каждый предмет варится в %s mB. Подайте воду трубой от насоса сзади или сбоку или вылейте на куб ведро воды",
+  "gui.hextale.alembic.no_water": "Не хватает воды для варки"
 }

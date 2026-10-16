@@ -2,6 +2,36 @@
   "multipart": [
     {
       "when": {
+        "facing": "north",
+        "east": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_inlet",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "south": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_inlet",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "west": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_inlet",
+        "y": 270
+      }
+    },
+    {
+      "when": {
         "facing": "north"
       },
       "apply": {
@@ -15,6 +45,35 @@
       },
       "apply": {
         "model": "hextale:block/alembic_port"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "north": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_inlet"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "south": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_inlet",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "west": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_inlet",
+        "y": 270
       }
     },
     {
@@ -38,6 +97,35 @@
     },
     {
       "when": {
+        "facing": "south",
+        "north": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_inlet"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "east": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_inlet",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "west": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_inlet",
+        "y": 270
+      }
+    },
+    {
+      "when": {
         "facing": "south"
       },
       "apply": {
@@ -52,6 +140,35 @@
       },
       "apply": {
         "model": "hextale:block/alembic_port",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "north": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_inlet"
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "east": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_inlet",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "south": "true"
+      },
+      "apply": {
+        "model": "hextale:block/alembic_inlet",
         "y": 180
       }
     },

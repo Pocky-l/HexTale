@@ -5,8 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -17,7 +15,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -41,29 +38,31 @@ import com.pockyl.hextale.menu.AlembicMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.research.ItemElements;
 import com.pockyl.hextale.research.ResearchItems;
-import com.pockyl.hextale.rune.SimpleRune;
 
-import java.util.Map;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Alembic's contents: the items waiting to boil, glass bottles and the bottle it filled, and the essence boiled so
- * far. An item boils for {@value #BOIL_TICKS} ticks over heat into {@value #DROPS_PER_POINT} drops per point of each of
- * its elements - all of them at once, a mixture. The essence goes into bottles and out of the spout (the front) into a
- * pipe.
+ * The Alembic's contents: the items waiting to boil, glass bottles and the bottle it filled, the water in its flask and
+ * the essence boiled so far. An item boils in {@value #WATER_PER_ITEM} mB of water for {@value #BOIL_TICKS} ticks over
+ * heat into {@value #DROPS_PER_POINT} drops per point of each of its elements - all of them at once, a mixture. Water
+ * comes in through pipes at the back and the sides (from a pump) or from a bucket; the essence goes into bottles and out
+ * of the spout (the front) into a pipe.
  * <p>
  * Only items the researcher has studied go in: checked against the player at the screen, and against the alembic's
  * owner (who placed it) for hoppers, while the owner is online.
  */
-public class AlembicBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
+public class AlembicBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.WaterReceiver {
     public static final int INPUT = 0;
     public static final int FLASK_IN = 1;
     public static final int FLASK_OUT = 2;
     public static final int BOIL_TICKS = 80;
     public static final int DROPS_PER_POINT = 2;
     public static final int CAPACITY = 64;
+    /** Millibuckets of water the flask holds, and how much one boiled item takes. */
+    public static final int WATER_CAPACITY = 2000;
+    public static final int WATER_PER_ITEM = 250;
     private static final int[] TOP = {INPUT};
     private static final int[] SIDES = {INPUT, FLASK_IN};
     private static final int[] BOTTOM = {FLASK_OUT};
@@ -71,6 +70,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
     private NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
     private final EssenceTank tank = new EssenceTank(CAPACITY);
     private int progress;
+    private int water;
     @Nullable
     private UUID owner;
     /** Client side: smooth boiling progress between syncs. */
@@ -112,6 +112,30 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return progress;
     }
 
+    /** Millibuckets of water in the flask. */
+    public int water() {
+        return water;
+    }
+
+    /** Pours in up to {@code amount} mB of water. */
+    public int fillWater(int amount, boolean simulate) {
+        int taken = Math.max(0, Math.min(amount, WATER_CAPACITY - water));
+        if (taken > 0 && !simulate) {
+            water += taken;
+            setChanged();
+        }
+        return taken;
+    }
+
+    /** Pipes bring water in at the back and the sides; the front is the spout. */
+    @Override
+    public int receiveWater(Direction side, int amount, boolean simulate) {
+        if (!side.getAxis().isHorizontal() || side == getBlockState().getValue(AlembicBlock.FACING)) {
+            return 0;
+        }
+        return fillWater(amount, simulate);
+    }
+
     public ItemStack input() {
         return items.get(INPUT);
     }
@@ -145,7 +169,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
     private boolean boil() {
         ItemStack inside = input();
         ItemElements elements = ResearchItems.of(inside);
-        if (!heated() || elements == null) {
+        if (!heated() || elements == null || water < WATER_PER_ITEM) {
             boolean had = progress != 0;
             progress = 0;
             return had;
@@ -160,6 +184,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         }
         tank.fill(boiled, false);
         inside.shrink(1);
+        water -= WATER_PER_ITEM;
         progress = 0;
         level.playSound(null, worldPosition, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 0.5F, 1.4F);
         return true;
@@ -195,32 +220,10 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return false;
     }
 
-    /** Bubbles of the item's colours rise in a working flask; steam leaves the cap. */
+    /** Client side: the boiling progress runs on smoothly between syncs (the renderer shows it as bubbles). */
     public static void clientTick(Level level, BlockPos pos, BlockState state, AlembicBlockEntity alembic) {
-        RandomSource random = level.getRandom();
-        ItemElements elements = ResearchItems.of(alembic.input());
-        boolean working = state.getValue(AlembicBlock.LIT) && elements != null;
+        boolean working = state.getValue(AlembicBlock.LIT) && ResearchItems.of(alembic.input()) != null && alembic.water >= WATER_PER_ITEM;
         alembic.clientProgress = working ? Math.min(1, alembic.clientProgress + 1.0F / BOIL_TICKS) : 0;
-        if (working && random.nextInt(3) == 0) {
-            SimpleRune element = pick(elements, random);
-            level.addParticle(new DustParticleOptions(element.color(), 0.5F), pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.35,
-                    pos.getY() + 0.35 + random.nextDouble() * 0.3, pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.35, 0, 0.02, 0);
-        }
-        if (working && random.nextInt(12) == 0) {
-            level.addParticle(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 0, 0.03, 0);
-        }
-    }
-
-    private static SimpleRune pick(ItemElements elements, RandomSource random) {
-        int total = elements.elements().values().stream().mapToInt(Integer::intValue).sum();
-        int roll = random.nextInt(Math.max(1, total));
-        for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
-            roll -= entry.getValue();
-            if (roll < 0) {
-                return entry.getKey();
-            }
-        }
-        return elements.main();
     }
 
     @Override
@@ -299,6 +302,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         ContainerHelper.loadAllItems(input, items);
         tank.load(input, "essence");
         progress = input.getIntOr("progress", 0);
+        water = input.getIntOr("water", 0);
         clientProgress = progress / (float) BOIL_TICKS;
         owner = input.read("owner", UUIDUtil.CODEC).orElse(null);
     }
@@ -309,6 +313,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         ContainerHelper.saveAllItems(output, items);
         tank.save(output, "essence");
         output.putInt("progress", progress);
+        output.putInt("water", water);
         if (owner != null) {
             output.store("owner", UUIDUtil.CODEC, owner);
         }

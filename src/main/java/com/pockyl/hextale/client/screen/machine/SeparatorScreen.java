@@ -189,13 +189,4 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         };
     }
 
-    /** A pulsing red frame around the part that stops the separator. */
-    private static void warn(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {
-        int alpha = Math.round(120 + 100 * Mth.sin(Util.getMillis() / 200.0F));
-        int colour = alpha << 24 | 0xE0503C;
-        graphics.fill(x - 1, y - 1, x + w + 1, y, colour);
-        graphics.fill(x - 1, y + h, x + w + 1, y + h + 1, colour);
-        graphics.fill(x - 1, y, x, y + h, colour);
-        graphics.fill(x + w, y, x + w + 1, y + h, colour);
-    }
 }

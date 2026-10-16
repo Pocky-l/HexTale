@@ -3,6 +3,8 @@
     "hextale:alembic",
     "hextale:separator",
     "hextale:essence_tank",
-    "hextale:brass_pipe"
+    "hextale:brass_pipe",
+    "hextale:drain_valve",
+    "hextale:pump"
   ]
 }

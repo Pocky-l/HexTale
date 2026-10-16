@@ -4,12 +4,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -43,8 +47,9 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Alembic: a glass flask on a brass stand over a fire (fire, a lit campfire, lava or magma below it). Studied items
- * put into it boil down into essence - a mixture of all their elements - which it pours into glass bottles or lets out
- * through its spout, the front: a brass pipe joins it there and only there.
+ * put into it boil down, in water, into essence - a mixture of all their elements - which it pours into glass bottles or
+ * lets out through its spout at the front. Pipes join it at the front (essence out) and at the back and the sides (water
+ * in); a water bucket fills it by hand.
  */
 public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHolder, EssenceMachine {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
@@ -69,10 +74,30 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
         }
     }
 
-    /** The spout, at the front, is the only port. */
+    /** The spout at the front lets essence out; the other sides take water in. */
     @Override
     public boolean isPort(BlockState state, Direction face) {
-        return face == state.getValue(FACING);
+        return face.getAxis().isHorizontal();
+    }
+
+    /** A water bucket fills the flask. */
+    @Override
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+                                          BlockHitResult hitResult) {
+        if (!stack.is(Items.WATER_BUCKET) || !(level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic)) {
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
+        }
+        if (alembic.fillWater(1000, true) < 1000) {
+            return InteractionResult.FAIL;
+        }
+        if (!level.isClientSide()) {
+            alembic.fillWater(1000, false);
+            if (!player.getAbilities().instabuild) {
+                player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+            }
+            level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+        return InteractionResult.SUCCESS;
     }
 
     /** Whether the block below heats an alembic. */

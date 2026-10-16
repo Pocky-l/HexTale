@@ -1,13 +1,18 @@
 package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -19,23 +24,29 @@ import com.pockyl.hextale.research.ItemElements;
 import com.pockyl.hextale.research.ResearchItems;
 
 /**
- * The essence inside the Alembic's flask: a glowing liquid in the colour of what it holds (or of the item boiling),
- * rising while an item boils and swaying a little on its surface.
+ * Inside the Alembic's flask: the water, tinted by the essence boiled into it (or by the item boiling); bubbles rising
+ * through it while an item boils; and the item itself, turning slowly in the water.
  */
 public class AlembicRenderer implements BlockEntityRenderer<AlembicBlockEntity, AlembicRenderer.State> {
     private static final float MIN = 4.6F / 16;
     private static final float MAX = 11.4F / 16;
     private static final float BOTTOM = 4.4F / 16;
     private static final float TOP = 10.6F / 16;
+    private static final int WATER_COLOR = 0x3F76E4;
+    private static final int BUBBLES = 7;
+
+    private final ItemModelResolver itemModelResolver;
 
     public static final class State extends BlockEntityRenderState {
         float level;
         int color;
         float time;
         boolean working;
+        final ItemStackRenderState item = new ItemStackRenderState();
     }
 
     public AlembicRenderer(BlockEntityRendererProvider.Context context) {
+        itemModelResolver = context.itemModelResolver();
     }
 
     @Override
@@ -50,22 +61,44 @@ public class AlembicRenderer implements BlockEntityRenderer<AlembicBlockEntity, 
         Level level = alembic.getLevel();
         state.time = level == null ? 0 : level.getGameTime() + partialTick;
         ItemElements elements = ResearchItems.of(alembic.input());
-        state.working = elements != null && alembic.getBlockState().getValue(AlembicBlock.LIT);
+        state.working = elements != null && alembic.getBlockState().getValue(AlembicBlock.LIT)
+                && alembic.water() >= AlembicBlockEntity.WATER_PER_ITEM;
         EssenceTank tank = alembic.tank();
-        int held = tank.isEmpty() ? elements == null ? 0x7EC8E8 : elements.main().color() : tank.contents().color();
-        state.color = state.working ? RuneDrawing.mix(held, elements.main().color(), alembic.clientProgress * 0.5F) : held;
-        float fill = tank.amount() / (float) tank.capacity();
-        state.level = Math.max(fill, state.working ? 0.15F + 0.6F * alembic.clientProgress : 0);
+        // Water, coloured by the essence in it: the more essence, the stronger its colour.
+        float share = Math.min(1, tank.amount() / (float) tank.capacity() * 2);
+        int color = tank.isEmpty() ? WATER_COLOR : RuneDrawing.mix(WATER_COLOR, tank.contents().color(), 0.35F + 0.65F * share);
+        state.color = state.working ? RuneDrawing.mix(color, elements.main().color(), alembic.clientProgress * 0.5F) : color;
+        float water = alembic.water() / (float) AlembicBlockEntity.WATER_CAPACITY;
+        state.level = Math.max(water, tank.isEmpty() ? 0 : 0.12F);
+        itemModelResolver.updateForTopItem(state.item, alembic.input(), ItemDisplayContext.FIXED, level, null, (int) alembic.getBlockPos().asLong());
     }
 
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        float top = BOTTOM + (TOP - BOTTOM) * Math.min(1, state.level);
+        if (!state.item.isEmpty()) {
+            poseStack.pushPose();
+            poseStack.translate(0.5F, BOTTOM + 1.6F / 16, 0.5F);
+            poseStack.rotate(Axis.YP.rotationDegrees(state.time * 0.6F));
+            poseStack.scale(0.28F, 0.28F, 0.28F);
+            state.item.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
+        }
         if (state.level <= 0.01F) {
             return;
         }
         float sway = state.working ? Mth.sin(state.time * 0.3F) * 0.15F / 16 : 0;
-        float top = BOTTOM + (TOP - BOTTOM) * Math.min(1, state.level) + sway;
-        float alpha = 0.55F + (state.working ? 0.15F * (0.5F + 0.5F * Mth.sin(state.time * 0.2F)) : 0);
-        LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, BOTTOM, top, RuneDrawing.argb(state.color, alpha));
+        LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, BOTTOM, top + sway, RuneDrawing.argb(state.color, 0.55F));
+        if (state.working) {
+            // Bubbles rise from the bottom and burst at the surface, each on its own track.
+            float size = 0.45F / 16;
+            for (int i = 0; i < BUBBLES; i++) {
+                float t = ((state.time * 0.025F + i * 0.37F) % 1 + 1) % 1;
+                float y = BOTTOM + 0.2F / 16 + (top - BOTTOM - 0.6F / 16) * t;
+                float x = 5.4F / 16 + ((i * 0.618F) % 1) * (5.2F / 16) + Mth.sin(state.time * 0.2F + i) * 0.2F / 16;
+                float z = 5.4F / 16 + ((i * 0.381F + 0.5F) % 1) * (5.2F / 16);
+                LiquidBox.submit(poseStack, collector, x, z, x + size, z + size, y, y + size, RuneDrawing.argb(0xFFFFFF, 0.75F * (1 - t * 0.5F)));
+            }
+        }
     }
 }

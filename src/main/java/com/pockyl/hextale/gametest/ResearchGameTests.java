@@ -29,7 +29,10 @@ import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.AlembicBlock;
 import com.pockyl.hextale.block.AlembicBlockEntity;
 import com.pockyl.hextale.block.BrassPipeBlock;
+import com.pockyl.hextale.block.DrainValveBlock;
+import com.pockyl.hextale.block.EssenceMachine;
 import com.pockyl.hextale.block.PortMode;
+import com.pockyl.hextale.block.PumpBlock;
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.block.InkSupply;
 import com.pockyl.hextale.block.SeparatorBlock;
@@ -464,11 +467,55 @@ public final class ResearchGameTests {
         AlembicBlockEntity alembic = helper.getBlockEntity(at, AlembicBlockEntity.class);
         alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.OAK_PLANKS));
         alembic.setItem(AlembicBlockEntity.FLASK_IN, new ItemStack(Items.GLASS_BOTTLE, 2));
+        alembic.fillWater(1000, false);
         Essence expected = Essence.boiled(ResearchItems.of(Items.OAK_PLANKS), AlembicBlockEntity.DROPS_PER_POINT);
         helper.succeedWhen(() -> {
             Essence boiled = EssenceFlaskItem.contents(alembic.getItem(AlembicBlockEntity.FLASK_OUT));
             helper.assertTrue(boiled.equals(expected), "oak planks boil into " + expected + ", got " + boiled);
             helper.assertTrue(alembic.getItem(AlembicBlockEntity.FLASK_IN).getCount() == 1, "one glass bottle was used");
+            helper.assertTrue(alembic.water() == 1000 - AlembicBlockEntity.WATER_PER_ITEM, "and the item took its water");
+        });
+    }
+
+    @HexTest(maxTicks = 200)
+    public static void aDryAlembicDoesNotBoil(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at.below(), Blocks.MAGMA_BLOCK);
+        helper.setBlock(at, ModBlocks.ALEMBIC.get().defaultBlockState().setValue(AlembicBlock.LIT, true));
+        AlembicBlockEntity alembic = helper.getBlockEntity(at, AlembicBlockEntity.class);
+        alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.OAK_PLANKS));
+        helper.runAfterDelay(120, () -> {
+            helper.assertTrue(alembic.input().getCount() == 1 && alembic.tank().isEmpty(), "no water, no boiling");
+            helper.succeed();
+        });
+    }
+
+    @HexTest(maxTicks = 100)
+    public static void aPumpInWaterFillsTheAlembic(GameTestHelper helper) {
+        // pump (in water) -> pipe -> pipe -> the alembic's back (it faces north, so its back is south)
+        BlockPos pump = new BlockPos(1, 2, 3);
+        BlockPos alembicAt = new BlockPos(1, 3, 2);
+        helper.setBlock(pump, ModBlocks.PUMP.get().defaultBlockState().setValue(PumpBlock.WATERLOGGED, true));
+        helper.setBlock(pump.above(), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(alembicAt, ModBlocks.ALEMBIC.get().defaultBlockState().setValue(AlembicBlock.FACING, Direction.NORTH));
+        AlembicBlockEntity alembic = helper.getBlockEntity(alembicAt, AlembicBlockEntity.class);
+        helper.assertTrue(helper.getBlockState(alembicAt).getValue(EssenceMachine.PORTS.get(Direction.SOUTH)), "the pipe joins the alembic's back");
+        helper.succeedWhen(() -> helper.assertTrue(alembic.water() >= 500, "the pump fills the flask, got " + alembic.water() + " mB"));
+    }
+
+    @HexTest(maxTicks = 100)
+    public static void anOpenValveDrainsWhatComes(GameTestHelper helper) {
+        BlockPos tankAt = new BlockPos(1, 3, 1);
+        BlockPos valveAt = new BlockPos(2, 2, 1);
+        helper.setBlock(tankAt, ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(tankAt.below(), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(valveAt, ModBlocks.DRAIN_VALVE.get());
+        EssenceTankBlockEntity tank = helper.getBlockEntity(tankAt, EssenceTankBlockEntity.class);
+        tank.tank().set(Essence.pure(SimpleRune.FIRE, 12));
+        helper.runAfterDelay(30, () -> {
+            helper.assertTrue(tank.tank().amount() == 12, "a shut valve lets nothing out");
+            helper.setBlock(valveAt, helper.getBlockState(valveAt).setValue(DrainValveBlock.OPEN, true));
+            helper.succeedWhen(() -> helper.assertTrue(tank.tank().isEmpty(), "the open valve drains the tank"));
         });
     }
 

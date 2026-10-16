@@ -432,5 +432,12 @@
   "gui.hextale.separator.vent.hint": "The top lets out the gas of separation",
   "essence.hextale.unknown": "Unknown essence",
   "item.hextale.essence_flask.unknown": "Bottle of Unknown Essence",
-  "item.hextale.essence_flask.unknown.hint": "What was left after a separation: no ink, but a Separator with another reagent can still draw an essence out of it"
+  "item.hextale.essence_flask.unknown.hint": "What was left after a separation: no ink, but a Separator with another reagent can still draw an essence out of it",
+  "block.hextale.drain_valve": "Drain Valve",
+  "block.hextale.pump": "Pump",
+  "block.hextale.drain_valve.open": "Valve open: what the pipes bring pours out",
+  "block.hextale.drain_valve.shut": "Valve shut",
+  "gui.hextale.alembic.water": "Water: %s/%s mB",
+  "gui.hextale.alembic.water.hint": "Each item boils in %s mB. Pipe water in from a Pump at the back or the sides, or pour a water bucket on the alembic",
+  "gui.hextale.alembic.no_water": "Not enough water to boil"
 }

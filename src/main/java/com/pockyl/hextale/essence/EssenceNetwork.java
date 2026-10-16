@@ -3,6 +3,7 @@ package com.pockyl.hextale.essence;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import com.pockyl.hextale.block.BrassPipeBlock;
 
@@ -11,8 +12,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Moves essence through brass pipes. A machine pushes out of one of its faces; the liquid runs through every pipe
- * connected there (up to {@value #MAX_PIPES} of them) to the first vessel that takes it from the side it touches.
+ * Moves liquids through brass pipes: essence and water share the pipes. A block pushes out of one of its faces; the
+ * liquid runs through every pipe connected there (up to {@value #MAX_PIPES} of them) to the first vessel that takes it
+ * from the side it touches.
  * <p>
  * A vessel never takes from a pipe network its own outlet runs into: otherwise what it lets out (the separator's rest,
  * a tank's contents) would flow straight back in and go round in circles.
@@ -31,10 +33,24 @@ public final class EssenceNetwork {
          */
         int receive(Direction side, Essence offer, boolean simulate);
 
-        /** Whether the receiver lets essence out through this face of its own. */
+        /** Whether the receiver lets liquid out through this face of its own. */
         default boolean isOutlet(Direction face) {
             return false;
         }
+    }
+
+    /** Something that takes water in through some of its faces (amounts in millibuckets). */
+    public interface WaterReceiver {
+        /**
+         * @param side the receiver's own face the water comes in through
+         * @return millibuckets taken
+         */
+        int receiveWater(Direction side, int amount, boolean simulate);
+    }
+
+    /** What a vessel takes of the liquid through one of its faces. */
+    private interface Taker {
+        int take(BlockEntity vessel, Direction side);
     }
 
     /**
@@ -46,9 +62,27 @@ public final class EssenceNetwork {
         if (offer.isEmpty()) {
             return 0;
         }
+        return deliver(level, from, face, (vessel, side) -> vessel instanceof Receiver receiver ? receiver.receive(side, offer, false) : 0);
+    }
+
+    /**
+     * Pushes {@code amount} millibuckets of water out of the block at {@code from} through its face {@code face}.
+     *
+     * @return the millibuckets delivered
+     */
+    public static int pushWater(Level level, BlockPos from, Direction face, int amount) {
+        if (amount <= 0) {
+            return 0;
+        }
+        return deliver(level, from, face,
+                (vessel, side) -> vessel instanceof WaterReceiver receiver ? receiver.receiveWater(side, amount, false) : 0);
+    }
+
+    private static int deliver(Level level, BlockPos from, Direction face, Taker taker) {
         BlockPos start = from.relative(face);
-        if (level.getBlockEntity(start) instanceof Receiver receiver) {
-            return receiver.receive(face.getOpposite(), offer, false);
+        BlockEntity next = level.getBlockEntity(start);
+        if (next != null) {
+            return taker.take(next, face.getOpposite());
         }
         if (!(level.getBlockState(start).getBlock() instanceof BrassPipeBlock)) {
             return 0;
@@ -56,12 +90,15 @@ public final class EssenceNetwork {
         Set<BlockPos> pipes = network(level, start);
         for (BlockPos pipe : pipes) {
             for (Direction direction : Direction.values()) {
-                BlockPos next = pipe.relative(direction);
-                if (next.equals(from) || pipes.contains(next) || !(level.getBlockEntity(next) instanceof Receiver receiver)
-                        || feedsBack(next, receiver, pipes)) {
+                BlockPos at = pipe.relative(direction);
+                if (at.equals(from) || pipes.contains(at)) {
                     continue;
                 }
-                int taken = receiver.receive(direction.getOpposite(), offer, false);
+                BlockEntity vessel = level.getBlockEntity(at);
+                if (vessel == null || vessel instanceof Receiver receiver && feedsBack(at, receiver, pipes)) {
+                    continue;
+                }
+                int taken = taker.take(vessel, direction.getOpposite());
                 if (taken > 0) {
                     return taken;
                 }

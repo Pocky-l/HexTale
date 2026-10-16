@@ -1,5 +1,6 @@
 package com.pockyl.hextale.client.screen.machine;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -16,6 +17,7 @@ import java.util.List;
 public class AlembicScreen extends MachineScreen<AlembicMenu> {
     public static final int TANK_X = 98;
     public static final int TANK_Y = 16;
+    public static final int WATER_X = 20;
 
     public AlembicScreen(AlembicMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, Hextale.id("textures/gui/alembic.png"));
@@ -32,6 +34,12 @@ public class AlembicScreen extends MachineScreen<AlembicMenu> {
         }
         arrow(graphics, x + 66, y + 39, 22, menu.progress() / (float) AlembicBlockEntity.BOIL_TICKS);
         if (alembic != null) {
+            waterTank(graphics, x + WATER_X, y + TANK_Y, TANK_H, alembic.water(), AlembicBlockEntity.WATER_CAPACITY, mouseX, mouseY,
+                    Component.translatable("gui.hextale.alembic.water", alembic.water(), AlembicBlockEntity.WATER_CAPACITY),
+                    Component.translatable("gui.hextale.alembic.water.hint", AlembicBlockEntity.WATER_PER_ITEM).withStyle(ChatFormatting.GRAY));
+            if (alembic.water() < AlembicBlockEntity.WATER_PER_ITEM && !alembic.input().isEmpty()) {
+                warn(graphics, x + WATER_X, y + TANK_Y, TANK_W, TANK_H);
+            }
             tank(graphics, x + TANK_X, y + TANK_Y, TANK_H, alembic.tank(), mouseX, mouseY,
                     Component.translatable("gui.hextale.alembic.out"));
         }

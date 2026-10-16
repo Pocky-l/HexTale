@@ -150,6 +150,9 @@
         "west": {
           "texture": "#brass"
         },
+        "up": {
+          "texture": "#brass"
+        },
         "down": {
           "texture": "#brass"
         }
@@ -210,15 +213,6 @@
             0,
             16,
             8
-          ]
-        },
-        "down": {
-          "texture": "#glass",
-          "uv": [
-            8,
-            8,
-            16,
-            16
           ]
         }
       }

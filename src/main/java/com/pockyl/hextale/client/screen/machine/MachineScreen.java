@@ -148,6 +148,37 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
         }
     }
 
+    /** A water gauge {@code height} pixels tall: blue water with a wobbling surface. */
+    protected void waterTank(GuiGraphicsExtractor graphics, int x, int y, int height, int amount, int capacity, int mouseX, int mouseY,
+                             Component... lines) {
+        int filled = Math.round(height * Math.min(1, amount / (float) capacity));
+        int bottom = y + height;
+        if (filled > 0) {
+            graphics.fill(x, bottom - filled, x + TANK_W, bottom, 0xFF3F76E4);
+            graphics.fill(x, bottom - filled, x + 2, bottom, 0x40FFFFFF);
+            long now = Util.getMillis();
+            for (int col = 0; col < TANK_W; col++) {
+                int top = Math.max(y, bottom - filled + Math.round(Mth.sin(now / 280.0F + col * 0.6F)));
+                graphics.fill(x + col, top, x + col + 1, top + 1, 0xFF9CC3FF);
+            }
+        }
+        graphics.fill(x + TANK_W - 3, y + 2, x + TANK_W - 2, y + height - 2, 0x50FFFFFF);
+        if (isOver(mouseX, mouseY, x, y, TANK_W, height)) {
+            List<Component> out = new ArrayList<>(List.of(lines));
+            tooltip(out);
+        }
+    }
+
+    /** A pulsing red frame around a part that stops the machine. */
+    protected static void warn(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {
+        int alpha = Math.round(120 + 100 * Mth.sin(Util.getMillis() / 200.0F));
+        int colour = alpha << 24 | 0xE0503C;
+        graphics.fill(x - 1, y - 1, x + w + 1, y, colour);
+        graphics.fill(x - 1, y + h, x + w + 1, y + h + 1, colour);
+        graphics.fill(x - 1, y, x, y + h, colour);
+        graphics.fill(x + w, y, x + w + 1, y + h, colour);
+    }
+
     /** A brass arrow pointing right, filled from the left by {@code progress} (0-1). */
     protected static void arrow(GuiGraphicsExtractor graphics, int x, int y, int length, float progress) {
         int done = Math.round(length * Mth.clamp(progress, 0, 1));
