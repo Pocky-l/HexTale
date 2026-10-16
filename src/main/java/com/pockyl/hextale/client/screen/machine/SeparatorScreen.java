@@ -82,6 +82,11 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
                 }
                 case WASTE -> graphics.fill(at[0] + 2, at[1] + 4, at[0] + CELL - 2, at[1] + 6, 0xFFE9C66D);
                 default -> {
+                    // Closed: a small cross.
+                    for (int k = 2; k < CELL - 2; k++) {
+                        graphics.fill(at[0] + k, at[1] + k, at[0] + k + 1, at[1] + k + 1, 0xFF8A7A60);
+                        graphics.fill(at[0] + CELL - 1 - k, at[1] + k, at[0] + CELL - k, at[1] + k + 1, 0xFF8A7A60);
+                    }
                 }
             }
             if (over) {

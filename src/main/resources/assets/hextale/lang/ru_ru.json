@@ -426,7 +426,7 @@
   "gui.hextale.port.waste": "выход остатка",
   "gui.hextale.port.waste.hint": "Здесь выходит побочный продукт (ржавый, кран, стрелка наружу)",
   "gui.hextale.port.none": "закрыто",
-  "gui.hextale.port.none.hint": "",
+  "gui.hextale.port.none.hint": "Здесь ничего не входит и не выходит, труба не присоединяется",
   "gui.hextale.port.click": "Нажмите, чтобы сменить",
   "gui.hextale.separator.vent": "Газоотвод",
   "gui.hextale.separator.vent.hint": "Сверху выходит газ разделения",

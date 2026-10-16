@@ -638,6 +638,15 @@ public final class ResearchGameTests {
         helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.PRODUCT,
                 "the joint follows the face's new mode");
         helper.assertTrue(entity.receive(Direction.EAST, EssenceMix.pure(Essence.FIRE, 4), true) == 0, "an outlet takes nothing in");
+        // Rest out, then closed: the pipe lets go of it.
+        entity.cycle(SeparatorBlock.Side.LEFT);
+        entity.cycle(SeparatorBlock.Side.LEFT);
+        helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.NONE,
+                "a closed side shows no joint");
+        helper.assertFalse(helper.getBlockState(at.east()).getValue(BrassPipeBlock.SIDES.get(Direction.WEST)),
+                "and no pipe joins it");
+        entity.cycle(SeparatorBlock.Side.LEFT);
+        entity.cycle(SeparatorBlock.Side.LEFT);
         helper.setBlock(at.east(), Blocks.AIR);
         helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.PRODUCT,
                 "the joint keeps showing the mode without a pipe");

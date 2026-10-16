@@ -139,7 +139,8 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         return side == null ? PortMode.NONE : modes[side.ordinal()];
     }
 
-    /** The next mode for a side: inlet, concentrate out, rest out. The joint on the block follows. */
+    /** The next mode for a side: inlet, concentrate out, rest out, closed. The joint on the block and the pipes
+     * follow. */
     public void cycle(SeparatorBlock.Side side) {
         modes[side.ordinal()] = modes[side.ordinal()].next();
         if (level != null) {
@@ -411,7 +412,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         int[] saved = input.getIntArray("ports").orElse(new int[0]);
         PortMode[] defaults = defaultModes();
         for (int i = 0; i < modes.length; i++) {
-            modes[i] = i < saved.length && saved[i] > 0 && saved[i] < PortMode.values().length ? PortMode.values()[saved[i]] : defaults[i];
+            modes[i] = i < saved.length && saved[i] >= 0 && saved[i] < PortMode.values().length ? PortMode.values()[saved[i]] : defaults[i];
         }
         charge = input.getIntOr("charge", 0);
         chargeEssence = input.getIntOr("charge_element", -1);

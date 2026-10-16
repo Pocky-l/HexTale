@@ -426,7 +426,7 @@
   "gui.hextale.port.waste": "rest out",
   "gui.hextale.port.waste.hint": "The by-product leaves here (rust, stopcock, arrow out)",
   "gui.hextale.port.none": "closed",
-  "gui.hextale.port.none.hint": "",
+  "gui.hextale.port.none.hint": "Nothing goes in or out here; no pipe joins it",
   "gui.hextale.port.click": "Click to change",
   "gui.hextale.separator.vent": "Gas vent",
   "gui.hextale.separator.vent.hint": "The top lets out the gas of separation",

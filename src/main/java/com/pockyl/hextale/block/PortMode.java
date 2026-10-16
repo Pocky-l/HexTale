@@ -3,9 +3,9 @@ package com.pockyl.hextale.block;
 import net.minecraft.util.StringRepresentable;
 
 /**
- * What a Separator face does with a pipe: takes the mixture in, lets the wanted product (the concentrate) out, or the
- * by-product (the rest of the mixture). As a block state value it is what the face shows: {@link #NONE} without a
- * pipe, else the joint of its mode.
+ * What a Separator side does with a pipe: takes the mixture in, lets the wanted product (the concentrate) out, or the
+ * by-product (the rest of the mixture) - or nothing at all ({@link #NONE}: closed, no joint, no pipe joins it). As a
+ * block state value it is the joint the side shows.
  */
 public enum PortMode implements StringRepresentable {
     NONE("none"),
@@ -13,8 +13,8 @@ public enum PortMode implements StringRepresentable {
     PRODUCT("product"),
     WASTE("waste");
 
-    /** The modes a face cycles through in the Separator's screen. */
-    public static final PortMode[] CYCLE = {INLET, PRODUCT, WASTE};
+    /** The modes a side cycles through. */
+    public static final PortMode[] CYCLE = {INLET, PRODUCT, WASTE, NONE};
 
     private final String name;
 
@@ -23,7 +23,12 @@ public enum PortMode implements StringRepresentable {
     }
 
     public PortMode next() {
-        return this == INLET ? PRODUCT : this == PRODUCT ? WASTE : INLET;
+        return switch (this) {
+            case INLET -> PRODUCT;
+            case PRODUCT -> WASTE;
+            case WASTE -> NONE;
+            case NONE -> INLET;
+        };
     }
 
     @Override

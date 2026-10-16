@@ -106,10 +106,11 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
         }
     }
 
-    /** The four sides; what a side does is set in the separator's screen, or by sneak-using that side of the block. */
+    /** The four sides unless closed; what a side does is set in the separator's screen, or by sneak-using that side of
+     * the block. */
     @Override
     public boolean isPort(BlockState state, Direction face) {
-        return face.getAxis().isHorizontal();
+        return face.getAxis().isHorizontal() && state.getValue(LOOKS.get(face)) != PortMode.NONE;
     }
 
     /** The state with the look of {@code face} set to the face's mode. */
