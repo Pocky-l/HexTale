@@ -36,9 +36,16 @@ public class AlembicMenu extends MachineMenu {
         addSlot(new Slot(container, AlembicBlockEntity.INPUT, INPUT_X, INPUT_Y) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                // The client cannot see the researcher's knowledge: the server decides and corrects the slot.
-                return AlembicBlockEntity.accepts(AlembicBlockEntity.INPUT, stack)
-                        && (!(player instanceof ServerPlayer) || AlembicBlockEntity.studied(player, stack));
+                return AlembicBlockEntity.accepts(AlembicBlockEntity.INPUT, stack);
+            }
+
+            @Override
+            public void setByPlayer(ItemStack stack, ItemStack previous) {
+                super.setByPlayer(stack, previous);
+                // Unstudied items boil into unknown essence: the player who puts the item in is its boiler.
+                if (player instanceof ServerPlayer && container instanceof AlembicBlockEntity alembic && !stack.isEmpty()) {
+                    alembic.boiledBy(player);
+                }
             }
         });
         addSlot(new Slot(container, AlembicBlockEntity.FLASK_IN, FLASK_X, FLASK_IN_Y) {

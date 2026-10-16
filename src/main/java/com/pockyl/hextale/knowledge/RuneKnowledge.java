@@ -8,6 +8,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
+import com.pockyl.hextale.quest.Quest;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 
@@ -26,7 +27,8 @@ import java.util.Set;
  * lost diary loses nothing. The server copy is authoritative; clients get a copy through {@code KnowledgeSyncPayload}.
  * <p>
  * A rune is learned with 1-3 stars (the best sheet counts). Studied items show their elements, and the parchment of
- * each rune remembers the sections the ink has passed, so walls stay known from sheet to sheet.
+ * each rune remembers the sections the ink has passed, so walls stay known from sheet to sheet. Done quests of the
+ * researcher's path are kept by id.
  */
 public final class RuneKnowledge {
     private static final Codec<Map<String, Integer>> INT_MAP = Codec.unboundedMap(Codec.STRING, Codec.INT);
@@ -35,7 +37,8 @@ public final class RuneKnowledge {
             INT_MAP.optionalFieldOf("stars", Map.of()).forGetter(k -> k.starsByKey()),
             INT_MAP.optionalFieldOf("best", Map.of()).forGetter(k -> k.bestByKey()),
             BITS_MAP.optionalFieldOf("seen", Map.of()).forGetter(RuneKnowledge::seenByKey),
-            Codec.STRING.listOf().optionalFieldOf("studied", List.of()).forGetter(k -> List.copyOf(k.studied))
+            Codec.STRING.listOf().optionalFieldOf("studied", List.of()).forGetter(k -> List.copyOf(k.studied)),
+            Codec.STRING.listOf().optionalFieldOf("quests", List.of()).forGetter(k -> List.copyOf(k.quests))
     ).apply(instance, RuneKnowledge::new));
     public static final Codec<RuneKnowledge> CODEC = MAP_CODEC.codec();
 
@@ -49,6 +52,7 @@ public final class RuneKnowledge {
             INTS, RuneKnowledge::bestByKey,
             BITS, RuneKnowledge::seenByKey,
             STRINGS, k -> List.copyOf(k.studied),
+            STRINGS, k -> List.copyOf(k.quests),
             RuneKnowledge::new);
 
     /** Learned runes in the order of discovery, with their stars (1-3). */
@@ -57,6 +61,8 @@ public final class RuneKnowledge {
     private final Map<ComplexRune, Integer> best = new HashMap<>();
     /** Ids of items whose elements the researcher has studied at the table: their tooltips show the elements. */
     private final Set<String> studied = new LinkedHashSet<>();
+    /** Ids of the researcher's path quests that are done. */
+    private final Set<String> quests = new LinkedHashSet<>();
     /** Per rune: parchment sections the ink has passed. */
     private final Map<ComplexRune, BitSet> seen = new HashMap<>();
 
@@ -64,7 +70,7 @@ public final class RuneKnowledge {
     }
 
     private RuneKnowledge(Map<String, Integer> stars, Map<String, Integer> best,
-                          Map<String, List<Long>> seen, List<String> studied) {
+                          Map<String, List<Long>> seen, List<String> studied, List<String> quests) {
         stars.forEach((key, value) -> {
             ComplexRune rune = ComplexRunes.byKey(key);
             if (rune != null && value > 0) {
@@ -78,6 +84,7 @@ public final class RuneKnowledge {
             }
         });
         this.studied.addAll(studied);
+        this.quests.addAll(quests);
         seen.forEach((key, value) -> {
             ComplexRune rune = ComplexRunes.byKey(key);
             if (rune != null) {
@@ -171,6 +178,18 @@ public final class RuneKnowledge {
         return Collections.unmodifiableSet(studied);
     }
 
+    public boolean questDone(Quest quest) {
+        return quests.contains(quest.id());
+    }
+
+    public void completeQuest(Quest quest) {
+        quests.add(quest.id());
+    }
+
+    public void forgetQuests() {
+        quests.clear();
+    }
+
     /** Sections of this rune's parchment the ink has passed (a copy). */
     public BitSet seen(ComplexRune rune) {
         BitSet bits = seen.get(rune);
@@ -191,6 +210,6 @@ public final class RuneKnowledge {
     }
 
     public RuneKnowledge copy() {
-        return new RuneKnowledge(starsByKey(), bestByKey(), seenByKey(), List.copyOf(studied));
+        return new RuneKnowledge(starsByKey(), bestByKey(), seenByKey(), List.copyOf(studied), List.copyOf(quests));
     }
 }

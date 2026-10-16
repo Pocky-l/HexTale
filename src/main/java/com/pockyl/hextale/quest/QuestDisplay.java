@@ -1,0 +1,64 @@
+package com.pockyl.hextale.quest;
+
+import java.util.List;
+
+/**
+ * The picture on a quest's page in the research book: a crafting grid, a "this plus that" scheme, the nine essences or
+ * the separation reagents. Ingredients are item ids or {@code #tag} ids, {@code ""} is an empty cell. Crafting grids
+ * mirror the recipe JSON; {@code questRecipesMatchTheRecipes} keeps them honest.
+ */
+public record QuestDisplay(Kind kind, List<String> ingredients, String result, int count) {
+    public enum Kind {
+        /** A 3 x 3 crafting grid, row by row. */
+        SHAPED,
+        /** Ingredients in any order. */
+        SHAPELESS,
+        /** Ingredients side by side, then an arrow and the result: something that happens in the world. */
+        SCHEME,
+        /** The nine essences' signs. */
+        ESSENCES,
+        /** One reagent per essence. */
+        REAGENTS
+    }
+
+    /** Rows of up to three cells, spaces for empty cells, keys as in the recipe JSON. */
+    static QuestDisplay shaped(String result, int count, String[] rows, String... keys) {
+        String[] cells = new String[9];
+        for (int row = 0; row < 3; row++) {
+            for (int column = 0; column < 3; column++) {
+                char c = row < rows.length && column < rows[row].length() ? rows[row].charAt(column) : ' ';
+                cells[row * 3 + column] = c == ' ' ? "" : key(keys, c);
+            }
+        }
+        return new QuestDisplay(Kind.SHAPED, List.of(cells), result, count);
+    }
+
+    private static String key(String[] keys, char c) {
+        for (String key : keys) {
+            if (key.charAt(0) == c) {
+                return key.substring(2);
+            }
+        }
+        throw new IllegalArgumentException("No key " + c);
+    }
+
+    static QuestDisplay shapeless(String result, int count, String... ingredients) {
+        return new QuestDisplay(Kind.SHAPELESS, List.of(ingredients), result, count);
+    }
+
+    static QuestDisplay scheme(String result, String... ingredients) {
+        return new QuestDisplay(Kind.SCHEME, List.of(ingredients), result, 1);
+    }
+
+    static QuestDisplay essences() {
+        return new QuestDisplay(Kind.ESSENCES, List.of(), "", 0);
+    }
+
+    static QuestDisplay reagents() {
+        return new QuestDisplay(Kind.REAGENTS, List.of(), "", 0);
+    }
+
+    public boolean isRecipe() {
+        return kind == Kind.SHAPED || kind == Kind.SHAPELESS;
+    }
+}

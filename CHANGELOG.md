@@ -22,8 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ink: the desk holds nine vials, one per element; the part the current thread would spend shimmers in them.
 - Essence works: ink is made, not found, and carried in plain glass bottles. The nine signs - fire, water, earth, air,
   light, shadow, life, metal, lightning - are essences.
-  - The Alembic (set over fire, a lit campfire, lava or magma) boils studied items in water into essence - a mixture
-    of all their essences. Every item takes 250 mB of water: pour a bucket in, or pipe it from a Pump standing in water.
+  - The Alembic (set over fire, a lit campfire, lava or magma) boils items in water into essence - a mixture of all
+    their essences. An item the player who put it in has not studied boils into as much dark unknown essence instead. Every item takes 250 mB of water: pour a bucket in, or pipe it from a Pump standing in water.
     The flask shows the water, the bubbles and the item turning inside; the essence is bottled or leaves through the
     spout at the front.
   - The Separator splits a mixture in two with a reagent (charcoal - fire, sugar - water, clay - earth, feather - air,
@@ -42,6 +42,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Integrations: [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) shows boiling and separation, a bottle of each
   concentrate and an info page for every block of the essence works; [Jade](https://www.curseforge.com/minecraft/mc-mods/jade)
   shows what the tanks, separators, alembics, pumps and valves hold and do.
+- The Researcher's Path: the first page of the research book is a path of quests from the Research Table to the full
+  codex - brass, unstable hextech, the diary, studying items, essences, the essence works, ink and the rune chapters.
+  Click a quest to see its goal, its recipe and a short explanation; quests are done the moment their goal is met.
+  Bookmarks turn the book between the path and the star map.
 - The Researcher's Diary is a star book: a dark sky to drag around and zoom, where the 72 runes hang as stars in
   constellations - Smelting and the tool runes in the centre, the other runes on the rays of their elements. Click a
   star to see the rune; on the Research Table it goes to the parchment with one click.

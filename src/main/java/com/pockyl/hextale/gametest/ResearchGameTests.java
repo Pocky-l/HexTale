@@ -455,6 +455,10 @@ public final class ResearchGameTests {
         helper.setBlock(at, ModBlocks.ALEMBIC.get().defaultBlockState().setValue(AlembicBlock.LIT, true));
         AlembicBlockEntity alembic = helper.getBlockEntity(at, AlembicBlockEntity.class);
         alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.OAK_PLANKS));
+        ServerPlayer boiler = player(helper);
+        boiler.setGameMode(GameType.SURVIVAL);
+        Research.of(boiler).study(Identifier.withDefaultNamespace("oak_planks"));
+        alembic.boiledBy(boiler);
         alembic.setItem(AlembicBlockEntity.FLASK_IN, new ItemStack(Items.GLASS_BOTTLE, 2));
         alembic.fillWater(1000, false);
         EssenceMix expected = EssenceMix.boiled(ResearchItems.of(Items.OAK_PLANKS), AlembicBlockEntity.DROPS_PER_POINT);
@@ -463,6 +467,26 @@ public final class ResearchGameTests {
             helper.assertTrue(boiled.equals(expected), "oak planks boil into " + expected + ", got " + boiled);
             helper.assertTrue(alembic.getItem(AlembicBlockEntity.FLASK_IN).getCount() == 1, "one glass bottle was used");
             helper.assertTrue(alembic.water() == 1000 - AlembicBlockEntity.WATER_PER_ITEM, "and the item took its water");
+        });
+    }
+
+    /** An item its boiler has not studied gives only as much dark unknown essence. */
+    @HexTest(maxTicks = 300)
+    public static void anUnstudiedItemBoilsIntoUnknownEssence(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at.below(), Blocks.MAGMA_BLOCK);
+        helper.setBlock(at, ModBlocks.ALEMBIC.get().defaultBlockState().setValue(AlembicBlock.LIT, true));
+        AlembicBlockEntity alembic = helper.getBlockEntity(at, AlembicBlockEntity.class);
+        alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.OAK_PLANKS));
+        ServerPlayer stranger = player(helper);
+        stranger.setGameMode(GameType.SURVIVAL);
+        alembic.boiledBy(stranger);
+        alembic.setItem(AlembicBlockEntity.FLASK_IN, new ItemStack(Items.GLASS_BOTTLE));
+        alembic.fillWater(1000, false);
+        int total = EssenceMix.boiled(ResearchItems.of(Items.OAK_PLANKS), AlembicBlockEntity.DROPS_PER_POINT).total();
+        helper.succeedWhen(() -> {
+            EssenceMix boiled = EssenceFlaskItem.contents(alembic.getItem(AlembicBlockEntity.FLASK_OUT));
+            helper.assertTrue(boiled.equals(EssenceMix.unknown(total)), "unstudied oak planks boil into " + total + " mB of unknown essence, got " + boiled);
         });
     }
 

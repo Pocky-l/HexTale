@@ -50,8 +50,9 @@ import org.jspecify.annotations.Nullable;
  * comes in through pipes at the back and the sides (from a pump) or from a bucket; the essence goes into bottles and out
  * of the spout (the front) into a pipe.
  * <p>
- * Only items the researcher has studied go in: checked against the player at the screen, and against the alembic's
- * owner (who placed it) for hoppers, while the owner is online.
+ * Any item with essences goes in, but only an item its boiler has studied gives its essences: anything else boils
+ * into as much dark unknown essence. The boiler is the player who put the item in at the screen; for hoppers it is
+ * the alembic's owner (who placed it) while online, otherwise nobody.
  */
 public class AlembicBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.WaterReceiver {
     public static final int INPUT = 0;
@@ -74,6 +75,8 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
     private int water;
     @Nullable
     private UUID owner;
+    /** Whether whoever put the current input in has studied it. */
+    private boolean inputKnown;
     /** Client side: smooth boiling progress between syncs. */
     public float clientProgress;
 
@@ -151,6 +154,27 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return player.getAbilities().instabuild || Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(stack.getItem()));
     }
 
+    /** The player put the input in: it boils into its essences if they have studied it. */
+    public void boiledBy(Player player) {
+        inputKnown = studied(player, input());
+        setChanged();
+    }
+
+    /** Whether the current input boils into its own essences rather than unknown essence. */
+    public boolean inputKnown() {
+        return inputKnown;
+    }
+
+    /** A new kind of item arriving (by a hopper, say) is known only if the online owner has studied it. */
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        if (slot == INPUT && !stack.isEmpty() && !ItemStack.isSameItem(stack, items.get(INPUT))) {
+            ServerPlayer player = onlineOwner();
+            inputKnown = player != null && studied(player, stack);
+        }
+        super.setItem(slot, stack);
+    }
+
     @Nullable
     private ServerPlayer onlineOwner() {
         return owner == null || !(level instanceof ServerLevel serverLevel) ? null : serverLevel.getServer().getPlayerList().getPlayer(owner);
@@ -176,6 +200,9 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
             return had;
         }
         EssenceMix boiled = EssenceMix.boiled(elements, DROPS_PER_POINT);
+        if (!inputKnown) {
+            boiled = EssenceMix.unknown(boiled.total());
+        }
         if (tank.space() < boiled.total()) {
             return false;
         }
@@ -260,7 +287,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return 3;
     }
 
-    /** What each slot takes; studying is checked by the screen and for hoppers. */
+    /** What each slot takes; whether the input is known decides only what it boils into. */
     public static boolean accepts(int slot, ItemStack stack) {
         return switch (slot) {
             case INPUT -> ResearchItems.of(stack) != null && !EssenceFlaskItem.isFlask(stack);
@@ -281,14 +308,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction direction) {
-        if (!accepts(slot, stack)) {
-            return false;
-        }
-        if (slot != INPUT) {
-            return true;
-        }
-        ServerPlayer player = onlineOwner();
-        return player != null && studied(player, stack);
+        return accepts(slot, stack);
     }
 
     @Override
@@ -306,6 +326,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         water = input.getIntOr("water", 0);
         clientProgress = progress / (float) BOIL_TICKS;
         owner = input.read("owner", UUIDUtil.CODEC).orElse(null);
+        inputKnown = input.getBooleanOr("input_known", false);
     }
 
     @Override
@@ -315,6 +336,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         tank.save(output, "essence");
         output.putInt("progress", progress);
         output.putInt("water", water);
+        output.putBoolean("input_known", inputKnown);
         if (owner != null) {
             output.store("owner", UUIDUtil.CODEC, owner);
         }

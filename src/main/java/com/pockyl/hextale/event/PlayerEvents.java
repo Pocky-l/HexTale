@@ -9,10 +9,11 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.knowledge.Research;
+import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.RuneBoards;
 
-/** Keeps the client's copy of the knowledge current and notices the first orb in a player's hands. */
+/** Keeps the client's copy of the knowledge current and checks the researcher's path quests. */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class PlayerEvents {
     private PlayerEvents() {
@@ -22,6 +23,13 @@ public final class PlayerEvents {
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {
         RuneBoards.warmUp();
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
+        if (event.getEntity() instanceof ServerPlayer player && player.tickCount % Quests.CHECK_TICKS == 0) {
+            Quests.check(player);
+        }
     }
 
     @SubscribeEvent

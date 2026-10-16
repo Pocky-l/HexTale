@@ -28,7 +28,7 @@ import com.pockyl.hextale.rune.ComplexRunes;
 import java.util.List;
 import java.util.stream.Stream;
 
-/** {@code /hextale runes list|learn <rune|all> [stars]|forget <rune|all>}: test helpers for operators. */
+/** {@code /hextale runes list|learn <rune|all> [stars]|forget <rune|all>} and {@code /hextale quests reset}: test helpers for operators. */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class HextaleCommand {
     private static final String ALL = "all";
@@ -59,7 +59,10 @@ public final class HextaleCommand {
                                                         IntegerArgumentType.getInteger(context, "stars"))))))
                         .then(Commands.literal("forget")
                                 .then(Commands.argument("rune", StringArgumentType.word()).suggests(RUNES)
-                                        .executes(context -> forget(context.getSource(), StringArgumentType.getString(context, "rune")))))));
+                                        .executes(context -> forget(context.getSource(), StringArgumentType.getString(context, "rune"))))))
+                .then(Commands.literal("quests")
+                        .then(Commands.literal("reset")
+                                .executes(context -> resetQuests(context.getSource())))));
     }
 
     private static List<ComplexRune> runes(String key) throws CommandSyntaxException {
@@ -95,6 +98,15 @@ public final class HextaleCommand {
         source.sendSuccess(() -> Component.translatable("commands.hextale.runes.forgotten", removed, player.getDisplayName(),
                 Research.of(player).runeCount(), ComplexRunes.COUNT), true);
         return removed;
+    }
+
+    /** Forgets the done quests; those whose goal is still met come back at the next check. */
+    private static int resetQuests(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        Research.of(player).forgetQuests();
+        Research.sync(player);
+        source.sendSuccess(() -> Component.translatable("commands.hextale.quests.reset", player.getDisplayName()), true);
+        return 1;
     }
 
     /** The rune's name in its category colour; hovering shows its key and effect. */
