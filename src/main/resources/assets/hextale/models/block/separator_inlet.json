@@ -1,7 +1,7 @@
 {
   "textures": {
-    "particle": "hextale:block/brass_pipe",
-    "pipe": "hextale:block/brass_pipe"
+    "particle": "hextale:block/separator_ports",
+    "port": "hextale:block/separator_ports"
   },
   "elements": [
     {
@@ -17,53 +17,52 @@
         3
       ],
       "faces": {
-        "east": {
-          "texture": "#pipe",
+        "north": {
+          "texture": "#port",
           "uv": [
-            6,
             0,
-            9,
+            8,
+            4,
+            12
+          ],
+          "cullface": "north"
+        },
+        "east": {
+          "texture": "#port",
+          "uv": [
+            0,
+            0,
+            3,
             4
           ]
         },
         "west": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            6,
             0,
-            9,
+            0,
+            3,
             4
           ]
         },
         "up": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            6,
             0,
-            9,
-            4
-          ],
-          "rotation": 90
+            4,
+            4,
+            7
+          ]
         },
         "down": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            6,
             0,
-            9,
-            4
+            4,
+            4,
+            7
           ],
-          "rotation": 90
-        },
-        "north": {
-          "texture": "#pipe",
-          "uv": [
-            11,
-            1,
-            15,
-            5
-          ],
-          "cullface": "north"
+          "rotation": 180
         }
       }
     }

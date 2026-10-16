@@ -1,7 +1,7 @@
 {
   "textures": {
-    "particle": "hextale:block/brass_pipe",
-    "pipe": "hextale:block/brass_pipe"
+    "particle": "hextale:block/separator_ports",
+    "port": "hextale:block/separator_ports"
   },
   "elements": [
     {
@@ -18,42 +18,41 @@
       ],
       "faces": {
         "east": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            6,
+            5,
             0,
-            8,
+            7,
             4
           ]
         },
         "west": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            6,
+            5,
             0,
-            8,
+            7,
             4
           ]
         },
         "up": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            6,
-            0,
-            8,
-            4
-          ],
-          "rotation": 90
+            5,
+            4,
+            9,
+            6
+          ]
         },
         "down": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            6,
-            0,
-            8,
-            4
+            5,
+            4,
+            9,
+            6
           ],
-          "rotation": 90
+          "rotation": 180
         }
       }
     },
@@ -71,60 +70,60 @@
       ],
       "faces": {
         "north": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            10,
+            4,
             8,
-            16,
+            10,
             14
           ],
           "cullface": "north"
         },
         "south": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            10,
+            4,
             8,
-            16,
+            10,
             14
           ]
         },
         "east": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            0,
-            8,
-            6,
-            9
+            4,
+            15,
+            10,
+            16
           ],
           "rotation": 90
         },
         "west": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            0,
-            8,
-            6,
-            9
+            4,
+            15,
+            10,
+            16
           ],
           "rotation": 90
         },
         "up": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            0,
-            8,
-            6,
-            9
+            4,
+            15,
+            10,
+            16
           ]
         },
         "down": {
-          "texture": "#pipe",
+          "texture": "#port",
           "uv": [
-            0,
-            8,
-            6,
-            9
+            4,
+            15,
+            10,
+            16
           ]
         }
       }

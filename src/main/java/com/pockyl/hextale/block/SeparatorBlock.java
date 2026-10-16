@@ -44,8 +44,8 @@ import java.util.Map;
  */
 public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerHolder, EssenceMachine {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
-    /** What each side shows: nothing without a pipe, else the joint of the side's mode (see {@link PortMode}). The top
-     * is the gas vent and the bottom stands on the floor: no pipes there. */
+    /** What each side shows: the joint of the side's mode (see {@link PortMode}), pipe or not, so a change shows at
+     * once. The top is the gas vent and the bottom stands on the floor: no pipes there. */
     public static final Map<Direction, EnumProperty<PortMode>> LOOKS = looks();
 
     public SeparatorBlock(Properties properties) {
@@ -112,7 +112,7 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
         return face.getAxis().isHorizontal();
     }
 
-    /** The state with the look of {@code face} set for the neighbour there and the face's mode. */
+    /** The state with the look of {@code face} set to the face's mode. */
     public static BlockState withLook(BlockState state, Direction face, BlockState neighbour, BlockGetter level, BlockPos pos) {
         EnumProperty<PortMode> look = LOOKS.get(face);
         if (look == null) {
@@ -120,7 +120,7 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
         }
         Side side = Side.of(face, state.getValue(FACING));
         PortMode mode = level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator ? separator.mode(side) : side.defaultMode();
-        return state.setValue(look, neighbour.getBlock() instanceof BrassPipeBlock ? mode : PortMode.NONE);
+        return state.setValue(look, mode);
     }
 
     /** The state with every face's look set. */

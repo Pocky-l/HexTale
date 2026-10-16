@@ -639,8 +639,10 @@ public final class ResearchGameTests {
                 "the joint follows the face's new mode");
         helper.assertTrue(entity.receive(Direction.EAST, EssenceMix.pure(Essence.FIRE, 4), true) == 0, "an outlet takes nothing in");
         helper.setBlock(at.east(), Blocks.AIR);
-        helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.NONE,
-                "the joint goes without a pipe");
+        helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.PRODUCT,
+                "the joint keeps showing the mode without a pipe");
+        helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.WEST)) == PortMode.PRODUCT,
+                "the right side (west) is a concentrate outlet by default, pipe or not");
         helper.succeed();
     }
 

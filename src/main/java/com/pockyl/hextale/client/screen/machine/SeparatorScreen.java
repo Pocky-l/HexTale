@@ -109,9 +109,9 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
 
     private static int colour(PortMode mode) {
         return switch (mode) {
-            case INLET -> 0xFF6D7F8A;
+            case INLET -> 0xFF3E8A4E;
             case PRODUCT -> 0xFF1A557F;
-            case WASTE -> 0xFF7A4A2A;
+            case WASTE -> 0xFF9A4A22;
             default -> 0xFF2A1B0C;
         };
     }
