@@ -72,15 +72,6 @@
     },
     {
       "when": {
-        "up": "inlet"
-      },
-      "apply": {
-        "model": "hextale:block/separator_inlet",
-        "x": 270
-      }
-    },
-    {
-      "when": {
         "north": "product"
       },
       "apply": {
@@ -116,15 +107,6 @@
     },
     {
       "when": {
-        "up": "product"
-      },
-      "apply": {
-        "model": "hextale:block/separator_product",
-        "x": 270
-      }
-    },
-    {
-      "when": {
         "north": "waste"
       },
       "apply": {
@@ -156,15 +138,6 @@
       "apply": {
         "model": "hextale:block/separator_waste",
         "y": 270
-      }
-    },
-    {
-      "when": {
-        "up": "waste"
-      },
-      "apply": {
-        "model": "hextale:block/separator_waste",
-        "x": 270
       }
     }
   ]

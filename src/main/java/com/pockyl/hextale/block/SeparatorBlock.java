@@ -2,6 +2,9 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.WorldlyContainer;
@@ -32,6 +35,7 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import org.jspecify.annotations.Nullable;
 
 import java.util.EnumMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -40,7 +44,8 @@ import java.util.Map;
  */
 public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerHolder, EssenceMachine {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
-    /** What each face shows: nothing without a pipe, else the joint of the face's mode (see {@link PortMode}). */
+    /** What each side shows: nothing without a pipe, else the joint of the side's mode (see {@link PortMode}). The top
+     * is the gas vent and the bottom stands on the floor: no pipes there. */
     public static final Map<Direction, EnumProperty<PortMode>> LOOKS = looks();
 
     public SeparatorBlock(Properties properties) {
@@ -54,7 +59,7 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
 
     private static Map<Direction, EnumProperty<PortMode>> looks() {
         Map<Direction, EnumProperty<PortMode>> looks = new EnumMap<>(Direction.class);
-        for (Direction face : new Direction[]{Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP}) {
+        for (Direction face : Direction.Plane.HORIZONTAL) {
             looks.put(face, EnumProperty.create(face.getSerializedName(), PortMode.class));
         }
         return looks;
@@ -66,14 +71,18 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
         LOOKS.values().forEach(builder::add);
     }
 
-    /** The faces of a separator as seen by someone standing in front of it. */
+    /** The sides of a separator as seen by someone standing in front of it. */
     public enum Side {
-        FRONT, BACK, LEFT, RIGHT, TOP;
+        FRONT, BACK, LEFT, RIGHT;
 
-        /** The modes of a new separator: the mixture in at the back and the sides, the rest out at the front, the
-         * concentrate out at the top. */
+        /** The modes of a new separator: the mixture in at the back and the left, the concentrate out at the right, the
+         * rest out at the front. */
         public PortMode defaultMode() {
-            return this == FRONT ? PortMode.WASTE : this == TOP ? PortMode.PRODUCT : PortMode.INLET;
+            return switch (this) {
+                case FRONT -> PortMode.WASTE;
+                case RIGHT -> PortMode.PRODUCT;
+                default -> PortMode.INLET;
+            };
         }
 
         public Direction face(Direction facing) {
@@ -83,7 +92,6 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
                 // Standing in front and looking at the separator, its left is the viewer's left.
                 case LEFT -> facing.getClockWise();
                 case RIGHT -> facing.getCounterClockWise();
-                case TOP -> Direction.UP;
             };
         }
 
@@ -98,10 +106,10 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
         }
     }
 
-    /** Every face but the bottom; what a face does is set in the separator's screen. */
+    /** The four sides; what a side does is set in the separator's screen, or by sneak-using that side of the block. */
     @Override
     public boolean isPort(BlockState state, Direction face) {
-        return face != Direction.DOWN;
+        return face.getAxis().isHorizontal();
     }
 
     /** The state with the look of {@code face} set for the neighbour there and the face's mode. */
@@ -138,7 +146,16 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator) {
-            player.openMenu(separator, buf -> buf.writeBlockPos(pos));
+            Side side = Side.of(hitResult.getDirection(), state.getValue(FACING));
+            if (player.isShiftKeyDown() && side != null) {
+                // Sneak-using a side changes what its pipe does, right on the block.
+                separator.cycle(side);
+                player.sendOverlayMessage(Component.translatable("gui.hextale.separator.side." + side.name().toLowerCase(Locale.ROOT))
+                        .append(": ").append(Component.translatable("gui.hextale.port." + separator.mode(side).getSerializedName())));
+                level.playSound(null, pos, SoundEvents.COPPER_BULB_TURN_ON, SoundSource.BLOCKS, 0.6F, 1.2F);
+            } else {
+                player.openMenu(separator, buf -> buf.writeBlockPos(pos));
+            }
         }
         return InteractionResult.SUCCESS;
     }

@@ -414,12 +414,11 @@
   "gui.hextale.slot.separator.rest": "The bottled rest of the mixture comes out here",
   "gui.hextale.research_table.ink.no_storage": "No storage: place an Essence Tank of %s concentrate next to the table",
   "gui.hextale.separator.ports": "Pipes",
-  "gui.hextale.separator.ports.hint": "The separator seen from above, its front towards you. Click a face to choose what its pipe does.",
+  "gui.hextale.separator.ports.hint": "The separator seen from above, its front towards you. Click a side to choose what its pipe does - or sneak-use that side of the block.",
   "gui.hextale.separator.side.front": "Front",
   "gui.hextale.separator.side.back": "Back",
   "gui.hextale.separator.side.left": "Left",
   "gui.hextale.separator.side.right": "Right",
-  "gui.hextale.separator.side.top": "Top",
   "gui.hextale.port.inlet": "mixture in",
   "gui.hextale.port.inlet.hint": "A pipe here brings the mixture in",
   "gui.hextale.port.product": "concentrate out",
@@ -428,5 +427,7 @@
   "gui.hextale.port.waste.hint": "The by-product leaves here (stopcock)",
   "gui.hextale.port.none": "closed",
   "gui.hextale.port.none.hint": "",
-  "gui.hextale.port.click": "Click to change"
+  "gui.hextale.port.click": "Click to change",
+  "gui.hextale.separator.vent": "Gas vent",
+  "gui.hextale.separator.vent.hint": "The top lets out the gas of separation"
 }

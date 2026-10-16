@@ -414,12 +414,11 @@
   "gui.hextale.slot.separator.rest": "Сюда выходит пузырёк с остатком смеси",
   "gui.hextale.research_table.ink.no_storage": "Нет хранилища: поставьте рядом со столом бак эссенции с концентратом: %s",
   "gui.hextale.separator.ports": "Трубы",
-  "gui.hextale.separator.ports.hint": "Сепаратор сверху, лицом к вам. Нажмите на грань, чтобы выбрать, что делает её труба.",
+  "gui.hextale.separator.ports.hint": "Сепаратор сверху, лицом к вам. Нажмите на сторону, чтобы выбрать, что делает её труба, или нажмите по этой стороне блока с Shift.",
   "gui.hextale.separator.side.front": "Перед",
   "gui.hextale.separator.side.back": "Зад",
   "gui.hextale.separator.side.left": "Слева",
   "gui.hextale.separator.side.right": "Справа",
-  "gui.hextale.separator.side.top": "Верх",
   "gui.hextale.port.inlet": "вход смеси",
   "gui.hextale.port.inlet.hint": "Труба здесь подаёт смесь внутрь",
   "gui.hextale.port.product": "выход концентрата",
@@ -428,5 +427,7 @@
   "gui.hextale.port.waste.hint": "Здесь выходит побочный продукт (кран)",
   "gui.hextale.port.none": "закрыто",
   "gui.hextale.port.none.hint": "",
-  "gui.hextale.port.click": "Нажмите, чтобы сменить"
+  "gui.hextale.port.click": "Нажмите, чтобы сменить",
+  "gui.hextale.separator.vent": "Газоотвод",
+  "gui.hextale.separator.vent.hint": "Сверху выходит газ разделения"
 }

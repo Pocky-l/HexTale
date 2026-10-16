@@ -38,10 +38,11 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Separator splits a mixture in two. The mixture comes in (from a bottle, or through pipes at the back and the
  * sides) and is worked off {@value #STEP_DROPS} drops at a time: the drops of the reagent's element go into the
- * concentrate vessel, all the others into the rest vessel. Each face but the bottom has a mode set in the screen: the
+ * concentrate vessel, all the others into the rest vessel. Each side has a mode set in the screen or on the block: the
  * mixture comes in through inlets, the concentrate (the wanted product) and the rest (the by-product) leave through
- * their outlets; by default the rest leaves at the front and the concentrate at the top. Both can be bottled. Without a
- * reagent nothing is split. One reagent item binds {@value Reagents#BINDS} drops of its element.
+ * their outlets; by default the mixture comes in at the back and the left, the concentrate leaves at the right and the
+ * rest at the front. The top is the gas vent. Both products can be bottled. Without a reagent nothing is split. One
+ * reagent item binds {@value Reagents#BINDS} drops of its element.
  */
 public class SeparatorBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.Receiver {
     public static final int POUR = 0;
@@ -50,7 +51,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     public static final int REST_OUT = 3;
     public static final int EXTRACT_OUT = 4;
     public static final int CAPACITY = 64;
-    /** Synced numbers: charge, its element, step, then the five face modes. */
+    /** Synced numbers: charge, its element, step, then the four side modes. */
     public static final int DATA_COUNT = 3 + SeparatorBlock.Side.values().length;
     /** Ticks per separating step, and drops of the mixture worked off per step. */
     public static final int STEP_TICKS = 10;
@@ -137,7 +138,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         return side == null ? PortMode.NONE : modes[side.ordinal()];
     }
 
-    /** The next mode for a face: inlet, concentrate out, rest out. The joint on the block follows. */
+    /** The next mode for a side: inlet, concentrate out, rest out. The joint on the block follows. */
     public void cycle(SeparatorBlock.Side side) {
         modes[side.ordinal()] = modes[side.ordinal()].next();
         if (level != null) {

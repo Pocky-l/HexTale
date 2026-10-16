@@ -3,7 +3,8 @@
   "textures": {
     "particle": "hextale:block/brass",
     "brass": "hextale:block/brass",
-    "glass": "hextale:block/separator_glass"
+    "glass": "hextale:block/separator_glass",
+    "pipe": "hextale:block/brass_pipe"
   },
   "elements": [
     {
@@ -381,6 +382,131 @@
             14,
             10,
             15
+          ]
+        }
+      }
+    },
+    {
+      "name": "vent_stack",
+      "from": [
+        6,
+        13,
+        6
+      ],
+      "to": [
+        10,
+        15,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pipe",
+          "uv": [
+            6,
+            0,
+            8,
+            4
+          ],
+          "rotation": 90
+        },
+        "south": {
+          "texture": "#pipe",
+          "uv": [
+            6,
+            0,
+            8,
+            4
+          ],
+          "rotation": 90
+        },
+        "east": {
+          "texture": "#pipe",
+          "uv": [
+            6,
+            0,
+            8,
+            4
+          ],
+          "rotation": 90
+        },
+        "west": {
+          "texture": "#pipe",
+          "uv": [
+            6,
+            0,
+            8,
+            4
+          ],
+          "rotation": 90
+        }
+      }
+    },
+    {
+      "name": "vent_cap",
+      "from": [
+        5,
+        15,
+        5
+      ],
+      "to": [
+        11,
+        16,
+        11
+      ],
+      "faces": {
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            10,
+            0,
+            16,
+            6
+          ],
+          "cullface": "up"
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            10,
+            0,
+            16,
+            6
+          ]
+        },
+        "north": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            6,
+            6,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            6,
+            6,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            6,
+            6,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            6,
+            6,
+            7
           ]
         }
       }

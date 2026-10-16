@@ -54,7 +54,6 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
             case LEFT -> new int[]{cx - CELL - 1, cy};
             case RIGHT -> new int[]{cx + CELL + 1, cy};
             case FRONT -> new int[]{cx, cy + CELL + 1};
-            case TOP -> new int[]{cx, cy};
         };
     }
 
@@ -93,6 +92,16 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
                         Component.translatable("gui.hextale.port." + mode.getSerializedName() + ".hint").withStyle(ChatFormatting.GRAY),
                         Component.translatable("gui.hextale.port.click").withStyle(ChatFormatting.DARK_GRAY)));
             }
+        }
+        // The top: the gas vent, no pipe.
+        int vx = leftPos + PANEL_X + (PANEL_W - CELL) / 2;
+        int vy = topPos + PANEL_Y + 18;
+        graphics.fill(vx, vy, vx + CELL, vy + CELL, 0xFF4A3312);
+        graphics.fill(vx + 2, vy + 2, vx + CELL - 2, vy + CELL - 2, 0xFF8A9A7A);
+        graphics.fill(vx + 4, vy + 4, vx + CELL - 4, vy + CELL - 4, 0xFF15121A);
+        if (isOver(mouseX, mouseY, vx, vy, CELL, CELL)) {
+            tooltip(List.of(Component.translatable("gui.hextale.separator.vent"),
+                    Component.translatable("gui.hextale.separator.vent.hint").withStyle(ChatFormatting.GRAY)));
         }
         if (isOver(mouseX, mouseY, x, y, PANEL_W, 8)) {
             tooltip(List.of(Component.translatable("gui.hextale.separator.ports"),
