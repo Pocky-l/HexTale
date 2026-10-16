@@ -24,13 +24,12 @@ import org.jetbrains.annotations.Nullable;
 public class ResearchTableMenu extends AbstractContainerMenu {
     public static final int IMAGE_WIDTH = 468;
     public static final int IMAGE_HEIGHT = 262;
-    /** The materials row on the side panel: diary, orb, paper, then the inkwell and the item to study. */
+    /** The materials row on the side panel: diary, orb, paper, then the item to study. */
     public static final int ROW_Y = 116;
     public static final int DIARY_X = 258;
     public static final int HEXTECH_X = 278;
     public static final int PAPER_X = 298;
-    public static final int INK_X = 326;
-    public static final int STUDY_X = 354;
+    public static final int STUDY_X = 330;
     public static final int TOOLS_X = 258;
     public static final int TOOLS_Y = 138;
     public static final int TOOL_SPACING = 20;
@@ -64,7 +63,6 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         addSlot(new TableSlot(container, ResearchTableBlockEntity.DIARY, DIARY_X, ROW_Y));
         addSlot(new TableSlot(container, ResearchTableBlockEntity.HEXTECH, HEXTECH_X, ROW_Y));
         addSlot(new TableSlot(container, ResearchTableBlockEntity.PAPER, PAPER_X, ROW_Y));
-        addSlot(new TableSlot(container, ResearchTableBlockEntity.INK, INK_X, ROW_Y));
         addSlot(new TableSlot(container, ResearchTableBlockEntity.STUDY, STUDY_X, ROW_Y));
         addSlot(new TableSlot(container, ResearchTableBlockEntity.OUTPUT, OUTPUT_X, OUTPUT_Y));
         for (int i = 0; i < ResearchTableBlockEntity.STUDY - ResearchTableBlockEntity.TOOLS; i++) {
@@ -103,20 +101,12 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         slotsVisible = visible;
     }
 
-    /** The table on the server side: what it does when the researcher changes its inkwell or study slot. */
+    /** The table on the server side: an item put into the study slot starts its study for this researcher. */
     private void tableSlotChanged(int index) {
-        if (container instanceof ResearchTableBlockEntity table && player instanceof ServerPlayer researcher) {
-            if (index == ResearchTableBlockEntity.INK) {
-                table.dissolve(researcher);
-            } else if (index == ResearchTableBlockEntity.STUDY) {
-                table.studySlotChanged(researcher);
-            }
+        if (index == ResearchTableBlockEntity.STUDY && container instanceof ResearchTableBlockEntity table
+                && player instanceof ServerPlayer researcher) {
+            table.studySlotChanged(researcher);
         }
-    }
-
-    /** Called once the menu is open on the server: items left in the inkwell dissolve for this researcher. */
-    public void opened() {
-        tableSlotChanged(ResearchTableBlockEntity.INK);
     }
 
     @Override

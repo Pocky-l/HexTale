@@ -7,6 +7,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.block.AlembicBlockEntity;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
 
 public final class ModBlockEntities {
@@ -16,6 +17,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ResearchTableBlockEntity>> RESEARCH_TABLE =
             BLOCK_ENTITIES.register("research_table",
                     () -> new BlockEntityType<>(ResearchTableBlockEntity::new, ModBlocks.RESEARCH_TABLE.get()));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AlembicBlockEntity>> ALEMBIC =
+            BLOCK_ENTITIES.register("alembic", () -> new BlockEntityType<>(AlembicBlockEntity::new, ModBlocks.ALEMBIC.get()));
 
     private ModBlockEntities() {
     }

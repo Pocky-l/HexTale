@@ -19,6 +19,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.client.render.AlembicRenderer;
 import com.pockyl.hextale.client.render.ResearchTableRenderer;
 import com.pockyl.hextale.client.render.RuneScrollRenderer;
 import com.pockyl.hextale.client.render.TableModels;
@@ -67,5 +68,6 @@ public final class HextaleClient {
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.RESEARCH_TABLE.get(), ResearchTableRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ALEMBIC.get(), AlembicRenderer::new);
     }
 }

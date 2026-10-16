@@ -10,6 +10,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.block.AlembicBlock;
 import com.pockyl.hextale.block.ResearchTableBlock;
 
 public final class ModBlocks {
@@ -20,6 +21,10 @@ public final class ModBlocks {
                     .strength(2.5F).sound(SoundType.WOOD).noOcclusion().ignitedByLava()
                     .lightLevel(state -> state.getValue(ResearchTableBlock.LIT) ? ResearchTableBlock.LIGHT : 0)
                     .pushReaction(PushReaction.IMMOVEABLE));
+
+    public static final DeferredBlock<AlembicBlock> ALEMBIC = BLOCKS.registerBlock("alembic", AlembicBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(SoundType.COPPER).noOcclusion()
+                    .lightLevel(state -> state.getValue(AlembicBlock.LIT) ? 5 : 0));
 
     private ModBlocks() {
     }

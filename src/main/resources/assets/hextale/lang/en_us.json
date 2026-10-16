@@ -384,7 +384,9 @@
   "gui.hextale.research_table.choose": "Choose a rune in the book",
   "gui.hextale.research_table.ink": "%s ink",
   "gui.hextale.research_table.slot.paper": "Paper: every research starts on a fresh sheet",
-  "gui.hextale.research_table.slot.ink": "Inkwell: studied items dissolve into ink",
-  "gui.hextale.research_table.slot.ink.unstudied": "Not studied yet: put it into the study slot first",
-  "item.hextale.rune_scroll.too_early": "Too early: %s is not open to you in the research book yet."
+  "item.hextale.rune_scroll.too_early": "Too early: %s is not open to you in the research book yet.",
+  "block.hextale.alembic": "Alembic",
+  "block.hextale.alembic.unstudied": "%s is not studied yet: the alembic cannot distil it.",
+  "block.hextale.alembic.busy": "The flask already holds %s. Take it out with an empty hand.",
+  "gui.hextale.research_table.ink.hint": "An Alembic over a fire next to the table distils studied items into ink."
 }

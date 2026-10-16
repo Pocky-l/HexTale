@@ -240,8 +240,12 @@ final class BoardView {
 
         // The head of the thread, where it can go on, and what is under the mouse.
         int head = thread[thread.length - 1];
+        if (!done && ready) {
+            inkCompass(graphics, board, thread, head, now);
+        }
         if (!done && thread.length > 1) {
-            head(graphics, head, trace == null ? null : headColour(board, thread), now, drawing);
+            SimpleRune last = trace == null ? null : trace.paying()[thread.length - 1];
+            head(graphics, head, last, now, drawing);
         } else if (!done && ready && !drawing) {
             PixelArt.hexRing(graphics, ox, oy, CELL + 8 + 2 * Math.round(pulse * 2), argb(0xFFFFFF, 0.3F + 0.4F * pulse));
         }
@@ -285,15 +289,36 @@ final class BoardView {
         lastLit = lit;
     }
 
-    /** The element whose ink the thread runs on after its last section. */
-    static SimpleRune headColour(RuneBoard board, int[] thread) {
-        for (int i = thread.length - 1; i >= 1; i--) {
-            int point = board.pointAt(thread[i]);
-            if (point >= 0) {
-                return board.points().get(point).element();
+    /**
+     * Around the thread's end: a drop of colour towards every open neighbour, the ink a step that way would cost. They
+     * breathe one after another, like a compass needle settling.
+     */
+    private void inkCompass(GuiGraphicsExtractor graphics, RuneBoard board, int[] thread, int head, long now) {
+        int hx = sx(head);
+        int hy = sy(head);
+        int[] neighbours = HexGrid.neighbours(head);
+        for (int k = 0; k < neighbours.length; k++) {
+            int next = neighbours[k];
+            if (next == HexGrid.CENTRE || board.wall(next) && visible[next] || contains(thread, next)) {
+                continue;
+            }
+            SimpleRune ink = ResearchSheet.toward(head, next);
+            float breath = 0.6F + 0.4F * Mth.sin(now / 220.0F - k * 1.05F);
+            int x = hx + Math.round((sx(next) - hx) * 0.55F);
+            int y = hy + Math.round((sy(next) - hy) * 0.55F);
+            PixelArt.fill(graphics, x - 1, y - 2, x + 2, y + 3, argb(PixelArt.mix(ink.color(), 0x000000, 0.45F), breath));
+            PixelArt.fill(graphics, x - 2, y - 1, x + 3, y + 2, argb(PixelArt.mix(ink.color(), 0x000000, 0.45F), breath));
+            PixelArt.fill(graphics, x - 1, y - 1, x + 2, y + 2, argb(ink.color(), breath));
+        }
+    }
+
+    private static boolean contains(int[] cells, int cell) {
+        for (int c : cells) {
+            if (c == cell) {
+                return true;
             }
         }
-        return board.rune().action();
+        return false;
     }
 
     private void head(GuiGraphicsExtractor graphics, int cell, @Nullable SimpleRune colour, long now, boolean drawing) {

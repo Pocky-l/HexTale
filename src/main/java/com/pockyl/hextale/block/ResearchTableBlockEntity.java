@@ -81,16 +81,14 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     public static final int STUDY = 8;
     /** Paper: every finished research is written on one. */
     public static final int PAPER = 9;
-    /** The inkwell: studied items put here dissolve into the vials. */
-    public static final int INK = 10;
-    public static final int SLOTS = 11;
+    public static final int SLOTS = 10;
     /** Drops each vial holds. */
     public static final int INK_CAPACITY = 64;
 
     public static final int EVENT_FUSED = 1;
     public static final int EVENT_FIZZLE = 3;
 
-    private static final int[] SIDE_SLOTS = {HEXTECH, STUDY, PAPER, INK};
+    private static final int[] SIDE_SLOTS = {HEXTECH, STUDY, PAPER};
     private static final int[] BOTTOM_SLOTS = {OUTPUT};
     /** How long the orb keeps stirring after the last symbol. */
     private static final int DRAWING_TICKS = 30;
@@ -214,34 +212,16 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     /**
-     * Dissolves studied items from the inkwell slot into the vials, one by one while every element of the item still
-     * fits. Unstudied items stay in the slot: the researcher does not know what they would give.
+     * Ink poured in by an alembic: {@code drops} of the element with this ordinal, if the vial has room.
+     *
+     * @return whether it was taken
      */
-    public void dissolve(ServerPlayer player) {
-        ItemStack stack = items.get(INK);
-        ItemElements elements = ResearchItems.of(stack);
-        if (elements == null || !studied(player, stack.getItem())) {
-            return;
+    public boolean receiveInk(int element, int drops) {
+        if (ink[element] + drops > INK_CAPACITY) {
+            return false;
         }
-        int perPoint = ResearchTool.inkPerPoint(toolLevel(player, ResearchTool.MORTAR));
-        int dissolved = 0;
-        while (!stack.isEmpty() && fits(elements, perPoint)) {
-            elements.elements().forEach((element, strength) -> ink[element.ordinal()] += strength * perPoint);
-            stack.shrink(1);
-            dissolved++;
-        }
-        if (dissolved > 0) {
-            level.playSound(null, worldPosition, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 0.6F, 1.3F);
-            setChanged();
-        }
-    }
-
-    private boolean fits(ItemElements elements, int perPoint) {
-        for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
-            if (ink[entry.getKey().ordinal()] + entry.getValue() * perPoint > INK_CAPACITY) {
-                return false;
-            }
-        }
+        ink[element] += drops;
+        setChanged();
         return true;
     }
 
@@ -331,7 +311,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         message(player, Component.translatable("research.hextale.complete", name(rune), "★".repeat(stars) + "☆".repeat(3 - stars)),
                 ResearchMessagePayload.Tone.WIN);
         completeEffects(rune);
-        dissolve(player);
     }
 
     // ---- Studying an item -----------------------------------------------------------------------------------------
@@ -409,7 +388,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
                 Vec3 orb = orbPosition();
                 serverLevel.sendParticles(ParticleTypes.END_ROD, orb.x, orb.y, orb.z, 10, 0.15, 0.1, 0.15, 0.03);
             }
-            dissolve(player);
         } else if (study.lost(elements)) {
             message(player, Component.translatable("research.hextale.study.lost", ResearchText.item(item)), ResearchMessagePayload.Tone.BAD);
             fizzle();
@@ -549,7 +527,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return switch (slot) {
             case DIARY -> stack.is(ModItems.RESEARCHERS_DIARY.get());
             case HEXTECH -> stack.is(ModItems.UNSTABLE_HEXTECH.get());
-            case STUDY, INK -> ResearchItems.of(stack) != null;
+            case STUDY -> ResearchItems.of(stack) != null;
             case PAPER -> stack.is(Items.PAPER);
             default -> slot >= TOOLS && slot < STUDY && stack.is(ResearchTool.values()[slot - TOOLS].item());
         };

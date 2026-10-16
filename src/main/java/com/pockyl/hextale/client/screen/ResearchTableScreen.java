@@ -86,7 +86,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private static final int GHOST_PAPER = 1;
     private static final int GHOST_ORB = 2;
     private static final int GHOST_TOOLS = 5;
-    private static final int GHOST_INK = 10;
     private static final int GHOST_STUDY = 11;
 
     private enum Tab {
@@ -269,7 +268,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return false;
         }
         if (!creative() && !next.affordable(ink())) {
-            SimpleRune lacking = BoardView.headColour(current, thread);
+            SimpleRune lacking = ResearchSheet.toward(thread[thread.length - 1], cell);
             vialFlash[lacking.ordinal()] = Util.getMillis();
             refuse(cell, 0.8F);
             return false;
@@ -623,7 +622,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             if (isOver(mouseX, mouseY, x - 2, y - 2, VIAL_W + 4, VIAL_H + 16)) {
                 Component count = infinite ? Component.literal("∞") : Component.literal(ink[e] + "/" + ResearchTableBlockEntity.INK_CAPACITY);
                 pendingTooltip = List.of(Component.translatable(KEY + "ink", ResearchText.element(element)),
-                        count.copy().withStyle(ChatFormatting.GRAY));
+                        count.copy().withStyle(ChatFormatting.GRAY),
+                        Component.translatable(KEY + "ink.hint").withStyle(ChatFormatting.DARK_GRAY));
             }
         }
     }
@@ -633,7 +633,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         ghost(graphics, ResearchTableBlockEntity.DIARY, ResearchTableMenu.DIARY_X, ResearchTableMenu.ROW_Y, GHOST_DIARY);
         ghost(graphics, ResearchTableBlockEntity.HEXTECH, ResearchTableMenu.HEXTECH_X, ResearchTableMenu.ROW_Y, GHOST_ORB);
         ghost(graphics, ResearchTableBlockEntity.PAPER, ResearchTableMenu.PAPER_X, ResearchTableMenu.ROW_Y, GHOST_PAPER);
-        ghost(graphics, ResearchTableBlockEntity.INK, ResearchTableMenu.INK_X, ResearchTableMenu.ROW_Y, GHOST_INK);
         ghost(graphics, ResearchTableBlockEntity.STUDY, ResearchTableMenu.STUDY_X, ResearchTableMenu.ROW_Y, GHOST_STUDY);
         for (ResearchTool tool : ResearchTool.values()) {
             int x = ResearchTableMenu.TOOLS_X + tool.ordinal() * ResearchTableMenu.TOOL_SPACING;
@@ -651,10 +650,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 case PAPER -> ResearchTableMenu.PAPER_X;
             };
             highlight(graphics, leftPos + x, topPos + ResearchTableMenu.ROW_Y, 0xFFD36E, strong);
-        }
-        ItemStack inkwell = menu.table().getItem(ResearchTableBlockEntity.INK);
-        if (!inkwell.isEmpty() && !studied(inkwell.getItem())) {
-            highlight(graphics, leftPos + ResearchTableMenu.INK_X, topPos + ResearchTableMenu.ROW_Y, 0xE06A5A, 0);
         }
     }
 
@@ -715,10 +710,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             graphics.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
             return;
         }
-        if (index == ResearchTableBlockEntity.INK && slot.hasItem() && !studied(slot.getItem().getItem())) {
-            graphics.setTooltipForNextFrame(font, font.split(Component.translatable(KEY + "slot.ink.unstudied"), 180), mouseX, mouseY);
-            return;
-        }
         if (slot.hasItem()) {
             return;
         }
@@ -726,7 +717,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             case ResearchTableBlockEntity.DIARY -> "diary";
             case ResearchTableBlockEntity.HEXTECH -> "hextech";
             case ResearchTableBlockEntity.PAPER -> "paper";
-            case ResearchTableBlockEntity.INK -> "ink";
             case ResearchTableBlockEntity.STUDY -> "study";
             default -> "output";
         };

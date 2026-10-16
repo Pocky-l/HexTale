@@ -26,6 +26,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.block.AlembicBlock;
+import com.pockyl.hextale.block.AlembicBlockEntity;
 import com.pockyl.hextale.block.Requirement;
 import com.pockyl.hextale.block.ResearchTableBlock;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
@@ -164,20 +166,28 @@ public final class ResearchGameTests {
     }
 
     @HexTest
-    public static void pointsSwitchTheInk(GameTestHelper helper) {
+    public static void stepsPayTheInkOfTheirDirection(GameTestHelper helper) {
         RuneBoard board = RuneBoards.get(SMELTING);
         int[] thread = RuneBoards.plainThread(board);
         ResearchSheet.Trace trace = ResearchSheet.trace(board, thread, ResearchSheet.Allowance.NONE);
-        SimpleRune colour = SMELTING.action();
         int[] ink = new int[SimpleRune.values().length];
         for (int i = 1; i < thread.length; i++) {
-            helper.assertTrue(trace.paying()[i] == colour, "section " + i + " costs the ink the thread runs on");
+            SimpleRune colour = ResearchSheet.toward(thread[i - 1], thread[i]);
+            helper.assertTrue(trace.paying()[i] == colour, "section " + i + " costs the ink of its direction");
             ink[colour.ordinal()]++;
-            int point = board.pointAt(thread[i]);
-            if (point >= 0) {
-                colour = board.points().get(point).element();
+        }
+        java.util.Set<SimpleRune> fromCentre = java.util.EnumSet.noneOf(SimpleRune.class);
+        java.util.Set<SimpleRune> anywhere = java.util.EnumSet.noneOf(SimpleRune.class);
+        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+            for (int next : HexGrid.neighbours(cell)) {
+                anywhere.add(ResearchSheet.toward(cell, next));
+                if (cell == HexGrid.CENTRE) {
+                    fromCentre.add(ResearchSheet.toward(cell, next));
+                }
             }
         }
+        helper.assertTrue(fromCentre.size() == 6, "the six steps from the orb pay six different inks, got " + fromCentre);
+        helper.assertTrue(anywhere.size() == 9, "every ink is needed somewhere on the parchment");
         helper.assertTrue(Arrays.equals(ink, trace.ink()), "the ink needed is the sum of the sections");
         ResearchSheet.Trace stretched = ResearchSheet.trace(board, thread, ResearchTool.allowance(0, 0, 2));
         helper.assertTrue(Arrays.stream(stretched.ink()).sum() == thread.length - 1 - 8, "a two-star stretcher saves eight sections");
@@ -420,20 +430,42 @@ public final class ResearchGameTests {
 
     // ---- The table ------------------------------------------------------------------------------------------------
 
-    @HexTest
-    public static void studiedItemsDissolveIntoInk(GameTestHelper helper) {
+    @HexTest(maxTicks = 400)
+    public static void anAlembicDistilsInkIntoTheTable(GameTestHelper helper) {
         ServerPlayer player = survivalPlayer(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
-        table.setItem(ResearchTableBlockEntity.INK, new ItemStack(Items.COAL, 64));
-        table.dissolve(player);
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.INK).getCount() == 64, "unstudied coal stays in the inkwell");
+        BlockPos alembicPos = TABLE.south();
+        helper.setBlock(alembicPos.below(), Blocks.MAGMA_BLOCK);
+        helper.setBlock(alembicPos, ModBlocks.ALEMBIC.get().defaultBlockState().setValue(AlembicBlock.LIT, true));
+        AlembicBlockEntity alembic = helper.getBlockEntity(alembicPos, AlembicBlockEntity.class);
+        alembic.setOwner(player);
+        ItemStack coal = new ItemStack(Items.COAL, 3);
+        helper.assertFalse(alembic.insert(player, coal), "unstudied coal does not go in");
         Research.study(player, Items.COAL);
-        table.dissolve(player);
-        int fire = table.ink()[SimpleRune.FIRE.ordinal()];
-        helper.assertTrue(fire == ResearchTableBlockEntity.INK_CAPACITY, "coal fills the fire vial, got " + fire);
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.INK).getCount() == 64 - fire / 4, "two points of fire, two drops each");
-        player.discard();
-        helper.succeed();
+        helper.assertTrue(alembic.insert(player, coal) && coal.isEmpty(), "studied coal goes into the flask");
+        helper.assertTrue(alembic.table() == table, "the alembic pours into the table it touches");
+        helper.succeedWhen(() -> {
+            int fire = table.ink()[SimpleRune.FIRE.ordinal()];
+            helper.assertTrue(fire == 12, "three coal, two fire points, two drops each: 12 fire ink, got " + fire);
+            helper.assertTrue(alembic.input().isEmpty(), "the coal is used up");
+            player.discard();
+        });
+    }
+
+    @HexTest(maxTicks = 120)
+    public static void aColdAlembicDoesNothing(GameTestHelper helper) {
+        ServerPlayer player = survivalPlayer(helper);
+        Research.study(player, Items.COAL);
+        BlockPos alembicPos = new BlockPos(1, 1, 1);
+        helper.setBlock(alembicPos.below(), Blocks.STONE);
+        helper.setBlock(alembicPos, ModBlocks.ALEMBIC.get().defaultBlockState());
+        AlembicBlockEntity alembic = helper.getBlockEntity(alembicPos, AlembicBlockEntity.class);
+        alembic.insert(player, new ItemStack(Items.COAL, 2));
+        helper.runAfterDelay(100, () -> {
+            helper.assertTrue(alembic.input().getCount() == 2 && alembic.progress() == 0, "no heat, no distilling");
+            player.discard();
+            helper.succeed();
+        });
     }
 
     @HexTest

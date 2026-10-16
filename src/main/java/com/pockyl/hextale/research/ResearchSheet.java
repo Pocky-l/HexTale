@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Learning a rune: one ink thread drawn from the orb, section by section, through every point of the rune's parchment.
  * <p>
- * The thread starts on the ink of the rune's action element; every point it passes switches it to that point's element,
- * and each section costs one drop of the ink the thread runs on there. Dark runes block it and it never crosses itself
+ * Every step costs one drop of the ink of the element whose corner of the parchment it heads towards (see
+ * {@link #toward}), so the way the thread winds decides which inks it spends. Dark runes block it and it never crosses itself
  * (research tools allow a few exceptions, see {@link Allowance}). Winding the thread back is free: ink is only spent
  * when the last point is reached and the rune binds. Stars count the sections of the finished thread. A paper is spent
  * when an attempt starts (its first section); winding back does not return it.
@@ -81,7 +81,6 @@ public final class ResearchSheet {
         SimpleRune[] paying = new SimpleRune[thread.length];
         boolean[] used = new boolean[HexGrid.COUNT];
         used[HexGrid.CENTRE] = true;
-        SimpleRune colour = board.rune().action();
         int lit = 0;
         int crossings = 0;
         int passes = 0;
@@ -99,16 +98,39 @@ public final class ResearchSheet {
             }
             used[cell] = true;
             if (i > allowance.free()) {
+                SimpleRune colour = toward(thread[i - 1], cell);
                 ink[colour.ordinal()]++;
                 paying[i] = colour;
             }
             int point = board.pointAt(cell);
             if (point >= 0) {
                 lit |= 1 << point;
-                colour = board.points().get(point).element();
             }
         }
         return new Trace(ink, lit, crossings, passes, paying);
+    }
+
+    /**
+     * The element a step pays with: the one whose corner lies most nearly in the step's direction, seen from where the
+     * step starts. Near a corner its element covers a wide fan of directions; in the middle each direction has its own.
+     */
+    public static SimpleRune toward(int from, int to) {
+        double dx = HexGrid.cx(to) - HexGrid.cx(from);
+        double dy = HexGrid.cy(to) - HexGrid.cy(from);
+        double length = Math.hypot(dx, dy);
+        SimpleRune best = HexGrid.RING[0];
+        double bestCos = -2;
+        for (SimpleRune element : HexGrid.RING) {
+            double[] u = HexGrid.unit(element);
+            double cx = u[0] - HexGrid.cx(from);
+            double cy = u[1] - HexGrid.cy(from);
+            double cos = (dx * cx + dy * cy) / (length * Math.hypot(cx, cy));
+            if (cos > bestCos) {
+                bestCos = cos;
+                best = element;
+            }
+        }
+        return best;
     }
 
     @Nullable

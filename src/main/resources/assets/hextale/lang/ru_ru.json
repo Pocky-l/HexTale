@@ -384,7 +384,9 @@
   "gui.hextale.research_table.choose": "Выберите руну в книге",
   "gui.hextale.research_table.ink": "Чернила: %s",
   "gui.hextale.research_table.slot.paper": "Бумага: каждое исследование начинается на новом листе",
-  "gui.hextale.research_table.slot.ink": "Чернильница: изученные предметы растворяются в чернила",
-  "gui.hextale.research_table.slot.ink.unstudied": "Ещё не изучен: сначала положите его в слот изучения",
-  "item.hextale.rune_scroll.too_early": "Слишком рано: руна «%s» ещё не открыта вам в книге исследований."
+  "item.hextale.rune_scroll.too_early": "Слишком рано: руна «%s» ещё не открыта вам в книге исследований.",
+  "block.hextale.alembic": "Перегонный куб",
+  "block.hextale.alembic.unstudied": "Предмет «%s» ещё не изучен: перегонный куб не сможет его перегнать.",
+  "block.hextale.alembic.busy": "В колбе уже %s. Заберите это пустой рукой.",
+  "gui.hextale.research_table.ink.hint": "Перегонный куб над огнём рядом со столом перегоняет изученные предметы в чернила."
 }
