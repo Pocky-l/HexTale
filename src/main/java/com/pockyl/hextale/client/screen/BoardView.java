@@ -24,8 +24,8 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Draws the research parchment in pixel art, for both games: a rune's parchment (fog, dark runes, points and the ink
- * thread) and an item's echoes (the item in the centre, the nine element strings, the ripples of the strikes).
+ * Draws the research parchment in pixel art, for both games: a rune's parchment (fog, stone and dark fields with their
+ * curse counts and flags, points and the branching ink) and an item's echoes (the item in the centre, the nine element strings, the ripples of the strikes).
  * Sections are laid out {@value #COL_STEP} pixels apart in a row and {@value #ROW_STEP} between rows (the background
  * texture uses the same numbers, see the texture generator).
  */
@@ -41,6 +41,10 @@ final class BoardView {
     private static final double KY = ROW_STEP / (HexGrid.HS * 1.5);
     private static final int WALL = 0x241A2E;
     private static final int WALL_RIM = 0x4A3A66;
+    private static final int DARK = 0x1A1226;
+    private static final int DARK_RIM = 0x6A4A9A;
+    /** Colours of the curse counts 0..6, like a minesweeper's. */
+    private static final int[] DANGER = {0x8C7A60, 0x2A5FC0, 0x2E8A3A, 0xC03028, 0x6A2A9A, 0x8A2A1A, 0x1A6A7A};
     private static final int GOLD = 0xE0A21C;
     private static final int FREE_INK = 0x8FB4C8;
     private static final long FADE_MILLIS = 450;
@@ -142,12 +146,19 @@ final class BoardView {
     }
 
     /**
-     * @param trace   the thread checked against the rules (null only for an empty board)
-     * @param hovered the section under the mouse, or -1
-     * @param preview a section the thread would step into if clicked, or -1
+     * @param tree        the drawing, steps as {@code from, to} pairs
+     * @param trace       the drawing checked against the rules (null only for an empty board)
+     * @param hovered     the section under the mouse, or -1
+     * @param preview     a section a click would ink, or -1
+     * @param previewFrom the inked section that step would start from
+     * @param head        where the line being drawn ends
+     * @param known       sections inked in earlier attempts (their curse counts stay shown)
+     * @param curses      cursed sections found the hard way
+     * @param flags       the researcher's flags on dark sections
      */
-    void renderRune(GuiGraphicsExtractor graphics, Font font, RuneBoard board, int[] thread, ResearchSheet.@Nullable Trace trace,
-                    boolean done, boolean drawing, int hovered, int preview, boolean ready) {
+    void renderRune(GuiGraphicsExtractor graphics, Font font, RuneBoard board, int[] tree, ResearchSheet.@Nullable Trace trace,
+                    boolean done, boolean drawing, int hovered, int preview, int previewFrom, boolean ready, int head,
+                    BitSet known, BitSet curses, BitSet flags) {
         long now = Util.getMillis();
         float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
         int lit = trace == null ? 0 : trace.lit();
@@ -156,52 +167,70 @@ final class BoardView {
             bindStart = now;
         }
         lastDone = done;
+        int[] cells = ResearchSheet.cells(tree);
+        boolean[] inked = new boolean[HexGrid.COUNT];
+        for (int cell : cells) {
+            inked[cell] = true;
+        }
 
-        // Sections: fog, open parchment, dark runes.
+        // Sections: fog, open parchment, stone, dark fields.
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
             int x = sx(cell);
             int y = sy(cell);
             float fade = revealed[cell] == 0 ? 1 : Math.min(1, (now - revealed[cell]) / (float) FADE_MILLIS);
-            if (!visible[cell]) {
+            boolean field = board.dark(cell);
+            if (!visible[cell] && !field) {
                 fog(graphics, x, y, cell, now);
-            } else {
-                if (fade < 1) {
-                    fog(graphics, x, y, cell, now);
-                }
-                if (board.wall(cell)) {
-                    stone(graphics, x, y, cell, fade);
+                continue;
+            }
+            if (fade < 1 && !field) {
+                fog(graphics, x, y, cell, now);
+            }
+            if (board.wall(cell)) {
+                stone(graphics, x, y, cell, fade);
+            } else if (field) {
+                if (curses.get(cell)) {
+                    curse(graphics, x, y, now);
+                } else if (inked[cell] || known.get(cell)) {
+                    PixelArt.hex(graphics, x, y, CELL, argb(0x6A5A86, 0.55F), argb(DARK_RIM, 0.9F));
                 } else {
-                    Essence near = nearestCorner(cell);
-                    int tint = near == null ? 0xFFF8E8 : PixelArt.mix(0xFFF8E8, near.color(), 0.22F);
-                    PixelArt.hex(graphics, x, y, CELL, argb(tint, 0.22F * fade), argb(0x8C7047, 0.28F * fade));
+                    darkField(graphics, x, y, cell, now);
+                    if (flags.get(cell)) {
+                        flag(graphics, x, y);
+                    }
                 }
+            } else {
+                Essence near = nearestCorner(cell);
+                int tint = near == null ? 0xFFF8E8 : PixelArt.mix(0xFFF8E8, near.color(), 0.22F);
+                PixelArt.hex(graphics, x, y, CELL, argb(tint, 0.22F * fade), argb(0x8C7047, 0.28F * fade));
             }
         }
 
-        // The thread: each section in the colour of the ink it costs, a glow running along it.
-        int bound = done ? (int) Math.min(thread.length, (now - bindStart) / (float) BIND_MILLIS * thread.length * 1.5F) : 0;
-        for (int i = 1; i < thread.length; i++) {
-            Essence paying = trace == null ? null : trace.paying()[i];
+        // The ink: each step in the colour of the ink it costs, a glow running along the branches.
+        int steps = tree.length / 2;
+        int bound = done ? (int) Math.min(steps, (now - bindStart) / (float) BIND_MILLIS * steps * 1.5F) : 0;
+        for (int i = 0; i < steps; i++) {
+            Essence paying = trace == null || i >= trace.paying().length ? null : trace.paying()[i];
             int rgb = paying == null ? FREE_INK : PixelArt.onParchment(paying.color());
-            if (done && i <= bound) {
+            if (done && i < bound) {
                 rgb = PixelArt.mix(rgb, GOLD, 0.65F);
             }
-            threadSegment(graphics, thread[i - 1], thread[i], rgb, board.wall(thread[i]));
+            threadSegment(graphics, tree[2 * i], tree[2 * i + 1], rgb, board.dark(tree[2 * i + 1]));
         }
-        if (thread.length > 1) {
-            int step = Math.max(6, thread.length / 4);
+        if (steps > 0) {
+            int every = Math.max(4, steps / 5);
             float flow = now / 140.0F;
-            for (int k = 0; k < thread.length; k += step) {
-                float at = (k + flow) % (thread.length - 1);
-                int i = (int) at;
-                float t = at - i;
-                int x = Math.round(sx(thread[i]) + (sx(thread[i + 1]) - sx(thread[i])) * t);
-                int y = Math.round(sy(thread[i]) + (sy(thread[i + 1]) - sy(thread[i])) * t);
+            for (int i = 0; i < steps; i += every) {
+                float t = (flow + i * 0.37F) % 1;
+                int from = tree[2 * i];
+                int to = tree[2 * i + 1];
+                int x = Math.round(sx(from) + (sx(to) - sx(from)) * t);
+                int y = Math.round(sy(from) + (sy(to) - sy(from)) * t);
                 PixelArt.fill(graphics, x, y, x + 2, y + 2, argb(done ? 0xFFF3C0 : 0xFFFFFF, 0.75F));
             }
         }
 
-        // Points: waiting ones breathe, passed ones shine in their element.
+        // Points: waiting ones breathe, reached ones shine in their element.
         for (int i = 0; i < board.points().size(); i++) {
             RuneBoard.Point p = board.points().get(i);
             int x = sx(p.cell());
@@ -223,7 +252,7 @@ final class BoardView {
             }
         }
 
-        // The orb, ringed with the ink the thread starts on.
+        // The orb, ringed with the rune's action ink.
         int ox = sx(HexGrid.CENTRE);
         int oy = sy(HexGrid.CENTRE);
         int action = board.rune().action().color();
@@ -234,23 +263,40 @@ final class BoardView {
             graphics.item(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), ox - 8, oy - 8);
         }
 
-        // The head of the thread, where it can go on, and what is under the mouse.
-        int head = thread[thread.length - 1];
-        if (!done && ready) {
-            inkCompass(graphics, board, thread, head, now);
+        // Curse counts: every inked (or once inked) section next to a dark field tells how many curses touch it.
+        PixelArt.flush(graphics);
+        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+            if ((inked[cell] || known.get(cell)) && cell != HexGrid.CENTRE && board.pointAt(cell) < 0 && board.nearDark(cell)
+                    && !board.cursed(cell)) {
+                int danger = board.danger(cell);
+                String text = String.valueOf(danger);
+                int x = sx(cell) - font.width(text) / 2 + 1;
+                int y = sy(cell) - 3;
+                graphics.text(font, text, x, y, 0xFF000000 | DANGER[Math.min(danger, DANGER.length - 1)], true);
+            }
         }
-        if (!done && thread.length > 1) {
-            Essence last = trace == null ? null : trace.paying()[thread.length - 1];
+
+        // The head of the line being drawn, where it can go on, and what is under the mouse.
+        if (!done && ready) {
+            inkCompass(graphics, board, inked, head, now);
+        }
+        if (!done && tree.length > 0 && head != HexGrid.CENTRE) {
+            Essence last = null;
+            for (int i = 0; i < steps && trace != null && i < trace.paying().length; i++) {
+                if (tree[2 * i + 1] == head) {
+                    last = trace.paying()[i];
+                }
+            }
             head(graphics, head, last, now, drawing);
         } else if (!done && ready && !drawing) {
             PixelArt.hexRing(graphics, ox, oy, CELL + 8 + 2 * Math.round(pulse * 2), argb(0xFFFFFF, 0.3F + 0.4F * pulse));
         }
-        if (preview >= 0) {
-            int[] h = screen(head);
+        if (preview >= 0 && previewFrom >= 0) {
+            int[] h = screen(previewFrom);
             int[] p = screen(preview);
             PixelArt.dotted(graphics, h[0], h[1], p[0], p[1], 2, 2, (int) (now / 90 % 4), argb(0x3B2A1A, 0.8F));
-            PixelArt.hexRing(graphics, p[0], p[1], CELL, argb(0xFFFFFF, 0.7F));
-        } else if (hovered >= 0 && !drawing && visible[hovered]) {
+            PixelArt.hexRing(graphics, p[0], p[1], CELL, argb(board.dark(preview) ? 0xE04A3A : 0xFFFFFF, 0.7F));
+        } else if (hovered >= 0 && !drawing && (visible[hovered] || board.dark(hovered))) {
             PixelArt.hexRing(graphics, sx(hovered), sy(hovered), CELL, argb(0xFFFFFF, 0.35F));
         }
         if (shakeCell >= 0) {
@@ -273,6 +319,31 @@ final class BoardView {
         renderSigns(graphics);
     }
 
+    /** An unexplored dark field section: a dark ink blot whose sheen drifts. */
+    private static void darkField(GuiGraphicsExtractor graphics, int x, int y, int cell, long now) {
+        float drift = 0.5F + 0.5F * Mth.sin(now / 900.0F + cell * 0.61F);
+        PixelArt.hex(graphics, x, y, CELL, argb(DARK, 0.92F), argb(DARK_RIM, 1));
+        PixelArt.fill(graphics, x - 2, y - 3, x + 1, y - 2, argb(0x8C7AB8, 0.35F + 0.35F * drift));
+        PixelArt.fill(graphics, x + 1, y + 1, x + 3, y + 2, argb(0x8C7AB8, 0.2F + 0.2F * (1 - drift)));
+    }
+
+    /** A cursed section the orb burst on: scorched, with a red cross. */
+    private static void curse(GuiGraphicsExtractor graphics, int x, int y, long now) {
+        float glow = 0.6F + 0.4F * Mth.sin(now / 260.0F);
+        PixelArt.hex(graphics, x, y, CELL, argb(0x2A0A0A, 0.95F), argb(0xB0302A, glow));
+        int red = argb(0xE04A3A, 1);
+        PixelArt.line(graphics, x - 3, y - 3, x + 3, y + 3, red);
+        PixelArt.line(graphics, x - 3, y + 3, x + 3, y - 3, red);
+    }
+
+    /** The researcher's flag: a little red pennant on a pole. */
+    private static void flag(GuiGraphicsExtractor graphics, int x, int y) {
+        PixelArt.fill(graphics, x - 1, y - 4, x, y + 4, argb(0xE8DCC0, 1));
+        PixelArt.fill(graphics, x, y - 4, x + 4, y - 2, argb(0xE04A3A, 1));
+        PixelArt.fill(graphics, x, y - 2, x + 2, y - 1, argb(0xE04A3A, 1));
+        PixelArt.fill(graphics, x - 3, y + 4, x + 2, y + 5, argb(0xE8DCC0, 1));
+    }
+
     private void noticeLit(RuneBoard board, int lit, long now) {
         if (lastLit >= 0) {
             int added = lit & ~lastLit;
@@ -286,16 +357,16 @@ final class BoardView {
     }
 
     /**
-     * Around the thread's end: a drop of colour towards every open neighbour, the ink a step that way would cost. They
+     * Around the end of the line: a drop of colour towards every open neighbour, the ink a step that way would cost. They
      * breathe one after another, like a compass needle settling.
      */
-    private void inkCompass(GuiGraphicsExtractor graphics, RuneBoard board, int[] thread, int head, long now) {
+    private void inkCompass(GuiGraphicsExtractor graphics, RuneBoard board, boolean[] inked, int head, long now) {
         int hx = sx(head);
         int hy = sy(head);
         int[] neighbours = HexGrid.neighbours(head);
         for (int k = 0; k < neighbours.length; k++) {
             int next = neighbours[k];
-            if (next == HexGrid.CENTRE || board.wall(next) && visible[next] || contains(thread, next)) {
+            if (inked[next] || board.wall(next) && visible[next]) {
                 continue;
             }
             Essence ink = ResearchSheet.toward(head, next);

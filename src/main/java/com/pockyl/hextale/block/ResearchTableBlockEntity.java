@@ -60,6 +60,7 @@ import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -82,6 +83,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     public static final int EVENT_FUSED = 1;
     public static final int EVENT_FIZZLE = 3;
+    /** Health a burst orb takes from the researcher (two hearts). */
+    private static final float BURST_DAMAGE = 4.0F;
 
     private static final int[] SIDE_SLOTS = {HEXTECH, STUDY, PAPER};
     private static final int[] BOTTOM_SLOTS = {OUTPUT};
@@ -215,16 +218,17 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     /**
-     * The researcher's new thread. It is checked against the rules, the table and the ink in the tanks around; a thread through
-     * every point binds the rune at once.
+     * The researcher's new drawing (steps as {@code from, to} pairs). It is checked against the rules, the table and the ink
+     * in the tanks around; a drawing that reaches every point binds the rune at once, one that steps on a curse bursts
+     * the orb.
      */
     public void thread(ServerPlayer player, int[] cells) {
         RuneBoard board = board();
         if (board == null || studyingItem || Requirement.diary(this, player) != null) {
             return;
         }
-        if (cells.length <= 1) {
-            sheet.setThread(new int[]{HexGrid.CENTRE});
+        if (cells.length == 0) {
+            sheet.setTree(new int[0]);
             setChanged();
             return;
         }
@@ -236,8 +240,11 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             setChanged();
             return;
         }
-        boolean longer = cells.length > sheet.thread().length;
-        sheet.setThread(cells);
+        if (trace.burst() >= 0) {
+            cells = Arrays.copyOf(cells, trace.sections() * 2);
+        }
+        boolean longer = cells.length > sheet.tree().length;
+        sheet.setTree(cells);
         if (fresh) {
             // The attempt starts: it is written on a paper from the table.
             if (!creative) {
@@ -247,8 +254,10 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             level.playSound(null, worldPosition, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 1.0F);
         }
         ResearchersDiaryItem.sign(items.get(DIARY), player);
-        Research.of(player).see(board.rune(), cells);
-        if (trace.complete(board)) {
+        Research.of(player).see(board.rune(), ResearchSheet.cells(cells));
+        if (trace.burst() >= 0) {
+            burst(player, board, cells[cells.length - 1], trace);
+        } else if (trace.complete(board)) {
             complete(player, board, trace);
         } else if (longer) {
             markDrawing(player);
@@ -273,6 +282,32 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         message(player, Component.translatable("research.hextale.complete", name(rune), "★".repeat(stars) + "☆".repeat(3 - stars)),
                 ResearchMessagePayload.Tone.WIN);
         completeEffects(rune);
+    }
+
+    /**
+     * The ink stepped on a cursed dark rune: the orb bursts. The sheet burns with its paper, the ink drawn so far is spent,
+     * the researcher is hurt by the blast and remembers where the curse was.
+     */
+    private void burst(ServerPlayer player, RuneBoard board, int cell, ResearchSheet.Trace trace) {
+        boolean creative = player.getAbilities().instabuild;
+        if (!creative) {
+            inkSupply().spendSections(trace.ink());
+            items.get(HEXTECH).shrink(1);
+            player.hurtServer((ServerLevel) level, level.damageSources().magic(), BURST_DAMAGE);
+        }
+        Research.of(player).curse(board.rune(), cell);
+        sheet.burn();
+        Research.sync(player);
+        message(player, Component.translatable("research.hextale.burst", name(board.rune())), ResearchMessagePayload.Tone.BAD);
+        if (level instanceof ServerLevel serverLevel) {
+            Vec3 orb = orbPosition();
+            serverLevel.sendParticles(ParticleTypes.EXPLOSION, orb.x, orb.y, orb.z, 1, 0, 0, 0, 0);
+            serverLevel.sendParticles(ParticleTypes.SQUID_INK, orb.x, orb.y, orb.z, 24, 0.25, 0.15, 0.25, 0.08);
+            serverLevel.sendParticles(ParticleTypes.ELECTRIC_SPARK, orb.x, orb.y, orb.z, 20, 0.2, 0.2, 0.2, 0.4);
+            level.playSound(null, worldPosition, ModSounds.ORB_CRACK.get(), SoundSource.BLOCKS, 1.0F, 0.7F);
+            level.playSound(null, worldPosition, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 0.5F, 1.4F);
+            level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_FIZZLE, 0);
+        }
     }
 
     // ---- Studying an item -----------------------------------------------------------------------------------------

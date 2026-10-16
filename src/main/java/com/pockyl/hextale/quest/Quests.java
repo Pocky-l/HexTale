@@ -2,8 +2,8 @@ package com.pockyl.hextale.quest;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.Item;
 
@@ -16,6 +16,7 @@ import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.menu.SeparatorMenu;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.Arrays;
@@ -46,7 +47,9 @@ public final class Quests {
             }
         }
         if (changed) {
-            player.level().playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 1.3F);
+            // Only the researcher hears their path.
+            player.connection.send(new ClientboundSoundPacket(ModSounds.QUEST_COMPLETE, SoundSource.PLAYERS, player.getX(), player.getY(),
+                    player.getZ(), 0.8F, 1.0F, player.getRandom().nextLong()));
             Research.sync(player);
         }
     }

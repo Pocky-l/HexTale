@@ -586,7 +586,8 @@ public final class StarBook {
         if (bookmark != null) {
             if (bookmark != page) {
                 turnTo(bookmark);
-                sound(bookmark == Page.STARS ? 1.2F : 1.0F);
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN,
+                        bookmark == Page.STARS ? 1.1F : 0.95F, 0.8F));
             }
             return true;
         }

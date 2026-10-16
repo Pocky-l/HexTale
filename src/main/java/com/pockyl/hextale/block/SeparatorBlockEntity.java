@@ -24,13 +24,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.essence.Reagents;
 import com.pockyl.hextale.menu.SeparatorMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
 
 import org.jspecify.annotations.Nullable;
@@ -268,7 +269,11 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         // What is left goes on as the rest, and drawing an essence out leaves a dark unknown essence on top of it.
         EssenceMix left = portion.minus(EssenceMix.pure(element, drawn));
         rest.fill(drawn > 0 ? left.plus(EssenceMix.unknown(UNKNOWN_PER_STEP)) : left, false);
-        level.playSound(null, worldPosition, SoundEvents.BUBBLE_COLUMN_BUBBLE_POP, SoundSource.BLOCKS, 0.5F, 1.2F);
+        if (drawn > 0) {
+            level.playSound(null, worldPosition, ModSounds.SEPARATOR_DRIP.get(), SoundSource.BLOCKS, 0.5F, 0.85F + level.getRandom().nextFloat() * 0.3F);
+        } else {
+            level.playSound(null, worldPosition, SoundEvents.BUBBLE_COLUMN_BUBBLE_POP, SoundSource.BLOCKS, 0.5F, 1.2F);
+        }
         return true;
     }
 

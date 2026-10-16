@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 import com.pockyl.hextale.Hextale;
@@ -32,8 +33,9 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
     private static final float TOP = 13.9F / 16;
 
     private static final Identifier LABELS = Hextale.id("textures/block/essence_labels.png");
-    /** A sticker is 11 x 11 pixels; in the sheet one per 16 pixels along a 256 x 16 texture. */
-    private static final float LABEL_HALF = 5.5F / 16;
+    /** A sticker is a 9 x 9 pixel enamel plate, one texel per pixel; in the sheet one per 16 pixels of a 256 x 16 texture. */
+    private static final int LABEL = 9;
+    private static final float LABEL_HALF = LABEL / 2F / 16;
     /** Side stickers lie 0.6 px in front of the glass (glass 1 px inside the block), top ones 0.3 px above the cap. */
     private static final float SIDE_INSET = 0.4F / 16;
     private static final float TOP_LIFT = 0.3F / 16;
@@ -41,6 +43,8 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
     public static final class State extends BlockEntityRenderState {
         float fill;
         int color;
+        float time;
+        long seed;
         final @Nullable Essence[] labels = new Essence[Direction.values().length];
     }
 
@@ -59,6 +63,8 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
         EssenceTank tank = tankEntity.tank();
         state.fill = tank.isEmpty() ? 0 : tank.amount() / (float) tank.capacity();
         state.color = tank.isEmpty() ? 0 : tank.contents().color();
+        state.time = tankEntity.getLevel() == null ? 0 : tankEntity.getLevel().getGameTime() + partialTick;
+        state.seed = tankEntity.getBlockPos().asLong();
         for (Direction face : Direction.values()) {
             state.labels[face.get3DDataValue()] = tankEntity.label(face);
         }
@@ -67,8 +73,11 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         if (state.fill > 0) {
-            float top = BOTTOM + (TOP - BOTTOM) * Math.min(1, state.fill);
-            LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, BOTTOM, top, RuneDrawing.argb(state.color, 0.55F));
+            // The surface breathes a little, unless the tank is brim-full.
+            float wave = state.fill < 0.98F ? Mth.sin(state.time * 0.08F + state.seed % 7) * 0.12F / 16 : 0;
+            float top = Math.min(TOP, BOTTOM + (TOP - BOTTOM) * Math.min(1, state.fill) + wave);
+            LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, BOTTOM, top, RuneDrawing.argb(state.color, 0.82F),
+                    state.time, state.seed, 3);
         }
         boolean any = false;
         for (Essence label : state.labels) {
@@ -104,9 +113,9 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
         float cz = 0.5F + nz * out;
         float h = LABEL_HALF;
         float u0 = essence.ordinal() * 16 / 256F;
-        float u1 = (essence.ordinal() * 16 + 11) / 256F;
+        float u1 = (essence.ordinal() * 16 + LABEL) / 256F;
         float v0 = 0;
-        float v1 = 11 / 16F;
+        float v1 = LABEL / 16F;
         float[][] corners = {
                 {cx - rx * h - up[0] * h, cy - ry * h - up[1] * h, cz - rz * h - up[2] * h, u0, v1},
                 {cx + rx * h - up[0] * h, cy + ry * h - up[1] * h, cz + rz * h - up[2] * h, u1, v1},

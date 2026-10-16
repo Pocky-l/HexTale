@@ -30,6 +30,8 @@ public class SeparatorRenderer implements BlockEntityRenderer<SeparatorBlockEnti
         float extract;
         int mixColor;
         int extractColor;
+        float time;
+        long seed;
     }
 
     public SeparatorRenderer(BlockEntityRendererProvider.Context context) {
@@ -52,6 +54,8 @@ public class SeparatorRenderer implements BlockEntityRenderer<SeparatorBlockEnti
         state.extract = extract.isEmpty() ? 0 : extract.amount() / room;
         state.mixColor = !mix.isEmpty() ? mix.contents().color() : rest.isEmpty() ? 0 : rest.contents().color();
         state.extractColor = extract.isEmpty() ? 0 : extract.contents().color();
+        state.time = separator.getLevel() == null ? 0 : separator.getLevel().getGameTime() + partialTick;
+        state.seed = separator.getBlockPos().asLong();
     }
 
     @Override
@@ -60,11 +64,11 @@ public class SeparatorRenderer implements BlockEntityRenderer<SeparatorBlockEnti
         float mixTop = BOTTOM + height * Math.min(1, state.mix);
         float extractTop = Math.min(TOP, mixTop + height * state.extract);
         if (state.mix > 0) {
-            LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, BOTTOM, mixTop, RuneDrawing.argb(state.mixColor, 0.5F));
+            LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, BOTTOM, mixTop, RuneDrawing.argb(state.mixColor, 0.78F), state.time, state.seed, 2);
         }
         if (state.extract > 0) {
             // A hair above the mixture's surface, so the two layers never share a plane.
-            LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, mixTop + 0.1F / 16, extractTop, RuneDrawing.argb(state.extractColor, 0.7F));
+            LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, mixTop + 0.1F / 16, extractTop, RuneDrawing.argb(state.extractColor, 0.85F));
         }
     }
 }

@@ -12,11 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   inside spinning gimbal rings with motes circling it; while someone writes, glyphs stream from the parchment into the
   orb, and a freshly learned rune rises over the desk as a glowing hieroglyph. The desk glows faintly while an orb lies on it.
 - Rune research: choose one of 72 runes in the star book, then draw it on a nine-cornered parchment of hexagonal
-  sections: hold the mouse on the hextech orb and drag an ink thread through every point of the rune. Every step costs
-  a drop of the ink of the element whose corner of the parchment it heads towards; drops of colour around the thread's
-  end show what each direction costs. Dark runes block it, it never crosses itself, and fog lifts only around the thread. Drag back to
-  wind it up for free - ink is spent only when the last point binds the rune. A finished thread writes the rune's
-  scroll into the output slot; shorter threads write scrolls with up to three stars.
+  sections: drag ink with the mouse from the hextech orb to every point of the rune. The ink branches: a new line may
+  start at the orb or at any section already inked. Every step costs ink of the essence whose corner of the parchment
+  it heads towards, a step onto a point ten times as much; drops of colour around the line's end show what each
+  direction costs. Right click takes a step back for free - ink is spent only when the last point binds the rune. A
+  finished drawing writes the rune's scroll into the output slot; shorter drawings write scrolls with up to three stars.
+- Dark runes: in chapter I they are stone the ink cannot pass. From chapter II on they are dark fields the ink may
+  cross, but some of their sections are cursed - like a minesweeper, every inked section next to them shows how many
+  curses touch it, and dark sections can be flagged with a right click. Stepping on a curse bursts the orb: the sheet
+  burns, the ink drawn so far is spent and the blast hurts; the curse is remembered for the next attempt. Chapter III
+  hides points inside rings of dark runes.
 - Runes are learned by studying their scrolls: the knowledge stays with the researcher, with the scroll's stars. A
   scroll of a rune that is not open to you in the research book yet cannot be studied.
 - Ink: the desk holds nine vials, one per element; the part the current thread would spend shimmers in them.
@@ -45,6 +50,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Essence Tank labels: sneak-use a side of a tank with an empty hand to stick a paper label with an essence's sign on it;
   every click shows the next essence, then none. Only a sign for the player.
 - Every essence has its own picture: a flame, a drop, a mountain, wind, the sun, a crescent, a sprout, a gear and a bolt.
+- Liquid essence in tanks, alembics and separators swirls with an animated texture, glows brighter at its surface,
+  darkens in the depths and bubbles; a tank's surface sways a little.
+- Sounds: the alembic bubbles while it boils, the separator drips, the pump strokes, the drain valve's handwheel
+  turns, tanks glug when bottles are poured, ink drips on the parchment with every step and a chime marks a quest done.
 - Every research takes a paper from the table's paper slot when it starts.
 - Integrations: [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) shows boiling and separation, a bottle of each
   concentrate and an info page for every block of the essence works; [Jade](https://www.curseforge.com/minecraft/mc-mods/jade)

@@ -58,5 +58,115 @@
         "attenuation_distance": 32
       }
     ]
+  },
+  "alembic.bubble": {
+    "subtitle": "subtitles.hextale.alembic.bubble",
+    "sounds": [
+      {
+        "name": "hextale:alembic_bubble1",
+        "volume": 0.45
+      },
+      {
+        "name": "hextale:alembic_bubble2",
+        "volume": 0.45
+      },
+      {
+        "name": "hextale:alembic_bubble3",
+        "volume": 0.45
+      },
+      {
+        "name": "hextale:alembic_bubble4",
+        "volume": 0.45
+      },
+      {
+        "name": "hextale:alembic_bubble5",
+        "volume": 0.45
+      }
+    ]
+  },
+  "separator.drip": {
+    "subtitle": "subtitles.hextale.separator.drip",
+    "sounds": [
+      {
+        "name": "hextale:separator_drip1",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:separator_drip2",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:separator_drip3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "pump.stroke": {
+    "subtitle": "subtitles.hextale.pump.stroke",
+    "sounds": [
+      {
+        "name": "hextale:pump_stroke",
+        "volume": 0.45
+      }
+    ]
+  },
+  "valve.turn": {
+    "subtitle": "subtitles.hextale.valve.turn",
+    "sounds": [
+      {
+        "name": "hextale:valve_turn1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:valve_turn2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "ink.step": {
+    "subtitle": "subtitles.hextale.ink.step",
+    "sounds": [
+      {
+        "name": "hextale:ink_step1",
+        "volume": 0.3
+      },
+      {
+        "name": "hextale:ink_step2",
+        "volume": 0.3
+      },
+      {
+        "name": "hextale:ink_step3",
+        "volume": 0.3
+      }
+    ]
+  },
+  "quest.complete": {
+    "subtitle": "subtitles.hextale.quest.complete",
+    "sounds": [
+      {
+        "name": "hextale:quest_complete",
+        "volume": 0.8
+      }
+    ]
+  },
+  "tank.glug": {
+    "subtitle": "subtitles.hextale.tank.glug",
+    "sounds": [
+      {
+        "name": "hextale:alembic_bubble1",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "hextale:alembic_bubble2",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "hextale:alembic_bubble3",
+        "volume": 0.6,
+        "pitch": 0.7
+      }
+    ]
   }
 }

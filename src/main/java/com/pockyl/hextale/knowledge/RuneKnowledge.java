@@ -38,7 +38,8 @@ public final class RuneKnowledge {
             INT_MAP.optionalFieldOf("best", Map.of()).forGetter(k -> k.bestByKey()),
             BITS_MAP.optionalFieldOf("seen", Map.of()).forGetter(RuneKnowledge::seenByKey),
             Codec.STRING.listOf().optionalFieldOf("studied", List.of()).forGetter(k -> List.copyOf(k.studied)),
-            Codec.STRING.listOf().optionalFieldOf("quests", List.of()).forGetter(k -> List.copyOf(k.quests))
+            Codec.STRING.listOf().optionalFieldOf("quests", List.of()).forGetter(k -> List.copyOf(k.quests)),
+            BITS_MAP.optionalFieldOf("curses", Map.of()).forGetter(RuneKnowledge::cursesByKey)
     ).apply(instance, RuneKnowledge::new));
     public static final Codec<RuneKnowledge> CODEC = MAP_CODEC.codec();
 
@@ -53,6 +54,7 @@ public final class RuneKnowledge {
             BITS, RuneKnowledge::seenByKey,
             STRINGS, k -> List.copyOf(k.studied),
             STRINGS, k -> List.copyOf(k.quests),
+            BITS, RuneKnowledge::cursesByKey,
             RuneKnowledge::new);
 
     /** Learned runes in the order of discovery, with their stars (1-3). */
@@ -65,12 +67,15 @@ public final class RuneKnowledge {
     private final Set<String> quests = new LinkedHashSet<>();
     /** Per rune: parchment sections the ink has passed. */
     private final Map<ComplexRune, BitSet> seen = new HashMap<>();
+    /** Per rune: cursed dark sections found the hard way (the orb burst there). */
+    private final Map<ComplexRune, BitSet> curses = new HashMap<>();
 
     public RuneKnowledge() {
     }
 
     private RuneKnowledge(Map<String, Integer> stars, Map<String, Integer> best,
-                          Map<String, List<Long>> seen, List<String> studied, List<String> quests) {
+                          Map<String, List<Long>> seen, List<String> studied, List<String> quests,
+                          Map<String, List<Long>> curses) {
         stars.forEach((key, value) -> {
             ComplexRune rune = ComplexRunes.byKey(key);
             if (rune != null && value > 0) {
@@ -85,6 +90,7 @@ public final class RuneKnowledge {
         });
         this.studied.addAll(studied);
         this.quests.addAll(quests);
+        readBits(curses, this.curses);
         seen.forEach((key, value) -> {
             ComplexRune rune = ComplexRunes.byKey(key);
             if (rune != null) {
@@ -105,9 +111,26 @@ public final class RuneKnowledge {
         return out;
     }
 
+    private static void readBits(Map<String, List<Long>> in, Map<ComplexRune, BitSet> out) {
+        in.forEach((key, value) -> {
+            ComplexRune rune = ComplexRunes.byKey(key);
+            if (rune != null) {
+                out.put(rune, BitSet.valueOf(value.stream().mapToLong(Long::longValue).toArray()));
+            }
+        });
+    }
+
+    private Map<String, List<Long>> cursesByKey() {
+        return bitsByKey(curses);
+    }
+
     private Map<String, List<Long>> seenByKey() {
+        return bitsByKey(seen);
+    }
+
+    private static Map<String, List<Long>> bitsByKey(Map<ComplexRune, BitSet> source) {
         Map<String, List<Long>> out = new HashMap<>();
-        seen.forEach((rune, bits) -> {
+        source.forEach((rune, bits) -> {
             List<Long> longs = new ArrayList<>();
             for (long word : bits.toLongArray()) {
                 longs.add(word);
@@ -148,6 +171,7 @@ public final class RuneKnowledge {
     public boolean forget(ComplexRune rune) {
         best.remove(rune);
         seen.remove(rune);
+        curses.remove(rune);
         return stars.remove(rune) != null;
     }
 
@@ -209,7 +233,17 @@ public final class RuneKnowledge {
         return changed;
     }
 
+    /** Cursed sections of this rune's parchment found so far (a copy). */
+    public BitSet curses(ComplexRune rune) {
+        BitSet bits = curses.get(rune);
+        return bits == null ? new BitSet() : (BitSet) bits.clone();
+    }
+
+    public void curse(ComplexRune rune, int cell) {
+        curses.computeIfAbsent(rune, r -> new BitSet()).set(cell);
+    }
+
     public RuneKnowledge copy() {
-        return new RuneKnowledge(starsByKey(), bestByKey(), seenByKey(), List.copyOf(studied), List.copyOf(quests));
+        return new RuneKnowledge(starsByKey(), bestByKey(), seenByKey(), List.copyOf(studied), List.copyOf(quests), cursesByKey());
     }
 }

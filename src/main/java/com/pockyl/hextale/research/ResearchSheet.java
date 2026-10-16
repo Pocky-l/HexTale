@@ -12,41 +12,50 @@ import java.util.Arrays;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Learning a rune: one ink thread drawn from the orb, section by section, through every point of the rune's parchment.
+ * Learning a rune: ink drawn out from the orb, section by section, until it reaches every point of the rune's parchment.
+ * The ink branches freely: a new line may start at the orb or at any section already inked, so the drawing is a tree
+ * rooted at the orb. It is kept as a flat list of steps, {@code [from, to, from, to, ...]}, in the order they were drawn;
+ * {@code from} is the orb or an earlier step's {@code to}.
  * <p>
- * Every step costs one drop of the ink of the element whose corner of the parchment it heads towards (see
- * {@link #toward}), so the way the thread winds decides which inks it spends. Dark runes block it and it never crosses
- * itself. Winding the thread back is free: ink is only spent
- * when the last point is reached and the rune binds. Stars count the sections of the finished thread. A paper is spent
- * when an attempt starts (its first section); winding back does not return it.
+ * Every step costs ink of the element whose corner of the parchment it heads towards (see {@link #toward}); a step onto a
+ * point costs {@value #POINT_COST} times as much. Stone dark runes block the ink and no section is inked twice. In
+ * chapters II and III the dark runes are fields the ink may cross, but a cursed section bursts the orb: the check stops
+ * there ({@link Trace#burst}). Every inked section next to a dark field shows how many cursed sections touch it.
+ * Removing steps is free: ink is only spent when the last point is reached (or the orb bursts). Stars count the sections.
+ * A paper is spent when an attempt starts (its first section).
  * <p>
  * Pure rules shared by the table (server) and its screen (client copy).
  */
 public final class ResearchSheet {
+    /** A step onto a point costs this many sections of ink. */
+    public static final int POINT_COST = 10;
+
     @Nullable
     private ComplexRune rune;
-    /** The thread, starting at the orb. */
-    private int[] thread = {HexGrid.CENTRE};
-    /** The thread bound its rune: it stays shown until a new one is started. */
+    /** The drawing, steps as {@code from, to} pairs. */
+    private int[] tree = new int[0];
+    /** The drawing bound its rune: it stays shown until a new one is started. */
     private boolean done;
-    /** A paper went into this attempt when its thread was started. */
+    /** A paper went into this attempt when its first section was drawn. */
     private boolean paid;
-    /** Bumped on every change the server makes, so screens know to take the server's thread. */
+    /** Bumped on every change the server makes, so screens know to take the server's drawing. */
     private int revision;
 
     /**
-     * A thread checked against the rules.
+     * A drawing checked against the rules.
      *
-     * @param ink    drops needed per element ({@link Essence#ordinal()})
-     * @param lit    points passed, bit per point
-     * @param paying per section: the element whose ink it costs, null for free sections and the orb
+     * @param ink      sections of ink needed per element ({@link Essence#ordinal()})
+     * @param lit      points reached, bit per point
+     * @param paying   per step: the element whose ink it costs
+     * @param sections steps checked (all of them, or up to and including the burst)
+     * @param burst    index of the step into a cursed section, or -1
      */
-    public record Trace(int[] ink, int lit, Essence[] paying) {
+    public record Trace(int[] ink, int lit, Essence[] paying, int sections, int burst) {
         public boolean complete(RuneBoard board) {
-            return lit == (1 << board.points().size()) - 1;
+            return burst < 0 && lit == (1 << board.points().size()) - 1;
         }
 
-        /** Whether the supply covers the ink this thread needs. */
+        /** Whether the supply covers the ink this drawing needs. */
         public boolean affordable(int[] supply) {
             for (int i = 0; i < ink.length; i++) {
                 if (ink[i] > supply[i]) {
@@ -57,39 +66,62 @@ public final class ResearchSheet {
         }
     }
 
+    /** The steps of a single line drawn along {@code path} (which starts at the orb). */
+    public static int[] fromPath(int[] path) {
+        int[] tree = new int[Math.max(0, path.length - 1) * 2];
+        for (int i = 1; i < path.length; i++) {
+            tree[2 * i - 2] = path[i - 1];
+            tree[2 * i - 1] = path[i];
+        }
+        return tree;
+    }
+
+    /** Every inked section of a drawing, the orb first. */
+    public static int[] cells(int[] tree) {
+        int[] out = new int[tree.length / 2 + 1];
+        out[0] = HexGrid.CENTRE;
+        for (int i = 1; i < out.length; i++) {
+            out[i] = tree[2 * i - 1];
+        }
+        return out;
+    }
+
     /**
-     * Checks a thread: it starts at the orb, steps to neighbouring sections only, never returns to the orb, never crosses
-     * itself and never enters a dark rune. Null when it breaks a rule.
+     * Checks a drawing: every step starts at the orb or an inked section, goes to a neighbouring section that is not inked
+     * yet, not the orb and not a stone dark rune. A step into a cursed section ends the check (the orb bursts there).
+     * Null when a rule is broken.
      */
     @Nullable
-    public static Trace trace(RuneBoard board, int[] thread) {
-        if (thread.length == 0 || thread[0] != HexGrid.CENTRE) {
+    public static Trace trace(RuneBoard board, int[] tree) {
+        if (tree.length % 2 != 0) {
             return null;
         }
+        int steps = tree.length / 2;
         int[] ink = new int[Essence.values().length];
-        Essence[] paying = new Essence[thread.length];
-        boolean[] used = new boolean[HexGrid.COUNT];
-        used[HexGrid.CENTRE] = true;
+        Essence[] paying = new Essence[steps];
+        boolean[] inked = new boolean[HexGrid.COUNT];
+        inked[HexGrid.CENTRE] = true;
         int lit = 0;
-        for (int i = 1; i < thread.length; i++) {
-            int cell = thread[i];
-            if (cell < 0 || cell >= HexGrid.COUNT || cell == HexGrid.CENTRE || !HexGrid.adjacent(thread[i - 1], cell)
-                    || i >= 2 && thread[i - 2] == cell) {
+        for (int i = 0; i < steps; i++) {
+            int from = tree[2 * i];
+            int cell = tree[2 * i + 1];
+            if (from < 0 || from >= HexGrid.COUNT || cell < 0 || cell >= HexGrid.COUNT || !inked[from] || inked[cell]
+                    || !HexGrid.adjacent(from, cell) || board.wall(cell)) {
                 return null;
             }
-            if (used[cell] || board.wall(cell)) {
-                return null;
-            }
-            used[cell] = true;
-            Essence colour = toward(thread[i - 1], cell);
-            ink[colour.ordinal()]++;
-            paying[i] = colour;
+            inked[cell] = true;
+            Essence colour = toward(from, cell);
             int point = board.pointAt(cell);
+            ink[colour.ordinal()] += point >= 0 ? POINT_COST : 1;
+            paying[i] = colour;
+            if (board.cursed(cell)) {
+                return new Trace(ink, lit, Arrays.copyOf(paying, i + 1), i + 1, i);
+            }
             if (point >= 0) {
                 lit |= 1 << point;
             }
         }
-        return new Trace(ink, lit, paying);
+        return new Trace(ink, lit, paying, steps, -1);
     }
 
     /**
@@ -120,7 +152,7 @@ public final class ResearchSheet {
         return rune;
     }
 
-    /** Chooses the rune to study: a fresh thread. */
+    /** Chooses the rune to study: a fresh drawing. */
     public void select(ComplexRune rune) {
         this.rune = rune;
         reset();
@@ -132,19 +164,19 @@ public final class ResearchSheet {
     }
 
     private void reset() {
-        thread = new int[]{HexGrid.CENTRE};
+        tree = new int[0];
         done = false;
         paid = false;
         revision++;
     }
 
-    public int[] thread() {
-        return thread;
+    public int[] tree() {
+        return tree;
     }
 
-    /** Sections of thread (the orb does not count). */
+    /** Sections of ink (the orb does not count). */
     public int length() {
-        return thread.length - 1;
+        return tree.length / 2;
     }
 
     public boolean isDone() {
@@ -164,21 +196,29 @@ public final class ResearchSheet {
         return revision;
     }
 
-    /** Takes a checked thread; a bound thread is replaced by the new one. */
-    public void setThread(int[] thread) {
-        this.thread = thread.clone();
+    /** Takes a checked drawing; a bound drawing is replaced by the new one. */
+    public void setTree(int[] tree) {
+        this.tree = tree.clone();
         done = false;
         revision++;
     }
 
-    /** The thread bound its rune; the next attempt takes a new paper. */
+    /** The drawing bound its rune; the next attempt takes a new paper. */
     public void finish() {
         done = true;
         paid = false;
         revision++;
     }
 
-    /** Nothing changed, but screens should take the server's thread again (a refused update). */
+    /** The orb burst: the sheet is burnt, the next attempt starts from a bare orb on a new paper. */
+    public void burn() {
+        tree = new int[0];
+        done = false;
+        paid = false;
+        revision++;
+    }
+
+    /** Nothing changed, but screens should take the server's drawing again (a refused update). */
     public void touch() {
         revision++;
     }
@@ -187,7 +227,7 @@ public final class ResearchSheet {
         if (rune != null) {
             tag.putString("rune", rune.key());
         }
-        tag.putIntArray("thread", thread);
+        tag.putIntArray("tree", tree);
         tag.putBoolean("done", done);
         tag.putBoolean("paid", paid);
         tag.putInt("revision", revision);
@@ -195,8 +235,8 @@ public final class ResearchSheet {
 
     public void load(ValueInput tag) {
         rune = tag.getString("rune").map(ComplexRunes::byKey).orElse(null);
-        int[] saved = tag.getIntArray("thread").orElse(new int[0]);
-        thread = saved.length == 0 || Arrays.stream(saved).anyMatch(c -> c < 0 || c >= HexGrid.COUNT) ? new int[]{HexGrid.CENTRE} : saved;
+        int[] saved = tag.getIntArray("tree").orElse(new int[0]);
+        tree = saved.length % 2 != 0 || Arrays.stream(saved).anyMatch(c -> c < 0 || c >= HexGrid.COUNT) ? new int[0] : saved;
         done = tag.getBooleanOr("done", false);
         paid = tag.getBooleanOr("paid", false);
         revision = tag.getIntOr("revision", 0);

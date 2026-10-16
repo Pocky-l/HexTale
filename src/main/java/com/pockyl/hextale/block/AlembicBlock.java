@@ -2,10 +2,10 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.util.RandomSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.WorldlyContainer;
@@ -42,6 +42,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.research.ResearchItems;
 
 import org.jspecify.annotations.Nullable;
 
@@ -154,6 +156,16 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
+    }
+
+    /** While it boils, the alembic bubbles now and then (heard by the client only). */
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (state.getValue(LIT) && random.nextInt(4) == 0 && level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic
+                && ResearchItems.of(alembic.input()) != null && alembic.water() >= AlembicBlockEntity.WATER_PER_ITEM) {
+            level.playLocalSound(pos, ModSounds.ALEMBIC_BUBBLE.get(), SoundSource.BLOCKS, 0.35F + random.nextFloat() * 0.2F,
+                    0.85F + random.nextFloat() * 0.3F, false);
+        }
     }
 
     @Override

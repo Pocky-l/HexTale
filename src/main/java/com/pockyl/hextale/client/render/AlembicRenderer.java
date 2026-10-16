@@ -88,7 +88,7 @@ public class AlembicRenderer implements BlockEntityRenderer<AlembicBlockEntity, 
             return;
         }
         float sway = state.working ? Mth.sin(state.time * 0.3F) * 0.15F / 16 : 0;
-        LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, BOTTOM, top + sway, RuneDrawing.argb(state.color, 0.55F));
+        LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, BOTTOM, top + sway, RuneDrawing.argb(state.color, 0.75F));
         if (state.working) {
             // Bubbles rise from the bottom and burst at the surface, each on its own track.
             float size = 0.45F / 16;

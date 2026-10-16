@@ -18,12 +18,15 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Builds and caches the 72 boards. Generation is deterministic (the rune's key seeds it) and identical on client and
- * server, so boards never travel over the network. Every board is checked to be finishable with a plain thread, and its
- * star thresholds come from that thread's length.
+ * server, so boards never travel over the network. Every board is checked to be finishable with a plain drawing that
+ * never steps on a curse, and its star thresholds come from that drawing's length.
  */
 public final class RuneBoards {
     private static final int[] POINTS = {0, 3, 4, 6};
     private static final int[] WALL_CHAINS = {0, 10, 18, 26};
+    /** Points ringed by dark sections, and the share of dark sections that are cursed, per chapter. */
+    private static final int[] RINGS = {0, 0, 1, 2};
+    private static final double[] CURSE_SHARE = {0, 0, 0.3, 0.4};
     /** The plain thread of a board is this long at least ... */
     private static final int[] PLAIN_MIN = {0, 14, 22, 32};
     /** ... and at most: harder runes are longer. */
@@ -134,12 +137,20 @@ public final class RuneBoards {
             if (points.size() < POINTS[tier]) {
                 continue;
             }
-            RuneBoard draft = new RuneBoard(rune, walls, List.copyOf(points), null);
-            int[] thread = plainThread(draft);
-            if (thread == null) {
+            boolean[] dark = new boolean[HexGrid.COUNT];
+            boolean[] cursed = new boolean[HexGrid.COUNT];
+            if (tier >= 2) {
+                // Later chapters: the dark runes become fields to cross, some points sit inside a ring of them.
+                dark = walls;
+                walls = new boolean[HexGrid.COUNT];
+                darkFields(dark, cursed, points, tier, new Random32(hash(key + "#curse#" + attempt)));
+            }
+            RuneBoard draft = new RuneBoard(rune, walls, dark, cursed, List.copyOf(points), null);
+            int[] tree = plainTree(draft);
+            if (tree == null) {
                 continue;
             }
-            int length = thread.length - 1;
+            int length = tree.length / 2;
             int miss = Math.max(0, PLAIN_MIN[tier] - length) + Math.max(0, length - PLAIN_MAX[tier]);
             if (miss == 0) {
                 return withPar(draft, length);
@@ -155,100 +166,110 @@ public final class RuneBoards {
         return fallback;
     }
 
+    /**
+     * Rings the last points with dark sections, keeps the orb's neighbourhood clear and curses a share of the dark
+     * sections. Every ring keeps two safe sections, so a point is never sealed off.
+     */
+    private static void darkFields(boolean[] dark, boolean[] cursed, List<RuneBoard.Point> points, int tier, Random32 random) {
+        int rings = Math.min(RINGS[tier], points.size());
+        for (int r = 0; r < rings; r++) {
+            int centre = points.get(points.size() - 1 - r).cell();
+            for (int next : HexGrid.neighbours(centre)) {
+                dark[next] = true;
+            }
+        }
+        for (RuneBoard.Point point : points) {
+            dark[point.cell()] = false;
+        }
+        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+            if (HexGrid.steps(HexGrid.CENTRE, cell) <= 1) {
+                dark[cell] = false;
+            }
+            cursed[cell] = dark[cell] && random.next() < CURSE_SHARE[tier];
+        }
+        for (int r = 0; r < rings; r++) {
+            int[] ring = HexGrid.neighbours(points.get(points.size() - 1 - r).cell());
+            int safe = 0;
+            for (int cell : ring) {
+                if (!cursed[cell]) {
+                    safe++;
+                }
+            }
+            for (int k = 0; safe < 2 && k < ring.length * 3; k++) {
+                int cell = ring[random.pick(ring.length)];
+                if (cursed[cell]) {
+                    cursed[cell] = false;
+                    safe++;
+                }
+            }
+        }
+    }
+
     private static RuneBoard withPar(RuneBoard draft, int plain) {
-        return new RuneBoard(draft.rune(), draft.walls(), draft.points(), new RuneBoard.Par(plain, plain + Math.max(3, plain / 4), plain));
+        return new RuneBoard(draft.rune(), draft.walls(), draft.dark(), draft.cursed(), draft.points(),
+                new RuneBoard.Par(plain, plain + Math.max(3, plain / 4), plain));
     }
 
     /**
-     * A short thread through every point without tools: every order of the points is tried, each leg the shortest way
-     * around dark runes and the thread laid so far. Not always the very shortest thread (a leg never bends to make room
-     * for a later one), but always a real one.
+     * A short drawing that reaches every point safely: the ink grows from the orb, each time out to the point nearest
+     * to anything inked so far, along the shortest way around stone, cursed sections and the ink. Not always the very
+     * shortest tree, but always a real one.
      *
-     * @return the thread from the orb, or null when no order works
+     * @return the steps ({@link ResearchSheet} pairs), or null when a point cannot be reached
      */
     @Nullable
-    public static int[] plainThread(RuneBoard board) {
-        int n = board.points().size();
-        int[] order = new int[n];
-        for (int i = 0; i < n; i++) {
-            order[i] = i;
-        }
-        int[] best = null;
-        do {
-            int[] thread = lay(board, order, best == null ? Integer.MAX_VALUE : best.length);
-            if (thread != null && (best == null || thread.length < best.length)) {
-                best = thread;
-            }
-        } while (nextPermutation(order));
-        return best;
-    }
-
-    /** Lays the thread leg by leg in this order of points; null when blocked or not shorter than {@code limit}. */
-    @Nullable
-    private static int[] lay(RuneBoard board, int[] order, int limit) {
-        boolean[] used = new boolean[HexGrid.COUNT];
-        used[HexGrid.CENTRE] = true;
-        List<Integer> thread = new ArrayList<>(List.of(HexGrid.CENTRE));
+    public static int[] plainTree(RuneBoard board) {
+        boolean[] inked = new boolean[HexGrid.COUNT];
+        inked[HexGrid.CENTRE] = true;
+        List<Integer> steps = new ArrayList<>();
         int[] previous = new int[HexGrid.COUNT];
         int[] queue = new int[HexGrid.COUNT];
-        for (int point : order) {
-            int target = board.points().get(point).cell();
-            if (used[target]) {
-                continue;
-            }
-            int from = thread.get(thread.size() - 1);
+        boolean[] reached = new boolean[board.points().size()];
+        int left = reached.length;
+        while (left > 0) {
             Arrays.fill(previous, -2);
-            previous[from] = -1;
             int head = 0;
             int tail = 0;
-            queue[tail++] = from;
-            while (head < tail && previous[target] == -2) {
+            for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+                if (inked[cell]) {
+                    previous[cell] = -1;
+                    queue[tail++] = cell;
+                }
+            }
+            int found = -1;
+            while (head < tail && found < 0) {
                 int cell = queue[head++];
                 for (int next : HexGrid.neighbours(cell)) {
-                    if (previous[next] == -2 && !used[next] && !board.wall(next)) {
+                    if (previous[next] == -2 && !board.wall(next) && !board.cursed(next)) {
                         previous[next] = cell;
                         queue[tail++] = next;
+                        int point = board.pointAt(next);
+                        if (point >= 0 && !reached[point]) {
+                            found = next;
+                            break;
+                        }
                     }
                 }
             }
-            if (previous[target] == -2) {
+            if (found < 0) {
                 return null;
             }
             List<Integer> leg = new ArrayList<>();
-            for (int cell = target; cell != from; cell = previous[cell]) {
+            for (int cell = found; previous[cell] != -1; cell = previous[cell]) {
                 leg.add(cell);
             }
             for (int i = leg.size() - 1; i >= 0; i--) {
-                used[leg.get(i)] = true;
-                thread.add(leg.get(i));
+                int cell = leg.get(i);
+                steps.add(previous[cell]);
+                steps.add(cell);
+                inked[cell] = true;
+                int point = board.pointAt(cell);
+                if (point >= 0 && !reached[point]) {
+                    reached[point] = true;
+                    left--;
+                }
             }
-            if (thread.size() >= limit) {
-                return null;
-            }
         }
-        return thread.stream().mapToInt(Integer::intValue).toArray();
-    }
-
-    private static boolean nextPermutation(int[] a) {
-        int i = a.length - 2;
-        while (i >= 0 && a[i] >= a[i + 1]) {
-            i--;
-        }
-        if (i < 0) {
-            return false;
-        }
-        int j = a.length - 1;
-        while (a[j] <= a[i]) {
-            j--;
-        }
-        int t = a[i];
-        a[i] = a[j];
-        a[j] = t;
-        for (int l = i + 1, r = a.length - 1; l < r; l++, r--) {
-            t = a[l];
-            a[l] = a[r];
-            a[r] = t;
-        }
-        return true;
+        return steps.stream().mapToInt(Integer::intValue).toArray();
     }
 }

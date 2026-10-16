@@ -102,55 +102,75 @@ public final class ResearchGameTests {
             helper.assertTrue(board.points().get(0).element() == rune.action() && board.points().get(1).element() == rune.target(),
                     rune.key() + ": the first points are its action and target");
             helper.assertTrue(par.three() >= 1 && par.three() == par.plain() && par.two() > par.three(), rune.key() + ": sane thresholds " + par);
-            helper.assertTrue(!board.wall(HexGrid.CENTRE), rune.key() + ": the orb is never walled in");
-            int[] thread = RuneBoards.plainThread(board);
-            helper.assertTrue(thread != null, rune.key() + ": a plain thread exists");
-            ResearchSheet.Trace trace = ResearchSheet.trace(board, thread);
-            helper.assertTrue(trace != null && trace.complete(board), rune.key() + ": the plain thread follows the rules and passes every point");
-            helper.assertTrue(thread.length - 1 == par.plain(), rune.key() + ": the thresholds come from that thread");
+            helper.assertTrue(!board.wall(HexGrid.CENTRE) && !board.dark(HexGrid.CENTRE), rune.key() + ": the orb is never walled in");
+            int darkCount = 0;
+            for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+                if (board.dark(cell)) {
+                    darkCount++;
+                    helper.assertTrue(HexGrid.steps(HexGrid.CENTRE, cell) > 1, rune.key() + ": the orb's neighbours are never dark");
+                    helper.assertTrue(board.pointAt(cell) < 0, rune.key() + ": no point lies in a dark field");
+                }
+                helper.assertTrue(!board.cursed(cell) || board.dark(cell), rune.key() + ": only dark sections are cursed");
+            }
+            helper.assertTrue(tier == 1 ? darkCount == 0 : darkCount > 0, rune.key() + ": dark fields only after chapter I");
+            int[] tree = RuneBoards.plainTree(board);
+            helper.assertTrue(tree != null, rune.key() + ": a plain drawing exists");
+            ResearchSheet.Trace trace = ResearchSheet.trace(board, tree);
+            helper.assertTrue(trace != null && trace.complete(board), rune.key() + ": the plain drawing follows the rules and reaches every point");
+            helper.assertTrue(tree.length / 2 == par.plain(), rune.key() + ": the thresholds come from that drawing");
             lengths[tier][0] = Math.min(lengths[tier][0], par.plain());
             lengths[tier][1] = Math.max(lengths[tier][1], par.plain());
         }
-        Hextale.LOGGER.info("Checked {} research boards in {} ms; plain threads by chapter: I {}-{}, II {}-{}, III {}-{}",
+        Hextale.LOGGER.info("Checked {} research boards in {} ms; plain drawings by chapter: I {}-{}, II {}-{}, III {}-{}",
                 ComplexRunes.COUNT, (System.nanoTime() - start) / 1_000_000, lengths[1][0], lengths[1][1], lengths[2][0], lengths[2][1],
                 lengths[3][0], lengths[3][1]);
         helper.succeed();
     }
 
     @HexTest
-    public static void theThreadFollowsTheRules(GameTestHelper helper) {
+    public static void theInkFollowsTheRules(GameTestHelper helper) {
         RuneBoard board = RuneBoards.get(SMELTING);
-        int[] plain = RuneBoards.plainThread(board);
-        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE}) != null, "a bare orb is a thread");
-        helper.assertTrue(ResearchSheet.trace(board, new int[]{plain[1]}) == null, "a thread starts at the orb");
-        int jump = -1;
+        int[] plain = RuneBoards.plainTree(board);
+        int first = plain[1];
+        helper.assertTrue(ResearchSheet.trace(board, new int[0]) != null, "a bare orb is a drawing");
+        int far = -1;
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
             if (HexGrid.steps(HexGrid.CENTRE, cell) == 3 && !board.wall(cell)) {
-                jump = cell;
+                far = cell;
                 break;
             }
         }
-        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE, jump}) == null, "a thread never jumps");
-        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE, plain[1], HexGrid.CENTRE}) == null,
-                "a thread never returns to the orb");
+        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE, far}) == null, "the ink never jumps");
+        helper.assertTrue(ResearchSheet.trace(board, new int[]{first, HexGrid.CENTRE}) == null, "a step starts at inked parchment");
+        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE, first, first, HexGrid.CENTRE}) == null,
+                "the ink never returns to the orb");
+        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE, first, HexGrid.CENTRE, first}) == null,
+                "no section is inked twice");
 
-        // A small loop back onto itself needs the fork quill.
-        int a = plain[1];
+        // Lines may start at the orb again, or branch from the middle of a line.
+        int[] around = HexGrid.neighbours(HexGrid.CENTRE);
+        int a = -1;
         int b = -1;
-        int c = -1;
-        for (int n : HexGrid.neighbours(a)) {
-            for (int m : HexGrid.neighbours(n)) {
-                if (n != HexGrid.CENTRE && m != HexGrid.CENTRE && m != a && HexGrid.adjacent(m, a) && !board.wall(n) && !board.wall(m)) {
+        for (int n : around) {
+            if (!board.wall(n)) {
+                if (a < 0) {
+                    a = n;
+                } else if (b < 0 && !HexGrid.adjacent(a, n)) {
                     b = n;
-                    c = m;
                 }
             }
         }
-        helper.assertTrue(b >= 0, "there is a small loop next to the orb");
-        int[] loop = {HexGrid.CENTRE, a, b, c, a};
-        helper.assertTrue(ResearchSheet.trace(board, loop) == null, "a thread never crosses itself");
+        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE, a, HexGrid.CENTRE, b}) != null, "two lines from the orb");
+        int branch = -1;
+        for (int n : HexGrid.neighbours(a)) {
+            if (n != HexGrid.CENTRE && n != b && !board.wall(n)) {
+                branch = n;
+            }
+        }
+        helper.assertTrue(ResearchSheet.trace(board, new int[]{HexGrid.CENTRE, a, HexGrid.CENTRE, b, a, branch}) != null,
+                "a branch from an inked section");
 
-        // Never through a dark rune.
+        // Never through stone.
         int wall = -1;
         int before = -1;
         for (int cell = 0; cell < HexGrid.COUNT && wall < 0; cell++) {
@@ -164,24 +184,44 @@ public final class ResearchGameTests {
                 }
             }
         }
-        int[] path = pathTo(board, before);
-        int[] through = Arrays.copyOf(path, path.length + 1);
-        through[path.length] = wall;
-        helper.assertTrue(ResearchSheet.trace(board, path) != null, "the way to the dark rune is open");
-        helper.assertTrue(ResearchSheet.trace(board, through) == null, "a dark rune blocks the thread");
+        int[] path = ResearchSheet.fromPath(pathTo(board, before));
+        int[] through = Arrays.copyOf(path, path.length + 2);
+        through[path.length] = before;
+        through[path.length + 1] = wall;
+        helper.assertTrue(ResearchSheet.trace(board, path) != null, "the way to the stone is open");
+        helper.assertTrue(ResearchSheet.trace(board, through) == null, "stone blocks the ink");
+        helper.succeed();
+    }
+
+    /** In the later chapters the ink may cross dark fields, but a cursed section bursts the orb and ends the drawing. */
+    @HexTest
+    public static void cursedSectionsBurstTheOrb(GameTestHelper helper) {
+        RuneBoard board = cursedBoard();
+        int cursed = cursedCell(board);
+        int[] tree = ResearchSheet.fromPath(pathTo(board, cursed));
+        ResearchSheet.Trace trace = ResearchSheet.trace(board, tree);
+        helper.assertTrue(trace != null && trace.burst() == tree.length / 2 - 1, "the step onto the curse bursts");
+        helper.assertFalse(trace.complete(board), "a burst drawing never binds");
+        int counted = 0;
+        for (int n : HexGrid.neighbours(tree[tree.length - 2])) {
+            if (board.cursed(n)) {
+                counted++;
+            }
+        }
+        helper.assertTrue(board.danger(tree[tree.length - 2]) == counted && counted >= 1, "a section counts the curses around it");
         helper.succeed();
     }
 
     @HexTest
     public static void stepsPayTheInkOfTheirDirection(GameTestHelper helper) {
         RuneBoard board = RuneBoards.get(SMELTING);
-        int[] thread = RuneBoards.plainThread(board);
-        ResearchSheet.Trace trace = ResearchSheet.trace(board, thread);
+        int[] tree = RuneBoards.plainTree(board);
+        ResearchSheet.Trace trace = ResearchSheet.trace(board, tree);
         int[] ink = new int[Essence.values().length];
-        for (int i = 1; i < thread.length; i++) {
-            Essence colour = ResearchSheet.toward(thread[i - 1], thread[i]);
-            helper.assertTrue(trace.paying()[i] == colour, "section " + i + " costs the ink of its direction");
-            ink[colour.ordinal()]++;
+        for (int i = 0; i < tree.length / 2; i++) {
+            Essence colour = ResearchSheet.toward(tree[2 * i], tree[2 * i + 1]);
+            helper.assertTrue(trace.paying()[i] == colour, "step " + i + " costs the ink of its direction");
+            ink[colour.ordinal()] += board.pointAt(tree[2 * i + 1]) >= 0 ? ResearchSheet.POINT_COST : 1;
         }
         java.util.Set<Essence> fromCentre = java.util.EnumSet.noneOf(Essence.class);
         java.util.Set<Essence> anywhere = java.util.EnumSet.noneOf(Essence.class);
@@ -195,7 +235,7 @@ public final class ResearchGameTests {
         }
         helper.assertTrue(fromCentre.size() == 6, "the six steps from the orb pay six different inks, got " + fromCentre);
         helper.assertTrue(anywhere.size() == 9, "every ink is needed somewhere on the parchment");
-        helper.assertTrue(Arrays.equals(ink, trace.ink()), "the ink needed is the sum of the sections");
+        helper.assertTrue(Arrays.equals(ink, trace.ink()), "the ink needed is the sum of the steps, a point ten times as much");
         helper.succeed();
     }
 
@@ -804,34 +844,34 @@ public final class ResearchGameTests {
         ResearchTableBlockEntity table = stockedTable(helper);
         table.setItem(ResearchTableBlockEntity.PAPER, new ItemStack(Items.PAPER, 2));
         RuneBoard board = RuneBoards.get(SMELTING);
-        int[] thread = RuneBoards.plainThread(board);
-        ResearchSheet.Trace trace = ResearchSheet.trace(board, thread);
+        int[] tree = RuneBoards.plainTree(board);
+        ResearchSheet.Trace trace = ResearchSheet.trace(board, tree);
 
         table.select(player, SMELTING);
-        table.thread(player, thread);
-        helper.assertTrue(table.sheet().length() == 0, "no thread without ink");
+        table.thread(player, tree);
+        helper.assertTrue(table.sheet().length() == 0, "no drawing without ink");
         Map<Essence, EssenceTankBlockEntity> tanks = inkTanks(helper, EssenceTankBlockEntity.CAPACITY);
-        int[] part = Arrays.copyOf(thread, 3);
+        int[] part = Arrays.copyOf(tree, 4);
         table.thread(player, part);
-        helper.assertTrue(table.sheet().length() == 2 && !table.sheet().isDone(), "a part of the thread is kept");
+        helper.assertTrue(table.sheet().length() == 2 && !table.sheet().isDone(), "a part of the drawing is kept");
         helper.assertTrue(tanks.get(SMELTING.action()).tank().amount() == EssenceTankBlockEntity.CAPACITY, "no ink is spent yet");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "the started attempt took a paper");
-        table.thread(player, new int[]{HexGrid.CENTRE});
+        table.thread(player, new int[0]);
         table.thread(player, part);
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "winding back and on costs no new paper");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "taking back and drawing again costs no new paper");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.OUTPUT).isEmpty(), "no scroll before the rune is finished");
-        table.thread(player, thread);
+        table.thread(player, tree);
 
-        helper.assertTrue(table.sheet().isDone(), "the thread bound the rune");
-        int stars = board.stars(thread.length - 1);
+        helper.assertTrue(table.sheet().isDone(), "the drawing bound the rune");
+        int stars = board.stars(tree.length / 2);
         RuneKnowledge knowledge = Research.of(player);
         helper.assertFalse(knowledge.knows(SMELTING), "the rune is not learned until its scroll is studied");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "the orb went into the rune");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "finishing takes no more paper"); 
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "finishing takes no more paper");
         for (Essence element : Essence.values()) {
             helper.assertTrue(tanks.get(element).tank().amount()
                             == EssenceTankBlockEntity.CAPACITY - trace.ink()[element.ordinal()] * InkSupply.MB_PER_SECTION,
-                    element.id() + " ink was spent from its tank by the thread");
+                    element.id() + " ink was spent from its tank by the drawing");
         }
         ItemStack scroll = table.getItem(ResearchTableBlockEntity.OUTPUT);
         helper.assertTrue(RuneScrollItem.rune(scroll) == SMELTING && RuneScrollItem.stars(scroll) == 3 && stars == 3,
@@ -839,9 +879,33 @@ public final class ResearchGameTests {
         player.setItemInHand(InteractionHand.MAIN_HAND, scroll.copy());
         player.getMainHandItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
         helper.assertTrue(knowledge.stars(SMELTING) == 3, "studying the scroll teaches Smelting with its three stars");
-        helper.assertTrue(knowledge.seen(SMELTING).get(thread[thread.length - 1]), "the parchment the thread passed is remembered");
+        helper.assertTrue(knowledge.seen(SMELTING).get(tree[tree.length - 1]), "the parchment the ink passed is remembered");
         DiaryOwner owner = ResearchersDiaryItem.owner(table.getItem(ResearchTableBlockEntity.DIARY));
         helper.assertTrue(owner != null && owner.is(player), "the unsigned diary is signed by the researcher");
+        player.discard();
+        helper.succeed();
+    }
+
+    /**
+     * Stepping on a curse at the table: the orb bursts, the sheet burns and the researcher remembers it. (The blast's
+     * damage is not checked: a mock player counts as still loading and takes none.)
+     */
+    @HexTest
+    public static void aCurseBurstsTheOrbAtTheTable(GameTestHelper helper) {
+        ServerPlayer player = survivalPlayer(helper);
+        ResearchTableBlockEntity table = stockedTable(helper);
+        table.setItem(ResearchTableBlockEntity.PAPER, new ItemStack(Items.PAPER, 2));
+        inkTanks(helper, EssenceTankBlockEntity.CAPACITY);
+        RuneBoard board = cursedBoard();
+        Research.learnAll(player, ResearchBook.runes(1), 1);
+        Research.learnAll(player, ResearchBook.runes(2), 1);
+        int cursed = cursedCell(board);
+        int[] tree = ResearchSheet.fromPath(pathTo(board, cursed));
+        table.select(player, board.rune());
+        table.thread(player, tree);
+        helper.assertTrue(table.sheet().length() == 0 && !table.sheet().paid(), "the sheet burnt with its paper");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "the orb burst");
+        helper.assertTrue(Research.of(player).curses(board.rune()).get(cursed), "the curse is remembered");
         player.discard();
         helper.succeed();
     }
@@ -853,7 +917,7 @@ public final class ResearchGameTests {
         player.getInventory().clearContent();
         ResearchTableBlockEntity table = stockedTable(helper);
         table.select(player, SMELTING);
-        table.thread(player, RuneBoards.plainThread(RuneBoards.get(SMELTING)));
+        table.thread(player, RuneBoards.plainTree(RuneBoards.get(SMELTING)));
         helper.assertTrue(table.sheet().isDone(), "no ink and no paper are needed in creative mode");
         player.discard();
         helper.succeed();
@@ -881,8 +945,8 @@ public final class ResearchGameTests {
         helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.PAPER, "paper in the pocket does not count");
         table.select(player, SMELTING);
         inkTanks(helper, EssenceTankBlockEntity.CAPACITY);
-        table.thread(player, Arrays.copyOf(RuneBoards.plainThread(RuneBoards.get(SMELTING)), 3));
-        helper.assertTrue(table.sheet().length() == 0, "no thread without paper");
+        table.thread(player, Arrays.copyOf(RuneBoards.plainTree(RuneBoards.get(SMELTING)), 4));
+        helper.assertTrue(table.sheet().length() == 0, "no drawing without paper");
         player.discard();
         helper.succeed();
     }
@@ -1036,6 +1100,28 @@ public final class ResearchGameTests {
     // ---- Helpers --------------------------------------------------------------------------------------------------
 
     /** The shortest open way from the orb to a section, around dark runes; the orb itself when unreachable. */
+    /** A chapter II rune's board (the first one with a curse). */
+    private static RuneBoard cursedBoard() {
+        for (ComplexRune rune : ResearchBook.runes(2)) {
+            RuneBoard board = RuneBoards.get(rune);
+            if (cursedCell(board) >= 0) {
+                return board;
+            }
+        }
+        throw new IllegalStateException("No chapter II board has a reachable curse");
+    }
+
+    /** A cursed section reachable from the orb over safe parchment, or -1. */
+    private static int cursedCell(RuneBoard board) {
+        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+            if (board.cursed(cell) && pathTo(board, cell).length > 1) {
+                return cell;
+            }
+        }
+        return -1;
+    }
+
+    /** The shortest path from the orb to the target over parchment that is neither stone nor cursed (but the target). */
     private static int[] pathTo(RuneBoard board, int target) {
         int[] previous = new int[HexGrid.COUNT];
         Arrays.fill(previous, -2);
@@ -1044,7 +1130,7 @@ public final class ResearchGameTests {
         while (!queue.isEmpty()) {
             int cell = queue.poll();
             for (int next : HexGrid.neighbours(cell)) {
-                if (previous[next] == -2 && !board.wall(next)) {
+                if (previous[next] == -2 && !board.wall(next) && (!board.cursed(next) || next == target)) {
                     previous[next] = cell;
                     queue.add(next);
                 }

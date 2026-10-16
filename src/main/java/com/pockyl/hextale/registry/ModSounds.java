@@ -8,7 +8,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
 
-/** Synthesized sounds of the research (see tools/sound-gen/hextale_sounds.py in the workspace). */
+/** The mod's sounds (synthesized or CC0, see tools/sound-gen/hextale_sounds.py in the workspace). */
 public final class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, Hextale.MOD_ID);
 
@@ -24,6 +24,20 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> ORB_CRACK = register("orb.crack");
     /** Lightning awakens amethyst into unstable hextech. */
     public static final DeferredHolder<SoundEvent, SoundEvent> ORB_AWAKEN = register("orb.awaken");
+    /** The alembic bubbles while it boils (CC0 samples, see the sound generator). */
+    public static final DeferredHolder<SoundEvent, SoundEvent> ALEMBIC_BUBBLE = register("alembic.bubble");
+    /** A drop of concentrate falls in the separator. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> SEPARATOR_DRIP = register("separator.drip");
+    /** One stroke of the pump. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PUMP_STROKE = register("pump.stroke");
+    /** The drain valve's handwheel turns. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VALVE_TURN = register("valve.turn");
+    /** A section of a rune's thread soaks up its ink (screen sound, pitched by the essence). */
+    public static final DeferredHolder<SoundEvent, SoundEvent> INK_STEP = register("ink.step");
+    /** A quest of the researcher's path is done. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> QUEST_COMPLETE = register("quest.complete");
+    /** Essence poured into or out of a tank. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> TANK_GLUG = register("tank.glug");
 
     private ModSounds() {
     }

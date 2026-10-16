@@ -6,23 +6,26 @@ import com.pockyl.hextale.rune.Essence;
 import java.util.List;
 
 /**
- * The parchment of one rune: dark runes (walls the ink thread cannot cross), the points the thread must pass and the
- * star thresholds in thread length.
+ * The parchment of one rune: stone dark runes (walls the ink cannot cross, chapter I), dark fields (chapters II and III:
+ * passable, but some of their sections are cursed and burst the orb, like the mines of a minesweeper), the points the
+ * ink must reach and the star thresholds in sections of ink.
  *
- * @param walls  per section: whether a dark rune is there
+ * @param walls  per section: a stone dark rune
+ * @param dark   per section: a dark field section (passable)
+ * @param cursed per section: a cursed dark field section
  * @param points the rune's points; the first two are its action and target elements
  */
-public record RuneBoard(ComplexRune rune, boolean[] walls, List<Point> points, Par par) {
-    /** A point the thread must pass; after it the thread runs on this element's ink. */
+public record RuneBoard(ComplexRune rune, boolean[] walls, boolean[] dark, boolean[] cursed, List<Point> points, Par par) {
+    /** A point the ink must reach. */
     public record Point(Essence element, int cell) {
     }
 
     /**
-     * Star thresholds in sections of thread.
+     * Star thresholds in sections of ink.
      *
-     * @param three the shortest plain thread found (tools can beat it)
-     * @param two   a thread that wanders a little
-     * @param plain the plain thread the generator found (sections from the orb to the last point)
+     * @param three the plain drawing's length
+     * @param two   a drawing that wanders a little
+     * @param plain the plain drawing the generator found (sections from the orb to every point)
      */
     public record Par(int three, int two, int plain) {
     }
@@ -33,6 +36,35 @@ public record RuneBoard(ComplexRune rune, boolean[] walls, List<Point> points, P
 
     public boolean wall(int cell) {
         return walls[cell];
+    }
+
+    public boolean dark(int cell) {
+        return dark[cell];
+    }
+
+    public boolean cursed(int cell) {
+        return cursed[cell];
+    }
+
+    /** Whether any neighbour of this section is a dark field section: inked, it then shows its count of curses. */
+    public boolean nearDark(int cell) {
+        for (int next : HexGrid.neighbours(cell)) {
+            if (dark[next]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** How many cursed sections touch this one. */
+    public int danger(int cell) {
+        int count = 0;
+        for (int next : HexGrid.neighbours(cell)) {
+            if (cursed[next]) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /** Index of the point in this section, or -1. */

@@ -24,8 +24,8 @@ import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import com.pockyl.hextale.Hextale;
-import com.pockyl.hextale.block.Requirement;
 import com.pockyl.hextale.block.InkSupply;
+import com.pockyl.hextale.block.Requirement;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
 import com.pockyl.hextale.client.ClientKnowledge;
 import com.pockyl.hextale.client.render.PixelArt;
@@ -48,7 +48,10 @@ import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
@@ -98,8 +101,14 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     @Nullable
     private List<Component> pendingTooltip;
 
-    // The thread being drawn: the client's copy, sent to the server when the mouse is released.
-    private int[] thread = {HexGrid.CENTRE};
+    // The drawing: the client's copy (steps as from, to pairs), sent to the server when the mouse is released.
+    private int[] tree = new int[0];
+    /** Where the line being drawn ends now. */
+    private int head = HexGrid.CENTRE;
+    /** Steps of the drawing before the current stroke: dragging back only winds up this stroke. */
+    private int strokeBase;
+    /** Flags the researcher set on dark sections, per rune; kept while the game runs. */
+    private static final Map<ComplexRune, BitSet> FLAGS = new HashMap<>();
     @Nullable
     private ComplexRune threadRune;
     private int serverRevision = Integer.MIN_VALUE;
@@ -216,27 +225,61 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         return rune == null ? null : RuneBoards.request(rune).getNow(null);
     }
 
-    /** Takes the server's thread whenever the server changed it and the researcher is not drawing. */
+    /** Takes the server's drawing whenever the server changed it and the researcher is not drawing. */
     private void syncThread(ResearchTableBlockEntity table, RuneBoard current) {
         ResearchSheet sheet = table.sheet();
         if (threadRune != current.rune()) {
             threadRune = current.rune();
-            thread = sheet.thread().clone();
+            tree = sheet.tree().clone();
             serverRevision = sheet.revision();
             board.reset();
             trace = null;
+            head = lastCell();
         } else if (!dragging && serverRevision != sheet.revision()) {
             serverRevision = sheet.revision();
-            thread = sheet.thread().clone();
+            tree = sheet.tree().clone();
             trace = null;
+            head = lastCell();
         }
         if (trace == null) {
-            trace = ResearchSheet.trace(current, thread);
+            trace = ResearchSheet.trace(current, tree);
             if (trace == null) {
-                thread = new int[]{HexGrid.CENTRE};
-                trace = ResearchSheet.trace(current, thread);
+                tree = new int[0];
+                trace = ResearchSheet.trace(current, tree);
+                head = HexGrid.CENTRE;
             }
         }
+    }
+
+    /** The section the drawing ended on last (the orb for a bare sheet). */
+    private int lastCell() {
+        return tree.length == 0 ? HexGrid.CENTRE : tree[tree.length - 1];
+    }
+
+    private boolean inked(int cell) {
+        if (cell == HexGrid.CENTRE) {
+            return true;
+        }
+        for (int i = 1; i < tree.length; i += 2) {
+            if (tree[i] == cell) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** The most recently inked neighbour of a section, where a click on it would draw from; -1 if none. */
+    private int inkedNeighbour(int cell) {
+        for (int i = tree.length - 1; i >= 1; i -= 2) {
+            if (HexGrid.adjacent(tree[i], cell)) {
+                return tree[i];
+            }
+        }
+        return HexGrid.adjacent(HexGrid.CENTRE, cell) ? HexGrid.CENTRE : -1;
+    }
+
+    private BitSet flags(ComplexRune rune) {
+        return FLAGS.computeIfAbsent(rune, r -> new BitSet());
     }
 
     /** The ink in the Essence Tanks around the desk, read once per frame. */
@@ -270,52 +313,66 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     private boolean done(ResearchTableBlockEntity table) {
-        return table.sheet().isDone() && Arrays.equals(thread, table.sheet().thread());
+        return table.sheet().isDone() && Arrays.equals(tree, table.sheet().tree());
     }
 
-    /** Tries to step the thread into a neighbouring section; on failure the section shakes and says why. */
-    private boolean extend(RuneBoard current, int cell) {
+    /** Tries to ink a step from an inked section into its neighbour; on failure the section shakes and says why. */
+    private boolean extend(RuneBoard current, int from, int cell) {
         if (missing() != null) {
             nudgeRequirement(cell);
             return false;
         }
-        int[] candidate = Arrays.copyOf(thread, thread.length + 1);
-        candidate[thread.length] = cell;
+        if (flags(current.rune()).get(cell)) {
+            // A flagged section is the researcher's own warning: take the flag off first.
+            refuse(cell, 0.7F);
+            return false;
+        }
+        int[] candidate = Arrays.copyOf(tree, tree.length + 2);
+        candidate[tree.length] = from;
+        candidate[tree.length + 1] = cell;
         ResearchSheet.Trace next = ResearchSheet.trace(current, candidate);
         if (next == null) {
             refuse(cell, 0.6F);
             return false;
         }
         if (!creative() && !next.affordable(ink())) {
-            Essence lacking = ResearchSheet.toward(thread[thread.length - 1], cell);
-            vialFlash[lacking.ordinal()] = Util.getMillis();
+            vialFlash[ResearchSheet.toward(from, cell).ordinal()] = Util.getMillis();
             refuse(cell, 0.8F);
             return false;
         }
         int lit = trace == null ? 0 : trace.lit();
-        thread = candidate;
+        tree = candidate;
         trace = next;
+        head = cell;
+        Essence paying = ResearchSheet.toward(from, cell);
         int point = current.pointAt(cell);
+        if (next.burst() >= 0) {
+            dragging = false;
+            send(ResearchActionPayload.thread(menu.pos(), tree));
+            return true;
+        }
         if ((next.lit() & ~lit) != 0 && point >= 0) {
             sound(ModSounds.RUNE_RECOGNISED.get(), 0.8F + current.points().get(point).element().ordinal() * 0.06F, 0.6F);
-        } else if (++lastStepSound % 2 == 0) {
-            sound(ModSounds.BRUSH_STROKE.get(), 0.9F + (float) Math.random() * 0.3F, 0.25F);
+        } else {
+            sound(ModSounds.INK_STEP.get(), 0.75F + paying.ordinal() * 0.06F + (float) Math.random() * 0.05F, 0.5F);
+            if (++lastStepSound % 3 == 0) {
+                sound(ModSounds.BRUSH_STROKE.get(), 0.9F + (float) Math.random() * 0.3F, 0.2F);
+            }
         }
         if (next.complete(current)) {
             dragging = false;
-            send(ResearchActionPayload.thread(menu.pos(), thread));
+            send(ResearchActionPayload.thread(menu.pos(), tree));
         }
         return true;
     }
 
+    /** Takes back the last step of the line being drawn. */
     private void retract() {
-        if (thread.length > 1) {
-            thread = Arrays.copyOf(thread, thread.length - 1);
-            trace = null;
+        if (tree.length / 2 > strokeBase) {
+            head = tree[tree.length - 2];
+            tree = Arrays.copyOf(tree, tree.length - 2);
             RuneBoard current = currentBoard();
-            if (current != null) {
-                trace = ResearchSheet.trace(current, thread);
-            }
+            trace = current == null ? null : ResearchSheet.trace(current, tree);
         }
     }
 
@@ -330,10 +387,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         sound(SoundEvents.NOTE_BLOCK_BASS.value(), 0.5F, 0.5F);
     }
 
-    /** Follows the mouse section by section while drawing: forward into new sections, back along the thread. */
+    /** Follows the mouse section by section while drawing: forward into new sections, back along this stroke. */
     private void follow(RuneBoard current, double mouseX, double mouseY) {
         for (int guard = 0; guard < 24; guard++) {
-            int head = thread[thread.length - 1];
             int target = board.cellAt(mouseX, mouseY);
             if (target < 0 || target == head) {
                 return;
@@ -353,9 +409,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             if (best < 0) {
                 return;
             }
-            if (thread.length >= 2 && best == thread[thread.length - 2]) {
+            boolean back = tree.length / 2 > strokeBase && tree[tree.length - 1] == head && tree[tree.length - 2] == best;
+            if (back) {
                 retract();
-            } else if (!extend(current, best)) {
+            } else if (!extend(current, head, best)) {
                 return;
             }
             if (!dragging) {
@@ -367,8 +424,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private void release() {
         ResearchTableBlockEntity table = table();
         dragging = false;
-        if (table != null && !Arrays.equals(thread, table.sheet().thread())) {
-            send(ResearchActionPayload.thread(menu.pos(), thread));
+        if (table != null && !Arrays.equals(tree, table.sheet().tree())) {
+            send(ResearchActionPayload.thread(menu.pos(), tree));
         }
     }
 
@@ -489,24 +546,31 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private void renderRune(GuiGraphicsExtractor graphics, ResearchTableBlockEntity table, RuneBoard current, int hovered,
                             int mouseX, int mouseY) {
         ComplexRune rune = current.rune();
-        String key = rune.key() + "|" + thread.length + "|" + thread[thread.length - 1] + "|" + ClientKnowledge.version();
+        String key = rune.key() + "|" + tree.length + "|" + lastCell() + "|" + ClientKnowledge.version();
         if (!key.equals(fogKey)) {
             fogKey = key;
-            board.updateFog(ClientKnowledge.get().seen(rune), thread);
+            board.updateFog(ClientKnowledge.get().seen(rune), ResearchSheet.cells(tree));
         }
         boolean done = done(table);
         boolean ready = !table.getItem(ResearchTableBlockEntity.HEXTECH).isEmpty() || done;
         int preview = -1;
-        if (!dragging && !done && hovered >= 0 && thread.length >= 1 && HexGrid.adjacent(thread[thread.length - 1], hovered)
-                && missing() == null) {
-            int[] candidate = Arrays.copyOf(thread, thread.length + 1);
-            candidate[thread.length] = hovered;
-            ResearchSheet.Trace next = ResearchSheet.trace(current, candidate);
-            if (next != null && (creative() || next.affordable(ink()))) {
-                preview = hovered;
+        int previewFrom = -1;
+        if (!dragging && !done && hovered >= 0 && !inked(hovered) && missing() == null && !flags(rune).get(hovered)) {
+            int from = inkedNeighbour(hovered);
+            if (from >= 0) {
+                int[] candidate = Arrays.copyOf(tree, tree.length + 2);
+                candidate[tree.length] = from;
+                candidate[tree.length + 1] = hovered;
+                ResearchSheet.Trace next = ResearchSheet.trace(current, candidate);
+                if (next != null && (creative() || next.affordable(ink()))) {
+                    preview = hovered;
+                    previewFrom = from;
+                }
             }
         }
-        board.renderRune(graphics, font, current, thread, trace, done, dragging, hovered, preview, ready);
+        BitSet known = ClientKnowledge.get().seen(rune);
+        board.renderRune(graphics, font, current, tree, trace, done, dragging, hovered, preview, previewFrom, ready, head, known,
+                ClientKnowledge.get().curses(rune), flags(rune));
         if (hovered >= 0 && !dragging) {
             int point = current.pointAt(hovered);
             if (point >= 0) {
@@ -537,7 +601,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         graphics.fill(x, y, three, y + 3, 0xFFD6AB52);
         graphics.fill(three, y, two, y + 3, 0xFFB8C4CC);
         graphics.fill(two, y, x + width, y + 3, 0xFF6E4D2A);
-        int length = thread.length - 1;
+        int length = tree.length / 2;
         int at = x + Math.min(width, width * length / max);
         int colour = length <= current.par().three() ? 0xFFFFF3C0 : length <= current.par().two() ? 0xFFFFFFFF : 0xFFF3A59B;
         graphics.fill(at - 1, y - 2, at + 1, y + 5, colour);
@@ -812,17 +876,16 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
         syncThread(table, current);
         if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
-            // Wind the thread back to the point before its end (or to the orb).
-            if (thread.length > 1 && !done(table)) {
-                int keep = 1;
-                for (int i = thread.length - 2; i >= 1; i--) {
-                    if (current.pointAt(thread[i]) >= 0) {
-                        keep = i + 1;
-                        break;
-                    }
-                }
-                thread = Arrays.copyOf(thread, keep);
-                trace = ResearchSheet.trace(current, thread);
+            if (cell >= 0 && current.dark(cell) && !inked(cell)) {
+                // A flag on a dark section the researcher suspects (only a mark: it guards against a careless step).
+                BitSet flags = flags(current.rune());
+                flags.flip(cell);
+                sound(SoundEvents.BOOK_PAGE_TURN, flags.get(cell) ? 1.5F : 1.2F, 0.5F);
+            } else if (tree.length > 0 && !done(table)) {
+                // Take back the last step drawn.
+                tree = Arrays.copyOf(tree, tree.length - 2);
+                trace = ResearchSheet.trace(current, tree);
+                head = lastCell();
                 sound(ModSounds.BRUSH_STROKE.get(), 0.6F, 0.4F);
                 release();
             }
@@ -833,30 +896,28 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
         if (done(table)) {
             if (cell == HexGrid.CENTRE) {
-                thread = new int[]{HexGrid.CENTRE};
-                trace = ResearchSheet.trace(current, thread);
+                tree = new int[0];
+                trace = ResearchSheet.trace(current, tree);
+                head = HexGrid.CENTRE;
+                strokeBase = 0;
                 dragging = true;
             }
             return;
         }
-        int index = -1;
-        for (int i = thread.length - 1; i >= 0; i--) {
-            if (thread[i] == cell) {
-                index = i;
-                break;
-            }
-        }
-        if (index >= 0) {
-            if (index < thread.length - 1) {
-                thread = Arrays.copyOf(thread, index + 1);
-                trace = ResearchSheet.trace(current, thread);
-                sound(ModSounds.BRUSH_STROKE.get(), 0.7F, 0.3F);
-            }
+        if (inked(cell)) {
+            // A new line from any inked section (the orb too).
+            head = cell;
+            strokeBase = tree.length / 2;
             dragging = true;
-        } else if (HexGrid.adjacent(thread[thread.length - 1], cell)) {
-            dragging = extend(current, cell) && !trace.complete(current);
+            sound(ModSounds.BRUSH_STROKE.get(), 1.2F, 0.2F);
+            return;
+        }
+        int from = inkedNeighbour(cell);
+        if (from >= 0) {
+            strokeBase = tree.length / 2;
+            dragging = extend(current, from, cell) && trace != null && !trace.complete(current) && trace.burst() < 0;
         } else {
-            board.shake(thread[thread.length - 1]);
+            board.shake(cell);
         }
     }
 

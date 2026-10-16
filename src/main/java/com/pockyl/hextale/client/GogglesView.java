@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
@@ -54,6 +55,11 @@ public final class GogglesView {
     private static final int DIM = 0xFF9A90B8;
     private static final int LINE = 11;
     private static final String KEY = "goggles.hextale.";
+    /** The plate slides out from the crosshair when the goggles settle on a new block. */
+    private static final long SLIDE_MILLIS = 160;
+    @Nullable
+    private static BlockPos shown;
+    private static long shownSince;
 
     private GogglesView() {
     }
@@ -93,8 +99,16 @@ public final class GogglesView {
         BlockPos pos = lookedAt(minecraft);
         Reading reading = pos == null ? null : read(minecraft.level, pos);
         if (reading == null) {
+            shown = null;
             return;
         }
+        long now = Util.getMillis();
+        if (!pos.equals(shown)) {
+            shown = pos.immutable();
+            shownSince = now;
+        }
+        float t = Math.min(1, (now - shownSince) / (float) SLIDE_MILLIS);
+        float eased = 1 - (1 - t) * (1 - t);
         Font font = minecraft.font;
         int width = font.width(reading.title());
         for (Row row : reading.rows()) {
@@ -102,7 +116,7 @@ public final class GogglesView {
         }
         int w = width + 12;
         int h = 18 + reading.rows().size() * LINE;
-        int x = graphics.guiWidth() / 2 + 14;
+        int x = graphics.guiWidth() / 2 + 14 - Math.round((1 - eased) * 10);
         int y = graphics.guiHeight() / 2 - h / 2;
         PixelArt.fill(graphics, x, y, x + w, y + h, 0xD0080614);
         int rim = PixelArt.argb(GOLD, 0.8F);

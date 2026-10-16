@@ -30,6 +30,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModSounds;
 
 import org.jspecify.annotations.Nullable;
 
@@ -87,7 +88,8 @@ public class DrainValveBlock extends BaseEntityBlock implements EssenceMachine {
         if (!level.isClientSide()) {
             boolean open = !state.getValue(OPEN);
             level.setBlock(pos, state.setValue(OPEN, open), Block.UPDATE_ALL);
-            level.playSound(null, pos, open ? SoundEvents.COPPER_TRAPDOOR_OPEN : SoundEvents.COPPER_TRAPDOOR_CLOSE, SoundSource.BLOCKS, 0.8F, 1.1F);
+            level.playSound(null, pos, ModSounds.VALVE_TURN.get(), SoundSource.BLOCKS, 0.8F, open ? 1.1F : 0.85F);
+            level.playSound(null, pos, open ? SoundEvents.COPPER_TRAPDOOR_OPEN : SoundEvents.COPPER_TRAPDOOR_CLOSE, SoundSource.BLOCKS, 0.3F, 1.4F);
             player.sendOverlayMessage(Component.translatable(open ? "block.hextale.drain_valve.open" : "block.hextale.drain_valve.shut"));
         }
         return InteractionResult.SUCCESS;

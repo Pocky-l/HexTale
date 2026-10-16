@@ -2,6 +2,8 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -13,8 +15,8 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -23,11 +25,13 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.Flasks;
-import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.rune.Essence;
 
 import org.jspecify.annotations.Nullable;
 
@@ -92,6 +96,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
         }
         if (Flasks.use(player, hand, stack, tank.tank())) {
             tank.setChanged();
+            level.playSound(null, pos, ModSounds.TANK_GLUG.get(), SoundSource.BLOCKS, 0.6F, 0.8F + level.getRandom().nextFloat() * 0.3F);
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.TRY_WITH_EMPTY_HAND;
@@ -107,6 +112,10 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             if (!level.isClientSide()) {
                 tank.cycleLabel(hitResult.getDirection());
                 level.playSound(null, pos, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 1.3F);
+                if (level instanceof ServerLevel serverLevel) {
+                    Vec3 at = hitResult.getLocation();
+                    serverLevel.sendParticles(ParticleTypes.WAX_ON, at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
+                }
             }
             return InteractionResult.SUCCESS;
         }
