@@ -1,5 +1,6 @@
 package com.pockyl.hextale.client.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
@@ -847,7 +848,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         double mouseY = event.y();
         int button = event.button();
         for (int i = 0; i < 3; i++) {
-            if (button == 0 && isOver(mouseX, mouseY, tabX(i), topPos + 1, TAB_WIDTH, TAB_HEIGHT)) {
+            if (button == InputConstants.MOUSE_BUTTON_LEFT && isOver(mouseX, mouseY, tabX(i), topPos + 1, TAB_WIDTH, TAB_HEIGHT)) {
                 if (tab.ordinal() != i) {
                     setTab(Tab.values()[i]);
                     click();
@@ -858,7 +859,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (tab == Tab.BOOK && book.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        if (tab != Tab.BOOK && button == 0) {
+        if (tab != Tab.BOOK && button == InputConstants.MOUSE_BUTTON_LEFT) {
             for (PanelButton panelButton : buttons) {
                 if (isOver(mouseX, mouseY, panelButton.x(), panelButton.y(), panelButton.width(), 16)) {
                     if (panelButton.active()) {
@@ -886,7 +887,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (table.isStudyingItem()) {
             ItemStudy study = table.study();
             ItemElements elements = study.item() == null ? null : ResearchItems.of(study.item());
-            if (button == 0 && cell >= 0 && elements != null && study.canGuess(cell, elements)) {
+            if (button == InputConstants.MOUSE_BUTTON_LEFT && cell >= 0 && elements != null && study.canGuess(cell, elements)) {
                 send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.GUESS, cell));
                 message = Component.empty();
             }
@@ -898,7 +899,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return;
         }
         ResearchSheet sheet = table.sheet();
-        if (button == 1) {
+        if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
             // Right click: the next of several items that reach this section.
             List<BoardView.Move> options = moves.get(cell);
             if (options != null && options.size() > 1) {
@@ -907,7 +908,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             }
             return;
         }
-        if (button != 0) {
+        if (button != InputConstants.MOUSE_BUTTON_LEFT) {
             return;
         }
         if (sheet.isOver()) {

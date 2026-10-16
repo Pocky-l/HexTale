@@ -1,5 +1,6 @@
 package com.pockyl.hextale.client.screen.book;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -469,7 +470,7 @@ public final class StarBook {
     // ---- Input ----------------------------------------------------------------------------------------------------
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button != 0 || !overSky(mouseX, mouseY)) {
+        if (button != InputConstants.MOUSE_BUTTON_LEFT || !overSky(mouseX, mouseY)) {
             return false;
         }
         if (selected != null && host != null && overPlate(mouseX, mouseY)) {
@@ -495,7 +496,7 @@ public final class StarBook {
     }
 
     public boolean mouseDragged(double mouseX, double mouseY, int button) {
-        if (!pressed || button != 0) {
+        if (!pressed || button != InputConstants.MOUSE_BUTTON_LEFT) {
             return false;
         }
         if (!dragging && Math.abs(mouseX - pressX) + Math.abs(mouseY - pressY) >= DRAG_THRESHOLD) {
@@ -510,7 +511,7 @@ public final class StarBook {
     }
 
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (!pressed || button != 0) {
+        if (!pressed || button != InputConstants.MOUSE_BUTTON_LEFT) {
             return false;
         }
         pressed = false;
