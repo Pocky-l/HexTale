@@ -2,13 +2,10 @@ package com.pockyl.hextale.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import com.pockyl.hextale.Hextale;
@@ -16,44 +13,41 @@ import com.pockyl.hextale.block.ResearchTableBlockEntity;
 import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.rune.ComplexRunes;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Client to server: something the researcher does at the open table. The server checks everything again.
  *
- * @param value the rune index (SELECT), point index (LEAVE) or parchment section (WRITE target, JUMP, GUESS)
- * @param item  the item that writes (WRITE)
- * @param ground whether the item is ground in the mortar first (WRITE)
+ * @param value the rune index (SELECT) or parchment section (STRIKE)
+ * @param cells the whole ink thread from the orb (THREAD)
  */
-public record ResearchActionPayload(BlockPos pos, Action action, int value, Identifier item, boolean ground)
-        implements CustomPacketPayload {
+public record ResearchActionPayload(BlockPos pos, Action action, int value, List<Integer> cells) implements CustomPacketPayload {
     public static final Type<ResearchActionPayload> TYPE = new Type<>(Hextale.id("research_action"));
-    private static final Identifier NONE = Identifier.withDefaultNamespace("air");
+    /** Longer than any thread the parchment's sections allow without crossings. */
+    private static final int MAX_CELLS = 1024;
 
     public static final StreamCodec<ByteBuf, ResearchActionPayload> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, ResearchActionPayload::pos,
             ByteBufCodecs.VAR_INT.map(i -> Action.values()[Math.floorMod(i, Action.values().length)], Action::ordinal),
             ResearchActionPayload::action,
             ByteBufCodecs.VAR_INT, ResearchActionPayload::value,
-            Identifier.STREAM_CODEC, ResearchActionPayload::item,
-            ByteBufCodecs.BOOL, ResearchActionPayload::ground,
+            ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list(MAX_CELLS)), ResearchActionPayload::cells,
             ResearchActionPayload::new);
 
     public enum Action {
         SELECT,
-        NEW_SHEET,
-        WRITE,
-        LEAVE,
-        SCRAPE,
-        JUMP,
-        STUDY_ITEM,
-        GUESS
+        THREAD,
+        STRIKE,
+        CLOSE_STUDY
     }
 
     public static ResearchActionPayload of(BlockPos pos, Action action, int value) {
-        return new ResearchActionPayload(pos, action, value, NONE, false);
+        return new ResearchActionPayload(pos, action, value, List.of());
     }
 
-    public static ResearchActionPayload write(BlockPos pos, Item item, boolean ground, int target) {
-        return new ResearchActionPayload(pos, Action.WRITE, target, BuiltInRegistries.ITEM.getKey(item), ground);
+    public static ResearchActionPayload thread(BlockPos pos, int[] cells) {
+        return new ResearchActionPayload(pos, Action.THREAD, 0, Arrays.stream(cells).boxed().toList());
     }
 
     @Override
@@ -75,14 +69,9 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, Iden
                     table.select(player, ComplexRunes.all().get(payload.value()));
                 }
             }
-            case NEW_SHEET -> table.newSheet(player);
-            case WRITE -> BuiltInRegistries.ITEM.getOptional(payload.item())
-                    .ifPresent(item -> table.write(player, item, payload.ground(), payload.value()));
-            case LEAVE -> table.leave(player, payload.value());
-            case SCRAPE -> table.scrape(player);
-            case JUMP -> table.jump(player, payload.value());
-            case STUDY_ITEM -> table.selectItem(player);
-            case GUESS -> table.guess(player, payload.value());
+            case THREAD -> table.thread(player, payload.cells().stream().mapToInt(Integer::intValue).toArray());
+            case STRIKE -> table.strike(player, payload.value());
+            case CLOSE_STUDY -> table.closeStudy(player);
         }
     }
 }

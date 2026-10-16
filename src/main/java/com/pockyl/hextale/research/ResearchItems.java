@@ -6,16 +6,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import com.pockyl.hextale.registry.ModDataMaps;
-import com.pockyl.hextale.rune.SimpleRune;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -30,13 +24,12 @@ import static com.pockyl.hextale.rune.SimpleRune.SPARK;
 import static com.pockyl.hextale.rune.SimpleRune.WATER;
 
 /**
- * Items as levers on the parchment. In game the elements of every item come from {@link ItemElementTable} (the
- * {@code hextale:elements} data map plus what is derived from recipes and names); boards and star thresholds are computed from the {@link #canonical()} set below, which
- * is also the default data map, so a board never changes with the items a pack adds.
+ * Items and the elements they carry (their ink at the Research Table). In game the elements of every item come from
+ * {@link ItemElementTable} (the {@code hextale:elements} data map plus what is derived from recipes and names); the
+ * {@link #canonical()} set below is the default data map.
  */
 public final class ResearchItems {
     private static final Map<Item, ItemElements> CANONICAL = new LinkedHashMap<>();
-    private static final Map<SimpleRune, Item[]> RESOURCES = new EnumMap<>(SimpleRune.class);
 
     static {
         add(Items.COAL, 1, FIRE, 2);
@@ -72,15 +65,6 @@ public final class ResearchItems {
         add(Items.NETHERITE_INGOT, 3, METAL, 4, FIRE, 1);
         add(Items.NETHER_STAR, 3, SPARK, 3, LIGHT, 2);
 
-        resources(FIRE, Items.COAL, Items.BLAZE_POWDER, Items.BLAZE_ROD);
-        resources(WATER, Items.KELP, Items.PRISMARINE_CRYSTALS, Items.HEART_OF_THE_SEA);
-        resources(EARTH, Items.COBBLESTONE, Items.OBSIDIAN, Items.DIAMOND);
-        resources(AIR, Items.FEATHER, Items.PHANTOM_MEMBRANE, Items.WIND_CHARGE);
-        resources(LIGHT, Items.GLOW_BERRIES, Items.GLOWSTONE, Items.BEACON);
-        resources(SHADOW, Items.INK_SAC, Items.SCULK, Items.ECHO_SHARD);
-        resources(LIFE, Items.WHEAT, Items.HONEY_BOTTLE, Items.TOTEM_OF_UNDYING);
-        resources(METAL, Items.COPPER_INGOT, Items.IRON_INGOT, Items.NETHERITE_INGOT);
-        resources(SPARK, Items.REDSTONE, Items.REDSTONE_BLOCK, Items.NETHER_STAR);
     }
 
     private ResearchItems() {
@@ -90,18 +74,9 @@ public final class ResearchItems {
         CANONICAL.put(item, ItemElements.of(tier, pairs));
     }
 
-    private static void resources(SimpleRune element, Item... byTier) {
-        RESOURCES.put(element, byTier);
-    }
-
-    /** The default levers in prototype order; boards and star thresholds are computed from these. */
+    /** The base materials of the default data map. */
     public static Map<Item, ItemElements> canonical() {
         return Collections.unmodifiableMap(CANONICAL);
-    }
-
-    /** The resource a point of this element asks for on a board of this tier (1-3). */
-    public static Item resource(SimpleRune element, int tier) {
-        return RESOURCES.get(element)[tier - 1];
     }
 
     /**
@@ -122,29 +97,5 @@ public final class ResearchItems {
     @Nullable
     public static ItemElements of(ItemStack stack) {
         return stack.isEmpty() ? null : of(stack.getItem());
-    }
-
-    /** A canonical lever's step and the element of the symbol it writes (ordinal). */
-    record Step(int[] offset, int element) {
-    }
-
-    /**
-     * Distinct non-zero steps of the canonical items, plain and (with a mortar) ground; the same step written by symbols
-     * of different elements counts once per element.
-     */
-    static List<Step> canonicalSteps(boolean ground) {
-        List<Step> out = new ArrayList<>();
-        Set<String> seen = new HashSet<>();
-        for (ItemElements elements : CANONICAL.values()) {
-            for (boolean half : ground ? new boolean[]{false, true} : new boolean[]{false}) {
-                int[] offset = elements.offset(half);
-                int element = elements.main().ordinal();
-                String key = offset[0] + "," + offset[1] + "," + element;
-                if ((offset[0] != 0 || offset[1] != 0) && seen.add(key)) {
-                    out.add(new Step(offset, element));
-                }
-            }
-        }
-        return out;
     }
 }

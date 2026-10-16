@@ -1,11 +1,9 @@
 package com.pockyl.hextale.client.screen;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.util.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -15,25 +13,22 @@ import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemElements;
 import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchSheet;
-import com.pockyl.hextale.research.ResearchText;
+import com.pockyl.hextale.research.ResearchTool;
 import com.pockyl.hextale.research.RuneBoard;
-import com.pockyl.hextale.research.WallKind;
 import com.pockyl.hextale.rune.SimpleRune;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * Draws the research parchment in pixel art, for both games: a rune's parchment (dark runes, points, the symbols written
- * so far, the sections the next symbol can reach) and an item's resonance (the item in the centre, the nine element
- * strings, tuning marks and their echoes). Sections are laid out {@value #COL_STEP} pixels apart in a row and
- * {@value #ROW_STEP} between rows (the background texture uses the same numbers, see the texture generator).
+ * Draws the research parchment in pixel art, for both games: a rune's parchment (fog, dark runes, points and the ink
+ * thread) and an item's echoes (the item in the centre, the nine element strings, the ripples of the strikes).
+ * Sections are laid out {@value #COL_STEP} pixels apart in a row and {@value #ROW_STEP} between rows (the background
+ * texture uses the same numbers, see the texture generator).
  */
 final class BoardView {
     static final int CX = 126;
@@ -43,37 +38,31 @@ final class BoardView {
     static final int CELL = 13;
     private static final double KX = COL_STEP / (HexGrid.HS * HexGrid.SQ3);
     private static final double KY = ROW_STEP / (HexGrid.HS * 1.5);
-    /** Fog radius (parchment units) around sections the ink has passed, by lens strength 0-2; 3 sees everything. */
-    private static final double[] SIGHT = {0.26, 0.4, 0.6};
-    private static final int INK = 0x3B2A1A;
-    private static final int WALL = 0x1E1628;
+    private static final int WALL = 0x241A2E;
     private static final int WALL_RIM = 0x4A3A66;
-    private static final int MIRROR = 0xC9D3E3;
-    private static final int MIRROR_RIM = 0x6E7FA0;
-    private static final int GOLD = 0xC88A12;
-    private static final long INK_MILLIS = 380;
-    private static final long BURST_MILLIS = 800;
-
-    /** A symbol the researcher can write now: which studied item, ground or not, and where its ink goes. */
-    record Move(Item item, ItemElements elements, boolean ground, HexGrid.Walk walk) {
-    }
+    private static final int GOLD = 0xE0A21C;
+    private static final int FREE_INK = 0x8FB4C8;
+    private static final long FADE_MILLIS = 450;
+    private static final long LIGHT_MILLIS = 700;
+    private static final long SHAKE_MILLIS = 320;
+    private static final long BIND_MILLIS = 1200;
+    private static final long RIPPLE_STEP_MILLIS = 70;
 
     private int left;
     private int top;
     private final boolean[] visible = new boolean[HexGrid.COUNT];
-    private long inkStart;
-    private int inkMarks;
-    private long burstStart;
-    private int burstCell = -1;
-    private int burstColor;
-    private int lastFilled;
-    private int lastEchoes;
-    /** The newest guess mark: a wave runs from the item along its string to it. */
-    private int rippleCell = -1;
-    private long rippleStart;
-    private static final long RIPPLE_MILLIS = 420;
-    /** False until the first look at the sheet: what was already there when the screen opened is not animated. */
-    private boolean primed;
+    /** When each section came out of the fog (for the fade), 0 = visible from the start. */
+    private final long[] revealed = new long[HexGrid.COUNT];
+    private boolean fogPrimed;
+    /** When each point lit up, 0 = not lit (or lit before the screen opened). */
+    private final long[] litAt = new long[8];
+    private int lastLit;
+    private long shakeStart;
+    private int shakeCell = -1;
+    private long bindStart;
+    private boolean lastDone;
+    private int lastEchoes = -1;
+    private long echoStart;
 
     void layout(int left, int top) {
         this.left = left;
@@ -88,6 +77,14 @@ final class BoardView {
         return CY + ROW_STEP * HexGrid.r(cell);
     }
 
+    private int sx(int cell) {
+        return left + px(cell);
+    }
+
+    private int sy(int cell) {
+        return top + py(cell);
+    }
+
     /** The section under the mouse, or -1. */
     int cellAt(double mouseX, double mouseY) {
         double ux = (mouseX - left - CX - 0.5) / KX;
@@ -95,324 +92,397 @@ final class BoardView {
         return HexGrid.cellAt(ux, uy);
     }
 
-    /** Recomputes the fog: sections near the ink's past paths are visible, all of them with a full lens. */
-    void updateFog(BitSet seen, int lens) {
+    /** Screen position of a section's centre. */
+    int[] screen(int cell) {
+        return new int[]{sx(cell), sy(cell)};
+    }
+
+    /** A new rune or a fresh screen: nothing that is already there animates. */
+    void reset() {
+        fogPrimed = false;
+        lastLit = -1;
+        lastDone = false;
+        lastEchoes = -1;
+        Arrays.fill(litAt, 0);
+        shakeCell = -1;
+    }
+
+    /** The thread could not go on here: the head shakes red. */
+    void shake(int cell) {
+        shakeCell = cell;
+        shakeStart = Util.getMillis();
+    }
+
+    // ---- The rune's parchment -------------------------------------------------------------------------------------
+
+    /** Lifts the fog around the sections the researcher's threads have passed (and the thread being drawn). */
+    void updateFog(BitSet seen, int[] thread, int lens) {
+        long now = Util.getMillis();
+        boolean[] next = new boolean[HexGrid.COUNT];
         if (lens >= 3) {
-            Arrays.fill(visible, true);
-            return;
-        }
-        double sight = SIGHT[lens];
-        Arrays.fill(visible, false);
-        for (int s = seen.nextSetBit(0); s >= 0; s = seen.nextSetBit(s + 1)) {
-            for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-                if (!visible[cell] && HexGrid.distance(s, cell) < sight) {
-                    visible[cell] = true;
+            Arrays.fill(next, true);
+        } else {
+            int sight = ResearchTool.SIGHT[lens];
+            BitSet sources = (BitSet) seen.clone();
+            sources.set(HexGrid.CENTRE);
+            for (int cell : thread) {
+                sources.set(cell);
+            }
+            for (int s = sources.nextSetBit(0); s >= 0; s = sources.nextSetBit(s + 1)) {
+                for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+                    if (!next[cell] && HexGrid.steps(s, cell) <= sight) {
+                        next[cell] = true;
+                    }
                 }
             }
         }
-        visible[HexGrid.CENTRE] = true;
-    }
-
-    /** Notices new symbols, filled points and echoes to animate them. */
-    void observe(@Nullable RuneBoard board, @Nullable ResearchSheet sheet, @Nullable ItemStudy study) {
-        long now = Util.getMillis();
-        int used = sheet == null ? 0 : sheet.used();
-        int filled = sheet == null ? 0 : sheet.filledMask();
-        int echoes = study == null ? 0 : study.marks().size();
-        if (!primed) {
-            primed = true;
-            inkMarks = used;
-            lastFilled = filled;
-            lastEchoes = echoes;
-            return;
-        }
-        if (used > inkMarks) {
-            inkStart = now;
-        }
-        inkMarks = used;
-        int added = filled & ~lastFilled;
-        if (added != 0 && board != null) {
-            RuneBoard.Point p = board.points().get(Integer.numberOfTrailingZeros(added));
-            burstCell = p.cell();
-            burstColor = p.element().color();
-            burstStart = now;
-        }
-        lastFilled = filled;
-        if (echoes > lastEchoes && study != null) {
-            Integer newest = null;
-            for (Integer cell : study.marks().keySet()) {
-                newest = cell;
+        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+            if (next[cell] && !visible[cell]) {
+                revealed[cell] = fogPrimed ? now : 0;
             }
-            if (newest != null) {
-                rippleCell = newest;
-                rippleStart = now;
-            }
+            visible[cell] = next[cell];
         }
-        lastEchoes = echoes;
+        fogPrimed = true;
     }
-
-    // ---- A rune's parchment ---------------------------------------------------------------------------------------
 
     /**
-     * @param moves   where the next symbol can go, by landing section (empty when nothing can be written)
+     * @param trace   the thread checked against the rules (null only for an empty board)
      * @param hovered the section under the mouse, or -1
-     * @param chosen  the move shown for the hovered section, or null
+     * @param preview a section the thread would step into if clicked, or -1
      */
-    void renderRune(GuiGraphicsExtractor graphics, Font font, RuneBoard board, ResearchSheet sheet, Map<Integer, List<Move>> moves,
-                    int hovered, @Nullable Move chosen, int choice, int forkLevel) {
+    void renderRune(GuiGraphicsExtractor graphics, Font font, RuneBoard board, int[] thread, ResearchSheet.@Nullable Trace trace,
+                    boolean done, boolean drawing, int hovered, int preview, boolean ready) {
         long now = Util.getMillis();
         float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
+        int lit = trace == null ? 0 : trace.lit();
+        noticeLit(board, lit, now);
+        if (done && !lastDone) {
+            bindStart = now;
+        }
+        lastDone = done;
 
+        // Sections: fog, open parchment, dark runes.
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-            int x = left + px(cell);
-            int y = top + py(cell);
-            WallKind wall = board.walls()[cell];
-            int point = board.pointAt(cell);
-            if (point >= 0) {
-                RuneBoard.Point p = board.points().get(point);
-                int color = PixelArt.onParchment(p.element().color());
-                if (sheet.isOpen() && sheet.isFilled(point)) {
-                    PixelArt.hex(graphics, x, y, CELL, argb(PixelArt.mix(p.element().color(), 0xFFFFFF, 0.1F), 1), argb(color, 1));
-                    PixelArt.radical(graphics, p.element(), x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(color, 0x000000, 0.55F));
-                } else {
-                    PixelArt.hex(graphics, x, y, CELL, argb(0xFBF2DA, 1), argb(PixelArt.mix(color, 0xFFFFFF, 0.35F * pulse), 1));
-                    PixelArt.radical(graphics, p.element(), x - 4, y - 4, 9, argb(color, 0.75F));
-                }
-            } else if (wall != null) {
-                wall(graphics, font, x, y, visible[cell] ? wall : null, pulse);
-            } else if (visible[cell]) {
-                SimpleRune near = nearestCorner(cell);
-                int tint = near == null ? 0xFFF8E8 : PixelArt.mix(0xFFF8E8, near.color(), 0.25F);
-                PixelArt.hex(graphics, x, y, CELL, argb(tint, 0.28F), argb(0x8C7047, 0.32F));
+            int x = sx(cell);
+            int y = sy(cell);
+            float fade = revealed[cell] == 0 ? 1 : Math.min(1, (now - revealed[cell]) / (float) FADE_MILLIS);
+            if (!visible[cell]) {
+                fog(graphics, x, y, cell, now);
             } else {
-                PixelArt.hex(graphics, x, y, CELL, argb(0x5E4526, 0.2F), argb(0x5E4526, 0.12F));
+                if (fade < 1) {
+                    fog(graphics, x, y, cell, now);
+                }
+                if (board.wall(cell)) {
+                    stone(graphics, x, y, cell, fade);
+                } else {
+                    SimpleRune near = nearestCorner(cell);
+                    int tint = near == null ? 0xFFF8E8 : PixelArt.mix(0xFFF8E8, near.color(), 0.22F);
+                    PixelArt.hex(graphics, x, y, CELL, argb(tint, 0.22F * fade), argb(0x8C7047, 0.28F * fade));
+                }
             }
         }
 
-        List<ResearchSheet.Mark> marks = sheet.isOpen() ? sheet.marks() : List.of();
-        float inkProgress = Math.min(1, (now - inkStart) / (float) INK_MILLIS);
-        for (int i = 0; i < marks.size(); i++) {
-            ResearchSheet.Mark mark = marks.get(i);
-            boolean newest = i == marks.size() - 1 && inkProgress < 1;
-            inkLine(graphics, mark.from(), mark.cells(), newest ? inkProgress : 1, argb(INK, 0.75F));
-        }
-        for (int i = 0; i < marks.size(); i++) {
-            ResearchSheet.Mark mark = marks.get(i);
-            if (i == marks.size() - 1 && inkProgress < 1) {
-                continue;
+        // The thread: each section in the colour of the ink it costs, a glow running along it.
+        int bound = done ? (int) Math.min(thread.length, (now - bindStart) / (float) BIND_MILLIS * thread.length * 1.5F) : 0;
+        for (int i = 1; i < thread.length; i++) {
+            SimpleRune paying = trace == null ? null : trace.paying()[i];
+            int rgb = paying == null ? FREE_INK : PixelArt.onParchment(paying.color());
+            if (done && i <= bound) {
+                rgb = PixelArt.mix(rgb, GOLD, 0.65F);
             }
-            symbol(graphics, mark.cell(), mark.element(), 1);
+            threadSegment(graphics, thread[i - 1], thread[i], rgb, board.wall(thread[i]));
         }
+        if (thread.length > 1) {
+            int step = Math.max(6, thread.length / 4);
+            float flow = now / 140.0F;
+            for (int k = 0; k < thread.length; k += step) {
+                float at = (k + flow) % (thread.length - 1);
+                int i = (int) at;
+                float t = at - i;
+                int x = Math.round(sx(thread[i]) + (sx(thread[i + 1]) - sx(thread[i])) * t);
+                int y = Math.round(sy(thread[i]) + (sy(thread[i + 1]) - sy(thread[i])) * t);
+                PixelArt.fill(graphics, x, y, x + 2, y + 2, argb(done ? 0xFFF3C0 : 0xFFFFFF, 0.75F));
+            }
+        }
+
+        // Points: waiting ones breathe, passed ones shine in their element.
         for (int i = 0; i < board.points().size(); i++) {
             RuneBoard.Point p = board.points().get(i);
-            if (sheet.isOpen() && sheet.markAt(p.cell()) != null) {
-                int color = sheet.isFilled(i) ? p.element().color() : PixelArt.mix(p.element().color(), 0xFFFFFF, pulse * 0.6F);
-                PixelArt.hexRing(graphics, left + px(p.cell()), top + py(p.cell()), CELL, argb(color, 1));
-                PixelArt.hexRing(graphics, left + px(p.cell()), top + py(p.cell()), CELL + 2, argb(color, 0.5F + 0.5F * pulse));
+            int x = sx(p.cell());
+            int y = sy(p.cell());
+            int color = PixelArt.onParchment(p.element().color());
+            if ((lit & 1 << i) != 0) {
+                PixelArt.hex(graphics, x, y, CELL + 2, argb(p.element().color(), 1), argb(PixelArt.mix(color, 0x000000, 0.3F), 1));
+                PixelArt.radical(graphics, p.element(), x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(color, 0x000000, 0.6F));
+                float t = litAt[i] == 0 ? 1 : (now - litAt[i]) / (float) LIGHT_MILLIS;
+                if (t < 1) {
+                    int width = CELL + 2 * (int) (t * 12) | 1;
+                    PixelArt.hexRing(graphics, x, y, width, argb(p.element().color(), 1 - t));
+                    PixelArt.hexRing(graphics, x, y, width + 4, argb(0xFFFFFF, (1 - t) * 0.6F));
+                }
+            } else {
+                PixelArt.hex(graphics, x, y, CELL + 2, argb(0xFBF2DA, 1), argb(PixelArt.mix(color, 0xFFFFFF, 0.3F * pulse), 1));
+                PixelArt.radical(graphics, p.element(), x - 4, y - 4, 9, argb(color, 0.85F));
+                PixelArt.hexRing(graphics, x, y, CELL + 4, argb(p.element().color(), 0.25F + 0.35F * pulse));
             }
         }
 
-        // Where the next symbol can go: a gold spark on every reachable section.
-        for (Map.Entry<Integer, List<Move>> entry : moves.entrySet()) {
-            int cell = entry.getKey();
-            int x = left + px(cell);
-            int y = top + py(cell);
-            int color = board.pointAt(cell) >= 0 ? 0xE0A21C : GOLD;
-            PixelArt.hexRing(graphics, x, y, CELL - 4, argb(color, 0.45F + 0.4F * pulse));
-            PixelArt.fill(graphics, x, y, x + 1, y + 1, argb(color, 0.9F));
-        }
-        if (chosen != null) {
-            renderMove(graphics, font, board, sheet, chosen, now, moves.getOrDefault(hovered, List.of()).size(), choice);
+        // The orb, ringed with the ink the thread starts on.
+        int ox = sx(HexGrid.CENTRE);
+        int oy = sy(HexGrid.CENTRE);
+        int action = board.rune().action().color();
+        PixelArt.hex(graphics, ox, oy, CELL + 4, argb(0x5CC8F2, 0.25F + 0.2F * pulse), argb(action, 1));
+        PixelArt.hexRing(graphics, ox, oy, CELL + 6, argb(action, 0.35F + 0.35F * pulse));
+        if (ready) {
+            PixelArt.flush(graphics);
+            graphics.item(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), ox - 8, oy - 8);
         }
 
-        int ox = left + px(HexGrid.CENTRE);
-        int oy = top + py(HexGrid.CENTRE);
-        PixelArt.hex(graphics, ox, oy, CELL + 2, argb(0x5CC8F2, 0.25F + 0.2F * pulse), argb(0x2B8FB8, 1));
-        PixelArt.flush(graphics);
-        graphics.item(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), ox - 8, oy - 8);
-        if (forkLevel > 0 && sheet.canJump(board, HexGrid.CENTRE, forkLevel) && hovered == HexGrid.CENTRE) {
-            PixelArt.hexRing(graphics, ox, oy, CELL + 4, argb(0xE0A21C, 1));
+        // The head of the thread, where it can go on, and what is under the mouse.
+        int head = thread[thread.length - 1];
+        if (!done && thread.length > 1) {
+            head(graphics, head, trace == null ? null : headColour(board, thread), now, drawing);
+        } else if (!done && ready && !drawing) {
+            PixelArt.hexRing(graphics, ox, oy, CELL + 8 + 2 * Math.round(pulse * 2), argb(0xFFFFFF, 0.3F + 0.4F * pulse));
         }
-        if (!sheet.isOver()) {
-            here(graphics, sheet.isActive() ? sheet.from() : HexGrid.CENTRE, now);
+        if (preview >= 0) {
+            int[] h = screen(head);
+            int[] p = screen(preview);
+            PixelArt.dotted(graphics, h[0], h[1], p[0], p[1], 2, 2, (int) (now / 90 % 4), argb(0x3B2A1A, 0.8F));
+            PixelArt.hexRing(graphics, p[0], p[1], CELL, argb(0xFFFFFF, 0.7F));
+        } else if (hovered >= 0 && !drawing && visible[hovered]) {
+            PixelArt.hexRing(graphics, sx(hovered), sy(hovered), CELL, argb(0xFFFFFF, 0.35F));
+        }
+        if (shakeCell >= 0) {
+            float t = (now - shakeStart) / (float) SHAKE_MILLIS;
+            if (t < 1) {
+                int dx = Math.round(Mth.sin(t * 30) * 2 * (1 - t));
+                PixelArt.hexRing(graphics, sx(shakeCell) + dx, sy(shakeCell), CELL + 2, argb(0xE04A3A, 1 - t));
+                PixelArt.hexRing(graphics, sx(shakeCell) + dx, sy(shakeCell), CELL, argb(0xE04A3A, (1 - t) * 0.7F));
+            } else {
+                shakeCell = -1;
+            }
+        }
+        if (done) {
+            float t = (now - bindStart) / (float) BIND_MILLIS;
+            if (t < 1.4F) {
+                int width = CELL + 2 * (int) (Math.min(1, t) * 40) | 1;
+                PixelArt.hexRing(graphics, ox, oy, width, argb(board.rune().color(), Math.max(0, 1 - t)));
+            }
         }
         renderSigns(graphics);
-        renderBurst(graphics, now);
-        if (hovered >= 0 && chosen == null) {
-            PixelArt.hexRing(graphics, left + px(hovered), top + py(hovered), CELL, argb(0xFFFFFF, 0.6F));
+    }
+
+    private void noticeLit(RuneBoard board, int lit, long now) {
+        if (lastLit >= 0) {
+            int added = lit & ~lastLit;
+            for (int i = 0; i < board.points().size() && i < litAt.length; i++) {
+                if ((added & 1 << i) != 0) {
+                    litAt[i] = now;
+                }
+            }
+        }
+        lastLit = lit;
+    }
+
+    /** The element whose ink the thread runs on after its last section. */
+    static SimpleRune headColour(RuneBoard board, int[] thread) {
+        for (int i = thread.length - 1; i >= 1; i--) {
+            int point = board.pointAt(thread[i]);
+            if (point >= 0) {
+                return board.points().get(point).element();
+            }
+        }
+        return board.rune().action();
+    }
+
+    private void head(GuiGraphicsExtractor graphics, int cell, @Nullable SimpleRune colour, long now, boolean drawing) {
+        int x = sx(cell);
+        int y = sy(cell);
+        int rgb = colour == null ? 0xFFFFFF : colour.color();
+        float pulse = 0.5F + 0.5F * Mth.sin(now / (drawing ? 90.0F : 200.0F));
+        PixelArt.hex(graphics, x, y, 7, argb(0xFFFFFF, 0.9F), argb(rgb, 1));
+        PixelArt.hexRing(graphics, x, y, CELL + 2 + 2 * Math.round(pulse * 2), argb(rgb, 0.4F + 0.5F * pulse));
+        for (int k = 0; k < 4; k++) {
+            float t = ((now + k * 250L) % 1000) / 1000.0F;
+            double angle = k * 1.7 + now / 700.0;
+            int px = x + (int) Math.round(Math.cos(angle) * (4 + t * 6));
+            int py = y + (int) Math.round(Math.sin(angle) * (4 + t * 6)) - (int) (t * 3);
+            PixelArt.fill(graphics, px, py, px + 1, py + 1, argb(PixelArt.mix(rgb, 0xFFFFFF, 0.5F), 1 - t));
         }
     }
 
-    /**
-     * Where the next symbol starts: a bright double ring around the section and a small marker bobbing above it.
-     */
-    private void here(GuiGraphicsExtractor graphics, int cell, long now) {
-        int x = left + px(cell);
-        int y = top + py(cell);
-        float pulse = 0.5F + 0.5F * Mth.sin(now / 200.0F);
-        PixelArt.hexRing(graphics, x, y, CELL + 2, argb(0x7EF0FF, 0.7F + 0.3F * pulse));
-        PixelArt.hexRing(graphics, x, y, CELL + 4, argb(0x2B8FB8, 0.4F + 0.4F * pulse));
-        int bob = Math.round(pulse * 2);
-        int ty = y - 12 - bob;
-        for (int row = 0; row < 4; row++) {
-            PixelArt.fill(graphics, x - 3 + row, ty + row, x + 4 - row, ty + row + 1, argb(row == 0 ? 0xD2F6FF : 0x5CC8F2, 1));
-        }
-        PixelArt.fill(graphics, x - 4, ty - 1, x + 5, ty, argb(0x1A557F, 1));
-    }
-
-    /** The chosen move: its ink path, a ghost symbol and the item that writes it, hovering above the section. */
-    private void renderMove(GuiGraphicsExtractor graphics, Font font, RuneBoard board, ResearchSheet sheet, Move move, long now, int options,
-                            int choice) {
-        int phase = (int) (now / 90 % 6);
-        int from = sheet.isActive() ? sheet.from() : HexGrid.CENTRE;
-        int x0 = left + px(from);
-        int y0 = top + py(from);
-        int point = board.pointAt(move.walk().end());
-        boolean good = point >= 0 && !(sheet.isOpen() && sheet.isFilled(point));
-        int color = good ? 0xFFC88A12 : 0xCC3B2A1A;
-        for (int cell : move.walk().cells()) {
-            int x1 = left + px(cell);
-            int y1 = top + py(cell);
-            PixelArt.dotted(graphics, x0, y0, x1, y1, 3, 3, phase, color);
-            x0 = x1;
-            y0 = y1;
-        }
-        int end = move.walk().end();
-        symbol(graphics, end, move.elements().main(), 0.55F);
-        PixelArt.hexRing(graphics, left + px(end), top + py(end), CELL + 2, color);
-        int ix = left + px(end) + 6;
-        int iy = top + py(end) - 20;
-        PixelArt.fill(graphics, ix - 1, iy - 1, ix + 17, iy + 17, 0xD0140C06);
-        PixelArt.flush(graphics);
-        graphics.item(new ItemStack(move.item()), ix, iy);
-        if (move.ground()) {
-            PixelArt.flush(graphics);
-            graphics.text(font, "½", ix, iy, 0xFF7EF0FF, true);
-        }
-        if (options > 1) {
-            PixelArt.flush(graphics);
-            graphics.text(font, (choice % options + 1) + "/" + options, ix + 18, iy + 5, 0xFFF0E3C2, true);
+    private void threadSegment(GuiGraphicsExtractor graphics, int from, int to, int rgb, boolean throughWall) {
+        int x0 = sx(from);
+        int y0 = sy(from);
+        int x1 = sx(to);
+        int y1 = sy(to);
+        int dark = argb(PixelArt.mix(rgb, 0x000000, 0.35F), 0.9F);
+        PixelArt.line(graphics, x0, y0 + 1, x1, y1 + 1, dark);
+        PixelArt.line(graphics, x0, y0, x1, y1, argb(rgb, 1));
+        PixelArt.line(graphics, x0 + 1, y0, x1 + 1, y1, argb(rgb, 1));
+        PixelArt.fill(graphics, x1 - 1, y1 - 1, x1 + 2, y1 + 2, argb(rgb, 1));
+        if (throughWall) {
+            PixelArt.hexRing(graphics, x1, y1, CELL, argb(0xC9D3E3, 0.8F));
         }
     }
 
-    // ---- An item's resonance --------------------------------------------------------------------------------------
+    /** Fog: a smudge of darker parchment that drifts slowly. */
+    private static void fog(GuiGraphicsExtractor graphics, int x, int y, int cell, long now) {
+        float drift = 0.5F + 0.5F * Mth.sin(now / 1500.0F + cell * 0.37F);
+        PixelArt.hex(graphics, x, y, CELL, argb(0x4A3520, 0.3F + 0.08F * drift), argb(0x4A3520, 0.18F));
+    }
 
-    void renderStudy(GuiGraphicsExtractor graphics, Item item, ItemElements elements, ItemStudy study, int hovered) {
+    private static void stone(GuiGraphicsExtractor graphics, int x, int y, int cell, float alpha) {
+        PixelArt.hex(graphics, x, y, CELL, argb(WALL, alpha), argb(WALL_RIM, alpha));
+        int crack = argb(0x0C0812, alpha);
+        if (cell % 2 == 0) {
+            PixelArt.line(graphics, x - 3, y - 2, x, y + 1, crack);
+            PixelArt.line(graphics, x, y + 1, x + 3, y - 1, crack);
+        } else {
+            PixelArt.line(graphics, x - 2, y + 2, x + 1, y - 2, crack);
+            PixelArt.line(graphics, x + 1, y - 2, x + 3, y, crack);
+        }
+        PixelArt.fill(graphics, x - 2, y - 4, x, y - 3, argb(0x6A5890, alpha));
+    }
+
+    // ---- An item's echoes -----------------------------------------------------------------------------------------
+
+    void renderStudy(GuiGraphicsExtractor graphics, Font font, Item item, ItemElements elements, ItemStudy study, int hovered) {
         long now = Util.getMillis();
         float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
         boolean active = study.isActive(elements);
-        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-            PixelArt.hex(graphics, left + px(cell), top + py(cell), CELL, argb(0x5E4526, 0.07F), argb(0x5E4526, 0.1F));
+        boolean lost = study.lost(elements);
+        List<ItemStudy.Echo> echoes = study.echoes();
+        if (echoes.size() != lastEchoes) {
+            echoStart = lastEchoes < 0 ? 0 : now;
+            lastEchoes = echoes.size();
         }
-        int hoveredString = hovered >= 0 && study.canGuess(hovered, elements) ? ItemStudy.stringOf(hovered) : -1;
-        float ripple = rippleCell >= 0 ? (now - rippleStart) / (float) RIPPLE_MILLIS : 2;
-        int rippleString = rippleCell >= 0 ? ItemStudy.stringOf(rippleCell) : -1;
+        ItemStudy.Echo newest = echoes.isEmpty() ? null : echoes.get(echoes.size() - 1);
+        // How far the newest ripple has run, in sections (it is still on its way).
+        float wave = newest == null || echoStart == 0 ? Float.MAX_VALUE : (now - echoStart) / (float) RIPPLE_STEP_MILLIS;
+
+        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+            int x = sx(cell);
+            int y = sy(cell);
+            boolean cleared = false;
+            for (ItemStudy.Echo echo : echoes) {
+                if (echo == newest && wave < echo.radius()) {
+                    continue;
+                }
+                if (HexGrid.steps(echo.cell(), cell) < echo.radius()) {
+                    cleared = true;
+                    break;
+                }
+            }
+            int string = ItemStudy.stringOf(cell);
+            if (cleared) {
+                PixelArt.hex(graphics, x, y, CELL, argb(0x3B4A5A, 0.16F), argb(0x3B4A5A, 0.12F));
+            } else if (string >= 0 && study.possible(cell)) {
+                SimpleRune element = HexGrid.RING[string];
+                int heat = wave >= (newest == null ? 0 : newest.radius()) ? study.heat(cell, elements) : 0;
+                if (heat > 0) {
+                    // On the rim of an open echo: an element may well sing here.
+                    float glow = 0.5F + 0.5F * Mth.sin(now / 160.0F + cell);
+                    PixelArt.hex(graphics, x, y, CELL, argb(PixelArt.mix(element.color(), 0xFFF8E8, 0.35F), 0.9F),
+                            argb(element.color(), 1));
+                    PixelArt.hexRing(graphics, x, y, CELL + 2 + (heat > 1 ? 2 : 0), argb(element.color(), 0.4F + 0.5F * glow));
+                } else {
+                    PixelArt.hex(graphics, x, y, CELL, argb(PixelArt.mix(element.color(), 0xFFF8E8, 0.75F), 0.55F),
+                            argb(PixelArt.onParchment(element.color()), 0.35F));
+                }
+                PixelArt.fill(graphics, x, y, x + 1, y + 1, argb(PixelArt.onParchment(element.color()), 0.8F));
+            } else {
+                PixelArt.hex(graphics, x, y, CELL, argb(0x5E4526, 0.06F), argb(0x5E4526, 0.1F));
+            }
+        }
+
+        // Strings, faint, from the item to the corners.
         for (int string = 0; string < HexGrid.RING.length; string++) {
             SimpleRune element = HexGrid.RING[string];
-            ItemStudy.Presence presence = study.presence(string);
-            boolean revealed = study.isRevealed(string);
-            boolean absent = presence == ItemStudy.Presence.ABSENT;
-            boolean shimmering = presence == ItemStudy.Presence.PRESENT && !revealed;
-            boolean stirredByHover = hoveredString >= 0 && presence == ItemStudy.Presence.UNKNOWN
-                    && (string == Math.floorMod(hoveredString - 1, 9) || string == Math.floorMod(hoveredString + 1, 9));
-            int ink = PixelArt.onParchment(element.color());
             int[] cells = ItemStudy.string(string);
-            int x0 = left + px(HexGrid.CENTRE);
-            int y0 = top + py(HexGrid.CENTRE);
-            for (int i = 0; i < cells.length; i++) {
-                int cell = cells[i];
-                int x = left + px(cell);
-                int y = top + py(cell);
-                boolean beyond = revealed && !study.marks().containsKey(cell) && i > foundIndex(study, string);
-                float lineAlpha = absent || beyond ? 0.12F : revealed ? 0.7F : shimmering ? 0.35F + 0.35F * shimmer(now, i) : 0.28F;
-                int lineColor = absent ? 0x6A6058 : stirredByHover ? 0x2B8FB8 : ink;
-                if (stirredByHover) {
-                    PixelArt.dotted(graphics, x0, y0, x, y, 2, 2, (int) (now / 120 % 4), argb(lineColor, 0.8F));
-                } else {
-                    PixelArt.line(graphics, x0, y0, x, y, argb(lineColor, lineAlpha));
-                }
-                x0 = x;
-                y0 = y;
+            boolean found = study.isRevealed(string);
+            int x0 = sx(HexGrid.CENTRE);
+            int y0 = sy(HexGrid.CENTRE);
+            for (int cell : cells) {
+                PixelArt.dotted(graphics, x0, y0, sx(cell), sy(cell), 1, 3, 0, argb(PixelArt.onParchment(element.color()), found ? 0.5F : 0.3F));
+                x0 = sx(cell);
+                y0 = sy(cell);
+            }
+        }
 
-                boolean possible = study.possible(string, i);
-                ItemStudy.Echo mark = study.marks().get(cell);
-                if (mark == ItemStudy.Echo.EXACT) {
-                    // Found: the element's sign shines where it hid.
-                    PixelArt.hex(graphics, x, y, CELL + 4, argb(element.color(), 0.25F + 0.15F * pulse), 0);
-                    PixelArt.hex(graphics, x, y, CELL, argb(element.color(), 1), argb(GOLD, 1));
-                    PixelArt.radical(graphics, element, x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(element.color(), 0x000000, 0.6F));
-                    sparkle(graphics, x, y, now, cell);
-                } else if (mark != null) {
-                    guessToken(graphics, x, y, element, mark, 1);
-                } else if (absent) {
-                    PixelArt.hex(graphics, x, y, CELL, argb(0x5E5650, 0.12F), argb(0x5E5650, 0.2F));
-                } else if (possible) {
-                    float glow = shimmering ? 0.25F + 0.45F * shimmer(now, i) : 0;
-                    int fill = PixelArt.mix(element.color(), 0xFFF8E8, shimmering ? 0.6F : 0.85F);
-                    PixelArt.hex(graphics, x, y, CELL, argb(fill, 0.75F + glow * 0.25F), argb(ink, 0.45F + glow));
-                    if (shimmering) {
-                        PixelArt.hexRing(graphics, x, y, CELL + 2, argb(element.color(), glow));
-                    }
-                } else {
-                    // Ruled out by a guess: dark, a faint dot.
-                    PixelArt.hex(graphics, x, y, CELL, argb(0x3B2A1A, 0.1F), argb(ink, 0.12F));
-                    PixelArt.fill(graphics, x, y, x + 1, y + 1, argb(ink, 0.35F));
-                }
-                if (cell == hovered && active && study.canGuess(cell, elements)) {
-                    guessToken(graphics, x, y, element, null, 0.6F);
-                    PixelArt.hexRing(graphics, x, y, CELL + 2, argb(0xFFFFFF, 0.8F));
-                }
+        // Ripples: the older ones as faint rims, the newest one running out and ringing.
+        for (ItemStudy.Echo echo : echoes) {
+            if (echo.radius() == 0) {
+                continue;
             }
-            if (string == rippleString && ripple < 1) {
-                // The wave of the newest guess: a bright bead running out from the item.
-                int target = ItemStudy.indexOf(rippleCell);
-                float along = ripple * (target + 1);
-                int from = HexGrid.CENTRE;
-                for (int i = 0; i <= target; i++) {
-                    if (along >= i && along < i + 1) {
-                        float t = along - i;
-                        int ax = left + px(from);
-                        int ay = top + py(from);
-                        int bx = left + px(cells[i]);
-                        int by = top + py(cells[i]);
-                        int x = Math.round(ax + (bx - ax) * t);
-                        int y = Math.round(ay + (by - ay) * t);
-                        PixelArt.hex(graphics, x, y, 7, argb(0xD2F6FF, 1), argb(0x5CC8F2, 1));
-                    }
-                    from = cells[i];
+            boolean running = echo == newest && wave < echo.radius() + 4;
+            float reach = echo == newest ? Math.min(wave, echo.radius()) : echo.radius();
+            float alpha = echo == newest ? 0.85F : 0.3F;
+            for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+                int d = HexGrid.steps(echo.cell(), cell);
+                if (running && d == (int) reach && d < echo.radius()) {
+                    PixelArt.hexRing(graphics, sx(cell), sy(cell), CELL, argb(0x9FE3FF, 0.8F));
+                } else if (d == echo.radius() && reach >= echo.radius()) {
+                    float ring = echo == newest ? Math.max(0, 1 - (wave - echo.radius()) / 6) : 0;
+                    PixelArt.hexRing(graphics, sx(cell), sy(cell), CELL - 2, argb(0x2B8FB8, alpha * (0.6F + 0.4F * pulse) + ring * 0.3F));
                 }
             }
         }
-        if (rippleCell >= 0 && ripple >= 1 && ripple < 2.2F) {
-            float t = (ripple - 1) / 1.2F;
-            int width = CELL + 2 * (int) (t * 8) | 1;
-            PixelArt.hexRing(graphics, left + px(rippleCell), top + py(rippleCell), width, argb(0x5CC8F2, 1 - t));
+
+        // Strike marks with their distance, and the elements found.
+        for (ItemStudy.Echo echo : echoes) {
+            int x = sx(echo.cell());
+            int y = sy(echo.cell());
+            if (echo.radius() == 0) {
+                continue;
+            }
+            PixelArt.hex(graphics, x, y, 11, argb(0xD6AB52, 1), argb(0x6E4A16, 1));
+            PixelArt.flush(graphics);
+            String text = echo.radius() > 9 ? "+" : String.valueOf(echo.radius());
+            graphics.text(font, text, x - font.width(text) / 2 + 1, y - 3, 0xFF2A1B0C, false);
         }
-        int ox = left + px(HexGrid.CENTRE);
-        int oy = top + py(HexGrid.CENTRE);
-        PixelArt.hex(graphics, ox, oy, CELL + 4, argb(0xFFF8E8, 0.6F), argb(GOLD, 0.6F + 0.4F * pulse));
+        for (Map.Entry<SimpleRune, Integer> entry : elements.elements().entrySet()) {
+            SimpleRune element = entry.getKey();
+            if (!study.isRevealed(element)) {
+                continue;
+            }
+            int cell = ItemStudy.hiding(element, entry.getValue());
+            int x = sx(cell);
+            int y = sy(cell);
+            PixelArt.hex(graphics, x, y, CELL + 6, argb(element.color(), 0.25F + 0.15F * pulse), 0);
+            PixelArt.hex(graphics, x, y, CELL + 2, argb(element.color(), 1), argb(GOLD, 1));
+            PixelArt.radical(graphics, element, x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(element.color(), 0x000000, 0.6F));
+            sparkle(graphics, x, y, now, cell);
+            PixelArt.flush(graphics);
+            String strength = String.valueOf(entry.getValue());
+            graphics.text(font, strength, x + 7, y - 11, 0xFFFFF3C0, true);
+        }
+
+        if (hovered >= 0 && active && study.canStrike(hovered, elements)) {
+            int x = sx(hovered);
+            int y = sy(hovered);
+            PixelArt.hex(graphics, x, y, 11, argb(0xD6AB52, 0.5F), argb(0x6E4A16, 0.7F));
+            PixelArt.hexRing(graphics, x, y, CELL + 2 + 2 * Math.round(pulse * 2), argb(0xFFFFFF, 0.7F));
+        }
+
+        int ox = sx(HexGrid.CENTRE);
+        int oy = sy(HexGrid.CENTRE);
+        PixelArt.hex(graphics, ox, oy, CELL + 6, argb(0xFFF8E8, 0.7F), argb(lost ? 0x6A6058 : GOLD, 0.6F + 0.4F * pulse));
+        if (study.won(elements)) {
+            float t = Math.min(1, (now - echoStart) / 900.0F);
+            PixelArt.hexRing(graphics, ox, oy, CELL + 2 * (int) (t * 30) | 1, argb(GOLD, 1 - t));
+        }
         PixelArt.flush(graphics);
         graphics.item(new ItemStack(item), ox - 8, oy - 8);
+        if (lost) {
+            PixelArt.line(graphics, ox - 6, oy - 6, ox + 6, oy + 6, argb(0x3B2A1A, 0.8F));
+            PixelArt.line(graphics, ox + 6, oy - 6, ox - 6, oy + 6, argb(0x3B2A1A, 0.8F));
+        }
         renderSigns(graphics);
     }
 
-    /** The section a found element sits on (its gold mark), or the end of the string. */
-    private static int foundIndex(ItemStudy study, int string) {
-        int[] cells = ItemStudy.string(string);
-        for (int i = 0; i < cells.length; i++) {
-            if (study.marks().get(cells[i]) == ItemStudy.Echo.EXACT) {
-                return i;
-            }
-        }
-        return cells.length;
-    }
-
-    /** A shimmer travelling along a string, section by section. */
-    private static float shimmer(long now, int index) {
-        return 0.5F + 0.5F * Mth.sin(now / 180.0F - index * 0.9F);
-    }
-
-    private void sparkle(GuiGraphicsExtractor graphics, int x, int y, long now, int seed) {
+    private static void sparkle(GuiGraphicsExtractor graphics, int x, int y, long now, int seed) {
         for (int k = 0; k < 3; k++) {
             float t = ((now + seed * 137L + k * 333L) % 1000) / 1000.0F;
             double angle = (seed * 1.7 + k * 2.1) % (Math.PI * 2);
@@ -422,51 +492,22 @@ final class BoardView {
         }
     }
 
-    /**
-     * A guess mark: a brass token on the section. Its face tells the answer - an arrow along the string (the element is
-     * farther out or nearer the item) or a cross (the item has no such element); a question mark before it is placed.
-     */
-    private void guessToken(GuiGraphicsExtractor graphics, int x, int y, SimpleRune element, ItemStudy.@Nullable Echo echo, float alpha) {
-        boolean silent = echo == ItemStudy.Echo.SILENT;
-        int body = silent ? 0x8A8078 : 0xD6AB52;
-        int rim = silent ? 0x4A4440 : 0x6E4A16;
-        PixelArt.hex(graphics, x, y + 1, 11, argb(0x1E140A, 0.35F * alpha), 0);
-        PixelArt.hex(graphics, x, y, 11, argb(body, alpha), argb(rim, alpha));
-        PixelArt.fill(graphics, x - 2, y - 4, x + 1, y - 3, argb(0xFFF6D6, 0.7F * alpha));
-        int face = argb(silent ? 0x2A2420 : 0x3B2208, alpha);
-        if (echo == null) {
-            PixelArt.fill(graphics, x - 1, y - 3, x + 2, y - 2, face);
-            PixelArt.fill(graphics, x + 1, y - 2, x + 2, y, face);
-            PixelArt.fill(graphics, x, y, x + 1, y + 1, face);
-            PixelArt.fill(graphics, x, y + 2, x + 1, y + 3, face);
-        } else if (silent) {
-            PixelArt.line(graphics, x - 2, y - 2, x + 2, y + 2, face);
-            PixelArt.line(graphics, x - 2, y + 2, x + 2, y - 2, face);
-        } else {
-            arrow(graphics, x, y, element, echo == ItemStudy.Echo.FARTHER, face);
-        }
-    }
-
-    /** A small pixel arrow along the string: outwards (farther) or towards the item (nearer). */
-    private void arrow(GuiGraphicsExtractor graphics, int x, int y, SimpleRune element, boolean outwards, int argb) {
-        double[] u = HexGrid.unit(element);
-        double dx = u[0] * (outwards ? 1 : -1);
-        double dy = u[1] * (outwards ? 1 : -1);
-        int tipX = x + (int) Math.round(dx * 3);
-        int tipY = y + (int) Math.round(dy * 3);
-        PixelArt.line(graphics, x - (int) Math.round(dx * 3), y - (int) Math.round(dy * 3), tipX, tipY, argb);
-        int sideX = (int) Math.round(-dy * 2);
-        int sideY = (int) Math.round(dx * 2);
-        int baseX = tipX - (int) Math.round(dx * 2);
-        int baseY = tipY - (int) Math.round(dy * 2);
-        PixelArt.line(graphics, tipX, tipY, baseX + sideX, baseY + sideY, argb);
-        PixelArt.line(graphics, tipX, tipY, baseX - sideX, baseY - sideY, argb);
-    }
-
     // ---- Shared -----------------------------------------------------------------------------------------------------
 
-    /** The parchment with nothing on it yet: only the element signs in their corners. */
-    void renderEmpty(GuiGraphicsExtractor graphics) {
+    /** The parchment with nothing on it: the element signs, and a book inviting to choose a rune. */
+    void renderEmpty(GuiGraphicsExtractor graphics, boolean hovered) {
+        long now = Util.getMillis();
+        float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
+        int ox = sx(HexGrid.CENTRE);
+        int oy = sy(HexGrid.CENTRE);
+        PixelArt.hex(graphics, ox, oy, 27, argb(0x5E4526, 0.12F), argb(0x5E4526, 0.3F));
+        PixelArt.hexRing(graphics, ox, oy, 31 + 2 * Math.round(pulse * 2), argb(hovered ? 0xFFFFFF : GOLD, 0.35F + 0.4F * pulse));
+        PixelArt.flush(graphics);
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(ox - 12, oy - 13 - Math.round(pulse * 2));
+        graphics.pose().scale(1.5F, 1.5F);
+        graphics.item(new ItemStack(ModItems.RESEARCHERS_DIARY.get()), 0, 0);
+        graphics.pose().popMatrix();
         renderSigns(graphics);
     }
 
@@ -476,60 +517,6 @@ final class BoardView {
             int sx = left + CX + (int) Math.round(u[0] * KX * 1.03);
             int sy = top + CY + (int) Math.round(u[1] * KY * 1.03);
             PixelArt.radical(graphics, element, sx - 4, sy - 4, 9, argb(element.color(), 1));
-        }
-    }
-
-    private void renderBurst(GuiGraphicsExtractor graphics, long now) {
-        if (burstCell >= 0) {
-            float t = (now - burstStart) / (float) BURST_MILLIS;
-            if (t < 1) {
-                int width = CELL + 2 * (int) (t * 14) | 1;
-                PixelArt.hexRing(graphics, left + px(burstCell), top + py(burstCell), width, argb(burstColor, 1 - t));
-            } else {
-                burstCell = -1;
-            }
-        }
-    }
-
-    /** A written symbol: a section washed with ink and the element's radical in pale parchment. */
-    private void symbol(GuiGraphicsExtractor graphics, int cell, SimpleRune element, float alpha) {
-        int x = left + px(cell);
-        int y = top + py(cell);
-        PixelArt.hex(graphics, x, y, CELL, argb(INK, 0.9F * alpha), argb(0x1E140A, alpha));
-        PixelArt.radical(graphics, element, x - 4, y - 4, 9, argb(PixelArt.mix(0xF4E6C4, element.color(), 0.35F), alpha));
-    }
-
-    private void inkLine(GuiGraphicsExtractor graphics, int from, int[] cells, float progress, int color) {
-        int shown = Math.round(cells.length * progress);
-        int x0 = left + px(from);
-        int y0 = top + py(from);
-        for (int i = 0; i < shown; i++) {
-            int x1 = left + px(cells[i]);
-            int y1 = top + py(cells[i]);
-            PixelArt.line(graphics, x0, y0, x1, y1, color);
-            PixelArt.line(graphics, x0 + 1, y0, x1 + 1, y1, color);
-            x0 = x1;
-            y0 = y1;
-        }
-    }
-
-    /** A dark rune: dark stone, a light mirror with a glint, or (in the fog) a dark hex with a question mark. */
-    private static void wall(GuiGraphicsExtractor graphics, Font font, int x, int y, @Nullable WallKind kind, float pulse) {
-        if (kind == WallKind.MIRROR) {
-            PixelArt.hex(graphics, x, y, CELL, argb(MIRROR, 1), argb(MIRROR_RIM, 1));
-            PixelArt.line(graphics, x - 3, y + 2, x + 1, y - 2, argb(0xFFFFFF, 0.55F + 0.45F * pulse));
-            PixelArt.line(graphics, x - 1, y + 3, x + 3, y - 1, argb(0xFFFFFF, 0.35F + 0.3F * pulse));
-            return;
-        }
-        PixelArt.hex(graphics, x, y, CELL, argb(WALL, 1), argb(WALL_RIM, 1));
-        if (kind == WallKind.STONE) {
-            // Cracks in the stone.
-            PixelArt.line(graphics, x - 3, y - 2, x, y + 1, argb(0x0C0812, 1));
-            PixelArt.line(graphics, x, y + 1, x + 3, y - 1, argb(0x0C0812, 1));
-            PixelArt.fill(graphics, x - 2, y + 2, x - 1, y + 3, argb(0x6A5890, 1));
-        } else {
-            PixelArt.flush(graphics);
-            graphics.text(font, "?", x - 2, y - 4, 0xFF6A5890, false);
         }
     }
 
@@ -547,53 +534,8 @@ final class BoardView {
         return best;
     }
 
-    /** What the hovered section of a rune's parchment is, for a tooltip. */
-    List<Component> describe(RuneBoard board, ResearchSheet sheet, int cell) {
-        List<Component> lines = new ArrayList<>();
-        String key = "gui.hextale.research_table.cell.";
-        int point = board.pointAt(cell);
-        WallKind wall = board.walls()[cell];
-        if (point >= 0) {
-            RuneBoard.Point p = board.points().get(point);
-            lines.add(Component.translatable(key + "point", ResearchText.element(p.element())));
-            if (sheet.isOpen() && sheet.isFilled(point)) {
-                lines.add(Component.translatable(key + "point.filled").withStyle(ChatFormatting.GREEN));
-            } else {
-                lines.add(ResearchText.item(p.resource()).copy().withStyle(ChatFormatting.GRAY));
-            }
-        } else if (wall != null) {
-            lines.add(Component.translatable(key + "wall." + (visible[cell] ? wall.id() : "unknown")));
-        }
-        return lines;
-    }
-
-    /** What a section of an item's resonance is, for a tooltip. */
-    List<Component> describeStudy(ItemStudy study, int cell) {
-        List<Component> lines = new ArrayList<>();
-        String key = "gui.hextale.research_table.string.";
-        int string = ItemStudy.stringOf(cell);
-        if (string < 0) {
-            return lines;
-        }
-        SimpleRune element = HexGrid.RING[string];
-        int index = ItemStudy.indexOf(cell);
-        lines.add(Component.translatable(key + "name", ResearchText.element(element), index + 1));
-        ItemStudy.Echo mark = study.marks().get(cell);
-        ItemStudy.Presence presence = study.presence(string);
-        if (mark != null) {
-            ChatFormatting style = mark == ItemStudy.Echo.EXACT ? ChatFormatting.GOLD
-                    : mark == ItemStudy.Echo.SILENT ? ChatFormatting.GRAY : ChatFormatting.AQUA;
-            lines.add(Component.translatable(key + "echo." + mark.name().toLowerCase(Locale.ROOT)).withStyle(style));
-        } else if (study.isRevealed(string)) {
-            lines.add(Component.translatable(key + "found").withStyle(ChatFormatting.GRAY));
-        } else if (presence == ItemStudy.Presence.ABSENT) {
-            lines.add(Component.translatable(key + "silent").withStyle(ChatFormatting.GRAY));
-        } else if (!study.possible(string, index)) {
-            lines.add(Component.translatable(key + "excluded").withStyle(ChatFormatting.GRAY));
-        } else if (presence == ItemStudy.Presence.PRESENT) {
-            lines.add(Component.translatable(key + "shimmers").withStyle(ChatFormatting.AQUA));
-        }
-        return lines;
+    boolean visible(int cell) {
+        return visible[cell];
     }
 
     private static int argb(int rgb, float alpha) {

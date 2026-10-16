@@ -16,15 +16,15 @@ import java.util.function.Supplier;
  * Texts: {@code research.hextale.tool.<id>} and {@code .level.<1-3>}.
  */
 public enum ResearchTool {
-    /** Shows the elements of dark runes farther from the ink; at 3 stars all of them. */
+    /** Fog lifts farther around the thread: dark runes show sooner; at 3 stars the whole parchment is clear. */
     LENS("water_light", ModItems.RESEARCHERS_LENS),
-    /** 1-3 times per sheet: the next symbol starts from the orb (from 2 stars also from a filled point). */
+    /** The thread may cross itself 1-3 times. */
     FORK("light_earth", ModItems.FORK_QUILL),
-    /** Grinds items up to its strength in tiers: a ground item writes its symbol half as far. */
+    /** Items dissolve into more ink: 3, 4 or 5 drops per element point instead of 2. */
     MORTAR("water_earth", ModItems.MORTAR),
-    /** 1-3 times per sheet: scrapes off the last symbol and gives its place back. */
+    /** The thread may pass through 1-3 dark runes. */
     SCRAPER("earth_spark", ModItems.BRASS_SCRAPER),
-    /** Each sheet holds 1-3 more symbols. */
+    /** The first 4, 8 or 12 sections of every thread cost no ink. */
     STRETCHER("earth_fire", ModItems.PARCHMENT_STRETCHER);
 
     private final ComplexRune rune;
@@ -33,6 +33,19 @@ public enum ResearchTool {
     ResearchTool(String rune, Supplier<? extends Item> item) {
         this.rune = Objects.requireNonNull(ComplexRunes.byKey(rune));
         this.item = item;
+    }
+
+    /** Fog sight around the thread in sections, by lens strength 0-2 (3 sees everything). */
+    public static final int[] SIGHT = {2, 3, 5};
+
+    /** What the fork, scraper and stretcher of these strengths allow on a thread. */
+    public static ResearchSheet.Allowance allowance(int fork, int scraper, int stretcher) {
+        return new ResearchSheet.Allowance(fork, scraper, stretcher * 4);
+    }
+
+    /** Drops of ink per element point an item dissolves into, by mortar strength. */
+    public static int inkPerPoint(int mortar) {
+        return 2 + mortar;
     }
 
     public ComplexRune rune() {

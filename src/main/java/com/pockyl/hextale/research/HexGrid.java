@@ -9,8 +9,7 @@ import java.util.List;
 /**
  * The research parchment: a nonagon with one corner per element (fire on top, then clockwise lightning, air, light,
  * life, water, shadow, earth, metal), cut into hexagonal sections. Coordinates are axial {@code (q, r)} of pointy-top
- * hexagons; positions are in units of the nonagon's circumradius. Ported number for number from the approved
- * prototype, so every board here is the board the owner played there.
+ * hexagons; positions are in units of the nonagon's circumradius.
  */
 public final class HexGrid {
     /** Corner order around the rim, starting at the top. */
@@ -203,70 +202,13 @@ public final class HexGrid {
         return Arrays.copyOf(out, n);
     }
 
-    /**
-     * Where an ink line from {@code from} ends. It runs section by section along the item's step; the edge and a stone
-     * rune stop it in the last open section; a mirror rune turns it back for the steps it has left (on the way back any
-     * rune or the edge stops it).
-     *
-     * @param walls per section: the dark rune there, or null
-     */
-    public static Walk walk(WallKind[] walls, int from, int[] offset) {
-        int steps = length(offset);
-        int[] cells = new int[steps];
-        int count = 0;
-        int last = from;
-        Walk.Stop stop = Walk.Stop.NONE;
-        int[][] line = line(from, offset);
-        int travelled = 0;
-        for (int[] axial : line) {
-            int cell = index(axial[0], axial[1]);
-            if (cell < 0) {
-                stop = Walk.Stop.EDGE;
-                break;
-            }
-            if (walls[cell] == WallKind.MIRROR) {
-                stop = Walk.Stop.BOUNCE;
-                break;
-            }
-            if (walls[cell] != null) {
-                stop = Walk.Stop.WALL;
-                break;
-            }
-            cells[count++] = cell;
-            last = cell;
-            travelled++;
-        }
-        if (stop == Walk.Stop.BOUNCE) {
-            int left = steps - travelled;
-            int[][] back = line(last, new int[]{-offset[0], -offset[1]});
-            for (int i = 0; i < left && i < back.length; i++) {
-                int cell = index(back[i][0], back[i][1]);
-                if (cell < 0 || walls[cell] != null) {
-                    break;
-                }
-                if (count == cells.length) {
-                    cells = Arrays.copyOf(cells, count * 2 + 1);
-                }
-                cells[count++] = cell;
-                last = cell;
-            }
-        }
-        return new Walk(last, Arrays.copyOf(cells, count), stop);
+    /** Hex distance in sections (walls ignored). */
+    public static int steps(int a, int b) {
+        return length(new int[]{Q[b] - Q[a], R[b] - R[a]});
     }
 
-    /**
-     * An ink line.
-     *
-     * @param end   the section the symbol lands in
-     * @param cells the sections the line crossed in order (back over itself after a mirror), ending with {@code end}
-     *              (empty when it did not move)
-     */
-    public record Walk(int end, int[] cells, Stop stop) {
-        public enum Stop {
-            NONE,
-            WALL,
-            EDGE,
-            BOUNCE
-        }
+    /** Whether two sections touch. */
+    public static boolean adjacent(int a, int b) {
+        return steps(a, b) == 1;
     }
 }

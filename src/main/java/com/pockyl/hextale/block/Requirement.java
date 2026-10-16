@@ -13,8 +13,8 @@ import java.util.Locale;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * What the Research Table needs to learn a rune (the diary, the orb and paper), in the order the screen asks for it. Checked by the screen (to
- * say exactly what to put where) and again by the server.
+ * What the Research Table needs to learn a rune (the diary, the orb and paper), in the order the screen asks for it.
+ * Checked by the screen (to light up the slot that needs something) and again by the server.
  */
 public enum Requirement {
     DIARY,
@@ -46,12 +46,12 @@ public enum Requirement {
         if (table.getItem(ResearchTableBlockEntity.HEXTECH).isEmpty()) {
             return HEXTECH;
         }
-        return paper(player);
+        return paper(table, player);
     }
 
-    /** Every sheet - a rune's or an item study's - is written on a paper from the researcher's inventory. */
+    /** Every finished research - a rune or an item study - is written on a paper from the table's paper slot. */
     @Nullable
-    public static Requirement paper(Player player) {
-        return player.getAbilities().instabuild || player.getInventory().contains(stack -> stack.is(Items.PAPER)) ? null : PAPER;
+    public static Requirement paper(Container table, Player player) {
+        return player.getAbilities().instabuild || table.getItem(ResearchTableBlockEntity.PAPER).is(Items.PAPER) ? null : PAPER;
     }
 }

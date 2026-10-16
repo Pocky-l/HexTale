@@ -36,6 +36,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
 
 import org.jspecify.annotations.Nullable;
@@ -168,6 +169,9 @@ public class ResearchTableBlock extends BaseEntityBlock implements WorldlyContai
         BlockPos main = mainPos(state, pos);
         if (!level.isClientSide() && level.getBlockEntity(main) instanceof MenuProvider menu) {
             player.openMenu(menu, buf -> buf.writeBlockPos(main));
+            if (player.containerMenu instanceof ResearchTableMenu opened) {
+                opened.opened();
+            }
         }
         return InteractionResult.SUCCESS;
     }
