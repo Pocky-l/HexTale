@@ -209,7 +209,7 @@ final class BoardView {
             int color = PixelArt.onParchment(p.element().color());
             if ((lit & 1 << i) != 0) {
                 PixelArt.hex(graphics, x, y, CELL + 2, argb(p.element().color(), 1), argb(PixelArt.mix(color, 0x000000, 0.3F), 1));
-                PixelArt.radical(graphics, p.element(), x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(color, 0x000000, 0.6F));
+                PixelArt.essence(graphics, p.element(), x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(color, 0x000000, 0.2F));
                 float t = litAt[i] == 0 ? 1 : (now - litAt[i]) / (float) LIGHT_MILLIS;
                 if (t < 1) {
                     int width = CELL + 2 * (int) (t * 12) | 1;
@@ -218,7 +218,7 @@ final class BoardView {
                 }
             } else {
                 PixelArt.hex(graphics, x, y, CELL + 2, argb(0xFBF2DA, 1), argb(PixelArt.mix(color, 0xFFFFFF, 0.3F * pulse), 1));
-                PixelArt.radical(graphics, p.element(), x - 4, y - 4, 9, argb(color, 0.85F));
+                PixelArt.essence(graphics, p.element(), x - 4, y - 4, 9, argb(color, 0.85F));
                 PixelArt.hexRing(graphics, x, y, CELL + 4, argb(p.element().color(), 0.25F + 0.35F * pulse));
             }
         }
@@ -473,7 +473,7 @@ final class BoardView {
             int y = sy(cell);
             PixelArt.hex(graphics, x, y, CELL + 6, argb(element.color(), 0.25F + 0.15F * pulse), 0);
             PixelArt.hex(graphics, x, y, CELL + 2, argb(element.color(), 1), argb(GOLD, 1));
-            PixelArt.radical(graphics, element, x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(element.color(), 0x000000, 0.6F));
+            PixelArt.essence(graphics, element, x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(element.color(), 0x000000, 0.2F));
             sparkle(graphics, x, y, now, cell);
             PixelArt.flush(graphics);
             String strength = String.valueOf(entry.getValue());
@@ -537,7 +537,7 @@ final class BoardView {
             double[] u = HexGrid.unit(element);
             int sx = left + CX + (int) Math.round(u[0] * KX * 1.03);
             int sy = top + CY + (int) Math.round(u[1] * KY * 1.03);
-            PixelArt.radical(graphics, element, sx - 4, sy - 4, 9, argb(element.color(), 1));
+            PixelArt.essence(graphics, element, sx - 4, sy - 4, 9, argb(element.color(), 1));
         }
     }
 

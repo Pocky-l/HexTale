@@ -39,6 +39,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Brass Pipes carry essence and water and join a machine only where it has a port - the machine's model grows a
     joint there; no vessel takes back what its own outlet lets out. The Drain Valve pours whatever reaches it out into
     the world while its handwheel is open, and drains tanks beside it or piped to it.
+- Researcher's Goggles (leather, brass and glass panes), worn on the head: looking at a tank, a pipe or a machine of the
+  essence works shows the essences inside it beside the crosshair; looking at a Research Table shows its ink, essence
+  by essence, while coloured streams run from each tank of concentrate to the orb.
+- Essence Tank labels: sneak-use a side of a tank with an empty hand to stick a paper label with an essence's sign on it;
+  every click shows the next essence, then none. Only a sign for the player.
+- Every essence has its own picture: a flame, a drop, a mountain, wind, the sun, a crescent, a sprout, a gear and a bolt.
 - Every research takes a paper from the table's paper slot when it starts.
 - Integrations: [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) shows boiling and separation, a bottle of each
   concentrate and an info page for every block of the essence works; [Jade](https://www.curseforge.com/minecraft/mc-mods/jade)

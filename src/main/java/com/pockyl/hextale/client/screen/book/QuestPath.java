@@ -385,7 +385,7 @@ final class QuestPath {
                 for (Essence essence : Essence.values()) {
                     PixelArt.hex(graphics, sx + SLOT / 2, y + SLOT / 2, SLOT - 1, PixelArt.argb(PixelArt.mix(essence.color(), 0x06050D, 0.8F), 1),
                             PixelArt.argb(essence.color(), 0.7F));
-                    PixelArt.radical(graphics, essence, sx + 4, y + 4, 10, PixelArt.argb(essence.color(), 1));
+                    PixelArt.essence(graphics, essence, sx + 4, y + 4, 10, PixelArt.argb(essence.color(), 1));
                     if (over(mouseX, mouseY, sx, y, SLOT, SLOT)) {
                         tooltip = List.of(Component.translatable(essence.translationKey()).withColor(essence.color()).getVisualOrderText());
                     }
@@ -395,7 +395,7 @@ final class QuestPath {
             case REAGENTS -> {
                 int sx = centre - Essence.values().length * SLOT / 2;
                 for (Essence essence : Essence.values()) {
-                    PixelArt.radical(graphics, essence, sx + 4, y, 10, PixelArt.argb(essence.color(), 1));
+                    PixelArt.essence(graphics, essence, sx + 4, y, 10, PixelArt.argb(essence.color(), 1));
                     ItemStack reagent = reagent(essence, now);
                     Component extra = Component.translatable("book.hextale.quest.reagent_for", Component.translatable(essence.translationKey()))
                             .withColor(essence.color());

@@ -40,7 +40,7 @@ public final class ClientEssencesTooltip implements ClientTooltipComponent {
         int cx = x;
         for (Map.Entry<Essence, Integer> entry : data.essences().essences().entrySet()) {
             Essence element = entry.getKey();
-            PixelArt.radical(graphics, element, cx, y, SIGN, PixelArt.argb(element.color(), 1), 0xFF000000);
+            PixelArt.essence(graphics, element, cx, y, SIGN, PixelArt.argb(element.color(), 1));
             String strength = String.valueOf(entry.getValue());
             PixelArt.flush(graphics);
             graphics.text(font, strength, cx + SIGN + 2, y + 1, 0xFF000000 | element.color(), true);

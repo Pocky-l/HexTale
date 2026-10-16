@@ -158,7 +158,7 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         int ry = y + SeparatorMenu.REAGENT_Y;
         // The element the reagent binds, above it; its charge under it.
         if (element != null) {
-            PixelArt.radical(graphics, element, rx + 3, ry - 13, 9, PixelArt.argb(element.color(), 1));
+            PixelArt.essence(graphics, element, rx + 3, ry - 13, 9, PixelArt.argb(element.color(), 1));
             if (isOver(mouseX, mouseY, rx, ry - 14, 16, 12)) {
                 tooltip(List.of(Component.translatable("gui.hextale.separator.binds", ResearchText.essence(element))));
             }

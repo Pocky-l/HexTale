@@ -2,6 +2,8 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -97,7 +99,18 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof EssenceTankBlockEntity tank) {
+        if (!(level.getBlockEntity(pos) instanceof EssenceTankBlockEntity tank)) {
+            return InteractionResult.PASS;
+        }
+        if (player.isSecondaryUseActive() && hitResult.getDirection() != Direction.DOWN) {
+            // Sneak-use with an empty hand: the next essence's sticker on that face (a sign only).
+            if (!level.isClientSide()) {
+                tank.cycleLabel(hitResult.getDirection());
+                level.playSound(null, pos, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 1.3F);
+            }
+            return InteractionResult.SUCCESS;
+        }
+        if (!level.isClientSide()) {
             player.sendOverlayMessage(Flasks.describe(tank.tank()));
         }
         return InteractionResult.SUCCESS;

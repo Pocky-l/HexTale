@@ -7,10 +7,12 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
+import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fc;
 import org.jspecify.annotations.Nullable;
 
+import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.RuneGlyphs;
 import com.pockyl.hextale.rune.Essence;
@@ -33,6 +35,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class PixelArt {
     private static final Map<String, int[][]> MASKS = new ConcurrentHashMap<>();
+    private static final Identifier ESSENCE_ICONS = Hextale.id("textures/gui/essence_icons.png");
+    /** Essence pictograms are 9 x 9, one every 10 pixels along the sheet. */
+    public static final int ICON = 9;
+    private static final int ICON_STEP = 10;
+    private static final int ICONS_WIDTH = 128;
+    private static final int ICONS_HEIGHT = 16;
     private static final Batch BATCH = new Batch();
 
     private PixelArt() {
@@ -49,6 +57,20 @@ public final class PixelArt {
     /** Submits the collected pixels, so whatever is drawn next lies above them. */
     public static void flush(GuiGraphicsExtractor graphics) {
         BATCH.submit(graphics);
+    }
+
+    /**
+     * The essence's pictogram ({@code gui/essence_icons.png}, greys) tinted with {@code argb}, scaled by whole pixels
+     * and centred in a {@code size} x {@code size} box at {@code x, y} (top left).
+     */
+    public static void essence(GuiGraphicsExtractor graphics, Essence essence, int x, int y, int size, int argb) {
+        flush(graphics);
+        int scale = Math.max(1, size / ICON);
+        int drawn = ICON * scale;
+        int ox = x + (size - drawn) / 2;
+        int oy = y + (size - drawn) / 2;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, ESSENCE_ICONS, ox, oy, essence.ordinal() * ICON_STEP, 0, drawn, drawn, ICON, ICON,
+                ICONS_WIDTH, ICONS_HEIGHT, argb);
     }
 
     /** A simple rune's radical in a {@code size} x {@code size} box at {@code x, y} (top left). */

@@ -704,6 +704,24 @@ public final class ResearchGameTests {
         helper.succeedWhen(() -> helper.assertTrue(beside.tank().isEmpty() && piped.tank().isEmpty(), "the open valve drains both tanks"));
     }
 
+    /** Sneak-use stickers cycle through every essence and back to none, and stay on their face. */
+    @HexTest
+    public static void tankLabelsCycleThroughTheEssences(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at, ModBlocks.ESSENCE_TANK.get());
+        EssenceTankBlockEntity tank = helper.getBlockEntity(at, EssenceTankBlockEntity.class);
+        helper.assertTrue(tank.label(Direction.NORTH) == null, "a new tank has no stickers");
+        for (Essence essence : Essence.values()) {
+            tank.cycleLabel(Direction.NORTH);
+            helper.assertTrue(tank.label(Direction.NORTH) == essence, "the next click shows " + essence);
+        }
+        tank.cycleLabel(Direction.NORTH);
+        helper.assertTrue(tank.label(Direction.NORTH) == null, "after lightning the sticker comes off");
+        tank.cycleLabel(Direction.EAST);
+        helper.assertTrue(tank.label(Direction.EAST) == Essence.FIRE && tank.label(Direction.WEST) == null, "each face has its own sticker");
+        helper.succeed();
+    }
+
     @HexTest
     public static void pipesJoinMachinesOnlyAtPorts(GameTestHelper helper) {
         BlockPos at = new BlockPos(2, 2, 2);

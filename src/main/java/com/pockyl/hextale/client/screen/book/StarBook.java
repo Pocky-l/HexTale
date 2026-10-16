@@ -317,7 +317,7 @@ public final class StarBook {
             double[] u = HexGrid.unit(element);
             int x = (int) Math.round(u[0] * StarMap.SIGN_RADIUS);
             int y = (int) Math.round(u[1] * StarMap.SIGN_RADIUS);
-            PixelArt.radical(graphics, element, x - 12, y - 12, 25, PixelArt.argb(element.color(), 0.32F));
+            PixelArt.essence(graphics, element, x - 13, y - 13, 27, PixelArt.argb(element.color(), 0.45F));
             ComplexRune head = StarMap.rayHeads().get(element);
             if (head != null) {
                 int[] p = StarMap.position(head);

@@ -1,5 +1,6 @@
 package com.pockyl.hextale.block;
 
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -23,6 +24,8 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.rune.Essence;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * The essence tank's contents; it drains downwards into pipes. The contents travel with the item (component
  * {@code hextale:essence}): a broken tank keeps them, a full tank can be placed from the creative tab. A Creative Essence
@@ -37,6 +40,8 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     static final int FLOW = 4;
 
     private final EssenceTank tank = new EssenceTank(CAPACITY);
+    /** A sticker per face (by {@link Direction} index): 0 none, else essence ordinal + 1. Only a sign for the player. */
+    private final int[] labels = new int[Direction.values().length];
 
     public EssenceTankBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ESSENCE_TANK.get(), pos, state);
@@ -44,6 +49,20 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
 
     public EssenceTank tank() {
         return tank;
+    }
+
+    /** The essence on the sticker of this face, or null. */
+    @Nullable
+    public Essence label(Direction face) {
+        int label = labels[face.get3DDataValue()];
+        return label == 0 ? null : Essence.values()[label - 1];
+    }
+
+    /** Puts the next essence's sticker on this face: none, then every essence in turn, then none again. */
+    public void cycleLabel(Direction face) {
+        int index = face.get3DDataValue();
+        labels[index] = (labels[index] + 1) % (Essence.values().length + 1);
+        setChanged();
     }
 
     /** Whether this is a Creative Essence Tank. */
@@ -127,12 +146,17 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         tank.load(input, "essence");
+        int[] stored = input.getIntArray("labels").orElse(new int[0]);
+        for (int i = 0; i < labels.length; i++) {
+            labels[i] = i < stored.length && stored[i] >= 0 && stored[i] <= Essence.values().length ? stored[i] : 0;
+        }
     }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         tank.save(output, "essence");
+        output.putIntArray("labels", labels.clone());
     }
 
     @Override

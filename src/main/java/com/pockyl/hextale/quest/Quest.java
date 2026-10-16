@@ -61,6 +61,9 @@ public enum Quest {
     ESSENCE_TANK(CONCENTRATE, 56, 80, () -> new ItemStack(ModItems.ESSENCE_TANK.get()), Quests.has(ModItems.ESSENCE_TANK),
             QuestDisplay.shaped("hextale:essence_tank", 1, new String[]{"BGB", "G G", "BGB"},
                     "B=hextale:brass_ingot", "G=minecraft:glass")),
+    RESEARCHERS_GOGGLES(ESSENCE_TANK, 84, 122, () -> new ItemStack(ModItems.RESEARCHERS_GOGGLES.get()), Quests.has(ModItems.RESEARCHERS_GOGGLES),
+            QuestDisplay.shaped("hextale:researchers_goggles", 1, new String[]{"LBL", "G G"},
+                    "L=minecraft:leather", "B=hextale:brass_ingot", "G=minecraft:glass_pane")),
     INK(ESSENCE_TANK, 0, 80, () -> new ItemStack(Items.INK_SAC), Quests::inkAtTable, null),
 
     // Row 3, left to right: runes.

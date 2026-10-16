@@ -152,7 +152,7 @@ public final class EssenceNetwork {
     }
 
     /** The pipes connected to {@code start}, nearest first. */
-    private static Set<BlockPos> network(Level level, BlockPos start) {
+    public static Set<BlockPos> network(Level level, BlockPos start) {
         Set<BlockPos> pipes = new LinkedHashSet<>();
         ArrayDeque<BlockPos> queue = new ArrayDeque<>();
         pipes.add(start);

@@ -641,7 +641,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             }
             // Glass highlight.
             graphics.fill(x + 1, y + 1, x + 2, y + VIAL_H - 2, 0x40FFFFFF);
-            PixelArt.radical(graphics, element, x + VIAL_W / 2 - 4, y + VIAL_H + 4, 9, PixelArt.argb(color, 1));
+            PixelArt.essence(graphics, element, x + VIAL_W / 2 - 4, y + VIAL_H + 4, 9, PixelArt.argb(color, 1));
             if (isOver(mouseX, mouseY, x - 2, y - 2, VIAL_W + 4, VIAL_H + 16)) {
                 Component count = infinite ? Component.literal("∞") : Component.literal(ink[e] + "/" + capacity[e] + " mB");
                 boolean noStorage = !infinite && capacity[e] == 0;

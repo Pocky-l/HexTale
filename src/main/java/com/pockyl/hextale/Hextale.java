@@ -51,6 +51,7 @@ public final class Hextale {
         modBus.addListener(Hextale::addToVanillaTabs);
         PockyModsTab.register(modBus, () -> new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), output -> {
             output.accept(ModItems.RESEARCH_TABLE);
+            output.accept(ModItems.RESEARCHERS_GOGGLES);
             output.accept(ModItems.ALEMBIC);
             output.accept(ModItems.SEPARATOR);
             output.accept(ModItems.ESSENCE_TANK);

@@ -8,6 +8,7 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,6 +48,11 @@ public final class InkSupply {
             }
         }
         return supply;
+    }
+
+    /** The tanks of this essence's concentrate around the desk. */
+    public List<EssenceTankBlockEntity> tanks(Essence essence) {
+        return Collections.unmodifiableList(tanks.get(essence.ordinal()));
     }
 
     /** Millibuckets of each essence's concentrate around the desk ({@link Essence#ordinal()}). */
