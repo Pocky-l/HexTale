@@ -754,6 +754,27 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
+    /** An Essence Jar shows a fitting on every face a pipe joins - the lid and the foot too - and beside a drain valve. */
+    @HexTest
+    public static void jarsShowFittingsWherePipesJoin(GameTestHelper helper) {
+        BlockPos at = new BlockPos(2, 2, 2);
+        helper.setBlock(at, ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(at.above(), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(at.below(), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(at.north(), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(at.east(), ModBlocks.DRAIN_VALVE.get());
+        BlockState jar = helper.getBlockState(at);
+        for (Direction face : new Direction[]{Direction.UP, Direction.DOWN, Direction.NORTH, Direction.EAST}) {
+            helper.assertTrue(jar.getValue(EssenceMachine.PORTS.get(face)), "the jar shows a fitting " + face);
+        }
+        helper.assertFalse(jar.getValue(EssenceMachine.PORTS.get(Direction.SOUTH)), "and none on a free side");
+        helper.assertTrue(helper.getBlockState(at.above()).getValue(BrassPipeBlock.SIDES.get(Direction.DOWN)),
+                "the pipe on top joins the lid");
+        helper.setBlock(at.above(), Blocks.AIR);
+        helper.assertFalse(helper.getBlockState(at).getValue(EssenceMachine.PORTS.get(Direction.UP)), "the fitting goes with the pipe");
+        helper.succeed();
+    }
+
     @HexTest
     public static void pipesJoinMachinesOnlyAtPorts(GameTestHelper helper) {
         BlockPos at = new BlockPos(2, 2, 2);

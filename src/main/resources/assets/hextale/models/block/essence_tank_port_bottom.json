@@ -1,0 +1,128 @@
+{
+  "textures": {
+    "particle": "hextale:block/essence_jar_fittings",
+    "fit": "hextale:block/essence_jar_fittings"
+  },
+  "elements": [
+    {
+      "name": "tube",
+      "from": [
+        6,
+        0,
+        6
+      ],
+      "to": [
+        10,
+        1,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fit",
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ]
+        },
+        "south": {
+          "texture": "#fit",
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ]
+        },
+        "east": {
+          "texture": "#fit",
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ]
+        },
+        "west": {
+          "texture": "#fit",
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "name": "drain",
+      "from": [
+        5,
+        1,
+        5
+      ],
+      "to": [
+        11,
+        2,
+        11
+      ],
+      "faces": {
+        "up": {
+          "texture": "#fit",
+          "uv": [
+            8,
+            2,
+            14,
+            8
+          ]
+        },
+        "down": {
+          "texture": "#fit",
+          "uv": [
+            8,
+            2,
+            14,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#fit",
+          "uv": [
+            8,
+            1,
+            14,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#fit",
+          "uv": [
+            8,
+            1,
+            14,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#fit",
+          "uv": [
+            8,
+            1,
+            14,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#fit",
+          "uv": [
+            8,
+            1,
+            14,
+            2
+          ]
+        }
+      }
+    }
+  ]
+}

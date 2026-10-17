@@ -39,6 +39,22 @@
         "model": "hextale:block/essence_tank_port",
         "y": 270
       }
+    },
+    {
+      "when": {
+        "up": "true"
+      },
+      "apply": {
+        "model": "hextale:block/essence_tank_port_top"
+      }
+    },
+    {
+      "when": {
+        "down": "true"
+      },
+      "apply": {
+        "model": "hextale:block/essence_tank_port_bottom"
+      }
     }
   ]
 }

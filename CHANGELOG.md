@@ -38,26 +38,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     port panel of its screen or by sneak-using that side; the top is a gas vent. Without a reagent it waits, and its
     screen shows what is missing.
   - Essence is one mixed liquid measured in millibuckets, one millibucket per point of an item's essence (the
-    number in its tooltip): a bottle holds 16 mB, a tank 256 mB, and every step of a rune's thread costs 1 mB of ink. Essence Tanks store
-    it (in at the top and the sides, out at the bottom; separator inlets and drain valves draw from them). The Research Table keeps no ink of its
-    own: it draws each essence's ink from tanks of that concentrate within two blocks of the desk.
+    number in its tooltip): a bottle holds 16 mB, a jar 256 mB, and every step of a rune's thread costs 1 mB of ink. Essence Jars - big glass
+    jars with a wooden lid - store it (in through the lid and the sides, out at the bottom; separator inlets and drain valves draw from them). The Research Table keeps no ink of its
+    own: it draws each essence's ink from jars of that concentrate within two blocks of the desk.
   - Brass Pipes carry essence and water and join a machine only where it has a port - the machine's model grows a
     joint there; no vessel takes back what its own outlet lets out. The Drain Valve pours whatever reaches it out into
-    the world while its handwheel is open, and drains tanks beside it or piped to it.
-- Researcher's Goggles (leather, brass and glass panes), worn on the head: looking at a tank, a pipe or a machine of the
+    the world while its handwheel is open, and drains jars beside it or piped to it.
+- Researcher's Goggles (leather, brass and glass panes), worn on the head: looking at a jar, a pipe or a machine of the
   essence works shows the essences inside it beside the crosshair; looking at a Research Table shows its ink, essence
-  by essence, while coloured streams run from each tank of concentrate to the orb.
-- Essence Tank labels: sneak-use a side of a tank with an empty hand to stick a paper label with an essence's sign on it;
+  by essence, while coloured streams run from each jar of concentrate to the orb.
+- Essence Jar labels: sneak-use a side or the lid of a jar with an empty hand to stick an enamel label with an essence's sign on it;
   every click shows the next essence, then none. Only a sign for the player.
 - Every essence has its own picture: a flame, a drop, a mountain, wind, the sun, a crescent, a sprout, a gear and a bolt.
-- Liquid essence in tanks, alembics and separators swirls with an animated texture, glows brighter at its surface,
-  darkens in the depths and bubbles; a tank's surface sways a little.
+- Liquid essence in jars, alembics and separators swirls with an animated texture, glows brighter at its surface,
+  darkens in the depths and bubbles; a jar's surface sways a little.
 - Sounds: the alembic bubbles while it boils, the separator drips, the pump strokes, the drain valve's handwheel
-  turns, tanks glug when bottles are poured, ink drips on the parchment with every step and a chime marks a quest done.
+  turns, jars glug when bottles are poured, ink drips on the parchment with every step and a chime marks a quest done.
 - Every research takes a paper from the table's paper slot when it starts.
 - Integrations: [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) shows boiling and separation, a bottle of each
   concentrate and an info page for every block of the essence works; [Jade](https://www.curseforge.com/minecraft/mc-mods/jade)
-  shows what the tanks, separators, alembics, pumps and valves hold and do.
+  shows what the jars, separators, alembics, pumps and valves hold and do.
 - The Researcher's Path: the first page of the research book is a path of quests from the Research Table to the full
   codex - brass, unstable hextech, the diary, studying items, essences, the essence works, ink and the rune chapters.
   Click a quest to see its goal, its recipe and a short explanation; quests are done the moment their goal is met.

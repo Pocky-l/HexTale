@@ -1,77 +1,201 @@
 {
   "textures": {
-    "particle": "hextale:block/brass_pipe",
-    "pipe": "hextale:block/brass_pipe"
+    "particle": "hextale:block/essence_jar_fittings",
+    "fit": "hextale:block/essence_jar_fittings"
   },
   "elements": [
     {
-      "name": "flange",
+      "name": "tube",
       "from": [
-        5,
-        5,
+        6,
+        6,
         0
       ],
       "to": [
-        11,
-        11,
+        10,
+        10,
         1
       ],
       "faces": {
         "north": {
-          "texture": "#pipe",
+          "texture": "#fit",
           "uv": [
-            10,
             0,
-            16,
-            6
+            9,
+            4,
+            13
           ],
           "cullface": "north"
         },
-        "south": {
-          "texture": "#pipe",
-          "uv": [
-            10,
-            0,
-            16,
-            6
-          ]
-        },
         "east": {
-          "texture": "#pipe",
+          "texture": "#fit",
           "uv": [
             0,
-            6,
-            6,
-            7
+            8,
+            4,
+            9
           ],
           "rotation": 90
         },
         "west": {
-          "texture": "#pipe",
+          "texture": "#fit",
           "uv": [
             0,
-            6,
-            6,
-            7
+            8,
+            4,
+            9
           ],
           "rotation": 90
         },
         "up": {
-          "texture": "#pipe",
+          "texture": "#fit",
           "uv": [
             0,
-            6,
-            6,
-            7
+            8,
+            4,
+            9
           ]
         },
         "down": {
-          "texture": "#pipe",
+          "texture": "#fit",
           "uv": [
             0,
-            6,
-            6,
-            7
+            8,
+            4,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "name": "nut",
+      "from": [
+        5,
+        5,
+        1
+      ],
+      "to": [
+        11,
+        11,
+        2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fit",
+          "uv": [
+            8,
+            2,
+            14,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#fit",
+          "uv": [
+            8,
+            2,
+            14,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#fit",
+          "uv": [
+            8,
+            1,
+            14,
+            2
+          ],
+          "rotation": 90
+        },
+        "west": {
+          "texture": "#fit",
+          "uv": [
+            8,
+            1,
+            14,
+            2
+          ],
+          "rotation": 90
+        },
+        "up": {
+          "texture": "#fit",
+          "uv": [
+            8,
+            1,
+            14,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#fit",
+          "uv": [
+            8,
+            1,
+            14,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "inner_nut",
+      "from": [
+        6,
+        6,
+        2
+      ],
+      "to": [
+        10,
+        10,
+        3
+      ],
+      "faces": {
+        "south": {
+          "texture": "#fit",
+          "uv": [
+            0,
+            9,
+            4,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#fit",
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ],
+          "rotation": 90
+        },
+        "west": {
+          "texture": "#fit",
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ],
+          "rotation": 90
+        },
+        "up": {
+          "texture": "#fit",
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#fit",
+          "uv": [
+            0,
+            8,
+            4,
+            9
           ]
         }
       }

@@ -65,6 +65,41 @@ public final class LiquidBox {
         });
     }
 
+    /**
+     * Liquid in a vessel whose vertical edges are cut back by {@code cut} (the Essence Jar): its outline steps in at the
+     * corners like the glass, so no corner of the liquid stands outside the vessel. Bubbles rise in the middle.
+     */
+    public static void submitCutCorners(PoseStack poseStack, SubmitNodeCollector collector, float minX, float minZ, float maxX,
+                                        float maxZ, float cut, float bottom, float top, int argb, float time, long seed, int bubbles) {
+        if (top - bottom <= 0.001F) {
+            return;
+        }
+        TextureAtlasSprite sprite = sprite();
+        int alpha = argb >>> 24;
+        int rgb = argb & 0xFFFFFF;
+        int surface = alpha << 24 | RuneDrawing.mix(rgb, 0xFFFFFF, SURFACE_LIGHT);
+        int deep = alpha << 24 | RuneDrawing.mix(rgb, 0x000000, 1 - DEPTH_SHADE);
+        float x0 = minX + cut;
+        float x1 = maxX - cut;
+        float z0 = minZ + cut;
+        float z1 = maxZ - cut;
+        // Round the outline the same way as a box's walls (north edge first, towards +x), two corners per cut.
+        float[][] outline = {{x0, minZ}, {x1, minZ}, {x1, z0}, {maxX, z0}, {maxX, z1}, {x1, z1}, {x1, maxZ}, {x0, maxZ}, {x0, z1},
+                {minX, z1}, {minX, z0}, {x0, z0}};
+        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(TextureAtlas.LOCATION_BLOCKS), (pose, consumer) -> {
+            new Box(x0, minZ, x1, maxZ, bottom, top, sprite).top(consumer, pose, surface);
+            new Box(minX, z0, x0, z1, bottom, top, sprite).top(consumer, pose, surface);
+            new Box(x1, z0, maxX, z1, bottom, top, sprite).top(consumer, pose, surface);
+            Box middle = new Box(x0, z0, x1, z1, bottom, top, sprite);
+            for (int i = 0; i < outline.length; i++) {
+                middle.wall(consumer, pose, outline[i], outline[(i + 1) % outline.length], argb, deep);
+            }
+            for (int i = 0; i < bubbles; i++) {
+                bubble(consumer, pose, middle, time, seed, i, alpha);
+            }
+        });
+    }
+
     /** A small bright bead rising from the bottom to the surface, then starting over somewhere else. */
     private static void bubble(VertexConsumer consumer, PoseStack.Pose pose, Box box, float time, long seed, int index, int alpha) {
         float period = 40 + (Math.floorMod(seed * 31 + index * 17, 23));
@@ -110,25 +145,29 @@ public final class LiquidBox {
         void sides(VertexConsumer consumer, PoseStack.Pose pose, int high, int deep) {
             float[][] corners = {{minX, minZ}, {maxX, minZ}, {maxX, maxZ}, {minX, maxZ}};
             for (int i = 0; i < 4; i++) {
-                float[] a = corners[i];
-                float[] b = corners[(i + 1) % 4];
-                boolean alongX = a[1] == b[1];
-                float ua = u(alongX ? a[0] : a[1]);
-                float ub = u(alongX ? b[0] : b[1]);
-                float vTop = v(1 - top);
-                float vBottom = v(1 - bottom);
-                float nx = alongX ? 0 : (i == 1 ? 1 : -1);
-                float nz = alongX ? (i == 0 ? -1 : 1) : 0;
-                // Outside winding, then inside winding.
-                vertex(consumer, pose, a[0], bottom, a[1], ua, vBottom, deep, nx, 0, nz);
-                vertex(consumer, pose, b[0], bottom, b[1], ub, vBottom, deep, nx, 0, nz);
-                vertex(consumer, pose, b[0], top, b[1], ub, vTop, high, nx, 0, nz);
-                vertex(consumer, pose, a[0], top, a[1], ua, vTop, high, nx, 0, nz);
-                vertex(consumer, pose, a[0], top, a[1], ua, vTop, high, -nx, 0, -nz);
-                vertex(consumer, pose, b[0], top, b[1], ub, vTop, high, -nx, 0, -nz);
-                vertex(consumer, pose, b[0], bottom, b[1], ub, vBottom, deep, -nx, 0, -nz);
-                vertex(consumer, pose, a[0], bottom, a[1], ua, vBottom, deep, -nx, 0, -nz);
+                wall(consumer, pose, corners[i], corners[(i + 1) % 4], high, deep);
             }
+        }
+
+        /** A wall from corner a to corner b of an outline running round like the box's (north wall towards +x first). */
+        void wall(VertexConsumer consumer, PoseStack.Pose pose, float[] a, float[] b, int high, int deep) {
+            boolean alongX = a[1] == b[1];
+            float ua = u(alongX ? a[0] : a[1]);
+            float ub = u(alongX ? b[0] : b[1]);
+            float vTop = v(1 - top);
+            float vBottom = v(1 - bottom);
+            // The edge's direction turned to the outside of the outline.
+            float nx = Math.signum(b[1] - a[1]);
+            float nz = -Math.signum(b[0] - a[0]);
+            // Outside winding, then inside winding.
+            vertex(consumer, pose, a[0], bottom, a[1], ua, vBottom, deep, nx, 0, nz);
+            vertex(consumer, pose, b[0], bottom, b[1], ub, vBottom, deep, nx, 0, nz);
+            vertex(consumer, pose, b[0], top, b[1], ub, vTop, high, nx, 0, nz);
+            vertex(consumer, pose, a[0], top, a[1], ua, vTop, high, nx, 0, nz);
+            vertex(consumer, pose, a[0], top, a[1], ua, vTop, high, -nx, 0, -nz);
+            vertex(consumer, pose, b[0], top, b[1], ub, vTop, high, -nx, 0, -nz);
+            vertex(consumer, pose, b[0], bottom, b[1], ub, vBottom, deep, -nx, 0, -nz);
+            vertex(consumer, pose, a[0], bottom, a[1], ua, vBottom, deep, -nx, 0, -nz);
         }
 
         /** All six faces in one colour (bubbles). */

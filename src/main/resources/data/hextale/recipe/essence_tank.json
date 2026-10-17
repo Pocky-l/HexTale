@@ -2,12 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "BGB",
+    "BSB",
     "G G",
-    "BGB"
+    "GGG"
   ],
   "key": {
     "B": "hextale:brass_ingot",
+    "S": "#minecraft:wooden_slabs",
     "G": "minecraft:glass"
   },
   "result": {

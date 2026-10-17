@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
@@ -26,6 +27,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.Flasks;
@@ -36,15 +40,18 @@ import com.pockyl.hextale.rune.Essence;
 import org.jspecify.annotations.Nullable;
 
 /**
- * An essence tank: stores a large amount of one liquid (whatever flows in mixes). Pipes fill it through the top and the
- * sides; it lets its liquid out at the bottom. A bottle of essence by hand pours in, a glass bottle draws out; an empty
- * hand reads it.
+ * An Essence Jar (the block id is still essence_tank): a big glass jar with a wooden lid that stores a large amount of
+ * one liquid (whatever flows in mixes). Pipes fill it through the top and the sides; it lets its liquid out at the
+ * bottom. A bottle of essence by hand pours in, a glass bottle draws out; an empty hand reads it.
  */
 public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine {
+    /** The glass body and the shoulder, the neck and the lid above it (as the model, without the pipe fittings). */
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 11, 14), Block.box(3, 11, 3, 13, 15, 13));
+
     public EssenceTankBlock(Properties properties) {
         super(properties);
         BlockState state = stateDefinition.any();
-        for (Direction face : Direction.Plane.HORIZONTAL) {
+        for (Direction face : Direction.values()) {
             state = state.setValue(PORTS.get(face), false);
         }
         registerDefaultState(state);
@@ -52,12 +59,17 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        for (Direction face : Direction.Plane.HORIZONTAL) {
+        for (Direction face : Direction.values()) {
             builder.add(PORTS.get(face));
         }
     }
 
-    /** Every face: in at the top and the sides, out at the bottom. Only the side joints show on the model. */
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return SHAPE;
+    }
+
+    /** Every face: in at the top and the sides, out at the bottom; the model shows a fitting where a pipe joins. */
     @Override
     public boolean isPort(BlockState state, Direction face) {
         return true;
@@ -104,10 +116,12 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
         if (!(level.getBlockEntity(pos) instanceof EssenceTankBlockEntity tank)) {
             return InteractionResult.PASS;
         }
-        if (player.isSecondaryUseActive() && hitResult.getDirection() != Direction.DOWN) {
-            // Sneak-use with an empty hand: the next essence's sticker on that face (a sign only).
+        Direction face = hitResult.getDirection();
+        if (player.isSecondaryUseActive() && face != Direction.DOWN && !state.getValue(PORTS.get(face))) {
+            // Sneak-use with an empty hand: the next essence's sticker on that face (a sign only); a face a pipe joins
+            // has its fitting where the sticker would go.
             if (!level.isClientSide()) {
-                tank.cycleLabel(hitResult.getDirection());
+                tank.cycleLabel(face);
                 level.playSound(null, pos, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 1.3F);
                 if (level instanceof ServerLevel serverLevel) {
                     Vec3 at = hitResult.getLocation();
