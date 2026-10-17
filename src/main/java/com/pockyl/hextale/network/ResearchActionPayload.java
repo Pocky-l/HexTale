@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Client to server: something the researcher does at the open table. The server checks everything again.
  *
- * @param value the rune index (SELECT) or parchment section (STRIKE)
+ * @param value the rune index (SELECT), the field section to check (STRIKE) or the port to shine from (FIRE)
  * @param cells the whole ink thread from the orb (THREAD)
  */
 public record ResearchActionPayload(BlockPos pos, Action action, int value, List<Integer> cells) implements CustomPacketPayload {
@@ -39,7 +39,8 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
         SELECT,
         THREAD,
         STRIKE,
-        CLOSE_STUDY
+        CLOSE_STUDY,
+        FIRE
     }
 
     public static ResearchActionPayload of(BlockPos pos, Action action, int value) {
@@ -72,6 +73,7 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
             case THREAD -> table.thread(player, payload.cells().stream().mapToInt(Integer::intValue).toArray());
             case STRIKE -> table.strike(player, payload.value());
             case CLOSE_STUDY -> table.closeStudy(player);
+            case FIRE -> table.fire(player, payload.value());
         }
     }
 }

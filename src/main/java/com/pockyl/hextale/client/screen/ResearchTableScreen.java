@@ -109,6 +109,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private int strokeBase;
     /** Flags the researcher set on dark sections, per rune; kept while the game runs. */
     private static final Map<ComplexRune, BitSet> FLAGS = new HashMap<>();
+    /** The researcher's pencil marks on an item's prism (client only), per item. */
+    private static final Map<Item, BitSet> PENCIL = new HashMap<>();
     @Nullable
     private ComplexRune threadRune;
     private int serverRevision = Integer.MIN_VALUE;
@@ -616,14 +618,20 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
 
     // ---- The item study -------------------------------------------------------------------------------------------
 
+    private static BitSet pencil(Item item) {
+        return PENCIL.computeIfAbsent(item, k -> new BitSet());
+    }
+
     private void renderStudy(GuiGraphicsExtractor graphics, ResearchTableBlockEntity table, int hovered, int mouseX, int mouseY) {
         ItemStudy study = table.study();
         Item item = study.item();
-        ItemEssences elements = ResearchItems.of(item);
-        if (elements == null) {
+        if (item == null) {
             return;
         }
-        board.renderStudy(graphics, font, item, elements, study, hovered);
+        boolean over = overBoard(mouseX, mouseY);
+        int port = over ? board.portAt(mouseX, mouseY) : -1;
+        int cell = over && port < 0 ? board.prismCellAt(mouseX, mouseY) : -1;
+        board.renderStudy(graphics, font, item, study, cell, port, pencil(item));
 
         int x0 = leftPos + PANEL_X;
         int y0 = topPos;
@@ -635,18 +643,41 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         graphics.pose().popMatrix();
         PixelArt.flush(graphics);
         graphics.text(font, ResearchText.item(item).copy().withStyle(ChatFormatting.BOLD), x0 + 38, y0 + 29, 0xFF000000 | TEXT, true);
-        // Strikes left: brass tokens, spent ones dark.
-        for (int i = 0; i < study.maxStrikes(); i++) {
-            boolean left = i >= study.strikes();
-            PixelArt.hex(graphics, x0 + 42 + i * 10, y0 + 46, 7, PixelArt.argb(left ? 0xD6AB52 : 0x2A2018, 1),
-                    PixelArt.argb(left ? 0x6E4A16 : 0x4A3A28, 1));
+        // Light left: rays as small prisms, spent ones dark; then the essences still hidden.
+        for (int i = 0; i < study.maxRays(); i++) {
+            boolean left = i >= study.spent();
+            PixelArt.hex(graphics, x0 + 42 + i % 12 * 8, y0 + 44 + i / 12 * 8, 5, PixelArt.argb(left ? 0xFFF3C0 : 0x2A2018, 1),
+                    PixelArt.argb(left ? 0x9C7230 : 0x4A3A28, 1));
         }
-        if (hovered >= 0) {
-            int string = ItemStudy.stringOf(hovered);
-            Essence on = string < 0 ? null : ItemStudy.essenceOn(elements, string);
-            if (string >= 0) {
-                pendingTooltip = List.of(on != null && study.isRevealed(string) ? ResearchText.essence(on)
-                        : Component.translatable(KEY + "hidden_string").withStyle(ChatFormatting.GRAY));
+        if (port >= 0) {
+            ItemStudy.Ray ray = null;
+            for (ItemStudy.Ray r : study.rays()) {
+                if (r.port() == port || r.exit() == port) {
+                    ray = r;
+                }
+            }
+            if (ray != null) {
+                List<Component> lines = new java.util.ArrayList<>();
+                lines.add(Component.translatable(KEY + "prism.ray." + ray.outcome().name().toLowerCase(java.util.Locale.ROOT),
+                        study.rays().indexOf(ray) + 1));
+                for (int b = 0; b < study.bodies().size(); b++) {
+                    if ((ray.touched() & 1 << b) != 0) {
+                        Essence essence = study.bodies().get(b).essence();
+                        lines.add(Component.literal(" ").append(ResearchText.essence(essence)));
+                    }
+                }
+                pendingTooltip = lines;
+            } else if (study.isActive()) {
+                pendingTooltip = List.of(Component.translatable(KEY + "prism.port"),
+                        Component.translatable(KEY + "prism.port.hint").withStyle(ChatFormatting.GRAY));
+            }
+        } else if (cell >= 0) {
+            int body = ItemStudy.bodyAt(study.bodies(), cell);
+            if (body >= 0 && study.isRevealed(body)) {
+                pendingTooltip = List.of(ResearchText.essence(study.bodies().get(body).essence()));
+            } else if (study.isActive() && study.canCheck(cell)) {
+                pendingTooltip = List.of(Component.translatable(KEY + "prism.check"),
+                        Component.translatable(KEY + "prism.check.hint").withStyle(ChatFormatting.GRAY));
             }
         }
     }
@@ -859,16 +890,31 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         int cell = board.cellAt(mouseX, mouseY);
         if (table.isStudyingItem() && table.study().item() != null) {
             ItemStudy study = table.study();
-            ItemEssences elements = ResearchItems.of(study.item());
-            if (button != InputConstants.MOUSE_BUTTON_LEFT || elements == null) {
+            int port = board.portAt(mouseX, mouseY);
+            int field = port < 0 ? board.prismCellAt(mouseX, mouseY) : -1;
+            if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
+                // A pencil mark where the researcher suspects an essence: free, only a note.
+                if (field >= 0 && !study.checked(field)) {
+                    BitSet pencil = pencil(study.item());
+                    pencil.flip(field);
+                    sound(SoundEvents.BOOK_PAGE_TURN, pencil.get(field) ? 1.6F : 1.3F, 0.5F);
+                }
                 return;
             }
-            if (!study.isActive(elements)) {
+            if (button != InputConstants.MOUSE_BUTTON_LEFT) {
+                return;
+            }
+            if (!study.isActive()) {
+                PENCIL.remove(study.item());
                 send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.CLOSE_STUDY, 0));
             } else if (!study.started() && Requirement.paper(menu.table(), minecraft.player) != null) {
-                nudgeRequirement(cell < 0 ? HexGrid.CENTRE : cell);
-            } else if (study.canStrike(cell, elements)) {
-                send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.STRIKE, cell));
+                nudgeRequirement(field < 0 ? HexGrid.CENTRE : field);
+            } else if (port >= 0 && study.canFire(port)) {
+                send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.FIRE, port));
+                sound(SoundEvents.AMETHYST_CLUSTER_PLACE, 1.4F, 0.6F);
+            } else if (field >= 0 && study.canCheck(field)) {
+                pencil(study.item()).clear(field);
+                send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.STRIKE, field));
                 sound(SoundEvents.AMETHYST_BLOCK_HIT, 1.2F, 0.6F);
             }
             return;

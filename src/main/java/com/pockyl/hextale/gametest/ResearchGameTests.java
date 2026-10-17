@@ -323,139 +323,101 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    // ---- Echoes ---------------------------------------------------------------------------------------------------
+    // ---- The prism ------------------------------------------------------------------------------------------------
 
-    @HexTest
-    public static void echoStringsAreDistinct(GameTestHelper helper) {
-        java.util.Set<Integer> used = new java.util.HashSet<>();
-        for (int string = 0; string < ItemStudy.STRINGS_COUNT; string++) {
-            int[] cells = ItemStudy.string(string);
-            helper.assertTrue(cells.length >= 5, "string " + string + " has at least five sections, got " + cells.length);
-            for (int cell : cells) {
-                helper.assertTrue(used.add(cell), "strings never share a section");
-                helper.assertTrue(ItemStudy.stringOf(cell) == string, "a section knows its string");
+    /** A port whose ray runs straight towards the centre for at least three sections. */
+    private static int straightPort() {
+        for (int i = 0; i < ItemStudy.portCount(); i++) {
+            int port = ItemStudy.port(i);
+            int d = ItemStudy.portDirection(port);
+            int cell = ItemStudy.portTarget(port);
+            boolean inward = true;
+            for (int k = 0; k < 3 && inward; k++) {
+                int next = HexGrid.step(cell, d);
+                inward = HexGrid.steps(next, HexGrid.CENTRE) < HexGrid.steps(cell, HexGrid.CENTRE);
+                cell = next;
+            }
+            if (inward) {
+                return port;
             }
         }
-        helper.assertTrue(ItemStudy.stringOf(HexGrid.CENTRE) < 0, "the centre belongs to no string");
-        helper.succeed();
+        throw new IllegalStateException("no straight port");
+    }
+
+    private static ItemStudy.Body light(int cell) {
+        return new ItemStudy.Body(Essence.FIRE, 3, cell, false);
     }
 
     @HexTest
-    public static void echoesStopAtTheNearestElement(GameTestHelper helper) {
-        ItemEssences elements = ItemEssences.of(1, Essence.FIRE, 3, Essence.WATER, 1);
-        ItemStudy study = new ItemStudy();
-        study.begin(Items.STICK, elements);
-        int fire = ItemStudy.hiding(0, 3);
-        int water = ItemStudy.hiding(1, 1);
-        helper.assertTrue(study.maxStrikes() == 9, "three strikes plus three per element");
-        int probe = ItemStudy.string(0)[0];
-        ItemStudy.Echo first = study.strike(probe, elements);
-        int nearest = Math.min(HexGrid.steps(probe, fire), HexGrid.steps(probe, water));
-        helper.assertTrue(first != null && first.radius() == nearest, "the ripple stops at the nearest element");
-        helper.assertFalse(study.possible(probe), "inside the ripple nothing hides");
-        helper.assertTrue(study.strike(probe, elements) == null, "a section is struck once");
-        ItemStudy.Echo hit = study.strike(fire, elements);
-        helper.assertTrue(hit != null && hit.radius() == 0 && study.isRevealed(elements, Essence.FIRE), "striking the essence reveals it");
-        helper.assertFalse(study.possible(ItemStudy.string(0)[0]), "a revealed string is quiet");
-        int aside = -1;
-        for (int n : HexGrid.neighbours(fire)) {
-            if (aside < 0 && n != water && !study.struck(n)) {
-                aside = n;
-            }
+    public static void prismRaysFollowTheRules(GameTestHelper helper) {
+        helper.assertTrue(ItemStudy.portCount() == 6 + 6 * (ItemStudy.RIM - 1) * 2, "every rim section has its ports, got " + ItemStudy.portCount());
+        int port = straightPort();
+        int d = ItemStudy.portDirection(port);
+        int t1 = ItemStudy.portTarget(port);
+        int t2 = HexGrid.step(t1, d);
+        int t3 = HexGrid.step(t2, d);
+
+        ItemStudy.Ray free = ItemStudy.trace(List.of(), port);
+        helper.assertTrue(free.outcome() == ItemStudy.Outcome.EXIT && free.exit() >= 0 && free.touched() == 0, "an empty field lets a ray through");
+        for (int k = 1; k < free.path().length; k++) {
+            helper.assertTrue(HexGrid.direction(free.path()[k - 1], free.path()[k]) == d, "and it runs straight");
         }
-        ItemStudy.Echo next = study.strike(aside, elements);
-        helper.assertTrue(next != null && next.radius() == HexGrid.steps(next.cell(), water), "a revealed element no longer answers");
-        study.strike(water, elements);
-        helper.assertTrue(study.won(elements) && !study.isActive(elements), "both elements found: the item is studied");
+        helper.assertTrue(ItemStudy.trace(List.of(), free.exit()).exit() == port, "a ray from the far end comes back the same way");
+
+        ItemStudy.Ray hit = ItemStudy.trace(List.of(light(t3)), port);
+        helper.assertTrue(hit.outcome() == ItemStudy.Outcome.HIT && hit.path()[hit.path().length - 1] == t3 && hit.touched() == 1,
+                "a body in the way absorbs the ray");
+
+        ItemStudy.Ray rim = ItemStudy.trace(List.of(light(HexGrid.step(t1, (d + 1) % 6))), port);
+        helper.assertTrue(rim.outcome() == ItemStudy.Outcome.REFLECT, "a body beside the first section reflects the ray at the rim");
+
+        ItemStudy.Ray bent = ItemStudy.trace(List.of(light(HexGrid.step(t3, (d + 1) % 6))), port);
+        helper.assertTrue(bent.outcome() == ItemStudy.Outcome.EXIT && bent.touched() == 1 && bent.exit() != free.exit(), "a body beside the path bends it");
+        helper.assertTrue(bent.path()[2] == t2 && bent.path()[3] == HexGrid.step(t2, (d + 5) % 6), "away from the body, by one direction");
+
+        ItemStudy.Ray back = ItemStudy.trace(List.of(light(HexGrid.step(t3, (d + 1) % 6)), light(HexGrid.step(t3, (d + 5) % 6))), port);
+        helper.assertTrue(back.outcome() == ItemStudy.Outcome.REFLECT && back.touched() == 3, "bodies on both sides turn the ray back");
+
+        ItemStudy.Body big = new ItemStudy.Body(Essence.EARTH, 20, t3, true);
+        ItemStudy.Ray heavy = ItemStudy.trace(List.of(big), port);
+        helper.assertTrue(heavy.outcome() == ItemStudy.Outcome.HIT && heavy.path()[heavy.path().length - 1] == t2, "a strong essence fills seven sections");
         helper.succeed();
     }
 
-    /** A sensible player - strike where the answer splits the possible sections best - studies almost every item. */
+    /** Every item's essences fit into the prism, and every body shows itself to some ray. */
     @HexTest(maxTicks = 600)
-    public static void echoesAreFairForEveryItem(GameTestHelper helper) {
+    public static void prismBodiesFitEveryItem(GameTestHelper helper) {
         int items = 0;
-        int won = 0;
-        int used = 0;
-        Map<Integer, List<Integer>> byCount = new java.util.TreeMap<>();
+        int hidden = 0;
+        int[] budget = new int[ItemStudy.MAX_BODIES + 1];
         for (Item item : BuiltInRegistries.ITEM) {
-            ItemEssences elements = ResearchItems.of(item);
-            if (elements == null) {
+            ItemEssences essences = ResearchItems.of(item);
+            if (essences == null) {
                 continue;
             }
-            ItemStudy study = new ItemStudy();
-            study.begin(item, elements);
-            while (study.isActive(elements)) {
-                int cell = sensibleStrike(study, elements);
-                helper.assertTrue(cell >= 0 && study.strike(cell, elements) != null, item + ": there is always a strike to make");
-            }
-            items++;
-            if (study.won(elements)) {
-                won++;
-                used += study.strikes();
-                byCount.computeIfAbsent(elements.essences().size(), k -> new ArrayList<>()).add(study.strikes());
-            }
-        }
-        Hextale.LOGGER.info("Echoes: a sensible player studies {}/{} items, {} strikes on average", won, items,
-                won == 0 ? "-" : String.format("%.1f", used / (double) won));
-        byCount.forEach((count, strikes) -> {
-            Collections.sort(strikes);
-            Hextale.LOGGER.info("Echoes, {} elements: {} items, strikes median {}, 90% within {}", count, strikes.size(),
-                    strikes.get(strikes.size() / 2), strikes.get(strikes.size() * 9 / 10));
-        });
-        helper.assertTrue(won >= items * 0.9, "a sensible player studies at least 90% of the items, got " + won + "/" + items);
-        helper.succeed();
-    }
-
-    /**
-     * What the table shows a player: the hot sections on the rim of the newest open echo (else every possible section)
-     * are the suspects; strike the section whose answer splits them best, a suspect itself when two or fewer are left.
-     */
-    private static int sensibleStrike(ItemStudy study, ItemEssences elements) {
-        List<Integer> suspects = new ArrayList<>();
-        ItemStudy.Echo clue = null;
-        for (ItemStudy.Echo echo : study.echoes()) {
-            if (study.open(echo, elements)) {
-                clue = echo;
-            }
-        }
-        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-            if (study.possible(cell) && (clue == null || HexGrid.steps(clue.cell(), cell) == clue.radius())) {
-                suspects.add(cell);
-            }
-        }
-        if (suspects.isEmpty()) {
-            for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-                if (study.possible(cell)) {
-                    suspects.add(cell);
+            for (int seed = 0; seed < 3; seed++) {
+                List<ItemStudy.Body> bodies = ItemStudy.place(essences, item.hashCode() + seed);
+                helper.assertTrue(bodies.size() == Math.min(ItemStudy.MAX_BODIES, essences.essences().size()), item + ": every essence gets a body");
+                helper.assertTrue(bodies.equals(ItemStudy.place(essences, item.hashCode() + seed)), item + ": the same seed, the same bodies");
+                int seen = 0;
+                for (int b = 0; b < bodies.size(); b++) {
+                    for (int cell : bodies.get(b).cells()) {
+                        helper.assertTrue(ItemStudy.inField(cell), item + ": bodies lie in the field");
+                        helper.assertTrue(ItemStudy.bodyAt(bodies, cell) == b, item + ": bodies never overlap");
+                    }
                 }
+                for (int p = 0; p < ItemStudy.portCount(); p++) {
+                    seen |= ItemStudy.trace(bodies, ItemStudy.port(p)).touched();
+                }
+                hidden += bodies.size() - Integer.bitCount(seen);
+                items++;
+                budget[bodies.size()] = ItemStudy.maxRays(bodies);
             }
         }
-        if (suspects.size() <= 2) {
-            return suspects.get(0);
-        }
-        int best = -1;
-        double bestScore = Double.MAX_VALUE;
-        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-            if (!study.canStrike(cell, elements)) {
-                continue;
-            }
-            Map<Integer, Integer> byDistance = new HashMap<>();
-            for (int p : suspects) {
-                byDistance.merge(HexGrid.steps(cell, p), 1, Integer::sum);
-            }
-            double score = 0;
-            for (int count : byDistance.values()) {
-                score += count * (double) count;
-            }
-            if (suspects.contains(cell)) {
-                score -= 0.5;
-            }
-            if (score < bestScore) {
-                bestScore = score;
-                best = cell;
-            }
-        }
-        return best;
+        Hextale.LOGGER.info("Prism: {} placements, {} bodies no ray touches; rays by essences 1-6: {}", items, hidden,
+                Arrays.toString(Arrays.copyOfRange(budget, 1, budget.length)));
+        helper.assertTrue(hidden <= items / 100, "nearly every body shows itself to some ray, " + hidden + " hidden in " + items);
+        helper.succeed();
     }
 
     @HexTest
@@ -467,9 +429,10 @@ public final class ResearchGameTests {
         table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.GLASS, 3));
         table.studySlotChanged(player);
         helper.assertTrue(table.isStudyingItem() && table.study().item() == Items.GLASS, "glass lies on the parchment, no orb needed");
-        ItemEssences elements = ResearchItems.of(Items.GLASS);
-        for (Map.Entry<Essence, Integer> entry : elements.essences().entrySet()) {
-            table.strike(player, ItemStudy.hiding(ItemStudy.stringFor(elements, entry.getKey()), entry.getValue()));
+        table.fire(player, ItemStudy.port(0));
+        helper.assertTrue(table.study().rays().size() == 1, "a ray was shone");
+        for (ItemStudy.Body body : table.study().bodies()) {
+            table.strike(player, body.centre());
         }
         Identifier glass = BuiltInRegistries.ITEM.getKey(Items.GLASS);
         helper.assertTrue(Research.of(player).hasStudied(glass), "glass is studied");
@@ -478,20 +441,15 @@ public final class ResearchGameTests {
         table.closeStudy(player);
         helper.assertFalse(table.isStudyingItem(), "a studied item is not studied again");
 
-        // A lost study: strikes away from the elements until they run out; the item is used once.
+        // A lost study: empty checks until the light runs out; the item is used once.
         table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.FEATHER, 2));
         table.studySlotChanged(player);
-        ItemEssences feather = ResearchItems.of(Items.FEATHER);
-        for (int cell = 0; cell < HexGrid.COUNT && table.study().isActive(feather); cell++) {
-            boolean answer = false;
-            for (Map.Entry<Essence, Integer> entry : feather.essences().entrySet()) {
-                answer |= ItemStudy.hiding(ItemStudy.stringFor(feather, entry.getKey()), entry.getValue()) == cell;
-            }
-            if (!answer) {
+        for (int cell = 0; cell < HexGrid.COUNT && table.study().isActive(); cell++) {
+            if (ItemStudy.inField(cell) && ItemStudy.bodyAt(table.study().bodies(), cell) < 0) {
                 table.strike(player, cell);
             }
         }
-        helper.assertTrue(table.study().lost(feather), "the strikes ran out");
+        helper.assertTrue(table.study().lost(), "the light ran out");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 1, "the study used one feather");
         helper.assertFalse(Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(Items.FEATHER)), "a lost study teaches nothing");
         table.closeStudy(player);

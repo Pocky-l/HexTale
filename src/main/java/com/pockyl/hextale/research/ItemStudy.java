@@ -12,115 +12,279 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Studying an item: "echoes". The item lies in the centre of the hexagonal parchment; six strings run from it to the
- * corners, one per direction. Each essence the item carries (up to six, strongest first) hides on its own string, the
- * farther out the more of it there is.
+ * Studying an item: "the prism". The item's essences hide as bodies of light inside a small hexagonal field in the
+ * middle of the parchment - a strong essence ({@value #HEAVY} or more) as a big body of seven sections, a weak one as a
+ * single section. Around the field runs the rim; from its ports the researcher shines rays inward.
  * <p>
- * The researcher strikes the parchment anywhere: a ripple runs out from the struck section and stops at the nearest
- * essence still hidden. Everything inside the ripple is empty; somewhere on its edge an essence sings. Striking an
- * essence's own section reveals it, and a revealed essence goes quiet, so later ripples run on to the others. Strikes
- * are limited: three plus three per essence.
+ * A ray runs straight. Running into a body it is absorbed (a hit). A body beside the section ahead bends it away by 60
+ * degrees; bodies on both sides turn it back. A ray bent at the very rim comes straight back out (a reflection). A ray
+ * that gets through leaves at another port. What the researcher sees is only where each ray went in and came out (or
+ * that it was absorbed or reflected), tinted with the colours of the essences it touched - and a faint glimmer of its
+ * path through the mist while it runs.
  * <p>
- * Pure rules shared by the table (server) and its screen (client copy).
+ * From that the researcher works out where the bodies lie and checks a section: a body there is revealed, an empty
+ * section costs a ray. Rays are limited: {@value #BASE_RAYS} plus {@value #RAYS_PER_ESSENCE} per essence. All bodies
+ * revealed = the item is studied.
+ * <p>
+ * Pure rules shared by the table (server) and its screen (client copy): the bodies follow from the item and a seed
+ * chosen when the study begins.
  */
 public final class ItemStudy {
-    /** Strings start two sections out: right by the item the six directions crowd together. */
-    private static final int FIRST_STEP = 2;
-    public static final int STRINGS_COUNT = HexGrid.DIRECTIONS.length;
-    private static final int[][] STRINGS = new int[STRINGS_COUNT][];
-    private static final int[] STRING_OF = new int[HexGrid.COUNT];
-    private static final int[] INDEX_OF = new int[HexGrid.COUNT];
+    /** Sections from the centre the bodies can lie within. */
+    public static final int FIELD = 4;
+    /** Ring of the rim, where the ports are. */
+    public static final int RIM = FIELD + 1;
+    /** An essence this strong is a big body (the section and its six neighbours). */
+    public static final int HEAVY = 10;
+    public static final int MAX_BODIES = 6;
+    public static final int BASE_RAYS = 6;
+    public static final int RAYS_PER_ESSENCE = 2;
+    /** Ports in rim order (clockwise around the field), each {@code rimCell * 6 + direction}. */
+    private static final int[] PORTS;
+    private static final int[] PORT_INDEX = new int[HexGrid.COUNT * 6];
 
     static {
-        Arrays.fill(STRING_OF, -1);
-        Arrays.fill(INDEX_OF, -1);
-        for (int d = 0; d < STRINGS_COUNT; d++) {
-            List<Integer> string = new ArrayList<>();
-            int cell = HexGrid.CENTRE;
-            for (int n = 1; n <= HexGrid.RADIUS; n++) {
-                cell = HexGrid.step(cell, d);
-                if (n >= FIRST_STEP && cell >= 0) {
-                    string.add(cell);
+        Arrays.fill(PORT_INDEX, -1);
+        List<int[]> ports = new ArrayList<>();
+        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+            if (HexGrid.steps(cell, HexGrid.CENTRE) != RIM) {
+                continue;
+            }
+            for (int d = 0; d < 6; d++) {
+                int next = HexGrid.step(cell, d);
+                if (next >= 0 && inField(next)) {
+                    ports.add(new int[]{cell, d});
                 }
             }
-            STRINGS[d] = string.stream().mapToInt(Integer::intValue).toArray();
-            for (int k = 0; k < STRINGS[d].length; k++) {
-                STRING_OF[STRINGS[d][k]] = d;
-                INDEX_OF[STRINGS[d][k]] = k;
-            }
+        }
+        // Clockwise from the top: by the angle of the point between the rim section and the section it shines into.
+        ports.sort((a, b) -> Double.compare(angle(a), angle(b)));
+        PORTS = new int[ports.size()];
+        for (int i = 0; i < PORTS.length; i++) {
+            PORTS[i] = ports.get(i)[0] * 6 + ports.get(i)[1];
+            PORT_INDEX[PORTS[i]] = i;
         }
     }
 
+    private static double angle(int[] port) {
+        int next = HexGrid.step(port[0], port[1]);
+        double x = (HexGrid.cx(port[0]) + HexGrid.cx(next)) / 2;
+        double y = (HexGrid.cy(port[0]) + HexGrid.cy(next)) / 2;
+        double a = Math.atan2(x, -y);
+        return a < 0 ? a + Math.PI * 2 : a;
+    }
+
+    /** An essence's body of light. */
+    public record Body(Essence essence, int amount, int centre, boolean heavy) {
+        public boolean covers(int cell) {
+            return cell == centre || heavy && HexGrid.adjacent(cell, centre);
+        }
+
+        public int[] cells() {
+            if (!heavy) {
+                return new int[]{centre};
+            }
+            int[] out = new int[7];
+            out[0] = centre;
+            int[] around = HexGrid.neighbours(centre);
+            System.arraycopy(around, 0, out, 1, Math.min(6, around.length));
+            return out;
+        }
+    }
+
+    public enum Outcome {
+        /** Absorbed by a body. */
+        HIT,
+        /** Came back out of its own port. */
+        REFLECT,
+        /** Left at another port. */
+        EXIT
+    }
+
     /**
-     * A strike and its ripple.
+     * A ray and what became of it.
      *
-     * @param radius sections from the struck one to the nearest hidden element; 0 = found it
+     * @param port    the port it was shone from
+     * @param exit    the port it left by (EXIT only), else -1
+     * @param path    the sections it ran through, from the rim section it started in
+     * @param touched bit per body that bent, turned or absorbed it
      */
-    public record Echo(int cell, int radius) {
+    public record Ray(int port, Outcome outcome, int exit, int[] path, int touched) {
     }
 
     @Nullable
     private Item item;
-    /** Revealed elements, bit per ring index. */
+    private int seed;
+    private List<Body> bodies = List.of();
     private int revealed;
-    private final List<Echo> echoes = new ArrayList<>();
-    private int maxStrikes;
+    private final List<Ray> rays = new ArrayList<>();
+    /** Sections the researcher checked and found empty. */
+    private final List<Integer> misses = new ArrayList<>();
+    private int maxRays;
 
     public ItemStudy() {
         clear();
     }
 
-    /** The sections of a string, from the centre out. */
-    public static int[] string(int string) {
-        return STRINGS[string];
+    // ---- Geometry -----------------------------------------------------------------------------------------------------
+
+    public static boolean inField(int cell) {
+        return cell >= 0 && HexGrid.steps(cell, HexGrid.CENTRE) <= FIELD;
     }
 
-    /** Which string a section belongs to, or -1. */
-    public static int stringOf(int cell) {
-        return STRING_OF[cell];
+    public static int portCount() {
+        return PORTS.length;
     }
 
-    /** The section's place on its string (0 = nearest the item), or -1. */
-    public static int indexOf(int cell) {
-        return INDEX_OF[cell];
+    /** The {@code index}-th port in rim order. */
+    public static int port(int index) {
+        return PORTS[index];
     }
 
-    /** The string an essence of the item hides on (its place among the item's essences, strongest first), or -1. */
-    public static int stringFor(ItemEssences essences, Essence essence) {
-        int i = 0;
-        for (Essence e : essences.essences().keySet()) {
-            if (e == essence) {
-                return i < STRINGS_COUNT ? i : -1;
+    /** A port's place in rim order, or -1 for no port. */
+    public static int portIndex(int port) {
+        return port >= 0 && port < PORT_INDEX.length ? PORT_INDEX[port] : -1;
+    }
+
+    public static int portCell(int port) {
+        return port / 6;
+    }
+
+    public static int portDirection(int port) {
+        return port % 6;
+    }
+
+    /** The field section a port shines into. */
+    public static int portTarget(int port) {
+        return HexGrid.step(portCell(port), portDirection(port));
+    }
+
+    // ---- Bodies -------------------------------------------------------------------------------------------------------
+
+    /** Where the item's essences (strongest first, at most six) lie for this seed. */
+    public static List<Body> place(ItemEssences essences, int seed) {
+        Random random = new Random(seed * 31L + 7);
+        List<Body> out = new ArrayList<>();
+        for (Map.Entry<Essence, Integer> entry : essences.essences().entrySet()) {
+            if (out.size() >= MAX_BODIES) {
+                break;
             }
-            i++;
+            boolean heavy = entry.getValue() >= HEAVY;
+            Body placed = null;
+            // First apart from the others by a free section, then just not touching, then anywhere free.
+            for (int gap = 2; gap >= 0 && placed == null; gap--) {
+                for (int attempt = 0; attempt < 400 && placed == null; attempt++) {
+                    int centre = random.nextInt(HexGrid.COUNT);
+                    int distance = HexGrid.steps(centre, HexGrid.CENTRE);
+                    if (distance < 1 || distance > (heavy ? FIELD - 1 : FIELD)) {
+                        continue;
+                    }
+                    Body body = new Body(entry.getKey(), entry.getValue(), centre, heavy);
+                    if (fits(body, out, gap)) {
+                        placed = body;
+                    }
+                }
+            }
+            if (placed == null) {
+                break;
+            }
+            out.add(placed);
+        }
+        return List.copyOf(out);
+    }
+
+    private static boolean fits(Body body, List<Body> others, int gap) {
+        for (int cell : body.cells()) {
+            if (cell == HexGrid.CENTRE && gap > 0) {
+                return false;
+            }
+            for (Body other : others) {
+                for (int taken : other.cells()) {
+                    if (HexGrid.steps(cell, taken) < Math.max(1, gap)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /** The body covering a section, or -1. */
+    public static int bodyAt(List<Body> bodies, int cell) {
+        if (cell < 0) {
+            return -1;
+        }
+        for (int i = 0; i < bodies.size(); i++) {
+            if (bodies.get(i).covers(cell)) {
+                return i;
+            }
         }
         return -1;
     }
 
-    /** The essence hiding on a string, or null when the item has fewer essences. */
-    @Nullable
-    public static Essence essenceOn(ItemEssences essences, int string) {
-        int i = 0;
-        for (Essence e : essences.essences().keySet()) {
-            if (i++ == string) {
-                return e;
+    // ---- Rays ---------------------------------------------------------------------------------------------------------
+
+    /** Where a ray shone from {@code port} goes among these bodies. */
+    public static Ray trace(List<Body> bodies, int port) {
+        int cell = portCell(port);
+        int d = portDirection(port);
+        List<Integer> path = new ArrayList<>();
+        path.add(cell);
+        int touched = 0;
+        boolean atRim = true;
+        int turns = 0;
+        for (int guard = 0; guard < 400; guard++) {
+            int next = HexGrid.step(cell, d);
+            if (next < 0 || !inField(next)) {
+                // Out of the field: through the rim section ahead.
+                int exitCell = next < 0 ? cell : next;
+                int exit = exitCell * 6 + (d + 3) % 6;
+                path.add(exitCell);
+                if (exit == port) {
+                    return new Ray(port, Outcome.REFLECT, -1, toArray(path), touched);
+                }
+                return new Ray(port, Outcome.EXIT, portIndex(exit) >= 0 ? exit : -1, toArray(path), touched);
             }
+            int ahead = bodyAt(bodies, next);
+            if (ahead >= 0) {
+                path.add(next);
+                return new Ray(port, Outcome.HIT, -1, toArray(path), touched | 1 << ahead);
+            }
+            int left = bodyAt(bodies, HexGrid.step(next, (d + 1) % 6));
+            int right = bodyAt(bodies, HexGrid.step(next, (d + 5) % 6));
+            if (left >= 0 || right >= 0) {
+                touched |= (left >= 0 ? 1 << left : 0) | (right >= 0 ? 1 << right : 0);
+                if (atRim) {
+                    return new Ray(port, Outcome.REFLECT, -1, toArray(path), touched);
+                }
+                if (++turns > 3) {
+                    // Caught between bodies: the light dies there.
+                    return new Ray(port, Outcome.HIT, -1, toArray(path), touched);
+                }
+                d = left >= 0 && right >= 0 ? (d + 3) % 6 : left >= 0 ? (d + 5) % 6 : (d + 1) % 6;
+                continue;
+            }
+            cell = next;
+            path.add(cell);
+            atRim = false;
+            turns = 0;
         }
-        return null;
+        return new Ray(port, Outcome.HIT, -1, toArray(path), touched);
     }
 
-    /** The section where an essence of this strength hides on its string: two units of essence per section, the rim at most. */
-    public static int hiding(int string, int strength) {
-        int[] cells = STRINGS[string];
-        return cells[Math.max(0, Math.min(cells.length, (strength + 1) / 2) - 1)];
+    private static int[] toArray(List<Integer> cells) {
+        return cells.stream().mapToInt(Integer::intValue).toArray();
     }
 
-    public static int maxStrikes(ItemEssences elements) {
-        return 3 + 3 * Math.min(STRINGS_COUNT, elements.essences().size());
+    // ---- The study ----------------------------------------------------------------------------------------------------
+
+    public static int maxRays(List<Body> bodies) {
+        return BASE_RAYS + RAYS_PER_ESSENCE * bodies.size();
     }
 
     @Nullable
@@ -129,185 +293,159 @@ public final class ItemStudy {
     }
 
     /** A fresh study of this item. */
-    public void begin(Item item, ItemEssences elements) {
+    public void begin(Item item, ItemEssences essences, int seed) {
         clear();
         this.item = item;
-        maxStrikes = maxStrikes(elements);
+        this.seed = seed;
+        bodies = place(essences, seed);
+        maxRays = maxRays(bodies);
     }
 
     public void clear() {
         item = null;
+        seed = 0;
+        bodies = List.of();
         revealed = 0;
-        echoes.clear();
-        maxStrikes = 0;
+        rays.clear();
+        misses.clear();
+        maxRays = 0;
     }
 
-    /** The first strike uses up one of the item: the study has begun. */
+    public List<Body> bodies() {
+        return bodies;
+    }
+
+    /** The first ray (or check) uses up one of the item: the study has begun. */
     public boolean started() {
-        return !echoes.isEmpty();
+        return !rays.isEmpty() || !misses.isEmpty() || revealed != 0;
     }
 
-    public List<Echo> echoes() {
-        return echoes;
+    public List<Ray> rays() {
+        return rays;
     }
 
-    public int strikes() {
-        return echoes.size();
+    public List<Integer> misses() {
+        return misses;
     }
 
-    public int maxStrikes() {
-        return maxStrikes;
+    /** Rays shone plus empty checks: both spend the study's light. */
+    public int spent() {
+        return rays.size() + misses.size();
     }
 
-    public int strikesLeft() {
-        return maxStrikes - echoes.size();
+    public int maxRays() {
+        return maxRays;
     }
 
-    public boolean isRevealed(int string) {
-        return (revealed & 1 << string) != 0;
+    public int left() {
+        return maxRays - spent();
     }
 
-    public boolean isRevealed(ItemEssences essences, Essence essence) {
-        int string = stringFor(essences, essence);
-        return string >= 0 && isRevealed(string);
+    public boolean isRevealed(int body) {
+        return (revealed & 1 << body) != 0;
     }
 
-    /** Whether the section was struck already. */
-    public boolean struck(int cell) {
-        for (Echo echo : echoes) {
-            if (echo.cell() == cell) {
+    /** The revealed essences in body order (null where still hidden), for the hexagon's corner signs. */
+    public List<@Nullable Essence> signs() {
+        List<@Nullable Essence> out = new ArrayList<>();
+        for (int i = 0; i < bodies.size(); i++) {
+            out.add(isRevealed(i) ? bodies.get(i).essence() : null);
+        }
+        return out;
+    }
+
+    /** Whether a port was used already, as the start or the end of a ray. */
+    public boolean used(int port) {
+        for (Ray ray : rays) {
+            if (ray.port() == port || ray.exit() == port) {
                 return true;
             }
         }
         return false;
     }
 
-    /**
-     * Whether a hidden element could still be on this section, from what the ripples showed: it lies on a string whose
-     * element is not revealed yet and inside no ripple.
-     */
-    public boolean possible(int cell) {
-        int string = stringOf(cell);
-        if (string < 0 || isRevealed(string)) {
-            return false;
-        }
-        for (Echo echo : echoes) {
-            if (HexGrid.steps(echo.cell(), cell) < echo.radius()) {
-                return false;
-            }
-        }
-        return true;
+    public boolean canFire(int port) {
+        return isActive() && portIndex(port) >= 0 && !used(port);
     }
 
-    /**
-     * Whether an echo is still a clue: its ripple stopped at an element that has not been revealed yet (no revealed
-     * element sits on its rim).
-     */
-    public boolean open(Echo echo, ItemEssences elements) {
-        if (echo.radius() == 0) {
-            return false;
-        }
-        int string = 0;
-        for (Map.Entry<Essence, Integer> entry : elements.essences().entrySet()) {
-            if (string < STRINGS_COUNT && isRevealed(string) && HexGrid.steps(echo.cell(), hiding(string, entry.getValue())) == echo.radius()) {
-                return false;
-            }
-            string++;
-        }
-        return true;
+    /** Whether a section was checked already (found empty, or holds a revealed body). */
+    public boolean checked(int cell) {
+        int body = bodyAt(bodies, cell);
+        return misses.contains(cell) || body >= 0 && isRevealed(body);
     }
 
-    /**
-     * How many open echoes point at this section: it is possible and lies on their rims. Revealing elements only closes
-     * echoes, so this never needs the hidden answer beyond what the table shows.
-     */
-    public int heat(int cell, ItemEssences elements) {
-        if (!possible(cell)) {
-            return 0;
-        }
-        int heat = 0;
-        for (Echo echo : echoes) {
-            if (HexGrid.steps(echo.cell(), cell) == echo.radius() && open(echo, elements)) {
-                heat++;
-            }
-        }
-        return heat;
+    public boolean canCheck(int cell) {
+        return isActive() && inField(cell) && !checked(cell);
     }
 
-    public boolean canStrike(int cell, ItemEssences elements) {
-        return isActive(elements) && cell >= 0 && cell < HexGrid.COUNT && cell != HexGrid.CENTRE && !struck(cell);
+    public boolean won() {
+        return item != null && !bodies.isEmpty() && revealed == (1 << bodies.size()) - 1;
     }
 
-    public boolean won(ItemEssences elements) {
-        int strings = Math.min(STRINGS_COUNT, elements.essences().size());
-        for (int string = 0; string < strings; string++) {
-            if (!isRevealed(string)) {
-                return false;
-            }
-        }
-        return true;
+    public boolean lost() {
+        return item != null && spent() >= maxRays && !won();
     }
 
-    public boolean lost(ItemEssences elements) {
-        return echoes.size() >= maxStrikes && !won(elements);
+    public boolean isActive() {
+        return item != null && !won() && !lost();
     }
 
-    public boolean isActive(ItemEssences elements) {
-        return item != null && !won(elements) && !lost(elements);
-    }
-
-    /** Strikes a section: the ripple stops at the nearest hidden element (and reveals it when struck exactly). */
+    /** Shines a ray from a port. */
     @Nullable
-    public Echo strike(int cell, ItemEssences elements) {
-        if (!canStrike(cell, elements)) {
+    public Ray fire(int port) {
+        if (!canFire(port)) {
             return null;
         }
-        int radius = Integer.MAX_VALUE;
-        int found = -1;
-        int string = -1;
-        for (Map.Entry<Essence, Integer> entry : elements.essences().entrySet()) {
-            string++;
-            if (string >= STRINGS_COUNT || isRevealed(string)) {
-                continue;
-            }
-            int d = HexGrid.steps(cell, hiding(string, entry.getValue()));
-            if (d < radius) {
-                radius = d;
-                found = d == 0 ? string : -1;
-            }
+        Ray ray = trace(bodies, port);
+        rays.add(ray);
+        return ray;
+    }
+
+    /**
+     * Checks a section: a hidden body there is revealed (returned), an empty section is a miss that costs a ray (null).
+     */
+    @Nullable
+    public Body check(int cell) {
+        if (!canCheck(cell)) {
+            return null;
         }
-        if (found >= 0) {
-            revealed |= 1 << found;
+        int body = bodyAt(bodies, cell);
+        if (body < 0) {
+            misses.add(cell);
+            return null;
         }
-        Echo echo = new Echo(cell, radius);
-        echoes.add(echo);
-        return echo;
+        revealed |= 1 << body;
+        return bodies.get(body);
     }
 
     public void save(ValueOutput tag) {
         if (item != null) {
             tag.putString("item", BuiltInRegistries.ITEM.getKey(item).toString());
         }
+        tag.putInt("seed", seed);
         tag.putInt("revealed", revealed);
-        tag.putInt("max_strikes", maxStrikes);
-        int[] flat = new int[echoes.size() * 2];
-        for (int i = 0; i < echoes.size(); i++) {
-            flat[i * 2] = echoes.get(i).cell();
-            flat[i * 2 + 1] = echoes.get(i).radius();
-        }
-        tag.putIntArray("echoes", flat);
+        tag.putIntArray("rays", rays.stream().mapToInt(Ray::port).toArray());
+        tag.putIntArray("misses", misses.stream().mapToInt(Integer::intValue).toArray());
     }
 
     public void load(ValueInput tag) {
         clear();
         Identifier id = tag.getString("item").map(Identifier::tryParse).orElse(null);
-        item = id == null ? null : BuiltInRegistries.ITEM.getOptional(id).orElse(null);
-        revealed = tag.getIntOr("revealed", 0);
-        maxStrikes = tag.getIntOr("max_strikes", 0);
-        int[] flat = tag.getIntArray("echoes").orElse(new int[0]);
-        for (int i = 0; i + 1 < flat.length; i += 2) {
-            if (flat[i] >= 0 && flat[i] < HexGrid.COUNT) {
-                echoes.add(new Echo(flat[i], flat[i + 1]));
+        Item loaded = id == null ? null : BuiltInRegistries.ITEM.getOptional(id).orElse(null);
+        ItemEssences essences = loaded == null ? null : ResearchItems.of(loaded);
+        if (loaded == null || essences == null) {
+            return;
+        }
+        begin(loaded, essences, tag.getIntOr("seed", 0));
+        revealed = tag.getIntOr("revealed", 0) & (1 << bodies.size()) - 1;
+        for (int port : tag.getIntArray("rays").orElse(new int[0])) {
+            if (portIndex(port) >= 0) {
+                rays.add(trace(bodies, port));
+            }
+        }
+        for (int cell : tag.getIntArray("misses").orElse(new int[0])) {
+            if (inField(cell)) {
+                misses.add(cell);
             }
         }
     }

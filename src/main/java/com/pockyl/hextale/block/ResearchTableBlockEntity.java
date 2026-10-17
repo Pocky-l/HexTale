@@ -67,7 +67,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Research Table's contents, its ink and the server side of both mini-games - learning a rune by drawing an ink
- * thread on its parchment and studying an item by its echoes. Every action a client asks for is checked here against the sheet, the table and the
+ * thread on its parchment and studying an item through the prism. Every action a client asks for is checked here against the sheet, the table and the
  * researcher's knowledge and inventory before it happens. Contents, both games and a "someone is writing" flag are
  * synced to clients; finishing a rune reaches every nearby client as a block event so the orb can flare for all.
  */
@@ -314,20 +314,19 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     /**
      * The study slot changed in the researcher's hands: an unstudied item starts its study at once, an emptied slot
-     * (before the first strike) takes the study off the parchment.
+     * (before the first ray) takes the study off the parchment.
      */
     public void studySlotChanged(ServerPlayer player) {
         ItemStack stack = items.get(STUDY);
         Item current = study.item();
-        ItemEssences running = current == null ? null : ResearchItems.of(current);
-        if (studyingItem && running != null && study.started() && study.isActive(running)) {
+        if (studyingItem && current != null && study.started() && study.isActive()) {
             return;
         }
         ItemEssences elements = ResearchItems.of(stack);
         if (elements != null && !studied(player, stack.getItem()) && Requirement.diary(this, player) == null) {
             if (!studyingItem || current != stack.getItem() || study.started()) {
                 ResearchersDiaryItem.sign(items.get(DIARY), player);
-                study.begin(stack.getItem(), elements);
+                study.begin(stack.getItem(), elements, level == null ? 0 : level.getRandom().nextInt());
                 studyingItem = true;
                 setChanged();
             }
@@ -340,9 +339,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     /** A click on a finished study: try a lost item again, or put the study away. */
     public void closeStudy(ServerPlayer player) {
-        Item current = study.item();
-        ItemEssences running = current == null ? null : ResearchItems.of(current);
-        if (!studyingItem || running != null && study.isActive(running)) {
+        if (!studyingItem || study.item() != null && study.isActive()) {
             return;
         }
         study.clear();
@@ -351,36 +348,60 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         setChanged();
     }
 
-    /** Strikes a section of the item's parchment. The first strike takes one of the item and a paper. */
-    public void strike(ServerPlayer player, int cell) {
+    /** Whether the researcher may act on the study now; the first action takes one of the item and a paper. */
+    private boolean studyAction(ServerPlayer player) {
         Item item = study.item();
-        ItemEssences elements = item == null ? null : ResearchItems.of(item);
-        if (!studyingItem || elements == null || Requirement.diary(this, player) != null || !study.canStrike(cell, elements)) {
-            return;
+        if (!studyingItem || item == null || Requirement.diary(this, player) != null || !study.isActive()) {
+            return false;
         }
         if (!study.started()) {
             if (!items.get(STUDY).is(item) || Requirement.paper(this, player) != null) {
-                return;
+                return false;
             }
             if (!player.getAbilities().instabuild) {
                 items.get(STUDY).shrink(1);
                 items.get(PAPER).shrink(1);
             }
         }
-        ItemStudy.Echo echo = study.strike(cell, elements);
-        if (echo == null) {
+        return true;
+    }
+
+    /** Shines a ray into the item's field from a port of the rim. */
+    public void fire(ServerPlayer player, int port) {
+        if (!study.canFire(port) || !studyAction(player)) {
             return;
         }
-        if (echo.radius() == 0) {
-            Essence found = ItemStudy.essenceOn(elements, ItemStudy.stringOf(cell));
-            if (found != null) {
-                pointEffects(found);
-            }
-        } else {
-            level.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.0F,
-                    Math.max(0.5F, 1.6F - echo.radius() * 0.08F));
+        ItemStudy.Ray ray = study.fire(port);
+        if (ray == null) {
+            return;
         }
-        if (study.won(elements)) {
+        float pitch = switch (ray.outcome()) {
+            case HIT -> 0.6F;
+            case REFLECT -> 1.5F;
+            case EXIT -> Math.max(0.7F, 1.3F - ray.path().length * 0.04F);
+        };
+        level.playSound(null, worldPosition, ray.outcome() == ItemStudy.Outcome.HIT ? SoundEvents.AMETHYST_BLOCK_HIT
+                : SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.9F, pitch);
+        afterStudyAction(player);
+    }
+
+    /** Checks a field section: a hidden essence there is revealed, an empty one costs a ray. */
+    public void strike(ServerPlayer player, int cell) {
+        if (!study.canCheck(cell) || !studyAction(player)) {
+            return;
+        }
+        ItemStudy.Body found = study.check(cell);
+        if (found != null) {
+            pointEffects(found.essence());
+        } else {
+            level.playSound(null, worldPosition, SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 0.8F, 0.8F);
+        }
+        afterStudyAction(player);
+    }
+
+    private void afterStudyAction(ServerPlayer player) {
+        Item item = study.item();
+        if (study.won()) {
             Research.study(player, item);
             message(player, Component.translatable("research.hextale.study.complete", ResearchText.item(item)), ResearchMessagePayload.Tone.WIN);
             level.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0F, 1.2F);
@@ -388,7 +409,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
                 Vec3 orb = orbPosition();
                 serverLevel.sendParticles(ParticleTypes.END_ROD, orb.x, orb.y, orb.z, 10, 0.15, 0.1, 0.15, 0.03);
             }
-        } else if (study.lost(elements)) {
+        } else if (study.lost()) {
             message(player, Component.translatable("research.hextale.study.lost", ResearchText.item(item)), ResearchMessagePayload.Tone.BAD);
             fizzle();
         }
