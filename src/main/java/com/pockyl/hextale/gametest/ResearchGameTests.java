@@ -820,6 +820,15 @@ public final class ResearchGameTests {
 
     @HexTest
     public static void theTableDrawsInkFromTanksAround(GameTestHelper helper) {
+        // Blocks outside the 1x1x1 test structure outlive their test: no jar left by another test may be in reach.
+        int reach = JarReach.RADIUS + 2;
+        for (int x = -reach; x <= reach; x++) {
+            for (int z = -reach; z <= reach; z++) {
+                for (int y = 1; y <= reach; y++) {
+                    helper.setBlock(new BlockPos(x, y, z), net.minecraft.world.level.block.Blocks.AIR);
+                }
+            }
+        }
         ResearchTableBlockEntity table = stockedTable(helper);
         int[] none = table.inkSupply().capacity();
         helper.assertTrue(Arrays.stream(none).sum() == 0, "no tanks around: no ink and no storage (0/0)");

@@ -110,7 +110,8 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         Vec3 origin = Vec3.atLowerCornerOf(table.getBlockPos());
         for (JarReach.Draw draw : table.inkDraws()) {
             state.inkStreams.add(new JarStreamFx.Stream(JarReach.mouth(draw.jar()).subtract(origin), orb,
-                    draw.essence() == null ? ORB_COLOR : draw.essence().color(), age / 12, (age - 42) / 16, (int) draw.jar().asLong()));
+                    draw.essence() == null ? ORB_COLOR : draw.essence().color(), ResearchTableBlockEntity.inkHead(age),
+                    ResearchTableBlockEntity.inkTail(age), (int) draw.jar().asLong()));
         }
     }
 

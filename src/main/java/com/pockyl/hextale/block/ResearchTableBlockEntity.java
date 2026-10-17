@@ -131,6 +131,11 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
      * letters into an enchanting table's book.
      */
     public static void clientTick(Level level, BlockPos pos, BlockState state, ResearchTableBlockEntity table) {
+        float age = table.sinceInkDrawn();
+        for (JarReach.Draw draw : table.inkDraws()) {
+            JarReach.shed(level, JarReach.mouth(draw.jar()), table.orbPosition(), draw.essence() == null ? 0x5CC8F2 : draw.essence().color(),
+                    Math.min(1, inkHead(age)), Math.max(0, inkTail(age)));
+        }
         if (table.items.get(HEXTECH).isEmpty()) {
             return;
         }
@@ -225,6 +230,16 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     /** Ticks since the last ink was drawn. */
     public long sinceInkDrawn() {
         return level == null ? Long.MAX_VALUE : level.getGameTime() - inkDrawnAt;
+    }
+
+    /** How far the ink's streams have grown out of their jars, {@code age} ticks after the draw. */
+    public static float inkHead(float age) {
+        return age / 12;
+    }
+
+    /** How far the ink's streams have run into the orb, {@code age} ticks after the draw. */
+    public static float inkTail(float age) {
+        return (age - 42) / 16;
     }
 
     // ---- Learning a rune ------------------------------------------------------------------------------------------

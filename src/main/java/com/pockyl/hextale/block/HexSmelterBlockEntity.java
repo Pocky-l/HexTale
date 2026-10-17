@@ -424,6 +424,7 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
                 streamTailO = 0;
             }
             streamHead = Math.min(1, streamHead + 0.08F);
+            JarReach.shed(level, JarReach.mouth(from), gemPosition(worldPosition), color, streamHead, streamTail);
         } else if (streamHead > 0) {
             streamTail = Math.min(streamHead, streamTail + 0.06F);
             if (streamTail >= streamHead) {

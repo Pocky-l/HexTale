@@ -1,6 +1,8 @@
 package com.pockyl.hextale.essence;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
@@ -71,6 +73,33 @@ public final class JarReach {
     /** Where a stream leaves a jar: just above its lid. */
     public static Vec3 mouth(BlockPos jar) {
         return Vec3.atLowerCornerOf(jar).add(0.5, 1.02, 0.5);
+    }
+
+    /** A point of the stream's arc from {@code from} to {@code to} at {@code t} (0-1): it rises with the distance. */
+    public static Vec3 arc(Vec3 from, Vec3 to, float t) {
+        Vec3 control = from.add(to).scale(0.5).add(0, 0.45 + 0.16 * from.distanceTo(to), 0);
+        float u = 1 - t;
+        return from.scale(u * u).add(control.scale(2 * u * t)).add(to.scale(t * t));
+    }
+
+    /**
+     * Client: wisps of the essence shed by a stream ({@code from}/{@code to} in world space, drawn between {@code tail}
+     * and {@code head}) - potion-like swirls in its colour along the arc and rising from the jar. Call every client tick.
+     */
+    public static void shed(Level level, Vec3 from, Vec3 to, int color, float head, float tail) {
+        if (head <= tail) {
+            return;
+        }
+        var random = level.getRandom();
+        ColorParticleOption swirl = ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0xFF000000 | color);
+        if (random.nextInt(3) == 0) {
+            Vec3 at = arc(from, to, tail + random.nextFloat() * (head - tail));
+            level.addParticle(swirl, at.x + (random.nextDouble() - 0.5) * 0.15, at.y + (random.nextDouble() - 0.5) * 0.15,
+                    at.z + (random.nextDouble() - 0.5) * 0.15, 0, 0, 0);
+        }
+        if (tail <= 0 && random.nextInt(4) == 0) {
+            level.addParticle(swirl, from.x + (random.nextDouble() - 0.5) * 0.3, from.y - 0.05, from.z + (random.nextDouble() - 0.5) * 0.3, 0, 0, 0);
+        }
     }
 
     /** The colour a stream from this jar shows, or -1 when there is nothing to show (no jar, or it is empty). */
