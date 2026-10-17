@@ -338,6 +338,15 @@ public final class PylonGameTests {
         PylonFlight got = back.flights().getFirst();
         helper.assertTrue(got.icon().is(Items.IRON_INGOT) && got.gathered() && got.path().size() == path.size()
                 && got.path().getLast().distanceTo(path.getLast()) < 1.0E-3, "the way arrives whole");
+        // An essence stream carries no item: it must encode too (an empty stack once broke the connection).
+        PylonFlight stream = PylonFlight.essence(path, 0x3366FF);
+        net.minecraft.network.RegistryFriendlyByteBuf buf2 = new net.minecraft.network.RegistryFriendlyByteBuf(io.netty.buffer.Unpooled.buffer(),
+                helper.getLevel().registryAccess());
+        com.pockyl.hextale.network.PylonFlightsPayload.STREAM_CODEC.encode(buf2,
+                new com.pockyl.hextale.network.PylonFlightsPayload(helper.absolutePos(BASE), java.util.List.of(stream, flight)));
+        com.pockyl.hextale.network.PylonFlightsPayload mixed = com.pockyl.hextale.network.PylonFlightsPayload.STREAM_CODEC.decode(buf2);
+        helper.assertTrue(mixed.flights().getFirst().isEssence() && mixed.flights().getFirst().color() == 0x3366FF
+                && mixed.flights().getFirst().icon().isEmpty() && mixed.flights().get(1).icon().is(Items.IRON_INGOT), "an essence stream arrives");
         helper.succeed();
     }
 
