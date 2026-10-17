@@ -65,6 +65,7 @@ public final class HextaleClient {
         modBus.addListener(TableModels::register);
         modBus.addListener((RegisterParticleProvidersEvent event) -> event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new));
         modBus.addListener(GogglesView::registerLayer);
+        modBus.addListener(com.pockyl.hextale.client.render.HexGlow::registerPipelines);
         NeoForge.EVENT_BUS.addListener(GogglesView::tick);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
                 event.register(EssencesTooltip.class, ClientEssencesTooltip::new));

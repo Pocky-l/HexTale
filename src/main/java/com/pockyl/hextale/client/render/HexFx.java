@@ -108,8 +108,7 @@ public final class HexFx {
     /**
      * A rune's hieroglyph as glowing strokes of {@code size} blocks, in the pose's XY plane: a wide faint glow, a
      * narrower one and a near-white core, each fading to nothing at its edges. Drawn with additive light (the
-     * lightning render type), so the layers never need sorting: overlapping translucent quads in one plane are
-     * re-sorted as the camera moves, which made the old glyph flicker.
+     * {@link HexGlow} type, no depth writes), so the layers never need sorting or depth tests against each other.
      */
     public static void glyph(PoseStack poseStack, SubmitNodeCollector collector, ComplexRune rune, float size, int color, float alpha) {
         glyph(poseStack, collector, rune, size, color, alpha, 1);
@@ -131,7 +130,7 @@ public final class HexFx {
         float budget = total * Math.min(1, reveal);
         int core = RuneDrawing.mix(color, 0xFFFFFF, 0.7F);
         float drawnLength = budget;
-        collector.submitCustomGeometry(poseStack, RenderTypes.lightning(), (pose, consumer) -> {
+        collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
             float left = drawnLength;
             for (float[] stroke : strokes) {
                 for (int i = 0; i + 3 < stroke.length && left > 0; i += 2) {
@@ -166,7 +165,7 @@ public final class HexFx {
         if (alpha <= 0.01F) {
             return;
         }
-        collector.submitCustomGeometry(poseStack, RenderTypes.lightning(), (pose, consumer) -> {
+        collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
             int segments = 48;
             for (int i = 0; i < segments; i++) {
                 float a0 = Mth.TWO_PI * i / segments;
@@ -184,7 +183,7 @@ public final class HexFx {
 
     /**
      * A segment of additive light: full {@code alpha} along its centre line, fading to 0 at both long edges, ends
-     * reaching a little past the points so strokes join; both windings.
+     * reaching a little past the points so strokes join (drawn without culling).
      */
     private static void glowSegment(VertexConsumer consumer, PoseStack.Pose pose, float x0, float y0, float x1, float y1, float width,
                                     int color, float alpha) {
@@ -212,10 +211,6 @@ public final class HexFx {
             glow(consumer, pose, x0 + sx, y0 + sy, edge);
             glow(consumer, pose, x1 + sx, y1 + sy, edge);
             glow(consumer, pose, x1, y1, centre);
-            glow(consumer, pose, x1, y1, centre);
-            glow(consumer, pose, x1 + sx, y1 + sy, edge);
-            glow(consumer, pose, x0 + sx, y0 + sy, edge);
-            glow(consumer, pose, x0, y0, centre);
         }
     }
 
