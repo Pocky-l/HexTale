@@ -34,6 +34,11 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CREATIVE_ESSENCE_TANK = ITEMS.registerSimpleBlockItem(ModBlocks.CREATIVE_ESSENCE_TANK);
     public static final DeferredItem<BlockItem> DRAIN_VALVE = ITEMS.registerSimpleBlockItem(ModBlocks.DRAIN_VALVE);
     public static final DeferredItem<BlockItem> PUMP = ITEMS.registerSimpleBlockItem(ModBlocks.PUMP);
+    public static final DeferredItem<BlockItem> HEXTECH_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_BRICKS);
+    public static final DeferredItem<BlockItem> HEXTECH_BRICK_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_BRICK_STAIRS);
+    public static final DeferredItem<BlockItem> HEXTECH_BRICK_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_BRICK_SLAB);
+    public static final DeferredItem<BlockItem> HEXTECH_BRICK_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_BRICK_WALL);
+    public static final DeferredItem<BlockItem> CHISELED_HEXTECH_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.CHISELED_HEXTECH_BRICKS);
     public static final DeferredItem<BlockItem> HEXTECH_ALTAR = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_ALTAR,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> PEDESTAL = ITEMS.registerSimpleBlockItem(ModBlocks.PEDESTAL);

@@ -71,8 +71,6 @@ public class RuneScrollItem extends Item {
         tooltip.accept(Component.translatable(rune.category().translationKey()).withColor(rune.color())
                 .append(Component.literal("  " + "★".repeat(stars)).withStyle(ChatFormatting.GOLD))
                 .append(Component.literal("★".repeat(3 - stars)).withStyle(ChatFormatting.DARK_GRAY)));
-        tooltip.accept(Component.translatable(rune.translationKey() + ".effect").withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable(rune.translationKey() + ".use").withStyle(ChatFormatting.DARK_AQUA, ChatFormatting.ITALIC));
         tooltip.accept(Component.translatable("item.hextale.rune_scroll.study").withStyle(ChatFormatting.DARK_GRAY));
     }
 

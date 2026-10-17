@@ -2,14 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "BAB",
-    " D ",
-    "DDD"
+    " I ",
+    " B ",
+    "BCB"
   ],
   "key": {
-    "B": "hextale:brass_ingot",
-    "A": "minecraft:amethyst_shard",
-    "D": "minecraft:polished_deepslate"
+    "I": "hextale:brass_ingot",
+    "B": "hextale:hextech_bricks",
+    "C": "hextale:chiseled_hextech_bricks"
   },
   "result": {
     "id": "hextale:pedestal",

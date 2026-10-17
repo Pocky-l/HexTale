@@ -1,6 +1,10 @@
 package com.pockyl.hextale.registry;
 
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
@@ -50,6 +54,18 @@ public final class ModBlocks {
     public static final DeferredBlock<PumpBlock> PUMP = BLOCKS.registerBlock("pump", PumpBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(SoundType.COPPER).noOcclusion());
 
+    // Hextech bricks: the decorative set the ritual circle is built from.
+    public static final DeferredBlock<Block> HEXTECH_BRICKS = BLOCKS.registerBlock("hextech_bricks", Block::new, ModBlocks::brickProperties);
+    public static final DeferredBlock<StairBlock> HEXTECH_BRICK_STAIRS = BLOCKS.registerBlock("hextech_brick_stairs",
+            properties -> new StairBlock(HEXTECH_BRICKS.get().defaultBlockState(), properties), ModBlocks::brickProperties);
+    public static final DeferredBlock<SlabBlock> HEXTECH_BRICK_SLAB = BLOCKS.registerBlock("hextech_brick_slab", SlabBlock::new,
+            ModBlocks::brickProperties);
+    public static final DeferredBlock<WallBlock> HEXTECH_BRICK_WALL = BLOCKS.registerBlock("hextech_brick_wall", WallBlock::new,
+            () -> brickProperties().forceSolidOn());
+    /** Carved bricks with a hextech crystal set in them: they glow softly. */
+    public static final DeferredBlock<Block> CHISELED_HEXTECH_BRICKS = BLOCKS.registerBlock("chiseled_hextech_bricks", Block::new,
+            () -> brickProperties().lightLevel(state -> 7));
+
     public static final DeferredBlock<HextechAltarBlock> HEXTECH_ALTAR = BLOCKS.registerBlock("hextech_altar", HextechAltarBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(3.5F, 9.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 6));
@@ -61,6 +77,11 @@ public final class ModBlocks {
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> state.getValue(RuneSteleBlock.LIT) ? 9 : 2));
 
     private ModBlocks() {
+    }
+
+    private static BlockBehaviour.Properties brickProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).instrument(NoteBlockInstrument.BASEDRUM)
+                .requiresCorrectToolForDrops().strength(3.5F, 6.0F).sound(SoundType.DEEPSLATE_BRICKS);
     }
 
     public static void register(IEventBus modBus) {

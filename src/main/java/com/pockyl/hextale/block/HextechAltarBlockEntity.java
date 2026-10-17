@@ -3,6 +3,7 @@ package com.pockyl.hextale.block;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -56,6 +57,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     private static final int PREVIEW_TICKS = 10;
     private static final int RESCAN_TICKS = 40;
     private static final int SYNC_TICKS = 4;
+    private static final int ABORT_GRACE = 30;
     private static final Codec<List<Ritual.Input>> INPUTS_CODEC = Codec.list(com.mojang.serialization.codecs.RecordCodecBuilder.create(
             instance -> instance.group(
                     BlockPos.CODEC.fieldOf("pos").forGetter(Ritual.Input::pos),
@@ -78,6 +80,10 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     private int finale;
     private int stalled;
     private int itemsTotal;
+    /** Game time the ritual started (server). */
+    private long startedAt;
+    /** What the ritual waits for now, or null. */
+    private @Nullable Component waitingFor;
     private Ritual.@Nullable Circle circle;
     private int rescan;
 
@@ -89,6 +95,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     private float outerPhase;
     private float innerPhase;
     private float ringTime = Float.NaN;
+    private float itemTurn;
+    private float itemTime = Float.NaN;
 
     public HextechAltarBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.HEXTECH_ALTAR.get(), pos, state);
@@ -142,12 +150,20 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
      * tick, and returns their phases {outer, inner}.
      */
     public float[] animateRings(float time, float targetSpin) {
-        float delta = Float.isNaN(ringTime) ? 0 : Mth.clamp(time - ringTime, 0, 5);
+        float delta = Float.isNaN(ringTime) || time < ringTime ? 0 : Math.min(time - ringTime, 5);
         ringTime = time;
         ringSpin = Mth.lerp(Math.min(1, 0.05F * delta), ringSpin, targetSpin);
         outerPhase = (outerPhase + ringSpin * 0.5F * delta) % 360;
         innerPhase = (innerPhase + ringSpin * 0.8F * delta) % 360;
         return new float[]{outerPhase, innerPhase};
+    }
+
+    /** Client side: the centre item's turn (degrees) at {@code time}, turning at {@code speed} degrees per tick. */
+    public float animateItem(float time, float speed) {
+        float delta = Float.isNaN(itemTime) || time < itemTime ? 0 : Math.min(time - itemTime, 5);
+        itemTime = time;
+        itemTurn = (itemTurn + speed * delta) % 360;
+        return itemTurn;
     }
 
     public long finishedAt() {
@@ -195,7 +211,10 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             return;
         }
         if (active()) {
-            collapse(serverLevel);
+            // Holding the use key repeats the click every few ticks: only a fresh sneak-use after the start aborts.
+            if (player != null && serverLevel.getGameTime() - startedAt > ABORT_GRACE) {
+                collapse(serverLevel);
+            }
             return;
         }
         circle = Ritual.Circle.scan(serverLevel, worldPosition);
@@ -221,6 +240,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         stalled = 0;
         rescan = 0;
         preview = result.copy();
+        startedAt = serverLevel.getGameTime();
         for (var stele : circle.steles()) {
             if (stele.rune() != null) {
                 serverLevel.blockEvent(stele.getBlockPos(), stele.getBlockState().getBlock(), RuneSteleBlockEntity.EVENT_ACTIVE, duration + 20);
@@ -251,6 +271,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         if (progressed) {
             altar.elapsed++;
             altar.stalled = 0;
+            altar.waitingFor = null;
         } else if (altar.kind != null && ++altar.stalled > (altar.kind == Ritual.Kind.CHARGE ? 60 : Ritual.STALL_LIMIT)) {
             if (altar.kind == Ritual.Kind.CHARGE) {
                 altar.finish(serverLevel);
@@ -264,8 +285,13 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         if (altar.kind != null && altar.stalled == 0 && serverLevel.getGameTime() % 40 == 0) {
             serverLevel.playSound(null, pos, ModSounds.RITUAL_HUM.get(), SoundSource.BLOCKS, 0.6F, 0.9F + 0.2F * altar.elapsed / Math.max(1F, altar.duration));
         }
-        if (altar.kind != null && altar.stalled > 10 && serverLevel.getGameTime() % 20 == 0) {
-            serverLevel.playSound(null, pos, ModSounds.RITUAL_STALL.get(), SoundSource.BLOCKS, 0.7F, 1.0F);
+        if (altar.kind != null && altar.stalled > 10 && serverLevel.getGameTime() % 40 == 0) {
+            serverLevel.playSound(null, pos, ModSounds.RITUAL_STALL.get(), SoundSource.BLOCKS, 0.5F, 1.0F);
+            if (altar.waitingFor != null) {
+                for (ServerPlayer player : serverLevel.getEntitiesOfClass(ServerPlayer.class, new AABB(pos).inflate(Ritual.TANK_RADIUS))) {
+                    player.sendOverlayMessage(altar.waitingFor);
+                }
+            }
         }
     }
 
@@ -289,6 +315,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                 } else {
                     itemTimer = Ritual.TICKS_PER_ITEM;
                     waiting = true;
+                    waitingFor = Component.translatable("block.hextale.hextech_altar.wait.item",
+                            new ItemStack(BuiltInRegistries.ITEM.getValue(input.item())).getHoverName());
                 }
             } else if (itemTimer == 1) {
                 BlockPos next = inputs.getFirst().pos();
@@ -299,6 +327,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             EssenceMix drawn = drawEssence(Ritual.DRAW_PER_TICK);
             if (drawn.isEmpty()) {
                 waiting = true;
+                waitingFor = Component.translatable("block.hextale.hextech_altar.wait.essence", essenceLeft.describe());
             }
         }
         if (inputs.isEmpty() && essenceLeft.isEmpty()) {
@@ -458,9 +487,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         if (altar.kind != Ritual.Kind.CHARGE) {
             for (RuneSteleBlockEntity stele : circle.steles()) {
                 if (stele.rune() != null && random.nextInt(3) == 0) {
-                    Vec3 from = Vec3.atCenterOf(stele.getBlockPos()).add(0, 0.9, 0);
-                    Vec3 offset = from.subtract(target);
-                    level.addParticle(ParticleTypes.ENCHANT, target.x, target.y, target.z, offset.x, offset.y, offset.z);
+                    Vec3 from = Vec3.atCenterOf(stele.getBlockPos()).add(0, 1.05, 0);
+                    spawnFlow(level, target, from, stele.rune().color());
                 }
             }
         }

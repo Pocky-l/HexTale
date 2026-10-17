@@ -8,6 +8,11 @@
     "hextale:pump",
     "hextale:hextech_altar",
     "hextale:pedestal",
-    "hextale:rune_stele"
+    "hextale:rune_stele",
+    "hextale:hextech_bricks",
+    "hextale:hextech_brick_stairs",
+    "hextale:hextech_brick_slab",
+    "hextale:hextech_brick_wall",
+    "hextale:chiseled_hextech_bricks"
   ]
 }

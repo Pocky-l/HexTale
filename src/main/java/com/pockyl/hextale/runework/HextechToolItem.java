@@ -36,8 +36,6 @@ public class HextechToolItem extends Item {
                     .append(Component.translatable(rune.translationKey()).withColor(rune.color()))
                     .append(Component.literal(" " + "★".repeat(stars)).withStyle(ChatFormatting.GOLD))
                     .append(Component.literal("★".repeat(3 - stars)).withStyle(ChatFormatting.DARK_GRAY)));
-            tooltip.accept(Component.literal("  ").append(Component.translatable(ToolRunes.translationKey(rune),
-                    ToolRunes.cost(rune), Component.translatable(rune.action().translationKey()))).withStyle(ChatFormatting.GRAY));
         }
     }
 }

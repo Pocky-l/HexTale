@@ -176,11 +176,11 @@
     "sounds": [
       {
         "name": "hextale:ritual_hum1",
-        "volume": 0.35
+        "volume": 0.22
       },
       {
         "name": "hextale:ritual_hum2",
-        "volume": 0.35
+        "volume": 0.22
       }
     ]
   },

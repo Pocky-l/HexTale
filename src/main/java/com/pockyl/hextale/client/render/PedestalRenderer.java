@@ -42,8 +42,8 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
                                    ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(pedestal, state, partialTick, cameraPosition, breakProgress);
         Level level = pedestal.getLevel();
-        state.time = level == null ? 0 : level.getGameTime() + partialTick;
-        state.sinceDraw = state.time - pedestal.drawnAt();
+        state.time = HexFx.time(level, partialTick);
+        state.sinceDraw = level == null ? -1 : level.getGameTime() - pedestal.drawnAt() + partialTick;
         state.seed = (int) pedestal.getBlockPos().asLong();
         itemModelResolver.updateForTopItem(state.item, pedestal.item(), ItemDisplayContext.GROUND, level, null, state.seed);
     }

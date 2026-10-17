@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": "hextale:hextech_bricks"
+  },
+  "result": {
+    "id": "hextale:hextech_brick_wall",
+    "count": 6
+  }
+}

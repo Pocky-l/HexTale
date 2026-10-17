@@ -3,13 +3,13 @@
   "category": "misc",
   "pattern": [
     " A ",
-    "BDB",
-    "DDD"
+    " C ",
+    "BBB"
   ],
   "key": {
     "A": "minecraft:amethyst_shard",
-    "B": "hextale:brass_ingot",
-    "D": "minecraft:polished_deepslate"
+    "C": "hextale:chiseled_hextech_bricks",
+    "B": "hextale:hextech_bricks"
   },
   "result": {
     "id": "hextale:rune_stele"

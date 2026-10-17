@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * The runes that direct hextech tools and what one firing costs. A rune burns its action essence; the cost is in mB
  * per firing (per smelted item, per saved durability point, per washed block...). Runes missing here cannot be
- * engraved into a tool yet. Texts: {@code runework.hextale.<rune key>} (what it does on a tool).
+ * engraved into a tool yet. What a rune does on a tool is never written anywhere: the player finds it out.
  */
 public final class ToolRunes {
     /** Fire > earth: mined drops come out smelted. */
@@ -27,10 +27,6 @@ public final class ToolRunes {
     /** mB of the rune's action essence per firing. */
     public static int cost(ComplexRune rune) {
         return COSTS.getOrDefault(rune, 1);
-    }
-
-    public static String translationKey(ComplexRune rune) {
-        return "runework.hextale." + rune.key();
     }
 
     private static ComplexRune rune(String key) {

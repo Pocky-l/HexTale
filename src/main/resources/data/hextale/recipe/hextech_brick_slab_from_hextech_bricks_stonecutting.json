@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "hextale:hextech_bricks",
+  "result": {
+    "id": "hextale:hextech_brick_slab",
+    "count": 2
+  }
+}

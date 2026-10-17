@@ -211,4 +211,25 @@ public final class RuneWorkGameTests {
             helper.succeed();
         });
     }
+
+    /** The player's way: creative tanks of each essence, sneak + empty hand on the altar, and wait for the result. */
+    @HexTest(maxTicks = 260)
+    public static void aPlayerStartsARitualWithCreativeTanks(GameTestHelper helper) {
+        HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
+                new ItemStack(Items.AMETHYST_SHARD), new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(ModItems.BRASS_INGOT.get())),
+                EssenceMix.EMPTY);
+        Essence[] essences = {Essence.METAL, Essence.EARTH, Essence.SPARK};
+        for (int i = 0; i < essences.length; i++) {
+            BlockPos at = new BlockPos(6, 2, 0 + i * 2);
+            helper.setBlock(at, ModBlocks.CREATIVE_ESSENCE_TANK.get());
+            helper.getBlockEntity(at, EssenceTankBlockEntity.class).setCreativeEssence(essences[i]);
+        }
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setShiftKeyDown(true);
+        BlockPos abs = helper.absolutePos(ALTAR);
+        net.minecraft.world.phys.BlockHitResult hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(abs), net.minecraft.core.Direction.UP, abs, false);
+        helper.getLevel().getBlockState(abs).useWithoutItem(helper.getLevel(), player, hit);
+        helper.assertTrue(altar.active(), "sneak + empty hand starts the ritual");
+        helper.succeedWhen(() -> helper.assertTrue(altar.center().is(ModItems.HEXTECH_PICKAXE.get()), "the ritual finishes"));
+    }
 }

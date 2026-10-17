@@ -3,7 +3,7 @@
   "textures": {
     "particle": "minecraft:block/polished_deepslate",
     "stone": "minecraft:block/polished_deepslate",
-    "tiles": "minecraft:block/deepslate_tiles",
+    "tiles": "hextale:block/hextech_bricks",
     "brass": "hextale:block/brass",
     "dim": "hextale:block/hextech_glow_dim"
   },

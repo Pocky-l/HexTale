@@ -16,13 +16,11 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
 import com.pockyl.hextale.client.ClientKnowledge;
 import com.pockyl.hextale.client.render.PixelArt;
-import com.pockyl.hextale.infusion.InfusionRecipes;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.network.SteleRunePayload;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.runework.ToolRunes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +30,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * The glyph picker of a rune stele: the codex as a 9 x 8 grid, one row per action essence (its sign on the left), one
  * column per target. Runes the researcher knows shine in their colour and can be chosen; unknown ones are dim
- * hexagons. A rune that can be engraved into tools carries a small brass mark. Click a rune to set it on the stele.
+ * hexagons. Click a rune to set it on the stele.
  */
 public class SteleScreen extends Screen {
     private static final int TILE = 20;
@@ -76,7 +74,7 @@ public class SteleScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         long now = Util.getMillis();
-        HexGui.cosmos(graphics, left + 6, top + 6, PANEL_W - 12, PANEL_H - 12, (int) (now / 120), (int) (now / 200));
+        HexGui.cosmos(graphics, left + 6, top + 6, PANEL_W - 12, PANEL_H - 12, 0, 0);
         HexGui.frame(graphics, left, top, PANEL_W, PANEL_H);
         graphics.centeredText(font, title, left + PANEL_W / 2, top + 12, 0xFFE8FAFF);
         graphics.centeredText(font, Component.translatable("gui.hextale.stele.subtitle"), left + PANEL_W / 2, top + 22, 0xFF8F88B8);
@@ -135,10 +133,6 @@ public class SteleScreen extends Screen {
             PixelArt.hex(graphics, cx, cy, 19, 0, PixelArt.argb(GOLD, 0.35F + 0.4F * pulse));
         }
         PixelArt.glyph(graphics, rune, x + 4, y + 4, 12, PixelArt.argb(hover || chosen ? PixelArt.mix(color, 0xFFFFFF, 0.25F) : color, 1), 0xFF000000);
-        if (ToolRunes.worksOnTools(rune) && InfusionRecipes.engraving(true, rune) != null) {
-            PixelArt.fill(graphics, x + TILE - 6, y + TILE - 5, x + TILE - 3, y + TILE - 4, PixelArt.argb(GOLD, 1));
-            PixelArt.fill(graphics, x + TILE - 5, y + TILE - 6, x + TILE - 4, y + TILE - 3, PixelArt.argb(GOLD, 1));
-        }
     }
 
     private List<Component> describe(ComplexRune rune, boolean known, RuneKnowledge knowledge) {
@@ -151,11 +145,10 @@ public class SteleScreen extends Screen {
         lines.add(Component.translatable(rune.translationKey()).withColor(rune.color())
                 .append(Component.literal("  " + "★".repeat(stars)).withColor(GOLD))
                 .append(Component.literal("★".repeat(3 - stars)).withColor(0x3A3460)));
-        lines.add(Component.translatable(rune.translationKey() + ".effect").withStyle(ChatFormatting.GRAY));
-        if (ToolRunes.worksOnTools(rune)) {
-            lines.add(Component.translatable("gui.hextale.stele.on_tools", Component.translatable(ToolRunes.translationKey(rune),
-                    ToolRunes.cost(rune), Component.translatable(rune.action().translationKey()))).withColor(GOLD));
-        }
+        // Only what the rune is in general - its essences and kind; what it does on a tool is for the player to find.
+        lines.add(Component.translatable("rune.hextale.formula", Component.translatable(rune.action().translationKey()),
+                Component.translatable(rune.target().translationKey())).withStyle(ChatFormatting.GRAY));
+        lines.add(Component.translatable(rune.category().translationKey()).withColor(rune.color()));
         lines.add(Component.translatable("gui.hextale.stele.choose").withStyle(ChatFormatting.DARK_AQUA));
         return lines;
     }

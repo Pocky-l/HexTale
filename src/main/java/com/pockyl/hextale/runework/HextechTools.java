@@ -17,7 +17,7 @@ import org.jspecify.annotations.Nullable;
  */
 public final class HextechTools {
     /** Rune slots of a hextech tool. */
-    public static final int SLOTS = 3;
+    public static final int SLOTS = 4;
     /** Runes a tool carries without overloading. */
     public static final int STABLE_RUNES = 2;
     /** Essence cell size, mB. */

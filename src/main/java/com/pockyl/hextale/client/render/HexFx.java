@@ -9,7 +9,9 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 import org.joml.Quaternionfc;
+import org.jspecify.annotations.Nullable;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -39,7 +41,18 @@ public final class HexFx {
     };
     private static final float[][] CUBE_UVS = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
 
+    /** Animation clock period: game time wraps here so floats keep sub-tick precision (smooth motion in old worlds). */
+    private static final long CLOCK_PERIOD = 72000;
+
     private HexFx() {
+    }
+
+    /**
+     * Ticks for animations: game time plus the partial tick, wrapped to keep float precision. Raw game time in a world
+     * that ran for days loses the fraction of a tick in a float, and spinning items stutter.
+     */
+    public static float time(@Nullable Level level, float partialTick) {
+        return level == null ? partialTick : (level.getGameTime() % CLOCK_PERIOD) + partialTick;
     }
 
     /** A camera-facing sprite at the current pose origin, drawn with both windings. */

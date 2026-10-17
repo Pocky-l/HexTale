@@ -39,11 +39,11 @@ public class RuneSteleRenderer implements BlockEntityRenderer<RuneSteleBlockEnti
                                    ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(stele, state, partialTick, cameraPosition, breakProgress);
         Level level = stele.getLevel();
-        float time = level == null ? 0 : level.getGameTime() + partialTick;
+        float time = HexFx.time(level, partialTick);
         state.time = time;
         state.rune = stele.rune();
         state.active = level != null && level.getGameTime() < stele.activeUntil();
-        state.sinceChosen = time - stele.chosenAt();
+        state.sinceChosen = level == null ? -1 : level.getGameTime() - stele.chosenAt() + partialTick;
         state.seed = (int) stele.getBlockPos().asLong();
     }
 

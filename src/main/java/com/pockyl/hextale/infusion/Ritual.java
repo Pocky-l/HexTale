@@ -32,10 +32,10 @@ import org.jspecify.annotations.Nullable;
  * The ritual circle around a Hextech Altar and what it would do now. Pure planning: nothing in the world changes here.
  */
 public final class Ritual {
-    public static final int PEDESTAL_RADIUS = 4;
-    public static final int STELE_RADIUS = 5;
+    /** Pedestals stand within this many blocks of the altar (any number of them), steles a little farther. */
+    public static final int PEDESTAL_RADIUS = 6;
+    public static final int STELE_RADIUS = 7;
     public static final int TANK_RADIUS = 8;
-    public static final int MAX_PEDESTALS = 16;
     public static final int WARMUP_TICKS = 40;
     public static final int TICKS_PER_ITEM = 20;
     public static final int FINALE_TICKS = 24;
@@ -270,32 +270,37 @@ public final class Ritual {
         if (needed.size() != filled.size()) {
             return null;
         }
-        int[] assigned = new int[needed.size()];
-        boolean[] used = new boolean[filled.size()];
-        if (!assign(needed, filled, 0, assigned, used)) {
-            return null;
+        // Bipartite matching (augmenting paths): fast even for many pedestals holding interchangeable items.
+        int n = needed.size();
+        int[] owner = new int[n];
+        java.util.Arrays.fill(owner, -1);
+        boolean[][] fits = new boolean[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int p = 0; p < n; p++) {
+                fits[i][p] = needed.get(i).test(filled.get(p).item());
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (!augment(i, fits, owner, new boolean[n])) {
+                return null;
+            }
         }
         // Draw in circle order, so items leave the pedestals one after another around the ring.
         List<Input> inputs = new ArrayList<>();
-        for (int p = 0; p < filled.size(); p++) {
-            PedestalBlockEntity pedestal = filled.get(p);
+        for (PedestalBlockEntity pedestal : filled) {
             inputs.add(new Input(pedestal.getBlockPos(), BuiltInRegistries.ITEM.getKey(pedestal.item().getItem())));
         }
         return inputs;
     }
 
-    private static boolean assign(List<Ingredient> needed, List<PedestalBlockEntity> filled, int index, int[] assigned, boolean[] used) {
-        if (index == needed.size()) {
-            return true;
-        }
-        for (int p = 0; p < filled.size(); p++) {
-            if (!used[p] && needed.get(index).test(filled.get(p).item())) {
-                used[p] = true;
-                assigned[index] = p;
-                if (assign(needed, filled, index + 1, assigned, used)) {
+    private static boolean augment(int ingredient, boolean[][] fits, int[] owner, boolean[] seen) {
+        for (int p = 0; p < owner.length; p++) {
+            if (fits[ingredient][p] && !seen[p]) {
+                seen[p] = true;
+                if (owner[p] < 0 || augment(owner[p], fits, owner, seen)) {
+                    owner[p] = ingredient;
                     return true;
                 }
-                used[p] = false;
             }
         }
         return false;

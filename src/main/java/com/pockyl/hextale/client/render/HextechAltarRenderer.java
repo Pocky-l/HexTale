@@ -51,7 +51,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
                                    ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(altar, state, partialTick, cameraPosition, breakProgress);
         Level level = altar.getLevel();
-        float time = level == null ? 0 : level.getGameTime() + partialTick;
+        float time = HexFx.time(level, partialTick);
         int seed = (int) altar.getBlockPos().asLong();
         itemModelResolver.updateForTopItem(state.center, altar.center(), ItemDisplayContext.GROUND, level, null, seed);
         ItemStack preview = altar.preview();
@@ -64,13 +64,15 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         state.ritualTime = altar.ritualTime(partialTick);
         state.stalled = altar.stalled();
         state.finishing = altar.finishing();
-        state.sinceFinish = time - altar.finishedAt();
-        state.sinceCollapse = time - altar.collapsedAt();
+        state.sinceFinish = level == null ? -1 : level.getGameTime() - altar.finishedAt() + partialTick;
+        state.sinceCollapse = level == null ? -1 : level.getGameTime() - altar.collapsedAt() + partialTick;
         // The rings keep their phase on the block entity: their speed follows the ritual smoothly.
         float target = state.active ? (state.stalled ? 2.5F : 4 + 14 * state.progress) : 0.8F;
         float[] rings = altar.animateRings(time, target);
         state.outerPhase = rings[0];
         state.innerPhase = rings[1];
+        // The item's turn is integrated too: a change of speed never makes it jump.
+        state.itemTurn = altar.animateItem(time, state.active ? 3 + 9 * state.progress : 1.6F);
     }
 
     @Override
@@ -110,8 +112,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         // The centre item, turning; faster as the ritual goes on.
         if (!state.center.isEmpty()) {
             poseStack.pushPose();
-            float turn = state.active ? state.ritualTime * (3 + 9 * state.progress) : time * 1.6F;
-            poseStack.rotate(Axis.YP.rotationDegrees(turn));
+            poseStack.rotate(Axis.YP.rotationDegrees(state.itemTurn));
             float pop = 1 + 0.25F * flash * Mth.sin(Math.min(1, state.sinceFinish / 8) * Mth.PI);
             poseStack.scale(0.9F * pop, 0.9F * pop, 0.9F * pop);
             poseStack.translate(0, -0.15, 0);
@@ -181,5 +182,6 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         float sinceCollapse;
         float outerPhase;
         float innerPhase;
+        float itemTurn;
     }
 }

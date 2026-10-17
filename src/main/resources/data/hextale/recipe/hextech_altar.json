@@ -3,14 +3,15 @@
   "category": "misc",
   "pattern": [
     " H ",
-    "BAB",
-    "DDD"
+    "IAI",
+    "CBC"
   ],
   "key": {
     "H": "hextale:unstable_hextech",
-    "B": "hextale:brass_ingot",
+    "I": "hextale:brass_ingot",
     "A": "minecraft:amethyst_block",
-    "D": "minecraft:polished_deepslate"
+    "C": "hextale:chiseled_hextech_bricks",
+    "B": "hextale:hextech_bricks"
   },
   "result": {
     "id": "hextale:hextech_altar"
