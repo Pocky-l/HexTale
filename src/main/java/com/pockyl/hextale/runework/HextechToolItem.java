@@ -20,8 +20,7 @@ import java.util.function.Consumer;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A hextech tool (pickaxe, shovel...): a plain tool of its kind plus rune slots and an essence cell. The essence cell
- * is drawn in the tooltip by the client; the runes are listed here.
+ * A hextech tool (pickaxe, shovel...): a plain tool of its kind plus rune slots; the runes are listed in the tooltip.
  */
 public class HextechToolItem extends Item {
     private static final String[] NUMERALS = {"I", "II", "III", "IV", "V"};
@@ -33,7 +32,7 @@ public class HextechToolItem extends Item {
     /** Chance a Tempering rune of strength 1-4 saves a point of wear. */
     private static final float[] TEMPERED = {0.4F, 0.6F, 0.8F, 0.9F};
 
-    /** Tempering: each point of wear may be shrugged off, paid with the rune's essence. */
+    /** Tempering: each point of wear may be shrugged off. */
     @Override
     public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<ItemStack> onBroken) {
         RuneSlots.Engraving tempering = HextechTools.engraving(stack, ToolRunes.TEMPERING);
@@ -43,7 +42,7 @@ public class HextechToolItem extends Item {
         float chance = TEMPERED[Math.min(4, HextechTools.strength(stack, tempering)) - 1];
         int left = amount;
         for (int i = 0; i < amount; i++) {
-            if (entity.getRandom().nextFloat() < chance && HextechTools.payFiring(stack, tempering, entity.getRandom())) {
+            if (entity.getRandom().nextFloat() < chance) {
                 left--;
             }
         }

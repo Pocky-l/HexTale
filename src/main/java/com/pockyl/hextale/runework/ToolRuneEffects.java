@@ -55,10 +55,8 @@ import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
-import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -73,8 +71,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * What every one of the 72 runes does on a hextech tool. Each rune fires at one or two moments - when a block is broken,
  * when an enemy is struck, when the tool is used (right click), while it is held, when an enemy falls, when the holder
- * is hurt - and pays every firing from the tool's essence cell ({@link HextechTools#payFiring}); its strength is its
- * stars (a Lens before it adds one). Runes on one tool stack: a pickaxe with Drill, Smelting and Cache digs 3x3, smelts
+ * is hurt. Runes cost nothing: right-click spells only make the tool rest a moment; a rune's strength is its stars (a
+ * Lens before it adds one). Runes on one tool stack: a pickaxe with Drill, Smelting and Cache digs 3x3, smelts
  * and sends everything to the pocket. Nothing of this is ever written for the player: they find it out.
  */
 public final class ToolRuneEffects {
@@ -92,8 +90,6 @@ public final class ToolRuneEffects {
     private static final List<Expiring> EXPIRING = new ArrayList<>();
     private static final int USE_COOLDOWN = 20;
     private static final int HOLD_PERIOD = 20;
-    /** Held effects pay one firing every this many ticks. */
-    private static final int HOLD_PAY = 100;
 
     static {
         t("fire_water", Trigger.USE);
@@ -247,8 +243,7 @@ public final class ToolRuneEffects {
                 }
                 case "earth_light" -> {
                     // Gem: stone sometimes gives up a crystal.
-                    if (event.getState().is(BlockTags.BASE_STONE_OVERWORLD) && random.nextFloat() < 0.02F * s
-                            && HextechTools.payFiring(tool, engraving, random)) {
+                    if (event.getState().is(BlockTags.BASE_STONE_OVERWORLD) && random.nextFloat() < 0.02F * s) {
                         float roll = random.nextFloat();
                         ItemStack gem = new ItemStack(roll < 0.6F ? Items.AMETHYST_SHARD : roll < 0.85F ? Items.LAPIS_LAZULI
                                 : roll < 0.97F ? Items.EMERALD : Items.DIAMOND);
@@ -261,7 +256,7 @@ public final class ToolRuneEffects {
                     if (event.getState().is(Tags.Blocks.ORES)) {
                         List<ItemEntity> more = new ArrayList<>();
                         for (ItemEntity drop : event.getDrops()) {
-                            if (random.nextFloat() < 0.2F * s && HextechTools.payFiring(tool, engraving, random)) {
+                            if (random.nextFloat() < 0.2F * s) {
                                 more.add(drop(level, event.getPos(), drop.getItem().copy()));
                             }
                         }
@@ -270,8 +265,7 @@ public final class ToolRuneEffects {
                 }
                 case "life_air" -> {
                     // Pollen: a ripe crop plants itself again.
-                    if (event.getState().getBlock() instanceof CropBlock crop && level.getBlockState(event.getPos()).isAir()
-                            && HextechTools.payFiring(tool, engraving, random)) {
+                    if (event.getState().getBlock() instanceof CropBlock crop && level.getBlockState(event.getPos()).isAir()) {
                         ItemStack seed = new ItemStack(crop.asItem());
                         for (ItemEntity drop : event.getDrops()) {
                             if (drop.getItem().is(seed.getItem())) {
@@ -288,7 +282,7 @@ public final class ToolRuneEffects {
                 }
             }
         }
-        if (cache != null && HextechTools.payFiring(tool, cache, random)) {
+        if (cache != null) {
             // Cache: the drops go straight into the pocket.
             for (Iterator<ItemEntity> it = event.getDrops().iterator(); it.hasNext(); ) {
                 ItemEntity drop = it.next();
@@ -324,9 +318,6 @@ public final class ToolRuneEffects {
                         if (state.isAir() || speed < 0 || speed > hardness * 1.5F + 0.5F || level.getBlockEntity(at) != null
                                 || !tool.isCorrectToolForDrops(state) && state.requiresCorrectToolForDrops()) {
                             continue;
-                        }
-                        if (!HextechTools.payFiring(tool, engraving, level.getRandom())) {
-                            return;
                         }
                         Block.dropResources(state, level, at, null, player, tool);
                         level.destroyBlock(at, false, player);
@@ -366,26 +357,22 @@ public final class ToolRuneEffects {
             }
             switch (key) {
                 case "fire_shadow" -> {
-                    if (target.getType().builtInRegistryHolder().is(EntityTypeTags.UNDEAD) && HextechTools.payFiring(tool, engraving, random)) {
+                    if (target.getType().builtInRegistryHolder().is(EntityTypeTags.UNDEAD)) {
                         target.hurtServer(level, level.damageSources().magic(), 2 * s);
                         target.igniteForSeconds(3);
                         burst(level, target.position().add(0, 1, 0), ParticleTypes.SOUL_FIRE_FLAME, 10);
                     }
                 }
-                case "fire_life" -> {
-                    if (HextechTools.payFiring(tool, engraving, random)) {
-                        target.igniteForSeconds(2 * s);
-                    }
-                }
-                case "water_shadow" -> pay(tool, engraving, random, () -> {
+                case "fire_life" -> target.igniteForSeconds(2 * s);
+                case "water_shadow" -> {
                     target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 60, s - 1));
                     target.setDeltaMovement(target.getDeltaMovement().add(0, -0.6, 0));
                     target.needsSync = true;
                     burst(level, target.position(), ParticleTypes.BUBBLE, 12);
-                });
-                case "water_metal" -> pay(tool, engraving, random, () -> target.addEffect(new MobEffectInstance(MobEffects.POISON, 60 + 20 * s, s - 1)));
+                }
+                case "water_metal" -> target.addEffect(new MobEffectInstance(MobEffects.POISON, 60 + 20 * s, s - 1));
                 case "water_spark" -> {
-                    if (target.isInWaterOrRain() && HextechTools.payFiring(tool, engraving, random)) {
+                    if (target.isInWaterOrRain()) {
                         target.hurtServer(level, level.damageSources().lightningBolt(), 2 * s);
                         for (LivingEntity other : level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(4),
                                 e -> e != player && e != target && e.isInWaterOrRain())) {
@@ -394,58 +381,58 @@ public final class ToolRuneEffects {
                         }
                     }
                 }
-                case "earth_air" -> pay(tool, engraving, random, () -> {
+                case "earth_air" -> {
                     if (!target.onGround()) {
                         target.hurtServer(level, level.damageSources().fall(), 2 * s);
                     }
                     target.setDeltaMovement(target.getDeltaMovement().x, -1.2, target.getDeltaMovement().z);
                     target.needsSync = true;
                     target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 40, 1));
-                });
+                }
                 case "air_fire" -> {
-                    if (target.isOnFire() && HextechTools.payFiring(tool, engraving, random)) {
+                    if (target.isOnFire()) {
                         target.hurtServer(level, level.damageSources().onFire(), 2 * s);
                         target.igniteForSeconds(4);
                         knock(target, player, 0.6);
                         burst(level, target.position().add(0, 1, 0), ParticleTypes.FLAME, 12);
                     }
                 }
-                case "light_metal" -> pay(tool, engraving, random, () -> target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100 * s, 0)));
-                case "shadow_life" -> pay(tool, engraving, random, () -> {
+                case "light_metal" -> target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100 * s, 0));
+                case "shadow_life" -> {
                     target.addEffect(new MobEffectInstance(MobEffects.WITHER, 40 + 20 * s, 0));
                     player.heal(s);
-                });
-                case "shadow_metal" -> pay(tool, engraving, random, () -> {
+                }
+                case "shadow_metal" -> {
                     for (net.minecraft.world.entity.EquipmentSlot slot : net.minecraft.world.entity.EquipmentSlot.values()) {
                         ItemStack worn = target.getItemBySlot(slot);
                         if (worn.isDamageableItem()) {
                             worn.hurtAndBreak(5 * s, target, slot);
                         }
                     }
-                });
-                case "life_shadow" -> pay(tool, engraving, random, () -> {
+                }
+                case "life_shadow" -> {
                     target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 40 * s, 2));
                     target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40 * s, 0));
-                });
-                case "metal_shadow" -> pay(tool, engraving, random, () -> {
+                }
+                case "metal_shadow" -> {
                     target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 20 * s, 9));
                     target.setDeltaMovement(Vec3.ZERO);
                     target.needsSync = true;
-                });
+                }
                 case "spark_fire" -> {
-                    if (target.getHealth() < target.getMaxHealth() * 0.3F && HextechTools.payFiring(tool, engraving, random)) {
+                    if (target.getHealth() < target.getMaxHealth() * 0.3F) {
                         level.explode(player, target.getX(), target.getY() + 0.5, target.getZ(), 1.5F + 0.5F * s, Level.ExplosionInteraction.NONE);
                     }
                 }
-                case "spark_water" -> pay(tool, engraving, random, () -> {
+                case "spark_water" -> {
                     boolean wet = target.isInWaterOrRain();
                     target.hurtServer(level, level.damageSources().lightningBolt(), (1 + s) * (wet ? 2 : 1));
                     if (wet) {
                         target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 40, 2));
                     }
                     burst(level, target.position().add(0, 1, 0), ParticleTypes.ELECTRIC_SPARK, 12);
-                });
-                case "spark_air" -> pay(tool, engraving, random, () -> {
+                }
+                case "spark_air" -> {
                     int left = s;
                     for (LivingEntity other : level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(5),
                             e -> e != player && e != target && e instanceof Enemy)) {
@@ -455,7 +442,7 @@ public final class ToolRuneEffects {
                         other.hurtServer(level, level.damageSources().lightningBolt(), 2 + s);
                         arc(level, target.position().add(0, 1, 0), other.position().add(0, 1, 0));
                     }
-                });
+                }
                 default -> {
                 }
             }
@@ -469,7 +456,7 @@ public final class ToolRuneEffects {
         ItemStack tool = player.getMainHandItem();
         for (RuneSlots.Engraving engraving : firing(tool, Trigger.KILL)) {
             int s = strength(tool, engraving);
-            if (engraving.rune().key().equals("fire_metal") && HextechTools.payFiring(tool, engraving, level.getRandom())) {
+            if (engraving.rune().key().equals("fire_metal")) {
                 // Reforge: the fallen leave melted metal.
                 LivingEntity dead = event.getEntity();
                 level.addFreshEntity(drop(level, dead.blockPosition(), new ItemStack(Items.IRON_NUGGET, 1 + level.getRandom().nextInt(2 * s))));
@@ -491,8 +478,7 @@ public final class ToolRuneEffects {
             switch (engraving.rune().key()) {
                 case "metal_light" -> {
                     // Mirror: some arrows turn back on whoever shot them.
-                    if (source.is(DamageTypeTags.IS_PROJECTILE) && level.getRandom().nextFloat() < 0.15F * s
-                            && HextechTools.payFiring(tool, engraving, level.getRandom())) {
+                    if (source.is(DamageTypeTags.IS_PROJECTILE) && level.getRandom().nextFloat() < 0.15F * s) {
                         if (source.getEntity() instanceof LivingEntity shooter) {
                             shooter.hurtServer(level, level.damageSources().magic(), event.getAmount());
                         }
@@ -502,7 +488,7 @@ public final class ToolRuneEffects {
                 }
                 case "shadow_spark" -> {
                     // Insulator: lightning finds no way in.
-                    if (source.is(DamageTypes.LIGHTNING_BOLT) && HextechTools.payFiring(tool, engraving, level.getRandom())) {
+                    if (source.is(DamageTypes.LIGHTNING_BOLT)) {
                         event.setCanceled(true);
                     }
                 }
@@ -524,79 +510,69 @@ public final class ToolRuneEffects {
         if (held.isEmpty()) {
             return;
         }
-        boolean payDay = player.tickCount % HOLD_PAY == 0;
         RandomSource random = level.getRandom();
         for (RuneSlots.Engraving engraving : held) {
             int s = strength(tool, engraving);
             switch (engraving.rune().key()) {
                 case "water_fire" -> {
-                    if (player.isOnFire() && HextechTools.payFiring(tool, engraving, random)) {
+                    if (player.isOnFire()) {
                         player.clearFire();
                         burst(level, player.position().add(0, 1, 0), ParticleTypes.CLOUD, 8);
                     }
                 }
-                case "earth_metal" -> keep(player, tool, engraving, payDay, MobEffects.RESISTANCE, s >= 3 ? 1 : 0);
+                case "earth_metal" -> keep(player, MobEffects.RESISTANCE, s >= 3 ? 1 : 0);
                 case "air_shadow" -> {
                     // Silence: enemies farther than a few steps forget the holder.
-                    boolean lost = false;
-                    for (Mob mob : level.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(16),
+                                for (Mob mob : level.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(16),
                             m -> m.getTarget() == player && m.distanceTo(player) > 7 - s)) {
                         mob.setTarget(null);
-                        lost = true;
-                    }
-                    if (lost && payDay) {
-                        HextechTools.payFiring(tool, engraving, random);
                     }
                 }
                 case "air_life" -> {
                     if (player.isUnderWater()) {
-                        keep(player, tool, engraving, payDay, MobEffects.WATER_BREATHING, 0);
+                        keep(player, MobEffects.WATER_BREATHING, 0);
                     }
                 }
                 case "air_spark" -> {
-                    // Windmill: high up or in a storm the wind charges the cell.
+                    // Windmill: high up or in a storm the wind carries the holder.
                     if (player.getY() >= 100 || level.isRainingAt(player.blockPosition())) {
-                        HextechTools.fill(tool, EssenceMix.of(Map.of(Essence.AIR, s, Essence.SPARK, s)));
+                        keep(player, MobEffects.JUMP_BOOST, s - 1);
+                        keep(player, MobEffects.SLOW_FALLING, 0);
                     }
                 }
                 case "light_life" -> {
                     // Photosynthesis: sunlight feeds the holder.
-                    if (sunlit(level, player) && random.nextFloat() < 0.15F * s && player.getFoodData().needsFood()
-                            && HextechTools.payFiring(tool, engraving, random)) {
+                    if (sunlit(level, player) && random.nextFloat() < 0.15F * s && player.getFoodData().needsFood()) {
                         player.getFoodData().eat(1, 0.3F);
                     }
                 }
                 case "light_spark" -> {
+                    // Light-catcher: sunlight lends the holder strength.
                     if (sunlit(level, player)) {
-                        HextechTools.fill(tool, EssenceMix.of(Map.of(Essence.SPARK, s, Essence.LIGHT, s)));
+                        keep(player, MobEffects.STRENGTH, s - 1);
                     }
                 }
                 case "shadow_fire" -> {
                     if (player.isOnFire() || player.isInLava()) {
-                        keep(player, tool, engraving, true, MobEffects.FIRE_RESISTANCE, 0);
+                        keep(player, MobEffects.FIRE_RESISTANCE, 0);
                     }
                 }
-                case "life_fire" -> keep(player, tool, engraving, payDay, MobEffects.FIRE_RESISTANCE, 0);
-                case "life_light" -> keep(player, tool, engraving, payDay, MobEffects.NIGHT_VISION, 0, 300);
+                case "life_fire" -> keep(player, MobEffects.FIRE_RESISTANCE, 0);
+                case "life_light" -> keep(player, MobEffects.NIGHT_VISION, 0, 300);
                 case "life_metal" -> {
-                    if (tool.isDamaged() && HextechTools.payFiring(tool, engraving, random)) {
+                    if (tool.isDamaged()) {
                         tool.setDamageValue(Math.max(0, tool.getDamageValue() - s));
                     }
                 }
-                case "metal_spark" -> keep(player, tool, engraving, payDay, MobEffects.HASTE, s - 1);
-                case "spark_life" -> keep(player, tool, engraving, payDay, MobEffects.SPEED, s - 1);
+                case "metal_spark" -> keep(player, MobEffects.HASTE, s - 1);
+                case "spark_life" -> keep(player, MobEffects.SPEED, s - 1);
                 case "spark_metal" -> {
                     // Magnet: drops and experience fly to the holder.
                     double reach = 4 + 2 * s;
-                    boolean pulled = false;
                     for (Entity loose : level.getEntities((Entity) null, player.getBoundingBox().inflate(reach),
                             e -> e instanceof ItemEntity || e instanceof ExperienceOrb)) {
                         Vec3 pull = player.position().add(0, 0.5, 0).subtract(loose.position()).normalize().scale(0.45);
                         loose.setDeltaMovement(pull);
-                        pulled = true;
-                    }
-                    if (pulled && payDay) {
-                        HextechTools.payFiring(tool, engraving, random);
                     }
                 }
                 default -> {
@@ -605,20 +581,13 @@ public final class ToolRuneEffects {
         }
     }
 
-    /** Keeps a status effect on the holder while the tool is held; paid now and then. */
-    private static void keep(Player player, ItemStack tool, RuneSlots.Engraving engraving, boolean payDay,
-                             net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect, int amplifier) {
-        keep(player, tool, engraving, payDay, effect, amplifier, 60);
+    /** Keeps a status effect on the holder while the tool is held. */
+    private static void keep(Player player, net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect, int amplifier) {
+        keep(player, effect, amplifier, 60);
     }
 
-    private static void keep(Player player, ItemStack tool, RuneSlots.Engraving engraving, boolean payDay,
-                             net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect, int amplifier, int duration) {
-        if (payDay && !HextechTools.payFiring(tool, engraving, player.getRandom())) {
-            return;
-        }
-        if (!payDay && HextechTools.cell(tool).get(engraving.rune().action()) <= 0 && ToolRunes.cost(engraving.rune()) > 0) {
-            return;
-        }
+    private static void keep(Player player, net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect, int amplifier,
+                             int duration) {
         player.addEffect(new MobEffectInstance(effect, duration, amplifier, true, false, true));
     }
 
@@ -650,9 +619,6 @@ public final class ToolRuneEffects {
         BlockHitResult fluid = level.clip(new ClipContext(eye, eye.add(look.scale(6)), ClipContext.Block.OUTLINE, ClipContext.Fluid.SOURCE_ONLY, player));
         boolean fired = false;
         for (RuneSlots.Engraving engraving : runes) {
-            if (!HextechTools.payFiring(tool, engraving, random)) {
-                continue;
-            }
             fired = true;
             int s = strength(tool, engraving);
             BlockPos hitPos = block.getType() == HitResult.Type.BLOCK ? block.getBlockPos() : null;
@@ -704,7 +670,7 @@ public final class ToolRuneEffects {
                 }
                 case "earth_water" -> {
                     if (hitPos != null) {
-                        replaceFluids(level, hitPos, 1 + s, Blocks.COBBLESTONE.defaultBlockState(), Blocks.OBSIDIAN.defaultBlockState(), null);
+                        replaceFluids(level, hitPos, 1 + s, Blocks.COBBLESTONE.defaultBlockState(), Blocks.OBSIDIAN.defaultBlockState());
                     }
                 }
                 case "earth_life" -> {
@@ -716,9 +682,9 @@ public final class ToolRuneEffects {
                     }
                 }
                 case "air_water" -> {
-                    // Pump: a fluid goes into the cell as essence.
+                    // Pump: a whole body of fluid drains away, the farther the stronger the rune.
                     if (fluid.getType() == HitResult.Type.BLOCK) {
-                        pump(level, fluid.getBlockPos(), 4 * s, tool);
+                        pump(level, fluid.getBlockPos(), 16 * s);
                     }
                 }
                 case "air_earth" -> {
@@ -775,7 +741,7 @@ public final class ToolRuneEffects {
                 }
                 case "shadow_water" -> {
                     if (hitPos != null) {
-                        replaceFluids(level, hitPos, 1 + s, Blocks.AIR.defaultBlockState(), Blocks.AIR.defaultBlockState(), tool);
+                        replaceFluids(level, hitPos, 1 + s, Blocks.AIR.defaultBlockState(), Blocks.AIR.defaultBlockState());
                     }
                 }
                 case "shadow_earth" -> {
@@ -853,10 +819,16 @@ public final class ToolRuneEffects {
             }
         }
         if (fired) {
-            player.getCooldowns().addCooldown(tool, USE_COOLDOWN);
+            player.getCooldowns().addCooldown(tool, cooldown(tool));
             level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.4F, 1.4F);
         }
         return fired;
+    }
+
+    /** Ticks the tool rests after a right-click spell: Grounding leads the excess away, a quarter shorter per star. */
+    private static int cooldown(ItemStack tool) {
+        RuneSlots.Engraving grounding = HextechTools.runes(tool).find(ToolRunes.GROUNDING);
+        return grounding == null ? USE_COOLDOWN : Math.max(5, USE_COOLDOWN - USE_COOLDOWN * HextechTools.strength(tool, grounding) / 4);
     }
 
     // ---- Use helpers ------------------------------------------------------------------------------------------------
@@ -923,13 +895,6 @@ public final class ToolRuneEffects {
         return entity;
     }
 
-    /** Runs only if the firing is paid. */
-    private static void pay(ItemStack tool, RuneSlots.Engraving engraving, RandomSource random, Runnable effect) {
-        if (HextechTools.payFiring(tool, engraving, random)) {
-            effect.run();
-        }
-    }
-
     private static void quench(ServerLevel level, BlockPos centre, int radius) {
         for (BlockPos at : BlockPos.betweenClosed(centre.offset(-radius, -radius, -radius), centre.offset(radius, radius, radius))) {
             BlockState state = level.getBlockState(at);
@@ -944,35 +909,23 @@ public final class ToolRuneEffects {
         level.playSound(null, centre, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.8F, 1.0F);
     }
 
-    /** Replaces fluid blocks around: water with one block, lava with another; a sponge-like rune pours them into the cell. */
-    private static void replaceFluids(ServerLevel level, BlockPos centre, int radius, BlockState forWater, BlockState forLava, @Nullable ItemStack cell) {
-        int water = 0;
-        int lava = 0;
+    /** Replaces fluid blocks around: water with one block, lava with another. */
+    private static void replaceFluids(ServerLevel level, BlockPos centre, int radius, BlockState forWater, BlockState forLava) {
         for (BlockPos at : BlockPos.betweenClosed(centre.offset(-radius, -radius, -radius), centre.offset(radius, radius, radius))) {
             FluidState fluid = level.getFluidState(at);
             if (fluid.isEmpty() || level.getBlockEntity(at) != null) {
                 continue;
             }
             boolean isLava = fluid.is(FluidTags.LAVA);
-            if (fluid.isSource()) {
-                if (isLava) {
-                    lava++;
-                } else {
-                    water++;
-                }
-            }
             BlockState state = level.getBlockState(at);
             if (state.getBlock() instanceof net.minecraft.world.level.block.LiquidBlock) {
                 level.setBlockAndUpdate(at, isLava ? forLava : forWater);
             }
         }
-        if (cell != null) {
-            HextechTools.fill(cell, EssenceMix.of(Map.of(Essence.WATER, Math.max(0, water), Essence.MAGMA, Math.max(0, lava))));
-        }
         level.playSound(null, centre, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 0.7F, 1.0F);
     }
 
-    private static void pump(ServerLevel level, BlockPos start, int max, ItemStack tool) {
+    private static void pump(ServerLevel level, BlockPos start, int max) {
         FluidState first = level.getFluidState(start);
         if (first.isEmpty()) {
             return;
@@ -998,8 +951,6 @@ public final class ToolRuneEffects {
                 queue.add(at.relative(d));
             }
         }
-        HextechTools.fill(tool, lava ? EssenceMix.of(Map.of(Essence.FIRE, 2 * taken, Essence.MAGMA, 2 * taken))
-                : EssenceMix.pure(Essence.WATER, 4 * taken));
         level.playSound(null, start, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 0.8F, 0.8F);
     }
 

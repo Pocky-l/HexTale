@@ -1,28 +1,18 @@
 package com.pockyl.hextale.runework;
 
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 
-import com.pockyl.hextale.essence.EssenceMix;
-import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.Essence;
 
 import org.jspecify.annotations.Nullable;
 
-/**
- * Hextech tools: a tool with rune slots and an essence cell. The runes direct the tool, the cell feeds them - every
- * firing of a rune burns its action essence (Smelting = fire > earth burns fire). A rune whose essence ran out simply
- * does not fire; the tool keeps working as a plain tool.
- */
+/** Hextech tools: a tool with rune slots. The runes direct the tool and cost nothing to fire. */
 public final class HextechTools {
     /** Rune slots of a hextech tool. */
     public static final int SLOTS = 4;
     /** Runes a tool carries without overloading. */
     public static final int STABLE_RUNES = 2;
-    /** Essence cell size, mB. */
-    public static final int CELL = 64;
 
     private HextechTools() {
     }
@@ -55,106 +45,5 @@ public final class HextechTools {
     public static int strength(ItemStack stack, RuneSlots.Engraving engraving) {
         RuneSlots.Engraving before = runes(stack).get(engraving.slot() - 1);
         return engraving.stars() + (before != null && before.rune() == ToolRunes.LENS ? 1 : 0);
-    }
-
-    /**
-     * Pays one firing of a rune: its action essence from the cell (a Lens before it adds a drop of water), unless a
-     * Grounding rune leads the cost away this time (chance by its stars).
-     *
-     * @return false when the cell cannot pay (the rune does not fire)
-     */
-    public static boolean payFiring(ItemStack stack, RuneSlots.Engraving engraving, RandomSource random) {
-        ComplexRune rune = engraving.rune();
-        int cost = ToolRunes.cost(rune);
-        RuneSlots.Engraving grounding = runes(stack).find(ToolRunes.GROUNDING);
-        if (grounding != null && grounding != engraving && random.nextFloat() < GROUNDED[Math.min(3, strength(stack, grounding)) - 1]) {
-            return true;
-        }
-        RuneSlots.Engraving before = runes(stack).get(engraving.slot() - 1);
-        boolean focused = before != null && before.rune() == ToolRunes.LENS;
-        EssenceMix cell = cell(stack);
-        if (cell.get(rune.action()) < cost || focused && cell.get(ToolRunes.LENS.action()) < 1 + (rune.action() == ToolRunes.LENS.action() ? cost : 0)) {
-            return false;
-        }
-        spend(stack, rune.action(), cost);
-        if (focused) {
-            spend(stack, ToolRunes.LENS.action(), 1);
-        }
-        return true;
-    }
-
-    /** Chance a Grounding rune of 1/2/3+ stars makes a firing free. */
-    private static final float[] GROUNDED = {0.2F, 0.35F, 0.5F};
-
-    public static EssenceMix cell(ItemStack stack) {
-        return stack.getOrDefault(ModDataComponents.ESSENCE.get(), EssenceMix.EMPTY);
-    }
-
-    public static void setCell(ItemStack stack, EssenceMix contents) {
-        if (contents.isEmpty()) {
-            stack.remove(ModDataComponents.ESSENCE.get());
-        } else {
-            stack.set(ModDataComponents.ESSENCE.get(), contents);
-        }
-    }
-
-    public static int space(ItemStack stack) {
-        return CELL - cell(stack).total();
-    }
-
-    /** How many firings of {@code cost} mB each the cell can pay in that essence. */
-    public static int affordable(ItemStack stack, Essence essence, int cost) {
-        return cost <= 0 ? Integer.MAX_VALUE : cell(stack).get(essence) / cost;
-    }
-
-    /**
-     * Burns {@code amount} mB of one essence from the cell.
-     *
-     * @return false (and nothing spent) when the cell holds less
-     */
-    public static boolean spend(ItemStack stack, Essence essence, int amount) {
-        if (amount <= 0) {
-            return true;
-        }
-        EssenceMix cell = cell(stack);
-        if (cell.get(essence) < amount) {
-            return false;
-        }
-        setCell(stack, cell.minus(EssenceMix.pure(essence, amount)));
-        return true;
-    }
-
-    /**
-     * Pours as much of {@code offer} into the cell as fits, keeping its proportions. Unknown essence never goes in: a
-     * rune cannot burn what nobody can name.
-     *
-     * @return the mB taken
-     */
-    public static int fill(ItemStack stack, EssenceMix offer) {
-        if (offer.unknown() > 0) {
-            return 0;
-        }
-        EssenceMix taken = offer.part(Math.min(space(stack), offer.total()));
-        if (!taken.isEmpty()) {
-            setCell(stack, cell(stack).plus(taken));
-        }
-        return taken.total();
-    }
-
-    /**
-     * Fills the cell from a tank.
-     *
-     * @return the mB taken, -1 when the tank holds unknown essence
-     */
-    public static int fillFrom(ItemStack stack, EssenceTank tank) {
-        if (tank.contents().unknown() > 0) {
-            return -1;
-        }
-        EssenceMix drawn = tank.drain(Math.min(space(stack), tank.amount()), true);
-        int taken = fill(stack, drawn);
-        if (taken > 0) {
-            tank.remove(drawn.part(taken));
-        }
-        return taken;
     }
 }

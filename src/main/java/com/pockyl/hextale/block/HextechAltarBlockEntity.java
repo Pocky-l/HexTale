@@ -81,6 +81,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     private int finale;
     private int stalled;
     private int itemsTotal;
+    /** Ticks spent drawing essence so far (paces the draw). */
+    private int drawTick;
     /** Game time the ritual started (server). */
     private long startedAt;
     /** What the ritual waits for now, or null. */
@@ -173,7 +175,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     }
 
     public boolean finishing() {
-        return kind != null && kind != Ritual.Kind.CHARGE && inputs.isEmpty() && essenceLeft.isEmpty();
+        return kind != null && inputs.isEmpty() && essenceLeft.isEmpty();
     }
 
     // ---- Player use -------------------------------------------------------------------------------------------------
@@ -242,6 +244,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         itemTimer = 0;
         finale = 0;
         stalled = 0;
+        drawTick = 0;
         rescan = 0;
         startedAt = serverLevel.getGameTime();
         for (var stele : circle.steles()) {
@@ -266,17 +269,13 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             altar.rescan = 0;
             altar.circle = Ritual.Circle.scan(serverLevel, pos);
         }
-        boolean progressed = altar.kind == Ritual.Kind.CHARGE ? altar.tickCharge() : altar.tickInfusion(serverLevel);
+        boolean progressed = altar.tickInfusion(serverLevel);
         if (progressed) {
             altar.elapsed++;
             altar.stalled = 0;
             altar.waitingFor = null;
-        } else if (altar.kind != null && ++altar.stalled > (altar.kind == Ritual.Kind.CHARGE ? 60 : Ritual.STALL_LIMIT)) {
-            if (altar.kind == Ritual.Kind.CHARGE) {
-                altar.finish(serverLevel);
-            } else {
-                altar.collapse(serverLevel);
-            }
+        } else if (altar.kind != null && ++altar.stalled > Ritual.STALL_LIMIT) {
+            altar.collapse(serverLevel);
         }
         if (altar.kind != null && serverLevel.getGameTime() % SYNC_TICKS == 0) {
             altar.sync();
@@ -322,11 +321,16 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                 level.blockEvent(next, level.getBlockState(next).getBlock(), PedestalBlockEntity.EVENT_DRAW, 0);
             }
         }
-        if (!essenceLeft.isEmpty()) {
-            EssenceMix drawn = drawEssence(Ritual.DRAW_PER_TICK);
-            if (drawn.isEmpty()) {
+        // The essences follow the items, one after another.
+        Essence essence = inputs.isEmpty() ? Ritual.drawingEssence(essenceLeft) : null;
+        if (essence != null) {
+            int drawn = drawEssence(essence, Ritual.drawnOn(drawTick));
+            if (drawn > 0 || Ritual.drawnOn(drawTick) == 0) {
+                drawTick++;
+            } else {
                 waiting = true;
-                waitingFor = Component.translatable("block.hextale.hextech_altar.wait.essence", essenceLeft.describe());
+                waitingFor = Component.translatable("block.hextale.hextech_altar.wait.essence",
+                        EssenceMix.pure(essence, essenceLeft.get(essence)).describe());
             }
         }
         if (inputs.isEmpty() && essenceLeft.isEmpty()) {
@@ -338,45 +342,29 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         return !waiting;
     }
 
-    /** One tick of charging: the drawn essence goes straight into the tool's cell. */
-    private boolean tickCharge() {
-        EssenceMix drawn = drawEssence(Ritual.CHARGE_PER_TICK);
-        if (!drawn.isEmpty()) {
-            HextechTools.fill(center, drawn);
-        }
-        if (essenceLeft.isEmpty() && level instanceof ServerLevel serverLevel) {
-            finish(serverLevel);
-            return true;
-        }
-        return !drawn.isEmpty();
-    }
-
-    /** Pulls up to {@code rate} mB of every essence still owed from the tanks of the circle. */
-    private EssenceMix drawEssence(int rate) {
+    /** Pulls up to {@code rate} mB of one owed essence from the tanks of the circle; returns the mB drawn. */
+    private int drawEssence(Essence essence, int rate) {
         if (circle == null) {
-            return EssenceMix.EMPTY;
+            return 0;
         }
-        EssenceMix drawn = EssenceMix.EMPTY;
-        for (Essence essence : Essence.values()) {
-            int owed = Math.min(rate, essenceLeft.get(essence));
-            for (EssenceTankBlockEntity tank : circle.tanks()) {
-                if (owed <= 0) {
-                    break;
-                }
-                if (tank.isRemoved()) {
-                    continue;
-                }
-                int take = Math.min(owed, tank.tank().contents().get(essence));
-                if (take > 0) {
-                    EssenceMix part = EssenceMix.pure(essence, take);
-                    tank.tank().remove(part);
-                    tank.setChanged();
-                    drawn = drawn.plus(part);
-                    owed -= take;
-                }
+        int owed = Math.min(rate, essenceLeft.get(essence));
+        int drawn = 0;
+        for (EssenceTankBlockEntity tank : circle.tanks()) {
+            if (owed <= 0) {
+                break;
+            }
+            if (tank.isRemoved()) {
+                continue;
+            }
+            int take = Math.min(owed, tank.tank().contents().get(essence));
+            if (take > 0) {
+                tank.tank().remove(EssenceMix.pure(essence, take));
+                tank.setChanged();
+                drawn += take;
+                owed -= take;
             }
         }
-        essenceLeft = essenceLeft.minus(drawn);
+        essenceLeft = essenceLeft.minus(EssenceMix.pure(essence, drawn));
         return drawn;
     }
 
@@ -390,7 +378,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     }
 
     private void finish(ServerLevel level) {
-        center = kind == Ritual.Kind.CHARGE ? center : result.copy();
+        center = result.copy();
         clearRitual();
         Vec3 at = itemPosition();
         level.sendParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, 40, 0.1, 0.1, 0.1, 0.18);
@@ -427,6 +415,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         finale = 0;
         stalled = 0;
         itemsTotal = 0;
+        drawTick = 0;
     }
 
     public Vec3 itemPosition() {
@@ -455,11 +444,10 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             altar.circle = Ritual.Circle.scan(level, pos);
         }
         Ritual.Circle circle = altar.circle;
-        // Essence streams: from every tank holding an essence still owed.
-        for (Essence essence : Essence.values()) {
-            if (altar.essenceLeft.get(essence) <= 0) {
-                continue;
-            }
+        // An essence stream: once the items are in, from every tank holding the essence drawn now.
+        Essence drawingEssence = altar.inputs.isEmpty() ? Ritual.drawingEssence(altar.essenceLeft) : null;
+        if (drawingEssence != null) {
+            Essence essence = drawingEssence;
             for (EssenceTankBlockEntity tank : circle.tanks()) {
                 if (tank.tank().contents().get(essence) > 0 && random.nextInt(2) == 0) {
                     Vec3 from = Vec3.atCenterOf(tank.getBlockPos()).add((random.nextDouble() - 0.5) * 0.4, 0.3, (random.nextDouble() - 0.5) * 0.4);
@@ -468,7 +456,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             }
         }
         // Rune steles feed the centre glyph light for the whole ritual.
-        if (altar.kind != Ritual.Kind.CHARGE) {
+        {
             for (RuneSteleBlockEntity stele : circle.steles()) {
                 if (stele.rune() != null && random.nextInt(3) == 0) {
                     Vec3 from = Vec3.atCenterOf(stele.getBlockPos()).add(0, 1.05, 0);
@@ -635,7 +623,9 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         super.loadAdditional(input);
         center = input.read("center", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         Ritual.Kind before = kind;
-        kind = input.getString("ritual").map(name -> Ritual.Kind.valueOf(name)).orElse(null);
+        // A ritual of a kind that no longer exists (charging) is dropped.
+        kind = input.getString("ritual").flatMap(name -> java.util.Arrays.stream(Ritual.Kind.values())
+                .filter(k -> k.name().equals(name)).findFirst()).orElse(null);
         inputs = new ArrayList<>(input.read("inputs", INPUTS_CODEC).orElse(List.of()));
         essenceLeft = input.read("essence_left", EssenceMix.CODEC).orElse(EssenceMix.EMPTY);
         essenceTotal = input.read("essence_total", EssenceMix.CODEC).orElse(EssenceMix.EMPTY);
@@ -645,6 +635,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         itemTimer = input.getIntOr("item_timer", 0);
         finale = input.getIntOr("finale", 0);
         stalled = input.getIntOr("stalled", 0);
+        drawTick = input.getIntOr("draw_tick", 0);
         itemsTotal = input.getIntOr("items_total", 0);
         if (level != null && level.isClientSide() && (before == null || Math.abs(clientElapsed - elapsed) > 10)) {
             clientElapsed = elapsed;
@@ -670,6 +661,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             output.putInt("item_timer", itemTimer);
             output.putInt("finale", finale);
             output.putInt("stalled", stalled);
+            output.putInt("draw_tick", drawTick);
             output.putInt("items_total", itemsTotal);
         }
     }

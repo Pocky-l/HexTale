@@ -72,12 +72,6 @@ public final class HextaleClient {
         NeoForge.EVENT_BUS.addListener((ItemTooltipEvent event) -> {
             ItemStack stack = event.getItemStack();
             EssenceMix contents = stack.get(ModDataComponents.ESSENCE.get());
-            if (HextechTools.isTool(stack)) {
-                EssenceMix cell = HextechTools.cell(stack);
-                event.getToolTip().add(1, Component.translatable("item.hextale.hextech_tool.cell",
-                        cell.isEmpty() ? Component.translatable("block.hextale.essence.empty") : cell.describe(), cell.total(), HextechTools.CELL)
-                        .withStyle(ChatFormatting.GRAY));
-            }
             if (stack.is(ModItems.CREATIVE_ESSENCE_TANK.get())) {
                 event.getToolTip().add(1, Component.translatable("block.hextale.creative_essence_tank.all").withStyle(ChatFormatting.GRAY));
             } else if (contents != null && stack.is(ModItems.ESSENCE_TANK.get())) {

@@ -48,10 +48,9 @@ public final class RuneWorkGameTests {
     private RuneWorkGameTests() {
     }
 
-    private static ItemStack smeltingPickaxe(int fire) {
+    private static ItemStack smeltingPickaxe() {
         ItemStack tool = new ItemStack(ModItems.HEXTECH_PICKAXE.get());
         HextechTools.setRunes(tool, RuneSlots.EMPTY.with(new RuneSlots.Engraving(0, ToolRunes.SMELTING, 2)));
-        HextechTools.setCell(tool, EssenceMix.pure(Essence.FIRE, fire));
         return tool;
     }
 
@@ -91,34 +90,10 @@ public final class RuneWorkGameTests {
 
     @HexTest
     public static void smeltingRuneSmeltsDrops(GameTestHelper helper) {
-        ItemStack tool = smeltingPickaxe(10);
+        ItemStack tool = smeltingPickaxe();
         List<ItemEntity> drops = mine(helper, tool);
         helper.assertTrue(drops.stream().anyMatch(drop -> drop.getItem().is(Items.IRON_INGOT)), "raw iron comes out as an ingot");
         helper.assertTrue(drops.stream().noneMatch(drop -> drop.getItem().is(Items.RAW_IRON)), "no raw iron left");
-        helper.assertTrue(HextechTools.cell(tool).get(Essence.FIRE) == 9, "one mB of fire burned per item");
-        helper.succeed();
-    }
-
-    @HexTest
-    public static void smeltingSleepsWithoutFire(GameTestHelper helper) {
-        List<ItemEntity> drops = mine(helper, smeltingPickaxe(0));
-        helper.assertTrue(drops.stream().anyMatch(drop -> drop.getItem().is(Items.RAW_IRON)), "without fire the drop stays raw");
-        helper.succeed();
-    }
-
-    @HexTest
-    public static void cellFillsFromTanks(GameTestHelper helper) {
-        ItemStack tool = new ItemStack(ModItems.HEXTECH_PICKAXE.get());
-        EssenceTank tank = new EssenceTank(256);
-        tank.set(EssenceMix.pure(Essence.FIRE, 100));
-        helper.assertTrue(HextechTools.fillFrom(tool, tank) == HextechTools.CELL, "the cell fills up to its size");
-        helper.assertTrue(tank.amount() == 100 - HextechTools.CELL, "the tank gives what the cell took");
-        EssenceTank murky = new EssenceTank(256);
-        murky.set(EssenceMix.unknown(50));
-        helper.assertTrue(HextechTools.fillFrom(new ItemStack(ModItems.HEXTECH_PICKAXE.get()), murky) < 0, "unknown essence is refused");
-        helper.assertTrue(HextechTools.spend(tool, Essence.FIRE, 4) && HextechTools.cell(tool).get(Essence.FIRE) == HextechTools.CELL - 4,
-                "a firing burns its essence");
-        helper.assertFalse(HextechTools.spend(tool, Essence.WATER, 1), "nothing burns without that essence");
         helper.succeed();
     }
 
@@ -155,7 +130,6 @@ public final class RuneWorkGameTests {
         ItemStack tool = new ItemStack(ModItems.HEXTECH_PICKAXE.get());
         HextechTools.setRunes(tool, RuneSlots.EMPTY.with(new RuneSlots.Engraving(0, ComplexRunes.byKey("metal_earth"), 1))
                 .with(new RuneSlots.Engraving(1, ComplexRunes.byKey("earth_shadow"), 1)));
-        HextechTools.setCell(tool, EssenceMix.of(Map.of(Essence.METAL, 30, Essence.EARTH, 20)));
         BlockPos centre = helper.absolutePos(new BlockPos(2, 3, 2));
         for (BlockPos at : BlockPos.betweenClosed(centre.offset(-1, 0, -1), centre.offset(1, 0, 1))) {
             helper.getLevel().setBlockAndUpdate(at, Blocks.STONE.defaultBlockState());
@@ -172,21 +146,18 @@ public final class RuneWorkGameTests {
         helper.assertTrue(left == 0, "the 3x3 around is mined, " + left + " left");
         helper.assertTrue(player.getInventory().countItem(Items.COBBLESTONE) == 9, "all nine cobblestones went into the pocket");
         helper.assertTrue(helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(centre).inflate(3)).isEmpty(), "nothing on the ground");
-        helper.assertTrue(HextechTools.cell(tool).get(Essence.METAL) == 30 - 8, "one firing of Drill per extra block");
         helper.succeed();
     }
 
-    /** Right click fires the rune's spell: Healing heals, pays, and the tool rests a moment. */
+    /** Right click fires the rune's spell for free: Healing heals, and the tool rests a moment. */
     @HexTest
     public static void useRunesFireOnRightClick(GameTestHelper helper) {
         ItemStack tool = new ItemStack(ModItems.HEXTECH_PICKAXE.get());
         HextechTools.setRunes(tool, RuneSlots.EMPTY.with(new RuneSlots.Engraving(0, ComplexRunes.byKey("water_life"), 2)));
-        HextechTools.setCell(tool, EssenceMix.pure(Essence.WATER, 10));
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         player.setHealth(6);
         helper.assertTrue(ToolRuneEffects.use(helper.getLevel(), player, tool), "the rune fires");
         helper.assertTrue(player.getHealth() >= 10, "and heals");
-        helper.assertTrue(HextechTools.cell(tool).get(Essence.WATER) == 10 - ToolRunes.cost(ComplexRunes.byKey("water_life")), "paid");
         helper.assertFalse(ToolRuneEffects.use(helper.getLevel(), player, tool), "not again right away");
         helper.succeed();
     }
@@ -208,7 +179,7 @@ public final class RuneWorkGameTests {
     }
 
     /** An iron pickaxe, four items and three essences become a Hextech Pickaxe that keeps its enchantments. */
-    @HexTest(maxTicks = 260)
+    @HexTest(maxTicks = 320)
     public static void altarInfusesTheHextechPickaxe(GameTestHelper helper) {
         ItemStack iron = new ItemStack(Items.IRON_PICKAXE);
         iron.enchant(helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
@@ -218,6 +189,9 @@ public final class RuneWorkGameTests {
                 new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(ModItems.BRASS_INGOT.get())), essence);
         altar.startOrAbort(null);
         helper.assertTrue(altar.active() && altar.kind() == Ritual.Kind.INFUSE, "the ritual starts");
+        // The essences follow the items: while items are still drawn, no essence has left the tank.
+        helper.runAfterDelay(Ritual.WARMUP_TICKS + Ritual.TICKS_PER_ITEM * 2, () -> helper.assertTrue(
+                altar.essenceLeft().total() == 24 + 16 + 8, "no essence is drawn before the items, left " + altar.essenceLeft()));
         helper.succeedWhen(() -> {
             helper.assertTrue(altar.center().is(ModItems.HEXTECH_PICKAXE.get()), "the centre became a hextech pickaxe");
             helper.assertTrue(altar.center().isEnchanted(), "it kept its enchantment");
@@ -256,28 +230,14 @@ public final class RuneWorkGameTests {
         });
     }
 
-    /** A pickaxe with Smelting and nothing else around fills its cell with fire from the tanks. */
-    @HexTest(maxTicks = 120)
-    public static void altarChargesATool(GameTestHelper helper) {
-        HextechAltarBlockEntity altar = circle(helper, smeltingPickaxe(0), List.of(), EssenceMix.of(Map.of(Essence.FIRE, 100, Essence.WATER, 50)));
-        altar.startOrAbort(null);
-        helper.assertTrue(altar.kind() == Ritual.Kind.CHARGE, "the ritual charges");
-        helper.succeedWhen(() -> {
-            helper.assertFalse(altar.active(), "charging is done");
-            EssenceMix cell = HextechTools.cell(altar.center());
-            helper.assertTrue(cell.get(Essence.FIRE) == HextechTools.CELL && cell.get(Essence.WATER) == 0,
-                    "the cell took only the fire its rune burns, got " + cell);
-        });
-    }
-
     /** With an essence missing the ritual stalls instead of finishing. */
-    @HexTest(maxTicks = 200)
+    @HexTest(maxTicks = 300)
     public static void aRitualShortOfEssenceStalls(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
                 new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(Items.AMETHYST_SHARD)),
                 EssenceMix.of(Map.of(Essence.ORE, 40, Essence.FORGE, 30)));
         altar.startOrAbort(null);
-        helper.runAfterDelay(180, () -> {
+        helper.runAfterDelay(240, () -> {
             helper.assertTrue(altar.active() && altar.stalled(), "without energy essence the ritual waits");
             helper.assertTrue(altar.center().is(Items.IRON_PICKAXE), "and the centre is untouched");
             helper.succeed();

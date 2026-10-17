@@ -36,12 +36,12 @@ public final class Ritual {
     public static final int PEDESTAL_RADIUS = 6;
     public static final int STELE_RADIUS = 7;
     public static final int TANK_RADIUS = 8;
-    public static final int WARMUP_TICKS = 40;
-    public static final int TICKS_PER_ITEM = 20;
-    public static final int FINALE_TICKS = 24;
-    /** mB of each essence the altar draws per tick while infusing, and while charging a tool. */
-    public static final int DRAW_PER_TICK = 4;
-    public static final int CHARGE_PER_TICK = 2;
+    public static final int WARMUP_TICKS = 56;
+    public static final int TICKS_PER_ITEM = 28;
+    public static final int FINALE_TICKS = 34;
+    /** The altar draws {@value #DRAW_MB} mB of essence every {@value #DRAW_TICKS} ticks, one essence after another. */
+    public static final int DRAW_MB = 20;
+    public static final int DRAW_TICKS = 7;
     /** A ritual short of something waits this long, then collapses. */
     public static final int STALL_LIMIT = 600;
 
@@ -105,6 +105,26 @@ public final class Ritual {
         }
     }
 
+    /** Ticks the altar takes to draw {@code mb} mB of essence. */
+    public static int drawTicks(int mb) {
+        return Mth.ceil(mb * DRAW_TICKS / (float) DRAW_MB);
+    }
+
+    /** mB drawn on the {@code tick}-th tick of drawing (0-based): {@value #DRAW_MB} per {@value #DRAW_TICKS} ticks, spread evenly. */
+    public static int drawnOn(int tick) {
+        return (tick + 1) * DRAW_MB / DRAW_TICKS - tick * DRAW_MB / DRAW_TICKS;
+    }
+
+    /** The essence a ritual draws now: the first one still owed, in essence order; null when nothing is owed. */
+    public static @Nullable Essence drawingEssence(EssenceMix left) {
+        for (Essence essence : Essence.values()) {
+            if (left.get(essence) > 0) {
+                return essence;
+            }
+        }
+        return null;
+    }
+
     /** Angle of {@code pos} around {@code centre}, 0 at north, growing clockwise (seen from above). */
     static double clockwise(BlockPos centre, BlockPos pos) {
         double angle = Mth.atan2(pos.getX() - centre.getX(), centre.getZ() - pos.getZ());
@@ -112,7 +132,7 @@ public final class Ritual {
     }
 
     public enum Kind {
-        INFUSE, ENGRAVE, ERASE, CHARGE
+        INFUSE, ENGRAVE, ERASE
     }
 
     /**
@@ -126,19 +146,9 @@ public final class Ritual {
      */
     public record Plan(Kind kind, @Nullable Identifier recipe, List<Input> inputs, EssenceMix essences, List<RuneSlots.Engraving> engravings,
                        ItemStack result) {
+        /** Warm-up, then the pedestal items one by one, then the essences one by one, then the finale. */
         public int duration() {
-            int draw = DRAW_PER_TICK;
-            if (kind == Kind.CHARGE) {
-                draw = CHARGE_PER_TICK;
-            }
-            int longest = 0;
-            for (Essence essence : Essence.values()) {
-                longest = Math.max(longest, Mth.ceil(essences.get(essence) / (float) draw));
-            }
-            if (kind == Kind.CHARGE) {
-                return longest;
-            }
-            return WARMUP_TICKS + Math.max(inputs.size() * TICKS_PER_ITEM, longest) + FINALE_TICKS;
+            return WARMUP_TICKS + inputs.size() * TICKS_PER_ITEM + drawTicks(essences.total()) + FINALE_TICKS;
         }
     }
 
@@ -199,14 +209,6 @@ public final class Ritual {
                 ItemStack result = center.copy();
                 HextechTools.setRunes(result, RuneSlots.EMPTY);
                 return new Plan(Kind.ERASE, null, inputs, erase.essences(), List.of(), result);
-            }
-        }
-        if (filled.isEmpty() && !runes.isEmpty() && HextechTools.space(center) > 0) {
-            EssenceMix need = chargeNeed(center, runes);
-            if (!need.isEmpty()) {
-                ItemStack result = center.copy();
-                HextechTools.fill(result, need);
-                return new Plan(Kind.CHARGE, null, List.of(), need, List.of(), result);
             }
         }
         return null;
@@ -361,27 +363,6 @@ public final class Ritual {
             }
         }
         return -1;
-    }
-
-    /** The cell's free space split evenly between the action essences of the tool's runes. */
-    public static EssenceMix chargeNeed(ItemStack tool, RuneSlots runes) {
-        Map<Essence, Integer> want = new EnumMap<>(Essence.class);
-        List<Essence> actions = runes.engravings().stream().map(engraving -> engraving.rune().action()).distinct().toList();
-        if (actions.isEmpty()) {
-            return EssenceMix.EMPTY;
-        }
-        EssenceMix cell = HextechTools.cell(tool);
-        int share = HextechTools.CELL / actions.size();
-        int space = HextechTools.space(tool);
-        for (Essence essence : actions) {
-            int missing = Math.max(0, share - cell.get(essence));
-            int take = Math.min(missing, space);
-            if (take > 0) {
-                want.put(essence, take);
-                space -= take;
-            }
-        }
-        return EssenceMix.of(want);
     }
 
     /**

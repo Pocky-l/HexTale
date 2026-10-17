@@ -68,7 +68,6 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         }
         state.time = time;
         state.active = altar.active();
-        state.charging = altar.kind() == Ritual.Kind.CHARGE;
         state.progress = altar.progress(partialTick);
         state.ritualTime = altar.ritualTime(partialTick);
         state.stalled = altar.stalled();
@@ -170,7 +169,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
 
     /** Sparkles on tilted orbits around the centre item. */
     private static void motes(PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera, State state, int color, float intensity) {
-        int count = state.charging ? 5 : 9;
+        int count = 9;
         float time = state.time;
         for (int i = 0; i < count; i++) {
             float angle = time * (0.06F + 0.1F * state.progress) * (1 + i * 0.11F) + i * Mth.TWO_PI / count;
@@ -203,7 +202,6 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         final ItemStackRenderState center = new ItemStackRenderState();
         float time;
         boolean active;
-        boolean charging;
         boolean stalled;
         boolean finishing;
         float progress;

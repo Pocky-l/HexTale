@@ -92,8 +92,7 @@ public enum Quest {
     HEXTECH_PICKAXE(PEDESTAL, 280, 216, () -> new ItemStack(ModItems.HEXTECH_PICKAXE.get()), Quests.has(ModItems.HEXTECH_PICKAXE),
             QuestDisplay.infusion("hextale:hextech_pickaxe")),
     FIRST_ENGRAVING(HEXTECH_PICKAXE, 336, 216, () -> new ItemStack(ModItems.RUNE_SCROLL.get()), Quests::engravedTool,
-            QuestDisplay.infusion("hextale:engrave/fire_earth")),
-    CHARGED_TOOL(FIRST_ENGRAVING, 336, 258, () -> new ItemStack(ModItems.ESSENCE_TANK.get()), Quests::chargedTool, null);
+            QuestDisplay.infusion("hextale:engrave/fire_earth"));
 
     @Nullable
     private final Quest parent;

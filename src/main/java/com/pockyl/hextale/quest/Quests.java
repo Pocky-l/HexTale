@@ -72,12 +72,6 @@ public final class Quests {
         return player.getInventory().contains(stack -> HextechTools.isTool(stack) && !HextechTools.runes(stack).isEmpty());
     }
 
-    /** A hextech tool with runes and essence in its cell in the inventory. */
-    static boolean chargedTool(ServerPlayer player) {
-        return player.getInventory().contains(stack -> HextechTools.isTool(stack) && !HextechTools.runes(stack).isEmpty()
-                && !HextechTools.cell(stack).isEmpty());
-    }
-
     /** A bottle of concentrate in the inventory, or a Separator open on the screen with concentrate in it. */
     static boolean concentrate(ServerPlayer player) {
         if (player.getInventory().contains(stack -> stack.is(ModItems.ESSENCE_FLASK.get())

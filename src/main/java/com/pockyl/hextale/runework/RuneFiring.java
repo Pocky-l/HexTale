@@ -36,12 +36,11 @@ public final class RuneFiring {
     private RuneFiring() {
     }
 
-    /** Smelting: every drop with a furnace recipe comes out smelted, one firing per item. */
+    /** Smelting: every drop with a furnace recipe comes out smelted, every item. */
     static void smelt(BlockDropsEvent event, ItemStack tool, RuneSlots.Engraving engraving) {
         ServerLevel level = event.getLevel();
         float experience = 0;
         int smelted = 0;
-        List<ItemEntity> extra = new ArrayList<>();
         for (ItemEntity drop : event.getDrops()) {
             ItemStack stack = drop.getItem();
             SingleRecipeInput input = new SingleRecipeInput(stack);
@@ -53,27 +52,12 @@ public final class RuneFiring {
             if (result.isEmpty()) {
                 continue;
             }
-            int count = 0;
-            while (count < stack.getCount() && HextechTools.payFiring(tool, engraving, level.getRandom())) {
-                count++;
-            }
-            if (count == 0) {
-                break;
-            }
-            ItemStack rest = stack.copyWithCount(stack.getCount() - count);
+            int count = stack.getCount();
             result.setCount(Math.min(result.getMaxStackSize(), result.getCount() * count));
             drop.setItem(result);
             smelted += count;
             experience += recipe.get().value().experience() * count;
-            if (!rest.isEmpty()) {
-                // Out of essence halfway: the rest drops as it was mined.
-                ItemEntity leftover = new ItemEntity(level, drop.getX(), drop.getY(), drop.getZ(), rest);
-                leftover.setDefaultPickUpDelay();
-                extra.add(leftover);
-                break;
-            }
         }
-        event.getDrops().addAll(extra);
         if (smelted <= 0) {
             return;
         }
@@ -93,7 +77,7 @@ public final class RuneFiring {
 
     /**
      * Erosion: a broken loose block (anything a shovel digs) washes away the same blocks touching it, nearest first, up
-     * to the rune's reach; one firing per block. Their drops go through the tool's other runes too.
+     * to the rune's reach. Their drops go through the tool's other runes too.
      */
     static void erode(BlockDropsEvent event, Player player, ItemStack tool, RuneSlots.Engraving engraving) {
         BlockState origin = event.getState();
@@ -119,9 +103,6 @@ public final class RuneFiring {
                     BlockState state = level.getBlockState(next);
                     if (!state.is(origin.getBlock())) {
                         continue;
-                    }
-                    if (!HextechTools.payFiring(tool, engraving, level.getRandom())) {
-                        return;
                     }
                     Block.dropResources(state, level, next, level.getBlockEntity(next), player, tool);
                     level.destroyBlock(next, false, player);
