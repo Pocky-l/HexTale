@@ -88,6 +88,31 @@ public final class Guide {
     public static final Quest INK = add("ink", Quest.Kind.ITEM, List.of(ESSENCE_TANK), () -> new ItemStack(Items.INK_SAC),
             Quests::inkAtTable, null, null, Quest.Aura.NONE);
 
+    // ---- Early devices still being worked out: farms, wood, logistics, the first chemtech -----------------------------
+
+    public static final Quest WIP_SAP_TAP = wip("sap_tap", Items.HONEY_BOTTLE, Quest.Aura.LIFE, ESSENCE_BOTTLE);
+    public static final Quest WIP_ESSENCE_SPRINKLER = wip("essence_sprinkler", Items.POINTED_DRIPSTONE, Quest.Aura.LIFE, BRASS_PIPE, CONCENTRATE);
+    public static final Quest WIP_LIVING_SOIL = wip("living_soil", Items.ROOTED_DIRT, Quest.Aura.LIFE, MAGIC_STONE);
+    public static final Quest WIP_FIELD_WARD = wip("field_ward", Items.CARVED_PUMPKIN, Quest.Aura.NONE, MAGIC_STONE);
+    public static final Quest WIP_TREE_FELLER = wip("tree_feller", Items.OAK_LOG, Quest.Aura.NONE, MAGIC_STONE, ESSENCE_TANK);
+    public static final Quest WIP_SEED_SOWER = wip("seed_sower", Items.WHEAT_SEEDS, Quest.Aura.NONE, ESSENCE_TANK);
+    public static final Quest WIP_REAPER = wip("reaper", Items.WHEAT, Quest.Aura.NONE, ESSENCE_TANK);
+    public static final Quest WIP_GROVE_KEEPER = wip("grove_keeper", Items.OAK_SAPLING, Quest.Aura.LIFE, ESSENCE_TANK);
+    public static final Quest WIP_FEEDING_TROUGH = wip("feeding_trough", Items.HAY_BLOCK, Quest.Aura.LIFE, ESSENCE_TANK);
+    public static final Quest WIP_COURIER_NODE = wip("courier_node", Items.BUNDLE, Quest.Aura.GOLD, ESSENCE_TANK);
+    public static final Quest WIP_GATHERING_LANTERN = wip("gathering_lantern", Items.LODESTONE, Quest.Aura.GOLD, ESSENCE_TANK);
+    public static final Quest WIP_GEODE_RESONATOR = wip("geode_resonator", Items.SMALL_AMETHYST_BUD, Quest.Aura.STORM, ESSENCE_TANK, UNSTABLE_HEXTECH);
+    public static final Quest WIP_RESONANCE_FORK = wip("resonance_fork", Items.TRIPWIRE_HOOK, Quest.Aura.NONE, RESEARCHERS_GOGGLES);
+    public static final Quest WIP_JAR_GAUGE = wip("jar_gauge", Items.COMPARATOR, Quest.Aura.NONE, RESEARCHERS_GOGGLES);
+    public static final Quest WIP_SAWMILL = wip("sawmill", Items.OAK_PLANKS, Quest.Aura.NONE, ALEMBIC);
+    public static final Quest WIP_FISH_WEIR = wip("fish_weir", Items.FISHING_ROD, Quest.Aura.NONE, PUMP);
+    public static final Quest WIP_COMPOST_VAT = wip("compost_vat", Items.COMPOSTER, Quest.Aura.NONE, DRAIN_VALVE);
+    public static final Quest WIP_THE_GRAY = wip("the_gray", Items.GUNPOWDER, Quest.Aura.CURSED, DRAIN_VALVE);
+    public static final Quest WIP_CHEM_BURNER = wip("chem_burner", Items.CAMPFIRE, Quest.Aura.FLAME, SEPARATOR);
+    public static final Quest WIP_LAB_BENCH = wip("lab_bench", Items.BREWING_STAND, Quest.Aura.NONE, SEPARATOR);
+    public static final Quest WIP_EXPERIMENT_POT = wip("experiment_pot", Items.FLOWER_POT, Quest.Aura.LIFE, SEPARATOR, CONCENTRATE);
+    public static final Quest WIP_SPECIMEN_CAGE = wip("specimen_cage", Items.IRON_BARS, Quest.Aura.CURSED, SEPARATOR);
+
     // ---- Smelting and the rune works it opens -------------------------------------------------------------------------
 
     public static final Quest SMELTING = rune("fire_earth", Quest.Aura.GOLD, INK);
@@ -121,6 +146,10 @@ public final class Guide {
     public static final Quest RADIANT_PICKAXE = add("radiant_pickaxe", Quest.Kind.ITEM, List.of(REFINED_PICKAXE),
             () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.RADIANT).get()), Quests.pickaxe(3),
             QuestDisplay.infusion("hextale:radiant_hextech_pickaxe"), null, Quest.Aura.HEXTECH);
+    public static final Quest WIP_HEX_RELAY = wip("hex_relay", Items.PRISMARINE_CRYSTALS, Quest.Aura.HEXTECH, HEXTECH_GEMSTONE);
+    public static final Quest WIP_RUNE_WORKBENCH = wip("rune_workbench", Items.CRAFTER, Quest.Aura.HEXTECH, PEDESTAL, HEXTECH_GEMSTONE);
+    public static final Quest WIP_HEXTECH_AXE = wip("hextech_axe", Items.IRON_AXE, Quest.Aura.HEXTECH, HEXTECH_PICKAXE);
+    public static final Quest WIP_HEXTECH_HOE = wip("hextech_hoe", Items.IRON_HOE, Quest.Aura.LIFE, HEXTECH_PICKAXE);
 
     // ---- Rune branches. Chapter I runes sit next to Smelting, chapter III runes deep in the branches -----------------
 
@@ -242,6 +271,33 @@ public final class Guide {
     public static final Quest WIP_CONSTRUCT = wip("construct", Items.ARMOR_STAND, Quest.Aura.HEXTECH, CONSTRUCT, MOTOR);
     public static final Quest WIP_SHIMMER = wip("shimmer", Items.EXPERIENCE_BOTTLE, Quest.Aura.CURSED, HASTE, WITHERING);
     public static final Quest WIP_HEXCORE = wip("hexcore", Items.HEART_OF_THE_SEA, Quest.Aura.GOLD, REVIVAL, CONSTRUCT, RADIANCE);
+
+    // ---- Devices the runes will drive: sorting and storage, farms that tend themselves, constructs, shimmer -----------
+
+    public static final Quest WIP_SORTING_MATRIX = wip("sorting_matrix", Items.OBSERVER, Quest.Aura.HEXTECH, MIRROR, HEXTECH_GEMSTONE);
+    public static final Quest WIP_XP_CONDENSER = wip("xp_condenser", Items.SCULK_CATALYST, Quest.Aura.HEXTECH, INSIGHT);
+    public static final Quest WIP_ORE_WASHER = wip("ore_washer", Items.RAW_IRON, Quest.Aura.NONE, EROSION, PUMP);
+    public static final Quest WIP_HERD_WARDEN = wip("herd_warden", Items.SHEARS, Quest.Aura.LIFE, FERTILITY);
+    public static final Quest WIP_SPRING_BASIN = wip("spring_basin", Items.LILY_PAD, Quest.Aura.LIFE, SPRING);
+    public static final Quest WIP_BLOOM_CENSER = wip("bloom_censer", Items.SPORE_BLOSSOM, Quest.Aura.LIFE, POLLEN);
+    public static final Quest WIP_MAGMA_FONT = wip("magma_font", Items.LAVA_BUCKET, Quest.Aura.FLAME, ETERNAL_FLAME);
+    public static final Quest WIP_RAIN_CALLER = wip("rain_caller", Items.TRIDENT, Quest.Aura.STORM, FOG, CONDUCTOR);
+    public static final Quest WIP_ESSENCE_RESONATOR = wip("essence_resonator", Items.GLASS_BOTTLE, Quest.Aura.HEXTECH, CONDUCTOR, PIPES);
+    public static final Quest WIP_WORLD_ANCHOR = wip("world_anchor", Items.RESPAWN_ANCHOR, Quest.Aura.STORM, GROUNDING, GRAVITY);
+    public static final Quest WIP_HEX_BORE = wip("hex_bore", Items.DIAMOND_PICKAXE, Quest.Aura.HEXTECH, DRILL, MOTOR);
+    public static final Quest WIP_ATTRACTOR_SPIRE = wip("attractor_spire", Items.HEAVY_CORE, Quest.Aura.STORM, MAGNET);
+    public static final Quest WIP_SHADOW_COFFER = wip("shadow_coffer", Items.ENDER_CHEST, Quest.Aura.CURSED, CACHE);
+    public static final Quest WIP_HEX_ARCHIVE = wip("hex_archive", Items.CHISELED_BOOKSHELF, Quest.Aura.HEXTECH, CACHE, ENGRAVING);
+    public static final Quest WIP_FOLDING_GATE = wip("folding_gate", Items.ENDER_PEARL, Quest.Aura.CURSED, BLINK);
+    public static final Quest WIP_HARVEST_CONSTRUCT = wip("harvest_construct", Items.GOLDEN_HOE, Quest.Aura.HEXTECH, CONSTRUCT, BLADES);
+    public static final Quest WIP_FORESTER_CONSTRUCT = wip("forester_construct", Items.GOLDEN_AXE, Quest.Aura.HEXTECH, CONSTRUCT, GROWTH);
+    public static final Quest WIP_WINGED_COURIER = wip("winged_courier", Items.FEATHER, Quest.Aura.HEXTECH, CONSTRUCT, LIFT);
+    public static final Quest WIP_CRYSTAL_VAT = wip("crystal_vat", Items.BUDDING_AMETHYST, Quest.Aura.CURSED, CORROSION, HEXTECH_GEMSTONE);
+    public static final Quest WIP_GLOWBLOOM_BED = wip("glowbloom_bed", Items.GLOW_BERRIES, Quest.Aura.LIFE, RADIANCE);
+    public static final Quest WIP_REGEN_TANK = wip("regen_tank", Items.AXOLOTL_BUCKET, Quest.Aura.CURSED, HEALING, PIPES);
+    public static final Quest WIP_MUTATION_INJECTOR = wip("mutation_injector", Items.SPIDER_EYE, Quest.Aura.CURSED, BLIGHT);
+    public static final Quest WIP_LULL_LANTERN = wip("lull_lantern", Items.SOUL_LANTERN, Quest.Aura.CURSED, SLUMBER);
+    public static final Quest WIP_CHRONO_CHAMBER = wip("chrono_chamber", Items.CLOCK, Quest.Aura.STORM, HASTE);
 
     static {
         layout();
