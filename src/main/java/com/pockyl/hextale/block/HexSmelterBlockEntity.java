@@ -36,12 +36,14 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
 
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.essence.EssenceTank;
+import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.menu.HexSmelterMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
@@ -56,8 +58,9 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Hex Smelter's contents. It smelts whatever a furnace smelts, twice as fast, and burns no fuel: its heat is the
- * fire in essence. Fiery essence (any essence with fire in its make-up) comes in through pipes at the back and the sides
- * or from bottles; each millibucket gives as much heat as its share of fire. An item needs {@value #HEAT_PER_ITEM}
+ * fire in essence. Fiery essence (any essence with fire in its make-up) comes in through pipes at the back and the sides,
+ * from bottles, or is drawn by the smelter itself out of Essence Jars around it ({@link JarReach}) while it has
+ * something to smelt; each millibucket gives as much heat as its share of fire. An item needs {@value #HEAT_PER_ITEM}
  * heat. Runes burned into the smelter at the altar ({@link SmelterRune}) cut the heat, speed it up or add pieces; they
  * stay with the block and go back onto its item when it is broken.
  */
@@ -70,6 +73,12 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
     public static final int COOK_TICKS = 100;
     public static final int HEAT_PER_ITEM = 8;
     public static final int CAPACITY = 256;
+    /** While smelting it tops its tank up from the jars around: {@value #DRAW_MB} mB every {@value #DRAW_TICKS} ticks below {@value #DRAW_BELOW} mB. */
+    public static final int DRAW_MB = 8;
+    public static final int DRAW_TICKS = 20;
+    public static final int DRAW_BELOW = 32;
+    /** Block event: a jar's essence streams into the smelter ({@link JarReach#pack}). */
+    private static final int EVENT_DRAW = 1;
     /** Heat is kept in hundredths: a millibucket of half-fire essence gives 50. */
     private static final int HEAT_UNIT = 100;
     private static final int[] TOP = {INPUT};
@@ -88,6 +97,10 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
     private String blocked = "";
     /** Client side: smooth progress between syncs. */
     public float clientProgress;
+    /** Client side: the motes of the jars it draws from. */
+    private final JarReach.Streams streams = new JarReach.Streams();
+    /** Client side: game time of the last draw, for the gem's flare. */
+    public long drewAt = -1000;
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -192,6 +205,33 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
         return taken;
     }
 
+    /**
+     * Tops the tank up out of the nearest jar of fiery essence within {@link JarReach#RADIUS} (a Creative Essence Jar
+     * gives pure fire). Only every {@value #DRAW_TICKS} ticks and only when low, so idle smelters never look around.
+     */
+    private void drawFromJars(ServerLevel level) {
+        if (Math.floorMod(level.getGameTime() + worldPosition.asLong(), DRAW_TICKS) != 0
+                || tank.amount() >= DRAW_BELOW || tank.space() < DRAW_MB) {
+            return;
+        }
+        for (EssenceTankBlockEntity jar : JarReach.around(level, worldPosition)) {
+            EssenceMix drawn;
+            if (jar.isCreative()) {
+                drawn = EssenceMix.pure(Essence.FIRE, DRAW_MB);
+            } else if (fiery(jar.tank().contents())) {
+                drawn = jar.tank().drain(DRAW_MB, false);
+                jar.setChanged();
+            } else {
+                continue;
+            }
+            tank.fill(drawn, false);
+            setChanged();
+            level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_DRAW,
+                    JarReach.pack(worldPosition, jar.getBlockPos(), jar.isCreative() ? Essence.FIRE : null));
+            return;
+        }
+    }
+
     /** Draws essence until the heat covers an item; false when the tank runs dry first. */
     private boolean stoke(int needed) {
         boolean drew = false;
@@ -266,6 +306,7 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
             return idle("output_full");
         }
         int needed = heatPerItem();
+        drawFromJars(level);
         if (!stoke(needed)) {
             // The item stays where it got to: the smelter only cools down.
             blocked = "no_heat";
@@ -332,6 +373,24 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
         if (smelter.clientProgress >= 1) {
             smelter.clientProgress = 0;
         }
+        smelter.streams.tick(level, gemPosition(pos));
+    }
+
+    /** Where the gem floats over the smelter: drawn essence flows into it. */
+    public static Vec3 gemPosition(BlockPos pos) {
+        return Vec3.atLowerCornerOf(pos).add(0.5, 15.5 / 16, 0.5);
+    }
+
+    @Override
+    public boolean triggerEvent(int id, int param) {
+        if (id == EVENT_DRAW) {
+            if (level != null && level.isClientSide()) {
+                streams.start(level, worldPosition, param);
+                drewAt = level.getGameTime();
+            }
+            return true;
+        }
+        return super.triggerEvent(id, param);
     }
 
     // ---- Container ----------------------------------------------------------------------------------------------------

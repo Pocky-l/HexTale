@@ -63,7 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   out, set on its screen or by sneak-using that side.
 - Essence Jar: a big glass jar with a wooden lid, 256 mB; in through the lid and the sides, out at the bottom. Sneak-use
   a side or the lid with an empty hand to stick an enamel label with an essence's sign on it. The Research Table draws
-  its ink from jars of concentrate within two blocks. A Creative Essence Jar holds every essence without end.
+  its ink from jars of concentrate within 5 blocks - every drop it spends streams from its jar into the orb. A Creative Essence Jar holds every essence without end.
 - Brass Pipes - slim tubes with small flanges - carry essence and water and join a machine only where it has a port;
   the machine's model grows a matching joint there. The Drain Valve pours whatever reaches it out into the world while
   its handwheel is open; essence it pours onto stone soaks in and turns it into magic stone.
@@ -80,8 +80,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   still lacks hover over the free pedestals.
 - Hex Smelter: a kiln of magic bricks with brass posts and a hextech gem floating in its crown, made at the altar from
   a blast furnace under the rune of Smelting. It smelts anything a furnace smelts, twice as fast, and burns fiery
-  essence instead of fuel - piped in at the back and the sides or poured from bottles; the more fire an essence holds,
-  the less of it goes. Its mouth burns with a hextech-blue flame while it works. Runes are burned into it at the altar
+  essence instead of fuel. While it has something to smelt it draws the essence by itself from the nearest jar of fiery
+  essence within 5 blocks - a ribbon of motes flows from the jar into its gem, which swells as it arrives; pipes at the
+  back and the sides and bottles work too. The more fire an essence holds, the less of it goes. Its mouth burns with a hextech-blue flame while it works. Runes are burned into it at the altar
   like into a pickaxe, up to three: Tempering saves essence, Bellows speeds it up, Forge adds ingots from ore, Lens
   strengthens the others; the gem glows in their colours and the smelter keeps them when broken. JEI, Jade and the
   goggles show it.

@@ -37,6 +37,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
+import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.knowledge.Research;
@@ -83,6 +84,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     public static final int EVENT_FUSED = 1;
     public static final int EVENT_FIZZLE = 3;
+    /** A jar's ink streams into the orb ({@link JarReach#pack}). */
+    public static final int EVENT_DRAW = 4;
     /** Health a burst orb takes from the researcher (two hearts). */
     private static final float BURST_DAMAGE = 4.0F;
 
@@ -105,6 +108,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     /** Client side: index of the last finished rune (its hieroglyph rises over the orb), or -1. */
     public int flareRune = -1;
     public long fizzleTime = Long.MIN_VALUE / 2;
+    /** Client side: ink streaming from the jars into the orb. */
+    private final JarReach.Streams inkStreams = new JarReach.Streams();
     /** Client side: ring spin and orb brightness, advanced by the renderer. */
     public final TableAnimation animation = new TableAnimation();
 
@@ -124,6 +129,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
      * letters into an enchanting table's book.
      */
     public static void clientTick(Level level, BlockPos pos, BlockState state, ResearchTableBlockEntity table) {
+        table.inkStreams.tick(level, table.orbPosition());
         if (table.items.get(HEXTECH).isEmpty()) {
             return;
         }
@@ -193,9 +199,16 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     // ---- Ink ------------------------------------------------------------------------------------------------------
 
-    /** The ink around the desk: Essence Tanks of concentrate (the table keeps none itself). */
+    /** The ink around the desk: Essence Jars of concentrate (the table keeps none itself). */
     public InkSupply inkSupply() {
         return InkSupply.around(level, worldPosition, facing());
+    }
+
+    /** Spends the ink of {@code sections} (per essence); every jar it comes from streams into the orb. */
+    private void drawInk(int[] sections) {
+        Map<EssenceTankBlockEntity, Essence> drawn = inkSupply().spendSections(sections);
+        drawn.forEach((jar, essence) -> level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_DRAW,
+                JarReach.pack(worldPosition, jar.getBlockPos(), essence)));
     }
 
     // ---- Learning a rune ------------------------------------------------------------------------------------------
@@ -273,7 +286,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         ComplexRune rune = board.rune();
         int stars = board.stars(sheet.length());
         if (!player.getAbilities().instabuild) {
-            inkSupply().spendSections(trace.ink());
+            drawInk(trace.ink());
         }
         items.get(HEXTECH).shrink(1);
         sheet.finish();
@@ -291,7 +304,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     private void burst(ServerPlayer player, RuneBoard board, int cell, ResearchSheet.Trace trace) {
         boolean creative = player.getAbilities().instabuild;
         if (!creative) {
-            inkSupply().spendSections(trace.ink());
+            drawInk(trace.ink());
             items.get(HEXTECH).shrink(1);
             player.hurtServer((ServerLevel) level, level.damageSources().magic(), BURST_DAMAGE);
         }
@@ -480,6 +493,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
                     flareColor = flareRune >= 0 ? ComplexRunes.all().get(param).color() : 0x5CC8F2;
                 }
                 case EVENT_FIZZLE -> fizzleTime = now;
+                case EVENT_DRAW -> inkStreams.start(level, worldPosition, param);
                 default -> {
                     return super.triggerEvent(id, param);
                 }

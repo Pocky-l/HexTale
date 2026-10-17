@@ -38,6 +38,7 @@ import com.pockyl.hextale.block.SeparatorBlock;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
+import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.block.Requirement;
 import com.pockyl.hextale.block.ResearchTableBlock;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
@@ -824,18 +825,21 @@ public final class ResearchGameTests {
         helper.assertTrue(Arrays.stream(none).sum() == 0, "no tanks around: no ink and no storage (0/0)");
         BlockPos mixture = new BlockPos(0, 1, 2);
         BlockPos fire = new BlockPos(1, 1, 2);
-        BlockPos farAway = new BlockPos(0, 1, 6);
-        for (BlockPos pos : new BlockPos[]{mixture, fire, farAway}) {
+        BlockPos farAway = new BlockPos(0, 1, JarReach.RADIUS + 1);
+        BlockPos above = new BlockPos(-3, 4, 3);
+        for (BlockPos pos : new BlockPos[]{mixture, fire, farAway, above}) {
             helper.setBlock(pos, ModBlocks.ESSENCE_TANK.get());
         }
         helper.getBlockEntity(mixture, EssenceTankBlockEntity.class).tank().set(EssenceMix.of(java.util.Map.of(Essence.LIFE, 8, Essence.EARTH, 8)));
         helper.getBlockEntity(fire, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.FIRE, 16));
         helper.getBlockEntity(farAway, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.WATER, 16));
+        helper.getBlockEntity(above, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.AIR, 16));
         InkSupply supply = table.inkSupply();
         helper.assertTrue(supply.available()[Essence.FIRE.ordinal()] == 16
                 && supply.capacity()[Essence.FIRE.ordinal()] == EssenceTankBlockEntity.CAPACITY, "a fire concentrate next to the desk is fire ink");
         helper.assertTrue(supply.available()[Essence.LIFE.ordinal()] == 0, "a mixture is no ink");
         helper.assertTrue(supply.capacity()[Essence.WATER.ordinal()] == 0, "a tank too far away does not count");
+        helper.assertTrue(supply.available()[Essence.AIR.ordinal()] == 16, "a jar a few blocks off and up is in reach");
         supply.spend(ink(Essence.FIRE, 5));
         helper.assertTrue(helper.getBlockEntity(fire, EssenceTankBlockEntity.class).tank().amount() == 11, "spent ink leaves the tank");
         helper.succeed();

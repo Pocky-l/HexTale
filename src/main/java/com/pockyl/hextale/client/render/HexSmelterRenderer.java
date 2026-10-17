@@ -51,6 +51,9 @@ public class HexSmelterRenderer implements BlockEntityRenderer<HexSmelterBlockEn
         state.time = HexFx.time(level, partialTick);
         state.lit = smelter.getBlockState().getValue(HexSmelterBlock.LIT);
         state.color = PickaxeRuneTint.blend(smelter.runes());
+        // The gem swells while the drawn essence arrives: the motes fly for about a second, the stream lasts another.
+        float age = level == null ? 1000 : level.getGameTime() - smelter.drewAt + partialTick;
+        state.flare = age < 10 || age > 50 ? 0 : Mth.sin((age - 10) / 40F * Mth.PI);
     }
 
     @Override
@@ -60,7 +63,8 @@ public class HexSmelterRenderer implements BlockEntityRenderer<HexSmelterBlockEn
         float bob = Mth.sin(time * 0.07F) * 0.02F;
         poseStack.pushPose();
         poseStack.translate(0.5, 15.5 / 16 + bob, 0.5);
-        HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.55F + 0.25F * activity, state.color, 0.3F + 0.25F * activity);
+        HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.55F + 0.25F * activity + 0.2F * state.flare, state.color,
+                Math.min(1, 0.3F + 0.25F * activity + 0.35F * state.flare));
         if (state.lit) {
             for (int i = 0; i < 4; i++) {
                 float angle = time * 0.12F + i * Mth.HALF_PI;
@@ -87,5 +91,6 @@ public class HexSmelterRenderer implements BlockEntityRenderer<HexSmelterBlockEn
         float time;
         boolean lit;
         int color;
+        float flare;
     }
 }
