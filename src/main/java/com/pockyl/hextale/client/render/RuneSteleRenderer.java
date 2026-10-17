@@ -12,7 +12,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
@@ -20,8 +19,7 @@ import com.pockyl.hextale.rune.ComplexRune;
 
 /**
  * The rune chosen on a stele hangs over it as its glowing hieroglyph in the rune's colour, facing the viewer, inside a
- * slowly turning sigil ring, with a soft halo, a few motes circling it and a thin thread of light down to the stele's
- * socket. A freshly chosen rune writes itself stroke by stroke while the ring opens; while a ritual draws on the stele,
+ * slowly turning sigil ring, with a soft halo and a few motes circling it. A freshly chosen rune writes itself stroke by stroke while the ring opens; while a ritual draws on the stele,
  * everything burns brighter and pulses. Glyph and ring are additive light (no sorting, no flicker).
  */
 public class RuneSteleRenderer implements BlockEntityRenderer<RuneSteleBlockEntity, RuneSteleRenderer.State> {
@@ -65,9 +63,6 @@ public class RuneSteleRenderer implements BlockEntityRenderer<RuneSteleBlockEnti
         poseStack.translate(0.5, y, 0.5);
         HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, (0.7F + (state.active ? 0.25F : 0)) * entrance, color,
                 (state.active ? 0.55F : 0.3F) * pulse);
-        // Thread of light down to the socket.
-        HexFx.beam(poseStack, collector, 0, -(y - 1.0F), 0, 0.06F * entrance, color, 0.5F * pulse,
-                new Vector3f(0, 0, 1).rotate(camera.orientation));
         // Motes circling the rune on a tilted orbit.
         for (int i = 0; i < 4; i++) {
             float angle = time * (state.active ? 0.09F : 0.035F) + i * Mth.HALF_PI;
