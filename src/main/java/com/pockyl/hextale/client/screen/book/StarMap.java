@@ -1,10 +1,10 @@
 package com.pockyl.hextale.client.screen.book;
 
-import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.rune.PrimalRing;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +44,7 @@ final class StarMap {
                     (int) Math.round(Math.sin(angle) * TOOL_RING)});
             LINKS.add(new Link(ResearchBook.FIRST, ring.get(i), false));
         }
-        for (Essence action : HexGrid.RING) {
+        for (Essence action : PrimalRing.RING) {
             List<ComplexRune> ray = new ArrayList<>();
             List<ComplexRune> outposts = new ArrayList<>();
             for (ComplexRune rune : ComplexRunes.all()) {
@@ -56,7 +56,7 @@ final class StarMap {
             }
             // Chapter II before chapter III, so a ray grows outwards as the book opens.
             ray.sort((a, b) -> ResearchBook.chapter(a) - ResearchBook.chapter(b));
-            double[] u = HexGrid.unit(action);
+            double[] u = PrimalRing.unit(action);
             int r = RAY_START;
             ComplexRune previous = null;
             List<ComplexRune> all = new ArrayList<>(ray);

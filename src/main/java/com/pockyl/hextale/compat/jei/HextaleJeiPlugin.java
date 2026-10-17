@@ -76,8 +76,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addRecipes(BoilingCategory.TYPE, List.of(new BoilingCategory.Recipe(boilable)));
         List<SeparationCategory.Recipe> separations = new ArrayList<>();
         for (Essence essence : Essence.values()) {
-            List<ItemStack> reagents = new ArrayList<>();
-            BuiltInRegistries.ITEM.getTagOrEmpty(Reagents.tag(essence)).forEach(holder -> reagents.add(new ItemStack(holder)));
+            List<ItemStack> reagents = Reagents.examples(essence, 32);
             if (!reagents.isEmpty()) {
                 separations.add(new SeparationCategory.Recipe(essence, reagents));
             }

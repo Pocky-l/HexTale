@@ -13,9 +13,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * The essences an item carries (roughly like aspects): each point pulls the symbol the item writes one section towards
- * that element's corner. {@code tier} says how valuable the item is (1 simple, 2 valuable, 3 rare); the mortar can
- * only grind items up to its strength. Entry order matters (it breaks ties), so maps keep their insertion order.
+ * The essences an item carries (roughly like aspects) and how much of each: up to six (one per side of the research
+ * hexagon), strongest first - an item boils into that many mB of each. {@code tier} says how valuable the item is (1
+ * simple, 2 valuable, 3 rare). Entry order matters (strongest first, it breaks ties), so maps keep their insertion order.
  */
 public record ItemEssences(Map<Essence, Integer> essences, int tier) {
     private static final Codec<Essence> ELEMENT = Codec.STRING.comapFlatMap(id -> {
@@ -23,7 +23,7 @@ public record ItemEssences(Map<Essence, Integer> essences, int tier) {
         return rune != null ? DataResult.success(rune) : DataResult.error(() -> "Unknown element: " + id);
     }, Essence::id);
     public static final Codec<ItemEssences> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.unboundedMap(ELEMENT, Codec.intRange(1, 9)).fieldOf("essences").forGetter(ItemEssences::essences),
+            Codec.unboundedMap(ELEMENT, Codec.intRange(1, 64)).fieldOf("essences").forGetter(ItemEssences::essences),
             Codec.intRange(1, 3).optionalFieldOf("tier", 1).forGetter(ItemEssences::tier)
     ).apply(instance, ItemEssences::new));
     public static final StreamCodec<ByteBuf, ItemEssences> STREAM_CODEC = StreamCodec.composite(
@@ -43,25 +43,6 @@ public record ItemEssences(Map<Essence, Integer> essences, int tier) {
             map.put((Essence) pairs[i], (Integer) pairs[i + 1]);
         }
         return new ItemEssences(map, tier);
-    }
-
-    /** The pull in parchment units; ground in a mortar it is half as long. */
-    public double[] vector(boolean ground) {
-        double x = 0;
-        double y = 0;
-        for (Map.Entry<Essence, Integer> entry : essences.entrySet()) {
-            double[] u = HexGrid.unit(entry.getKey());
-            double k = entry.getValue() * HexGrid.CELL * (ground ? 0.5 : 1);
-            x = x + u[0] * k;
-            y = y + u[1] * k;
-        }
-        return new double[]{x, y};
-    }
-
-    /** The fixed step in sections {@code [dq, dr]}: the pull snapped to the hex grid once. */
-    public int[] offset(boolean ground) {
-        double[] v = vector(ground);
-        return HexGrid.axialAt(v[0], v[1]);
     }
 
     /** The strongest element (the first of equals): it names the symbol the item writes. */

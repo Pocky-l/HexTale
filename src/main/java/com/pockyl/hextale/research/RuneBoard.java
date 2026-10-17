@@ -10,12 +10,15 @@ import java.util.List;
  * passable, but some of their sections are cursed and burst the orb, like the mines of a minesweeper), the points the
  * ink must reach and the star thresholds in sections of ink.
  *
- * @param walls  per section: a stone dark rune
- * @param dark   per section: a dark field section (passable)
- * @param cursed per section: a cursed dark field section
- * @param points the rune's points; the first two are its action and target elements
+ * @param essences the essence of each of the six directions ({@link HexGrid#DIRECTIONS}): a step of ink that way pays
+ *                 with it; all six belong to the rune's theme
+ * @param walls    per section: a stone dark rune
+ * @param dark     per section: a dark field section (passable)
+ * @param cursed   per section: a cursed dark field section
+ * @param points   the rune's points; the first two carry the essences nearest its action and its target
  */
-public record RuneBoard(ComplexRune rune, boolean[] walls, boolean[] dark, boolean[] cursed, List<Point> points, Par par) {
+public record RuneBoard(ComplexRune rune, List<Essence> essences, boolean[] walls, boolean[] dark, boolean[] cursed, List<Point> points,
+                        Par par) {
     /** A point the ink must reach. */
     public record Point(Essence element, int cell) {
     }
@@ -28,6 +31,11 @@ public record RuneBoard(ComplexRune rune, boolean[] walls, boolean[] dark, boole
      * @param plain the plain drawing the generator found (sections from the orb to every point)
      */
     public record Par(int three, int two, int plain) {
+    }
+
+    /** The essence a step in this direction pays with. */
+    public Essence essence(int direction) {
+        return essences.get(direction);
     }
 
     public int tier() {

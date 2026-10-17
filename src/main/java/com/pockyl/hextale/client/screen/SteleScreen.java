@@ -83,12 +83,12 @@ public class SteleScreen extends Screen {
         boolean creative = creative();
         ComplexRune current = current();
         List<Component> tooltip = null;
-        for (Essence action : Essence.values()) {
+        for (Essence action : Essence.PRIMALS) {
             int row = action.ordinal();
             int y = top + GRID_Y + row * TILE;
             PixelArt.essence(graphics, action, left + GRID_X - 15, y + 5, PixelArt.ICON, PixelArt.argb(action.color(), 1));
             int col = 0;
-            for (Essence target : Essence.values()) {
+            for (Essence target : Essence.PRIMALS) {
                 if (target == action) {
                     continue;
                 }
@@ -177,8 +177,8 @@ public class SteleScreen extends Screen {
         int col = Mth.floor((mx - left - GRID_X) / TILE);
         int row = Mth.floor((my - top - GRID_Y) / TILE);
         if (col >= 0 && col < 8 && row >= 0 && row < 9) {
-            Essence action = Essence.values()[row];
-            Essence target = Essence.values()[col >= row ? col + 1 : col];
+            Essence action = Essence.PRIMALS.get(row);
+            Essence target = Essence.PRIMALS.get(col >= row ? col + 1 : col);
             ComplexRune rune = ComplexRunes.of(action, target);
             if (creative() || ClientKnowledge.get().knows(rune)) {
                 send(rune.index());

@@ -16,60 +16,41 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Studying an item: "echoes". The item lies in the centre of the parchment; nine strings run from it to the corners,
- * one per element. Each element the item carries hides on its string, as many sections out as it is strong.
+ * Studying an item: "echoes". The item lies in the centre of the hexagonal parchment; six strings run from it to the
+ * corners, one per direction. Each essence the item carries (up to six, strongest first) hides on its own string, the
+ * farther out the more of it there is.
  * <p>
  * The researcher strikes the parchment anywhere: a ripple runs out from the struck section and stops at the nearest
- * element still hidden. Everything inside the ripple is empty; somewhere on its edge an element sings. Striking an
- * element's own section reveals it, and a revealed element goes quiet, so later ripples run on to the others. Strikes
- * are limited: three plus three per element.
+ * essence still hidden. Everything inside the ripple is empty; somewhere on its edge an essence sings. Striking an
+ * essence's own section reveals it, and a revealed essence goes quiet, so later ripples run on to the others. Strikes
+ * are limited: three plus three per essence.
  * <p>
  * Pure rules shared by the table (server) and its screen (client copy).
  */
 public final class ItemStudy {
-    /** Strings start two sections out: near the centre nine directions would share six neighbours. */
+    /** Strings start two sections out: right by the item the six directions crowd together. */
     private static final int FIRST_STEP = 2;
-    private static final int LAST_STEP = 12;
-    private static final int[][] STRINGS = new int[HexGrid.RING.length][];
+    public static final int STRINGS_COUNT = HexGrid.DIRECTIONS.length;
+    private static final int[][] STRINGS = new int[STRINGS_COUNT][];
     private static final int[] STRING_OF = new int[HexGrid.COUNT];
     private static final int[] INDEX_OF = new int[HexGrid.COUNT];
 
     static {
-        boolean[] taken = new boolean[HexGrid.COUNT];
-        taken[HexGrid.CENTRE] = true;
-        List<List<Integer>> strings = new ArrayList<>();
-        for (int i = 0; i < HexGrid.RING.length; i++) {
-            strings.add(new ArrayList<>());
-        }
-        // Grow all strings together, step by step, so none of them steals the others' sections.
-        boolean[] alive = new boolean[HexGrid.RING.length];
-        Arrays.fill(alive, true);
-        for (int n = FIRST_STEP; n <= LAST_STEP; n++) {
-            for (int i = 0; i < HexGrid.RING.length; i++) {
-                if (!alive[i]) {
-                    continue;
-                }
-                int[] offset = ItemEssences.of(1, HexGrid.RING[i], n).offset(false);
-                int cell = HexGrid.index(HexGrid.q(HexGrid.CENTRE) + offset[0], HexGrid.r(HexGrid.CENTRE) + offset[1]);
-                List<Integer> string = strings.get(i);
-                if (cell >= 0 && !string.isEmpty() && string.get(string.size() - 1) == cell) {
-                    continue;
-                }
-                if (cell < 0 || taken[cell]) {
-                    alive[i] = false;
-                    continue;
-                }
-                taken[cell] = true;
-                string.add(cell);
-            }
-        }
         Arrays.fill(STRING_OF, -1);
         Arrays.fill(INDEX_OF, -1);
-        for (int i = 0; i < HexGrid.RING.length; i++) {
-            STRINGS[i] = strings.get(i).stream().mapToInt(Integer::intValue).toArray();
-            for (int k = 0; k < STRINGS[i].length; k++) {
-                STRING_OF[STRINGS[i][k]] = i;
-                INDEX_OF[STRINGS[i][k]] = k;
+        for (int d = 0; d < STRINGS_COUNT; d++) {
+            List<Integer> string = new ArrayList<>();
+            int cell = HexGrid.CENTRE;
+            for (int n = 1; n <= HexGrid.RADIUS; n++) {
+                cell = HexGrid.step(cell, d);
+                if (n >= FIRST_STEP && cell >= 0) {
+                    string.add(cell);
+                }
+            }
+            STRINGS[d] = string.stream().mapToInt(Integer::intValue).toArray();
+            for (int k = 0; k < STRINGS[d].length; k++) {
+                STRING_OF[STRINGS[d][k]] = d;
+                INDEX_OF[STRINGS[d][k]] = k;
             }
         }
     }
@@ -93,9 +74,9 @@ public final class ItemStudy {
         clear();
     }
 
-    /** The sections of an element's string, from the centre out. */
-    public static int[] string(int ringIndex) {
-        return STRINGS[ringIndex];
+    /** The sections of a string, from the centre out. */
+    public static int[] string(int string) {
+        return STRINGS[string];
     }
 
     /** Which string a section belongs to, or -1. */
@@ -108,23 +89,38 @@ public final class ItemStudy {
         return INDEX_OF[cell];
     }
 
-    public static int ringIndex(Essence element) {
-        for (int i = 0; i < HexGrid.RING.length; i++) {
-            if (HexGrid.RING[i] == element) {
-                return i;
+    /** The string an essence of the item hides on (its place among the item's essences, strongest first), or -1. */
+    public static int stringFor(ItemEssences essences, Essence essence) {
+        int i = 0;
+        for (Essence e : essences.essences().keySet()) {
+            if (e == essence) {
+                return i < STRINGS_COUNT ? i : -1;
             }
+            i++;
         }
         return -1;
     }
 
-    /** The section where an element of this strength hides (the last of its string for strengths beyond it). */
-    public static int hiding(Essence element, int strength) {
-        int[] string = STRINGS[ringIndex(element)];
-        return string[Math.min(strength, string.length) - 1];
+    /** The essence hiding on a string, or null when the item has fewer essences. */
+    @Nullable
+    public static Essence essenceOn(ItemEssences essences, int string) {
+        int i = 0;
+        for (Essence e : essences.essences().keySet()) {
+            if (i++ == string) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    /** The section where an essence of this strength hides on its string: two units of essence per section, the rim at most. */
+    public static int hiding(int string, int strength) {
+        int[] cells = STRINGS[string];
+        return cells[Math.max(0, Math.min(cells.length, (strength + 1) / 2) - 1)];
     }
 
     public static int maxStrikes(ItemEssences elements) {
-        return 3 + 3 * elements.essences().size();
+        return 3 + 3 * Math.min(STRINGS_COUNT, elements.essences().size());
     }
 
     @Nullable
@@ -171,8 +167,9 @@ public final class ItemStudy {
         return (revealed & 1 << string) != 0;
     }
 
-    public boolean isRevealed(Essence element) {
-        return isRevealed(ringIndex(element));
+    public boolean isRevealed(ItemEssences essences, Essence essence) {
+        int string = stringFor(essences, essence);
+        return string >= 0 && isRevealed(string);
     }
 
     /** Whether the section was struck already. */
@@ -210,10 +207,12 @@ public final class ItemStudy {
         if (echo.radius() == 0) {
             return false;
         }
+        int string = 0;
         for (Map.Entry<Essence, Integer> entry : elements.essences().entrySet()) {
-            if (isRevealed(entry.getKey()) && HexGrid.steps(echo.cell(), hiding(entry.getKey(), entry.getValue())) == echo.radius()) {
+            if (string < STRINGS_COUNT && isRevealed(string) && HexGrid.steps(echo.cell(), hiding(string, entry.getValue())) == echo.radius()) {
                 return false;
             }
+            string++;
         }
         return true;
     }
@@ -240,8 +239,9 @@ public final class ItemStudy {
     }
 
     public boolean won(ItemEssences elements) {
-        for (Essence element : elements.essences().keySet()) {
-            if (!isRevealed(element)) {
+        int strings = Math.min(STRINGS_COUNT, elements.essences().size());
+        for (int string = 0; string < strings; string++) {
+            if (!isRevealed(string)) {
                 return false;
             }
         }
@@ -264,12 +264,13 @@ public final class ItemStudy {
         }
         int radius = Integer.MAX_VALUE;
         int found = -1;
+        int string = -1;
         for (Map.Entry<Essence, Integer> entry : elements.essences().entrySet()) {
-            int string = ringIndex(entry.getKey());
-            if (isRevealed(string)) {
+            string++;
+            if (string >= STRINGS_COUNT || isRevealed(string)) {
                 continue;
             }
-            int d = HexGrid.steps(cell, hiding(entry.getKey(), entry.getValue()));
+            int d = HexGrid.steps(cell, hiding(string, entry.getValue()));
             if (d < radius) {
                 radius = d;
                 found = d == 0 ? string : -1;

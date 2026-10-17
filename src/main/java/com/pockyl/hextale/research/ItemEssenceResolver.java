@@ -21,6 +21,7 @@ import net.minecraft.util.context.ContextMap;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.registry.ModDataMaps;
 import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.rune.PrimalRing;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -31,279 +32,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.pockyl.hextale.rune.Essence.AIR;
-import static com.pockyl.hextale.rune.Essence.EARTH;
-import static com.pockyl.hextale.rune.Essence.FIRE;
-import static com.pockyl.hextale.rune.Essence.LIFE;
-import static com.pockyl.hextale.rune.Essence.LIGHT;
-import static com.pockyl.hextale.rune.Essence.METAL;
-import static com.pockyl.hextale.rune.Essence.SHADOW;
-import static com.pockyl.hextale.rune.Essence.SPARK;
-import static com.pockyl.hextale.rune.Essence.WATER;
 
 /**
- * Gives every item its elements, in three passes:
+ * Gives every item its essences, in three passes:
  * <ol>
- *     <li>items with a value in the {@code hextale:elements} data map keep it (the base materials);</li>
- *     <li>raw items no recipe makes get elements from the words of their name (logs carry life and earth, ice water
- *     and air...);</li>
- *     <li>everything else is made of its ingredients: a recipe passes on the sum of its ingredients' elements, shared
+ *     <li>items with a value in the {@code hextale:essences} data map keep it (hand-tuned materials);</li>
+ *     <li>raw items no recipe makes get essences from the words of their name ({@link ItemEssenceWords}: logs carry wood
+ *     and sap, ice ice and cold...);</li>
+ *     <li>everything else is made of its ingredients: a recipe passes on the sum of its ingredients' essences, shared
  *     among the items it makes and softened (a block of nine ingots is stronger than one, not nine times); cooking adds
- *     a little fire.</li>
+ *     a little fire; the words of the result's own name add what it IS (a sword is also a weapon).</li>
  * </ol>
- * Whatever is still left (circular recipes) falls back to its name, and at last to its kind. An item keeps at most
- * three elements, each 1-9.
+ * Whatever is still left (circular recipes) falls back to its name, and at last to its kind. An item keeps its six
+ * strongest essences, each 1-32.
  */
 public final class ItemEssenceResolver {
-    private static final int MAX_ELEMENTS = 3;
-    private static final int MAX_POINTS = 9;
+    /** Up to six essences: one per side of the research hexagon. */
+    private static final int MAX_ELEMENTS = 6;
+    private static final int MAX_POINTS = 32;
     private static final int PASSES = 12;
     /** Totals up to this stay as they are; above it they grow more slowly. */
-    private static final float SOFT_FROM = 4;
+    private static final float SOFT_FROM = 10;
     private static final double SOFTENING = 0.55;
-    private static final Map<String, Object[]> WORDS = new LinkedHashMap<>();
-
-    static {
-        // Fire
-        word("blaze", FIRE, 3);
-        word("magma", FIRE, 2, EARTH, 1);
-        word("fire", FIRE, 2);
-        word("lava", FIRE, 3, EARTH, 1);
-        word("campfire", FIRE, 2, LIFE, 1);
-        word("torch", FIRE, 1, LIGHT, 1);
-        word("netherrack", FIRE, 1, EARTH, 1);
-        word("nether", FIRE, 1);
-        word("crimson", FIRE, 1, LIFE, 1);
-        word("warped", SHADOW, 1, LIFE, 1);
-        word("basalt", FIRE, 1, EARTH, 2);
-        word("blackstone", EARTH, 2, SHADOW, 1);
-        word("quartz", LIGHT, 1, EARTH, 1);
-        word("ghast", SHADOW, 1, AIR, 2);
-        word("cooked", FIRE, 1);
-        word("charcoal", FIRE, 2, LIFE, 1);
-        // Water
-        word("water", WATER, 2);
-        word("ice", WATER, 2, AIR, 1);
-        word("snow", WATER, 1, AIR, 1);
-        word("snowball", WATER, 1, AIR, 1);
-        word("prismarine", WATER, 2, LIGHT, 1);
-        word("sea", WATER, 2);
-        word("coral", WATER, 2, LIFE, 1);
-        word("kelp", WATER, 2, LIFE, 1);
-        word("cod", WATER, 2, LIFE, 1);
-        word("salmon", WATER, 2, LIFE, 1);
-        word("tropical", WATER, 2, LIFE, 1);
-        word("pufferfish", WATER, 2, SHADOW, 1);
-        word("fish", WATER, 2, LIFE, 1);
-        word("sponge", WATER, 2, LIFE, 1);
-        word("clay", EARTH, 1, WATER, 1);
-        word("mud", EARTH, 1, WATER, 1);
-        word("squid", WATER, 1, SHADOW, 1);
-        word("turtle", WATER, 2, EARTH, 1);
-        word("scute", WATER, 1, EARTH, 1);
-        word("nautilus", WATER, 2, EARTH, 1);
-        word("trident", WATER, 3, METAL, 1);
-        word("axolotl", WATER, 1, LIFE, 2);
-        word("frog", WATER, 1, LIFE, 1);
-        word("tadpole", WATER, 1, LIFE, 1);
-        word("dripleaf", WATER, 1, LIFE, 1);
-        word("lily", WATER, 1, LIFE, 1);
-        word("bucket", METAL, 2);
-        // Earth
-        word("stone", EARTH, 2);
-        word("cobblestone", EARTH, 2);
-        word("deepslate", EARTH, 2, SHADOW, 1);
-        word("tuff", EARTH, 2);
-        word("calcite", EARTH, 2, LIGHT, 1);
-        word("granite", EARTH, 2, FIRE, 1);
-        word("diorite", EARTH, 2, LIGHT, 1);
-        word("andesite", EARTH, 2);
-        word("dirt", EARTH, 1, LIFE, 1);
-        word("grass", LIFE, 1, EARTH, 1);
-        word("gravel", EARTH, 2);
-        word("sand", EARTH, 1, AIR, 1);
-        word("sandstone", EARTH, 2, AIR, 1);
-        word("brick", EARTH, 2, FIRE, 1);
-        word("terracotta", EARTH, 2, FIRE, 1);
-        word("concrete", EARTH, 2, WATER, 1);
-        word("powder", EARTH, 1, AIR, 1);
-        word("obsidian", EARTH, 2, FIRE, 1, SHADOW, 1);
-        word("ore", EARTH, 2);
-        word("raw", METAL, 1, EARTH, 1);
-        word("diamond", EARTH, 2, LIGHT, 2);
-        word("emerald", LIGHT, 2, LIFE, 1);
-        word("amethyst", LIGHT, 1, EARTH, 1, SPARK, 1);
-        word("lapis", WATER, 1, LIGHT, 1);
-        word("flint", EARTH, 1, FIRE, 1);
-        word("bedrock", EARTH, 4);
-        word("dripstone", EARTH, 2, WATER, 1);
-        word("pointed", EARTH, 1);
-        word("ancient", EARTH, 2, FIRE, 2);
-        word("debris", EARTH, 2, FIRE, 2);
-        word("sherd", EARTH, 1, SHADOW, 1);
-        // Air
-        word("feather", AIR, 2);
-        word("phantom", AIR, 3, SHADOW, 1);
-        word("string", AIR, 1, LIFE, 1);
-        word("cobweb", AIR, 1, SHADOW, 1);
-        word("wool", LIFE, 1, AIR, 1);
-        word("carpet", LIFE, 1, AIR, 1);
-        word("bed", LIFE, 1, AIR, 1);
-        word("wind", AIR, 3);
-        word("breeze", AIR, 3);
-        word("bamboo", LIFE, 1, AIR, 1);
-        word("glass", LIGHT, 1, EARTH, 1);
-        word("bell", METAL, 2, AIR, 1);
-        word("horn", AIR, 2, LIFE, 1);
-        word("disc", AIR, 2, SPARK, 1);
-        word("firework", FIRE, 1, AIR, 2);
-        word("elytra", AIR, 4, SHADOW, 1);
-        word("cloud", AIR, 2);
-        // Light
-        word("glow", LIGHT, 2);
-        word("glowstone", LIGHT, 3);
-        word("shroomlight", LIGHT, 2, LIFE, 1);
-        word("froglight", LIGHT, 2, WATER, 1);
-        word("lantern", LIGHT, 2, METAL, 1);
-        word("beacon", LIGHT, 4, METAL, 1);
-        word("gold", METAL, 2, LIGHT, 1);
-        word("golden", METAL, 2, LIGHT, 1);
-        word("candle", FIRE, 1, LIGHT, 1);
-        word("rod", LIGHT, 1);
-        word("light", LIGHT, 1);
-        word("white", LIGHT, 1);
-        word("sunflower", LIGHT, 2, LIFE, 1);
-        // Shadow
-        word("ink", SHADOW, 1, WATER, 1);
-        word("sculk", SHADOW, 2);
-        word("echo", SHADOW, 4);
-        word("spider", SHADOW, 1, LIFE, 1);
-        word("rotten", SHADOW, 1, LIFE, 1);
-        word("bone", LIFE, 1, SHADOW, 1);
-        word("skull", SHADOW, 2, LIFE, 1);
-        word("head", SHADOW, 1, LIFE, 1);
-        word("soul", SHADOW, 2);
-        word("black", SHADOW, 1);
-        word("dark", SHADOW, 1);
-        word("wither", SHADOW, 3);
-        word("ender", SHADOW, 2, SPARK, 1);
-        word("end", SHADOW, 1, AIR, 1);
-        word("chorus", SHADOW, 1, LIFE, 1, AIR, 1);
-        word("purpur", SHADOW, 1, EARTH, 1);
-        word("shulker", SHADOW, 2, METAL, 1);
-        word("dragon", FIRE, 2, SHADOW, 2, AIR, 1);
-        word("crying", SHADOW, 1, LIGHT, 1);
-        word("gunpowder", FIRE, 2, SPARK, 1);
-        // Life
-        word("log", LIFE, 2, EARTH, 1);
-        word("wood", LIFE, 2, EARTH, 1);
-        word("stem", LIFE, 2, SHADOW, 1);
-        word("hyphae", LIFE, 2, SHADOW, 1);
-        word("planks", LIFE, 1, EARTH, 1);
-        word("sapling", LIFE, 2);
-        word("propagule", LIFE, 2, WATER, 1);
-        word("leaves", LIFE, 2, AIR, 1);
-        word("flower", LIFE, 2, LIGHT, 1);
-        word("tulip", LIFE, 2, LIGHT, 1);
-        word("orchid", LIFE, 2, LIGHT, 1);
-        word("allium", LIFE, 2, LIGHT, 1);
-        word("poppy", LIFE, 2, FIRE, 1);
-        word("dandelion", LIFE, 2, LIGHT, 1);
-        word("cornflower", LIFE, 2, WATER, 1);
-        word("daisy", LIFE, 2, LIGHT, 1);
-        word("bluet", LIFE, 2, WATER, 1);
-        word("lilac", LIFE, 2, AIR, 1);
-        word("peony", LIFE, 2, LIGHT, 1);
-        word("rose", LIFE, 2, FIRE, 1);
-        word("torchflower", LIFE, 2, FIRE, 1);
-        word("pitcher", LIFE, 2, WATER, 1);
-        word("seeds", LIFE, 1, EARTH, 1);
-        word("wheat", LIFE, 2);
-        word("carrot", LIFE, 2);
-        word("potato", LIFE, 2, EARTH, 1);
-        word("beetroot", LIFE, 2);
-        word("melon", LIFE, 2, WATER, 1);
-        word("pumpkin", LIFE, 2);
-        word("apple", LIFE, 2);
-        word("berries", LIFE, 2);
-        word("beef", LIFE, 2);
-        word("porkchop", LIFE, 2);
-        word("chicken", LIFE, 2, AIR, 1);
-        word("mutton", LIFE, 2);
-        word("rabbit", LIFE, 2, AIR, 1);
-        word("egg", LIFE, 2);
-        word("leather", LIFE, 1, EARTH, 1);
-        word("hide", LIFE, 1, EARTH, 1);
-        word("honey", LIFE, 3);
-        word("honeycomb", LIFE, 2, LIGHT, 1);
-        word("slime", WATER, 1, LIFE, 2);
-        word("mushroom", LIFE, 1, SHADOW, 1);
-        word("fungus", LIFE, 1, SHADOW, 1);
-        word("vine", LIFE, 1);
-        word("vines", LIFE, 1);
-        word("moss", LIFE, 2, EARTH, 1);
-        word("azalea", LIFE, 2);
-        word("cactus", LIFE, 1, EARTH, 1);
-        word("cane", LIFE, 1, WATER, 1);
-        word("sugar", LIFE, 1, AIR, 1);
-        word("spawn", LIFE, 3);
-        word("totem", LIFE, 4, LIGHT, 1);
-        word("cocoa", LIFE, 1, FIRE, 1);
-        word("milk", LIFE, 2, WATER, 1);
-        word("potion", WATER, 1, LIFE, 1, LIGHT, 1);
-        word("dye", LIGHT, 1, LIFE, 1);
-        word("paper", LIFE, 1, AIR, 1);
-        word("book", LIFE, 1, LIGHT, 1);
-        word("wart", LIFE, 1, FIRE, 1, SHADOW, 1);
-        word("sniffer", LIFE, 2, EARTH, 1);
-        word("armadillo", LIFE, 1, EARTH, 1);
-        word("hay", LIFE, 2);
-        // Metal
-        word("iron", METAL, 2);
-        word("copper", METAL, 1, SPARK, 1);
-        word("netherite", METAL, 4, FIRE, 1);
-        word("chain", METAL, 1);
-        word("anvil", METAL, 3, EARTH, 1);
-        word("rail", METAL, 1, SPARK, 1);
-        word("minecart", METAL, 2);
-        word("saddle", LIFE, 1, METAL, 1);
-        word("key", METAL, 1, SHADOW, 1);
-        word("trial", METAL, 2, SPARK, 1);
-        word("vault", METAL, 2, SHADOW, 1);
-        word("spawner", SHADOW, 2, METAL, 2);
-        word("heavy", METAL, 4, EARTH, 1);
-        word("mace", METAL, 3, EARTH, 2);
-        word("template", METAL, 2, LIGHT, 1);
-        word("armor", METAL, 2);
-        word("lodestone", METAL, 2, EARTH, 2, SPARK, 1);
-        word("compass", METAL, 1, SPARK, 1);
-        word("clock", METAL, 1, LIGHT, 1);
-        // Lightning
-        word("redstone", SPARK, 2);
-        word("repeater", SPARK, 2, EARTH, 1);
-        word("comparator", SPARK, 2, EARTH, 1);
-        word("piston", SPARK, 1, METAL, 1, EARTH, 1);
-        word("observer", SPARK, 2, EARTH, 1);
-        word("lightning", SPARK, 3, METAL, 1);
-        word("tnt", FIRE, 2, SPARK, 2);
-        word("creeper", SPARK, 2, FIRE, 1);
-        word("daylight", LIGHT, 1, SPARK, 1);
-        word("target", SPARK, 1, LIFE, 1);
-        word("button", SPARK, 1);
-        word("lever", SPARK, 1);
-        word("plate", SPARK, 1, EARTH, 1);
-        word("conduit", WATER, 2, SPARK, 2);
-        word("star", SPARK, 3, LIGHT, 2);
-        word("experience", SPARK, 2, LIGHT, 1);
-        word("enchanted", SPARK, 1, LIGHT, 2);
-        word("ominous", SHADOW, 2, SPARK, 1);
-    }
-
     private ItemEssenceResolver() {
-    }
-
-    private static void word(String word, Object... pairs) {
-        WORDS.put(word, pairs);
     }
 
     /** Resolves the elements of every registered item. */
@@ -412,7 +163,7 @@ public final class ItemEssenceResolver {
             cheapest.essences().forEach((element, points) -> sum.merge(element, (float) points, Float::sum));
         }
         if (made.cooked()) {
-            sum.merge(FIRE, 1.0F, Float::sum);
+            sum.merge(Essence.FIRE, 2.0F, Float::sum);
         }
         // Soften big totals, keep the proportions: nine ingots make a stronger block than one ingot, not nine times.
         float total = 0;
@@ -423,44 +174,57 @@ public final class ItemEssenceResolver {
         Map<Essence, Integer> soft = new EnumMap<>(Essence.class);
         sum.forEach((element, points) -> soft.put(element,
                 Math.max(1, Math.min(MAX_POINTS, Math.round(points / made.count() * scale)))));
+        // What the thing is, by its name, on top of what it is made of.
+        words(BuiltInRegistries.ITEM.getKey(result).getPath()).forEach((essence, points) ->
+                soft.merge(essence, points, (a, b) -> Math.min(MAX_POINTS, a + b)));
         return strongest(soft, Math.max(tier, rarityTier(result)));
     }
 
-    /** Elements from the words of the item's id, or null when no word is known. */
+    /** Essences from the words of the item's id, or null when no word is known. */
     static ItemEssences byName(Item item) {
-        String path = BuiltInRegistries.ITEM.getKey(item).getPath();
+        Map<Essence, Integer> sum = words(BuiltInRegistries.ITEM.getKey(item).getPath());
+        if (sum.isEmpty()) {
+            return null;
+        }
+        int total = sum.values().stream().mapToInt(Integer::intValue).sum();
+        return strongest(sum, Math.max(rarityTier(item), total >= 16 ? 3 : total >= 9 ? 2 : 1));
+    }
+
+    /** The essences the words of an id bring, summed (each word once). */
+    static Map<Essence, Integer> words(String path) {
         Map<Essence, Integer> sum = new EnumMap<>(Essence.class);
         Set<String> used = new HashSet<>();
-        String[] tokens = path.split("_");
-        for (String token : tokens) {
-            for (Map.Entry<String, Object[]> word : WORDS.entrySet()) {
-                String key = word.getKey();
-                boolean match = token.equals(key) || token.equals(key + "s") || key.length() >= 4 && token.contains(key);
-                if (match && used.add(key)) {
-                    Object[] pairs = word.getValue();
+        for (String token : path.split("_")) {
+            List<String> matches = new ArrayList<>();
+            for (String key : ItemEssenceWords.WORDS.keySet()) {
+                if (token.equals(key) || token.equals(key + "s") || key.length() >= 4 && token.contains(key)) {
+                    matches.add(key);
+                }
+            }
+            // The longest word wins over the words inside it: "redstone" is no "stone", "glowstone" no "glow".
+            matches.removeIf(key -> matches.stream().anyMatch(other -> other.length() > key.length() && other.contains(key)));
+            for (String key : matches) {
+                if (used.add(key)) {
+                    Object[] pairs = ItemEssenceWords.WORDS.get(key);
                     for (int i = 0; i < pairs.length; i += 2) {
                         sum.merge((Essence) pairs[i], (Integer) pairs[i + 1], Integer::sum);
                     }
                 }
             }
         }
-        if (sum.isEmpty()) {
-            return null;
-        }
-        sum.replaceAll((element, points) -> Math.min(MAX_POINTS, points));
-        int total = sum.values().stream().mapToInt(Integer::intValue).sum();
-        return strongest(sum, Math.max(rarityTier(item), total >= 6 ? 3 : total >= 4 ? 2 : 1));
+        sum.replaceAll((essence, points) -> Math.min(MAX_POINTS, points));
+        return sum;
     }
 
     private static ItemEssences byKind(Item item) {
         ItemStack stack = new ItemStack(item);
         if (stack.has(DataComponents.FOOD)) {
-            return ItemEssences.of(rarityTier(item), LIFE, 1);
+            return ItemEssences.of(rarityTier(item), Essence.FOOD, 2, Essence.LIFE, 1);
         }
         if (item instanceof BlockItem) {
-            return ItemEssences.of(rarityTier(item), EARTH, 1);
+            return ItemEssences.of(rarityTier(item), Essence.EARTH, 2, Essence.CRAFT, 1);
         }
-        return ItemEssences.of(rarityTier(item), METAL, 1, AIR, 1);
+        return ItemEssences.of(rarityTier(item), Essence.CRAFT, 2, Essence.METAL, 1);
     }
 
     @SuppressWarnings("deprecation")
@@ -469,7 +233,7 @@ public final class ItemEssenceResolver {
         return rarity == Rarity.EPIC || rarity == Rarity.RARE ? 3 : rarity == Rarity.UNCOMMON ? 2 : 1;
     }
 
-    /** The three strongest elements, strongest first (ring order breaks ties). */
+    /** The six strongest essences, strongest first (kind breaks ties). */
     private static ItemEssences strongest(Map<Essence, Integer> all, int tier) {
         List<Essence> order = new ArrayList<>(all.keySet());
         order.sort((a, b) -> all.get(b) - all.get(a) != 0 ? all.get(b) - all.get(a) : ring(a) - ring(b));
@@ -480,13 +244,10 @@ public final class ItemEssenceResolver {
         return new ItemEssences(kept, Math.max(1, Math.min(3, tier)));
     }
 
-    private static int ring(Essence element) {
-        for (int i = 0; i < HexGrid.RING.length; i++) {
-            if (HexGrid.RING[i] == element) {
-                return i;
-            }
-        }
-        return 0;
+    /** Ties break by kind: primals first in their circle order, then compounds in enum order. */
+    private static int ring(Essence essence) {
+        int primal = PrimalRing.index(essence);
+        return primal >= 0 ? primal : 100 + essence.ordinal();
     }
 
     private static int total(ItemEssences elements) {

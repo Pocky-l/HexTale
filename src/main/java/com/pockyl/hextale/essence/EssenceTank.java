@@ -67,11 +67,10 @@ public final class EssenceTank {
     }
 
     public void save(ValueOutput output, String key) {
-        output.putIntArray(key, contents.amounts());
+        output.store(key, EssenceMix.CODEC, contents);
     }
 
     public void load(ValueInput input, String key) {
-        int[] saved = input.getIntArray(key).orElse(new int[0]);
-        contents = EssenceMix.of(saved);
+        contents = input.read(key, EssenceMix.CODEC).orElse(EssenceMix.EMPTY);
     }
 }

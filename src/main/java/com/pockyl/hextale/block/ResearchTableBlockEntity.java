@@ -372,7 +372,10 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             return;
         }
         if (echo.radius() == 0) {
-            pointEffects(HexGrid.RING[ItemStudy.stringOf(cell)]);
+            Essence found = ItemStudy.essenceOn(elements, ItemStudy.stringOf(cell));
+            if (found != null) {
+                pointEffects(found);
+            }
         } else {
             level.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.0F,
                     Math.max(0.5F, 1.6F - echo.radius() * 0.08F));

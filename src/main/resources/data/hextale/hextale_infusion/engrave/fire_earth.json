@@ -8,7 +8,7 @@
     "minecraft:coal"
   ],
   "essences": {
-    "fire": 24,
-    "earth": 12
+    "fire": 16,
+    "magma": 12
   }
 }

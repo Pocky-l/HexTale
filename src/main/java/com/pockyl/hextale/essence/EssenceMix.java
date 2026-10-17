@@ -35,10 +35,27 @@ public final class EssenceMix {
     private static final String UNKNOWN_KEY = "unknown";
     public static final Codec<EssenceMix> CODEC = Codec.unboundedMap(Codec.STRING, Codec.intRange(1, Integer.MAX_VALUE))
             .comapFlatMap(EssenceMix::fromSaved, EssenceMix::toSaved);
+    /** Sparse on the wire: pairs of slot and amount for the slots that hold anything. */
     public static final StreamCodec<ByteBuf, EssenceMix> STREAM_CODEC = ByteBufCodecs.VAR_INT
-            .apply(ByteBufCodecs.list(SLOTS))
-            .map(list -> new EssenceMix(list.stream().mapToInt(Integer::intValue).toArray()),
-                    mix -> Arrays.stream(mix.amounts).boxed().toList());
+            .apply(ByteBufCodecs.list(SLOTS * 2))
+            .map(list -> {
+                int[] out = new int[SLOTS];
+                for (int i = 0; i + 1 < list.size(); i += 2) {
+                    if (list.get(i) >= 0 && list.get(i) < SLOTS) {
+                        out[list.get(i)] = list.get(i + 1);
+                    }
+                }
+                return new EssenceMix(out);
+            }, mix -> {
+                java.util.List<Integer> pairs = new java.util.ArrayList<>();
+                for (int i = 0; i < SLOTS; i++) {
+                    if (mix.amounts[i] > 0) {
+                        pairs.add(i);
+                        pairs.add(mix.amounts[i]);
+                    }
+                }
+                return pairs;
+            });
 
     private final int[] amounts;
 

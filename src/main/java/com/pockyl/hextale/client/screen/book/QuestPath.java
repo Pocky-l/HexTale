@@ -390,8 +390,8 @@ final class QuestPath {
                 }
             }
             case ESSENCES -> {
-                int sx = centre - Essence.values().length * SLOT / 2;
-                for (Essence essence : Essence.values()) {
+                int sx = centre - Essence.PRIMALS.size() * SLOT / 2;
+                for (Essence essence : Essence.PRIMALS) {
                     PixelArt.hex(graphics, sx + SLOT / 2, y + SLOT / 2, SLOT - 1, PixelArt.argb(PixelArt.mix(essence.color(), 0x06050D, 0.8F), 1),
                             PixelArt.argb(essence.color(), 0.7F));
                     PixelArt.essence(graphics, essence, sx + 4, y + 4, 10, PixelArt.argb(essence.color(), 1));
@@ -402,8 +402,8 @@ final class QuestPath {
                 }
             }
             case REAGENTS -> {
-                int sx = centre - Essence.values().length * SLOT / 2;
-                for (Essence essence : Essence.values()) {
+                int sx = centre - Essence.PRIMALS.size() * SLOT / 2;
+                for (Essence essence : Essence.PRIMALS) {
                     PixelArt.essence(graphics, essence, sx + 4, y, 10, PixelArt.argb(essence.color(), 1));
                     ItemStack reagent = reagent(essence, now);
                     Component extra = Component.translatable("book.hextale.quest.reagent_for", Component.translatable(essence.translationKey()))
@@ -584,7 +584,8 @@ final class QuestPath {
     }
 
     private static ItemStack reagent(Essence essence, long now) {
-        return cycle(BuiltInRegistries.ITEM.getTagOrEmpty(Reagents.tag(essence)), now, essence.ordinal());
+        List<ItemStack> examples = Reagents.examples(essence, 8);
+        return examples.isEmpty() ? ItemStack.EMPTY : examples.get((int) ((now / 1000 + essence.ordinal()) % examples.size()));
     }
 
     private static ItemStack cycle(Iterable<Holder<Item>> holders, long now, int phase) {

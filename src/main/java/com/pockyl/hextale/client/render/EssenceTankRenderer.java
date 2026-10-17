@@ -112,10 +112,11 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
         float cy = (face.getAxis().isVertical() ? 0.5F : 8F / 16) + ny * out;
         float cz = 0.5F + nz * out;
         float h = LABEL_HALF;
-        float u0 = essence.ordinal() * 16 / 256F;
-        float u1 = (essence.ordinal() * 16 + LABEL) / 256F;
-        float v0 = 0;
-        float v1 = LABEL / 16F;
+        // Stickers sit 16 to a row on a 256 x 128 sheet.
+        float u0 = essence.ordinal() % 16 * 16 / 256F;
+        float u1 = (essence.ordinal() % 16 * 16 + LABEL) / 256F;
+        float v0 = essence.ordinal() / 16 * 16 / 128F;
+        float v1 = (essence.ordinal() / 16 * 16 + LABEL) / 128F;
         float[][] corners = {
                 {cx - rx * h - up[0] * h, cy - ry * h - up[1] * h, cz - rz * h - up[2] * h, u0, v1},
                 {cx + rx * h - up[0] * h, cy + ry * h - up[1] * h, cz + rz * h - up[2] * h, u1, v1},

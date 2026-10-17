@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
  * rooted at the orb. It is kept as a flat list of steps, {@code [from, to, from, to, ...]}, in the order they were drawn;
  * {@code from} is the orb or an earlier step's {@code to}.
  * <p>
- * Every step costs one section of ink of the element whose corner of the parchment it heads towards (see {@link #toward});
+ * Every step costs one section of ink of the essence the parchment gives its direction (see {@link #toward});
  * a step onto a point costs {@value #POINT_COST} sections of that point's own essence instead (see {@link #paying}). Stone dark runes block the ink and no section is inked twice. In
  * chapters II and III the dark runes are fields the ink may cross, but a cursed section bursts the orb: the check stops
  * there ({@link Trace#burst}). Every inked section next to a dark field shows how many cursed sections touch it.
@@ -127,30 +127,12 @@ public final class ResearchSheet {
     /** The essence a step pays with: a point's own essence when it steps onto a point, else that of its direction. */
     public static Essence paying(RuneBoard board, int from, int to) {
         int point = board.pointAt(to);
-        return point >= 0 ? board.points().get(point).element() : toward(from, to);
+        return point >= 0 ? board.points().get(point).element() : toward(board, from, to);
     }
 
-    /**
-     * The element a plain step pays with: the one whose corner lies most nearly in the step's direction, seen from where the
-     * step starts. Near a corner its element covers a wide fan of directions; in the middle each direction has its own.
-     */
-    public static Essence toward(int from, int to) {
-        double dx = HexGrid.cx(to) - HexGrid.cx(from);
-        double dy = HexGrid.cy(to) - HexGrid.cy(from);
-        double length = Math.hypot(dx, dy);
-        Essence best = HexGrid.RING[0];
-        double bestCos = -2;
-        for (Essence element : HexGrid.RING) {
-            double[] u = HexGrid.unit(element);
-            double cx = u[0] - HexGrid.cx(from);
-            double cy = u[1] - HexGrid.cy(from);
-            double cos = (dx * cx + dy * cy) / (length * Math.hypot(cx, cy));
-            if (cos > bestCos) {
-                bestCos = cos;
-                best = element;
-            }
-        }
-        return best;
+    /** The essence of a plain step: the one the parchment gives the step's direction. */
+    public static Essence toward(RuneBoard board, int from, int to) {
+        return board.essence(Math.max(0, HexGrid.direction(from, to)));
     }
 
     @Nullable

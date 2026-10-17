@@ -5,6 +5,7 @@
     "minecraft:flint"
   ],
   "essences": {
-    "shadow": 16
+    "shadow": 8,
+    "rift": 8
   }
 }

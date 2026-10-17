@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Builds and caches the 72 boards. Generation is deterministic (the rune's key seeds it) and identical on client and
+ * Builds and caches the 72 boards (hexagonal parchments, six essences of the rune's theme around them). Generation is deterministic (the rune's key seeds it) and identical on client and
  * server, so boards never travel over the network. Every board is checked to be finishable with a plain drawing that
  * never steps on a curse, and its star thresholds come from that drawing's length.
  */
@@ -100,13 +100,20 @@ public final class RuneBoards {
     static RuneBoard generate(ComplexRune rune) {
         int tier = ResearchBook.chapter(rune);
         String key = rune.action().id() + ">" + rune.target().id();
+        List<Essence> essences = theme(rune, new Random32(hash(key + "#theme")));
         RuneBoard fallback = null;
         int fallbackMiss = Integer.MAX_VALUE;
         for (int attempt = 0; attempt < 300; attempt++) {
             Random32 random = new Random32(hash(key + "#thread#" + attempt));
-            List<Essence> elements = new ArrayList<>(List.of(rune.action(), rune.target()));
+            List<Essence> elements = new ArrayList<>(List.of(nearest(essences, rune.action()), nearest(essences, rune.target())));
+            if (elements.get(1) == elements.get(0)) {
+                elements.set(1, essences.get((essences.indexOf(elements.get(0)) + 3) % 6));
+            }
             while (elements.size() < POINTS[tier]) {
-                elements.add(HexGrid.RING[random.pick(HexGrid.RING.length)]);
+                Essence next = essences.get(random.pick(essences.size()));
+                if (!elements.contains(next) || elements.size() >= essences.size()) {
+                    elements.add(next);
+                }
             }
             boolean[] walls = new boolean[HexGrid.COUNT];
             for (int c = 0; c < WALL_CHAINS[tier]; c++) {
@@ -145,7 +152,7 @@ public final class RuneBoards {
                 walls = new boolean[HexGrid.COUNT];
                 darkFields(dark, cursed, points, tier, new Random32(hash(key + "#curse#" + attempt)));
             }
-            RuneBoard draft = new RuneBoard(rune, walls, dark, cursed, List.copyOf(points), null);
+            RuneBoard draft = new RuneBoard(rune, essences, walls, dark, cursed, List.copyOf(points), null);
             int[] tree = plainTree(draft);
             if (tree == null) {
                 continue;
@@ -164,6 +171,82 @@ public final class RuneBoards {
             throw new IllegalStateException("No board for rune " + rune.key());
         }
         return fallback;
+    }
+
+    /** How many essences of each tier (primal, of two primals, deeper) a chapter's parchment holds. */
+    private static final int[][] THEME_TIERS = {{}, {2, 4, 0}, {1, 3, 2}, {0, 2, 4}};
+
+    /**
+     * The six essences of a rune's parchment: all of its theme - essences made of the rune's action and target primals.
+     * Chapter I keeps both primals and adds compounds of two primals; later chapters trade primals for deeper compounds,
+     * which take more distilling to gather. Picks favour the most fitting essences, alternating between the action's
+     * and the target's side, so both halves of the rune are always present; their order around the hexagon is shuffled.
+     */
+    static List<Essence> theme(ComplexRune rune, Random32 random) {
+        Essence a = rune.action();
+        Essence b = rune.target();
+        int[] plan = THEME_TIERS[ResearchBook.chapter(rune)];
+        List<Essence> picked = new ArrayList<>();
+        if (plan[0] >= 1) {
+            picked.add(a);
+        }
+        if (plan[0] >= 2) {
+            picked.add(b);
+        }
+        for (int tier = 1; tier <= 2; tier++) {
+            int want = plan[tier];
+            List<double[]> scored = new ArrayList<>();
+            for (Essence e : Essence.values()) {
+                boolean fits = tier == 2 ? e.tier() >= 2 : e.tier() == 1;
+                double fit = e.share(a) + e.share(b);
+                if (fits && !picked.contains(e) && fit > 0) {
+                    // Best fit first; a little randomness among equals so boards of related runes differ.
+                    scored.add(new double[]{e.ordinal(), fit + (e.share(a) > 0 && e.share(b) > 0 ? 0.5 : 0) + random.next() * 0.2});
+                }
+            }
+            scored.sort((x, y) -> Double.compare(y[1], x[1]));
+            boolean actionSide = true;
+            while (want > 0 && !scored.isEmpty()) {
+                Essence side = actionSide ? a : b;
+                int at = 0;
+                for (int i = 0; i < scored.size(); i++) {
+                    if (Essence.values()[(int) scored.get(i)[0]].share(side) > 0) {
+                        at = i;
+                        break;
+                    }
+                }
+                picked.add(Essence.values()[(int) scored.remove(at)[0]]);
+                actionSide = !actionSide;
+                want--;
+            }
+        }
+        // Top up from any essence of the theme if a tier ran short.
+        for (Essence e : Essence.values()) {
+            if (picked.size() >= 6) {
+                break;
+            }
+            if (!picked.contains(e) && e.share(a) + e.share(b) > 0) {
+                picked.add(e);
+            }
+        }
+        for (int i = picked.size() - 1; i > 0; i--) {
+            int j = random.pick(i + 1);
+            Essence t = picked.get(i);
+            picked.set(i, picked.get(j));
+            picked.set(j, t);
+        }
+        return List.copyOf(picked.subList(0, 6));
+    }
+
+    /** The essence of the theme with the most of this primal in it. */
+    private static Essence nearest(List<Essence> essences, Essence primal) {
+        Essence best = essences.getFirst();
+        for (Essence e : essences) {
+            if (e.share(primal) > best.share(primal)) {
+                best = e;
+            }
+        }
+        return best;
     }
 
     /**
@@ -206,7 +289,7 @@ public final class RuneBoards {
     }
 
     private static RuneBoard withPar(RuneBoard draft, int plain) {
-        return new RuneBoard(draft.rune(), draft.walls(), draft.dark(), draft.cursed(), draft.points(),
+        return new RuneBoard(draft.rune(), draft.essences(), draft.walls(), draft.dark(), draft.cursed(), draft.points(),
                 new RuneBoard.Par(plain, plain + Math.max(3, plain / 4), plain));
     }
 

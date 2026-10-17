@@ -518,7 +518,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private void renderDesk(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         ResearchTableBlockEntity table = table();
         int hovered = overBoard(mouseX, mouseY) ? board.cellAt(mouseX, mouseY) : -1;
-        int[] reserved = new int[Essence.values().length];
+        int[] reserved = new int[Essence.COUNT];
+        List<Essence> shown = List.of();
         if (table != null && table.isStudyingItem() && table.study().item() != null) {
             renderStudy(graphics, table, hovered, mouseX, mouseY);
         } else {
@@ -529,6 +530,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             } else {
                 syncThread(table, current);
                 renderRune(graphics, table, current, hovered, mouseX, mouseY);
+                shown = current.essences();
                 if (trace != null && !done(table)) {
                     reserved = trace.ink().clone();
                     for (int i = 0; i < reserved.length; i++) {
@@ -537,7 +539,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 }
             }
         }
-        renderVials(graphics, reserved, mouseX, mouseY);
+        renderVials(graphics, reserved, shown, mouseX, mouseY);
         renderGhosts(graphics);
     }
 
@@ -641,24 +643,29 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
         if (hovered >= 0) {
             int string = ItemStudy.stringOf(hovered);
+            Essence on = string < 0 ? null : ItemStudy.essenceOn(elements, string);
             if (string >= 0) {
-                pendingTooltip = List.of(ResearchText.essence(HexGrid.RING[string]));
+                pendingTooltip = List.of(on != null && study.isRevealed(string) ? ResearchText.essence(on)
+                        : Component.translatable(KEY + "hidden_string").withStyle(ChatFormatting.GRAY));
             }
         }
     }
 
     // ---- Vials, slots, toast --------------------------------------------------------------------------------------
 
-    /** The nine ink vials: liquid rises as items dissolve; the part the current thread would spend shimmers. */
-    private void renderVials(GuiGraphicsExtractor graphics, int[] reserved, int mouseX, int mouseY) {
+    /**
+     * The ink vials of the six essences of the parchment on the desk: liquid rises as the tanks fill; the part the current
+     * thread would spend shimmers.
+     */
+    private void renderVials(GuiGraphicsExtractor graphics, int[] reserved, List<Essence> shown, int mouseX, int mouseY) {
         long now = Util.getMillis();
         int[] ink = inkMb();
         int[] capacity = inkCapacity();
         boolean infinite = creative();
-        for (int i = 0; i < HexGrid.RING.length; i++) {
-            Essence element = HexGrid.RING[i];
+        for (int i = 0; i < shown.size(); i++) {
+            Essence element = shown.get(i);
             int e = element.ordinal();
-            int x = leftPos + VIAL_X + i * VIAL_STEP;
+            int x = leftPos + VIAL_X + (9 - shown.size()) * VIAL_STEP / 2 + i * VIAL_STEP;
             int y = topPos + VIAL_Y;
             int full = infinite ? 1 : Math.max(1, capacity[e]);
             int amount = infinite ? 1 : ink[e];

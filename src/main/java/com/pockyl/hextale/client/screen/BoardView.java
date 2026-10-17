@@ -25,7 +25,8 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Draws the research parchment in pixel art, for both games: a rune's parchment (fog, stone and dark fields with their
- * curse counts and flags, points and the branching ink) and an item's echoes (the item in the centre, the nine element strings, the ripples of the strikes).
+ * curse counts and flags, points and the branching ink, the six essences at the hexagon's corners) and an item's echoes
+ * (the item in the centre, six strings, the ripples of the strikes).
  * Sections are laid out {@value #COL_STEP} pixels apart in a row and {@value #ROW_STEP} between rows (the background
  * texture uses the same numbers, see the texture generator).
  */
@@ -46,6 +47,8 @@ final class BoardView {
     /** Colours of the curse counts 0..6, like a minesweeper's. */
     private static final int[] DANGER = {0x8C7A60, 0x2A5FC0, 0x2E8A3A, 0xC03028, 0x6A2A9A, 0x8A2A1A, 0x1A6A7A};
     private static final int GOLD = 0xE0A21C;
+    /** A string whose essence is still hidden. */
+    private static final int HIDDEN = 0xC08A3A;
     private static final int FREE_INK = 0x8FB4C8;
     private static final long FADE_MILLIS = 450;
     private static final long LIGHT_MILLIS = 700;
@@ -200,7 +203,7 @@ final class BoardView {
                     }
                 }
             } else {
-                Essence near = nearestCorner(cell);
+                Essence near = nearestCorner(board, cell);
                 int tint = near == null ? 0xFFF8E8 : PixelArt.mix(0xFFF8E8, near.color(), 0.22F);
                 PixelArt.hex(graphics, x, y, CELL, argb(tint, 0.22F * fade), argb(0x8C7047, 0.28F * fade));
             }
@@ -316,7 +319,7 @@ final class BoardView {
                 PixelArt.hexRing(graphics, ox, oy, width, argb(board.rune().color(), Math.max(0, 1 - t)));
             }
         }
-        renderSigns(graphics);
+        renderSigns(graphics, board.essences());
     }
 
     /** An unexplored dark field section: a dark ink blot whose sheen drifts. */
@@ -471,33 +474,36 @@ final class BoardView {
             if (cleared) {
                 PixelArt.hex(graphics, x, y, CELL, argb(0x3B4A5A, 0.16F), argb(0x3B4A5A, 0.12F));
             } else if (string >= 0 && study.possible(cell)) {
-                Essence element = HexGrid.RING[string];
+                // Which essence hides on a string is the secret: hidden strings glow in the parchment's own gold.
+                Essence element = null;
+                int stringColor = HIDDEN;
                 int heat = wave >= (newest == null ? 0 : newest.radius()) ? study.heat(cell, elements) : 0;
                 if (heat > 0) {
                     // On the rim of an open echo: an element may well sing here.
                     float glow = 0.5F + 0.5F * Mth.sin(now / 160.0F + cell);
-                    PixelArt.hex(graphics, x, y, CELL, argb(PixelArt.mix(element.color(), 0xFFF8E8, 0.35F), 0.9F),
-                            argb(element.color(), 1));
-                    PixelArt.hexRing(graphics, x, y, CELL + 2 + (heat > 1 ? 2 : 0), argb(element.color(), 0.4F + 0.5F * glow));
+                    PixelArt.hex(graphics, x, y, CELL, argb(PixelArt.mix(stringColor, 0xFFF8E8, 0.35F), 0.9F),
+                            argb(stringColor, 1));
+                    PixelArt.hexRing(graphics, x, y, CELL + 2 + (heat > 1 ? 2 : 0), argb(stringColor, 0.4F + 0.5F * glow));
                 } else {
-                    PixelArt.hex(graphics, x, y, CELL, argb(PixelArt.mix(element.color(), 0xFFF8E8, 0.75F), 0.55F),
-                            argb(PixelArt.onParchment(element.color()), 0.35F));
+                    PixelArt.hex(graphics, x, y, CELL, argb(PixelArt.mix(stringColor, 0xFFF8E8, 0.75F), 0.55F),
+                            argb(PixelArt.onParchment(stringColor), 0.35F));
                 }
-                PixelArt.fill(graphics, x, y, x + 1, y + 1, argb(PixelArt.onParchment(element.color()), 0.8F));
+                PixelArt.fill(graphics, x, y, x + 1, y + 1, argb(PixelArt.onParchment(stringColor), 0.8F));
             } else {
                 PixelArt.hex(graphics, x, y, CELL, argb(0x5E4526, 0.06F), argb(0x5E4526, 0.1F));
             }
         }
 
-        // Strings, faint, from the item to the corners.
-        for (int string = 0; string < HexGrid.RING.length; string++) {
-            Essence element = HexGrid.RING[string];
+        // Strings, faint, from the item to the corners: revealed ones in their essence's colour.
+        for (int string = 0; string < ItemStudy.STRINGS_COUNT; string++) {
+            Essence on = ItemStudy.essenceOn(elements, string);
+            boolean found = study.isRevealed(string) && on != null;
+            int stringColor = found ? on.color() : HIDDEN;
             int[] cells = ItemStudy.string(string);
-            boolean found = study.isRevealed(string);
             int x0 = sx(HexGrid.CENTRE);
             int y0 = sy(HexGrid.CENTRE);
             for (int cell : cells) {
-                PixelArt.dotted(graphics, x0, y0, sx(cell), sy(cell), 1, 3, 0, argb(PixelArt.onParchment(element.color()), found ? 0.5F : 0.3F));
+                PixelArt.dotted(graphics, x0, y0, sx(cell), sy(cell), 1, 3, 0, argb(PixelArt.onParchment(stringColor), found ? 0.5F : 0.3F));
                 x0 = sx(cell);
                 y0 = sy(cell);
             }
@@ -536,10 +542,11 @@ final class BoardView {
         }
         for (Map.Entry<Essence, Integer> entry : elements.essences().entrySet()) {
             Essence element = entry.getKey();
-            if (!study.isRevealed(element)) {
+            int string = ItemStudy.stringFor(elements, element);
+            if (string < 0 || !study.isRevealed(string)) {
                 continue;
             }
-            int cell = ItemStudy.hiding(element, entry.getValue());
+            int cell = ItemStudy.hiding(string, entry.getValue());
             int x = sx(cell);
             int y = sy(cell);
             PixelArt.hex(graphics, x, y, CELL + 6, argb(element.color(), 0.25F + 0.15F * pulse), 0);
@@ -571,7 +578,12 @@ final class BoardView {
             PixelArt.line(graphics, ox - 6, oy - 6, ox + 6, oy + 6, argb(0x3B2A1A, 0.8F));
             PixelArt.line(graphics, ox + 6, oy - 6, ox - 6, oy + 6, argb(0x3B2A1A, 0.8F));
         }
-        renderSigns(graphics);
+        java.util.List<Essence> signs = new java.util.ArrayList<>();
+        for (int string = 0; string < ItemStudy.STRINGS_COUNT; string++) {
+            Essence on = ItemStudy.essenceOn(elements, string);
+            signs.add(on != null && study.isRevealed(string) ? on : null);
+        }
+        renderSigns(graphics, signs);
     }
 
     private static void sparkle(GuiGraphicsExtractor graphics, int x, int y, long now, int seed) {
@@ -600,27 +612,42 @@ final class BoardView {
         graphics.pose().scale(1.5F, 1.5F);
         graphics.item(new ItemStack(ModItems.RESEARCHERS_DIARY.get()), 0, 0);
         graphics.pose().popMatrix();
-        renderSigns(graphics);
+        renderSigns(graphics, java.util.Collections.nCopies(6, null));
     }
 
-    private void renderSigns(GuiGraphicsExtractor graphics) {
-        for (Essence element : HexGrid.RING) {
-            double[] u = HexGrid.unit(element);
-            int sx = left + CX + (int) Math.round(u[0] * KX * 1.03);
-            int sy = top + CY + (int) Math.round(u[1] * KY * 1.03);
-            PixelArt.essence(graphics, element, sx - 4, sy - 4, 9, argb(element.color(), 1));
+    /**
+     * The six corners of the hexagon: each direction's essence sign on a little plaque; a corner whose essence is still
+     * unknown (an item's hidden strings, an empty parchment) shows a faint question mark.
+     */
+    private void renderSigns(GuiGraphicsExtractor graphics, java.util.List<@Nullable Essence> essences) {
+        for (int d = 0; d < 6; d++) {
+            double[] corner = HexGrid.corner(d);
+            int x = left + CX + (int) Math.round(corner[0] * KX);
+            int y = top + CY + (int) Math.round(corner[1] * KY);
+            Essence essence = d < essences.size() ? essences.get(d) : null;
+            if (essence != null) {
+                PixelArt.hex(graphics, x, y, 15, argb(0x1E1608, 0.85F), argb(PixelArt.mix(essence.color(), 0x000000, 0.2F), 1));
+                PixelArt.essence(graphics, essence, x - 4, y - 4, 9, argb(essence.color(), 1));
+            } else {
+                PixelArt.hex(graphics, x, y, 15, argb(0x5E4526, 0.12F), argb(0x5E4526, 0.35F));
+                PixelArt.fill(graphics, x - 1, y - 3, x + 2, y - 2, argb(0x5E4526, 0.6F));
+                PixelArt.fill(graphics, x + 1, y - 2, x + 2, y, argb(0x5E4526, 0.6F));
+                PixelArt.fill(graphics, x, y, x + 1, y + 1, argb(0x5E4526, 0.6F));
+                PixelArt.fill(graphics, x, y + 2, x + 1, y + 3, argb(0x5E4526, 0.6F));
+            }
         }
     }
 
-    private static @Nullable Essence nearestCorner(int cell) {
+    /** The essence of the corner a section lies nearest to (its direction's essence), within reach of the corner. */
+    private static @Nullable Essence nearestCorner(RuneBoard board, int cell) {
         Essence best = null;
         double distance = 0.55;
-        for (Essence element : HexGrid.RING) {
-            double[] u = HexGrid.unit(element);
-            double d = Math.hypot(HexGrid.cx(cell) - u[0], HexGrid.cy(cell) - u[1]);
-            if (d < distance) {
-                distance = d;
-                best = element;
+        for (int d = 0; d < 6; d++) {
+            double[] corner = HexGrid.corner(d);
+            double dist = Math.hypot(HexGrid.cx(cell) - corner[0], HexGrid.cy(cell) - corner[1]);
+            if (dist < distance) {
+                distance = dist;
+                best = board.essence(d);
             }
         }
         return best;

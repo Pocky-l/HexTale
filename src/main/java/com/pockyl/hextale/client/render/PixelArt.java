@@ -39,8 +39,9 @@ public final class PixelArt {
     /** Essence pictograms are 9 x 9, one every 10 pixels along the sheet. */
     public static final int ICON = 9;
     private static final int ICON_STEP = 10;
-    private static final int ICONS_WIDTH = 128;
-    private static final int ICONS_HEIGHT = 16;
+    private static final int ICONS_PER_ROW = 16;
+    private static final int ICONS_WIDTH = 256;
+    private static final int ICONS_HEIGHT = 64;
     private static final Batch BATCH = new Batch();
 
     private PixelArt() {
@@ -69,7 +70,8 @@ public final class PixelArt {
         int drawn = ICON * scale;
         int ox = x + (size - drawn) / 2;
         int oy = y + (size - drawn) / 2;
-        graphics.blit(RenderPipelines.GUI_TEXTURED, ESSENCE_ICONS, ox, oy, essence.ordinal() * ICON_STEP, 0, drawn, drawn, ICON, ICON,
+        graphics.blit(RenderPipelines.GUI_TEXTURED, ESSENCE_ICONS, ox, oy, essence.ordinal() % ICONS_PER_ROW * ICON_STEP,
+                essence.ordinal() / ICONS_PER_ROW * ICON_STEP, drawn, drawn, ICON, ICON,
                 ICONS_WIDTH, ICONS_HEIGHT, argb);
     }
 

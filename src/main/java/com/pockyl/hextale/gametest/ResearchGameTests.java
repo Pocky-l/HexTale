@@ -99,8 +99,17 @@ public final class ResearchGameTests {
             int tier = board.tier();
             RuneBoard.Par par = board.par();
             helper.assertTrue(board.points().size() == points[tier], rune.key() + " has " + points[tier] + " points");
-            helper.assertTrue(board.points().get(0).element() == rune.action() && board.points().get(1).element() == rune.target(),
-                    rune.key() + ": the first points are its action and target");
+            helper.assertTrue(board.essences().size() == 6 && new java.util.HashSet<>(board.essences()).size() == 6,
+                    rune.key() + ": six different essences around the hexagon");
+            for (Essence essence : board.essences()) {
+                helper.assertTrue(essence.share(rune.action()) + essence.share(rune.target()) > 0,
+                        rune.key() + ": " + essence.id() + " belongs to the rune's theme");
+            }
+            helper.assertTrue(board.essences().stream().anyMatch(e -> e.share(rune.action()) > 0)
+                    && board.essences().stream().anyMatch(e -> e.share(rune.target()) > 0), rune.key() + ": both halves of the rune are there");
+            for (RuneBoard.Point point : board.points()) {
+                helper.assertTrue(board.essences().contains(point.element()), rune.key() + ": points carry essences of the parchment");
+            }
             helper.assertTrue(par.three() >= 1 && par.three() == par.plain() && par.two() > par.three(), rune.key() + ": sane thresholds " + par);
             helper.assertTrue(!board.wall(HexGrid.CENTRE) && !board.dark(HexGrid.CENTRE), rune.key() + ": the orb is never walled in");
             int darkCount = 0;
@@ -121,6 +130,12 @@ public final class ResearchGameTests {
             lengths[tier][0] = Math.min(lengths[tier][0], par.plain());
             lengths[tier][1] = Math.max(lengths[tier][1], par.plain());
         }
+        StringBuilder themes = new StringBuilder();
+        for (String key : List.of("fire_earth", "earth_fire", "water_light", "air_metal", "life_shadow", "shadow_spark", "spark_life")) {
+            RuneBoard board = RuneBoards.get(ComplexRunes.byKey(key));
+            themes.append(key).append('=').append(board.essences()).append("; ");
+        }
+        Hextale.LOGGER.info("Board themes: {}", themes);
         Hextale.LOGGER.info("Checked {} research boards in {} ms; plain drawings by chapter: I {}-{}, II {}-{}, III {}-{}",
                 ComplexRunes.COUNT, (System.nanoTime() - start) / 1_000_000, lengths[1][0], lengths[1][1], lengths[2][0], lengths[2][1],
                 lengths[3][0], lengths[3][1]);
@@ -220,7 +235,7 @@ public final class ResearchGameTests {
         int[] ink = new int[Essence.values().length];
         for (int i = 0; i < tree.length / 2; i++) {
             int point = board.pointAt(tree[2 * i + 1]);
-            Essence colour = point >= 0 ? board.points().get(point).element() : ResearchSheet.toward(tree[2 * i], tree[2 * i + 1]);
+            Essence colour = point >= 0 ? board.points().get(point).element() : ResearchSheet.toward(board, tree[2 * i], tree[2 * i + 1]);
             helper.assertTrue(trace.paying()[i] == colour, "step " + i + " costs the ink of its direction, or of the point it reaches");
             ink[colour.ordinal()] += point >= 0 ? ResearchSheet.POINT_COST : 1;
         }
@@ -228,14 +243,14 @@ public final class ResearchGameTests {
         java.util.Set<Essence> anywhere = java.util.EnumSet.noneOf(Essence.class);
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
             for (int next : HexGrid.neighbours(cell)) {
-                anywhere.add(ResearchSheet.toward(cell, next));
+                anywhere.add(ResearchSheet.toward(board, cell, next));
                 if (cell == HexGrid.CENTRE) {
-                    fromCentre.add(ResearchSheet.toward(cell, next));
+                    fromCentre.add(ResearchSheet.toward(board, cell, next));
                 }
             }
         }
         helper.assertTrue(fromCentre.size() == 6, "the six steps from the orb pay six different inks, got " + fromCentre);
-        helper.assertTrue(anywhere.size() == 9, "every ink is needed somewhere on the parchment");
+        helper.assertTrue(anywhere.equals(new java.util.HashSet<>(board.essences())), "the six inks are the parchment's six essences");
         helper.assertTrue(Arrays.equals(ink, trace.ink()), "the ink needed is the sum of the steps, a point ten of its own essence");
         helper.succeed();
     }
@@ -269,9 +284,31 @@ public final class ResearchGameTests {
             }
             ItemEssences elements = all.get(item);
             helper.assertTrue(elements != null, BuiltInRegistries.ITEM.getKey(item) + " carries elements");
-            helper.assertTrue(!elements.essences().isEmpty() && elements.essences().size() <= 3, item + ": one to three elements");
-            elements.essences().values().forEach(points -> helper.assertTrue(points >= 1 && points <= 9, item + ": strength 1-9"));
+            helper.assertTrue(!elements.essences().isEmpty() && elements.essences().size() <= 6, item + ": one to six essences");
+            elements.essences().values().forEach(points -> helper.assertTrue(points >= 1 && points <= 32, item + ": amount 1-32"));
         }
+        // Every essence must be gatherable: carried, as the strongest essence, by some items.
+        int[] carriers = new int[Essence.COUNT];
+        int[] strongest = new int[Essence.COUNT];
+        int[] sizes = new int[7];
+        for (ItemEssences essences : all.values()) {
+            essences.essences().keySet().forEach(e -> carriers[e.ordinal()]++);
+            strongest[essences.main().ordinal()]++;
+            sizes[Math.min(6, essences.essences().size())]++;
+        }
+        List<String> rare = new ArrayList<>();
+        List<String> noReagent = new ArrayList<>();
+        for (Essence essence : Essence.values()) {
+            if (carriers[essence.ordinal()] < 3) {
+                rare.add(essence.id() + "=" + carriers[essence.ordinal()]);
+            }
+            if (strongest[essence.ordinal()] < 1) {
+                noReagent.add(essence.id());
+            }
+        }
+        helper.assertTrue(rare.isEmpty(), "every essence is carried by at least three items, short: " + rare);
+        helper.assertTrue(noReagent.isEmpty(), "every essence is the strongest of some item (a reagent for it), missing: " + noReagent);
+        Hextale.LOGGER.info("Items by number of essences 1-6: {} {} {} {} {} {}", sizes[1], sizes[2], sizes[3], sizes[4], sizes[5], sizes[6]);
         for (Map.Entry<Item, ItemEssences> entry : ResearchItems.canonical().entrySet()) {
             helper.assertTrue(entry.getValue().equals(all.get(entry.getKey())), entry.getKey() + " keeps its base elements");
         }
@@ -291,9 +328,9 @@ public final class ResearchGameTests {
     @HexTest
     public static void echoStringsAreDistinct(GameTestHelper helper) {
         java.util.Set<Integer> used = new java.util.HashSet<>();
-        for (int string = 0; string < HexGrid.RING.length; string++) {
+        for (int string = 0; string < ItemStudy.STRINGS_COUNT; string++) {
             int[] cells = ItemStudy.string(string);
-            helper.assertTrue(cells.length >= 5, HexGrid.RING[string].id() + " has a string of at least five sections, got " + cells.length);
+            helper.assertTrue(cells.length >= 5, "string " + string + " has at least five sections, got " + cells.length);
             for (int cell : cells) {
                 helper.assertTrue(used.add(cell), "strings never share a section");
                 helper.assertTrue(ItemStudy.stringOf(cell) == string, "a section knows its string");
@@ -308,18 +345,18 @@ public final class ResearchGameTests {
         ItemEssences elements = ItemEssences.of(1, Essence.FIRE, 3, Essence.WATER, 1);
         ItemStudy study = new ItemStudy();
         study.begin(Items.STICK, elements);
-        int fire = ItemStudy.hiding(Essence.FIRE, 3);
-        int water = ItemStudy.hiding(Essence.WATER, 1);
+        int fire = ItemStudy.hiding(0, 3);
+        int water = ItemStudy.hiding(1, 1);
         helper.assertTrue(study.maxStrikes() == 9, "three strikes plus three per element");
-        int probe = ItemStudy.string(ring(Essence.FIRE))[0];
+        int probe = ItemStudy.string(0)[0];
         ItemStudy.Echo first = study.strike(probe, elements);
         int nearest = Math.min(HexGrid.steps(probe, fire), HexGrid.steps(probe, water));
         helper.assertTrue(first != null && first.radius() == nearest, "the ripple stops at the nearest element");
         helper.assertFalse(study.possible(probe), "inside the ripple nothing hides");
         helper.assertTrue(study.strike(probe, elements) == null, "a section is struck once");
         ItemStudy.Echo hit = study.strike(fire, elements);
-        helper.assertTrue(hit != null && hit.radius() == 0 && study.isRevealed(Essence.FIRE), "striking the element reveals it");
-        helper.assertFalse(study.possible(ItemStudy.string(ring(Essence.FIRE))[0]), "a revealed string is quiet");
+        helper.assertTrue(hit != null && hit.radius() == 0 && study.isRevealed(elements, Essence.FIRE), "striking the essence reveals it");
+        helper.assertFalse(study.possible(ItemStudy.string(0)[0]), "a revealed string is quiet");
         int aside = -1;
         for (int n : HexGrid.neighbours(fire)) {
             if (aside < 0 && n != water && !study.struck(n)) {
@@ -432,7 +469,7 @@ public final class ResearchGameTests {
         helper.assertTrue(table.isStudyingItem() && table.study().item() == Items.GLASS, "glass lies on the parchment, no orb needed");
         ItemEssences elements = ResearchItems.of(Items.GLASS);
         for (Map.Entry<Essence, Integer> entry : elements.essences().entrySet()) {
-            table.strike(player, ItemStudy.hiding(entry.getKey(), entry.getValue()));
+            table.strike(player, ItemStudy.hiding(ItemStudy.stringFor(elements, entry.getKey()), entry.getValue()));
         }
         Identifier glass = BuiltInRegistries.ITEM.getKey(Items.GLASS);
         helper.assertTrue(Research.of(player).hasStudied(glass), "glass is studied");
@@ -448,7 +485,7 @@ public final class ResearchGameTests {
         for (int cell = 0; cell < HexGrid.COUNT && table.study().isActive(feather); cell++) {
             boolean answer = false;
             for (Map.Entry<Essence, Integer> entry : feather.essences().entrySet()) {
-                answer |= ItemStudy.hiding(entry.getKey(), entry.getValue()) == cell;
+                answer |= ItemStudy.hiding(ItemStudy.stringFor(feather, entry.getKey()), entry.getValue()) == cell;
             }
             if (!answer) {
                 table.strike(player, cell);
@@ -461,15 +498,6 @@ public final class ResearchGameTests {
         helper.assertTrue(table.isStudyingItem() && !table.study().started(), "a click on a lost study tries the next feather");
         player.discard();
         helper.succeed();
-    }
-
-    private static int ring(Essence element) {
-        for (int i = 0; i < HexGrid.RING.length; i++) {
-            if (HexGrid.RING[i] == element) {
-                return i;
-            }
-        }
-        throw new IllegalArgumentException(element.id());
     }
 
     // ---- The table ------------------------------------------------------------------------------------------------
@@ -851,7 +879,7 @@ public final class ResearchGameTests {
         table.select(player, SMELTING);
         table.thread(player, tree);
         helper.assertTrue(table.sheet().length() == 0, "no drawing without ink");
-        Map<Essence, EssenceTankBlockEntity> tanks = inkTanks(helper, EssenceTankBlockEntity.CAPACITY);
+        Map<Essence, EssenceTankBlockEntity> tanks = inkTanks(helper, EssenceTankBlockEntity.CAPACITY, board.essences());
         int[] part = Arrays.copyOf(tree, 4);
         table.thread(player, part);
         helper.assertTrue(table.sheet().length() == 2 && !table.sheet().isDone(), "a part of the drawing is kept");
@@ -869,7 +897,7 @@ public final class ResearchGameTests {
         helper.assertFalse(knowledge.knows(SMELTING), "the rune is not learned until its scroll is studied");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "the orb went into the rune");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "finishing takes no more paper");
-        for (Essence element : Essence.values()) {
+        for (Essence element : board.essences()) {
             helper.assertTrue(tanks.get(element).tank().amount()
                             == EssenceTankBlockEntity.CAPACITY - trace.ink()[element.ordinal()] * InkSupply.MB_PER_SECTION,
                     element.id() + " ink was spent from its tank by the drawing");
@@ -896,8 +924,8 @@ public final class ResearchGameTests {
         ServerPlayer player = survivalPlayer(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
         table.setItem(ResearchTableBlockEntity.PAPER, new ItemStack(Items.PAPER, 2));
-        inkTanks(helper, EssenceTankBlockEntity.CAPACITY);
         RuneBoard board = cursedBoard();
+        inkTanks(helper, EssenceTankBlockEntity.CAPACITY, board.essences());
         Research.learnAll(player, ResearchBook.runes(1), 1);
         Research.learnAll(player, ResearchBook.runes(2), 1);
         int cursed = cursedCell(board);
@@ -945,7 +973,7 @@ public final class ResearchGameTests {
         player.getInventory().add(new ItemStack(Items.PAPER));
         helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.PAPER, "paper in the pocket does not count");
         table.select(player, SMELTING);
-        inkTanks(helper, EssenceTankBlockEntity.CAPACITY);
+        inkTanks(helper, EssenceTankBlockEntity.CAPACITY, RuneBoards.get(SMELTING).essences());
         table.thread(player, Arrays.copyOf(RuneBoards.plainTree(RuneBoards.get(SMELTING)), 4));
         helper.assertTrue(table.sheet().length() == 0, "no drawing without paper");
         player.discard();
@@ -1161,10 +1189,10 @@ public final class ResearchGameTests {
         return table;
     }
 
-    /** An Essence Tank of each element's concentrate next to the test table, {@code drops} in each. */
-    private static Map<Essence, EssenceTankBlockEntity> inkTanks(GameTestHelper helper, int drops) {
+    /** An Essence Tank of each of these essences' concentrate next to the test table, {@code drops} in each. */
+    private static Map<Essence, EssenceTankBlockEntity> inkTanks(GameTestHelper helper, int drops, List<Essence> essences) {
         Map<Essence, EssenceTankBlockEntity> tanks = new java.util.EnumMap<>(Essence.class);
-        Essence[] elements = Essence.values();
+        Essence[] elements = essences.toArray(new Essence[0]);
         for (int i = 0; i < elements.length; i++) {
             BlockPos pos = new BlockPos(-2 + i % 5, TABLE.getY() + i / 5, TABLE.getZ() + 2);
             helper.setBlock(pos, ModBlocks.ESSENCE_TANK.get());
@@ -1176,7 +1204,7 @@ public final class ResearchGameTests {
     }
 
     private static int[] ink(Essence element, int drops) {
-        int[] ink = new int[Essence.values().length];
+        int[] ink = new int[Essence.COUNT];
         ink[element.ordinal()] = drops;
         return ink;
     }

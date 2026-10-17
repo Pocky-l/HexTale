@@ -1,29 +1,29 @@
 package com.pockyl.hextale.research;
 
-import com.pockyl.hextale.rune.Essence;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * The research parchment: a nonagon with one corner per element (fire on top, then clockwise lightning, air, light,
- * life, water, shadow, earth, metal), cut into hexagonal sections. Coordinates are axial {@code (q, r)} of pointy-top
- * hexagons; positions are in units of the nonagon's circumradius.
+ * The research parchment: a hexagon cut into hexagonal sections. A section has six neighbours, one per direction, and
+ * the parchment's six corners lie in those six directions - every study gives each direction its own essence, and a
+ * step of ink pays with the essence of its direction. Coordinates are axial {@code (q, r)} of pointy-top hexagons;
+ * positions are in units of the parchment's circumradius (its corners lie at distance ~1).
  */
 public final class HexGrid {
-    /** Corner order around the rim, starting at the top. */
-    public static final Essence[] RING = {Essence.FIRE, Essence.SPARK, Essence.AIR, Essence.LIGHT,
-            Essence.LIFE, Essence.WATER, Essence.SHADOW, Essence.EARTH, Essence.METAL};
-    /** Circumradius of one section. */
-    public static final double HS = 0.072;
+    /** Sections from the centre to a corner. */
+    public static final int RADIUS = 8;
     public static final double SQ3 = Math.sqrt(3);
+    /** Circumradius of one section. */
+    public static final double HS = 1.0 / (RADIUS * SQ3);
     /** Distance between the centres of two neighbouring sections. */
     public static final double CELL = HS * SQ3;
-    private static final int SPAN = 16;
-    private static final int[][] DIRECTIONS = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
-    private static final double[][] UNIT = new double[Essence.values().length][];
-    private static final double[][] CORNERS = new double[RING.length][];
+    /**
+     * The six directions in axial steps, counter-clockwise on screen from the east: east, north-east, north-west,
+     * west, south-west, south-east.
+     */
+    public static final int[][] DIRECTIONS = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
+    private static final int SPAN = RADIUS + 1;
 
     private static final int[] Q;
     private static final int[] R;
@@ -33,20 +33,13 @@ public final class HexGrid {
     public static final int CENTRE;
 
     static {
-        for (int i = 0; i < RING.length; i++) {
-            // StrictMath is fdlibm, like the prototype's JavaScript engine: identical corners, identical boards.
-            double angle = -Math.PI / 2 + i * 2 * Math.PI / 9;
-            double[] u = {StrictMath.cos(angle), StrictMath.sin(angle)};
-            UNIT[RING[i].ordinal()] = u;
-            CORNERS[i] = u;
-        }
         List<int[]> cells = new ArrayList<>();
         for (int[] row : INDEX) {
             Arrays.fill(row, -1);
         }
-        for (int q = -SPAN; q <= SPAN; q++) {
-            for (int r = -SPAN; r <= SPAN; r++) {
-                if (inside(x(q, r), y(r), HS * 0.55)) {
+        for (int q = -RADIUS; q <= RADIUS; q++) {
+            for (int r = -RADIUS; r <= RADIUS; r++) {
+                if (length(new int[]{q, r}) <= RADIUS) {
                     INDEX[q + SPAN][r + SPAN] = cells.size();
                     cells.add(new int[]{q, r});
                 }
@@ -84,23 +77,42 @@ public final class HexGrid {
         return HS * 1.5 * r;
     }
 
-    /** Whether a point lies inside the nonagon, at least {@code margin} away from its edges. */
+    /** The corner of the parchment in a direction, in parchment units. */
+    public static double[] corner(int direction) {
+        int[] d = DIRECTIONS[direction];
+        return new double[]{x(d[0] * RADIUS, d[1] * RADIUS), y(d[1] * RADIUS)};
+    }
+
+    /** Whether a point lies inside the parchment's hexagon, at least {@code margin} away from its edges. */
     public static boolean inside(double px, double py, double margin) {
-        for (int i = 0; i < 9; i++) {
-            double[] a = CORNERS[i];
-            double[] b = CORNERS[(i + 1) % 9];
+        for (int i = 0; i < 6; i++) {
+            double[] a = corner(i);
+            double[] b = corner((i + 1) % 6);
             double ex = b[0] - a[0];
             double ey = b[1] - a[1];
-            if ((ex * (py - a[1]) - ey * (px - a[0])) / Math.hypot(ex, ey) < margin) {
+            // Corners run counter-clockwise on screen (y down): the inside is to the right of every edge.
+            if ((ey * (px - a[0]) - ex * (py - a[1])) / Math.hypot(ex, ey) < margin) {
                 return false;
             }
         }
         return true;
     }
 
-    /** Unit vector from the centre towards the element's corner. */
-    public static double[] unit(Essence element) {
-        return UNIT[element.ordinal()];
+    /** The direction (0-5) of a step between two neighbouring sections, or -1 when they do not touch. */
+    public static int direction(int from, int to) {
+        int dq = Q[to] - Q[from];
+        int dr = R[to] - R[from];
+        for (int i = 0; i < DIRECTIONS.length; i++) {
+            if (DIRECTIONS[i][0] == dq && DIRECTIONS[i][1] == dr) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /** The section one step from {@code cell} in a direction, or -1 off the parchment. */
+    public static int step(int cell, int direction) {
+        return index(Q[cell] + DIRECTIONS[direction][0], R[cell] + DIRECTIONS[direction][1]);
     }
 
     public static int q(int cell) {
@@ -170,36 +182,6 @@ public final class HexGrid {
 
     public static int length(int[] offset) {
         return (Math.abs(offset[0]) + Math.abs(offset[1]) + Math.abs(offset[0] + offset[1])) / 2;
-    }
-
-    /**
-     * The straight line of sections from {@code from} along an axial offset, section by section, as axial coordinates
-     * (the line may leave the parchment). A fixed nudge breaks ties the same way everywhere.
-     */
-    public static int[][] line(int from, int[] offset) {
-        int n = length(offset);
-        int[][] out = new int[n][];
-        for (int i = 1; i <= n; i++) {
-            double q = Q[from] + (double) offset[0] * i / n + 1e-6;
-            double r = R[from] + (double) offset[1] * i / n + 2e-6;
-            out[i - 1] = round(q, r);
-        }
-        return out;
-    }
-
-    /** The sections of {@link #line} up to the edge of the parchment. */
-    public static int[] ray(int from, int[] offset) {
-        int[][] line = line(from, offset);
-        int[] out = new int[line.length];
-        int n = 0;
-        for (int[] axial : line) {
-            int cell = index(axial[0], axial[1]);
-            if (cell < 0) {
-                break;
-            }
-            out[n++] = cell;
-        }
-        return Arrays.copyOf(out, n);
     }
 
     /** Hex distance in sections (walls ignored). */

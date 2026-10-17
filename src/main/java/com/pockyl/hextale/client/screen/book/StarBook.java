@@ -21,10 +21,10 @@ import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.quest.Quest;
 import com.pockyl.hextale.registry.ModItems;
-import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.rune.PrimalRing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -313,8 +313,8 @@ public final class StarBook {
 
     /** The nine elements' signs far out on their rays, like the names of constellations. */
     private void renderSigns(GuiGraphicsExtractor graphics, RuneKnowledge knowledge) {
-        for (Essence element : HexGrid.RING) {
-            double[] u = HexGrid.unit(element);
+        for (Essence element : PrimalRing.RING) {
+            double[] u = PrimalRing.unit(element);
             int x = (int) Math.round(u[0] * StarMap.SIGN_RADIUS);
             int y = (int) Math.round(u[1] * StarMap.SIGN_RADIUS);
             PixelArt.essence(graphics, element, x - 13, y - 13, 27, PixelArt.argb(element.color(), 0.45F));
