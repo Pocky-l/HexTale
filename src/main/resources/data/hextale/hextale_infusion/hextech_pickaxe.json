@@ -4,15 +4,13 @@
     "hextale:hextech_gemstone",
     "hextale:brass_ingot",
     "hextale:brass_ingot",
-    "minecraft:spyglass"
+    "minecraft:amethyst_shard"
   ],
   "essences": {
-    "ore": 16,
-    "gleam": 12
+    "forge": 16,
+    "ore": 12,
+    "energy": 8
   },
-  "runes": [
-    "light_earth"
-  ],
-  "result": "hextale:prospector_pickaxe",
+  "result": "hextale:hextech_pickaxe",
   "keep_components": true
 }

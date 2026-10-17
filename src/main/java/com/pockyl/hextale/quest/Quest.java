@@ -95,15 +95,16 @@ public enum Quest {
     HEXTECH_LAMP(HEXTECH_GEMSTONE, 308, 258, () -> new ItemStack(ModItems.HEXTECH_LAMP.get()), Quests.has(ModItems.HEXTECH_LAMP),
             QuestDisplay.shaped("hextale:hextech_lamp", 2, new String[]{" N ", "BGB", " S "}, "N=hextale:brass_nugget",
                     "B=hextale:brass_ingot", "G=hextale:hextech_gemstone", "S=hextale:magic_brick_slab")),
-    // The hextech pickaxes, one quest per number of runes their recipes need.
-    HEXTECH_PICKAXE(HEXTECH_GEMSTONE, 280, 216, () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.SMELTING).get()), Quests.pickaxe(1),
-            QuestDisplay.infusion("hextale:smelting_pickaxe")),
-    PICKAXE_TWO_RUNES(HEXTECH_PICKAXE, 336, 216, () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.DRILL).get()), Quests.pickaxe(2),
-            QuestDisplay.infusion("hextale:drill_pickaxe")),
-    PICKAXE_THREE_RUNES(PICKAXE_TWO_RUNES, 392, 216, () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.TUNNEL).get()), Quests.pickaxe(3),
-            QuestDisplay.infusion("hextale:tunnel_pickaxe")),
-    PICKAXE_FOUR_RUNES(PICKAXE_THREE_RUNES, 448, 216, () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.CORE).get()), Quests.pickaxe(4),
-            QuestDisplay.infusion("hextale:core_pickaxe"));
+    // The hextech pickaxes and their runes.
+    HEXTECH_PICKAXE(HEXTECH_GEMSTONE, 280, 216, () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), Quests.pickaxe(1),
+            QuestDisplay.infusion("hextale:hextech_pickaxe")),
+    PICKAXE_RUNE(HEXTECH_PICKAXE, 336, 216, () -> new ItemStack(ModItems.RUNE_SCROLL.get()), Quests.pickaxeRunes(1),
+            QuestDisplay.pickaxeRunes()),
+    FOUR_RUNES(PICKAXE_RUNE, 336, 258, () -> new ItemStack(Items.ENCHANTED_BOOK), Quests.pickaxeRunes(4), null),
+    REFINED_PICKAXE(PICKAXE_RUNE, 392, 216, () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.REFINED).get()), Quests.pickaxe(2),
+            QuestDisplay.infusion("hextale:refined_hextech_pickaxe")),
+    RADIANT_PICKAXE(REFINED_PICKAXE, 448, 216, () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.RADIANT).get()), Quests.pickaxe(3),
+            QuestDisplay.infusion("hextale:radiant_hextech_pickaxe"));
 
     @Nullable
     private final Quest parent;

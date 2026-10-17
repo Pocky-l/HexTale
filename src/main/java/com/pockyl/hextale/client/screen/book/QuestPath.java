@@ -19,7 +19,8 @@ import com.pockyl.hextale.infusion.InfusionRecipe;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.infusion.InfusionRecipes;
 import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.runework.HextechPickaxeItem;
+import com.pockyl.hextale.runework.PickaxeRune;
+import com.pockyl.hextale.runework.PickaxeRunes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Ingredient;
 import com.pockyl.hextale.client.render.PixelArt;
@@ -242,6 +243,7 @@ final class QuestPath {
             case ESSENCES -> SLOT;
             case REAGENTS -> 30;
             case INFUSION -> infusionHeight(display);
+            case PICKAXE_RUNES -> (PickaxeRune.values().length + RUNES_PER_ROW - 1) / RUNES_PER_ROW * RUNE_ROW + 12;
         };
     }
 
@@ -411,6 +413,7 @@ final class QuestPath {
                 }
             }
             case INFUSION -> tooltip = renderInfusion(graphics, display, x, y, mouseX, mouseY, now);
+            case PICKAXE_RUNES -> tooltip = renderPickaxeRunes(graphics, x, y, mouseX, mouseY);
         }
         return tooltip;
     }
@@ -510,10 +513,50 @@ final class QuestPath {
         }
         if (!runes.isEmpty()) {
             rowY += (runes.size() + RUNES_PER_ROW - 1) / RUNES_PER_ROW * RUNE_ROW;
-            boolean pickaxe = HextechPickaxeItem.kind(recipe.result().create()) != null;
-            graphics.text(font, Component.translatable(pickaxe ? "book.hextale.quest.infusion.stars" : "book.hextale.quest.infusion.runes"),
+            graphics.text(font, Component.translatable("book.hextale.quest.infusion.runes"),
                     x, rowY + 1, 0xFF9A90B8, false);
         }
+        return tooltip;
+    }
+
+    /**
+     * The runes a hextech pickaxe takes: sign and name in two columns (greyed while the researcher does not know the
+     * rune); hovering one shows what burning it in costs per star and which runes it cannot share a pickaxe with.
+     */
+    @Nullable
+    private List<FormattedCharSequence> renderPickaxeRunes(GuiGraphicsExtractor graphics, int x, int y, int mouseX, int mouseY) {
+        List<FormattedCharSequence> tooltip = null;
+        RuneKnowledge knowledge = com.pockyl.hextale.client.ClientKnowledge.get();
+        PickaxeRune[] runes = PickaxeRune.values();
+        int column = innerWidth() / RUNES_PER_ROW;
+        for (int r = 0; r < runes.length; r++) {
+            PickaxeRune pickaxeRune = runes[r];
+            ComplexRune rune = pickaxeRune.rune();
+            boolean known = knowledge != null && knowledge.knows(rune);
+            int color = known ? rune.color() : 0x6A6480;
+            int cx = x + r % RUNES_PER_ROW * column;
+            int cy = y + r / RUNES_PER_ROW * RUNE_ROW;
+            PixelArt.glyph(graphics, rune, cx, cy, 11, PixelArt.argb(color, 1), 0xFF000000);
+            PixelArt.flush(graphics);
+            Component name = Component.translatable(rune.translationKey());
+            graphics.text(font, name, cx + 14, cy + 2, 0xFF000000 | color, true);
+            if (over(mouseX, mouseY, cx, cy, 14 + font.width(name), 12)) {
+                List<FormattedCharSequence> lines = new java.util.ArrayList<>();
+                lines.add(name.copy().withColor(rune.color()).getVisualOrderText());
+                var cost = pickaxeRune.cost(1).asMap().entrySet().iterator().next();
+                lines.add(Component.translatable("book.hextale.quest.pickaxe_rune.cost", cost.getValue(),
+                        Component.translatable(cost.getKey().translationKey())).withColor(cost.getKey().color()).getVisualOrderText());
+                for (PickaxeRune other : runes) {
+                    if (pickaxeRune.clashes(other)) {
+                        lines.add(Component.translatable("book.hextale.quest.pickaxe_rune.clash", Component.translatable(other.rune().translationKey()))
+                                .withColor(0xE07A6A).getVisualOrderText());
+                    }
+                }
+                tooltip = lines;
+            }
+        }
+        int bottom = y + (runes.length + RUNES_PER_ROW - 1) / RUNES_PER_ROW * RUNE_ROW;
+        graphics.text(font, Component.translatable("book.hextale.quest.pickaxe_rune.note", PickaxeRunes.SLOTS), x, bottom + 1, 0xFF9A90B8, false);
         return tooltip;
     }
 

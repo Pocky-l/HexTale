@@ -18,8 +18,8 @@ import com.pockyl.hextale.menu.SeparatorMenu;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.runework.HextechPickaxe;
 import com.pockyl.hextale.runework.HextechPickaxeItem;
+import com.pockyl.hextale.runework.PickaxeRunes;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -68,13 +68,15 @@ public final class Quests {
         return player -> test.test(Research.of(player));
     }
 
-    /** A hextech tool with at least one rune engraved in the inventory. */
-    /** A hextech pickaxe whose recipe needs at least this many runes. */
-    static Predicate<ServerPlayer> pickaxe(int runes) {
-        return player -> player.getInventory().contains(stack -> {
-            HextechPickaxe kind = HextechPickaxeItem.kind(stack);
-            return kind != null && kind.tier() >= runes;
-        });
+    /** A hextech pickaxe of at least this tier (1 plain, 2 refined, 3 radiant). */
+    static Predicate<ServerPlayer> pickaxe(int tier) {
+        return player -> player.getInventory().contains(stack ->
+                stack.getItem() instanceof HextechPickaxeItem pickaxe && pickaxe.kind().tier() >= tier);
+    }
+
+    /** A hextech pickaxe carrying at least this many runes. */
+    static Predicate<ServerPlayer> pickaxeRunes(int runes) {
+        return player -> player.getInventory().contains(stack -> HextechPickaxeItem.is(stack) && PickaxeRunes.of(stack).count() >= runes);
     }
 
     /** A bottle of concentrate in the inventory, or a Separator open on the screen with concentrate in it. */

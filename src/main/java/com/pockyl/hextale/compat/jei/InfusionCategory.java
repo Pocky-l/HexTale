@@ -22,7 +22,6 @@ import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.runework.HextechPickaxeItem;
 
 import java.util.Collections;
 import java.util.List;
@@ -110,8 +109,7 @@ public class InfusionCategory extends AbstractRecipeCategory<InfusionCategory.Re
         }
         if (!runes.isEmpty()) {
             y += (runes.size() + RUNES_PER_ROW - 1) / RUNES_PER_ROW * 13;
-            boolean pickaxe = HextechPickaxeItem.kind(recipe.result().create()) != null;
-            graphics.text(font, Component.translatable(pickaxe ? "jei.hextale.infusion.stars" : "jei.hextale.infusion.runes"), 0, y + 1,
+            graphics.text(font, Component.translatable("jei.hextale.infusion.runes"), 0, y + 1,
                     0xFF7A7498, false);
         }
         PixelArt.flush(graphics);

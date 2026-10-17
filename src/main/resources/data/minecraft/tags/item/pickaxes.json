@@ -1,13 +1,7 @@
 {
   "values": [
-    "hextale:smelting_pickaxe",
-    "hextale:prospector_pickaxe",
-    "hextale:tempered_pickaxe",
-    "hextale:drill_pickaxe",
-    "hextale:vein_pickaxe",
-    "hextale:geode_pickaxe",
-    "hextale:tunnel_pickaxe",
-    "hextale:quake_pickaxe",
-    "hextale:core_pickaxe"
+    "hextale:hextech_pickaxe",
+    "hextale:refined_hextech_pickaxe",
+    "hextale:radiant_hextech_pickaxe"
   ]
 }

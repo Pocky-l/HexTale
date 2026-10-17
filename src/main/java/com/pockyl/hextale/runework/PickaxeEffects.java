@@ -1,12 +1,10 @@
 package com.pockyl.hextale.runework;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -14,8 +12,6 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
@@ -43,8 +39,6 @@ import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
-import com.pockyl.hextale.runework.HextechPickaxe.Ability;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -54,31 +48,32 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * What the hextech pickaxes do. Every value is chosen by the pickaxe's stars (1-3, index 0-2): a three-star pickaxe is
- * far stronger than a one-star one of the same kind. Extra blocks a pickaxe takes (area, vein, tunnel) wear it like
- * mined blocks and their drops go through its other abilities (smelting, the pocket) too.
+ * What the pickaxe runes do. Every value is chosen by a rune's strength - its stars, one more with a Lens (1-4, index
+ * 0-3). Extra blocks a pickaxe takes (area, vein, tunnel) wear it like mined blocks and their drops go through its other
+ * runes (smelting, the pocket) too. None of this is written for the player.
  */
 public final class PickaxeEffects {
-    private static final float[] SMELT_BONUS = {0F, 0.3F, 0.6F};
-    private static final float[] SMELT_XP = {0.5F, 1.0F, 1.5F};
-    private static final int[] REVEAL_RADIUS = {8, 12, 16};
-    private static final int[] REVEAL_SECONDS = {10, 15, 20};
-    private static final int[] REVEAL_COOLDOWN = {200, 140, 80};
-    private static final float[] TEMPER = {0.5F, 0.7F, 0.9F};
-    private static final float[] HARD_SPEED = {1.5F, 2.0F, 3.0F};
-    private static final int[] AREA_RADIUS = {1, 1, 2};
-    private static final int[] AREA_DEPTH = {1, 2, 1};
-    private static final int[] VEIN = {12, 24, 48};
-    private static final float[] RICH = {0.15F, 0.3F, 0.5F};
-    private static final float[] GEMS = {0.02F, 0.04F, 0.07F};
-    private static final int[] TUNNEL_DEPTH = {6, 10, 16};
-    private static final int[] TUNNEL_COOLDOWN = {80, 60, 40};
-    private static final int[] QUAKE_RADIUS = {2, 3, 4};
-    private static final int[] QUAKE_COOLDOWN = {100, 80, 60};
-    private static final int[] MAGNET = {5, 8, 12};
-    /** Gem odds out of 100 by stars: amethyst, lapis, emerald, diamond. */
-    private static final int[][] GEM_TABLE = {{60, 25, 12, 3}, {45, 25, 20, 10}, {30, 25, 25, 20}};
-    /** Blocks harder than this count as hard stone for a tempered pickaxe (deepslate is 3). */
+    private static final float[] SMELT_BONUS = {0F, 0.2F, 0.4F, 0.6F};
+    private static final float[] SMELT_XP = {0.5F, 1.0F, 1.5F, 2.0F};
+    private static final float[] TEMPER = {0.35F, 0.55F, 0.75F, 0.9F};
+    private static final float[] HARD_SPEED = {1.25F, 1.5F, 2.0F, 2.5F};
+    private static final int[] VEIN = {8, 16, 32, 64};
+    private static final int[] REVEAL_RADIUS = {6, 10, 14, 18};
+    private static final int[] REVEAL_SECONDS = {8, 12, 16, 20};
+    private static final int[] REVEAL_COOLDOWN = {240, 180, 120, 80};
+    private static final int[] AREA_RADIUS = {1, 1, 2, 2};
+    private static final int[] AREA_DEPTH = {1, 2, 1, 2};
+    private static final float[] RICH = {0.15F, 0.3F, 0.45F, 0.6F};
+    private static final float[] GEMS = {0.015F, 0.03F, 0.05F, 0.07F};
+    private static final float[] MOTOR = {1.3F, 1.6F, 2.0F, 2.5F};
+    private static final int[] MAGNET = {4, 7, 10, 13};
+    private static final int[] TUNNEL_DEPTH = {5, 8, 12, 16};
+    private static final int[] TUNNEL_COOLDOWN = {100, 80, 60, 40};
+    private static final int[] QUAKE_RADIUS = {2, 3, 4, 5};
+    private static final int[] QUAKE_COOLDOWN = {120, 100, 80, 60};
+    /** Gem odds out of 100 by strength: amethyst, lapis, emerald, diamond. */
+    private static final int[][] GEM_TABLE = {{60, 25, 12, 3}, {50, 25, 17, 8}, {40, 25, 22, 13}, {30, 25, 25, 20}};
+    /** Blocks harder than this count as hard stone for Tempering (deepslate is 3). */
     private static final float HARD = 2.9F;
     /** Tunnels take blocks up to this hardness (ores, deepslate; not obsidian). */
     private static final float TUNNEL_HARDNESS = 5.0F;
@@ -98,44 +93,21 @@ public final class PickaxeEffects {
         NeoForge.EVENT_BUS.addListener(PickaxeEffects::onServerTick);
     }
 
-    public static float temperChance(int stars) {
-        return TEMPER[stars - 1];
+    public static float temperChance(int strength) {
+        return TEMPER[strength - 1];
     }
 
-    // ---- Description ------------------------------------------------------------------------------------------------
-
-    public static String percent(float value) {
-        return Math.round(value * 100) + "%";
-    }
-
-    /** A multiplier as it reads: 1.5 -> "×1.5", 2.0 -> "×2". */
-    public static String times(float value) {
-        return "×" + (value == Math.round(value) ? String.valueOf(Math.round(value)) : String.valueOf(value));
-    }
-
-    /** One tooltip line per ability, with the numbers of these stars. */
-    public static List<Component> describe(HextechPickaxe kind, int stars) {
-        int i = stars - 1;
-        List<Component> lines = new ArrayList<>();
-        for (Ability ability : kind.abilities()) {
-            String key = "item.hextale.hextech_pickaxe.ability." + ability.key();
-            Component line = switch (ability) {
-                case SMELT -> SMELT_BONUS[i] > 0 ? Component.translatable(key + ".bonus", percent(SMELT_BONUS[i]))
-                        : Component.translatable(key);
-                case REVEAL -> Component.translatable(key, REVEAL_RADIUS[i], REVEAL_SECONDS[i]);
-                case TEMPER -> Component.translatable(key, percent(TEMPER[i]), times(HARD_SPEED[i]));
-                case AREA -> Component.translatable(key, AREA_RADIUS[i] * 2 + 1, AREA_DEPTH[i]);
-                case VEIN -> Component.translatable(key, VEIN[i]);
-                case RICH_ORE -> Component.translatable(key, percent(RICH[i]));
-                case GEMS -> Component.translatable(key, percent(GEMS[i]));
-                case TUNNEL -> Component.translatable(key, TUNNEL_DEPTH[i]);
-                case QUAKE -> Component.translatable(key, QUAKE_RADIUS[i]);
-                case MAGNET -> Component.translatable(key, MAGNET[i]);
-                case CLEAR_SIGHT, CACHE -> Component.translatable(key);
-            };
-            lines.add(Component.literal("• ").withStyle(ChatFormatting.DARK_AQUA).append(line.copy().withStyle(ChatFormatting.GRAY)));
+    /** The pickaxe's right-click rune, or null (only one can be on a pickaxe). */
+    public static PickaxeRune power(ItemStack tool) {
+        if (!HextechPickaxeItem.is(tool)) {
+            return null;
         }
-        return lines;
+        for (PickaxeRune rune : PickaxeRunes.of(tool).runes()) {
+            if (rune.active()) {
+                return rune;
+            }
+        }
+        return null;
     }
 
     // ---- Digging ----------------------------------------------------------------------------------------------------
@@ -143,16 +115,20 @@ public final class PickaxeEffects {
     private static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         Player player = event.getEntity();
         ItemStack tool = player.getMainHandItem();
-        HextechPickaxe kind = HextechPickaxeItem.kind(tool);
-        if (kind == null || !tool.isCorrectToolForDrops(event.getState())) {
+        if (!HextechPickaxeItem.is(tool) || !tool.isCorrectToolForDrops(event.getState())) {
             return;
         }
-        int stars = HextechPickaxe.stars(tool);
-        float speed = event.getNewSpeed() * HextechPickaxe.speed(stars);
-        if (kind.has(Ability.TEMPER)) {
+        PickaxeRunes runes = PickaxeRunes.of(tool);
+        float speed = event.getNewSpeed();
+        int motor = runes.strength(PickaxeRune.MOTOR);
+        if (motor > 0) {
+            speed *= MOTOR[motor - 1];
+        }
+        int tempering = runes.strength(PickaxeRune.TEMPERING);
+        if (tempering > 0) {
             BlockPos pos = event.getPosition().orElse(player.blockPosition());
             if (event.getState().getDestroySpeed(player.level(), pos) > HARD) {
-                speed *= HARD_SPEED[stars - 1];
+                speed *= HARD_SPEED[tempering - 1];
             }
         }
         event.setNewSpeed(speed);
@@ -160,39 +136,46 @@ public final class PickaxeEffects {
 
     private static void onBlockDrops(BlockDropsEvent event) {
         ItemStack tool = event.getTool();
-        HextechPickaxe kind = HextechPickaxeItem.kind(tool);
-        if (kind == null || !(event.getBreaker() instanceof Player player)) {
+        if (!HextechPickaxeItem.is(tool) || !(event.getBreaker() instanceof Player player)) {
+            return;
+        }
+        PickaxeRunes runes = PickaxeRunes.of(tool);
+        if (runes.isEmpty()) {
             return;
         }
         ServerLevel level = event.getLevel();
-        int i = HextechPickaxe.stars(tool) - 1;
         BlockState state = event.getState();
         boolean ore = state.is(Tags.Blocks.ORES);
         if (!CHAINING.get() && !player.isShiftKeyDown()) {
-            if (kind.has(Ability.VEIN) && ore) {
-                vein(event, player, tool, VEIN[i]);
-            } else if (kind.has(Ability.AREA)) {
-                area(event, player, tool, AREA_RADIUS[i], AREA_DEPTH[i]);
+            int erosion = runes.strength(PickaxeRune.EROSION);
+            int drill = runes.strength(PickaxeRune.DRILL);
+            if (erosion > 0 && ore) {
+                vein(event, player, tool, VEIN[erosion - 1]);
+            } else if (drill > 0) {
+                area(event, player, tool, AREA_RADIUS[drill - 1], AREA_DEPTH[drill - 1]);
             }
         }
         RandomSource random = level.getRandom();
-        if (kind.has(Ability.RICH_ORE) && ore) {
+        int forge = runes.strength(PickaxeRune.FORGE);
+        if (forge > 0 && ore) {
             List<ItemEntity> more = new ArrayList<>();
             for (ItemEntity drop : event.getDrops()) {
-                if (random.nextFloat() < RICH[i]) {
+                if (random.nextFloat() < RICH[forge - 1]) {
                     more.add(drop(level, event.getPos(), drop.getItem().copy()));
                 }
             }
             event.getDrops().addAll(more);
         }
-        if (kind.has(Ability.GEMS) && state.is(BlockTags.BASE_STONE_OVERWORLD) && random.nextFloat() < GEMS[i]) {
-            event.getDrops().add(drop(level, event.getPos(), gem(random, GEM_TABLE[i])));
+        int gemstone = runes.strength(PickaxeRune.GEMSTONE);
+        if (gemstone > 0 && state.is(BlockTags.BASE_STONE_OVERWORLD) && random.nextFloat() < GEMS[gemstone - 1]) {
+            event.getDrops().add(drop(level, event.getPos(), gem(random, GEM_TABLE[gemstone - 1])));
             burst(level, Vec3.atCenterOf(event.getPos()), ParticleTypes.WAX_ON, 8);
         }
-        if (kind.has(Ability.SMELT)) {
-            smelt(event, ore, i);
+        int smelting = runes.strength(PickaxeRune.SMELTING);
+        if (smelting > 0) {
+            smelt(event, ore, smelting - 1);
         }
-        if (kind.has(Ability.CACHE)) {
+        if (runes.strength(PickaxeRune.CACHE) > 0) {
             for (Iterator<ItemEntity> it = event.getDrops().iterator(); it.hasNext(); ) {
                 ItemStack stack = it.next().getItem();
                 player.getInventory().add(stack);
@@ -348,18 +331,17 @@ public final class PickaxeEffects {
 
     // ---- Right click ------------------------------------------------------------------------------------------------
 
-    /** The pickaxe's active ability; false when nothing happened (no cooldown then). */
-    static boolean use(ServerLevel level, Player player, ItemStack tool, HextechPickaxe kind) {
-        int i = HextechPickaxe.stars(tool) - 1;
-        Ability active = kind.active();
+    /** The pickaxe's right-click rune; false when nothing happened (no cooldown then). */
+    static boolean use(ServerLevel level, Player player, ItemStack tool, PickaxeRune power) {
+        int i = PickaxeRunes.of(tool).strength(power) - 1;
         boolean done;
         int cooldown;
-        switch (active) {
-            case REVEAL -> {
+        switch (power) {
+            case INSIGHT -> {
                 done = reveal(level, player, REVEAL_RADIUS[i], REVEAL_SECONDS[i] * 20);
                 cooldown = REVEAL_COOLDOWN[i];
             }
-            case TUNNEL -> {
+            case PASSAGE -> {
                 done = tunnel(level, player, tool, TUNNEL_DEPTH[i]);
                 cooldown = TUNNEL_COOLDOWN[i];
             }
@@ -494,21 +476,17 @@ public final class PickaxeEffects {
             return;
         }
         ItemStack tool = player.getMainHandItem();
-        HextechPickaxe kind = HextechPickaxeItem.kind(tool);
-        if (kind == null) {
+        if (!HextechPickaxeItem.is(tool)) {
             return;
         }
-        int i = HextechPickaxe.stars(tool) - 1;
-        if (kind.has(Ability.MAGNET)) {
-            double reach = MAGNET[i];
+        int magnet = PickaxeRunes.of(tool).strength(PickaxeRune.MAGNET);
+        if (magnet > 0) {
+            double reach = MAGNET[magnet - 1];
             for (Entity loose : level.getEntities((Entity) null, player.getBoundingBox().inflate(reach),
                     e -> e instanceof ItemEntity || e instanceof ExperienceOrb)) {
                 Vec3 pull = player.position().add(0, 0.5, 0).subtract(loose.position()).normalize().scale(0.45);
                 loose.setDeltaMovement(pull);
             }
-        }
-        if (kind.has(Ability.CLEAR_SIGHT) && player.tickCount % 20 == 0 && !level.canSeeSky(player.blockPosition().above())) {
-            player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 260, 0, true, false, true));
         }
     }
 

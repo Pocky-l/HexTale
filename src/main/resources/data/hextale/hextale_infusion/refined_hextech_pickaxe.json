@@ -1,0 +1,19 @@
+{
+  "center": "hextale:hextech_pickaxe",
+  "pedestals": [
+    "hextale:hextech_gemstone",
+    "hextale:hextech_gemstone",
+    "minecraft:diamond",
+    "minecraft:diamond",
+    "hextale:brass_ingot",
+    "hextale:brass_ingot"
+  ],
+  "essences": {
+    "forge": 32,
+    "ore": 24,
+    "crystal": 16,
+    "energy": 16
+  },
+  "result": "hextale:refined_hextech_pickaxe",
+  "keep_components": true
+}

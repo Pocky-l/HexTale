@@ -60,7 +60,8 @@ public class HextaleJeiPlugin implements IModPlugin {
     public void registerCategories(IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(new BoilingCategory(registration.getJeiHelpers().getGuiHelper()),
                 new SeparationCategory(registration.getJeiHelpers().getGuiHelper()),
-                new InfusionCategory(registration.getJeiHelpers().getGuiHelper()));
+                new InfusionCategory(registration.getJeiHelpers().getGuiHelper()),
+                new RuneBurningCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -80,6 +81,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addRecipes(SeparationCategory.TYPE, separations);
         registration.addRecipes(InfusionCategory.TYPE, InfusionRecipes.get(true).entrySet().stream()
                 .map(entry -> new InfusionCategory.Recipe(entry.getKey(), entry.getValue())).toList());
+        registration.addRecipes(RuneBurningCategory.TYPE, List.of(com.pockyl.hextale.runework.PickaxeRune.values()));
         info(registration, ModItems.HEXTECH_ALTAR.get(), "hextech_altar");
         info(registration, ModItems.PEDESTAL.get(), "pedestal");
         info(registration, ModItems.RUNE_STELE.get(), "rune_stele");
@@ -104,6 +106,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addCraftingStation(BoilingCategory.TYPE, ModItems.ALEMBIC.get());
         registration.addCraftingStation(SeparationCategory.TYPE, ModItems.SEPARATOR.get());
         registration.addCraftingStation(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.PEDESTAL.get(), ModItems.RUNE_STELE.get());
+        registration.addCraftingStation(RuneBurningCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
     }
 
     static ItemStack concentrate(Essence essence) {

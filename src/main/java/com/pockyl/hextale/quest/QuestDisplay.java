@@ -20,7 +20,9 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
         /** The blaze powder that draws out each primal essence. */
         REAGENTS,
         /** A Hextech Altar ritual; {@code result} is the altar recipe's id, drawn from the recipes the server sent. */
-        INFUSION
+        INFUSION,
+        /** The runes a hextech pickaxe takes, with their costs and clashes. */
+        PICKAXE_RUNES
     }
 
     /** Rows of up to three cells, spaces for empty cells, keys as in the recipe JSON. */
@@ -58,6 +60,10 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
 
     static QuestDisplay reagents() {
         return new QuestDisplay(Kind.REAGENTS, List.of(), "", 0);
+    }
+
+    static QuestDisplay pickaxeRunes() {
+        return new QuestDisplay(Kind.PICKAXE_RUNES, List.of(), "hextale:hextech_pickaxe", 1);
     }
 
     static QuestDisplay infusion(String recipe) {

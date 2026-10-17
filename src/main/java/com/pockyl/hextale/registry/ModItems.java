@@ -73,21 +73,20 @@ public final class ModItems {
     public static final DeferredItem<ResearchersDiaryItem> RESEARCHERS_DIARY = ITEMS.registerItem("researchers_diary",
             properties -> new ResearchersDiaryItem(properties.stacksTo(1)));
 
-    /** Hextech pickaxe materials by tier: iron, diamond, then netherite strength; repaired with brass. */
+    /** Hextech pickaxe materials by tier: iron, diamond, netherite strength; repaired with brass. */
     private static final ToolMaterial[] PICKAXE_MATERIALS = {
-            new ToolMaterial(BlockTags.INCORRECT_FOR_IRON_TOOL, 900, 6.5F, 2.0F, 14, ModTags.HEXTECH_TOOL_MATERIALS),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1800, 8.0F, 3.0F, 12, ModTags.HEXTECH_TOOL_MATERIALS),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2600, 9.0F, 4.0F, 15, ModTags.HEXTECH_TOOL_MATERIALS),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 3200, 9.5F, 4.0F, 18, ModTags.HEXTECH_TOOL_MATERIALS)};
-    /** The hextech pickaxes, each made at the altar with its own runes. */
+            new ToolMaterial(BlockTags.INCORRECT_FOR_IRON_TOOL, 750, 7.0F, 2.0F, 14, ModTags.HEXTECH_TOOL_MATERIALS),
+            new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1800, 9.0F, 3.0F, 12, ModTags.HEXTECH_TOOL_MATERIALS),
+            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2800, 10.5F, 4.0F, 16, ModTags.HEXTECH_TOOL_MATERIALS)};
+    /** The three hextech pickaxes; runes are burned into them at the altar. */
     public static final Map<HextechPickaxe, DeferredItem<HextechPickaxeItem>> PICKAXES = new EnumMap<>(HextechPickaxe.class);
 
     static {
         for (HextechPickaxe kind : HextechPickaxe.values()) {
             PICKAXES.put(kind, ITEMS.registerItem(kind.id(), properties -> {
                 Item.Properties p = properties.pickaxe(PICKAXE_MATERIALS[kind.tier() - 1], 1.0F, -2.8F)
-                        .rarity(kind.tier() >= 4 ? Rarity.EPIC : kind.tier() >= 3 ? Rarity.RARE : Rarity.UNCOMMON);
-                return new HextechPickaxeItem(kind, kind.tier() >= 3 ? p.fireResistant() : p);
+                        .rarity(kind == HextechPickaxe.RADIANT ? Rarity.EPIC : kind == HextechPickaxe.REFINED ? Rarity.RARE : Rarity.UNCOMMON);
+                return new HextechPickaxeItem(kind, kind == HextechPickaxe.RADIANT ? p.fireResistant() : p);
             }));
         }
     }

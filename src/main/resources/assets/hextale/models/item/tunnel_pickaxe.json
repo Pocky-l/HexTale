@@ -1,7 +1,0 @@
-{
-  "parent": "hextale:item/hextech_pickaxe",
-  "textures": {
-    "sheet": "hextale:item/tunnel_pickaxe",
-    "particle": "hextale:item/tunnel_pickaxe"
-  }
-}

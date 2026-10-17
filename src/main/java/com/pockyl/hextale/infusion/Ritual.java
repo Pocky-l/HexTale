@@ -14,8 +14,9 @@ import com.pockyl.hextale.block.RuneSteleBlockEntity;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.runework.HextechPickaxeItem;
+import com.pockyl.hextale.runework.PickaxeRune;
+import com.pockyl.hextale.runework.PickaxeRunes;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -135,9 +136,57 @@ public final class Ritual {
     public record Chosen(ComplexRune rune, int stars) {
     }
 
-    /** What a ritual does. Infusion is the only kind so far; devices may bring others. */
+    /** What a ritual does: make something new from the centre item, or burn the steles' runes into a hextech pickaxe. */
     public enum Kind {
-        INFUSE
+        INFUSE, ENGRAVE
+    }
+
+    /**
+     * Burning the steles' runes into a pickaxe: what it carries afterwards and what it costs, or why it cannot be done
+     * ({@code refusal}: a translation key under {@code block.hextale.hextech_altar.engrave.} with the runes it names).
+     */
+    public record Engraving(@Nullable PickaxeRunes after, EssenceMix cost, @Nullable String refusal, List<ComplexRune> named) {
+        static Engraving refuse(String key, ComplexRune... named) {
+            return new Engraving(null, EssenceMix.EMPTY, key, List.of(named));
+        }
+
+        public boolean possible() {
+            return after != null;
+        }
+    }
+
+    /**
+     * Burns every rune chosen on the steles into the pickaxe like an enchantment: a new rune takes a free place (up to
+     * {@link PickaxeRunes#SLOTS}), a rune the pickaxe already carries with fewer stars is raised to the stele's stars.
+     * Only pickaxe runes go in, and never two of one {@link PickaxeRune.Clash} group. Runes need no items, only their
+     * essence ({@link PickaxeRune#cost(int)} for the stars they get).
+     */
+    public static Engraving engraving(ItemStack pickaxe, Circle circle) {
+        PickaxeRunes runes = PickaxeRunes.of(pickaxe);
+        EssenceMix cost = EssenceMix.EMPTY;
+        boolean changed = false;
+        for (Chosen chosen : circle.chosenRunes()) {
+            PickaxeRune rune = PickaxeRune.of(chosen.rune());
+            if (rune == null) {
+                return Engraving.refuse("not_pickaxe", chosen.rune());
+            }
+            int have = runes.stars(rune);
+            if (chosen.stars() <= have) {
+                continue;
+            }
+            for (PickaxeRune other : runes.runes()) {
+                if (rune.clashes(other)) {
+                    return Engraving.refuse("clash", rune.rune(), other.rune());
+                }
+            }
+            if (have == 0 && runes.count() >= PickaxeRunes.SLOTS) {
+                return Engraving.refuse("full", rune.rune());
+            }
+            runes = runes.with(rune, chosen.stars());
+            cost = cost.plus(rune.cost(chosen.stars()));
+            changed = true;
+        }
+        return changed ? new Engraving(runes, cost, null, List.of()) : Engraving.refuse("nothing_new");
     }
 
     /**
@@ -171,7 +220,7 @@ public final class Ritual {
 
     /**
      * What the altar would do with this centre item and circle, or null (nothing fits). A recipe needs its runes chosen
-     * on the steles; a hextech pickaxe made by it takes the stars of the weakest of them.
+     * on the steles. A hextech pickaxe alone on the altar (no pedestal items) with runes on the steles takes them in.
      */
     @Nullable
     public static Plan plan(ItemStack center, Circle circle, boolean clientSide) {
@@ -179,6 +228,16 @@ public final class Ritual {
             return null;
         }
         List<PedestalBlockEntity> filled = circle.filledPedestals();
+        if (HextechPickaxeItem.is(center) && filled.isEmpty() && !circle.chosenRunes().isEmpty()) {
+            // A pickaxe alone on the altar with runes on the steles: they are burned in, paid with essence only.
+            Engraving engraving = engraving(center, circle);
+            if (!engraving.possible()) {
+                return null;
+            }
+            ItemStack result = center.copy();
+            PickaxeRunes.set(result, engraving.after());
+            return new Plan(Kind.ENGRAVE, null, List.of(), engraving.cost(), result);
+        }
         for (Map.Entry<Identifier, InfusionRecipe> entry : recipes(clientSide)) {
             InfusionRecipe recipe = entry.getValue();
             if (!recipe.center().test(center) || !recipe.runes().stream().allMatch(rune -> circle.stars(rune) > 0)) {
@@ -188,11 +247,7 @@ public final class Ritual {
             if (inputs == null) {
                 continue;
             }
-            ItemStack result = recipe.resultFor(center);
-            if (HextechPickaxeItem.kind(result) != null) {
-                result.set(ModDataComponents.STARS.get(), recipe.runes().stream().mapToInt(circle::stars).min().orElse(1));
-            }
-            return new Plan(Kind.INFUSE, entry.getKey(), inputs, recipe.totalEssences(), result);
+            return new Plan(Kind.INFUSE, entry.getKey(), inputs, recipe.totalEssences(), recipe.resultFor(center));
         }
         return null;
     }
@@ -212,7 +267,8 @@ public final class Ritual {
     }
 
     public static Hint hint(ItemStack center, Circle circle, boolean clientSide) {
-        if (center.isEmpty() || plan(center, circle, clientSide) != null) {
+        if (center.isEmpty() || plan(center, circle, clientSide) != null
+                || HextechPickaxeItem.is(center) && circle.filledPedestals().isEmpty() && !circle.chosenRunes().isEmpty()) {
             return Hint.NONE;
         }
         List<PedestalBlockEntity> filled = circle.filledPedestals();

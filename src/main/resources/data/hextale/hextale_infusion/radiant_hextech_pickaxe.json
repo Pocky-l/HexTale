@@ -1,0 +1,19 @@
+{
+  "center": "hextale:refined_hextech_pickaxe",
+  "pedestals": [
+    "hextale:hextech_gemstone",
+    "hextale:hextech_gemstone",
+    "minecraft:netherite_ingot",
+    "minecraft:amethyst_block",
+    "minecraft:echo_shard",
+    "minecraft:echo_shard"
+  ],
+  "essences": {
+    "magic": 32,
+    "gem": 24,
+    "energy": 24,
+    "star": 16
+  },
+  "result": "hextale:radiant_hextech_pickaxe",
+  "keep_components": true
+}

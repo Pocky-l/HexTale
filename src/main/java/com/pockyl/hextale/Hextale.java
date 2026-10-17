@@ -21,8 +21,8 @@ import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModBlocks;
-import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModDataMaps;
+import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModMenus;
 import com.pockyl.hextale.registry.ModSounds;
@@ -82,13 +82,7 @@ public final class Hextale {
             output.accept(ModItems.MAGIC_BRICK_WALL);
             output.accept(ModItems.CHISELED_MAGIC_BRICKS);
             output.accept(ModItems.HEXTECH_LAMP);
-            // Every pickaxe with one star and with three, so the difference the stars make can be tried in creative.
             ModItems.PICKAXES.values().forEach(output::accept);
-            for (var pickaxe : ModItems.PICKAXES.values()) {
-                ItemStack best = new ItemStack(pickaxe.get());
-                best.set(ModDataComponents.STARS.get(), 3);
-                output.accept(best);
-            }
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
             output.accept(ModItems.HEXTECH_GEMSTONE);

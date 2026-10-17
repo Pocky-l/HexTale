@@ -72,23 +72,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   centre item, the pedestal items are drawn in one by one, then the essences one after another, and the centre
   becomes something new. A ritual short of essence stalls and, left too long, collapses. Ghosts of the items a ritual
   still lacks hover over the free pedestals.
-- Hextech pickaxes: nine of them, one model in nine finishes, each made at the altar while the runes of its recipe
-  stand chosen on rune steles - without them it cannot be made. The runes take no items, only their own essence (the
-  compound of their two primals, more for harder runes). A pickaxe's stars are the stars of its weakest rune, and the
-  stars decide everything: it digs up to 2.2 times as fast and every ability grows with them. It keeps the
-  enchantments of the pickaxe it was made from. The tooltip lists its abilities with their numbers.
-  - One rune, from an iron pickaxe: the Smelter's Pickaxe (smelts what it mines, ores give extra pieces), the
-    Prospector's Pickaxe (right click: ores around glow through the stone) and the Tempered Pickaxe (barely wears,
-    cuts hard stone fast).
-  - Two runes, from a diamond pickaxe: the Drill Pickaxe (digs 3x3, then deeper, then 5x5), the Vein Pickaxe (takes a
-    whole ore vein, ores drop double) and the Geode Pickaxe (plain stone gives up gems; you see underground as by day).
-  - Three runes: the Tunneler's Pickaxe, made from the Drill (digs an area, right click bores a 3x3 tunnel), and the
-    Quake Pickaxe, made from the Vein (right click shatters the rock around and leaves the ores standing).
-  - Four runes: the Mountainheart Pickaxe, made from the Tunneler - digs an area, smelts it, puts it straight into
-    your pocket, draws in drops and experience, bores tunnels.
-  - The research book and JEI show each recipe whole: the pedestal items, every essence with its millibuckets (the
-    runes' included), the runes by sign and name, and that the stars come from the weakest rune. A circle that lacks a
-    rune names it.
+- Hextech pickaxes: the Hextech Pickaxe (iron strength), the Refined Hextech Pickaxe (diamond) and the Radiant Hextech
+  Pickaxe (netherite, fireproof), each made at the altar from the one before - runes and enchantments carry over. Their
+  crystal glows in the colour of the runes they carry.
+- Runes on a pickaxe, like enchantments: put the pickaxe alone on the altar, choose runes on rune steles and start the
+  ritual - each rune is burned in, paid only with its own essence (more for more stars and for harder runes). Up to
+  four runes on any pickaxe; thirteen runes of the codex take to a pickaxe, and a rune is as strong as its stars. A
+  stele with more stars raises a rune the pickaxe already has. Some runes cannot share a pickaxe, and only one of them
+  may answer the right click. A grindstone takes the runes off again. What the runes do is for you to find out.
+- The research book lists the pickaxe runes (cost per star and which runes they cannot share a pickaxe with), and JEI
+  shows every pickaxe recipe and every rune's burning.
 - Magic stone: stone that has drunk essence - flat plates of a dusky violet stone with nothing set into it. Craft eight stone,
   cobblestone, deepslate, tuff, andesite, diorite, granite or calcite around a bottle of any essence (the bottle comes
   back), or open a Drain Valve over such stone: the essence it pours soaks into the stone where the stream lands, one

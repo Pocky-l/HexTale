@@ -1,0 +1,7 @@
+{
+  "parent": "hextale:item/hextech_pickaxe_base",
+  "textures": {
+    "sheet": "hextale:item/refined_hextech_pickaxe",
+    "particle": "hextale:item/refined_hextech_pickaxe"
+  }
+}
