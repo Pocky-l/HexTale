@@ -165,7 +165,9 @@ public final class GogglesView {
             }
             return new Reading(name, rows);
         }
-        if (entity instanceof EssenceTankBlockEntity tank) {
+        if (entity instanceof EssenceTankBlockEntity tank && tank.isCreative()) {
+            rows.add(new Row(null, Component.translatable("block.hextale.creative_essence_tank.all"), 0xFFE8D0FF));
+        } else if (entity instanceof EssenceTankBlockEntity tank) {
             contents(rows, tank.tank().contents());
             rows.add(Row.heading(Component.translatable(KEY + "filled", tank.tank().amount(), tank.tank().capacity())));
             return new Reading(name, rows);

@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * The Research Table's ink: it keeps none of its own and draws it from Essence Tanks of concentrate around the desk -
  * within {@value #REACH} blocks of either half sideways, one block below and above. A tank counts for the element it
- * holds pure; mixtures and empty tanks are no ink. Read on both sides (tanks sync their contents to clients).
+ * holds pure; mixtures and empty tanks are no ink; a Creative Essence Tank is ink of every essence. Read on both sides (tanks sync their contents to clients).
  */
 public final class InkSupply {
     public static final int REACH = 2;
@@ -38,7 +38,13 @@ public final class InkSupply {
         BlockPos min = new BlockPos(Math.min(main.getX(), side.getX()) - REACH, main.getY() - 1, Math.min(main.getZ(), side.getZ()) - REACH);
         BlockPos max = new BlockPos(Math.max(main.getX(), side.getX()) + REACH, main.getY() + 1, Math.max(main.getZ(), side.getZ()) + REACH);
         for (BlockPos pos : BlockPos.betweenClosed(min, max)) {
-            if (level.getBlockEntity(pos) instanceof EssenceTankBlockEntity tank) {
+            if (level.getBlockEntity(pos) instanceof EssenceTankBlockEntity tank && tank.isCreative()) {
+                for (Essence essence : Essence.values()) {
+                    supply.tanks.get(essence.ordinal()).add(tank);
+                    supply.available[essence.ordinal()] += EssenceTankBlockEntity.CAPACITY;
+                    supply.capacity[essence.ordinal()] += EssenceTankBlockEntity.CAPACITY;
+                }
+            } else if (level.getBlockEntity(pos) instanceof EssenceTankBlockEntity tank) {
                 Essence element = tank.tank().contents().pureEssence();
                 if (element != null) {
                     supply.tanks.get(element.ordinal()).add(tank);

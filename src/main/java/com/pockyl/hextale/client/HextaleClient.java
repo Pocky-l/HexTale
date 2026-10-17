@@ -78,11 +78,11 @@ public final class HextaleClient {
                         cell.isEmpty() ? Component.translatable("block.hextale.essence.empty") : cell.describe(), cell.total(), HextechTools.CELL)
                         .withStyle(ChatFormatting.GRAY));
             }
-            if (contents != null && (stack.is(ModItems.ESSENCE_TANK.get()) || stack.is(ModItems.CREATIVE_ESSENCE_TANK.get()))) {
-                event.getToolTip().add(1, stack.is(ModItems.CREATIVE_ESSENCE_TANK.get())
-                        ? Component.translatable("block.hextale.creative_essence_tank.holds", contents.describe()).withStyle(ChatFormatting.GRAY)
-                        : contents.describe().append(Component.literal(" (" + contents.total() + "/" + EssenceTankBlockEntity.CAPACITY + ")")
-                        .withStyle(ChatFormatting.GRAY)));
+            if (stack.is(ModItems.CREATIVE_ESSENCE_TANK.get())) {
+                event.getToolTip().add(1, Component.translatable("block.hextale.creative_essence_tank.all").withStyle(ChatFormatting.GRAY));
+            } else if (contents != null && stack.is(ModItems.ESSENCE_TANK.get())) {
+                event.getToolTip().add(1, contents.describe().append(Component.literal(" (" + contents.total() + "/"
+                        + EssenceTankBlockEntity.CAPACITY + ")").withStyle(ChatFormatting.GRAY)));
             }
         });
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());

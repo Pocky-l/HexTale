@@ -212,18 +212,15 @@ public final class RuneWorkGameTests {
         });
     }
 
-    /** The player's way: creative tanks of each essence, sneak + empty hand on the altar, and wait for the result. */
+    /** The player's way: a Creative Essence Tank, sneak + empty hand on the altar, and wait for the result. */
     @HexTest(maxTicks = 260)
     public static void aPlayerStartsARitualWithCreativeTanks(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
                 new ItemStack(Items.AMETHYST_SHARD), new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(ModItems.BRASS_INGOT.get())),
                 EssenceMix.EMPTY);
-        Essence[] essences = {Essence.ORE, Essence.FORGE, Essence.ENERGY};
-        for (int i = 0; i < essences.length; i++) {
-            BlockPos at = new BlockPos(6, 2, 0 + i * 2);
-            helper.setBlock(at, ModBlocks.CREATIVE_ESSENCE_TANK.get());
-            helper.getBlockEntity(at, EssenceTankBlockEntity.class).setCreativeEssence(essences[i]);
-        }
+        BlockPos creative = new BlockPos(6, 2, 0);
+        helper.setBlock(creative, ModBlocks.CREATIVE_ESSENCE_TANK.get());
+        helper.getBlockEntity(creative, EssenceTankBlockEntity.class).tank().set(EssenceTankBlockEntity.CREATIVE);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         player.setShiftKeyDown(true);
         BlockPos abs = helper.absolutePos(ALTAR);

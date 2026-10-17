@@ -59,12 +59,10 @@ public final class Hextale {
             output.accept(ModItems.ALEMBIC);
             output.accept(ModItems.SEPARATOR);
             output.accept(ModItems.ESSENCE_TANK);
-            // For creative building: a full tank, an infinite tank and a bottle of every essence.
+            // For creative building: the Creative Essence Tank (every essence, endless), full tanks and bottles of primals.
+            output.accept(ModItems.CREATIVE_ESSENCE_TANK);
             for (Essence essence : Essence.PRIMALS) {
                 output.accept(withEssence(ModItems.ESSENCE_TANK.get(), EssenceMix.pure(essence, EssenceTankBlockEntity.CAPACITY)));
-            }
-            for (Essence essence : Essence.PRIMALS) {
-                output.accept(withEssence(ModItems.CREATIVE_ESSENCE_TANK.get(), EssenceMix.pure(essence, EssenceTankBlockEntity.CAPACITY)));
             }
             for (Essence essence : Essence.PRIMALS) {
                 output.accept(EssenceFlaskItem.filled(EssenceMix.pure(essence, EssenceFlaskItem.CAPACITY)));

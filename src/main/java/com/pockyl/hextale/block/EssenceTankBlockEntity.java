@@ -39,6 +39,9 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     static final int FLOW_EVERY = 5;
     static final int FLOW = 4;
 
+    /** What a Creative Essence Tank holds: a full tank of every essence at once. */
+    public static final EssenceMix CREATIVE = EssenceMix.all(CAPACITY);
+
     private final EssenceTank tank = new EssenceTank(CAPACITY);
     /** A sticker per face (by {@link Direction} index): 0 none, else essence ordinal + 1. Only a sign for the player. */
     private final int[] labels = new int[Direction.values().length];
@@ -70,17 +73,11 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
         return getBlockState().getBlock() instanceof CreativeEssenceTankBlock;
     }
 
-    /** Makes a creative tank hold {@code essence} (always full). */
-    public void setCreativeEssence(Essence essence) {
-        tank.set(EssenceMix.pure(essence, CAPACITY));
-        setChanged();
-    }
-
     @Override
     protected void applyImplicitComponents(DataComponentGetter components) {
         super.applyImplicitComponents(components);
         EssenceMix contents = components.get(ModDataComponents.ESSENCE.get());
-        if (contents != null) {
+        if (contents != null && !isCreative()) {
             tank.set(contents.part(CAPACITY));
         }
     }
@@ -88,7 +85,7 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
-        if (!tank.isEmpty()) {
+        if (!tank.isEmpty() && !isCreative()) {
             components.set(ModDataComponents.ESSENCE.get(), tank.contents());
         }
     }
@@ -101,10 +98,12 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, EssenceTankBlockEntity tank) {
         if (tank.isCreative()) {
-            Essence essence = tank.tank.contents().pureEssence();
-            if (essence != null && tank.tank.amount() < CAPACITY) {
-                tank.tank.set(EssenceMix.pure(essence, CAPACITY));
+            // Every essence, always full; it pours nothing into pipes (machines and the table draw what they need).
+            if (!tank.tank.contents().equals(CREATIVE)) {
+                tank.tank.set(CREATIVE);
+                tank.setChanged();
             }
+            return;
         }
         if (level.getGameTime() % FLOW_EVERY != 0 || tank.tank.isEmpty()) {
             return;

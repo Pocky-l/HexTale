@@ -433,7 +433,6 @@
   "jade.hextale.pump.dry": "Needs to stand in water",
   "config.jade.plugin_hextale.essence_works": "HexTale essence works",
   "block.hextale.creative_essence_tank": "Creative Essence Tank",
-  "block.hextale.creative_essence_tank.holds": "Always full: %s",
   "book.hextale.page.path": "Researcher's Path",
   "book.hextale.page.stars": "Rune Star Map",
   "book.hextale.quest.done": "✔ Done",
@@ -667,5 +666,6 @@
   "rune.hextale.element.dye": "Dye",
   "rune.hextale.element.star": "Star",
   "rune.hextale.element.blood": "Blood",
-  "gui.hextale.research_table.hidden_string": "A hidden essence: strike to find it"
+  "gui.hextale.research_table.hidden_string": "A hidden essence: strike to find it",
+  "block.hextale.creative_essence_tank.all": "Every essence, endless"
 }

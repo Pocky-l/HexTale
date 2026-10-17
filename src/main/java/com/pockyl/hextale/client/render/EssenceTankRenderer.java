@@ -63,6 +63,11 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
         EssenceTank tank = tankEntity.tank();
         state.fill = tank.isEmpty() ? 0 : tank.amount() / (float) tank.capacity();
         state.color = tank.isEmpty() ? 0 : tank.contents().color();
+        if (tankEntity.isCreative() && tankEntity.getLevel() != null) {
+            float t = (tankEntity.getLevel().getGameTime() % 4800 + partialTick) / 30F;
+            int a = (int) t % Essence.COUNT;
+            state.color = RuneDrawing.mix(Essence.values()[a].color(), Essence.values()[(a + 1) % Essence.COUNT].color(), t - (int) t);
+        }
         state.time = tankEntity.getLevel() == null ? 0 : tankEntity.getLevel().getGameTime() + partialTick;
         state.seed = tankEntity.getBlockPos().asLong();
         for (Direction face : Direction.values()) {

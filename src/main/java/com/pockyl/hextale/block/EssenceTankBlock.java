@@ -88,11 +88,8 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
-        Essence pure = EssenceFlaskItem.contents(stack).pureEssence();
-        if (tank.isCreative() && pure != null) {
-            tank.setCreativeEssence(pure);
-            player.sendOverlayMessage(Flasks.describe(tank.tank()));
-            return InteractionResult.SUCCESS;
+        if (tank.isCreative()) {
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (Flasks.use(player, hand, stack, tank.tank())) {
             tank.setChanged();

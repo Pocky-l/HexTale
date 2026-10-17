@@ -49,8 +49,11 @@ public final class Flasks {
         }
     }
 
-    /** "Life 8, Earth 8 (16/256)", or "empty". */
+    /** "Life 8, Earth 8 (16/256)", "every essence" for a creative tank, or "empty". */
     public static Component describe(EssenceTank tank) {
+        if (tank.contents().equals(com.pockyl.hextale.block.EssenceTankBlockEntity.CREATIVE)) {
+            return Component.translatable("block.hextale.creative_essence_tank.all");
+        }
         return tank.isEmpty() ? Component.translatable("block.hextale.essence.empty")
                 : tank.contents().describe().append(" (" + tank.amount() + "/" + tank.capacity() + ")");
     }

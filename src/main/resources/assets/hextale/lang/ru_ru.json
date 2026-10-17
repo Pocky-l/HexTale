@@ -433,7 +433,6 @@
   "jade.hextale.pump.dry": "Нужно поставить в воду",
   "config.jade.plugin_hextale.essence_works": "HexTale: машины эссенции",
   "block.hextale.creative_essence_tank": "Творческий бак эссенции",
-  "block.hextale.creative_essence_tank.holds": "Всегда полон: %s",
   "book.hextale.page.path": "Путь исследователя",
   "book.hextale.page.stars": "Звёздная карта рун",
   "book.hextale.quest.done": "✔ Выполнено",
@@ -667,5 +666,6 @@
   "rune.hextale.element.dye": "Краска",
   "rune.hextale.element.star": "Звезда",
   "rune.hextale.element.blood": "Кровь",
-  "gui.hextale.research_table.hidden_string": "Скрытая эссенция: бейте, чтобы найти её"
+  "gui.hextale.research_table.hidden_string": "Скрытая эссенция: бейте, чтобы найти её",
+  "block.hextale.creative_essence_tank.all": "Все эссенции, без конца"
 }

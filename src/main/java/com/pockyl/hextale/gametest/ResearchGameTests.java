@@ -730,14 +730,13 @@ public final class ResearchGameTests {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.CREATIVE_ESSENCE_TANK.get());
         EssenceTankBlockEntity tank = helper.getBlockEntity(at, EssenceTankBlockEntity.class);
-        ItemStack fire = new ItemStack(ModItems.CREATIVE_ESSENCE_TANK.get());
-        fire.set(ModDataComponents.ESSENCE.get(), EssenceMix.pure(Essence.FIRE, EssenceTankBlockEntity.CAPACITY));
-        tank.applyComponentsFromItemStack(fire);
-        helper.assertTrue(tank.isCreative() && tank.tank().contents().pureEssence() == Essence.FIRE, "placed from the item, it holds fire");
-        tank.tank().drain(100, false);
+        helper.runAfterDelay(1, () -> {
+            helper.assertTrue(tank.isCreative() && tank.tank().contents().equals(EssenceTankBlockEntity.CREATIVE), "it holds every essence");
+            tank.tank().remove(EssenceMix.pure(Essence.MAGMA, 100));
+        });
         helper.assertTrue(tank.receive(Direction.NORTH, EssenceMix.pure(Essence.WATER, 4), true) == 0, "it takes nothing in");
-        helper.runAfterDelay(2, () -> {
-            helper.assertTrue(tank.tank().amount() == EssenceTankBlockEntity.CAPACITY, "and is full again the next tick");
+        helper.runAfterDelay(3, () -> {
+            helper.assertTrue(tank.tank().contents().get(Essence.MAGMA) == EssenceTankBlockEntity.CAPACITY, "and is full again the next tick");
             helper.succeed();
         });
     }

@@ -109,6 +109,13 @@ public final class EssenceMix {
         return new EssenceMix(out);
     }
 
+    /** {@code amount} mB of every essence (the unknown one left out): what a Creative Essence Tank holds. */
+    public static EssenceMix all(int amount) {
+        int[] out = new int[SLOTS];
+        Arrays.fill(out, 0, UNKNOWN, amount);
+        return new EssenceMix(out);
+    }
+
     /** Only the unknown essence. */
     public static EssenceMix unknown(int amount) {
         int[] out = new int[SLOTS];
