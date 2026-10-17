@@ -113,8 +113,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   blocks, more with runes) and lowers them into what it stands on - a furnace gets ore through its top. With nothing
   under it, it sends them along its links.
 - Sending Pylon: stands on a storage and sends what it gives out (a furnace's result, a chest's anything) to the places
-  you link. Right click the pylon, then right click a storage's face: the face counts (a furnace takes ore from the top,
-  fuel from the side). Up to four links, tried in order; the same clicks again unlink one, sneak + right click with an
+  you link. Right click the pylon, then right click a storage: a chest or a barrel simply fills, a furnace (or a blast
+  furnace, a smoker) sorts what comes - what it can cook into the input, fuel into the fuel slot; a gathering pylon on a
+  furnace does the same. Up to four links, tried in order; the same clicks again unlink one, sneak + right click with an
   empty hand unlinks all. Clicking the air or a block that cannot take items stops linking and does what it always does;
   with a block in hand a right click on a pylon places the block. A broken block drops its links by itself, and sneak +
   right click with an empty hand on a linked block unties it from every pylon. The item tooltip tells how.

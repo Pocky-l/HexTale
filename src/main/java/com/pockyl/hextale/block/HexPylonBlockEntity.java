@@ -23,9 +23,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.resource.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import com.pockyl.hextale.network.PylonFlightsPayload;
@@ -35,6 +33,7 @@ import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.PylonRune;
 import com.pockyl.hextale.transport.PylonFlight;
 import com.pockyl.hextale.transport.PylonIndex;
+import com.pockyl.hextale.transport.PylonInsert;
 import com.pockyl.hextale.transport.PylonKind;
 import com.pockyl.hextale.transport.PylonLink;
 import com.pockyl.hextale.transport.PylonLinking;
@@ -52,10 +51,13 @@ import org.jspecify.annotations.Nullable;
  * per move, so sided inventories, modded machines and full containers behave); the clients only see the items fly
  * ({@link PylonFlight}, sent in one small payload per move).
  *
- * <p>Gathering: every interval, the items lying within the radius (nearest first, past their pickup delay) go into the container below through its top - or, with no container below, to the links. Sending: what the
- * container below gives out through its bottom (a furnace's result, a chest's anything) goes to the links in order, each
- * link through the face it was made by; a link to a relay passes on through the relay's own links, up to {@value #MAX_HOPS} relays, each hop within the range of the pylon it leaves. Nothing to do = the pylon
- * sleeps longer each time (up to four intervals), so idle pylons cost almost nothing.
+ * <p>Gathering: every interval, the items lying within the radius (nearest first, past their pickup delay) go into the
+ * container below through its top - or, with no container below, to the links. Sending: what the container below gives
+ * out through its bottom (a furnace's result, a chest's anything) goes to the links in order, each link through the face
+ * it was made by; a link to a relay passes on through the relay's own links, up to {@value #MAX_HOPS} relays, each hop
+ * within the range of the pylon it leaves. Furnaces are filled by {@link PylonInsert}: what they cook into the input,
+ * fuel into the fuel slot. Nothing to do = the pylon sleeps longer each time (up to four intervals), so idle pylons cost
+ * almost nothing.
  */
 public class HexPylonBlockEntity extends BlockEntity {
     public static final int MAX_LINKS = 4;
@@ -248,9 +250,10 @@ public class HexPylonBlockEntity extends BlockEntity {
 
     /** Pulls the items lying around into the container below (or to the links); every item moved adds a flight. */
     void gather(ServerLevel level, List<PylonFlight> flights) {
-        ResourceHandler<ItemResource> below = level.getCapability(Capabilities.Item.BLOCK, worldPosition.below(), Direction.UP);
-        List<Destination> routes = below == null ? destinations(level) : List.of();
-        if (below == null && routes.isEmpty()) {
+        BlockPos belowPos = worldPosition.below();
+        boolean below = level.getCapability(Capabilities.Item.BLOCK, belowPos, Direction.UP) != null;
+        List<Destination> routes = below ? List.of() : destinations(level);
+        if (!below && routes.isEmpty()) {
             return;
         }
         int r = radius();
@@ -273,12 +276,12 @@ public class HexPylonBlockEntity extends BlockEntity {
             List<Vec3> path = new ArrayList<>();
             path.add(item.position().add(0, 0.25, 0));
             path.add(gem);
-            if (below != null) {
-                moved = ResourceHandlerUtil.insertStacking(below, resource, want, null);
+            if (below) {
+                moved = PylonInsert.insert(level, belowPos, Direction.UP, resource, want, null);
                 path.add(Vec3.atBottomCenterOf(worldPosition).add(0, 0.05, 0));
             } else {
                 for (Destination route : routes) {
-                    moved = ResourceHandlerUtil.insertStacking(route.handler(), resource, want, null);
+                    moved = PylonInsert.insert(level, route.pos(), route.face(), resource, want, null);
                     if (moved > 0) {
                         path.addAll(route.path());
                         break;
@@ -311,22 +314,38 @@ public class HexPylonBlockEntity extends BlockEntity {
         int budget = amount();
         Vec3 start = Vec3.atBottomCenterOf(worldPosition).add(0, 0.05, 0);
         for (Destination route : destinations(level)) {
-            // A few moves per route: a stack of one item, then the next kind of item, while the budget lasts.
-            for (int turn = 0; turn < 4 && budget > 0; turn++) {
-                ResourceStack<ItemResource> moved;
+            // Slot by slot of what the container gives out, each item where the target takes it (a furnace sorts ore and
+            // fuel), up to four kinds of item per route while the budget lasts.
+            int turns = 0;
+            for (int slot = 0; slot < from.size() && budget > 0 && turns < 4; slot++) {
+                ItemResource resource = from.getResource(slot);
+                int available = from.getAmountAsInt(slot);
+                if (resource.isEmpty() || available <= 0) {
+                    continue;
+                }
+                // First find out how many the target takes (a trial that is thrown away), then move exactly that many.
+                int moved;
+                try (Transaction trial = Transaction.openRoot()) {
+                    int extracted = from.extract(slot, resource, Math.min(budget, available), trial);
+                    moved = extracted <= 0 ? 0 : PylonInsert.insert(level, route.pos(), route.face(), resource, extracted, trial);
+                }
+                if (moved <= 0) {
+                    continue;
+                }
                 try (Transaction transaction = Transaction.openRoot()) {
-                    moved = ResourceHandlerUtil.moveFirstStacking(from, route.handler(), resource -> true, budget, transaction);
+                    int taken = from.extract(slot, resource, moved, transaction);
+                    if (taken != moved || PylonInsert.insert(level, route.pos(), route.face(), resource, taken, transaction) != taken) {
+                        continue;
+                    }
                     transaction.commit();
                 }
-                if (moved == null || moved.amount() <= 0) {
-                    break;
-                }
-                budget -= moved.amount();
+                turns++;
+                budget -= moved;
                 List<Vec3> path = new ArrayList<>();
                 path.add(start);
                 path.add(gem());
                 path.addAll(route.path());
-                flights.add(new PylonFlight(moved.resource().toStack(1), path, false));
+                flights.add(new PylonFlight(resource.toStack(1), path, false));
             }
             if (budget <= 0) {
                 return;
@@ -334,8 +353,8 @@ public class HexPylonBlockEntity extends BlockEntity {
         }
     }
 
-    /** A place items can go: the handler of a linked container face and the way there after this pylon's gem. */
-    record Destination(ResourceHandler<ItemResource> handler, List<Vec3> path) {
+    /** A place items can go: a linked block and its face ({@link PylonInsert} picks the slots), and the way there after this pylon's gem. */
+    record Destination(BlockPos pos, Direction face, List<Vec3> path) {
     }
 
     /** Every place this pylon reaches through its links, in link order (relays' links in theirs). */
@@ -373,14 +392,13 @@ public class HexPylonBlockEntity extends BlockEntity {
             if (gem.distanceTo(Vec3.atCenterOf(link.pos())) > range) {
                 continue;
             }
-            ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, link.pos(), link.face());
-            if (handler == null) {
+            if (level.getCapability(Capabilities.Item.BLOCK, link.pos(), link.face()) == null) {
                 continue;
             }
             List<Vec3> full = new ArrayList<>(path);
             full.add(link.approach());
             full.add(link.entry());
-            out.add(new Destination(handler, full));
+            out.add(new Destination(link.pos(), link.face(), full));
         }
     }
 

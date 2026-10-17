@@ -86,16 +86,39 @@ public final class PylonGameTests {
         });
     }
 
-    /** Set on a furnace, a gathering pylon feeds dropped ore into its top: the input slot. */
+    /** Set on a furnace, a gathering pylon feeds dropped ore into its input and coal into its fuel slot. */
     @HexTest(maxTicks = 200)
     public static void gatheringPylonFeedsAFurnaceFromTheTop(GameTestHelper helper) {
         clear(helper, 6);
         helper.setBlock(BASE, Blocks.FURNACE);
         place(helper, ModBlocks.GATHERING_PYLON.get(), BASE.above());
         drop(helper, Items.RAW_IRON, 4, new Vec3(2.5, 1.2, 2.5));
+        drop(helper, Items.COAL, 3, new Vec3(1.5, 1.2, 3.5));
         FurnaceBlockEntity furnace = helper.getBlockEntity(BASE, FurnaceBlockEntity.class);
-        helper.succeedWhen(() -> helper.assertTrue(furnace.getItem(0).is(Items.RAW_IRON) && furnace.getItem(0).getCount() == 4,
-                "the ore went into the input slot"));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(furnace.getItem(0).is(Items.RAW_IRON), "the ore went into the input slot");
+            helper.assertTrue(furnace.getItem(1).is(Items.COAL), "the coal went into the fuel slot");
+        });
+    }
+
+    /** Coal and ore sent to a furnace sort themselves: ore into the input, coal into the fuel slot - whatever face was linked. */
+    @HexTest(maxTicks = 200)
+    public static void aFurnaceGetsFuelAndOreInTheirSlots(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, Blocks.CHEST);
+        BlockPos furnacePos = BASE.offset(3, 0, 0);
+        helper.setBlock(furnacePos, Blocks.FURNACE);
+        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        from.setItem(0, new ItemStack(Items.COAL, 8));
+        from.setItem(1, new ItemStack(Items.RAW_IRON, 8));
+        HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        pylon.toggleLink(link(helper, furnacePos, Direction.UP));
+        FurnaceBlockEntity furnace = helper.getBlockEntity(furnacePos, FurnaceBlockEntity.class);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(count(from, Items.COAL) == 0 && count(from, Items.RAW_IRON) == 0, "coal and ore were sent");
+            helper.assertTrue(furnace.getItem(1).is(Items.COAL), "coal went into the fuel slot");
+            helper.assertTrue(furnace.getItem(0).is(Items.RAW_IRON), "ore went into the input");
+        });
     }
 
     /** A sending pylon on a chest moves its contents into the linked chest. */
