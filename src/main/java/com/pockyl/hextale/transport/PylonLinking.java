@@ -303,6 +303,9 @@ public final class PylonLinking {
         while (it.hasNext()) {
             PylonFlight.Shown shown = it.next();
             long age = now - shown.start;
+            if (shown.flight.isEssence()) {
+                essenceMotes(level, shown, age);
+            }
             if (!shown.landed && age >= shown.duration) {
                 shown.landed = true;
                 Vec3 end = shown.flight.path().getLast();
@@ -317,6 +320,25 @@ public final class PylonLinking {
             if (age > shown.duration + FADE_TICKS) {
                 it.remove();
             }
+        }
+    }
+
+    /**
+     * Essence on its way: while a leg lets its motes go, two glowing motes a tick leave the leg's start (a little
+     * scattered) and arc into its end - the altar's flow particles, in the essence's colour.
+     */
+    private static void essenceMotes(Level level, PylonFlight.Shown shown, long age) {
+        PylonFlight.Phase phase = shown.flight.phaseAt(shown.phases, age);
+        if (phase == null || age - phase.start() >= PylonFlight.MOTE_SPAWN_TICKS) {
+            return;
+        }
+        Vec3 from = shown.flight.path().get(phase.leg());
+        Vec3 to = shown.flight.path().get(phase.leg() + 1);
+        var random = level.getRandom();
+        for (int i = 0; i < 2; i++) {
+            Vec3 start = from.add((random.nextDouble() - 0.5) * 0.25, (random.nextDouble() - 0.5) * 0.2, (random.nextDouble() - 0.5) * 0.25);
+            Vec3 offset = start.subtract(to);
+            level.addParticle(com.pockyl.hextale.registry.ModParticles.flow(shown.flight.color()), to.x, to.y, to.z, offset.x, offset.y, offset.z);
         }
     }
 

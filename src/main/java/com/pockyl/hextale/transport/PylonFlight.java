@@ -22,7 +22,7 @@ import java.util.List;
  * while the tendril's tail follows ({@link Move#SLIDE}); a short last leg into a container is a plain sink
  * ({@link Move#SINK}).</li>
  * </ol>
- * Essence ({@code color} >= 0, no item) is poured instead: every leg a {@link Move#STREAM}. Legs longer than a block bend
+ * Essence ({@code color} >= 0, no item) flies instead as the altar's motes: every leg a {@link Move#STREAM}. Legs longer than a block bend
  * upward; {@link #curve} gives the point of a leg.
  */
 public record PylonFlight(ItemStack icon, List<Vec3> path, boolean gathered, int color) {
@@ -34,12 +34,20 @@ public record PylonFlight(ItemStack icon, List<Vec3> path, boolean gathered, int
             ByteBufCodecs.BOOL, PylonFlight::gathered,
             ByteBufCodecs.INT, PylonFlight::color,
             PylonFlight::new);
+    /** Ticks during which an essence leg lets its motes go. */
+    public static final int MOTE_SPAWN_TICKS = 8;
+
+    /** How long an essence mote flies a leg of this length (the altar's flow motes, at their longest). */
+    public static float moteTicks(double length) {
+        return (float) Mth.clamp(10 + length * 3.5, 12, 48) + 6;
+    }
+
     /** A last leg shorter than this is a sink straight into the container, not a tendril. */
     private static final double SINK_BELOW = 1.5;
 
     public enum Move {
         REACH, GRAB, DRAG, ABSORB, EXTEND, SLIDE, SINK,
-        /** Essence pouring along a leg: a jet of light whose front runs ahead and whose tail follows. */
+        /** Essence along a leg: glowing motes arcing from its start to its end, like the altar's. */
         STREAM
     }
 
@@ -80,9 +88,10 @@ public record PylonFlight(ItemStack icon, List<Vec3> path, boolean gathered, int
         }
         float at = 0;
         if (isEssence()) {
-            // Essence: drawn up out of the jar into the bulb, then poured leg after leg.
+            // Essence flies like the altar's: motes are let go for MOTE_SPAWN_TICKS, each arcing to the leg's end in about
+            // as long as the altar's motes take (MOTE_TICKS); the next leg starts when they have arrived.
             for (int leg = 0; leg < path.size() - 1; leg++) {
-                at = add(out, Move.STREAM, leg, at, (float) Mth.clamp(5 + legLength(leg) * 1.3, 7, 24));
+                at = add(out, Move.STREAM, leg, at, MOTE_SPAWN_TICKS + moteTicks(legLength(leg)));
             }
             return out;
         }

@@ -512,6 +512,8 @@ public class HexPylonBlockEntity extends BlockEntity {
             path.add(start);
             path.add(gem());
             path.addAll(route.path());
+            // Motes arc on their own: straight from the last gem into the top, without the turn above it.
+            path.remove(path.size() - 2);
             flights.add(PylonFlight.essence(path, drawn.color()));
         }
     }

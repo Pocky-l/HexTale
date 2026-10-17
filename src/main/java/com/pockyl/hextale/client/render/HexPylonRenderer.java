@@ -371,18 +371,14 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
                 item(poseStack, collector, fs, at, size, fs.age * 12);
             }
             case STREAM -> {
-                // Essence poured along the leg: the front runs ahead, the tail follows, a bright drop leads.
-                float head = PylonFlight.out(Math.min(1, u * 1.6F));
-                float tail = PylonFlight.smooth(Math.max(0, (u - 0.35F) / 0.65F));
-                int essence = flight.color();
-                TendrilFx.submit(poseStack, collector, camera.orientation, eye, flight, leg, tail, head, false, essence, time, fs.seed + leg, 1,
-                        0.5F, origin, 1);
-                Vec3 front = flight.curve(leg, head).subtract(origin);
-                poseStack.pushPose();
-                poseStack.translate(front.x, front.y, front.z);
-                HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.3F, essence, 0.8F * (1 - tail));
-                HexFx.sprite(poseStack, collector, camera.orientation, HexFx.MOTE, 0.12F, RuneDrawing.lighten(essence, 0.5F), 1 - tail);
-                poseStack.popPose();
+                // Essence flies as the altar's motes (particles, see PylonLinking): only a soft glow where it lands.
+                if (fs.u > 0.6F) {
+                    Vec3 end = flight.path().get(leg + 1).subtract(origin);
+                    poseStack.pushPose();
+                    poseStack.translate(end.x, end.y, end.z);
+                    HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.35F, flight.color(), 0.5F * (fs.u - 0.6F) / 0.4F);
+                    poseStack.popPose();
+                }
             }
             case SINK -> {
                 float p = PylonFlight.smooth(u);

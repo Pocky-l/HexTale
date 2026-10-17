@@ -123,7 +123,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Relay Pylon: neither takes nor gives - it catches items and essence sent to it and passes them on to its own links,
   up to eight relays in a chain. Made of calcite, copper ingots, amethyst and a lightning rod.
 - Siphon Pylon: set on an Essence Jar, it draws the essence up into its glass bulb (swirling in the jar's colour) and
-  pours it as a stream of light along its links - into other jars, a separator, the Hex Smelter, anything that takes
+  sends it as glowing motes arcing along its links, like the essence drawn into the altar - into other jars, a separator, the Hex Smelter, anything that takes
   essence from pipes; relays pass the stream on.
 - Pylon Filter: right click it to set it up - nine slots (click with an item to put it in), "only these" or "all but
   these", matched by kind or exactly (enchantments, contents), and numbers: keep N of each item in the source, or fill
