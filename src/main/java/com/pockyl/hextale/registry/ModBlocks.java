@@ -20,6 +20,7 @@ import com.pockyl.hextale.block.CreativeEssenceTankBlock;
 import com.pockyl.hextale.block.DrainValveBlock;
 import com.pockyl.hextale.block.EssenceTankBlock;
 import com.pockyl.hextale.block.PumpBlock;
+import com.pockyl.hextale.block.HexSmelterBlock;
 import com.pockyl.hextale.block.HextechAltarBlock;
 import com.pockyl.hextale.block.HextechLampBlock;
 import com.pockyl.hextale.block.PedestalBlock;
@@ -85,6 +86,15 @@ public final class ModBlocks {
     public static final DeferredBlock<HextechLampBlock> HEXTECH_LAMP = BLOCKS.registerBlock("hextech_lamp", HextechLampBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.LANTERN)
                     .lightLevel(state -> 15).noOcclusion().pushReaction(PushReaction.POPPED).requiresCorrectToolForDrops());
+
+    /** A furnace of magic bricks that burns fiery essence; light while it smelts. */
+    public static final DeferredBlock<HexSmelterBlock> HEX_SMELTER = BLOCKS.registerBlock("hex_smelter", HexSmelterBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLUE).strength(3.5F, 6.0F).sound(SoundType.TUFF_BRICKS)
+                    .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> state.getValue(HexSmelterBlock.LIT) ? 13 : 3));
+    /** Nine brass ingots: a building block with the soft sheen of the machines. */
+    public static final DeferredBlock<Block> BRASS_BLOCK = BLOCKS.registerBlock("brass_block", Block::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(4.0F, 6.0F).sound(SoundType.COPPER)
+                    .requiresCorrectToolForDrops());
 
     private ModBlocks() {
     }

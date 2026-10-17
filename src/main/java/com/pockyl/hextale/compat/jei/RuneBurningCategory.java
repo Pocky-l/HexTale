@@ -24,17 +24,46 @@ import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.runework.PickaxeEffects;
 import com.pockyl.hextale.runework.PickaxeRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
+import com.pockyl.hextale.runework.RuneHolder;
+import com.pockyl.hextale.runework.SmelterRune;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Burning a rune into a hextech pickaxe at the altar: the pickaxe alone on the altar, the rune on a stele, no pedestal
+ * Burning a rune into a hextech pickaxe or a Hex Smelter at the altar: it lies alone on the altar, the rune on a stele, no pedestal
  * items - only the rune's essence. Shows what the rune does, how much at one, two and three stars, what each star costs
  * and the runes it is incompatible with.
  */
-public class RuneBurningCategory extends AbstractRecipeCategory<PickaxeRune> {
-    public static final IRecipeType<PickaxeRune> TYPE = IRecipeType.create(Hextale.MOD_ID, "rune_burning", PickaxeRune.class);
+public class RuneBurningCategory extends AbstractRecipeCategory<RuneBurningCategory.Recipe> {
+    public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "rune_burning", Recipe.class);
+
+    /** One rune burned into a pickaxe or a Hex Smelter. */
+    public record Recipe(RuneHolder holder, ComplexRune rune) {
+        String descriptionKey() {
+            return holder == RuneHolder.PICKAXE ? PickaxeRune.of(rune).descriptionKey() : SmelterRune.of(rune).descriptionKey();
+        }
+
+        String valueKey() {
+            return holder == RuneHolder.PICKAXE ? PickaxeRune.of(rune).valueKey() : SmelterRune.of(rune).valueKey();
+        }
+
+        String amount(int stars) {
+            return holder == RuneHolder.PICKAXE ? PickaxeEffects.amount(PickaxeRune.of(rune), stars) : SmelterRune.of(rune).amount(stars);
+        }
+
+        static List<Recipe> all() {
+            List<Recipe> out = new java.util.ArrayList<>();
+            for (PickaxeRune rune : PickaxeRune.values()) {
+                out.add(new Recipe(RuneHolder.PICKAXE, rune.rune()));
+            }
+            for (SmelterRune rune : SmelterRune.values()) {
+                out.add(new Recipe(RuneHolder.SMELTER, rune.rune()));
+            }
+            return out;
+        }
+    }
+
     private static final int WIDTH = 168;
     private static final int HEIGHT = 124;
     private static final int GOLD = 0xF0C24A;
@@ -46,11 +75,13 @@ public class RuneBurningCategory extends AbstractRecipeCategory<PickaxeRune> {
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, PickaxeRune rune, IFocusGroup focuses) {
-        List<ItemStack> before = ModItems.PICKAXES.values().stream().map(item -> new ItemStack(item.get())).toList();
+    public void setRecipe(IRecipeLayoutBuilder builder, Recipe recipe, IFocusGroup focuses) {
+        List<ItemStack> before = recipe.holder() == RuneHolder.PICKAXE
+                ? ModItems.PICKAXES.values().stream().map(item -> new ItemStack(item.get())).toList()
+                : List.of(new ItemStack(ModItems.HEX_SMELTER.get()));
         List<ItemStack> after = before.stream().map(stack -> {
             ItemStack out = stack.copy();
-            PickaxeRunes.set(out, PickaxeRunes.EMPTY.with(rune, 1));
+            recipe.holder().set(out, PickaxeRunes.EMPTY.with(recipe.rune(), 1));
             return out;
         }).toList();
         builder.addInputSlot(4, 4).setStandardSlotBackground().addItemStacks(before);
@@ -60,7 +91,7 @@ public class RuneBurningCategory extends AbstractRecipeCategory<PickaxeRune> {
     }
 
     @Override
-    public void draw(PickaxeRune rune, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+    public void draw(Recipe rune, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
         Font font = Minecraft.getInstance().font;
         ComplexRune complex = rune.rune();
         // pickaxe + (rune over its stele) -> pickaxe with the rune
@@ -84,14 +115,14 @@ public class RuneBurningCategory extends AbstractRecipeCategory<PickaxeRune> {
         y = Math.max(y, 60) + 2;
 
         // One, two and three stars: how strong, and what it costs.
-        Map.Entry<Essence, Integer> cost = rune.cost(1).asMap().entrySet().iterator().next();
+        Map.Entry<Essence, Integer> cost = rune.holder().cost(complex, 1).asMap().entrySet().iterator().next();
         int column = (WIDTH - 8) / 3;
         PixelArt.fill(graphics, 4, y - 2, WIDTH - 4, y + 31, PixelArt.argb(0x8B8B8B, 0.35F));
         PixelArt.flush(graphics);
         for (int stars = 1; stars <= 3; stars++) {
             int cx = 4 + (stars - 1) * column + column / 2;
             graphics.centeredText(font, Component.literal("★".repeat(stars)), cx, y, 0xFF000000 | GOLD);
-            Component value = Component.translatable(rune.valueKey(), PickaxeEffects.amount(rune, stars));
+            Component value = Component.translatable(rune.valueKey(), rune.amount(stars));
             graphics.text(font, value, cx - font.width(value) / 2, y + 10, 0xFF000000, false);
             String mb = cost.getValue() * stars + " mB";
             int ex = cx - (PixelArt.ICON + 2 + font.width(mb)) / 2;
@@ -103,7 +134,7 @@ public class RuneBurningCategory extends AbstractRecipeCategory<PickaxeRune> {
 
         StringBuilder clashes = new StringBuilder();
         for (PickaxeRune other : PickaxeRune.values()) {
-            if (rune.clashes(other)) {
+            if (rune.holder().clashes(complex, other.rune()) && other.rune() != complex) {
                 clashes.append(clashes.isEmpty() ? "" : ", ").append(Component.translatable(other.rune().translationKey()).getString());
             }
         }
@@ -111,17 +142,18 @@ public class RuneBurningCategory extends AbstractRecipeCategory<PickaxeRune> {
             graphics.text(font, Component.translatable("jei.hextale.rune_burning.clash", clashes.toString()), 4, y, 0xFFB03A2E, false);
             y += 10;
         }
-        for (FormattedCharSequence line : font.split(Component.translatable("jei.hextale.rune_burning.note", PickaxeRunes.SLOTS), WIDTH - 8)) {
+        String note = rune.holder() == RuneHolder.PICKAXE ? "jei.hextale.rune_burning.note" : "jei.hextale.rune_burning.note_smelter";
+        for (FormattedCharSequence line : font.split(Component.translatable(note, rune.holder().slots()), WIDTH - 8)) {
             graphics.text(font, line, 4, y, MUTED, false);
             y += 10;
         }
     }
 
     @Override
-    public void getTooltip(ITooltipBuilder tooltip, PickaxeRune rune, IRecipeSlotsView slots, double mouseX, double mouseY) {
+    public void getTooltip(ITooltipBuilder tooltip, Recipe rune, IRecipeSlotsView slots, double mouseX, double mouseY) {
         // The essence icons name their essence.
         if (mouseY >= 0 && mouseX >= 0) {
-            Map.Entry<Essence, Integer> cost = rune.cost(1).asMap().entrySet().iterator().next();
+            Map.Entry<Essence, Integer> cost = rune.holder().cost(rune.rune(), 1).asMap().entrySet().iterator().next();
             int top = costTop(rune);
             if (mouseY >= top && mouseY < top + 10 && mouseX >= 4 && mouseX < WIDTH - 4) {
                 tooltip.add(Component.translatable(cost.getKey().translationKey()).withColor(cost.getKey().color()));
@@ -129,7 +161,7 @@ public class RuneBurningCategory extends AbstractRecipeCategory<PickaxeRune> {
         }
     }
 
-    private static int costTop(PickaxeRune rune) {
+    private static int costTop(Recipe rune) {
         int lines = Minecraft.getInstance().font.split(Component.translatable(rune.descriptionKey()), WIDTH - 8).size();
         return Math.max(40 + lines * 10, 60) + 2 + 20;
     }

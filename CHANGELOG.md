@@ -23,10 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   an inkwell and a leather writing pad. Unstable hextech hangs over the parchment from a brass arm, turning inside
   spinning gimbal rings; glyphs stream from the parchment while someone writes, and a freshly drawn rune rises over the
   desk as a glowing hieroglyph. The table keeps its own paper; every research takes one sheet when it starts.
-- Researcher's Diary: a star book signed with its owner's name. Its first page is the Researcher's Path - quests from
-  the Research Table to the full codex, each with its goal, its recipe and a short note, done the moment the goal is
-  met. Its second page is a dark sky to drag and zoom, where the 72 runes hang as stars in constellations. Leather
-  bookmarks turn between the two.
+- Researcher's Diary: a book signed with its owner's name, holding the Researcher's Guide - one branching path through
+  the mod in a dark sky to drag and zoom. Things to make, runes to study and devices still being worked out (marked WIP)
+  share the path in the order they can really be made; a step opens when the steps before it are done, and only what
+  is done or open can be seen - the rest of the path fades into the fog. Key steps glow gold, storm steps crackle with
+  lightning, hextech steps are circled by blue sparks, cursed runes smoke, heat steps shed embers. A click opens the
+  step's plate: the recipe or ritual for a thing, what a rune does, what it is used for and what it opens (and a button
+  that lays it on the Research Table), the idea behind a device to come.
 - Essences: everything is made of them. Nine primal essences (fire, water, earth, air, light, shadow, life, metal,
   lightning) combine into 71 more, from Steam and Ore to Time and Soul; every essence has its own picture. Every item
   carries up to six essences in different amounts, from hand-tuned base materials to anything crafted from them; the
@@ -35,14 +38,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Shine rays in from the brass rim - a ray is absorbed by an essence ahead, bent away by one beside its path, turned back
   by two - and read where it leaves; check a section to look inside. Rays and checks share a small budget. A studied
   item shows its essences in its tooltip.
-- Rune research: choose one of the 72 runes in the star book and draw it on a worn parchment with a hexagon of six
+- Rune research: choose a rune the guide has opened and draw it on a worn parchment with a hexagon of six
   essences - one per direction, chosen by the rune's theme. Drag ink from the hextech orb to every point of the rune;
   the ink may branch from the orb or from any inked section. A step costs ink of the essence its direction points to,
   a step onto a point ten of the point's own essence; right click takes a step back for free. A shorter drawing earns
   up to three stars. In chapter I the dark runes are stone; from chapter II they are dark fields the ink may cross,
   but some of their sections are cursed - every inked section next to them counts the curses it touches, like a
   minesweeper. Stepping on a curse bursts the orb and burns the sheet. A finished drawing writes the rune's scroll;
-  studying the scroll teaches the rune to the researcher with the scroll's stars.
+  studying the scroll teaches the rune to the researcher with the scroll's stars. Smelting comes first; every rune
+  opens the runes and devices after it on the guide.
+- Creative mode: the Scroll of Omniscience teaches everything (every rune with three stars, every item, every quest),
+  the Scroll of Oblivion forgets everything.
 
 **Essence works**
 - Essence is one mixed liquid measured in millibuckets, one millibucket per point of an item's essence (the number in
@@ -72,7 +78,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   centre item, the pedestal items are drawn in one by one, then the essences one after another, and the centre
   becomes something new. A ritual short of essence stalls and, left too long, collapses. Ghosts of the items a ritual
   still lacks hover over the free pedestals.
-- Hextech pickaxes: the Hextech Pickaxe (iron strength), the Refined Hextech Pickaxe (diamond) and the Radiant Hextech
+- Hex Smelter: a kiln of magic bricks with brass posts and a hextech gem floating in its crown, made at the altar from
+  a blast furnace under the rune of Smelting. It smelts anything a furnace smelts, twice as fast, and burns fiery
+  essence instead of fuel - piped in at the back and the sides or poured from bottles; the more fire an essence holds,
+  the less of it goes. Its mouth burns with a hextech-blue flame while it works. Runes are burned into it at the altar
+  like into a pickaxe, up to three: Tempering saves essence, Bellows speeds it up, Forge adds ingots from ore, Lens
+  strengthens the others; the gem glows in their colours and the smelter keeps them when broken. JEI, Jade and the
+  goggles show it.
+- Block of Brass.
+- Hextech pickaxes: the Hextech Pickaxe (iron strength), forged under the rune of Smelting, the Refined Hextech Pickaxe (diamond) and the Radiant Hextech
   Pickaxe (netherite, fireproof), each made at the altar from the one before - runes and enchantments carry over. Their
   crystal glows in the colour of the runes they carry.
 - Runes on a pickaxe, like enchantments: put the pickaxe alone on the altar, choose runes on rune steles and start the
@@ -80,9 +94,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   four runes on any pickaxe; thirteen runes of the codex take to a pickaxe, and a rune is as strong as its stars. A
   stele with more stars raises a rune the pickaxe already has. Some runes cannot share a pickaxe, and only one of them
   may answer the right click. A grindstone takes the runes off again.
-- The research book shows a turning 3D altar burning the chosen rune into a pickaxe; pick any of the thirteen pickaxe
-  runes to see what it does, how strong it is at one, two and three stars, what it costs and which runes it is
-  incompatible with. JEI shows the same for every rune, next to every pickaxe recipe.
+- The guide shows a turning 3D altar burning the chosen rune into a pickaxe or the smelter; pick any rune they take to
+  see what it does, how strong it is at one, two and three stars, what it costs and which runes it is incompatible
+  with. JEI shows the same for every rune, next to every pickaxe recipe.
 - Magic stone: stone that has drunk essence - flat plates of a dusky violet stone with nothing set into it. Craft eight stone,
   cobblestone, deepslate, tuff, andesite, diorite, granite or calcite around a bottle of any essence (the bottle comes
   back), or open a Drain Valve over such stone: the essence it pours soaks into the stone where the stream lands, one

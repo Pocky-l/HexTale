@@ -17,7 +17,8 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes burned into a hextech pickaxe, in the order they were burned in, each with its stars. Immutable.
+ * The runes burned into a hextech pickaxe or a Hex Smelter ({@link RuneHolder}), in the order they were burned in, each
+ * with its stars. Immutable.
  */
 public record PickaxeRunes(List<Entry> entries) {
     /** Runes any hextech pickaxe holds. */
@@ -82,15 +83,43 @@ public record PickaxeRunes(List<Entry> entries) {
 
     /** With this rune at these stars: added at the end, or its stars replaced where it already is. */
     public PickaxeRunes with(PickaxeRune rune, int stars) {
+        return with(rune.rune(), stars);
+    }
+
+    public PickaxeRunes with(ComplexRune rune, int stars) {
         List<Entry> list = new ArrayList<>(entries);
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).rune() == rune.rune()) {
-                list.set(i, new Entry(rune.rune(), stars));
+            if (list.get(i).rune() == rune) {
+                list.set(i, new Entry(rune, stars));
                 return new PickaxeRunes(list);
             }
         }
-        list.add(new Entry(rune.rune(), stars));
+        list.add(new Entry(rune, stars));
         return new PickaxeRunes(list);
+    }
+
+    /** Stars of any rune in the set, 0 when it is missing. */
+    public int stars(ComplexRune rune) {
+        for (Entry entry : entries) {
+            if (entry.rune() == rune) {
+                return entry.stars();
+            }
+        }
+        return 0;
+    }
+
+    /** The strength any rune works with: its stars, one more with a Lens in the set (up to four); 0 when missing. */
+    public int strength(ComplexRune rune) {
+        int stars = stars(rune);
+        if (stars == 0) {
+            return 0;
+        }
+        return Math.min(4, stars + (rune != PickaxeRune.LENS.rune() && stars(PickaxeRune.LENS.rune()) > 0 ? 1 : 0));
+    }
+
+    /** The runes of the set, in burning order. */
+    public List<ComplexRune> complexRunes() {
+        return entries.stream().map(Entry::rune).toList();
     }
 
     /** The pickaxe runes these entries hold (skipping any that is no longer a pickaxe rune). */

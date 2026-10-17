@@ -82,6 +82,8 @@ public final class Hextale {
             output.accept(ModItems.MAGIC_BRICK_WALL);
             output.accept(ModItems.CHISELED_MAGIC_BRICKS);
             output.accept(ModItems.HEXTECH_LAMP);
+            output.accept(ModItems.HEX_SMELTER);
+            output.accept(ModItems.BRASS_BLOCK);
             ModItems.PICKAXES.values().forEach(output::accept);
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
@@ -89,6 +91,8 @@ public final class Hextale {
             output.accept(ModItems.BRASS_INGOT);
             output.accept(ModItems.BRASS_NUGGET);
             output.accept(exampleScroll());
+            output.accept(ModItems.SCROLL_OF_OMNISCIENCE);
+            output.accept(ModItems.SCROLL_OF_OBLIVION);
         });
 
         container.registerConfig(ModConfig.Type.SYNCED, Config.SPEC);

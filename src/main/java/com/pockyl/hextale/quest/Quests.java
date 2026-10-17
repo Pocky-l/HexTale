@@ -20,13 +20,14 @@ import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.HextechPickaxeItem;
 import com.pockyl.hextale.runework.PickaxeRunes;
+import com.pockyl.hextale.runework.RuneHolder;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-/** Server side of the researcher's path: notices met goals and marks their quests done. */
+/** Server side of the researcher's guide: notices met goals and marks their item quests done. */
 public final class Quests {
     /** How often a player's open quests are checked. */
     public static final int CHECK_TICKS = 10;
@@ -40,8 +41,8 @@ public final class Quests {
     public static void check(ServerPlayer player) {
         RuneKnowledge knowledge = Research.of(player);
         boolean changed = false;
-        for (Quest quest : Quest.values()) {
-            if (!knowledge.questDone(quest) && quest.isMet(player)) {
+        for (Quest quest : Guide.all()) {
+            if (quest.kind() == Quest.Kind.ITEM && !knowledge.questDone(quest) && quest.isMet(player)) {
                 knowledge.completeQuest(quest);
                 changed = true;
                 player.sendSystemMessage(Component.translatable("book.hextale.quest.completed",
@@ -77,6 +78,12 @@ public final class Quests {
     /** A hextech pickaxe carrying at least this many runes. */
     static Predicate<ServerPlayer> pickaxeRunes(int runes) {
         return player -> player.getInventory().contains(stack -> HextechPickaxeItem.is(stack) && PickaxeRunes.of(stack).count() >= runes);
+    }
+
+    /** A Hex Smelter item carrying at least this many runes. */
+    static Predicate<ServerPlayer> smelterRunes(int runes) {
+        return player -> player.getInventory().contains(stack -> stack.is(ModItems.HEX_SMELTER.get())
+                && RuneHolder.SMELTER.runes(stack).count() >= runes);
     }
 
     /** A bottle of concentrate in the inventory, or a Separator open on the screen with concentrate in it. */

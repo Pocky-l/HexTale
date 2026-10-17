@@ -1,0 +1,19 @@
+{
+  "center": "minecraft:blast_furnace",
+  "pedestals": [
+    "hextale:hextech_gemstone",
+    "hextale:brass_ingot",
+    "hextale:brass_ingot",
+    "hextale:magic_bricks",
+    "hextale:magic_bricks"
+  ],
+  "essences": {
+    "fire": 32,
+    "magma": 16,
+    "forge": 16
+  },
+  "runes": [
+    "fire_earth"
+  ],
+  "result": "hextale:hex_smelter"
+}

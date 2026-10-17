@@ -20,9 +20,13 @@ public record PickaxeRuneTint() implements ItemTintSource {
 
     @Override
     public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner) {
-        PickaxeRunes runes = PickaxeRunes.of(stack);
+        return ARGB.opaque(blend(PickaxeRunes.of(stack)));
+    }
+
+    /** The runes' colours mixed by their stars; hextech cyan for none (also the Hex Smelter's gem). */
+    public static int blend(PickaxeRunes runes) {
         if (runes.isEmpty()) {
-            return ARGB.opaque(PLAIN);
+            return PLAIN;
         }
         float r = 0;
         float g = 0;
@@ -35,7 +39,7 @@ public record PickaxeRuneTint() implements ItemTintSource {
             b += (color & 0xFF) * entry.stars();
             weight += entry.stars();
         }
-        return ARGB.color(255, Math.round(r / weight), Math.round(g / weight), Math.round(b / weight));
+        return Math.round(r / weight) << 16 | Math.round(g / weight) << 8 | Math.round(b / weight);
     }
 
     @Override

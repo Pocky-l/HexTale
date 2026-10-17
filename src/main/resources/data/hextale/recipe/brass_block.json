@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": "hextale:brass_ingot"
+  },
+  "result": {
+    "id": "hextale:brass_block",
+    "count": 1
+  }
+}

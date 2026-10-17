@@ -13,6 +13,7 @@ import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.block.PumpBlockEntity;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
+import com.pockyl.hextale.block.HexSmelterBlockEntity;
 import com.pockyl.hextale.block.HextechAltarBlockEntity;
 import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
@@ -25,6 +26,8 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("research_table",
                     () -> new BlockEntityType<>(ResearchTableBlockEntity::new, ModBlocks.RESEARCH_TABLE.get()));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HexSmelterBlockEntity>> HEX_SMELTER =
+            BLOCK_ENTITIES.register("hex_smelter", () -> new BlockEntityType<>(HexSmelterBlockEntity::new, ModBlocks.HEX_SMELTER.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AlembicBlockEntity>> ALEMBIC =
             BLOCK_ENTITIES.register("alembic", () -> new BlockEntityType<>(AlembicBlockEntity::new, ModBlocks.ALEMBIC.get()));
 

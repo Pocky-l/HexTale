@@ -39,6 +39,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, AlembicBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, DrainValveBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, PumpBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexSmelterBlock.class);
     }
 
     private enum Machines implements IBlockComponentProvider {
@@ -75,6 +76,15 @@ public class HextaleJadePlugin implements IWailaPlugin {
                     tooltip.add(Component.translatable("gui.hextale.alembic.no_water").withStyle(ChatFormatting.RED));
                 } else if (alembic.progress() > 0) {
                     tooltip.add(Component.translatable("jade.hextale.boiling", alembic.progress() * 100 / AlembicBlockEntity.BOIL_TICKS));
+                }
+            } else if (entity instanceof com.pockyl.hextale.block.HexSmelterBlockEntity smelter) {
+                tooltip.add(Component.translatable("jade.hextale.essence").append(": ").append(contents(smelter.tank())));
+                if ("no_heat".equals(smelter.blocked())) {
+                    tooltip.add(Component.translatable("gui.hextale.hex_smelter.no_heat").withStyle(ChatFormatting.RED));
+                }
+                for (var entry : smelter.runes().entries()) {
+                    tooltip.add(Component.translatable(entry.rune().translationKey()).withColor(entry.rune().color())
+                            .append(Component.literal(" " + "★".repeat(entry.stars())).withStyle(ChatFormatting.GOLD)));
                 }
             } else if (accessor.getBlock() instanceof DrainValveBlock) {
                 boolean open = accessor.getBlockState().getValue(DrainValveBlock.OPEN);

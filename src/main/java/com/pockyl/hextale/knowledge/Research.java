@@ -1,10 +1,6 @@
 package com.pockyl.hextale.knowledge;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -13,13 +9,17 @@ import com.pockyl.hextale.network.KnowledgeSyncPayload;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModTriggers;
+import com.pockyl.hextale.quest.Guide;
+import com.pockyl.hextale.quest.Quest;
+import com.pockyl.hextale.research.ItemEssenceTable;
 import com.pockyl.hextale.rune.ComplexRune;
+import com.pockyl.hextale.rune.ComplexRunes;
 
 import java.util.Collection;
 
 /**
- * Server-side changes to a researcher's knowledge. Every change is synced to the player's client; learning runes
- * also writes the first-rune and milestone notes and updates the codex advancements.
+ * Server-side changes to a researcher's knowledge. Every change is synced to the player's client and updates the codex
+ * advancements.
  */
 public final class Research {
     private Research() {
@@ -36,9 +36,7 @@ public final class Research {
      */
     public static boolean learn(ServerPlayer player, ComplexRune rune, int stars, int symbols) {
         RuneKnowledge knowledge = of(player);
-        int before = knowledge.runeCount();
         boolean fresh = knowledge.learn(rune, stars, symbols);
-        progress(player, before, knowledge.runeCount());
         sync(player);
         return fresh;
     }
@@ -56,7 +54,6 @@ public final class Research {
         int before = knowledge.runeCount();
         runes.forEach(rune -> knowledge.learn(rune, stars, 0));
         int added = knowledge.runeCount() - before;
-        progress(player, before, knowledge.runeCount());
         sync(player);
         return added;
     }
@@ -74,17 +71,30 @@ public final class Research {
         return removed;
     }
 
+    /** The Scroll of Omniscience: every rune with three stars, every item with essences studied, every item quest done. */
+    public static void learnEverything(ServerPlayer player) {
+        RuneKnowledge knowledge = of(player);
+        ComplexRunes.all().forEach(rune -> knowledge.learn(rune, 3, 0));
+        ItemEssenceTable.byId().keySet().forEach(knowledge::study);
+        for (Quest quest : Guide.all()) {
+            if (quest.kind() == Quest.Kind.ITEM) {
+                knowledge.completeQuest(quest);
+            }
+        }
+        sync(player);
+    }
+
+    /** The Scroll of Oblivion: runes, studied items, quests and every parchment's memory are gone. */
+    public static void forgetEverything(ServerPlayer player) {
+        RuneKnowledge knowledge = of(player);
+        ComplexRunes.all().forEach(knowledge::forget);
+        knowledge.forgetItems();
+        knowledge.forgetQuests();
+        sync(player);
+    }
+
     public static void sync(ServerPlayer player) {
         ModNetwork.sendToPlayer(player, new KnowledgeSyncPayload(of(player).copy()));
         ModTriggers.RUNES_LEARNED.get().trigger(player, of(player).runeCount());
-    }
-
-    private static void progress(ServerPlayer player, int before, int after) {
-        for (Milestone milestone : Milestone.values()) {
-            if (before < milestone.count() && after >= milestone.count()) {
-                player.sendSystemMessage(Component.translatable("diary.hextale.milestone.reached",
-                        Component.translatable(milestone.translationKey()).withStyle(ChatFormatting.GOLD), milestone.count()));
-            }
-        }
     }
 }

@@ -36,7 +36,6 @@ import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
-import com.pockyl.hextale.runework.HextechPickaxeItem;
 import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.rune.ComplexRune;
 
@@ -220,7 +219,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         if (plan == null) {
             if (player != null) {
                 Ritual.Hint hint = center.isEmpty() ? Ritual.Hint.NONE : Ritual.hint(center, circle, false);
-                if (HextechPickaxeItem.is(center) && circle.filledPedestals().isEmpty() && !circle.chosenRunes().isEmpty()) {
+                if (com.pockyl.hextale.runework.RuneHolder.of(center) != null && circle.filledPedestals().isEmpty() && !circle.chosenRunes().isEmpty()) {
                     // Why the steles' runes cannot go into this pickaxe.
                     Ritual.Engraving engraving = Ritual.engraving(center, circle);
                     Object[] names = engraving.named().stream()

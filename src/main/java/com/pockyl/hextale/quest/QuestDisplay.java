@@ -22,7 +22,9 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
         /** A Hextech Altar ritual; {@code result} is the altar recipe's id, drawn from the recipes the server sent. */
         INFUSION,
         /** The runes a hextech pickaxe takes, with their costs and clashes. */
-        PICKAXE_RUNES
+        PICKAXE_RUNES,
+        /** The runes a Hex Smelter takes. */
+        SMELTER_RUNES
     }
 
     /** Rows of up to three cells, spaces for empty cells, keys as in the recipe JSON. */
@@ -64,6 +66,10 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
 
     static QuestDisplay pickaxeRunes() {
         return new QuestDisplay(Kind.PICKAXE_RUNES, List.of(), "hextale:hextech_pickaxe", 1);
+    }
+
+    static QuestDisplay smelterRunes() {
+        return new QuestDisplay(Kind.SMELTER_RUNES, List.of(), "hextale:hex_smelter", 1);
     }
 
     static QuestDisplay infusion(String recipe) {

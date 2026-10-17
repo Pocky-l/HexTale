@@ -100,6 +100,7 @@ public final class HextaleClient {
     private static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenus.RESEARCH_TABLE.get(), ResearchTableScreen::new);
         event.register(ModMenus.ALEMBIC.get(), AlembicScreen::new);
+        event.register(ModMenus.HEX_SMELTER.get(), com.pockyl.hextale.client.screen.machine.HexSmelterScreen::new);
         event.register(ModMenus.SEPARATOR.get(), SeparatorScreen::new);
     }
 
@@ -109,6 +110,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.SEPARATOR.get(), SeparatorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ESSENCE_TANK.get(), EssenceTankRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_ALTAR.get(), HextechAltarRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.HEX_SMELTER.get(), com.pockyl.hextale.client.render.HexSmelterRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL.get(), PedestalRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RUNE_STELE.get(), RuneSteleRenderer::new);
     }

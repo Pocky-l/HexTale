@@ -23,6 +23,7 @@ import java.util.Map;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.item.HextechGemstoneItem;
+import com.pockyl.hextale.item.KnowledgeScrollItem;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.item.UnstableHextechItem;
@@ -50,6 +51,15 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEXTECH_ALTAR = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_ALTAR,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEXTECH_LAMP = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_LAMP);
+    public static final DeferredItem<BlockItem> HEX_SMELTER = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_SMELTER,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> BRASS_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_BLOCK);
+    /** Creative only: everything known at once - every rune with three stars, every item studied, every quest done. */
+    public static final DeferredItem<KnowledgeScrollItem> SCROLL_OF_OMNISCIENCE = ITEMS.registerItem("scroll_of_omniscience",
+            properties -> new KnowledgeScrollItem(true, properties.stacksTo(1).rarity(Rarity.EPIC)));
+    /** Creative only: everything forgotten - runes, studied items, quests, parchments. */
+    public static final DeferredItem<KnowledgeScrollItem> SCROLL_OF_OBLIVION = ITEMS.registerItem("scroll_of_oblivion",
+            properties -> new KnowledgeScrollItem(false, properties.stacksTo(1).rarity(Rarity.EPIC)));
     public static final DeferredItem<BlockItem> PEDESTAL = ITEMS.registerSimpleBlockItem(ModBlocks.PEDESTAL);
     public static final DeferredItem<BlockItem> RUNE_STELE = ITEMS.registerSimpleBlockItem(ModBlocks.RUNE_STELE);
     /** A crafting recipe that uses a bottle of essence (soaking magic stone) gives the glass bottle back. */

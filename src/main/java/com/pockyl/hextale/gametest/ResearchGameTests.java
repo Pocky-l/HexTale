@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -66,8 +65,6 @@ import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -256,19 +253,8 @@ public final class ResearchGameTests {
     }
 
     @HexTest
-    public static void chaptersOpenInOrder(GameTestHelper helper) {
-        RuneKnowledge knowledge = new RuneKnowledge();
+    public static void chaptersHoldAllRunes(GameTestHelper helper) {
         helper.assertTrue(ResearchBook.runes(1).size() == 6, "chapter I has Smelting and its ring of five runes");
-        helper.assertTrue(ResearchBook.open(knowledge, SMELTING), "Smelting is open from the start");
-        helper.assertFalse(ResearchBook.open(knowledge, ResearchBook.FIRST_RING.get(0)), "the ring waits for Smelting");
-        knowledge.learn(SMELTING, 1, 8);
-        helper.assertTrue(ResearchBook.open(knowledge, ResearchBook.FIRST_RING.get(0)), "after Smelting the ring opens");
-        helper.assertFalse(ResearchBook.chapterOpen(knowledge, 2), "chapter II needs four runes of chapter I");
-        ResearchBook.FIRST_RING.subList(0, 3).forEach(rune -> knowledge.learn(rune, 1, 0));
-        helper.assertTrue(ResearchBook.chapterOpen(knowledge, 2), "four runes of chapter I open chapter II");
-        helper.assertFalse(ResearchBook.chapterOpen(knowledge, 3), "chapter III is still closed");
-        ResearchBook.runes(2).subList(0, ResearchBook.CHAPTER_III_AFTER).forEach(rune -> knowledge.learn(rune, 2, 0));
-        helper.assertTrue(ResearchBook.chapterOpen(knowledge, 3), "ten runes of chapter II open chapter III");
         helper.assertTrue(ResearchBook.runes(1).size() + ResearchBook.runes(2).size() + ResearchBook.runes(3).size() == 72,
                 "the chapters hold all 72 runes");
         helper.succeed();
@@ -1102,9 +1088,9 @@ public final class ResearchGameTests {
         reader.setItemInHand(InteractionHand.MAIN_HAND, scroll);
 
         scroll.use(helper.getLevel(), reader, InteractionHand.MAIN_HAND);
-        helper.assertFalse(Research.of(reader).knows(lens), "a tool rune is too early before Smelting");
+        helper.assertFalse(Research.of(reader).knows(lens), "Lens is too early before Insight");
         helper.assertTrue(reader.getMainHandItem().getCount() == 3, "the early scroll is kept");
-        Research.learnAll(reader, List.of(SMELTING), 1);
+        Research.learnAll(reader, List.of(SMELTING, ComplexRunes.byKey("light_earth")), 1);
         scroll.use(helper.getLevel(), reader, InteractionHand.MAIN_HAND);
         helper.assertTrue(Research.of(reader).stars(lens) == 2, "studying the scroll teaches the rune with its stars");
         helper.assertTrue(reader.getMainHandItem().getCount() == 2, "one scroll is used up");
@@ -1209,6 +1195,15 @@ public final class ResearchGameTests {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Vec3 pos = helper.absoluteVec(new Vec3(0.5, 1, 2.5));
         player.snapTo(pos.x, pos.y, pos.z, 0, 0);
+        // A researcher who got as far as ink at the table: Smelting is open.
+        for (com.pockyl.hextale.quest.Quest quest : com.pockyl.hextale.quest.Guide.SMELTING.parents()) {
+            openUpTo(Research.of(player), quest);
+        }
         return player;
+    }
+
+    private static void openUpTo(com.pockyl.hextale.knowledge.RuneKnowledge knowledge, com.pockyl.hextale.quest.Quest quest) {
+        knowledge.completeQuest(quest);
+        quest.parents().forEach(parent -> openUpTo(knowledge, parent));
     }
 }

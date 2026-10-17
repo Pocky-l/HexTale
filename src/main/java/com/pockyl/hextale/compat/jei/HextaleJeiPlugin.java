@@ -81,7 +81,8 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addRecipes(SeparationCategory.TYPE, separations);
         registration.addRecipes(InfusionCategory.TYPE, InfusionRecipes.get(true).entrySet().stream()
                 .map(entry -> new InfusionCategory.Recipe(entry.getKey(), entry.getValue())).toList());
-        registration.addRecipes(RuneBurningCategory.TYPE, List.of(com.pockyl.hextale.runework.PickaxeRune.values()));
+        registration.addRecipes(RuneBurningCategory.TYPE, RuneBurningCategory.Recipe.all());
+        info(registration, ModItems.HEX_SMELTER.get(), "hex_smelter");
         info(registration, ModItems.HEXTECH_ALTAR.get(), "hextech_altar");
         info(registration, ModItems.PEDESTAL.get(), "pedestal");
         info(registration, ModItems.RUNE_STELE.get(), "rune_stele");
@@ -107,6 +108,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addCraftingStation(SeparationCategory.TYPE, ModItems.SEPARATOR.get());
         registration.addCraftingStation(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.PEDESTAL.get(), ModItems.RUNE_STELE.get());
         registration.addCraftingStation(RuneBurningCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
+        registration.addCraftingStation(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_SMELTER.get());
     }
 
     static ItemStack concentrate(Essence essence) {

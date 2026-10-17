@@ -197,7 +197,10 @@ public final class RuneWorkGameTests {
     public static void theAltarMakesTheHextechPickaxe(GameTestHelper helper) {
         ItemStack iron = new ItemStack(Items.IRON_PICKAXE);
         iron.enchant(helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.EFFICIENCY), 2);
-        HextechAltarBlockEntity altar = circle(helper, iron, pickaxeItems(), PICKAXE_ESSENCE.plus(EssenceMix.pure(Essence.ORE, 10)));
+        HextechAltarBlockEntity altar = circle(helper, iron, pickaxeItems(), PICKAXE_ESSENCE.plus(EssenceMix.pure(Essence.ORE, 10))
+                .plus(InfusionRecipe.runeEssence(PickaxeRune.SMELTING.rune())));
+        // The pickaxe is forged under the rune of Smelting.
+        stele(helper, PickaxeRune.SMELTING, 1);
         altar.startOrAbort(null);
         helper.assertTrue(altar.active() && altar.kind() == Ritual.Kind.INFUSE, "the ritual starts");
         helper.succeedWhen(() -> {
@@ -263,6 +266,7 @@ public final class RuneWorkGameTests {
     public static void aRitualShortOfEssenceStalls(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), pickaxeItems(),
                 EssenceMix.of(Map.of(Essence.FORGE, 16, Essence.ORE, 12)));
+        stele(helper, PickaxeRune.SMELTING, 1);
         altar.startOrAbort(null);
         helper.runAfterDelay(300, () -> {
             helper.assertTrue(altar.active() && altar.stalled(), "without energy essence the ritual waits");
@@ -278,6 +282,7 @@ public final class RuneWorkGameTests {
         BlockPos creative = new BlockPos(6, 2, 0);
         helper.setBlock(creative, ModBlocks.CREATIVE_ESSENCE_TANK.get());
         helper.getBlockEntity(creative, EssenceTankBlockEntity.class).tank().set(EssenceTankBlockEntity.CREATIVE);
+        stele(helper, PickaxeRune.SMELTING, 1);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         player.setShiftKeyDown(true);
         BlockPos abs = helper.absolutePos(ALTAR);

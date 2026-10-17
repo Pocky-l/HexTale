@@ -12,33 +12,25 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.client.ClientKnowledge;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
+import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.quest.Quest;
-import com.pockyl.hextale.registry.ModItems;
-import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.rune.PrimalRing;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Researcher's Diary: a magic book whose pages are a dark sky. Two bookmarks turn it between the researcher's path
- * (quests from the first table to the full codex, see {@link QuestPath}) and the star map, where the runes hang as
- * stars in constellations (see {@link StarMap}). Either sky can be dragged around and zoomed with the mouse wheel.
- * Clicking a star opens a small plate with the rune; on a Research Table the plate sends the rune to the parchment.
- * Shown by {@link StarBookScreen} in hand and inside the table's screen.
+ * The Researcher's Diary: a magic book whose page is a dark sky holding the researcher's guide (see {@link GuidePage}):
+ * item quests, runes and devices still being worked out, on one branching path. The sky can be dragged around and
+ * zoomed with the mouse wheel; a click opens a step's plate, and on a Research Table a rune's plate lays the rune on the
+ * parchment. Shown by {@link StarBookScreen} in hand and inside the table's screen.
  */
 public final class StarBook {
     private static final Identifier COSMOS = Hextale.id("textures/gui/cosmos.png");
@@ -49,30 +41,15 @@ public final class StarBook {
     /** The frame's leather band; the sky starts inside it. */
     private static final int BORDER = 7;
     private static final float[] ZOOMS = {0.5F, 0.75F, 1, 1.5F, 2, 3};
-    private static final int NODE = 15;
-    private static final int GLYPH = 11;
-    private static final int PLATE_WIDTH = 118;
     static final int BUTTON_HEIGHT = 16;
     static final int GOLD = 0xE0B85A;
     private static final int DRAG_THRESHOLD = 3;
-    private static final int BOOKMARK_WIDTH = 20;
-    private static final int BOOKMARK_HEIGHT = 22;
 
-    /** The book's two pages. */
-    enum Page {
-        PATH,
-        STARS
-    }
-
-    /** Each page's sky stays where the reader left it, between openings. */
-    private static final float[] SAVED_X = new float[Page.values().length];
-    private static final float[] SAVED_Y = new float[Page.values().length];
-    private static final int[] SAVED_ZOOM = {2, 2};
+    /** The sky stays where the reader left it, between openings. */
     private static float cameraX;
     private static float cameraY;
     private static int zoomIndex = 2;
     private static boolean placed;
-    private static Page page = Page.PATH;
 
     /** Where the book is open: in hand (nothing to send runes to) or on a table. */
     public interface Host {
@@ -90,9 +67,7 @@ public final class StarBook {
     private int top;
     private int width;
     private int height;
-    private final QuestPath path;
-    @Nullable
-    private ComplexRune selected;
+    private final GuidePage guide;
     private boolean dragging;
     private boolean pressed;
     private double pressX;
@@ -103,39 +78,24 @@ public final class StarBook {
     public StarBook(@Nullable Host host) {
         this.host = host;
         this.font = Minecraft.getInstance().font;
-        this.path = new QuestPath(this);
+        this.guide = new GuidePage(this);
         RuneKnowledge knowledge = ClientKnowledge.get();
         ComplexRune onTable = host == null ? null : host.studying();
-        if (!placed) {
-            // A new researcher starts on the path, seen whole; one who has learned the first rune starts on the stars.
-            SAVED_X[Page.PATH.ordinal()] = QuestPath.CENTRE_X;
-            SAVED_Y[Page.PATH.ordinal()] = QuestPath.CENTRE_Y;
-            page = knowledge.questDone(Quest.FIRST_RUNE) ? Page.STARS : Page.PATH;
-            cameraX = SAVED_X[page.ordinal()];
-            cameraY = SAVED_Y[page.ordinal()];
-            placed = true;
-        }
         if (onTable != null) {
-            turnTo(Page.STARS);
-            selected = onTable;
-            centreOn(onTable);
+            // On a table with a rune on it: open on that rune.
+            Quest quest = Guide.of(onTable);
+            guide.select(quest);
+            centreOn(quest);
+        } else if (!placed) {
+            // A new reading starts where the researcher's path goes on.
+            centreOn(GuidePage.focus(knowledge));
+            placed = true;
         }
     }
 
-    /** Opens the other page, keeping where each page's sky was left. */
-    private void turnTo(Page next) {
-        if (next == page) {
-            return;
-        }
-        SAVED_X[page.ordinal()] = cameraX;
-        SAVED_Y[page.ordinal()] = cameraY;
-        SAVED_ZOOM[page.ordinal()] = zoomIndex;
-        page = next;
-        cameraX = SAVED_X[page.ordinal()];
-        cameraY = SAVED_Y[page.ordinal()];
-        zoomIndex = SAVED_ZOOM[page.ordinal()];
-        dragging = false;
-        pressed = false;
+    @Nullable
+    Host host() {
+        return host;
     }
 
     /** The whole book including its frame. */
@@ -146,10 +106,9 @@ public final class StarBook {
         this.height = height;
     }
 
-    private void centreOn(ComplexRune rune) {
-        int[] p = StarMap.position(rune);
-        cameraX = p[0];
-        cameraY = p[1];
+    private void centreOn(Quest quest) {
+        cameraX = quest.x();
+        cameraY = quest.y();
     }
 
     float zoom() {
@@ -207,54 +166,20 @@ public final class StarBook {
         graphics.pose().translate(centreX(), centreY());
         graphics.pose().scale(zoom(), zoom());
         graphics.pose().translate(-cameraX, -cameraY);
-        boolean free = !dragging && overSky(mouseX, mouseY) && bookmarkAt(mouseX, mouseY) == null
-                && (page == Page.STARS ? !overPlate(mouseX, mouseY) : !path.overPlate(mouseX, mouseY, knowledge));
-        ComplexRune hovered = null;
-        Quest hoveredQuest = null;
-        if (page == Page.STARS) {
-            renderSigns(graphics, knowledge);
-            renderLinks(graphics, knowledge);
-            hovered = free ? starAt(mouseX, mouseY) : null;
-            for (Map.Entry<ComplexRune, int[]> entry : StarMap.positions().entrySet()) {
-                renderStar(graphics, entry.getKey(), entry.getValue()[0], entry.getValue()[1], knowledge, now, entry.getKey() == hovered);
-            }
-        } else {
-            hoveredQuest = free ? path.questAt(mouseX, mouseY) : null;
-            path.renderMap(graphics, knowledge, now, hoveredQuest);
-        }
+        boolean free = !dragging && overSky(mouseX, mouseY) && !guide.overPlate(mouseX, mouseY, knowledge);
+        Quest hovered = free ? guide.questAt(mouseX, mouseY, knowledge) : null;
+        guide.renderMap(graphics, knowledge, now, hovered);
         PixelArt.flush(graphics);
         graphics.pose().popMatrix();
 
-        List<FormattedCharSequence> tooltip = null;
-        if (page == Page.STARS && selected != null) {
-            renderPlate(graphics, selected, knowledge, mouseX, mouseY, now);
-        } else if (page == Page.PATH) {
-            tooltip = path.renderPlate(graphics, knowledge, mouseX, mouseY, now);
-        }
-        Page bookmark = bookmarkAt(mouseX, mouseY);
-        renderBookmarks(graphics, bookmark);
+        List<FormattedCharSequence> tooltip = guide.renderPlate(graphics, knowledge, mouseX, mouseY, now);
         // The pixel art is batched: draw it while the scissor still clips it to the sky.
         PixelArt.flush(graphics);
         graphics.disableScissor();
         renderFrame(graphics);
         PixelArt.flush(graphics);
-
-        if (bookmark != null) {
-            return List.of(Component.translatable("book.hextale.page." + bookmark.name().toLowerCase(Locale.ROOT))
-                    .withColor(GOLD).getVisualOrderText());
-        }
-        if (hoveredQuest != null && tooltip == null) {
-            tooltip = path.tooltip(hoveredQuest, knowledge);
-        }
         if (hovered != null && tooltip == null) {
-            List<FormattedCharSequence> lines = new ArrayList<>();
-            if (ResearchBook.open(knowledge, hovered)) {
-                lines.add(Component.translatable(hovered.translationKey()).withColor(hovered.color()).getVisualOrderText());
-                lines.add(stars(knowledge.stars(hovered)).getVisualOrderText());
-            } else {
-                lines.add(Component.translatable("book.hextale.unknown_star").withColor(0x9A90B8).getVisualOrderText());
-            }
-            tooltip = lines;
+            tooltip = guide.tooltip(hovered, knowledge);
         }
         return tooltip;
     }
@@ -311,169 +236,6 @@ public final class StarBook {
         return Math.abs(x);
     }
 
-    /** The nine elements' signs far out on their rays, like the names of constellations. */
-    private void renderSigns(GuiGraphicsExtractor graphics, RuneKnowledge knowledge) {
-        for (Essence element : PrimalRing.RING) {
-            double[] u = PrimalRing.unit(element);
-            int x = (int) Math.round(u[0] * StarMap.SIGN_RADIUS);
-            int y = (int) Math.round(u[1] * StarMap.SIGN_RADIUS);
-            PixelArt.essence(graphics, element, x - 13, y - 13, 27, PixelArt.argb(element.color(), 0.45F));
-            ComplexRune head = StarMap.rayHeads().get(element);
-            if (head != null) {
-                int[] p = StarMap.position(head);
-                double[] from = {u[0] * (StarMap.TOOL_RING + 16), u[1] * (StarMap.TOOL_RING + 16)};
-                PixelArt.dotted(graphics, (int) Math.round(from[0]), (int) Math.round(from[1]), p[0], p[1], 1, 3, 0,
-                        PixelArt.argb(element.color(), 0.18F));
-            }
-        }
-    }
-
-    private void renderLinks(GuiGraphicsExtractor graphics, RuneKnowledge knowledge) {
-        for (StarMap.Link link : StarMap.links()) {
-            int[] a = StarMap.position(link.from());
-            int[] b = StarMap.position(link.to());
-            boolean lit = knowledge.knows(link.from()) && knowledge.knows(link.to());
-            boolean open = ResearchBook.open(knowledge, link.to());
-            int color = lit ? PixelArt.argb(GOLD, 0.7F) : open ? PixelArt.argb(0x8C9AD8, 0.35F) : PixelArt.argb(0x5A5080, 0.18F);
-            if (link.chain() && !lit) {
-                PixelArt.dotted(graphics, a[0], a[1], b[0], b[1], 2, 2, 0, color);
-            } else {
-                PixelArt.line(graphics, a[0], a[1], b[0], b[1], color);
-            }
-        }
-    }
-
-    private void renderStar(GuiGraphicsExtractor graphics, ComplexRune rune, int x, int y, RuneKnowledge knowledge, long now, boolean hovered) {
-        boolean open = ResearchBook.open(knowledge, rune);
-        int stars = knowledge.stars(rune);
-        float pulse = 0.5F + 0.5F * Mth.sin(now / 420.0F + rune.index());
-        if (!open) {
-            // An unknown star: a faint point of light, no shape yet.
-            int argb = PixelArt.argb(0x9A90B8, 0.35F + 0.2F * pulse);
-            PixelArt.fill(graphics, x, y - 1, x + 1, y + 2, argb);
-            PixelArt.fill(graphics, x - 1, y, x + 2, y + 1, argb);
-            return;
-        }
-        boolean onTable = host != null && host.studying() == rune;
-        int color = rune.color();
-        if (stars > 0) {
-            // A learned rune glows in its category's colour.
-            for (int ring = 0; ring < 3; ring++) {
-                PixelArt.hex(graphics, x, y, NODE + 4 + ring * 4, PixelArt.argb(color, (0.12F - ring * 0.035F) * (0.7F + 0.3F * pulse)), 0);
-            }
-        }
-        int rim = stars == 3 ? GOLD : stars > 0 ? PixelArt.mix(color, 0xFFFFFF, 0.2F) : 0x6C78B8;
-        if (onTable) {
-            rim = PixelArt.mix(0x5CC8F2, 0xFFFFFF, 0.4F * pulse);
-        }
-        if (rune == selected || hovered) {
-            rim = PixelArt.mix(GOLD, 0xFFF6D6, pulse);
-        }
-        PixelArt.hex(graphics, x, y, NODE, PixelArt.argb(stars > 0 ? PixelArt.mix(color, 0x06050D, 0.78F) : 0x0E0C1E, 1),
-                PixelArt.argb(rim, 1));
-        int glyph = stars > 0 ? PixelArt.mix(color, 0xFFFFFF, 0.15F) : 0x8A86B0;
-        PixelArt.glyph(graphics, rune, x - GLYPH / 2, y - GLYPH / 2, GLYPH, PixelArt.argb(glyph, 1));
-        for (int s = 0; s < 3; s++) {
-            int dot = s < stars ? PixelArt.argb(GOLD, 1) : PixelArt.argb(0x3A3460, 1);
-            PixelArt.fill(graphics, x - 4 + s * 3, y + 10, x - 2 + s * 3, y + 12, dot);
-        }
-        if (rune == selected) {
-            PixelArt.hexRing(graphics, x, y, NODE + 4, PixelArt.argb(GOLD, 0.5F + 0.5F * pulse));
-        }
-    }
-
-    @Nullable
-    private ComplexRune starAt(double mouseX, double mouseY) {
-        float mx = mapX(mouseX);
-        float my = mapY(mouseY);
-        float reach = Math.max(8, 8 / zoom());
-        ComplexRune best = null;
-        float bestDistance = reach * reach;
-        for (Map.Entry<ComplexRune, int[]> entry : StarMap.positions().entrySet()) {
-            float dx = entry.getValue()[0] + 0.5F - mx;
-            float dy = entry.getValue()[1] + 0.5F - my;
-            float d = dx * dx + dy * dy;
-            if (d < bestDistance) {
-                bestDistance = d;
-                best = entry.getKey();
-            }
-        }
-        return best;
-    }
-
-    // ---- The plate of the selected rune ---------------------------------------------------------------------------
-
-    private int plateLeft() {
-        return skyLeft() + skyWidth() - PLATE_WIDTH - 6;
-    }
-
-    private int plateTop() {
-        return skyTop() + 6;
-    }
-
-    private Component plateName(ComplexRune rune) {
-        return ResearchBook.open(ClientKnowledge.get(), rune) ? Component.translatable(rune.translationKey())
-                : Component.translatable("book.hextale.unknown_star");
-    }
-
-    /** Glyph, name lines and the stars come first; the button sits under them. */
-    private int buttonTop(ComplexRune rune) {
-        return plateTop() + 54 + font.split(plateName(rune), PLATE_WIDTH - 12).size() * 10;
-    }
-
-    private int plateHeight(ComplexRune rune) {
-        return buttonTop(rune) - plateTop() + (host != null ? BUTTON_HEIGHT + 6 : 0);
-    }
-
-    private boolean overPlate(double x, double y) {
-        return selected != null && x >= plateLeft() && x < plateLeft() + PLATE_WIDTH && y >= plateTop()
-                && y < plateTop() + plateHeight(selected);
-    }
-
-    private void renderPlate(GuiGraphicsExtractor graphics, ComplexRune rune, RuneKnowledge knowledge, int mouseX, int mouseY,
-                                                    long now) {
-        int x = plateLeft();
-        int y = plateTop();
-        int h = plateHeight(rune);
-        int w = PLATE_WIDTH;
-        boolean open = ResearchBook.open(knowledge, rune);
-        plateBackground(graphics, x, y, w, h);
-        int stars = knowledge.stars(rune);
-        int cx = x + w / 2;
-        int color = rune.color();
-        float pulse = 0.5F + 0.5F * Mth.sin(now / 380.0F);
-        if (open) {
-            for (int ring = 0; ring < 3; ring++) {
-                PixelArt.hex(graphics, cx, y + 21, 25 + ring * 6, PixelArt.argb(color, (0.14F - ring * 0.04F) * (0.6F + 0.4F * pulse)), 0);
-            }
-            PixelArt.glyph(graphics, rune, cx - 13, y + 8, 27, PixelArt.argb(PixelArt.mix(color, 0xFFFFFF, 0.15F), 1), 0xFF000000);
-        } else {
-            PixelArt.flush(graphics);
-            graphics.centeredText(font, "?", cx, y + 17, 0xFF9A90B8);
-        }
-        int ty = y + 40;
-        Component name = plateName(rune);
-        for (FormattedCharSequence line : font.split(name, w - 12)) {
-            PixelArt.flush(graphics);
-            graphics.centeredText(font, line, cx, ty, 0xFF000000 | (open ? PixelArt.mix(color, 0xFFFFFF, 0.25F) : 0x9A90B8));
-            ty += 10;
-        }
-        PixelArt.flush(graphics);
-        graphics.centeredText(font, stars(stars), cx, ty + 1, 0xFFFFFFFF);
-        ty += 13;
-        if (host != null) {
-            boolean onTable = host.studying() == rune;
-            boolean active = open && !onTable;
-            Component label = Component.translatable(!open ? "book.hextale.closed" : onTable ? "book.hextale.on_table"
-                    : stars > 0 ? "book.hextale.restudy" : "book.hextale.study");
-            int bx = x + 8;
-            int by = buttonTop(rune);
-            int bw = w - 16;
-            boolean hovered = active && mouseX >= bx && mouseX < bx + bw && mouseY >= by && mouseY < by + BUTTON_HEIGHT;
-            magicButton(graphics, bx, by, bw, label, active, hovered, now);
-        }
-    }
-
     /** Dark glass in a gold rim with cyan corner studs: the plates of both pages. */
     static void plateBackground(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {
         PixelArt.fill(graphics, x, y, x + w, y + h, 0xE0080614);
@@ -484,46 +246,6 @@ public final class StarBook {
         PixelArt.fill(graphics, x + w - 1, y, x + w, y + h, rim);
         for (int[] corner : new int[][]{{x, y}, {x + w - 1, y}, {x, y + h - 1}, {x + w - 1, y + h - 1}}) {
             PixelArt.fill(graphics, corner[0] - 1, corner[1] - 1, corner[0] + 2, corner[1] + 2, PixelArt.argb(0x5CC8F2, 1));
-        }
-    }
-
-    // ---- Bookmarks ------------------------------------------------------------------------------------------------
-
-    private int bookmarkX(Page bookmark) {
-        return skyLeft() + 8 + bookmark.ordinal() * (BOOKMARK_WIDTH + 4);
-    }
-
-    @Nullable
-    private Page bookmarkAt(double x, double y) {
-        for (Page bookmark : Page.values()) {
-            int bx = bookmarkX(bookmark);
-            int h = bookmark == page ? BOOKMARK_HEIGHT + 4 : BOOKMARK_HEIGHT;
-            if (x >= bx && x < bx + BOOKMARK_WIDTH && y >= skyTop() && y < skyTop() + h) {
-                return bookmark;
-            }
-        }
-        return null;
-    }
-
-    /** Leather ribbons hanging from the top of the book; the open page's is longer and edged in gold. */
-    private void renderBookmarks(GuiGraphicsExtractor graphics, @Nullable Page hovered) {
-        for (Page bookmark : Page.values()) {
-            int x = bookmarkX(bookmark);
-            int y = skyTop();
-            boolean open = bookmark == page;
-            int h = open ? BOOKMARK_HEIGHT + 4 : BOOKMARK_HEIGHT;
-            int leather = PixelArt.argb(open ? 0x5A2E1E : bookmark == hovered ? 0x4A2618 : 0x351A10, 1);
-            PixelArt.fill(graphics, x, y, x + BOOKMARK_WIDTH, y + h - 3, leather);
-            // A swallowtail end.
-            for (int i = 0; i < 3; i++) {
-                PixelArt.fill(graphics, x, y + h - 3 + i, x + BOOKMARK_WIDTH / 2 - 1 - i * 2, y + h - 2 + i, leather);
-                PixelArt.fill(graphics, x + BOOKMARK_WIDTH / 2 + 1 + i * 2, y + h - 3 + i, x + BOOKMARK_WIDTH, y + h - 2 + i, leather);
-            }
-            int edge = PixelArt.argb(open ? GOLD : 0x1E0E08, 1);
-            PixelArt.fill(graphics, x, y, x + 1, y + h - 3, edge);
-            PixelArt.fill(graphics, x + BOOKMARK_WIDTH - 1, y, x + BOOKMARK_WIDTH, y + h - 3, edge);
-            PixelArt.flush(graphics);
-            graphics.item(bookmark == Page.PATH ? new ItemStack(Items.MAP) : new ItemStack(ModItems.RUNE_SCROLL.get()), x + 2, y + h - 21);
         }
     }
 
@@ -572,7 +294,7 @@ public final class StarBook {
         }
     }
 
-    private static Component stars(int count) {
+    static Component stars(int count) {
         return Component.literal("★".repeat(count)).withColor(GOLD).append(Component.literal("★".repeat(3 - count)).withColor(0x3A3460));
     }
 
@@ -582,35 +304,9 @@ public final class StarBook {
         if (button != InputConstants.MOUSE_BUTTON_LEFT || !overSky(mouseX, mouseY)) {
             return false;
         }
-        Page bookmark = bookmarkAt(mouseX, mouseY);
-        if (bookmark != null) {
-            if (bookmark != page) {
-                turnTo(bookmark);
-                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN,
-                        bookmark == Page.STARS ? 1.1F : 0.95F, 0.8F));
-            }
-            return true;
-        }
-        if (page == Page.PATH && path.overPlate(mouseX, mouseY, ClientKnowledge.get())) {
-            if (path.plateClicked(mouseX, mouseY, ClientKnowledge.get())) {
-                turnTo(Page.STARS);
-                selected = ResearchBook.FIRST;
-                centreOn(ResearchBook.FIRST);
-                sound(1.2F);
-            }
-            return true;
-        }
-        if (page == Page.STARS && selected != null && host != null && overPlate(mouseX, mouseY)) {
-            int bx = plateLeft() + 8;
-            int by = buttonTop(selected);
-            boolean open = ResearchBook.open(ClientKnowledge.get(), selected);
-            if (open && host.studying() != selected && mouseX >= bx && mouseX < bx + PLATE_WIDTH - 16 && mouseY >= by
-                    && mouseY < by + BUTTON_HEIGHT) {
-                host.study(selected);
-            }
-            return true;
-        }
-        if (page == Page.STARS && overPlate(mouseX, mouseY)) {
+        RuneKnowledge knowledge = ClientKnowledge.get();
+        if (guide.overPlate(mouseX, mouseY, knowledge)) {
+            guide.plateClicked(mouseX, mouseY, knowledge);
             return true;
         }
         pressed = true;
@@ -642,18 +338,11 @@ public final class StarBook {
             return false;
         }
         pressed = false;
-        if (!dragging && page == Page.STARS) {
-            ComplexRune star = starAt(mouseX, mouseY);
-            if (star != selected) {
-                selected = star;
-                if (star != null) {
-                    sound(ResearchBook.open(ClientKnowledge.get(), star) ? 1.4F : 0.8F);
-                }
-            }
-        } else if (!dragging) {
-            Quest quest = path.questAt(mouseX, mouseY);
-            if (path.select(quest) && quest != null) {
-                sound(QuestPath.state(quest, ClientKnowledge.get()) == QuestPath.State.LOCKED ? 0.8F : 1.4F);
+        if (!dragging) {
+            RuneKnowledge knowledge = ClientKnowledge.get();
+            Quest quest = guide.questAt(mouseX, mouseY, knowledge);
+            if (guide.select(quest) && quest != null) {
+                sound(Guide.done(quest, knowledge) ? 1.4F : 1.1F);
             }
         }
         dragging = false;
@@ -664,8 +353,8 @@ public final class StarBook {
         if (!overSky(mouseX, mouseY) || scrollY == 0) {
             return false;
         }
-        if (page == Page.PATH && path.overPlate(mouseX, mouseY, ClientKnowledge.get())) {
-            path.scrollPlate(scrollY);
+        if (guide.overPlate(mouseX, mouseY, ClientKnowledge.get())) {
+            guide.scrollPlate(scrollY);
             return true;
         }
         int next = Mth.clamp(zoomIndex + (scrollY > 0 ? 1 : -1), 0, ZOOMS.length - 1);
@@ -682,13 +371,8 @@ public final class StarBook {
     }
 
     private void clampCamera() {
-        if (page == Page.PATH) {
-            cameraX = Mth.clamp(cameraX, QuestPath.MIN_X, QuestPath.MAX_X);
-            cameraY = Mth.clamp(cameraY, QuestPath.MIN_Y, QuestPath.MAX_Y);
-        } else {
-            cameraX = Mth.clamp(cameraX, -StarMap.EXTENT, StarMap.EXTENT);
-            cameraY = Mth.clamp(cameraY, -StarMap.EXTENT, StarMap.EXTENT);
-        }
+        cameraX = Mth.clamp(cameraX, GuidePage.minX(), GuidePage.maxX());
+        cameraY = Mth.clamp(cameraY, GuidePage.minY(), GuidePage.maxY());
     }
 
     private static void sound(float pitch) {

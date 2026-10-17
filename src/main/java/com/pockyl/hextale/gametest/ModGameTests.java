@@ -29,8 +29,7 @@ import java.util.Set;
 public final class ModGameTests {
     private static final List<String> RECIPES = List.of("brass_ingot", "brass_ingot_from_nuggets", "brass_nugget", "research_table",
             "researchers_diary");
-    private static final List<String> ADVANCEMENTS = List.of("root", "born_of_storm", "researchers_table", "first_rune", "milestone_3",
-            "milestone_12", "milestone_24", "milestone_36", "milestone_54", "milestone_72");
+    private static final List<String> ADVANCEMENTS = List.of("root", "born_of_storm", "researchers_table", "first_rune");
 
     private ModGameTests() {
     }
