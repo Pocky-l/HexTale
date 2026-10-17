@@ -24,8 +24,8 @@ import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.rune.Essence;
 
 /**
- * The essence inside an Essence Jar: a glowing liquid inside the glass, as high as the jar is full. Enamel stickers with
- * an essence's sign sit on the faces the player marked, except where a pipe joins that face.
+ * The essence inside an Essence Jar: a glowing liquid inside the glass, as high as the jar is full. The jar's Essence
+ * Sticker shows as a small paper label with the essence's sign on every side, except where a pipe joins that side.
  */
 public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlockEntity, EssenceTankRenderer.State> {
     // Inside the glass (model: body 2-14 with its vertical edges cut back by a pixel, thick glass at the foot up to 1,
@@ -37,19 +37,20 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
     private static final float TOP = 10.75F / 16;
 
     private static final Identifier LABELS = Hextale.id("textures/block/essence_labels.png");
-    /** A sticker is a 9 x 9 pixel enamel plate, one texel per pixel; in the sheet one per 16 x 16 cell of a 256 x 128 texture. */
-    private static final int LABEL = 9;
-    private static final float LABEL_HALF = LABEL / 2F / 16;
     /**
-     * Side stickers lie 0.3 px in front of the glass (2 px inside the block) between its foot and its top rim, pixels
-     * 4-13 from the left and 1-10 from the bottom; the top one 0.3 px above the lid (top at 15), 4-13 from the west and
-     * 3-12 from the north. The centres are given from the middle of the face, so the plates sit on the pixel grid.
+     * A sticker is a small paper label of 13 x 15 texels drawn at two texels per pixel (6.5 x 7.5 px), so its sign is
+     * small and sharp; in the sheet one per 16 x 16 cell of a 256 x 128 texture.
      */
+    private static final int LABEL_W = 13;
+    private static final int LABEL_H = 15;
+    private static final float HALF_W = LABEL_W / 2F / 32;
+    private static final float HALF_H = LABEL_H / 2F / 32;
+    /** Side stickers lie 0.3 px in front of the glass (2 px inside the block), centred across, a little below the middle. */
     private static final float SIDE_OUT = 0.5F - 1.7F / 16;
     private static final float TOP_OUT = 15.3F / 16 - 0.5F;
-    private static final float ACROSS = 0.5F / 16;
-    private static final float SIDE_UP = -2.5F / 16;
-    private static final float TOP_UP = 0.5F / 16;
+    private static final float ACROSS = 0;
+    private static final float SIDE_UP = -2F / 16;
+    private static final float TOP_UP = 0;
 
     public static final class State extends BlockEntityRenderState {
         float fill;
@@ -132,17 +133,18 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
         float cx = 0.5F + nx * out + rx * ACROSS + up[0] * lift;
         float cy = 0.5F + ny * out + ry * ACROSS + up[1] * lift;
         float cz = 0.5F + nz * out + rz * ACROSS + up[2] * lift;
-        float h = LABEL_HALF;
+        float w = HALF_W;
+        float h = HALF_H;
         // Stickers sit 16 to a row on a 256 x 128 sheet.
         float u0 = essence.ordinal() % 16 * 16 / 256F;
-        float u1 = (essence.ordinal() % 16 * 16 + LABEL) / 256F;
+        float u1 = (essence.ordinal() % 16 * 16 + LABEL_W) / 256F;
         float v0 = essence.ordinal() / 16 * 16 / 128F;
-        float v1 = (essence.ordinal() / 16 * 16 + LABEL) / 128F;
+        float v1 = (essence.ordinal() / 16 * 16 + LABEL_H) / 128F;
         float[][] corners = {
-                {cx - rx * h - up[0] * h, cy - ry * h - up[1] * h, cz - rz * h - up[2] * h, u0, v1},
-                {cx + rx * h - up[0] * h, cy + ry * h - up[1] * h, cz + rz * h - up[2] * h, u1, v1},
-                {cx + rx * h + up[0] * h, cy + ry * h + up[1] * h, cz + rz * h + up[2] * h, u1, v0},
-                {cx - rx * h + up[0] * h, cy - ry * h + up[1] * h, cz - rz * h + up[2] * h, u0, v0},
+                {cx - rx * w - up[0] * h, cy - ry * w - up[1] * h, cz - rz * w - up[2] * h, u0, v1},
+                {cx + rx * w - up[0] * h, cy + ry * w - up[1] * h, cz + rz * w - up[2] * h, u1, v1},
+                {cx + rx * w + up[0] * h, cy + ry * w + up[1] * h, cz + rz * w + up[2] * h, u1, v0},
+                {cx - rx * w + up[0] * h, cy - ry * w + up[1] * h, cz - rz * w + up[2] * h, u0, v0},
         };
         for (float[] c : corners) {
             consumer.addVertex(pose, c[0], c[1], c[2]).setColor(-1).setUv(c[3], c[4]).setOverlay(OverlayTexture.NO_OVERLAY)
