@@ -48,7 +48,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Hextech Altar: the centre item and the ritual in progress.
  * <p>
- * Idle, it looks at its circle twice a second and keeps a preview of what a ritual would make. A ritual warms up, then
+ * Idle, it holds its centre item (the client shows ghosts of the pedestal items the circle lacks). A ritual warms up, then
  * draws the pedestal items one by one while it pulls essences from the tanks around; with everything in, a short finale
  * turns the centre item into the result. A ritual short of anything stalls (the circle flickers); stalled too long it
  * collapses: the drawn items are lost, the centre stays, the backlash hurts whoever stands close.
@@ -56,7 +56,6 @@ import org.jspecify.annotations.Nullable;
 public class HextechAltarBlockEntity extends BlockEntity implements Container {
     /** Height of the centre item over the altar's base (blocks). */
     public static final double ITEM_Y = 1.3;
-    private static final int PREVIEW_TICKS = 10;
     private static final int RESCAN_TICKS = 40;
     /** How often the client looks again which pedestal items the circle lacks. */
     private static final int GHOST_TICKS = 10;
@@ -69,8 +68,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             ).apply(instance, Ritual.Input::new)));
 
     private ItemStack center = ItemStack.EMPTY;
-    private ItemStack preview = ItemStack.EMPTY;
-    private int previewTimer;
 
     // The ritual in progress (kind == null: idle).
     private Ritual.@Nullable Kind kind;
@@ -110,9 +107,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         return center;
     }
 
-    public ItemStack preview() {
-        return preview;
-    }
 
     public boolean active() {
         return kind != null;
@@ -189,7 +183,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             return false;
         }
         center = stack.copyWithCount(1);
-        refreshPreview();
         setChanged();
         return true;
     }
@@ -200,7 +193,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         }
         ItemStack out = center;
         center = ItemStack.EMPTY;
-        preview = ItemStack.EMPTY;
         setChanged();
         return out;
     }
@@ -251,7 +243,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         finale = 0;
         stalled = 0;
         rescan = 0;
-        preview = result.copy();
         startedAt = serverLevel.getGameTime();
         for (var stele : circle.steles()) {
             if (stele.rune() != null) {
@@ -269,10 +260,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             return;
         }
         if (altar.kind == null) {
-            if (++altar.previewTimer >= PREVIEW_TICKS) {
-                altar.previewTimer = 0;
-                altar.refreshPreview();
-            }
             return;
         }
         if (altar.circle == null || ++altar.rescan >= RESCAN_TICKS) {
@@ -410,7 +397,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y, at.z, 20, 0.3, 0.3, 0.3, 0.3);
         level.playSound(null, worldPosition, ModSounds.RITUAL_COMPLETE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         level.blockEvent(worldPosition, getBlockState().getBlock(), 1, 0);
-        refreshPreview();
         sync();
     }
 
@@ -426,7 +412,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             player.hurtServer(level, level.damageSources().magic(), 4.0F);
         }
         level.blockEvent(worldPosition, getBlockState().getBlock(), 2, 0);
-        refreshPreview();
         sync();
     }
 
@@ -442,24 +427,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         finale = 0;
         stalled = 0;
         itemsTotal = 0;
-    }
-
-    /** Re-plans from the current circle and keeps what it would make, syncing when it changed. */
-    private void refreshPreview() {
-        if (!(level instanceof ServerLevel serverLevel) || active()) {
-            return;
-        }
-        ItemStack next = ItemStack.EMPTY;
-        if (!center.isEmpty()) {
-            Ritual.Plan plan = Ritual.plan(center, Ritual.Circle.scan(serverLevel, worldPosition), false);
-            if (plan != null) {
-                next = plan.result();
-            }
-        }
-        if (!ItemStack.matches(next, preview)) {
-            preview = next;
-            sync();
-        }
     }
 
     public Vec3 itemPosition() {
@@ -667,7 +634,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         center = input.read("center", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
-        preview = input.read("preview", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         Ritual.Kind before = kind;
         kind = input.getString("ritual").map(name -> Ritual.Kind.valueOf(name)).orElse(null);
         inputs = new ArrayList<>(input.read("inputs", INPUTS_CODEC).orElse(List.of()));
@@ -690,9 +656,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         super.saveAdditional(output);
         if (!center.isEmpty()) {
             output.store("center", ItemStack.OPTIONAL_CODEC, center);
-        }
-        if (!preview.isEmpty()) {
-            output.store("preview", ItemStack.OPTIONAL_CODEC, preview);
         }
         if (kind != null) {
             output.putString("ritual", kind.name());
