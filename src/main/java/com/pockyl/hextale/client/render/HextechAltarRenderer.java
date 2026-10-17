@@ -2,6 +2,7 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.minecraft.core.BlockPos;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -27,7 +28,7 @@ import com.pockyl.hextale.infusion.Ritual;
 /**
  * The Hextech Altar: its centre item floats over the dish inside a hextech gimbal (two brass rings turning on crossed
  * axes) wrapped in a soft glow. Idle, everything turns slowly and a small ghost of what a ritual would make hovers
- * above. During a ritual the rings spin up, the glow swells, motes circle the item; in the finale the item rises and a
+ * above, and ghosts of the pedestal items the circle still lacks float over the free pedestals. During a ritual the rings spin up, the glow swells, motes circle the item; in the finale the item rises and a
  * flash closes the ritual. A collapse shakes the altar and greys the glow for a moment.
  */
 public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlockEntity, HextechAltarRenderer.State> {
@@ -57,6 +58,17 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         ItemStack preview = altar.preview();
         boolean showPreview = !altar.active() && !preview.isEmpty() && !ItemStack.isSameItemSameComponents(preview, altar.center());
         itemModelResolver.updateForTopItem(state.preview, showPreview ? preview : ItemStack.EMPTY, ItemDisplayContext.GROUND, level, null, seed + 1);
+        state.ghosts.clear();
+        int index = 0;
+        for (HextechAltarBlockEntity.Ghost ghost : altar.ghosts()) {
+            ItemStackRenderState item = new ItemStackRenderState();
+            itemModelResolver.updateForTopItem(item, ghost.item(), ItemDisplayContext.GROUND, level, null, seed + 2 + index++);
+            state.ghosts.add(new GhostState(ghost.at(), item));
+        }
+        state.extras.clear();
+        for (BlockPos pos : altar.extras()) {
+            state.extras.add(Vec3.atLowerCornerOf(pos.subtract(altar.getBlockPos())).add(0.5, 1.12, 0.5));
+        }
         state.time = time;
         state.active = altar.active();
         state.charging = altar.kind() == Ritual.Kind.CHARGE;
@@ -125,6 +137,8 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         }
         poseStack.popPose();
 
+        ghosts(state, poseStack, collector, camera);
+
         // What a ritual would make: a small ghost over the gimbal.
         if (!state.preview.isEmpty()) {
             poseStack.pushPose();
@@ -134,6 +148,38 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
             poseStack.scale(0.45F, 0.45F, 0.45F);
             poseStack.translate(0, -0.15, 0);
             state.preview.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
+        }
+    }
+
+    /**
+     * The items the circle still lacks, as ghosts over the free pedestals: small, slowly turning, flickering in and out
+     * inside a pale cyan haze; pedestals holding something the ritual does not take get a dull red haze.
+     */
+    private static void ghosts(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        float time = state.time;
+        int i = 0;
+        for (GhostState ghost : state.ghosts) {
+            float phase = time * 0.12F + i * 1.7F;
+            float pulse = 0.5F + 0.5F * Mth.sin(phase);
+            poseStack.pushPose();
+            poseStack.translate(ghost.at.x, ghost.at.y + Mth.sin(time * 0.09F + i) * 0.04F, ghost.at.z);
+            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.55F + 0.08F * pulse, 0x9FE6FF, 0.22F + 0.2F * pulse);
+            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.MOTE, 0.12F, 0xD8F6FF, 0.35F + 0.4F * pulse);
+            poseStack.rotate(Axis.YP.rotationDegrees(time * 1.5F + i * 40));
+            float scale = 0.48F + 0.04F * pulse;
+            poseStack.scale(scale, scale, scale);
+            poseStack.translate(0, -0.15, 0);
+            // Dimmed light: the ghost reads as an outline of the item rather than the item itself.
+            int light = LightCoordsUtil.pack(4 + (int) (6 * pulse), 4 + (int) (6 * pulse));
+            ghost.item.submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
+            i++;
+        }
+        for (Vec3 extra : state.extras) {
+            poseStack.pushPose();
+            poseStack.translate(extra.x, extra.y, extra.z);
+            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.6F, STALL_COLOR, 0.25F + 0.12F * Mth.sin(time * 0.2F));
             poseStack.popPose();
         }
     }
@@ -165,7 +211,8 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
 
     @Override
     public AABB getRenderBoundingBox(HextechAltarBlockEntity altar) {
-        return new AABB(altar.getBlockPos()).inflate(1, 2, 1);
+        // Ghosts float over pedestals anywhere in the circle.
+        return new AABB(altar.getBlockPos()).inflate(Ritual.PEDESTAL_RADIUS + 1, 3, Ritual.PEDESTAL_RADIUS + 1);
     }
 
     public static final class State extends BlockEntityRenderState {
@@ -183,5 +230,10 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         float outerPhase;
         float innerPhase;
         float itemTurn;
+        final java.util.List<GhostState> ghosts = new java.util.ArrayList<>();
+        final java.util.List<Vec3> extras = new java.util.ArrayList<>();
+    }
+
+    record GhostState(Vec3 at, ItemStackRenderState item) {
     }
 }

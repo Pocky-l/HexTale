@@ -58,6 +58,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     public static final double ITEM_Y = 1.3;
     private static final int PREVIEW_TICKS = 10;
     private static final int RESCAN_TICKS = 40;
+    /** How often the client looks again which pedestal items the circle lacks. */
+    private static final int GHOST_TICKS = 10;
     private static final int SYNC_TICKS = 4;
     private static final int ABORT_GRACE = 30;
     private static final Codec<List<Ritual.Input>> INPUTS_CODEC = Codec.list(com.mojang.serialization.codecs.RecordCodecBuilder.create(
@@ -470,8 +472,13 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     public static void clientTick(Level level, BlockPos pos, BlockState state, HextechAltarBlockEntity altar) {
         if (altar.kind == null) {
             altar.clientElapsed = 0;
+            if (level.getGameTime() % GHOST_TICKS == 0) {
+                altar.updateGhosts(level);
+            }
             return;
         }
+        altar.ghosts = List.of();
+        altar.extras = List.of();
         if (!altar.stalled()) {
             altar.clientElapsed = Math.min(altar.duration, altar.clientElapsed + 1);
         }
@@ -513,6 +520,49 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             level.addParticle(ParticleTypes.ELECTRIC_SPARK, target.x + (random.nextDouble() - 0.5) * 0.8, target.y + random.nextDouble() * 0.4,
                     target.z + (random.nextDouble() - 0.5) * 0.8, 0, 0.02, 0);
         }
+    }
+
+    /** A missing pedestal item shown as a ghost: where it floats (relative to the altar block) and what it is. */
+    public record Ghost(Vec3 at, ItemStack item) {
+    }
+
+    private List<Ghost> ghosts = List.of();
+    private List<BlockPos> extras = List.of();
+
+    /** Client: ghosts of the items the circle still needs. */
+    public List<Ghost> ghosts() {
+        return ghosts;
+    }
+
+    /** Client: pedestals holding something the ritual being set up does not take. */
+    public List<BlockPos> extras() {
+        return extras;
+    }
+
+    /** Client: works out what the circle lacks; each missing item floats over a free pedestal, the rest around the altar. */
+    private void updateGhosts(Level level) {
+        Ritual.Circle scanned = Ritual.Circle.scan(level, worldPosition);
+        Ritual.Hint hint = Ritual.hint(center, scanned, true);
+        List<Ghost> next = new java.util.ArrayList<>();
+        List<PedestalBlockEntity> free = scanned.pedestals().stream().filter(pedestal -> pedestal.item().isEmpty()).toList();
+        int around = Math.max(0, hint.missing().size() - free.size());
+        int aroundIndex = 0;
+        for (int i = 0; i < hint.missing().size(); i++) {
+            ItemStack item = hint.missing().get(i);
+            if (item.isEmpty()) {
+                continue;
+            }
+            if (i < free.size()) {
+                BlockPos at = free.get(i).getBlockPos().subtract(worldPosition);
+                next.add(new Ghost(new Vec3(at.getX() + 0.5, at.getY() + 1.12, at.getZ() + 0.5), item));
+            } else {
+                // No free pedestal for it: it circles the altar, telling the player to set one more pedestal.
+                double angle = Math.PI * 2 * aroundIndex++ / around;
+                next.add(new Ghost(new Vec3(0.5 + Math.sin(angle) * 1.3, 1.0, 0.5 - Math.cos(angle) * 1.3), item));
+            }
+        }
+        ghosts = next;
+        extras = hint.extra();
     }
 
     private static void spawnFlow(Level level, Vec3 to, Vec3 from, int color) {

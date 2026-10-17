@@ -122,6 +122,22 @@ public final class RuneWorkGameTests {
         helper.succeed();
     }
 
+    /** The circle names what it lacks: missing pedestal items (incl. a stele rune's) and items the ritual does not take. */
+    @HexTest
+    public static void theCircleShowsWhatItLacks(GameTestHelper helper) {
+        HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE),
+                List.of(new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(Items.DIRT)), EssenceMix.EMPTY);
+        Ritual.Hint hint = Ritual.hint(altar.center(), Ritual.Circle.scan(helper.getLevel(), helper.absolutePos(ALTAR)), false);
+        helper.assertTrue(hint.missing().size() == 3, "a brass ingot, the hextech and the shard are missing, got " + hint.missing());
+        helper.assertTrue(hint.extra().size() == 1 && hint.extra().getFirst().equals(helper.absolutePos(PEDESTALS.get(1))), "the dirt is extra");
+        helper.setBlock(STELE, ModBlocks.RUNE_STELE.get());
+        helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(ToolRunes.SMELTING, 1);
+        hint = Ritual.hint(altar.center(), Ritual.Circle.scan(helper.getLevel(), helper.absolutePos(ALTAR)), false);
+        helper.assertTrue(hint.missing().size() == 5 && hint.missing().stream().anyMatch(stack -> stack.is(Items.FURNACE)),
+                "the stele's rune adds its furnace and coal, got " + hint.missing());
+        helper.succeed();
+    }
+
     /** Every rune of the codex does something on a tool and can be burned into one at the altar. */
     @HexTest
     public static void everyRuneWorksOnTools(GameTestHelper helper) {

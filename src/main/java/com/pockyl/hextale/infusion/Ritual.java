@@ -212,6 +212,78 @@ public final class Ritual {
         return null;
     }
 
+    /**
+     * What the circle still lacks for the ritual it is being set up for: the pedestal items nobody has laid out yet
+     * (as stacks to show) and the pedestals holding something that ritual does not take. Candidates are every infusion
+     * the centre item fits (with the steles' runes when it makes a hextech tool) and engraving the steles' runes into a
+     * centre tool; the one closest to complete wins. Empty when a ritual can start or nothing fits the centre item.
+     */
+    public record Hint(List<ItemStack> missing, List<BlockPos> extra) {
+        public static final Hint NONE = new Hint(List.of(), List.of());
+
+        public boolean isEmpty() {
+            return missing.isEmpty() && extra.isEmpty();
+        }
+    }
+
+    public static Hint hint(ItemStack center, Circle circle, boolean clientSide) {
+        if (center.isEmpty() || plan(center, circle, clientSide) != null) {
+            return Hint.NONE;
+        }
+        List<List<Ingredient>> candidates = new ArrayList<>();
+        List<ComplexRune> chosen = circle.chosenRunes().stream().map(RuneSlots.Engraving::rune).toList();
+        for (InfusionRecipe recipe : InfusionRecipes.get(clientSide).values()) {
+            if (recipe.kind() != InfusionRecipe.Kind.INFUSE || !recipe.center().orElseThrow().test(center)
+                    || !chosen.containsAll(recipe.runes())) {
+                continue;
+            }
+            List<Ingredient> needed = new ArrayList<>(recipe.pedestals());
+            ItemStack result = recipe.resultFor(center);
+            if (HextechTools.isTool(result) && unusable(HextechTools.runes(result), circle, clientSide) == null) {
+                needed.addAll(engravings(HextechTools.runes(result), circle, clientSide).needed());
+            }
+            candidates.add(needed);
+        }
+        if (HextechTools.isTool(center) && unusable(HextechTools.runes(center), circle, clientSide) == null) {
+            Engravings runes = engravings(HextechTools.runes(center), circle, clientSide);
+            if (!runes.added().isEmpty()) {
+                candidates.add(runes.needed());
+            }
+        }
+        List<PedestalBlockEntity> filled = circle.filledPedestals();
+        Hint best = Hint.NONE;
+        int bestScore = Integer.MAX_VALUE;
+        for (List<Ingredient> needed : candidates) {
+            int[] owner = assign(needed, filled);
+            boolean[] used = new boolean[filled.size()];
+            boolean[] met = new boolean[needed.size()];
+            for (int p = 0; p < owner.length; p++) {
+                if (owner[p] >= 0) {
+                    used[p] = true;
+                    met[owner[p]] = true;
+                }
+            }
+            List<ItemStack> missing = new ArrayList<>();
+            for (int i = 0; i < needed.size(); i++) {
+                if (!met[i]) {
+                    missing.add(needed.get(i).items().findFirst().map(ItemStack::new).orElse(ItemStack.EMPTY));
+                }
+            }
+            List<BlockPos> extra = new ArrayList<>();
+            for (int p = 0; p < filled.size(); p++) {
+                if (!used[p]) {
+                    extra.add(filled.get(p).getBlockPos());
+                }
+            }
+            int score = missing.size() + extra.size();
+            if (score < bestScore) {
+                bestScore = score;
+                best = new Hint(missing, extra);
+            }
+        }
+        return best;
+    }
+
     /** Runes on the steles that the tool lacks go into its free slots, in stele order, paid by their engraving entries. */
     @Nullable
     private static Plan engravingPlan(ItemStack center, RuneSlots runes, Circle circle, List<PedestalBlockEntity> filled, boolean clientSide) {
@@ -342,6 +414,22 @@ public final class Ritual {
             inputs.add(new Input(pedestal.getBlockPos(), BuiltInRegistries.ITEM.getKey(pedestal.item().getItem())));
         }
         return inputs;
+    }
+
+    /** The largest matching of ingredients to filled pedestals: for each pedestal the ingredient it serves, or -1. */
+    private static int[] assign(List<Ingredient> needed, List<PedestalBlockEntity> filled) {
+        int[] owner = new int[filled.size()];
+        java.util.Arrays.fill(owner, -1);
+        boolean[][] fits = new boolean[needed.size()][filled.size()];
+        for (int i = 0; i < needed.size(); i++) {
+            for (int p = 0; p < filled.size(); p++) {
+                fits[i][p] = needed.get(i).test(filled.get(p).item());
+            }
+        }
+        for (int i = 0; i < needed.size(); i++) {
+            augment(i, fits, owner, new boolean[filled.size()]);
+        }
+        return owner;
     }
 
     private static boolean augment(int ingredient, boolean[][] fits, int[] owner, boolean[] seen) {
