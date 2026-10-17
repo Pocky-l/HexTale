@@ -30,8 +30,6 @@ public final class HexFx {
     public static final Identifier MOTE = Hextale.id("textures/misc/mote.png");
     public static final Identifier WHITE = Hextale.id("textures/misc/white.png");
     public static final int HEXTECH = 0x5CC8F2;
-    /** How far a glyph's bright core sits in front of its soft stroke (blocks). */
-    private static final float GLYPH_LAYER = 0.004F;
 
     private static final float[][] CUBE_FACES = {
             {-1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1, 0, 0, 1},
@@ -108,23 +106,125 @@ public final class HexFx {
     }
 
     /**
-     * A rune's hieroglyph as glowing strokes of {@code size} blocks, in the pose's XY plane (a soft wide stroke under a
-     * bright thin one).
+     * A rune's hieroglyph as glowing strokes of {@code size} blocks, in the pose's XY plane: a wide faint glow, a
+     * narrower one and a near-white core, each fading to nothing at its edges. Drawn with additive light (the
+     * lightning render type), so the layers never need sorting: overlapping translucent quads in one plane are
+     * re-sorted as the camera moves, which made the old glyph flicker.
      */
     public static void glyph(PoseStack poseStack, SubmitNodeCollector collector, ComplexRune rune, float size, int color, float alpha) {
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(WHITE), (pose, consumer) -> {
-            for (float[] stroke : RuneGlyphs.glyph(rune)) {
-                for (int i = 0; i + 3 < stroke.length; i += 2) {
-                    float x0 = (stroke[i] - 0.5F) * size;
-                    float y0 = (0.5F - stroke[i + 1]) * size;
-                    float x1 = (stroke[i + 2] - 0.5F) * size;
-                    float y1 = (0.5F - stroke[i + 3]) * size;
-                    segment(consumer, pose, x0, y0, x1, y1, 0, size * 0.11F, color, alpha * 0.25F);
-                    // The bright core a hair in front of the soft stroke: two quads in one plane flicker.
-                    segment(consumer, pose, x0, y0, x1, y1, GLYPH_LAYER, size * 0.045F, RuneDrawing.lighten(color, 0.5F), alpha);
+        glyph(poseStack, collector, rune, size, color, alpha, 1);
+    }
+
+    /** As {@link #glyph}, with only the first {@code reveal} (0-1) of the strokes' length drawn - the rune writing itself. */
+    public static void glyph(PoseStack poseStack, SubmitNodeCollector collector, ComplexRune rune, float size, int color, float alpha,
+                             float reveal) {
+        if (alpha <= 0.01F || reveal <= 0) {
+            return;
+        }
+        java.util.List<float[]> strokes = RuneGlyphs.glyph(rune);
+        float total = 0;
+        for (float[] stroke : strokes) {
+            for (int i = 0; i + 3 < stroke.length; i += 2) {
+                total += Mth.sqrt(Mth.square(stroke[i + 2] - stroke[i]) + Mth.square(stroke[i + 3] - stroke[i + 1]));
+            }
+        }
+        float budget = total * Math.min(1, reveal);
+        int core = RuneDrawing.mix(color, 0xFFFFFF, 0.7F);
+        float drawnLength = budget;
+        collector.submitCustomGeometry(poseStack, RenderTypes.lightning(), (pose, consumer) -> {
+            float left = drawnLength;
+            for (float[] stroke : strokes) {
+                for (int i = 0; i + 3 < stroke.length && left > 0; i += 2) {
+                    float ax = stroke[i];
+                    float ay = stroke[i + 1];
+                    float bx = stroke[i + 2];
+                    float by = stroke[i + 3];
+                    float length = Mth.sqrt(Mth.square(bx - ax) + Mth.square(by - ay));
+                    if (length > left) {
+                        float t = left / length;
+                        bx = ax + (bx - ax) * t;
+                        by = ay + (by - ay) * t;
+                    }
+                    left -= length;
+                    float x0 = (ax - 0.5F) * size;
+                    float y0 = (0.5F - ay) * size;
+                    float x1 = (bx - 0.5F) * size;
+                    float y1 = (0.5F - by) * size;
+                    glowSegment(consumer, pose, x0, y0, x1, y1, size * 0.22F, color, alpha * 0.22F);
+                    glowSegment(consumer, pose, x0, y0, x1, y1, size * 0.09F, color, alpha * 0.55F);
+                    glowSegment(consumer, pose, x0, y0, x1, y1, size * 0.035F, core, alpha);
                 }
             }
         });
+    }
+
+    /**
+     * A thin ring of additive light of {@code radius} in the pose's XY plane, with {@code ticks} short marks on its
+     * outside - the sigil circle around a rune.
+     */
+    public static void sigilRing(PoseStack poseStack, SubmitNodeCollector collector, float radius, int ticks, int color, float alpha) {
+        if (alpha <= 0.01F) {
+            return;
+        }
+        collector.submitCustomGeometry(poseStack, RenderTypes.lightning(), (pose, consumer) -> {
+            int segments = 48;
+            for (int i = 0; i < segments; i++) {
+                float a0 = Mth.TWO_PI * i / segments;
+                float a1 = Mth.TWO_PI * (i + 1) / segments;
+                glowSegment(consumer, pose, Mth.cos(a0) * radius, Mth.sin(a0) * radius, Mth.cos(a1) * radius, Mth.sin(a1) * radius,
+                        radius * 0.08F, color, alpha);
+            }
+            for (int i = 0; i < ticks; i++) {
+                float a = Mth.TWO_PI * i / ticks;
+                glowSegment(consumer, pose, Mth.cos(a) * radius * 1.04F, Mth.sin(a) * radius * 1.04F, Mth.cos(a) * radius * 1.16F,
+                        Mth.sin(a) * radius * 1.16F, radius * 0.07F, color, alpha * 1.3F);
+            }
+        });
+    }
+
+    /**
+     * A segment of additive light: full {@code alpha} along its centre line, fading to 0 at both long edges, ends
+     * reaching a little past the points so strokes join; both windings.
+     */
+    private static void glowSegment(VertexConsumer consumer, PoseStack.Pose pose, float x0, float y0, float x1, float y1, float width,
+                                    int color, float alpha) {
+        float dx = x1 - x0;
+        float dy = y1 - y0;
+        float length = Mth.sqrt(dx * dx + dy * dy);
+        if (length < 1.0E-4F) {
+            return;
+        }
+        float h = width / 2;
+        float nx = -dy / length * h;
+        float ny = dx / length * h;
+        float ex = dx / length * h * 0.5F;
+        float ey = dy / length * h * 0.5F;
+        x0 -= ex;
+        y0 -= ey;
+        x1 += ex;
+        y1 += ey;
+        int centre = argbOf(color, alpha);
+        int edge = argbOf(color, 0);
+        for (int side = -1; side <= 1; side += 2) {
+            float sx = nx * side;
+            float sy = ny * side;
+            glow(consumer, pose, x0, y0, centre);
+            glow(consumer, pose, x0 + sx, y0 + sy, edge);
+            glow(consumer, pose, x1 + sx, y1 + sy, edge);
+            glow(consumer, pose, x1, y1, centre);
+            glow(consumer, pose, x1, y1, centre);
+            glow(consumer, pose, x1 + sx, y1 + sy, edge);
+            glow(consumer, pose, x0 + sx, y0 + sy, edge);
+            glow(consumer, pose, x0, y0, centre);
+        }
+    }
+
+    private static void glow(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, int argb) {
+        consumer.addVertex(pose, x, y, 0).setColor(argb);
+    }
+
+    private static int argbOf(int rgb, float alpha) {
+        return (Math.round(Mth.clamp(alpha, 0, 1) * 255) << 24) | (rgb & 0xFFFFFF);
     }
 
     /** A line segment as a quad of the given width, with square caps that overlap the next segment; both windings. */

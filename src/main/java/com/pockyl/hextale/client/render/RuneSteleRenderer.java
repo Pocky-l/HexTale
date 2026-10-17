@@ -19,12 +19,13 @@ import com.pockyl.hextale.block.RuneSteleBlockEntity;
 import com.pockyl.hextale.rune.ComplexRune;
 
 /**
- * The rune chosen on a stele hangs over it as its glowing hieroglyph in the rune's colour, facing the viewer, with a
- * soft halo and a thin thread of light down to the stele's socket. A freshly chosen rune
- * unfolds from a point; while a ritual draws on the stele, the glyph burns brighter and pulses.
+ * The rune chosen on a stele hangs over it as its glowing hieroglyph in the rune's colour, facing the viewer, inside a
+ * slowly turning sigil ring, with a soft halo, a few motes circling it and a thin thread of light down to the stele's
+ * socket. A freshly chosen rune writes itself stroke by stroke while the ring opens; while a ritual draws on the stele,
+ * everything burns brighter and pulses. Glyph and ring are additive light (no sorting, no flicker).
  */
 public class RuneSteleRenderer implements BlockEntityRenderer<RuneSteleBlockEntity, RuneSteleRenderer.State> {
-    private static final float ENTRANCE_TICKS = 14;
+    private static final float ENTRANCE_TICKS = 24;
 
     public RuneSteleRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -55,7 +56,7 @@ public class RuneSteleRenderer implements BlockEntityRenderer<RuneSteleBlockEnti
         }
         float time = state.time + (state.seed & 127);
         float entrance = state.sinceChosen >= 0 && state.sinceChosen < ENTRANCE_TICKS ? state.sinceChosen / ENTRANCE_TICKS : 1;
-        entrance = entrance * entrance * (3 - 2 * entrance);
+        entrance = 1 - (1 - entrance) * (1 - entrance);
         float pulse = state.active ? 0.8F + 0.2F * Mth.sin(time * 0.5F) : 0.85F + 0.15F * Mth.sin(time * 0.08F);
         int color = rune.color();
         float y = 1.55F + Mth.sin(time * 0.06F) * 0.04F;
@@ -67,13 +68,26 @@ public class RuneSteleRenderer implements BlockEntityRenderer<RuneSteleBlockEnti
         // Thread of light down to the socket.
         HexFx.beam(poseStack, collector, 0, -(y - 1.0F), 0, 0.06F * entrance, color, 0.5F * pulse,
                 new Vector3f(0, 0, 1).rotate(camera.orientation));
-        // Always readable: the glyph faces the viewer and sways a little, clearly in front of the halo.
+        // Motes circling the rune on a tilted orbit.
+        for (int i = 0; i < 4; i++) {
+            float angle = time * (state.active ? 0.09F : 0.035F) + i * Mth.HALF_PI;
+            poseStack.pushPose();
+            poseStack.translate(Mth.cos(angle) * 0.36F, Mth.sin(angle * 2 + i) * 0.05F, Mth.sin(angle) * 0.36F);
+            float twinkle = 0.55F + 0.45F * Mth.sin(time * 0.3F + i * 1.9F);
+            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.MOTE, 0.06F, RuneDrawing.lighten(color, 0.4F), 0.7F * twinkle * entrance);
+            poseStack.popPose();
+        }
+        // Always readable: the glyph faces the viewer and sways a little, in front of the halo.
         poseStack.rotate(camera.orientation);
         poseStack.translate(0, 0, 0.03F);
-        poseStack.rotate(Axis.ZP.rotationDegrees(Mth.sin(time * 0.05F) * 4));
-        float size = 0.46F * entrance * (state.active ? 1.08F : 1);
-        float alpha = Math.min(1, entrance * 1.2F) * pulse;
-        HexFx.glyph(poseStack, collector, rune, size, color, alpha);
+        float size = 0.46F * (state.active ? 1.08F : 1);
+        float alpha = pulse * (state.active ? 1 : 0.85F);
+        poseStack.pushPose();
+        poseStack.rotate(Axis.ZP.rotationDegrees(time * (state.active ? 1.2F : 0.35F)));
+        HexFx.sigilRing(poseStack, collector, 0.36F * (0.6F + 0.4F * entrance), 9, color, 0.35F * alpha * entrance);
+        poseStack.popPose();
+        poseStack.rotate(Axis.ZP.rotationDegrees(Mth.sin(time * 0.05F) * 3));
+        HexFx.glyph(poseStack, collector, rune, size, color, alpha, entrance);
         poseStack.popPose();
     }
 
