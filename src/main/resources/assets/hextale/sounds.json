@@ -64,19 +64,23 @@
     "sounds": [
       {
         "name": "hextale:alembic_simmer1",
-        "volume": 0.35
+        "volume": 0.2,
+        "attenuation_distance": 10
       },
       {
         "name": "hextale:alembic_simmer2",
-        "volume": 0.35
+        "volume": 0.2,
+        "attenuation_distance": 10
       },
       {
         "name": "hextale:alembic_simmer3",
-        "volume": 0.35
+        "volume": 0.2,
+        "attenuation_distance": 10
       },
       {
         "name": "hextale:alembic_simmer4",
-        "volume": 0.35
+        "volume": 0.2,
+        "attenuation_distance": 10
       }
     ]
   },

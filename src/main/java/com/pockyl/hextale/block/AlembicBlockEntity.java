@@ -214,7 +214,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         inside.shrink(1);
         water -= WATER_PER_ITEM;
         progress = 0;
-        level.playSound(null, worldPosition, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 0.5F, 1.4F);
+        level.playSound(null, worldPosition, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 0.2F, 1.4F);
         return true;
     }
 
@@ -230,7 +230,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         }
         items.set(FLASK_OUT, EssenceFlaskItem.filled(tank.drain(EssenceFlaskItem.CAPACITY, false)));
         empty.shrink(1);
-        level.playSound(null, worldPosition, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 0.6F, 1.0F);
+        level.playSound(null, worldPosition, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 0.35F, 1.0F);
         return true;
     }
 
