@@ -631,6 +631,24 @@ public final class ResearchGameTests {
         });
     }
 
+    /** Choosing the unknown essence filters it out: the rest comes out clean, with no new unknown essence on top. */
+    @HexTest(maxTicks = 300)
+    public static void theUnknownEssenceIsFilteredOut(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState());
+        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(EssenceMix.pure(Essence.FIRE, 8).plus(EssenceMix.unknown(8))));
+        separator.setItem(SeparatorBlockEntity.FUEL, new ItemStack(Items.BLAZE_POWDER, 2));
+        separator.chooseUnknown();
+        separator.setItem(SeparatorBlockEntity.SUPPLY, new ItemStack(Items.GLASS_BOTTLE, 2));
+        helper.succeedWhen(() -> {
+            EssenceMix rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
+            EssenceMix drawn = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.EXTRACT_OUT));
+            helper.assertTrue(rest.equals(EssenceMix.pure(Essence.FIRE, 8)), "the fire comes out clean, a concentrate again, got " + rest);
+            helper.assertTrue(drawn.equals(EssenceMix.unknown(8)), "the unknown essence is drawn out, got " + drawn);
+        });
+    }
+
     @HexTest(maxTicks = 300)
     public static void withoutAChosenEssenceNothingIsSplit(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);

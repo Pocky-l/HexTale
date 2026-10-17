@@ -46,7 +46,8 @@ import org.jspecify.annotations.Nullable;
  * their outlets; by default the mixture comes in at the back and the left, the concentrate leaves at the right and the
  * rest at the front. The top is the gas vent. Both products can be bottled. Drawing an essence out burns blaze powder:
  * one powder draws {@value #FUEL_BINDS} mB of whatever essence is chosen. Without a chosen essence or powder nothing is
- * split.
+ * split. The dark unknown essence can be chosen too: it is filtered out of a mixture into its own vessel, and then no
+ * unknown essence is added to the rest - that is the way to clean a mixture.
  */
 public class SeparatorBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.Receiver {
     public static final int POUR = 0;
@@ -61,9 +62,12 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     public static final int DATA_COUNT = 3 + SeparatorBlock.Side.values().length;
     /** Ticks per separating step, millibuckets of the mixture worked off per step, and of unknown essence each step
      * that drew something out adds to the rest. */
-    public static final int STEP_TICKS = 20;
+    public static final int STEP_TICKS = 10;
+    /** The choice that draws out the dark unknown essence (after the essences' ordinals). */
+    public static final int UNKNOWN_CHOICE = Essence.COUNT;
     private static final int STEP_DROPS = 4;
     public static final int UNKNOWN_PER_STEP = 1;
+    private static final String UNKNOWN_KEY = "unknown";
     /** A partly filled bottle is filled once nothing has come in for this long. */
     private static final int IDLE_TICKS = 40;
     private static final int[] TOP = {FUEL};
@@ -171,9 +175,22 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         return chosen >= 0 && chosen < Essence.COUNT ? Essence.values()[chosen] : null;
     }
 
+    /** Whether the dark unknown essence is chosen to be drawn out. */
+    public boolean separatingUnknown() {
+        return chosen == UNKNOWN_CHOICE;
+    }
+
     /** Chooses the essence to draw out (null: none, nothing is split). */
     public void choose(@Nullable Essence essence) {
-        int now = essence == null ? -1 : essence.ordinal();
+        choose(essence == null ? -1 : essence.ordinal());
+    }
+
+    /** Chooses the dark unknown essence to draw out. */
+    public void chooseUnknown() {
+        choose(UNKNOWN_CHOICE);
+    }
+
+    private void choose(int now) {
         if (now != chosen) {
             chosen = now;
             step = 0;
@@ -232,20 +249,34 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             return "empty";
         }
         Essence element = separating();
-        if (element == null) {
+        boolean unknown = separatingUnknown();
+        if (element == null && !unknown) {
             return "no_essence";
         }
         EssenceMix portion = portion();
-        int drawn = portion.get(element);
+        int drawn = drawnOut(portion);
         if (drawn > 0) {
             if (charge + (isFuel(items.get(FUEL)) ? FUEL_BINDS : 0) < drawn) {
                 return "no_fuel";
             }
-            if (extract.space() < drawn || !extract.isEmpty() && extract.contents().pureEssence() != element) {
+            boolean other = !extract.isEmpty() && (unknown ? extract.contents().unknown() != extract.amount()
+                    : extract.contents().pureEssence() != element);
+            if (extract.space() < drawn || other) {
                 return "extract_full";
             }
         }
-        return rest.space() < portion.total() - drawn + (drawn > 0 ? UNKNOWN_PER_STEP : 0) ? "rest_full" : null;
+        return rest.space() < portion.total() - drawn + stain(drawn) ? "rest_full" : null;
+    }
+
+    /** How much of the chosen essence (or of the unknown one) a portion gives up. */
+    private int drawnOut(EssenceMix portion) {
+        Essence element = separating();
+        return separatingUnknown() ? portion.unknown() : element == null ? 0 : portion.get(element);
+    }
+
+    /** What the drawn-out portion leaves on top of the rest: unknown essence, except when the unknown is what is drawn. */
+    private int stain(int drawn) {
+        return drawn > 0 && !separatingUnknown() ? UNKNOWN_PER_STEP : 0;
     }
 
     private boolean separate() {
@@ -258,21 +289,22 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             return false;
         }
         step = 0;
-        Essence element = separating();
         EssenceMix portion = portion();
-        int drawn = portion.get(element);
+        int drawn = drawnOut(portion);
         if (drawn > charge) {
             items.get(FUEL).shrink(1);
             charge += FUEL_BINDS;
         }
         mix.remove(portion);
+        EssenceMix out = separatingUnknown() ? EssenceMix.unknown(drawn) : EssenceMix.pure(separating(), drawn);
         if (drawn > 0) {
-            extract.fill(EssenceMix.pure(element, drawn), false);
+            extract.fill(out, false);
             charge -= drawn;
         }
         // What is left goes on as the rest, and drawing an essence out leaves a dark unknown essence on top of it.
-        EssenceMix left = portion.minus(EssenceMix.pure(element, drawn));
-        rest.fill(drawn > 0 ? left.plus(EssenceMix.unknown(UNKNOWN_PER_STEP)) : left, false);
+        EssenceMix left = portion.minus(out);
+        int stain = stain(drawn);
+        rest.fill(stain > 0 ? left.plus(EssenceMix.unknown(stain)) : left, false);
         // A drop through the stopcock now and then: often enough to hear it work, rarely enough not to tire.
         if (drawn > 0 && level.getRandom().nextInt(3) == 0) {
             level.playSound(null, worldPosition, ModSounds.SEPARATOR_DRIP.get(), SoundSource.BLOCKS, 0.6F,
@@ -452,8 +484,9 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             modes[i] = i < saved.length && saved[i] >= 0 && saved[i] < PortMode.values().length ? PortMode.values()[saved[i]] : defaults[i];
         }
         charge = input.getIntOr("charge", 0);
-        Essence essence = Essence.byId(input.getStringOr("chosen", ""));
-        chosen = essence == null ? -1 : essence.ordinal();
+        String choice = input.getStringOr("chosen", "");
+        Essence essence = Essence.byId(choice);
+        chosen = UNKNOWN_KEY.equals(choice) ? UNKNOWN_CHOICE : essence == null ? -1 : essence.ordinal();
     }
 
     @Override
@@ -472,6 +505,8 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         Essence essence = separating();
         if (essence != null) {
             output.putString("chosen", essence.id());
+        } else if (separatingUnknown()) {
+            output.putString("chosen", UNKNOWN_KEY);
         }
     }
 

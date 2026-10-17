@@ -23,7 +23,8 @@ import org.jspecify.annotations.Nullable;
  * The Separator, read from left to right: a bottle of mixture to pour in and glass bottles, the mixture's tank, the
  * chosen essence over the blaze powder, and the two products - the concentrate (top) and the rest (bottom) - each with the slot it is bottled into.
  * Data = the powder's charge, the chosen essence, the step progress and the mode of each face (the port panel). Buttons:
- * 0-3 cycle a face, {@link #CHOOSE} + essence ordinal chooses the essence, {@link #CHOOSE} - 1 clears it.
+ * 0-3 cycle a face, {@link #CHOOSE} + essence ordinal chooses the essence ({@link #CHOOSE} + the number of essences: the
+ * dark unknown essence), {@link #CHOOSE} - 1 clears it.
  */
 public class SeparatorMenu extends MachineMenu {
     public static final int POUR_X = 12;
@@ -74,6 +75,11 @@ public class SeparatorMenu extends MachineMenu {
         return index >= 0 && index < Essence.COUNT ? Essence.values()[index] : null;
     }
 
+    /** Whether the dark unknown essence is chosen. */
+    public boolean chosenUnknown() {
+        return data(1) == SeparatorBlockEntity.UNKNOWN_CHOICE;
+    }
+
     public int step() {
         return data(2);
     }
@@ -90,6 +96,10 @@ public class SeparatorMenu extends MachineMenu {
         }
         if (id >= 0 && id < SeparatorBlock.Side.values().length) {
             separator.cycle(SeparatorBlock.Side.values()[id]);
+            return true;
+        }
+        if (id == CHOOSE + SeparatorBlockEntity.UNKNOWN_CHOICE) {
+            separator.chooseUnknown();
             return true;
         }
         if (id >= CHOOSE - 1 && id < CHOOSE + Essence.COUNT) {

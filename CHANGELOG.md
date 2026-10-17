@@ -66,6 +66,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Separator: draws the essence chosen on its screen out of a mixture into a concentrate and lets the rest go on with
   dark unknown essence added. It burns blaze powder; each side takes the mixture in or lets the concentrate or the rest
   out, set on its screen or by sneak-using that side.
+  It works off 4 mB every half second. The dark unknown essence can be chosen as well: it is filtered out into its own
+  bottles, and the rest comes out clean (no new unknown essence on top) - a mixture dirtied by unstudied items can be
+  cleaned into a concentrate again.
 - Essence Jar: a big glass jar with a wooden lid (glass and wooden slabs, no brass), 256 mB; in through the lid and the sides, out at the bottom. Sneak-use
   a side or the lid with an empty hand to stick an enamel label with an essence's sign on it. The Research Table draws
   its ink from jars of concentrate within 5 blocks - every drop it spends streams from its jar into the orb. A Creative Essence Jar holds every essence without end.

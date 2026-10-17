@@ -13,6 +13,7 @@ import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.PortMode;
 import com.pockyl.hextale.block.SeparatorBlock;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.menu.SeparatorMenu;
 import com.pockyl.hextale.research.ResearchText;
@@ -157,7 +158,24 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
     }
 
     private int pickHeight() {
-        return pickRows() * PICK_CELL + PICK_GAP * 2 + PICK_PAD * 2 + 10;
+        return (pickRows() + 1) * PICK_CELL + PICK_GAP * 3 + PICK_PAD * 2 + 10;
+    }
+
+    /** The cell of the dark unknown essence: alone on the last row, under the deep essences. */
+    private int[] unknownCell() {
+        return new int[]{pickLeft() + PICK_PAD, pickTop() + PICK_PAD + 10 + pickRows() * PICK_CELL + PICK_GAP * 3};
+    }
+
+    private boolean overUnknown(double mouseX, double mouseY) {
+        int[] at = unknownCell();
+        return isOver(mouseX, mouseY, at[0], at[1], PICK_CELL, PICK_CELL);
+    }
+
+    /** The sign of the unknown essence: a dark drop with a pale question mark. */
+    private void unknownSign(GuiGraphicsExtractor graphics, int x, int y) {
+        graphics.fill(x + 1, y, x + 8, y + 9, 0xFF000000 | EssenceMix.UNKNOWN_COLOR);
+        graphics.fill(x, y + 1, x + 9, y + 8, 0xFF000000 | EssenceMix.UNKNOWN_COLOR);
+        graphics.centeredText(font, "?", x + 5, y + 1, 0xFFB8A8D0);
     }
 
     private int pickLeft() {
@@ -230,8 +248,18 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
             PixelArt.essence(graphics, essence, at[0] + 1, at[1] + 1, 9, PixelArt.argb(essence.color(), 1));
         }
         PixelArt.flush(graphics);
+        int[] unknown = unknownCell();
+        boolean overDark = overUnknown(mouseX, mouseY);
+        if (menu.chosenUnknown() || overDark) {
+            graphics.fill(unknown[0], unknown[1], unknown[0] + PICK_CELL, unknown[1] + PICK_CELL, menu.chosenUnknown() ? 0xFFE9C66D : 0xFF6A5A40);
+            graphics.fill(unknown[0] + 1, unknown[1] + 1, unknown[0] + PICK_CELL - 1, unknown[1] + PICK_CELL - 1, 0xFF120D16);
+        }
+        unknownSign(graphics, unknown[0] + 1, unknown[1] + 1);
         if (over != null) {
             graphics.setComponentTooltipForNextFrame(font, List.of(ResearchText.essence(over)), mouseX, mouseY);
+        } else if (overDark) {
+            graphics.setComponentTooltipForNextFrame(font, List.of(Component.translatable("essence.hextale.unknown"),
+                    Component.translatable("gui.hextale.separator.unknown.hint").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         }
     }
 
@@ -260,8 +288,9 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         if (picking) {
             // While the picker is open every click belongs to it: an essence chooses, anything else closes it.
             Essence essence = pickedAt(event.x(), event.y());
-            if (essence != null) {
-                choose(SeparatorMenu.CHOOSE + essence.ordinal());
+            boolean dark = overUnknown(event.x(), event.y());
+            if (essence != null || dark) {
+                choose(SeparatorMenu.CHOOSE + (dark ? SeparatorBlockEntity.UNKNOWN_CHOICE : essence.ordinal()));
                 if (minecraft != null) {
                     minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 }
@@ -318,6 +347,9 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         graphics.fill(rx + 1, ry - 14, rx + 15, ry - 3, 0xFF1C140C);
         if (element != null) {
             PixelArt.essence(graphics, element, rx + 3, ry - 13, 9, PixelArt.argb(element.color(), 1));
+        } else if (menu.chosenUnknown()) {
+            PixelArt.flush(graphics);
+            unknownSign(graphics, rx + 3, ry - 13);
         } else {
             PixelArt.flush(graphics);
             graphics.centeredText(font, "?", rx + 8, ry - 13, 0xFF8A7A60);
@@ -326,7 +358,8 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
             warn(graphics, rx, ry - 15, 16, 13);
         }
         if (overPlate) {
-            tooltip(List.of(element == null ? Component.translatable("gui.hextale.separator.no_essence")
+            tooltip(List.of(menu.chosenUnknown() ? Component.translatable("gui.hextale.separator.binds", Component.translatable("essence.hextale.unknown"))
+                            : element == null ? Component.translatable("gui.hextale.separator.no_essence")
                             : Component.translatable("gui.hextale.separator.binds", ResearchText.essence(element)),
                     Component.translatable("gui.hextale.separator.choose.hint").withStyle(ChatFormatting.GRAY)));
         }
@@ -339,7 +372,7 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         }
         int charge = Math.round(16 * Math.min(menu.charge(), SeparatorBlockEntity.FUEL_BINDS) / (float) SeparatorBlockEntity.FUEL_BINDS);
         graphics.fill(rx, ry + 18, rx + 16, ry + 20, 0xFF2A1B0C);
-        graphics.fill(rx, ry + 18, rx + charge, ry + 20, element == null ? 0xFF8A7A60 : 0xFF000000 | element.color());
+        graphics.fill(rx, ry + 18, rx + charge, ry + 20, menu.chosenUnknown() ? 0xFF6A5A7A : element == null ? 0xFF8A7A60 : 0xFF000000 | element.color());
         float progress = menu.step() / (float) SeparatorBlockEntity.STEP_TICKS;
         arrow(graphics, x + 55, y + 39, 6, blocked == null ? 1 : 0);
         arrow(graphics, x + 88, y + 23, 8, progress);
