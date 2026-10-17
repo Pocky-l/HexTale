@@ -1,0 +1,28 @@
+package com.pockyl.hextale.registry;
+
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
+import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
+
+/**
+ * The item handlers of the mod's machines, so hex pylons (and other mods' pipes) can feed and empty them like hoppers
+ * do: each sided machine takes and gives items through the same faces as for a hopper.
+ */
+public final class ModCapabilities {
+    private ModCapabilities() {
+    }
+
+    public static void register(IEventBus modBus) {
+        modBus.addListener(ModCapabilities::onRegister);
+    }
+
+    private static void onRegister(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ALEMBIC.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.SEPARATOR.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.HEX_SMELTER.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.RESEARCH_TABLE.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PEDESTAL.get(), (pedestal, side) -> VanillaContainerWrapper.of(pedestal));
+    }
+}

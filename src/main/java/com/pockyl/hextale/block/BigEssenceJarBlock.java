@@ -1,0 +1,69 @@
+package com.pockyl.hextale.block;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+import com.pockyl.hextale.registry.ModBlockEntities;
+
+import org.jspecify.annotations.Nullable;
+
+/**
+ * The controller of a Big Essence Jar, in the centre of its bottom layer. It behaves like an Essence Jar (bottles,
+ * stickers, an empty hand reads it; out into a pipe below), draws nothing itself - its renderer draws the whole jar - and
+ * mined, drops what it was (glass) while the jar falls apart.
+ */
+public class BigEssenceJarBlock extends EssenceTankBlock {
+    public BigEssenceJarBlock(Properties properties) {
+        super(properties);
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return Shapes.block();
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.INVISIBLE;
+    }
+
+    @Override
+    public void playerDestroy(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity,
+                              ItemStack destroyedWith) {
+        player.awardStat(net.minecraft.stats.Stats.BLOCK_MINED.get(this));
+        player.causeFoodExhaustion(0.005F);
+        if (blockEntity instanceof BigEssenceJarBlockEntity jar && jar.formed() != null) {
+            Block.dropResources(jar.formed().original(), level, pos, null, player, destroyedWith);
+        }
+    }
+
+    @Override
+    protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
+        return level.getBlockEntity(pos) instanceof BigEssenceJarBlockEntity jar && jar.formed() != null
+                ? new ItemStack(jar.formed().original().getBlock()) : ItemStack.EMPTY;
+    }
+
+    @Override
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new BigEssenceJarBlockEntity(pos, state);
+    }
+
+    @Override
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.BIG_ESSENCE_JAR.get(), EssenceTankBlockEntity::serverTick);
+    }
+}

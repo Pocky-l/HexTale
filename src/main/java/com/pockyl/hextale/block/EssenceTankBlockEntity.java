@@ -13,6 +13,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -42,12 +43,18 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     /** What a Creative Essence Tank holds: a full tank of every essence at once. */
     public static final EssenceMix CREATIVE = EssenceMix.all(CAPACITY);
 
-    private final EssenceTank tank = new EssenceTank(CAPACITY);
+    private final EssenceTank tank;
     /** The essence sticker on the jar: it then takes only that essence. */
     private @Nullable Essence sticker;
 
     public EssenceTankBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ESSENCE_TANK.get(), pos, state);
+        this(ModBlockEntities.ESSENCE_TANK.get(), pos, state, CAPACITY);
+    }
+
+    /** A jar of another kind and size (the Big Essence Jar). */
+    protected EssenceTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int capacity) {
+        super(type, pos, state);
+        tank = new EssenceTank(capacity);
     }
 
     public EssenceTank tank() {
@@ -89,7 +96,7 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
         super.applyImplicitComponents(components);
         EssenceMix contents = components.get(ModDataComponents.ESSENCE.get());
         if (contents != null && !isCreative()) {
-            tank.set(contents.part(CAPACITY));
+            tank.set(contents.part(tank.capacity()));
         }
     }
 

@@ -30,7 +30,8 @@ import java.util.function.Consumer;
 public final class GameTests {
     private static final Identifier STRUCTURE = Hextale.id("empty");
     private static final List<Class<?>> HOLDERS = List.of(ModGameTests.class, ResearchGameTests.class, QuestGameTests.class,
-            RuneWorkGameTests.class, HextechGameTests.class, SmelterGameTests.class, PylonGameTests.class);
+            RuneWorkGameTests.class, HextechGameTests.class, SmelterGameTests.class, PylonGameTests.class,
+            MultiblockGameTests.class);
     private static final DeferredRegister<Consumer<GameTestHelper>> FUNCTIONS = DeferredRegister.create(Registries.TEST_FUNCTION, Hextale.MOD_ID);
 
     private record Test(String name, Method method, HexTest settings) {

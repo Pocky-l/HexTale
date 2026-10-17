@@ -41,6 +41,13 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("essence_tank", () -> new BlockEntityType<>(EssenceTankBlockEntity::new, ModBlocks.ESSENCE_TANK.get(),
                     ModBlocks.CREATIVE_ESSENCE_TANK.get()));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.BigEssenceJarBlockEntity>> BIG_ESSENCE_JAR =
+            BLOCK_ENTITIES.register("big_essence_jar", () -> new BlockEntityType<>(com.pockyl.hextale.block.BigEssenceJarBlockEntity::new,
+                    ModBlocks.BIG_ESSENCE_JAR.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.multiblock.MultiblockPartBlockEntity>> MULTIBLOCK_PART =
+            BLOCK_ENTITIES.register("multiblock_part", () -> new BlockEntityType<>(com.pockyl.hextale.multiblock.MultiblockPartBlockEntity::new,
+                    ModBlocks.MULTIBLOCK_PART.get()));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DrainValveBlockEntity>> DRAIN_VALVE =
             BLOCK_ENTITIES.register("drain_valve", () -> new BlockEntityType<>(DrainValveBlockEntity::new, ModBlocks.DRAIN_VALVE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PumpBlockEntity>> PUMP =

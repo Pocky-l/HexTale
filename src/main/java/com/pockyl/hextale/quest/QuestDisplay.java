@@ -26,7 +26,9 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
         /** The runes a Hex Smelter takes. */
         SMELTER_RUNES,
         /** The runes the hex pylons take. */
-        PYLON_RUNES
+        PYLON_RUNES,
+        /** A multiblock layer by layer and the item that wakes it; {@code result} is the multiblock's id. */
+        MULTIBLOCK
     }
 
     /** Rows of up to three cells, spaces for empty cells, keys as in the recipe JSON. */
@@ -76,6 +78,10 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
 
     static QuestDisplay pylonRunes() {
         return new QuestDisplay(Kind.PYLON_RUNES, List.of(), "hextale:sending_pylon", 1);
+    }
+
+    static QuestDisplay multiblock(String id) {
+        return new QuestDisplay(Kind.MULTIBLOCK, List.of(), id, 1);
     }
 
     static QuestDisplay infusion(String recipe) {

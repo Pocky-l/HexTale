@@ -2,6 +2,7 @@ package com.pockyl.hextale.client.screen.book;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
@@ -54,6 +55,11 @@ public class StarBookScreen extends Screen {
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         return book.mouseReleased(event.x(), event.y(), event.button()) || super.mouseReleased(event);
+    }
+
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        return book.keyPressed(event) || super.keyPressed(event);
     }
 
     @Override

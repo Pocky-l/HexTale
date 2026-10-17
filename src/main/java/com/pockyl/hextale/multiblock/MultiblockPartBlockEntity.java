@@ -1,0 +1,79 @@
+package com.pockyl.hextale.multiblock;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.server.level.ServerLevel;
+
+import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.essence.EssenceNetwork;
+import com.pockyl.hextale.registry.ModBlockEntities;
+
+import org.jspecify.annotations.Nullable;
+
+/**
+ * A block of a formed structure: it remembers the block it was and its controller. Essence that pipes bring to it goes
+ * to the controller, if that takes essence; taking it away (breaking it) takes the whole structure apart.
+ */
+public class MultiblockPartBlockEntity extends BlockEntity implements EssenceNetwork.Receiver {
+    private BlockPos controller = BlockPos.ZERO;
+    private BlockState original = Blocks.AIR.defaultBlockState();
+
+    public MultiblockPartBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.MULTIBLOCK_PART.get(), pos, state);
+    }
+
+    void bind(BlockPos controller, BlockState original) {
+        this.controller = controller;
+        this.original = original;
+        setChanged();
+    }
+
+    public BlockPos controller() {
+        return controller;
+    }
+
+    /** The block that stood here before the structure was formed. */
+    public BlockState original() {
+        return original;
+    }
+
+    @Nullable
+    public BlockEntity core() {
+        return level == null ? null : level.getBlockEntity(controller);
+    }
+
+    @Override
+    public int receive(Direction side, EssenceMix offer, boolean simulate) {
+        return core() instanceof EssenceNetwork.Receiver receiver ? receiver.receive(side, offer, simulate) : 0;
+    }
+
+    /** Removed by anything but the structure itself coming apart: the rest of the structure comes apart too. */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        Level level = this.level;
+        if (level instanceof ServerLevel serverLevel) {
+            Multiblocks.breakApart(serverLevel, controller, pos);
+        }
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        controller = input.read("controller", BlockPos.CODEC).orElse(BlockPos.ZERO);
+        original = input.read("original", BlockState.CODEC).orElse(Blocks.AIR.defaultBlockState());
+    }
+
+    @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.store("controller", BlockPos.CODEC, controller);
+        output.store("original", BlockState.CODEC, original);
+    }
+}

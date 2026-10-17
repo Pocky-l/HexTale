@@ -15,7 +15,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * One step of the researcher's guide (see {@link Guide}): something to make or obtain (an {@link Kind#ITEM} quest),
  * a rune to study at the table ({@link Kind#RUNE}), or a device still being worked out ({@link Kind#WIP}, never done).
- * A step opens once all its parents are done; the first parent is the one it hangs from on the page. Texts: items and
+ * A step opens once all its parents are done; the first parent is the one its main link comes from on the page. Texts: items and
  * WIP steps {@code quest.hextale.<id>}, {@code .goal}, {@code .desc}; rune steps use the rune's own keys.
  */
 public final class Quest {
@@ -53,12 +53,13 @@ public final class Quest {
     @Nullable
     private final ComplexRune rune;
     private final Aura aura;
+    private final Region region;
     int index;
     int x;
     int y;
 
     Quest(String id, Kind kind, List<Quest> parents, Supplier<ItemStack> icon, Predicate<ServerPlayer> goal,
-          @Nullable QuestDisplay display, @Nullable ComplexRune rune, Aura aura) {
+          @Nullable QuestDisplay display, @Nullable ComplexRune rune, Aura aura, Region region) {
         this.id = id;
         this.kind = kind;
         this.parents = List.copyOf(parents);
@@ -67,6 +68,7 @@ public final class Quest {
         this.display = display;
         this.rune = rune;
         this.aura = aura;
+        this.region = region;
         for (Quest parent : parents) {
             parent.children.add(this);
         }
@@ -116,6 +118,11 @@ public final class Quest {
 
     public Aura aura() {
         return aura;
+    }
+
+    /** The theme this step belongs to: where it sits in the book. */
+    public Region region() {
+        return region;
     }
 
     /** Key steps are drawn larger. */

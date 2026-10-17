@@ -16,6 +16,8 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
+import java.util.UUID;
+
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -38,11 +40,14 @@ public final class PylonInsert {
         return level.getCapability(Capabilities.Item.BLOCK, pos, face);
     }
 
-    /** Puts up to {@code amount} in; returns how many went. */
+    /**
+     * Puts up to {@code amount} in on behalf of the pylon's owner (machines that care who sends an item, like the Alembic,
+     * read the owner's knowledge through {@link Deliverer}); returns how many went.
+     */
     public static int insert(ServerLevel level, BlockPos pos, Direction face, ItemResource resource, int amount,
-                             @Nullable TransactionContext transaction) {
+                             @Nullable TransactionContext transaction, @Nullable UUID owner) {
         ResourceHandler<ItemResource> handler = handler(level, pos, face, resource);
-        return handler == null ? 0 : ResourceHandlerUtil.insertStacking(handler, resource, amount, transaction);
+        return handler == null ? 0 : Deliverer.as(owner, () -> ResourceHandlerUtil.insertStacking(handler, resource, amount, transaction));
     }
 
     /** The furnace face for this item: the top for what it cooks, a side for fuel, null for neither. */

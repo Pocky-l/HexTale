@@ -52,9 +52,23 @@ public final class Quests {
         if (changed) {
             // Only the researcher hears their path.
             player.connection.send(new ClientboundSoundPacket(ModSounds.QUEST_COMPLETE, SoundSource.PLAYERS, player.getX(), player.getY(),
-                    player.getZ(), 0.8F, 1.0F, player.getRandom().nextLong()));
+                    player.getZ(), 0.6F, 1.0F, player.getRandom().nextLong()));
             Research.sync(player);
         }
+    }
+
+    /** Marks a quest done that has no goal to check (a structure formed, say): tells the player like any other. */
+    public static void complete(ServerPlayer player, Quest quest) {
+        RuneKnowledge knowledge = Research.of(player);
+        if (knowledge.questDone(quest)) {
+            return;
+        }
+        knowledge.completeQuest(quest);
+        player.sendSystemMessage(Component.translatable("book.hextale.quest.completed",
+                Component.translatable(quest.translationKey()).withStyle(ChatFormatting.GOLD)));
+        player.connection.send(new ClientboundSoundPacket(ModSounds.QUEST_COMPLETE, SoundSource.PLAYERS, player.getX(), player.getY(),
+                player.getZ(), 0.6F, 1.0F, player.getRandom().nextLong()));
+        Research.sync(player);
     }
 
     static Predicate<ServerPlayer> has(Supplier<? extends Item> item) {

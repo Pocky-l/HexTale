@@ -146,6 +146,10 @@ public final class GogglesView {
     /** What the goggles see in the block, or null when it is not part of the essence works. */
     @Nullable
     private static Reading read(Level level, BlockPos pos) {
+        // A block of a formed structure reads as the structure's heart.
+        if (level.getBlockEntity(pos) instanceof com.pockyl.hextale.multiblock.MultiblockPartBlockEntity part) {
+            pos = part.controller();
+        }
         BlockState state = level.getBlockState(pos);
         Component name = state.getBlock().getName();
         BlockEntity entity = level.getBlockEntity(pos);
@@ -233,6 +237,9 @@ public final class GogglesView {
             }
         }
         rows.add(new Row(null, Component.translatable(KEY + "pylon.range", pylon.range()), TEXT));
+        if (!pylon.ownerName().isEmpty()) {
+            rows.add(new Row(null, Component.translatable(KEY + "pylon.owner", pylon.ownerName()), TEXT));
+        }
         rows.add(Row.heading(Component.translatable(KEY + "pylon.links", pylon.links().size(), HexPylonBlockEntity.MAX_LINKS)));
         for (PylonLink link : pylon.links()) {
             BlockState target = level.getBlockState(link.pos());

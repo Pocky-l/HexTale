@@ -1,0 +1,9 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "hextale:block/multiblock_part"
+      }
+    }
+  ]
+}

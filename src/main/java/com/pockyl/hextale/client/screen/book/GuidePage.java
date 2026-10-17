@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -25,9 +26,13 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.infusion.InfusionRecipe;
 import com.pockyl.hextale.infusion.InfusionRecipes;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
+import com.pockyl.hextale.multiblock.Multiblock;
+import com.pockyl.hextale.multiblock.MultiblockPattern;
+import com.pockyl.hextale.multiblock.Multiblocks;
 import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.quest.Quest;
 import com.pockyl.hextale.quest.QuestDisplay;
+import com.pockyl.hextale.quest.Region;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
@@ -58,7 +63,11 @@ final class GuidePage {
     private static final int ITEM_NODE = 24;
     private static final int RUNE_NODE = 24;
     private static final int BIG = 6;
-    private static final int PLATE_WIDTH = 180;
+    private static final int PLATE_WIDTH = 252;
+    /** The back arrow in the plate's top left corner. */
+    private static final int BACK = 14;
+    /** The header leaves room for the back arrow and the step's sign before the name. */
+    private static final int TITLE_INDENT = BACK + 4 + 20;
     private static final int PAD = 6;
     private static final int SLOT = 18;
     private static final int TEXT = 0xFFD8D0E8;
@@ -67,8 +76,6 @@ final class GuidePage {
     private static final int OPEN = 0x5CC8F2;
     private static final int WIP = 0xB08AE0;
     private static final int MARGIN = 90;
-    /** Radius of the rounded bends in the links. */
-    private static final int BEND = 7;
     private static final int BRASS_LIGHT = 0xFFF0B8;
     private static final int BRASS_DARK = 0x6A4A18;
 
@@ -92,11 +99,11 @@ final class GuidePage {
     }
 
     static int minX() {
-        return -MARGIN;
+        return Guide.left() - MARGIN;
     }
 
     static int maxX() {
-        return Guide.width() + MARGIN;
+        return Guide.right() + MARGIN;
     }
 
     static int minY() {
@@ -104,22 +111,60 @@ final class GuidePage {
     }
 
     static int maxY() {
-        return Guide.height() + MARGIN;
+        return Guide.bottom() + MARGIN;
     }
 
-    /** Where a reader should look first: the earliest open step not done yet, else the last done one. */
-    static Quest focus(RuneKnowledge knowledge) {
+    /**
+     * Where a reader should look first, in map coordinates: the middle of the steps open now (not done, not WIP) when
+     * they fit into a view of this size, else the earliest of them with as many of its open neighbours as fit; with
+     * nothing open, the middle of the done steps around the last one.
+     */
+    static float[] focus(RuneKnowledge knowledge, float viewWidth, float viewHeight) {
+        List<Quest> open = new ArrayList<>();
         Quest last = Guide.BRASS;
         for (Quest quest : Guide.all()) {
             boolean done = Guide.done(quest, knowledge);
             if (!done && quest.kind() != Quest.Kind.WIP && Guide.open(quest, knowledge)) {
-                return quest;
+                open.add(quest);
             }
             if (done) {
                 last = quest;
             }
         }
-        return last;
+        if (open.isEmpty()) {
+            open.add(last);
+        }
+        // Grow a box from the earliest open step, taking every other open step that still keeps it within the view.
+        Quest first = open.getFirst();
+        float minX = first.x();
+        float maxX = first.x();
+        float minY = first.y();
+        float maxY = first.y();
+        float roomX = viewWidth - MARGIN;
+        float roomY = viewHeight - MARGIN;
+        for (Quest quest : open) {
+            float x0 = Math.min(minX, quest.x());
+            float x1 = Math.max(maxX, quest.x());
+            float y0 = Math.min(minY, quest.y());
+            float y1 = Math.max(maxY, quest.y());
+            if (x1 - x0 <= roomX && y1 - y0 <= roomY) {
+                minX = x0;
+                maxX = x1;
+                minY = y0;
+                maxY = y1;
+            }
+        }
+        return new float[]{(minX + maxX) / 2, (minY + maxY) / 2};
+    }
+
+    /** Whether any step the reader can see lies inside the view around this point. */
+    static boolean anyVisibleNear(RuneKnowledge knowledge, float cx, float cy, float viewWidth, float viewHeight) {
+        for (Quest quest : Guide.all()) {
+            if (Guide.visible(quest, knowledge) && Math.abs(quest.x() - cx) < viewWidth / 2 - 16 && Math.abs(quest.y() - cy) < viewHeight / 2 - 16) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static int size(Quest quest) {
@@ -132,6 +177,7 @@ final class GuidePage {
     void renderMap(GuiGraphicsExtractor graphics, RuneKnowledge knowledge, long now, @Nullable Quest hovered) {
         List<Quest> shown = Guide.all().stream().filter(quest -> Guide.visible(quest, knowledge)).toList();
         focus = hovered;
+        renderHaze(graphics, shown);
         for (Quest quest : shown) {
             renderLinks(graphics, quest, knowledge, now);
         }
@@ -161,6 +207,45 @@ final class GuidePage {
             }
         }
         PixelArt.flush(graphics);
+        renderRegionNames(graphics, shown);
+    }
+
+    /**
+     * A faint haze of each region's colour behind its visible steps: wide soft discs that melt into one cloud, so a theme
+     * reads as a nebula of its own rather than a box.
+     */
+    private static void renderHaze(GuiGraphicsExtractor graphics, List<Quest> shown) {
+        for (Quest quest : shown) {
+            int color = quest.region().color();
+            PixelArt.disc(graphics, quest.x(), quest.y(), 96, PixelArt.argb(color, 0.022F), 0);
+            PixelArt.disc(graphics, quest.x(), quest.y(), 60, PixelArt.argb(color, 0.03F), 0);
+        }
+    }
+
+    /** Each region's name over its visible steps, in its colour, small and quiet. */
+    private void renderRegionNames(GuiGraphicsExtractor graphics, List<Quest> shown) {
+        java.util.Map<Region, int[]> boxes = new java.util.EnumMap<>(Region.class);
+        for (Quest quest : shown) {
+            // min x, max x, min y, count
+            int[] box = boxes.computeIfAbsent(quest.region(), region -> new int[]{Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, 0});
+            box[0] = Math.min(box[0], quest.x());
+            box[1] = Math.max(box[1], quest.x());
+            box[2] = Math.min(box[2], quest.y());
+            box[3]++;
+        }
+        for (var entry : boxes.entrySet()) {
+            Region region = entry.getKey();
+            int[] box = entry.getValue();
+            Component name = Component.translatable(region.translationKey());
+            int cx = (box[0] + box[1]) / 2;
+            int y = box[2] - 34;
+            int w = font.width(name);
+            int line = PixelArt.argb(region.color(), 0.35F);
+            PixelArt.fill(graphics, cx - w / 2 - 16, y + 4, cx - w / 2 - 4, y + 5, line);
+            PixelArt.fill(graphics, cx + w / 2 + 4, y + 4, cx + w / 2 + 16, y + 5, line);
+            PixelArt.flush(graphics);
+            graphics.centeredText(font, name, cx, y, PixelArt.argb(PixelArt.mix(region.color(), 0xFFFFFF, 0.2F), 0.8F));
+        }
     }
 
     /**
@@ -177,19 +262,20 @@ final class GuidePage {
             float pulse = pulse(now, quest.index());
             int color = lit ? PixelArt.argb(StarBook.GOLD, 0.7F)
                     : quest.kind() == Quest.Kind.WIP ? PixelArt.argb(WIP, 0.4F) : PixelArt.argb(OPEN, 0.35F + 0.25F * pulse);
-            int ax = parent.x() + size(parent) / 2;
-            int ay = parent.y();
-            int bx = quest.x() - size(quest) / 2;
-            int by = quest.y();
+            int[][] path = curve(parent, quest);
             if (parent != quest.parent()) {
                 // Second parents: a dotted thread, shown for item quests and for the step in focus only, so the
                 // runes' cross links never criss-cross the whole sky.
                 if (quest.kind() == Quest.Kind.ITEM || quest == selected || quest == focus) {
-                    PixelArt.dotted(graphics, parent.x(), parent.y(), quest.x(), quest.y(), 1, 3, (int) (now / 120 % 4), color);
+                    int phase = (int) (now / 120 % 4);
+                    for (int i = 0; i < path.length; i++) {
+                        if ((i + phase) % 4 == 0) {
+                            PixelArt.fill(graphics, path[i][0], path[i][1], path[i][0] + 1, path[i][1] + 1, color);
+                        }
+                    }
                 }
                 continue;
             }
-            int[][] path = conduit(ax, ay, bx, by);
             for (int[] p : path) {
                 PixelArt.fill(graphics, p[0], p[1], p[0] + 1, p[1] + 1, color);
             }
@@ -207,63 +293,53 @@ final class GuidePage {
 
     /** Paths into the fog: a few fading dots from a visible step towards each hidden one, no further. */
     private void renderTrails(GuiGraphicsExtractor graphics, Quest quest, RuneKnowledge knowledge, long now) {
-        int x = quest.x() + size(quest) / 2;
         for (Quest child : quest.children()) {
             if (Guide.visible(child, knowledge) || child.parent() != quest) {
                 continue;
             }
-            int dy = Integer.signum(child.y() - quest.y());
+            float dx = child.x() - quest.x();
+            float dy = child.y() - quest.y();
+            float length = Math.max(1, Mth.sqrt(dx * dx + dy * dy));
+            dx /= length;
+            dy /= length;
+            float start = size(quest) / 2.0F + 3;
             for (int i = 0; i < 6; i++) {
                 float fade = 1 - i / 6.0F;
                 float drift = 0.5F + 0.5F * Mth.sin(now / 600.0F + i + child.index());
-                int px = x + 3 + i * 4;
-                int py = quest.y() + dy * i * 2;
-                PixelArt.fill(graphics, px, py, px + 2, py + 1, PixelArt.argb(0x8C84B0, 0.5F * fade * (0.5F + 0.5F * drift)));
+                int px = Math.round(quest.x() + dx * (start + i * 4));
+                int py = Math.round(quest.y() + dy * (start + i * 4));
+                PixelArt.fill(graphics, px, py, px + 1, py + 1, PixelArt.argb(0x8C84B0, 0.6F * fade * (0.5F + 0.5F * drift)));
             }
         }
     }
 
     /**
-     * The pixels of a link from a parent's right side to a child's left side, in order: along, a rounded bend, down or
-     * up, another rounded bend, along. Every pixel appears once, so translucent links stay even.
+     * The pixels of a link from a parent's rim to a child's rim, in order: a gentle arc (a quadratic curve bowed to one
+     * side, the side set by the pair so neighbouring links bow differently). Every pixel appears once, so translucent
+     * links stay even.
      */
-    private static int[][] conduit(int ax, int ay, int bx, int by) {
-        int mid = ax + Math.max(4, (bx - ax) / 2);
-        int dy = Math.abs(by - ay);
-        int sy = Integer.signum(by - ay);
-        int r = Math.min(BEND, Math.min(dy / 2, Math.min(Math.abs(mid - ax), Math.abs(bx - mid))));
+    private static int[][] curve(Quest from, Quest to) {
+        float ax = from.x();
+        float ay = from.y();
+        float bx = to.x();
+        float by = to.y();
+        float dx = bx - ax;
+        float dy = by - ay;
+        float length = Math.max(1, Mth.sqrt(dx * dx + dy * dy));
+        float bow = ((from.index() + to.index()) % 2 == 0 ? 1 : -1) * Math.min(26, length * 0.16F);
+        float cx = (ax + bx) / 2 - dy / length * bow;
+        float cy = (ay + by) / 2 + dx / length * bow;
+        float t0 = Math.min(0.45F, (size(from) / 2.0F + 2) / length);
+        float t1 = Math.max(0.55F, 1 - (size(to) / 2.0F + 2) / length);
+        int steps = Math.max(2, Math.round(length * 1.6F));
         List<int[]> points = new ArrayList<>();
         java.util.Set<Long> seen = new java.util.HashSet<>();
-        if (r < 2) {
-            // Too tight to bend: the plain three-legged path.
-            segment(points, seen, ax, ay, mid, ay);
-            segment(points, seen, mid, ay, mid, by);
-            segment(points, seen, mid, by, bx, by);
-        } else {
-            segment(points, seen, ax, ay, mid - r, ay);
-            arc(points, seen, mid - r, ay + sy * r, r, -sy * Mth.HALF_PI, 0);
-            segment(points, seen, mid, ay + sy * r, mid, by - sy * r);
-            arc(points, seen, mid + r, by - sy * r, r, Mth.PI, Mth.PI - sy * Mth.HALF_PI);
-            segment(points, seen, mid + r, by, bx, by);
+        for (int i = 0; i <= steps; i++) {
+            float t = t0 + (t1 - t0) * i / steps;
+            float u = 1 - t;
+            point(points, seen, Math.round(u * u * ax + 2 * u * t * cx + t * t * bx), Math.round(u * u * ay + 2 * u * t * cy + t * t * by));
         }
         return points.toArray(int[][]::new);
-    }
-
-    private static void segment(List<int[]> points, java.util.Set<Long> seen, int x0, int y0, int x1, int y1) {
-        int steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
-        for (int i = 0; i <= steps; i++) {
-            float t = steps == 0 ? 0 : (float) i / steps;
-            point(points, seen, Math.round(x0 + (x1 - x0) * t), Math.round(y0 + (y1 - y0) * t));
-        }
-    }
-
-    /** A quarter of a circle around {@code cx, cy} from angle {@code from} to {@code to} (screen y down). */
-    private static void arc(List<int[]> points, java.util.Set<Long> seen, int cx, int cy, int r, float from, float to) {
-        int steps = r * 4;
-        for (int i = 0; i <= steps; i++) {
-            float angle = from + (to - from) * i / steps;
-            point(points, seen, Math.round(cx + Mth.cos(angle) * r), Math.round(cy + Mth.sin(angle) * r));
-        }
     }
 
     private static void point(List<int[]> points, java.util.Set<Long> seen, int x, int y) {
@@ -354,6 +430,22 @@ final class GuidePage {
         PixelArt.disc(graphics, cx, cy, size - 2, PixelArt.argb(fill, 1), PixelArt.argb(PixelArt.mix(rim, BRASS_DARK, 0.7F), 1));
         PixelArt.disc(graphics, cx, cy, size - 8, PixelArt.argb(glow, 0.8F), 0);
         PixelArt.discRing(graphics, cx, cy, size - 4, PixelArt.argb(rim, 0.22F));
+    }
+
+    /** The plate's back arrow: a round brass button with a left-pointing arrow, brighter under the mouse. */
+    private static void backArrow(GuiGraphicsExtractor graphics, int x, int y, boolean hovered, long now) {
+        int cx = x + BACK / 2;
+        int cy = y + BACK / 2;
+        float pulse = 0.5F + 0.5F * Mth.sin(now / 300.0F);
+        int rim = hovered ? PixelArt.mix(StarBook.GOLD, 0xFFF6D6, pulse) : StarBook.GOLD;
+        PixelArt.disc(graphics, cx, cy, BACK, PixelArt.argb(hovered ? 0x2A2210 : 0x14101E, 1), PixelArt.argb(rim, 1));
+        int color = PixelArt.argb(hovered ? 0xFFF6D6 : StarBook.GOLD, 1);
+        // The shaft and the head of the arrow.
+        PixelArt.fill(graphics, cx - 3, cy - 1, cx + 4, cy + 1, color);
+        for (int i = 0; i < 4; i++) {
+            PixelArt.fill(graphics, cx - 4 + i, cy - 1 - i, cx - 3 + i, cy + 1 + i, color);
+        }
+        PixelArt.flush(graphics);
     }
 
     /** A violet badge with three dots lighting up in turn: being worked out. */
@@ -470,20 +562,26 @@ final class GuidePage {
 
     // ---- The plate ------------------------------------------------------------------------------------------------
 
-    private int plateLeft() {
-        return book.skyLeft() + book.skyWidth() - PLATE_WIDTH - 6;
+    // The plate is a window in the middle of the sky over the dimmed map, with a back arrow in its corner.
+
+    private int plateWidth() {
+        return Math.min(PLATE_WIDTH, book.skyWidth() - 24);
     }
 
-    private int plateTop() {
-        return book.skyTop() + 6;
+    private int plateLeft() {
+        return book.skyLeft() + (book.skyWidth() - plateWidth()) / 2;
+    }
+
+    private int plateTop(Quest quest, RuneKnowledge knowledge) {
+        return book.skyTop() + (book.skyHeight() - plateHeight(quest, knowledge)) / 2;
     }
 
     private int innerWidth() {
-        return PLATE_WIDTH - PAD * 2;
+        return plateWidth() - PAD * 2;
     }
 
     private List<FormattedCharSequence> titleLines(Quest quest) {
-        return font.split(title(quest), innerWidth() - 22);
+        return font.split(title(quest), innerWidth() - TITLE_INDENT - (quest.kind() == Quest.Kind.WIP ? 26 : 0));
     }
 
     private List<FormattedCharSequence> statusLines(Quest quest, RuneKnowledge knowledge) {
@@ -600,7 +698,7 @@ final class GuidePage {
     }
 
     private int maxPlateHeight() {
-        return book.skyHeight() - 12;
+        return book.skyHeight() - 24;
     }
 
     private int plateHeight(Quest quest, RuneKnowledge knowledge) {
@@ -608,12 +706,21 @@ final class GuidePage {
     }
 
     boolean overPlate(double x, double y, RuneKnowledge knowledge) {
-        return selected != null && x >= plateLeft() && x < plateLeft() + PLATE_WIDTH && y >= plateTop()
-                && y < plateTop() + plateHeight(selected, knowledge);
+        return selected != null && x >= plateLeft() && x < plateLeft() + plateWidth() && y >= plateTop(selected, knowledge)
+                && y < plateTop(selected, knowledge) + plateHeight(selected, knowledge);
+    }
+
+    private boolean overBack(double x, double y, RuneKnowledge knowledge) {
+        if (selected == null) {
+            return false;
+        }
+        int bx = plateLeft() + 4;
+        int by = plateTop(selected, knowledge) + 4;
+        return x >= bx && x < bx + BACK && y >= by && y < by + BACK;
     }
 
     private int buttonTop(Quest quest, RuneKnowledge knowledge) {
-        return plateTop() + contentHeight(quest, knowledge) - PAD - StarBook.BUTTON_HEIGHT - scroll;
+        return plateTop(quest, knowledge) + contentHeight(quest, knowledge) - PAD - StarBook.BUTTON_HEIGHT - scroll;
     }
 
     /** Draws the selected step's plate; returns the tooltip of what is under the mouse, or null. */
@@ -624,11 +731,13 @@ final class GuidePage {
             return null;
         }
         int x = plateLeft();
-        int top = plateTop();
-        int w = PLATE_WIDTH;
+        int top = plateTop(quest, knowledge);
+        int w = plateWidth();
         int h = plateHeight(quest, knowledge);
         int content = contentHeight(quest, knowledge);
         scroll = Mth.clamp(scroll, 0, Math.max(0, content - h));
+        // The map sinks into the dark behind the window.
+        PixelArt.fill(graphics, book.skyLeft(), book.skyTop(), book.skyLeft() + book.skyWidth(), book.skyTop() + book.skyHeight(), 0xB0040310);
         StarBook.plateBackground(graphics, x, top, w, h);
         PixelArt.flush(graphics);
         graphics.enableScissor(x + 1, top + 1, x + w - 1, top + h - 1);
@@ -638,17 +747,18 @@ final class GuidePage {
         int ix = x + PAD;
         int y = top + PAD - scroll;
         // Header: the step's sign and name.
+        int sx = ix + BACK + 4;
         if (quest.kind() == Quest.Kind.RUNE) {
             ComplexRune rune = quest.rune();
-            PixelArt.hex(graphics, ix + 8, y + 8, 18, PixelArt.argb(PixelArt.mix(rune.color(), 0x06050D, 0.7F), 1), PixelArt.argb(rune.color(), 1));
-            PixelArt.glyph(graphics, rune, ix + 2, y + 2, 12, PixelArt.argb(PixelArt.mix(rune.color(), 0xFFFFFF, 0.2F), 1), 0xFF000000);
+            PixelArt.hex(graphics, sx + 8, y + 8, 18, PixelArt.argb(PixelArt.mix(rune.color(), 0x06050D, 0.7F), 1), PixelArt.argb(rune.color(), 1));
+            PixelArt.glyph(graphics, rune, sx + 2, y + 2, 12, PixelArt.argb(PixelArt.mix(rune.color(), 0xFFFFFF, 0.2F), 1), 0xFF000000);
             PixelArt.flush(graphics);
         } else {
-            graphics.item(quest.icon(), ix, y);
+            graphics.item(quest.icon(), sx, y);
         }
         int ty = y + Math.max(0, (headerHeight(quest) - titleLines(quest).size() * 10) / 2 - 1);
         for (FormattedCharSequence line : titleLines(quest)) {
-            graphics.text(font, line, ix + 22, ty, 0xFFFFFFFF, true);
+            graphics.text(font, line, ix + TITLE_INDENT, ty, 0xFFFFFFFF, true);
             ty += 10;
         }
         if (quest.kind() == Quest.Kind.WIP) {
@@ -703,6 +813,11 @@ final class GuidePage {
         }
         PixelArt.flush(graphics);
         graphics.disableScissor();
+        boolean back = overBack(mouseX, mouseY, knowledge);
+        backArrow(graphics, x + 4, top + 4, back, now);
+        if (back) {
+            tooltip = List.of(Component.translatable("book.hextale.guide.back").getVisualOrderText());
+        }
         if (content > h) {
             // A thin scroll bar on the right rim.
             int bar = Math.max(12, h * h / content);
@@ -734,6 +849,7 @@ final class GuidePage {
             case PICKAXE_RUNES -> optionsHeight(RuneHolder.PICKAXE);
             case SMELTER_RUNES -> optionsHeight(RuneHolder.SMELTER);
             case PYLON_RUNES -> optionsHeight(RuneHolder.PYLON);
+            case MULTIBLOCK -> multiblockHeight(display);
         };
     }
 
@@ -809,6 +925,90 @@ final class GuidePage {
             case PICKAXE_RUNES -> tooltip = renderOptions(graphics, RuneHolder.PICKAXE, x, y, mouseX, mouseY, now);
             case SMELTER_RUNES -> tooltip = renderOptions(graphics, RuneHolder.SMELTER, x, y, mouseX, mouseY, now);
             case PYLON_RUNES -> tooltip = renderOptions(graphics, RuneHolder.PYLON, x, y, mouseX, mouseY, now);
+            case MULTIBLOCK -> tooltip = renderMultiblock(graphics, display, x, y, mouseX, mouseY, now);
+        }
+        return tooltip;
+    }
+
+    // ---- Multiblocks: the structure layer by layer --------------------------------------------------------------------
+
+    private static final int LAYER_GAP = 8;
+    private static final int LAYER_LABEL = 10;
+
+    private int layersPerRow(MultiblockPattern pattern) {
+        return Math.max(1, (innerWidth() + LAYER_GAP) / (pattern.width() * SLOT + LAYER_GAP));
+    }
+
+    private int multiblockHeight(QuestDisplay display) {
+        Multiblock multiblock = Multiblocks.byId(display.result());
+        if (multiblock == null) {
+            return SLOT;
+        }
+        MultiblockPattern pattern = multiblock.pattern();
+        int rows = (pattern.height() + layersPerRow(pattern) - 1) / layersPerRow(pattern);
+        return rows * (LAYER_LABEL + pattern.depth() * SLOT + 6) + 10 + SLOT;
+    }
+
+    /**
+     * A multiblock from the bottom layer up, each layer a small grid seen from above (north at the top), the hollow cells
+     * dark, and the items that wake it under them.
+     */
+    @Nullable
+    private List<FormattedCharSequence> renderMultiblock(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
+                                                         int mouseY, long now) {
+        Multiblock multiblock = Multiblocks.byId(display.result());
+        if (multiblock == null) {
+            return null;
+        }
+        MultiblockPattern pattern = multiblock.pattern();
+        java.util.Map<Long, MultiblockPattern.Cell> cells = new java.util.HashMap<>();
+        for (MultiblockPattern.Cell cell : pattern.cells()) {
+            cells.put(BlockPos.asLong(cell.x(), cell.y(), cell.z()), cell);
+        }
+        List<FormattedCharSequence> tooltip = null;
+        int perRow = layersPerRow(pattern);
+        int gridWidth = pattern.width() * SLOT;
+        int rowWidth = Math.min(pattern.height(), perRow) * (gridWidth + LAYER_GAP) - LAYER_GAP;
+        int left = x + (innerWidth() - rowWidth) / 2;
+        int rowHeight = LAYER_LABEL + pattern.depth() * SLOT + 6;
+        for (int layer = 0; layer < pattern.height(); layer++) {
+            int gx = left + layer % perRow * (gridWidth + LAYER_GAP);
+            int gy = y + layer / perRow * rowHeight;
+            PixelArt.flush(graphics);
+            graphics.centeredText(font, Component.translatable("book.hextale.quest.multiblock.layer", layer + 1), gx + gridWidth / 2, gy, MUTED);
+            for (int z = 0; z < pattern.depth(); z++) {
+                for (int cx = 0; cx < pattern.width(); cx++) {
+                    MultiblockPattern.Cell cell = cells.get(BlockPos.asLong(cx, layer, z));
+                    int sx = gx + cx * SLOT;
+                    int sy = gy + LAYER_LABEL + z * SLOT;
+                    if (cell == null) {
+                        continue;
+                    }
+                    if (cell.key() == MultiblockPattern.Key.AIR) {
+                        PixelArt.fill(graphics, sx, sy, sx + SLOT, sy + SLOT, PixelArt.argb(0x05040A, 1));
+                        if (over(mouseX, mouseY, sx, sy, SLOT, SLOT)) {
+                            tooltip = List.of(Component.translatable("book.hextale.quest.multiblock.hollow").withColor(MUTED).getVisualOrderText());
+                        }
+                        continue;
+                    }
+                    List<ItemStack> shown = cell.key().shown().get();
+                    ItemStack stack = shown.isEmpty() ? ItemStack.EMPTY : shown.get((int) ((now / 1000 + cx + z) % shown.size()));
+                    tooltip = orTooltip(tooltip, slot(graphics, stack, sx, sy, mouseX, mouseY, null));
+                }
+            }
+        }
+        int rows = (pattern.height() + perRow - 1) / perRow;
+        int wy = y + rows * rowHeight;
+        PixelArt.flush(graphics);
+        Component wake = Component.translatable("book.hextale.quest.multiblock.wake");
+        List<ItemStack> activators = multiblock.activators();
+        int width = font.width(wake) + 6 + activators.size() * (SLOT + 2);
+        int wx = x + (innerWidth() - width) / 2;
+        graphics.text(font, wake, wx, wy + 5, MUTED, false);
+        int ax = wx + font.width(wake) + 6;
+        for (ItemStack activator : activators) {
+            tooltip = orTooltip(tooltip, slot(graphics, activator, ax, wy, mouseX, mouseY, null));
+            ax += SLOT + 2;
         }
         return tooltip;
     }
@@ -1168,7 +1368,14 @@ final class GuidePage {
     /** A click on the plate: picks a rune in a runes picture or presses the study button (laying the rune on the table). */
     void plateClicked(double mouseX, double mouseY, RuneKnowledge knowledge) {
         Quest quest = selected;
-        if (quest == null || pickRune(mouseX, mouseY) || !studyButton(quest)) {
+        if (quest == null) {
+            return;
+        }
+        if (overBack(mouseX, mouseY, knowledge)) {
+            close();
+            return;
+        }
+        if (pickRune(mouseX, mouseY) || !studyButton(quest)) {
             return;
         }
         int ix = plateLeft() + PAD;
@@ -1178,6 +1385,13 @@ final class GuidePage {
         if (mouseX >= ix && mouseX < ix + innerWidth() && mouseY >= by && mouseY < by + StarBook.BUTTON_HEIGHT
                 && ResearchBook.open(knowledge, rune) && host.studying() != rune) {
             host.study(rune);
+        }
+    }
+
+    /** Closes the plate and goes back to the map. */
+    void close() {
+        if (select(null)) {
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 0.9F, 0.5F));
         }
     }
 

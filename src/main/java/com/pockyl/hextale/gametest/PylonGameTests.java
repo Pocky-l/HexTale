@@ -121,6 +121,34 @@ public final class PylonGameTests {
         });
     }
 
+    /**
+     * A pylon delivers on its owner's behalf: coal its owner has studied boils in the linked Alembic into its own
+     * essences, an item they have not studied would boil into unknown essence.
+     */
+    @HexTest(maxTicks = 200)
+    public static void anAlembicKnowsWhatThePylonOwnerStudied(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, Blocks.CHEST);
+        BlockPos alembicPos = BASE.offset(3, 0, 0);
+        helper.setBlock(alembicPos, ModBlocks.ALEMBIC.get());
+        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        from.setItem(0, new ItemStack(Items.COAL, 4));
+        ServerPlayer owner = helper.makeMockServerPlayerInLevel();
+        owner.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        com.pockyl.hextale.knowledge.Research.of(owner).study(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(Items.COAL));
+        HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        pylon.setOwner(owner);
+        helper.assertTrue(pylon.toggleLink(link(helper, alembicPos, Direction.WEST)), "linked to the alembic's side");
+        com.pockyl.hextale.block.AlembicBlockEntity alembic = helper.getBlockEntity(alembicPos, com.pockyl.hextale.block.AlembicBlockEntity.class);
+        for (Direction side : Direction.Plane.HORIZONTAL) {
+            helper.assertTrue(alembic.receiveWater(side, 100, true) == 100, "the alembic takes water from the " + side);
+        }
+        helper.succeedWhen(() -> {
+            helper.assertTrue(alembic.input().is(Items.COAL), "the coal went into the alembic");
+            helper.assertTrue(alembic.inputKnown(), "the owner has studied coal, so it boils into its essences");
+        });
+    }
+
     /** A sending pylon on a chest moves its contents into the linked chest. */
     @HexTest(maxTicks = 200)
     public static void sendingPylonEmptiesIntoItsLink(GameTestHelper helper) {

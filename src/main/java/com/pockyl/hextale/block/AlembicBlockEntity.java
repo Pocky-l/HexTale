@@ -30,6 +30,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.transport.Deliverer;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.essence.EssenceTank;
@@ -47,12 +48,13 @@ import org.jspecify.annotations.Nullable;
  * The Alembic's contents: the items waiting to boil, glass bottles and the bottle it filled, the water in its flask and
  * the essence boiled so far. An item boils in {@value #WATER_PER_ITEM} mB of water for {@value #BOIL_TICKS} ticks over
  * heat into {@value #DROPS_PER_POINT} mB per point of each of its elements - all of them at once, a mixture. Water
- * comes in through pipes at the back and the sides (from a pump) or from a bucket; the essence goes into bottles and out
- * of the spout (the front) into a pipe.
+ * comes in through pipes on any side (from a pump) or from a bucket; the essence goes into bottles and out through the
+ * pipes on any side (water pipes never take it).
  * <p>
  * Any item with essences goes in, but only an item its boiler has studied gives its essences: anything else boils
- * into as much dark unknown essence. The boiler is the player who put the item in at the screen; for hoppers it is
- * the alembic's owner (who placed it) while online, otherwise nobody.
+ * into as much dark unknown essence. The boiler is the player who put the item in at the screen; for a hex pylon it is
+ * the pylon's owner ({@link Deliverer}); for hoppers it is the alembic's owner (who placed it). Knowledge is read from
+ * an online player only: anyone offline counts as nobody.
  */
 public class AlembicBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.WaterReceiver {
     public static final int INPUT = 0;
@@ -131,10 +133,10 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return taken;
     }
 
-    /** Pipes bring water in at the back and the sides; the front is the spout. */
+    /** Pipes bring water in on any side. */
     @Override
     public int receiveWater(Direction side, int amount, boolean simulate) {
-        if (!side.getAxis().isHorizontal() || side == getBlockState().getValue(AlembicBlock.FACING)) {
+        if (!side.getAxis().isHorizontal()) {
             return 0;
         }
         return fillWater(amount, simulate);
@@ -165,19 +167,24 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return inputKnown;
     }
 
-    /** A new kind of item arriving (by a hopper, say) is known only if the online owner has studied it. */
+    /**
+     * A new kind of item arriving without a player at the screen is known only if whoever sent it has studied it: the
+     * owner of the pylon that brought it, else (a hopper, say) the alembic's own owner.
+     */
     @Override
-    public void setItem(int slot, ItemStack stack) {
+    public void setItem(int slot, ItemStack stack, boolean insideTransaction) {
+        // Item handlers (pylons, other mods' pipes) come in through this one; the plain setItem ends up here too.
         if (slot == INPUT && !stack.isEmpty() && !ItemStack.isSameItem(stack, items.get(INPUT))) {
-            ServerPlayer player = onlineOwner();
+            UUID sender = Deliverer.current();
+            ServerPlayer player = online(sender != null ? sender : owner);
             inputKnown = player != null && studied(player, stack);
         }
-        super.setItem(slot, stack);
+        super.setItem(slot, stack, insideTransaction);
     }
 
     @Nullable
-    private ServerPlayer onlineOwner() {
-        return owner == null || !(level instanceof ServerLevel serverLevel) ? null : serverLevel.getServer().getPlayerList().getPlayer(owner);
+    private ServerPlayer online(@Nullable UUID player) {
+        return player == null || !(level instanceof ServerLevel serverLevel) ? null : serverLevel.getServer().getPlayerList().getPlayer(player);
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, AlembicBlockEntity alembic) {
@@ -234,16 +241,20 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return true;
     }
 
-    /** Lets essence out of the spout into a pipe (or a vessel) in front. */
+    /** Lets essence out into a pipe (or a vessel) on any side, the spout first, then the others in turn. */
     private boolean pushToPipes() {
         if (tank.isEmpty()) {
             return false;
         }
-        EssenceMix offer = tank.drain(EssenceTankBlockEntity.FLOW, true);
-        int moved = EssenceNetwork.push(level, worldPosition, getBlockState().getValue(AlembicBlock.FACING), offer);
-        if (moved > 0) {
-            tank.remove(offer.part(moved));
-            return true;
+        Direction face = getBlockState().getValue(AlembicBlock.FACING);
+        for (int i = 0; i < 4; i++) {
+            EssenceMix offer = tank.drain(EssenceTankBlockEntity.FLOW, true);
+            int moved = EssenceNetwork.push(level, worldPosition, face, offer);
+            if (moved > 0) {
+                tank.remove(offer.part(moved));
+                return true;
+            }
+            face = face.getClockWise();
         }
         return false;
     }

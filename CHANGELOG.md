@@ -23,13 +23,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   an inkwell and a leather writing pad. Unstable hextech hangs over the parchment from a brass arm, turning inside
   spinning gimbal rings; glyphs stream from the parchment while someone writes, and a freshly drawn rune rises over the
   desk as a glowing hieroglyph. The table keeps its own paper; every research takes one sheet when it starts.
-- Researcher's Diary: a book signed with its owner's name, holding the Researcher's Guide - one branching path through
-  the mod in a dark sky to drag and zoom. Things to make, runes to study and devices still being worked out (marked WIP)
-  share the path in the order they can really be made; a step opens when the steps before it are done, and only what
-  is done or open can be seen - the rest of the path fades into the fog. Key steps glow gold, storm steps crackle with
-  lightning, hextech steps are circled by blue sparks, cursed runes smoke, heat steps shed embers. A click opens the
-  step's plate: the recipe or ritual for a thing, what a rune does, what it is used for and what it opens (and a button
-  that lays it on the Research Table), the idea behind a device to come.
+- Researcher's Diary: a book signed with its owner's name, holding the Researcher's Guide - a web of steps through the
+  mod in a dark sky to drag and zoom, gathered by theme into loose constellations, each in a haze of its own colour under
+  its name: the Workshop, Essence Works, Fields and Woods, Chemtech, the Hextech Circle, Hex Pylons, and the rune lore of
+  the Forge, Flame, Waters, Deep Earth, Light, Storm and Life. There is no single road: a step needs only what it really
+  needs, so brass and raw hextech both start the journey and several themes open at once - you choose where to go.
+  Things to make, runes to study and devices still being worked out (marked WIP) are linked by gently curving threads;
+  only what is done or open can be seen - the rest fades into the fog. Key steps glow gold, storm steps crackle with
+  lightning, hextech steps are circled by blue sparks, cursed runes smoke, heat steps shed embers. The diary opens where
+  your next steps are. A click opens the step's window in the middle of the page (back arrow, Escape or a click beside it
+  returns to the map): the recipe, ritual or structure for a thing, what a rune does, what it is used for and what it
+  opens (and a button that lays it on the Research Table), the idea behind a device to come. Finishing a step is marked
+  by a quiet stroke of the pen.
 - Essences: everything is made of them. Nine primal essences (fire, water, earth, air, light, shadow, life, metal,
   lightning) combine into 71 more, from Steam and Ore to Time and Soul; every essence has its own picture. Every item
   carries up to six essences in different amounts, from hand-tuned base materials to anything crafted from them; the
@@ -55,15 +60,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   its tooltip).
 - Alembic: set over fire, a lit campfire, lava or magma, it boils items in water into essence - a mixture of all their
   essences. An item the player who put it in has not studied boils into as much dark unknown essence. Every item takes
-  250 mB of water: pour a bucket in, or pipe it from a Pump standing in water. The flask shows the water, the bubbles and
-  the item turning inside.
+  250 mB of water: pour a bucket in, or pipe it from a Pump standing in water - pipes bring water in and take essence
+  out on any side. The flask shows the water, the bubbles and the item turning inside.
 - Bottles of essence: plain glass bottles fill with 16 mB at the machines and jars.
 - Separator: draws the essence chosen on its screen out of a mixture into a concentrate and lets the rest go on with
   dark unknown essence added. It burns blaze powder; each side takes the mixture in or lets the concentrate or the rest
   out, set on its screen or by sneak-using that side.
-- Essence Jar: a big glass jar with a wooden lid, 256 mB; in through the lid and the sides, out at the bottom. Sneak-use
+- Essence Jar: a big glass jar with a wooden lid (glass and wooden slabs, no brass), 256 mB; in through the lid and the sides, out at the bottom. Sneak-use
   a side or the lid with an empty hand to stick an enamel label with an essence's sign on it. The Research Table draws
   its ink from jars of concentrate within 5 blocks - every drop it spends streams from its jar into the orb. A Creative Essence Jar holds every essence without end.
+- Big Essence Jar, the first structure built in the world: a 3 x 3 floor of glass, two rings of glass around a hollow
+  middle and a lid of any wooden slabs, woken by a right click with unstable hextech or a hextech gemstone (not used
+  up). It looks like the Essence Jar four times as large and holds sixteen jars' worth (4096 mB): bottles by hand, pipes
+  join it anywhere, it pours out under its middle, machines draw from it like from any jar. Breaking any of its blocks
+  takes it apart into its glass and slabs, and the essence inside is lost. The guide shows the structure layer by layer.
 - Brass Pipes - slim tubes with small flanges - carry essence and water and join a machine only where it has a port;
   the machine's model grows a matching joint there. The Drain Valve pours whatever reaches it out into the world while
   its handwheel is open; essence it pours onto stone soaks in and turns it into magic stone.
@@ -120,6 +130,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   empty hand unlinks all. Clicking the air or a block that cannot take items stops linking and does what it always does;
   with a block in hand a right click on a pylon places the block. A broken block drops its links by itself, and sneak +
   right click with an empty hand on a linked block unties it from every pylon. The item tooltip tells how.
+- Pylons belong to whoever placed them and deliver on their behalf: they feed the Alembic, the Separator, the Hex
+  Smelter, the Research Table and Pedestals like a hopper would, and the Alembic boils what they bring into its own
+  essences only if the pylon's owner (online) has studied it. The goggles show a pylon's owner.
 - Relay Pylon: neither takes nor gives - it catches items and essence sent to it and passes them on to its own links,
   up to eight relays in a chain. Made of calcite, copper ingots, amethyst and a lightning rod.
 - Siphon Pylon: set on an Essence Jar, it draws the essence up into its glass bulb (swirling in the jar's colour) and

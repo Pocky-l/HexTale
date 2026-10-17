@@ -3,6 +3,7 @@ package com.pockyl.hextale.block;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentGetter;
@@ -13,6 +14,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -49,6 +51,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
@@ -75,6 +78,9 @@ public class HexPylonBlockEntity extends BlockEntity {
     /** Client: ticks between the tendrils of one move. */
     private static final int STAGGER_TICKS = 4;
 
+    @Nullable
+    private UUID owner;
+    private String ownerName = "";
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
     private final List<PylonLink> links = new ArrayList<>();
     /** The Pylon Filter set into it (one item, given back when taken out or broken). */
@@ -361,7 +367,7 @@ public class HexPylonBlockEntity extends BlockEntity {
                 }
                 // How many it would take now (a trial that is thrown away); they arrive when the flight does.
                 try (Transaction trial = Transaction.openRoot()) {
-                    moved = PylonInsert.insert(level, route.pos(), route.face(), resource, want, trial);
+                    moved = PylonInsert.insert(level, route.pos(), route.face(), resource, want, trial, owner);
                 }
                 if (moved > 0) {
                     path.addAll(route.path());
@@ -418,7 +424,7 @@ public class HexPylonBlockEntity extends BlockEntity {
                 int moved;
                 try (Transaction trial = Transaction.openRoot()) {
                     int extracted = from.extract(slot, resource, want, trial);
-                    moved = extracted <= 0 ? 0 : PylonInsert.insert(level, route.pos(), route.face(), resource, extracted, trial);
+                    moved = extracted <= 0 ? 0 : PylonInsert.insert(level, route.pos(), route.face(), resource, extracted, trial, owner);
                 }
                 if (moved <= 0) {
                     continue;
@@ -550,10 +556,10 @@ public class HexPylonBlockEntity extends BlockEntity {
             ItemResource resource = ItemResource.of(c.item());
             int rest = c.item().getCount();
             if (level.isLoaded(c.target())) {
-                rest -= PylonInsert.insert(level, c.target(), c.face(), resource, rest, null);
+                rest -= PylonInsert.insert(level, c.target(), c.face(), resource, rest, null, owner);
             }
             if (rest > 0 && level.getCapability(Capabilities.Item.BLOCK, source, Direction.UP) != null) {
-                rest -= PylonInsert.insert(level, source, Direction.UP, resource, rest, null);
+                rest -= PylonInsert.insert(level, source, Direction.UP, resource, rest, null, owner);
             }
             if (rest > 0) {
                 net.minecraft.world.Containers.dropItemStack(level, worldPosition.getX() + 0.5, worldPosition.getY() + 1, worldPosition.getZ() + 0.5,
@@ -773,9 +779,31 @@ public class HexPylonBlockEntity extends BlockEntity {
         }
     }
 
+    /**
+     * The player who placed the pylon: it delivers on their behalf, so a machine that needs knowledge (the Alembic boils
+     * only studied items) reads theirs.
+     */
+    public void setOwner(Player player) {
+        owner = player.getUUID();
+        ownerName = player.getGameProfile().name();
+        setChanged();
+    }
+
+    @Nullable
+    public UUID owner() {
+        return owner;
+    }
+
+    /** The owner's name as it was when the pylon was placed, for the goggles; empty when nobody owns it. */
+    public String ownerName() {
+        return ownerName;
+    }
+
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
+        owner = input.read("owner", UUIDUtil.CODEC).orElse(null);
+        ownerName = input.getStringOr("owner_name", "");
         runes = input.read("runes", PickaxeRunes.CODEC).orElse(PickaxeRunes.EMPTY);
         links.clear();
         input.read("links", PylonLink.CODEC.listOf()).ifPresent(links::addAll);
@@ -788,6 +816,10 @@ public class HexPylonBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
+        if (owner != null) {
+            output.store("owner", UUIDUtil.CODEC, owner);
+            output.putString("owner_name", ownerName);
+        }
         if (!runes.isEmpty()) {
             output.store("runes", PickaxeRunes.CODEC, runes);
         }

@@ -5,6 +5,7 @@ import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -29,8 +30,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Researcher's Diary: a magic book whose page is a dark sky holding the researcher's guide (see {@link GuidePage}):
  * item quests, runes and devices still being worked out, on one branching path. The sky can be dragged around and
- * zoomed with the mouse wheel; a click opens a step's plate, and on a Research Table a rune's plate lays the rune on the
- * parchment. Shown by {@link StarBookScreen} in hand and inside the table's screen.
+ * zoomed with the mouse wheel; a click opens a step's plate - a window in the middle of the sky with a back arrow - and
+ * on a Research Table a rune's plate lays the rune on the parchment. Shown by {@link StarBookScreen} in hand and inside the table's screen.
  */
 public final class StarBook {
     private static final Identifier COSMOS = Hextale.id("textures/gui/cosmos.png");
@@ -45,7 +46,7 @@ public final class StarBook {
     static final int GOLD = 0xE0B85A;
     private static final int DRAG_THRESHOLD = 3;
 
-    /** The sky stays where the reader left it, between openings. */
+    /** The sky stays where the reader left it, between openings, as long as some step can be seen there. */
     private static float cameraX;
     private static float cameraY;
     private static int zoomIndex = 2;
@@ -79,16 +80,35 @@ public final class StarBook {
         this.host = host;
         this.font = Minecraft.getInstance().font;
         this.guide = new GuidePage(this);
-        RuneKnowledge knowledge = ClientKnowledge.get();
         ComplexRune onTable = host == null ? null : host.studying();
         if (onTable != null) {
             // On a table with a rune on it: open on that rune.
             Quest quest = Guide.of(onTable);
-            guide.select(quest);
-            centreOn(quest);
-        } else if (!placed) {
-            // A new reading starts where the researcher's path goes on.
-            centreOn(GuidePage.focus(knowledge));
+            cameraX = quest.x();
+            cameraY = quest.y();
+            placed = true;
+        } else {
+            // The view is placed on the first frame, once the book knows its size.
+            aimed = false;
+        }
+    }
+
+    /** Whether the camera was checked against what the reader can see since the book opened. */
+    private boolean aimed = true;
+
+    /**
+     * Opens on the steps the researcher can take now: a new reading, or a view that shows no visible step (empty sky),
+     * moves the camera to them; otherwise the sky stays where the reader left it.
+     */
+    private void aim(RuneKnowledge knowledge) {
+        aimed = true;
+        float viewWidth = skyWidth() / zoom();
+        float viewHeight = skyHeight() / zoom();
+        if (!placed || !GuidePage.anyVisibleNear(knowledge, cameraX, cameraY, viewWidth, viewHeight)) {
+            float[] focus = GuidePage.focus(knowledge, viewWidth, viewHeight);
+            cameraX = focus[0];
+            cameraY = focus[1];
+            clampCamera();
             placed = true;
         }
     }
@@ -104,11 +124,6 @@ public final class StarBook {
         this.top = top;
         this.width = width;
         this.height = height;
-    }
-
-    private void centreOn(Quest quest) {
-        cameraX = quest.x();
-        cameraY = quest.y();
     }
 
     float zoom() {
@@ -159,6 +174,9 @@ public final class StarBook {
     public List<FormattedCharSequence> render(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         long now = Util.getMillis();
         RuneKnowledge knowledge = ClientKnowledge.get();
+        if (!aimed && width > 0) {
+            aim(knowledge);
+        }
         graphics.enableScissor(skyLeft(), skyTop(), skyLeft() + skyWidth(), skyTop() + skyHeight());
         renderSpace(graphics, now);
 
@@ -166,7 +184,8 @@ public final class StarBook {
         graphics.pose().translate(centreX(), centreY());
         graphics.pose().scale(zoom(), zoom());
         graphics.pose().translate(-cameraX, -cameraY);
-        boolean free = !dragging && overSky(mouseX, mouseY) && !guide.overPlate(mouseX, mouseY, knowledge);
+        // While a plate is open the map waits behind it.
+        boolean free = !dragging && overSky(mouseX, mouseY) && guide.selected() == null;
         Quest hovered = free ? guide.questAt(mouseX, mouseY, knowledge) : null;
         guide.renderMap(graphics, knowledge, now, hovered);
         PixelArt.flush(graphics);
@@ -305,8 +324,13 @@ public final class StarBook {
             return false;
         }
         RuneKnowledge knowledge = ClientKnowledge.get();
-        if (guide.overPlate(mouseX, mouseY, knowledge)) {
-            guide.plateClicked(mouseX, mouseY, knowledge);
+        if (guide.selected() != null) {
+            // The plate is a window over the map: a click inside works it, a click beside it goes back to the map.
+            if (guide.overPlate(mouseX, mouseY, knowledge)) {
+                guide.plateClicked(mouseX, mouseY, knowledge);
+            } else {
+                guide.close();
+            }
             return true;
         }
         pressed = true;
@@ -353,7 +377,7 @@ public final class StarBook {
         if (!overSky(mouseX, mouseY) || scrollY == 0) {
             return false;
         }
-        if (guide.overPlate(mouseX, mouseY, ClientKnowledge.get())) {
+        if (guide.selected() != null) {
             guide.scrollPlate(scrollY);
             return true;
         }
@@ -368,6 +392,15 @@ public final class StarBook {
             clampCamera();
         }
         return true;
+    }
+
+    /** Escape closes an open plate before it closes the book. */
+    public boolean keyPressed(KeyEvent event) {
+        if (event.isEscape() && guide.selected() != null) {
+            guide.close();
+            return true;
+        }
+        return false;
     }
 
     private void clampCamera() {

@@ -90,7 +90,14 @@ public final class QuestGameTests {
                 helper.assertTrue(parent.index() < quest.index(), quest.id() + " follows " + parent.id());
                 helper.assertTrue(parent.kind() != Quest.Kind.WIP, quest.id() + " never waits for a WIP device");
             }
-            helper.assertTrue(quest.parents().isEmpty() == (quest == Guide.BRASS), quest.id() + ": only Brass starts the path");
+            helper.assertTrue(quest.parents().isEmpty() == (quest == Guide.BRASS || quest == Guide.UNSTABLE_HEXTECH),
+                    quest.id() + ": only Brass and raw hextech start the guide");
+            for (Quest other : Guide.all()) {
+                if (other.index() > quest.index()) {
+                    double distance = Math.hypot(other.x() - quest.x(), other.y() - quest.y());
+                    helper.assertTrue(distance >= 40, quest.id() + " and " + other.id() + " do not crowd each other");
+                }
+            }
             helper.assertTrue(Guide.byId(quest.id()) == quest, quest.id() + " is found by id");
         }
         for (ComplexRune rune : ComplexRunes.all()) {
@@ -206,6 +213,21 @@ public final class QuestGameTests {
         helper.assertTrue(decoded.questDone(Guide.BRASS) && decoded.questDone(Guide.ITEM_STUDY)
                 && !decoded.questDone(Guide.RESEARCH_TABLE), "done quests save and load");
         helper.assertTrue(knowledge.copy().questDone(Guide.ITEM_STUDY), "done quests are synced");
+        helper.succeed();
+    }
+
+    /** No single road: the first brass already opens the workshop, the essence works and the goggles at once. */
+    @HexTest
+    public static void theGuideBranchesEarly(GameTestHelper helper) {
+        RuneKnowledge knowledge = new RuneKnowledge();
+        helper.assertTrue(Guide.visible(Guide.BRASS, knowledge) && Guide.visible(Guide.UNSTABLE_HEXTECH, knowledge), "two ways to begin");
+        knowledge.completeQuest(Guide.BRASS);
+        for (Quest quest : List.of(Guide.RESEARCH_TABLE, Guide.ALEMBIC, Guide.RESEARCHERS_GOGGLES)) {
+            helper.assertTrue(Guide.open(quest, knowledge), quest.id() + " opens with brass");
+        }
+        helper.assertFalse(Guide.open(Guide.RESEARCHERS_DIARY, knowledge), "the diary also needs raw hextech");
+        knowledge.completeQuest(Guide.UNSTABLE_HEXTECH);
+        helper.assertTrue(Guide.open(Guide.RESEARCHERS_DIARY, knowledge), "brass and hextech open the diary");
         helper.succeed();
     }
 

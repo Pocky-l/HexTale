@@ -36,6 +36,8 @@ public final class TableModels {
     /** The Hextech Altar's gimbal, larger rings with hextech studs, centred on their block like the table's. */
     public static final StandaloneModelKey<BlockStateModelPart> ALTAR_RING_OUTER = model("block/hextech_altar/ring_outer");
     public static final StandaloneModelKey<BlockStateModelPart> ALTAR_RING_INNER = model("block/hextech_altar/ring_inner");
+    /** The Essence Jar's body, drawn four times larger by the Big Essence Jar's renderer. */
+    public static final StandaloneModelKey<BlockStateModelPart> ESSENCE_JAR = model("block/essence_tank");
 
     private TableModels() {
     }

@@ -20,6 +20,7 @@ import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModCapabilities;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModDataMaps;
 import com.pockyl.hextale.registry.ModDataComponents;
@@ -43,6 +44,7 @@ public final class Hextale {
         ModItems.register(modBus);
         ModDataComponents.register(modBus);
         ModBlockEntities.register(modBus);
+        ModCapabilities.register(modBus);
         ModMenus.register(modBus);
         ModAttachments.register(modBus);
         ModSounds.register(modBus);
@@ -50,6 +52,7 @@ public final class Hextale {
         ModTriggers.register(modBus);
         modBus.addListener(ModNetwork::register);
         PickaxeEffects.register();
+        com.pockyl.hextale.multiblock.Multiblocks.register();
         GameTests.register(modBus);
         modBus.addListener(ModDataMaps::register);
         modBus.addListener(Hextale::addToVanillaTabs);
