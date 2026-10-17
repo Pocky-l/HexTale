@@ -97,6 +97,18 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
+        push(level, pos, player);
+        return use(stack, level, pos, player, hand, hitResult);
+    }
+
+    /** Every right click nudges the jar: it rocks on its foot for a moment (drawn by the renderer on every client). */
+    private void push(Level level, BlockPos pos, Player player) {
+        if (!level.isClientSide()) {
+            level.blockEvent(pos, this, EssenceTankBlockEntity.PUSHED, player.getDirection().get2DDataValue());
+        }
+    }
+
+    private InteractionResult use(ItemStack stack, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (!(level.getBlockEntity(pos) instanceof EssenceTankBlockEntity tank)) {
             return InteractionResult.PASS;
         }
@@ -145,6 +157,10 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (player.getMainHandItem().isEmpty()) {
+            // With an item in hand the push already came from useItemOn.
+            push(level, pos, player);
+        }
         if (!(level.getBlockEntity(pos) instanceof EssenceTankBlockEntity tank)) {
             return InteractionResult.PASS;
         }

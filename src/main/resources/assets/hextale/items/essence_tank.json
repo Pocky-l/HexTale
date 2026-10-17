@@ -1,6 +1,18 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "hextale:block/essence_tank"
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "hextale:block/essence_tank"
+      },
+      {
+        "type": "minecraft:special",
+        "base": "hextale:block/essence_tank",
+        "model": {
+          "type": "hextale:essence_jar"
+        }
+      }
+    ]
   }
 }

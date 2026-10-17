@@ -38,6 +38,8 @@ public class BigEssenceJarRenderer implements BlockEntityRenderer<BigEssenceJarB
     public void extractRenderState(BigEssenceJarBlockEntity entity, EssenceTankRenderer.State state, float partialTick, Vec3 cameraPosition,
                                    ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         jar.extractRenderState(entity, state, partialTick, cameraPosition, breakProgress);
+        // A big jar barely sways when pushed.
+        state.tilt *= 0.3F;
     }
 
     @Override
@@ -45,7 +47,6 @@ public class BigEssenceJarRenderer implements BlockEntityRenderer<BigEssenceJarB
         poseStack.pushPose();
         poseStack.translate(SHIFT, 0, SHIFT);
         poseStack.scale(SCALE, SCALE, SCALE);
-        TableModels.submit(poseStack, collector, TableModels.ESSENCE_JAR, state.lightCoords);
         jar.submit(state, poseStack, collector, camera);
         poseStack.popPose();
     }

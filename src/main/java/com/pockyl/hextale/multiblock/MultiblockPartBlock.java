@@ -54,6 +54,17 @@ public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachi
         return RenderShape.INVISIBLE;
     }
 
+    /** See-through: it neither shades the blocks around it nor keeps the light of the sky from what lies below. */
+    @Override
+    protected float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
+        return 1.0F;
+    }
+
+    @Override
+    protected boolean propagatesSkylightDown(BlockState state) {
+        return true;
+    }
+
     /** Pipes may join the structure anywhere; what they bring goes to the controller. */
     @Override
     public boolean isPort(BlockState state, Direction face) {

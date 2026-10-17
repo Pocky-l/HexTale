@@ -1,6 +1,7 @@
 package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -24,8 +25,9 @@ import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.rune.Essence;
 
 /**
- * The essence inside an Essence Jar: a glowing liquid inside the glass, as high as the jar is full. The jar's Essence
- * Sticker shows as a small paper label with the essence's sign on every side, except where a pipe joins that side.
+ * An Essence Jar: its glass and lid (the block model only draws the pipe fittings), the glowing liquid inside, as high as
+ * the jar is full, and its Essence Sticker as a small paper label with the essence's sign on every side, except where a
+ * pipe joins that side. A right click pushes the jar: it rocks on its foot away from the player and settles.
  */
 public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlockEntity, EssenceTankRenderer.State> {
     // Inside the glass (model: body 2-14 with its vertical edges cut back by a pixel, thick glass at the foot up to 1,
@@ -52,7 +54,16 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
     private static final float SIDE_UP = -2F / 16;
     private static final float TOP_UP = 0;
 
+    /** How far a pushed jar leans at first (degrees), how fast it rocks (ticks per swing) and how soon it settles. */
+    private static final float WOBBLE_DEGREES = 8;
+    private static final float WOBBLE_PERIOD = 9;
+    private static final float WOBBLE_DECAY = 9;
+
     public static final class State extends BlockEntityRenderState {
+        boolean creative;
+        /** The lean of a pushed jar (degrees) and where it leans to (a horizontal direction's 2D value). */
+        float tilt;
+        int tiltDirection;
         float fill;
         int color;
         float time;
@@ -82,6 +93,11 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
         }
         state.time = tankEntity.getLevel() == null ? 0 : tankEntity.getLevel().getGameTime() + partialTick;
         state.seed = tankEntity.getBlockPos().asLong();
+        state.creative = tankEntity.isCreative();
+        float since = state.time - tankEntity.pushedAt();
+        state.tilt = tankEntity.pushedAt() < 0 || since < 0 || since > WOBBLE_DECAY * 5 ? 0
+                : WOBBLE_DEGREES * (float) Math.exp(-since / WOBBLE_DECAY) * Mth.sin(since * Mth.TWO_PI / WOBBLE_PERIOD);
+        state.tiltDirection = tankEntity.pushedTowards();
         BlockState block = tankEntity.getBlockState();
         for (Direction face : Direction.values()) {
             BooleanProperty port = EssenceMachine.PORTS.get(face);
@@ -93,24 +109,38 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
 
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
-        if (state.fill > 0) {
+        poseStack.pushPose();
+        if (state.tilt != 0) {
+            // Rock on the foot: the top leans towards the push.
+            Direction towards = Direction.from2DDataValue(state.tiltDirection);
+            poseStack.translate(0.5, 0, 0.5);
+            poseStack.rotate(Axis.of(new org.joml.Vector3f(towards.getStepZ(), 0, -towards.getStepX())).rotationDegrees(state.tilt));
+            poseStack.translate(-0.5, 0, -0.5);
+        }
+        TableModels.submit(poseStack, collector, state.creative ? TableModels.CREATIVE_JAR : TableModels.ESSENCE_JAR, state.lightCoords);
+        submitContents(poseStack, collector, state.fill, state.color, state.time, state.seed, state.labels, state.lightCoords);
+        poseStack.popPose();
+    }
+
+    /** The liquid and the stickers, in the jar's own block space (shared with the jar item's renderer). */
+    static void submitContents(PoseStack poseStack, SubmitNodeCollector collector, float fill, int color, float time, long seed,
+                               @Nullable Essence[] labels, int light) {
+        if (fill > 0) {
             // The surface breathes a little, unless the jar is brim-full.
-            float wave = state.fill < 0.98F ? Mth.sin(state.time * 0.08F + state.seed % 7) * 0.12F / 16 : 0;
-            float top = Math.min(TOP, BOTTOM + (TOP - BOTTOM) * Math.min(1, state.fill) + wave);
-            LiquidBox.submitCutCorners(poseStack, collector, MIN, MIN, MAX, MAX, CUT, BOTTOM, top, RuneDrawing.argb(state.color, 0.82F),
-                    state.time, state.seed, 3);
+            float wave = fill < 0.98F ? Mth.sin(time * 0.08F + seed % 7) * 0.12F / 16 : 0;
+            float top = Math.min(TOP, BOTTOM + (TOP - BOTTOM) * Math.min(1, fill) + wave);
+            LiquidBox.submitCutCorners(poseStack, collector, MIN, MIN, MAX, MAX, CUT, BOTTOM, top, RuneDrawing.argb(color, 0.82F), time, seed, 3);
         }
         boolean any = false;
-        for (Essence label : state.labels) {
+        for (Essence label : labels) {
             any |= label != null;
         }
         if (!any) {
             return;
         }
-        int light = state.lightCoords;
         collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(LABELS), (pose, consumer) -> {
             for (Direction face : Direction.values()) {
-                Essence label = state.labels[face.get3DDataValue()];
+                Essence label = labels[face.get3DDataValue()];
                 if (label != null) {
                     sticker(consumer, pose, face, label, light);
                 }

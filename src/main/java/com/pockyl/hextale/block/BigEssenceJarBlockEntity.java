@@ -39,10 +39,14 @@ public class BigEssenceJarBlockEntity extends EssenceTankBlockEntity implements 
         setChanged();
     }
 
-    /** Broken: the essence is lost and the jar falls apart into its glass and slabs. */
+    /** Broken: the essence is lost, the sticker comes off and the jar falls apart into its glass and slabs. */
     @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
         super.preRemoveSideEffects(pos, state);
+        if (sticker() != null && level != null && !level.isClientSide()) {
+            net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
+                    com.pockyl.hextale.item.EssenceStickerItem.of(com.pockyl.hextale.registry.ModItems.ESSENCE_STICKER.get(), sticker()));
+        }
         if (level instanceof ServerLevel serverLevel) {
             Multiblocks.breakApart(serverLevel, pos, pos, formed);
         }

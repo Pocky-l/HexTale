@@ -69,11 +69,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Essence Jar: a big glass jar with a wooden lid (glass and wooden slabs, no brass), 256 mB; in through the lid and the sides, out at the bottom. Sneak-use
   a side or the lid with an empty hand to stick an enamel label with an essence's sign on it. The Research Table draws
   its ink from jars of concentrate within 5 blocks - every drop it spends streams from its jar into the orb. A Creative Essence Jar holds every essence without end.
+  A jar breaks quickly by hand and keeps its essence and its sticker: the item shows the liquid and the sticker inside
+  its glass, and placed again it holds the same. A right click nudges the jar - it rocks on its foot and settles.
 - Big Essence Jar, the first structure built in the world: a 3 x 3 floor of glass, two rings of glass around a hollow
   middle and a lid of any wooden slabs, woken by a right click with unstable hextech or a hextech gemstone (not used
   up). It looks like the Essence Jar four times as large and holds sixteen jars' worth (4096 mB): bottles by hand, pipes
   join it anywhere, it pours out under its middle, machines draw from it like from any jar. Breaking any of its blocks
-  takes it apart into its glass and slabs, and the essence inside is lost. The guide shows the structure layer by layer.
+  takes it apart into its glass and slabs; the essence inside is lost and no jar drops. The ground under it stays lit. The guide shows the structure layer by layer.
 - Brass Pipes - slim tubes with small flanges - carry essence and water and join a machine only where it has a port;
   the machine's model grows a matching joint there. The Drain Valve pours whatever reaches it out into the world while
   its handwheel is open; essence it pours onto stone soaks in and turns it into magic stone.
@@ -133,6 +135,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pylons belong to whoever placed them and deliver on their behalf: they feed the Alembic, the Separator, the Hex
   Smelter, the Research Table and Pedestals like a hopper would, and the Alembic boils what they bring into its own
   essences only if the pylon's owner (online) has studied it. The goggles show a pylon's owner.
+- A pylon with several links takes them in turn: each move goes to the next link that takes something, so every
+  linked chest, machine or jar gets its share.
 - Relay Pylon: neither takes nor gives - it catches items and essence sent to it and passes them on to its own links,
   up to eight relays in a chain. Made of calcite, copper ingots, amethyst and a lightning rod.
 - Siphon Pylon: set on an Essence Jar, it draws the essence up into its glass bulb (swirling in the jar's colour) and

@@ -12,7 +12,8 @@
           "modifier": {
             "type": "minecraft:copy_components",
             "include": [
-              "hextale:essence"
+              "hextale:essence",
+              "hextale:sticker"
             ],
             "source": "block_entity"
           }

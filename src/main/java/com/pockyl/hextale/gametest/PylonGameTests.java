@@ -149,6 +149,29 @@ public final class PylonGameTests {
         });
     }
 
+    /** Linked to two chests, a sending pylon takes them in turn: both get their share, not only the first. */
+    @HexTest(maxTicks = 300)
+    public static void sendingPylonTakesItsLinksInTurn(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, Blocks.CHEST);
+        BlockPos east = BASE.offset(4, 0, 0);
+        BlockPos south = BASE.offset(0, 0, 4);
+        helper.setBlock(east, Blocks.CHEST);
+        helper.setBlock(south, Blocks.CHEST);
+        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container a = (Container) helper.getBlockEntity(east, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container b = (Container) helper.getBlockEntity(south, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        from.setItem(0, new ItemStack(Items.COBBLESTONE, 64));
+        HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        helper.assertTrue(pylon.toggleLink(link(helper, east, Direction.UP)) && pylon.toggleLink(link(helper, south, Direction.UP)), "linked");
+        helper.succeedWhen(() -> {
+            helper.assertTrue(count(from, Items.COBBLESTONE) == 0, "everything was sent");
+            int first = count(a, Items.COBBLESTONE);
+            int second = count(b, Items.COBBLESTONE);
+            helper.assertTrue(first + second == 64 && Math.abs(first - second) <= 16, "both chests got a share: " + first + " and " + second);
+        });
+    }
+
     /** A sending pylon on a chest moves its contents into the linked chest. */
     @HexTest(maxTicks = 200)
     public static void sendingPylonEmptiesIntoItsLink(GameTestHelper helper) {

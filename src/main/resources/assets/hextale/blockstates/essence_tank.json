@@ -2,7 +2,7 @@
   "multipart": [
     {
       "apply": {
-        "model": "hextale:block/essence_tank"
+        "model": "hextale:block/essence_tank_particle"
       }
     },
     {

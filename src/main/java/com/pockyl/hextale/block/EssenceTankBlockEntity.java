@@ -28,8 +28,9 @@ import com.pockyl.hextale.rune.Essence;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The essence tank's contents; it drains downwards into pipes. The contents travel with the item (component
- * {@code hextale:essence}): a broken tank keeps them, a full tank can be placed from the creative tab. A Creative Essence
+ * The essence tank's contents; it drains downwards into pipes. The contents and the sticker travel with the item
+ * (components {@code hextale:essence} and {@code hextale:sticker}): a broken jar keeps them, a full jar can be placed
+ * from the creative tab. A Creative Essence
  * Tank (same entity) holds one essence and is always full: whatever is drawn or let out is back the next tick, and it
  * takes nothing in.
  */
@@ -76,14 +77,30 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
         return sticker == null || offer.unknown() == 0 && offer.get(sticker) == offer.total();
     }
 
-    /** Broken: the sticker comes off and drops. */
+    /** Block event: someone pushed the jar (the parameter is the direction they faced); clients rock it. */
+    public static final int PUSHED = 1;
+    /** Client side: the game time of the last push (-1 never) and the direction it pushed towards. */
+    private float pushedAt = -1;
+    private int pushedTowards;
+
+    public float pushedAt() {
+        return pushedAt;
+    }
+
+    public int pushedTowards() {
+        return pushedTowards;
+    }
+
     @Override
-    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
-        if (sticker != null && level != null && !level.isClientSide()) {
-            net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
-                    com.pockyl.hextale.item.EssenceStickerItem.of(com.pockyl.hextale.registry.ModItems.ESSENCE_STICKER.get(), sticker));
+    public boolean triggerEvent(int id, int param) {
+        if (id == PUSHED) {
+            if (level != null && level.isClientSide()) {
+                pushedAt = level.getGameTime();
+                pushedTowards = param;
+            }
+            return true;
         }
+        return super.triggerEvent(id, param);
     }
 
     /** Whether this is a Creative Essence Tank. */
@@ -98,6 +115,7 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
         if (contents != null && !isCreative()) {
             tank.set(contents.part(tank.capacity()));
         }
+        sticker = components.get(ModDataComponents.STICKER.get());
     }
 
     @Override
@@ -106,12 +124,16 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
         if (!tank.isEmpty() && !isCreative()) {
             components.set(ModDataComponents.ESSENCE.get(), tank.contents());
         }
+        if (sticker != null) {
+            components.set(ModDataComponents.STICKER.get(), sticker);
+        }
     }
 
     @Override
     public void removeComponentsFromTag(ValueOutput output) {
         super.removeComponentsFromTag(output);
         output.discard("essence");
+        output.discard("sticker");
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, EssenceTankBlockEntity tank) {

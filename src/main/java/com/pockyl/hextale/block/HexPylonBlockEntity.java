@@ -360,7 +360,7 @@ public class HexPylonBlockEntity extends BlockEntity {
             path.add(item.position().add(0, 0.25, 0));
             path.add(gem);
             Destination to = null;
-            for (Destination route : routes) {
+            for (Destination route : inTurn(routes)) {
                 int want = Math.min(Math.min(budget, stack.getCount()), room(level, route, resource));
                 if (want <= 0 || !route.passes(resource)) {
                     continue;
@@ -372,6 +372,7 @@ public class HexPylonBlockEntity extends BlockEntity {
                 if (moved > 0) {
                     path.addAll(route.path());
                     to = route;
+                    served(routes, route);
                     break;
                 }
             }
@@ -390,7 +391,10 @@ public class HexPylonBlockEntity extends BlockEntity {
         }
     }
 
-    /** Takes what the container below gives out and throws it to the links, in their order. */
+    /**
+     * Takes what the container below gives out and throws it to one of its links per move, the links taking turns (a
+     * link that takes nothing now is skipped), so every storage linked gets its share.
+     */
     void send(ServerLevel level, List<PylonFlight> flights) {
         if (links.isEmpty()) {
             return;
@@ -402,7 +406,8 @@ public class HexPylonBlockEntity extends BlockEntity {
         ItemFilter own = filter();
         int budget = amount();
         Vec3 start = Vec3.atBottomCenterOf(worldPosition).add(0, 0.05, 0);
-        for (Destination route : destinations(level)) {
+        List<Destination> routes = destinations(level);
+        for (Destination route : inTurn(routes)) {
             // Slot by slot of what the container gives out, each item where the target takes it (a furnace sorts ore and
             // fuel), up to four kinds of item per route while the budget lasts.
             int turns = 0;
@@ -444,10 +449,30 @@ public class HexPylonBlockEntity extends BlockEntity {
                 ship(level, flights, new PylonFlight(resource.toStack(1), path, false), resource.toStack(moved), EssenceMix.EMPTY,
                         route.pos(), route.face());
             }
-            if (budget <= 0) {
+            if (turns > 0) {
+                served(routes, route);
                 return;
             }
         }
+    }
+
+    /** Which route is served first next time: a pylon with several links takes them in turn. */
+    private int nextRoute;
+
+    /** The routes starting with the one whose turn it is. */
+    private List<Destination> inTurn(List<Destination> routes) {
+        if (routes.size() < 2) {
+            return routes;
+        }
+        int first = Math.floorMod(nextRoute, routes.size());
+        List<Destination> out = new ArrayList<>(routes.subList(first, routes.size()));
+        out.addAll(routes.subList(0, first));
+        return out;
+    }
+
+    /** The route got its share: the next one is first next time. */
+    private void served(List<Destination> routes, Destination route) {
+        nextRoute = routes.indexOf(route) + 1;
     }
 
     /** How many more of the item the route's target may take under the "fill up to N" rule of any filter on the way. */
@@ -597,10 +622,8 @@ public class HexPylonBlockEntity extends BlockEntity {
         }
         int budget = essenceAmount();
         Vec3 start = Vec3.atBottomCenterOf(worldPosition).add(0, -0.05, 0);
-        for (Destination route : destinations(level, true)) {
-            if (budget <= 0) {
-                return;
-            }
+        List<Destination> routes = destinations(level, true);
+        for (Destination route : inTurn(routes)) {
             BlockEntity target = level.getBlockEntity(route.pos());
             if (!(target instanceof EssenceNetwork.Receiver receiver) || route.pos().equals(worldPosition.below())) {
                 continue;
@@ -655,6 +678,8 @@ public class HexPylonBlockEntity extends BlockEntity {
             // Motes arc on their own: straight from the last gem into the top, without the turn above it.
             path.remove(path.size() - 2);
             ship(level, flights, PylonFlight.essence(path, drawn.color()), ItemStack.EMPTY, drawn, route.pos(), face);
+            served(routes, route);
+            return;
         }
     }
 
