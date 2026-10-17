@@ -499,8 +499,8 @@ final class BoardView {
 
     /**
      * The prism: a mist-filled hexagonal field in a brass rim with ports; the rays shone so far marked at the ports they
-     * went in and came out (numbered, in the colours of the essences they touched), a glimmer of the newest ray's path
-     * through the mist while it runs, revealed essences, empty checks and the researcher's pencil marks.
+     * went in and came out (numbered, in the colours of the essences they touched) and drawn along their paths, the mist
+     * lifted from every section a ray proved empty, revealed essences, empty checks and the researcher's pencil marks.
      *
      * @param hoveredCell a field section under the mouse, or -1
      * @param hoveredPort a port under the mouse, or -1
@@ -517,6 +517,15 @@ final class BoardView {
             lastRays = rays.size();
         }
         ItemStudy.Ray newest = rays.isEmpty() ? null : rays.get(rays.size() - 1);
+        boolean[] empty = new boolean[HexGrid.COUNT];
+        for (ItemStudy.Ray ray : rays) {
+            if (ray == newest && rayStart != 0 && (now - rayStart) / (float) RAY_STEP_MILLIS < ray.path().length) {
+                continue;
+            }
+            for (int cell : ray.empty()) {
+                empty[cell] = true;
+            }
+        }
         float run = newest == null || rayStart == 0 ? Float.MAX_VALUE : (now - rayStart) / (float) RAY_STEP_MILLIS;
         boolean running = newest != null && run < newest.path().length + 2;
 
@@ -534,21 +543,40 @@ final class BoardView {
             }
             int x = psx(cell);
             int y = psy(cell);
+            if (empty[cell]) {
+                // Proved empty by a ray: the mist has lifted, clean parchment.
+                PixelArt.hex(graphics, x, y, PRISM_CELL, argb(0xFFF8E8, 0.12F), argb(0x8C7047, 0.18F));
+                PixelArt.fill(graphics, x, y, x + 1, y + 1, argb(0x8C7047, 0.5F));
+                continue;
+            }
             float drift = 0.5F + 0.5F * Mth.sin(now / 1300.0F + cell * 0.53F);
-            PixelArt.hex(graphics, x, y, PRISM_CELL, argb(0xD8CDB8, 0.35F + 0.1F * drift), argb(0x8C7047, 0.35F));
+            PixelArt.hex(graphics, x, y, PRISM_CELL, argb(0xBFAE90, 0.55F + 0.1F * drift), argb(0x6E5634, 0.55F));
         }
 
-        // The newest ray's glimmer: a soft light running along its path, barely seen through the mist.
-        if (running) {
-            int[] path = newest.path();
-            int color = rayColor(study, newest);
-            for (int k = 0; k < path.length; k++) {
-                float age = run - k;
-                if (age < 0 || age > 3) {
-                    continue;
+        // The rays' paths: each in its colour, the newest drawing itself section by section, the hovered one bright.
+        for (ItemStudy.Ray ray : rays) {
+            boolean fresh = ray == newest && running;
+            boolean hot = ray.port() == hoveredPort || ray.exit() == hoveredPort;
+            int color = PixelArt.onParchment(rayColor(study, ray));
+            int[] path = ray.path();
+            int segments = fresh ? Math.min(path.length - 1, (int) run) : path.length - 1;
+            float alpha = hot || fresh ? 1 : 0.55F;
+            int[] from = portScreen(ray.port());
+            for (int k = 1; k <= segments; k++) {
+                int cell = path[k];
+                int[] to = k == path.length - 1 && ray.outcome() != ItemStudy.Outcome.HIT
+                        ? (ray.exit() >= 0 ? portScreen(ray.exit()) : portScreen(ray.port()))
+                        : new int[]{psx(cell), psy(cell)};
+                PixelArt.line(graphics, from[0], from[1] + 1, to[0], to[1] + 1, argb(PixelArt.mix(color, 0x000000, 0.4F), alpha * 0.7F));
+                PixelArt.line(graphics, from[0], from[1], to[0], to[1], argb(color, alpha));
+                if (hot) {
+                    PixelArt.line(graphics, from[0] + 1, from[1], to[0] + 1, to[1], argb(color, alpha));
                 }
-                float a = (1 - age / 3) * (k == 0 || k == path.length - 1 ? 0.9F : 0.3F);
-                PixelArt.hex(graphics, psx(path[k]), psy(path[k]), PRISM_CELL - 6, argb(PixelArt.mix(color, 0xFFFFFF, 0.4F), a), 0);
+                from = to;
+            }
+            if (ray.outcome() == ItemStudy.Outcome.HIT && segments == path.length - 1) {
+                int end = path[path.length - 1];
+                PixelArt.hexRing(graphics, psx(end), psy(end), PRISM_CELL - 4, argb(color, alpha));
             }
         }
 

@@ -24,8 +24,8 @@ import org.jetbrains.annotations.Nullable;
  * A ray runs straight. Running into a body it is absorbed (a hit). A body beside the section ahead bends it away by 60
  * degrees; bodies on both sides turn it back. A ray bent at the very rim comes straight back out (a reflection). A ray
  * that gets through leaves at another port. What the researcher sees is only where each ray went in and came out (or
- * that it was absorbed or reflected), tinted with the colours of the essences it touched - and a faint glimmer of its
- * path through the mist while it runs.
+ * that it was absorbed or reflected), its path, tinted with the colours of the essences it touched, and the mist lifting
+ * from the sections it proved empty.
  * <p>
  * From that the researcher works out where the bodies lie and checks a section: a body there is revealed, an empty
  * section costs a ray. Rays are limited: {@value #BASE_RAYS} plus {@value #RAYS_PER_ESSENCE} per essence. All bodies
@@ -113,8 +113,10 @@ public final class ItemStudy {
      * @param exit    the port it left by (EXIT only), else -1
      * @param path    the sections it ran through, from the rim section it started in
      * @param touched bit per body that bent, turned or absorbed it
+     * @param empty   field sections the ray proves empty: those it ran through or looked into, and those beside a
+     *                section it entered without bending
      */
-    public record Ray(int port, Outcome outcome, int exit, int[] path, int touched) {
+    public record Ray(int port, Outcome outcome, int exit, int[] path, int touched, int[] empty) {
     }
 
     @Nullable
@@ -234,6 +236,7 @@ public final class ItemStudy {
         int cell = portCell(port);
         int d = portDirection(port);
         List<Integer> path = new ArrayList<>();
+        java.util.Set<Integer> empty = new java.util.LinkedHashSet<>();
         path.add(cell);
         int touched = 0;
         boolean atRim = true;
@@ -246,38 +249,48 @@ public final class ItemStudy {
                 int exit = exitCell * 6 + (d + 3) % 6;
                 path.add(exitCell);
                 if (exit == port) {
-                    return new Ray(port, Outcome.REFLECT, -1, toArray(path), touched);
+                    return new Ray(port, Outcome.REFLECT, -1, toArray(path), touched, toArray(empty));
                 }
-                return new Ray(port, Outcome.EXIT, portIndex(exit) >= 0 ? exit : -1, toArray(path), touched);
+                return new Ray(port, Outcome.EXIT, portIndex(exit) >= 0 ? exit : -1, toArray(path), touched, toArray(empty));
             }
             int ahead = bodyAt(bodies, next);
             if (ahead >= 0) {
                 path.add(next);
-                return new Ray(port, Outcome.HIT, -1, toArray(path), touched | 1 << ahead);
+                return new Ray(port, Outcome.HIT, -1, toArray(path), touched | 1 << ahead, toArray(empty));
             }
-            int left = bodyAt(bodies, HexGrid.step(next, (d + 1) % 6));
-            int right = bodyAt(bodies, HexGrid.step(next, (d + 5) % 6));
+            // Nothing in the section ahead, or the ray would have been absorbed.
+            empty.add(next);
+            int leftCell = HexGrid.step(next, (d + 1) % 6);
+            int rightCell = HexGrid.step(next, (d + 5) % 6);
+            int left = bodyAt(bodies, leftCell);
+            int right = bodyAt(bodies, rightCell);
             if (left >= 0 || right >= 0) {
                 touched |= (left >= 0 ? 1 << left : 0) | (right >= 0 ? 1 << right : 0);
                 if (atRim) {
-                    return new Ray(port, Outcome.REFLECT, -1, toArray(path), touched);
+                    return new Ray(port, Outcome.REFLECT, -1, toArray(path), touched, toArray(empty));
                 }
                 if (++turns > 3) {
                     // Caught between bodies: the light dies there.
-                    return new Ray(port, Outcome.HIT, -1, toArray(path), touched);
+                    return new Ray(port, Outcome.HIT, -1, toArray(path), touched, toArray(empty));
                 }
                 d = left >= 0 && right >= 0 ? (d + 3) % 6 : left >= 0 ? (d + 5) % 6 : (d + 1) % 6;
                 continue;
+            }
+            // It went on unbent: nothing beside the section either.
+            for (int side : new int[]{leftCell, rightCell}) {
+                if (inField(side)) {
+                    empty.add(side);
+                }
             }
             cell = next;
             path.add(cell);
             atRim = false;
             turns = 0;
         }
-        return new Ray(port, Outcome.HIT, -1, toArray(path), touched);
+        return new Ray(port, Outcome.HIT, -1, toArray(path), touched, toArray(empty));
     }
 
-    private static int[] toArray(List<Integer> cells) {
+    private static int[] toArray(java.util.Collection<Integer> cells) {
         return cells.stream().mapToInt(Integer::intValue).toArray();
     }
 
@@ -374,8 +387,21 @@ public final class ItemStudy {
         return misses.contains(cell) || body >= 0 && isRevealed(body);
     }
 
+    /** Whether some ray already proved this section empty. */
+    public boolean provenEmpty(int cell) {
+        for (Ray ray : rays) {
+            for (int e : ray.empty()) {
+                if (e == cell) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** A section can be checked unless it was checked already or a ray proved it empty (no wasted light). */
     public boolean canCheck(int cell) {
-        return isActive() && inField(cell) && !checked(cell);
+        return isActive() && inField(cell) && !checked(cell) && !provenEmpty(cell);
     }
 
     public boolean won() {

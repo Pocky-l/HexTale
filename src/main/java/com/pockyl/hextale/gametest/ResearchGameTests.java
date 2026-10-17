@@ -407,7 +407,11 @@ public final class ResearchGameTests {
                     }
                 }
                 for (int p = 0; p < ItemStudy.portCount(); p++) {
-                    seen |= ItemStudy.trace(bodies, ItemStudy.port(p)).touched();
+                    ItemStudy.Ray ray = ItemStudy.trace(bodies, ItemStudy.port(p));
+                    seen |= ray.touched();
+                    for (int cell : ray.empty()) {
+                        helper.assertTrue(ItemStudy.bodyAt(bodies, cell) < 0, item + ": a section a ray proves empty holds no essence");
+                    }
                 }
                 hidden += bodies.size() - Integer.bitCount(seen);
                 items++;
