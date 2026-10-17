@@ -19,8 +19,8 @@ import com.pockyl.hextale.rune.ComplexRune;
 
 /**
  * The rune chosen on a stele hangs over it as its glowing hieroglyph in the rune's colour, facing the viewer, inside a
- * slowly turning sigil ring, with a soft halo and a few motes circling it. A freshly chosen rune writes itself stroke by stroke while the ring opens; while a ritual draws on the stele,
- * everything burns brighter and pulses. Glyph and ring are additive light (no sorting, no flicker).
+ * slowly turning sigil ring, with a soft halo and a few motes circling it. A freshly chosen rune writes itself stroke
+ * by stroke while the ring opens; while a ritual draws on the stele, everything burns brighter and pulses. Glyph and ring are additive light (no sorting, no flicker).
  */
 public class RuneSteleRenderer implements BlockEntityRenderer<RuneSteleBlockEntity, RuneSteleRenderer.State> {
     private static final float ENTRANCE_TICKS = 24;
