@@ -29,6 +29,9 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.HextechTools;
 import com.pockyl.hextale.runework.RuneSlots;
+import com.pockyl.hextale.rune.ComplexRune;
+import com.pockyl.hextale.rune.ComplexRunes;
+import com.pockyl.hextale.runework.ToolRuneEffects;
 import com.pockyl.hextale.runework.ToolRunes;
 
 import java.util.List;
@@ -116,6 +119,59 @@ public final class RuneWorkGameTests {
         helper.assertTrue(HextechTools.spend(tool, Essence.FIRE, 4) && HextechTools.cell(tool).get(Essence.FIRE) == HextechTools.CELL - 4,
                 "a firing burns its essence");
         helper.assertFalse(HextechTools.spend(tool, Essence.WATER, 1), "nothing burns without that essence");
+        helper.succeed();
+    }
+
+    /** Every rune of the codex does something on a tool and can be burned into one at the altar. */
+    @HexTest
+    public static void everyRuneWorksOnTools(GameTestHelper helper) {
+        helper.assertTrue(ToolRuneEffects.withoutEffect().isEmpty(), "runes without a tool effect: " + ToolRuneEffects.withoutEffect());
+        for (ComplexRune rune : ComplexRunes.all()) {
+            helper.assertTrue(ToolRunes.worksOnTools(rune), rune.key() + " works on tools");
+            helper.assertTrue(InfusionRecipes.engraving(false, rune) != null, rune.key() + " has an engraving");
+        }
+        helper.succeed();
+    }
+
+    /** Cache: what the tool breaks goes straight into the pocket; Drill takes the blocks around too. */
+    @HexTest
+    public static void drillAndCacheMineIntoThePocket(GameTestHelper helper) {
+        ItemStack tool = new ItemStack(ModItems.HEXTECH_PICKAXE.get());
+        HextechTools.setRunes(tool, RuneSlots.EMPTY.with(new RuneSlots.Engraving(0, ComplexRunes.byKey("metal_earth"), 1))
+                .with(new RuneSlots.Engraving(1, ComplexRunes.byKey("earth_shadow"), 1)));
+        HextechTools.setCell(tool, EssenceMix.of(Map.of(Essence.METAL, 30, Essence.EARTH, 20)));
+        BlockPos centre = helper.absolutePos(new BlockPos(2, 3, 2));
+        for (BlockPos at : BlockPos.betweenClosed(centre.offset(-1, 0, -1), centre.offset(1, 0, 1))) {
+            helper.getLevel().setBlockAndUpdate(at, Blocks.STONE.defaultBlockState());
+        }
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.snapTo(centre.getX() + 0.5, centre.getY() + 2, centre.getZ() + 0.5, 0, 90);
+        BlockState stone = Blocks.STONE.defaultBlockState();
+        helper.getLevel().removeBlock(centre, false);
+        Block.dropResources(stone, helper.getLevel(), centre, null, player, tool);
+        int left = 0;
+        for (BlockPos at : BlockPos.betweenClosed(centre.offset(-1, 0, -1), centre.offset(1, 0, 1))) {
+            left += helper.getLevel().getBlockState(at).isAir() ? 0 : 1;
+        }
+        helper.assertTrue(left == 0, "the 3x3 around is mined, " + left + " left");
+        helper.assertTrue(player.getInventory().countItem(Items.COBBLESTONE) == 9, "all nine cobblestones went into the pocket");
+        helper.assertTrue(helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(centre).inflate(3)).isEmpty(), "nothing on the ground");
+        helper.assertTrue(HextechTools.cell(tool).get(Essence.METAL) == 30 - 8, "one firing of Drill per extra block");
+        helper.succeed();
+    }
+
+    /** Right click fires the rune's spell: Healing heals, pays, and the tool rests a moment. */
+    @HexTest
+    public static void useRunesFireOnRightClick(GameTestHelper helper) {
+        ItemStack tool = new ItemStack(ModItems.HEXTECH_PICKAXE.get());
+        HextechTools.setRunes(tool, RuneSlots.EMPTY.with(new RuneSlots.Engraving(0, ComplexRunes.byKey("water_life"), 2)));
+        HextechTools.setCell(tool, EssenceMix.pure(Essence.WATER, 10));
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setHealth(6);
+        helper.assertTrue(ToolRuneEffects.use(helper.getLevel(), player, tool), "the rune fires");
+        helper.assertTrue(player.getHealth() >= 10, "and heals");
+        helper.assertTrue(HextechTools.cell(tool).get(Essence.WATER) == 10 - ToolRunes.cost(ComplexRunes.byKey("water_life")), "paid");
+        helper.assertFalse(ToolRuneEffects.use(helper.getLevel(), player, tool), "not again right away");
         helper.succeed();
     }
 

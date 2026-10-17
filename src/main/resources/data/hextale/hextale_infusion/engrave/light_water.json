@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "light_water"
+  ],
+  "pedestals": [
+    "minecraft:glowstone_dust",
+    "minecraft:kelp"
+  ],
+  "essences": {
+    "light": 12,
+    "purity": 8
+  }
+}

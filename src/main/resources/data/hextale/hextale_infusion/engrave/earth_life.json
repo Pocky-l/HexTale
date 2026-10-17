@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "earth_life"
+  ],
+  "pedestals": [
+    "minecraft:clay_ball",
+    "minecraft:wheat_seeds"
+  ],
+  "essences": {
+    "earth": 12,
+    "soil": 8
+  }
+}

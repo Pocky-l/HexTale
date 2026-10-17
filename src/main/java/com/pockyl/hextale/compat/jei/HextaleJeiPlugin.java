@@ -16,7 +16,6 @@ import net.minecraft.world.level.ItemLike;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.EssenceMix;
-import com.pockyl.hextale.essence.Reagents;
 import com.pockyl.hextale.infusion.InfusionRecipes;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
@@ -76,10 +75,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addRecipes(BoilingCategory.TYPE, List.of(new BoilingCategory.Recipe(boilable)));
         List<SeparationCategory.Recipe> separations = new ArrayList<>();
         for (Essence essence : Essence.values()) {
-            List<ItemStack> reagents = Reagents.examples(essence, 32);
-            if (!reagents.isEmpty()) {
-                separations.add(new SeparationCategory.Recipe(essence, reagents));
-            }
+            separations.add(new SeparationCategory.Recipe(essence, List.of(new ItemStack(net.minecraft.world.item.Items.BLAZE_POWDER))));
         }
         registration.addRecipes(SeparationCategory.TYPE, separations);
         registration.addRecipes(InfusionCategory.TYPE, InfusionRecipes.get(true).entrySet().stream()

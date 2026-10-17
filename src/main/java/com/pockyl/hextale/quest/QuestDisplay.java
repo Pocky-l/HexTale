@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * The picture on a quest's page in the research book: a crafting grid, a "this plus that" scheme, the nine essences or
- * the separation reagents. Ingredients are item ids or {@code #tag} ids, {@code ""} is an empty cell. Crafting grids
+ * the separator's blaze powder per essence. Ingredients are item ids or {@code #tag} ids, {@code ""} is an empty cell. Crafting grids
  * mirror the recipe JSON; {@code questRecipesMatchTheRecipes} keeps them honest.
  */
 public record QuestDisplay(Kind kind, List<String> ingredients, String result, int count) {
@@ -17,7 +17,7 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
         SCHEME,
         /** The nine essences' signs. */
         ESSENCES,
-        /** One reagent per essence. */
+        /** The blaze powder that draws out each primal essence. */
         REAGENTS,
         /** A Hextech Altar ritual; {@code result} is the altar recipe's id, drawn from the recipes the server sent. */
         INFUSION

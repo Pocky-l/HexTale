@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "metal_water"
+  ],
+  "pedestals": [
+    "minecraft:iron_ingot",
+    "minecraft:kelp"
+  ],
+  "essences": {
+    "metal": 12,
+    "rust": 8
+  }
+}

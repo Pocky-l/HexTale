@@ -63,8 +63,8 @@ public class HextaleJadePlugin implements IWailaPlugin {
                             .withStyle(ChatFormatting.GRAY));
                 }
                 String blocked = separator.blocked();
-                if ("no_reagent".equals(blocked)) {
-                    tooltip.add(Component.translatable("gui.hextale.separator.no_reagent").withStyle(ChatFormatting.RED));
+                if ("no_essence".equals(blocked) || "no_fuel".equals(blocked)) {
+                    tooltip.add(Component.translatable("gui.hextale.separator." + blocked).withStyle(ChatFormatting.RED));
                 }
             } else if (entity instanceof AlembicBlockEntity alembic) {
                 tooltip.add(Component.translatable("gui.hextale.alembic.water", alembic.water(), AlembicBlockEntity.WATER_CAPACITY));

@@ -307,7 +307,7 @@ public final class ResearchGameTests {
             }
         }
         helper.assertTrue(rare.isEmpty(), "every essence is carried by at least three items, short: " + rare);
-        helper.assertTrue(noReagent.isEmpty(), "every essence is the strongest of some item (a reagent for it), missing: " + noReagent);
+        helper.assertTrue(noReagent.isEmpty(), "every essence is the strongest of some item (its clearest source), missing: " + noReagent);
         Hextale.LOGGER.info("Items by number of essences 1-6: {} {} {} {} {} {}", sizes[1], sizes[2], sizes[3], sizes[4], sizes[5], sizes[6]);
         for (Map.Entry<Item, ItemEssences> entry : ResearchItems.canonical().entrySet()) {
             helper.assertTrue(entry.getValue().equals(all.get(entry.getKey())), entry.getKey() + " keeps its base elements");
@@ -615,42 +615,46 @@ public final class ResearchGameTests {
     }
 
     @HexTest(maxTicks = 400)
-    public static void aReagentSeparatesOneElement(GameTestHelper helper) {
+    public static void theChosenEssenceIsSeparated(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState());
         SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
         EssenceMix mixture = EssenceMix.of(java.util.Map.of(Essence.LIFE, 8, Essence.EARTH, 8));
         separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(mixture));
-        separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 3));
+        separator.setItem(SeparatorBlockEntity.FUEL, new ItemStack(Items.BLAZE_POWDER, 3));
+        separator.choose(Essence.EARTH);
         separator.setItem(SeparatorBlockEntity.SUPPLY, new ItemStack(Items.GLASS_BOTTLE, 2));
         helper.succeedWhen(() -> {
             EssenceMix rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
             EssenceMix drawn = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.EXTRACT_OUT));
             // 16 mB of mixture take four steps of 4 mB, each drawing earth and adding its unknown essence.
             helper.assertTrue(rest.equals(EssenceMix.pure(Essence.LIFE, 8).plus(EssenceMix.unknown(4 * SeparatorBlockEntity.UNKNOWN_PER_STEP)))
-                    && rest.pureEssence() == null, "clay leaves the life with a dark unknown essence on top, no concentrate, got " + rest);
+                    && rest.pureEssence() == null, "drawing earth leaves the life with a dark unknown essence on top, no concentrate, got " + rest);
             helper.assertTrue(drawn.equals(EssenceMix.pure(Essence.EARTH, 8)), "and draws out pure earth, got " + drawn);
-            helper.assertTrue(separator.getItem(SeparatorBlockEntity.REAGENT).getCount() == 2, "one clay ball binds eight drops");
+            helper.assertTrue(separator.getItem(SeparatorBlockEntity.FUEL).getCount() == 2, "one blaze powder draws the eight mB of earth");
         });
     }
 
     @HexTest(maxTicks = 300)
-    public static void withoutAReagentNothingIsSplit(GameTestHelper helper) {
+    public static void withoutAChosenEssenceNothingIsSplit(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState());
         SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
         separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(EssenceMix.of(java.util.Map.of(Essence.LIFE, 8, Essence.EARTH, 8))));
         helper.runAfterDelay(80, () -> {
-            helper.assertTrue(separator.mix().amount() == 16 && separator.rest().isEmpty(), "the mixture waits for a reagent");
-            helper.assertTrue("no_reagent".equals(separator.blocked()), "and the screen says so");
-            separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.FEATHER));
+            helper.assertTrue(separator.mix().amount() == 16 && separator.rest().isEmpty(), "the mixture waits for a chosen essence");
+            helper.assertTrue("no_essence".equals(separator.blocked()), "and the screen says so");
+            separator.choose(Essence.EARTH);
+            helper.assertTrue("no_fuel".equals(separator.blocked()), "then for blaze powder");
+            separator.choose(Essence.AIR);
+            separator.setItem(SeparatorBlockEntity.FUEL, new ItemStack(Items.BLAZE_POWDER));
             helper.runAfterDelay(100, () -> {
-                // A feather binds air; the mixture has none, so all of it passes on as the rest - bottled in the glass
+                // Air is chosen; the mixture has none, so all of it passes on as the rest - bottled in the glass
                 // bottle the poured one left.
                 EssenceMix rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
                 helper.assertTrue(separator.mix().isEmpty() && rest.total() == 16 && separator.extract().isEmpty(),
-                        "a mixture without the reagent's element passes through, got rest " + rest);
-                helper.assertTrue(separator.getItem(SeparatorBlockEntity.REAGENT).getCount() == 1, "and spends no reagent");
+                        "a mixture without the chosen essence passes through, got rest " + rest);
+                helper.assertTrue(separator.getItem(SeparatorBlockEntity.FUEL).getCount() == 1, "and burns no powder");
                 helper.succeed();
             });
         });
@@ -671,7 +675,8 @@ public final class ResearchGameTests {
         EssenceTankBlockEntity sink = helper.getBlockEntity(at.north(2), EssenceTankBlockEntity.class);
         SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
         source.tank().set(EssenceMix.of(java.util.Map.of(Essence.LIFE, 12, Essence.EARTH, 12)));
-        separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 4));
+        separator.setItem(SeparatorBlockEntity.FUEL, new ItemStack(Items.BLAZE_POWDER, 1));
+        separator.choose(Essence.EARTH);
         helper.succeedWhen(() -> {
             helper.assertTrue(source.tank().isEmpty() && separator.mix().isEmpty(), "the mixture was worked off");
             helper.assertTrue(sink.tank().contents().get(Essence.LIFE) == 12 && sink.tank().contents().isUnknown()
@@ -695,7 +700,8 @@ public final class ResearchGameTests {
         EssenceTankBlockEntity tank = helper.getBlockEntity(at.north().east(2), EssenceTankBlockEntity.class);
         SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
         separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(EssenceMix.of(java.util.Map.of(Essence.EARTH, 8, Essence.AIR, 8))));
-        separator.setItem(SeparatorBlockEntity.REAGENT, new ItemStack(Items.CLAY_BALL, 2));
+        separator.setItem(SeparatorBlockEntity.FUEL, new ItemStack(Items.BLAZE_POWDER, 1));
+        separator.choose(Essence.EARTH);
         helper.runAfterDelay(200, () -> {
             helper.assertTrue(separator.mix().isEmpty(), "the mixture was worked off, left " + separator.mix().contents());
             helper.assertTrue(separator.rest().contents().get(Essence.AIR) == 8 && separator.rest().contents().isUnknown(),

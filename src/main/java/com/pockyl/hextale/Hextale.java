@@ -31,7 +31,7 @@ import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.PockyModsTab;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.runework.RuneFiring;
+import com.pockyl.hextale.runework.ToolRuneEffects;
 
 @Mod(Hextale.MOD_ID)
 public final class Hextale {
@@ -49,7 +49,7 @@ public final class Hextale {
         ModParticles.register(modBus);
         ModTriggers.register(modBus);
         modBus.addListener(ModNetwork::register);
-        RuneFiring.register();
+        ToolRuneEffects.register();
         GameTests.register(modBus);
         modBus.addListener(ModDataMaps::register);
         modBus.addListener(Hextale::addToVanillaTabs);

@@ -1,0 +1,15 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "spark_earth"
+  ],
+  "pedestals": [
+    "minecraft:redstone",
+    "minecraft:cobblestone",
+    "minecraft:ender_pearl"
+  ],
+  "essences": {
+    "spark": 12,
+    "quake": 8
+  }
+}

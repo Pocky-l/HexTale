@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "life_metal"
+  ],
+  "pedestals": [
+    "minecraft:bone_meal",
+    "minecraft:iron_nugget"
+  ],
+  "essences": {
+    "life": 12,
+    "craft": 8
+  }
+}

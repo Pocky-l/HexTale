@@ -1,0 +1,15 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "metal_shadow"
+  ],
+  "pedestals": [
+    "minecraft:iron_ingot",
+    "minecraft:soul_sand",
+    "minecraft:ender_pearl"
+  ],
+  "essences": {
+    "metal": 12,
+    "corruption": 8
+  }
+}

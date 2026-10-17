@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
@@ -28,7 +29,6 @@ import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.essence.EssenceTank;
-import com.pockyl.hextale.essence.Reagents;
 import com.pockyl.hextale.menu.SeparatorMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModSounds;
@@ -38,23 +38,26 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Separator splits a mixture in two. The mixture comes in (from a bottle, through pipes pushing into an inlet, or
- * drawn by an inlet out of the Essence Tanks piped to it) and is worked off {@value #STEP_DROPS} drops at a time: the drops of the reagent's element go into the
- * concentrate vessel, all the others into the rest vessel, and every step that drew something out adds
+ * drawn by an inlet out of the Essence Tanks piped to it) and is worked off {@value #STEP_DROPS} mB at a time: the
+ * essence chosen on its screen goes into the concentrate vessel, all the others into the rest vessel, and every step that drew something out adds
  * {@value #UNKNOWN_PER_STEP} mB of dark unknown essence to the rest (so the rest is never a concentrate). Amounts are
  * millibuckets. Each side has a mode set in the screen or on the block: the
  * mixture comes in through inlets, the concentrate (the wanted product) and the rest (the by-product) leave through
  * their outlets; by default the mixture comes in at the back and the left, the concentrate leaves at the right and the
- * rest at the front. The top is the gas vent. Both products can be bottled. Without a reagent nothing is split. One
- * reagent item binds {@value Reagents#BINDS} drops of its element.
+ * rest at the front. The top is the gas vent. Both products can be bottled. Drawing an essence out burns blaze powder:
+ * one powder draws {@value #FUEL_BINDS} mB of whatever essence is chosen. Without a chosen essence or powder nothing is
+ * split.
  */
 public class SeparatorBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.Receiver {
     public static final int POUR = 0;
-    public static final int REAGENT = 1;
+    public static final int FUEL = 1;
     public static final int SUPPLY = 2;
     public static final int REST_OUT = 3;
     public static final int EXTRACT_OUT = 4;
     public static final int CAPACITY = 64;
-    /** Synced numbers: charge, its element, step, then the four side modes. */
+    /** Millibuckets of the chosen essence one blaze powder draws out. */
+    public static final int FUEL_BINDS = 32;
+    /** Synced numbers: fuel left, the chosen essence, step, then the four side modes. */
     public static final int DATA_COUNT = 3 + SeparatorBlock.Side.values().length;
     /** Ticks per separating step, millibuckets of the mixture worked off per step, and of unknown essence each step
      * that drew something out adds to the rest. */
@@ -63,17 +66,17 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     public static final int UNKNOWN_PER_STEP = 1;
     /** A partly filled bottle is filled once nothing has come in for this long. */
     private static final int IDLE_TICKS = 40;
-    private static final int[] TOP = {REAGENT};
-    private static final int[] SIDES = {POUR, SUPPLY, REAGENT};
+    private static final int[] TOP = {FUEL};
+    private static final int[] SIDES = {POUR, SUPPLY, FUEL};
     private static final int[] BOTTOM = {POUR, REST_OUT, EXTRACT_OUT};
 
     private NonNullList<ItemStack> items = NonNullList.withSize(5, ItemStack.EMPTY);
     private final EssenceTank mix = new EssenceTank(CAPACITY);
     private final EssenceTank extract = new EssenceTank(CAPACITY);
     private final EssenceTank rest = new EssenceTank(CAPACITY);
-    /** Drops the reagent already used can still bind, and its element (-1 for none). */
+    /** Millibuckets the powder already burned can still draw out, and the essence to draw (-1 for none chosen). */
     private int charge;
-    private int chargeEssence = -1;
+    private int chosen = -1;
     private int step;
     private long lastReceived = Long.MIN_VALUE / 2;
     /** The mode of each face, in {@link SeparatorBlock.Side} order. */
@@ -84,7 +87,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         public int get(int index) {
             return switch (index) {
                 case 0 -> charge;
-                case 1 -> chargeEssence;
+                case 1 -> chosen;
                 case 2 -> step;
                 default -> modes[index - 3].ordinal();
             };
@@ -94,7 +97,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         public void set(int index, int value) {
             switch (index) {
                 case 0 -> charge = value;
-                case 1 -> chargeEssence = value;
+                case 1 -> chosen = value;
                 case 2 -> step = value;
                 default -> modes[index - 3] = PortMode.values()[value];
             }
@@ -162,13 +165,20 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         return state.hasProperty(SeparatorBlock.FACING) ? state.getValue(SeparatorBlock.FACING) : Direction.NORTH;
     }
 
-    /** The element being drawn out now: the bound one while charge is left, else the reagent's. */
+    /** The essence chosen to be drawn out, or null. */
     @Nullable
     public Essence separating() {
-        if (charge > 0 && chargeEssence >= 0) {
-            return Essence.values()[chargeEssence];
+        return chosen >= 0 && chosen < Essence.COUNT ? Essence.values()[chosen] : null;
+    }
+
+    /** Chooses the essence to draw out (null: none, nothing is split). */
+    public void choose(@Nullable Essence essence) {
+        int now = essence == null ? -1 : essence.ordinal();
+        if (now != chosen) {
+            chosen = now;
+            step = 0;
+            setChanged();
         }
-        return Reagents.essence(items.get(REAGENT));
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, SeparatorBlockEntity separator) {
@@ -223,14 +233,13 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         }
         Essence element = separating();
         if (element == null) {
-            return "no_reagent";
+            return "no_essence";
         }
         EssenceMix portion = portion();
         int drawn = portion.get(element);
         if (drawn > 0) {
-            int binds = charge + (Reagents.essence(items.get(REAGENT)) == element ? Reagents.BINDS : 0);
-            if (binds < drawn) {
-                return "no_reagent";
+            if (charge + (isFuel(items.get(FUEL)) ? FUEL_BINDS : 0) < drawn) {
+                return "no_fuel";
             }
             if (extract.space() < drawn || !extract.isEmpty() && extract.contents().pureEssence() != element) {
                 return "extract_full";
@@ -253,18 +262,13 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         EssenceMix portion = portion();
         int drawn = portion.get(element);
         if (drawn > charge) {
-            items.get(REAGENT).shrink(1);
-            charge += Reagents.BINDS;
-            chargeEssence = element.ordinal();
+            items.get(FUEL).shrink(1);
+            charge += FUEL_BINDS;
         }
         mix.remove(portion);
         if (drawn > 0) {
             extract.fill(EssenceMix.pure(element, drawn), false);
             charge -= drawn;
-            if (charge <= 0) {
-                charge = 0;
-                chargeEssence = -1;
-            }
         }
         // What is left goes on as the rest, and drawing an essence out leaves a dark unknown essence on top of it.
         EssenceMix left = portion.minus(EssenceMix.pure(element, drawn));
@@ -403,10 +407,15 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     public static boolean accepts(int slot, ItemStack stack) {
         return switch (slot) {
             case POUR -> !EssenceFlaskItem.contents(stack).isEmpty();
-            case REAGENT -> Reagents.essence(stack) != null;
+            case FUEL -> isFuel(stack);
             case SUPPLY -> EssenceFlaskItem.isEmptyFlask(stack);
             default -> false;
         };
+    }
+
+    /** Separation always burns blaze powder. */
+    public static boolean isFuel(ItemStack stack) {
+        return stack.is(Items.BLAZE_POWDER);
     }
 
     @Override
@@ -443,7 +452,8 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             modes[i] = i < saved.length && saved[i] >= 0 && saved[i] < PortMode.values().length ? PortMode.values()[saved[i]] : defaults[i];
         }
         charge = input.getIntOr("charge", 0);
-        chargeEssence = input.getIntOr("charge_element", -1);
+        Essence essence = Essence.byId(input.getStringOr("chosen", ""));
+        chosen = essence == null ? -1 : essence.ordinal();
     }
 
     @Override
@@ -459,7 +469,10 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         }
         output.putIntArray("ports", ports);
         output.putInt("charge", charge);
-        output.putInt("charge_element", chargeEssence);
+        Essence essence = separating();
+        if (essence != null) {
+            output.putString("chosen", essence.id());
+        }
     }
 
     @Override

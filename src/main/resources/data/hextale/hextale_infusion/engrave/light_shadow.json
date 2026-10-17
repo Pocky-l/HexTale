@@ -1,0 +1,15 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "light_shadow"
+  ],
+  "pedestals": [
+    "minecraft:glowstone_dust",
+    "minecraft:soul_sand",
+    "minecraft:ender_pearl"
+  ],
+  "essences": {
+    "light": 12,
+    "illusion": 8
+  }
+}

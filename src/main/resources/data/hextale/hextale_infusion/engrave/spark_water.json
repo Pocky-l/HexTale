@@ -1,0 +1,15 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "spark_water"
+  ],
+  "pedestals": [
+    "minecraft:redstone",
+    "minecraft:kelp",
+    "minecraft:ender_pearl"
+  ],
+  "essences": {
+    "spark": 12,
+    "storm": 8
+  }
+}

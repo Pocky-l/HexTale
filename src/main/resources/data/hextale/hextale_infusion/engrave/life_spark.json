@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "life_spark"
+  ],
+  "pedestals": [
+    "minecraft:bone_meal",
+    "minecraft:copper_ingot"
+  ],
+  "essences": {
+    "life": 12,
+    "vigor": 8
+  }
+}

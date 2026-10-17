@@ -1,5 +1,6 @@
 package com.pockyl.hextale.runework;
 
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.essence.EssenceMix;
@@ -46,6 +47,44 @@ public final class HextechTools {
     public static RuneSlots.@Nullable Engraving engraving(ItemStack stack, ComplexRune rune) {
         return isTool(stack) ? runes(stack).find(rune) : null;
     }
+
+    /**
+     * The strength a rune fires with on this tool: its stars, one more when a Lens sits in the slot before it (a
+     * focused rune can reach a fourth star).
+     */
+    public static int strength(ItemStack stack, RuneSlots.Engraving engraving) {
+        RuneSlots.Engraving before = runes(stack).get(engraving.slot() - 1);
+        return engraving.stars() + (before != null && before.rune() == ToolRunes.LENS ? 1 : 0);
+    }
+
+    /**
+     * Pays one firing of a rune: its action essence from the cell (a Lens before it adds a drop of water), unless a
+     * Grounding rune leads the cost away this time (chance by its stars).
+     *
+     * @return false when the cell cannot pay (the rune does not fire)
+     */
+    public static boolean payFiring(ItemStack stack, RuneSlots.Engraving engraving, RandomSource random) {
+        ComplexRune rune = engraving.rune();
+        int cost = ToolRunes.cost(rune);
+        RuneSlots.Engraving grounding = runes(stack).find(ToolRunes.GROUNDING);
+        if (grounding != null && grounding != engraving && random.nextFloat() < GROUNDED[Math.min(3, strength(stack, grounding)) - 1]) {
+            return true;
+        }
+        RuneSlots.Engraving before = runes(stack).get(engraving.slot() - 1);
+        boolean focused = before != null && before.rune() == ToolRunes.LENS;
+        EssenceMix cell = cell(stack);
+        if (cell.get(rune.action()) < cost || focused && cell.get(ToolRunes.LENS.action()) < 1 + (rune.action() == ToolRunes.LENS.action() ? cost : 0)) {
+            return false;
+        }
+        spend(stack, rune.action(), cost);
+        if (focused) {
+            spend(stack, ToolRunes.LENS.action(), 1);
+        }
+        return true;
+    }
+
+    /** Chance a Grounding rune of 1/2/3+ stars makes a firing free. */
+    private static final float[] GROUNDED = {0.2F, 0.35F, 0.5F};
 
     public static EssenceMix cell(ItemStack stack) {
         return stack.getOrDefault(ModDataComponents.ESSENCE.get(), EssenceMix.EMPTY);

@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "earth_fire"
+  ],
+  "pedestals": [
+    "minecraft:iron_ingot",
+    "minecraft:obsidian"
+  ],
+  "essences": {
+    "earth": 12,
+    "forge": 12
+  }
+}

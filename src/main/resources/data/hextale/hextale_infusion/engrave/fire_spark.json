@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "fire_spark"
+  ],
+  "pedestals": [
+    "minecraft:blaze_powder",
+    "minecraft:copper_ingot"
+  ],
+  "essences": {
+    "fire": 12,
+    "blast": 8
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "water_air"
+  ],
+  "pedestals": [
+    "minecraft:prismarine_shard",
+    "minecraft:string"
+  ],
+  "essences": {
+    "water": 12,
+    "mist": 8
+  }
+}

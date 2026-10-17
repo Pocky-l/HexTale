@@ -1,5 +1,6 @@
 package com.pockyl.hextale.client.screen.machine;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -13,17 +14,19 @@ import com.pockyl.hextale.block.PortMode;
 import com.pockyl.hextale.block.SeparatorBlock;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.client.render.PixelArt;
-import com.pockyl.hextale.essence.Reagents;
 import com.pockyl.hextale.menu.SeparatorMenu;
 import com.pockyl.hextale.research.ResearchText;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 /**
- * The Separator, left to right: the mixture's tank, the reagent (the element it binds above it, its remaining charge
- * under it) and the two products it splits the mixture into - the concentrate above, leaving through the top, and the
- * rest below, leaving through the front. When it cannot work, the part in the way glows red and says why.
+ * The Separator, left to right: the mixture's tank, the essence to draw out (a plate above the blaze powder slot: click
+ * it to pick any of the essences from a grid, right click clears it, the wheel steps through them; the powder's charge
+ * under the slot) and the two products it splits the mixture into - the concentrate above, leaving through the top, and
+ * the rest below, leaving through the front. When it cannot work, the part in the way glows red and says why.
  */
 public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
     public static final int MIX_X = 36;
@@ -38,6 +41,12 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
     private static final int PANEL_W = 38;
     private static final int PANEL_H = 52;
     private static final int CELL = 10;
+    /** The essence picker: nine columns, rows of primals, pairs and deeper compounds with a gap between the groups. */
+    private static final int PICK_CELL = 11;
+    private static final int PICK_COLUMNS = 9;
+    private static final int PICK_GAP = 4;
+    private static final int PICK_PAD = 5;
+    private boolean picking;
 
     public SeparatorScreen(SeparatorMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, Hextale.id("textures/gui/separator.png"), PANEL_X + PANEL_W);
@@ -121,8 +130,156 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         };
     }
 
+    /** The plate above the powder slot that shows (and opens the choice of) the essence to draw out. */
+    private boolean overChooser(double mouseX, double mouseY) {
+        return isOver(mouseX, mouseY, leftPos + SeparatorMenu.REAGENT_X, topPos + SeparatorMenu.REAGENT_Y - 15, 16, 13);
+    }
+
+    private static int pickRows() {
+        int pairs = 0;
+        int deep = 0;
+        for (Essence essence : Essence.values()) {
+            if (essence.tier() == 1) {
+                pairs++;
+            } else if (essence.tier() > 1) {
+                deep++;
+            }
+        }
+        return 1 + ceil(pairs) + ceil(deep);
+    }
+
+    private static int ceil(int count) {
+        return (count + PICK_COLUMNS - 1) / PICK_COLUMNS;
+    }
+
+    private int pickWidth() {
+        return PICK_COLUMNS * PICK_CELL + PICK_PAD * 2;
+    }
+
+    private int pickHeight() {
+        return pickRows() * PICK_CELL + PICK_GAP * 2 + PICK_PAD * 2 + 10;
+    }
+
+    private int pickLeft() {
+        return leftPos + 88 - pickWidth() / 2;
+    }
+
+    private int pickTop() {
+        return topPos + 4;
+    }
+
+    /** Top-left corner of an essence's cell in the picker (screen coordinates). */
+    private int[] pickCell(Essence essence) {
+        int group = essence.isPrimal() ? 0 : essence.tier() == 1 ? 1 : 2;
+        int index = 0;
+        for (Essence other : Essence.values()) {
+            if (other == essence) {
+                break;
+            }
+            int otherGroup = other.isPrimal() ? 0 : other.tier() == 1 ? 1 : 2;
+            if (otherGroup == group) {
+                index++;
+            }
+        }
+        int pairs = (int) java.util.Arrays.stream(Essence.values()).filter(e -> !e.isPrimal() && e.tier() == 1).count();
+        int row = (group == 0 ? 0 : group == 1 ? 1 : 1 + ceil(pairs)) + index / PICK_COLUMNS;
+        int x = pickLeft() + PICK_PAD + index % PICK_COLUMNS * PICK_CELL;
+        int y = pickTop() + PICK_PAD + 10 + row * PICK_CELL + group * PICK_GAP;
+        return new int[]{x, y};
+    }
+
+    @Nullable
+    private Essence pickedAt(double mouseX, double mouseY) {
+        for (Essence essence : Essence.values()) {
+            int[] at = pickCell(essence);
+            if (isOver(mouseX, mouseY, at[0], at[1], PICK_CELL, PICK_CELL)) {
+                return essence;
+            }
+        }
+        return null;
+    }
+
+    private void choose(int button) {
+        if (minecraft != null && minecraft.gameMode != null) {
+            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, button);
+        }
+    }
+
+    /** The picker, over everything else: every essence in its colour, the chosen one framed in gold. */
+    private void renderPicker(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        graphics.nextStratum();
+        int x = pickLeft();
+        int y = pickTop();
+        int w = pickWidth();
+        int h = pickHeight();
+        graphics.fill(x, y, x + w, y + h, 0xFF4A3312);
+        graphics.fill(x + 1, y + 1, x + w - 1, y + h - 1, 0xF0120D16);
+        graphics.fill(x + 1, y + 1, x + w - 1, y + 2, 0xFFC29445);
+        graphics.centeredText(font, Component.translatable("gui.hextale.separator.choose"), x + w / 2, y + PICK_PAD, 0xFFE9C66D);
+        Essence chosen = menu.chosen();
+        Essence over = pickedAt(mouseX, mouseY);
+        for (Essence essence : Essence.values()) {
+            int[] at = pickCell(essence);
+            if (essence == chosen) {
+                graphics.fill(at[0], at[1], at[0] + PICK_CELL, at[1] + PICK_CELL, 0xFFE9C66D);
+                graphics.fill(at[0] + 1, at[1] + 1, at[0] + PICK_CELL - 1, at[1] + PICK_CELL - 1, 0xFF120D16);
+            } else if (essence == over) {
+                graphics.fill(at[0], at[1], at[0] + PICK_CELL, at[1] + PICK_CELL, 0xFF6A5A40);
+                graphics.fill(at[0] + 1, at[1] + 1, at[0] + PICK_CELL - 1, at[1] + PICK_CELL - 1, 0xFF120D16);
+            }
+            PixelArt.essence(graphics, essence, at[0] + 1, at[1] + 1, 9, PixelArt.argb(essence.color(), 1));
+        }
+        PixelArt.flush(graphics);
+        if (over != null) {
+            graphics.setComponentTooltipForNextFrame(font, List.of(ResearchText.essence(over)), mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        if (picking) {
+            renderPicker(graphics, mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (!picking && overChooser(mouseX, mouseY) && scrollY != 0) {
+            Essence chosen = menu.chosen();
+            int next = chosen == null ? (scrollY < 0 ? 0 : Essence.COUNT - 1)
+                    : Math.floorMod(chosen.ordinal() + (scrollY < 0 ? 1 : -1), Essence.COUNT);
+            choose(SeparatorMenu.CHOOSE + next);
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (picking) {
+            // While the picker is open every click belongs to it: an essence chooses, anything else closes it.
+            Essence essence = pickedAt(event.x(), event.y());
+            if (essence != null) {
+                choose(SeparatorMenu.CHOOSE + essence.ordinal());
+                if (minecraft != null) {
+                    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                }
+            }
+            picking = false;
+            return true;
+        }
+        if (overChooser(event.x(), event.y())) {
+            if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
+                choose(SeparatorMenu.CHOOSE - 1);
+            } else {
+                picking = true;
+            }
+            if (minecraft != null) {
+                minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+            }
+            return true;
+        }
         for (SeparatorBlock.Side side : SeparatorBlock.Side.values()) {
             int[] at = cell(side);
             if (isOver(event.x(), event.y(), at[0], at[1], CELL, CELL) && minecraft != null && minecraft.gameMode != null) {
@@ -152,25 +309,35 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
                 warn(graphics, x + OUT_TANK_X, y + REST_Y, 16, OUT_TANK_H);
             }
         }
-        Essence element = menu.charge() > 0 && menu.chargeEssence() >= 0 ? Essence.values()[menu.chargeEssence()]
-                : separator == null ? null : Reagents.essence(separator.getItem(SeparatorBlockEntity.REAGENT));
+        Essence element = menu.chosen();
         int rx = x + SeparatorMenu.REAGENT_X;
         int ry = y + SeparatorMenu.REAGENT_Y;
-        // The element the reagent binds, above it; its charge under it.
+        // The essence to draw out on a small plate above the powder; the powder's charge under it.
+        boolean overPlate = overChooser(mouseX, mouseY) && !picking;
+        graphics.fill(rx, ry - 15, rx + 16, ry - 2, overPlate ? 0xFFF8E3A0 : 0xFF9C7230);
+        graphics.fill(rx + 1, ry - 14, rx + 15, ry - 3, 0xFF1C140C);
         if (element != null) {
             PixelArt.essence(graphics, element, rx + 3, ry - 13, 9, PixelArt.argb(element.color(), 1));
-            if (isOver(mouseX, mouseY, rx, ry - 14, 16, 12)) {
-                tooltip(List.of(Component.translatable("gui.hextale.separator.binds", ResearchText.essence(element))));
-            }
+        } else {
+            PixelArt.flush(graphics);
+            graphics.centeredText(font, "?", rx + 8, ry - 13, 0xFF8A7A60);
         }
-        if ("no_reagent".equals(blocked)) {
+        if ("no_essence".equals(blocked)) {
+            warn(graphics, rx, ry - 15, 16, 13);
+        }
+        if (overPlate) {
+            tooltip(List.of(element == null ? Component.translatable("gui.hextale.separator.no_essence")
+                            : Component.translatable("gui.hextale.separator.binds", ResearchText.essence(element)),
+                    Component.translatable("gui.hextale.separator.choose.hint").withStyle(ChatFormatting.GRAY)));
+        }
+        if ("no_fuel".equals(blocked)) {
             warn(graphics, rx, ry, 16, 16);
-            if (isOver(mouseX, mouseY, rx, ry, 16, 16) && separator.getItem(SeparatorBlockEntity.REAGENT).isEmpty()) {
-                tooltip(List.of(Component.translatable("gui.hextale.separator.no_reagent"),
-                        Component.translatable("gui.hextale.separator.no_reagent.hint").withStyle(ChatFormatting.GRAY)));
+            if (isOver(mouseX, mouseY, rx, ry, 16, 16) && separator.getItem(SeparatorBlockEntity.FUEL).isEmpty()) {
+                tooltip(List.of(Component.translatable("gui.hextale.separator.no_fuel"),
+                        Component.translatable("gui.hextale.separator.no_fuel.hint").withStyle(ChatFormatting.GRAY)));
             }
         }
-        int charge = Math.round(16 * menu.charge() / (float) Reagents.BINDS);
+        int charge = Math.round(16 * Math.min(menu.charge(), SeparatorBlockEntity.FUEL_BINDS) / (float) SeparatorBlockEntity.FUEL_BINDS);
         graphics.fill(rx, ry + 18, rx + 16, ry + 20, 0xFF2A1B0C);
         graphics.fill(rx, ry + 18, rx + charge, ry + 20, element == null ? 0xFF8A7A60 : 0xFF000000 | element.color());
         float progress = menu.step() / (float) SeparatorBlockEntity.STEP_TICKS;
@@ -185,7 +352,7 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
     protected String slotHint(int slot) {
         return switch (slot) {
             case SeparatorBlockEntity.POUR -> "separator.pour";
-            case SeparatorBlockEntity.REAGENT -> "separator.reagent";
+            case SeparatorBlockEntity.FUEL -> "separator.fuel";
             case SeparatorBlockEntity.SUPPLY -> "bottles";
             case SeparatorBlockEntity.EXTRACT_OUT -> "separator.extract";
             default -> "separator.rest";

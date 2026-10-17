@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "water_spark"
+  ],
+  "pedestals": [
+    "minecraft:prismarine_shard",
+    "minecraft:copper_ingot"
+  ],
+  "essences": {
+    "water": 12,
+    "storm": 8
+  }
+}

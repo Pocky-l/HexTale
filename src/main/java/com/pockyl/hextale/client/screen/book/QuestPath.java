@@ -24,7 +24,6 @@ import com.pockyl.hextale.runework.RuneSlots;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Ingredient;
 import com.pockyl.hextale.client.render.PixelArt;
-import com.pockyl.hextale.essence.Reagents;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.quest.Quest;
 import com.pockyl.hextale.quest.QuestDisplay;
@@ -584,8 +583,8 @@ final class QuestPath {
     }
 
     private static ItemStack reagent(Essence essence, long now) {
-        List<ItemStack> examples = Reagents.examples(essence, 8);
-        return examples.isEmpty() ? ItemStack.EMPTY : examples.get((int) ((now / 1000 + essence.ordinal()) % examples.size()));
+        // The separator always burns blaze powder, whatever essence is chosen on its screen.
+        return new ItemStack(net.minecraft.world.item.Items.BLAZE_POWDER);
     }
 
     private static ItemStack cycle(Iterable<Holder<Item>> holders, long now, int phase) {

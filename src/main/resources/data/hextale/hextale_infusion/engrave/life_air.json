@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "life_air"
+  ],
+  "pedestals": [
+    "minecraft:bone_meal",
+    "minecraft:string"
+  ],
+  "essences": {
+    "life": 12,
+    "breath": 8
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "light_metal"
+  ],
+  "pedestals": [
+    "minecraft:glowstone_dust",
+    "minecraft:iron_nugget"
+  ],
+  "essences": {
+    "light": 12,
+    "gleam": 8
+  }
+}

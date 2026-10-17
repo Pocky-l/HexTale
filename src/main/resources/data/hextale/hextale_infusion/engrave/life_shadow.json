@@ -1,0 +1,15 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "life_shadow"
+  ],
+  "pedestals": [
+    "minecraft:bone_meal",
+    "minecraft:soul_sand",
+    "minecraft:ender_pearl"
+  ],
+  "essences": {
+    "life": 12,
+    "decay": 8
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "spark_life"
+  ],
+  "pedestals": [
+    "minecraft:redstone",
+    "minecraft:wheat_seeds",
+    "minecraft:ender_pearl"
+  ],
+  "essences": {
+    "spark": 12,
+    "vigor": 8
+  }
+}

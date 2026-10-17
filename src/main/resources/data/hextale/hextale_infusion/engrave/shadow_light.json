@@ -1,0 +1,15 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "shadow_light"
+  ],
+  "pedestals": [
+    "minecraft:ink_sac",
+    "minecraft:torch",
+    "minecraft:ender_pearl"
+  ],
+  "essences": {
+    "shadow": 12,
+    "illusion": 8
+  }
+}

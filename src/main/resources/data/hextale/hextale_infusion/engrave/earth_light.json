@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "earth_light"
+  ],
+  "pedestals": [
+    "minecraft:clay_ball",
+    "minecraft:torch"
+  ],
+  "essences": {
+    "earth": 12,
+    "crystal": 8
+  }
+}

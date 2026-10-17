@@ -169,6 +169,10 @@ public final class Ritual {
             List<RuneSlots.Engraving> engraved = List.of();
             if (HextechTools.isTool(result)) {
                 // A hextech tool takes the steles' runes the moment it is made; their items and essences join the recipe.
+                // A rune that cannot go in stops the ritual rather than vanishing from the result.
+                if (unusable(HextechTools.runes(result), circle, clientSide) != null) {
+                    continue;
+                }
                 Engravings runes = engravings(HextechTools.runes(result), circle, clientSide);
                 needed.addAll(runes.needed());
                 essences = essences.plus(runes.essences());
@@ -211,6 +215,9 @@ public final class Ritual {
     /** Runes on the steles that the tool lacks go into its free slots, in stele order, paid by their engraving entries. */
     @Nullable
     private static Plan engravingPlan(ItemStack center, RuneSlots runes, Circle circle, List<PedestalBlockEntity> filled, boolean clientSide) {
+        if (unusable(runes, circle, clientSide) != null) {
+            return null;
+        }
         Engravings engravings = engravings(runes, circle, clientSide);
         if (engravings.added().isEmpty()) {
             return null;
@@ -222,6 +229,29 @@ public final class Ritual {
         ItemStack result = center.copy();
         HextechTools.setRunes(result, engravings.after());
         return new Plan(Kind.ENGRAVE, null, inputs, engravings.essences(), engravings.added(), result);
+    }
+
+    /**
+     * The first rune on the steles that a tool already carrying {@code runes} cannot take - one that does not work on
+     * tools (yet), or one more than its free slots hold - or null when all of them fit.
+     */
+    public static @Nullable ComplexRune unusable(RuneSlots runes, Circle circle, boolean clientSide) {
+        int free = 0;
+        for (int slot = 0; slot < HextechTools.SLOTS; slot++) {
+            if (runes.get(slot) == null) {
+                free++;
+            }
+        }
+        for (RuneSlots.Engraving chosen : circle.chosenRunes()) {
+            ComplexRune rune = chosen.rune();
+            if (runes.has(rune)) {
+                continue;
+            }
+            if (!ToolRunes.worksOnTools(rune) || InfusionRecipes.engraving(clientSide, rune) == null || free-- <= 0) {
+                return rune;
+            }
+        }
+        return null;
     }
 
     /** What engraving the steles' runes into a tool that already carries {@code runes} adds and costs. */

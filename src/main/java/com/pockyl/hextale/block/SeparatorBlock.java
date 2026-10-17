@@ -39,7 +39,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * The Separator: draws one element out of a mixture with a reagent. Its front (facing the player who placed it) lets the
+ * The Separator: draws the essence chosen on its screen out of a mixture, burning blaze powder. Its front (facing the player who placed it) lets the
  * rest of the mixture out, its top the drawn-out concentrate; pipes bring the mixture in at the back and the sides.
  */
 public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerHolder, EssenceMachine {

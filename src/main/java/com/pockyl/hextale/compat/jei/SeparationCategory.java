@@ -20,13 +20,13 @@ import com.pockyl.hextale.rune.Essence;
 import java.util.List;
 
 /**
- * Splitting in the Separator: a mixture and the reagent of one essence give that essence's concentrate (the wanted
+ * Splitting in the Separator: a mixture with one essence chosen (and blaze powder burned) gives that essence's concentrate (the wanted
  * product) and the rest of the mixture as an unknown essence (the by-product).
  */
 public class SeparationCategory extends AbstractRecipeCategory<SeparationCategory.Recipe> {
     public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "separation", Recipe.class);
 
-    /** The reagents that bind {@code essence}. */
+    /** The fuel burned to draw {@code essence} out (blaze powder). */
     public record Recipe(Essence essence, List<ItemStack> reagents) {
     }
 

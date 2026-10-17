@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "water_fire"
+  ],
+  "pedestals": [
+    "minecraft:prismarine_shard",
+    "minecraft:coal"
+  ],
+  "essences": {
+    "water": 12,
+    "steam": 8
+  }
+}

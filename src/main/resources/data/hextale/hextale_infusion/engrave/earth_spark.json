@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "earth_spark"
+  ],
+  "pedestals": [
+    "minecraft:copper_ingot",
+    "minecraft:lightning_rod"
+  ],
+  "essences": {
+    "earth": 12,
+    "circuit": 8
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "shadow_water"
+  ],
+  "pedestals": [
+    "minecraft:ink_sac",
+    "minecraft:kelp",
+    "minecraft:ender_pearl"
+  ],
+  "essences": {
+    "shadow": 12,
+    "cold": 8
+  }
+}

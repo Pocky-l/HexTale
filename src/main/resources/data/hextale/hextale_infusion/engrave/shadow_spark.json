@@ -1,0 +1,15 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "shadow_spark"
+  ],
+  "pedestals": [
+    "minecraft:ink_sac",
+    "minecraft:copper_ingot",
+    "minecraft:ender_pearl"
+  ],
+  "essences": {
+    "shadow": 12,
+    "rift": 8
+  }
+}

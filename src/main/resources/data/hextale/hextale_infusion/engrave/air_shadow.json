@@ -1,0 +1,15 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "air_shadow"
+  ],
+  "pedestals": [
+    "minecraft:feather",
+    "minecraft:soul_sand",
+    "minecraft:ender_pearl"
+  ],
+  "essences": {
+    "air": 12,
+    "silence": 8
+  }
+}

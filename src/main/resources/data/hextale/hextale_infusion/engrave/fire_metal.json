@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "fire_metal"
+  ],
+  "pedestals": [
+    "minecraft:blaze_powder",
+    "minecraft:iron_nugget"
+  ],
+  "essences": {
+    "fire": 12,
+    "forge": 8
+  }
+}

@@ -36,7 +36,9 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.runework.HextechTools;
+import com.pockyl.hextale.runework.RuneSlots;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -221,9 +223,16 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         Ritual.Plan plan = Ritual.plan(center, circle, false);
         if (plan == null) {
             if (player != null) {
-                String key = center.isEmpty() ? "block.hextale.hextech_altar.empty"
-                        : circle.chosenRunes().isEmpty() ? "block.hextale.hextech_altar.nothing" : "block.hextale.hextech_altar.nothing.runes";
-                player.sendOverlayMessage(Component.translatable(key));
+                ComplexRune refused = center.isEmpty() ? null : Ritual.unusable(HextechTools.isTool(center) ? HextechTools.runes(center)
+                        : RuneSlots.EMPTY, circle, false);
+                if (refused != null && !circle.chosenRunes().isEmpty()) {
+                    player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.nothing.unusable",
+                            Component.translatable(refused.translationKey()).withColor(refused.color())));
+                } else {
+                    String key = center.isEmpty() ? "block.hextale.hextech_altar.empty"
+                            : circle.chosenRunes().isEmpty() ? "block.hextale.hextech_altar.nothing" : "block.hextale.hextech_altar.nothing.runes";
+                    player.sendOverlayMessage(Component.translatable(key));
+                }
             }
             serverLevel.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 0.6F);
             return;

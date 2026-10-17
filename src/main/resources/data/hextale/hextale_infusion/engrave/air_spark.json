@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "air_spark"
+  ],
+  "pedestals": [
+    "minecraft:feather",
+    "minecraft:copper_ingot"
+  ],
+  "essences": {
+    "air": 12,
+    "thunder": 8
+  }
+}

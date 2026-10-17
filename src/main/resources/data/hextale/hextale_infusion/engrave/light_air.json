@@ -1,0 +1,14 @@
+{
+  "kind": "engrave",
+  "runes": [
+    "light_air"
+  ],
+  "pedestals": [
+    "minecraft:glowstone_dust",
+    "minecraft:string"
+  ],
+  "essences": {
+    "light": 12,
+    "sky": 8
+  }
+}
