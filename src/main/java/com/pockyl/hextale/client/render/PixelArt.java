@@ -280,6 +280,76 @@ public final class PixelArt {
         }
     }
 
+    /**
+     * A pixel disc {@code diameter} wide (even) centred on the pixel corner {@code cx, cy}, like an item icon at
+     * {@code cx - 8, cy - 8}: filled, then a one-pixel outline. Either colour may be 0 to skip it.
+     */
+    public static void disc(GuiGraphicsExtractor graphics, int cx, int cy, int diameter, int fill, int outline) {
+        Circle circle = Circle.of(diameter);
+        if (outline != 0) {
+            for (int[] run : circle.ring) {
+                fill(graphics, cx + run[1], cy + run[0], cx + run[2], cy + run[0] + 1, outline);
+            }
+        }
+        if (fill != 0) {
+            for (int[] run : outline != 0 ? circle.inner : circle.outer) {
+                fill(graphics, cx + run[1], cy + run[0], cx + run[2], cy + run[0] + 1, fill);
+            }
+        }
+    }
+
+    /** Only the one-pixel rim of a disc. */
+    public static void discRing(GuiGraphicsExtractor graphics, int cx, int cy, int diameter, int argb) {
+        for (int[] run : Circle.of(diameter).ring) {
+            fill(graphics, cx + run[1], cy + run[0], cx + run[2], cy + run[0] + 1, argb);
+        }
+    }
+
+    /** Pixel masks of a disc centred on a pixel corner; {@code pixels} = the rim's pixels with their angle. */
+    public static final class Circle {
+        private static final Map<Integer, Circle> CACHE = new ConcurrentHashMap<>();
+        final int[][] outer;
+        final int[][] inner;
+        final int[][] ring;
+        /** {@code [dx, dy]} of every rim pixel, relative to the centre corner. */
+        public final int[][] pixels;
+        /** The direction of each rim pixel from the centre, radians, 0 = right, growing clockwise on screen. */
+        public final float[] angles;
+
+        private Circle(int diameter) {
+            int r = diameter / 2;
+            boolean[][] outer = new boolean[r * 2][r * 2];
+            boolean[][] inner = new boolean[r * 2][r * 2];
+            boolean[][] rim = new boolean[r * 2][r * 2];
+            List<int[]> pixels = new ArrayList<>();
+            for (int row = 0; row < r * 2; row++) {
+                for (int col = 0; col < r * 2; col++) {
+                    float x = col - r + 0.5F;
+                    float y = row - r + 0.5F;
+                    float d = x * x + y * y;
+                    outer[row][col] = d <= r * r;
+                    inner[row][col] = d <= (r - 1) * (r - 1);
+                    rim[row][col] = outer[row][col] && !inner[row][col];
+                    if (rim[row][col]) {
+                        pixels.add(new int[]{col - r, row - r});
+                    }
+                }
+            }
+            this.outer = Hex.shift(runs(outer), r, r);
+            this.inner = Hex.shift(runs(inner), r, r);
+            this.ring = Hex.shift(runs(rim), r, r);
+            this.pixels = pixels.toArray(int[][]::new);
+            this.angles = new float[this.pixels.length];
+            for (int i = 0; i < this.pixels.length; i++) {
+                angles[i] = (float) Math.atan2(this.pixels[i][1] + 0.5, this.pixels[i][0] + 0.5);
+            }
+        }
+
+        public static Circle of(int diameter) {
+            return CACHE.computeIfAbsent(diameter, Circle::new);
+        }
+    }
+
     public static int argb(int rgb, float alpha) {
         return (Math.max(0, Math.min(255, (int) (alpha * 255))) << 24) | (rgb & 0xFFFFFF);
     }

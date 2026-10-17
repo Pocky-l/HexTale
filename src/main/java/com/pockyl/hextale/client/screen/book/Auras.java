@@ -28,23 +28,24 @@ final class Auras {
         int x = quest.x();
         int y = quest.y();
         int seed = quest.index() * 7919;
+        boolean round = quest.kind() != Quest.Kind.RUNE;
         switch (quest.aura()) {
             case NONE -> {
             }
-            case GOLD -> gold(graphics, x, y, size, now, seed);
-            case STORM -> storm(graphics, x, y, size, now, seed);
-            case HEXTECH -> hextech(graphics, x, y, size, now, seed);
-            case CURSED -> cursed(graphics, x, y, size, now, seed);
-            case FLAME -> flame(graphics, x, y, size, now, seed);
+            case GOLD -> gold(graphics, round, x, y, size, now, seed);
+            case STORM -> storm(graphics, round, x, y, size, now, seed);
+            case HEXTECH -> hextech(graphics, round, x, y, size, now, seed);
+            case CURSED -> cursed(graphics, round, x, y, size, now, seed);
+            case FLAME -> flame(graphics, round, x, y, size, now, seed);
             case LIFE -> life(graphics, x, y, size, now, seed);
         }
     }
 
     /** Slow golden halo rings and six motes circling: a key step of the path. */
-    private static void gold(GuiGraphicsExtractor graphics, int x, int y, int size, long now, int seed) {
+    private static void gold(GuiGraphicsExtractor graphics, boolean round, int x, int y, int size, long now, int seed) {
         float pulse = 0.5F + 0.5F * Mth.sin(now / 700.0F + seed);
         for (int ring = 0; ring < 4; ring++) {
-            PixelArt.hex(graphics, x, y, size + 6 + ring * 5, PixelArt.argb(GOLD, (0.13F - ring * 0.028F) * (0.5F + 0.5F * pulse)), 0);
+            shape(graphics, round, x, y, size + 6 + ring * 5, PixelArt.argb(GOLD, (0.13F - ring * 0.028F) * (0.5F + 0.5F * pulse)), 0);
         }
         float radius = size * 0.85F;
         for (int i = 0; i < 6; i++) {
@@ -61,10 +62,10 @@ final class Auras {
     }
 
     /** Arcs of lightning: a few jagged bolts leave the frame, change every few frames and sometimes skip a beat. */
-    private static void storm(GuiGraphicsExtractor graphics, int x, int y, int size, long now, int seed) {
+    private static void storm(GuiGraphicsExtractor graphics, boolean round, int x, int y, int size, long now, int seed) {
         long bucket = now / 90;
         float glow = 0.5F + 0.5F * Mth.sin(now / 160.0F + seed);
-        PixelArt.hex(graphics, x, y, size + 6, PixelArt.argb(HEXTECH, 0.06F + 0.06F * glow), 0);
+        shape(graphics, round, x, y, size + 6, PixelArt.argb(HEXTECH, 0.06F + 0.06F * glow), 0);
         for (int k = 0; k < 3; k++) {
             long h = hash(bucket * 31 + k * 977 + seed);
             if (h % 4 == 0) {
@@ -91,7 +92,7 @@ final class Auras {
     }
 
     /** Blue sparks on a tilted orbit, each with a short fading tail. */
-    private static void hextech(GuiGraphicsExtractor graphics, int x, int y, int size, long now, int seed) {
+    private static void hextech(GuiGraphicsExtractor graphics, boolean round, int x, int y, int size, long now, int seed) {
         float rx = size * 0.82F;
         float ry = size * 0.45F;
         for (int i = 0; i < 5; i++) {
@@ -104,11 +105,11 @@ final class Auras {
                 PixelArt.fill(graphics, px, py, px + 1, py + 1, PixelArt.argb(color, 0.9F - t * 0.22F));
             }
         }
-        PixelArt.hex(graphics, x, y, size + 4, PixelArt.argb(HEXTECH, 0.08F), 0);
+        shape(graphics, round, x, y, size + 4, PixelArt.argb(HEXTECH, 0.08F), 0);
     }
 
     /** Dark smoke puffs creeping out and up, with a sickly violet flicker at the rim. */
-    private static void cursed(GuiGraphicsExtractor graphics, int x, int y, int size, long now, int seed) {
+    private static void cursed(GuiGraphicsExtractor graphics, boolean round, int x, int y, int size, long now, int seed) {
         for (int i = 0; i < 8; i++) {
             float period = 2400 + (hash(seed + i) % 900);
             float t = ((now + i * 377L) % (long) period) / period;
@@ -120,12 +121,12 @@ final class Auras {
             disc(graphics, px, py, radius, PixelArt.argb(PixelArt.mix(SMOKE, CURSE, 0.25F * (1 - t)), 0.55F * (1 - t)));
         }
         float flicker = 0.5F + 0.5F * Mth.sin(now / 130.0F + seed) * Mth.sin(now / 370.0F);
-        PixelArt.hexRing(graphics, x, y, size + 3, PixelArt.argb(CURSE, 0.15F + 0.3F * flicker));
-        PixelArt.hex(graphics, x, y, size + 10, PixelArt.argb(SMOKE, 0.25F), 0);
+        ring(graphics, round, x, y, size + 3, PixelArt.argb(CURSE, 0.15F + 0.3F * flicker));
+        shape(graphics, round, x, y, size + 10, PixelArt.argb(SMOKE, 0.25F), 0);
     }
 
     /** Embers rising from below the frame, swaying and dying out. */
-    private static void flame(GuiGraphicsExtractor graphics, int x, int y, int size, long now, int seed) {
+    private static void flame(GuiGraphicsExtractor graphics, boolean round, int x, int y, int size, long now, int seed) {
         for (int i = 0; i < 7; i++) {
             float period = 1300 + (hash(seed + i * 13) % 700);
             float t = ((now + i * 211L) % (long) period) / period;
@@ -136,7 +137,7 @@ final class Auras {
             PixelArt.fill(graphics, px, py, px + 1, py + 1, PixelArt.argb(color, 1 - t));
         }
         float glow = 0.5F + 0.5F * Mth.sin(now / 300.0F + seed);
-        PixelArt.hex(graphics, x, y + 2, size + 6, PixelArt.argb(0xFF7A1C, 0.06F + 0.05F * glow), 0);
+        shape(graphics, round, x, y + 2, size + 6, PixelArt.argb(0xFF7A1C, 0.06F + 0.05F * glow), 0);
     }
 
     /** Green motes drifting up with a gentle sway. */
@@ -147,6 +148,23 @@ final class Auras {
             int px = x - size / 2 + (int) (hash(seed + i * 7) % size) + Math.round(Mth.sin(t * 5 + i) * 3);
             int py = y + size / 3 - Math.round(t * (size + 4));
             PixelArt.fill(graphics, px, py, px + 1, py + 1, PixelArt.argb(LIFE, 0.9F * Mth.sin(t * Mth.PI)));
+        }
+    }
+
+    /** A filled hexagon around a rune, a disc around the round item and device medallions. */
+    private static void shape(GuiGraphicsExtractor graphics, boolean round, int x, int y, int size, int fill, int outline) {
+        if (round) {
+            PixelArt.disc(graphics, x, y, size + 1 & ~1, fill, outline);
+        } else {
+            PixelArt.hex(graphics, x, y, size | 1, fill, outline);
+        }
+    }
+
+    private static void ring(GuiGraphicsExtractor graphics, boolean round, int x, int y, int size, int argb) {
+        if (round) {
+            PixelArt.discRing(graphics, x, y, size + 1 & ~1, argb);
+        } else {
+            PixelArt.hexRing(graphics, x, y, size | 1, argb);
         }
     }
 

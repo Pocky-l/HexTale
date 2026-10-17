@@ -47,14 +47,14 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The research book's page: the researcher's guide as one branching path in the dark sky. Only what is done and what is
- * open now can be seen; every path that goes on beyond them fades into the fog. Item quests hang in square frames,
- * runes in hexagons with their glyphs, devices still being worked out (WIP) in dashed frames. Important steps wear an
+ * open now can be seen; every path that goes on beyond them fades into the fog. Item quests sit in round brass medallions,
+ * runes in hexagons with their glyphs, devices still being worked out (WIP) in turning dashed rings. Important steps wear an
  * aura: gold, storm arcs, hextech sparks, cursed smoke, embers or green motes. A click opens the step's plate on the
  * right: the recipe or scheme for an item, what a rune does and what it opens (and a button that lays it on the table),
  * the idea behind a WIP device.
  */
 final class GuidePage {
-    private static final int ITEM_NODE = 22;
+    private static final int ITEM_NODE = 24;
     private static final int RUNE_NODE = 24;
     private static final int BIG = 6;
     private static final int PLATE_WIDTH = 180;
@@ -66,6 +66,10 @@ final class GuidePage {
     private static final int OPEN = 0x5CC8F2;
     private static final int WIP = 0xB08AE0;
     private static final int MARGIN = 90;
+    /** Radius of the rounded bends in the links. */
+    private static final int BEND = 7;
+    private static final int BRASS_LIGHT = 0xFFF0B8;
+    private static final int BRASS_DARK = 0x6A4A18;
 
     private final StarBook book;
     private final Font font;
@@ -146,16 +150,20 @@ final class GuidePage {
             }
         }
         for (Quest quest : shown) {
+            int badge = Math.round(size(quest) * 0.36F);
             if (quest.kind() == Quest.Kind.WIP) {
-                wipTag(graphics, quest.x(), quest.y() + size(quest) / 2 + 1);
+                // Mist over a device still being worked out, and a badge with three dots waiting in turn.
+                PixelArt.disc(graphics, quest.x(), quest.y(), size(quest) - 4, PixelArt.argb(0x120E1E, 0.45F), 0);
+                inProgress(graphics, quest.x() + badge, quest.y() + badge, now, quest.index());
             } else if (Guide.done(quest, knowledge) && quest.kind() == Quest.Kind.ITEM) {
-                check(graphics, quest.x() + size(quest) / 2 - 5, quest.y() + size(quest) / 2 - 5);
+                check(graphics, quest.x() + badge - 4, quest.y() + badge - 4);
             }
         }
+        PixelArt.flush(graphics);
     }
 
     /**
-     * Links to the parents: an elbow like a brass conduit (along, down, along) for the parent a step hangs from, a thin
+     * Links to the parents: a brass conduit with rounded bends (along, down, along) for the parent a step hangs from, a thin
      * dotted line for the others. Gold where both ends are done, a pulsing cyan into an open step.
      */
     private void renderLinks(GuiGraphicsExtractor graphics, Quest quest, RuneKnowledge knowledge, long now) {
@@ -180,12 +188,18 @@ final class GuidePage {
                 }
                 continue;
             }
-            elbow(graphics, ax, ay, bx, by, color);
+            int[][] path = conduit(ax, ay, bx, by);
+            for (int[] p : path) {
+                PixelArt.fill(graphics, p[0], p[1], p[0] + 1, p[1] + 1, color);
+            }
             if (!lit) {
-                // A bead of light running along an open link.
+                // A bead of light running along an open link, with a soft glow around it.
                 float t = (now % 1600) / 1600.0F;
-                int[] p = alongElbow(ax, ay, bx, by, t);
-                PixelArt.fill(graphics, p[0] - 1, p[1] - 1, p[0] + 2, p[1] + 2, PixelArt.argb(OPEN, 0.8F * (1 - t)));
+                int[] p = path[Math.min(path.length - 1, (int) (t * path.length))];
+                float fade = 1 - t;
+                PixelArt.fill(graphics, p[0] - 1, p[1], p[0] + 2, p[1] + 1, PixelArt.argb(OPEN, 0.45F * fade));
+                PixelArt.fill(graphics, p[0], p[1] - 1, p[0] + 1, p[1] + 2, PixelArt.argb(OPEN, 0.45F * fade));
+                PixelArt.fill(graphics, p[0], p[1], p[0] + 1, p[1] + 1, PixelArt.argb(0xE8FCFF, 0.9F * fade));
             }
         }
     }
@@ -208,28 +222,53 @@ final class GuidePage {
         }
     }
 
-    private static void elbow(GuiGraphicsExtractor graphics, int ax, int ay, int bx, int by, int color) {
+    /**
+     * The pixels of a link from a parent's right side to a child's left side, in order: along, a rounded bend, down or
+     * up, another rounded bend, along. Every pixel appears once, so translucent links stay even.
+     */
+    private static int[][] conduit(int ax, int ay, int bx, int by) {
         int mid = ax + Math.max(4, (bx - ax) / 2);
-        PixelArt.line(graphics, ax, ay, mid, ay, color);
-        PixelArt.line(graphics, mid, ay, mid, by, color);
-        PixelArt.line(graphics, mid, by, bx, by, color);
+        int dy = Math.abs(by - ay);
+        int sy = Integer.signum(by - ay);
+        int r = Math.min(BEND, Math.min(dy / 2, Math.min(Math.abs(mid - ax), Math.abs(bx - mid))));
+        List<int[]> points = new ArrayList<>();
+        java.util.Set<Long> seen = new java.util.HashSet<>();
+        if (r < 2) {
+            // Too tight to bend: the plain three-legged path.
+            segment(points, seen, ax, ay, mid, ay);
+            segment(points, seen, mid, ay, mid, by);
+            segment(points, seen, mid, by, bx, by);
+        } else {
+            segment(points, seen, ax, ay, mid - r, ay);
+            arc(points, seen, mid - r, ay + sy * r, r, -sy * Mth.HALF_PI, 0);
+            segment(points, seen, mid, ay + sy * r, mid, by - sy * r);
+            arc(points, seen, mid + r, by - sy * r, r, Mth.PI, Mth.PI - sy * Mth.HALF_PI);
+            segment(points, seen, mid + r, by, bx, by);
+        }
+        return points.toArray(int[][]::new);
     }
 
-    private static int[] alongElbow(int ax, int ay, int bx, int by, float t) {
-        int mid = ax + Math.max(4, (bx - ax) / 2);
-        float a = Math.abs(mid - ax);
-        float b = Math.abs(by - ay);
-        float c = Math.abs(bx - mid);
-        float d = t * (a + b + c);
-        if (d <= a) {
-            return new int[]{Math.round(ax + Math.signum(mid - ax) * d), ay};
+    private static void segment(List<int[]> points, java.util.Set<Long> seen, int x0, int y0, int x1, int y1) {
+        int steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
+        for (int i = 0; i <= steps; i++) {
+            float t = steps == 0 ? 0 : (float) i / steps;
+            point(points, seen, Math.round(x0 + (x1 - x0) * t), Math.round(y0 + (y1 - y0) * t));
         }
-        d -= a;
-        if (d <= b) {
-            return new int[]{mid, Math.round(ay + Math.signum(by - ay) * d)};
+    }
+
+    /** A quarter of a circle around {@code cx, cy} from angle {@code from} to {@code to} (screen y down). */
+    private static void arc(List<int[]> points, java.util.Set<Long> seen, int cx, int cy, int r, float from, float to) {
+        int steps = r * 4;
+        for (int i = 0; i <= steps; i++) {
+            float angle = from + (to - from) * i / steps;
+            point(points, seen, Math.round(cx + Mth.cos(angle) * r), Math.round(cy + Mth.sin(angle) * r));
         }
-        d -= b;
-        return new int[]{Math.round(mid + Math.signum(bx - mid) * d), by};
+    }
+
+    private static void point(List<int[]> points, java.util.Set<Long> seen, int x, int y) {
+        if (seen.add((long) x << 32 | (y & 0xFFFFFFFFL))) {
+            points.add(new int[]{x, y});
+        }
     }
 
     private void renderNode(GuiGraphicsExtractor graphics, Quest quest, RuneKnowledge knowledge, long now, boolean hovered) {
@@ -239,10 +278,16 @@ final class GuidePage {
         boolean done = Guide.done(quest, knowledge);
         boolean wip = quest.kind() == Quest.Kind.WIP;
         float pulse = pulse(now, quest.index());
+        boolean round = quest.kind() != Quest.Kind.RUNE;
         if (!done && !wip) {
             // An open step breathes in cyan.
             for (int ring = 0; ring < 3; ring++) {
-                PixelArt.hex(graphics, x, y, size + 4 + ring * 4, PixelArt.argb(OPEN, (0.14F - ring * 0.04F) * (0.6F + 0.4F * pulse)), 0);
+                int halo = PixelArt.argb(OPEN, (0.14F - ring * 0.04F) * (0.6F + 0.4F * pulse));
+                if (round) {
+                    PixelArt.disc(graphics, x, y, size + 4 + ring * 4, halo, 0);
+                } else {
+                    PixelArt.hex(graphics, x, y, size + 4 + ring * 4, halo, 0);
+                }
             }
         }
         int rim = done ? StarBook.GOLD : wip ? WIP : PixelArt.mix(0x2B8FB8, 0x7EF0FF, pulse);
@@ -262,50 +307,92 @@ final class GuidePage {
                     PixelArt.fill(graphics, x - 4 + s * 3, y + size / 2 - 3, x - 2 + s * 3, y + size / 2 - 1, PixelArt.argb(StarBook.GOLD, 1));
                 }
             }
-            case ITEM -> square(graphics, x, y, size, PixelArt.argb(done ? 0x2A2210 : 0x0C1A2A, 1), PixelArt.argb(rim, 1));
+            case ITEM -> {
+                int fill = done ? 0x2A2210 : 0x0C1A2A;
+                medallion(graphics, x, y, size, rim, fill, done ? PixelArt.mix(fill, StarBook.GOLD, 0.18F) : PixelArt.mix(fill, OPEN, 0.12F));
+            }
             case WIP -> {
-                square(graphics, x, y, size, PixelArt.argb(0x120E1E, 0.9F), 0);
-                int h = size / 2;
-                int phase = (int) (now / 160 % 4);
-                PixelArt.dotted(graphics, x - h, y - h, x + h, y - h, 2, 2, phase, PixelArt.argb(rim, 1));
-                PixelArt.dotted(graphics, x + h, y - h, x + h, y + h, 2, 2, phase, PixelArt.argb(rim, 1));
-                PixelArt.dotted(graphics, x + h, y + h, x - h, y + h, 2, 2, phase, PixelArt.argb(rim, 1));
-                PixelArt.dotted(graphics, x - h, y + h, x - h, y - h, 2, 2, phase, PixelArt.argb(rim, 1));
+                // A dashed ring turning slowly around a dim disc: a device still being drawn up.
+                PixelArt.disc(graphics, x, y, size, PixelArt.argb(0x120E1E, 0.9F), 0);
+                PixelArt.Circle circle = PixelArt.Circle.of(size);
+                float turn = now / 2600.0F + quest.index();
+                for (int i = 0; i < circle.pixels.length; i++) {
+                    float a = circle.angles[i] - turn;
+                    float dash = Mth.sin(a * 8);
+                    if (dash > -0.15F) {
+                        int[] p = circle.pixels[i];
+                        PixelArt.fill(graphics, x + p[0], y + p[1], x + p[0] + 1, y + p[1] + 1, PixelArt.argb(rim, 0.55F + 0.45F * dash));
+                    }
+                }
             }
         }
         if (quest == selected) {
-            PixelArt.hexRing(graphics, x, y, size + 6, PixelArt.argb(StarBook.GOLD, 0.5F + 0.5F * pulse));
+            int ring = PixelArt.argb(StarBook.GOLD, 0.5F + 0.5F * pulse);
+            if (round) {
+                PixelArt.discRing(graphics, x, y, size + 6, ring);
+            } else {
+                PixelArt.hexRing(graphics, x, y, size + 6, ring);
+            }
         }
     }
 
-    /** A square frame with clipped corners. */
-    static void square(GuiGraphicsExtractor graphics, int cx, int cy, int size, int fill, int rim) {
-        int h = size / 2;
-        PixelArt.fill(graphics, cx - h + 1, cy - h, cx + h - 1, cy + h, fill);
-        PixelArt.fill(graphics, cx - h, cy - h + 1, cx + h, cy + h - 1, fill);
-        if (rim == 0) {
-            return;
+    /**
+     * A round brass medallion: a dark outline, a bevelled rim lit from the top left, a thin inner groove and a face
+     * that glows a little towards its centre.
+     */
+    private static void medallion(GuiGraphicsExtractor graphics, int cx, int cy, int size, int rim, int fill, int glow) {
+        PixelArt.disc(graphics, cx, cy, size + 2, 0, PixelArt.argb(0x05040A, 0.85F));
+        PixelArt.Circle circle = PixelArt.Circle.of(size);
+        for (int i = 0; i < circle.pixels.length; i++) {
+            // Light from the top left (-3/4 pi on screen), shade towards the bottom right.
+            float light = Mth.cos(circle.angles[i] + 3 * Mth.PI / 4);
+            int color = light > 0 ? PixelArt.mix(rim, BRASS_LIGHT, 0.5F * light) : PixelArt.mix(rim, BRASS_DARK, -0.55F * light);
+            int[] p = circle.pixels[i];
+            PixelArt.fill(graphics, cx + p[0], cy + p[1], cx + p[0] + 1, cy + p[1] + 1, PixelArt.argb(color, 1));
         }
-        PixelArt.fill(graphics, cx - h + 1, cy - h, cx + h - 1, cy - h + 1, rim);
-        PixelArt.fill(graphics, cx - h + 1, cy + h - 1, cx + h - 1, cy + h, rim);
-        PixelArt.fill(graphics, cx - h, cy - h + 1, cx - h + 1, cy + h - 1, rim);
-        PixelArt.fill(graphics, cx + h - 1, cy - h + 1, cx + h, cy + h - 1, rim);
+        PixelArt.disc(graphics, cx, cy, size - 2, PixelArt.argb(fill, 1), PixelArt.argb(PixelArt.mix(rim, BRASS_DARK, 0.7F), 1));
+        PixelArt.disc(graphics, cx, cy, size - 8, PixelArt.argb(glow, 0.8F), 0);
+        PixelArt.discRing(graphics, cx, cy, size - 4, PixelArt.argb(rim, 0.22F));
     }
 
-    /** A small violet "WIP" ribbon under a device still being worked out. */
+    /** A violet badge with three dots lighting up in turn: being worked out. */
+    private static void inProgress(GuiGraphicsExtractor graphics, int cx, int cy, long now, int phase) {
+        PixelArt.disc(graphics, cx, cy, 10, PixelArt.argb(0x2A1840, 1), PixelArt.argb(WIP, 1));
+        int lit = (int) ((now / 300 + phase) % 3);
+        for (int i = 0; i < 3; i++) {
+            // Dots at -3, -1..0 and 2: symmetric around the badge's centre corner.
+            int x0 = i == 0 ? cx - 3 : i == 1 ? cx - 1 : cx + 2;
+            int x1 = i == 1 ? cx + 1 : x0 + 1;
+            PixelArt.fill(graphics, x0, cy - 1, x1, cy + 1, PixelArt.argb(i == lit ? 0xFFF0FF : 0xB89ADF, 1));
+        }
+    }
+
+    /** A small violet "WIP" ribbon with rounded ends. */
     private void wipTag(GuiGraphicsExtractor graphics, int cx, int top) {
         String label = Component.translatable("book.hextale.guide.wip").getString();
-        int w = font.width(label) + 4;
-        PixelArt.fill(graphics, cx - w / 2, top, cx + w / 2, top + 9, PixelArt.argb(0x2A1840, 0.95F));
-        PixelArt.fill(graphics, cx - w / 2, top, cx + w / 2, top + 1, PixelArt.argb(WIP, 1));
+        int w = font.width(label) + 6;
+        int x0 = cx - w / 2;
+        int x1 = cx + w / 2;
+        int body = PixelArt.argb(0x2A1840, 0.95F);
+        int edge = PixelArt.argb(WIP, 1);
+        PixelArt.fill(graphics, x0 + 2, top, x1 - 2, top + 1, edge);
+        PixelArt.fill(graphics, x0 + 2, top + 9, x1 - 2, top + 10, edge);
+        PixelArt.fill(graphics, x0 + 1, top + 1, x0 + 2, top + 2, edge);
+        PixelArt.fill(graphics, x1 - 2, top + 1, x1 - 1, top + 2, edge);
+        PixelArt.fill(graphics, x0 + 1, top + 8, x0 + 2, top + 9, edge);
+        PixelArt.fill(graphics, x1 - 2, top + 8, x1 - 1, top + 9, edge);
+        PixelArt.fill(graphics, x0, top + 2, x0 + 1, top + 8, edge);
+        PixelArt.fill(graphics, x1 - 1, top + 2, x1, top + 8, edge);
+        PixelArt.fill(graphics, x0 + 2, top + 1, x1 - 2, top + 9, body);
+        PixelArt.fill(graphics, x0 + 1, top + 2, x0 + 2, top + 8, body);
+        PixelArt.fill(graphics, x1 - 2, top + 2, x1 - 1, top + 8, body);
         PixelArt.flush(graphics);
-        graphics.text(font, label, cx - w / 2 + 2, top + 1, 0xFFD8C0FF, false);
+        graphics.text(font, label, x0 + 3, top + 1, 0xFFD8C0FF, false);
     }
 
     /** A small tick in a green disc: the quest is done. */
     private static void check(GuiGraphicsExtractor graphics, int x, int y) {
-        PixelArt.fill(graphics, x - 1, y, x + 8, y + 7, 0xFF1C3A16);
-        PixelArt.fill(graphics, x, y - 1, x + 7, y + 8, 0xFF1C3A16);
+        PixelArt.disc(graphics, x + 4, y + 4, 10, 0xFF1C3A16, PixelArt.argb(PixelArt.mix(DONE, 0x1C3A16, 0.45F), 1));
         int tick = PixelArt.argb(DONE, 1);
         PixelArt.fill(graphics, x + 1, y + 3, x + 2, y + 5, tick);
         PixelArt.fill(graphics, x + 2, y + 4, x + 3, y + 6, tick);
