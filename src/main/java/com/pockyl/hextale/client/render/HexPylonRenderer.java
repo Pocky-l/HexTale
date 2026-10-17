@@ -38,16 +38,13 @@ import java.util.List;
 
 /**
  * A hex pylon's gem and its magic. The gem floats over the crown in a halo of its runes' colour and spins up for a
- * moment after every move. Each kind has its rings: a gathering pylon a wide sigil ring lying in its dish that snaps
- * inward when it pulls, a sending pylon a ring turning upright around the gem, a relay two crossed rings. Filters float
- * around the gem as small items. Moved items fly along their way as glowing items with a trail of motes; a gathered item
- * leaves a ring of light where it lay, a landed one a flash. While the player sneaks or holds a pylon the links show as
+ * moment after every move. Each kind has its rings: a gathering pylon a wide sigil ring lying in its dish, a sending pylon a ring turning upright around the gem, a relay two crossed rings. Moved items are fetched by the magic ({@link #flight}): a tendril of light ({@link TendrilFx})
+ * reaches out of the gem, closes its grip around the item, drags it in and hands it on along the next tendril. While the player sneaks or holds a pylon the links show as
  * gold threads with motes running along them; while linking, a cyan thread runs from the gem to the crosshair.
  */
 public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity, HexPylonRenderer.State> {
     private static final int GOLD = 0xF0C24A;
     private static final int LINK_CYAN = 0x7EF0FF;
-    private static final int TRAIL = 5;
     private final ItemModelResolver itemModelResolver;
 
     public HexPylonRenderer(BlockEntityRendererProvider.Context context) {
@@ -75,12 +72,6 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         state.color = PickaxeRuneTint.blend(pylon.runes());
         itemModelResolver.updateForTopItem(state.gem, new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), ItemDisplayContext.GROUND, level, null, seed);
 
-        List<ItemStack> filters = pylon.filters();
-        state.filterCount = filters.size();
-        for (int i = 0; i < filters.size(); i++) {
-            itemModelResolver.updateForTopItem(state.item(state.filters, i), filters.get(i), ItemDisplayContext.GROUND, level, null, seed + i);
-        }
-
         // Links: only while the player sneaks, holds a pylon or is linking, so a busy base is not a web of threads.
         LocalPlayer player = Minecraft.getInstance().player;
         boolean linkingHere = pos.equals(PylonLinking.clientFrom);
@@ -101,6 +92,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         }
 
         state.flightCount = 0;
+        state.origin = origin;
         for (PylonFlight.Shown shown : pylon.shown) {
             float age = now - shown.start;
             if (age < 0) {
@@ -108,17 +100,15 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             }
             int i = state.flightCount++;
             FlightState fs = i < state.flights.size() ? state.flights.get(i) : add(state.flights, new FlightState());
-            float t = Mth.clamp(age / shown.duration, 0, 1);
-            float eased = t * t * (3 - 2 * t);
+            fs.flight = shown.flight;
             fs.age = age;
-            fs.progress = t;
+            fs.seed = seed + i * 977;
             fs.landed = age >= shown.duration ? (age - shown.duration) / PylonLinking.FADE_TICKS : -1;
-            fs.gathered = shown.flight.gathered();
-            fs.start = shown.flight.path().getFirst().subtract(origin);
-            fs.end = shown.flight.path().getLast().subtract(origin);
-            for (int k = 0; k <= TRAIL; k++) {
-                float tk = Mth.clamp(eased - k * 0.035F, 0, 1);
-                fs.trail[k] = shown.flight.at(tk).subtract(origin);
+            fs.phase = shown.flight.phaseAt(shown.phases, age);
+            fs.u = fs.phase == null ? 1 : fs.phase.progress(age);
+            if (fs.phase != null && fs.phase.move() == PylonFlight.Move.ABSORB) {
+                // The gem drinks the item in: it flares.
+                state.flare = Math.max(state.flare, Mth.sin(fs.u * Mth.PI));
             }
             itemModelResolver.updateForTopItem(fs.item, shown.flight.icon(), ItemDisplayContext.GROUND, level, null, seed + i * 31);
         }
@@ -144,11 +134,6 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
                 poseStack.rotate(Axis.XP.rotationDegrees(90));
                 poseStack.rotate(Axis.ZP.rotationDegrees(time * 0.6F));
                 HexFx.sigilRing(poseStack, collector, 0.36F, 6, state.color, 0.45F + 0.4F * state.flare);
-                if (state.flare > 0) {
-                    // The pull: a wide ring snapping in from the gathering radius.
-                    HexFx.sigilRing(poseStack, collector, 0.36F + 1.4F * state.flare * state.flare, 12, RuneDrawing.lighten(state.color, 0.3F),
-                            0.6F * state.flare);
-                }
             }
             case SENDING -> {
                 poseStack.translate(gem.x, gem.y + bob, gem.z);
@@ -172,16 +157,6 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         poseStack.pushPose();
         poseStack.translate(gem.x, gem.y + bob, gem.z);
         HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.45F + 0.3F * state.flare, state.color, 0.35F + 0.4F * state.flare);
-        for (int i = 0; i < state.filterCount; i++) {
-            float angle = time * 0.05F + i * Mth.TWO_PI / state.filterCount;
-            poseStack.pushPose();
-            poseStack.translate(Mth.cos(angle) * 0.3F, Mth.sin(time * 0.07F + i) * 0.04F, Mth.sin(angle) * 0.3F);
-            poseStack.rotate(Axis.YP.rotationDegrees(-time * 3));
-            poseStack.scale(0.22F, 0.22F, 0.22F);
-            poseStack.translate(0, -0.15, 0);
-            state.filters.get(i).submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
-            poseStack.popPose();
-        }
         poseStack.rotate(Axis.YP.rotationDegrees(time * (1.5F + 12 * state.flare)));
         poseStack.scale(0.42F, 0.42F, 0.42F);
         poseStack.translate(0, -0.2, 0);
@@ -203,7 +178,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
 
         // Items in flight.
         for (int i = 0; i < state.flightCount; i++) {
-            flight(poseStack, collector, camera, state.flights.get(i), state.color);
+            flight(poseStack, collector, camera, eye, state, state.flights.get(i));
         }
     }
 
@@ -226,43 +201,131 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         poseStack.popPose();
     }
 
-    private static void flight(PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, FlightState fs, int color) {
-        if (fs.gathered && fs.age < 10) {
-            // Where it lay: a ring of light on the ground, opening and fading.
-            float r = fs.age / 10F;
-            poseStack.pushPose();
-            poseStack.translate(fs.start.x, fs.start.y - 0.2, fs.start.z);
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
-            HexFx.sigilRing(poseStack, collector, 0.18F + 0.25F * r, 6, color, 0.8F * (1 - r));
-            poseStack.popPose();
-        }
-        if (fs.landed >= 0) {
-            // Landed: a flash at the end that swells and fades.
+    /**
+     * One item fetched by the magic, by the phase of its timeline: a tendril reaches out of the gem, its tip closes
+     * around the item, it pulls the item in along its own line, the item sinks into the gem; on every next leg a tendril
+     * stretches to the next gem or container and draws the item along to it.
+     */
+    private static void flight(PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, Vec3 eye, State state,
+                               FlightState fs) {
+        PylonFlight flight = fs.flight;
+        int color = state.color;
+        float time = state.time;
+        if (fs.landed >= 0 || fs.phase == null) {
+            // Landed: a soft flash where it went in.
             float f = Mth.clamp(fs.landed, 0, 1);
+            Vec3 end = flight.path().getLast().subtract(state.origin);
             poseStack.pushPose();
-            poseStack.translate(fs.end.x, fs.end.y, fs.end.z);
-            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.3F + 0.5F * f, RuneDrawing.lighten(color, 0.3F), 0.7F * (1 - f));
+            poseStack.translate(end.x, end.y, end.z);
+            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.25F + 0.45F * f, RuneDrawing.lighten(color, 0.3F), 0.6F * (1 - f));
             poseStack.popPose();
             return;
         }
-        for (int k = TRAIL; k >= 1; k--) {
-            Vec3 p = fs.trail[k];
-            float fade = 1 - k / (float) (TRAIL + 1);
-            poseStack.pushPose();
-            poseStack.translate(p.x, p.y, p.z);
-            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.MOTE, 0.05F + 0.07F * fade, RuneDrawing.lighten(color, 0.35F), 0.75F * fade);
-            poseStack.popPose();
+        float u = fs.u;
+        int leg = fs.phase.leg();
+        Vec3 origin = state.origin;
+        Vec3 lying = flight.path().getFirst().subtract(origin);
+        switch (fs.phase.move()) {
+            case REACH -> {
+                float e = PylonFlight.out(u);
+                TendrilFx.submit(poseStack, collector, camera.orientation, eye, flight, 0, 1 - e, 1, true, color, time, fs.seed, 1, 0,
+                        origin, Math.min(1, u * 4));
+                if (flight.gathered() && u > 0.5F) {
+                    // The spot it lies on lights up as the tendril comes.
+                    flatRing(poseStack, collector, lying.add(0, -0.18, 0), 0.32F - 0.08F * u, color, (u - 0.5F) * 1.4F, time);
+                }
+                item(poseStack, collector, fs, lying.add(0, Mth.sin(fs.age * 0.15F) * 0.03, 0), 0.5F, fs.age * 2);
+            }
+            case GRAB -> {
+                float g = PylonFlight.smooth(u);
+                TendrilFx.submit(poseStack, collector, camera.orientation, eye, flight, 0, 0, 1, true, color, time, fs.seed, -1, 0.6F * g,
+                        origin, 1);
+                Vec3 at = lying.add(0, 0.22 * g, 0);
+                if (flight.gathered()) {
+                    flatRing(poseStack, collector, lying.add(0, -0.18, 0), 0.24F, color, 0.7F * (1 - g), time);
+                }
+                claw(poseStack, collector, camera, at, Mth.lerp(g, 0.42F, 0.2F), color, 0.4F + 0.6F * g, time);
+                item(poseStack, collector, fs, at, Mth.lerp(g, 0.5F, 0.42F), fs.age * (2 + 10 * g));
+            }
+            case DRAG -> {
+                float p = PylonFlight.smooth(u);
+                // A little behind the tendril's pull and swinging, like something heavy being dragged.
+                Vec3 side = new Vec3(Mth.sin(fs.age * 0.35F), 0, Mth.cos(fs.age * 0.29F)).scale(0.05 * Mth.sin(p * Mth.PI));
+                Vec3 at = flight.curve(0, p).subtract(origin).add(0, 0.22 * (1 - p), 0).add(side);
+                TendrilFx.submit(poseStack, collector, camera.orientation, eye, flight, 0, p, 1, true, color, time, fs.seed, -1, 0.8F,
+                        origin, 1);
+                claw(poseStack, collector, camera, at, 0.2F, color, 1 - 0.5F * p, time);
+                item(poseStack, collector, fs, at, 0.42F * (1 - 0.35F * p * p), fs.age * 12);
+            }
+            case ABSORB -> {
+                Vec3 at = flight.path().get(1).subtract(origin);
+                float shrink = 1 - PylonFlight.smooth(u);
+                item(poseStack, collector, fs, at, 0.27F * shrink, fs.age * 30);
+            }
+            case EXTEND -> {
+                float e = PylonFlight.out(u);
+                TendrilFx.submit(poseStack, collector, camera.orientation, eye, flight, leg, 0, e, false, color, time, fs.seed + leg, 1, 0.2F,
+                        origin, 1);
+            }
+            case SLIDE -> {
+                float p = PylonFlight.smooth(u);
+                Vec3 at = flight.curve(leg, p).subtract(origin);
+                TendrilFx.submit(poseStack, collector, camera.orientation, eye, flight, leg, p, 1, true, color, time, fs.seed + leg, -1, 0.85F,
+                        origin, 1);
+                // Out of one gem, into the next: it grows at the start and, before a gem, shrinks at the end.
+                boolean intoGem = leg + 1 < flight.path().size() - 2;
+                float size = 0.42F * Math.min(1, u * 5) * (intoGem ? Math.min(1, (1 - u) * 5) : 1);
+                claw(poseStack, collector, camera, at, 0.2F, color, 0.8F, time);
+                item(poseStack, collector, fs, at, size, fs.age * 12);
+            }
+            case SINK -> {
+                float p = PylonFlight.smooth(u);
+                Vec3 from = flight.path().get(leg).subtract(origin);
+                Vec3 to = flight.path().get(leg + 1).subtract(origin);
+                flatRing(poseStack, collector, to.add(0, 0.02, 0), 0.3F - 0.12F * p, color, 0.8F * Mth.sin(u * Mth.PI), time);
+                // Out of the gem (it grows back from nothing) and down into the container, shrinking.
+                item(poseStack, collector, fs, from.lerp(to, p), 0.36F * Math.min(1, u * 4) * (1 - 0.75F * p), fs.age * 12);
+            }
         }
-        Vec3 at = fs.trail[0];
-        // Grows out of where it was and shrinks into where it goes.
-        float size = 0.38F * Mth.clamp(Math.min(fs.progress * 6, (1 - fs.progress) * 5), 0.25F, 1);
+    }
+
+    /** The item itself, full bright in a soft halo of the magic holding it. */
+    private static void item(PoseStack poseStack, SubmitNodeCollector collector, FlightState fs, Vec3 at, float size, float spin) {
+        if (size <= 0.01F) {
+            return;
+        }
         poseStack.pushPose();
         poseStack.translate(at.x, at.y, at.z);
-        HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.42F, color, 0.55F);
-        poseStack.rotate(Axis.YP.rotationDegrees(fs.age * 18));
+        poseStack.rotate(Axis.YP.rotationDegrees(spin));
         poseStack.scale(size, size, size);
         poseStack.translate(0, -0.15, 0);
         fs.item.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+        poseStack.popPose();
+    }
+
+    /** The tendril's grip: a sigil ring facing the camera around what it holds, and a faint glow inside. */
+    private static void claw(PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, Vec3 at, float radius, int color,
+                             float alpha, float time) {
+        poseStack.pushPose();
+        poseStack.translate(at.x, at.y, at.z);
+        HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, radius * 2.6F, color, 0.3F * alpha);
+        poseStack.rotate(camera.orientation);
+        poseStack.rotate(Axis.ZP.rotation(time * 0.12F));
+        HexFx.sigilRing(poseStack, collector, radius, 4, RuneDrawing.lighten(color, 0.3F), alpha);
+        poseStack.popPose();
+    }
+
+    /** A sigil ring lying flat (on the ground under an item, on a container's top). */
+    private static void flatRing(PoseStack poseStack, SubmitNodeCollector collector, Vec3 at, float radius, int color, float alpha,
+                                 float time) {
+        if (alpha <= 0.01F) {
+            return;
+        }
+        poseStack.pushPose();
+        poseStack.translate(at.x, at.y, at.z);
+        poseStack.rotate(Axis.XP.rotationDegrees(90));
+        poseStack.rotate(Axis.ZP.rotation(-time * 0.08F));
+        HexFx.sigilRing(poseStack, collector, radius, 6, color, Math.min(1, alpha));
         poseStack.popPose();
     }
 
@@ -286,7 +349,6 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
 
     public static final class State extends BlockEntityRenderState {
         final ItemStackRenderState gem = new ItemStackRenderState();
-        final List<ItemStackRenderState> filters = new ArrayList<>();
         final List<FlightState> flights = new ArrayList<>();
         final List<Vec3> links = new ArrayList<>();
         @Nullable
@@ -296,25 +358,17 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         float time;
         float flare;
         int color;
-        int filterCount;
         int flightCount;
-
-        ItemStackRenderState item(List<ItemStackRenderState> pool, int i) {
-            while (pool.size() <= i) {
-                pool.add(new ItemStackRenderState());
-            }
-            return pool.get(i);
-        }
+        Vec3 origin = Vec3.ZERO;
     }
 
     static final class FlightState {
         final ItemStackRenderState item = new ItemStackRenderState();
-        final Vec3[] trail = new Vec3[TRAIL + 1];
-        Vec3 start = Vec3.ZERO;
-        Vec3 end = Vec3.ZERO;
+        PylonFlight flight;
+        PylonFlight.@Nullable Phase phase;
+        float u;
         float age;
-        float progress;
         float landed;
-        boolean gathered;
+        int seed;
     }
 }

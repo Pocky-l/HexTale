@@ -29,7 +29,7 @@ public enum PylonRune {
 
     public static final int SLOTS = 3;
     /** Blocks around the pylon it gathers from, by strength. */
-    private static final int[] RADIUS = {3, 5, 7, 9, 12};
+    private static final int[] RADIUS = {6, 8, 10, 12, 16};
     /** Blocks a link may span, gem to gem, by strength. */
     private static final int[] RANGE = {8, 12, 16, 24, 32};
     /** Ticks between moves, by strength. */

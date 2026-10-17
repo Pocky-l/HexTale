@@ -142,7 +142,7 @@ public final class JarStreamFx {
     }
 
     /** Brightens a colour to full value, keeping its hue: dull essence colours would vanish as additive light. */
-    private static int vivid(int rgb) {
+    static int vivid(int rgb) {
         int r = rgb >> 16 & 0xFF;
         int g = rgb >> 8 & 0xFF;
         int b = rgb & 0xFF;
@@ -152,7 +152,7 @@ public final class JarStreamFx {
     }
 
     /** A camera-facing strip of additive light through the points: full light on its centre line, none at its edges. */
-    private static void strip(VertexConsumer consumer, PoseStack.Pose pose, Vec3[] points, float[] light, Vector3f eye, float width, int color,
+    static void strip(VertexConsumer consumer, PoseStack.Pose pose, Vec3[] points, float[] light, Vector3f eye, float width, int color,
                               float alpha) {
         Vector3f[] centre = new Vector3f[points.length];
         Vector3f[] across = new Vector3f[points.length];
@@ -186,7 +186,7 @@ public final class JarStreamFx {
     }
 
     /** A twinkling four-pointed star of light facing the camera: a soft disc and four thin rays, turned by {@code spin}. */
-    private static void star(VertexConsumer consumer, PoseStack.Pose pose, Vec3 at, Vector3f right, Vector3f up, float size, float spin,
+    static void star(VertexConsumer consumer, PoseStack.Pose pose, Vec3 at, Vector3f right, Vector3f up, float size, float spin,
                              int color, int core, float alpha) {
         if (alpha <= 0.01F) {
             return;

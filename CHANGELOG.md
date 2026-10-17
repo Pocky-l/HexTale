@@ -109,24 +109,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Item transport: hex pylons**
 - Instead of a clumsy mechanical arm, the pull of a hextech gem: three pylons, columns of fluted magic stone crowned
   with brass and a floating gemstone, made at the altar.
-- Gathering Pylon: set on a chest, a barrel, a furnace or any container, it lifts the items lying around (3 blocks, more
-  with runes) into its gem and lowers them into what it stands on - a furnace gets ore through its top. With nothing
+- Gathering Pylon: set on a chest, a barrel, a furnace or any container, it reaches for the items lying around (6
+  blocks, more with runes) and lowers them into what it stands on - a furnace gets ore through its top. With nothing
   under it, it sends them along its links.
-- Sending Pylon: stands on a storage and throws what it gives out (a furnace's result, a chest's anything) to the places
-  you link. Sneak + right click the pylon with an empty hand, then sneak + right click a storage's face: the face counts
-  (a furnace takes ore from the top, fuel from the side). Up to four links, tried in order; the same click again unlinks.
-- Relay Pylon: neither takes nor gives - it catches items thrown to it and passes them on to its own links, up to eight
-  relays in a chain. A relay with filters lets only those items through, so a few relays sort a storeroom.
-- Filters: right click a pylon with an item to make it a filter (up to four, circling the gem); with an empty hand to
-  take one off, or to hear what the pylon does now.
+- Sending Pylon: stands on a storage and sends what it gives out (a furnace's result, a chest's anything) to the places
+  you link. Right click the pylon, then right click a storage's face: the face counts (a furnace takes ore from the top,
+  fuel from the side). Up to four links, tried in order; the same clicks again unlink one, sneak + right click with an
+  empty hand unlinks all. The item tooltip tells how.
+- Relay Pylon: neither takes nor gives - it catches items sent to it and passes them on to its own links, up to eight
+  relays in a chain.
 - Pylon runes, burned in at the altar like a smelter's: Shift (reach and link range), Motor (pace), Lift (items per
   move), Lens. A broken pylon keeps its runes.
-- Moved items fly as glowing items with a trail of motes along arcs from gem to gem, a ring of light opens where a
-  gathered item lay and a flash marks where it lands; the gems spin up with each move, a gathering pylon's ring snaps
-  in as it pulls. Links show as gold threads while you sneak or hold a pylon; while linking, a thread runs to your
-  crosshair. Soft whooshes for pulling and throwing, a low touch for landing.
+- The magic fetches every item: a tendril of light, two strands twisting around a swaying line, reaches out of the gem,
+  closes a turning sigil around the item, draws back and drags it in, swinging a little; the gem flares as it drinks the
+  item in, and on to the next gem or container another tendril stretches out and pulls it along. Several items get
+  several tendrils, one after another. Links show as gold threads while you sneak or hold a pylon; while linking, a
+  thread runs to your crosshair. Soft whooshes for pulling and sending, a low touch for landing.
 - Decorative: Magic Stone Pillar (like a quartz pillar) and Brass Grate (see-through, like a copper grate).
-- Built to be cheap: items move straight between inventories in one transaction (only the flight is drawn), idle
+- Built to be cheap: items move straight between inventories in one transaction (only the fetching is drawn), idle
   pylons look four times rarer, and the clients get one small message per move.
 
 **Sound and integrations**

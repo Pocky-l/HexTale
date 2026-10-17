@@ -35,10 +35,9 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Linking pylons, like tying a thread: sneak + right click a pylon with an empty hand, then sneak + right click where it
- * should send - a container's face (the face matters: a furnace's top takes what it smelts, its side the fuel) or a relay
- * pylon. Doing it again on the same target unties the link; sneak-clicking the pylon itself, or waiting
- * {@value #TIMEOUT_TICKS} ticks, gives up. While a player is linking, a thread of light runs from the pylon to their
+ * Linking pylons, like tying a thread: right click a pylon, then right click where it should send - a container's face
+ * (the face matters: a furnace's top takes what it smelts, its side the fuel) or a relay pylon. Doing it again on the
+ * same target unties the link; clicking the pylon itself again, or waiting {@value #TIMEOUT_TICKS} ticks, gives up. While a player is linking, a thread of light runs from the pylon to their
  * crosshair (the client is told which pylon).
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
@@ -55,11 +54,18 @@ public final class PylonLinking {
     private PylonLinking() {
     }
 
-    /** Sneak-click on a pylon with no link going: start one from it. */
+    /** A click on a pylon: start a link from it, or give up the one going from it. */
     public static void start(ServerPlayer player, HexPylonBlockEntity pylon) {
+        Pending going = PENDING.get(player.getUUID());
+        if (going != null && going.pos().equals(pylon.getBlockPos()) && going.dimension() == player.level().dimension()) {
+            stop(player);
+            player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"));
+            return;
+        }
         PENDING.put(player.getUUID(), new Pending(player.level().dimension(), pylon.getBlockPos(), player.level().getGameTime()));
         ModNetwork.sendToPlayer(player, new PylonLinkPayload(Optional.of(pylon.getBlockPos())));
-        player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.start", pylon.range()).withStyle(ChatFormatting.AQUA));
+        player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.start", pylon.range(), pylon.links().size(),
+                HexPylonBlockEntity.MAX_LINKS).withStyle(ChatFormatting.AQUA));
         player.level().playSound(null, pylon.getBlockPos(), ModSounds.PYLON_LINK.get(), SoundSource.BLOCKS, 0.4F, 1.3F);
     }
 
@@ -89,13 +95,13 @@ public final class PylonLinking {
     }
 
     /**
-     * The second click: while a link is going, sneak + right click on any block ties it there (or unties it), before the
-     * block's own use - a chest does not open.
+     * The second click: while a link is going, right click on any block ties it there (or unties it), before the block's
+     * own use - a chest does not open.
      */
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         Player player = event.getEntity();
-        if (event.getHand() != InteractionHand.MAIN_HAND || !player.isSecondaryUseActive()) {
+        if (event.getHand() != InteractionHand.MAIN_HAND) {
             return;
         }
         if (event.getLevel().isClientSide()) {

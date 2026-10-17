@@ -51,25 +51,23 @@ import org.jspecify.annotations.Nullable;
  * per move, so sided inventories, modded machines and full containers behave); the clients only see the items fly
  * ({@link PylonFlight}, sent in one small payload per move).
  *
- * <p>Gathering: every interval, the items lying within the radius (nearest first, past their pickup delay, matching the
- * filters) go into the container below through its top - or, with no container below, to the links. Sending: what the
+ * <p>Gathering: every interval, the items lying within the radius (nearest first, past their pickup delay) go into the container below through its top - or, with no container below, to the links. Sending: what the
  * container below gives out through its bottom (a furnace's result, a chest's anything) goes to the links in order, each
- * link through the face it was made by; a link to a relay passes on through the relay's own links (its filters must
- * match too), up to {@value #MAX_HOPS} relays, each hop within the range of the pylon it leaves. Nothing to do = the pylon
+ * link through the face it was made by; a link to a relay passes on through the relay's own links, up to {@value #MAX_HOPS} relays, each hop within the range of the pylon it leaves. Nothing to do = the pylon
  * sleeps longer each time (up to four intervals), so idle pylons cost almost nothing.
  */
 public class HexPylonBlockEntity extends BlockEntity {
     public static final int MAX_LINKS = 4;
-    public static final int MAX_FILTERS = 4;
     public static final int MAX_HOPS = 8;
     /** Flights shown per move: a stack of 64 shows a few items in the air, not 64. */
     public static final int SHOWN_FLIGHTS = 6;
     /** Longest sleep of an idle pylon, in ticks. */
     public static final int MAX_SLEEP = 80;
+    /** Client: ticks between the tendrils of one move. */
+    private static final int STAGGER_TICKS = 4;
 
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
     private final List<PylonLink> links = new ArrayList<>();
-    private final List<ItemStack> filters = new ArrayList<>();
     private int wait;
     private int idle;
     /** Server: the flights of the last move (what the clients were sent), for tests. */
@@ -93,10 +91,6 @@ public class HexPylonBlockEntity extends BlockEntity {
 
     public List<PylonLink> links() {
         return links;
-    }
-
-    public List<ItemStack> filters() {
-        return filters;
     }
 
     public List<PylonFlight> lastFlights() {
@@ -134,7 +128,7 @@ public class HexPylonBlockEntity extends BlockEntity {
         return PylonRune.amount(strength(PylonRune.LIFT));
     }
 
-    // ---- Links and filters (changed by players) ------------------------------------------------------------------------
+    // ---- Links (changed by players) -------------------------------------------------------------------------------------
 
     public boolean linked(PylonLink link) {
         return links.stream().anyMatch(l -> l.pos().equals(link.pos()));
@@ -155,35 +149,17 @@ public class HexPylonBlockEntity extends BlockEntity {
         return true;
     }
 
-    public boolean addFilter(ItemStack stack) {
-        if (filters.size() >= MAX_FILTERS || filters.stream().anyMatch(f -> f.is(stack.getItem()))) {
+    /** Takes every link away; false when it had none. */
+    public boolean clearLinks() {
+        if (links.isEmpty()) {
             return false;
         }
-        filters.add(stack.copyWithCount(1));
-        wake();
+        links.clear();
         changed();
         return true;
     }
 
-    public ItemStack removeFilter() {
-        if (filters.isEmpty()) {
-            return ItemStack.EMPTY;
-        }
-        ItemStack removed = filters.removeLast();
-        changed();
-        return removed;
-    }
-
-    /** Whether the filters let this item through: any item when there are none, else the same kind of item. */
-    public boolean passes(ItemStack stack) {
-        return filters.isEmpty() || filters.stream().anyMatch(f -> f.is(stack.getItem()));
-    }
-
-    private boolean passes(ItemResource resource) {
-        return filters.isEmpty() || filters.stream().anyMatch(f -> resource.is(f.getItem()));
-    }
-
-    /** Look again at once (a link or filter changed, the container below changed). */
+    /** Look again at once (a link changed, the container below changed). */
     public void wake() {
         wait = Math.min(wait, 2);
         idle = 0;
@@ -232,7 +208,7 @@ public class HexPylonBlockEntity extends BlockEntity {
         }
         int r = radius();
         List<ItemEntity> lying = level.getEntitiesOfClass(ItemEntity.class, new AABB(worldPosition).inflate(r),
-                item -> item.isAlive() && !item.hasPickUpDelay() && !item.getItem().isEmpty() && passes(item.getItem()));
+                item -> item.isAlive() && !item.hasPickUpDelay() && !item.getItem().isEmpty());
         if (lying.isEmpty()) {
             return;
         }
@@ -255,12 +231,10 @@ public class HexPylonBlockEntity extends BlockEntity {
                 path.add(Vec3.atBottomCenterOf(worldPosition).add(0, 0.05, 0));
             } else {
                 for (Destination route : routes) {
-                    if (route.accepts(resource)) {
-                        moved = ResourceHandlerUtil.insertStacking(route.handler(), resource, want, null);
-                        if (moved > 0) {
-                            path.addAll(route.path());
-                            break;
-                        }
+                    moved = ResourceHandlerUtil.insertStacking(route.handler(), resource, want, null);
+                    if (moved > 0) {
+                        path.addAll(route.path());
+                        break;
                     }
                 }
             }
@@ -294,7 +268,7 @@ public class HexPylonBlockEntity extends BlockEntity {
             for (int turn = 0; turn < 4 && budget > 0; turn++) {
                 ResourceStack<ItemResource> moved;
                 try (Transaction transaction = Transaction.openRoot()) {
-                    moved = ResourceHandlerUtil.moveFirstStacking(from, route.handler(), route::accepts, budget, transaction);
+                    moved = ResourceHandlerUtil.moveFirstStacking(from, route.handler(), resource -> true, budget, transaction);
                     transaction.commit();
                 }
                 if (moved == null || moved.amount() <= 0) {
@@ -313,19 +287,8 @@ public class HexPylonBlockEntity extends BlockEntity {
         }
     }
 
-    /**
-     * A place items can go: the handler of a linked container face, the gems on the way after this pylon's own (relays)
-     * and the filters of every pylon on the way.
-     */
-    record Destination(ResourceHandler<ItemResource> handler, List<Vec3> path, List<HexPylonBlockEntity> through) {
-        boolean accepts(ItemResource resource) {
-            for (HexPylonBlockEntity pylon : through) {
-                if (!pylon.passes(resource)) {
-                    return false;
-                }
-            }
-            return true;
-        }
+    /** A place items can go: the handler of a linked container face and the way there after this pylon's gem. */
+    record Destination(ResourceHandler<ItemResource> handler, List<Vec3> path) {
     }
 
     /** Every place this pylon reaches through its links, in link order (relays' links in theirs). */
@@ -333,12 +296,12 @@ public class HexPylonBlockEntity extends BlockEntity {
         List<Destination> out = new ArrayList<>();
         Set<BlockPos> seen = new HashSet<>();
         seen.add(worldPosition);
-        collect(level, this, new ArrayList<>(), new ArrayList<>(List.of(this)), seen, 0, out);
+        collect(level, this, new ArrayList<>(), seen, 0, out);
         return out;
     }
 
-    private static void collect(ServerLevel level, HexPylonBlockEntity node, List<Vec3> path, List<HexPylonBlockEntity> through,
-                                Set<BlockPos> seen, int hops, List<Destination> out) {
+    private static void collect(ServerLevel level, HexPylonBlockEntity node, List<Vec3> path, Set<BlockPos> seen, int hops,
+                                List<Destination> out) {
         Vec3 gem = node.gem();
         double range = node.range() + 0.5;
         for (PylonLink link : node.links) {
@@ -352,9 +315,7 @@ public class HexPylonBlockEntity extends BlockEntity {
                 seen.add(link.pos());
                 List<Vec3> nextPath = new ArrayList<>(path);
                 nextPath.add(next.gem());
-                List<HexPylonBlockEntity> nextThrough = new ArrayList<>(through);
-                nextThrough.add(next);
-                collect(level, next, nextPath, nextThrough, seen, hops + 1, out);
+                collect(level, next, nextPath, seen, hops + 1, out);
                 seen.remove(link.pos());
                 continue;
             }
@@ -368,7 +329,7 @@ public class HexPylonBlockEntity extends BlockEntity {
             List<Vec3> full = new ArrayList<>(path);
             full.add(link.approach());
             full.add(link.entry());
-            out.add(new Destination(handler, full, List.copyOf(through)));
+            out.add(new Destination(handler, full));
         }
     }
 
@@ -382,8 +343,9 @@ public class HexPylonBlockEntity extends BlockEntity {
 
     /** Client: flights arrived from the server. */
     public void show(List<PylonFlight> flights, long now) {
-        for (PylonFlight flight : flights) {
-            shown.add(new PylonFlight.Shown(flight, now));
+        // Each item gets its own tendril, a moment after the one before: many hands, not one jerk.
+        for (int i = 0; i < flights.size(); i++) {
+            shown.add(new PylonFlight.Shown(flights.get(i), now + i * STAGGER_TICKS));
         }
         movedAt = now;
     }
@@ -410,8 +372,6 @@ public class HexPylonBlockEntity extends BlockEntity {
         runes = input.read("runes", PickaxeRunes.CODEC).orElse(PickaxeRunes.EMPTY);
         links.clear();
         input.read("links", PylonLink.CODEC.listOf()).ifPresent(links::addAll);
-        filters.clear();
-        input.read("filters", ItemStack.CODEC.listOf()).ifPresent(filters::addAll);
     }
 
     @Override
@@ -422,9 +382,6 @@ public class HexPylonBlockEntity extends BlockEntity {
         }
         if (!links.isEmpty()) {
             output.store("links", PylonLink.CODEC.listOf(), List.copyOf(links));
-        }
-        if (!filters.isEmpty()) {
-            output.store("filters", ItemStack.CODEC.listOf(), List.copyOf(filters));
         }
     }
 

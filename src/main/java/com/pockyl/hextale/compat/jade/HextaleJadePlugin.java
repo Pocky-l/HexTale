@@ -89,13 +89,6 @@ public class HextaleJadePlugin implements IWailaPlugin {
                 }
             } else if (entity instanceof com.pockyl.hextale.block.HexPylonBlockEntity pylon) {
                 tooltip.add(com.pockyl.hextale.block.HexPylonBlock.status(pylon).copy().withStyle(ChatFormatting.GRAY));
-                if (!pylon.filters().isEmpty()) {
-                    Component names = Component.empty();
-                    for (int i = 0; i < pylon.filters().size(); i++) {
-                        names = names.copy().append(i == 0 ? Component.empty() : Component.literal(", ")).append(pylon.filters().get(i).getHoverName());
-                    }
-                    tooltip.add(Component.translatable("jade.hextale.pylon.filters", names).withStyle(ChatFormatting.AQUA));
-                }
                 for (var entry : pylon.runes().entries()) {
                     tooltip.add(Component.translatable(entry.rune().translationKey()).withColor(entry.rune().color())
                             .append(Component.literal(" " + "★".repeat(entry.stars())).withStyle(ChatFormatting.GOLD)));

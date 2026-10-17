@@ -23,7 +23,7 @@ import com.pockyl.hextale.transport.PylonFlight;
 import com.pockyl.hextale.transport.PylonLink;
 import com.pockyl.hextale.transport.PylonLinking;
 
-/** Hex pylons: gathering into what they stand on, sending along links and through relays, filters, reach and sleep. */
+/** Hex pylons: gathering into what they stand on, sending along links and through relays, reach and sleep. */
 public final class PylonGameTests {
     private static final BlockPos BASE = new BlockPos(1, 1, 1);
 
@@ -71,12 +71,12 @@ public final class PylonGameTests {
     /** Items lying within the radius go into the chest under the pylon, a pile beyond it stays; the clients get flights. */
     @HexTest(maxTicks = 200)
     public static void gatheringPylonFillsTheChestBelow(GameTestHelper helper) {
-        clear(helper, 8);
+        clear(helper, 10);
         helper.setBlock(BASE, Blocks.CHEST);
         HexPylonBlockEntity pylon = place(helper, ModBlocks.GATHERING_PYLON.get(), BASE.above());
-        drop(helper, Items.COBBLESTONE, 5, new Vec3(3.5, 1.2, 1.5));
-        drop(helper, Items.STICK, 3, new Vec3(1.5, 1.2, 3.5));
-        ItemEntity far = drop(helper, Items.DIAMOND, 1, new Vec3(8.5, 1.2, 1.5));
+        drop(helper, Items.COBBLESTONE, 5, new Vec3(6.5, 1.2, 1.5));
+        drop(helper, Items.STICK, 3, new Vec3(1.5, 1.2, 5.5));
+        ItemEntity far = drop(helper, Items.DIAMOND, 1, new Vec3(10.5, 1.2, 1.5));
         Container chest = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
         helper.succeedWhen(() -> {
             helper.assertTrue(count(chest, Items.COBBLESTONE) == 5 && count(chest, Items.STICK) == 3, "the items around are in the chest");
@@ -135,30 +135,25 @@ public final class PylonGameTests {
         });
     }
 
-    /** Sorting: iron goes through a relay that lets only iron pass, everything else takes the sender's second link. */
+    /** A chain: the sender throws to a relay, the relay passes everything on to the chest it is linked to. */
     @HexTest(maxTicks = 300)
-    public static void relaysPassOnAndFilter(GameTestHelper helper) {
+    public static void relaysPassItemsOn(GameTestHelper helper) {
         clear(helper, 6);
         helper.setBlock(BASE, Blocks.CHEST);
         Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
         from.setItem(0, new ItemStack(Items.IRON_INGOT, 6));
         from.setItem(1, new ItemStack(Items.COBBLESTONE, 6));
         BlockPos relayPos = BASE.offset(5, 0, 0);
-        BlockPos ironChest = BASE.offset(10, 0, 0);
-        BlockPos restChest = BASE.offset(0, 0, 3);
-        helper.setBlock(ironChest, Blocks.CHEST);
-        helper.setBlock(restChest, Blocks.CHEST);
+        BlockPos farChest = BASE.offset(10, 0, 0);
+        helper.setBlock(farChest, Blocks.CHEST);
         HexPylonBlockEntity relay = place(helper, ModBlocks.RELAY_PYLON.get(), relayPos);
-        relay.addFilter(new ItemStack(Items.IRON_INGOT));
-        relay.toggleLink(link(helper, ironChest, Direction.UP));
+        relay.toggleLink(link(helper, farChest, Direction.UP));
         HexPylonBlockEntity sender = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
         sender.toggleLink(link(helper, relayPos, Direction.UP));
-        sender.toggleLink(link(helper, restChest, Direction.UP));
-        Container iron = (Container) helper.getBlockEntity(ironChest, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
-        Container rest = (Container) helper.getBlockEntity(restChest, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container far = (Container) helper.getBlockEntity(farChest, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
         helper.succeedWhen(() -> {
-            helper.assertTrue(count(iron, Items.IRON_INGOT) == 6 && count(iron, Items.COBBLESTONE) == 0, "iron went through the relay");
-            helper.assertTrue(count(rest, Items.COBBLESTONE) == 6 && count(rest, Items.IRON_INGOT) == 0, "the rest took the other link");
+            helper.assertTrue(count(far, Items.IRON_INGOT) == 6 && count(far, Items.COBBLESTONE) == 6, "everything went through the relay");
+            helper.assertTrue(sender.lastFlights().getFirst().path().contains(relay.gem()), "the flight passes the relay's gem");
         });
     }
 
@@ -181,7 +176,7 @@ public final class PylonGameTests {
         helper.succeed();
     }
 
-    /** Linking by hand: sneak-click the pylon, then the chest's face; the link remembers the face. */
+    /** Linking by hand: click the pylon, then the furnace's side; the link remembers the face. Clicking twice gives up. */
     @HexTest(maxTicks = 20)
     public static void playersLinkByClicking(GameTestHelper helper) {
         clear(helper, 3);
@@ -195,6 +190,10 @@ public final class PylonGameTests {
         PylonLinking.link(player, helper.absolutePos(furnacePos), Direction.EAST);
         helper.assertFalse(PylonLinking.linking(player), "the link is tied");
         helper.assertTrue(pylon.links().size() == 1 && pylon.links().getFirst().face() == Direction.EAST, "the furnace's side: fuel");
+        PylonLinking.start(player, pylon);
+        PylonLinking.start(player, pylon);
+        helper.assertFalse(PylonLinking.linking(player), "a second click on the pylon gives up");
+        helper.assertTrue(pylon.clearLinks() && pylon.links().isEmpty(), "all links can be taken away");
         helper.succeed();
     }
 

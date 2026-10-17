@@ -4,12 +4,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -35,9 +32,8 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * A hex pylon: a fluted column of magic stone with a hextech gem floating over its crown ({@link HexPylonBlockEntity}
- * does the work). Right click with an item adds it to the filters (up to four, shown circling the gem), right click
- * with an empty hand takes the last one off or, with none, tells what the pylon does. Sneak + right click with an empty
- * hand starts a link: then sneak + right click a container's face or a relay ({@link PylonLinking}).
+ * does the work). Right click starts a link, then right click a container's face or a relay ({@link PylonLinking});
+ * sneak + right click with an empty hand takes all its links away.
  */
 public class HexPylonBlock extends BaseEntityBlock {
     private static final VoxelShape GATHERING_SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 2, 14), Block.box(5, 2, 5, 11, 10, 11),
@@ -57,24 +53,10 @@ public class HexPylonBlock extends BaseEntityBlock {
         return kind;
     }
 
-    @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
-                                          BlockHitResult hitResult) {
-        if (!(level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon)) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
-        }
-        if (!level.isClientSide()) {
-            if (pylon.addFilter(stack)) {
-                player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.filter.added", stack.getHoverName()));
-                level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.5F, 1.4F);
-            } else {
-                player.sendOverlayMessage(Component.translatable(pylon.filters().size() >= HexPylonBlockEntity.MAX_FILTERS
-                        ? "block.hextale.hex_pylon.filter.full" : "block.hextale.hex_pylon.filter.already", stack.getHoverName()));
-            }
-        }
-        return InteractionResult.SUCCESS;
-    }
-
+    /**
+     * Right click (with anything in hand; vanilla offers the block the use after the item): start a link from here, or
+     * give it up when one from here is going. Sneak + right click with an empty hand: take every link away.
+     */
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!(level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon)) {
@@ -84,16 +66,15 @@ public class HexPylonBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
         if (player.isSecondaryUseActive()) {
-            PylonLinking.start((ServerPlayer) player, pylon);
+            if (pylon.clearLinks()) {
+                player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.cleared"));
+                level.playSound(null, pos, com.pockyl.hextale.registry.ModSounds.PYLON_UNLINK.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
+            } else {
+                player.sendOverlayMessage(status(pylon));
+            }
             return InteractionResult.SUCCESS;
         }
-        ItemStack removed = pylon.removeFilter();
-        if (!removed.isEmpty()) {
-            player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.filter.removed", removed.getHoverName()));
-            level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.5F, 0.9F);
-        } else {
-            player.sendOverlayMessage(status(pylon));
-        }
+        PylonLinking.start((ServerPlayer) player, pylon);
         return InteractionResult.SUCCESS;
     }
 

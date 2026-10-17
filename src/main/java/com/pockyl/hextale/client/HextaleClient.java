@@ -87,6 +87,13 @@ public final class HextaleClient {
                             .append(Component.literal(" " + "★".repeat(entry.stars())).withStyle(ChatFormatting.GOLD)));
                 }
             }
+            // How a pylon is set up: what it does, how to link it, how to untie it.
+            if (ModItems.isPylon(stack)) {
+                String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+                event.getToolTip().add(Component.translatable("block.hextale." + id + ".hint").withStyle(ChatFormatting.GRAY));
+                event.getToolTip().add(Component.translatable("block.hextale.hex_pylon.hint.link").withStyle(ChatFormatting.DARK_AQUA));
+                event.getToolTip().add(Component.translatable("block.hextale.hex_pylon.hint.clear").withStyle(ChatFormatting.DARK_AQUA));
+            }
         });
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> RuneBoards.warmUp());
