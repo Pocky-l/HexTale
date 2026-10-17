@@ -649,37 +649,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             PixelArt.hex(graphics, x0 + 42 + i % 12 * 8, y0 + 44 + i / 12 * 8, 5, PixelArt.argb(left ? 0xFFF3C0 : 0x2A2018, 1),
                     PixelArt.argb(left ? 0x9C7230 : 0x4A3A28, 1));
         }
-        if (port >= 0) {
-            ItemStudy.Ray ray = null;
-            for (ItemStudy.Ray r : study.rays()) {
-                if (r.port() == port || r.exit() == port) {
-                    ray = r;
-                }
-            }
-            if (ray != null) {
-                List<Component> lines = new java.util.ArrayList<>();
-                lines.add(Component.translatable(KEY + "prism.ray." + ray.outcome().name().toLowerCase(java.util.Locale.ROOT),
-                        study.rays().indexOf(ray) + 1));
-                for (int b = 0; b < study.bodies().size(); b++) {
-                    if ((ray.touched() & 1 << b) != 0) {
-                        Essence essence = study.bodies().get(b).essence();
-                        lines.add(Component.literal(" ").append(ResearchText.essence(essence)));
-                    }
-                }
-                pendingTooltip = lines;
-            } else if (study.isActive()) {
-                pendingTooltip = List.of(Component.translatable(KEY + "prism.port"),
-                        Component.translatable(KEY + "prism.port.hint").withStyle(ChatFormatting.GRAY));
-            }
-        } else if (cell >= 0) {
-            int body = ItemStudy.bodyAt(study.bodies(), cell);
-            if (body >= 0 && study.isRevealed(body)) {
-                pendingTooltip = List.of(ResearchText.essence(study.bodies().get(body).essence()));
-            } else if (study.isActive() && study.canCheck(cell)) {
-                pendingTooltip = List.of(Component.translatable(KEY + "prism.check"),
-                        Component.translatable(KEY + "prism.check.hint").withStyle(ChatFormatting.GRAY));
-            }
-        }
+        // No tooltips over the prism: they would cover the field. Hovering a used port highlights its ray instead.
     }
 
     // ---- Vials, slots, toast --------------------------------------------------------------------------------------

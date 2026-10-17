@@ -666,12 +666,5 @@
   "gui.hextale.separator.no_essence": "Эссенция не выбрана",
   "gui.hextale.separator.no_fuel": "Нужен огненный порошок",
   "gui.hextale.separator.no_fuel.hint": "Один огненный порошок извлекает 32 мВ выбранной эссенции",
-  "gui.hextale.slot.separator.fuel": "Огненный порошок: сгорает, извлекая выбранную эссенцию",
-  "gui.hextale.research_table.prism.port": "Порт призмы",
-  "gui.hextale.research_table.prism.port.hint": "Клик: пустить луч в поле. Он огибает спрятанные там эссенции, поглощается, если врезается в одну, и возвращается, если его отклонило прямо у края.",
-  "gui.hextale.research_table.prism.check": "Проверить эту секцию",
-  "gui.hextale.research_table.prism.check.hint": "Клик: эссенция здесь проявится, пустая секция стоит одного луча. ПКМ: пометка карандашом.",
-  "gui.hextale.research_table.prism.ray.exit": "Луч %s: вышел здесь",
-  "gui.hextale.research_table.prism.ray.hit": "Луч %s: поглощён",
-  "gui.hextale.research_table.prism.ray.reflect": "Луч %s: вернулся обратно"
+  "gui.hextale.slot.separator.fuel": "Огненный порошок: сгорает, извлекая выбранную эссенцию"
 }

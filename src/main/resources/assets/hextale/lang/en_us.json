@@ -666,12 +666,5 @@
   "gui.hextale.separator.no_essence": "No essence chosen",
   "gui.hextale.separator.no_fuel": "Needs blaze powder",
   "gui.hextale.separator.no_fuel.hint": "One blaze powder draws 32 mB of the chosen essence",
-  "gui.hextale.slot.separator.fuel": "Blaze powder: burned to draw the chosen essence out",
-  "gui.hextale.research_table.prism.port": "A port of the prism",
-  "gui.hextale.research_table.prism.port.hint": "Click: shine a ray into the field. It bends away from the essences hidden there, is absorbed when it runs into one, and comes back when bent right at the rim.",
-  "gui.hextale.research_table.prism.check": "Check this section",
-  "gui.hextale.research_table.prism.check.hint": "Click: an essence here is revealed, an empty section costs a ray. Right click: a pencil mark.",
-  "gui.hextale.research_table.prism.ray.exit": "Ray %s: came out here",
-  "gui.hextale.research_table.prism.ray.hit": "Ray %s: absorbed",
-  "gui.hextale.research_table.prism.ray.reflect": "Ray %s: came straight back"
+  "gui.hextale.slot.separator.fuel": "Blaze powder: burned to draw the chosen essence out"
 }
