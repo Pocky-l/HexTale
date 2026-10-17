@@ -74,7 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Big Essence Jar, the first structure built in the world: a 3 x 3 floor of glass, two rings of glass around a hollow
   middle and a lid of any wooden slabs, woken by a right click with unstable hextech or a hextech gemstone (not used
   up). It looks like the Essence Jar four times as large and holds sixteen jars' worth (4096 mB): bottles by hand, pipes
-  join it anywhere, it pours out under its middle, machines draw from it like from any jar. Breaking any of its blocks
+  join it anywhere (machines draw through them, a Siphon Pylon can stand on its lid), it pours out under its middle,
+  machines draw from it like from any jar. Breaking any of its blocks
   takes it apart into its glass and slabs; the essence inside is lost and no jar drops. The ground under it stays lit. The guide shows the structure layer by layer.
 - Brass Pipes - slim tubes with small flanges - carry essence and water and join a machine only where it has a port;
   the machine's model grows a matching joint there. The Drain Valve pours whatever reaches it out into the world while

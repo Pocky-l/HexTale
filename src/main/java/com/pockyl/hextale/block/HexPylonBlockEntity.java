@@ -617,7 +617,9 @@ public class HexPylonBlockEntity extends BlockEntity {
      * Essence Jar, which holds every essence: there a sticker picks the essence it gives.
      */
     void siphon(ServerLevel level, List<PylonFlight> flights) {
-        if (links.isEmpty() || !(level.getBlockEntity(worldPosition.below()) instanceof EssenceTankBlockEntity jar) || jar.tank().isEmpty()) {
+        // On a jar, or on the lid of a Big Essence Jar.
+        EssenceTankBlockEntity jar = EssenceTankBlockEntity.at(level, worldPosition.below());
+        if (links.isEmpty() || jar == null || jar.tank().isEmpty()) {
             return;
         }
         int budget = essenceAmount();
@@ -625,7 +627,8 @@ public class HexPylonBlockEntity extends BlockEntity {
         List<Destination> routes = destinations(level, true);
         for (Destination route : inTurn(routes)) {
             BlockEntity target = level.getBlockEntity(route.pos());
-            if (!(target instanceof EssenceNetwork.Receiver receiver) || route.pos().equals(worldPosition.below())) {
+            EssenceTankBlockEntity targetJar = EssenceTankBlockEntity.at(level, route.pos());
+            if (!(target instanceof EssenceNetwork.Receiver receiver) || route.pos().equals(worldPosition.below()) || targetJar == jar) {
                 continue;
             }
             Essence only = sticker;
@@ -634,9 +637,9 @@ public class HexPylonBlockEntity extends BlockEntity {
                 clash |= only != null && relay.sticker() != null && relay.sticker() != only;
                 only = only == null ? relay.sticker() : only;
             }
-            if (target instanceof EssenceTankBlockEntity tank && tank.sticker() != null) {
-                clash |= only != null && tank.sticker() != only;
-                only = only == null ? tank.sticker() : only;
+            if (targetJar != null && targetJar.sticker() != null) {
+                clash |= only != null && targetJar.sticker() != only;
+                only = only == null ? targetJar.sticker() : only;
             }
             if (clash) {
                 continue;

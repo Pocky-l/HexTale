@@ -534,6 +534,53 @@ public final class ResearchGameTests {
         helper.succeedWhen(() -> helper.assertTrue(alembic.water() >= 500, "the pump fills the flask, got " + alembic.water() + " mB"));
     }
 
+    /** A separator's inlet draws the mixture through a pipe out of a jar standing beside it. */
+    @HexTest(maxTicks = 100)
+    public static void aSeparatorDrawsFromAPipedJar(GameTestHelper helper) {
+        BlockPos separatorAt = new BlockPos(3, 2, 3);
+        BlockPos jarAt = separatorAt.south(2);
+        helper.setBlock(separatorAt.below(), net.minecraft.world.level.block.Blocks.STONE);
+        helper.setBlock(jarAt.below(), net.minecraft.world.level.block.Blocks.STONE);
+        helper.setBlock(separatorAt, ModBlocks.SEPARATOR.get());
+        helper.setBlock(jarAt, ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(separatorAt.south(), ModBlocks.BRASS_PIPE.get());
+        EssenceTankBlockEntity jar = helper.getBlockEntity(jarAt, EssenceTankBlockEntity.class);
+        jar.tank().set(EssenceMix.pure(Essence.FIRE, 40));
+        com.pockyl.hextale.block.SeparatorBlockEntity separator = helper.getBlockEntity(separatorAt, com.pockyl.hextale.block.SeparatorBlockEntity.class);
+        helper.succeedWhen(() -> helper.assertTrue(separator.mix().amount() > 0 || jar.tank().amount() < 40,
+                "the separator draws from the jar through the pipe: jar " + jar.tank().amount() + ", separator " + separator.mix().amount()));
+    }
+
+    /** The same from a Big Essence Jar: the pipe meets one of its glass blocks. */
+    @HexTest(maxTicks = 100)
+    public static void aSeparatorDrawsFromAPipedBigJar(GameTestHelper helper) {
+        BlockPos corner = new BlockPos(1, 2, 4);
+        for (int y = 0; y < 4; y++) {
+            for (int x = 0; x < 3; x++) {
+                for (int z = 0; z < 3; z++) {
+                    if (x == 1 && z == 1 && (y == 1 || y == 2)) {
+                        continue;
+                    }
+                    helper.setBlock(corner.offset(x, y, z), y == 3 ? net.minecraft.world.level.block.Blocks.OAK_SLAB
+                            : net.minecraft.world.level.block.Blocks.GLASS);
+                }
+            }
+        }
+        var found = com.pockyl.hextale.multiblock.Multiblocks.find(helper.getLevel(), helper.absolutePos(corner),
+                new ItemStack(ModItems.UNSTABLE_HEXTECH.get()));
+        helper.assertTrue(found.isPresent(), "the big jar is found");
+        com.pockyl.hextale.multiblock.Multiblocks.form(helper.getLevel(), found.get().getKey(), found.get().getValue(), null);
+        EssenceTankBlockEntity jar = helper.getBlockEntity(corner.offset(1, 0, 1), EssenceTankBlockEntity.class);
+        jar.tank().set(EssenceMix.pure(Essence.FIRE, 40));
+        // Separator north of the jar, its back (south) piped to the jar's north side.
+        BlockPos separatorAt = corner.offset(1, 0, -2);
+        helper.setBlock(separatorAt, ModBlocks.SEPARATOR.get());
+        helper.setBlock(separatorAt.south(), ModBlocks.BRASS_PIPE.get());
+        com.pockyl.hextale.block.SeparatorBlockEntity separator = helper.getBlockEntity(separatorAt, com.pockyl.hextale.block.SeparatorBlockEntity.class);
+        helper.succeedWhen(() -> helper.assertTrue(separator.mix().amount() > 0,
+                "the separator draws from the big jar: jar " + jar.tank().amount() + ", separator " + separator.mix().amount()));
+    }
+
     @HexTest(maxTicks = 100)
     public static void anOpenValveDrainsWhatComes(GameTestHelper helper) {
         BlockPos tankAt = new BlockPos(1, 3, 1);

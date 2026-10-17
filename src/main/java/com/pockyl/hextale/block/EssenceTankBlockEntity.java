@@ -58,6 +58,16 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
         tank = new EssenceTank(capacity);
     }
 
+    /** The jar at this block: a jar itself, or the Big Essence Jar a block of which stands there; else null. */
+    @Nullable
+    public static EssenceTankBlockEntity at(net.minecraft.world.level.BlockGetter level, BlockPos pos) {
+        BlockEntity entity = level.getBlockEntity(pos);
+        if (entity instanceof com.pockyl.hextale.multiblock.MultiblockPartBlockEntity part) {
+            entity = level.getBlockEntity(part.controller());
+        }
+        return entity instanceof EssenceTankBlockEntity jar ? jar : null;
+    }
+
     public EssenceTank tank() {
         return tank;
     }

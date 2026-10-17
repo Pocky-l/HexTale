@@ -110,7 +110,7 @@ public final class EssenceNetwork {
 
     /**
      * Draws up to {@code amount} drops for the vessel at {@code to} through its face {@code face}: out of an Essence Tank
-     * right there, or out of the first non-empty tank on the pipes joined there - so a machine's inlet takes from the
+     * right there, or out of the first non-empty tank on the pipes joined there (a block of a Big Essence Jar counts as the jar) - so a machine's inlet takes from the
      * tanks it is piped to, whichever face of the tank the pipe meets. Never out of a network the vessel's own outlet
      * runs into.
      *
@@ -121,8 +121,9 @@ public final class EssenceNetwork {
             return EssenceMix.EMPTY;
         }
         BlockPos start = to.relative(face);
-        if (level.getBlockEntity(start) instanceof EssenceTankBlockEntity tank) {
-            return take(tank, amount);
+        EssenceTankBlockEntity here = EssenceTankBlockEntity.at(level, start);
+        if (here != null) {
+            return take(here, amount);
         }
         if (!(level.getBlockState(start).getBlock() instanceof BrassPipeBlock)) {
             return EssenceMix.EMPTY;
@@ -134,8 +135,8 @@ public final class EssenceNetwork {
         for (BlockPos pipe : pipes) {
             for (Direction direction : Direction.values()) {
                 BlockPos at = pipe.relative(direction);
-                if (!at.equals(to) && !pipes.contains(at) && level.getBlockEntity(at) instanceof EssenceTankBlockEntity tank
-                        && !tank.tank().isEmpty()) {
+                EssenceTankBlockEntity tank = at.equals(to) || pipes.contains(at) ? null : EssenceTankBlockEntity.at(level, at);
+                if (tank != null && !tank.tank().isEmpty()) {
                     return take(tank, amount);
                 }
             }
