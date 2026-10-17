@@ -16,13 +16,16 @@ public record PylonLink(BlockPos pos, Direction face) {
             Direction.CODEC.fieldOf("face").forGetter(PylonLink::face)
     ).apply(instance, PylonLink::new));
 
-    /** The middle of the linked face, where items go in. */
+    /**
+     * Where items are shown going in: the middle of the block's top, whatever face the link uses (a side face would send
+     * the flight down to the ground beside the block). The face only decides the slots.
+     */
     public Vec3 entry() {
-        return Vec3.atCenterOf(pos).add(face.getStepX() * 0.5, face.getStepY() * 0.5, face.getStepZ() * 0.5);
+        return Vec3.atCenterOf(pos).add(0, 0.5, 0);
     }
 
-    /** A little in front of the linked face: where a flight turns to go in. */
+    /** Above the block's top: where a flight turns to sink in. */
     public Vec3 approach() {
-        return Vec3.atCenterOf(pos).add(face.getStepX() * 0.95, face.getStepY() * 0.95, face.getStepZ() * 0.95);
+        return Vec3.atCenterOf(pos).add(0, 1.1, 0);
     }
 }
