@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -22,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.block.HexSmelterBlock;
 import com.pockyl.hextale.block.HexSmelterBlockEntity;
+import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.registry.ModItems;
 
 /**
@@ -51,14 +53,26 @@ public class HexSmelterRenderer implements BlockEntityRenderer<HexSmelterBlockEn
         state.time = HexFx.time(level, partialTick);
         state.lit = smelter.getBlockState().getValue(HexSmelterBlock.LIT);
         state.color = PickaxeRuneTint.blend(smelter.runes());
-        // The gem swells while the drawn essence arrives: the motes fly for about a second, the stream lasts another.
-        float age = level == null ? 1000 : level.getGameTime() - smelter.drewAt + partialTick;
-        state.flare = age < 10 || age > 50 ? 0 : Mth.sin((age - 10) / 40F * Mth.PI);
+        // Essence drawn out of a jar: the stream, and the gem swelling while the stream pours into it.
+        float head = Mth.lerp(partialTick, smelter.streamHeadO, smelter.streamHead);
+        float tail = Mth.lerp(partialTick, smelter.streamTailO, smelter.streamTail);
+        BlockPos jar = smelter.streamJar;
+        state.stream = null;
+        if (head > 0 && jar != null && smelter.streamColor >= 0) {
+            Vec3 origin = Vec3.atLowerCornerOf(smelter.getBlockPos());
+            state.stream = new JarStreamFx.Stream(JarReach.mouth(jar).subtract(origin),
+                    HexSmelterBlockEntity.gemPosition(smelter.getBlockPos()).subtract(origin), smelter.streamColor, head, tail,
+                    (int) smelter.getBlockPos().asLong());
+        }
+        state.flare = Mth.clamp(head * 2 - 1, 0, 1) * (1 - tail);
     }
 
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         float time = state.time;
+        if (state.stream != null) {
+            JarStreamFx.submit(poseStack, collector, camera.orientation, camera.pos.subtract(Vec3.atLowerCornerOf(state.blockPos)), state.stream, time);
+        }
         float activity = state.lit ? 1 : 0;
         float bob = Mth.sin(time * 0.07F) * 0.02F;
         poseStack.pushPose();
@@ -83,7 +97,10 @@ public class HexSmelterRenderer implements BlockEntityRenderer<HexSmelterBlockEn
 
     @Override
     public AABB getRenderBoundingBox(HexSmelterBlockEntity smelter) {
-        return new AABB(smelter.getBlockPos()).expandTowards(0, 0.6, 0);
+        AABB box = new AABB(smelter.getBlockPos()).expandTowards(0, 0.6, 0);
+        BlockPos source = smelter.streamJar;
+        // The stream reaches out to its jar and arches above the straight line.
+        return source == null ? box : box.minmax(new AABB(source).expandTowards(0, 1.5, 0)).inflate(0.5, 1.5, 0.5);
     }
 
     public static final class State extends BlockEntityRenderState {
@@ -92,5 +109,6 @@ public class HexSmelterRenderer implements BlockEntityRenderer<HexSmelterBlockEn
         boolean lit;
         int color;
         float flare;
+        JarStreamFx.@Nullable Stream stream;
     }
 }

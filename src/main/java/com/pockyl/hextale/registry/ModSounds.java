@@ -56,6 +56,8 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SMELTER_ROAR = register("smelter.roar");
     /** A creative scroll unrolling: everything learned, or everything forgotten. */
     public static final DeferredHolder<SoundEvent, SoundEvent> SCROLL_KNOWLEDGE = register("scroll.knowledge");
+    /** Essence siphoned out of a jar into a machine that draws from the jars around it. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> ESSENCE_DRAW = register("essence.draw");
 
     private ModSounds() {
     }

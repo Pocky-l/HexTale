@@ -730,6 +730,7 @@
   "block.hextale.hextech_altar.engrave.clash_smelter": "%s и %s несовместимы",
   "block.hextale.hextech_altar.engrave.full_smelter": "Нет места для %s: плавильня держит три руны",
   "subtitles.hextale.smelter.roar": "Гудит Хекс-плавильня",
+  "subtitles.hextale.essence.draw": "Эссенция вытягивается из банки",
   "subtitles.hextale.scroll.knowledge": "Разворачивается свиток",
   "quest.hextale.wip_quench_tank": "Закалочная ванна",
   "quest.hextale.wip_quench_tank.desc": "Ванна, где раскалённый инструмент закаляют в эссенции: прочнее и выносливее.",

@@ -78,6 +78,9 @@ public final class SmelterGameTests {
             helper.assertTrue(fire.tank().amount() < 64, "the fire jar in reach was drawn from");
             helper.assertTrue(water.tank().amount() == 64, "water is no fuel: its jar stays full");
             helper.assertTrue(far.tank().amount() == 64, "a jar out of reach stays full");
+            helper.assertTrue(helper.absolutePos(fireJar).equals(smelter.streamSource())
+                    || helper.absolutePos(fireJar).asLong() == smelter.getUpdateTag(helper.getLevel().registryAccess()).getLongOr("source", 0),
+                    "the client learns which jar it draws from, for the stream");
         });
     }
 

@@ -25,9 +25,13 @@ import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
 import com.pockyl.hextale.block.TableAnimation;
 import com.pockyl.hextale.block.TableGeometry;
+import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Shows what lies on the Research Table - the open diary on its rest, parchment, ink and brush, a finished scroll - and
@@ -65,6 +69,7 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         float outerPhase;
         float innerPhase;
         float glow;
+        final List<JarStreamFx.Stream> inkStreams = new ArrayList<>();
     }
 
     public ResearchTableRenderer(BlockEntityRendererProvider.Context context) {
@@ -98,6 +103,15 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         state.outerPhase = animation.outerPhase;
         state.innerPhase = animation.innerPhase;
         state.glow = animation.glow;
+        // Ink spent on the parchment flows out of its jars into the orb: the threads grow, pour, then run in.
+        state.inkStreams.clear();
+        float age = table.sinceInkDrawn() + partialTick;
+        Vec3 orb = TableGeometry.toWorld(BlockPos.ZERO, state.facing, TableGeometry.ORB);
+        Vec3 origin = Vec3.atLowerCornerOf(table.getBlockPos());
+        for (JarReach.Draw draw : table.inkDraws()) {
+            state.inkStreams.add(new JarStreamFx.Stream(JarReach.mouth(draw.jar()).subtract(origin), orb,
+                    draw.essence() == null ? ORB_COLOR : draw.essence().color(), age / 12, (age - 42) / 16, (int) draw.jar().asLong()));
+        }
     }
 
     @Override
@@ -118,6 +132,12 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         submitOrb(state, poseStack, collector, camera.orientation);
         submitGlyph(state, poseStack, collector, camera.orientation);
         poseStack.popPose();
+        if (!state.inkStreams.isEmpty()) {
+            Vec3 eye = camera.pos.subtract(Vec3.atLowerCornerOf(state.blockPos));
+            for (JarStreamFx.Stream stream : state.inkStreams) {
+                JarStreamFx.submit(poseStack, collector, camera.orientation, eye, stream, state.time);
+            }
+        }
     }
 
     /** The parchment, the inkwell and the brush always lie on the desk; a finished scroll waits beside them. */
@@ -244,6 +264,10 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
 
     @Override
     public AABB getRenderBoundingBox(ResearchTableBlockEntity table) {
-        return TableGeometry.renderBounds(table.getBlockPos(), table.facing());
+        AABB box = TableGeometry.renderBounds(table.getBlockPos(), table.facing());
+        for (JarReach.Draw draw : table.inkDraws()) {
+            box = box.minmax(new AABB(draw.jar()).inflate(0.5, 2, 0.5));
+        }
+        return box;
     }
 }

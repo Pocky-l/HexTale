@@ -62,6 +62,7 @@ import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -84,8 +85,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     public static final int EVENT_FUSED = 1;
     public static final int EVENT_FIZZLE = 3;
-    /** A jar's ink streams into the orb ({@link JarReach#pack}). */
-    public static final int EVENT_DRAW = 4;
+    /** How long the ink streams from the jars into the orb, in ticks. */
+    public static final int INK_STREAM_TICKS = 60;
     /** Health a burst orb takes from the researcher (two hearts). */
     private static final float BURST_DAMAGE = 4.0F;
 
@@ -108,8 +109,9 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     /** Client side: index of the last finished rune (its hieroglyph rises over the orb), or -1. */
     public int flareRune = -1;
     public long fizzleTime = Long.MIN_VALUE / 2;
-    /** Client side: ink streaming from the jars into the orb. */
-    private final JarReach.Streams inkStreams = new JarReach.Streams();
+    /** The jars the last ink came from and when (game time); synced, the renderer streams them into the orb. */
+    private List<JarReach.Draw> inkDraws = List.of();
+    private long inkDrawnAt = -1000;
     /** Client side: ring spin and orb brightness, advanced by the renderer. */
     public final TableAnimation animation = new TableAnimation();
 
@@ -129,7 +131,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
      * letters into an enchanting table's book.
      */
     public static void clientTick(Level level, BlockPos pos, BlockState state, ResearchTableBlockEntity table) {
-        table.inkStreams.tick(level, table.orbPosition());
         if (table.items.get(HEXTECH).isEmpty()) {
             return;
         }
@@ -207,8 +208,23 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     /** Spends the ink of {@code sections} (per essence); every jar it comes from streams into the orb. */
     private void drawInk(int[] sections) {
         Map<EssenceTankBlockEntity, Essence> drawn = inkSupply().spendSections(sections);
-        drawn.forEach((jar, essence) -> level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_DRAW,
-                JarReach.pack(worldPosition, jar.getBlockPos(), essence)));
+        if (drawn.isEmpty()) {
+            return;
+        }
+        inkDraws = drawn.entrySet().stream().map(entry -> new JarReach.Draw(entry.getKey().getBlockPos(), entry.getValue())).toList();
+        inkDrawnAt = level.getGameTime();
+        level.playSound(null, worldPosition, ModSounds.ESSENCE_DRAW.get(), SoundSource.BLOCKS, 0.6F, 1.1F);
+        setChanged();
+    }
+
+    /** The jars whose ink still streams into the orb, or none. */
+    public List<JarReach.Draw> inkDraws() {
+        return level != null && level.getGameTime() - inkDrawnAt <= INK_STREAM_TICKS ? inkDraws : List.of();
+    }
+
+    /** Ticks since the last ink was drawn. */
+    public long sinceInkDrawn() {
+        return level == null ? Long.MAX_VALUE : level.getGameTime() - inkDrawnAt;
     }
 
     // ---- Learning a rune ------------------------------------------------------------------------------------------
@@ -493,7 +509,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
                     flareColor = flareRune >= 0 ? ComplexRunes.all().get(param).color() : 0x5CC8F2;
                 }
                 case EVENT_FIZZLE -> fizzleTime = now;
-                case EVENT_DRAW -> inkStreams.start(level, worldPosition, param);
                 default -> {
                     return super.triggerEvent(id, param);
                 }
@@ -592,6 +607,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         sheet.load(input.childOrEmpty("sheet"));
         study.load(input.childOrEmpty("study"));
         studyingItem = input.getBooleanOr("studying_item", false);
+        inkDraws = JarReach.read(input.getIntArray("ink_draws").orElse(new int[0]));
+        inkDrawnAt = input.getLongOr("ink_drawn_at", -1000);
     }
 
     @Override
@@ -607,6 +624,10 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = saveCustomOnly(registries);
         tag.putBoolean("drawing", drawing);
+        if (level != null && level.getGameTime() - inkDrawnAt <= INK_STREAM_TICKS) {
+            tag.putIntArray("ink_draws", JarReach.write(inkDraws));
+            tag.putLong("ink_drawn_at", inkDrawnAt);
+        }
         return tag;
     }
 

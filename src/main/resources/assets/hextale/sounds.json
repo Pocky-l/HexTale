@@ -266,5 +266,22 @@
         "volume": 0.8
       }
     ]
+  },
+  "essence.draw": {
+    "subtitle": "subtitles.hextale.essence.draw",
+    "sounds": [
+      {
+        "name": "hextale:essence_draw1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:essence_draw2",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:essence_draw3",
+        "volume": 0.7
+      }
+    ]
   }
 }

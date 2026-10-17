@@ -81,7 +81,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hex Smelter: a kiln of magic bricks with brass posts and a hextech gem floating in its crown, made at the altar from
   a blast furnace under the rune of Smelting. It smelts anything a furnace smelts, twice as fast, and burns fiery
   essence instead of fuel. While it has something to smelt it draws the essence by itself from the nearest jar of fiery
-  essence within 5 blocks - a ribbon of motes flows from the jar into its gem, which swells as it arrives; pipes at the
+  essence within 5 blocks - a glowing stream arches out of the jar's lid with blobs of essence running along it, a
+  whirl over the jar and the gem swelling as it pours in, with a soft siphoning sound; pipes at the
   back and the sides and bottles work too. The more fire an essence holds, the less of it goes. Its mouth burns with a hextech-blue flame while it works. Runes are burned into it at the altar
   like into a pickaxe, up to three: Tempering saves essence, Bellows speeds it up, Forge adds ingots from ore, Lens
   strengthens the others; the gem glows in their colours and the smelter keeps them when broken. JEI, Jade and the

@@ -870,6 +870,11 @@ public final class ResearchGameTests {
         table.thread(player, tree);
 
         helper.assertTrue(table.sheet().isDone(), "the drawing bound the rune");
+        // The client is told which jars the ink came from: its renderer streams them into the orb.
+        helper.assertTrue(!table.inkDraws().isEmpty() && table.inkDraws().stream().allMatch(draw -> draw.essence() != null),
+                "the ink's jars are remembered for the stream");
+        helper.assertTrue(table.getUpdateTag(helper.getLevel().registryAccess()).getIntArray("ink_draws").map(data -> data.length > 0).orElse(false),
+                "the ink's jars travel to the client");
         int stars = board.stars(tree.length / 2);
         RuneKnowledge knowledge = Research.of(player);
         helper.assertFalse(knowledge.knows(SMELTING), "the rune is not learned until its scroll is studied");

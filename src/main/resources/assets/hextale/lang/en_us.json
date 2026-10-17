@@ -730,6 +730,7 @@
   "block.hextale.hextech_altar.engrave.clash_smelter": "%s and %s are incompatible",
   "block.hextale.hextech_altar.engrave.full_smelter": "No room for %s: a smelter holds three runes",
   "subtitles.hextale.smelter.roar": "Hex Smelter roars",
+  "subtitles.hextale.essence.draw": "Essence is drawn from a jar",
   "subtitles.hextale.scroll.knowledge": "Scroll unrolls",
   "quest.hextale.wip_quench_tank": "Quench Tank",
   "quest.hextale.wip_quench_tank.desc": "A tank where red-hot tools are quenched in essence: tougher and longer-lasting.",

@@ -47,6 +47,7 @@ import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.menu.HexSmelterMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.SmelterRune;
@@ -74,11 +75,11 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
     public static final int HEAT_PER_ITEM = 8;
     public static final int CAPACITY = 256;
     /** While smelting it tops its tank up from the jars around: {@value #DRAW_MB} mB every {@value #DRAW_TICKS} ticks below {@value #DRAW_BELOW} mB. */
-    public static final int DRAW_MB = 8;
-    public static final int DRAW_TICKS = 20;
+    public static final int DRAW_MB = 4;
+    public static final int DRAW_TICKS = 10;
     public static final int DRAW_BELOW = 32;
-    /** Block event: a jar's essence streams into the smelter ({@link JarReach#pack}). */
-    private static final int EVENT_DRAW = 1;
+    /** The stream from a jar stays up this long after the last draw, even when the smelter rests. */
+    public static final int STREAM_LINGER = 40;
     /** Heat is kept in hundredths: a millibucket of half-fire essence gives 50. */
     private static final int HEAT_UNIT = 100;
     private static final int[] TOP = {INPUT};
@@ -97,10 +98,18 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
     private String blocked = "";
     /** Client side: smooth progress between syncs. */
     public float clientProgress;
-    /** Client side: the motes of the jars it draws from. */
-    private final JarReach.Streams streams = new JarReach.Streams();
-    /** Client side: game time of the last draw, for the gem's flare. */
-    public long drewAt = -1000;
+    /** The jar it draws from (synced, so the stream shows); null when its essence comes by pipe or bottle. */
+    private @Nullable BlockPos source;
+    /** Game time of the last draw from a jar (synced). */
+    private long drewAt = -1000;
+    /** Client side: how far the stream has grown out of the jar and run into the smelter (see {@code JarStreamFx}). */
+    public float streamHead;
+    public float streamTail;
+    public float streamHeadO;
+    public float streamTailO;
+    /** Client side: the jar the stream shows and its colour, kept while the stream runs out after the draw stopped. */
+    public @Nullable BlockPos streamJar;
+    public int streamColor = -1;
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -200,6 +209,7 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
         }
         int taken = tank.fill(offer, simulate);
         if (taken > 0 && !simulate) {
+            source = null;
             setChanged();
         }
         return taken;
@@ -225,11 +235,30 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
                 continue;
             }
             tank.fill(drawn, false);
+            if (!jar.getBlockPos().equals(source) || level.getGameTime() - drewAt > STREAM_LINGER) {
+                // A new stream: the essence is pulled out of the jar with a soft siphoning whoosh.
+                level.playSound(null, worldPosition, ModSounds.ESSENCE_DRAW.get(), SoundSource.BLOCKS, 0.5F, 0.9F + level.getRandom().nextFloat() * 0.2F);
+            }
+            source = jar.getBlockPos();
+            drewAt = level.getGameTime();
             setChanged();
-            level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_DRAW,
-                    JarReach.pack(worldPosition, jar.getBlockPos(), jar.isCreative() ? Essence.FIRE : null));
             return;
         }
+    }
+
+    /** The jar the stream comes from, or null when there is no stream now. */
+    public @Nullable BlockPos streamSource() {
+        if (source == null || level == null) {
+            return null;
+        }
+        boolean working = getBlockState().getValue(HexSmelterBlock.LIT) || level.getGameTime() - drewAt <= STREAM_LINGER;
+        return working ? source : null;
+    }
+
+    /** The essence the stream shows: pure fire from a creative jar, else whatever the jar holds. */
+    public @Nullable Essence streamEssence() {
+        return source != null && level != null && level.getBlockEntity(source) instanceof EssenceTankBlockEntity jar && jar.isCreative()
+                ? Essence.FIRE : null;
     }
 
     /** Draws essence until the heat covers an item; false when the tank runs dry first. */
@@ -272,6 +301,7 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
             return false;
         }
         tank.fill(inside, false);
+        source = null;
         bottle.shrink(1);
         if (out.isEmpty()) {
             items.set(BOTTLE_OUT, new ItemStack(Items.GLASS_BOTTLE));
@@ -373,7 +403,36 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
         if (smelter.clientProgress >= 1) {
             smelter.clientProgress = 0;
         }
-        smelter.streams.tick(level, gemPosition(pos));
+        smelter.tickStream();
+    }
+
+    /** Client: the stream grows out of the jar while it draws and runs into the smelter when it stops. */
+    private void tickStream() {
+        streamHeadO = streamHead;
+        streamTailO = streamTail;
+        BlockPos from = streamSource();
+        int color = from == null ? -1 : JarReach.color(level, new JarReach.Draw(from, streamEssence()));
+        boolean on = color >= 0;
+        if (on) {
+            streamJar = from;
+            streamColor = color;
+            if (streamTail > 0) {
+                // It had begun to run out: start over from the jar.
+                streamHead = 0;
+                streamTail = 0;
+                streamHeadO = 0;
+                streamTailO = 0;
+            }
+            streamHead = Math.min(1, streamHead + 0.08F);
+        } else if (streamHead > 0) {
+            streamTail = Math.min(streamHead, streamTail + 0.06F);
+            if (streamTail >= streamHead) {
+                streamHead = 0;
+                streamTail = 0;
+                streamHeadO = 0;
+                streamTailO = 0;
+            }
+        }
     }
 
     /** Where the gem floats over the smelter: drawn essence flows into it. */
@@ -381,17 +440,6 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
         return Vec3.atLowerCornerOf(pos).add(0.5, 15.5 / 16, 0.5);
     }
 
-    @Override
-    public boolean triggerEvent(int id, int param) {
-        if (id == EVENT_DRAW) {
-            if (level != null && level.isClientSide()) {
-                streams.start(level, worldPosition, param);
-                drewAt = level.getGameTime();
-            }
-            return true;
-        }
-        return super.triggerEvent(id, param);
-    }
 
     // ---- Container ----------------------------------------------------------------------------------------------------
 
@@ -484,6 +532,8 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
         experience = input.getFloatOr("experience", 0);
         blocked = input.getStringOr("blocked", "");
         runes = input.read("runes", PickaxeRunes.CODEC).orElse(PickaxeRunes.EMPTY);
+        source = input.getLong("source").map(BlockPos::of).orElse(null);
+        drewAt = input.getLongOr("drew_at", -1000);
     }
 
     @Override
@@ -497,6 +547,10 @@ public class HexSmelterBlockEntity extends BaseContainerBlockEntity implements W
         output.putString("blocked", blocked);
         if (!runes.isEmpty()) {
             output.store("runes", PickaxeRunes.CODEC, runes);
+        }
+        if (source != null) {
+            output.putLong("source", source.asLong());
+            output.putLong("drew_at", drewAt);
         }
     }
 
