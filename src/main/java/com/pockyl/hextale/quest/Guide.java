@@ -99,10 +99,7 @@ public final class Guide {
     public static final Quest WIP_REAPER = wip("reaper", Items.WHEAT, Quest.Aura.NONE, ESSENCE_TANK);
     public static final Quest WIP_GROVE_KEEPER = wip("grove_keeper", Items.OAK_SAPLING, Quest.Aura.LIFE, ESSENCE_TANK);
     public static final Quest WIP_FEEDING_TROUGH = wip("feeding_trough", Items.HAY_BLOCK, Quest.Aura.LIFE, ESSENCE_TANK);
-    public static final Quest WIP_COURIER_NODE = wip("courier_node", Items.BUNDLE, Quest.Aura.GOLD, ESSENCE_TANK);
-    public static final Quest WIP_GATHERING_LANTERN = wip("gathering_lantern", Items.LODESTONE, Quest.Aura.GOLD, ESSENCE_TANK);
     public static final Quest WIP_GEODE_RESONATOR = wip("geode_resonator", Items.SMALL_AMETHYST_BUD, Quest.Aura.STORM, ESSENCE_TANK, UNSTABLE_HEXTECH);
-    public static final Quest WIP_RESONANCE_FORK = wip("resonance_fork", Items.TRIPWIRE_HOOK, Quest.Aura.NONE, RESEARCHERS_GOGGLES);
     public static final Quest WIP_JAR_GAUGE = wip("jar_gauge", Items.COMPARATOR, Quest.Aura.NONE, RESEARCHERS_GOGGLES);
     public static final Quest WIP_SAWMILL = wip("sawmill", Items.OAK_PLANKS, Quest.Aura.NONE, ALEMBIC);
     public static final Quest WIP_FISH_WEIR = wip("fish_weir", Items.FISHING_ROD, Quest.Aura.NONE, PUMP);
@@ -135,6 +132,15 @@ public final class Guide {
             QuestDisplay.infusion("hextale:hex_smelter"), HEXTECH_GEMSTONE, RUNE_STELE);
     public static final Quest SMELTER_RUNE = add("smelter_rune", Quest.Kind.ITEM, List.of(HEX_SMELTER),
             () -> new ItemStack(ModItems.RUNE_STELE.get()), Quests.smelterRunes(1), QuestDisplay.smelterRunes(), null, Quest.Aura.FLAME);
+    // Hex pylons: items carried by hextech, gathered off the ground, thrown to links, passed on by relays.
+    public static final Quest GATHERING_PYLON = item("gathering_pylon", ModItems.GATHERING_PYLON, Quest.Aura.HEXTECH,
+            QuestDisplay.infusion("hextale:gathering_pylon"), HEXTECH_GEMSTONE);
+    public static final Quest SENDING_PYLON = item("sending_pylon", ModItems.SENDING_PYLON, Quest.Aura.GOLD,
+            QuestDisplay.infusion("hextale:sending_pylon"), GATHERING_PYLON);
+    public static final Quest RELAY_PYLON = item("relay_pylon", ModItems.RELAY_PYLON, Quest.Aura.HEXTECH,
+            QuestDisplay.infusion("hextale:relay_pylon"), SENDING_PYLON);
+    public static final Quest PYLON_RUNE = add("pylon_rune", Quest.Kind.ITEM, List.of(SENDING_PYLON),
+            () -> new ItemStack(ModItems.RUNE_STELE.get()), Quests.pylonRunes(1), QuestDisplay.pylonRunes(), null, Quest.Aura.NONE);
     public static final Quest HEXTECH_PICKAXE = add("hextech_pickaxe", Quest.Kind.ITEM, List.of(HEXTECH_GEMSTONE, RUNE_STELE),
             () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), Quests.pickaxe(1),
             QuestDisplay.infusion("hextale:hextech_pickaxe"), null, Quest.Aura.GOLD);
@@ -146,7 +152,6 @@ public final class Guide {
     public static final Quest RADIANT_PICKAXE = add("radiant_pickaxe", Quest.Kind.ITEM, List.of(REFINED_PICKAXE),
             () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.RADIANT).get()), Quests.pickaxe(3),
             QuestDisplay.infusion("hextale:radiant_hextech_pickaxe"), null, Quest.Aura.HEXTECH);
-    public static final Quest WIP_HEX_RELAY = wip("hex_relay", Items.PRISMARINE_CRYSTALS, Quest.Aura.HEXTECH, HEXTECH_GEMSTONE);
     public static final Quest WIP_RUNE_WORKBENCH = wip("rune_workbench", Items.CRAFTER, Quest.Aura.HEXTECH, PEDESTAL, HEXTECH_GEMSTONE);
     public static final Quest WIP_HEXTECH_AXE = wip("hextech_axe", Items.IRON_AXE, Quest.Aura.HEXTECH, HEXTECH_PICKAXE);
     public static final Quest WIP_HEXTECH_HOE = wip("hextech_hoe", Items.IRON_HOE, Quest.Aura.LIFE, HEXTECH_PICKAXE);
@@ -285,7 +290,6 @@ public final class Guide {
     public static final Quest WIP_ESSENCE_RESONATOR = wip("essence_resonator", Items.GLASS_BOTTLE, Quest.Aura.HEXTECH, CONDUCTOR, PIPES);
     public static final Quest WIP_WORLD_ANCHOR = wip("world_anchor", Items.RESPAWN_ANCHOR, Quest.Aura.STORM, GROUNDING, GRAVITY);
     public static final Quest WIP_HEX_BORE = wip("hex_bore", Items.DIAMOND_PICKAXE, Quest.Aura.HEXTECH, DRILL, MOTOR);
-    public static final Quest WIP_ATTRACTOR_SPIRE = wip("attractor_spire", Items.HEAVY_CORE, Quest.Aura.STORM, MAGNET);
     public static final Quest WIP_SHADOW_COFFER = wip("shadow_coffer", Items.ENDER_CHEST, Quest.Aura.CURSED, CACHE);
     public static final Quest WIP_HEX_ARCHIVE = wip("hex_archive", Items.CHISELED_BOOKSHELF, Quest.Aura.HEXTECH, CACHE, ENGRAVING);
     public static final Quest WIP_FOLDING_GATE = wip("folding_gate", Items.ENDER_PEARL, Quest.Aura.CURSED, BLINK);

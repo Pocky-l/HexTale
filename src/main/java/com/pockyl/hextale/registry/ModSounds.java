@@ -58,6 +58,16 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SCROLL_KNOWLEDGE = register("scroll.knowledge");
     /** Essence siphoned out of a jar into a machine that draws from the jars around it. */
     public static final DeferredHolder<SoundEvent, SoundEvent> ESSENCE_DRAW = register("essence.draw");
+    /** A gathering pylon pulls items off the ground into its gem. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_GATHER = register("pylon.gather");
+    /** A sending pylon throws items out of its gem. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_SEND = register("pylon.send");
+    /** A flying item lands where it was sent. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_ARRIVE = register("pylon.arrive");
+    /** A link between pylons is tied. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_LINK = register("pylon.link");
+    /** A link between pylons is untied. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_UNLINK = register("pylon.unlink");
 
     private ModSounds() {
     }

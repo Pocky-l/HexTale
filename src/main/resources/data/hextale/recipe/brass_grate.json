@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " B ",
+    "B B",
+    " B "
+  ],
+  "key": {
+    "B": "hextale:brass_ingot"
+  },
+  "result": {
+    "id": "hextale:brass_grate",
+    "count": 4
+  }
+}

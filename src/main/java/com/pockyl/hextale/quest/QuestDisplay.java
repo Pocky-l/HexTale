@@ -24,7 +24,9 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
         /** The runes a hextech pickaxe takes, with their costs and clashes. */
         PICKAXE_RUNES,
         /** The runes a Hex Smelter takes. */
-        SMELTER_RUNES
+        SMELTER_RUNES,
+        /** The runes the hex pylons take. */
+        PYLON_RUNES
     }
 
     /** Rows of up to three cells, spaces for empty cells, keys as in the recipe JSON. */
@@ -70,6 +72,10 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
 
     static QuestDisplay smelterRunes() {
         return new QuestDisplay(Kind.SMELTER_RUNES, List.of(), "hextale:hex_smelter", 1);
+    }
+
+    static QuestDisplay pylonRunes() {
+        return new QuestDisplay(Kind.PYLON_RUNES, List.of(), "hextale:sending_pylon", 1);
     }
 
     static QuestDisplay infusion(String recipe) {

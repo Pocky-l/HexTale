@@ -78,6 +78,15 @@ public final class HextaleClient {
                 event.getToolTip().add(1, contents.describe().append(Component.literal(" (" + contents.total() + "/"
                         + EssenceTankBlockEntity.CAPACITY + ")").withStyle(ChatFormatting.GRAY)));
             }
+            // A smelter's or a pylon's runes, like a pickaxe's: name in its colour and stars.
+            com.pockyl.hextale.runework.RuneHolder holder = com.pockyl.hextale.runework.RuneHolder.of(stack);
+            if (holder != null && holder != com.pockyl.hextale.runework.RuneHolder.PICKAXE) {
+                int line = 1;
+                for (var entry : holder.runes(stack).entries()) {
+                    event.getToolTip().add(line++, Component.translatable(entry.rune().translationKey()).withColor(entry.rune().color())
+                            .append(Component.literal(" " + "★".repeat(entry.stars())).withStyle(ChatFormatting.GOLD)));
+                }
+            }
         });
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> RuneBoards.warmUp());
@@ -111,6 +120,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.ESSENCE_TANK.get(), EssenceTankRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_ALTAR.get(), HextechAltarRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_SMELTER.get(), com.pockyl.hextale.client.render.HexSmelterRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.HEX_PYLON.get(), com.pockyl.hextale.client.render.HexPylonRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL.get(), PedestalRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RUNE_STELE.get(), RuneSteleRenderer::new);
     }

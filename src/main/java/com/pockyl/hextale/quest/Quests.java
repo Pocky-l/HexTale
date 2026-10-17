@@ -81,6 +81,10 @@ public final class Quests {
     }
 
     /** A Hex Smelter item carrying at least this many runes. */
+    static Predicate<ServerPlayer> pylonRunes(int runes) {
+        return player -> player.getInventory().contains(stack -> ModItems.isPylon(stack) && RuneHolder.PYLON.runes(stack).count() >= runes);
+    }
+
     static Predicate<ServerPlayer> smelterRunes(int runes) {
         return player -> player.getInventory().contains(stack -> stack.is(ModItems.HEX_SMELTER.get())
                 && RuneHolder.SMELTER.runes(stack).count() >= runes);

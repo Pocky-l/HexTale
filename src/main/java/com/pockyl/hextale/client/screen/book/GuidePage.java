@@ -36,6 +36,7 @@ import com.pockyl.hextale.runework.HextechPickaxe;
 import com.pockyl.hextale.runework.PickaxeEffects;
 import com.pockyl.hextale.runework.PickaxeRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
+import com.pockyl.hextale.runework.PylonRune;
 import com.pockyl.hextale.runework.RuneHolder;
 import com.pockyl.hextale.runework.SmelterRune;
 
@@ -517,6 +518,10 @@ final class GuidePage {
         if (smelter != null) {
             uses.add(Component.translatable("book.hextale.guide.use.smelter", Component.translatable(smelter.descriptionKey())));
         }
+        PylonRune pylon = PylonRune.of(rune);
+        if (pylon != null) {
+            uses.add(Component.translatable("book.hextale.guide.use.pylon", Component.translatable(pylon.descriptionKey())));
+        }
         for (var entry : InfusionRecipes.get(true).entrySet()) {
             if (entry.getValue().runes().contains(rune)) {
                 ItemStack result = entry.getValue().result().create();
@@ -728,6 +733,7 @@ final class GuidePage {
             case INFUSION -> infusionHeight(display);
             case PICKAXE_RUNES -> optionsHeight(RuneHolder.PICKAXE);
             case SMELTER_RUNES -> optionsHeight(RuneHolder.SMELTER);
+            case PYLON_RUNES -> optionsHeight(RuneHolder.PYLON);
         };
     }
 
@@ -802,6 +808,7 @@ final class GuidePage {
             case INFUSION -> tooltip = renderInfusion(graphics, display, x, y, mouseX, mouseY, now);
             case PICKAXE_RUNES -> tooltip = renderOptions(graphics, RuneHolder.PICKAXE, x, y, mouseX, mouseY, now);
             case SMELTER_RUNES -> tooltip = renderOptions(graphics, RuneHolder.SMELTER, x, y, mouseX, mouseY, now);
+            case PYLON_RUNES -> tooltip = renderOptions(graphics, RuneHolder.PYLON, x, y, mouseX, mouseY, now);
         }
         return tooltip;
     }
@@ -907,8 +914,9 @@ final class GuidePage {
                         rune.cost(1), clashes.toString()));
             }
         } else {
-            for (SmelterRune rune : SmelterRune.values()) {
-                out.add(new Option(rune.rune(), rune.descriptionKey(), rune.valueKey(), rune::amount, rune.cost(1), ""));
+            for (ComplexRune rune : holder.takes()) {
+                out.add(new Option(rune, holder.descriptionKey(rune), holder.valueKey(rune), strength -> holder.amount(rune, strength),
+                        holder.cost(rune, 1), ""));
             }
         }
         return out;
@@ -928,8 +936,7 @@ final class GuidePage {
     }
 
     private List<FormattedCharSequence> optionNote(RuneHolder holder) {
-        return font.split(Component.translatable(holder == RuneHolder.PICKAXE ? "book.hextale.quest.pickaxe_rune.note"
-                : "book.hextale.quest.smelter_rune.note", holder.slots()), innerWidth());
+        return font.split(Component.translatable(holder.bookNoteKey(), holder.slots()), innerWidth());
     }
 
     private static boolean knows(ComplexRune rune) {
@@ -966,8 +973,7 @@ final class GuidePage {
         PixelArt.fill(graphics, x, y + 1, x + 1, y + DIORAMA_HEIGHT - 1, frame);
         PixelArt.fill(graphics, x + w - 1, y + 1, x + w, y + DIORAMA_HEIGHT - 1, frame);
         PixelArt.flush(graphics);
-        ItemStack item = holder == RuneHolder.PICKAXE ? new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get())
-                : new ItemStack(ModItems.HEX_SMELTER.get());
+        ItemStack item = holder.items().getFirst();
         holder.set(item, PickaxeRunes.EMPTY.with(chosen, 3));
         AltarDiorama.draw(graphics, item, chosen, now / 50F, x + 1, y + 1, x + w - 1, y + DIORAMA_HEIGHT - 1, 26);
         y += DIORAMA_HEIGHT + 4;
@@ -1048,6 +1054,7 @@ final class GuidePage {
         RuneHolder holder = switch (display.kind()) {
             case PICKAXE_RUNES -> RuneHolder.PICKAXE;
             case SMELTER_RUNES -> RuneHolder.SMELTER;
+            case PYLON_RUNES -> RuneHolder.PYLON;
             default -> null;
         };
         if (holder == null) {

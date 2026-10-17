@@ -171,7 +171,7 @@ public final class Ritual {
         for (Chosen chosen : circle.chosenRunes()) {
             ComplexRune rune = chosen.rune();
             if (!holder.takes(rune)) {
-                return Engraving.refuse(holder == RuneHolder.PICKAXE ? "not_pickaxe" : "not_smelter", rune);
+                return Engraving.refuse(holder.notTakenRefusal(), rune);
             }
             int have = runes.stars(rune);
             if (chosen.stars() <= have) {

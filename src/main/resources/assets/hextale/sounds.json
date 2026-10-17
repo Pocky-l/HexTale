@@ -283,5 +283,74 @@
         "volume": 0.7
       }
     ]
+  },
+  "pylon.gather": {
+    "subtitle": "subtitles.hextale.pylon.gather",
+    "sounds": [
+      {
+        "name": "hextale:pylon_gather1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:pylon_gather2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:pylon_gather3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "pylon.send": {
+    "subtitle": "subtitles.hextale.pylon.send",
+    "sounds": [
+      {
+        "name": "hextale:pylon_send1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:pylon_send2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:pylon_send3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "pylon.arrive": {
+    "subtitle": "subtitles.hextale.pylon.arrive",
+    "sounds": [
+      {
+        "name": "hextale:pylon_arrive1",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:pylon_arrive2",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:pylon_arrive3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "pylon.link": {
+    "subtitle": "subtitles.hextale.pylon.link",
+    "sounds": [
+      {
+        "name": "hextale:pylon_link",
+        "volume": 0.8
+      }
+    ]
+  },
+  "pylon.unlink": {
+    "subtitle": "subtitles.hextale.pylon.unlink",
+    "sounds": [
+      {
+        "name": "hextale:pylon_unlink",
+        "volume": 0.8
+      }
+    ]
   }
 }

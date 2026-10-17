@@ -18,6 +18,11 @@
     "hextale:magic_stone",
     "hextale:polished_magic_stone",
     "hextale:hex_smelter",
-    "hextale:brass_block"
+    "hextale:brass_block",
+    "hextale:gathering_pylon",
+    "hextale:sending_pylon",
+    "hextale:relay_pylon",
+    "hextale:magic_stone_pillar",
+    "hextale:brass_grate"
   ]
 }

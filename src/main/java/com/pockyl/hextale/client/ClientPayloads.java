@@ -14,6 +14,15 @@ import com.pockyl.hextale.network.KnowledgeSyncPayload;
 import com.pockyl.hextale.network.OpenDiaryPayload;
 import com.pockyl.hextale.network.ResearchMessagePayload;
 import com.pockyl.hextale.research.ItemEssenceTable;
+import com.pockyl.hextale.block.HexPylonBlockEntity;
+import com.pockyl.hextale.network.PylonFlightsPayload;
+import com.pockyl.hextale.network.PylonLinkPayload;
+import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.transport.PylonFlight;
+import com.pockyl.hextale.transport.PylonLinking;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.Vec3;
 
 /** Handlers of the client-bound payloads; run on the client thread. */
 public final class ClientPayloads {
@@ -27,6 +36,21 @@ public final class ClientPayloads {
         event.register(OpenDiaryPayload.TYPE, (payload, context) -> openDiary(payload));
         event.register(InfusionRecipesPayload.TYPE, (payload, context) -> InfusionRecipes.setClient(payload.recipes()));
         event.register(OpenStelePayload.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new SteleScreen(payload.pos())));
+        event.register(PylonFlightsPayload.TYPE, (payload, context) -> pylonFlights(payload));
+        event.register(PylonLinkPayload.TYPE, (payload, context) -> PylonLinking.clientFrom = payload.from().orElse(null));
+    }
+
+    /** Items a pylon moved: show them flying, with the pull or the throw heard at the gem. */
+    public static void pylonFlights(PylonFlightsPayload payload) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null || !(level.getBlockEntity(payload.pylon()) instanceof HexPylonBlockEntity pylon)) {
+            return;
+        }
+        pylon.show(payload.flights(), level.getGameTime());
+        Vec3 gem = pylon.gem();
+        boolean gathered = payload.flights().stream().anyMatch(PylonFlight::gathered);
+        level.playLocalSound(gem.x, gem.y, gem.z, gathered ? ModSounds.PYLON_GATHER.get() : ModSounds.PYLON_SEND.get(), SoundSource.BLOCKS,
+                0.4F, 0.9F + level.getRandom().nextFloat() * 0.2F, false);
     }
 
     public static void knowledge(KnowledgeSyncPayload payload) {

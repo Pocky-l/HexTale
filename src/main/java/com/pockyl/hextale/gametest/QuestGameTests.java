@@ -101,9 +101,9 @@ public final class QuestGameTests {
 
     /** What else a step gives besides its own result: things crafted straight from it. */
     private static final Map<String, List<String>> ALSO = Map.of(
-            "brass", List.of("hextale:brass_nugget", "hextale:brass_block"),
+            "brass", List.of("hextale:brass_nugget", "hextale:brass_block", "hextale:brass_grate"),
             "magic_stone", List.of("hextale:polished_magic_stone", "hextale:magic_bricks", "hextale:magic_brick_slab",
-                    "hextale:magic_brick_stairs", "hextale:magic_brick_wall", "hextale:chiseled_magic_bricks"));
+                    "hextale:magic_brick_stairs", "hextale:magic_brick_wall", "hextale:chiseled_magic_bricks", "hextale:magic_stone_pillar"));
 
     /** Item ids a step yields: its icon, its picture's result and what is crafted straight from it. */
     private static Set<Identifier> yields(Quest quest) {

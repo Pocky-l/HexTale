@@ -1,6 +1,8 @@
 package com.pockyl.hextale.registry;
 
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
@@ -14,12 +16,14 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.transport.PylonKind;
 import com.pockyl.hextale.block.AlembicBlock;
 import com.pockyl.hextale.block.BrassPipeBlock;
 import com.pockyl.hextale.block.CreativeEssenceTankBlock;
 import com.pockyl.hextale.block.DrainValveBlock;
 import com.pockyl.hextale.block.EssenceTankBlock;
 import com.pockyl.hextale.block.PumpBlock;
+import com.pockyl.hextale.block.HexPylonBlock;
 import com.pockyl.hextale.block.HexSmelterBlock;
 import com.pockyl.hextale.block.HextechAltarBlock;
 import com.pockyl.hextale.block.HextechLampBlock;
@@ -96,12 +100,32 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(4.0F, 6.0F).sound(SoundType.COPPER)
                     .requiresCorrectToolForDrops());
 
+    // Hex pylons: gemstone-crowned columns of magic stone that move items without belts or pipes.
+    public static final DeferredBlock<HexPylonBlock> GATHERING_PYLON = BLOCKS.registerBlock("gathering_pylon",
+            properties -> new HexPylonBlock(PylonKind.GATHERING, properties), ModBlocks::pylonProperties);
+    public static final DeferredBlock<HexPylonBlock> SENDING_PYLON = BLOCKS.registerBlock("sending_pylon",
+            properties -> new HexPylonBlock(PylonKind.SENDING, properties), ModBlocks::pylonProperties);
+    public static final DeferredBlock<HexPylonBlock> RELAY_PYLON = BLOCKS.registerBlock("relay_pylon",
+            properties -> new HexPylonBlock(PylonKind.RELAY, properties), ModBlocks::pylonProperties);
+    /** A fluted column of polished magic stone, like a quartz pillar. */
+    public static final DeferredBlock<RotatedPillarBlock> MAGIC_STONE_PILLAR = BLOCKS.registerBlock("magic_stone_pillar",
+            RotatedPillarBlock::new, () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF));
+    /** A see-through brass lattice, like a copper grate. */
+    public static final DeferredBlock<TransparentBlock> BRASS_GRATE = BLOCKS.registerBlock("brass_grate", TransparentBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(3.0F, 6.0F).sound(SoundType.COPPER_GRATE)
+                    .noOcclusion().requiresCorrectToolForDrops().isValidSpawn((state, level, pos, type) -> false)
+                    .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false));
+
     private ModBlocks() {
     }
 
     private static BlockBehaviour.Properties magicStoneProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLUE).instrument(NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(2.0F, 6.0F);
+    }
+
+    private static BlockBehaviour.Properties pylonProperties() {
+        return magicStoneProperties().strength(2.5F, 6.0F).sound(SoundType.POLISHED_TUFF).noOcclusion().lightLevel(state -> 5);
     }
 
     private static BlockBehaviour.Properties brickProperties() {

@@ -1,0 +1,16 @@
+{
+  "center": "hextale:hextech_gemstone",
+  "pedestals": [
+    "minecraft:hopper",
+    "hextale:magic_stone_pillar",
+    "hextale:magic_stone_pillar",
+    "hextale:brass_ingot",
+    "hextale:brass_ingot"
+  ],
+  "essences": {
+    "motion": 16,
+    "magic": 12,
+    "crystal": 8
+  },
+  "result": "hextale:gathering_pylon"
+}

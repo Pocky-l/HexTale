@@ -54,6 +54,14 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEX_SMELTER = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_SMELTER,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> BRASS_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_BLOCK);
+    public static final DeferredItem<BlockItem> GATHERING_PYLON = ITEMS.registerSimpleBlockItem(ModBlocks.GATHERING_PYLON,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> SENDING_PYLON = ITEMS.registerSimpleBlockItem(ModBlocks.SENDING_PYLON,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> RELAY_PYLON = ITEMS.registerSimpleBlockItem(ModBlocks.RELAY_PYLON,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> MAGIC_STONE_PILLAR = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_STONE_PILLAR);
+    public static final DeferredItem<BlockItem> BRASS_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_GRATE);
     /** Creative only: everything known at once - every rune with three stars, every item studied, every quest done. */
     public static final DeferredItem<KnowledgeScrollItem> SCROLL_OF_OMNISCIENCE = ITEMS.registerItem("scroll_of_omniscience",
             properties -> new KnowledgeScrollItem(true, properties.stacksTo(1).rarity(Rarity.EPIC)));
@@ -111,5 +119,10 @@ public final class ModItems {
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
+    }
+
+    /** Any of the three hex pylons. */
+    public static boolean isPylon(net.minecraft.world.item.ItemStack stack) {
+        return stack.is(GATHERING_PYLON.get()) || stack.is(SENDING_PYLON.get()) || stack.is(RELAY_PYLON.get());
     }
 }

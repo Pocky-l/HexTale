@@ -38,27 +38,26 @@ import java.util.Map;
 public class RuneBurningCategory extends AbstractRecipeCategory<RuneBurningCategory.Recipe> {
     public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "rune_burning", Recipe.class);
 
-    /** One rune burned into a pickaxe or a Hex Smelter. */
+    /** One rune burned into a pickaxe, a Hex Smelter or a hex pylon. */
     public record Recipe(RuneHolder holder, ComplexRune rune) {
         String descriptionKey() {
-            return holder == RuneHolder.PICKAXE ? PickaxeRune.of(rune).descriptionKey() : SmelterRune.of(rune).descriptionKey();
+            return holder.descriptionKey(rune);
         }
 
         String valueKey() {
-            return holder == RuneHolder.PICKAXE ? PickaxeRune.of(rune).valueKey() : SmelterRune.of(rune).valueKey();
+            return holder.valueKey(rune);
         }
 
         String amount(int stars) {
-            return holder == RuneHolder.PICKAXE ? PickaxeEffects.amount(PickaxeRune.of(rune), stars) : SmelterRune.of(rune).amount(stars);
+            return holder.amount(rune, stars);
         }
 
         static List<Recipe> all() {
             List<Recipe> out = new java.util.ArrayList<>();
-            for (PickaxeRune rune : PickaxeRune.values()) {
-                out.add(new Recipe(RuneHolder.PICKAXE, rune.rune()));
-            }
-            for (SmelterRune rune : SmelterRune.values()) {
-                out.add(new Recipe(RuneHolder.SMELTER, rune.rune()));
+            for (RuneHolder holder : RuneHolder.values()) {
+                for (ComplexRune rune : holder.takes()) {
+                    out.add(new Recipe(holder, rune));
+                }
             }
             return out;
         }
@@ -76,9 +75,7 @@ public class RuneBurningCategory extends AbstractRecipeCategory<RuneBurningCateg
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, Recipe recipe, IFocusGroup focuses) {
-        List<ItemStack> before = recipe.holder() == RuneHolder.PICKAXE
-                ? ModItems.PICKAXES.values().stream().map(item -> new ItemStack(item.get())).toList()
-                : List.of(new ItemStack(ModItems.HEX_SMELTER.get()));
+        List<ItemStack> before = recipe.holder().items();
         List<ItemStack> after = before.stream().map(stack -> {
             ItemStack out = stack.copy();
             recipe.holder().set(out, PickaxeRunes.EMPTY.with(recipe.rune(), 1));
@@ -142,7 +139,7 @@ public class RuneBurningCategory extends AbstractRecipeCategory<RuneBurningCateg
             graphics.text(font, Component.translatable("jei.hextale.rune_burning.clash", clashes.toString()), 4, y, 0xFFB03A2E, false);
             y += 10;
         }
-        String note = rune.holder() == RuneHolder.PICKAXE ? "jei.hextale.rune_burning.note" : "jei.hextale.rune_burning.note_smelter";
+        String note = rune.holder().jeiNoteKey();
         for (FormattedCharSequence line : font.split(Component.translatable(note, rune.holder().slots()), WIDTH - 8)) {
             graphics.text(font, line, 4, y, MUTED, false);
             y += 10;

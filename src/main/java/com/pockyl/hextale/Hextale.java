@@ -84,6 +84,11 @@ public final class Hextale {
             output.accept(ModItems.HEXTECH_LAMP);
             output.accept(ModItems.HEX_SMELTER);
             output.accept(ModItems.BRASS_BLOCK);
+            output.accept(ModItems.BRASS_GRATE);
+            output.accept(ModItems.MAGIC_STONE_PILLAR);
+            output.accept(ModItems.GATHERING_PYLON);
+            output.accept(ModItems.SENDING_PYLON);
+            output.accept(ModItems.RELAY_PYLON);
             ModItems.PICKAXES.values().forEach(output::accept);
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
