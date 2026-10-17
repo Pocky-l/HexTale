@@ -273,7 +273,7 @@ public final class PylonGameTests {
     }
 
     /** A siphon on a jar pours its essence into a linked jar and, through a relay, into a third one; the clients see streams. */
-    @HexTest(maxTicks = 300)
+    @HexTest(maxTicks = 600)
     public static void siphonPoursEssenceAlongItsLinks(GameTestHelper helper) {
         clear(helper, 6);
         helper.setBlock(BASE, ModBlocks.ESSENCE_TANK.get());

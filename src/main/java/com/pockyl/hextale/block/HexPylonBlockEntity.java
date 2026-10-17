@@ -1,5 +1,7 @@
 package com.pockyl.hextale.block;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -246,6 +248,12 @@ public class HexPylonBlockEntity extends BlockEntity {
             if (!filterItem.isEmpty()) {
                 net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), filterItem.copy());
             }
+            for (Cargo c : cargo) {
+                if (!c.item().isEmpty()) {
+                    net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), c.item().copy());
+                }
+            }
+            cargo.clear();
             if (sticker != null) {
                 net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
                         com.pockyl.hextale.item.EssenceStickerItem.of(com.pockyl.hextale.registry.ModItems.ESSENCE_STICKER.get(), sticker));
@@ -287,10 +295,11 @@ public class HexPylonBlockEntity extends BlockEntity {
     // ---- Work -----------------------------------------------------------------------------------------------------------
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, HexPylonBlockEntity pylon) {
+        ServerLevel server = (ServerLevel) level;
+        pylon.deliver(server);
         if (--pylon.wait > 0) {
             return;
         }
-        ServerLevel server = (ServerLevel) level;
         List<PylonFlight> flights = new ArrayList<>();
         switch (pylon.kind()) {
             case GATHERING -> pylon.gather(server, flights);
@@ -344,22 +353,28 @@ public class HexPylonBlockEntity extends BlockEntity {
             List<Vec3> path = new ArrayList<>();
             path.add(item.position().add(0, 0.25, 0));
             path.add(gem);
+            Destination to = null;
             for (Destination route : routes) {
                 int want = Math.min(Math.min(budget, stack.getCount()), room(level, route, resource));
                 if (want <= 0 || !route.passes(resource)) {
                     continue;
                 }
-                moved = PylonInsert.insert(level, route.pos(), route.face(), resource, want, null);
+                // How many it would take now (a trial that is thrown away); they arrive when the flight does.
+                try (Transaction trial = Transaction.openRoot()) {
+                    moved = PylonInsert.insert(level, route.pos(), route.face(), resource, want, trial);
+                }
                 if (moved > 0) {
                     path.addAll(route.path());
+                    to = route;
                     break;
                 }
             }
-            if (moved <= 0) {
+            if (moved <= 0 || to == null) {
                 continue;
             }
             budget -= moved;
-            flights.add(new PylonFlight(stack.copyWithCount(1), path, true));
+            PylonFlight flight = new PylonFlight(stack.copyWithCount(1), path, true);
+            ship(level, flights, flight, stack.copyWithCount(moved), EssenceMix.EMPTY, to.pos(), to.face());
             stack.shrink(moved);
             if (stack.isEmpty()) {
                 item.discard();
@@ -409,8 +424,7 @@ public class HexPylonBlockEntity extends BlockEntity {
                     continue;
                 }
                 try (Transaction transaction = Transaction.openRoot()) {
-                    int taken = from.extract(slot, resource, moved, transaction);
-                    if (taken != moved || PylonInsert.insert(level, route.pos(), route.face(), resource, taken, transaction) != taken) {
+                    if (from.extract(slot, resource, moved, transaction) != moved) {
                         continue;
                     }
                     transaction.commit();
@@ -421,7 +435,8 @@ public class HexPylonBlockEntity extends BlockEntity {
                 path.add(start);
                 path.add(gem());
                 path.addAll(route.path());
-                flights.add(new PylonFlight(resource.toStack(1), path, false));
+                ship(level, flights, new PylonFlight(resource.toStack(1), path, false), resource.toStack(moved), EssenceMix.EMPTY,
+                        route.pos(), route.face());
             }
             if (budget <= 0) {
                 return;
@@ -444,10 +459,117 @@ public class HexPylonBlockEntity extends BlockEntity {
         for (ItemFilter filter : filters) {
             if (filter.rule() == ItemFilter.Rule.LIMIT) {
                 ResourceHandler<ItemResource> handler = PylonInsert.handler(level, route.pos(), route.face(), resource);
-                room = Math.min(room, handler == null ? 0 : filter.room(resource, filter.count(handler, resource)));
+                room = Math.min(room, handler == null ? 0 : filter.room(resource, filter.count(handler, resource) + onTheWay(route.pos(), resource)));
             }
         }
         return room;
+    }
+
+    // ---- Cargo on its way --------------------------------------------------------------------------------------------
+
+    /**
+     * Something moved and still in the air: it left its source when the move began and arrives at {@code arriveAt}, the
+     * game tick its flight lands on the clients (so nothing is in the target before the eye sees it get there).
+     */
+    public record Cargo(long arriveAt, ItemStack item, EssenceMix essence, BlockPos target, Direction face) {
+        public static final Codec<Cargo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.LONG.fieldOf("arrive_at").forGetter(Cargo::arriveAt),
+                ItemStack.OPTIONAL_CODEC.optionalFieldOf("item", ItemStack.EMPTY).forGetter(Cargo::item),
+                EssenceMix.CODEC.optionalFieldOf("essence", EssenceMix.EMPTY).forGetter(Cargo::essence),
+                BlockPos.CODEC.fieldOf("target").forGetter(Cargo::target),
+                Direction.CODEC.fieldOf("face").forGetter(Cargo::face)
+        ).apply(instance, Cargo::new));
+    }
+
+    private final List<Cargo> cargo = new ArrayList<>();
+
+    public List<Cargo> cargo() {
+        return cargo;
+    }
+
+    /** Adds the flight (shown to the clients) and its cargo, due when that flight lands - after the tendrils before it. */
+    private void ship(ServerLevel level, List<PylonFlight> flights, PylonFlight flight, ItemStack item, EssenceMix essence, BlockPos target,
+                      Direction face) {
+        int index = Math.min(flights.size(), SHOWN_FLIGHTS - 1);
+        flights.add(flight);
+        cargo.add(new Cargo(level.getGameTime() + (long) index * STAGGER_TICKS + flight.duration(), item, essence, target, face));
+        setChanged();
+    }
+
+    /** How many of the item are already on their way to {@code target}. */
+    private int onTheWay(BlockPos target, ItemResource resource) {
+        int total = 0;
+        for (Cargo c : cargo) {
+            if (c.target().equals(target) && !c.item().isEmpty() && resource.matches(c.item())) {
+                total += c.item().getCount();
+            }
+        }
+        return total;
+    }
+
+    /** mB of essence already on its way to {@code target}. */
+    private int essenceOnTheWay(BlockPos target) {
+        int total = 0;
+        for (Cargo c : cargo) {
+            if (c.target().equals(target)) {
+                total += c.essence().total();
+            }
+        }
+        return total;
+    }
+
+    /** Delivers the cargo whose flight has landed. */
+    private void deliver(ServerLevel level) {
+        if (cargo.isEmpty()) {
+            return;
+        }
+        long now = level.getGameTime();
+        List<Cargo> due = new ArrayList<>();
+        cargo.removeIf(c -> {
+            if (c.arriveAt() <= now) {
+                due.add(c);
+                return true;
+            }
+            return false;
+        });
+        for (Cargo c : due) {
+            land(level, c);
+        }
+        if (!due.isEmpty()) {
+            setChanged();
+        }
+    }
+
+    /**
+     * Puts landed cargo in. What the target no longer takes (it filled up meanwhile, or is gone) goes back to the source -
+     * the container or jar under the pylon - and what that cannot take either drops by the pylon (essence evaporates).
+     */
+    private void land(ServerLevel level, Cargo c) {
+        BlockPos source = worldPosition.below();
+        if (!c.item().isEmpty()) {
+            ItemResource resource = ItemResource.of(c.item());
+            int rest = c.item().getCount();
+            if (level.isLoaded(c.target())) {
+                rest -= PylonInsert.insert(level, c.target(), c.face(), resource, rest, null);
+            }
+            if (rest > 0 && level.getCapability(Capabilities.Item.BLOCK, source, Direction.UP) != null) {
+                rest -= PylonInsert.insert(level, source, Direction.UP, resource, rest, null);
+            }
+            if (rest > 0) {
+                net.minecraft.world.Containers.dropItemStack(level, worldPosition.getX() + 0.5, worldPosition.getY() + 1, worldPosition.getZ() + 0.5,
+                        c.item().copyWithCount(rest));
+            }
+            return;
+        }
+        EssenceMix rest = c.essence();
+        if (level.isLoaded(c.target()) && level.getBlockEntity(c.target()) instanceof EssenceNetwork.Receiver receiver) {
+            int taken = receiver.receive(c.face(), rest, false);
+            rest = rest.minus(rest.part(taken));
+        }
+        if (!rest.isEmpty() && level.getBlockEntity(source) instanceof EssenceTankBlockEntity jar && !jar.isCreative()) {
+            jar.tank().fill(rest, false);
+            jar.setChanged();
+        }
     }
 
     /** mB a siphon pours per move: four times a sending pylon's items (Lift raises both). */
@@ -500,7 +622,17 @@ public class HexPylonBlockEntity extends BlockEntity {
             if (face == null) {
                 continue;
             }
-            int taken = receiver.receive(face, offer, true);
+            // What is already flying there counts against the room it has: ask the target about this mixture together
+            // with what is on its way (the same mixture, repeated), then take that away again.
+            int way = essenceOnTheWay(route.pos());
+            EssenceMix asked = offer;
+            while (asked.total() < offer.total() + way) {
+                asked = asked.plus(offer);
+            }
+            int taken = Math.min(offer.total(), receiver.receive(face, asked, true) - way);
+            if (taken <= 0) {
+                continue;
+            }
             EssenceMix drawn;
             if (pick) {
                 drawn = EssenceMix.pure(only, taken);
@@ -508,7 +640,6 @@ public class HexPylonBlockEntity extends BlockEntity {
             } else {
                 drawn = jar.tank().drain(taken, false);
             }
-            receiver.receive(face, drawn, false);
             jar.setChanged();
             budget -= drawn.total();
             List<Vec3> path = new ArrayList<>();
@@ -517,7 +648,7 @@ public class HexPylonBlockEntity extends BlockEntity {
             path.addAll(route.path());
             // Motes arc on their own: straight from the last gem into the top, without the turn above it.
             path.remove(path.size() - 2);
-            flights.add(PylonFlight.essence(path, drawn.color()));
+            ship(level, flights, PylonFlight.essence(path, drawn.color()), ItemStack.EMPTY, drawn, route.pos(), face);
         }
     }
 
@@ -650,6 +781,8 @@ public class HexPylonBlockEntity extends BlockEntity {
         input.read("links", PylonLink.CODEC.listOf()).ifPresent(links::addAll);
         filterItem = input.read("filter", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         sticker = Essence.byId(input.getStringOr("sticker", ""));
+        cargo.clear();
+        input.read("cargo", Cargo.CODEC.listOf()).ifPresent(cargo::addAll);
     }
 
     @Override
@@ -667,11 +800,17 @@ public class HexPylonBlockEntity extends BlockEntity {
         if (sticker != null) {
             output.putString("sticker", sticker.id());
         }
+        if (!cargo.isEmpty()) {
+            output.store("cargo", Cargo.CODEC.listOf(), List.copyOf(cargo));
+        }
     }
 
+    /** The clients need the links, runes, filter and sticker - not the cargo in the air. */
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        return saveCustomOnly(registries);
+        CompoundTag tag = saveCustomOnly(registries);
+        tag.remove("cargo");
+        return tag;
     }
 
     @Override
