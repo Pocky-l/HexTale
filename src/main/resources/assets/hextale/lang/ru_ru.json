@@ -902,7 +902,7 @@
   "block.hextale.hex_pylon.status.gathering": "Собирает в %s блоках раз в %s с, по %s · связи %s/%s",
   "block.hextale.hex_pylon.status.sending": "Отправляет по %s раз в %s с, до %s блоков · связи %s/%s",
   "block.hextale.hex_pylon.status.relay": "Передаёт дальше, до %s блоков · связи %s/%s",
-  "block.hextale.hex_pylon.link.start": "ПКМ по грани хранилища или по посреднику в пределах %s блоков (связи %s/%s)",
+  "block.hextale.hex_pylon.link.start": "ПКМ по хранилищу или посреднику в пределах %s блоков — связать (%s/%s); по связанному — снять; в другом месте — отмена",
   "block.hextale.hex_pylon.link.cancel": "Связывание отменено",
   "block.hextale.hex_pylon.link.nothing": "Здесь нечему хранить предметы",
   "block.hextale.hex_pylon.link.added": "Связь: %s (%s/%s)",
@@ -948,5 +948,15 @@
   "block.hextale.hex_pylon.hint.clear": "Шифт-ПКМ пустой рукой — снять все связи",
   "block.hextale.gathering_pylon.hint": "Ставится на контейнер: затягивает лежащие вокруг предметы",
   "block.hextale.sending_pylon.hint": "Ставится на контейнер: отправляет его содержимое по связям",
-  "block.hextale.relay_pylon.hint": "Передаёт присланные предметы дальше по своим связям"
+  "block.hextale.relay_pylon.hint": "Передаёт присланные предметы дальше по своим связям",
+  "block.hextale.hex_pylon.link.untied": "%s отвязан от пилонов: %s",
+  "block.hextale.hex_pylon.hint.untie": "Шифт-ПКМ пустой рукой по связанному блоку — отвязать его",
+  "goggles.hextale.pylon.radius": "Собирает в %s блоках",
+  "goggles.hextale.pylon.pace": "Раз в %s с, по %s шт.",
+  "goggles.hextale.pylon.range": "Связи до %s блоков",
+  "goggles.hextale.pylon.links": "Связи %s/%s",
+  "goggles.hextale.pylon.to": "→ %s · %s бл.",
+  "goggles.hextale.pylon.senders": "Сюда отправляют пилоны",
+  "goggles.hextale.pylon.from": "← %s · %s бл.",
+  "goggles.hextale.pylon.untie": "Шифт-ПКМ пустой рукой — отвязать"
 }

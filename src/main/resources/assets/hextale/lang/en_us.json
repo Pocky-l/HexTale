@@ -902,7 +902,7 @@
   "block.hextale.hex_pylon.status.gathering": "Gathers within %s blocks every %s s, %s at a time · links %s/%s",
   "block.hextale.hex_pylon.status.sending": "Sends %s items every %s s, up to %s blocks · links %s/%s",
   "block.hextale.hex_pylon.status.relay": "Passes items on, up to %s blocks · links %s/%s",
-  "block.hextale.hex_pylon.link.start": "Right click a storage face or a relay within %s blocks (links %s/%s)",
+  "block.hextale.hex_pylon.link.start": "Right click a storage or a relay within %s blocks to link (%s/%s); a linked one to unlink; anywhere else to stop",
   "block.hextale.hex_pylon.link.cancel": "Linking cancelled",
   "block.hextale.hex_pylon.link.nothing": "Nothing here holds items",
   "block.hextale.hex_pylon.link.added": "Linked: %s (%s/%s)",
@@ -948,5 +948,15 @@
   "block.hextale.hex_pylon.hint.clear": "Sneak + right click with an empty hand: take all links away",
   "block.hextale.gathering_pylon.hint": "Set on a container: pulls in the items lying around",
   "block.hextale.sending_pylon.hint": "Set on a container: sends what it holds to its links",
-  "block.hextale.relay_pylon.hint": "Passes items sent to it on to its links"
+  "block.hextale.relay_pylon.hint": "Passes items sent to it on to its links",
+  "block.hextale.hex_pylon.link.untied": "%s untied from %s pylons",
+  "block.hextale.hex_pylon.hint.untie": "Sneak + right click a linked block with an empty hand: untie it",
+  "goggles.hextale.pylon.radius": "Gathers within %s blocks",
+  "goggles.hextale.pylon.pace": "Every %s s, %s items at a time",
+  "goggles.hextale.pylon.range": "Links reach %s blocks",
+  "goggles.hextale.pylon.links": "Links %s/%s",
+  "goggles.hextale.pylon.to": "→ %s · %s blocks",
+  "goggles.hextale.pylon.senders": "Pylons sending here",
+  "goggles.hextale.pylon.from": "← %s · %s blocks",
+  "goggles.hextale.pylon.untie": "Sneak + right click with an empty hand: untie"
 }

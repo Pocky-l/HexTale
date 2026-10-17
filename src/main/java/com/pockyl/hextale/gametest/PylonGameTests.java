@@ -197,6 +197,58 @@ public final class PylonGameTests {
         helper.succeed();
     }
 
+    /** A broken chest drops the links to it at once; the other link stays. */
+    @HexTest(maxTicks = 20)
+    public static void aBrokenTargetDropsItsLinks(GameTestHelper helper) {
+        clear(helper, 4);
+        helper.setBlock(BASE, Blocks.CHEST);
+        BlockPos a = BASE.offset(3, 0, 0);
+        BlockPos b = BASE.offset(0, 0, 3);
+        helper.setBlock(a, Blocks.CHEST);
+        helper.setBlock(b, Blocks.BARREL);
+        HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        pylon.toggleLink(link(helper, a, Direction.UP));
+        pylon.toggleLink(link(helper, b, Direction.UP));
+        helper.destroyBlock(a);
+        helper.assertTrue(pylon.links().size() == 1 && pylon.links().getFirst().pos().equals(helper.absolutePos(b)),
+                "only the link to the broken chest went away");
+        helper.succeed();
+    }
+
+    /** Sneak + right click on a linked block unties it from every pylon sending to it. */
+    @HexTest(maxTicks = 20)
+    public static void aBlockCanBeUntiedFromAllPylons(GameTestHelper helper) {
+        clear(helper, 4);
+        BlockPos target = BASE.offset(3, 0, 0);
+        helper.setBlock(target, Blocks.CHEST);
+        helper.setBlock(BASE, Blocks.CHEST);
+        helper.setBlock(BASE.offset(0, 0, 2), Blocks.CHEST);
+        HexPylonBlockEntity one = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        HexPylonBlockEntity two = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.offset(0, 1, 2));
+        one.toggleLink(link(helper, target, Direction.UP));
+        two.toggleLink(link(helper, target, Direction.UP));
+        PylonLinking.untie(helper.makeMockServerPlayerInLevel(), helper.absolutePos(target));
+        helper.assertTrue(one.links().isEmpty() && two.links().isEmpty(), "both pylons let go of it");
+        helper.succeed();
+    }
+
+    /** While linking, a click on something that cannot take items gives the link up instead of getting in the way. */
+    @HexTest(maxTicks = 20)
+    public static void aClickElsewhereStopsLinking(GameTestHelper helper) {
+        clear(helper, 3);
+        helper.setBlock(BASE, Blocks.CHEST);
+        BlockPos stone = BASE.offset(2, 0, 0);
+        helper.setBlock(stone, Blocks.STONE);
+        HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        PylonLinking.start(player, pylon);
+        helper.assertFalse(PylonLinking.linkable(helper.getLevel(), helper.absolutePos(stone), Direction.UP), "stone takes no items");
+        PylonLinking.giveUp(player);
+        helper.assertFalse(PylonLinking.linking(player), "the link was given up");
+        helper.assertTrue(pylon.links().isEmpty(), "nothing was linked");
+        helper.succeed();
+    }
+
     /** The flights of a move survive the trip to the clients (the payload's codec), the longest way included. */
     @HexTest(maxTicks = 20)
     public static void flightsReachTheClient(GameTestHelper helper) {

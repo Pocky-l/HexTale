@@ -115,7 +115,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sending Pylon: stands on a storage and sends what it gives out (a furnace's result, a chest's anything) to the places
   you link. Right click the pylon, then right click a storage's face: the face counts (a furnace takes ore from the top,
   fuel from the side). Up to four links, tried in order; the same clicks again unlink one, sneak + right click with an
-  empty hand unlinks all. The item tooltip tells how.
+  empty hand unlinks all. Clicking the air or a block that cannot take items stops linking and does what it always does;
+  with a block in hand a right click on a pylon places the block. A broken block drops its links by itself, and sneak +
+  right click with an empty hand on a linked block unties it from every pylon. The item tooltip tells how.
 - Relay Pylon: neither takes nor gives - it catches items sent to it and passes them on to its own links, up to eight
   relays in a chain.
 - Pylon runes, burned in at the altar like a smelter's: Shift (reach and link range), Motor (pace), Lift (items per
@@ -125,6 +127,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   item in, and on to the next gem or container another tendril stretches out and pulls it along. Several items get
   several tendrils, one after another. Links show as gold threads while you sneak or hold a pylon; while linking, a
   thread runs to your crosshair. Soft whooshes for pulling and sending, a low touch for landing.
+- Researcher's Goggles: every link around shows while worn; looking at a pylon shows its reach, pace, link range, its
+  links (where to, how far) and runes, a gathering pylon's reach lights up as a ring on the ground; looking at a linked
+  block shows which pylons send to it.
 - Decorative: Magic Stone Pillar (like a quartz pillar) and Brass Grate (see-through, like a copper grate).
 - Built to be cheap: items move straight between inventories in one transaction (only the fetching is drawn), idle
   pylons look four times rarer, and the clients get one small message per move.

@@ -22,7 +22,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.item.ItemResource;
@@ -35,8 +34,10 @@ import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.PylonRune;
 import com.pockyl.hextale.transport.PylonFlight;
+import com.pockyl.hextale.transport.PylonIndex;
 import com.pockyl.hextale.transport.PylonKind;
 import com.pockyl.hextale.transport.PylonLink;
+import com.pockyl.hextale.transport.PylonLinking;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -136,15 +137,29 @@ public class HexPylonBlockEntity extends BlockEntity {
 
     /** Adds the link, or takes away a link to the same block; false when there is no room for a new one. */
     public boolean toggleLink(PylonLink link) {
-        if (links.removeIf(l -> l.pos().equals(link.pos()))) {
-            changed();
+        if (unlink(link.pos())) {
             return true;
         }
         if (links.size() >= MAX_LINKS) {
             return false;
         }
         links.add(link);
+        if (level != null && !level.isClientSide()) {
+            PylonIndex.add(level, worldPosition, link.pos());
+        }
         wake();
+        changed();
+        return true;
+    }
+
+    /** Takes away the link to {@code target}; false when there was none. */
+    public boolean unlink(BlockPos target) {
+        if (!links.removeIf(l -> l.pos().equals(target))) {
+            return false;
+        }
+        if (level != null && !level.isClientSide()) {
+            PylonIndex.remove(level, worldPosition, target);
+        }
         changed();
         return true;
     }
@@ -154,9 +169,38 @@ public class HexPylonBlockEntity extends BlockEntity {
         if (links.isEmpty()) {
             return false;
         }
+        if (level != null && !level.isClientSide()) {
+            PylonIndex.removeAll(level, worldPosition, links);
+        }
         links.clear();
         changed();
         return true;
+    }
+
+    /** Server: a link to a block that no longer takes items (broken, replaced) goes away; false when it still holds. */
+    public boolean dropIfBroken(PylonLink link) {
+        if (level == null || !level.isLoaded(link.pos()) || PylonLinking.linkable(level, link.pos(), link.face())) {
+            return false;
+        }
+        return unlink(link.pos());
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level != null && !level.isClientSide()) {
+            for (PylonLink link : links) {
+                PylonIndex.add(level, worldPosition, link.pos());
+            }
+        }
+    }
+
+    @Override
+    public void setRemoved() {
+        if (level != null && !level.isClientSide()) {
+            PylonIndex.removeAll(level, worldPosition, links);
+        }
+        super.setRemoved();
     }
 
     /** Look again at once (a link changed, the container below changed). */
@@ -194,8 +238,11 @@ public class HexPylonBlockEntity extends BlockEntity {
             pylon.idle = 0;
             pylon.wait = interval;
             pylon.lastFlights = List.copyOf(flights);
-            PacketDistributor.sendToPlayersTrackingChunk(server, ChunkPos.containing(pos),
-                    new PylonFlightsPayload(pos, PylonFlight.limit(flights, SHOWN_FLIGHTS)));
+            // Only to players whose client has the mod's channel (fake players have none).
+            PylonFlightsPayload payload = new PylonFlightsPayload(pos, PylonFlight.limit(flights, SHOWN_FLIGHTS));
+            for (net.minecraft.server.level.ServerPlayer player : server.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(pos), false)) {
+                com.pockyl.hextale.network.ModNetwork.sendToPlayer(player, payload);
+            }
         }
     }
 
@@ -304,6 +351,10 @@ public class HexPylonBlockEntity extends BlockEntity {
                                 List<Destination> out) {
         Vec3 gem = node.gem();
         double range = node.range() + 0.5;
+        // Links to blocks that are gone go away (a broken block normally drops them at once, see PylonLinking).
+        for (PylonLink link : List.copyOf(node.links)) {
+            node.dropIfBroken(link);
+        }
         for (PylonLink link : node.links) {
             if (!level.isLoaded(link.pos()) || seen.contains(link.pos())) {
                 continue;

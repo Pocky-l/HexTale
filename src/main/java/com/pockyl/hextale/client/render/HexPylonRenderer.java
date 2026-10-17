@@ -27,6 +27,7 @@ import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.block.HexPylonBlockEntity;
+import com.pockyl.hextale.client.ClientPylons;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.transport.PylonFlight;
 import com.pockyl.hextale.transport.PylonKind;
@@ -39,8 +40,9 @@ import java.util.List;
 /**
  * A hex pylon's gem and its magic. The gem floats over the crown in a halo of its runes' colour and spins up for a
  * moment after every move. Each kind has its rings: a gathering pylon a wide sigil ring lying in its dish, a sending pylon a ring turning upright around the gem, a relay two crossed rings. Moved items are fetched by the magic ({@link #flight}): a tendril of light ({@link TendrilFx})
- * reaches out of the gem, closes its grip around the item, drags it in and hands it on along the next tendril. While the player sneaks or holds a pylon the links show as
- * gold threads with motes running along them; while linking, a cyan thread runs from the gem to the crosshair.
+ * reaches out of the gem, closes its grip around the item, drags it in and hands it on along the next tendril. While the player wears the goggles, sneaks or holds a pylon the links show as
+ * gold threads with motes running along them; while linking, a cyan thread runs from the gem to the crosshair and the
+ * ends already tied pulse. The goggles also show a gathering pylon's reach as a ring on the ground.
  */
 public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity, HexPylonRenderer.State> {
     private static final int GOLD = 0xF0C24A;
@@ -72,10 +74,17 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         state.color = PickaxeRuneTint.blend(pylon.runes());
         itemModelResolver.updateForTopItem(state.gem, new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), ItemDisplayContext.GROUND, level, null, seed);
 
-        // Links: only while the player sneaks, holds a pylon or is linking, so a busy base is not a web of threads.
+        // Links: only while the player wears the goggles, sneaks, holds a pylon or is linking, so a busy base is not a
+        // web of threads.
         LocalPlayer player = Minecraft.getInstance().player;
         boolean linkingHere = pos.equals(PylonLinking.clientFrom);
-        boolean showLinks = linkingHere || player != null && (player.isShiftKeyDown() || ModItems.isPylon(player.getMainHandItem()));
+        boolean goggles = ClientPylons.goggles();
+        boolean showLinks = linkingHere || goggles || player != null && (player.isShiftKeyDown() || ModItems.isPylon(player.getMainHandItem()));
+        state.linking = linkingHere;
+        // The gathering reach on the ground, while the goggles look at the pylon or it is being linked.
+        HitResult looked = Minecraft.getInstance().hitResult;
+        boolean lookedAt = looked instanceof BlockHitResult block && looked.getType() == HitResult.Type.BLOCK && block.getBlockPos().equals(pos);
+        state.reach = pylon.kind() == PylonKind.GATHERING && (linkingHere || goggles && lookedAt) ? pylon.radius() : 0;
         state.links.clear();
         if (showLinks && level != null) {
             for (PylonLink link : pylon.links()) {
@@ -163,9 +172,25 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         state.gem.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
         poseStack.popPose();
 
-        // Links and the thread of a link being made.
+        // Links and the thread of a link being made. While linking, the ends already tied pulse: clicking one unties it.
         for (Vec3 to : state.links) {
-            thread(poseStack, collector, camera, eye, gem, to, GOLD, 0.22F, time);
+            thread(poseStack, collector, camera, eye, gem, to, GOLD, state.linking ? 0.35F : 0.22F, time);
+            if (state.linking) {
+                float pulse = 0.5F + 0.5F * Mth.sin(time * 0.25F);
+                poseStack.pushPose();
+                poseStack.translate(to.x, to.y, to.z);
+                HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.45F + 0.15F * pulse, GOLD, 0.45F + 0.3F * pulse);
+                poseStack.popPose();
+            }
+        }
+        if (state.reach > 0) {
+            // The ground the gathering pylon reaches: a wide slow ring around the container it stands on.
+            poseStack.pushPose();
+            poseStack.translate(0.5, -0.94, 0.5);
+            poseStack.rotate(Axis.XP.rotationDegrees(90));
+            poseStack.rotate(Axis.ZP.rotationDegrees(time * 0.15F));
+            HexFx.sigilRing(poseStack, collector, state.reach + 0.5F, 36, state.color, 0.35F);
+            poseStack.popPose();
         }
         if (state.pending != null) {
             float pulse = 0.5F + 0.5F * Mth.sin(time * 0.3F);
@@ -343,6 +368,8 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         }
         if (pos.equals(PylonLinking.clientFrom)) {
             box = box.inflate(pylon.range() + 2);
+        } else if (pylon.kind() == PylonKind.GATHERING && ClientPylons.goggles()) {
+            box = box.inflate(pylon.radius() + 1, 1, pylon.radius() + 1);
         }
         return box;
     }
@@ -359,6 +386,8 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         float flare;
         int color;
         int flightCount;
+        boolean linking;
+        int reach;
         Vec3 origin = Vec3.ZERO;
     }
 

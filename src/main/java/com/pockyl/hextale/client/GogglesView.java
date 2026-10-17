@@ -26,7 +26,9 @@ import com.pockyl.hextale.block.AlembicBlockEntity;
 import com.pockyl.hextale.block.BrassPipeBlock;
 import com.pockyl.hextale.block.DrainValveBlockEntity;
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
+import com.pockyl.hextale.block.HexPylonBlockEntity;
 import com.pockyl.hextale.block.InkSupply;
+import com.pockyl.hextale.transport.PylonLink;
 import com.pockyl.hextale.block.ResearchTableBlock;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
@@ -47,7 +49,9 @@ import org.jspecify.annotations.Nullable;
  * The Researcher's Goggles at work: while worn, looking at a block of the essence works shows a small plate beside the
  * crosshair with the essences inside it (a pipe shows what the vessels on its network hold), and looking at a Research
  * Table shows its ink, essence by essence, while streams of coloured motes run from each tank of concentrate to the
- * orb. Nothing shows when the goggles are off or the player looks elsewhere. Reads only what the blocks sync anyway.
+ * orb. A hex pylon shows its reach, pace, links and runes (every link of the pylons around is drawn while the goggles
+ * are on), a block pylons send to shows which ones. Nothing shows when the goggles are off or the player looks
+ * elsewhere. Reads only what the blocks sync anyway.
  */
 public final class GogglesView {
     private static final int GOLD = 0xE0B85A;
@@ -79,7 +83,7 @@ public final class GogglesView {
         }
     }
 
-    private static boolean wearing(@Nullable Player player) {
+    public static boolean wearing(@Nullable Player player) {
         return player != null && player.getItemBySlot(EquipmentSlot.HEAD).is(ModItems.RESEARCHERS_GOGGLES.get());
     }
 
@@ -193,7 +197,55 @@ public final class GogglesView {
             contents(rows, network(level, pos));
             return new Reading(name, rows);
         }
+        if (entity instanceof HexPylonBlockEntity pylon) {
+            pylon(level, pylon, rows);
+            return new Reading(name, rows);
+        }
+        // A block pylons send to: which ones, and how to untie it.
+        List<HexPylonBlockEntity> senders = ClientPylons.linkingTo(level, pos);
+        if (!senders.isEmpty()) {
+            rows.add(Row.heading(Component.translatable(KEY + "pylon.senders")));
+            for (HexPylonBlockEntity sender : senders) {
+                rows.add(new Row(null, Component.translatable(KEY + "pylon.from", sender.getBlockState().getBlock().getName(),
+                        distance(sender.gem(), Vec3.atCenterOf(pos))), 0xFF000000 | GOLD));
+            }
+            rows.add(Row.heading(Component.translatable(KEY + "pylon.untie")));
+            return new Reading(name, rows);
+        }
         return null;
+    }
+
+    /** A pylon: what it does with its runes, where its links go (a gone block in red), its runes, how to set it up. */
+    private static void pylon(Level level, HexPylonBlockEntity pylon, List<Row> rows) {
+        String seconds = String.format(java.util.Locale.ROOT, "%.1f", pylon.interval() / 20.0F);
+        switch (pylon.kind()) {
+            case GATHERING -> {
+                rows.add(new Row(null, Component.translatable(KEY + "pylon.radius", pylon.radius()), TEXT));
+                rows.add(new Row(null, Component.translatable(KEY + "pylon.pace", seconds, pylon.amount()), TEXT));
+            }
+            case SENDING -> rows.add(new Row(null, Component.translatable(KEY + "pylon.pace", seconds, pylon.amount()), TEXT));
+            case RELAY -> {
+            }
+        }
+        rows.add(new Row(null, Component.translatable(KEY + "pylon.range", pylon.range()), TEXT));
+        rows.add(Row.heading(Component.translatable(KEY + "pylon.links", pylon.links().size(), HexPylonBlockEntity.MAX_LINKS)));
+        for (PylonLink link : pylon.links()) {
+            BlockState target = level.getBlockState(link.pos());
+            Vec3 to = level.getBlockEntity(link.pos()) instanceof HexPylonBlockEntity relay ? relay.gem() : Vec3.atCenterOf(link.pos());
+            boolean gone = target.isAir();
+            rows.add(new Row(null, Component.translatable(KEY + "pylon.to", target.getBlock().getName(), distance(pylon.gem(), to)),
+                    gone ? 0xFFE05A4A : 0xFF000000 | GOLD));
+        }
+        for (var entry : pylon.runes().entries()) {
+            rows.add(new Row(null, Component.translatable(entry.rune().translationKey())
+                    .append(" " + "★".repeat(entry.stars())), 0xFF000000 | entry.rune().color()));
+        }
+        rows.add(Row.heading(Component.translatable("block.hextale.hex_pylon.hint.link")));
+        rows.add(Row.heading(Component.translatable("block.hextale.hex_pylon.hint.clear")));
+    }
+
+    private static int distance(Vec3 a, Vec3 b) {
+        return (int) Math.round(a.distanceTo(b));
     }
 
     private static void section(List<Row> rows, String key, EssenceMix mix) {

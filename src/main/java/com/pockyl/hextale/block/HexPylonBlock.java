@@ -53,8 +53,15 @@ public class HexPylonBlock extends BaseEntityBlock {
         return kind;
     }
 
+    /** With a block in hand, a right click places it as on any block; anything else falls through to {@link #useWithoutItem}. */
+    @Override
+    protected InteractionResult useItemOn(net.minecraft.world.item.ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+                                          net.minecraft.world.InteractionHand hand, BlockHitResult hitResult) {
+        return stack.getItem() instanceof net.minecraft.world.item.BlockItem ? InteractionResult.PASS : InteractionResult.TRY_WITH_EMPTY_HAND;
+    }
+
     /**
-     * Right click (with anything in hand; vanilla offers the block the use after the item): start a link from here, or
+     * Right click (with an empty hand or any item but a block; vanilla offers the block the use after the item): start a link from here, or
      * give it up when one from here is going. Sneak + right click with an empty hand: take every link away.
      */
     @Override

@@ -93,9 +93,11 @@ public final class HextaleClient {
                 event.getToolTip().add(Component.translatable("block.hextale." + id + ".hint").withStyle(ChatFormatting.GRAY));
                 event.getToolTip().add(Component.translatable("block.hextale.hex_pylon.hint.link").withStyle(ChatFormatting.DARK_AQUA));
                 event.getToolTip().add(Component.translatable("block.hextale.hex_pylon.hint.clear").withStyle(ChatFormatting.DARK_AQUA));
+                event.getToolTip().add(Component.translatable("block.hextale.hex_pylon.hint.untie").withStyle(ChatFormatting.DARK_AQUA));
             }
         });
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());
+        ClientPylons.register();
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> RuneBoards.warmUp());
     }
 

@@ -19,6 +19,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.HexPylonBlockEntity;
@@ -37,7 +38,9 @@ import org.jspecify.annotations.Nullable;
 /**
  * Linking pylons, like tying a thread: right click a pylon, then right click where it should send - a container's face
  * (the face matters: a furnace's top takes what it smelts, its side the fuel) or a relay pylon. Doing it again on the
- * same target unties the link; clicking the pylon itself again, or waiting {@value #TIMEOUT_TICKS} ticks, gives up. While a player is linking, a thread of light runs from the pylon to their
+ * same target unties the link; clicking the pylon itself again, clicking anything that cannot take items, clicking the
+ * air or waiting {@value #TIMEOUT_TICKS} ticks gives up. A block that breaks drops its links by itself; sneak + right
+ * click with an empty hand on a linked block unties it from every pylon. While a player is linking, a thread of light runs from the pylon to their
  * crosshair (the client is told which pylon).
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
@@ -69,7 +72,7 @@ public final class PylonLinking {
         player.level().playSound(null, pylon.getBlockPos(), ModSounds.PYLON_LINK.get(), SoundSource.BLOCKS, 0.4F, 1.3F);
     }
 
-    private static void stop(ServerPlayer player) {
+    public static void stop(ServerPlayer player) {
         if (PENDING.remove(player.getUUID()) != null) {
             ModNetwork.sendToPlayer(player, new PylonLinkPayload(Optional.empty()));
         }
@@ -95,32 +98,110 @@ public final class PylonLinking {
     }
 
     /**
-     * The second click: while a link is going, right click on any block ties it there (or unties it), before the block's
-     * own use - a chest does not open.
+     * Right clicks on blocks. While a link is going: a click on a place items can go (a container's face, a relay, another
+     * pylon) ties it there before the block's own use - a chest does not open; a click anywhere else gives the link up
+     * and does what it always does (blocks get placed, doors open). Otherwise: sneak + right click with an empty hand on
+     * a block pylons send to unties it from all of them.
      */
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         Player player = event.getEntity();
+        Level level = event.getLevel();
+        BlockPos pos = event.getPos();
+        Direction face = event.getFace() == null ? Direction.UP : event.getFace();
         if (event.getHand() != InteractionHand.MAIN_HAND) {
             return;
         }
-        if (event.getLevel().isClientSide()) {
-            if (clientFrom != null) {
+        boolean going = level.isClientSide() ? clientFrom != null : PENDING.containsKey(player.getUUID());
+        if (going) {
+            if (level.getBlockEntity(pos) instanceof HexPylonBlockEntity || linkable(level, pos, face)) {
                 event.setCanceled(true);
                 event.setCancellationResult(InteractionResult.SUCCESS);
+                if (player instanceof ServerPlayer server) {
+                    link(server, pos, face);
+                }
+            } else {
+                giveUp(player);
             }
             return;
         }
-        if (!(player instanceof ServerPlayer server)) {
+        if (player.isSecondaryUseActive() && player.getMainHandItem().isEmpty() && player.getOffhandItem().isEmpty()
+                && !(level.getBlockEntity(pos) instanceof HexPylonBlockEntity)
+                && (level.isClientSide() ? clientLinked.test(level, pos) : PylonIndex.isTarget(level, pos))) {
+            event.setCanceled(true);
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            if (player instanceof ServerPlayer server) {
+                untie(server, pos);
+            }
+        }
+    }
+
+    /** Using an item in the air gives a going link up. */
+    @SubscribeEvent
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        if (event.getHand() == InteractionHand.MAIN_HAND) {
+            giveUp(event.getEntity());
+        }
+    }
+
+    /** A click elsewhere: the going link is given up (the client forgets it at once, the server tells the player). */
+    public static void giveUp(Player player) {
+        if (player.level().isClientSide()) {
+            clientFrom = null;
+        } else if (player instanceof ServerPlayer server && PENDING.containsKey(server.getUUID())) {
+            stop(server);
+            server.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"));
+        }
+    }
+
+    /** Whether items can be sent to the block through {@code face}: a container there, or a relay pylon. */
+    public static boolean linkable(Level level, BlockPos pos, Direction face) {
+        if (level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon) {
+            return pylon.kind() == PylonKind.RELAY;
+        }
+        return level.getCapability(Capabilities.Item.BLOCK, pos, face) != null;
+    }
+
+    /** Client: whether some pylon nearby links to the block (set by the client, which can look at the pylons it knows). */
+    public static java.util.function.BiPredicate<Level, BlockPos> clientLinked = (level, pos) -> false;
+
+    /** Unties the block from every pylon that sends to it. */
+    public static void untie(ServerPlayer player, BlockPos target) {
+        ServerLevel level = player.level();
+        int count = 0;
+        for (BlockPos pos : PylonIndex.linkingTo(level, target)) {
+            if (level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon && pylon.unlink(target)) {
+                count++;
+            }
+        }
+        if (count > 0) {
+            player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.untied", level.getBlockState(target).getBlock().getName(),
+                    count));
+            level.playSound(null, target, ModSounds.PYLON_UNLINK.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
+        }
+    }
+
+    /** A block changed: if pylons link to it and it no longer takes items (broken, replaced), their links go away. */
+    @SubscribeEvent
+    public static void onBlockChanged(BlockEvent.NeighborNotifyEvent event) {
+        if (!(event.getLevel() instanceof ServerLevel level) || !PylonIndex.isTarget(level, event.getPos())) {
             return;
         }
-        Pending pending = PENDING.get(server.getUUID());
-        if (pending == null) {
-            return;
+        for (BlockPos pos : PylonIndex.linkingTo(level, event.getPos())) {
+            if (level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon) {
+                for (PylonLink link : java.util.List.copyOf(pylon.links())) {
+                    if (link.pos().equals(event.getPos())) {
+                        pylon.dropIfBroken(link);
+                    }
+                }
+            }
         }
-        event.setCanceled(true);
-        event.setCancellationResult(InteractionResult.SUCCESS);
-        link(server, event.getPos(), event.getFace() == null ? Direction.UP : event.getFace());
+    }
+
+    @SubscribeEvent
+    public static void onServerStopped(net.neoforged.neoforge.event.server.ServerStoppedEvent event) {
+        PylonIndex.clear();
+        PENDING.clear();
     }
 
     /** Ties (or unties) the player's pending link to the block at {@code target}, entering through {@code face}. */
@@ -149,7 +230,8 @@ public final class PylonLinking {
             }
             link = new PylonLink(target, Direction.UP);
         } else {
-            if (level.getCapability(Capabilities.Item.BLOCK, target, face) == null) {
+            if (!linkable(level, target, face)) {
+                stop(player);
                 player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.nothing").withStyle(ChatFormatting.RED));
                 return;
             }
@@ -166,11 +248,13 @@ public final class PylonLinking {
         if (!pylon.reaches(target)) {
             int distance = (int) Math.ceil(pylon.gem().distanceTo(Vec3.atCenterOf(target)));
             player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.far", distance, pylon.range()).withStyle(ChatFormatting.RED));
+            stop(player);
             return;
         }
         if (!pylon.toggleLink(link)) {
             player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.full", HexPylonBlockEntity.MAX_LINKS)
                     .withStyle(ChatFormatting.RED));
+            stop(player);
             return;
         }
         stop(player);
