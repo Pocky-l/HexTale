@@ -33,6 +33,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.Flasks;
+import com.pockyl.hextale.item.EssenceStickerItem;
+import com.pockyl.hextale.registry.ModItems;
+import net.minecraft.network.chat.Component;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
@@ -103,6 +106,35 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
         if (tank.isCreative()) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
+        if (stack.is(ModItems.ESSENCE_STICKER.get())) {
+            // A sticker goes on the jar (the one already there comes back); a blank one asks for its essence first.
+            Essence essence = EssenceStickerItem.essence(stack);
+            if (essence == null) {
+                player.sendOverlayMessage(Component.translatable("item.hextale.essence_sticker.blank"));
+                return InteractionResult.SUCCESS;
+            }
+            Essence old = tank.sticker();
+            tank.setSticker(essence);
+            if (!player.getAbilities().instabuild) {
+                stack.shrink(1);
+            }
+            if (old != null) {
+                com.pockyl.hextale.item.PylonFilterItem.give(player, EssenceStickerItem.of(ModItems.ESSENCE_STICKER.get(), old));
+            }
+            level.playSound(null, pos, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 1.3F);
+            if (level instanceof ServerLevel serverLevel) {
+                Vec3 at = hitResult.getLocation();
+                serverLevel.sendParticles(ParticleTypes.WAX_ON, at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
+            }
+            player.sendOverlayMessage(Component.translatable("block.hextale.essence_tank.sticker", Component.translatable(essence.translationKey())));
+            return InteractionResult.SUCCESS;
+        }
+        if (tank.sticker() != null && EssenceFlaskItem.isFlask(stack) && !EssenceFlaskItem.contents(stack).isEmpty()
+                && !tank.accepts(EssenceFlaskItem.contents(stack))) {
+            player.sendOverlayMessage(Component.translatable("block.hextale.essence_tank.refuses",
+                    Component.translatable(tank.sticker().translationKey())));
+            return InteractionResult.SUCCESS;
+        }
         if (Flasks.use(player, hand, stack, tank.tank())) {
             tank.setChanged();
             level.playSound(null, pos, ModSounds.TANK_GLUG.get(), SoundSource.BLOCKS, 0.6F, 0.8F + level.getRandom().nextFloat() * 0.3F);
@@ -116,17 +148,12 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
         if (!(level.getBlockEntity(pos) instanceof EssenceTankBlockEntity tank)) {
             return InteractionResult.PASS;
         }
-        Direction face = hitResult.getDirection();
-        if (player.isSecondaryUseActive() && face != Direction.DOWN && !state.getValue(PORTS.get(face))) {
-            // Sneak-use with an empty hand: the next essence's sticker on that face (a sign only); a face a pipe joins
-            // has its fitting where the sticker would go.
+        if (player.isSecondaryUseActive() && tank.sticker() != null) {
+            // Sneak-use with an empty hand peels the sticker off.
             if (!level.isClientSide()) {
-                tank.cycleLabel(face);
-                level.playSound(null, pos, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 1.3F);
-                if (level instanceof ServerLevel serverLevel) {
-                    Vec3 at = hitResult.getLocation();
-                    serverLevel.sendParticles(ParticleTypes.WAX_ON, at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
-                }
+                com.pockyl.hextale.item.PylonFilterItem.give(player, EssenceStickerItem.of(ModItems.ESSENCE_STICKER.get(), tank.sticker()));
+                tank.setSticker(null);
+                level.playSound(null, pos, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 0.9F);
             }
             return InteractionResult.SUCCESS;
         }

@@ -141,6 +141,12 @@ public final class Guide {
             QuestDisplay.infusion("hextale:relay_pylon"), SENDING_PYLON);
     public static final Quest SIPHON_PYLON = item("siphon_pylon", ModItems.SIPHON_PYLON, Quest.Aura.HEXTECH,
             QuestDisplay.infusion("hextale:siphon_pylon"), SENDING_PYLON, ESSENCE_TANK, BRASS_PIPE);
+    public static final Quest PYLON_FILTER = item("pylon_filter", ModItems.PYLON_FILTER, Quest.Aura.NONE,
+            QuestDisplay.shaped("hextale:pylon_filter", 1, new String[]{"N N", " S ", "N N"}, "N=hextale:brass_nugget", "S=minecraft:string"),
+            SENDING_PYLON);
+    public static final Quest ESSENCE_STICKER = item("essence_sticker", ModItems.ESSENCE_STICKER, Quest.Aura.NONE,
+            QuestDisplay.shapeless("hextale:essence_sticker", 6, "minecraft:paper", "minecraft:paper", "minecraft:paper", "minecraft:slime_ball"),
+            SIPHON_PYLON);
     public static final Quest PYLON_RUNE = add("pylon_rune", Quest.Kind.ITEM, List.of(SENDING_PYLON),
             () -> new ItemStack(ModItems.RUNE_STELE.get()), Quests.pylonRunes(1), QuestDisplay.pylonRunes(), null, Quest.Aura.NONE);
     public static final Quest HEXTECH_PICKAXE = add("hextech_pickaxe", Quest.Kind.ITEM, List.of(HEXTECH_GEMSTONE, RUNE_STELE),

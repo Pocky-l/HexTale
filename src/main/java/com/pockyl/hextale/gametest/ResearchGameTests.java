@@ -727,21 +727,18 @@ public final class ResearchGameTests {
         helper.succeedWhen(() -> helper.assertTrue(beside.tank().isEmpty() && piped.tank().isEmpty(), "the open valve drains both tanks"));
     }
 
-    /** Sneak-use stickers cycle through every essence and back to none, and stay on their face. */
+    /** A jar with a sticker takes only its essence, pure; without one it takes anything. */
     @HexTest
-    public static void tankLabelsCycleThroughTheEssences(GameTestHelper helper) {
+    public static void aStickeredJarTakesOnlyItsEssence(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.ESSENCE_TANK.get());
         EssenceTankBlockEntity tank = helper.getBlockEntity(at, EssenceTankBlockEntity.class);
-        helper.assertTrue(tank.label(Direction.NORTH) == null, "a new tank has no stickers");
-        for (Essence essence : Essence.values()) {
-            tank.cycleLabel(Direction.NORTH);
-            helper.assertTrue(tank.label(Direction.NORTH) == essence, "the next click shows " + essence);
-        }
-        tank.cycleLabel(Direction.NORTH);
-        helper.assertTrue(tank.label(Direction.NORTH) == null, "after lightning the sticker comes off");
-        tank.cycleLabel(Direction.EAST);
-        helper.assertTrue(tank.label(Direction.EAST) == Essence.FIRE && tank.label(Direction.WEST) == null, "each face has its own sticker");
+        helper.assertTrue(tank.receive(Direction.UP, EssenceMix.pure(Essence.WATER, 8), true) == 8, "a plain jar takes water");
+        tank.setSticker(Essence.FIRE);
+        helper.assertTrue(tank.receive(Direction.UP, EssenceMix.pure(Essence.WATER, 8), true) == 0, "a fire jar refuses water");
+        helper.assertTrue(tank.receive(Direction.UP, EssenceMix.pure(Essence.FIRE, 4).plus(EssenceMix.pure(Essence.WATER, 4)), true) == 0,
+                "and a mixture holding fire");
+        helper.assertTrue(tank.receive(Direction.UP, EssenceMix.pure(Essence.FIRE, 8), false) == 8, "it takes pure fire");
         helper.succeed();
     }
 

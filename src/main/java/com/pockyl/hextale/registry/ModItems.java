@@ -63,6 +63,12 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> SIPHON_PYLON = ITEMS.registerSimpleBlockItem(ModBlocks.SIPHON_PYLON,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> MAGIC_STONE_PILLAR = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_STONE_PILLAR);
+    /** Rules what a pylon moves: white or black list, numbers to keep or to fill up to. */
+    public static final DeferredItem<com.pockyl.hextale.item.PylonFilterItem> PYLON_FILTER = ITEMS.registerItem("pylon_filter",
+            properties -> new com.pockyl.hextale.item.PylonFilterItem(properties.stacksTo(16)));
+    /** A label with one essence: a jar wearing it takes only that essence, a siphon or relay carries only it. */
+    public static final DeferredItem<com.pockyl.hextale.item.EssenceStickerItem> ESSENCE_STICKER = ITEMS.registerItem("essence_sticker",
+            com.pockyl.hextale.item.EssenceStickerItem::new);
     public static final DeferredItem<BlockItem> BRASS_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_GRATE);
     /** Creative only: everything known at once - every rune with three stars, every item studied, every quest done. */
     public static final DeferredItem<KnowledgeScrollItem> SCROLL_OF_OMNISCIENCE = ITEMS.registerItem("scroll_of_omniscience",

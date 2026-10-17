@@ -125,6 +125,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Siphon Pylon: set on an Essence Jar, it draws the essence up into its glass bulb (swirling in the jar's colour) and
   pours it as a stream of light along its links - into other jars, a separator, the Hex Smelter, anything that takes
   essence from pipes; relays pass the stream on.
+- Pylon Filter: right click it to set it up - nine slots (click with an item to put it in), "only these" or "all but
+  these", matched by kind or exactly (enchantments, contents), and numbers: keep N of each item in the source, or fill
+  a target only up to N (scroll over a slot to set N). Right click a pylon with it to set it in (the one there comes
+  back), sneak + right click to take it out. On a gathering pylon it picks what to gather, on a sending pylon what to
+  send, on a relay what may pass - a few filtered relays sort a storeroom. The filter's items circle the pylon's heart.
+- Essence Sticker: right click to pick its essence from all of them. On an Essence Jar the jar takes only that essence
+  (from pipes, bottles and siphons alike); sneak + right click with an empty hand peels it off. On a siphon or a relay
+  it carries only that essence - one siphon on a jar of mixed essence fills a row of labelled jars, each with its own.
+  The old per-face signs on jars are gone.
 - Pylon runes, burned in at the altar like a smelter's: Shift (reach and link range), Motor (pace), Lift (items per
   move), Lens. A broken pylon keeps its runes.
 - The magic fetches every item: a tendril of light, two strands twisting around a swaying line, reaches out of the gem,

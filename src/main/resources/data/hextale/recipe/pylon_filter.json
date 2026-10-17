@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "N N",
+    " S ",
+    "N N"
+  ],
+  "key": {
+    "N": "hextale:brass_nugget",
+    "S": "minecraft:string"
+  },
+  "result": {
+    "id": "hextale:pylon_filter",
+    "count": 1
+  }
+}

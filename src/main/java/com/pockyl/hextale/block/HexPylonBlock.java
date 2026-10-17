@@ -57,7 +57,53 @@ public class HexPylonBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useItemOn(net.minecraft.world.item.ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           net.minecraft.world.InteractionHand hand, BlockHitResult hitResult) {
+        if (stack.is(com.pockyl.hextale.registry.ModItems.PYLON_FILTER.get()) || stack.is(com.pockyl.hextale.registry.ModItems.ESSENCE_STICKER.get())) {
+            if (!level.isClientSide() && level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon) {
+                fit(stack, pylon, player);
+            }
+            return InteractionResult.SUCCESS;
+        }
         return stack.getItem() instanceof net.minecraft.world.item.BlockItem ? InteractionResult.PASS : InteractionResult.TRY_WITH_EMPTY_HAND;
+    }
+
+    /**
+     * A filter goes into an item pylon (gathering, sending, relay), a sticker onto an essence carrier (siphon, relay); the
+     * one already there comes back to the player.
+     */
+    private static void fit(net.minecraft.world.item.ItemStack stack, HexPylonBlockEntity pylon, Player player) {
+        boolean filter = stack.is(com.pockyl.hextale.registry.ModItems.PYLON_FILTER.get());
+        PylonKind kind = pylon.kind();
+        if (filter ? kind == PylonKind.SIPHON : kind != PylonKind.SIPHON && kind != PylonKind.RELAY) {
+            player.sendOverlayMessage(Component.translatable(filter ? "item.hextale.pylon_filter.not_here" : "item.hextale.essence_sticker.not_here"));
+            return;
+        }
+        if (filter) {
+            net.minecraft.world.item.ItemStack old = pylon.setFilter(stack);
+            if (!player.getAbilities().instabuild) {
+                stack.shrink(1);
+            }
+            if (!old.isEmpty()) {
+                com.pockyl.hextale.item.PylonFilterItem.give(player, old);
+            }
+            player.sendOverlayMessage(Component.translatable("item.hextale.pylon_filter.set"));
+        } else {
+            com.pockyl.hextale.rune.Essence essence = com.pockyl.hextale.item.EssenceStickerItem.essence(stack);
+            if (essence == null) {
+                player.sendOverlayMessage(Component.translatable("item.hextale.essence_sticker.blank"));
+                return;
+            }
+            com.pockyl.hextale.rune.Essence old = pylon.setSticker(essence);
+            if (!player.getAbilities().instabuild) {
+                stack.shrink(1);
+            }
+            if (old != null) {
+                com.pockyl.hextale.item.PylonFilterItem.give(player,
+                        com.pockyl.hextale.item.EssenceStickerItem.of(com.pockyl.hextale.registry.ModItems.ESSENCE_STICKER.get(), old));
+            }
+            player.sendOverlayMessage(Component.translatable("item.hextale.essence_sticker.set", Component.translatable(essence.translationKey())));
+        }
+        pylon.getLevel().playSound(null, pylon.getBlockPos(), net.minecraft.sounds.SoundEvents.ITEM_FRAME_ADD_ITEM,
+                net.minecraft.sounds.SoundSource.BLOCKS, 0.7F, 1.2F);
     }
 
     /**

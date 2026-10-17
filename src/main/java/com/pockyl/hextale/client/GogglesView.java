@@ -172,6 +172,10 @@ public final class GogglesView {
         if (entity instanceof EssenceTankBlockEntity tank && tank.isCreative()) {
             rows.add(new Row(null, Component.translatable("block.hextale.creative_essence_tank.all"), 0xFFE8D0FF));
         } else if (entity instanceof EssenceTankBlockEntity tank) {
+            if (tank.sticker() != null) {
+                rows.add(new Row(tank.sticker(), Component.translatable(KEY + "jar.sticker", Component.translatable(tank.sticker().translationKey())),
+                        0xFF000000 | tank.sticker().color()));
+            }
             contents(rows, tank.tank().contents());
             rows.add(Row.heading(Component.translatable(KEY + "filled", tank.tank().amount(), tank.tank().capacity())));
             return new Reading(name, rows);
@@ -236,6 +240,17 @@ public final class GogglesView {
             boolean gone = target.isAir();
             rows.add(new Row(null, Component.translatable(KEY + "pylon.to", target.getBlock().getName(), distance(pylon.gem(), to)),
                     gone ? 0xFFE05A4A : 0xFF000000 | GOLD));
+        }
+        com.pockyl.hextale.transport.ItemFilter filter = pylon.filter();
+        if (filter != null) {
+            Component what = Component.translatable(filter.entries().isEmpty() ? "gui.hextale.pylon_filter.summary.empty"
+                    : !filter.whitelist() ? "gui.hextale.pylon_filter.summary.blacklist"
+                    : "gui.hextale.pylon_filter.summary." + filter.rule().getSerializedName());
+            rows.add(new Row(null, Component.translatable(KEY + "pylon.filter", what), 0xFF000000 | GOLD));
+        }
+        if (pylon.sticker() != null) {
+            rows.add(new Row(pylon.sticker(), Component.translatable(KEY + "pylon.sticker", Component.translatable(pylon.sticker().translationKey())),
+                    0xFF000000 | pylon.sticker().color()));
         }
         for (var entry : pylon.runes().entries()) {
             rows.add(new Row(null, Component.translatable(entry.rune().translationKey())

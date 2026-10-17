@@ -59,6 +59,8 @@ public final class HextaleClient {
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("essence"), EssenceTint.MAP_CODEC));
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("rune"), RuneTint.MAP_CODEC));
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
+                event.register(Hextale.id("sticker"), com.pockyl.hextale.client.render.StickerTint.MAP_CODEC));
+        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
                 event.register(Hextale.id("pickaxe_runes"), com.pockyl.hextale.client.render.PickaxeRuneTint.MAP_CODEC));
         modBus.addListener(TableModels::register);
         modBus.addListener((RegisterParticleProvidersEvent event) -> event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new));
@@ -119,6 +121,7 @@ public final class HextaleClient {
         event.register(ModMenus.RESEARCH_TABLE.get(), ResearchTableScreen::new);
         event.register(ModMenus.ALEMBIC.get(), AlembicScreen::new);
         event.register(ModMenus.HEX_SMELTER.get(), com.pockyl.hextale.client.screen.machine.HexSmelterScreen::new);
+        event.register(ModMenus.ITEM_FILTER.get(), com.pockyl.hextale.client.screen.ItemFilterScreen::new);
         event.register(ModMenus.SEPARATOR.get(), SeparatorScreen::new);
     }
 

@@ -86,6 +86,20 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             default -> new ItemStack(ModItems.HEXTECH_GEMSTONE.get());
         };
         itemModelResolver.updateForTopItem(state.gem, heart, ItemDisplayContext.GROUND, level, null, seed);
+        // A sticker colours the pylon's light; a filter shows its first items circling the heart.
+        if (pylon.sticker() != null) {
+            state.color = pylon.sticker().color();
+        }
+        com.pockyl.hextale.transport.ItemFilter filter = pylon.filter();
+        state.filterCount = filter == null ? 0 : Math.min(3, filter.entries().size());
+        while (state.filterIcons.size() < state.filterCount) {
+            state.filterIcons.add(new ItemStackRenderState());
+        }
+        for (int i = 0; i < state.filterCount; i++) {
+            itemModelResolver.updateForTopItem(state.filterIcons.get(i), filter.entries().get(i).item(), ItemDisplayContext.GROUND, level,
+                    null, seed + 7 * i);
+        }
+        state.filterWhitelist = filter == null || filter.whitelist();
 
         // Links: only while the player wears the goggles, sneaks, holds a pylon or is linking, so a busy base is not a
         // web of threads.
@@ -209,6 +223,19 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             poseStack.scale(scale, scale, scale);
             poseStack.translate(0, -0.2, 0);
             state.gem.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
+        }
+
+        // The filter's items circling the heart (on a blacklist they glow red).
+        for (int i = 0; i < state.filterCount; i++) {
+            float angle = time * 0.04F + i * Mth.TWO_PI / state.filterCount;
+            poseStack.pushPose();
+            poseStack.translate(gem.x + Mth.cos(angle) * 0.3F, gem.y + 0.05F + Mth.sin(time * 0.07F + i) * 0.03F, gem.z + Mth.sin(angle) * 0.3F);
+            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.22F, state.filterWhitelist ? 0xF0C24A : 0xE04A3A, 0.4F);
+            poseStack.rotate(Axis.YP.rotationDegrees(-time * 2));
+            poseStack.scale(0.18F, 0.18F, 0.18F);
+            poseStack.translate(0, -0.15, 0);
+            state.filterIcons.get(i).submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
         }
 
@@ -440,6 +467,9 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         float flare;
         int color;
         int essenceColor = -1;
+        final List<ItemStackRenderState> filterIcons = new ArrayList<>();
+        int filterCount;
+        boolean filterWhitelist = true;
         int flightCount;
         boolean linking;
         int reach;

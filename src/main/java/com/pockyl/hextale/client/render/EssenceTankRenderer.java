@@ -85,7 +85,8 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
         for (Direction face : Direction.values()) {
             BooleanProperty port = EssenceMachine.PORTS.get(face);
             boolean piped = block.hasProperty(port) && block.getValue(port);
-            state.labels[face.get3DDataValue()] = piped ? null : tankEntity.label(face);
+            // The jar's sticker shows on every side without a pipe.
+            state.labels[face.get3DDataValue()] = piped || !face.getAxis().isHorizontal() ? null : tankEntity.sticker();
         }
     }
 

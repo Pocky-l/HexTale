@@ -320,6 +320,128 @@ public final class PylonGameTests {
         helper.succeed();
     }
 
+    private static ItemStack filter(com.pockyl.hextale.transport.ItemFilter settings) {
+        ItemStack stack = new ItemStack(com.pockyl.hextale.registry.ModItems.PYLON_FILTER.get());
+        stack.set(ModDataComponents.ITEM_FILTER.get(), settings);
+        return stack;
+    }
+
+    private static com.pockyl.hextale.transport.ItemFilter only(net.minecraft.world.item.Item item, int count) {
+        return com.pockyl.hextale.transport.ItemFilter.EMPTY.with(0, new ItemStack(item)).add(0, count - 1);
+    }
+
+    /** A whitelist on a gathering pylon: it picks up only cobblestone and leaves the dirt lying. */
+    @HexTest(maxTicks = 200)
+    public static void aWhitelistGathersOnlyItsItems(GameTestHelper helper) {
+        clear(helper, 8);
+        helper.setBlock(BASE, Blocks.CHEST);
+        HexPylonBlockEntity pylon = place(helper, ModBlocks.GATHERING_PYLON.get(), BASE.above());
+        pylon.setFilter(filter(only(Items.COBBLESTONE, 1)));
+        drop(helper, Items.COBBLESTONE, 5, new Vec3(3.5, 1.2, 1.5));
+        ItemEntity dirt = drop(helper, Items.DIRT, 5, new Vec3(1.5, 1.2, 3.5));
+        Container chest = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(count(chest, Items.COBBLESTONE) == 5, "the cobblestone was gathered");
+            helper.assertTrue(dirt.isAlive() && count(chest, Items.DIRT) == 0, "the dirt was left lying");
+        });
+    }
+
+    /** Numbers: a sending pylon keeping 5 cobblestone sends 15 of 20; then a blacklist sends all but cobblestone. */
+    @HexTest(maxTicks = 300)
+    public static void keepAndBlacklistRuleASendingPylon(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, Blocks.CHEST);
+        BlockPos target = BASE.offset(3, 0, 0);
+        helper.setBlock(target, Blocks.CHEST);
+        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container to = (Container) helper.getBlockEntity(target, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        from.setItem(0, new ItemStack(Items.COBBLESTONE, 20));
+        from.setItem(1, new ItemStack(Items.DIRT, 10));
+        HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        pylon.setFilter(filter(only(Items.COBBLESTONE, 5).withRule(com.pockyl.hextale.transport.ItemFilter.Rule.KEEP)));
+        pylon.toggleLink(link(helper, target, Direction.UP));
+        helper.runAfterDelay(120, () -> {
+            helper.assertTrue(count(to, Items.COBBLESTONE) == 15 && count(from, Items.COBBLESTONE) == 5, "five cobblestone stayed behind");
+            helper.assertTrue(count(to, Items.DIRT) == 0, "dirt is not on the list");
+            pylon.setFilter(filter(com.pockyl.hextale.transport.ItemFilter.EMPTY.with(0, new ItemStack(Items.COBBLESTONE)).withWhitelist(false)));
+            helper.runAfterDelay(120, () -> {
+                helper.assertTrue(count(to, Items.DIRT) == 10 && count(from, Items.COBBLESTONE) == 5, "all but cobblestone went");
+                helper.succeed();
+            });
+        });
+    }
+
+    /** Fill up to N: the target gets only 8 raw iron from a chest of 32. */
+    @HexTest(maxTicks = 200)
+    public static void fillUpToLimitsTheTarget(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, Blocks.CHEST);
+        BlockPos target = BASE.offset(3, 0, 0);
+        helper.setBlock(target, Blocks.CHEST);
+        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container to = (Container) helper.getBlockEntity(target, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        from.setItem(0, new ItemStack(Items.RAW_IRON, 32));
+        HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        pylon.setFilter(filter(only(Items.RAW_IRON, 8).withRule(com.pockyl.hextale.transport.ItemFilter.Rule.LIMIT)));
+        pylon.toggleLink(link(helper, target, Direction.UP));
+        helper.runAfterDelay(150, () -> {
+            helper.assertTrue(count(to, Items.RAW_IRON) == 8 && count(from, Items.RAW_IRON) == 24, "the target was filled up to 8");
+            helper.succeed();
+        });
+    }
+
+    /** Sorting by relays: iron goes through the relay whose filter lets only iron pass, the rest takes the other link. */
+    @HexTest(maxTicks = 300)
+    public static void filteredRelaysSort(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, Blocks.CHEST);
+        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        from.setItem(0, new ItemStack(Items.IRON_INGOT, 6));
+        from.setItem(1, new ItemStack(Items.COBBLESTONE, 6));
+        BlockPos relayPos = BASE.offset(5, 0, 0);
+        BlockPos ironChest = BASE.offset(10, 0, 0);
+        BlockPos restChest = BASE.offset(0, 0, 3);
+        helper.setBlock(ironChest, Blocks.CHEST);
+        helper.setBlock(restChest, Blocks.CHEST);
+        HexPylonBlockEntity relay = place(helper, ModBlocks.RELAY_PYLON.get(), relayPos);
+        relay.setFilter(filter(only(Items.IRON_INGOT, 1)));
+        relay.toggleLink(link(helper, ironChest, Direction.UP));
+        HexPylonBlockEntity sender = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        sender.toggleLink(link(helper, relayPos, Direction.UP));
+        sender.toggleLink(link(helper, restChest, Direction.UP));
+        Container iron = (Container) helper.getBlockEntity(ironChest, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container rest = (Container) helper.getBlockEntity(restChest, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(count(iron, Items.IRON_INGOT) == 6 && count(iron, Items.COBBLESTONE) == 0, "iron went through the relay");
+            helper.assertTrue(count(rest, Items.COBBLESTONE) == 6 && count(rest, Items.IRON_INGOT) == 0, "the rest took the other link");
+        });
+    }
+
+    /** Stickers sort essence: a siphon on a jar of fire and water fills a fire jar with fire and a water jar with water. */
+    @HexTest(maxTicks = 300)
+    public static void stickersSortEssence(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, ModBlocks.ESSENCE_TANK.get());
+        BlockPos fireAt = BASE.offset(3, 0, 0);
+        BlockPos waterAt = BASE.offset(0, 0, 3);
+        helper.setBlock(fireAt, ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(waterAt, ModBlocks.ESSENCE_TANK.get());
+        var source = helper.getBlockEntity(BASE, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        var fire = helper.getBlockEntity(fireAt, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        var water = helper.getBlockEntity(waterAt, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        source.tank().set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.FIRE, 40).plus(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.WATER, 40)));
+        fire.setSticker(com.pockyl.hextale.rune.Essence.FIRE);
+        water.setSticker(com.pockyl.hextale.rune.Essence.WATER);
+        HexPylonBlockEntity siphon = place(helper, ModBlocks.SIPHON_PYLON.get(), BASE.above());
+        siphon.toggleLink(link(helper, fireAt, Direction.UP));
+        siphon.toggleLink(link(helper, waterAt, Direction.UP));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(fire.tank().contents().equals(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.FIRE, 40)), "the fire jar holds all the fire, and only fire");
+            helper.assertTrue(water.tank().contents().equals(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.WATER, 40)), "the water jar holds all the water");
+            helper.assertTrue(source.tank().isEmpty(), "the mixed jar is empty");
+        });
+    }
+
     /** The flights of a move survive the trip to the clients (the payload's codec), the longest way included. */
     @HexTest(maxTicks = 20)
     public static void flightsReachTheClient(GameTestHelper helper) {

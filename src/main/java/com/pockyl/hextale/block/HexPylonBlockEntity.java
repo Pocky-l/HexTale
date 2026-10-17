@@ -31,8 +31,10 @@ import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.network.PylonFlightsPayload;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.PylonRune;
+import com.pockyl.hextale.transport.ItemFilter;
 import com.pockyl.hextale.transport.PylonFlight;
 import com.pockyl.hextale.transport.PylonIndex;
 import com.pockyl.hextale.transport.PylonInsert;
@@ -73,6 +75,10 @@ public class HexPylonBlockEntity extends BlockEntity {
 
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
     private final List<PylonLink> links = new ArrayList<>();
+    /** The Pylon Filter set into it (one item, given back when taken out or broken). */
+    private ItemStack filterItem = ItemStack.EMPTY;
+    /** The essence sticker on a siphon or relay: it carries only that essence. */
+    private @Nullable Essence sticker;
     private int wait;
     private int idle;
     /** Server: the flights of the last move (what the clients were sent), for tests. */
@@ -133,6 +139,49 @@ public class HexPylonBlockEntity extends BlockEntity {
         return PylonRune.amount(strength(PylonRune.LIFT));
     }
 
+    // ---- Filter and sticker ---------------------------------------------------------------------------------------------
+
+    /** The filter's settings, or null when it has none. */
+    public @Nullable ItemFilter filter() {
+        return filterItem.isEmpty() ? null : filterItem.getOrDefault(ModDataComponents.ITEM_FILTER.get(), ItemFilter.EMPTY);
+    }
+
+    public ItemStack filterItem() {
+        return filterItem;
+    }
+
+    /** Sets a filter in (one item of {@code stack}); returns the one that was there (or empty). */
+    public ItemStack setFilter(ItemStack stack) {
+        ItemStack old = filterItem;
+        filterItem = stack.copyWithCount(1);
+        wake();
+        changed();
+        return old;
+    }
+
+    public ItemStack takeFilter() {
+        ItemStack old = filterItem;
+        filterItem = ItemStack.EMPTY;
+        if (!old.isEmpty()) {
+            wake();
+            changed();
+        }
+        return old;
+    }
+
+    public @Nullable Essence sticker() {
+        return sticker;
+    }
+
+    /** Sets the sticker; returns the essence of the one that was there. */
+    public @Nullable Essence setSticker(@Nullable Essence essence) {
+        Essence old = sticker;
+        sticker = essence;
+        wake();
+        changed();
+        return old;
+    }
+
     // ---- Links (changed by players) -------------------------------------------------------------------------------------
 
     public boolean linked(PylonLink link) {
@@ -187,6 +236,21 @@ public class HexPylonBlockEntity extends BlockEntity {
             return false;
         }
         return unlink(link.pos());
+    }
+
+    /** Broken: the filter and the sticker drop with it. */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (level != null && !level.isClientSide()) {
+            if (!filterItem.isEmpty()) {
+                net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), filterItem.copy());
+            }
+            if (sticker != null) {
+                net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
+                        com.pockyl.hextale.item.EssenceStickerItem.of(com.pockyl.hextale.registry.ModItems.ESSENCE_STICKER.get(), sticker));
+            }
+        }
     }
 
     @Override
@@ -255,13 +319,15 @@ public class HexPylonBlockEntity extends BlockEntity {
     void gather(ServerLevel level, List<PylonFlight> flights) {
         BlockPos belowPos = worldPosition.below();
         boolean below = level.getCapability(Capabilities.Item.BLOCK, belowPos, Direction.UP) != null;
-        List<Destination> routes = below ? List.of() : destinations(level);
-        if (!below && routes.isEmpty()) {
+        List<Destination> routes = below ? List.of(new Destination(belowPos, Direction.UP,
+                List.of(Vec3.atBottomCenterOf(worldPosition).add(0, 0.05, 0)), List.of())) : destinations(level);
+        if (routes.isEmpty()) {
             return;
         }
+        ItemFilter own = filter();
         int r = radius();
         List<ItemEntity> lying = level.getEntitiesOfClass(ItemEntity.class, new AABB(worldPosition).inflate(r),
-                item -> item.isAlive() && !item.hasPickUpDelay() && !item.getItem().isEmpty());
+                item -> item.isAlive() && !item.hasPickUpDelay() && !item.getItem().isEmpty() && (own == null || own.passes(item.getItem())));
         if (lying.isEmpty()) {
             return;
         }
@@ -274,21 +340,19 @@ public class HexPylonBlockEntity extends BlockEntity {
             }
             ItemStack stack = item.getItem();
             ItemResource resource = ItemResource.of(stack);
-            int want = Math.min(budget, stack.getCount());
             int moved = 0;
             List<Vec3> path = new ArrayList<>();
             path.add(item.position().add(0, 0.25, 0));
             path.add(gem);
-            if (below) {
-                moved = PylonInsert.insert(level, belowPos, Direction.UP, resource, want, null);
-                path.add(Vec3.atBottomCenterOf(worldPosition).add(0, 0.05, 0));
-            } else {
-                for (Destination route : routes) {
-                    moved = PylonInsert.insert(level, route.pos(), route.face(), resource, want, null);
-                    if (moved > 0) {
-                        path.addAll(route.path());
-                        break;
-                    }
+            for (Destination route : routes) {
+                int want = Math.min(Math.min(budget, stack.getCount()), room(level, route, resource));
+                if (want <= 0 || !route.passes(resource)) {
+                    continue;
+                }
+                moved = PylonInsert.insert(level, route.pos(), route.face(), resource, want, null);
+                if (moved > 0) {
+                    path.addAll(route.path());
+                    break;
                 }
             }
             if (moved <= 0) {
@@ -314,6 +378,7 @@ public class HexPylonBlockEntity extends BlockEntity {
         if (from == null) {
             return;
         }
+        ItemFilter own = filter();
         int budget = amount();
         Vec3 start = Vec3.atBottomCenterOf(worldPosition).add(0, 0.05, 0);
         for (Destination route : destinations(level)) {
@@ -323,13 +388,21 @@ public class HexPylonBlockEntity extends BlockEntity {
             for (int slot = 0; slot < from.size() && budget > 0 && turns < 4; slot++) {
                 ItemResource resource = from.getResource(slot);
                 int available = from.getAmountAsInt(slot);
-                if (resource.isEmpty() || available <= 0) {
+                if (resource.isEmpty() || available <= 0 || own != null && !own.passes(resource) || !route.passes(resource)) {
+                    continue;
+                }
+                int want = Math.min(Math.min(budget, available), room(level, route, resource));
+                if (own != null) {
+                    // Keep N in the container: only what is above it may go.
+                    want = Math.min(want, own.sendable(resource, own.count(from, resource)));
+                }
+                if (want <= 0) {
                     continue;
                 }
                 // First find out how many the target takes (a trial that is thrown away), then move exactly that many.
                 int moved;
                 try (Transaction trial = Transaction.openRoot()) {
-                    int extracted = from.extract(slot, resource, Math.min(budget, available), trial);
+                    int extracted = from.extract(slot, resource, want, trial);
                     moved = extracted <= 0 ? 0 : PylonInsert.insert(level, route.pos(), route.face(), resource, extracted, trial);
                 }
                 if (moved <= 0) {
@@ -356,6 +429,27 @@ public class HexPylonBlockEntity extends BlockEntity {
         }
     }
 
+    /** How many more of the item the route's target may take under the "fill up to N" rule of any filter on the way. */
+    private int room(ServerLevel level, Destination route, ItemResource resource) {
+        int room = Integer.MAX_VALUE;
+        List<ItemFilter> filters = new ArrayList<>();
+        if (filter() != null) {
+            filters.add(filter());
+        }
+        for (HexPylonBlockEntity relay : route.through()) {
+            if (relay.filter() != null) {
+                filters.add(relay.filter());
+            }
+        }
+        for (ItemFilter filter : filters) {
+            if (filter.rule() == ItemFilter.Rule.LIMIT) {
+                ResourceHandler<ItemResource> handler = PylonInsert.handler(level, route.pos(), route.face(), resource);
+                room = Math.min(room, handler == null ? 0 : filter.room(resource, filter.count(handler, resource)));
+            }
+        }
+        return room;
+    }
+
     /** mB a siphon pours per move: four times a sending pylon's items (Lift raises both). */
     public int essenceAmount() {
         return amount() * 4;
@@ -363,7 +457,9 @@ public class HexPylonBlockEntity extends BlockEntity {
 
     /**
      * Draws essence out of the jar under it and pours it to the links, in their order: each receiver (a jar, a separator,
-     * a smelter...) takes what it can through the linked face, or any other face that lets it in.
+     * a smelter...) takes what it can through the linked face, or any other face that lets it in. Stickers sort: when the
+     * siphon, a relay on the way or the target jar wears one, only that essence is drawn out of the jar for that way (a
+     * way whose stickers disagree carries nothing) - so one jar of mixed essence fills a row of labelled jars.
      */
     void siphon(ServerLevel level, List<PylonFlight> flights) {
         if (links.isEmpty() || !(level.getBlockEntity(worldPosition.below()) instanceof EssenceTankBlockEntity jar) || jar.tank().isEmpty()) {
@@ -375,19 +471,40 @@ public class HexPylonBlockEntity extends BlockEntity {
             if (budget <= 0) {
                 return;
             }
-            if (!(level.getBlockEntity(route.pos()) instanceof EssenceNetwork.Receiver receiver) || route.pos().equals(worldPosition.below())) {
+            BlockEntity target = level.getBlockEntity(route.pos());
+            if (!(target instanceof EssenceNetwork.Receiver receiver) || route.pos().equals(worldPosition.below())) {
                 continue;
             }
-            EssenceMix offer = jar.tank().drain(budget, true);
+            Essence only = sticker;
+            boolean clash = false;
+            for (HexPylonBlockEntity relay : route.through()) {
+                clash |= only != null && relay.sticker() != null && relay.sticker() != only;
+                only = only == null ? relay.sticker() : only;
+            }
+            if (target instanceof EssenceTankBlockEntity tank && tank.sticker() != null) {
+                clash |= only != null && tank.sticker() != only;
+                only = only == null ? tank.sticker() : only;
+            }
+            if (clash) {
+                continue;
+            }
+            EssenceMix offer = only == null ? jar.tank().drain(budget, true)
+                    : EssenceMix.pure(only, Math.min(budget, jar.tank().contents().get(only)));
             if (offer.isEmpty()) {
-                return;
+                continue;
             }
             Direction face = receivingFace(receiver, route.face(), offer);
             if (face == null) {
                 continue;
             }
             int taken = receiver.receive(face, offer, true);
-            EssenceMix drawn = jar.tank().drain(taken, false);
+            EssenceMix drawn;
+            if (only == null) {
+                drawn = jar.tank().drain(taken, false);
+            } else {
+                drawn = EssenceMix.pure(only, taken);
+                jar.tank().remove(drawn);
+            }
             receiver.receive(face, drawn, false);
             jar.setChanged();
             budget -= drawn.total();
@@ -412,8 +529,20 @@ public class HexPylonBlockEntity extends BlockEntity {
         return null;
     }
 
-    /** A place items can go: a linked block and its face ({@link PylonInsert} picks the slots), and the way there after this pylon's gem. */
-    record Destination(BlockPos pos, Direction face, List<Vec3> path) {
+    /**
+     * A place items can go: a linked block and its face ({@link PylonInsert} picks the slots), the way there after this
+     * pylon's gem, and the relays on the way (their filters and stickers rule too).
+     */
+    record Destination(BlockPos pos, Direction face, List<Vec3> path, List<HexPylonBlockEntity> through) {
+        boolean passes(ItemResource resource) {
+            for (HexPylonBlockEntity relay : through) {
+                ItemFilter filter = relay.filter();
+                if (filter != null && !filter.passes(resource)) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     /** Every place this pylon reaches through its links, in link order (relays' links in theirs). */
@@ -426,12 +555,12 @@ public class HexPylonBlockEntity extends BlockEntity {
         List<Destination> out = new ArrayList<>();
         Set<BlockPos> seen = new HashSet<>();
         seen.add(worldPosition);
-        collect(level, this, new ArrayList<>(), seen, 0, essence, out);
+        collect(level, this, new ArrayList<>(), new ArrayList<>(), seen, 0, essence, out);
         return out;
     }
 
-    private static void collect(ServerLevel level, HexPylonBlockEntity node, List<Vec3> path, Set<BlockPos> seen, int hops, boolean essence,
-                                List<Destination> out) {
+    private static void collect(ServerLevel level, HexPylonBlockEntity node, List<Vec3> path, List<HexPylonBlockEntity> through,
+                                Set<BlockPos> seen, int hops, boolean essence, List<Destination> out) {
         Vec3 gem = node.gem();
         double range = node.range() + 0.5;
         // Links to blocks that are gone go away (a broken block normally drops them at once, see PylonLinking).
@@ -449,7 +578,9 @@ public class HexPylonBlockEntity extends BlockEntity {
                 seen.add(link.pos());
                 List<Vec3> nextPath = new ArrayList<>(path);
                 nextPath.add(next.gem());
-                collect(level, next, nextPath, seen, hops + 1, essence, out);
+                List<HexPylonBlockEntity> nextThrough = new ArrayList<>(through);
+                nextThrough.add(next);
+                collect(level, next, nextPath, nextThrough, seen, hops + 1, essence, out);
                 seen.remove(link.pos());
                 continue;
             }
@@ -464,7 +595,7 @@ public class HexPylonBlockEntity extends BlockEntity {
             List<Vec3> full = new ArrayList<>(path);
             full.add(link.approach());
             full.add(link.entry());
-            out.add(new Destination(link.pos(), link.face(), full));
+            out.add(new Destination(link.pos(), link.face(), full, List.copyOf(through)));
         }
     }
 
@@ -507,6 +638,8 @@ public class HexPylonBlockEntity extends BlockEntity {
         runes = input.read("runes", PickaxeRunes.CODEC).orElse(PickaxeRunes.EMPTY);
         links.clear();
         input.read("links", PylonLink.CODEC.listOf()).ifPresent(links::addAll);
+        filterItem = input.read("filter", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+        sticker = Essence.byId(input.getStringOr("sticker", ""));
     }
 
     @Override
@@ -517,6 +650,12 @@ public class HexPylonBlockEntity extends BlockEntity {
         }
         if (!links.isEmpty()) {
             output.store("links", PylonLink.CODEC.listOf(), List.copyOf(links));
+        }
+        if (!filterItem.isEmpty()) {
+            output.store("filter", ItemStack.CODEC, filterItem);
+        }
+        if (sticker != null) {
+            output.putString("sticker", sticker.id());
         }
     }
 

@@ -238,6 +238,15 @@ public enum Essence {
         return null;
     }
 
+    /** An essence by its id ("fire", "steam"...), as data components save it. */
+    public static final com.mojang.serialization.Codec<Essence> ID_CODEC = com.mojang.serialization.Codec.STRING.comapFlatMap(id -> {
+        Essence essence = byId(id);
+        return essence == null ? com.mojang.serialization.DataResult.error(() -> "Unknown essence " + id)
+                : com.mojang.serialization.DataResult.success(essence);
+    }, Essence::id);
+    public static final net.minecraft.network.codec.StreamCodec<io.netty.buffer.ByteBuf, Essence> STREAM_CODEC =
+            net.minecraft.network.codec.ByteBufCodecs.VAR_INT.map(i -> values()[i], Essence::ordinal);
+
     @Nullable
     public static Essence byId(@Nullable String id) {
         if (id == null) {

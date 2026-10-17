@@ -46,6 +46,16 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("pylon_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
 
+    /** The settings of a Pylon Filter. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.transport.ItemFilter>> ITEM_FILTER =
+            COMPONENTS.registerComponentType("item_filter", builder -> builder
+                    .persistent(com.pockyl.hextale.transport.ItemFilter.CODEC).networkSynchronized(com.pockyl.hextale.transport.ItemFilter.STREAM_CODEC));
+
+    /** The essence written on an essence sticker. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.rune.Essence>> STICKER =
+            COMPONENTS.registerComponentType("sticker", builder -> builder
+                    .persistent(com.pockyl.hextale.rune.Essence.ID_CODEC).networkSynchronized(com.pockyl.hextale.rune.Essence.STREAM_CODEC));
+
     /** The essence in a flask or a tank item. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<EssenceMix>> ESSENCE =
             COMPONENTS.registerComponentType("essence", builder -> builder

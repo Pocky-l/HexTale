@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:paper",
+    "minecraft:paper",
+    "minecraft:paper",
+    "minecraft:slime_ball"
+  ],
+  "result": {
+    "id": "hextale:essence_sticker",
+    "count": 6
+  }
+}

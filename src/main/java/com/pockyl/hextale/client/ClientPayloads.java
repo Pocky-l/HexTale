@@ -36,6 +36,8 @@ public final class ClientPayloads {
         event.register(OpenDiaryPayload.TYPE, (payload, context) -> openDiary(payload));
         event.register(InfusionRecipesPayload.TYPE, (payload, context) -> InfusionRecipes.setClient(payload.recipes()));
         event.register(OpenStelePayload.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new SteleScreen(payload.pos())));
+        event.register(com.pockyl.hextale.network.OpenStickerPayload.TYPE, (payload, context) ->
+                Minecraft.getInstance().gui.setScreen(new com.pockyl.hextale.client.screen.StickerScreen(payload.hand())));
         event.register(PylonFlightsPayload.TYPE, (payload, context) -> pylonFlights(payload));
         event.register(PylonLinkPayload.TYPE, (payload, context) -> PylonLinking.clientFrom = payload.from().orElse(null));
     }
