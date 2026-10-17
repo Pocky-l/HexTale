@@ -365,9 +365,11 @@ public class HexPylonBlockEntity extends BlockEntity {
                 if (want <= 0 || !route.passes(resource)) {
                     continue;
                 }
-                // How many it would take now (a trial that is thrown away); they arrive when the flight does.
+                // How many it would take now (a trial that is thrown away); they arrive when the flight does, so what is
+                // already flying there counts against the room.
+                int way = onTheWay(route.pos(), resource);
                 try (Transaction trial = Transaction.openRoot()) {
-                    moved = PylonInsert.insert(level, route.pos(), route.face(), resource, want, trial, owner);
+                    moved = Math.min(want, PylonInsert.insert(level, route.pos(), route.face(), resource, want + way, trial, owner) - way);
                 }
                 if (moved > 0) {
                     path.addAll(route.path());
@@ -425,13 +427,17 @@ public class HexPylonBlockEntity extends BlockEntity {
                 if (want <= 0) {
                     continue;
                 }
-                // First find out how many the target takes (a trial that is thrown away), then move exactly that many.
+                // First find out how many the target takes (a trial that is thrown away), counting what is already flying
+                // there, then move exactly that many. A target with room for less than a whole batch waits until it has
+                // it: no single items flown to top up a nearly full slot.
+                int way = onTheWay(route.pos(), resource);
                 int moved;
                 try (Transaction trial = Transaction.openRoot()) {
                     int extracted = from.extract(slot, resource, want, trial);
-                    moved = extracted <= 0 ? 0 : PylonInsert.insert(level, route.pos(), route.face(), resource, extracted, trial, owner);
+                    moved = extracted <= 0 ? 0
+                            : Math.min(extracted, PylonInsert.insert(level, route.pos(), route.face(), resource, extracted + way, trial, owner) - way);
                 }
-                if (moved <= 0) {
+                if (moved <= 0 || moved < want) {
                     continue;
                 }
                 try (Transaction transaction = Transaction.openRoot()) {

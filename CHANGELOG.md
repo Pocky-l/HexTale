@@ -138,6 +138,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   essences only if the pylon's owner (online) has studied it. The goggles show a pylon's owner.
 - A pylon with several links takes them in turn: each move goes to the next link that takes something, so every
   linked chest, machine or jar gets its share.
+- A Sending Pylon waits until its target has room for a whole batch (a furnace with 62 ore gets nothing until 8 fit),
+  and what is already flying to a target counts against its room, so no extra items fly there only to come back.
 - Relay Pylon: neither takes nor gives - it catches items and essence sent to it and passes them on to its own links,
   up to eight relays in a chain. Made of calcite, copper ingots, amethyst and a lightning rod.
 - Siphon Pylon: set on an Essence Jar, it draws the essence up into its glass bulb (swirling in the jar's colour) and

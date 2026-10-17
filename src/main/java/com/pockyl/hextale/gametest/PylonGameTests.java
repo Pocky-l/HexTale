@@ -149,6 +149,35 @@ public final class PylonGameTests {
         });
     }
 
+    /**
+     * A furnace whose input has room for only a few items gets nothing (no single items flown in to bounce back); once
+     * there is room for a whole batch, exactly that batch comes.
+     */
+    @HexTest(maxTicks = 300)
+    public static void sendingPylonWaitsForRoomForAWholeBatch(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, Blocks.CHEST);
+        BlockPos furnacePos = BASE.offset(3, 0, 0);
+        helper.setBlock(furnacePos, Blocks.FURNACE);
+        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        from.setItem(0, new ItemStack(Items.RAW_IRON, 32));
+        FurnaceBlockEntity furnace = helper.getBlockEntity(furnacePos, FurnaceBlockEntity.class);
+        furnace.setItem(0, new ItemStack(Items.RAW_IRON, 62));
+        HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        int batch = pylon.amount();
+        pylon.toggleLink(link(helper, furnacePos, Direction.UP));
+        helper.runAfterDelay(100, () -> {
+            helper.assertTrue(count(from, Items.RAW_IRON) == 32 && pylon.cargo().isEmpty(), "room for two: nothing is sent");
+            furnace.setItem(0, new ItemStack(Items.RAW_IRON, 64 - batch));
+            helper.runAfterDelay(120, () -> {
+                helper.assertTrue(furnace.getItem(0).getCount() == 64, "a whole batch came once there was room for it");
+                helper.assertTrue(count(from, Items.RAW_IRON) == 32 - batch, "and only that batch: nothing flew back, got "
+                        + count(from, Items.RAW_IRON));
+                helper.succeed();
+            });
+        });
+    }
+
     /** Linked to two chests, a sending pylon takes them in turn: both get their share, not only the first. */
     @HexTest(maxTicks = 300)
     public static void sendingPylonTakesItsLinksInTurn(GameTestHelper helper) {
