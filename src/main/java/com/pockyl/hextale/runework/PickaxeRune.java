@@ -13,8 +13,9 @@ import org.jspecify.annotations.Nullable;
 /**
  * The runes a hextech pickaxe takes - like enchantments, burned in at the Hextech Altar from rune steles, up to
  * {@link PickaxeRunes#SLOTS} on any pickaxe. A rune's strength is its stars (a Lens adds one, up to four). Runes of one
- * {@link Clash} group cannot share a pickaxe (one shape of digging, one right-click power). What a rune does is never
- * written for the player; the effects live in {@link PickaxeEffects}.
+ * {@link Clash} group cannot share a pickaxe (one shape of digging, one right-click power). The effects live in
+ * {@link PickaxeEffects}; the book and JEI describe them in one short line ({@link #descriptionKey()}) with the amount
+ * per star ({@link #valueKey()}, {@link PickaxeEffects#amount}).
  */
 public enum PickaxeRune {
     // Chapter I
@@ -51,6 +52,16 @@ public enum PickaxeRune {
 
     public @Nullable Clash clash() {
         return clash;
+    }
+
+    /** What the rune does, one short line for the book and JEI. */
+    public String descriptionKey() {
+        return "pickaxe_rune.hextale." + name().toLowerCase(java.util.Locale.ROOT) + ".desc";
+    }
+
+    /** How much it does at a strength: a pattern for {@link PickaxeEffects#amount}. */
+    public String valueKey() {
+        return "pickaxe_rune.hextale." + name().toLowerCase(java.util.Locale.ROOT) + ".value";
     }
 
     /** Whether this rune works on right click (only one such rune per pickaxe). */

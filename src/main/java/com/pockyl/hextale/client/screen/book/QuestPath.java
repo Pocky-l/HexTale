@@ -20,6 +20,11 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.infusion.InfusionRecipes;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.runework.PickaxeRune;
+import com.pockyl.hextale.runework.PickaxeEffects;
+import com.pockyl.hextale.research.ResearchBook;
+import com.pockyl.hextale.client.ClientKnowledge;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvents;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -66,6 +71,10 @@ final class QuestPath {
     @Nullable
     private Quest selected;
     private int scroll;
+    /** The rune chosen in a pickaxe-runes picture; where its grid was drawn last (screen coordinates). */
+    private PickaxeRune pickaxeRune = PickaxeRune.SMELTING;
+    private int runeGridX = Integer.MIN_VALUE;
+    private int runeGridY;
 
     QuestPath(StarBook book) {
         this.book = book;
@@ -235,7 +244,7 @@ final class QuestPath {
         return Math.max(18, titleLines(quest).size() * 10 + 4);
     }
 
-    private static int displayHeight(QuestDisplay display) {
+    private int displayHeight(QuestDisplay display) {
         return switch (display.kind()) {
             case SHAPED -> SLOT * 3;
             case SHAPELESS -> SLOT * 3 + 10;
@@ -243,7 +252,7 @@ final class QuestPath {
             case ESSENCES -> SLOT;
             case REAGENTS -> 30;
             case INFUSION -> infusionHeight(display);
-            case PICKAXE_RUNES -> (PickaxeRune.values().length + RUNES_PER_ROW - 1) / RUNES_PER_ROW * RUNE_ROW + 12;
+            case PICKAXE_RUNES -> pickaxeRunesHeight();
         };
     }
 
@@ -413,7 +422,7 @@ final class QuestPath {
                 }
             }
             case INFUSION -> tooltip = renderInfusion(graphics, display, x, y, mouseX, mouseY, now);
-            case PICKAXE_RUNES -> tooltip = renderPickaxeRunes(graphics, x, y, mouseX, mouseY);
+            case PICKAXE_RUNES -> tooltip = renderPickaxeRunes(graphics, x, y, mouseX, mouseY, now);
         }
         return tooltip;
     }
@@ -423,9 +432,11 @@ final class QuestPath {
 
     /** Essences per row and runes per row under an altar picture. */
     private static final int ESSENCES_PER_ROW = 3;
-    private static final int RUNES_PER_ROW = 2;
+    private static final int RUNES_PER_ROW = 7;
+    private static final int RUNE_CELL = 24;
+    private static final int DIORAMA_HEIGHT = 84;
     private static final int ESSENCE_ROW = 11;
-    private static final int RUNE_ROW = 13;
+    private static final int RUNE_ROW = 22;
 
     private static int infusionHeight(QuestDisplay display) {
         InfusionRecipe recipe = InfusionRecipes.get(true).get(Identifier.parse(display.result()));
@@ -519,45 +530,155 @@ final class QuestPath {
         return tooltip;
     }
 
-    /**
-     * The runes a hextech pickaxe takes: sign and name in two columns (greyed while the researcher does not know the
-     * rune); hovering one shows what burning it in costs per star and which runes it cannot share a pickaxe with.
-     */
-    @Nullable
-    private List<FormattedCharSequence> renderPickaxeRunes(GuiGraphicsExtractor graphics, int x, int y, int mouseX, int mouseY) {
-        List<FormattedCharSequence> tooltip = null;
-        RuneKnowledge knowledge = com.pockyl.hextale.client.ClientKnowledge.get();
-        PickaxeRune[] runes = PickaxeRune.values();
-        int column = innerWidth() / RUNES_PER_ROW;
-        for (int r = 0; r < runes.length; r++) {
-            PickaxeRune pickaxeRune = runes[r];
-            ComplexRune rune = pickaxeRune.rune();
-            boolean known = knowledge != null && knowledge.knows(rune);
-            int color = known ? rune.color() : 0x6A6480;
-            int cx = x + r % RUNES_PER_ROW * column;
-            int cy = y + r / RUNES_PER_ROW * RUNE_ROW;
-            PixelArt.glyph(graphics, rune, cx, cy, 11, PixelArt.argb(color, 1), 0xFF000000);
-            PixelArt.flush(graphics);
-            Component name = Component.translatable(rune.translationKey());
-            graphics.text(font, name, cx + 14, cy + 2, 0xFF000000 | color, true);
-            if (over(mouseX, mouseY, cx, cy, 14 + font.width(name), 12)) {
-                List<FormattedCharSequence> lines = new java.util.ArrayList<>();
-                lines.add(name.copy().withColor(rune.color()).getVisualOrderText());
-                var cost = pickaxeRune.cost(1).asMap().entrySet().iterator().next();
-                lines.add(Component.translatable("book.hextale.quest.pickaxe_rune.cost", cost.getValue(),
-                        Component.translatable(cost.getKey().translationKey())).withColor(cost.getKey().color()).getVisualOrderText());
-                for (PickaxeRune other : runes) {
-                    if (pickaxeRune.clashes(other)) {
-                        lines.add(Component.translatable("book.hextale.quest.pickaxe_rune.clash", Component.translatable(other.rune().translationKey()))
-                                .withColor(0xE07A6A).getVisualOrderText());
-                    }
-                }
-                tooltip = lines;
+    private int runeRows() {
+        return (PickaxeRune.values().length + RUNES_PER_ROW - 1) / RUNES_PER_ROW;
+    }
+
+    private List<FormattedCharSequence> runeDescription() {
+        return font.split(Component.translatable(pickaxeRune.descriptionKey()), innerWidth());
+    }
+
+    private List<FormattedCharSequence> runeNote() {
+        return font.split(Component.translatable("book.hextale.quest.pickaxe_rune.note", PickaxeRunes.SLOTS), innerWidth());
+    }
+
+    private static boolean knows(PickaxeRune rune) {
+        RuneKnowledge knowledge = ClientKnowledge.get();
+        return knowledge != null && knowledge.knows(rune.rune());
+    }
+
+    private static String clashes(PickaxeRune rune) {
+        StringBuilder out = new StringBuilder();
+        for (PickaxeRune other : PickaxeRune.values()) {
+            if (rune.clashes(other)) {
+                out.append(out.isEmpty() ? "" : ", ").append(Component.translatable(other.rune().translationKey()).getString());
             }
         }
-        int bottom = y + (runes.length + RUNES_PER_ROW - 1) / RUNES_PER_ROW * RUNE_ROW;
-        graphics.text(font, Component.translatable("book.hextale.quest.pickaxe_rune.note", PickaxeRunes.SLOTS), x, bottom + 1, 0xFF9A90B8, false);
+        return out.toString();
+    }
+
+    private int pickaxeRunesHeight() {
+        return DIORAMA_HEIGHT + 4 + 10 + runeRows() * RUNE_ROW + 4 + 12 + (knows(pickaxeRune) ? 0 : 10) + runeDescription().size() * 10 + 4
+                + 22 + 12 + (clashes(pickaxeRune).isEmpty() ? 0 : 10) + 2 + runeNote().size() * 10;
+    }
+
+    /**
+     * The runes a hextech pickaxe takes: a turning 3D altar with the chosen rune flowing from its stele into the
+     * pickaxe, a grid of rune signs to choose from (greyed while not studied) and the chosen rune's card - what it does,
+     * how much at one, two and three stars, its essence cost and the runes it is incompatible with.
+     */
+    @Nullable
+    private List<FormattedCharSequence> renderPickaxeRunes(GuiGraphicsExtractor graphics, int x, int y, int mouseX, int mouseY, long now) {
+        List<FormattedCharSequence> tooltip = null;
+        int w = innerWidth();
+        ComplexRune chosen = pickaxeRune.rune();
+
+        // The scene in a dark recess with a thin gold frame.
+        int frame = PixelArt.argb(StarBook.GOLD, 0.35F);
+        PixelArt.fill(graphics, x, y, x + w, y + DIORAMA_HEIGHT, PixelArt.argb(0x0B0918, 1));
+        PixelArt.fill(graphics, x, y, x + w, y + 1, frame);
+        PixelArt.fill(graphics, x, y + DIORAMA_HEIGHT - 1, x + w, y + DIORAMA_HEIGHT, frame);
+        PixelArt.fill(graphics, x, y + 1, x + 1, y + DIORAMA_HEIGHT - 1, frame);
+        PixelArt.fill(graphics, x + w - 1, y + 1, x + w, y + DIORAMA_HEIGHT - 1, frame);
+        PixelArt.flush(graphics);
+        ItemStack pickaxe = new ItemStack(ModItems.pickaxe(com.pockyl.hextale.runework.HextechPickaxe.HEXTECH).get());
+        PickaxeRunes.set(pickaxe, PickaxeRunes.EMPTY.with(pickaxeRune, 3));
+        AltarDiorama.draw(graphics, pickaxe, chosen, now / 50F, x + 1, y + 1, x + w - 1, y + DIORAMA_HEIGHT - 1, 26);
+        y += DIORAMA_HEIGHT + 4;
+
+        // The signs to choose from.
+        graphics.text(font, Component.translatable("book.hextale.quest.pickaxe_rune.pick"), x, y, 0xFF9A90B8, false);
+        y += 10;
+        runeGridX = x;
+        runeGridY = y;
+        PickaxeRune[] runes = PickaxeRune.values();
+        for (int r = 0; r < runes.length; r++) {
+            PickaxeRune option = runes[r];
+            ComplexRune rune = option.rune();
+            int cx = x + r % RUNES_PER_ROW * RUNE_CELL;
+            int cy = y + r / RUNES_PER_ROW * RUNE_ROW;
+            boolean hovered = over(mouseX, mouseY, cx, cy, RUNE_CELL, RUNE_ROW);
+            boolean picked = option == pickaxeRune;
+            if (picked || hovered) {
+                PixelArt.hex(graphics, cx + RUNE_CELL / 2, cy + RUNE_ROW / 2, RUNE_ROW - 1,
+                        PixelArt.argb(PixelArt.mix(rune.color(), 0x06050D, picked ? 0.65F : 0.82F), 1),
+                        PixelArt.argb(picked ? rune.color() : 0x5A5080, picked ? 0.9F : 0.6F));
+            }
+            int color = knows(option) ? rune.color() : 0x6A6480;
+            PixelArt.glyph(graphics, rune, cx + (RUNE_CELL - 14) / 2, cy + (RUNE_ROW - 14) / 2, 14, PixelArt.argb(color, 1), 0xFF000000);
+            if (hovered) {
+                tooltip = List.of(Component.translatable(rune.translationKey()).withColor(rune.color()).getVisualOrderText());
+            }
+        }
+        PixelArt.flush(graphics);
+        y += runeRows() * RUNE_ROW + 4;
+        PixelArt.fill(graphics, x, y - 2, x + w, y - 1, PixelArt.argb(StarBook.GOLD, 0.2F));
+        PixelArt.flush(graphics);
+
+        // The chosen rune's card: name and chapter, what it does, how much per star, cost, incompatible runes.
+        graphics.text(font, Component.translatable(chosen.translationKey()), x, y + 2, 0xFF000000 | chosen.color(), true);
+        Component chapter = Component.translatable("book.hextale.quest.pickaxe_rune.chapter",
+                "I".repeat(ResearchBook.chapter(chosen)));
+        graphics.text(font, chapter, x + w - font.width(chapter), y + 2, 0xFF9A90B8, false);
+        y += 12;
+        if (!knows(pickaxeRune)) {
+            graphics.text(font, Component.translatable("book.hextale.quest.pickaxe_rune.unknown"), x, y, 0xFFE0A86A, false);
+            y += 10;
+        }
+        for (FormattedCharSequence line : runeDescription()) {
+            graphics.text(font, line, x, y, TEXT, false);
+            y += 10;
+        }
+        y += 4;
+        int column = w / 3;
+        for (int stars = 1; stars <= 3; stars++) {
+            int cx = x + (stars - 1) * column + column / 2;
+            graphics.centeredText(font, Component.literal("★".repeat(stars)), cx, y, 0xFF000000 | StarBook.GOLD);
+            graphics.centeredText(font, Component.translatable(pickaxeRune.valueKey(), PickaxeEffects.amount(pickaxeRune, stars)), cx, y + 10,
+                    0xFFFFFFFF);
+        }
+        y += 22;
+        var cost = pickaxeRune.cost(1).asMap().entrySet().iterator().next();
+        Essence essence = cost.getKey();
+        PixelArt.essence(graphics, essence, x, y, PixelArt.ICON, PixelArt.argb(essence.color(), 1));
+        PixelArt.flush(graphics);
+        Component costLine = Component.translatable(essence.translationKey()).withColor(essence.color())
+                .append(Component.literal(" · ").withColor(0x9A90B8))
+                .append(Component.translatable("book.hextale.quest.pickaxe_rune.cost", cost.getValue()).withColor(0xD8D0E8));
+        graphics.text(font, costLine, x + PixelArt.ICON + 2, y + 1, 0xFFFFFFFF, false);
+        y += 12;
+        String clashes = clashes(pickaxeRune);
+        if (!clashes.isEmpty()) {
+            graphics.text(font, Component.translatable("book.hextale.quest.pickaxe_rune.clash", clashes), x, y, 0xFFE07A6A, false);
+            y += 10;
+        }
+        y += 2;
+        for (FormattedCharSequence line : runeNote()) {
+            graphics.text(font, line, x, y, 0xFF9A90B8, false);
+            y += 10;
+        }
         return tooltip;
+    }
+
+    /** Picks the rune under the mouse in the last drawn pickaxe-runes grid; true when one was hit. */
+    private boolean pickRune(double mouseX, double mouseY) {
+        QuestDisplay display = selected == null ? null : selected.display();
+        if (display == null || display.kind() != QuestDisplay.Kind.PICKAXE_RUNES || runeGridX == Integer.MIN_VALUE) {
+            return false;
+        }
+        PickaxeRune[] runes = PickaxeRune.values();
+        for (int r = 0; r < runes.length; r++) {
+            int cx = runeGridX + r % RUNES_PER_ROW * RUNE_CELL;
+            int cy = runeGridY + r / RUNES_PER_ROW * RUNE_ROW;
+            if (mouseX >= cx && mouseX < cx + RUNE_CELL && mouseY >= cy && mouseY < cy + RUNE_ROW) {
+                if (runes[r] != pickaxeRune) {
+                    pickaxeRune = runes[r];
+                    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.3F, 0.6F));
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     /** One of an ingredient's items, changing every second. */
@@ -662,7 +783,7 @@ final class QuestPath {
     /** A click on the plate; returns true when it asks for the star map. */
     boolean plateClicked(double mouseX, double mouseY, RuneKnowledge knowledge) {
         Quest quest = selected;
-        if (quest == null || !quest.leadsToStars()) {
+        if (quest == null || pickRune(mouseX, mouseY) || !quest.leadsToStars()) {
             return false;
         }
         int ix = plateLeft() + PAD;

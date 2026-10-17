@@ -1,6 +1,7 @@
 package com.pockyl.hextale.compat.jei;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -11,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.Hextale;
@@ -18,6 +20,8 @@ import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.research.ResearchBook;
+import com.pockyl.hextale.runework.PickaxeEffects;
 import com.pockyl.hextale.runework.PickaxeRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 
@@ -26,13 +30,16 @@ import java.util.Map;
 
 /**
  * Burning a rune into a hextech pickaxe at the altar: the pickaxe alone on the altar, the rune on a stele, no pedestal
- * items - only the rune's essence, more for more stars. Shows the cost of each star and the runes it cannot share a
- * pickaxe with. Never what the rune does.
+ * items - only the rune's essence. Shows what the rune does, how much at one, two and three stars, what each star costs
+ * and the runes it is incompatible with.
  */
 public class RuneBurningCategory extends AbstractRecipeCategory<PickaxeRune> {
     public static final IRecipeType<PickaxeRune> TYPE = IRecipeType.create(Hextale.MOD_ID, "rune_burning", PickaxeRune.class);
-    private static final int WIDTH = 160;
-    private static final int HEIGHT = 74;
+    private static final int WIDTH = 168;
+    private static final int HEIGHT = 124;
+    private static final int GOLD = 0xF0C24A;
+    private static final int INK = 0xFF3C3850;
+    private static final int MUTED = 0xFF6A6480;
 
     public RuneBurningCategory(IGuiHelper guiHelper) {
         super(TYPE, Component.translatable("jei.hextale.rune_burning"), guiHelper.createDrawableItemLike(ModItems.RUNE_STELE.get()), WIDTH, HEIGHT);
@@ -46,35 +53,54 @@ public class RuneBurningCategory extends AbstractRecipeCategory<PickaxeRune> {
             PickaxeRunes.set(out, PickaxeRunes.EMPTY.with(rune, 1));
             return out;
         }).toList();
-        builder.addInputSlot(4, 6).setStandardSlotBackground().addItemStacks(before);
-        builder.addOutputSlot(84, 6).setOutputSlotBackground().addItemStacks(after);
-        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 140, 6).add(new ItemStack(ModItems.HEXTECH_ALTAR.get()));
+        builder.addInputSlot(4, 4).setStandardSlotBackground().addItemStacks(before);
+        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 40, 4).add(new ItemStack(ModItems.RUNE_STELE.get()));
+        builder.addOutputSlot(98, 4).setOutputSlotBackground().addItemStacks(after);
+        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, WIDTH - 20, 4).add(new ItemStack(ModItems.HEXTECH_ALTAR.get()));
     }
 
     @Override
     public void draw(PickaxeRune rune, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
         Font font = Minecraft.getInstance().font;
         ComplexRune complex = rune.rune();
-        // The rune on its stele between the pickaxe and the result.
-        PixelArt.glyph(graphics, complex, 34, 4, 14, PixelArt.argb(complex.color(), 1), 0xFF000000);
-        PixelArt.fill(graphics, 54, 13, 72, 15, PixelArt.argb(0xF0C24A, 1));
-        for (int i = 0; i < 5; i++) {
-            PixelArt.fill(graphics, 72 + i, 10 + i, 73 + i, 18 - i, PixelArt.argb(0xF0C24A, 1));
+        // pickaxe + (rune over its stele) -> pickaxe with the rune
+        plus(graphics, 29, 13);
+        PixelArt.glyph(graphics, complex, 60, 5, 14, PixelArt.argb(complex.color(), 1), 0xFF000000);
+        PixelArt.fill(graphics, 78, 12, 90, 14, PixelArt.argb(GOLD, 1));
+        for (int i = 0; i < 4; i++) {
+            PixelArt.fill(graphics, 90 + i, 9 + i, 91 + i, 17 - i, PixelArt.argb(GOLD, 1));
         }
         PixelArt.flush(graphics);
-        graphics.text(font, Component.translatable(complex.translationKey()), 4, 28, 0xFF000000 | complex.color(), true);
-        // The essence per star.
-        int x = 4;
-        for (int stars = 1; stars <= 3; stars++) {
-            Map.Entry<Essence, Integer> cost = rune.cost(stars).asMap().entrySet().iterator().next();
-            String label = "★".repeat(stars);
-            graphics.text(font, label, x, 41, 0xFFF0C24A, true);
-            int ex = x + font.width(label) + 2;
-            PixelArt.essence(graphics, cost.getKey(), ex, 40, PixelArt.ICON, PixelArt.argb(cost.getKey().color(), 1));
-            PixelArt.flush(graphics);
-            graphics.text(font, cost.getValue() + " mB", ex + 11, 41, 0xFF000000 | cost.getKey().color(), true);
-            x += 52;
+
+        int y = 28;
+        graphics.text(font, Component.translatable(complex.translationKey()), 4, y, 0xFF000000 | complex.color(), true);
+        Component chapter = Component.translatable("book.hextale.quest.pickaxe_rune.chapter", "I".repeat(ResearchBook.chapter(complex)));
+        graphics.text(font, chapter, WIDTH - 4 - font.width(chapter), y, MUTED, false);
+        y += 12;
+        for (FormattedCharSequence line : font.split(Component.translatable(rune.descriptionKey()), WIDTH - 8)) {
+            graphics.text(font, line, 4, y, INK, false);
+            y += 10;
         }
+        y = Math.max(y, 60) + 2;
+
+        // One, two and three stars: how strong, and what it costs.
+        Map.Entry<Essence, Integer> cost = rune.cost(1).asMap().entrySet().iterator().next();
+        int column = (WIDTH - 8) / 3;
+        PixelArt.fill(graphics, 4, y - 2, WIDTH - 4, y + 31, PixelArt.argb(0x8B8B8B, 0.35F));
+        PixelArt.flush(graphics);
+        for (int stars = 1; stars <= 3; stars++) {
+            int cx = 4 + (stars - 1) * column + column / 2;
+            graphics.centeredText(font, Component.literal("★".repeat(stars)), cx, y, 0xFF000000 | GOLD);
+            Component value = Component.translatable(rune.valueKey(), PickaxeEffects.amount(rune, stars));
+            graphics.text(font, value, cx - font.width(value) / 2, y + 10, 0xFF000000, false);
+            String mb = cost.getValue() * stars + " mB";
+            int ex = cx - (PixelArt.ICON + 2 + font.width(mb)) / 2;
+            PixelArt.essence(graphics, cost.getKey(), ex, y + 20, PixelArt.ICON, PixelArt.argb(cost.getKey().color(), 1));
+            PixelArt.flush(graphics);
+            graphics.text(font, mb, ex + PixelArt.ICON + 2, y + 21, INK, false);
+        }
+        y += 35;
+
         StringBuilder clashes = new StringBuilder();
         for (PickaxeRune other : PickaxeRune.values()) {
             if (rune.clashes(other)) {
@@ -82,8 +108,35 @@ public class RuneBurningCategory extends AbstractRecipeCategory<PickaxeRune> {
             }
         }
         if (!clashes.isEmpty()) {
-            graphics.text(font, Component.translatable("jei.hextale.rune_burning.clash", clashes.toString()), 4, 54, 0xFFE07A6A, false);
+            graphics.text(font, Component.translatable("jei.hextale.rune_burning.clash", clashes.toString()), 4, y, 0xFFB03A2E, false);
+            y += 10;
         }
-        graphics.text(font, Component.translatable("jei.hextale.rune_burning.note", PickaxeRunes.SLOTS), 4, 64, 0xFF7A7498, false);
+        for (FormattedCharSequence line : font.split(Component.translatable("jei.hextale.rune_burning.note", PickaxeRunes.SLOTS), WIDTH - 8)) {
+            graphics.text(font, line, 4, y, MUTED, false);
+            y += 10;
+        }
+    }
+
+    @Override
+    public void getTooltip(ITooltipBuilder tooltip, PickaxeRune rune, IRecipeSlotsView slots, double mouseX, double mouseY) {
+        // The essence icons name their essence.
+        if (mouseY >= 0 && mouseX >= 0) {
+            Map.Entry<Essence, Integer> cost = rune.cost(1).asMap().entrySet().iterator().next();
+            int top = costTop(rune);
+            if (mouseY >= top && mouseY < top + 10 && mouseX >= 4 && mouseX < WIDTH - 4) {
+                tooltip.add(Component.translatable(cost.getKey().translationKey()).withColor(cost.getKey().color()));
+            }
+        }
+    }
+
+    private static int costTop(PickaxeRune rune) {
+        int lines = Minecraft.getInstance().font.split(Component.translatable(rune.descriptionKey()), WIDTH - 8).size();
+        return Math.max(40 + lines * 10, 60) + 2 + 20;
+    }
+
+    private static void plus(GuiGraphicsExtractor graphics, int cx, int cy) {
+        int color = PixelArt.argb(GOLD, 1);
+        PixelArt.fill(graphics, cx - 4, cy - 1, cx + 4, cy + 1, color);
+        PixelArt.fill(graphics, cx - 1, cy - 4, cx + 1, cy + 4, color);
     }
 }

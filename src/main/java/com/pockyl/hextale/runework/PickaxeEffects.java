@@ -50,7 +50,7 @@ import java.util.Set;
 /**
  * What the pickaxe runes do. Every value is chosen by a rune's strength - its stars, one more with a Lens (1-4, index
  * 0-3). Extra blocks a pickaxe takes (area, vein, tunnel) wear it like mined blocks and their drops go through its other
- * runes (smelting, the pocket) too. None of this is written for the player.
+ * runes (smelting, the pocket) too. {@link #amount} tells the book and JEI the number behind each strength.
  */
 public final class PickaxeEffects {
     private static final float[] SMELT_BONUS = {0F, 0.2F, 0.4F, 0.6F};
@@ -95,6 +95,40 @@ public final class PickaxeEffects {
 
     public static float temperChance(int strength) {
         return TEMPER[strength - 1];
+    }
+
+    /**
+     * The number a rune works with at a strength (1-4), formatted for its {@link PickaxeRune#valueKey()} pattern:
+     * a share, a radius, a block count or a factor.
+     */
+    public static String amount(PickaxeRune rune, int strength) {
+        int i = Mth.clamp(strength, 1, 4) - 1;
+        return switch (rune) {
+            case SMELTING -> percent(SMELT_BONUS[i]);
+            case TEMPERING -> percent(TEMPER[i]);
+            case EROSION -> Integer.toString(VEIN[i]);
+            case INSIGHT -> Integer.toString(REVEAL_RADIUS[i]);
+            case LENS, CACHE -> "";
+            case DRILL -> {
+                int side = AREA_RADIUS[i] * 2 + 1;
+                yield side + "×" + side + (AREA_DEPTH[i] > 1 ? "×" + AREA_DEPTH[i] : "");
+            }
+            case FORGE -> percent(RICH[i]);
+            case GEMSTONE -> percent(GEMS[i]);
+            case MOTOR -> factor(MOTOR[i]);
+            case MAGNET -> Integer.toString(MAGNET[i]);
+            case PASSAGE -> Integer.toString(TUNNEL_DEPTH[i]);
+            case QUAKE -> Integer.toString(QUAKE_RADIUS[i]);
+        };
+    }
+
+    private static String percent(float share) {
+        float value = share * 100;
+        return (value == Math.round(value) ? Integer.toString(Math.round(value)) : String.format(java.util.Locale.ROOT, "%.1f", value)) + "%";
+    }
+
+    private static String factor(float value) {
+        return value == Math.round(value) ? Integer.toString(Math.round(value)) : String.format(java.util.Locale.ROOT, "%.1f", value);
     }
 
     /** The pickaxe's right-click rune, or null (only one can be on a pickaxe). */

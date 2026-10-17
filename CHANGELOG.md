@@ -79,9 +79,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ritual - each rune is burned in, paid only with its own essence (more for more stars and for harder runes). Up to
   four runes on any pickaxe; thirteen runes of the codex take to a pickaxe, and a rune is as strong as its stars. A
   stele with more stars raises a rune the pickaxe already has. Some runes cannot share a pickaxe, and only one of them
-  may answer the right click. A grindstone takes the runes off again. What the runes do is for you to find out.
-- The research book lists the pickaxe runes (cost per star and which runes they cannot share a pickaxe with), and JEI
-  shows every pickaxe recipe and every rune's burning.
+  may answer the right click. A grindstone takes the runes off again.
+- The research book shows a turning 3D altar burning the chosen rune into a pickaxe; pick any of the thirteen pickaxe
+  runes to see what it does, how strong it is at one, two and three stars, what it costs and which runes it is
+  incompatible with. JEI shows the same for every rune, next to every pickaxe recipe.
 - Magic stone: stone that has drunk essence - flat plates of a dusky violet stone with nothing set into it. Craft eight stone,
   cobblestone, deepslate, tuff, andesite, diorite, granite or calcite around a bottle of any essence (the bottle comes
   back), or open a Drain Valve over such stone: the essence it pours soaks into the stone where the stream lands, one
