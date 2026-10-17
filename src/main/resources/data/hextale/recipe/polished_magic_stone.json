@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "SS",
+    "SS"
+  ],
+  "key": {
+    "S": "hextale:magic_stone"
+  },
+  "result": {
+    "id": "hextale:polished_magic_stone",
+    "count": 4
+  }
+}

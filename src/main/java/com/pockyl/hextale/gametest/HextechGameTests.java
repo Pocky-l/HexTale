@@ -1,19 +1,32 @@
 package com.pockyl.hextale.gametest;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
+import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.block.DrainValveBlock;
+import com.pockyl.hextale.block.DrainValveBlockEntity;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.item.UnstableHextechItem;
+import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.rune.Essence;
 
-/** Raw hextech is volatile: it bursts after a long fall or in a blast; refined gemstones and short drops are safe. */
+/**
+ * Raw hextech is volatile: it bursts after a long fall or in a blast; refined gemstones and short drops are safe. Magic
+ * stone is stone that drank essence: crafted around a bottle, or soaked where a drain valve pours essence.
+ */
 public final class HextechGameTests {
     private HextechGameTests() {
     }
@@ -79,6 +92,34 @@ public final class HextechGameTests {
             helper.getLevel().explode(null, at.x, at.y, at.z, 1.0F, Level.ExplosionInteraction.NONE);
             helper.assertTrue(orb.isRemoved(), "the orb burst in the blast");
             helper.succeed();
+        });
+    }
+
+    /** The crafted way: eight stone around a bottle of essence; the bottle comes back. */
+    @HexTest
+    public static void magicStoneIsCraftedAroundABottle(GameTestHelper helper) {
+        helper.assertTrue(helper.getLevel().getServer().getRecipeManager().byKey(ResourceKey.create(Registries.RECIPE,
+                Hextale.id("magic_stone"))).isPresent(), "the magic stone recipe is loaded");
+        ItemStack bottle = new ItemStack(ModItems.ESSENCE_FLASK.get());
+        helper.assertTrue(bottle.getItem().getCraftingRemainder(bottle).is(Items.GLASS_BOTTLE), "the bottle comes back as a glass bottle");
+        helper.succeed();
+    }
+
+    /** The poured way: an open drain valve over stone soaks the block under its stream into magic stone. */
+    @HexTest(maxTicks = 80)
+    public static void essencePouredOnStoneSoaksIntoMagicStone(GameTestHelper helper) {
+        for (int x = 0; x < 3; x++) {
+            for (int z = 0; z < 3; z++) {
+                helper.setBlock(new BlockPos(x, 1, z), Blocks.STONE);
+            }
+        }
+        BlockPos valve = new BlockPos(1, 4, 1);
+        helper.setBlock(valve, ModBlocks.DRAIN_VALVE.get().defaultBlockState().setValue(DrainValveBlock.OPEN, true));
+        DrainValveBlockEntity drain = helper.getBlockEntity(valve, DrainValveBlockEntity.class);
+        helper.onEachTick(() -> drain.receive(Direction.EAST, EssenceMix.pure(Essence.FIRE, DrainValveBlockEntity.DROPS_PER_TICK), false));
+        helper.succeedWhen(() -> {
+            helper.assertBlockPresent(ModBlocks.MAGIC_STONE.get(), new BlockPos(1, 1, 1));
+            helper.assertBlockPresent(Blocks.STONE, new BlockPos(0, 1, 0));
         });
     }
 }

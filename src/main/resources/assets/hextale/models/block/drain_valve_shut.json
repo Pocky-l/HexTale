@@ -22,55 +22,55 @@
         "north": {
           "texture": "#pipe",
           "uv": [
-            0,
-            0,
-            6,
-            6
+            10,
+            4,
+            16,
+            10
           ]
         },
         "south": {
           "texture": "#pipe",
           "uv": [
-            0,
-            0,
-            6,
-            6
+            10,
+            4,
+            16,
+            10
           ]
         },
         "east": {
           "texture": "#pipe",
           "uv": [
-            0,
-            0,
-            6,
-            6
+            10,
+            4,
+            16,
+            10
           ]
         },
         "west": {
           "texture": "#pipe",
           "uv": [
-            0,
-            0,
-            6,
-            6
+            10,
+            4,
+            16,
+            10
           ]
         },
         "up": {
           "texture": "#pipe",
           "uv": [
-            0,
-            0,
-            6,
-            6
+            10,
+            4,
+            16,
+            10
           ]
         },
         "down": {
           "texture": "#pipe",
           "uv": [
-            0,
-            0,
-            6,
-            6
+            10,
+            4,
+            16,
+            10
           ]
         }
       }
@@ -91,50 +91,50 @@
         "north": {
           "texture": "#pipe",
           "uv": [
-            6,
             0,
-            10,
-            2
+            5,
+            4,
+            7
           ],
           "rotation": 90
         },
         "south": {
           "texture": "#pipe",
           "uv": [
-            6,
             0,
-            10,
-            2
+            5,
+            4,
+            7
           ],
           "rotation": 90
         },
         "east": {
           "texture": "#pipe",
           "uv": [
-            6,
             0,
-            10,
-            2
+            5,
+            4,
+            7
           ],
           "rotation": 90
         },
         "west": {
           "texture": "#pipe",
           "uv": [
-            6,
             0,
-            10,
-            2
+            5,
+            4,
+            7
           ],
           "rotation": 90
         },
         "down": {
           "texture": "#pipe",
           "uv": [
+            10,
+            0,
             12,
-            2,
-            14,
-            4
+            2
           ]
         }
       }

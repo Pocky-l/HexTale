@@ -10,7 +10,7 @@
     "N": "hextale:brass_nugget",
     "B": "hextale:brass_ingot",
     "G": "hextale:hextech_gemstone",
-    "S": "hextale:hextech_brick_slab"
+    "S": "hextale:magic_brick_slab"
   },
   "result": {
     "id": "hextale:hextech_lamp",

@@ -101,10 +101,10 @@ public class DrainValveBlock extends BaseEntityBlock implements EssenceMachine {
         for (Direction face : Direction.Plane.HORIZONTAL) {
             if (state.getValue(PORTS.get(face))) {
                 shape = Shapes.or(shape, switch (face) {
-                    case NORTH -> Block.box(5, 5, 0, 11, 11, 5);
-                    case SOUTH -> Block.box(5, 5, 11, 11, 11, 16);
-                    case WEST -> Block.box(0, 5, 5, 5, 11, 11);
-                    default -> Block.box(11, 5, 5, 16, 11, 11);
+                    case NORTH -> Block.box(6, 6, 0, 10, 10, 5);
+                    case SOUTH -> Block.box(6, 6, 11, 10, 10, 16);
+                    case WEST -> Block.box(0, 6, 6, 5, 10, 10);
+                    default -> Block.box(11, 6, 6, 16, 10, 10);
                 });
             }
         }

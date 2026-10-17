@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "SSS",
+    "SBS",
+    "SSS"
+  ],
+  "key": {
+    "S": "#hextale:soaks_essence",
+    "B": "hextale:essence_flask"
+  },
+  "result": {
+    "id": "hextale:magic_stone",
+    "count": 8
+  }
+}

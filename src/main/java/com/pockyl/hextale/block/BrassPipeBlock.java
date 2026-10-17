@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class BrassPipeBlock extends Block {
     public static final Map<Direction, BooleanProperty> SIDES = PipeBlock.PROPERTY_BY_DIRECTION;
-    private static final VoxelShape CORE = Block.box(5, 5, 5, 11, 11, 11);
+    private static final VoxelShape CORE = Block.box(6, 6, 6, 10, 10, 10);
 
     public BrassPipeBlock(Properties properties) {
         super(properties);
@@ -71,12 +71,12 @@ public class BrassPipeBlock extends Block {
         for (Direction direction : Direction.values()) {
             if (state.getValue(SIDES.get(direction))) {
                 shape = Shapes.or(shape, Block.box(
-                        direction.getStepX() < 0 ? 0 : direction.getStepX() > 0 ? 11 : 5,
-                        direction.getStepY() < 0 ? 0 : direction.getStepY() > 0 ? 11 : 5,
-                        direction.getStepZ() < 0 ? 0 : direction.getStepZ() > 0 ? 11 : 5,
-                        direction.getStepX() < 0 ? 5 : direction.getStepX() > 0 ? 16 : 11,
-                        direction.getStepY() < 0 ? 5 : direction.getStepY() > 0 ? 16 : 11,
-                        direction.getStepZ() < 0 ? 5 : direction.getStepZ() > 0 ? 16 : 11));
+                        direction.getStepX() < 0 ? 0 : direction.getStepX() > 0 ? 10 : 6,
+                        direction.getStepY() < 0 ? 0 : direction.getStepY() > 0 ? 10 : 6,
+                        direction.getStepZ() < 0 ? 0 : direction.getStepZ() > 0 ? 10 : 6,
+                        direction.getStepX() < 0 ? 6 : direction.getStepX() > 0 ? 16 : 10,
+                        direction.getStepY() < 0 ? 6 : direction.getStepY() > 0 ? 16 : 10,
+                        direction.getStepZ() < 0 ? 6 : direction.getStepZ() > 0 ? 16 : 10));
             }
         }
         return shape;

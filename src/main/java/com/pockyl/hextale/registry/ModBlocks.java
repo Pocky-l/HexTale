@@ -55,17 +55,22 @@ public final class ModBlocks {
     public static final DeferredBlock<PumpBlock> PUMP = BLOCKS.registerBlock("pump", PumpBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(SoundType.COPPER).noOcclusion());
 
-    // Hextech bricks: the decorative set the ritual circle is built from.
-    public static final DeferredBlock<Block> HEXTECH_BRICKS = BLOCKS.registerBlock("hextech_bricks", Block::new, ModBlocks::brickProperties);
-    public static final DeferredBlock<StairBlock> HEXTECH_BRICK_STAIRS = BLOCKS.registerBlock("hextech_brick_stairs",
-            properties -> new StairBlock(HEXTECH_BRICKS.get().defaultBlockState(), properties), ModBlocks::brickProperties);
-    public static final DeferredBlock<SlabBlock> HEXTECH_BRICK_SLAB = BLOCKS.registerBlock("hextech_brick_slab", SlabBlock::new,
+    // Magic stone: stone that has drunk essence (a crafted bottle or a drain valve pouring onto stone). The ritual circle
+    // is built from it; the set follows vanilla tuff: stone -> polished -> bricks -> chiseled, plus brick stairs/slab/wall.
+    public static final DeferredBlock<Block> MAGIC_STONE = BLOCKS.registerBlock("magic_stone", Block::new,
+            () -> magicStoneProperties().sound(SoundType.TUFF));
+    public static final DeferredBlock<Block> POLISHED_MAGIC_STONE = BLOCKS.registerBlock("polished_magic_stone", Block::new,
+            () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF));
+    public static final DeferredBlock<Block> MAGIC_BRICKS = BLOCKS.registerBlock("magic_bricks", Block::new, ModBlocks::brickProperties);
+    public static final DeferredBlock<StairBlock> MAGIC_BRICK_STAIRS = BLOCKS.registerBlock("magic_brick_stairs",
+            properties -> new StairBlock(MAGIC_BRICKS.get().defaultBlockState(), properties), ModBlocks::brickProperties);
+    public static final DeferredBlock<SlabBlock> MAGIC_BRICK_SLAB = BLOCKS.registerBlock("magic_brick_slab", SlabBlock::new,
             ModBlocks::brickProperties);
-    public static final DeferredBlock<WallBlock> HEXTECH_BRICK_WALL = BLOCKS.registerBlock("hextech_brick_wall", WallBlock::new,
+    public static final DeferredBlock<WallBlock> MAGIC_BRICK_WALL = BLOCKS.registerBlock("magic_brick_wall", WallBlock::new,
             () -> brickProperties().forceSolidOn());
-    /** Carved bricks with a hextech crystal set in them: they glow softly. */
-    public static final DeferredBlock<Block> CHISELED_HEXTECH_BRICKS = BLOCKS.registerBlock("chiseled_hextech_bricks", Block::new,
-            () -> brickProperties().lightLevel(state -> 7));
+    /** Carved bricks with the circle's hexagon cut into them. */
+    public static final DeferredBlock<Block> CHISELED_MAGIC_BRICKS = BLOCKS.registerBlock("chiseled_magic_bricks", Block::new,
+            ModBlocks::brickProperties);
 
     public static final DeferredBlock<HextechAltarBlock> HEXTECH_ALTAR = BLOCKS.registerBlock("hextech_altar", HextechAltarBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(3.5F, 9.0F).sound(SoundType.POLISHED_DEEPSLATE)
@@ -84,9 +89,13 @@ public final class ModBlocks {
     private ModBlocks() {
     }
 
+    private static BlockBehaviour.Properties magicStoneProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLUE).instrument(NoteBlockInstrument.BASEDRUM)
+                .requiresCorrectToolForDrops().strength(2.0F, 6.0F);
+    }
+
     private static BlockBehaviour.Properties brickProperties() {
-        return BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).instrument(NoteBlockInstrument.BASEDRUM)
-                .requiresCorrectToolForDrops().strength(3.5F, 6.0F).sound(SoundType.DEEPSLATE_BRICKS);
+        return magicStoneProperties().strength(2.5F, 6.0F).sound(SoundType.TUFF_BRICKS);
     }
 
     public static void register(IEventBus modBus) {

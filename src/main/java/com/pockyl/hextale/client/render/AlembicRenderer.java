@@ -32,6 +32,8 @@ public class AlembicRenderer implements BlockEntityRenderer<AlembicBlockEntity, 
     private static final float MAX = 11.4F / 16;
     private static final float BOTTOM = 4.4F / 16;
     private static final float TOP = 10.6F / 16;
+    /** The round flask's corners are cut back by a pixel; the water follows them. */
+    private static final float CUT = 1F / 16;
     private static final int WATER_COLOR = 0x3F76E4;
     private static final int BUBBLES = 7;
 
@@ -88,7 +90,8 @@ public class AlembicRenderer implements BlockEntityRenderer<AlembicBlockEntity, 
             return;
         }
         float sway = state.working ? Mth.sin(state.time * 0.3F) * 0.15F / 16 : 0;
-        LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, BOTTOM, top + sway, RuneDrawing.argb(state.color, 0.75F));
+        LiquidBox.submitCutCorners(poseStack, collector, MIN, MIN, MAX, MAX, CUT, BOTTOM, top + sway, RuneDrawing.argb(state.color, 0.75F),
+                0, 0, 0);
         if (state.working) {
             // Bubbles rise from the bottom and burst at the surface, each on its own track.
             float size = 0.45F / 16;

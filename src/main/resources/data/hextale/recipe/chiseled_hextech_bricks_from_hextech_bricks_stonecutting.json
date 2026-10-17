@@ -1,7 +1,0 @@
-{
-  "type": "minecraft:stonecutting",
-  "ingredient": "hextale:hextech_bricks",
-  "result": {
-    "id": "hextale:chiseled_hextech_bricks"
-  }
-}

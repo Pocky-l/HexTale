@@ -8,8 +8,8 @@
   ],
   "key": {
     "I": "hextale:brass_ingot",
-    "B": "hextale:hextech_bricks",
-    "C": "hextale:chiseled_hextech_bricks"
+    "B": "hextale:magic_bricks",
+    "C": "hextale:chiseled_magic_bricks"
   },
   "result": {
     "id": "hextale:pedestal",

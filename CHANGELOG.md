@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   close. Orbs fresh from the storm are still settling and survive their first fall.
 - Hextech Gemstone: unstable hextech refined at the Hextech Altar into a smooth, steady sphere. It no longer bursts,
   and every hextech tool and device is built around one.
-- Hextech Lamp: a gemstone floating in a cage of deepslate and brass, full light. It stands on a block or hangs under
+- Hextech Lamp: a gemstone floating in a cage of polished magic stone and brass, full light. It stands on a block or hangs under
   one, like a lantern.
 
 **Research**
@@ -58,11 +58,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Essence Jar: a big glass jar with a wooden lid, 256 mB; in through the lid and the sides, out at the bottom. Sneak-use
   a side or the lid with an empty hand to stick an enamel label with an essence's sign on it. The Research Table draws
   its ink from jars of concentrate within two blocks. A Creative Essence Jar holds every essence without end.
-- Brass Pipes carry essence and water and join a machine only where it has a port; the machine's model grows a joint
-  there. The Drain Valve pours whatever reaches it out into the world while its handwheel is open.
+- Brass Pipes - slim tubes with small flanges - carry essence and water and join a machine only where it has a port;
+  the machine's model grows a matching joint there. The Drain Valve pours whatever reaches it out into the world while
+  its handwheel is open; essence it pours onto stone soaks in and turns it into magic stone.
 - Researcher's Goggles: worn on the head, they show the essences inside a jar, pipe or machine you look at; looking at a
   Research Table shows its ink while coloured streams run from each jar to the orb.
-- Liquid essence swirls with an animated texture, glows at its surface, darkens in the depths and bubbles.
+- Liquid essence swirls with an animated texture, glows at its surface, darkens in the depths and bubbles. The
+  alembic's flask and the separator's vessel are round glass with framed panes, like the jar.
 
 **Rune works**
 - Hextech Altar circle: the altar, Pedestals within six blocks, Rune Steles within seven and Essence Jars within eight.
@@ -73,7 +75,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hextech Pickaxe: infused from an iron pickaxe; it keeps its enchantments and takes up to four runes. A rune chosen on
   a stele is burned into the tool as it is made, or into a finished tool later; flint grinds runes off again. Every
   one of the 72 runes does something on a tool, and runes cost nothing to fire. Runes have no descriptions - try them.
-- Hextech Bricks with stairs, slab, wall and chiseled bricks: the stone of the ritual circle.
+- Magic stone: stone that has drunk essence - a cool blue-violet stone with nothing set into it. Craft eight stone,
+  cobblestone, deepslate, tuff, andesite, diorite, granite or calcite around a bottle of any essence (the bottle comes
+  back), or open a Drain Valve over such stone: the essence it pours soaks into the stone where the stream lands, one
+  block per 16 mB. Polished magic stone, magic bricks with stairs, slab and wall, and chiseled magic bricks with the
+  circle's hexagon cut into them: the stone of the ritual circle.
 
 **Sound and integrations**
 - Synthesized sounds: the alembic simmers, the separator drips, the pump strokes, the valve's handwheel turns, jars

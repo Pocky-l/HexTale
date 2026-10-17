@@ -74,11 +74,13 @@ public final class Hextale {
             output.accept(ModItems.HEXTECH_ALTAR);
             output.accept(ModItems.PEDESTAL);
             output.accept(ModItems.RUNE_STELE);
-            output.accept(ModItems.HEXTECH_BRICKS);
-            output.accept(ModItems.HEXTECH_BRICK_STAIRS);
-            output.accept(ModItems.HEXTECH_BRICK_SLAB);
-            output.accept(ModItems.HEXTECH_BRICK_WALL);
-            output.accept(ModItems.CHISELED_HEXTECH_BRICKS);
+            output.accept(ModItems.MAGIC_STONE);
+            output.accept(ModItems.POLISHED_MAGIC_STONE);
+            output.accept(ModItems.MAGIC_BRICKS);
+            output.accept(ModItems.MAGIC_BRICK_STAIRS);
+            output.accept(ModItems.MAGIC_BRICK_SLAB);
+            output.accept(ModItems.MAGIC_BRICK_WALL);
+            output.accept(ModItems.CHISELED_MAGIC_BRICKS);
             output.accept(ModItems.HEXTECH_LAMP);
             output.accept(ModItems.HEXTECH_PICKAXE);
             output.accept(ModItems.RESEARCHERS_DIARY);
@@ -105,11 +107,13 @@ public final class Hextale {
             event.accept(ModItems.RUNE_STELE);
             event.accept(ModItems.HEXTECH_LAMP);
         } else if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            event.accept(ModItems.HEXTECH_BRICKS);
-            event.accept(ModItems.HEXTECH_BRICK_STAIRS);
-            event.accept(ModItems.HEXTECH_BRICK_SLAB);
-            event.accept(ModItems.HEXTECH_BRICK_WALL);
-            event.accept(ModItems.CHISELED_HEXTECH_BRICKS);
+            event.accept(ModItems.MAGIC_STONE);
+            event.accept(ModItems.POLISHED_MAGIC_STONE);
+            event.accept(ModItems.MAGIC_BRICKS);
+            event.accept(ModItems.MAGIC_BRICK_STAIRS);
+            event.accept(ModItems.MAGIC_BRICK_SLAB);
+            event.accept(ModItems.MAGIC_BRICK_WALL);
+            event.accept(ModItems.CHISELED_MAGIC_BRICKS);
         } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItems.BRASS_INGOT);
             event.accept(ModItems.BRASS_NUGGET);

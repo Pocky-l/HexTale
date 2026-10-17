@@ -8,17 +8,28 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+
+import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModBlocks;
+import com.pockyl.hextale.registry.ModTags;
 
 /**
  * An open Drain Valve takes what the pipes bring - up to {@value #DROPS_PER_TICK} mB of essence and
- * {@value #WATER_PER_TICK} mB of water a tick - and pours it out of its spout. The spilled essence is gone for now;
- * later it will taint the world around.
+ * {@value #WATER_PER_TICK} mB of water a tick - and pours it out of its spout. Essence that lands on stone soaks into
+ * it: every {@value #ESSENCE_PER_STONE} mB turns one block of the {@link ModTags#SOAKS_ESSENCE} stone in the 3x3 patch
+ * where the stream lands (up to {@value #FALL} blocks below) into magic stone. Essence that finds no stone is lost.
  */
 public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork.Receiver, EssenceNetwork.WaterReceiver {
     public static final int DROPS_PER_TICK = 4;
@@ -26,11 +37,15 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
     /** Block event: a splash of this colour pours out (param = RGB). */
     private static final int EVENT_POUR = 1;
     private static final int WATER_COLOR = 0x3F76E4;
+    public static final int ESSENCE_PER_STONE = 16;
+    public static final int FALL = 6;
 
     private long tick = Long.MIN_VALUE;
     private int dropsThisTick;
     private int waterThisTick;
     private long lastSplash = Long.MIN_VALUE / 2;
+    /** Essence poured but not yet soaked into a block. */
+    private int soaked;
 
     public DrainValveBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.DRAIN_VALVE.get(), pos, state);
@@ -45,6 +60,7 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
             EssenceMix drawn = EssenceNetwork.draw(level, pos, side, EssenceTankBlockEntity.FLOW, valve);
             if (!drawn.isEmpty()) {
                 valve.splash(drawn.color());
+                valve.soak(drawn.total());
             }
         }
     }
@@ -73,6 +89,7 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
         if (taken > 0 && !simulate) {
             dropsThisTick += taken;
             splash(offer.color());
+            soak(taken);
         }
         return Math.max(0, taken);
     }
@@ -89,6 +106,87 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
             splash(WATER_COLOR);
         }
         return Math.max(0, taken);
+    }
+
+    /** Poured essence soaks into the stone where the stream lands, one block per {@value #ESSENCE_PER_STONE} mB. */
+    private void soak(int amount) {
+        if (!(level instanceof ServerLevel server)) {
+            return;
+        }
+        soaked += amount;
+        while (soaked >= ESSENCE_PER_STONE) {
+            BlockPos stone = soakTarget(server);
+            if (stone == null) {
+                soaked = 0;
+                return;
+            }
+            soaked -= ESSENCE_PER_STONE;
+            BlockState magic = ModBlocks.MAGIC_STONE.get().defaultBlockState();
+            server.setBlockAndUpdate(stone, magic);
+            server.gameEvent(GameEvent.BLOCK_CHANGE, stone, GameEvent.Context.of(magic));
+            server.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, stone, Block.getId(magic));
+            server.playSound(null, stone, SoundEvents.SCULK_BLOCK_SPREAD, SoundSource.BLOCKS, 0.7F, 0.8F);
+        }
+        setChanged();
+    }
+
+    /**
+     * Where the next block soaks: the stream falls from the spout to the first block that is not air; among the
+     * soakable stone in the 3x3 patch around it whose top is open (the essence runs over it), the nearest to the stream
+     * goes first, ties at random. Null when the stream lands in a liquid or finds no such stone.
+     */
+    @Nullable
+    private BlockPos soakTarget(ServerLevel server) {
+        BlockPos.MutableBlockPos at = worldPosition.mutable();
+        for (int i = 0; i < FALL; i++) {
+            at.move(Direction.DOWN);
+            BlockState state = server.getBlockState(at);
+            if (!state.getFluidState().isEmpty()) {
+                return null;
+            }
+            if (!state.isAir()) {
+                break;
+            }
+            if (i == FALL - 1) {
+                return null;
+            }
+        }
+        BlockPos landing = at.immutable();
+        BlockPos best = null;
+        int bestDistance = Integer.MAX_VALUE;
+        int ties = 0;
+        RandomSource random = server.getRandom();
+        for (BlockPos pos : BlockPos.betweenClosed(landing.offset(-1, 0, -1), landing.offset(1, 0, 1))) {
+            if (!server.getBlockState(pos).is(ModTags.SOAKS_ESSENCE)
+                    || !server.getBlockState(pos.above()).getCollisionShape(server, pos.above()).isEmpty()) {
+                continue;
+            }
+            int distance = Math.abs(pos.getX() - landing.getX()) + Math.abs(pos.getZ() - landing.getZ());
+            if (distance < bestDistance) {
+                best = pos.immutable();
+                bestDistance = distance;
+                ties = 1;
+            } else if (distance == bestDistance && random.nextInt(++ties) == 0) {
+                best = pos.immutable();
+            }
+        }
+        return best;
+    }
+
+    public int soaked() {
+        return soaked;
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        soaked = input.getIntOr("soaked", 0);
+    }
+
+    @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putInt("soaked", soaked);
     }
 
     /** Tells clients now and then to show the liquid pouring out of the spout. */

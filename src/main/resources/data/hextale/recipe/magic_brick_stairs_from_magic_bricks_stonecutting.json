@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "hextale:magic_bricks",
+  "result": {
+    "id": "hextale:magic_brick_stairs"
+  }
+}

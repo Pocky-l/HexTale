@@ -12,7 +12,9 @@ public final class ModTags {
     public static final TagKey<Block> AWAKENS_INTO_HEXTECH = TagKey.create(Registries.BLOCK, Hextale.id("awakens_into_hextech"));
     /** What repairs hextech tools. */
     public static final TagKey<Item> HEXTECH_TOOL_MATERIALS = TagKey.create(Registries.ITEM, Hextale.id("hextech_tool_materials"));
-    /** Blocks whose nearness to a lightning strike is worth a diary note. */
+    /** Stone that drinks spilled essence and becomes magic stone (block tag; the item tag of the same name feeds the
+     *  crafting recipe). */
+    public static final TagKey<Block> SOAKS_ESSENCE = TagKey.create(Registries.BLOCK, Hextale.id("soaks_essence"));
 
     private ModTags() {
     }

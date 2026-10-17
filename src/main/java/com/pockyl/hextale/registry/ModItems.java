@@ -6,6 +6,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.tags.BlockTags;
@@ -35,18 +36,21 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CREATIVE_ESSENCE_TANK = ITEMS.registerSimpleBlockItem(ModBlocks.CREATIVE_ESSENCE_TANK);
     public static final DeferredItem<BlockItem> DRAIN_VALVE = ITEMS.registerSimpleBlockItem(ModBlocks.DRAIN_VALVE);
     public static final DeferredItem<BlockItem> PUMP = ITEMS.registerSimpleBlockItem(ModBlocks.PUMP);
-    public static final DeferredItem<BlockItem> HEXTECH_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_BRICKS);
-    public static final DeferredItem<BlockItem> HEXTECH_BRICK_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_BRICK_STAIRS);
-    public static final DeferredItem<BlockItem> HEXTECH_BRICK_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_BRICK_SLAB);
-    public static final DeferredItem<BlockItem> HEXTECH_BRICK_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_BRICK_WALL);
-    public static final DeferredItem<BlockItem> CHISELED_HEXTECH_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.CHISELED_HEXTECH_BRICKS);
+    public static final DeferredItem<BlockItem> MAGIC_STONE = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_STONE);
+    public static final DeferredItem<BlockItem> POLISHED_MAGIC_STONE = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_MAGIC_STONE);
+    public static final DeferredItem<BlockItem> MAGIC_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_BRICKS);
+    public static final DeferredItem<BlockItem> MAGIC_BRICK_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_BRICK_STAIRS);
+    public static final DeferredItem<BlockItem> MAGIC_BRICK_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_BRICK_SLAB);
+    public static final DeferredItem<BlockItem> MAGIC_BRICK_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_BRICK_WALL);
+    public static final DeferredItem<BlockItem> CHISELED_MAGIC_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.CHISELED_MAGIC_BRICKS);
     public static final DeferredItem<BlockItem> HEXTECH_ALTAR = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_ALTAR,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEXTECH_LAMP = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_LAMP);
     public static final DeferredItem<BlockItem> PEDESTAL = ITEMS.registerSimpleBlockItem(ModBlocks.PEDESTAL);
     public static final DeferredItem<BlockItem> RUNE_STELE = ITEMS.registerSimpleBlockItem(ModBlocks.RUNE_STELE);
+    /** A crafting recipe that uses a bottle of essence (soaking magic stone) gives the glass bottle back. */
     public static final DeferredItem<EssenceFlaskItem> ESSENCE_FLASK = ITEMS.registerItem("essence_flask",
-            properties -> new EssenceFlaskItem(properties.stacksTo(1)));
+            properties -> new EssenceFlaskItem(properties.stacksTo(1).craftRemainder(Items.GLASS_BOTTLE)));
     public static final DeferredItem<Item> BRASS_INGOT = ITEMS.registerSimpleItem("brass_ingot");
     public static final DeferredItem<Item> BRASS_NUGGET = ITEMS.registerSimpleItem("brass_nugget");
     /** Lightning-born: neither fire nor further lightning harms it. */

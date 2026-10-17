@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#",
+    "#"
+  ],
+  "key": {
+    "#": "hextale:magic_brick_slab"
+  },
+  "result": {
+    "id": "hextale:chiseled_magic_bricks"
+  }
+}

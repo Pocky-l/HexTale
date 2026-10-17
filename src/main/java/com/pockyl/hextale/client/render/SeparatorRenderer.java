@@ -24,6 +24,8 @@ public class SeparatorRenderer implements BlockEntityRenderer<SeparatorBlockEnti
     private static final float MAX = 12.5F / 16;
     private static final float BOTTOM = 1.1F / 16;
     private static final float TOP = 11.9F / 16;
+    /** The vessel's corners are cut back by a pixel; the liquid follows them. */
+    private static final float CUT = 1F / 16;
 
     public static final class State extends BlockEntityRenderState {
         float mix;
@@ -64,11 +66,13 @@ public class SeparatorRenderer implements BlockEntityRenderer<SeparatorBlockEnti
         float mixTop = BOTTOM + height * Math.min(1, state.mix);
         float extractTop = Math.min(TOP, mixTop + height * state.extract);
         if (state.mix > 0) {
-            LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, BOTTOM, mixTop, RuneDrawing.argb(state.mixColor, 0.78F), state.time, state.seed, 2);
+            LiquidBox.submitCutCorners(poseStack, collector, MIN, MIN, MAX, MAX, CUT, BOTTOM, mixTop, RuneDrawing.argb(state.mixColor, 0.78F),
+                    state.time, state.seed, 2);
         }
         if (state.extract > 0) {
             // A hair above the mixture's surface, so the two layers never share a plane.
-            LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, mixTop + 0.1F / 16, extractTop, RuneDrawing.argb(state.extractColor, 0.85F));
+            LiquidBox.submitCutCorners(poseStack, collector, MIN, MIN, MAX, MAX, CUT, mixTop + 0.1F / 16, extractTop,
+                    RuneDrawing.argb(state.extractColor, 0.85F), state.time, state.seed, 0);
         }
     }
 }

@@ -1,7 +1,7 @@
 {
   "mc": "26.3",
   "allow": [
-    {"model": "hextale:block/hextech_brick_wall_*", "element": "*", "face": "*", "flags": ["coplanar"],
+    {"model": "hextale:block/magic_brick_wall_*", "element": "*", "face": "*", "flags": ["coplanar"],
      "why": "vanilla wall templates: post and side tops meet in one plane, as in every vanilla wall"}
   ]
 }

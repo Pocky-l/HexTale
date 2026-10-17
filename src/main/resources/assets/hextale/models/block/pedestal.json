@@ -1,9 +1,9 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "minecraft:block/polished_deepslate",
-    "stone": "minecraft:block/polished_deepslate",
-    "tiles": "hextale:block/hextech_bricks",
+    "particle": "hextale:block/polished_magic_stone",
+    "stone": "hextale:block/polished_magic_stone",
+    "tiles": "hextale:block/magic_bricks",
     "brass": "hextale:block/brass",
     "pedestal_top": "hextale:block/pedestal_top"
   },

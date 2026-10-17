@@ -9,11 +9,13 @@
     "hextale:hextech_altar",
     "hextale:pedestal",
     "hextale:rune_stele",
-    "hextale:hextech_bricks",
-    "hextale:hextech_brick_stairs",
-    "hextale:hextech_brick_slab",
-    "hextale:hextech_brick_wall",
-    "hextale:chiseled_hextech_bricks",
-    "hextale:hextech_lamp"
+    "hextale:magic_bricks",
+    "hextale:magic_brick_stairs",
+    "hextale:magic_brick_slab",
+    "hextale:magic_brick_wall",
+    "hextale:chiseled_magic_bricks",
+    "hextale:hextech_lamp",
+    "hextale:magic_stone",
+    "hextale:polished_magic_stone"
   ]
 }

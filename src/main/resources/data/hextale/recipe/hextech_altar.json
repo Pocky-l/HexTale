@@ -10,8 +10,8 @@
     "H": "hextale:unstable_hextech",
     "I": "hextale:brass_ingot",
     "A": "minecraft:amethyst_block",
-    "C": "hextale:chiseled_hextech_bricks",
-    "B": "hextale:hextech_bricks"
+    "C": "hextale:chiseled_magic_bricks",
+    "B": "hextale:magic_bricks"
   },
   "result": {
     "id": "hextale:hextech_altar"

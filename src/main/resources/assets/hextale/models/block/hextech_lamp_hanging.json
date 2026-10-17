@@ -3,7 +3,7 @@
   "textures": {
     "particle": "hextale:block/brass",
     "brass": "hextale:block/brass",
-    "stone": "minecraft:block/polished_deepslate",
+    "stone": "hextale:block/polished_magic_stone",
     "gem": "hextale:block/hextech_gem"
   },
   "elements": [
