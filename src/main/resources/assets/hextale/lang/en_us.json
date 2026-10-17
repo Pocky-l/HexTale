@@ -567,8 +567,8 @@
   "quest.hextale.hextech_pickaxe.goal": "infuse an iron pickaxe at the altar",
   "quest.hextale.hextech_pickaxe.desc": "Essence Tanks within 8 blocks feed the altar. The pickaxe keeps its enchantments and gets three rune slots and an essence cell.",
   "quest.hextale.first_engraving": "First Engraving",
-  "quest.hextale.first_engraving.goal": "engrave a rune into a hextech tool",
-  "quest.hextale.first_engraving.desc": "Hextech tool on the altar, a rune on a stele, the right items on the pedestals - which ones, you find out. A tool takes up to four runes.",
+  "quest.hextale.first_engraving.goal": "make a hextech tool with a rune",
+  "quest.hextale.first_engraving.desc": "Choose a rune on a stele before the ritual: it is burned into the tool as the tool is made. Each rune wants its own items on the pedestals and its essences. A finished tool takes more runes the same way, up to four.",
   "quest.hextale.charged_tool": "Charged",
   "quest.hextale.charged_tool.goal": "charge a hextech tool at the altar",
   "quest.hextale.charged_tool.desc": "A tool with runes alone on the altar fills its cell from the tanks with the essences its runes burn.",
@@ -594,5 +594,6 @@
   "quest.hextale.hextech_bricks.goal": "make hextech bricks",
   "quest.hextale.hextech_bricks.desc": "Deepslate bricks with amethyst veins grown through them: the stone of the ritual circle. Two slabs stacked make chiseled bricks with a crystal set in.",
   "block.hextale.hextech_altar.wait.item": "The ritual waits: put %s back on its pedestal",
-  "block.hextale.hextech_altar.wait.essence": "The ritual waits for essence: %s"
+  "block.hextale.hextech_altar.wait.essence": "The ritual waits for essence: %s",
+  "block.hextale.hextech_altar.nothing.runes": "The circle does not answer: the runes on the steles need their own items on the pedestals too"
 }

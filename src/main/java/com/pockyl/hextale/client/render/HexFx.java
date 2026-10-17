@@ -30,6 +30,8 @@ public final class HexFx {
     public static final Identifier MOTE = Hextale.id("textures/misc/mote.png");
     public static final Identifier WHITE = Hextale.id("textures/misc/white.png");
     public static final int HEXTECH = 0x5CC8F2;
+    /** How far a glyph's bright core sits in front of its soft stroke (blocks). */
+    private static final float GLYPH_LAYER = 0.004F;
 
     private static final float[][] CUBE_FACES = {
             {-1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1, 0, 0, 1},
@@ -117,16 +119,17 @@ public final class HexFx {
                     float y0 = (0.5F - stroke[i + 1]) * size;
                     float x1 = (stroke[i + 2] - 0.5F) * size;
                     float y1 = (0.5F - stroke[i + 3]) * size;
-                    segment(consumer, pose, x0, y0, x1, y1, size * 0.11F, color, alpha * 0.25F);
-                    segment(consumer, pose, x0, y0, x1, y1, size * 0.045F, RuneDrawing.lighten(color, 0.5F), alpha);
+                    segment(consumer, pose, x0, y0, x1, y1, 0, size * 0.11F, color, alpha * 0.25F);
+                    // The bright core a hair in front of the soft stroke: two quads in one plane flicker.
+                    segment(consumer, pose, x0, y0, x1, y1, GLYPH_LAYER, size * 0.045F, RuneDrawing.lighten(color, 0.5F), alpha);
                 }
             }
         });
     }
 
     /** A line segment as a quad of the given width, with square caps that overlap the next segment; both windings. */
-    public static void segment(VertexConsumer consumer, PoseStack.Pose pose, float x0, float y0, float x1, float y1, float width, int color,
-                               float alpha) {
+    public static void segment(VertexConsumer consumer, PoseStack.Pose pose, float x0, float y0, float x1, float y1, float z, float width,
+                               int color, float alpha) {
         float dx = x1 - x0;
         float dy = y1 - y0;
         float length = Mth.sqrt(dx * dx + dy * dy);
@@ -142,14 +145,14 @@ public final class HexFx {
         y0 -= ey;
         x1 += ex;
         y1 += ey;
-        vertex(consumer, pose, x0 + nx, y0 + ny, 0, 0, color, alpha);
-        vertex(consumer, pose, x0 - nx, y0 - ny, 0, 1, color, alpha);
-        vertex(consumer, pose, x1 - nx, y1 - ny, 1, 1, color, alpha);
-        vertex(consumer, pose, x1 + nx, y1 + ny, 1, 0, color, alpha);
-        vertex(consumer, pose, x1 + nx, y1 + ny, 1, 0, color, alpha);
-        vertex(consumer, pose, x1 - nx, y1 - ny, 1, 1, color, alpha);
-        vertex(consumer, pose, x0 - nx, y0 - ny, 0, 1, color, alpha);
-        vertex(consumer, pose, x0 + nx, y0 + ny, 0, 0, color, alpha);
+        vertex(consumer, pose, x0 + nx, y0 + ny, z, 0, 0, color, alpha);
+        vertex(consumer, pose, x0 - nx, y0 - ny, z, 0, 1, color, alpha);
+        vertex(consumer, pose, x1 - nx, y1 - ny, z, 1, 1, color, alpha);
+        vertex(consumer, pose, x1 + nx, y1 + ny, z, 1, 0, color, alpha);
+        vertex(consumer, pose, x1 + nx, y1 + ny, z, 1, 0, color, alpha);
+        vertex(consumer, pose, x1 - nx, y1 - ny, z, 1, 1, color, alpha);
+        vertex(consumer, pose, x0 - nx, y0 - ny, z, 0, 1, color, alpha);
+        vertex(consumer, pose, x0 + nx, y0 + ny, z, 0, 0, color, alpha);
     }
 
     /** A thin glowing beam from the pose origin to {@code (dx, dy, dz)}, turned to face the camera along its length. */
@@ -180,7 +183,11 @@ public final class HexFx {
     }
 
     public static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float u, float v, int color, float alpha) {
-        consumer.addVertex(pose, x, y, 0).setColor(RuneDrawing.argb(color, alpha)).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY)
+        vertex(consumer, pose, x, y, 0, u, v, color, alpha);
+    }
+
+    public static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float u, float v, int color, float alpha) {
+        consumer.addVertex(pose, x, y, z).setColor(RuneDrawing.argb(color, alpha)).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(LightCoordsUtil.FULL_BRIGHT).setNormal(pose, 0, 0, 1);
     }
 }

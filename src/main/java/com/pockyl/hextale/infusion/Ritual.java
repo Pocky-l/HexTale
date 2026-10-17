@@ -163,9 +163,21 @@ public final class Ritual {
                     || !chosen.containsAll(recipe.runes())) {
                 continue;
             }
-            List<Input> inputs = match(recipe.pedestals(), filled);
+            ItemStack result = recipe.resultFor(center);
+            List<Ingredient> needed = new ArrayList<>(recipe.pedestals());
+            EssenceMix essences = recipe.essences();
+            List<RuneSlots.Engraving> engraved = List.of();
+            if (HextechTools.isTool(result)) {
+                // A hextech tool takes the steles' runes the moment it is made; their items and essences join the recipe.
+                Engravings runes = engravings(HextechTools.runes(result), circle, clientSide);
+                needed.addAll(runes.needed());
+                essences = essences.plus(runes.essences());
+                engraved = runes.added();
+                HextechTools.setRunes(result, runes.after());
+            }
+            List<Input> inputs = match(needed, filled);
             if (inputs != null) {
-                return new Plan(Kind.INFUSE, entry.getKey(), inputs, recipe.essences(), List.of(), recipe.resultFor(center));
+                return new Plan(Kind.INFUSE, entry.getKey(), inputs, essences, engraved, result);
             }
         }
         if (!HextechTools.isTool(center)) {
@@ -199,6 +211,24 @@ public final class Ritual {
     /** Runes on the steles that the tool lacks go into its free slots, in stele order, paid by their engraving entries. */
     @Nullable
     private static Plan engravingPlan(ItemStack center, RuneSlots runes, Circle circle, List<PedestalBlockEntity> filled, boolean clientSide) {
+        Engravings engravings = engravings(runes, circle, clientSide);
+        if (engravings.added().isEmpty()) {
+            return null;
+        }
+        List<Input> inputs = match(engravings.needed(), filled);
+        if (inputs == null) {
+            return null;
+        }
+        ItemStack result = center.copy();
+        HextechTools.setRunes(result, engravings.after());
+        return new Plan(Kind.ENGRAVE, null, inputs, engravings.essences(), engravings.added(), result);
+    }
+
+    /** What engraving the steles' runes into a tool that already carries {@code runes} adds and costs. */
+    private record Engravings(List<RuneSlots.Engraving> added, List<Ingredient> needed, EssenceMix essences, RuneSlots after) {
+    }
+
+    private static Engravings engravings(RuneSlots runes, Circle circle, boolean clientSide) {
         List<RuneSlots.Engraving> added = new ArrayList<>();
         List<Ingredient> needed = new ArrayList<>();
         EssenceMix essences = EssenceMix.EMPTY;
@@ -219,16 +249,7 @@ public final class Ritual {
             needed.addAll(entry.pedestals());
             essences = essences.plus(entry.essences());
         }
-        if (added.isEmpty()) {
-            return null;
-        }
-        List<Input> inputs = match(needed, filled);
-        if (inputs == null) {
-            return null;
-        }
-        ItemStack result = center.copy();
-        HextechTools.setRunes(result, after);
-        return new Plan(Kind.ENGRAVE, null, inputs, essences, added, result);
+        return new Engravings(added, needed, essences, after);
     }
 
     private static int freeSlot(RuneSlots runes) {

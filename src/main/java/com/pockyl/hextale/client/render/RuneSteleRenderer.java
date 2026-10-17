@@ -67,8 +67,9 @@ public class RuneSteleRenderer implements BlockEntityRenderer<RuneSteleBlockEnti
         // Thread of light down to the socket.
         HexFx.beam(poseStack, collector, 0, -(y - 1.0F), 0, 0.06F * entrance, color, 0.5F * pulse,
                 new Vector3f(0, 0, 1).rotate(camera.orientation));
-        // Always readable: the glyph faces the viewer and sways a little.
+        // Always readable: the glyph faces the viewer and sways a little, clearly in front of the halo.
         poseStack.rotate(camera.orientation);
+        poseStack.translate(0, 0, 0.03F);
         poseStack.rotate(Axis.ZP.rotationDegrees(Mth.sin(time * 0.05F) * 4));
         float size = 0.46F * entrance * (state.active ? 1.08F : 1);
         float alpha = Math.min(1, entrance * 1.2F) * pulse;

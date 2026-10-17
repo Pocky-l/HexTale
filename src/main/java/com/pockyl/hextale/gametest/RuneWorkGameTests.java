@@ -232,4 +232,26 @@ public final class RuneWorkGameTests {
         helper.assertTrue(altar.active(), "sneak + empty hand starts the ritual");
         helper.succeedWhen(() -> helper.assertTrue(altar.center().is(ModItems.HEXTECH_PICKAXE.get()), "the ritual finishes"));
     }
+
+    /** A stele's rune is burned into the pickaxe the moment it is made; the rune's items join the pickaxe's on the pedestals. */
+    @HexTest(maxTicks = 300)
+    public static void theSteleRuneGoesIntoTheNewPickaxe(GameTestHelper helper) {
+        HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
+                new ItemStack(Items.AMETHYST_SHARD), new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(ModItems.BRASS_INGOT.get())),
+                EssenceMix.of(Map.of(Essence.METAL, 40, Essence.EARTH, 60, Essence.SPARK, 20, Essence.FIRE, 40)));
+        BlockPos[] extra = {new BlockPos(5, 2, 1), new BlockPos(1, 2, 5)};
+        ItemStack[] items = {new ItemStack(Items.FURNACE), new ItemStack(Items.COAL)};
+        for (int i = 0; i < extra.length; i++) {
+            helper.setBlock(extra[i], ModBlocks.PEDESTAL.get());
+            helper.getBlockEntity(extra[i], PedestalBlockEntity.class).place(items[i]);
+        }
+        helper.setBlock(STELE, ModBlocks.RUNE_STELE.get());
+        helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(ToolRunes.SMELTING, 2);
+        altar.startOrAbort(null);
+        helper.assertTrue(altar.kind() == Ritual.Kind.INFUSE, "the infusion starts with the rune's items");
+        helper.succeedWhen(() -> {
+            helper.assertTrue(altar.center().is(ModItems.HEXTECH_PICKAXE.get()), "the pickaxe is made");
+            helper.assertTrue(HextechTools.runes(altar.center()).has(ToolRunes.SMELTING), "already carrying Smelting");
+        });
+    }
 }

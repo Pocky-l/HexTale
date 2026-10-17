@@ -221,8 +221,9 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         Ritual.Plan plan = Ritual.plan(center, circle, false);
         if (plan == null) {
             if (player != null) {
-                player.sendOverlayMessage(Component.translatable(center.isEmpty() ? "block.hextale.hextech_altar.empty"
-                        : "block.hextale.hextech_altar.nothing"));
+                String key = center.isEmpty() ? "block.hextale.hextech_altar.empty"
+                        : circle.chosenRunes().isEmpty() ? "block.hextale.hextech_altar.nothing" : "block.hextale.hextech_altar.nothing.runes";
+                player.sendOverlayMessage(Component.translatable(key));
             }
             serverLevel.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 0.6F);
             return;
