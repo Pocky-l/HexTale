@@ -14,17 +14,13 @@ import com.pockyl.hextale.block.RuneSteleBlockEntity;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.runework.HextechTools;
-import com.pockyl.hextale.runework.RuneSlots;
-import com.pockyl.hextale.runework.ToolRunes;
+import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.runework.HextechPickaxeItem;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
@@ -88,16 +84,20 @@ public final class Ritual {
             return new Circle(pedestals, steles, tanks);
         }
 
-        /** The runes chosen on the steles, in stele order, each once. */
-        public List<RuneSlots.Engraving> chosenRunes() {
-            List<RuneSlots.Engraving> runes = new ArrayList<>();
-            Set<ComplexRune> seen = new LinkedHashSet<>();
+        /** The runes chosen on the steles, in stele order, each once (with the best stars it is chosen with). */
+        public List<Chosen> chosenRunes() {
+            Map<ComplexRune, Integer> stars = new java.util.LinkedHashMap<>();
             for (RuneSteleBlockEntity stele : steles) {
-                if (stele.rune() != null && seen.add(stele.rune())) {
-                    runes.add(new RuneSlots.Engraving(0, stele.rune(), stele.stars()));
+                if (stele.rune() != null) {
+                    stars.merge(stele.rune(), stele.stars(), Math::max);
                 }
             }
-            return runes;
+            return stars.entrySet().stream().map(e -> new Chosen(e.getKey(), e.getValue())).toList();
+        }
+
+        /** The stars a rune is chosen with on the steles, 0 when no stele shows it. */
+        public int stars(ComplexRune rune) {
+            return chosenRunes().stream().filter(c -> c.rune() == rune).mapToInt(Chosen::stars).findFirst().orElse(0);
         }
 
         public List<PedestalBlockEntity> filledPedestals() {
@@ -131,21 +131,24 @@ public final class Ritual {
         return angle < 0 ? angle + Math.PI * 2 : angle;
     }
 
+    /** A rune chosen on a stele and the researcher's stars on it. */
+    public record Chosen(ComplexRune rune, int stars) {
+    }
+
+    /** What a ritual does. Infusion is the only kind so far; devices may bring others. */
     public enum Kind {
-        INFUSE, ENGRAVE, ERASE
+        INFUSE
     }
 
     /**
      * What a ritual will do.
      *
-     * @param recipe     the infusion recipe's id (infusions only)
-     * @param inputs     the pedestals to draw from, in drawing order, with the item each must hold
-     * @param essences   what it draws from the tanks
-     * @param engravings runes engraved into the tool, slots assigned
-     * @param result     what the centre item becomes
+     * @param recipe   the infusion recipe's id
+     * @param inputs   the pedestals to draw from, in drawing order, with the item each must hold
+     * @param essences what it draws from the tanks (the recipe's and its runes')
+     * @param result   what the centre item becomes
      */
-    public record Plan(Kind kind, @Nullable Identifier recipe, List<Input> inputs, EssenceMix essences, List<RuneSlots.Engraving> engravings,
-                       ItemStack result) {
+    public record Plan(Kind kind, @Nullable Identifier recipe, List<Input> inputs, EssenceMix essences, ItemStack result) {
         /** Warm-up, then the pedestal items one by one, then the essences one by one, then the finale. */
         public int duration() {
             return WARMUP_TICKS + inputs.size() * TICKS_PER_ITEM + drawTicks(essences.total()) + FINALE_TICKS;
@@ -159,72 +162,52 @@ public final class Ritual {
         }
     }
 
-    /** What the altar would do with this centre item and circle, or null (nothing fits). */
+    /** The recipes, those that need the most runes first (a circle set up for a rich recipe never makes a poorer one). */
+    private static List<Map.Entry<Identifier, InfusionRecipe>> recipes(boolean clientSide) {
+        List<Map.Entry<Identifier, InfusionRecipe>> list = new ArrayList<>(InfusionRecipes.get(clientSide).entrySet());
+        list.sort(Comparator.comparingInt((Map.Entry<Identifier, InfusionRecipe> e) -> -e.getValue().runes().size()));
+        return list;
+    }
+
+    /**
+     * What the altar would do with this centre item and circle, or null (nothing fits). A recipe needs its runes chosen
+     * on the steles; a hextech pickaxe made by it takes the stars of the weakest of them.
+     */
     @Nullable
     public static Plan plan(ItemStack center, Circle circle, boolean clientSide) {
         if (center.isEmpty()) {
             return null;
         }
         List<PedestalBlockEntity> filled = circle.filledPedestals();
-        List<ComplexRune> chosen = circle.chosenRunes().stream().map(RuneSlots.Engraving::rune).toList();
-        for (Map.Entry<Identifier, InfusionRecipe> entry : InfusionRecipes.get(clientSide).entrySet()) {
+        for (Map.Entry<Identifier, InfusionRecipe> entry : recipes(clientSide)) {
             InfusionRecipe recipe = entry.getValue();
-            if (recipe.kind() != InfusionRecipe.Kind.INFUSE || !recipe.center().orElseThrow().test(center)
-                    || !chosen.containsAll(recipe.runes())) {
+            if (!recipe.center().test(center) || !recipe.runes().stream().allMatch(rune -> circle.stars(rune) > 0)) {
+                continue;
+            }
+            List<Input> inputs = match(recipe.pedestals(), filled);
+            if (inputs == null) {
                 continue;
             }
             ItemStack result = recipe.resultFor(center);
-            List<Ingredient> needed = new ArrayList<>(recipe.pedestals());
-            EssenceMix essences = recipe.essences();
-            List<RuneSlots.Engraving> engraved = List.of();
-            if (HextechTools.isTool(result)) {
-                // A hextech tool takes the steles' runes the moment it is made; their items and essences join the recipe.
-                // A rune that cannot go in stops the ritual rather than vanishing from the result.
-                if (unusable(HextechTools.runes(result), circle, clientSide) != null) {
-                    continue;
-                }
-                Engravings runes = engravings(HextechTools.runes(result), circle, clientSide);
-                needed.addAll(runes.needed());
-                essences = essences.plus(runes.essences());
-                engraved = runes.added();
-                HextechTools.setRunes(result, runes.after());
+            if (HextechPickaxeItem.kind(result) != null) {
+                result.set(ModDataComponents.STARS.get(), recipe.runes().stream().mapToInt(circle::stars).min().orElse(1));
             }
-            List<Input> inputs = match(needed, filled);
-            if (inputs != null) {
-                return new Plan(Kind.INFUSE, entry.getKey(), inputs, essences, engraved, result);
-            }
-        }
-        if (!HextechTools.isTool(center)) {
-            return null;
-        }
-        RuneSlots runes = HextechTools.runes(center);
-        Plan engraving = engravingPlan(center, runes, circle, filled, clientSide);
-        if (engraving != null) {
-            return engraving;
-        }
-        InfusionRecipe erase = InfusionRecipes.erasing(clientSide);
-        if (erase != null && !runes.isEmpty() && !filled.isEmpty()) {
-            List<Input> inputs = match(erase.pedestals(), filled);
-            if (inputs != null) {
-                ItemStack result = center.copy();
-                HextechTools.setRunes(result, RuneSlots.EMPTY);
-                return new Plan(Kind.ERASE, null, inputs, erase.essences(), List.of(), result);
-            }
+            return new Plan(Kind.INFUSE, entry.getKey(), inputs, recipe.totalEssences(), result);
         }
         return null;
     }
 
     /**
      * What the circle still lacks for the ritual it is being set up for: the pedestal items nobody has laid out yet
-     * (as stacks to show) and the pedestals holding something that ritual does not take. Candidates are every infusion
-     * the centre item fits (with the steles' runes when it makes a hextech tool) and engraving the steles' runes into a
-     * centre tool; the one closest to complete wins. Empty when a ritual can start or nothing fits the centre item.
+     * (as stacks to show), the pedestals holding something that ritual does not take, and the runes no stele shows.
+     * Candidates are every recipe the centre item fits; the one closest to complete wins. Empty when a ritual can start
+     * or nothing fits the centre item.
      */
-    public record Hint(List<ItemStack> missing, List<BlockPos> extra) {
-        public static final Hint NONE = new Hint(List.of(), List.of());
+    public record Hint(List<ItemStack> missing, List<BlockPos> extra, List<ComplexRune> runes) {
+        public static final Hint NONE = new Hint(List.of(), List.of(), List.of());
 
         public boolean isEmpty() {
-            return missing.isEmpty() && extra.isEmpty();
+            return missing.isEmpty() && extra.isEmpty() && runes.isEmpty();
         }
     }
 
@@ -232,30 +215,15 @@ public final class Ritual {
         if (center.isEmpty() || plan(center, circle, clientSide) != null) {
             return Hint.NONE;
         }
-        List<List<Ingredient>> candidates = new ArrayList<>();
-        List<ComplexRune> chosen = circle.chosenRunes().stream().map(RuneSlots.Engraving::rune).toList();
-        for (InfusionRecipe recipe : InfusionRecipes.get(clientSide).values()) {
-            if (recipe.kind() != InfusionRecipe.Kind.INFUSE || !recipe.center().orElseThrow().test(center)
-                    || !chosen.containsAll(recipe.runes())) {
-                continue;
-            }
-            List<Ingredient> needed = new ArrayList<>(recipe.pedestals());
-            ItemStack result = recipe.resultFor(center);
-            if (HextechTools.isTool(result) && unusable(HextechTools.runes(result), circle, clientSide) == null) {
-                needed.addAll(engravings(HextechTools.runes(result), circle, clientSide).needed());
-            }
-            candidates.add(needed);
-        }
-        if (HextechTools.isTool(center) && unusable(HextechTools.runes(center), circle, clientSide) == null) {
-            Engravings runes = engravings(HextechTools.runes(center), circle, clientSide);
-            if (!runes.added().isEmpty()) {
-                candidates.add(runes.needed());
-            }
-        }
         List<PedestalBlockEntity> filled = circle.filledPedestals();
         Hint best = Hint.NONE;
         int bestScore = Integer.MAX_VALUE;
-        for (List<Ingredient> needed : candidates) {
+        for (Map.Entry<Identifier, InfusionRecipe> entry : recipes(clientSide)) {
+            InfusionRecipe recipe = entry.getValue();
+            if (!recipe.center().test(center)) {
+                continue;
+            }
+            List<Ingredient> needed = recipe.pedestals();
             int[] owner = assign(needed, filled);
             boolean[] used = new boolean[filled.size()];
             boolean[] met = new boolean[needed.size()];
@@ -277,92 +245,14 @@ public final class Ritual {
                     extra.add(filled.get(p).getBlockPos());
                 }
             }
-            int score = missing.size() + extra.size();
+            List<ComplexRune> runes = recipe.runes().stream().filter(rune -> circle.stars(rune) == 0).toList();
+            int score = missing.size() + extra.size() + runes.size();
             if (score < bestScore) {
                 bestScore = score;
-                best = new Hint(missing, extra);
+                best = new Hint(missing, extra, runes);
             }
         }
         return best;
-    }
-
-    /** Runes on the steles that the tool lacks go into its free slots, in stele order, paid by their engraving entries. */
-    @Nullable
-    private static Plan engravingPlan(ItemStack center, RuneSlots runes, Circle circle, List<PedestalBlockEntity> filled, boolean clientSide) {
-        if (unusable(runes, circle, clientSide) != null) {
-            return null;
-        }
-        Engravings engravings = engravings(runes, circle, clientSide);
-        if (engravings.added().isEmpty()) {
-            return null;
-        }
-        List<Input> inputs = match(engravings.needed(), filled);
-        if (inputs == null) {
-            return null;
-        }
-        ItemStack result = center.copy();
-        HextechTools.setRunes(result, engravings.after());
-        return new Plan(Kind.ENGRAVE, null, inputs, engravings.essences(), engravings.added(), result);
-    }
-
-    /**
-     * The first rune on the steles that a tool already carrying {@code runes} cannot take - one that does not work on
-     * tools (yet), or one more than its free slots hold - or null when all of them fit.
-     */
-    public static @Nullable ComplexRune unusable(RuneSlots runes, Circle circle, boolean clientSide) {
-        int free = 0;
-        for (int slot = 0; slot < HextechTools.SLOTS; slot++) {
-            if (runes.get(slot) == null) {
-                free++;
-            }
-        }
-        for (RuneSlots.Engraving chosen : circle.chosenRunes()) {
-            ComplexRune rune = chosen.rune();
-            if (runes.has(rune)) {
-                continue;
-            }
-            if (!ToolRunes.worksOnTools(rune) || InfusionRecipes.engraving(clientSide, rune) == null || free-- <= 0) {
-                return rune;
-            }
-        }
-        return null;
-    }
-
-    /** What engraving the steles' runes into a tool that already carries {@code runes} adds and costs. */
-    private record Engravings(List<RuneSlots.Engraving> added, List<Ingredient> needed, EssenceMix essences, RuneSlots after) {
-    }
-
-    private static Engravings engravings(RuneSlots runes, Circle circle, boolean clientSide) {
-        List<RuneSlots.Engraving> added = new ArrayList<>();
-        List<Ingredient> needed = new ArrayList<>();
-        EssenceMix essences = EssenceMix.EMPTY;
-        RuneSlots after = runes;
-        for (RuneSlots.Engraving chosen : circle.chosenRunes()) {
-            ComplexRune rune = chosen.rune();
-            InfusionRecipe entry = InfusionRecipes.engraving(clientSide, rune);
-            if (entry == null || !ToolRunes.worksOnTools(rune) || after.has(rune)) {
-                continue;
-            }
-            int slot = freeSlot(after);
-            if (slot < 0) {
-                break;
-            }
-            RuneSlots.Engraving engraving = new RuneSlots.Engraving(slot, rune, chosen.stars());
-            after = after.with(engraving);
-            added.add(engraving);
-            needed.addAll(entry.pedestals());
-            essences = essences.plus(entry.essences());
-        }
-        return new Engravings(added, needed, essences, after);
-    }
-
-    private static int freeSlot(RuneSlots runes) {
-        for (int slot = 0; slot < HextechTools.SLOTS; slot++) {
-            if (runes.get(slot) == null) {
-                return slot;
-            }
-        }
-        return -1;
     }
 
     /**

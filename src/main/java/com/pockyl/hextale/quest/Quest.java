@@ -9,6 +9,7 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.runework.HextechPickaxe;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -94,10 +95,15 @@ public enum Quest {
     HEXTECH_LAMP(HEXTECH_GEMSTONE, 308, 258, () -> new ItemStack(ModItems.HEXTECH_LAMP.get()), Quests.has(ModItems.HEXTECH_LAMP),
             QuestDisplay.shaped("hextale:hextech_lamp", 2, new String[]{" N ", "BGB", " S "}, "N=hextale:brass_nugget",
                     "B=hextale:brass_ingot", "G=hextale:hextech_gemstone", "S=hextale:magic_brick_slab")),
-    HEXTECH_PICKAXE(HEXTECH_GEMSTONE, 280, 216, () -> new ItemStack(ModItems.HEXTECH_PICKAXE.get()), Quests.has(ModItems.HEXTECH_PICKAXE),
-            QuestDisplay.infusion("hextale:hextech_pickaxe")),
-    FIRST_ENGRAVING(HEXTECH_PICKAXE, 336, 216, () -> new ItemStack(ModItems.RUNE_SCROLL.get()), Quests::engravedTool,
-            QuestDisplay.infusion("hextale:engrave/fire_earth"));
+    // The hextech pickaxes, one quest per number of runes their recipes need.
+    HEXTECH_PICKAXE(HEXTECH_GEMSTONE, 280, 216, () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.SMELTING).get()), Quests.pickaxe(1),
+            QuestDisplay.infusion("hextale:smelting_pickaxe")),
+    PICKAXE_TWO_RUNES(HEXTECH_PICKAXE, 336, 216, () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.DRILL).get()), Quests.pickaxe(2),
+            QuestDisplay.infusion("hextale:drill_pickaxe")),
+    PICKAXE_THREE_RUNES(PICKAXE_TWO_RUNES, 392, 216, () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.TUNNEL).get()), Quests.pickaxe(3),
+            QuestDisplay.infusion("hextale:tunnel_pickaxe")),
+    PICKAXE_FOUR_RUNES(PICKAXE_THREE_RUNES, 448, 216, () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.CORE).get()), Quests.pickaxe(4),
+            QuestDisplay.infusion("hextale:core_pickaxe"));
 
     @Nullable
     private final Quest parent;

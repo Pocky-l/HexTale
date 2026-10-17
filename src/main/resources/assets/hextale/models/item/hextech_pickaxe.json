@@ -1,8 +1,7 @@
 {
   "gui_light": "front",
   "textures": {
-    "particle": "hextale:item/hextech_pickaxe_model",
-    "sheet": "hextale:item/hextech_pickaxe_model"
+    "particle": "#sheet"
   },
   "elements": [
     {
@@ -334,8 +333,7 @@
             0,
             14,
             2
-          ],
-          "tintindex": 0
+          ]
         },
         "east": {
           "texture": "#sheet",
@@ -344,8 +342,7 @@
             0,
             13,
             2
-          ],
-          "tintindex": 0
+          ]
         },
         "west": {
           "texture": "#sheet",
@@ -354,8 +351,7 @@
             0,
             13,
             2
-          ],
-          "tintindex": 0
+          ]
         },
         "up": {
           "texture": "#sheet",
@@ -364,8 +360,7 @@
             0,
             14,
             1
-          ],
-          "tintindex": 0
+          ]
         },
         "down": {
           "texture": "#sheet",
@@ -374,8 +369,7 @@
             0,
             14,
             1
-          ],
-          "tintindex": 0
+          ]
         }
       },
       "light_emission": 15
@@ -400,8 +394,7 @@
             0,
             14,
             2
-          ],
-          "tintindex": 0
+          ]
         },
         "east": {
           "texture": "#sheet",
@@ -410,8 +403,7 @@
             0,
             13,
             2
-          ],
-          "tintindex": 0
+          ]
         },
         "west": {
           "texture": "#sheet",
@@ -420,8 +412,7 @@
             0,
             13,
             2
-          ],
-          "tintindex": 0
+          ]
         },
         "up": {
           "texture": "#sheet",
@@ -430,8 +421,7 @@
             0,
             14,
             1
-          ],
-          "tintindex": 0
+          ]
         },
         "down": {
           "texture": "#sheet",
@@ -440,8 +430,7 @@
             0,
             14,
             1
-          ],
-          "tintindex": 0
+          ]
         }
       },
       "light_emission": 15
@@ -466,8 +455,7 @@
             0,
             14,
             2
-          ],
-          "tintindex": 0
+          ]
         },
         "south": {
           "texture": "#sheet",
@@ -476,8 +464,7 @@
             0,
             14,
             2
-          ],
-          "tintindex": 0
+          ]
         },
         "east": {
           "texture": "#sheet",
@@ -486,8 +473,7 @@
             0,
             14,
             2
-          ],
-          "tintindex": 0
+          ]
         },
         "west": {
           "texture": "#sheet",
@@ -496,8 +482,7 @@
             0,
             14,
             2
-          ],
-          "tintindex": 0
+          ]
         },
         "up": {
           "texture": "#sheet",
@@ -506,8 +491,7 @@
             0,
             14,
             2
-          ],
-          "tintindex": 0
+          ]
         }
       },
       "light_emission": 15

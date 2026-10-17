@@ -31,7 +31,7 @@ import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.PockyModsTab;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.runework.ToolRuneEffects;
+import com.pockyl.hextale.runework.PickaxeEffects;
 
 @Mod(Hextale.MOD_ID)
 public final class Hextale {
@@ -49,7 +49,7 @@ public final class Hextale {
         ModParticles.register(modBus);
         ModTriggers.register(modBus);
         modBus.addListener(ModNetwork::register);
-        ToolRuneEffects.register();
+        PickaxeEffects.register();
         GameTests.register(modBus);
         modBus.addListener(ModDataMaps::register);
         modBus.addListener(Hextale::addToVanillaTabs);
@@ -82,7 +82,13 @@ public final class Hextale {
             output.accept(ModItems.MAGIC_BRICK_WALL);
             output.accept(ModItems.CHISELED_MAGIC_BRICKS);
             output.accept(ModItems.HEXTECH_LAMP);
-            output.accept(ModItems.HEXTECH_PICKAXE);
+            // Every pickaxe with one star and with three, so the difference the stars make can be tried in creative.
+            ModItems.PICKAXES.values().forEach(output::accept);
+            for (var pickaxe : ModItems.PICKAXES.values()) {
+                ItemStack best = new ItemStack(pickaxe.get());
+                best.set(ModDataComponents.STARS.get(), 3);
+                output.accept(best);
+            }
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
             output.accept(ModItems.HEXTECH_GEMSTONE);
@@ -121,7 +127,7 @@ public final class Hextale {
             event.accept(ModItems.HEXTECH_GEMSTONE);
         } else if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(ModItems.RESEARCHERS_DIARY);
-            event.accept(ModItems.HEXTECH_PICKAXE);
+            ModItems.PICKAXES.values().forEach(event::accept);
         }
     }
 

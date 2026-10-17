@@ -1,0 +1,20 @@
+{
+  "center": "minecraft:diamond_pickaxe",
+  "pedestals": [
+    "hextale:hextech_gemstone",
+    "hextale:hextech_gemstone",
+    "minecraft:amethyst_block",
+    "minecraft:emerald"
+  ],
+  "essences": {
+    "crystal": 24,
+    "gem": 16,
+    "gleam": 12
+  },
+  "runes": [
+    "earth_light",
+    "water_light"
+  ],
+  "result": "hextale:geode_pickaxe",
+  "keep_components": true
+}

@@ -1,0 +1,20 @@
+{
+  "center": "minecraft:diamond_pickaxe",
+  "pedestals": [
+    "hextale:hextech_gemstone",
+    "hextale:hextech_gemstone",
+    "minecraft:raw_iron_block",
+    "minecraft:redstone_block"
+  ],
+  "essences": {
+    "ore": 24,
+    "depths": 16,
+    "energy": 12
+  },
+  "runes": [
+    "water_earth",
+    "metal_fire"
+  ],
+  "result": "hextale:vein_pickaxe",
+  "keep_components": true
+}

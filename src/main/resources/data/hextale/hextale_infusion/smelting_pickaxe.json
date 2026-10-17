@@ -1,0 +1,18 @@
+{
+  "center": "minecraft:iron_pickaxe",
+  "pedestals": [
+    "hextale:hextech_gemstone",
+    "hextale:brass_ingot",
+    "hextale:brass_ingot",
+    "minecraft:furnace"
+  ],
+  "essences": {
+    "forge": 16,
+    "ore": 12
+  },
+  "runes": [
+    "fire_earth"
+  ],
+  "result": "hextale:smelting_pickaxe",
+  "keep_components": true
+}

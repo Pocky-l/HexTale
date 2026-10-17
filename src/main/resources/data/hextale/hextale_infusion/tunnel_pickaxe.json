@@ -1,0 +1,23 @@
+{
+  "center": "hextale:drill_pickaxe",
+  "pedestals": [
+    "hextale:hextech_gemstone",
+    "hextale:hextech_gemstone",
+    "minecraft:ender_pearl",
+    "minecraft:ender_pearl",
+    "minecraft:obsidian",
+    "minecraft:obsidian"
+  ],
+  "essences": {
+    "rift": 24,
+    "depths": 24,
+    "energy": 16
+  },
+  "runes": [
+    "shadow_earth",
+    "metal_earth",
+    "earth_spark"
+  ],
+  "result": "hextale:tunnel_pickaxe",
+  "keep_components": true
+}

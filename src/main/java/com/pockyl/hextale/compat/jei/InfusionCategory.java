@@ -22,26 +22,27 @@ import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.runework.HextechTools;
-import com.pockyl.hextale.runework.RuneSlots;
-import com.pockyl.hextale.runework.ToolRunes;
+import com.pockyl.hextale.runework.HextechPickaxeItem;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Hextech Altar rituals: the centre item inside the ring of pedestal items, the result, and under them the essences
- * the altar draws from the tanks and the runes it needs on rune steles. Engravings show a hextech pickaxe taking the
- * rune; erasing shows the runes ground off.
+ * Hextech Altar rituals: the centre item inside the ring of pedestal items, the result, and under them every essence
+ * the altar draws (the runes' own essences included), the runes it needs on rune steles - sign and name - and what
+ * decides a pickaxe's stars.
  */
 public class InfusionCategory extends AbstractRecipeCategory<InfusionCategory.Recipe> {
     public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "infusion", Recipe.class);
-    private static final int WIDTH = 150;
-    private static final int HEIGHT = 96;
+    private static final int WIDTH = 160;
+    private static final int HEIGHT = 140;
     private static final int RING = 28;
     private static final int CX = 44;
-    private static final int CY = 38;
+    private static final int CY = 36;
+    private static final int TOP = 72;
+    private static final int ESSENCES_PER_ROW = 3;
+    private static final int RUNES_PER_ROW = 2;
 
     public record Recipe(Identifier id, InfusionRecipe recipe) {
     }
@@ -60,24 +61,11 @@ public class InfusionCategory extends AbstractRecipeCategory<InfusionCategory.Re
             int y = CY - (int) Math.round(Math.cos(angle) * RING) - 8;
             builder.addInputSlot(x, y).setStandardSlotBackground().add(pedestals.get(i));
         }
-        ItemStack tool = new ItemStack(ModItems.HEXTECH_PICKAXE.get());
-        if (recipe.kind() == InfusionRecipe.Kind.INFUSE) {
-            Ingredient center = recipe.center().orElseThrow();
-            builder.addInputSlot(CX - 8, CY - 8).setStandardSlotBackground().add(center);
-            ItemStack shown = center.items().findFirst().map(ItemStack::new).orElse(ItemStack.EMPTY);
-            builder.addOutputSlot(124, CY - 8).setOutputSlotBackground().addItemStack(recipe.resultFor(shown));
-        } else {
-            ItemStack before = tool.copy();
-            ItemStack after = tool.copy();
-            if (recipe.kind() == InfusionRecipe.Kind.ENGRAVE) {
-                HextechTools.setRunes(after, RuneSlots.EMPTY.with(new RuneSlots.Engraving(0, recipe.rune(), 1)));
-            } else {
-                HextechTools.setRunes(before, RuneSlots.EMPTY.with(new RuneSlots.Engraving(0, ToolRunes.SMELTING, 1)));
-            }
-            builder.addInputSlot(CX - 8, CY - 8).setStandardSlotBackground().addItemStack(before);
-            builder.addOutputSlot(124, CY - 8).setOutputSlotBackground().addItemStack(after);
-        }
-        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 124, 4).addItemStack(new ItemStack(ModItems.HEXTECH_ALTAR.get()));
+        Ingredient center = recipe.center();
+        builder.addInputSlot(CX - 8, CY - 8).setStandardSlotBackground().add(center);
+        ItemStack shown = center.items().findFirst().map(ItemStack::new).orElse(ItemStack.EMPTY);
+        builder.addOutputSlot(130, CY - 8).setOutputSlotBackground().add(recipe.resultFor(shown));
+        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 130, 4).add(new ItemStack(ModItems.HEXTECH_ALTAR.get()));
     }
 
     @Override
@@ -91,35 +79,44 @@ public class InfusionCategory extends AbstractRecipeCategory<InfusionCategory.Re
             int y = CY - (int) Math.round(Math.cos(angle) * RING);
             PixelArt.fill(graphics, x, y, x + 1, y + 1, PixelArt.argb(0x5CC8F2, 0.5F));
         }
-        int ax = 92;
+        int ax = 96;
         PixelArt.fill(graphics, ax, CY - 1, ax + 18, CY + 1, PixelArt.argb(0xF0C24A, 1));
         for (int i = 0; i < 5; i++) {
             PixelArt.fill(graphics, ax + 18 + i, CY - 4 + i, ax + 19 + i, CY + 4 - i, PixelArt.argb(0xF0C24A, 1));
         }
-        // Essences and runes along the bottom.
-        int x = 2;
-        int y = HEIGHT - 12;
-        for (Map.Entry<Essence, Integer> essence : recipe.essences().asMap().entrySet()) {
-            PixelArt.essence(graphics, essence.getKey(), x, y, PixelArt.ICON, PixelArt.argb(essence.getKey().color(), 1));
+        // Every essence in rows, then the runes, then the stars rule.
+        int y = TOP;
+        int column = WIDTH / ESSENCES_PER_ROW;
+        int i = 0;
+        Map<Essence, Integer> essences = recipe.totalEssences().asMap();
+        for (Map.Entry<Essence, Integer> essence : essences.entrySet()) {
+            int x = i % ESSENCES_PER_ROW * column;
+            int ey = y + i / ESSENCES_PER_ROW * 11;
+            PixelArt.essence(graphics, essence.getKey(), x, ey, PixelArt.ICON, PixelArt.argb(essence.getKey().color(), 1));
             PixelArt.flush(graphics);
-            String amount = essence.getValue() + " mB";
-            graphics.text(font, amount, x + 11, y + 1, 0xFF000000 | essence.getKey().color(), true);
-            x += 11 + font.width(amount) + 6;
+            graphics.text(font, essence.getValue() + " mB", x + 11, ey + 1, 0xFF000000 | essence.getKey().color(), true);
+            i++;
         }
-        for (ComplexRune rune : recipe.kind() == InfusionRecipe.Kind.INFUSE ? recipe.runes() : List.<ComplexRune>of()) {
-            PixelArt.glyph(graphics, rune, x, y - 2, 12, PixelArt.argb(rune.color(), 1), 0xFF000000);
-            x += 14;
-        }
-        if (recipe.kind() == InfusionRecipe.Kind.ENGRAVE) {
-            ComplexRune rune = recipe.rune();
-            PixelArt.glyph(graphics, rune, 100, CY + 12, 14, PixelArt.argb(rune.color(), 1), 0xFF000000);
+        y += (essences.size() + ESSENCES_PER_ROW - 1) / ESSENCES_PER_ROW * 11 + 2;
+        List<ComplexRune> runes = recipe.runes();
+        int runeColumn = WIDTH / RUNES_PER_ROW;
+        for (int r = 0; r < runes.size(); r++) {
+            ComplexRune rune = runes.get(r);
+            int x = r % RUNES_PER_ROW * runeColumn;
+            int ry = y + r / RUNES_PER_ROW * 13;
+            PixelArt.glyph(graphics, rune, x, ry, 11, PixelArt.argb(rune.color(), 1), 0xFF000000);
             PixelArt.flush(graphics);
-            graphics.text(font, Component.translatable("jei.hextale.infusion.engrave"), 92, CY + 28, 0xFF7A7498, false);
+            graphics.text(font, Component.translatable(rune.translationKey()), x + 14, ry + 2, 0xFF000000 | rune.color(), true);
+        }
+        if (!runes.isEmpty()) {
+            y += (runes.size() + RUNES_PER_ROW - 1) / RUNES_PER_ROW * 13;
+            boolean pickaxe = HextechPickaxeItem.kind(recipe.result().create()) != null;
+            graphics.text(font, Component.translatable(pickaxe ? "jei.hextale.infusion.stars" : "jei.hextale.infusion.runes"), 0, y + 1,
+                    0xFF7A7498, false);
         }
         PixelArt.flush(graphics);
-        int pedestals = recipe.pedestals().size();
-        int ticks = new Ritual.Plan(Ritual.Kind.INFUSE, null, Collections.nCopies(pedestals, null), recipe.essences(), List.of(),
+        int ticks = new Ritual.Plan(Ritual.Kind.INFUSE, null, Collections.nCopies(recipe.pedestals().size(), null), recipe.totalEssences(),
                 ItemStack.EMPTY).duration();
-        graphics.text(font, Component.translatable("jei.hextale.infusion.time", String.format("%.1f", ticks / 20.0F)), 92, 4, 0xFF7A7498, false);
+        graphics.text(font, Component.translatable("jei.hextale.infusion.time", String.format("%.1f", ticks / 20.0F)), 92, 8, 0xFF7A7498, false);
     }
 }

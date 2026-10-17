@@ -13,7 +13,6 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.item.DiaryOwner;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.runework.RuneSlots;
 
 public final class ModDataComponents {
     public static final DeferredRegister.DataComponents COMPONENTS =
@@ -23,7 +22,7 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ComplexRune>> RUNE =
             COMPONENTS.registerComponentType("rune", builder -> builder
                     .persistent(ComplexRunes.CODEC).networkSynchronized(ComplexRunes.STREAM_CODEC));
-    /** Stars the rune on a scroll was studied with (1-3). */
+    /** Stars the rune on a scroll was studied with, or a hextech pickaxe's strength (1-3). */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> STARS =
             COMPONENTS.registerComponentType("stars", builder -> builder
                     .persistent(Codec.intRange(1, 3)).networkSynchronized(ByteBufCodecs.VAR_INT));
@@ -31,12 +30,7 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("diary_owner", builder -> builder
                     .persistent(DiaryOwner.CODEC).networkSynchronized(DiaryOwner.STREAM_CODEC));
 
-    /** The runes engraved into a hextech tool. */
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<RuneSlots>> RUNE_SLOTS =
-            COMPONENTS.registerComponentType("rune_slots", builder -> builder
-                    .persistent(RuneSlots.CODEC).networkSynchronized(RuneSlots.STREAM_CODEC));
-
-    /** The essence in a flask, a tank item or a hextech tool's cell. */
+    /** The essence in a flask or a tank item. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<EssenceMix>> ESSENCE =
             COMPONENTS.registerComponentType("essence", builder -> builder
                     .persistent(EssenceMix.CODEC).networkSynchronized(EssenceMix.STREAM_CODEC));

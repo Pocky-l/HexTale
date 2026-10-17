@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   lands after a long fall or is caught in a blast bursts in a flash of sparks that hurts and pushes what stands
   close. Orbs fresh from the storm are still settling and survive their first fall.
 - Hextech Gemstone: unstable hextech refined at the Hextech Altar into a smooth, steady sphere. It no longer bursts,
-  and every hextech tool and device is built around one.
+  and every hextech pickaxe and device is built around one.
 - Hextech Lamp: a gemstone floating in a cage of polished magic stone and brass, full light. It stands on a block or hangs under
   one, like a lantern.
 
@@ -72,10 +72,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   centre item, the pedestal items are drawn in one by one, then the essences one after another, and the centre
   becomes something new. A ritual short of essence stalls and, left too long, collapses. Ghosts of the items a ritual
   still lacks hover over the free pedestals.
-- Hextech Pickaxe: infused from an iron pickaxe; it keeps its enchantments and takes up to four runes. A rune chosen on
-  a stele is burned into the tool as it is made, or into a finished tool later; flint grinds runes off again. Every
-  one of the 72 runes does something on a tool, and runes cost nothing to fire. Runes have no descriptions - try them.
-- Magic stone: stone that has drunk essence - a cool blue-violet stone with nothing set into it. Craft eight stone,
+- Hextech pickaxes: nine of them, one model in nine finishes, each made at the altar while the runes of its recipe
+  stand chosen on rune steles - without them it cannot be made. The runes take no items, only their own essence (the
+  compound of their two primals, more for harder runes). A pickaxe's stars are the stars of its weakest rune, and the
+  stars decide everything: it digs up to 2.2 times as fast and every ability grows with them. It keeps the
+  enchantments of the pickaxe it was made from. The tooltip lists its abilities with their numbers.
+  - One rune, from an iron pickaxe: the Smelter's Pickaxe (smelts what it mines, ores give extra pieces), the
+    Prospector's Pickaxe (right click: ores around glow through the stone) and the Tempered Pickaxe (barely wears,
+    cuts hard stone fast).
+  - Two runes, from a diamond pickaxe: the Drill Pickaxe (digs 3x3, then deeper, then 5x5), the Vein Pickaxe (takes a
+    whole ore vein, ores drop double) and the Geode Pickaxe (plain stone gives up gems; you see underground as by day).
+  - Three runes: the Tunneler's Pickaxe, made from the Drill (digs an area, right click bores a 3x3 tunnel), and the
+    Quake Pickaxe, made from the Vein (right click shatters the rock around and leaves the ores standing).
+  - Four runes: the Mountainheart Pickaxe, made from the Tunneler - digs an area, smelts it, puts it straight into
+    your pocket, draws in drops and experience, bores tunnels.
+  - The research book and JEI show each recipe whole: the pedestal items, every essence with its millibuckets (the
+    runes' included), the runes by sign and name, and that the stars come from the weakest rune. A circle that lacks a
+    rune names it.
+- Magic stone: stone that has drunk essence - flat plates of a dusky violet stone with nothing set into it. Craft eight stone,
   cobblestone, deepslate, tuff, andesite, diorite, granite or calcite around a bottle of any essence (the bottle comes
   back), or open a Drain Valve over such stone: the essence it pours soaks into the stone where the stream lands, one
   block per 16 mB. Polished magic stone, magic bricks with stairs, slab and wall, and chiseled magic bricks with the

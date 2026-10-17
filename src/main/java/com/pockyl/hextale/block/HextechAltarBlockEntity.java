@@ -8,6 +8,7 @@ import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -37,8 +38,6 @@ import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.runework.HextechTools;
-import com.pockyl.hextale.runework.RuneSlots;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -219,15 +218,19 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         Ritual.Plan plan = Ritual.plan(center, circle, false);
         if (plan == null) {
             if (player != null) {
-                ComplexRune refused = center.isEmpty() ? null : Ritual.unusable(HextechTools.isTool(center) ? HextechTools.runes(center)
-                        : RuneSlots.EMPTY, circle, false);
-                if (refused != null && !circle.chosenRunes().isEmpty()) {
-                    player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.nothing.unusable",
-                            Component.translatable(refused.translationKey()).withColor(refused.color())));
+                Ritual.Hint hint = center.isEmpty() ? Ritual.Hint.NONE : Ritual.hint(center, circle, false);
+                if (!hint.runes().isEmpty()) {
+                    // The recipe this circle is closest to wants runes no stele shows: name them.
+                    MutableComponent names = Component.empty();
+                    for (int i = 0; i < hint.runes().size(); i++) {
+                        ComplexRune rune = hint.runes().get(i);
+                        names.append(i == 0 ? Component.empty() : Component.literal(", "))
+                                .append(Component.translatable(rune.translationKey()).withColor(rune.color()));
+                    }
+                    player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.nothing.runes_missing", names));
                 } else {
-                    String key = center.isEmpty() ? "block.hextale.hextech_altar.empty"
-                            : circle.chosenRunes().isEmpty() ? "block.hextale.hextech_altar.nothing" : "block.hextale.hextech_altar.nothing.runes";
-                    player.sendOverlayMessage(Component.translatable(key));
+                    player.sendOverlayMessage(Component.translatable(center.isEmpty() ? "block.hextale.hextech_altar.empty"
+                            : "block.hextale.hextech_altar.nothing"));
                 }
             }
             serverLevel.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 0.6F);

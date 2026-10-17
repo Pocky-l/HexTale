@@ -17,13 +17,17 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.item.HextechGemstoneItem;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.item.UnstableHextechItem;
-import com.pockyl.hextale.runework.HextechToolItem;
+import com.pockyl.hextale.runework.HextechPickaxe;
+import com.pockyl.hextale.runework.HextechPickaxeItem;
 
 public final class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Hextale.MOD_ID);
@@ -69,11 +73,28 @@ public final class ModItems {
     public static final DeferredItem<ResearchersDiaryItem> RESEARCHERS_DIARY = ITEMS.registerItem("researchers_diary",
             properties -> new ResearchersDiaryItem(properties.stacksTo(1)));
 
-    /** Hextech tools: iron-tier mining, long-lived, repaired with brass. */
-    public static final ToolMaterial HEXTECH = new ToolMaterial(BlockTags.INCORRECT_FOR_IRON_TOOL, 900, 6.5F, 2.0F, 12,
-            ModTags.HEXTECH_TOOL_MATERIALS);
-    public static final DeferredItem<HextechToolItem> HEXTECH_PICKAXE = ITEMS.registerItem("hextech_pickaxe",
-            properties -> new HextechToolItem(properties.pickaxe(HEXTECH, 1.0F, -2.8F).rarity(Rarity.UNCOMMON)));
+    /** Hextech pickaxe materials by tier: iron, diamond, then netherite strength; repaired with brass. */
+    private static final ToolMaterial[] PICKAXE_MATERIALS = {
+            new ToolMaterial(BlockTags.INCORRECT_FOR_IRON_TOOL, 900, 6.5F, 2.0F, 14, ModTags.HEXTECH_TOOL_MATERIALS),
+            new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1800, 8.0F, 3.0F, 12, ModTags.HEXTECH_TOOL_MATERIALS),
+            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2600, 9.0F, 4.0F, 15, ModTags.HEXTECH_TOOL_MATERIALS),
+            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 3200, 9.5F, 4.0F, 18, ModTags.HEXTECH_TOOL_MATERIALS)};
+    /** The hextech pickaxes, each made at the altar with its own runes. */
+    public static final Map<HextechPickaxe, DeferredItem<HextechPickaxeItem>> PICKAXES = new EnumMap<>(HextechPickaxe.class);
+
+    static {
+        for (HextechPickaxe kind : HextechPickaxe.values()) {
+            PICKAXES.put(kind, ITEMS.registerItem(kind.id(), properties -> {
+                Item.Properties p = properties.pickaxe(PICKAXE_MATERIALS[kind.tier() - 1], 1.0F, -2.8F)
+                        .rarity(kind.tier() >= 4 ? Rarity.EPIC : kind.tier() >= 3 ? Rarity.RARE : Rarity.UNCOMMON);
+                return new HextechPickaxeItem(kind, kind.tier() >= 3 ? p.fireResistant() : p);
+            }));
+        }
+    }
+
+    public static DeferredItem<HextechPickaxeItem> pickaxe(HextechPickaxe kind) {
+        return PICKAXES.get(kind);
+    }
 
     private ModItems() {
     }

@@ -3,7 +3,6 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -20,48 +19,56 @@ import com.pockyl.hextale.block.HextechAltarBlockEntity;
 import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
 import com.pockyl.hextale.essence.EssenceMix;
-import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.infusion.InfusionRecipe;
 import com.pockyl.hextale.infusion.InfusionRecipes;
 import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.registry.ModBlocks;
+import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
-import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.runework.HextechTools;
-import com.pockyl.hextale.runework.RuneSlots;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.runework.ToolRuneEffects;
-import com.pockyl.hextale.runework.ToolRunes;
+import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.runework.HextechPickaxe;
+import com.pockyl.hextale.runework.PickaxeEffects;
 
 import java.util.List;
 import java.util.Map;
 
-/** Rune works: the Hextech Altar's rituals, the essence cell and the runes firing on hextech tools. */
+/** Rune works: the Hextech Altar's rituals, the runes they need on steles, and the hextech pickaxes. */
 public final class RuneWorkGameTests {
     private static final BlockPos ALTAR = new BlockPos(3, 2, 3);
     private static final List<BlockPos> PEDESTALS = List.of(new BlockPos(3, 2, 1), new BlockPos(5, 2, 3), new BlockPos(3, 2, 5),
             new BlockPos(1, 2, 3));
     private static final BlockPos STELE = new BlockPos(1, 2, 1);
     private static final BlockPos TANK = new BlockPos(6, 2, 6);
+    private static final ComplexRune SMELTING = ComplexRunes.byKey("fire_earth");
+    /** The Smelter's Pickaxe recipe's essences, its rune's (magma) included. */
+    private static final EssenceMix SMELTER_ESSENCE = EssenceMix.of(Map.of(Essence.FORGE, 16, Essence.ORE, 12, Essence.MAGMA, 16));
 
     private RuneWorkGameTests() {
     }
 
-    private static ItemStack smeltingPickaxe() {
-        ItemStack tool = new ItemStack(ModItems.HEXTECH_PICKAXE.get());
-        HextechTools.setRunes(tool, RuneSlots.EMPTY.with(new RuneSlots.Engraving(0, ToolRunes.SMELTING, 2)));
+    private static ItemStack pickaxe(HextechPickaxe kind, int stars) {
+        ItemStack tool = new ItemStack(ModItems.pickaxe(kind).get());
+        tool.set(ModDataComponents.STARS.get(), stars);
         return tool;
     }
 
-    /** Breaks iron ore with the tool (as a player) and returns the items it dropped. */
-    private static List<ItemEntity> mine(GameTestHelper helper, ItemStack tool) {
-        BlockPos pos = helper.absolutePos(new BlockPos(0, 1, 0));
-        BlockState ore = Blocks.IRON_ORE.defaultBlockState();
-        helper.getLevel().setBlockAndUpdate(pos, ore);
+    private static List<ItemStack> smelterItems() {
+        return List.of(new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(ModItems.BRASS_INGOT.get()),
+                new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(Items.FURNACE));
+    }
+
+    /** Breaks the block at {@code pos} with the tool as a player (drops through the pickaxe's abilities). */
+    private static void mine(GameTestHelper helper, ItemStack tool, BlockPos pos) {
+        BlockPos abs = helper.absolutePos(pos);
+        BlockState state = helper.getLevel().getBlockState(abs);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        Block.dropResources(ore, helper.getLevel(), pos, null, player, tool);
-        return helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(pos).inflate(2));
+        // Standing over the block, looking straight down at it: the pickaxe strikes its top face.
+        player.snapTo(abs.getX() + 0.5, abs.getY() + 1, abs.getZ() + 0.5, 0, 90);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, tool);
+        Block.dropResources(state, helper.getLevel(), abs, null, player, tool);
+        helper.getLevel().removeBlock(abs, false);
     }
 
     /** An altar with the given centre item, pedestal items and a tank of essence around it. */
@@ -88,124 +95,123 @@ public final class RuneWorkGameTests {
         return altar;
     }
 
+    private static void stele(GameTestHelper helper, ComplexRune rune, int stars) {
+        helper.setBlock(STELE, ModBlocks.RUNE_STELE.get());
+        helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(rune, stars);
+    }
+
     @HexTest
-    public static void smeltingRuneSmeltsDrops(GameTestHelper helper) {
-        ItemStack tool = smeltingPickaxe();
-        List<ItemEntity> drops = mine(helper, tool);
+    public static void theSmeltersPickaxeSmeltsDrops(GameTestHelper helper) {
+        helper.setBlock(new BlockPos(0, 1, 0), Blocks.IRON_ORE);
+        mine(helper, pickaxe(HextechPickaxe.SMELTING, 1), new BlockPos(0, 1, 0));
+        List<ItemEntity> drops = helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(new BlockPos(0, 1, 0))).inflate(2));
         helper.assertTrue(drops.stream().anyMatch(drop -> drop.getItem().is(Items.IRON_INGOT)), "raw iron comes out as an ingot");
         helper.assertTrue(drops.stream().noneMatch(drop -> drop.getItem().is(Items.RAW_IRON)), "no raw iron left");
         helper.succeed();
     }
 
-    /** The circle names what it lacks: missing pedestal items (incl. a stele rune's) and items the ritual does not take. */
+    /** The Drill takes the 3x3 around the broken block (struck from above: the layer). */
+    @HexTest
+    public static void theDrillDigsAnArea(GameTestHelper helper) {
+        for (int x = 0; x < 3; x++) {
+            for (int z = 0; z < 3; z++) {
+                helper.setBlock(new BlockPos(x, 1, z), Blocks.STONE);
+            }
+        }
+        mine(helper, pickaxe(HextechPickaxe.DRILL, 1), new BlockPos(1, 1, 1));
+        for (int x = 0; x < 3; x++) {
+            for (int z = 0; z < 3; z++) {
+                helper.assertBlockPresent(Blocks.AIR, new BlockPos(x, 1, z));
+            }
+        }
+        helper.succeed();
+    }
+
+    /** The Vein takes the ore touching the broken one, not the stone around. */
+    @HexTest
+    public static void theVeinTakesTheWholeVein(GameTestHelper helper) {
+        for (int x = 0; x < 4; x++) {
+            helper.setBlock(new BlockPos(x, 1, 0), Blocks.IRON_ORE);
+        }
+        helper.setBlock(new BlockPos(0, 1, 1), Blocks.STONE);
+        mine(helper, pickaxe(HextechPickaxe.VEIN, 1), new BlockPos(0, 1, 0));
+        for (int x = 1; x < 4; x++) {
+            helper.assertBlockPresent(Blocks.AIR, new BlockPos(x, 1, 0));
+        }
+        helper.assertBlockPresent(Blocks.STONE, new BlockPos(0, 1, 1));
+        helper.succeed();
+    }
+
+    /** Stars matter: a three-star pickaxe digs over twice as fast and every ability is stronger. */
+    @HexTest
+    public static void starsMakeAPickaxeStronger(GameTestHelper helper) {
+        helper.assertTrue(HextechPickaxe.speed(3) >= HextechPickaxe.speed(1) * 2, "three stars dig over twice as fast");
+        helper.assertTrue(PickaxeEffects.temperChance(3) > PickaxeEffects.temperChance(1), "tempering grows with the stars");
+        helper.assertTrue(!PickaxeEffects.describe(HextechPickaxe.DRILL, 1).get(0).getString()
+                .equals(PickaxeEffects.describe(HextechPickaxe.DRILL, 3).get(0).getString()), "the drill digs wider with three stars");
+        helper.assertTrue(HextechPickaxe.stars(new ItemStack(ModItems.pickaxe(HextechPickaxe.CORE).get())) == 1, "no stars = one star");
+        helper.succeed();
+    }
+
+    /** Every pickaxe has its recipe: as many runes as its tier, each rune paid with its own essence. */
+    @HexTest
+    public static void everyPickaxeHasItsRecipe(GameTestHelper helper) {
+        for (HextechPickaxe kind : HextechPickaxe.values()) {
+            InfusionRecipe recipe = InfusionRecipes.get(false).get(Hextale.id(kind.id()));
+            helper.assertTrue(recipe != null, kind.id() + " has an altar recipe");
+            helper.assertTrue(recipe.runes().size() == kind.tier(), kind.id() + " needs " + kind.tier() + " runes, has " + recipe.runes());
+            helper.assertTrue(recipe.result().item().value() == ModItems.pickaxe(kind).get(), kind.id() + " makes itself");
+            for (ComplexRune rune : recipe.runes()) {
+                EssenceMix cost = InfusionRecipe.runeEssence(rune);
+                helper.assertTrue(recipe.totalEssences().get(cost.pureEssence()) >= cost.total(), kind.id() + " pays " + rune.key() + "'s essence");
+            }
+        }
+        helper.succeed();
+    }
+
+    /** Without its rune on a stele the pickaxe cannot be made, and the circle says which rune it waits for. */
+    @HexTest
+    public static void aPickaxeNeedsItsRunes(GameTestHelper helper) {
+        HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), smelterItems(), SMELTER_ESSENCE);
+        altar.startOrAbort(null);
+        helper.assertFalse(altar.active(), "no rune, no ritual");
+        Ritual.Hint hint = Ritual.hint(altar.center(), Ritual.Circle.scan(helper.getLevel(), helper.absolutePos(ALTAR)), false);
+        helper.assertTrue(hint.runes().contains(SMELTING) && hint.missing().isEmpty() && hint.extra().isEmpty(),
+                "the circle only lacks Smelting, got " + hint);
+        helper.succeed();
+    }
+
+    /** The circle names what it lacks: missing pedestal items, items the ritual does not take, and runes. */
     @HexTest
     public static void theCircleShowsWhatItLacks(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE),
                 List.of(new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(Items.DIRT)), EssenceMix.EMPTY);
         Ritual.Hint hint = Ritual.hint(altar.center(), Ritual.Circle.scan(helper.getLevel(), helper.absolutePos(ALTAR)), false);
-        helper.assertTrue(hint.missing().size() == 3, "a brass ingot, the hextech and the shard are missing, got " + hint.missing());
+        helper.assertTrue(hint.missing().size() == 3, "a gemstone, a brass ingot and the pickaxe's own item are missing, got " + hint.missing());
         helper.assertTrue(hint.extra().size() == 1 && hint.extra().getFirst().equals(helper.absolutePos(PEDESTALS.get(1))), "the dirt is extra");
-        helper.setBlock(STELE, ModBlocks.RUNE_STELE.get());
-        helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(ToolRunes.SMELTING, 1);
-        hint = Ritual.hint(altar.center(), Ritual.Circle.scan(helper.getLevel(), helper.absolutePos(ALTAR)), false);
-        helper.assertTrue(hint.missing().size() == 5 && hint.missing().stream().anyMatch(stack -> stack.is(Items.FURNACE)),
-                "the stele's rune adds its furnace and coal, got " + hint.missing());
+        helper.assertTrue(hint.runes().size() == 1, "and one rune");
         helper.succeed();
     }
 
-    /** Every rune of the codex does something on a tool and can be burned into one at the altar. */
-    @HexTest
-    public static void everyRuneWorksOnTools(GameTestHelper helper) {
-        helper.assertTrue(ToolRuneEffects.withoutEffect().isEmpty(), "runes without a tool effect: " + ToolRuneEffects.withoutEffect());
-        for (ComplexRune rune : ComplexRunes.all()) {
-            helper.assertTrue(ToolRunes.worksOnTools(rune), rune.key() + " works on tools");
-            helper.assertTrue(InfusionRecipes.engraving(false, rune) != null, rune.key() + " has an engraving");
-        }
-        helper.succeed();
-    }
-
-    /** Cache: what the tool breaks goes straight into the pocket; Drill takes the blocks around too. */
-    @HexTest
-    public static void drillAndCacheMineIntoThePocket(GameTestHelper helper) {
-        ItemStack tool = new ItemStack(ModItems.HEXTECH_PICKAXE.get());
-        HextechTools.setRunes(tool, RuneSlots.EMPTY.with(new RuneSlots.Engraving(0, ComplexRunes.byKey("metal_earth"), 1))
-                .with(new RuneSlots.Engraving(1, ComplexRunes.byKey("earth_shadow"), 1)));
-        BlockPos centre = helper.absolutePos(new BlockPos(2, 3, 2));
-        for (BlockPos at : BlockPos.betweenClosed(centre.offset(-1, 0, -1), centre.offset(1, 0, 1))) {
-            helper.getLevel().setBlockAndUpdate(at, Blocks.STONE.defaultBlockState());
-        }
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        player.snapTo(centre.getX() + 0.5, centre.getY() + 2, centre.getZ() + 0.5, 0, 90);
-        BlockState stone = Blocks.STONE.defaultBlockState();
-        helper.getLevel().removeBlock(centre, false);
-        Block.dropResources(stone, helper.getLevel(), centre, null, player, tool);
-        int left = 0;
-        for (BlockPos at : BlockPos.betweenClosed(centre.offset(-1, 0, -1), centre.offset(1, 0, 1))) {
-            left += helper.getLevel().getBlockState(at).isAir() ? 0 : 1;
-        }
-        helper.assertTrue(left == 0, "the 3x3 around is mined, " + left + " left");
-        helper.assertTrue(player.getInventory().countItem(Items.COBBLESTONE) == 9, "all nine cobblestones went into the pocket");
-        helper.assertTrue(helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(centre).inflate(3)).isEmpty(), "nothing on the ground");
-        helper.succeed();
-    }
-
-    /** Right click fires the rune's spell for free: Healing heals, and the tool rests a moment. */
-    @HexTest
-    public static void useRunesFireOnRightClick(GameTestHelper helper) {
-        ItemStack tool = new ItemStack(ModItems.HEXTECH_PICKAXE.get());
-        HextechTools.setRunes(tool, RuneSlots.EMPTY.with(new RuneSlots.Engraving(0, ComplexRunes.byKey("water_life"), 2)));
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        player.setHealth(6);
-        helper.assertTrue(ToolRuneEffects.use(helper.getLevel(), player, tool), "the rune fires");
-        helper.assertTrue(player.getHealth() >= 10, "and heals");
-        helper.assertFalse(ToolRuneEffects.use(helper.getLevel(), player, tool), "not again right away");
-        helper.succeed();
-    }
-
-    /** The altar recipes load from data, including the first infusion, Smelting's engraving and erasing. */
-    @HexTest
-    public static void altarRecipesLoad(GameTestHelper helper) {
-        InfusionRecipe pickaxe = InfusionRecipes.get(false).get(Hextale.id("hextech_pickaxe"));
-        helper.assertTrue(pickaxe != null && pickaxe.kind() == InfusionRecipe.Kind.INFUSE, "the pickaxe infusion is loaded");
-        helper.assertTrue(pickaxe.pedestals().size() == 4 && pickaxe.essences().get(Essence.ORE) == 24, "with its items and essences");
-        helper.assertTrue(pickaxe.pedestals().stream().anyMatch(item -> item.test(new ItemStack(ModItems.HEXTECH_GEMSTONE.get()))),
-                "a refined gemstone is the pickaxe's heart");
-        InfusionRecipe gemstone = InfusionRecipes.get(false).get(Hextale.id("hextech_gemstone"));
-        helper.assertTrue(gemstone != null && gemstone.center().orElseThrow().test(new ItemStack(ModItems.UNSTABLE_HEXTECH.get())),
-                "unstable hextech is refined into the gemstone");
-        helper.assertTrue(InfusionRecipes.engraving(false, ToolRunes.SMELTING) != null, "Smelting can be engraved");
-        helper.assertTrue(InfusionRecipes.erasing(false) != null, "runes can be ground off");
-        for (Map.Entry<Identifier, InfusionRecipe> entry : InfusionRecipes.get(false).entrySet()) {
-            if (entry.getValue().kind() == InfusionRecipe.Kind.ENGRAVE) {
-                helper.assertTrue(ToolRunes.worksOnTools(entry.getValue().rune()), entry.getKey() + " engraves a rune that works on tools");
-            }
-        }
-        helper.succeed();
-    }
-
-    /** An iron pickaxe, four items and three essences become a Hextech Pickaxe that keeps its enchantments. */
-    @HexTest(maxTicks = 320)
-    public static void altarInfusesTheHextechPickaxe(GameTestHelper helper) {
+    /** With Smelting on a two-star stele, an iron pickaxe becomes a two-star Smelter's Pickaxe that keeps its enchantment. */
+    @HexTest(maxTicks = 360)
+    public static void theAltarMakesAPickaxeWithTheRunesStars(GameTestHelper helper) {
         ItemStack iron = new ItemStack(Items.IRON_PICKAXE);
-        iron.enchant(helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
-                .getOrThrow(Enchantments.EFFICIENCY), 2);
-        EssenceMix essence = EssenceMix.of(Map.of(Essence.ORE, 40, Essence.FORGE, 30, Essence.ENERGY, 20));
-        HextechAltarBlockEntity altar = circle(helper, iron, List.of(new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(Items.AMETHYST_SHARD),
-                new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(ModItems.BRASS_INGOT.get())), essence);
+        iron.enchant(helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.EFFICIENCY), 2);
+        HextechAltarBlockEntity altar = circle(helper, iron, smelterItems(), SMELTER_ESSENCE.plus(EssenceMix.pure(Essence.ORE, 10)));
+        stele(helper, SMELTING, 2);
         altar.startOrAbort(null);
         helper.assertTrue(altar.active() && altar.kind() == Ritual.Kind.INFUSE, "the ritual starts");
-        // The essences follow the items: while items are still drawn, no essence has left the tank.
-        helper.runAfterDelay(Ritual.WARMUP_TICKS + Ritual.TICKS_PER_ITEM * 2, () -> helper.assertTrue(
-                altar.essenceLeft().total() == 24 + 16 + 8, "no essence is drawn before the items, left " + altar.essenceLeft()));
         helper.succeedWhen(() -> {
-            helper.assertTrue(altar.center().is(ModItems.HEXTECH_PICKAXE.get()), "the centre became a hextech pickaxe");
-            helper.assertTrue(altar.center().isEnchanted(), "it kept its enchantment");
+            ItemStack made = altar.center();
+            helper.assertTrue(made.is(ModItems.pickaxe(HextechPickaxe.SMELTING).get()), "the centre became a Smelter's Pickaxe");
+            helper.assertTrue(HextechPickaxe.stars(made) == 2, "with the rune's two stars");
+            helper.assertTrue(made.isEnchanted(), "it kept its enchantment");
             for (BlockPos pos : PEDESTALS) {
                 helper.assertTrue(helper.getBlockEntity(pos, PedestalBlockEntity.class).item().isEmpty(), "every pedestal item was drawn");
             }
             EssenceMix left = helper.getBlockEntity(TANK, EssenceTankBlockEntity.class).tank().contents();
-            helper.assertTrue(left.get(Essence.ORE) == 16 && left.get(Essence.FORGE) == 14 && left.get(Essence.ENERGY) == 12,
-                    "the essences were drawn from the tank, left " + left);
+            helper.assertTrue(left.get(Essence.ORE) == 10 && left.get(Essence.MAGMA) == 0, "the essences were drawn, the rune's too, left " + left);
         });
     }
 
@@ -214,78 +220,43 @@ public final class RuneWorkGameTests {
     public static void anExtraItemSpoilsTheCircle(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
                 new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(Items.DIRT)),
-                EssenceMix.pure(Essence.METAL, 100));
+                SMELTER_ESSENCE);
+        stele(helper, SMELTING, 1);
         altar.startOrAbort(null);
         helper.assertFalse(altar.active(), "a circle with a wrong item does not start");
         helper.succeed();
     }
 
-    /** A stele with Smelting, a furnace and coal and fire + earth engrave Smelting into the pickaxe with the stele's stars. */
-    @HexTest(maxTicks = 200)
-    public static void altarEngravesTheSteleRune(GameTestHelper helper) {
-        HextechAltarBlockEntity altar = circle(helper, new ItemStack(ModItems.HEXTECH_PICKAXE.get()),
-                List.of(new ItemStack(Items.FURNACE), new ItemStack(Items.COAL)), EssenceMix.of(Map.of(Essence.FIRE, 50, Essence.MAGMA, 50)));
-        helper.setBlock(STELE, ModBlocks.RUNE_STELE.get());
-        helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(ToolRunes.SMELTING, 3);
-        altar.startOrAbort(null);
-        helper.assertTrue(altar.kind() == Ritual.Kind.ENGRAVE, "the ritual engraves");
-        helper.succeedWhen(() -> {
-            RuneSlots.Engraving engraving = HextechTools.runes(altar.center()).find(ToolRunes.SMELTING);
-            helper.assertTrue(engraving != null && engraving.slot() == 0 && engraving.stars() == 3, "Smelting sits in slot I with three stars");
-        });
-    }
-
-    /** With an essence missing the ritual stalls instead of finishing. */
-    @HexTest(maxTicks = 300)
+    /** With an essence missing (here the rune's own) the ritual stalls instead of finishing. */
+    @HexTest(maxTicks = 360)
     public static void aRitualShortOfEssenceStalls(GameTestHelper helper) {
-        HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
-                new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(Items.AMETHYST_SHARD)),
-                EssenceMix.of(Map.of(Essence.ORE, 40, Essence.FORGE, 30)));
+        HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), smelterItems(),
+                EssenceMix.of(Map.of(Essence.FORGE, 16, Essence.ORE, 12)));
+        stele(helper, SMELTING, 1);
         altar.startOrAbort(null);
-        helper.runAfterDelay(240, () -> {
-            helper.assertTrue(altar.active() && altar.stalled(), "without energy essence the ritual waits");
+        helper.runAfterDelay(300, () -> {
+            helper.assertTrue(altar.active() && altar.stalled(), "without the rune's magma essence the ritual waits");
             helper.assertTrue(altar.center().is(Items.IRON_PICKAXE), "and the centre is untouched");
             helper.succeed();
         });
     }
 
-    /** The player's way: a Creative Essence Tank, sneak + empty hand on the altar, and wait for the result. */
-    @HexTest(maxTicks = 260)
+    /** The player's way: a Creative Essence Jar, sneak + empty hand on the altar, and wait for the result. */
+    @HexTest(maxTicks = 320)
     public static void aPlayerStartsARitualWithCreativeTanks(GameTestHelper helper) {
-        HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
-                new ItemStack(Items.AMETHYST_SHARD), new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(ModItems.BRASS_INGOT.get())),
-                EssenceMix.EMPTY);
+        HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), smelterItems(), EssenceMix.EMPTY);
+        stele(helper, SMELTING, 3);
         BlockPos creative = new BlockPos(6, 2, 0);
         helper.setBlock(creative, ModBlocks.CREATIVE_ESSENCE_TANK.get());
         helper.getBlockEntity(creative, EssenceTankBlockEntity.class).tank().set(EssenceTankBlockEntity.CREATIVE);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         player.setShiftKeyDown(true);
         BlockPos abs = helper.absolutePos(ALTAR);
-        net.minecraft.world.phys.BlockHitResult hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(abs), net.minecraft.core.Direction.UP, abs, false);
+        net.minecraft.world.phys.BlockHitResult hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(abs),
+                net.minecraft.core.Direction.UP, abs, false);
         helper.getLevel().getBlockState(abs).useWithoutItem(helper.getLevel(), player, hit);
         helper.assertTrue(altar.active(), "sneak + empty hand starts the ritual");
-        helper.succeedWhen(() -> helper.assertTrue(altar.center().is(ModItems.HEXTECH_PICKAXE.get()), "the ritual finishes"));
-    }
-
-    /** A stele's rune is burned into the pickaxe the moment it is made; the rune's items join the pickaxe's on the pedestals. */
-    @HexTest(maxTicks = 300)
-    public static void theSteleRuneGoesIntoTheNewPickaxe(GameTestHelper helper) {
-        HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
-                new ItemStack(Items.AMETHYST_SHARD), new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(ModItems.BRASS_INGOT.get())),
-                EssenceMix.of(Map.of(Essence.ORE, 40, Essence.FORGE, 30, Essence.ENERGY, 20, Essence.FIRE, 40, Essence.MAGMA, 30)));
-        BlockPos[] extra = {new BlockPos(5, 2, 1), new BlockPos(1, 2, 5)};
-        ItemStack[] items = {new ItemStack(Items.FURNACE), new ItemStack(Items.COAL)};
-        for (int i = 0; i < extra.length; i++) {
-            helper.setBlock(extra[i], ModBlocks.PEDESTAL.get());
-            helper.getBlockEntity(extra[i], PedestalBlockEntity.class).place(items[i]);
-        }
-        helper.setBlock(STELE, ModBlocks.RUNE_STELE.get());
-        helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(ToolRunes.SMELTING, 2);
-        altar.startOrAbort(null);
-        helper.assertTrue(altar.kind() == Ritual.Kind.INFUSE, "the infusion starts with the rune's items");
-        helper.succeedWhen(() -> {
-            helper.assertTrue(altar.center().is(ModItems.HEXTECH_PICKAXE.get()), "the pickaxe is made");
-            helper.assertTrue(HextechTools.runes(altar.center()).has(ToolRunes.SMELTING), "already carrying Smelting");
-        });
+        helper.succeedWhen(() -> helper.assertTrue(altar.center().is(ModItems.pickaxe(HextechPickaxe.SMELTING).get())
+                && HextechPickaxe.stars(altar.center()) == 3, "the ritual finishes with a three-star pickaxe"));
     }
 }

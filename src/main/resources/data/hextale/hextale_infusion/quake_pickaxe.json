@@ -1,0 +1,23 @@
+{
+  "center": "hextale:vein_pickaxe",
+  "pedestals": [
+    "hextale:hextech_gemstone",
+    "hextale:hextech_gemstone",
+    "minecraft:tnt",
+    "minecraft:tnt",
+    "minecraft:obsidian",
+    "minecraft:iron_block"
+  ],
+  "essences": {
+    "quake": 32,
+    "storm": 16,
+    "energy": 16
+  },
+  "runes": [
+    "spark_earth",
+    "metal_fire",
+    "water_earth"
+  ],
+  "result": "hextale:quake_pickaxe",
+  "keep_components": true
+}

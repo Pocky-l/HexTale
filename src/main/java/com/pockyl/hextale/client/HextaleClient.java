@@ -26,7 +26,6 @@ import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.client.render.AlembicRenderer;
 import com.pockyl.hextale.client.render.EssenceTankRenderer;
 import com.pockyl.hextale.client.render.EssenceTint;
-import com.pockyl.hextale.client.render.HextechCellTint;
 import com.pockyl.hextale.client.render.FlowParticle;
 import com.pockyl.hextale.client.render.HextechAltarRenderer;
 import com.pockyl.hextale.client.render.PedestalRenderer;
@@ -49,7 +48,6 @@ import com.pockyl.hextale.research.EssencesTooltip;
 import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.RuneBoards;
-import com.pockyl.hextale.runework.HextechTools;
 
 @Mod(value = Hextale.MOD_ID, dist = Dist.CLIENT)
 public final class HextaleClient {
@@ -60,8 +58,6 @@ public final class HextaleClient {
         modBus.addListener(ClientPayloads::register);
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("essence"), EssenceTint.MAP_CODEC));
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("rune"), RuneTint.MAP_CODEC));
-        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
-                event.register(Hextale.id("hextech_cell"), HextechCellTint.MAP_CODEC));
         modBus.addListener(TableModels::register);
         modBus.addListener((RegisterParticleProvidersEvent event) -> event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new));
         modBus.addListener(GogglesView::registerLayer);

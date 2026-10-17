@@ -1,0 +1,20 @@
+{
+  "center": "minecraft:diamond_pickaxe",
+  "pedestals": [
+    "hextale:hextech_gemstone",
+    "hextale:hextech_gemstone",
+    "minecraft:piston",
+    "minecraft:iron_block"
+  ],
+  "essences": {
+    "mechanism": 24,
+    "ore": 16,
+    "energy": 12
+  },
+  "runes": [
+    "metal_earth",
+    "earth_fire"
+  ],
+  "result": "hextale:drill_pickaxe",
+  "keep_components": true
+}

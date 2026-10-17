@@ -18,7 +18,8 @@ import com.pockyl.hextale.menu.SeparatorMenu;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.runework.HextechTools;
+import com.pockyl.hextale.runework.HextechPickaxe;
+import com.pockyl.hextale.runework.HextechPickaxeItem;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -68,8 +69,12 @@ public final class Quests {
     }
 
     /** A hextech tool with at least one rune engraved in the inventory. */
-    static boolean engravedTool(ServerPlayer player) {
-        return player.getInventory().contains(stack -> HextechTools.isTool(stack) && !HextechTools.runes(stack).isEmpty());
+    /** A hextech pickaxe whose recipe needs at least this many runes. */
+    static Predicate<ServerPlayer> pickaxe(int runes) {
+        return player -> player.getInventory().contains(stack -> {
+            HextechPickaxe kind = HextechPickaxeItem.kind(stack);
+            return kind != null && kind.tier() >= runes;
+        });
     }
 
     /** A bottle of concentrate in the inventory, or a Separator open on the screen with concentrate in it. */

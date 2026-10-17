@@ -224,6 +224,20 @@ public enum Essence {
         return "rune.hextale.element." + id;
     }
 
+    /** The compound of exactly these two primals (fire + earth = magma), in either order; null when a or b is not a primal. */
+    @Nullable
+    public static Essence pair(Essence a, Essence b) {
+        for (Essence essence : values()) {
+            if (essence.tier() == 1) {
+                Essence[] p = essence.parents();
+                if (p[0] == a && p[1] == b || p[0] == b && p[1] == a) {
+                    return essence;
+                }
+            }
+        }
+        return null;
+    }
+
     @Nullable
     public static Essence byId(@Nullable String id) {
         if (id == null) {

@@ -19,8 +19,7 @@ import com.pockyl.hextale.infusion.InfusionRecipe;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.infusion.InfusionRecipes;
 import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.runework.HextechTools;
-import com.pockyl.hextale.runework.RuneSlots;
+import com.pockyl.hextale.runework.HextechPickaxeItem;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Ingredient;
 import com.pockyl.hextale.client.render.PixelArt;
@@ -242,7 +241,7 @@ final class QuestPath {
             case SCHEME -> SLOT + (Language.getInstance().has(captionKey(display)) ? 10 : 0);
             case ESSENCES -> SLOT;
             case REAGENTS -> 30;
-            case INFUSION -> INFUSION_RING * 2 + SLOT + 16;
+            case INFUSION -> infusionHeight(display);
         };
     }
 
@@ -419,9 +418,27 @@ final class QuestPath {
     /** Radius of the pedestal ring in an altar picture. */
     private static final int INFUSION_RING = 26;
 
+    /** Essences per row and runes per row under an altar picture. */
+    private static final int ESSENCES_PER_ROW = 3;
+    private static final int RUNES_PER_ROW = 2;
+    private static final int ESSENCE_ROW = 11;
+    private static final int RUNE_ROW = 13;
+
+    private static int infusionHeight(QuestDisplay display) {
+        InfusionRecipe recipe = InfusionRecipes.get(true).get(Identifier.parse(display.result()));
+        if (recipe == null) {
+            return INFUSION_RING * 2 + SLOT + 16;
+        }
+        int essences = recipe.totalEssences().asMap().size();
+        int runes = recipe.runes().size();
+        return INFUSION_RING * 2 + SLOT + 6 + (essences + ESSENCES_PER_ROW - 1) / ESSENCES_PER_ROW * ESSENCE_ROW
+                + (runes + RUNES_PER_ROW - 1) / RUNES_PER_ROW * RUNE_ROW + (runes > 0 ? 12 : 0);
+    }
+
     /**
-     * An altar ritual: the centre item inside a ring of pedestal items, an arrow to the result, and under them the
-     * essences the altar draws (sign and mB) and the runes it needs on steles. Drawn from the recipes the server sent.
+     * An altar ritual: the centre item inside a ring of pedestal items, an arrow to the result, and under them every
+     * essence the altar draws (sign and mB, the runes' own essences included), the runes it needs on steles (sign and
+     * name) and what decides a pickaxe's stars. Drawn from the recipes the server sent.
      */
     @Nullable
     private List<FormattedCharSequence> renderInfusion(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX, int mouseY,
@@ -450,51 +467,52 @@ final class QuestPath {
             tooltip = orTooltip(tooltip, slot(graphics, cycle(pedestals.get(i), now, i), sx, sy, mouseX, mouseY,
                     Component.translatable("book.hextale.quest.infusion.pedestal").withColor(0x9FE6FF)));
         }
-        ItemStack center = recipe.kind() == InfusionRecipe.Kind.INFUSE ? cycle(recipe.center().orElseThrow(), now, 99)
-                : new ItemStack(ModItems.HEXTECH_PICKAXE.get());
+        ItemStack center = cycle(recipe.center(), now, 99);
         tooltip = orTooltip(tooltip, slot(graphics, center, ringCentreX - SLOT / 2, ringCentreY - SLOT / 2, mouseX, mouseY,
                 Component.translatable("book.hextale.quest.infusion.center").withColor(StarBook.GOLD)));
         int ax = ringCentreX + INFUSION_RING + SLOT / 2 + 6;
         arrow(graphics, ax, ringCentreY);
-        ItemStack result;
-        if (recipe.kind() == InfusionRecipe.Kind.INFUSE) {
-            result = recipe.resultFor(center);
-        } else {
-            result = center.copy();
-            if (recipe.kind() == InfusionRecipe.Kind.ENGRAVE) {
-                HextechTools.setRunes(result, RuneSlots.EMPTY.with(new RuneSlots.Engraving(0, recipe.rune(), 1)));
-            }
-        }
-        tooltip = orTooltip(tooltip, slot(graphics, result, ax + 22, ringCentreY - SLOT / 2, mouseX, mouseY, null));
-        // Essences and runes under the ring.
+        tooltip = orTooltip(tooltip, slot(graphics, recipe.resultFor(center), ax + 22, ringCentreY - SLOT / 2, mouseX, mouseY, null));
+        // Every essence, then the runes, in rows under the ring.
         int rowY = y + INFUSION_RING * 2 + SLOT + 4;
-        List<Essence> essences = recipe.essences().asMap().keySet().stream().toList();
-        List<ComplexRune> runes = recipe.kind() == InfusionRecipe.Kind.ERASE ? List.of() : recipe.runes();
-        int width = 0;
-        for (Essence essence : essences) {
-            width += 11 + font.width(String.valueOf(recipe.essences().get(essence))) + 6;
-        }
-        width += runes.size() * 14;
-        int cx = x + (innerWidth() - width) / 2;
-        for (Essence essence : essences) {
-            int amount = recipe.essences().get(essence);
-            PixelArt.essence(graphics, essence, cx, rowY, PixelArt.ICON, PixelArt.argb(essence.color(), 1));
+        var essences = recipe.totalEssences().asMap();
+        int column = innerWidth() / ESSENCES_PER_ROW;
+        int i = 0;
+        for (var entry : essences.entrySet()) {
+            Essence essence = entry.getKey();
+            int amount = entry.getValue();
+            int cx = x + i % ESSENCES_PER_ROW * column;
+            int cy = rowY + i / ESSENCES_PER_ROW * ESSENCE_ROW;
+            PixelArt.essence(graphics, essence, cx, cy, PixelArt.ICON, PixelArt.argb(essence.color(), 1));
             PixelArt.flush(graphics);
-            String text = String.valueOf(amount);
-            graphics.text(font, text, cx + 11, rowY + 1, 0xFF000000 | essence.color(), true);
-            if (over(mouseX, mouseY, cx, rowY, 11 + font.width(text), 10)) {
+            String text = amount + " mB";
+            graphics.text(font, text, cx + 11, cy + 1, 0xFF000000 | essence.color(), true);
+            if (over(mouseX, mouseY, cx, cy, 11 + font.width(text), 10)) {
                 tooltip = List.of(Component.translatable("book.hextale.quest.infusion.essence", Component.translatable(essence.translationKey()), amount)
                         .withColor(essence.color()).getVisualOrderText());
             }
-            cx += 11 + font.width(text) + 6;
+            i++;
         }
-        for (ComplexRune rune : runes) {
-            PixelArt.glyph(graphics, rune, cx, rowY - 1, 12, PixelArt.argb(rune.color(), 1), 0xFF000000);
-            if (over(mouseX, mouseY, cx, rowY - 1, 12, 12)) {
-                tooltip = List.of(Component.translatable("book.hextale.quest.infusion.rune", Component.translatable(rune.translationKey()))
-                        .withColor(rune.color()).getVisualOrderText());
+        rowY += (essences.size() + ESSENCES_PER_ROW - 1) / ESSENCES_PER_ROW * ESSENCE_ROW;
+        List<ComplexRune> runes = recipe.runes();
+        int runeColumn = innerWidth() / RUNES_PER_ROW;
+        for (int r = 0; r < runes.size(); r++) {
+            ComplexRune rune = runes.get(r);
+            int cx = x + r % RUNES_PER_ROW * runeColumn;
+            int cy = rowY + r / RUNES_PER_ROW * RUNE_ROW;
+            PixelArt.glyph(graphics, rune, cx, cy, 11, PixelArt.argb(rune.color(), 1), 0xFF000000);
+            PixelArt.flush(graphics);
+            Component name = Component.translatable(rune.translationKey());
+            graphics.text(font, name, cx + 14, cy + 2, 0xFF000000 | rune.color(), true);
+            if (over(mouseX, mouseY, cx, cy, 14 + font.width(name), 12)) {
+                tooltip = List.of(Component.translatable("book.hextale.quest.infusion.rune", name).withColor(rune.color()).getVisualOrderText());
             }
-            cx += 14;
+        }
+        if (!runes.isEmpty()) {
+            rowY += (runes.size() + RUNES_PER_ROW - 1) / RUNES_PER_ROW * RUNE_ROW;
+            boolean pickaxe = HextechPickaxeItem.kind(recipe.result().create()) != null;
+            graphics.text(font, Component.translatable(pickaxe ? "book.hextale.quest.infusion.stars" : "book.hextale.quest.infusion.runes"),
+                    x, rowY + 1, 0xFF9A90B8, false);
         }
         return tooltip;
     }
