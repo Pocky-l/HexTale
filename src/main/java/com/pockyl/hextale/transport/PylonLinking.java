@@ -163,13 +163,19 @@ public final class PylonLinking {
         return level.getBlockEntity(pos) instanceof EssenceNetwork.Receiver || level.getCapability(Capabilities.Item.BLOCK, pos, face) != null;
     }
 
-    /** Whether this pylon may send to the block: a relay, or what it carries (essence or items) goes in there. */
+    /** Whether this pylon may send to the block: a relay, or what it carries goes in there (a relay carries items and essence). */
     public static boolean takes(Level level, HexPylonBlockEntity from, BlockPos pos, Direction face) {
         if (level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon) {
             return pylon.kind() == PylonKind.RELAY;
         }
-        return from.kind().essence() ? level.getBlockEntity(pos) instanceof EssenceNetwork.Receiver
-                : level.getCapability(Capabilities.Item.BLOCK, pos, face) != null;
+        boolean essence = level.getBlockEntity(pos) instanceof EssenceNetwork.Receiver;
+        boolean items = level.getCapability(Capabilities.Item.BLOCK, pos, face) != null;
+        // A relay carries both: it may link to a chest as well as to a jar.
+        return switch (from.kind()) {
+            case SIPHON -> essence;
+            case RELAY -> essence || items;
+            default -> items;
+        };
     }
 
     /** Client: whether some pylon nearby links to the block (set by the client, which can look at the pylons it knows). */
@@ -243,7 +249,8 @@ public final class PylonLinking {
             if (!takes(level, pylon, target, face)) {
                 stop(player);
                 player.sendOverlayMessage(Component.translatable(pylon.kind().essence() ? "block.hextale.hex_pylon.link.no_essence"
-                        : "block.hextale.hex_pylon.link.nothing").withStyle(ChatFormatting.RED));
+                        : pylon.kind() == PylonKind.RELAY ? "block.hextale.hex_pylon.link.no_load" : "block.hextale.hex_pylon.link.nothing")
+                        .withStyle(ChatFormatting.RED));
                 return;
             }
             link = new PylonLink(target, face);

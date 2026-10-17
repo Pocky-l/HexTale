@@ -299,7 +299,7 @@ public final class PylonGameTests {
         });
     }
 
-    /** An item pylon cannot link to a jar, a siphon cannot link to a chest; both can link to a relay. */
+    /** An item pylon cannot link to a jar, a siphon cannot link to a chest; both can link to a relay, and a relay to either. */
     @HexTest(maxTicks = 20)
     public static void pylonsLinkOnlyToWhatTakesTheirLoad(GameTestHelper helper) {
         clear(helper, 4);
@@ -317,6 +317,9 @@ public final class PylonGameTests {
         helper.assertFalse(PylonLinking.takes(level, siphon, helper.absolutePos(chest), Direction.UP), "essence does not go into a chest");
         helper.assertTrue(PylonLinking.takes(level, sender, helper.absolutePos(relayPos), Direction.UP)
                 && PylonLinking.takes(level, siphon, helper.absolutePos(relayPos), Direction.UP), "both go to a relay");
+        HexPylonBlockEntity relay = helper.getBlockEntity(relayPos, HexPylonBlockEntity.class);
+        helper.assertTrue(PylonLinking.takes(level, relay, helper.absolutePos(jar), Direction.UP)
+                && PylonLinking.takes(level, relay, helper.absolutePos(chest), Direction.UP), "a relay links to a jar and to a chest");
         helper.succeed();
     }
 

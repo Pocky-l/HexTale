@@ -1010,5 +1010,6 @@
   "quest.hextale.pylon_filter.desc": "Decides what a pylon picks up, sends or passes on: only some items or all but them, by kind or exactly, and with numbers - keep a stock in the chest, or fill a furnace only up to a stack. Right click it to set it up, right click a pylon to set it in.",
   "quest.hextale.essence_sticker": "Essence Sticker",
   "quest.hextale.essence_sticker.goal": "craft Essence Stickers",
-  "quest.hextale.essence_sticker.desc": "A paper label with one essence on it. A jar wearing it takes only that essence, pure. On a siphon or a relay it lets through only that essence, pure - pylons never split a mixture: that is the separator's work."
+  "quest.hextale.essence_sticker.desc": "A paper label with one essence on it. A jar wearing it takes only that essence, pure. On a siphon or a relay it lets through only that essence, pure - pylons never split a mixture: that is the separator's work.",
+  "block.hextale.hex_pylon.link.no_load": "Nothing here takes items or essence"
 }
