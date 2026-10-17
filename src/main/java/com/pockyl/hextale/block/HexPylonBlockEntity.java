@@ -457,9 +457,11 @@ public class HexPylonBlockEntity extends BlockEntity {
 
     /**
      * Draws essence out of the jar under it and pours it to the links, in their order: each receiver (a jar, a separator,
-     * a smelter...) takes what it can through the linked face, or any other face that lets it in. Stickers sort: when the
-     * siphon, a relay on the way or the target jar wears one, only that essence is drawn out of the jar for that way (a
-     * way whose stickers disagree carries nothing) - so one jar of mixed essence fills a row of labelled jars.
+     * a smelter...) takes what it can through the linked face, or any other face that lets it in. A mixture always travels
+     * whole, in its own proportions - pylons never split essences (that is the separator's work). Stickers only let
+     * through: when the siphon, a relay on the way or the target jar wears one, the way carries the jar's essence only
+     * while it is that essence, pure (a way whose stickers disagree carries nothing). The one exception is a Creative
+     * Essence Jar, which holds every essence: there a sticker picks the essence it gives.
      */
     void siphon(ServerLevel level, List<PylonFlight> flights) {
         if (links.isEmpty() || !(level.getBlockEntity(worldPosition.below()) instanceof EssenceTankBlockEntity jar) || jar.tank().isEmpty()) {
@@ -488,9 +490,10 @@ public class HexPylonBlockEntity extends BlockEntity {
             if (clash) {
                 continue;
             }
-            EssenceMix offer = only == null ? jar.tank().drain(budget, true)
-                    : EssenceMix.pure(only, Math.min(budget, jar.tank().contents().get(only)));
-            if (offer.isEmpty()) {
+            // A Creative Essence Jar holds every essence at once: there a sticker picks the one it gives.
+            boolean pick = only != null && jar.isCreative();
+            EssenceMix offer = pick ? EssenceMix.pure(only, Math.min(budget, jar.tank().contents().get(only))) : jar.tank().drain(budget, true);
+            if (offer.isEmpty() || only != null && !pick && !pure(jar.tank().contents(), only)) {
                 continue;
             }
             Direction face = receivingFace(receiver, route.face(), offer);
@@ -499,11 +502,11 @@ public class HexPylonBlockEntity extends BlockEntity {
             }
             int taken = receiver.receive(face, offer, true);
             EssenceMix drawn;
-            if (only == null) {
-                drawn = jar.tank().drain(taken, false);
-            } else {
+            if (pick) {
                 drawn = EssenceMix.pure(only, taken);
                 jar.tank().remove(drawn);
+            } else {
+                drawn = jar.tank().drain(taken, false);
             }
             receiver.receive(face, drawn, false);
             jar.setChanged();
@@ -516,6 +519,11 @@ public class HexPylonBlockEntity extends BlockEntity {
             path.remove(path.size() - 2);
             flights.add(PylonFlight.essence(path, drawn.color()));
         }
+    }
+
+    /** Whether the mixture is this one essence and nothing else. */
+    private static boolean pure(EssenceMix mix, Essence essence) {
+        return mix.unknown() == 0 && mix.get(essence) == mix.total();
     }
 
     /** The face a receiver takes this essence through: the linked one first, then any side, then the top. */

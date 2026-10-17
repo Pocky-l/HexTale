@@ -132,7 +132,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   send, on a relay what may pass - a few filtered relays sort a storeroom. The filter's items circle the pylon's heart.
 - Essence Sticker: right click to pick its essence from all of them. On an Essence Jar the jar takes only that essence
   (from pipes, bottles and siphons alike); sneak + right click with an empty hand peels it off. On a siphon or a relay
-  it carries only that essence - one siphon on a jar of mixed essence fills a row of labelled jars, each with its own.
+  it lets only that essence through, pure. Pylons never split a mixture - it always travels whole; separating essences
+  stays the separator's work.
   The old per-face signs on jars are gone.
 - Pylon runes, burned in at the altar like a smelter's: Shift (reach and link range), Motor (pace), Lift (items per
   move), Lens. A broken pylon keeps its runes.

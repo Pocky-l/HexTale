@@ -977,7 +977,7 @@
   "item.hextale.essence_sticker": "Essence Sticker",
   "item.hextale.essence_sticker.of": "Sticker: %s",
   "item.hextale.essence_sticker.blank": "Blank: right click to choose its essence",
-  "item.hextale.essence_sticker.hint": "On a jar: it takes only this essence · on a siphon or relay: carries only it",
+  "item.hextale.essence_sticker.hint": "On a jar: it takes only this essence · on a siphon or relay: only this essence, pure, passes",
   "item.hextale.essence_sticker.set": "Sticker: %s",
   "item.hextale.essence_sticker.not_here": "A sticker goes on a jar, a siphon or a relay",
   "block.hextale.essence_tank.sticker": "The jar now takes only %s",
@@ -1010,5 +1010,5 @@
   "quest.hextale.pylon_filter.desc": "Decides what a pylon picks up, sends or passes on: only some items or all but them, by kind or exactly, and with numbers - keep a stock in the chest, or fill a furnace only up to a stack. Right click it to set it up, right click a pylon to set it in.",
   "quest.hextale.essence_sticker": "Essence Sticker",
   "quest.hextale.essence_sticker.goal": "craft Essence Stickers",
-  "quest.hextale.essence_sticker.desc": "A paper label with one essence on it. A jar wearing it takes only that essence, pure. On a siphon or a relay it lets only that essence through - so one siphon on a jar of mixed essence fills a row of labelled jars, each with its own."
+  "quest.hextale.essence_sticker.desc": "A paper label with one essence on it. A jar wearing it takes only that essence, pure. On a siphon or a relay it lets through only that essence, pure - pylons never split a mixture: that is the separator's work."
 }

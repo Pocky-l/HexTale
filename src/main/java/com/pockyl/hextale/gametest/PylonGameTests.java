@@ -417,29 +417,52 @@ public final class PylonGameTests {
         });
     }
 
-    /** Stickers sort essence: a siphon on a jar of fire and water fills a fire jar with fire and a water jar with water. */
+    /**
+     * Pylons never split a mixture: a jar of fire and water sends nothing along a way with a fire sticker, but pours its
+     * whole mixture, in its proportions, into an unlabelled jar; pure fire goes along the fire way.
+     */
     @HexTest(maxTicks = 300)
-    public static void stickersSortEssence(GameTestHelper helper) {
+    public static void stickersNeverSplitAMixture(GameTestHelper helper) {
         clear(helper, 6);
         helper.setBlock(BASE, ModBlocks.ESSENCE_TANK.get());
         BlockPos fireAt = BASE.offset(3, 0, 0);
-        BlockPos waterAt = BASE.offset(0, 0, 3);
+        BlockPos plainAt = BASE.offset(0, 0, 3);
         helper.setBlock(fireAt, ModBlocks.ESSENCE_TANK.get());
-        helper.setBlock(waterAt, ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(plainAt, ModBlocks.ESSENCE_TANK.get());
         var source = helper.getBlockEntity(BASE, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
         var fire = helper.getBlockEntity(fireAt, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
-        var water = helper.getBlockEntity(waterAt, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        var plain = helper.getBlockEntity(plainAt, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
         source.tank().set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.FIRE, 40).plus(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.WATER, 40)));
         fire.setSticker(com.pockyl.hextale.rune.Essence.FIRE);
-        water.setSticker(com.pockyl.hextale.rune.Essence.WATER);
         HexPylonBlockEntity siphon = place(helper, ModBlocks.SIPHON_PYLON.get(), BASE.above());
         siphon.toggleLink(link(helper, fireAt, Direction.UP));
-        siphon.toggleLink(link(helper, waterAt, Direction.UP));
+        siphon.toggleLink(link(helper, plainAt, Direction.UP));
         helper.succeedWhen(() -> {
-            helper.assertTrue(fire.tank().contents().equals(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.FIRE, 40)), "the fire jar holds all the fire, and only fire");
-            helper.assertTrue(water.tank().contents().equals(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.WATER, 40)), "the water jar holds all the water");
-            helper.assertTrue(source.tank().isEmpty(), "the mixed jar is empty");
+            helper.assertTrue(source.tank().isEmpty(), "the mixture went out");
+            helper.assertTrue(fire.tank().isEmpty(), "no fire was split off into the fire jar");
+            helper.assertTrue(plain.tank().contents().get(com.pockyl.hextale.rune.Essence.FIRE) == 40 && plain.tank().contents().get(com.pockyl.hextale.rune.Essence.WATER) == 40,
+                    "the plain jar got the whole mixture");
+            source.tank().set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.FIRE, 30));
+            helper.runAfterDelay(100, () -> {
+                helper.assertTrue(fire.tank().amount() == 30, "pure fire takes the fire way");
+                helper.succeed();
+            });
         });
+    }
+
+    /** A Creative Essence Jar holds every essence: a sticker on the way picks the one it gives, pure. */
+    @HexTest(maxTicks = 200)
+    public static void aCreativeJarGivesTheStickersEssence(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, ModBlocks.CREATIVE_ESSENCE_TANK.get());
+        BlockPos fireAt = BASE.offset(3, 0, 0);
+        helper.setBlock(fireAt, ModBlocks.ESSENCE_TANK.get());
+        var fire = helper.getBlockEntity(fireAt, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        fire.setSticker(com.pockyl.hextale.rune.Essence.FIRE);
+        HexPylonBlockEntity siphon = place(helper, ModBlocks.SIPHON_PYLON.get(), BASE.above());
+        siphon.toggleLink(link(helper, fireAt, Direction.UP));
+        helper.succeedWhen(() -> helper.assertTrue(fire.tank().amount() > 0
+                && fire.tank().contents().get(com.pockyl.hextale.rune.Essence.FIRE) == fire.tank().amount(), "pure fire came from the creative jar"));
     }
 
     /** The flights of a move survive the trip to the clients (the payload's codec), the longest way included. */
