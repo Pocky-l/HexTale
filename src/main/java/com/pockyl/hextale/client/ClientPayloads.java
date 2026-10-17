@@ -49,8 +49,9 @@ public final class ClientPayloads {
         pylon.show(payload.flights(), level.getGameTime());
         Vec3 gem = pylon.gem();
         boolean gathered = payload.flights().stream().anyMatch(PylonFlight::gathered);
-        level.playLocalSound(gem.x, gem.y, gem.z, gathered ? ModSounds.PYLON_GATHER.get() : ModSounds.PYLON_SEND.get(), SoundSource.BLOCKS,
-                0.4F, 0.9F + level.getRandom().nextFloat() * 0.2F, false);
+        boolean essence = payload.flights().stream().anyMatch(PylonFlight::isEssence);
+        level.playLocalSound(gem.x, gem.y, gem.z, essence ? ModSounds.ESSENCE_DRAW.get() : gathered ? ModSounds.PYLON_GATHER.get()
+                : ModSounds.PYLON_SEND.get(), SoundSource.BLOCKS, 0.4F, 0.9F + level.getRandom().nextFloat() * 0.2F, false);
     }
 
     public static void knowledge(KnowledgeSyncPayload payload) {

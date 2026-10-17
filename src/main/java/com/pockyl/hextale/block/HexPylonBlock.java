@@ -36,11 +36,11 @@ import org.jspecify.annotations.Nullable;
  * sneak + right click with an empty hand takes all its links away.
  */
 public class HexPylonBlock extends BaseEntityBlock {
-    private static final VoxelShape GATHERING_SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 2, 14), Block.box(5, 2, 5, 11, 10, 11),
-            Block.box(2, 10, 2, 14, 14, 14));
-    private static final VoxelShape SENDING_SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 2, 13), Block.box(5, 2, 5, 11, 11, 11),
-            Block.box(4, 11, 4, 12, 16, 12));
+    private static final VoxelShape GATHERING_SHAPE = Shapes.or(Block.box(5, 0, 5, 11, 3, 11), Block.box(2, 3, 2, 14, 6, 14));
+    private static final VoxelShape SENDING_SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 2, 15), Block.box(4, 2, 4, 12, 7, 12));
     private static final VoxelShape RELAY_SHAPE = Shapes.or(Block.box(4, 0, 4, 12, 2, 12), Block.box(5, 2, 5, 11, 15, 11));
+    private static final VoxelShape SIPHON_SHAPE = Shapes.or(Block.box(5, 0, 5, 11, 4, 11), Block.box(4, 4, 4, 12, 11, 12),
+            Block.box(5, 11, 5, 11, 15, 11));
 
     private final PylonKind kind;
 
@@ -95,6 +95,8 @@ public class HexPylonBlock extends BaseEntityBlock {
                     pylon.links().size(), HexPylonBlockEntity.MAX_LINKS);
             case RELAY -> Component.translatable("block.hextale.hex_pylon.status.relay", pylon.range(), pylon.links().size(),
                     HexPylonBlockEntity.MAX_LINKS);
+            case SIPHON -> Component.translatable("block.hextale.hex_pylon.status.siphon", pylon.essenceAmount(), seconds, pylon.range(),
+                    pylon.links().size(), HexPylonBlockEntity.MAX_LINKS);
         };
     }
 
@@ -113,6 +115,7 @@ public class HexPylonBlock extends BaseEntityBlock {
             case GATHERING -> GATHERING_SHAPE;
             case SENDING -> SENDING_SHAPE;
             case RELAY -> RELAY_SHAPE;
+            case SIPHON -> SIPHON_SHAPE;
         };
     }
 

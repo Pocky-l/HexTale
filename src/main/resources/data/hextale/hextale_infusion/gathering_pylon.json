@@ -2,10 +2,10 @@
   "center": "hextale:hextech_gemstone",
   "pedestals": [
     "minecraft:hopper",
-    "hextale:magic_stone_pillar",
-    "hextale:magic_stone_pillar",
+    "minecraft:bowl",
     "hextale:brass_ingot",
-    "hextale:brass_ingot"
+    "hextale:brass_ingot",
+    "hextale:polished_magic_stone"
   ],
   "essences": {
     "motion": 16,

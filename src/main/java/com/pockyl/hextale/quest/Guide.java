@@ -139,6 +139,8 @@ public final class Guide {
             QuestDisplay.infusion("hextale:sending_pylon"), GATHERING_PYLON);
     public static final Quest RELAY_PYLON = item("relay_pylon", ModItems.RELAY_PYLON, Quest.Aura.HEXTECH,
             QuestDisplay.infusion("hextale:relay_pylon"), SENDING_PYLON);
+    public static final Quest SIPHON_PYLON = item("siphon_pylon", ModItems.SIPHON_PYLON, Quest.Aura.HEXTECH,
+            QuestDisplay.infusion("hextale:siphon_pylon"), SENDING_PYLON, ESSENCE_TANK, BRASS_PIPE);
     public static final Quest PYLON_RUNE = add("pylon_rune", Quest.Kind.ITEM, List.of(SENDING_PYLON),
             () -> new ItemStack(ModItems.RUNE_STELE.get()), Quests.pylonRunes(1), QuestDisplay.pylonRunes(), null, Quest.Aura.NONE);
     public static final Quest HEXTECH_PICKAXE = add("hextech_pickaxe", Quest.Kind.ITEM, List.of(HEXTECH_GEMSTONE, RUNE_STELE),

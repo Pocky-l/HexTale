@@ -22,7 +22,7 @@ import org.jspecify.annotations.Nullable;
 public enum RuneHolder {
     PICKAXE,
     SMELTER,
-    /** The three hex pylons share one set of runes. */
+    /** The hex pylons share one set of runes. */
     PYLON;
 
     @Nullable
@@ -132,7 +132,7 @@ public enum RuneHolder {
             case PICKAXE -> ModItems.PICKAXES.values().stream().map(item -> new ItemStack(item.get())).toList();
             case SMELTER -> List.of(new ItemStack(ModItems.HEX_SMELTER.get()));
             case PYLON -> List.of(new ItemStack(ModItems.GATHERING_PYLON.get()), new ItemStack(ModItems.SENDING_PYLON.get()),
-                    new ItemStack(ModItems.RELAY_PYLON.get()));
+                    new ItemStack(ModItems.RELAY_PYLON.get()), new ItemStack(ModItems.SIPHON_PYLON.get()));
         };
     }
 

@@ -1,0 +1,16 @@
+{
+  "center": "hextale:essence_tank",
+  "pedestals": [
+    "hextale:hextech_gemstone",
+    "hextale:brass_pipe",
+    "hextale:brass_pipe",
+    "minecraft:glass_bottle",
+    "minecraft:glass_bottle"
+  ],
+  "essences": {
+    "water": 16,
+    "motion": 12,
+    "magic": 8
+  },
+  "result": "hextale:siphon_pylon"
+}

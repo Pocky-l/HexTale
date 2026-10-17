@@ -26,6 +26,8 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
+import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.network.PylonFlightsPayload;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
@@ -229,6 +231,7 @@ public class HexPylonBlockEntity extends BlockEntity {
         switch (pylon.kind()) {
             case GATHERING -> pylon.gather(server, flights);
             case SENDING -> pylon.send(server, flights);
+            case SIPHON -> pylon.siphon(server, flights);
             case RELAY -> {
             }
         }
@@ -353,20 +356,81 @@ public class HexPylonBlockEntity extends BlockEntity {
         }
     }
 
+    /** mB a siphon pours per move: four times a sending pylon's items (Lift raises both). */
+    public int essenceAmount() {
+        return amount() * 4;
+    }
+
+    /**
+     * Draws essence out of the jar under it and pours it to the links, in their order: each receiver (a jar, a separator,
+     * a smelter...) takes what it can through the linked face, or any other face that lets it in.
+     */
+    void siphon(ServerLevel level, List<PylonFlight> flights) {
+        if (links.isEmpty() || !(level.getBlockEntity(worldPosition.below()) instanceof EssenceTankBlockEntity jar) || jar.tank().isEmpty()) {
+            return;
+        }
+        int budget = essenceAmount();
+        Vec3 start = Vec3.atBottomCenterOf(worldPosition).add(0, -0.05, 0);
+        for (Destination route : destinations(level, true)) {
+            if (budget <= 0) {
+                return;
+            }
+            if (!(level.getBlockEntity(route.pos()) instanceof EssenceNetwork.Receiver receiver) || route.pos().equals(worldPosition.below())) {
+                continue;
+            }
+            EssenceMix offer = jar.tank().drain(budget, true);
+            if (offer.isEmpty()) {
+                return;
+            }
+            Direction face = receivingFace(receiver, route.face(), offer);
+            if (face == null) {
+                continue;
+            }
+            int taken = receiver.receive(face, offer, true);
+            EssenceMix drawn = jar.tank().drain(taken, false);
+            receiver.receive(face, drawn, false);
+            jar.setChanged();
+            budget -= drawn.total();
+            List<Vec3> path = new ArrayList<>();
+            path.add(start);
+            path.add(gem());
+            path.addAll(route.path());
+            flights.add(PylonFlight.essence(path, drawn.color()));
+        }
+    }
+
+    /** The face a receiver takes this essence through: the linked one first, then any side, then the top. */
+    private static @Nullable Direction receivingFace(EssenceNetwork.Receiver receiver, Direction linked, EssenceMix offer) {
+        if (receiver.receive(linked, offer, true) > 0) {
+            return linked;
+        }
+        for (Direction face : new Direction[]{Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP}) {
+            if (face != linked && receiver.receive(face, offer, true) > 0) {
+                return face;
+            }
+        }
+        return null;
+    }
+
     /** A place items can go: a linked block and its face ({@link PylonInsert} picks the slots), and the way there after this pylon's gem. */
     record Destination(BlockPos pos, Direction face, List<Vec3> path) {
     }
 
     /** Every place this pylon reaches through its links, in link order (relays' links in theirs). */
     List<Destination> destinations(ServerLevel level) {
+        return destinations(level, kind().essence());
+    }
+
+    /** The same, keeping only the places that take essence ({@code essence}) or items. */
+    List<Destination> destinations(ServerLevel level, boolean essence) {
         List<Destination> out = new ArrayList<>();
         Set<BlockPos> seen = new HashSet<>();
         seen.add(worldPosition);
-        collect(level, this, new ArrayList<>(), seen, 0, out);
+        collect(level, this, new ArrayList<>(), seen, 0, essence, out);
         return out;
     }
 
-    private static void collect(ServerLevel level, HexPylonBlockEntity node, List<Vec3> path, Set<BlockPos> seen, int hops,
+    private static void collect(ServerLevel level, HexPylonBlockEntity node, List<Vec3> path, Set<BlockPos> seen, int hops, boolean essence,
                                 List<Destination> out) {
         Vec3 gem = node.gem();
         double range = node.range() + 0.5;
@@ -385,14 +449,16 @@ public class HexPylonBlockEntity extends BlockEntity {
                 seen.add(link.pos());
                 List<Vec3> nextPath = new ArrayList<>(path);
                 nextPath.add(next.gem());
-                collect(level, next, nextPath, seen, hops + 1, out);
+                collect(level, next, nextPath, seen, hops + 1, essence, out);
                 seen.remove(link.pos());
                 continue;
             }
             if (gem.distanceTo(Vec3.atCenterOf(link.pos())) > range) {
                 continue;
             }
-            if (level.getCapability(Capabilities.Item.BLOCK, link.pos(), link.face()) == null) {
+            boolean takes = essence ? level.getBlockEntity(link.pos()) instanceof EssenceNetwork.Receiver
+                    : level.getCapability(Capabilities.Item.BLOCK, link.pos(), link.face()) != null;
+            if (!takes) {
                 continue;
             }
             List<Vec3> full = new ArrayList<>(path);

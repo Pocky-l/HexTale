@@ -22,21 +22,25 @@ import java.util.List;
  * while the tendril's tail follows ({@link Move#SLIDE}); a short last leg into a container is a plain sink
  * ({@link Move#SINK}).</li>
  * </ol>
- * Legs longer than a block bend upward; {@link #curve} gives the point of a leg.
+ * Essence ({@code color} >= 0, no item) is poured instead: every leg a {@link Move#STREAM}. Legs longer than a block bend
+ * upward; {@link #curve} gives the point of a leg.
  */
-public record PylonFlight(ItemStack icon, List<Vec3> path, boolean gathered) {
+public record PylonFlight(ItemStack icon, List<Vec3> path, boolean gathered, int color) {
     public static final StreamCodec<RegistryFriendlyByteBuf, Vec3> VEC = StreamCodec.composite(
             ByteBufCodecs.FLOAT, v -> (float) v.x, ByteBufCodecs.FLOAT, v -> (float) v.y, ByteBufCodecs.FLOAT, v -> (float) v.z, Vec3::new);
     public static final StreamCodec<RegistryFriendlyByteBuf, PylonFlight> STREAM_CODEC = StreamCodec.composite(
             ItemStack.STREAM_CODEC, PylonFlight::icon,
             VEC.apply(ByteBufCodecs.list(12)), PylonFlight::path,
             ByteBufCodecs.BOOL, PylonFlight::gathered,
+            ByteBufCodecs.INT, PylonFlight::color,
             PylonFlight::new);
     /** A last leg shorter than this is a sink straight into the container, not a tendril. */
     private static final double SINK_BELOW = 1.5;
 
     public enum Move {
-        REACH, GRAB, DRAG, ABSORB, EXTEND, SLIDE, SINK
+        REACH, GRAB, DRAG, ABSORB, EXTEND, SLIDE, SINK,
+        /** Essence pouring along a leg: a jet of light whose front runs ahead and whose tail follows. */
+        STREAM
     }
 
     /** One step of the timeline: what happens on which leg, from tick {@code start} for {@code length} ticks. */
@@ -50,6 +54,20 @@ public record PylonFlight(ItemStack icon, List<Vec3> path, boolean gathered) {
         path = List.copyOf(path);
     }
 
+    /** An item's flight. */
+    public PylonFlight(ItemStack icon, List<Vec3> path, boolean gathered) {
+        this(icon, path, gathered, -1);
+    }
+
+    /** Essence of this colour poured along the way (no item). */
+    public static PylonFlight essence(List<Vec3> path, int color) {
+        return new PylonFlight(ItemStack.EMPTY, path, false, color & 0xFFFFFF);
+    }
+
+    public boolean isEssence() {
+        return color >= 0;
+    }
+
     public double legLength(int leg) {
         return path.get(leg).distanceTo(path.get(leg + 1));
     }
@@ -61,6 +79,13 @@ public record PylonFlight(ItemStack icon, List<Vec3> path, boolean gathered) {
             return out;
         }
         float at = 0;
+        if (isEssence()) {
+            // Essence: drawn up out of the jar into the bulb, then poured leg after leg.
+            for (int leg = 0; leg < path.size() - 1; leg++) {
+                at = add(out, Move.STREAM, leg, at, (float) Mth.clamp(5 + legLength(leg) * 1.3, 7, 24));
+            }
+            return out;
+        }
         double pull = legLength(0);
         at = add(out, Move.REACH, 0, at, (float) Mth.clamp(4 + pull * 1.1, 6, 16));
         at = add(out, Move.GRAB, 0, at, 6);

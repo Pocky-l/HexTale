@@ -23,6 +23,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.HexPylonBlockEntity;
+import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.network.PylonLinkPayload;
 import com.pockyl.hextale.registry.ModSounds;
@@ -154,12 +155,21 @@ public final class PylonLinking {
         }
     }
 
-    /** Whether items can be sent to the block through {@code face}: a container there, or a relay pylon. */
+    /** Whether a pylon could link to the block through {@code face}: a container, an essence receiver or a relay pylon. */
     public static boolean linkable(Level level, BlockPos pos, Direction face) {
         if (level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon) {
             return pylon.kind() == PylonKind.RELAY;
         }
-        return level.getCapability(Capabilities.Item.BLOCK, pos, face) != null;
+        return level.getBlockEntity(pos) instanceof EssenceNetwork.Receiver || level.getCapability(Capabilities.Item.BLOCK, pos, face) != null;
+    }
+
+    /** Whether this pylon may send to the block: a relay, or what it carries (essence or items) goes in there. */
+    public static boolean takes(Level level, HexPylonBlockEntity from, BlockPos pos, Direction face) {
+        if (level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon) {
+            return pylon.kind() == PylonKind.RELAY;
+        }
+        return from.kind().essence() ? level.getBlockEntity(pos) instanceof EssenceNetwork.Receiver
+                : level.getCapability(Capabilities.Item.BLOCK, pos, face) != null;
     }
 
     /** Client: whether some pylon nearby links to the block (set by the client, which can look at the pylons it knows). */
@@ -230,9 +240,10 @@ public final class PylonLinking {
             }
             link = new PylonLink(target, Direction.UP);
         } else {
-            if (!linkable(level, target, face)) {
+            if (!takes(level, pylon, target, face)) {
                 stop(player);
-                player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.nothing").withStyle(ChatFormatting.RED));
+                player.sendOverlayMessage(Component.translatable(pylon.kind().essence() ? "block.hextale.hex_pylon.link.no_essence"
+                        : "block.hextale.hex_pylon.link.nothing").withStyle(ChatFormatting.RED));
                 return;
             }
             link = new PylonLink(target, face);
@@ -295,7 +306,8 @@ public final class PylonLinking {
             if (!shown.landed && age >= shown.duration) {
                 shown.landed = true;
                 Vec3 end = shown.flight.path().getLast();
-                level.playLocalSound(end.x, end.y, end.z, ModSounds.PYLON_ARRIVE.get(), SoundSource.BLOCKS, 0.35F,
+                level.playLocalSound(end.x, end.y, end.z, shown.flight.isEssence() ? ModSounds.TANK_GLUG.get() : ModSounds.PYLON_ARRIVE.get(),
+                        SoundSource.BLOCKS, 0.35F,
                         0.9F + level.getRandom().nextFloat() * 0.2F, false);
                 for (int i = 0; i < 4; i++) {
                     level.addParticle(ParticleTypes.ELECTRIC_SPARK, end.x, end.y, end.z, (level.getRandom().nextDouble() - 0.5) * 0.12,

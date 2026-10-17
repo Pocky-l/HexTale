@@ -46,6 +46,7 @@ import java.util.List;
  */
 public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity, HexPylonRenderer.State> {
     private static final int GOLD = 0xF0C24A;
+    private static final int AMETHYST = 0xB98CF0;
     private static final int LINK_CYAN = 0x7EF0FF;
     private final ItemModelResolver itemModelResolver;
 
@@ -71,8 +72,20 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         state.time = HexFx.time(level, partialTick) + (seed & 127);
         float now = level == null ? 0 : level.getGameTime() + partialTick;
         state.flare = Mth.clamp(1 - (now - pylon.movedAt) / 14F, 0, 1);
-        state.color = PickaxeRuneTint.blend(pylon.runes());
-        itemModelResolver.updateForTopItem(state.gem, new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), ItemDisplayContext.GROUND, level, null, seed);
+        // Each kind's heart: the hextech gemstone over the bowl and the plate, an amethyst cluster over the relay (violet
+        // light without runes), a swirl of the jar's essence in the siphon's bulb.
+        state.color = pylon.kind() == PylonKind.RELAY && pylon.runes().isEmpty() ? AMETHYST : PickaxeRuneTint.blend(pylon.runes());
+        state.essenceColor = -1;
+        if (pylon.kind() == PylonKind.SIPHON && level != null
+                && level.getBlockEntity(pos.below()) instanceof com.pockyl.hextale.block.EssenceTankBlockEntity jar && !jar.tank().isEmpty()) {
+            state.essenceColor = jar.tank().contents().color();
+        }
+        ItemStack heart = switch (pylon.kind()) {
+            case RELAY -> new ItemStack(net.minecraft.world.item.Items.AMETHYST_CLUSTER);
+            case SIPHON -> ItemStack.EMPTY;
+            default -> new ItemStack(ModItems.HEXTECH_GEMSTONE.get());
+        };
+        itemModelResolver.updateForTopItem(state.gem, heart, ItemDisplayContext.GROUND, level, null, seed);
 
         // Links: only while the player wears the goggles, sneaks, holds a pylon or is linking, so a busy base is not a
         // web of threads.
@@ -139,15 +152,16 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         poseStack.pushPose();
         switch (state.kind) {
             case GATHERING -> {
-                poseStack.translate(0.5, 13.15 / 16, 0.5);
+                // Lying in the bowl, just over its carved floor.
+                poseStack.translate(0.5, 4.3 / 16, 0.5);
                 poseStack.rotate(Axis.XP.rotationDegrees(90));
                 poseStack.rotate(Axis.ZP.rotationDegrees(time * 0.6F));
-                HexFx.sigilRing(poseStack, collector, 0.36F, 6, state.color, 0.45F + 0.4F * state.flare);
+                HexFx.sigilRing(poseStack, collector, 0.34F, 6, state.color, 0.45F + 0.4F * state.flare);
             }
             case SENDING -> {
                 poseStack.translate(gem.x, gem.y + bob, gem.z);
                 poseStack.rotate(Axis.YP.rotationDegrees(time * (2.2F + 10 * state.flare)));
-                HexFx.sigilRing(poseStack, collector, 0.21F, 4, state.color, 0.5F + 0.4F * state.flare);
+                HexFx.sigilRing(poseStack, collector, 0.17F, 4, state.color, 0.5F + 0.4F * state.flare);
             }
             case RELAY -> {
                 poseStack.translate(gem.x, gem.y + bob, gem.z);
@@ -159,18 +173,44 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
                 poseStack.rotate(Axis.XP.rotationDegrees(70));
                 HexFx.sigilRing(poseStack, collector, 0.15F, 3, state.color, 0.35F + 0.4F * state.flare);
             }
+            case SIPHON -> {
+                // Under the cap, turning: the siphon's sigil.
+                poseStack.translate(0.5, 10.8 / 16, 0.5);
+                poseStack.rotate(Axis.XP.rotationDegrees(90));
+                poseStack.rotate(Axis.ZP.rotationDegrees(-time * (1.5F + 8 * state.flare)));
+                HexFx.sigilRing(poseStack, collector, 0.2F, 6, state.essenceColor >= 0 ? state.essenceColor : state.color, 0.4F + 0.4F * state.flare);
+            }
         }
         poseStack.popPose();
 
-        // The gem and its halo.
-        poseStack.pushPose();
-        poseStack.translate(gem.x, gem.y + bob, gem.z);
-        HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.45F + 0.3F * state.flare, state.color, 0.35F + 0.4F * state.flare);
-        poseStack.rotate(Axis.YP.rotationDegrees(time * (1.5F + 12 * state.flare)));
-        poseStack.scale(0.42F, 0.42F, 0.42F);
-        poseStack.translate(0, -0.2, 0);
-        state.gem.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
-        poseStack.popPose();
+        if (state.kind == PylonKind.SIPHON) {
+            // A swirl of the jar's essence in the bulb: a soft glow and motes circling inside the glass.
+            if (state.essenceColor >= 0) {
+                poseStack.pushPose();
+                poseStack.translate(gem.x, gem.y, gem.z);
+                HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.38F + 0.18F * state.flare, state.essenceColor,
+                        0.45F + 0.35F * state.flare);
+                for (int i = 0; i < 5; i++) {
+                    float angle = time * (0.12F + 0.25F * state.flare) + i * Mth.TWO_PI / 5;
+                    poseStack.pushPose();
+                    poseStack.translate(Mth.cos(angle) * 0.14F, Mth.sin(time * 0.15F + i * 1.3F) * 0.12F, Mth.sin(angle) * 0.14F);
+                    HexFx.sprite(poseStack, collector, camera.orientation, HexFx.MOTE, 0.07F, RuneDrawing.lighten(state.essenceColor, 0.35F), 0.85F);
+                    poseStack.popPose();
+                }
+                poseStack.popPose();
+            }
+        } else {
+            // The heart and its halo.
+            float scale = state.kind == PylonKind.SENDING ? 0.32F : state.kind == PylonKind.RELAY ? 0.36F : 0.42F;
+            poseStack.pushPose();
+            poseStack.translate(gem.x, gem.y + bob, gem.z);
+            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.45F + 0.3F * state.flare, state.color, 0.35F + 0.4F * state.flare);
+            poseStack.rotate(Axis.YP.rotationDegrees(time * (1.5F + 12 * state.flare)));
+            poseStack.scale(scale, scale, scale);
+            poseStack.translate(0, -0.2, 0);
+            state.gem.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
+        }
 
         // Links and the thread of a link being made. While linking, the ends already tied pulse: clicking one unties it.
         for (Vec3 to : state.links) {
@@ -303,6 +343,20 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
                 claw(poseStack, collector, camera, at, 0.2F, color, 0.8F, time);
                 item(poseStack, collector, fs, at, size, fs.age * 12);
             }
+            case STREAM -> {
+                // Essence poured along the leg: the front runs ahead, the tail follows, a bright drop leads.
+                float head = PylonFlight.out(Math.min(1, u * 1.6F));
+                float tail = PylonFlight.smooth(Math.max(0, (u - 0.35F) / 0.65F));
+                int essence = flight.color();
+                TendrilFx.submit(poseStack, collector, camera.orientation, eye, flight, leg, tail, head, false, essence, time, fs.seed + leg, 1,
+                        0.5F, origin, 1);
+                Vec3 front = flight.curve(leg, head).subtract(origin);
+                poseStack.pushPose();
+                poseStack.translate(front.x, front.y, front.z);
+                HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.3F, essence, 0.8F * (1 - tail));
+                HexFx.sprite(poseStack, collector, camera.orientation, HexFx.MOTE, 0.12F, RuneDrawing.lighten(essence, 0.5F), 1 - tail);
+                poseStack.popPose();
+            }
             case SINK -> {
                 float p = PylonFlight.smooth(u);
                 Vec3 from = flight.path().get(leg).subtract(origin);
@@ -385,6 +439,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         float time;
         float flare;
         int color;
+        int essenceColor = -1;
         int flightCount;
         boolean linking;
         int reach;

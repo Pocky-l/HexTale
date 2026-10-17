@@ -1,11 +1,10 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "hextale:block/magic_stone_pillar",
-    "stone": "hextale:block/polished_magic_stone",
-    "pillar": "hextale:block/magic_stone_pillar",
-    "brass": "hextale:block/brass",
-    "chiseled": "hextale:block/chiseled_magic_bricks"
+    "particle": "minecraft:block/calcite",
+    "calcite": "minecraft:block/calcite",
+    "copper": "minecraft:block/copper_block",
+    "amethyst": "minecraft:block/amethyst_block"
   },
   "elements": [
     {
@@ -22,7 +21,7 @@
       "name": "foot",
       "faces": {
         "north": {
-          "texture": "#stone",
+          "texture": "#copper",
           "uv": [
             4,
             14,
@@ -31,7 +30,7 @@
           ]
         },
         "south": {
-          "texture": "#stone",
+          "texture": "#copper",
           "uv": [
             4,
             14,
@@ -40,7 +39,7 @@
           ]
         },
         "east": {
-          "texture": "#stone",
+          "texture": "#copper",
           "uv": [
             4,
             14,
@@ -49,7 +48,7 @@
           ]
         },
         "west": {
-          "texture": "#stone",
+          "texture": "#copper",
           "uv": [
             4,
             14,
@@ -58,7 +57,7 @@
           ]
         },
         "up": {
-          "texture": "#stone",
+          "texture": "#copper",
           "uv": [
             4,
             4,
@@ -67,7 +66,7 @@
           ]
         },
         "down": {
-          "texture": "#stone",
+          "texture": "#copper",
           "uv": [
             4,
             4,
@@ -92,7 +91,7 @@
       "name": "column_low",
       "faces": {
         "north": {
-          "texture": "#pillar",
+          "texture": "#calcite",
           "uv": [
             6,
             10,
@@ -101,7 +100,7 @@
           ]
         },
         "south": {
-          "texture": "#pillar",
+          "texture": "#calcite",
           "uv": [
             6,
             10,
@@ -110,7 +109,7 @@
           ]
         },
         "east": {
-          "texture": "#pillar",
+          "texture": "#calcite",
           "uv": [
             6,
             10,
@@ -119,7 +118,7 @@
           ]
         },
         "west": {
-          "texture": "#pillar",
+          "texture": "#calcite",
           "uv": [
             6,
             10,
@@ -143,7 +142,7 @@
       "name": "band",
       "faces": {
         "north": {
-          "texture": "#brass",
+          "texture": "#copper",
           "uv": [
             5,
             9,
@@ -152,7 +151,7 @@
           ]
         },
         "south": {
-          "texture": "#brass",
+          "texture": "#copper",
           "uv": [
             5,
             9,
@@ -161,7 +160,7 @@
           ]
         },
         "east": {
-          "texture": "#brass",
+          "texture": "#copper",
           "uv": [
             5,
             9,
@@ -170,7 +169,7 @@
           ]
         },
         "west": {
-          "texture": "#brass",
+          "texture": "#copper",
           "uv": [
             5,
             9,
@@ -179,7 +178,7 @@
           ]
         },
         "up": {
-          "texture": "#brass",
+          "texture": "#copper",
           "uv": [
             5,
             5,
@@ -188,7 +187,7 @@
           ]
         },
         "down": {
-          "texture": "#brass",
+          "texture": "#copper",
           "uv": [
             5,
             5,
@@ -212,7 +211,7 @@
       "name": "column",
       "faces": {
         "north": {
-          "texture": "#pillar",
+          "texture": "#calcite",
           "uv": [
             6,
             4,
@@ -221,7 +220,7 @@
           ]
         },
         "south": {
-          "texture": "#pillar",
+          "texture": "#calcite",
           "uv": [
             6,
             4,
@@ -230,7 +229,7 @@
           ]
         },
         "east": {
-          "texture": "#pillar",
+          "texture": "#calcite",
           "uv": [
             6,
             4,
@@ -239,7 +238,7 @@
           ]
         },
         "west": {
-          "texture": "#pillar",
+          "texture": "#calcite",
           "uv": [
             6,
             4,
@@ -263,7 +262,7 @@
       "name": "collar",
       "faces": {
         "north": {
-          "texture": "#brass",
+          "texture": "#copper",
           "uv": [
             5,
             3,
@@ -272,7 +271,7 @@
           ]
         },
         "south": {
-          "texture": "#brass",
+          "texture": "#copper",
           "uv": [
             5,
             3,
@@ -281,7 +280,7 @@
           ]
         },
         "east": {
-          "texture": "#brass",
+          "texture": "#copper",
           "uv": [
             5,
             3,
@@ -290,7 +289,7 @@
           ]
         },
         "west": {
-          "texture": "#brass",
+          "texture": "#copper",
           "uv": [
             5,
             3,
@@ -299,7 +298,7 @@
           ]
         },
         "up": {
-          "texture": "#chiseled",
+          "texture": "#amethyst",
           "uv": [
             5,
             5,
@@ -308,7 +307,7 @@
           ]
         },
         "down": {
-          "texture": "#brass",
+          "texture": "#copper",
           "uv": [
             5,
             5,
@@ -332,7 +331,7 @@
       "name": "prong_nw",
       "faces": {
         "north": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             10,
             1,
@@ -341,7 +340,7 @@
           ]
         },
         "south": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             5,
             1,
@@ -350,7 +349,7 @@
           ]
         },
         "east": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             10,
             1,
@@ -359,7 +358,7 @@
           ]
         },
         "west": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             5,
             1,
@@ -368,7 +367,7 @@
           ]
         },
         "up": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             5,
             5,
@@ -392,7 +391,7 @@
       "name": "prong_ne",
       "faces": {
         "north": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             5,
             1,
@@ -401,7 +400,7 @@
           ]
         },
         "south": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             10,
             1,
@@ -410,7 +409,7 @@
           ]
         },
         "east": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             10,
             1,
@@ -419,7 +418,7 @@
           ]
         },
         "west": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             5,
             1,
@@ -428,7 +427,7 @@
           ]
         },
         "up": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             10,
             5,
@@ -452,7 +451,7 @@
       "name": "prong_sw",
       "faces": {
         "north": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             10,
             1,
@@ -461,7 +460,7 @@
           ]
         },
         "south": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             5,
             1,
@@ -470,7 +469,7 @@
           ]
         },
         "east": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             5,
             1,
@@ -479,7 +478,7 @@
           ]
         },
         "west": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             10,
             1,
@@ -488,7 +487,7 @@
           ]
         },
         "up": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             5,
             10,
@@ -512,7 +511,7 @@
       "name": "prong_se",
       "faces": {
         "north": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             5,
             1,
@@ -521,7 +520,7 @@
           ]
         },
         "south": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             10,
             1,
@@ -530,7 +529,7 @@
           ]
         },
         "east": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             5,
             1,
@@ -539,7 +538,7 @@
           ]
         },
         "west": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             10,
             1,
@@ -548,7 +547,7 @@
           ]
         },
         "up": {
-          "texture": "#brass",
+          "texture": "#amethyst",
           "uv": [
             10,
             10,

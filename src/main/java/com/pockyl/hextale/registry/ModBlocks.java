@@ -106,7 +106,12 @@ public final class ModBlocks {
     public static final DeferredBlock<HexPylonBlock> SENDING_PYLON = BLOCKS.registerBlock("sending_pylon",
             properties -> new HexPylonBlock(PylonKind.SENDING, properties), ModBlocks::pylonProperties);
     public static final DeferredBlock<HexPylonBlock> RELAY_PYLON = BLOCKS.registerBlock("relay_pylon",
-            properties -> new HexPylonBlock(PylonKind.RELAY, properties), ModBlocks::pylonProperties);
+            properties -> new HexPylonBlock(PylonKind.RELAY, properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_WHITE).strength(2.0F, 6.0F).sound(SoundType.CALCITE)
+                    .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 5));
+    public static final DeferredBlock<HexPylonBlock> SIPHON_PYLON = BLOCKS.registerBlock("siphon_pylon",
+            properties -> new HexPylonBlock(PylonKind.SIPHON, properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(SoundType.GLASS).noOcclusion().lightLevel(state -> 5));
     /** A fluted column of polished magic stone, like a quartz pillar. */
     public static final DeferredBlock<RotatedPillarBlock> MAGIC_STONE_PILLAR = BLOCKS.registerBlock("magic_stone_pillar",
             RotatedPillarBlock::new, () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF));

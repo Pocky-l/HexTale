@@ -23,6 +23,7 @@
     "hextale:sending_pylon",
     "hextale:relay_pylon",
     "hextale:magic_stone_pillar",
-    "hextale:brass_grate"
+    "hextale:brass_grate",
+    "hextale:siphon_pylon"
   ]
 }

@@ -224,6 +224,7 @@ public final class GogglesView {
                 rows.add(new Row(null, Component.translatable(KEY + "pylon.pace", seconds, pylon.amount()), TEXT));
             }
             case SENDING -> rows.add(new Row(null, Component.translatable(KEY + "pylon.pace", seconds, pylon.amount()), TEXT));
+            case SIPHON -> rows.add(new Row(null, Component.translatable(KEY + "pylon.pace_mb", seconds, pylon.essenceAmount()), TEXT));
             case RELAY -> {
             }
         }

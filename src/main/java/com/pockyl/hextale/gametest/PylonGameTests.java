@@ -272,6 +272,54 @@ public final class PylonGameTests {
         helper.succeed();
     }
 
+    /** A siphon on a jar pours its essence into a linked jar and, through a relay, into a third one; the clients see streams. */
+    @HexTest(maxTicks = 300)
+    public static void siphonPoursEssenceAlongItsLinks(GameTestHelper helper) {
+        clear(helper, 6);
+        helper.setBlock(BASE, ModBlocks.ESSENCE_TANK.get());
+        BlockPos near = BASE.offset(3, 0, 0);
+        BlockPos relayPos = BASE.offset(0, 0, 4);
+        BlockPos far = BASE.offset(0, 0, 8);
+        helper.setBlock(near, ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(far, ModBlocks.ESSENCE_TANK.get());
+        com.pockyl.hextale.block.EssenceTankBlockEntity source = helper.getBlockEntity(BASE, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        com.pockyl.hextale.block.EssenceTankBlockEntity first = helper.getBlockEntity(near, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        com.pockyl.hextale.block.EssenceTankBlockEntity last = helper.getBlockEntity(far, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        source.tank().set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.WATER, 200));
+        first.tank().set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.WATER,
+                com.pockyl.hextale.block.EssenceTankBlockEntity.CAPACITY - 40));
+        HexPylonBlockEntity relay = place(helper, ModBlocks.RELAY_PYLON.get(), relayPos);
+        relay.toggleLink(link(helper, far, Direction.UP));
+        HexPylonBlockEntity siphon = place(helper, ModBlocks.SIPHON_PYLON.get(), BASE.above());
+        helper.assertTrue(siphon.toggleLink(link(helper, near, Direction.UP)) && siphon.toggleLink(link(helper, relayPos, Direction.UP)), "linked");
+        helper.succeedWhen(() -> {
+            helper.assertTrue(first.tank().amount() == com.pockyl.hextale.block.EssenceTankBlockEntity.CAPACITY, "the first jar was filled up");
+            helper.assertTrue(last.tank().amount() == 160 && source.tank().isEmpty(), "the rest went through the relay to the last jar");
+            helper.assertTrue(!siphon.lastFlights().isEmpty() && siphon.lastFlights().getFirst().isEssence(), "the clients see a stream");
+        });
+    }
+
+    /** An item pylon cannot link to a jar, a siphon cannot link to a chest; both can link to a relay. */
+    @HexTest(maxTicks = 20)
+    public static void pylonsLinkOnlyToWhatTakesTheirLoad(GameTestHelper helper) {
+        clear(helper, 4);
+        helper.setBlock(BASE, Blocks.CHEST);
+        BlockPos jar = BASE.offset(2, 0, 0);
+        BlockPos chest = BASE.offset(0, 0, 2);
+        BlockPos relayPos = BASE.offset(2, 0, 2);
+        helper.setBlock(jar, ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(chest, Blocks.CHEST);
+        place(helper, ModBlocks.RELAY_PYLON.get(), relayPos);
+        HexPylonBlockEntity sender = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
+        HexPylonBlockEntity siphon = place(helper, ModBlocks.SIPHON_PYLON.get(), jar.above());
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        helper.assertFalse(PylonLinking.takes(level, sender, helper.absolutePos(jar), Direction.UP), "items do not go into a jar");
+        helper.assertFalse(PylonLinking.takes(level, siphon, helper.absolutePos(chest), Direction.UP), "essence does not go into a chest");
+        helper.assertTrue(PylonLinking.takes(level, sender, helper.absolutePos(relayPos), Direction.UP)
+                && PylonLinking.takes(level, siphon, helper.absolutePos(relayPos), Direction.UP), "both go to a relay");
+        helper.succeed();
+    }
+
     /** The flights of a move survive the trip to the clients (the payload's codec), the longest way included. */
     @HexTest(maxTicks = 20)
     public static void flightsReachTheClient(GameTestHelper helper) {

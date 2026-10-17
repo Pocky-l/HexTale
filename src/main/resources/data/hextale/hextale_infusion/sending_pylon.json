@@ -3,10 +3,9 @@
   "pedestals": [
     "minecraft:dropper",
     "minecraft:feather",
-    "hextale:magic_stone_pillar",
-    "hextale:magic_stone_pillar",
     "hextale:brass_ingot",
-    "hextale:brass_ingot"
+    "hextale:brass_ingot",
+    "hextale:magic_stone_pillar"
   ],
   "essences": {
     "motion": 16,

@@ -1,14 +1,15 @@
 {
-  "center": "hextale:hextech_gemstone",
+  "center": "minecraft:lightning_rod",
   "pedestals": [
     "minecraft:amethyst_shard",
     "minecraft:amethyst_shard",
-    "hextale:magic_stone_pillar",
-    "hextale:brass_ingot",
-    "hextale:brass_ingot"
+    "minecraft:calcite",
+    "minecraft:calcite",
+    "minecraft:copper_ingot",
+    "minecraft:copper_ingot"
   ],
   "essences": {
-    "motion": 12,
+    "storm": 12,
     "crystal": 8
   },
   "result": {

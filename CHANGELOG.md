@@ -107,8 +107,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   circle's hexagon cut into them: the stone of the ritual circle.
 
 **Item transport: hex pylons**
-- Instead of a clumsy mechanical arm, the pull of a hextech gem: three pylons, columns of fluted magic stone crowned
-  with brass and a floating gemstone, made at the altar.
+- Instead of a clumsy mechanical arm, the pull of hextech: four pylons made at the altar, each its own shape - a low
+  brass bowl that catches, a flat plate with claws that throws, a calcite and copper column with an amethyst crystal
+  that passes on, a glass bulb that pours essence.
 - Gathering Pylon: set on a chest, a barrel, a furnace or any container, it reaches for the items lying around (6
   blocks, more with runes) and lowers them into what it stands on - a furnace gets ore through its top. With nothing
   under it, it sends them along its links.
@@ -119,8 +120,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   empty hand unlinks all. Clicking the air or a block that cannot take items stops linking and does what it always does;
   with a block in hand a right click on a pylon places the block. A broken block drops its links by itself, and sneak +
   right click with an empty hand on a linked block unties it from every pylon. The item tooltip tells how.
-- Relay Pylon: neither takes nor gives - it catches items sent to it and passes them on to its own links, up to eight
-  relays in a chain.
+- Relay Pylon: neither takes nor gives - it catches items and essence sent to it and passes them on to its own links,
+  up to eight relays in a chain. Made of calcite, copper ingots, amethyst and a lightning rod.
+- Siphon Pylon: set on an Essence Jar, it draws the essence up into its glass bulb (swirling in the jar's colour) and
+  pours it as a stream of light along its links - into other jars, a separator, the Hex Smelter, anything that takes
+  essence from pipes; relays pass the stream on.
 - Pylon runes, burned in at the altar like a smelter's: Shift (reach and link range), Motor (pace), Lift (items per
   move), Lens. A broken pylon keeps its runes.
 - The magic fetches every item: a tendril of light, two strands twisting around a swaying line, reaches out of the gem,

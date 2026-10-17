@@ -60,6 +60,8 @@ public final class ModItems {
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> RELAY_PYLON = ITEMS.registerSimpleBlockItem(ModBlocks.RELAY_PYLON,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> SIPHON_PYLON = ITEMS.registerSimpleBlockItem(ModBlocks.SIPHON_PYLON,
+            properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> MAGIC_STONE_PILLAR = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_STONE_PILLAR);
     public static final DeferredItem<BlockItem> BRASS_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_GRATE);
     /** Creative only: everything known at once - every rune with three stars, every item studied, every quest done. */
@@ -121,8 +123,8 @@ public final class ModItems {
         ITEMS.register(modBus);
     }
 
-    /** Any of the three hex pylons. */
+    /** Any of the hex pylons. */
     public static boolean isPylon(net.minecraft.world.item.ItemStack stack) {
-        return stack.is(GATHERING_PYLON.get()) || stack.is(SENDING_PYLON.get()) || stack.is(RELAY_PYLON.get());
+        return stack.is(GATHERING_PYLON.get()) || stack.is(SENDING_PYLON.get()) || stack.is(RELAY_PYLON.get()) || stack.is(SIPHON_PYLON.get());
     }
 }

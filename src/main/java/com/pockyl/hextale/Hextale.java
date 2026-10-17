@@ -89,6 +89,7 @@ public final class Hextale {
             output.accept(ModItems.GATHERING_PYLON);
             output.accept(ModItems.SENDING_PYLON);
             output.accept(ModItems.RELAY_PYLON);
+            output.accept(ModItems.SIPHON_PYLON);
             ModItems.PICKAXES.values().forEach(output::accept);
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
