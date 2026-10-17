@@ -79,9 +79,11 @@ public final class Hextale {
             output.accept(ModItems.HEXTECH_BRICK_SLAB);
             output.accept(ModItems.HEXTECH_BRICK_WALL);
             output.accept(ModItems.CHISELED_HEXTECH_BRICKS);
+            output.accept(ModItems.HEXTECH_LAMP);
             output.accept(ModItems.HEXTECH_PICKAXE);
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
+            output.accept(ModItems.HEXTECH_GEMSTONE);
             output.accept(ModItems.BRASS_INGOT);
             output.accept(ModItems.BRASS_NUGGET);
             output.accept(exampleScroll());
@@ -101,6 +103,7 @@ public final class Hextale {
             event.accept(ModItems.HEXTECH_ALTAR);
             event.accept(ModItems.PEDESTAL);
             event.accept(ModItems.RUNE_STELE);
+            event.accept(ModItems.HEXTECH_LAMP);
         } else if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(ModItems.HEXTECH_BRICKS);
             event.accept(ModItems.HEXTECH_BRICK_STAIRS);
@@ -111,6 +114,7 @@ public final class Hextale {
             event.accept(ModItems.BRASS_INGOT);
             event.accept(ModItems.BRASS_NUGGET);
             event.accept(ModItems.UNSTABLE_HEXTECH);
+            event.accept(ModItems.HEXTECH_GEMSTONE);
         } else if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(ModItems.RESEARCHERS_DIARY);
             event.accept(ModItems.HEXTECH_PICKAXE);

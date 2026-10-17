@@ -168,6 +168,11 @@ public final class RuneWorkGameTests {
         InfusionRecipe pickaxe = InfusionRecipes.get(false).get(Hextale.id("hextech_pickaxe"));
         helper.assertTrue(pickaxe != null && pickaxe.kind() == InfusionRecipe.Kind.INFUSE, "the pickaxe infusion is loaded");
         helper.assertTrue(pickaxe.pedestals().size() == 4 && pickaxe.essences().get(Essence.ORE) == 24, "with its items and essences");
+        helper.assertTrue(pickaxe.pedestals().stream().anyMatch(item -> item.test(new ItemStack(ModItems.HEXTECH_GEMSTONE.get()))),
+                "a refined gemstone is the pickaxe's heart");
+        InfusionRecipe gemstone = InfusionRecipes.get(false).get(Hextale.id("hextech_gemstone"));
+        helper.assertTrue(gemstone != null && gemstone.center().orElseThrow().test(new ItemStack(ModItems.UNSTABLE_HEXTECH.get())),
+                "unstable hextech is refined into the gemstone");
         helper.assertTrue(InfusionRecipes.engraving(false, ToolRunes.SMELTING) != null, "Smelting can be engraved");
         helper.assertTrue(InfusionRecipes.erasing(false) != null, "runes can be ground off");
         for (Map.Entry<Identifier, InfusionRecipe> entry : InfusionRecipes.get(false).entrySet()) {
@@ -186,7 +191,7 @@ public final class RuneWorkGameTests {
                 .getOrThrow(Enchantments.EFFICIENCY), 2);
         EssenceMix essence = EssenceMix.of(Map.of(Essence.ORE, 40, Essence.FORGE, 30, Essence.ENERGY, 20));
         HextechAltarBlockEntity altar = circle(helper, iron, List.of(new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(Items.AMETHYST_SHARD),
-                new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(ModItems.BRASS_INGOT.get())), essence);
+                new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(ModItems.BRASS_INGOT.get())), essence);
         altar.startOrAbort(null);
         helper.assertTrue(altar.active() && altar.kind() == Ritual.Kind.INFUSE, "the ritual starts");
         // The essences follow the items: while items are still drawn, no essence has left the tank.
@@ -208,7 +213,7 @@ public final class RuneWorkGameTests {
     @HexTest
     public static void anExtraItemSpoilsTheCircle(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
-                new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(Items.DIRT)),
+                new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(Items.DIRT)),
                 EssenceMix.pure(Essence.METAL, 100));
         altar.startOrAbort(null);
         helper.assertFalse(altar.active(), "a circle with a wrong item does not start");
@@ -234,7 +239,7 @@ public final class RuneWorkGameTests {
     @HexTest(maxTicks = 300)
     public static void aRitualShortOfEssenceStalls(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
-                new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(Items.AMETHYST_SHARD)),
+                new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(Items.AMETHYST_SHARD)),
                 EssenceMix.of(Map.of(Essence.ORE, 40, Essence.FORGE, 30)));
         altar.startOrAbort(null);
         helper.runAfterDelay(240, () -> {
@@ -248,7 +253,7 @@ public final class RuneWorkGameTests {
     @HexTest(maxTicks = 260)
     public static void aPlayerStartsARitualWithCreativeTanks(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
-                new ItemStack(Items.AMETHYST_SHARD), new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(ModItems.BRASS_INGOT.get())),
+                new ItemStack(Items.AMETHYST_SHARD), new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(ModItems.BRASS_INGOT.get())),
                 EssenceMix.EMPTY);
         BlockPos creative = new BlockPos(6, 2, 0);
         helper.setBlock(creative, ModBlocks.CREATIVE_ESSENCE_TANK.get());
@@ -266,7 +271,7 @@ public final class RuneWorkGameTests {
     @HexTest(maxTicks = 300)
     public static void theSteleRuneGoesIntoTheNewPickaxe(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
-                new ItemStack(Items.AMETHYST_SHARD), new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(ModItems.BRASS_INGOT.get())),
+                new ItemStack(Items.AMETHYST_SHARD), new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(ModItems.BRASS_INGOT.get())),
                 EssenceMix.of(Map.of(Essence.ORE, 40, Essence.FORGE, 30, Essence.ENERGY, 20, Essence.FIRE, 40, Essence.MAGMA, 30)));
         BlockPos[] extra = {new BlockPos(5, 2, 1), new BlockPos(1, 2, 5)};
         ItemStack[] items = {new ItemStack(Items.FURNACE), new ItemStack(Items.COAL)};

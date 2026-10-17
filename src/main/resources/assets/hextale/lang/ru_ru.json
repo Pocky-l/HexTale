@@ -666,5 +666,16 @@
   "gui.hextale.separator.no_essence": "Эссенция не выбрана",
   "gui.hextale.separator.no_fuel": "Нужен огненный порошок",
   "gui.hextale.separator.no_fuel.hint": "Один огненный порошок извлекает 32 мВ выбранной эссенции",
-  "gui.hextale.slot.separator.fuel": "Огненный порошок: сгорает, извлекая выбранную эссенцию"
+  "gui.hextale.slot.separator.fuel": "Огненный порошок: сгорает, извлекая выбранную эссенцию",
+  "item.hextale.unstable_hextech.volatile": "Сырой и неустойчивый: от долгого падения или взрыва лопается.",
+  "item.hextale.hextech_gemstone": "Хекстек-самоцвет",
+  "item.hextale.hextech_gemstone.tooltip": "Гладкий и ровный. Больше не вздрагивает от удара.",
+  "block.hextale.hextech_lamp": "Хекстек-фонарь",
+  "quest.hextale.hextech_gemstone": "Хекстек-самоцвет",
+  "quest.hextale.hextech_gemstone.goal": "огранить нестабильный хекстек на алтаре",
+  "quest.hextale.hextech_gemstone.desc": "Сырой хекстек лопается от удара; огранённый на алтаре, он становится гладким ровным самоцветом. Вокруг него строится любой хекстек-инструмент и прибор.",
+  "quest.hextale.hextech_lamp": "Хекстек-фонарь",
+  "quest.hextale.hextech_lamp.goal": "сделать хекстек-фонарь",
+  "quest.hextale.hextech_lamp.desc": "Самоцвет, парящий в латунной клетке, даёт полный свет. Ставится на землю или подвешивается к потолку.",
+  "jei.hextale.info.hextech_lamp": "Огранённый хекстек-самоцвет парит в латунной клетке: полный свет, никогда не гаснет. Стоит на блоке или висит под ним, как фонарь."
 }

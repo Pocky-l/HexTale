@@ -666,5 +666,16 @@
   "gui.hextale.separator.no_essence": "No essence chosen",
   "gui.hextale.separator.no_fuel": "Needs blaze powder",
   "gui.hextale.separator.no_fuel.hint": "One blaze powder draws 32 mB of the chosen essence",
-  "gui.hextale.slot.separator.fuel": "Blaze powder: burned to draw the chosen essence out"
+  "gui.hextale.slot.separator.fuel": "Blaze powder: burned to draw the chosen essence out",
+  "item.hextale.unstable_hextech.volatile": "Raw and volatile: a long fall or a blast makes it burst.",
+  "item.hextale.hextech_gemstone": "Hextech Gemstone",
+  "item.hextale.hextech_gemstone.tooltip": "Smooth and steady. It no longer flinches at a blow.",
+  "block.hextale.hextech_lamp": "Hextech Lamp",
+  "quest.hextale.hextech_gemstone": "Hextech Gemstone",
+  "quest.hextale.hextech_gemstone.goal": "refine unstable hextech at the altar",
+  "quest.hextale.hextech_gemstone.desc": "Raw hextech bursts at a blow; refined on the altar it becomes a smooth, steady gemstone. Every hextech tool and device is built around one.",
+  "quest.hextale.hextech_lamp": "Hextech Lamp",
+  "quest.hextale.hextech_lamp.goal": "make a Hextech Lamp",
+  "quest.hextale.hextech_lamp.desc": "A gemstone floating in a brass cage gives full light. Place it on the ground or hang it from a ceiling.",
+  "jei.hextale.info.hextech_lamp": "A refined hextech gemstone floating in a brass cage: full light, never goes out. Stands on a block or hangs under one, like a lantern."
 }

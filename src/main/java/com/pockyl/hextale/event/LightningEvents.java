@@ -25,6 +25,7 @@ import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 
 import com.pockyl.hextale.Config;
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.item.UnstableHextechItem;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
@@ -95,6 +96,7 @@ public final class LightningEvents {
             double angle = random.nextDouble() * Math.PI * 2;
             orb.setDeltaMovement(Math.cos(angle) * 0.18, 0.32 + random.nextDouble() * 0.12, Math.sin(angle) * 0.18);
             orb.setDefaultPickUpDelay();
+            orb.addTag(UnstableHextechItem.BORN_TAG);
             level.addFreshEntity(orb);
         }
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, crystal), centre.x, centre.y, centre.z, 40, 0.3, 0.3, 0.3, 0.15);

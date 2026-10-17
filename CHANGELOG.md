@@ -7,73 +7,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - Unreleased
 
 ### Added
-- Research Table: a two-block dark oak writing desk with brass trim, a drawer cabinet, a bookshelf, a book rest for
-  the diary, an inkwell and a leather writing pad. Unstable hextech hangs over the parchment from a brass arm, turning
-  inside spinning gimbal rings with motes circling it; while someone writes, glyphs stream from the parchment into the
-  orb, and a freshly learned rune rises over the desk as a glowing hieroglyph. The desk glows faintly while an orb lies on it.
-- Rune research: choose one of 72 runes in the star book, then draw it on a nine-cornered parchment of hexagonal
-  sections: drag ink with the mouse from the hextech orb to every point of the rune. The ink branches: a new line may
-  start at the orb or at any section already inked. Every step costs ink of the essence whose corner of the parchment
-  it heads towards, a step onto a point ten of the point's own essence; drops of colour around the line's end show what each
-  direction costs. Right click takes a step back for free - ink is spent only when the last point binds the rune. A
-  finished drawing writes the rune's scroll into the output slot; shorter drawings write scrolls with up to three stars.
-- Dark runes: in chapter I they are stone the ink cannot pass. From chapter II on they are dark fields the ink may
-  cross, but some of their sections are cursed - like a minesweeper, every inked section next to them shows how many
-  curses touch it, and dark sections can be flagged with a right click. Stepping on a curse bursts the orb: the sheet
-  burns, the ink drawn so far is spent and the blast hurts; the curse is remembered for the next attempt. Chapter III
-  hides points inside rings of dark runes.
-- Runes are learned by studying their scrolls: the knowledge stays with the researcher, with the scroll's stars. A
-  scroll of a rune that is not open to you in the research book yet cannot be studied.
-- Ink: the desk holds nine vials, one per element; the part the current thread would spend shimmers in them.
-- Essence works: ink is made, not found, and carried in plain glass bottles. The nine signs - fire, water, earth, air,
-  light, shadow, life, metal, lightning - are essences.
-  - The Alembic (set over fire, a lit campfire, lava or magma) boils items in water into essence - a mixture of all
-    their essences. An item the player who put it in has not studied boils into as much dark unknown essence instead. Every item takes 250 mB of water: pour a bucket in, or pipe it from a Pump standing in water.
-    The flask shows the water, the bubbles and the item turning inside; the essence is bottled or leaves through the
-    spout at the front.
-  - The Separator splits a mixture in two with a reagent (charcoal - fire, sugar - water, clay - earth, feather - air,
-    glow ink sac - light, ink sac - shadow, bone meal - life, iron nugget - metal, redstone - lightning; item tags, so
-    packs can change them): the reagent's essence becomes a concentrate, all the rest goes on with a dark unknown
-    essence added - never ink, best poured away. Each side takes the mixture in or lets the concentrate or the rest out - chosen on the
-    port panel of its screen or by sneak-using that side; the top is a gas vent. Without a reagent it waits, and its
-    screen shows what is missing.
-  - Essence is one mixed liquid measured in millibuckets, one millibucket per point of an item's essence (the
-    number in its tooltip): a bottle holds 16 mB, a jar 256 mB, and every step of a rune's thread costs 1 mB of ink. Essence Jars - big glass
-    jars with a wooden lid - store it (in through the lid and the sides, out at the bottom; separator inlets and drain valves draw from them). The Research Table keeps no ink of its
-    own: it draws each essence's ink from jars of that concentrate within two blocks of the desk.
-  - Brass Pipes carry essence and water and join a machine only where it has a port - the machine's model grows a
-    joint there; no vessel takes back what its own outlet lets out. The Drain Valve pours whatever reaches it out into
-    the world while its handwheel is open, and drains jars beside it or piped to it.
-- Researcher's Goggles (leather, brass and glass panes), worn on the head: looking at a jar, a pipe or a machine of the
-  essence works shows the essences inside it beside the crosshair; looking at a Research Table shows its ink, essence
-  by essence, while coloured streams run from each jar of concentrate to the orb.
-- Essence Jar labels: sneak-use a side or the lid of a jar with an empty hand to stick an enamel label with an essence's sign on it;
-  every click shows the next essence, then none. Only a sign for the player.
-- Every essence has its own picture: a flame, a drop, a mountain, wind, the sun, a crescent, a sprout, a gear and a bolt.
-- Liquid essence in jars, alembics and separators swirls with an animated texture, glows brighter at its surface,
-  darkens in the depths and bubbles; a jar's surface sways a little.
-- Sounds: the alembic bubbles while it boils, the separator drips, the pump strokes, the drain valve's handwheel
-  turns, jars glug when bottles are poured, ink drips on the parchment with every step and a chime marks a quest done.
-- Every research takes a paper from the table's paper slot when it starts.
-- Integrations: [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) shows boiling and separation, a bottle of each
-  concentrate and an info page for every block of the essence works; [Jade](https://www.curseforge.com/minecraft/mc-mods/jade)
-  shows what the jars, separators, alembics, pumps and valves hold and do.
-- The Researcher's Path: the first page of the research book is a path of quests from the Research Table to the full
-  codex - brass, unstable hextech, the diary, studying items, essences, the essence works, ink and the rune chapters.
-  Click a quest to see its goal, its recipe and a short explanation; quests are done the moment their goal is met.
-  Bookmarks turn the book between the path and the star map.
-- The Researcher's Diary is a star book: a dark sky to drag around and zoom, where the 72 runes hang as stars in
-  constellations - Smelting and the tool runes in the centre, the other runes on the rays of their elements. Click a
-  star to see the rune; on the Research Table it goes to the parchment with one click.
-- Every item carries elements of different strength (base materials, then names and recipes for everything else).
-  Put an item into the study slot to find its elements by their echoes: they hide on nine strings, as far out as they
-  are strong. Strike the parchment anywhere: a ripple runs out and stops at the nearest hidden element; everything
-  inside it is empty and the sections on its rim that could hold an element glow. Strike an element's own section to
-  reveal it. A studied item shows its elements in its tooltip and can be dissolved into ink.
-- Five research tools crafted from the scrolls of the first runes - Researcher's Lens (the fog lifts farther), Fork
-  Quill (the thread may cross itself), Mortar (some sections of the thread cost no ink), Brass Scraper (the thread may pass dark runes) and
-  Parchment Stretcher (the first sections cost no ink). They sit in the table's tool slots and grow stronger with their
-  rune's stars.
-- Unstable hextech from lightning striking a lightning rod on an amethyst block.
-- Brass and rune scrolls.
-- Base item elements come from a data map (`hextale:elements`), so data packs can change them.
+
+**Hextech**
+- Unstable hextech: put a lightning rod on an amethyst block and wait for a storm (or call the lightning with a
+  Channeling trident) - the strike shatters the amethyst into lumpy, humming orbs. Raw hextech is volatile: an orb that
+  lands after a long fall or is caught in a blast bursts in a flash of sparks that hurts and pushes what stands
+  close. Orbs fresh from the storm are still settling and survive their first fall.
+- Hextech Gemstone: unstable hextech refined at the Hextech Altar into a smooth, steady sphere. It no longer bursts,
+  and every hextech tool and device is built around one.
+- Hextech Lamp: a gemstone floating in a cage of deepslate and brass, full light. It stands on a block or hangs under
+  one, like a lantern.
+
+**Research**
+- Research Table: a two-block dark oak writing desk with brass trim, drawers, a bookshelf, a book rest for the diary,
+  an inkwell and a leather writing pad. Unstable hextech hangs over the parchment from a brass arm, turning inside
+  spinning gimbal rings; glyphs stream from the parchment while someone writes, and a freshly drawn rune rises over the
+  desk as a glowing hieroglyph. The table keeps its own paper; every research takes one sheet when it starts.
+- Researcher's Diary: a star book signed with its owner's name. Its first page is the Researcher's Path - quests from
+  the Research Table to the full codex, each with its goal, its recipe and a short note, done the moment the goal is
+  met. Its second page is a dark sky to drag and zoom, where the 72 runes hang as stars in constellations. Leather
+  bookmarks turn between the two.
+- Essences: everything is made of them. Nine primal essences (fire, water, earth, air, light, shadow, life, metal,
+  lightning) combine into 71 more, from Steam and Ore to Time and Soul; every essence has its own picture. Every item
+  carries up to six essences in different amounts, from hand-tuned base materials to anything crafted from them; the
+  table comes from a data map (`hextale:essences`), so data packs can change it.
+- Item study, the prism: put an item into the study slot and find where its essences hide in a misty hexagonal field.
+  Shine rays in from the brass rim - a ray is absorbed by an essence ahead, bent away by one beside its path, turned back
+  by two - and read where it leaves; check a section to look inside. Rays and checks share a small budget. A studied
+  item shows its essences in its tooltip.
+- Rune research: choose one of the 72 runes in the star book and draw it on a worn parchment with a hexagon of six
+  essences - one per direction, chosen by the rune's theme. Drag ink from the hextech orb to every point of the rune;
+  the ink may branch from the orb or from any inked section. A step costs ink of the essence its direction points to,
+  a step onto a point ten of the point's own essence; right click takes a step back for free. A shorter drawing earns
+  up to three stars. In chapter I the dark runes are stone; from chapter II they are dark fields the ink may cross,
+  but some of their sections are cursed - every inked section next to them counts the curses it touches, like a
+  minesweeper. Stepping on a curse bursts the orb and burns the sheet. A finished drawing writes the rune's scroll;
+  studying the scroll teaches the rune to the researcher with the scroll's stars.
+
+**Essence works**
+- Essence is one mixed liquid measured in millibuckets, one millibucket per point of an item's essence (the number in
+  its tooltip).
+- Alembic: set over fire, a lit campfire, lava or magma, it boils items in water into essence - a mixture of all their
+  essences. An item the player who put it in has not studied boils into as much dark unknown essence. Every item takes
+  250 mB of water: pour a bucket in, or pipe it from a Pump standing in water. The flask shows the water, the bubbles and
+  the item turning inside.
+- Bottles of essence: plain glass bottles fill with 16 mB at the machines and jars.
+- Separator: draws the essence chosen on its screen out of a mixture into a concentrate and lets the rest go on with
+  dark unknown essence added. It burns blaze powder; each side takes the mixture in or lets the concentrate or the rest
+  out, set on its screen or by sneak-using that side.
+- Essence Jar: a big glass jar with a wooden lid, 256 mB; in through the lid and the sides, out at the bottom. Sneak-use
+  a side or the lid with an empty hand to stick an enamel label with an essence's sign on it. The Research Table draws
+  its ink from jars of concentrate within two blocks. A Creative Essence Jar holds every essence without end.
+- Brass Pipes carry essence and water and join a machine only where it has a port; the machine's model grows a joint
+  there. The Drain Valve pours whatever reaches it out into the world while its handwheel is open.
+- Researcher's Goggles: worn on the head, they show the essences inside a jar, pipe or machine you look at; looking at a
+  Research Table shows its ink while coloured streams run from each jar to the orb.
+- Liquid essence swirls with an animated texture, glows at its surface, darkens in the depths and bubbles.
+
+**Rune works**
+- Hextech Altar circle: the altar, Pedestals within six blocks, Rune Steles within seven and Essence Jars within eight.
+  Sneak-use the altar with an empty hand (or give it a redstone pulse) to start a ritual: the rings turn around the
+  centre item, the pedestal items are drawn in one by one, then the essences one after another, and the centre
+  becomes something new. A ritual short of essence stalls and, left too long, collapses. Ghosts of the items a ritual
+  still lacks hover over the free pedestals.
+- Hextech Pickaxe: infused from an iron pickaxe; it keeps its enchantments and takes up to four runes. A rune chosen on
+  a stele is burned into the tool as it is made, or into a finished tool later; flint grinds runes off again. Every
+  one of the 72 runes does something on a tool, and runes cost nothing to fire. Runes have no descriptions - try them.
+- Hextech Bricks with stairs, slab, wall and chiseled bricks: the stone of the ritual circle.
+
+**Sound and integrations**
+- Synthesized sounds: the alembic simmers, the separator drips, the pump strokes, the valve's handwheel turns, jars
+  glug, ink drips with every step; rituals hum, draw and finish with layered drones, whooshes and soft impacts.
+- [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) shows boiling, separation, the altar's infusions and an info
+  page for every block of the essence works and the ritual circle;
+  [Jade](https://www.curseforge.com/minecraft/mc-mods/jade) shows what the jars, machines, pumps and valves hold and do.

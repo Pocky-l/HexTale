@@ -89,7 +89,12 @@ public enum Quest {
     RUNE_STELE(HEXTECH_ALTAR, 196, 258, () -> new ItemStack(ModItems.RUNE_STELE.get()), Quests.has(ModItems.RUNE_STELE),
             QuestDisplay.shaped("hextale:rune_stele", 1, new String[]{" A ", " C ", "BBB"},
                     "A=minecraft:amethyst_shard", "C=hextale:chiseled_hextech_bricks", "B=hextale:hextech_bricks")),
-    HEXTECH_PICKAXE(PEDESTAL, 280, 216, () -> new ItemStack(ModItems.HEXTECH_PICKAXE.get()), Quests.has(ModItems.HEXTECH_PICKAXE),
+    HEXTECH_GEMSTONE(PEDESTAL, 252, 258, () -> new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), Quests.has(ModItems.HEXTECH_GEMSTONE),
+            QuestDisplay.infusion("hextale:hextech_gemstone")),
+    HEXTECH_LAMP(HEXTECH_GEMSTONE, 308, 258, () -> new ItemStack(ModItems.HEXTECH_LAMP.get()), Quests.has(ModItems.HEXTECH_LAMP),
+            QuestDisplay.shaped("hextale:hextech_lamp", 2, new String[]{" N ", "BGB", " S "}, "N=hextale:brass_nugget",
+                    "B=hextale:brass_ingot", "G=hextale:hextech_gemstone", "S=hextale:hextech_brick_slab")),
+    HEXTECH_PICKAXE(HEXTECH_GEMSTONE, 280, 216, () -> new ItemStack(ModItems.HEXTECH_PICKAXE.get()), Quests.has(ModItems.HEXTECH_PICKAXE),
             QuestDisplay.infusion("hextale:hextech_pickaxe")),
     FIRST_ENGRAVING(HEXTECH_PICKAXE, 336, 216, () -> new ItemStack(ModItems.RUNE_SCROLL.get()), Quests::engravedTool,
             QuestDisplay.infusion("hextale:engrave/fire_earth"));

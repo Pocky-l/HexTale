@@ -21,6 +21,7 @@ import com.pockyl.hextale.block.DrainValveBlock;
 import com.pockyl.hextale.block.EssenceTankBlock;
 import com.pockyl.hextale.block.PumpBlock;
 import com.pockyl.hextale.block.HextechAltarBlock;
+import com.pockyl.hextale.block.HextechLampBlock;
 import com.pockyl.hextale.block.PedestalBlock;
 import com.pockyl.hextale.block.RuneSteleBlock;
 import com.pockyl.hextale.block.SeparatorBlock;
@@ -75,6 +76,10 @@ public final class ModBlocks {
     public static final DeferredBlock<RuneSteleBlock> RUNE_STELE = BLOCKS.registerBlock("rune_stele", RuneSteleBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> state.getValue(RuneSteleBlock.LIT) ? 9 : 2));
+    /** A refined gemstone in a brass cage: stands or hangs like a lantern, full light. */
+    public static final DeferredBlock<HextechLampBlock> HEXTECH_LAMP = BLOCKS.registerBlock("hextech_lamp", HextechLampBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.LANTERN)
+                    .lightLevel(state -> 15).noOcclusion().pushReaction(PushReaction.POPPED).requiresCorrectToolForDrops());
 
     private ModBlocks() {
     }

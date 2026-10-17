@@ -18,6 +18,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
+import com.pockyl.hextale.item.HextechGemstoneItem;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.item.UnstableHextechItem;
@@ -41,6 +42,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CHISELED_HEXTECH_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.CHISELED_HEXTECH_BRICKS);
     public static final DeferredItem<BlockItem> HEXTECH_ALTAR = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_ALTAR,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> HEXTECH_LAMP = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_LAMP);
     public static final DeferredItem<BlockItem> PEDESTAL = ITEMS.registerSimpleBlockItem(ModBlocks.PEDESTAL);
     public static final DeferredItem<BlockItem> RUNE_STELE = ITEMS.registerSimpleBlockItem(ModBlocks.RUNE_STELE);
     public static final DeferredItem<EssenceFlaskItem> ESSENCE_FLASK = ITEMS.registerItem("essence_flask",
@@ -50,6 +52,9 @@ public final class ModItems {
     /** Lightning-born: neither fire nor further lightning harms it. */
     public static final DeferredItem<UnstableHextechItem> UNSTABLE_HEXTECH = ITEMS.registerItem("unstable_hextech",
             properties -> new UnstableHextechItem(properties.rarity(Rarity.UNCOMMON).fireResistant()));
+    /** Unstable hextech refined at the altar: steady, it no longer bursts. */
+    public static final DeferredItem<HextechGemstoneItem> HEXTECH_GEMSTONE = ITEMS.registerItem("hextech_gemstone",
+            properties -> new HextechGemstoneItem(properties.rarity(Rarity.UNCOMMON).fireResistant()));
     public static final DeferredItem<RuneScrollItem> RUNE_SCROLL = ITEMS.registerItem("rune_scroll",
             properties -> new RuneScrollItem(properties.stacksTo(16).rarity(Rarity.UNCOMMON)));
     /** Worn on the head: shows the essences inside the essence works and where a Research Table's ink comes from. */

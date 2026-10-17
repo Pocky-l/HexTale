@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "hanging=false,waterlogged=false": {
+      "model": "hextale:block/hextech_lamp"
+    },
+    "hanging=false,waterlogged=true": {
+      "model": "hextale:block/hextech_lamp"
+    },
+    "hanging=true,waterlogged=false": {
+      "model": "hextale:block/hextech_lamp_hanging"
+    },
+    "hanging=true,waterlogged=true": {
+      "model": "hextale:block/hextech_lamp_hanging"
+    }
+  }
+}

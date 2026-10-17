@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " N ",
+    "BGB",
+    " S "
+  ],
+  "key": {
+    "N": "hextale:brass_nugget",
+    "B": "hextale:brass_ingot",
+    "G": "hextale:hextech_gemstone",
+    "S": "hextale:hextech_brick_slab"
+  },
+  "result": {
+    "id": "hextale:hextech_lamp",
+    "count": 2
+  }
+}
