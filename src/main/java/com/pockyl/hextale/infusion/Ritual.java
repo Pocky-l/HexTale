@@ -1,6 +1,7 @@
 package com.pockyl.hextale.infusion;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -134,6 +135,63 @@ public final class Ritual {
         }
         asking.forEach((rune, recipes) -> uses.add(use(rune, null, recipes, center)));
         return uses;
+    }
+
+    /**
+     * The runes the item would carry with what the OTHER steles of the circle show (the item's own runes plus the new
+     * ones it takes), for the slot count; empty when the item takes no runes.
+     */
+    public static Set<ComplexRune> carried(ItemStack center, List<ComplexRune> onOtherSteles) {
+        Set<ComplexRune> carried = new java.util.LinkedHashSet<>();
+        RuneHolder holder = RuneHolder.of(center);
+        if (holder == null) {
+            return carried;
+        }
+        carried.addAll(holder.runes(center).complexRunes());
+        for (ComplexRune rune : onOtherSteles) {
+            if (holder.takes(rune)) {
+                carried.add(rune);
+            }
+        }
+        return carried;
+    }
+
+    /** The runes chosen on the steles of the altar's circle other than the one at {@code stele}. */
+    public static List<ComplexRune> onOtherSteles(Level level, HextechAltarBlockEntity altar, BlockPos stele) {
+        List<ComplexRune> runes = new ArrayList<>();
+        for (RuneSteleBlockEntity other : Circle.scan(level, altar.getBlockPos()).steles()) {
+            if (!other.getBlockPos().equals(stele) && other.rune() != null) {
+                runes.add(other.rune());
+            }
+        }
+        return runes;
+    }
+
+    /**
+     * Why this rune cannot be chosen on a stele whose circle's other steles show {@code onOtherSteles}, for the item
+     * on the altar, or null when it can: a rune stands on one stele of a circle only; a rune holder never gets more runes
+     * than its slots (raising the stars of a rune it has takes none) nor two that clash.
+     */
+    @Nullable
+    public static Component steleRefusal(ItemStack center, List<ComplexRune> onOtherSteles, ComplexRune rune) {
+        if (onOtherSteles.contains(rune)) {
+            return Component.translatable("gui.hextale.stele.refuse.twice");
+        }
+        RuneHolder holder = RuneHolder.of(center);
+        if (holder == null || !holder.takes(rune)) {
+            return null;
+        }
+        Set<ComplexRune> carried = carried(center, onOtherSteles);
+        for (ComplexRune other : carried) {
+            if (other != rune && holder.clashes(rune, other)) {
+                return Component.translatable("gui.hextale.stele.refuse.clash",
+                        Component.translatable(other.translationKey()));
+            }
+        }
+        if (!carried.contains(rune) && carried.size() >= holder.slots()) {
+            return Component.translatable("gui.hextale.stele.refuse.full", holder.slots());
+        }
+        return null;
     }
 
     private static RuneUse use(ComplexRune rune, @Nullable RuneHolder holder, List<InfusionRecipe> recipes, ItemStack center) {

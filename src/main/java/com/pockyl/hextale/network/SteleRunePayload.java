@@ -53,6 +53,15 @@ public record SteleRunePayload(BlockPos pos, int rune) implements CustomPacketPa
         if (allowed != null && !allowed.contains(rune)) {
             return;
         }
+        // One stele per rune, no more runes than the item has slots, no clashing runes.
+        if (altar != null && allowed != null && rune != stele.rune()) {
+            net.minecraft.network.chat.Component refusal = com.pockyl.hextale.infusion.Ritual.steleRefusal(altar.center(),
+                    com.pockyl.hextale.infusion.Ritual.onOtherSteles(player.level(), altar, payload.pos), rune);
+            if (refusal != null) {
+                player.sendOverlayMessage(refusal);
+                return;
+            }
+        }
         // Creative researchers choose runes they never studied with full stars.
         stele.choose(rune, knowledge.knows(rune) ? knowledge.stars(rune) : 3);
         player.level().playSound(null, payload.pos, ModSounds.STELE_SET.get(), SoundSource.BLOCKS, 0.9F, 1.0F);

@@ -96,7 +96,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   With an item on the altar, a stele lists only the runes that do something for it (the runes a pickaxe, smelter or
   pylon takes, and those its rituals ask for) in a tidy, scrollable list: each with its name, your stars, what it does
   on that item, its number and the essence it draws at your stars (a tooltip shows all three star levels with their essence, what it cannot share an item with
-  and, for a ritual, the essence the whole ritual draws); an empty altar shows the whole codex.
+  and, for a ritual, the essence the whole ritual draws). The circle stays sensible: a rune stands on one stele only,
+  an item never gets more runes than its slots (the header counts them, e.g. 2/3 on the Hex Smelter; raising the stars
+  of a rune it already has takes no slot) and never two incompatible runes - such runes are dimmed with the reason; an empty altar shows the whole codex.
   Sneak-use the altar with an empty hand (or give it a redstone pulse) to start a ritual: the rings turn around the
   centre item, the pedestal items are drawn in one by one, then the essences one after another, and the centre
   becomes something new. A ritual short of essence stalls and, left too long, collapses. Ghosts of the items a ritual

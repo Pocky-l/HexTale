@@ -31,6 +31,7 @@ import com.pockyl.hextale.runework.HextechPickaxe;
 import com.pockyl.hextale.runework.PickaxeGrindstone;
 import com.pockyl.hextale.runework.PickaxeRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
+import com.pockyl.hextale.runework.RuneHolder;
 
 import java.util.List;
 import java.util.Map;
@@ -134,6 +135,29 @@ public final class RuneWorkGameTests {
                 && uses.getFirst().cost(2).equals(PickaxeRune.values()[0].cost(2)), "the list shows what the altar draws for each rune");
         helper.assertTrue(Ritual.runesFor(new ItemStack(Items.DIRT), false).isEmpty(), "dirt takes no rune");
         helper.assertTrue(Ritual.runesFor(ItemStack.EMPTY, false) == null, "an empty altar takes any rune");
+        helper.succeed();
+    }
+
+    /** Steles of one circle: a rune once, no more runes than the item's slots, never two that clash. */
+    @HexTest
+    public static void stelesKeepTheCircleSensible(GameTestHelper helper) {
+        ItemStack smelter = new ItemStack(ModItems.HEX_SMELTER.get());
+        var tempering = com.pockyl.hextale.runework.SmelterRune.TEMPERING.rune();
+        var bellows = com.pockyl.hextale.runework.SmelterRune.BELLOWS.rune();
+        var forge = com.pockyl.hextale.runework.SmelterRune.FORGE.rune();
+        var lens = com.pockyl.hextale.runework.SmelterRune.LENS.rune();
+        helper.assertTrue(Ritual.steleRefusal(smelter, List.of(), tempering) == null, "the first rune goes");
+        helper.assertTrue(Ritual.steleRefusal(smelter, List.of(tempering), tempering) != null, "the same rune twice does not");
+        helper.assertTrue(Ritual.steleRefusal(smelter, List.of(tempering, bellows), forge) == null, "the third fills the last slot");
+        helper.assertTrue(Ritual.steleRefusal(smelter, List.of(tempering, bellows, forge), lens) != null, "a fourth has no slot");
+        // A rune the smelter already carries takes no new slot: its stars may still be raised.
+        ItemStack carrying = smelter.copy();
+        RuneHolder.SMELTER.set(carrying, PickaxeRunes.EMPTY.with(lens, 1));
+        helper.assertTrue(Ritual.steleRefusal(carrying, List.of(tempering, bellows), lens) == null, "raising a carried rune goes");
+        helper.assertTrue(Ritual.steleRefusal(carrying, List.of(tempering, bellows), forge) != null, "but the carried one counts");
+        ItemStack pickaxe = new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get());
+        helper.assertTrue(Ritual.steleRefusal(pickaxe, List.of(PickaxeRune.DRILL.rune()), PickaxeRune.EROSION.rune()) != null,
+                "Drill and Erosion clash");
         helper.succeed();
     }
 

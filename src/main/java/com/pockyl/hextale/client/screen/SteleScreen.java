@@ -51,6 +51,7 @@ public class SteleScreen extends Screen {
     private static final int BUTTON_W = 80;
     private static final int BUTTON_H = 14;
     private static final int GOLD = 0xF0C24A;
+    private static final int REFUSED = 0xFFE07A6A;
 
     private final BlockPos pos;
     private int top;
@@ -76,6 +77,15 @@ public class SteleScreen extends Screen {
     private ComplexRune current() {
         return minecraft != null && minecraft.level != null && minecraft.level.getBlockEntity(pos) instanceof RuneSteleBlockEntity stele
                 ? stele.rune() : null;
+    }
+
+    /** The runes chosen on the other steles of this stele's circle (none without an altar). */
+    private List<ComplexRune> onOtherSteles() {
+        if (minecraft == null || minecraft.level == null) {
+            return List.of();
+        }
+        HextechAltarBlockEntity altar = Ritual.altarOf(minecraft.level, pos);
+        return altar == null ? List.of() : Ritual.onOtherSteles(minecraft.level, altar, pos);
     }
 
     /** The item on the altar of this stele's circle, or empty. */
@@ -121,11 +131,23 @@ public class SteleScreen extends Screen {
         PixelArt.flush(graphics);
         int textWidth = w - HexPlate.BORDER * 2 - 8;
         HexPlate.centered(graphics, font, title, left + w / 2, top + 9, textWidth, HexPlate.TITLE);
+        List<ComplexRune> others = uses == null ? List.of() : onOtherSteles();
         Component subtitle = uses == null ? Component.translatable("gui.hextale.stele.subtitle")
                 : Component.translatable("gui.hextale.stele.for", altarItem.getHoverName());
+        RuneHolder holder = RuneHolder.of(altarItem);
+        if (uses != null && holder != null) {
+            // How many of the item's rune slots it would fill with what all the steles show now.
+            List<ComplexRune> all = new ArrayList<>(others);
+            if (current() != null) {
+                all.add(current());
+            }
+            subtitle = Component.translatable("gui.hextale.stele.for_slots", altarItem.getHoverName(),
+                    Ritual.carried(altarItem, all).size(), holder.slots());
+        }
         HexPlate.centered(graphics, font, subtitle, left + w / 2, top + 20, textWidth, HexPlate.MUTED);
 
-        List<Component> tooltip = uses == null ? grid(graphics, left, mouseX, mouseY, now) : list(graphics, left, uses, mouseX, mouseY, now);
+        List<Component> tooltip = uses == null ? grid(graphics, left, mouseX, mouseY, now)
+                : list(graphics, left, uses, altarItem, others, mouseX, mouseY, now);
         PixelArt.flush(graphics);
         // Clear button.
         int bx = left + (w - BUTTON_W) / 2;
@@ -222,7 +244,8 @@ public class SteleScreen extends Screen {
         return Math.max(0, uses.size() - visibleRows());
     }
 
-    private @Nullable List<Component> list(GuiGraphicsExtractor graphics, int left, List<Ritual.RuneUse> uses, int mouseX, int mouseY, long now) {
+    private @Nullable List<Component> list(GuiGraphicsExtractor graphics, int left, List<Ritual.RuneUse> uses, ItemStack center,
+                                           List<ComplexRune> others, int mouseX, int mouseY, long now) {
         if (uses.isEmpty()) {
             HexPlate.centeredParagraph(graphics, font, Component.translatable("gui.hextale.stele.none"), left + LIST_W / 2,
                     listTop() + 3 * ROW_H, LIST_W - 40, 3, HexPlate.MUTED);
@@ -241,21 +264,31 @@ public class SteleScreen extends Screen {
             boolean known = knows(rune);
             boolean hover = mouseX >= x0 && mouseX < x0 + rowW && mouseY >= y && mouseY < y + ROW_H;
             boolean chosen = rune == current;
+            Component refusal = chosen ? null : Ritual.steleRefusal(center, others, rune);
             if (hover || chosen) {
                 PixelArt.fill(graphics, x0, y, x0 + rowW, y + ROW_H - 1, PixelArt.argb(chosen ? GOLD : rune.color(), chosen ? 0.16F : 0.1F));
             }
             if (i > 0) {
                 PixelArt.fill(graphics, x0 + 4, y - 1, x0 + rowW - 4, y, PixelArt.argb(0x3A3460, 0.6F));
             }
-            tile(graphics, rune, x0 + 1, y + 2, known, hover, chosen, now);
+            tile(graphics, rune, x0 + 1, y + 2, known && refusal == null, hover, chosen, now);
             PixelArt.flush(graphics);
             int tx = x0 + TILE + 6;
             int tw = rowW - TILE - 8;
             int costW = cost(graphics, use.cost(stars(rune)), x0 + rowW - 3, y + 3);
             HexPlate.line(graphics, font, firstLine(use, known), tx, y + 3, tw - costW - 4, HexPlate.TEXT, true);
-            HexPlate.line(graphics, font, secondLine(use), tx, y + 13, tw, HexPlate.MUTED, false);
+            HexPlate.line(graphics, font, refusal != null ? refusal : secondLine(use), tx, y + 13, tw,
+                    refusal != null ? REFUSED : HexPlate.MUTED, false);
+            if (refusal != null) {
+                // Cannot be chosen now: the row dims.
+                PixelArt.fill(graphics, x0, y, x0 + rowW, y + ROW_H - 1, PixelArt.argb(0x0A0814, 0.45F));
+                PixelArt.flush(graphics);
+            }
             if (hover) {
                 tooltip = explain(use, known);
+                if (refusal != null) {
+                    tooltip.set(tooltip.size() - 1, refusal.copy().withColor(REFUSED & 0xFFFFFF));
+                }
             }
         }
         if (scrolls) {
@@ -416,9 +449,13 @@ public class SteleScreen extends Screen {
         }
         ComplexRune rune = uses == null ? gridRuneAt(left, mx, my) : listRuneAt(left, uses, mx, my);
         if (rune != null) {
-            if (knows(rune)) {
+            ItemStack center = altarItem();
+            boolean refused = uses != null && rune != current() && Ritual.steleRefusal(center, onOtherSteles(), rune) != null;
+            if (knows(rune) && !refused) {
                 send(rune.index());
                 onClose();
+            } else if (refused && minecraft != null) {
+                minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.VILLAGER_NO, 1.0F, 0.4F));
             }
             return true;
         }
