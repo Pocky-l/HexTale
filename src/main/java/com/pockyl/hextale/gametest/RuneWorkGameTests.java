@@ -121,6 +121,15 @@ public final class RuneWorkGameTests {
         helper.assertFalse(forPickaxe.contains(ComplexRunes.byKey("fire_water")), "but not a rune no pickaxe takes");
         helper.assertTrue(Ritual.runesFor(new ItemStack(Items.IRON_PICKAXE), false).equals(java.util.Set.of(ComplexRunes.byKey("fire_earth"))),
                 "an iron pickaxe needs only Smelting to become a hextech one");
+        List<Ritual.RuneUse> uses = Ritual.usesFor(altar.center(), false);
+        for (int i = 0; i < PickaxeRune.values().length; i++) {
+            helper.assertTrue(uses.get(i).rune() == PickaxeRune.values()[i].rune() && uses.get(i).holder() != null,
+                    "the pickaxe's runes come in the book's order, got " + uses.get(i).rune() + " at " + i);
+        }
+        List<Ritual.RuneUse> iron = Ritual.usesFor(new ItemStack(Items.IRON_PICKAXE), false);
+        helper.assertTrue(iron.size() == 1 && iron.getFirst().holder() == null
+                        && iron.getFirst().makes().getFirst().is(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()),
+                "Smelting on an iron pickaxe is what makes the hextech pickaxe");
         helper.assertTrue(Ritual.runesFor(new ItemStack(Items.DIRT), false).isEmpty(), "dirt takes no rune");
         helper.assertTrue(Ritual.runesFor(ItemStack.EMPTY, false) == null, "an empty altar takes any rune");
         helper.succeed();

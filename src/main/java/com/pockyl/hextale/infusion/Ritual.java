@@ -87,20 +87,49 @@ public final class Ritual {
      */
     @Nullable
     public static Set<ComplexRune> runesFor(ItemStack center, boolean clientSide) {
-        if (center.isEmpty()) {
+        List<RuneUse> uses = usesFor(center, clientSide);
+        if (uses == null) {
             return null;
         }
         Set<ComplexRune> runes = new java.util.LinkedHashSet<>();
-        RuneHolder holder = RuneHolder.of(center);
-        if (holder != null) {
-            runes.addAll(holder.takes());
+        uses.forEach(use -> runes.add(use.rune()));
+        return runes;
+    }
+
+    /**
+     * What a rune does for the centre item: burned into it ({@code holder}, the item takes it like an enchantment)
+     * and/or asked for by the rituals that turn it into {@code makes}.
+     */
+    public record RuneUse(ComplexRune rune, @Nullable RuneHolder holder, List<ItemStack> makes) {
+    }
+
+    /**
+     * The runes that do something for this centre item, each once: first the ones it takes (in the holder's order, as
+     * the book shows them), then the ones its rituals ask for (codex order). Null for an empty centre.
+     */
+    @Nullable
+    public static List<RuneUse> usesFor(ItemStack center, boolean clientSide) {
+        if (center.isEmpty()) {
+            return null;
         }
+        Map<ComplexRune, List<ItemStack>> makes = new java.util.TreeMap<>(Comparator.comparingInt(ComplexRune::index));
         for (InfusionRecipe recipe : InfusionRecipes.get(clientSide).values()) {
             if (recipe.center().test(center)) {
-                runes.addAll(recipe.runes());
+                for (ComplexRune rune : recipe.runes()) {
+                    makes.computeIfAbsent(rune, key -> new ArrayList<>()).add(recipe.resultFor(center));
+                }
             }
         }
-        return runes;
+        List<RuneUse> uses = new ArrayList<>();
+        RuneHolder holder = RuneHolder.of(center);
+        if (holder != null) {
+            for (ComplexRune rune : holder.takes()) {
+                List<ItemStack> results = makes.remove(rune);
+                uses.add(new RuneUse(rune, holder, results == null ? List.of() : results));
+            }
+        }
+        makes.forEach((rune, results) -> uses.add(new RuneUse(rune, null, results)));
+        return uses;
     }
 
     /** What the altar's surroundings hold: pedestals, rune steles (clockwise from north) and essence tanks. */
