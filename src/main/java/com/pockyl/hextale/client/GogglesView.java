@@ -58,6 +58,8 @@ public final class GogglesView {
     private static final int TEXT = 0xFFE8E0F0;
     private static final int DIM = 0xFF9A90B8;
     private static final int LINE = 11;
+    /** Text colours of the pipe side modes (by ordinal): the collars' green and blue, red for shut. */
+    private static final int[] PIPE_COLOURS = {0x9A90B8, 0xE8E0F0, 0x7FD38E, 0x98E3FB, 0xE07A6A};
     private static final String KEY = "goggles.hextale.";
     /** The plate slides out from the crosshair when the goggles settle on a new block. */
     private static final long SLIDE_MILLIS = 160;
@@ -203,6 +205,16 @@ public final class GogglesView {
         if (state.getBlock() instanceof BrassPipeBlock || entity instanceof DrainValveBlockEntity) {
             rows.add(Row.heading(Component.translatable(KEY + "network")));
             contents(rows, network(level, pos));
+            // The side under the crosshair: what it does, and how to change it.
+            if (state.getBlock() instanceof BrassPipeBlock && Minecraft.getInstance().hitResult instanceof BlockHitResult hit) {
+                Direction side = BrassPipeBlock.aimedSide(state, pos, hit);
+                com.pockyl.hextale.block.PipeSide mode = BrassPipeBlock.side(state, side);
+                if (mode != com.pockyl.hextale.block.PipeSide.NONE) {
+                    rows.add(new Row(null, Component.translatable(KEY + "pipe_side",
+                            Component.translatable(KEY + "pipe_side." + mode.getSerializedName())), 0xFF000000 | PIPE_COLOURS[mode.ordinal()]));
+                }
+                rows.add(Row.heading(Component.translatable("block.hextale.brass_pipe.hint")));
+            }
             return new Reading(name, rows);
         }
         if (entity instanceof HexPylonBlockEntity pylon) {

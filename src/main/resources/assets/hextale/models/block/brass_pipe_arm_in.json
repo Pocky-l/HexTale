@@ -1,0 +1,257 @@
+{
+  "textures": {
+    "particle": "hextale:block/brass_pipe",
+    "pipe": "hextale:block/brass_pipe"
+  },
+  "elements": [
+    {
+      "name": "tube_outer",
+      "from": [
+        7,
+        7,
+        1
+      ],
+      "to": [
+        9,
+        9,
+        3
+      ],
+      "faces": {
+        "east": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            5,
+            2,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            5,
+            2,
+            7
+          ]
+        },
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            5,
+            2,
+            7
+          ],
+          "rotation": 90
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            5,
+            2,
+            7
+          ],
+          "rotation": 90
+        }
+      }
+    },
+    {
+      "name": "collar",
+      "from": [
+        6,
+        6,
+        3
+      ],
+      "to": [
+        10,
+        10,
+        4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            11,
+            4,
+            15
+          ]
+        },
+        "south": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            11,
+            4,
+            15
+          ]
+        },
+        "east": {
+          "texture": "#pipe",
+          "uv": [
+            5,
+            11,
+            9,
+            12
+          ],
+          "rotation": 90
+        },
+        "west": {
+          "texture": "#pipe",
+          "uv": [
+            5,
+            11,
+            9,
+            12
+          ],
+          "rotation": 90
+        },
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            5,
+            11,
+            9,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            5,
+            11,
+            9,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "name": "tube_inner",
+      "from": [
+        7,
+        7,
+        4
+      ],
+      "to": [
+        9,
+        9,
+        6
+      ],
+      "faces": {
+        "east": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            5,
+            2,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            5,
+            2,
+            7
+          ]
+        },
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            5,
+            2,
+            7
+          ],
+          "rotation": 90
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            5,
+            2,
+            7
+          ],
+          "rotation": 90
+        }
+      }
+    },
+    {
+      "name": "flange",
+      "from": [
+        6,
+        6,
+        0
+      ],
+      "to": [
+        10,
+        10,
+        1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pipe",
+          "uv": [
+            5,
+            0,
+            9,
+            4
+          ],
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#pipe",
+          "uv": [
+            5,
+            0,
+            9,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ],
+          "rotation": 90
+        },
+        "west": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ],
+          "rotation": 90
+        },
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ]
+        }
+      }
+    }
+  ]
+}

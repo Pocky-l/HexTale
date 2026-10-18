@@ -155,25 +155,44 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
             }
             return;
         }
-        if (level.getGameTime() % FLOW_EVERY != 0 || tank.tank.isEmpty()) {
+        if (level.getGameTime() % FLOW_EVERY != 0 || tank.tank.isEmpty()
+                || BrassPipeBlock.side(level.getBlockState(pos.below()), Direction.UP) == PipeSide.OUT) {
+            // A pipe below that pumps the jar out does the pouring itself.
             return;
         }
         EssenceMix offer = tank.tank.drain(FLOW, true);
-        int moved = EssenceNetwork.push(level, pos, Direction.DOWN, offer);
+        int moved;
+        pouring = true;
+        try {
+            moved = EssenceNetwork.push(level, pos, Direction.DOWN, offer);
+        } finally {
+            pouring = false;
+        }
         if (moved > 0) {
             tank.tank.remove(offer.part(moved));
             tank.setChanged();
         }
     }
 
+    /**
+     * The jar pours out at the bottom (unless the pipe there is set to "in only" or shut) and through every side
+     * whose pipe pumps it out.
+     */
     @Override
     public boolean isOutlet(Direction face) {
-        return face == Direction.DOWN;
+        PipeSide pipe = level == null ? PipeSide.NONE : BrassPipeBlock.side(level.getBlockState(worldPosition.relative(face)), face.getOpposite());
+        return pipe == PipeSide.OUT || face == Direction.DOWN && pipe != PipeSide.IN && pipe != PipeSide.CLOSED;
     }
+
+    /**
+     * Whether a jar is pouring out of its bottom right now: what one jar pours never runs up into the bottom of another
+     * (two jars on one pipe would pour into each other for ever); pumps, machines and pylons may fill a jar from below.
+     */
+    private static boolean pouring;
 
     @Override
     public int receive(Direction side, EssenceMix offer, boolean simulate) {
-        if (side == Direction.DOWN || isCreative() || !accepts(offer)) {
+        if (side == Direction.DOWN && pouring || isCreative() || !accepts(offer)) {
             return 0;
         }
         int taken = tank.fill(offer, simulate);

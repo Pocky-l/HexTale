@@ -44,8 +44,8 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * An Essence Jar (the block id is still essence_tank): a big glass jar with a wooden lid that stores a large amount of
- * one liquid (whatever flows in mixes). Pipes fill it through the top and the sides; it lets its liquid out at the
- * bottom. A bottle of essence by hand pours in, a glass bottle draws out; an empty hand reads it.
+ * one liquid (whatever flows in mixes). Pipes fill it through every face, the bottom too; it lets its liquid out at the
+ * bottom and through pipes set to pump it out. A bottle of essence by hand pours in, a glass bottle draws out; an empty hand reads it.
  */
 public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine {
     /** The glass body and the shoulder, the neck and the lid above it (as the model, without the pipe fittings). */
@@ -72,7 +72,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
         return SHAPE;
     }
 
-    /** Every face: in at the top and the sides, out at the bottom; the model shows a fitting where a pipe joins. */
+    /** Every face: in everywhere, out at the bottom (and where a pipe pumps); the model shows a fitting where a pipe joins. */
     @Override
     public boolean isPort(BlockState state, Direction face) {
         return true;

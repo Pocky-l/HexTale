@@ -21,7 +21,9 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightningRodBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.Hextale;
@@ -30,6 +32,7 @@ import com.pockyl.hextale.block.AlembicBlockEntity;
 import com.pockyl.hextale.block.BrassPipeBlock;
 import com.pockyl.hextale.block.DrainValveBlock;
 import com.pockyl.hextale.block.EssenceMachine;
+import com.pockyl.hextale.block.PipeSide;
 import com.pockyl.hextale.block.PortMode;
 import com.pockyl.hextale.block.PumpBlock;
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
@@ -685,6 +688,8 @@ public final class ResearchGameTests {
         helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState().setValue(SeparatorBlock.FACING, Direction.NORTH));
         helper.setBlock(at.north(), ModBlocks.BRASS_PIPE.get());
         helper.setBlock(at.north(2), ModBlocks.ESSENCE_TANK.get());
+        // As placed by a player: the separator shows its ports, so the pipes join them.
+        helper.setBlock(at, SeparatorBlock.withLooks(helper.getBlockState(at), helper.getLevel(), helper.absolutePos(at)));
         EssenceTankBlockEntity source = helper.getBlockEntity(at.south(2).above(), EssenceTankBlockEntity.class);
         EssenceTankBlockEntity sink = helper.getBlockEntity(at.north(2), EssenceTankBlockEntity.class);
         SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
@@ -703,8 +708,9 @@ public final class ResearchGameTests {
 
     @HexTest(maxTicks = 400)
     public static void theRestNeverFlowsBackIntoTheSeparator(GameTestHelper helper) {
-        // One pipe network touches the separator's front (rest out) and its east side (mixture in), and a tank that
-        // takes from it at its side and lets out at its bottom into the same pipes: the rest must not go round in circles.
+        // One pipe network touches the separator's front (rest out) and its east side (mixture in), and a tank at its
+        // side and its bottom: the rest must not go round in circles. The tank takes it in from below (through the
+        // pipe it pours into), never at its side, and what it pours never gets back into the separator.
         BlockPos at = new BlockPos(2, 3, 2);
         helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState().setValue(SeparatorBlock.FACING, Direction.NORTH));
         for (BlockPos pipe : new BlockPos[]{at.north(), at.north().east(), at.east(), at.north().east().below(), at.north().east(2).below()}) {
@@ -718,9 +724,8 @@ public final class ResearchGameTests {
         separator.choose(Essence.EARTH);
         helper.runAfterDelay(200, () -> {
             helper.assertTrue(separator.mix().isEmpty(), "the mixture was worked off, left " + separator.mix().contents());
-            helper.assertTrue(separator.rest().contents().get(Essence.AIR) == 8 && separator.rest().contents().isUnknown(),
-                    "the air stays in the separator, got rest " + separator.rest().contents() + ", tank " + tank.tank().contents());
-            helper.assertTrue(tank.tank().isEmpty(), "the tank feeding back into the same pipes takes nothing");
+            helper.assertTrue(tank.tank().contents().get(Essence.AIR) == 8 && separator.rest().isEmpty(),
+                    "the air went into the tank from below, got rest " + separator.rest().contents() + ", tank " + tank.tank().contents());
             helper.succeed();
         });
     }
@@ -821,7 +826,7 @@ public final class ResearchGameTests {
             helper.assertTrue(jar.getValue(EssenceMachine.PORTS.get(face)), "the jar shows a fitting " + face);
         }
         helper.assertFalse(jar.getValue(EssenceMachine.PORTS.get(Direction.SOUTH)), "and none on a free side");
-        helper.assertTrue(helper.getBlockState(at.above()).getValue(BrassPipeBlock.SIDES.get(Direction.DOWN)),
+        helper.assertTrue(helper.getBlockState(at.above()).getValue(BrassPipeBlock.SIDES.get(Direction.DOWN)).open(),
                 "the pipe on top joins the lid");
         helper.setBlock(at.above(), Blocks.AIR);
         helper.assertFalse(helper.getBlockState(at).getValue(EssenceMachine.PORTS.get(Direction.UP)), "the fitting goes with the pipe");
@@ -836,8 +841,8 @@ public final class ResearchGameTests {
         helper.setBlock(at.below(), ModBlocks.BRASS_PIPE.get());
         BlockState separator = helper.getBlockState(at);
         helper.assertTrue(separator.getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.INLET, "the separator shows an inlet on its east side");
-        helper.assertTrue(helper.getBlockState(at.east()).getValue(BrassPipeBlock.SIDES.get(Direction.WEST)), "and the pipe joins it");
-        helper.assertFalse(helper.getBlockState(at.below()).getValue(BrassPipeBlock.SIDES.get(Direction.UP)),
+        helper.assertTrue(helper.getBlockState(at.east()).getValue(BrassPipeBlock.SIDES.get(Direction.WEST)).open(), "and the pipe joins it");
+        helper.assertFalse(helper.getBlockState(at.below()).getValue(BrassPipeBlock.SIDES.get(Direction.UP)).open(),
                 "the bottom is no port: the pipe below stays apart");
         // Facing north, the east face is the separator's left: make it a concentrate outlet.
         SeparatorBlockEntity entity = helper.getBlockEntity(at, SeparatorBlockEntity.class);
@@ -850,7 +855,7 @@ public final class ResearchGameTests {
         entity.cycle(SeparatorBlock.Side.LEFT);
         helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.NONE,
                 "a closed side shows no joint");
-        helper.assertFalse(helper.getBlockState(at.east()).getValue(BrassPipeBlock.SIDES.get(Direction.WEST)),
+        helper.assertFalse(helper.getBlockState(at.east()).getValue(BrassPipeBlock.SIDES.get(Direction.WEST)).open(),
                 "and no pipe joins it");
         entity.cycle(SeparatorBlock.Side.LEFT);
         entity.cycle(SeparatorBlock.Side.LEFT);
@@ -877,6 +882,106 @@ public final class ResearchGameTests {
             helper.assertTrue(target.tank().contents().equals(EssenceMix.pure(Essence.WATER, 12)),
                     "the water ran down the pipe into the other tank, got " + target.tank().contents());
             helper.assertTrue(source.tank().isEmpty(), "the first tank is empty");
+        });
+    }
+
+    /** A pipe side set to "out only" pumps a jar out through its side, and another jar takes it in from below. */
+    @HexTest(maxTicks = 200)
+    public static void aPipeSetToOutPumpsAJarIntoAnotherFromBelow(GameTestHelper helper) {
+        BlockPos from = new BlockPos(1, 2, 1);
+        BlockPos pump = from.east();
+        BlockPos under = from.east(2);
+        BlockPos to = under.above();
+        helper.setBlock(from, ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(pump, ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(under, ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(to, ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(pump, helper.getBlockState(pump).setValue(BrassPipeBlock.SIDES.get(Direction.WEST), PipeSide.OUT));
+        helper.assertTrue(helper.getBlockState(to).getValue(EssenceMachine.PORTS.get(Direction.DOWN)), "the jar shows its foot fitting");
+        EssenceTankBlockEntity source = helper.getBlockEntity(from, EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity target = helper.getBlockEntity(to, EssenceTankBlockEntity.class);
+        source.tank().set(EssenceMix.pure(Essence.FIRE, 12));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(target.tank().contents().equals(EssenceMix.pure(Essence.FIRE, 12)),
+                    "the fire was pumped into the other jar from below, got " + target.tank().contents());
+            helper.assertTrue(source.tank().isEmpty(), "the first jar is empty");
+        });
+    }
+
+    /** One jar never pours into the bottom of another: two jars on one pipe keep what they hold. */
+    @HexTest(maxTicks = 100)
+    public static void jarsNeverPourIntoEachOthersBottoms(GameTestHelper helper) {
+        BlockPos a = new BlockPos(1, 3, 1);
+        BlockPos b = a.east();
+        helper.setBlock(a.below(), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(b.below(), ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(a, ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(b, ModBlocks.ESSENCE_TANK.get());
+        EssenceTankBlockEntity first = helper.getBlockEntity(a, EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity second = helper.getBlockEntity(b, EssenceTankBlockEntity.class);
+        first.tank().set(EssenceMix.pure(Essence.WATER, 12));
+        second.tank().set(EssenceMix.pure(Essence.EARTH, 12));
+        helper.runAfterDelay(40, () -> {
+            helper.assertTrue(first.tank().contents().equals(EssenceMix.pure(Essence.WATER, 12))
+                    && second.tank().contents().equals(EssenceMix.pure(Essence.EARTH, 12)),
+                    "both jars keep their own, got " + first.tank().contents() + " and " + second.tank().contents());
+            helper.succeed();
+        });
+    }
+
+    /** Sneak-using a pipe's arm shuts the joint on both pipes and opens it again; shut or in-only sides pass nothing. */
+    @HexTest(maxTicks = 200)
+    public static void pipeSidesAreSetByHand(GameTestHelper helper) {
+        BlockPos left = new BlockPos(1, 2, 1);
+        BlockPos right = left.east();
+        helper.setBlock(left, ModBlocks.BRASS_PIPE.get());
+        helper.setBlock(right, ModBlocks.BRASS_PIPE.get());
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setShiftKeyDown(true);
+        BlockPos at = helper.absolutePos(left);
+        // The east arm of the left pipe: 6 px east of its centre.
+        BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(at).add(0.375, 0.1, 0), Direction.UP, at, false);
+        helper.getBlockState(left).useWithoutItem(helper.getLevel(), player, hit);
+        helper.assertTrue(BrassPipeBlock.side(helper.getBlockState(left), Direction.EAST) == PipeSide.CLOSED
+                && BrassPipeBlock.side(helper.getBlockState(right), Direction.WEST) == PipeSide.CLOSED, "both pipes shut the joint");
+        helper.assertFalse(com.pockyl.hextale.essence.EssenceNetwork.network(helper.getLevel(), at).contains(helper.absolutePos(right)),
+                "the pipes are apart");
+        helper.getBlockState(left).useWithoutItem(helper.getLevel(), player, hit);
+        helper.assertTrue(BrassPipeBlock.side(helper.getBlockState(left), Direction.EAST) == PipeSide.PIPE
+                && BrassPipeBlock.side(helper.getBlockState(right), Direction.WEST) == PipeSide.PIPE, "and open it again");
+        // A jar above the right pipe: its side cycles both ways -> in only -> out only -> shut -> both ways.
+        BlockPos jarAt = right.above();
+        helper.setBlock(jarAt, ModBlocks.ESSENCE_TANK.get());
+        BlockPos rightAt = helper.absolutePos(right);
+        BlockHitResult up = new BlockHitResult(Vec3.atCenterOf(rightAt).add(0, 0.4, 0), Direction.UP, rightAt, false);
+        PipeSide[] cycle = {PipeSide.IN, PipeSide.OUT, PipeSide.CLOSED, PipeSide.PIPE, PipeSide.IN};
+        for (PipeSide expected : cycle) {
+            helper.getBlockState(right).useWithoutItem(helper.getLevel(), player, up);
+            helper.assertTrue(BrassPipeBlock.side(helper.getBlockState(right), Direction.UP) == expected, "the jar side is now " + expected);
+        }
+        helper.assertTrue(helper.getBlockState(jarAt).getValue(EssenceMachine.PORTS.get(Direction.DOWN)), "the jar shows the fitting");
+        // In only: the jar pours nothing down into it, so the jar beside the pipe gets nothing.
+        helper.setBlock(right.east(), ModBlocks.ESSENCE_TANK.get());
+        EssenceTankBlockEntity jar = helper.getBlockEntity(jarAt, EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity beside = helper.getBlockEntity(right.east(), EssenceTankBlockEntity.class);
+        jar.tank().set(EssenceMix.pure(Essence.WATER, 12));
+        helper.runAfterDelay(40, () -> {
+            helper.assertTrue(beside.tank().isEmpty() && jar.tank().amount() == 12, "an in-only side lets nothing out of the jar");
+            // Back to both ways, but the side towards the jar beside is shut: still nothing reaches it.
+            for (int i = 0; i < 3; i++) {
+                helper.getBlockState(right).useWithoutItem(helper.getLevel(), player, up);
+            }
+            helper.assertTrue(BrassPipeBlock.side(helper.getBlockState(right), Direction.UP) == PipeSide.PIPE, "back to both ways");
+            BlockHitResult east = new BlockHitResult(Vec3.atCenterOf(rightAt).add(0.4, 0, 0), Direction.EAST, rightAt, false);
+            for (int i = 0; i < 3; i++) {
+                helper.getBlockState(right).useWithoutItem(helper.getLevel(), player, east);
+            }
+            helper.assertTrue(BrassPipeBlock.side(helper.getBlockState(right), Direction.EAST) == PipeSide.CLOSED, "the side to the jar beside is shut");
+            helper.assertFalse(helper.getBlockState(right.east()).getValue(EssenceMachine.PORTS.get(Direction.WEST)), "and it shows no fitting");
+            helper.runAfterDelay(40, () -> {
+                helper.assertTrue(beside.tank().isEmpty(), "a shut side lets nothing through, got " + beside.tank().contents());
+                helper.succeed();
+            });
         });
     }
 

@@ -69,7 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   It works off 4 mB every half second. The dark unknown essence can be chosen as well: it is filtered out into its own
   bottles, and the rest comes out clean (no new unknown essence on top) - a mixture dirtied by unstudied items can be
   cleaned into a concentrate again.
-- Essence Jar: a big glass jar with a wooden lid (glass and wooden slabs, no brass), 256 mB; in through the lid and the sides, out at the bottom. Sneak-use
+- Essence Jar: a big glass jar with a wooden lid (glass and wooden slabs, no brass), 256 mB; in through every face - the bottom too - and out at the bottom. Sneak-use
   a side or the lid with an empty hand to stick an enamel label with an essence's sign on it. The Research Table draws
   its ink from jars of concentrate within 5 blocks - every drop it spends streams from its jar into the orb. A Creative Essence Jar holds every essence without end.
   A jar breaks quickly by hand and keeps its essence and its sticker: the item shows the liquid and the sticker inside
@@ -81,7 +81,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   machines draw from it like from any jar. Breaking any of its blocks
   takes it apart into its glass and slabs; the essence inside is lost and no jar drops. The ground under it stays lit. The guide shows the structure layer by layer.
 - Brass Pipes - slim tubes with small flanges - carry essence and water and join a machine only where it has a port;
-  the machine's model grows a matching joint there. The Drain Valve pours whatever reaches it out into the world while
+  the machine's model grows a matching joint there. Sneak-use a pipe's side with an empty hand to set it: next to
+  another pipe it shuts the joint (both pipes show capped stubs) or opens it again; next to a machine or jar it cycles
+  both ways -> in only (green collar) -> out only (blue collar; a jar on that side is pumped out into the pipes) -> shut.
+  The goggles and the pipe's tooltip tell what the side you look at does. The Drain Valve pours whatever reaches it out into the world while
   its handwheel is open; essence it pours onto stone soaks in and turns it into magic stone.
 - Researcher's Goggles: worn on the head, they show the essences inside a jar, pipe or machine you look at; looking at a
   Research Table shows its ink while coloured streams run from each jar to the orb.

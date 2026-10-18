@@ -91,6 +91,10 @@ public final class HextaleClient {
                             .append(Component.literal(" " + "★".repeat(entry.stars())).withStyle(ChatFormatting.GOLD)));
                 }
             }
+            // How a pipe's sides are set.
+            if (stack.is(ModItems.BRASS_PIPE.get())) {
+                event.getToolTip().add(Component.translatable("block.hextale.brass_pipe.hint").withStyle(ChatFormatting.DARK_AQUA));
+            }
             // How a pylon is set up: what it does, how to link it, how to untie it.
             if (ModItems.isPylon(stack)) {
                 String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();

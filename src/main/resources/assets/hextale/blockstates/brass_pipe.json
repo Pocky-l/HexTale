@@ -7,7 +7,7 @@
     },
     {
       "when": {
-        "north": "true"
+        "north": "pipe"
       },
       "apply": {
         "model": "hextale:block/brass_pipe_arm"
@@ -15,7 +15,31 @@
     },
     {
       "when": {
-        "east": "true"
+        "north": "in"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm_in"
+      }
+    },
+    {
+      "when": {
+        "north": "out"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm_out"
+      }
+    },
+    {
+      "when": {
+        "north": "closed"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_stub"
+      }
+    },
+    {
+      "when": {
+        "east": "pipe"
       },
       "apply": {
         "model": "hextale:block/brass_pipe_arm",
@@ -24,7 +48,34 @@
     },
     {
       "when": {
-        "south": "true"
+        "east": "in"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm_in",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "out"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm_out",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "closed"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_stub",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "pipe"
       },
       "apply": {
         "model": "hextale:block/brass_pipe_arm",
@@ -33,7 +84,34 @@
     },
     {
       "when": {
-        "west": "true"
+        "south": "in"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm_in",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "out"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm_out",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "closed"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_stub",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "pipe"
       },
       "apply": {
         "model": "hextale:block/brass_pipe_arm",
@@ -42,7 +120,34 @@
     },
     {
       "when": {
-        "up": "true"
+        "west": "in"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm_in",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "out"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm_out",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "closed"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_stub",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "pipe"
       },
       "apply": {
         "model": "hextale:block/brass_pipe_arm",
@@ -51,10 +156,64 @@
     },
     {
       "when": {
-        "down": "true"
+        "up": "in"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm_in",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "up": "out"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm_out",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "up": "closed"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_stub",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "down": "pipe"
       },
       "apply": {
         "model": "hextale:block/brass_pipe_arm",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "down": "in"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm_in",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "down": "out"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_arm_out",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "down": "closed"
+      },
+      "apply": {
+        "model": "hextale:block/brass_pipe_stub",
         "x": 90
       }
     }

@@ -35,7 +35,7 @@ public interface EssenceMachine {
         if (!state.hasProperty(property) || !(state.getBlock() instanceof EssenceMachine machine)) {
             return state;
         }
-        boolean joined = neighbour.getBlock() instanceof BrassPipeBlock
+        boolean joined = BrassPipeBlock.joins(neighbour, face.getOpposite())
                 // A drain valve right beside a jar takes from it directly; both show the joint.
                 || state.getBlock() instanceof DrainValveBlock && neighbour.getBlock() instanceof EssenceTankBlock
                 || state.getBlock() instanceof EssenceTankBlock && neighbour.getBlock() instanceof DrainValveBlock valve
