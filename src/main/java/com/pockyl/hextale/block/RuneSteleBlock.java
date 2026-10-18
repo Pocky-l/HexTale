@@ -39,8 +39,8 @@ import org.jspecify.annotations.Nullable;
 public class RuneSteleBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 2, 13), Block.box(4, 2, 4, 12, 9, 12),
-            Block.box(5, 9, 5, 11, 15, 11), Block.box(7, 15, 7, 9, 16, 9));
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 2, 13), Block.box(4, 2, 4, 12, 10, 12),
+            Block.box(5, 10, 5, 11, 12, 11), Block.box(6, 12, 6, 10, 13, 10), Block.box(7, 13, 7, 9, 16, 9));
 
     public RuneSteleBlock(Properties properties) {
         super(properties);

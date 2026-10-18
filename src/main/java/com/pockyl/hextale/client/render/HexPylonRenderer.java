@@ -167,7 +167,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         switch (state.kind) {
             case GATHERING -> {
                 // Lying in the bowl, just over its carved floor.
-                poseStack.translate(0.5, 4.3 / 16, 0.5);
+                poseStack.translate(0.5, 3.3 / 16, 0.5);
                 poseStack.rotate(Axis.XP.rotationDegrees(90));
                 poseStack.rotate(Axis.ZP.rotationDegrees(time * 0.6F));
                 HexFx.sigilRing(poseStack, collector, 0.34F, 6, state.color, 0.45F + 0.4F * state.flare);

@@ -38,9 +38,9 @@ import org.jspecify.annotations.Nullable;
  * sneak + right click with an empty hand takes all its links away.
  */
 public class HexPylonBlock extends BaseEntityBlock {
-    private static final VoxelShape GATHERING_SHAPE = Shapes.or(Block.box(5, 0, 5, 11, 3, 11), Block.box(2, 3, 2, 14, 6, 14));
+    private static final VoxelShape GATHERING_SHAPE = Shapes.or(Block.box(5, 0, 5, 11, 2, 11), Block.box(2, 2, 2, 14, 6, 14));
     private static final VoxelShape SENDING_SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 2, 15), Block.box(4, 2, 4, 12, 7, 12));
-    private static final VoxelShape RELAY_SHAPE = Shapes.or(Block.box(4, 0, 4, 12, 2, 12), Block.box(5, 2, 5, 11, 15, 11));
+    private static final VoxelShape RELAY_SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 1, 13), Block.box(5, 1, 5, 11, 15, 11));
     private static final VoxelShape SIPHON_SHAPE = Shapes.or(Block.box(5, 0, 5, 11, 4, 11), Block.box(4, 4, 4, 12, 11, 12),
             Block.box(5, 11, 5, 11, 15, 11));
 

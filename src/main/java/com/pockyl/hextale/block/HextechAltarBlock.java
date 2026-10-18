@@ -41,8 +41,8 @@ import org.jspecify.annotations.Nullable;
  */
 public class HextechAltarBlock extends BaseEntityBlock {
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 3, 15), Block.box(3, 3, 3, 13, 10, 13),
-            Block.box(1, 10, 1, 15, 13, 15));
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 3, 15), Block.box(4, 3, 4, 12, 11, 12),
+            Block.box(3, 11, 3, 13, 12, 13), Block.box(1, 12, 1, 15, 13, 15));
 
     public HextechAltarBlock(Properties properties) {
         super(properties);

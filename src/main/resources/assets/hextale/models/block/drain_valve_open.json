@@ -127,15 +127,6 @@
             7
           ],
           "rotation": 90
-        },
-        "down": {
-          "texture": "#pipe",
-          "uv": [
-            10,
-            0,
-            12,
-            2
-          ]
         }
       }
     },
@@ -168,16 +159,16 @@
     },
     {
       "from": [
-        4,
-        13,
-        7
+        6,
+        0,
+        6
       ],
       "to": [
-        12,
-        14,
-        9
+        10,
+        1,
+        10
       ],
-      "name": "wheel",
+      "name": "nozzle",
       "faces": {
         "north": {
           "texture": "#brass"
@@ -195,46 +186,83 @@
           "texture": "#brass"
         },
         "down": {
-          "texture": "#brass"
+          "texture": "#pipe",
+          "uv": [
+            5,
+            0,
+            9,
+            4
+          ],
+          "cullface": "down"
         }
-      },
-      "rotation": {
-        "origin": [
-          8,
-          13.5,
-          8
-        ],
-        "axis": "y",
-        "angle": 45
       }
     },
     {
       "from": [
-        7,
-        13,
-        4
+        5.0,
+        13.0,
+        3.0
       ],
       "to": [
-        9,
-        14,
-        7
+        11.0,
+        14.0,
+        4.0
       ],
-      "name": "wheel",
+      "name": "wheel_rim",
       "faces": {
         "north": {
-          "texture": "#brass"
+          "texture": "#brass",
+          "uv": [
+            5,
+            2,
+            11,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            5,
+            2,
+            11,
+            3
+          ]
         },
         "east": {
-          "texture": "#brass"
+          "texture": "#brass",
+          "uv": [
+            12,
+            2,
+            13,
+            3
+          ]
         },
         "west": {
-          "texture": "#brass"
+          "texture": "#brass",
+          "uv": [
+            3,
+            2,
+            4,
+            3
+          ]
         },
         "up": {
-          "texture": "#brass"
+          "texture": "#brass",
+          "uv": [
+            5,
+            3,
+            11,
+            4
+          ]
         },
         "down": {
-          "texture": "#brass"
+          "texture": "#brass",
+          "uv": [
+            5,
+            12,
+            11,
+            13
+          ]
         }
       },
       "rotation": {
@@ -249,31 +277,787 @@
     },
     {
       "from": [
-        7,
-        13,
-        9
+        5.0,
+        13.0,
+        12.0
       ],
       "to": [
-        9,
-        14,
-        12
+        11.0,
+        14.0,
+        13.0
       ],
-      "name": "wheel",
+      "name": "wheel_rim",
       "faces": {
-        "east": {
-          "texture": "#brass"
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            5,
+            2,
+            11,
+            3
+          ]
         },
         "south": {
-          "texture": "#brass"
+          "texture": "#brass",
+          "uv": [
+            5,
+            2,
+            11,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            2,
+            4,
+            3
+          ]
         },
         "west": {
-          "texture": "#brass"
+          "texture": "#brass",
+          "uv": [
+            12,
+            2,
+            13,
+            3
+          ]
         },
         "up": {
-          "texture": "#brass"
+          "texture": "#brass",
+          "uv": [
+            5,
+            12,
+            11,
+            13
+          ]
         },
         "down": {
-          "texture": "#brass"
+          "texture": "#brass",
+          "uv": [
+            5,
+            3,
+            11,
+            4
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          13.5,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        3.0,
+        13.0,
+        5.0
+      ],
+      "to": [
+        4.0,
+        14.0,
+        11.0
+      ],
+      "name": "wheel_rim",
+      "faces": {
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            12,
+            2,
+            13,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            2,
+            4,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            5,
+            2,
+            11,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            5,
+            2,
+            11,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            5,
+            4,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            5,
+            4,
+            11
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          13.5,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        12.0,
+        13.0,
+        5.0
+      ],
+      "to": [
+        13.0,
+        14.0,
+        11.0
+      ],
+      "name": "wheel_rim",
+      "faces": {
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            2,
+            4,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            12,
+            2,
+            13,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            5,
+            2,
+            11,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            5,
+            2,
+            11,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            12,
+            5,
+            13,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            12,
+            5,
+            13,
+            11
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          13.5,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        4.0,
+        13.0,
+        4.0
+      ],
+      "to": [
+        5.0,
+        14.0,
+        5.0
+      ],
+      "name": "wheel_rim",
+      "faces": {
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            11,
+            2,
+            12,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            2,
+            5,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            11,
+            2,
+            12,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            2,
+            5,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            5
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            11,
+            5,
+            12
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          13.5,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        11.0,
+        13.0,
+        4.0
+      ],
+      "to": [
+        12.0,
+        14.0,
+        5.0
+      ],
+      "name": "wheel_rim",
+      "faces": {
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            2,
+            5,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            11,
+            2,
+            12,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            11,
+            2,
+            12,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            2,
+            5,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            11,
+            4,
+            12,
+            5
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            11,
+            11,
+            12,
+            12
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          13.5,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        4.0,
+        13.0,
+        11.0
+      ],
+      "to": [
+        5.0,
+        14.0,
+        12.0
+      ],
+      "name": "wheel_rim",
+      "faces": {
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            11,
+            2,
+            12,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            2,
+            5,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            2,
+            5,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            11,
+            2,
+            12,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            11,
+            5,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          13.5,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        11.0,
+        13.0,
+        11.0
+      ],
+      "to": [
+        12.0,
+        14.0,
+        12.0
+      ],
+      "name": "wheel_rim",
+      "faces": {
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            2,
+            5,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            11,
+            2,
+            12,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            2,
+            5,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            11,
+            2,
+            12,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            11,
+            11,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            11,
+            4,
+            12,
+            5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          13.5,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        4.0,
+        13.0,
+        7.0
+      ],
+      "to": [
+        12.0,
+        14.0,
+        9.0
+      ],
+      "name": "wheel_spoke",
+      "faces": {
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            2,
+            12,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            2,
+            12,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            7,
+            12,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            7,
+            12,
+            9
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          13.5,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        7.0,
+        13.0,
+        4.0
+      ],
+      "to": [
+        9.0,
+        14.0,
+        7.0
+      ],
+      "name": "wheel_spoke",
+      "faces": {
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            9,
+            2,
+            12,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            2,
+            7,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            7,
+            4,
+            9,
+            7
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            7,
+            9,
+            9,
+            12
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          13.5,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        7.0,
+        13.0,
+        9.0
+      ],
+      "to": [
+        9.0,
+        14.0,
+        12.0
+      ],
+      "name": "wheel_spoke",
+      "faces": {
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            2,
+            7,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            9,
+            2,
+            12,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            7,
+            9,
+            9,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            7,
+            4,
+            9,
+            7
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          13.5,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        7.0,
+        14.0,
+        7.0
+      ],
+      "to": [
+        9.0,
+        15.0,
+        9.0
+      ],
+      "name": "wheel_hub",
+      "faces": {
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            7,
+            1,
+            9,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            7,
+            1,
+            9,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            7,
+            1,
+            9,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            7,
+            1,
+            9,
+            2
+          ]
+        },
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ]
         }
       },
       "rotation": {

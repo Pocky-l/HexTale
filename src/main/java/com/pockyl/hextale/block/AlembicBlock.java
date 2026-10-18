@@ -57,7 +57,7 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     /** Heat below: the alembic works. */
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 12, 13), Block.box(6, 12, 6, 10, 15.5, 10));
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 12, 13), Block.box(6, 12, 6, 10, 14, 10));
 
     public AlembicBlock(Properties properties) {
         super(properties);

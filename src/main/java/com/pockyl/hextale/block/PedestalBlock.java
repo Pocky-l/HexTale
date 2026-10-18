@@ -25,7 +25,7 @@ import org.jspecify.annotations.Nullable;
 /** A pedestal of the ritual circle: an item in hand goes onto it, an empty hand takes it back. */
 public class PedestalBlock extends BaseEntityBlock {
     private static final VoxelShape SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 2, 13), Block.box(5, 2, 5, 11, 11, 11),
-            Block.box(3, 11, 3, 13, 14, 13));
+            Block.box(4, 11, 4, 12, 12, 12), Block.box(3, 12, 3, 13, 13, 13));
 
     public PedestalBlock(Properties properties) {
         super(properties);

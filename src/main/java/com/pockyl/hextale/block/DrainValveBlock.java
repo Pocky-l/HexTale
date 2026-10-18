@@ -41,8 +41,8 @@ import org.jspecify.annotations.Nullable;
  */
 public class DrainValveBlock extends BaseEntityBlock implements EssenceMachine {
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(5, 5, 5, 11, 11, 11), Block.box(7, 0, 7, 9, 5, 9),
-            Block.box(4, 11, 4, 12, 14, 12));
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(5, 5, 5, 11, 11, 11), Block.box(7, 1, 7, 9, 5, 9),
+            Block.box(6, 0, 6, 10, 1, 10), Block.box(3, 11, 3, 13, 15, 13));
 
     public DrainValveBlock(Properties properties) {
         super(properties);
