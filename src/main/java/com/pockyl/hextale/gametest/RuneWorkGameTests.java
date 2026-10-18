@@ -130,6 +130,8 @@ public final class RuneWorkGameTests {
         helper.assertTrue(iron.size() == 1 && iron.getFirst().holder() == null
                         && iron.getFirst().makes().getFirst().is(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()),
                 "Smelting on an iron pickaxe is what makes the hextech pickaxe");
+        helper.assertTrue(iron.getFirst().cost(1).equals(InfusionRecipe.runeEssence(iron.getFirst().rune()))
+                && uses.getFirst().cost(2).equals(PickaxeRune.values()[0].cost(2)), "the list shows what the altar draws for each rune");
         helper.assertTrue(Ritual.runesFor(new ItemStack(Items.DIRT), false).isEmpty(), "dirt takes no rune");
         helper.assertTrue(Ritual.runesFor(ItemStack.EMPTY, false) == null, "an empty altar takes any rune");
         helper.succeed();

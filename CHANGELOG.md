@@ -95,8 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hextech Altar circle: the altar, Pedestals within six blocks, Rune Steles within seven and Essence Jars within eight.
   With an item on the altar, a stele lists only the runes that do something for it (the runes a pickaxe, smelter or
   pylon takes, and those its rituals ask for) in a tidy, scrollable list: each with its name, your stars, what it does
-  on that item and its number at your stars (a tooltip shows all three star levels and what it cannot share an item
-  with); an empty altar shows the whole codex.
+  on that item, its number and the essence it draws at your stars (a tooltip shows all three star levels with their essence, what it cannot share an item with
+  and, for a ritual, the essence the whole ritual draws); an empty altar shows the whole codex.
   Sneak-use the altar with an empty hand (or give it a redstone pulse) to start a ritual: the rings turn around the
   centre item, the pedestal items are drawn in one by one, then the essences one after another, and the centre
   becomes something new. A ritual short of essence stalls and, left too long, collapses. Ghosts of the items a ritual

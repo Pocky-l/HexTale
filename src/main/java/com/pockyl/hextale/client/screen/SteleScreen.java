@@ -19,6 +19,7 @@ import com.pockyl.hextale.block.HextechAltarBlockEntity;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
 import com.pockyl.hextale.client.ClientKnowledge;
 import com.pockyl.hextale.client.render.PixelArt;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.network.SteleRunePayload;
@@ -250,7 +251,8 @@ public class SteleScreen extends Screen {
             PixelArt.flush(graphics);
             int tx = x0 + TILE + 6;
             int tw = rowW - TILE - 8;
-            HexPlate.line(graphics, font, firstLine(use, known), tx, y + 3, tw, HexPlate.TEXT, true);
+            int costW = cost(graphics, use.cost(stars(rune)), x0 + rowW - 3, y + 3);
+            HexPlate.line(graphics, font, firstLine(use, known), tx, y + 3, tw - costW - 4, HexPlate.TEXT, true);
             HexPlate.line(graphics, font, secondLine(use), tx, y + 13, tw, HexPlate.MUTED, false);
             if (hover) {
                 tooltip = explain(use, known);
@@ -267,6 +269,40 @@ public class SteleScreen extends Screen {
             PixelArt.fill(graphics, barX, ty, barX + 2, ty + thumb, PixelArt.argb(HexPlate.BRASS, 1));
         }
         return tooltip;
+    }
+
+    /**
+     * Draws the essence the rune costs right-aligned at {@code right}: each essence's sign and its millibuckets.
+     *
+     * @return the width used
+     */
+    private int cost(GuiGraphicsExtractor graphics, EssenceMix cost, int right, int y) {
+        int x = right;
+        for (var entry : cost.asMap().entrySet()) {
+            Component amount = Component.translatable("gui.hextale.stele.mb", entry.getValue());
+            x -= font.width(amount);
+            graphics.text(font, amount, x, y, 0xFF000000 | PixelArt.mix(entry.getKey().color(), 0xFFFFFF, 0.45F), true);
+            x -= PixelArt.ICON + 2;
+            PixelArt.essence(graphics, entry.getKey(), x, y - 1, PixelArt.ICON, PixelArt.argb(entry.getKey().color(), 1));
+            PixelArt.flush(graphics);
+            x -= 4;
+        }
+        return right - x;
+    }
+
+    /** "24 mB X, 12 mB Y" for a cost, each essence in its colour. */
+    private static MutableComponent amounts(EssenceMix cost) {
+        MutableComponent text = Component.empty();
+        boolean first = true;
+        for (var entry : cost.asMap().entrySet()) {
+            if (!first) {
+                text.append(", ");
+            }
+            first = false;
+            text.append(Component.translatable("gui.hextale.stele.mb", entry.getValue()).withStyle(ChatFormatting.WHITE)).append(" ")
+                    .append(Component.translatable(entry.getKey().translationKey()).withColor(entry.getKey().color()));
+        }
+        return text;
     }
 
     /** Name and stars, and on a holder the rune's number at those stars. */
@@ -315,7 +351,9 @@ public class SteleScreen extends Screen {
             lines.add(Component.translatable(holder.descriptionKey(rune)).withStyle(ChatFormatting.GRAY));
             for (int stars = 1; stars <= 3; stars++) {
                 lines.add(Component.literal("★".repeat(stars) + "  ").withColor(GOLD)
-                        .append(Component.literal(amount(holder, rune, stars)).withStyle(ChatFormatting.WHITE)));
+                        .append(Component.literal(amount(holder, rune, stars)).withStyle(ChatFormatting.WHITE))
+                        .append(Component.literal("  ·  ").withStyle(ChatFormatting.DARK_GRAY))
+                        .append(amounts(use.cost(stars))));
             }
             List<Component> clashes = new ArrayList<>();
             for (ComplexRune other : holder.takes()) {
@@ -333,6 +371,14 @@ public class SteleScreen extends Screen {
         }
         if (!use.makes().isEmpty()) {
             lines.add(makes(use).copy().withStyle(ChatFormatting.GRAY));
+            if (holder == null) {
+                lines.add(Component.translatable("gui.hextale.stele.rune_cost", amounts(use.cost(1))).withStyle(ChatFormatting.GRAY));
+            }
+            // The whole ritual: its own essences and its runes', drawn from the jars around the altar.
+            for (int i = 0; i < use.recipes().size(); i++) {
+                lines.add(Component.translatable("gui.hextale.stele.ritual_cost", use.makes().get(i).getHoverName(),
+                        amounts(use.recipes().get(i).totalEssences())).withStyle(ChatFormatting.GRAY));
+            }
         }
         lines.add(known ? Component.translatable("gui.hextale.stele.choose").withStyle(ChatFormatting.DARK_AQUA)
                 : Component.translatable("gui.hextale.stele.unknown").withStyle(ChatFormatting.DARK_GRAY));

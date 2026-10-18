@@ -98,9 +98,13 @@ public final class Ritual {
 
     /**
      * What a rune does for the centre item: burned into it ({@code holder}, the item takes it like an enchantment)
-     * and/or asked for by the rituals that turn it into {@code makes}.
+     * and/or asked for by {@code recipes}, the rituals that turn it into {@code makes} (same order).
      */
-    public record RuneUse(ComplexRune rune, @Nullable RuneHolder holder, List<ItemStack> makes) {
+    public record RuneUse(ComplexRune rune, @Nullable RuneHolder holder, List<ItemStack> makes, List<InfusionRecipe> recipes) {
+        /** The essence the altar draws for the rune at these stars: burned in, or asked for by a ritual. */
+        public EssenceMix cost(int stars) {
+            return holder != null ? holder.cost(rune, stars) : InfusionRecipe.runeEssence(rune);
+        }
     }
 
     /**
@@ -112,11 +116,11 @@ public final class Ritual {
         if (center.isEmpty()) {
             return null;
         }
-        Map<ComplexRune, List<ItemStack>> makes = new java.util.TreeMap<>(Comparator.comparingInt(ComplexRune::index));
+        Map<ComplexRune, List<InfusionRecipe>> asking = new java.util.TreeMap<>(Comparator.comparingInt(ComplexRune::index));
         for (InfusionRecipe recipe : InfusionRecipes.get(clientSide).values()) {
             if (recipe.center().test(center)) {
                 for (ComplexRune rune : recipe.runes()) {
-                    makes.computeIfAbsent(rune, key -> new ArrayList<>()).add(recipe.resultFor(center));
+                    asking.computeIfAbsent(rune, key -> new ArrayList<>()).add(recipe);
                 }
             }
         }
@@ -124,12 +128,16 @@ public final class Ritual {
         RuneHolder holder = RuneHolder.of(center);
         if (holder != null) {
             for (ComplexRune rune : holder.takes()) {
-                List<ItemStack> results = makes.remove(rune);
-                uses.add(new RuneUse(rune, holder, results == null ? List.of() : results));
+                List<InfusionRecipe> recipes = asking.remove(rune);
+                uses.add(use(rune, holder, recipes == null ? List.of() : recipes, center));
             }
         }
-        makes.forEach((rune, results) -> uses.add(new RuneUse(rune, null, results)));
+        asking.forEach((rune, recipes) -> uses.add(use(rune, null, recipes, center)));
         return uses;
+    }
+
+    private static RuneUse use(ComplexRune rune, @Nullable RuneHolder holder, List<InfusionRecipe> recipes, ItemStack center) {
+        return new RuneUse(rune, holder, recipes.stream().map(recipe -> recipe.resultFor(center)).toList(), recipes);
     }
 
     /** What the altar's surroundings hold: pedestals, rune steles (clockwise from north) and essence tanks. */
