@@ -28,14 +28,14 @@ import org.jspecify.annotations.Nullable;
  */
 public class SeparatorMenu extends MachineMenu {
     public static final int POUR_X = 12;
-    public static final int POUR_Y = 17;
+    public static final int POUR_Y = 25;
     public static final int SUPPLY_X = 12;
-    public static final int SUPPLY_Y = 53;
+    public static final int SUPPLY_Y = 61;
     public static final int REAGENT_X = 68;
-    public static final int REAGENT_Y = 35;
+    public static final int REAGENT_Y = 43;
     public static final int OUT_X = 130;
-    public static final int EXTRACT_OUT_Y = 20;
-    public static final int REST_OUT_Y = 50;
+    public static final int EXTRACT_OUT_Y = 28;
+    public static final int REST_OUT_Y = 58;
     public static final int CHOOSE = 100;
 
     public SeparatorMenu(int containerId, Inventory inventory, RegistryFriendlyByteBuf buf) {

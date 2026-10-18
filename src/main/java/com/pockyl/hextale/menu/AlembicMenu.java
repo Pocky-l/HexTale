@@ -18,10 +18,10 @@ import com.pockyl.hextale.registry.ModMenus;
 /** The Alembic: the item to boil, an empty flask and the filled flask; data = boiling progress and heat. */
 public class AlembicMenu extends MachineMenu {
     public static final int INPUT_X = 44;
-    public static final int INPUT_Y = 35;
+    public static final int INPUT_Y = 43;
     public static final int FLASK_X = 134;
-    public static final int FLASK_IN_Y = 17;
-    public static final int FLASK_OUT_Y = 53;
+    public static final int FLASK_IN_Y = 25;
+    public static final int FLASK_OUT_Y = 61;
 
     public AlembicMenu(int containerId, Inventory inventory, RegistryFriendlyByteBuf buf) {
         this(containerId, inventory, new SimpleContainer(3), new SimpleContainerData(2), buf.readBlockPos());

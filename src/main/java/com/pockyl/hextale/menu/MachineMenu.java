@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
  */
 public abstract class MachineMenu extends AbstractContainerMenu {
     public static final int INVENTORY_X = 8;
-    public static final int INVENTORY_Y = 84;
+    public static final int INVENTORY_Y = 102;
 
     protected final Container container;
     protected final ContainerData data;

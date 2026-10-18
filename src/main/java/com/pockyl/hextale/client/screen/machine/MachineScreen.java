@@ -3,15 +3,15 @@ package com.pockyl.hextale.client.screen.machine;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import com.pockyl.hextale.client.render.PixelArt;
+import com.pockyl.hextale.client.screen.HexPlate;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.menu.MachineMenu;
@@ -23,24 +23,27 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A screen of the essence works: the generated background, glass tanks whose liquid is layered by element, arrows and
- * tooltips. Tank contents are read from the block entity (synced by the server), the rest from the menu's data.
+ * A screen of the essence works on the mod's brass plate ({@link HexPlate}): a well under every slot (the product's slot
+ * ringed in brass), glass tanks in their wells, arrows and tooltips. Tank contents are read from the block entity
+ * (synced by the server), the rest from the menu's data.
  */
 public abstract class MachineScreen<M extends MachineMenu> extends AbstractContainerScreen<M> {
     protected static final int TANK_W = 16;
     protected static final int TANK_H = 54;
-    private final Identifier background;
+    /** The plate's width; a wider screen keeps the rest for a panel at its right. */
+    protected static final int PLATE_W = 176;
     @Nullable
     private List<Component> pendingTooltip;
 
-    protected MachineScreen(M menu, Inventory inventory, Component title, Identifier background) {
-        this(menu, inventory, title, background, 176);
+    protected MachineScreen(M menu, Inventory inventory, Component title) {
+        this(menu, inventory, title, PLATE_W);
     }
 
-    /** A screen wider than its 176 px background, for a panel at its right. */
-    protected MachineScreen(M menu, Inventory inventory, Component title, Identifier background, int width) {
-        super(menu, inventory, title, width, 166);
-        this.background = background;
+    /** A screen wider than its plate, for a panel at its right. */
+    protected MachineScreen(M menu, Inventory inventory, Component title, int width) {
+        super(menu, inventory, title, width, MachineMenu.INVENTORY_Y + 82);
+        titleLabelX = 8;
+        titleLabelY = 7;
         inventoryLabelY = MachineMenu.INVENTORY_Y - 11;
     }
 
@@ -54,9 +57,24 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         pendingTooltip = null;
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, background, leftPos, topPos, 0, 0, 176, 166, 176, 166);
+        HexPlate.plate(graphics, leftPos, topPos, PLATE_W, imageHeight);
+        HexPlate.divider(graphics, leftPos, topPos + MachineMenu.INVENTORY_Y - 15, PLATE_W);
+        for (Slot slot : menu.slots) {
+            if (!(slot.container instanceof Inventory) && isOutput(slot.getContainerSlot())) {
+                HexPlate.outputSlot(graphics, leftPos + slot.x, topPos + slot.y);
+            } else {
+                HexPlate.slot(graphics, leftPos + slot.x, topPos + slot.y);
+            }
+        }
+        PixelArt.flush(graphics);
         renderMachine(graphics, mouseX, mouseY);
         PixelArt.flush(graphics);
+    }
+
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, PLATE_W - titleLabelX * 2, HexPlate.TITLE, true);
+        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
     }
 
     @Override
@@ -74,6 +92,9 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
             }
         }
     }
+
+    /** Whether the machine slot (container index) is where the product comes out: its well gets a brass ring. */
+    protected abstract boolean isOutput(int slot);
 
     /** The key suffix of the hint for an empty machine slot ({@code gui.hextale.slot.<hint>}), or null. */
     @Nullable
@@ -96,6 +117,7 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
      */
     protected void tank(GuiGraphicsExtractor graphics, int x, int y, int height, EssenceTank tank, int mouseX, int mouseY,
                         Component... extra) {
+        glass(graphics, x, y, height);
         long now = Util.getMillis();
         EssenceMix contents = tank.contents();
         int filled = Math.round(height * tank.amount() / (float) tank.capacity());
@@ -129,9 +151,17 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
         }
     }
 
+    /** The well a tank's glass sits in, one pixel round it. */
+    private static void glass(GuiGraphicsExtractor graphics, int x, int y, int height) {
+        HexPlate.well(graphics, x - 1, y - 1, TANK_W + 2, height + 2);
+        PixelArt.fill(graphics, x, y, x + TANK_W, y + height, PixelArt.argb(0x120E1A, 1));
+        PixelArt.flush(graphics);
+    }
+
     /** A water gauge {@code height} pixels tall: blue water with a wobbling surface. */
     protected void waterTank(GuiGraphicsExtractor graphics, int x, int y, int height, int amount, int capacity, int mouseX, int mouseY,
                              Component... lines) {
+        glass(graphics, x, y, height);
         int filled = Math.round(height * Math.min(1, amount / (float) capacity));
         int bottom = y + height;
         if (filled > 0) {

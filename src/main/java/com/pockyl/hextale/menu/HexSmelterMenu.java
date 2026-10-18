@@ -17,12 +17,12 @@ import com.pockyl.hextale.registry.ModMenus;
 /** The Hex Smelter: input, output, a bottle of fiery essence and the emptied bottles; data = progress, ticks per item, heat. */
 public class HexSmelterMenu extends MachineMenu {
     public static final int INPUT_X = 56;
-    public static final int INPUT_Y = 26;
+    public static final int INPUT_Y = 34;
     public static final int OUTPUT_X = 112;
-    public static final int OUTPUT_Y = 35;
+    public static final int OUTPUT_Y = 43;
     public static final int BOTTLE_X = 8;
-    public static final int BOTTLE_IN_Y = 17;
-    public static final int BOTTLE_OUT_Y = 53;
+    public static final int BOTTLE_IN_Y = 25;
+    public static final int BOTTLE_OUT_Y = 61;
 
     public HexSmelterMenu(int containerId, Inventory inventory, RegistryFriendlyByteBuf buf) {
         this(containerId, inventory, new SimpleContainer(HexSmelterBlockEntity.SIZE), new SimpleContainerData(3), buf.readBlockPos());

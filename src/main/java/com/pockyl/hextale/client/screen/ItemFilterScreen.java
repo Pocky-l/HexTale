@@ -25,21 +25,18 @@ import java.util.List;
  */
 public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
     private static final int GRID_X = 12;
-    private static final int GRID_Y = 22;
+    private static final int GRID_Y = 20;
     private static final int CELL = 18;
     private static final int BUTTON_X = 72;
     private static final int BUTTON_W = 96;
     private static final int BUTTON_H = 14;
-    private static final int[] BUTTON_Y = {20, 37, 54};
-    private static final int BRASS = 0xC29445;
-    private static final int BRASS_LIGHT = 0xF8E3A0;
-    private static final int BRASS_DARK = 0x4A3312;
-    private static final int PANEL = 0x16121F;
-    private static final int TEXT = 0xFFE8E0F0;
-    private static final int MUTED = 0xFF9A90B8;
+    private static final int[] BUTTON_Y = {20, 40, 60};
+    /** The line on what the filter does: under the grid and the buttons, across the plate, two lines at most. */
+    private static final int SUMMARY_Y = 80;
+    private static final int SUMMARY_LINES = 2;
 
     public ItemFilterScreen(ItemFilterMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, 176, 186);
+        super(menu, inventory, title, 176, ItemFilterMenu.INVENTORY_Y + 82);
         inventoryLabelY = ItemFilterMenu.INVENTORY_Y - 11;
         titleLabelX = 8;
         titleLabelY = 7;
@@ -50,20 +47,22 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         int x = leftPos;
         int y = topPos;
-        plate(graphics, x, y, imageWidth, imageHeight);
+        HexPlate.plate(graphics, x, y, imageWidth, imageHeight);
+        HexPlate.divider(graphics, x, y + ItemFilterMenu.INVENTORY_Y - 15, imageWidth);
         ItemFilter filter = menu.filter();
         // Ghost slots: dark wells, the items drawn faded by being under a veil.
         for (int slot = 0; slot < ItemFilter.SLOTS; slot++) {
             int sx = x + GRID_X + slot % 3 * CELL;
             int sy = y + GRID_Y + slot / 3 * CELL;
-            well(graphics, sx, sy, CELL, CELL);
+            HexPlate.well(graphics, sx, sy, CELL, CELL);
         }
         for (int i = 0; i < 3; i++) {
-            button(graphics, x + BUTTON_X, y + BUTTON_Y[i], label(filter, i), over(mouseX, mouseY, x + BUTTON_X, y + BUTTON_Y[i], BUTTON_W, BUTTON_H));
+            HexPlate.button(graphics, font, x + BUTTON_X, y + BUTTON_Y[i], BUTTON_W, BUTTON_H, label(filter, i),
+                    over(mouseX, mouseY, x + BUTTON_X, y + BUTTON_Y[i], BUTTON_W, BUTTON_H), true);
         }
         // Inventory wells.
         for (Slot slot : menu.slots) {
-            well(graphics, x + slot.x - 1, y + slot.y - 1, 18, 18);
+            HexPlate.slot(graphics, x + slot.x, y + slot.y);
         }
         PixelArt.flush(graphics);
         for (ItemFilter.Entry entry : filter.entries()) {
@@ -83,17 +82,14 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
             }
         }
         // What it does now.
-        int ty = y + 73;
-        for (FormattedCharSequence line : font.split(summary(filter), BUTTON_W + 4)) {
-            graphics.text(font, line, x + BUTTON_X - 2, ty, MUTED, false);
-            ty += 9;
-        }
+        HexPlate.paragraph(graphics, font, summary(filter), x + GRID_X - 4, y + SUMMARY_Y, imageWidth - (GRID_X - 4) * 2,
+                SUMMARY_LINES, HexPlate.MUTED);
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        graphics.text(font, title, titleLabelX, titleLabelY, 0xFF000000 | BRASS_LIGHT, true);
-        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, TEXT, false);
+        HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, imageWidth - titleLabelX * 2, HexPlate.TITLE, true);
+        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
     }
 
     @Override
@@ -117,8 +113,22 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
         }
         for (int i = 0; i < 3; i++) {
             if (over(mouseX, mouseY, leftPos + BUTTON_X, topPos + BUTTON_Y[i], BUTTON_W, BUTTON_H)) {
-                graphics.setTooltipForNextFrame(font, font.split(Component.translatable(tipKey(menu.filter(), i)), 200), mouseX, mouseY);
+                // A label cut to fit its button heads its tooltip whole.
+                Component label = label(menu.filter(), i);
+                List<FormattedCharSequence> tip = new ArrayList<>();
+                if (HexPlate.cut(font, label, BUTTON_W - 6)) {
+                    tip.addAll(font.split(label, 200));
+                }
+                tip.addAll(font.split(Component.translatable(tipKey(menu.filter(), i)), 200));
+                graphics.setTooltipForNextFrame(font, tip, mouseX, mouseY);
             }
+        }
+        // The summary may be cut: hovering it shows it whole.
+        Component summary = summary(menu.filter());
+        int width = imageWidth - (GRID_X - 4) * 2;
+        if (font.split(summary, width).size() > SUMMARY_LINES
+                && over(mouseX, mouseY, leftPos + GRID_X - 4, topPos + SUMMARY_Y, width, SUMMARY_LINES * 10)) {
+            graphics.setTooltipForNextFrame(font, font.split(summary, 200), mouseX, mouseY);
         }
     }
 
@@ -198,36 +208,5 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
 
     private static boolean over(double mouseX, double mouseY, int x, int y, int w, int h) {
         return mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
-    }
-
-    // ---- Drawing ----------------------------------------------------------------------------------------------------
-
-    /** The plate: a dark panel in a brass frame lit at the top left. */
-    private static void plate(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {
-        PixelArt.fill(graphics, x, y, x + w, y + h, PixelArt.argb(BRASS_DARK, 1));
-        PixelArt.fill(graphics, x + 1, y + 1, x + w - 1, y + h - 1, PixelArt.argb(BRASS, 1));
-        PixelArt.fill(graphics, x + 1, y + 1, x + w - 1, y + 2, PixelArt.argb(BRASS_LIGHT, 1));
-        PixelArt.fill(graphics, x + 1, y + 1, x + 2, y + h - 1, PixelArt.argb(BRASS_LIGHT, 1));
-        PixelArt.fill(graphics, x + 3, y + 3, x + w - 3, y + h - 3, PixelArt.argb(BRASS_DARK, 1));
-        PixelArt.fill(graphics, x + 4, y + 4, x + w - 4, y + h - 4, PixelArt.argb(PANEL, 1));
-        PixelArt.fill(graphics, x + 4, y + ItemFilterMenu.INVENTORY_Y - 15, x + w - 4, y + ItemFilterMenu.INVENTORY_Y - 14,
-                PixelArt.argb(BRASS, 0.5F));
-    }
-
-    /** A slot well: shaded at the top left, lit at the bottom right. */
-    private static void well(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {
-        PixelArt.fill(graphics, x, y, x + w, y + h, PixelArt.argb(0x0A0810, 1));
-        PixelArt.fill(graphics, x + w - 1, y + 1, x + w, y + h, PixelArt.argb(0x4A4060, 1));
-        PixelArt.fill(graphics, x + 1, y + h - 1, x + w, y + h, PixelArt.argb(0x4A4060, 1));
-        PixelArt.fill(graphics, x + 1, y + 1, x + w - 1, y + h - 1, PixelArt.argb(0x1E1A2A, 1));
-    }
-
-    private void button(GuiGraphicsExtractor graphics, int x, int y, Component text, boolean hovered) {
-        int rim = hovered ? BRASS_LIGHT : BRASS;
-        PixelArt.fill(graphics, x + 1, y, x + BUTTON_W - 1, y + BUTTON_H, PixelArt.argb(rim, 1));
-        PixelArt.fill(graphics, x, y + 1, x + BUTTON_W, y + BUTTON_H - 1, PixelArt.argb(rim, 1));
-        PixelArt.fill(graphics, x + 1, y + 1, x + BUTTON_W - 1, y + BUTTON_H - 1, PixelArt.argb(hovered ? 0x2E2440 : 0x221B30, 1));
-        PixelArt.flush(graphics);
-        graphics.centeredText(font, text, x + BUTTON_W / 2, y + 3, hovered ? 0xFFFFF6D6 : TEXT);
     }
 }

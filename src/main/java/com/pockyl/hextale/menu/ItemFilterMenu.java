@@ -21,7 +21,7 @@ import com.pockyl.hextale.transport.ItemFilter;
  */
 public class ItemFilterMenu extends AbstractContainerMenu {
     public static final int INVENTORY_X = 8;
-    public static final int INVENTORY_Y = 104;
+    public static final int INVENTORY_Y = 116;
     /** Button ids: 0-8 ghost slot click; 20+ / 40+ / 60+ / 80+ slot: count +1 / -1 / +10 / -10. */
     public static final int SET = 0;
     public static final int PLUS = 20;

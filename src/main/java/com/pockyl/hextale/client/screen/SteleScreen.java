@@ -36,8 +36,10 @@ public class SteleScreen extends Screen {
     private static final int TILE = 20;
     private static final int GRID_X = 30;
     private static final int GRID_Y = 34;
-    private static final int PANEL_W = GRID_X + 8 * TILE + 22;
-    private static final int PANEL_H = GRID_Y + 9 * TILE + 40;
+    private static final int PANEL_W = GRID_X + 8 * TILE + 15;
+    private static final int PANEL_H = GRID_Y + 9 * TILE + 30;
+    private static final int BUTTON_W = 80;
+    private static final int BUTTON_H = 14;
     private static final int GOLD = 0xF0C24A;
 
     private final BlockPos pos;
@@ -74,10 +76,12 @@ public class SteleScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         long now = Util.getMillis();
-        HexGui.cosmos(graphics, left + 6, top + 6, PANEL_W - 12, PANEL_H - 12, 0, 0);
-        HexGui.frame(graphics, left, top, PANEL_W, PANEL_H);
-        graphics.centeredText(font, title, left + PANEL_W / 2, top + 12, 0xFFE8FAFF);
-        graphics.centeredText(font, Component.translatable("gui.hextale.stele.subtitle"), left + PANEL_W / 2, top + 22, 0xFF8F88B8);
+        HexPlate.plate(graphics, left, top, PANEL_W, PANEL_H);
+        PixelArt.flush(graphics);
+        int textWidth = PANEL_W - HexPlate.BORDER * 2 - 8;
+        HexPlate.centered(graphics, font, title, left + PANEL_W / 2, top + 9, textWidth, HexPlate.TITLE);
+        HexPlate.centered(graphics, font, Component.translatable("gui.hextale.stele.subtitle"), left + PANEL_W / 2, top + 20, textWidth,
+                HexPlate.MUTED);
 
         RuneKnowledge knowledge = ClientKnowledge.get();
         boolean creative = creative();
@@ -105,10 +109,11 @@ public class SteleScreen extends Screen {
         }
         PixelArt.flush(graphics);
         // Clear button.
-        int bx = left + PANEL_W / 2 - 40;
-        int by = top + PANEL_H - 30;
-        boolean overClear = mouseX >= bx && mouseX < bx + 80 && mouseY >= by && mouseY < by + 14;
-        button(graphics, bx, by, 80, Component.translatable("gui.hextale.stele.clear"), current != null, overClear);
+        int bx = left + (PANEL_W - BUTTON_W) / 2;
+        int by = buttonY();
+        boolean overClear = mouseX >= bx && mouseX < bx + BUTTON_W && mouseY >= by && mouseY < by + BUTTON_H;
+        HexPlate.button(graphics, font, bx, by, BUTTON_W, BUTTON_H, Component.translatable("gui.hextale.stele.clear"), overClear,
+                current != null);
         if (tooltip != null) {
             List<FormattedCharSequence> lines = new ArrayList<>();
             for (Component line : tooltip) {
@@ -153,24 +158,19 @@ public class SteleScreen extends Screen {
         return lines;
     }
 
-    private void button(GuiGraphicsExtractor graphics, int x, int y, int w, Component label, boolean active, boolean hover) {
-        int rim = !active ? 0x3A3460 : hover ? 0x9FE6FF : 0x5CC8F2;
-        PixelArt.fill(graphics, x, y, x + w, y + 14, PixelArt.argb(0x140F24, 0.92F));
-        PixelArt.fill(graphics, x, y, x + w, y + 1, PixelArt.argb(rim, 1));
-        PixelArt.fill(graphics, x, y + 13, x + w, y + 14, PixelArt.argb(rim, 1));
-        PixelArt.fill(graphics, x, y, x + 1, y + 14, PixelArt.argb(rim, 1));
-        PixelArt.fill(graphics, x + w - 1, y, x + w, y + 14, PixelArt.argb(rim, 1));
-        PixelArt.flush(graphics);
-        graphics.centeredText(font, label, x + w / 2, y + 3, active ? 0xFFE8FAFF : 0xFF7A7498);
+    /** The clear button's top: centred between the grid and the plate's bottom frame. */
+    private int buttonY() {
+        int gridBottom = top + GRID_Y + 9 * TILE;
+        return gridBottom + (top + PANEL_H - HexPlate.BORDER - gridBottom - BUTTON_H) / 2;
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double mx = event.x();
         double my = event.y();
-        int bx = left + PANEL_W / 2 - 40;
-        int by = top + PANEL_H - 30;
-        if (mx >= bx && mx < bx + 80 && my >= by && my < by + 14 && current() != null) {
+        int bx = left + (PANEL_W - BUTTON_W) / 2;
+        int by = buttonY();
+        if (mx >= bx && mx < bx + BUTTON_W && my >= by && my < by + BUTTON_H && current() != null) {
             send(-1);
             return true;
         }

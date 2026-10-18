@@ -7,7 +7,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Inventory;
 
-import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.AlembicBlockEntity;
 import com.pockyl.hextale.menu.AlembicMenu;
 
@@ -16,11 +15,11 @@ import java.util.List;
 /** The Alembic: item -> boiling arrow -> the flask's essence -> bottles; a flame lights while there is heat below. */
 public class AlembicScreen extends MachineScreen<AlembicMenu> {
     public static final int TANK_X = 98;
-    public static final int TANK_Y = 16;
+    public static final int TANK_Y = 24;
     public static final int WATER_X = 20;
 
     public AlembicScreen(AlembicMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, Hextale.id("textures/gui/alembic.png"));
+        super(menu, inventory, title);
     }
 
     @Override
@@ -32,7 +31,7 @@ public class AlembicScreen extends MachineScreen<AlembicMenu> {
         if (isOver(mouseX, mouseY, x + AlembicMenu.INPUT_X, y + AlembicMenu.INPUT_Y + 19, 16, 12)) {
             tooltip(List.of(Component.translatable(menu.heated() ? "gui.hextale.alembic.heat" : "gui.hextale.alembic.cold")));
         }
-        arrow(graphics, x + 66, y + 39, 22, menu.progress() / (float) AlembicBlockEntity.BOIL_TICKS);
+        arrow(graphics, x + 66, y + 47, 22, menu.progress() / (float) AlembicBlockEntity.BOIL_TICKS);
         if (alembic != null) {
             waterTank(graphics, x + WATER_X, y + TANK_Y, TANK_H, alembic.water(), AlembicBlockEntity.WATER_CAPACITY, mouseX, mouseY,
                     Component.translatable("gui.hextale.alembic.water", alembic.water(), AlembicBlockEntity.WATER_CAPACITY),
@@ -43,7 +42,12 @@ public class AlembicScreen extends MachineScreen<AlembicMenu> {
             tank(graphics, x + TANK_X, y + TANK_Y, TANK_H, alembic.tank(), mouseX, mouseY,
                     Component.translatable("gui.hextale.alembic.out"));
         }
-        arrow(graphics, x + 118, y + 39, 10, 0);
+        arrow(graphics, x + 118, y + 47, 10, 0);
+    }
+
+    @Override
+    protected boolean isOutput(int slot) {
+        return slot == AlembicBlockEntity.FLASK_OUT;
     }
 
     @Override

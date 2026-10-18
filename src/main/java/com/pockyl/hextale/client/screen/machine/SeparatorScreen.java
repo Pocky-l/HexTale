@@ -7,14 +7,15 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 
-import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.PortMode;
 import com.pockyl.hextale.block.SeparatorBlock;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.client.render.PixelArt;
+import com.pockyl.hextale.client.screen.HexPlate;
 import com.pockyl.hextale.menu.SeparatorMenu;
 import com.pockyl.hextale.research.ResearchText;
 import com.pockyl.hextale.rune.Essence;
@@ -31,32 +32,32 @@ import org.jspecify.annotations.Nullable;
  */
 public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
     public static final int MIX_X = 36;
-    public static final int MIX_Y = 16;
+    public static final int MIX_Y = 24;
     public static final int OUT_TANK_X = 106;
-    public static final int EXTRACT_Y = 16;
-    public static final int REST_Y = 46;
+    public static final int EXTRACT_Y = 24;
+    public static final int REST_Y = 54;
     public static final int OUT_TANK_H = 24;
     /** The port panel right of the screen: the block seen from above, its front towards the viewer (down). */
-    private static final int PANEL_X = 178;
-    private static final int PANEL_Y = 4;
-    private static final int PANEL_W = 38;
-    private static final int PANEL_H = 52;
+    private static final int PANEL_X = PLATE_W + 4;
+    private static final int PANEL_Y = 0;
+    private static final int PANEL_W = 44;
+    private static final int PANEL_H = 54;
     private static final int CELL = 10;
-    /** The essence picker: nine columns, rows of primals, pairs and deeper compounds with a gap between the groups. */
+    /** The essence picker: twelve columns, rows of primals, pairs and deeper compounds with a gap between the groups. */
     private static final int PICK_CELL = 11;
-    private static final int PICK_COLUMNS = 9;
+    private static final int PICK_COLUMNS = 12;
     private static final int PICK_GAP = 4;
-    private static final int PICK_PAD = 5;
+    private static final int PICK_PAD = HexPlate.BORDER + 4;
     private boolean picking;
 
     public SeparatorScreen(SeparatorMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, Hextale.id("textures/gui/separator.png"), PANEL_X + PANEL_W);
+        super(menu, inventory, title, PANEL_X + PANEL_W);
     }
 
     /** Top-left corner of a face's cell on the panel (screen coordinates). */
     private int[] cell(SeparatorBlock.Side side) {
         int cx = leftPos + PANEL_X + (PANEL_W - CELL) / 2;
-        int cy = topPos + PANEL_Y + 18;
+        int cy = topPos + PANEL_Y + 19;
         return switch (side) {
             case BACK -> new int[]{cx, cy - CELL - 1};
             case LEFT -> new int[]{cx - CELL - 1, cy};
@@ -69,9 +70,12 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
     private void renderPorts(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         int x = leftPos + PANEL_X;
         int y = topPos + PANEL_Y;
-        graphics.fill(x, y, x + PANEL_W, y + PANEL_H, 0xFF4A3312);
-        graphics.fill(x + 1, y + 1, x + PANEL_W - 1, y + PANEL_H - 1, 0xFF1C140C);
-        graphics.fill(x + 1, y + 1, x + PANEL_W - 1, y + 2, 0xFFC29445);
+        HexPlate.plate(graphics, x, y, PANEL_W, PANEL_H);
+        PixelArt.flush(graphics);
+        if (isOver(mouseX, mouseY, x, y, PANEL_W, PANEL_H)) {
+            tooltip(List.of(Component.translatable("gui.hextale.separator.ports"),
+                    Component.translatable("gui.hextale.separator.ports.hint").withStyle(ChatFormatting.GRAY)));
+        }
         // Where the viewer stands: a small arrow under the front cell.
         int[] front = cell(SeparatorBlock.Side.FRONT);
         for (int k = 0; k < 3; k++) {
@@ -81,7 +85,7 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
             int[] at = cell(side);
             PortMode mode = menu.mode(side);
             boolean over = isOver(mouseX, mouseY, at[0], at[1], CELL, CELL);
-            int rim = over ? 0xFFF8E3A0 : 0xFF9C7230;
+            int rim = 0xFF000000 | (over ? HexPlate.BRASS_LIGHT : HexPlate.BRASS);
             graphics.fill(at[0], at[1], at[0] + CELL, at[1] + CELL, rim);
             graphics.fill(at[0] + 1, at[1] + 1, at[0] + CELL - 1, at[1] + CELL - 1, colour(mode));
             switch (mode) {
@@ -108,17 +112,13 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         }
         // The top: the gas vent, no pipe.
         int vx = leftPos + PANEL_X + (PANEL_W - CELL) / 2;
-        int vy = topPos + PANEL_Y + 18;
+        int vy = topPos + PANEL_Y + 19;
         graphics.fill(vx, vy, vx + CELL, vy + CELL, 0xFF4A3312);
         graphics.fill(vx + 2, vy + 2, vx + CELL - 2, vy + CELL - 2, 0xFF8A9A7A);
         graphics.fill(vx + 4, vy + 4, vx + CELL - 4, vy + CELL - 4, 0xFF15121A);
         if (isOver(mouseX, mouseY, vx, vy, CELL, CELL)) {
             tooltip(List.of(Component.translatable("gui.hextale.separator.vent"),
                     Component.translatable("gui.hextale.separator.vent.hint").withStyle(ChatFormatting.GRAY)));
-        }
-        if (isOver(mouseX, mouseY, x, y, PANEL_W, 8)) {
-            tooltip(List.of(Component.translatable("gui.hextale.separator.ports"),
-                    Component.translatable("gui.hextale.separator.ports.hint").withStyle(ChatFormatting.GRAY)));
         }
     }
 
@@ -158,12 +158,21 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
     }
 
     private int pickHeight() {
-        return (pickRows() + 1) * PICK_CELL + PICK_GAP * 3 + PICK_PAD * 2 + 10;
+        return (pickRows() + 1) * PICK_CELL + PICK_GAP * 3 + PICK_PAD * 2 + pickTitleHeight();
+    }
+
+    /** The picker's title, wrapped to the picker's width (two lines at most). */
+    private List<FormattedCharSequence> pickTitle() {
+        return HexPlate.wrap(font, Component.translatable("gui.hextale.separator.choose"), pickWidth() - PICK_PAD * 2, 2);
+    }
+
+    private int pickTitleHeight() {
+        return pickTitle().size() * 10 + 2;
     }
 
     /** The cell of the dark unknown essence: alone on the last row, under the deep essences. */
     private int[] unknownCell() {
-        return new int[]{pickLeft() + PICK_PAD, pickTop() + PICK_PAD + 10 + pickRows() * PICK_CELL + PICK_GAP * 3};
+        return new int[]{pickLeft() + PICK_PAD, pickTop() + PICK_PAD + pickTitleHeight() + pickRows() * PICK_CELL + PICK_GAP * 3};
     }
 
     private boolean overUnknown(double mouseX, double mouseY) {
@@ -179,7 +188,7 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
     }
 
     private int pickLeft() {
-        return leftPos + 88 - pickWidth() / 2;
+        return leftPos + PLATE_W / 2 - pickWidth() / 2;
     }
 
     private int pickTop() {
@@ -202,7 +211,7 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         int pairs = (int) java.util.Arrays.stream(Essence.values()).filter(e -> !e.isPrimal() && e.tier() == 1).count();
         int row = (group == 0 ? 0 : group == 1 ? 1 : 1 + ceil(pairs)) + index / PICK_COLUMNS;
         int x = pickLeft() + PICK_PAD + index % PICK_COLUMNS * PICK_CELL;
-        int y = pickTop() + PICK_PAD + 10 + row * PICK_CELL + group * PICK_GAP;
+        int y = pickTop() + PICK_PAD + pickTitleHeight() + row * PICK_CELL + group * PICK_GAP;
         return new int[]{x, y};
     }
 
@@ -230,30 +239,24 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         int y = pickTop();
         int w = pickWidth();
         int h = pickHeight();
-        graphics.fill(x, y, x + w, y + h, 0xFF4A3312);
-        graphics.fill(x + 1, y + 1, x + w - 1, y + h - 1, 0xF0120D16);
-        graphics.fill(x + 1, y + 1, x + w - 1, y + 2, 0xFFC29445);
-        graphics.centeredText(font, Component.translatable("gui.hextale.separator.choose"), x + w / 2, y + PICK_PAD, 0xFFE9C66D);
+        HexPlate.plate(graphics, x, y, w, h);
+        PixelArt.flush(graphics);
+        int ty = y + PICK_PAD;
+        for (FormattedCharSequence line : pickTitle()) {
+            graphics.centeredText(font, line, x + w / 2, ty, HexPlate.TITLE);
+            ty += 10;
+        }
         Essence chosen = menu.chosen();
         Essence over = pickedAt(mouseX, mouseY);
         for (Essence essence : Essence.values()) {
             int[] at = pickCell(essence);
-            if (essence == chosen) {
-                graphics.fill(at[0], at[1], at[0] + PICK_CELL, at[1] + PICK_CELL, 0xFFE9C66D);
-                graphics.fill(at[0] + 1, at[1] + 1, at[0] + PICK_CELL - 1, at[1] + PICK_CELL - 1, 0xFF120D16);
-            } else if (essence == over) {
-                graphics.fill(at[0], at[1], at[0] + PICK_CELL, at[1] + PICK_CELL, 0xFF6A5A40);
-                graphics.fill(at[0] + 1, at[1] + 1, at[0] + PICK_CELL - 1, at[1] + PICK_CELL - 1, 0xFF120D16);
-            }
+            HexPlate.cell(graphics, at[0], at[1], PICK_CELL, essence == chosen, essence == over);
             PixelArt.essence(graphics, essence, at[0] + 1, at[1] + 1, 9, PixelArt.argb(essence.color(), 1));
         }
-        PixelArt.flush(graphics);
         int[] unknown = unknownCell();
         boolean overDark = overUnknown(mouseX, mouseY);
-        if (menu.chosenUnknown() || overDark) {
-            graphics.fill(unknown[0], unknown[1], unknown[0] + PICK_CELL, unknown[1] + PICK_CELL, menu.chosenUnknown() ? 0xFFE9C66D : 0xFF6A5A40);
-            graphics.fill(unknown[0] + 1, unknown[1] + 1, unknown[0] + PICK_CELL - 1, unknown[1] + PICK_CELL - 1, 0xFF120D16);
-        }
+        HexPlate.cell(graphics, unknown[0], unknown[1], PICK_CELL, menu.chosenUnknown(), overDark);
+        PixelArt.flush(graphics);
         unknownSign(graphics, unknown[0] + 1, unknown[1] + 1);
         if (over != null) {
             graphics.setComponentTooltipForNextFrame(font, List.of(ResearchText.essence(over)), mouseX, mouseY);
@@ -265,7 +268,8 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        // The open picker covers the screen: nothing under it is hovered (no slot or tank tooltips through it).
+        super.extractRenderState(graphics, picking ? -1 : mouseX, picking ? -1 : mouseY, partialTick);
         if (picking) {
             renderPicker(graphics, mouseX, mouseY);
         }
@@ -343,8 +347,8 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         int ry = y + SeparatorMenu.REAGENT_Y;
         // The essence to draw out on a small plate above the powder; the powder's charge under it.
         boolean overPlate = overChooser(mouseX, mouseY) && !picking;
-        graphics.fill(rx, ry - 15, rx + 16, ry - 2, overPlate ? 0xFFF8E3A0 : 0xFF9C7230);
-        graphics.fill(rx + 1, ry - 14, rx + 15, ry - 3, 0xFF1C140C);
+        graphics.fill(rx, ry - 15, rx + 16, ry - 2, 0xFF000000 | (overPlate ? HexPlate.BRASS_LIGHT : HexPlate.BRASS));
+        graphics.fill(rx + 1, ry - 14, rx + 15, ry - 3, 0xFF0A0810);
         if (element != null) {
             PixelArt.essence(graphics, element, rx + 3, ry - 13, 9, PixelArt.argb(element.color(), 1));
         } else if (menu.chosenUnknown()) {
@@ -374,11 +378,16 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         graphics.fill(rx, ry + 18, rx + 16, ry + 20, 0xFF2A1B0C);
         graphics.fill(rx, ry + 18, rx + charge, ry + 20, menu.chosenUnknown() ? 0xFF6A5A7A : element == null ? 0xFF8A7A60 : 0xFF000000 | element.color());
         float progress = menu.step() / (float) SeparatorBlockEntity.STEP_TICKS;
-        arrow(graphics, x + 55, y + 39, 6, blocked == null ? 1 : 0);
-        arrow(graphics, x + 88, y + 23, 8, progress);
-        arrow(graphics, x + 88, y + 53, 8, progress);
+        arrow(graphics, x + 55, y + 47, 6, blocked == null ? 1 : 0);
+        arrow(graphics, x + 88, y + 31, 8, progress);
+        arrow(graphics, x + 88, y + 61, 8, progress);
         renderPorts(graphics, mouseX, mouseY);
         PixelArt.flush(graphics);
+    }
+
+    @Override
+    protected boolean isOutput(int slot) {
+        return slot == SeparatorBlockEntity.EXTRACT_OUT || slot == SeparatorBlockEntity.REST_OUT;
     }
 
     @Override
