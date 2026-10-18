@@ -11,9 +11,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
+import com.pockyl.hextale.block.HextechAltarBlockEntity;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
+import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.client.ClientKnowledge;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
@@ -24,13 +27,15 @@ import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
 /**
  * The glyph picker of a rune stele: the codex as a 9 x 8 grid, one row per action essence (its sign on the left), one
  * column per target. Runes the researcher knows shine in their colour and can be chosen; unknown ones are dim
- * hexagons. Click a rune to set it on the stele.
+ * hexagons. Click a rune to set it on the stele. With an item on the altar of the stele's circle, only the runes that
+ * do something for that item are shown ({@link Ritual#runesFor}).
  */
 public class SteleScreen extends Screen {
     private static final int TILE = 20;
@@ -68,6 +73,21 @@ public class SteleScreen extends Screen {
                 ? stele.rune() : null;
     }
 
+    /** The item on the altar of this stele's circle, or empty. */
+    private ItemStack altarItem() {
+        if (minecraft == null || minecraft.level == null) {
+            return ItemStack.EMPTY;
+        }
+        HextechAltarBlockEntity altar = Ritual.altarOf(minecraft.level, pos);
+        return altar == null ? ItemStack.EMPTY : altar.center();
+    }
+
+    /** The runes that may be chosen for the altar's item, or null when the altar is empty (any rune). */
+    @Nullable
+    private Set<ComplexRune> allowed() {
+        return Ritual.runesFor(altarItem(), true);
+    }
+
     private boolean creative() {
         return minecraft != null && minecraft.player != null && minecraft.player.getAbilities().instabuild;
     }
@@ -80,8 +100,15 @@ public class SteleScreen extends Screen {
         PixelArt.flush(graphics);
         int textWidth = PANEL_W - HexPlate.BORDER * 2 - 8;
         HexPlate.centered(graphics, font, title, left + PANEL_W / 2, top + 9, textWidth, HexPlate.TITLE);
-        HexPlate.centered(graphics, font, Component.translatable("gui.hextale.stele.subtitle"), left + PANEL_W / 2, top + 20, textWidth,
-                HexPlate.MUTED);
+        ItemStack altarItem = altarItem();
+        Set<ComplexRune> allowed = Ritual.runesFor(altarItem, true);
+        Component subtitle = allowed == null ? Component.translatable("gui.hextale.stele.subtitle")
+                : Component.translatable("gui.hextale.stele.for", altarItem.getHoverName());
+        HexPlate.centered(graphics, font, subtitle, left + PANEL_W / 2, top + 20, textWidth, HexPlate.MUTED);
+        if (allowed != null && allowed.isEmpty()) {
+            HexPlate.paragraph(graphics, font, Component.translatable("gui.hextale.stele.none"), left + GRID_X - 15, top + GRID_Y + 4 * TILE,
+                    textWidth - 10, 3, HexPlate.MUTED);
+        }
 
         RuneKnowledge knowledge = ClientKnowledge.get();
         boolean creative = creative();
@@ -90,7 +117,9 @@ public class SteleScreen extends Screen {
         for (Essence action : Essence.PRIMALS) {
             int row = action.ordinal();
             int y = top + GRID_Y + row * TILE;
-            PixelArt.essence(graphics, action, left + GRID_X - 15, y + 5, PixelArt.ICON, PixelArt.argb(action.color(), 1));
+            if (allowed == null || allowed.stream().anyMatch(rune -> rune.action() == action)) {
+                PixelArt.essence(graphics, action, left + GRID_X - 15, y + 5, PixelArt.ICON, PixelArt.argb(action.color(), 1));
+            }
             int col = 0;
             for (Essence target : Essence.PRIMALS) {
                 if (target == action) {
@@ -98,6 +127,11 @@ public class SteleScreen extends Screen {
                 }
                 ComplexRune rune = ComplexRunes.of(action, target);
                 int x = left + GRID_X + col * TILE;
+                if (allowed != null && !allowed.contains(rune)) {
+                    // Does nothing for the item on the altar: not shown.
+                    col++;
+                    continue;
+                }
                 boolean known = creative || knowledge.knows(rune);
                 boolean hover = mouseX >= x && mouseX < x + TILE && mouseY >= y && mouseY < y + TILE;
                 tile(graphics, rune, x, y, known, hover, rune == current, now);
@@ -180,7 +214,8 @@ public class SteleScreen extends Screen {
             Essence action = Essence.PRIMALS.get(row);
             Essence target = Essence.PRIMALS.get(col >= row ? col + 1 : col);
             ComplexRune rune = ComplexRunes.of(action, target);
-            if (creative() || ClientKnowledge.get().knows(rune)) {
+            Set<ComplexRune> allowed = allowed();
+            if ((allowed == null || allowed.contains(rune)) && (creative() || ClientKnowledge.get().knows(rune))) {
                 send(rune.index());
                 onClose();
             }

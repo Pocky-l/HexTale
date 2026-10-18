@@ -108,6 +108,24 @@ public final class RuneWorkGameTests {
         return Ritual.Circle.scan(helper.getLevel(), helper.absolutePos(ALTAR));
     }
 
+    /** A stele offers only the runes that do something for the item on its altar; an empty altar takes any rune. */
+    @HexTest
+    public static void steleOffersOnlyRunesForTheAltarItem(GameTestHelper helper) {
+        HextechAltarBlockEntity altar = circle(helper, new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), List.of(), EssenceMix.EMPTY);
+        stele(helper, PickaxeRune.SMELTING, 1);
+        helper.assertTrue(Ritual.altarOf(helper.getLevel(), helper.absolutePos(STELE)) == altar, "the stele finds its altar");
+        java.util.Set<com.pockyl.hextale.rune.ComplexRune> forPickaxe = Ritual.runesFor(altar.center(), false);
+        for (PickaxeRune rune : PickaxeRune.values()) {
+            helper.assertTrue(forPickaxe.contains(rune.rune()), "a pickaxe takes " + rune);
+        }
+        helper.assertFalse(forPickaxe.contains(ComplexRunes.byKey("fire_water")), "but not a rune no pickaxe takes");
+        helper.assertTrue(Ritual.runesFor(new ItemStack(Items.IRON_PICKAXE), false).equals(java.util.Set.of(ComplexRunes.byKey("fire_earth"))),
+                "an iron pickaxe needs only Smelting to become a hextech one");
+        helper.assertTrue(Ritual.runesFor(new ItemStack(Items.DIRT), false).isEmpty(), "dirt takes no rune");
+        helper.assertTrue(Ritual.runesFor(ItemStack.EMPTY, false) == null, "an empty altar takes any rune");
+        helper.succeed();
+    }
+
     // ---- What the runes do ------------------------------------------------------------------------------------------
 
     @HexTest

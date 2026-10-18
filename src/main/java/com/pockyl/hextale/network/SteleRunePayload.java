@@ -47,6 +47,12 @@ public record SteleRunePayload(BlockPos pos, int rune) implements CustomPacketPa
         if (!creative && !knowledge.knows(rune)) {
             return;
         }
+        // With an item on the altar only the runes that do something for it may be chosen (the screen shows no others).
+        com.pockyl.hextale.block.HextechAltarBlockEntity altar = com.pockyl.hextale.infusion.Ritual.altarOf(player.level(), payload.pos);
+        java.util.Set<ComplexRune> allowed = altar == null ? null : com.pockyl.hextale.infusion.Ritual.runesFor(altar.center(), false);
+        if (allowed != null && !allowed.contains(rune)) {
+            return;
+        }
         // Creative researchers choose runes they never studied with full stars.
         stele.choose(rune, knowledge.knows(rune) ? knowledge.stars(rune) : 3);
         player.level().playSound(null, payload.pos, ModSounds.STELE_SET.get(), SoundSource.BLOCKS, 0.9F, 1.0F);

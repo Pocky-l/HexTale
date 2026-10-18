@@ -9,6 +9,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
+import com.pockyl.hextale.block.HextechAltarBlockEntity;
 import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
 import com.pockyl.hextale.essence.EssenceMix;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
@@ -42,6 +44,63 @@ public final class Ritual {
     public static final int STALL_LIMIT = 600;
 
     private Ritual() {
+    }
+
+    /**
+     * The altar whose circle this rune stele stands in (the nearest with an item on it, else the nearest), or null.
+     */
+    @Nullable
+    public static HextechAltarBlockEntity altarOf(Level level, BlockPos stele) {
+        HextechAltarBlockEntity best = null;
+        double bestDistance = Double.MAX_VALUE;
+        for (int cx = (stele.getX() - STELE_RADIUS) >> 4; cx <= (stele.getX() + STELE_RADIUS) >> 4; cx++) {
+            for (int cz = (stele.getZ() - STELE_RADIUS) >> 4; cz <= (stele.getZ() + STELE_RADIUS) >> 4; cz++) {
+                if (!level.hasChunk(cx, cz)) {
+                    continue;
+                }
+                for (var entity : level.getChunk(cx, cz).getBlockEntities().values()) {
+                    if (!(entity instanceof HextechAltarBlockEntity altar) || entity.isRemoved()) {
+                        continue;
+                    }
+                    BlockPos pos = entity.getBlockPos();
+                    int dy = stele.getY() - pos.getY();
+                    if (Math.abs(stele.getX() - pos.getX()) > STELE_RADIUS || Math.abs(stele.getZ() - pos.getZ()) > STELE_RADIUS
+                            || dy < -1 || dy > 2) {
+                        continue;
+                    }
+                    // An altar holding something counts first: that is the one the stele is being set up for.
+                    double distance = pos.distSqr(stele) + (altar.center().isEmpty() ? 10_000 : 0);
+                    if (distance < bestDistance) {
+                        bestDistance = distance;
+                        best = altar;
+                    }
+                }
+            }
+        }
+        return best;
+    }
+
+    /**
+     * The runes that do something for this centre item at the altar: the runes it takes like enchantments (a pickaxe,
+     * a smelter, a pylon) and the runes the recipes it fits ask for on the steles. Null for an empty centre: then any
+     * rune goes.
+     */
+    @Nullable
+    public static Set<ComplexRune> runesFor(ItemStack center, boolean clientSide) {
+        if (center.isEmpty()) {
+            return null;
+        }
+        Set<ComplexRune> runes = new java.util.LinkedHashSet<>();
+        RuneHolder holder = RuneHolder.of(center);
+        if (holder != null) {
+            runes.addAll(holder.takes());
+        }
+        for (InfusionRecipe recipe : InfusionRecipes.get(clientSide).values()) {
+            if (recipe.center().test(center)) {
+                runes.addAll(recipe.runes());
+            }
+        }
+        return runes;
     }
 
     /** What the altar's surroundings hold: pedestals, rune steles (clockwise from north) and essence tanks. */

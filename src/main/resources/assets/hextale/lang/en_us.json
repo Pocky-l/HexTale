@@ -506,6 +506,8 @@
   "block.hextale.hextech_altar.busy": "A ritual is running - sneak + use to abort it (what was drawn is lost)",
   "block.hextale.hextech_altar.hint": "Item in hand: put it on the altar. Sneak + empty hand: start the ritual",
   "gui.hextale.stele.subtitle": "Choose a rune for the circle",
+  "gui.hextale.stele.for": "Runes for %s on the altar",
+  "gui.hextale.stele.none": "No rune does anything for the item on the altar.",
   "gui.hextale.stele.clear": "Clear",
   "gui.hextale.stele.unknown": "A rune you have not learned yet",
   "gui.hextale.stele.choose": "Click: set it on the stele",
