@@ -36,12 +36,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class PixelArt {
     private static final Map<String, int[][]> MASKS = new ConcurrentHashMap<>();
     private static final Identifier ESSENCE_ICONS = Hextale.id("textures/gui/essence_icons.png");
-    /** Essence pictograms are 9 x 9, one every 10 pixels along the sheet. */
+    /** Essence pictograms take 9 x 9 GUI pixels; the sheet holds them at 18 x 18, one every 20 pixels. */
     public static final int ICON = 9;
-    private static final int ICON_STEP = 10;
+    private static final int ICON_TEXELS = 18;
+    private static final int ICON_STEP = 20;
     private static final int ICONS_PER_ROW = 16;
-    private static final int ICONS_WIDTH = 256;
-    private static final int ICONS_HEIGHT = 64;
+    private static final int ICONS_WIDTH = 512;
+    private static final int ICONS_HEIGHT = 128;
     private static final Batch BATCH = new Batch();
 
     private PixelArt() {
@@ -71,7 +72,7 @@ public final class PixelArt {
         int ox = x + (size - drawn) / 2;
         int oy = y + (size - drawn) / 2;
         graphics.blit(RenderPipelines.GUI_TEXTURED, ESSENCE_ICONS, ox, oy, essence.ordinal() % ICONS_PER_ROW * ICON_STEP,
-                essence.ordinal() / ICONS_PER_ROW * ICON_STEP, drawn, drawn, ICON, ICON,
+                essence.ordinal() / ICONS_PER_ROW * ICON_STEP, drawn, drawn, ICON_TEXELS, ICON_TEXELS,
                 ICONS_WIDTH, ICONS_HEIGHT, argb);
     }
 

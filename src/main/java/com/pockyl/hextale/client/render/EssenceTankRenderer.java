@@ -40,13 +40,14 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
 
     private static final Identifier LABELS = Hextale.id("textures/block/essence_labels.png");
     /**
-     * A sticker is a small paper label of 13 x 15 texels drawn at two texels per pixel (6.5 x 7.5 px), so its sign is
-     * small and sharp; in the sheet one per 16 x 16 cell of a 256 x 128 texture.
+     * A sticker is a small paper label of 26 x 30 texels drawn at four texels per pixel (6.5 x 7.5 px), so its sign is
+     * small and sharp; in the sheet one per 32 x 32 cell of a 512 x 256 texture.
      */
-    private static final int LABEL_W = 13;
-    private static final int LABEL_H = 15;
-    private static final float HALF_W = LABEL_W / 2F / 32;
-    private static final float HALF_H = LABEL_H / 2F / 32;
+    private static final int LABEL_W = 26;
+    private static final int LABEL_H = 30;
+    private static final int LABEL_CELL = 32;
+    private static final float HALF_W = LABEL_W / 2F / 64;
+    private static final float HALF_H = LABEL_H / 2F / 64;
     /** Side stickers lie 0.3 px in front of the glass (2 px inside the block), centred across, a little below the middle. */
     private static final float SIDE_OUT = 0.5F - 1.7F / 16;
     private static final float TOP_OUT = 15.3F / 16 - 0.5F;
@@ -165,11 +166,11 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
         float cz = 0.5F + nz * out + rz * ACROSS + up[2] * lift;
         float w = HALF_W;
         float h = HALF_H;
-        // Stickers sit 16 to a row on a 256 x 128 sheet.
-        float u0 = essence.ordinal() % 16 * 16 / 256F;
-        float u1 = (essence.ordinal() % 16 * 16 + LABEL_W) / 256F;
-        float v0 = essence.ordinal() / 16 * 16 / 128F;
-        float v1 = (essence.ordinal() / 16 * 16 + LABEL_H) / 128F;
+        // Stickers sit 16 to a row on a 512 x 256 sheet.
+        float u0 = essence.ordinal() % 16 * LABEL_CELL / 512F;
+        float u1 = (essence.ordinal() % 16 * LABEL_CELL + LABEL_W) / 512F;
+        float v0 = essence.ordinal() / 16 * LABEL_CELL / 256F;
+        float v1 = (essence.ordinal() / 16 * LABEL_CELL + LABEL_H) / 256F;
         float[][] corners = {
                 {cx - rx * w - up[0] * h, cy - ry * w - up[1] * h, cz - rz * w - up[2] * h, u0, v1},
                 {cx + rx * w - up[0] * h, cy + ry * w - up[1] * h, cz + rz * w - up[2] * h, u1, v1},
