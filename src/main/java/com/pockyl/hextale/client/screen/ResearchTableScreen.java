@@ -10,7 +10,9 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -80,6 +82,13 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private static final int BOARD_W = BoardView.SHEET_W;
     private static final int BOARD_H = BoardView.SHEET_H;
     /** Ink vials: nine glass tubes in ring order. */
+    /** The button that burns the parchment on purpose, in the paper's top right corner; a second click within the arm time burns. */
+    private static final int BURN_X = 225;
+    private static final int BURN_Y = 31;
+    private static final int BURN_SIZE = 16;
+    private static final long BURN_ARM_MILLIS = 3000;
+    /** Text in the header runs from beside the topic's icon to the panel's right frame. */
+    private static final int HEADER_TEXT_W = 168;
     private static final int VIAL_X = 258;
     private static final int VIAL_Y = 64;
     private static final int VIAL_STEP = 23;
@@ -127,6 +136,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     @Nullable
     private ResearchBoard lastBoard;
     private BoardView.@Nullable Burn burning;
+    /** When the burn button was clicked once (it waits for a second click), 0 = not armed. */
+    private long burnArmed;
 
     // Feedback.
     private Component toast = Component.empty();
@@ -638,6 +649,67 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (!done) {
             board.renderGoals(graphics, font, current, trace == null ? 0 : trace.lit(),
                     Component.translatable(KEY + "goals", Integer.bitCount(trace == null ? 0 : trace.lit()), current.points().size()));
+            renderBurnButton(graphics, mouseX, mouseY);
+        }
+    }
+
+    /**
+     * Where a flag may go: a dark section, or (tier I, whose curses hide in plain parchment) an open section next to an
+     * inked one that counts curses.
+     */
+    private boolean flaggable(ResearchBoard current, int cell) {
+        if (inked(cell) || current.wall(cell)) {
+            return false;
+        }
+        if (current.dark(cell)) {
+            return true;
+        }
+        for (int next : HexGrid.neighbours(cell)) {
+            if (inked(next) && current.danger(next) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean overBurnButton(double mouseX, double mouseY) {
+        return isOver(mouseX, mouseY, leftPos + BURN_X, topPos + BURN_Y, BURN_SIZE, BURN_SIZE);
+    }
+
+    private boolean burnArmed() {
+        return burnArmed != 0 && Util.getMillis() - burnArmed < BURN_ARM_MILLIS;
+    }
+
+    /**
+     * A small sepia plaque with a flame: burns the parchment to start the topic over on a new board. The first click arms
+     * it (the flame flares red and asks again), the second burns.
+     */
+    private void renderBurnButton(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        boolean over = overBurnButton(mouseX, mouseY);
+        boolean armed = burnArmed();
+        float flicker = 0.5F + 0.5F * Mth.sin(Util.getMillis() / 90.0F);
+        int x = leftPos + BURN_X;
+        int y = topPos + BURN_Y;
+        int rim = armed ? 0xB0302A : over ? 0x8A5A12 : 0x5E4526;
+        PixelArt.fill(graphics, x, y, x + BURN_SIZE, y + BURN_SIZE, PixelArt.argb(rim, 0.9F));
+        PixelArt.fill(graphics, x + 1, y + 1, x + BURN_SIZE - 1, y + BURN_SIZE - 1,
+                PixelArt.argb(armed ? 0x3A120C : over ? 0xF3E2B8 : 0xE6D2A4, 1));
+        int outer = armed ? PixelArt.mix(0xE04A3A, 0xFFB040, flicker) : over ? 0xD8742A : 0x8A5A3A;
+        int inner = armed ? 0xFFE08A : over ? 0xF2C040 : 0xB08A5A;
+        // The flame: a tongue with a lick to the left and a bright core.
+        int cx = x + 8;
+        int base = y + 13;
+        PixelArt.fill(graphics, cx - 4, base - 4, cx + 4, base, PixelArt.argb(outer, 1));
+        PixelArt.fill(graphics, cx - 3, base - 7, cx + 3, base - 4, PixelArt.argb(outer, 1));
+        PixelArt.fill(graphics, cx - 1, base - 10, cx + 2, base - 7, PixelArt.argb(outer, 1));
+        PixelArt.fill(graphics, cx, base - 11, cx + 1, base - 10, PixelArt.argb(outer, 1));
+        PixelArt.fill(graphics, cx - 4, base - 7, cx - 3, base - 5, PixelArt.argb(outer, 1));
+        PixelArt.fill(graphics, cx - 2, base - 4, cx + 2, base - 1, PixelArt.argb(inner, 1));
+        PixelArt.fill(graphics, cx - 1, base - 6, cx + 1, base - 4, PixelArt.argb(inner, 1));
+        if (over) {
+            pendingTooltip = armed
+                    ? List.of(Component.translatable(KEY + "burn.confirm").withStyle(ChatFormatting.RED))
+                    : List.of(Component.translatable(KEY + "burn"), Component.translatable(KEY + "burn.hint").withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -652,12 +724,24 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         graphics.item(topic.icon(), 0, 0);
         graphics.pose().popMatrix();
         PixelArt.flush(graphics);
-        graphics.text(font, Component.translatable(topic.translationKey()).withStyle(ChatFormatting.BOLD), x0 + 38, y0 + 29,
-                0xFF000000 | PixelArt.mix(topic.color(), 0xFFFFFF, 0.35F), true);
+        Component title = Component.translatable(topic.translationKey()).withStyle(ChatFormatting.BOLD);
+        graphics.text(font, fit(title, HEADER_TEXT_W), x0 + 38, y0 + 29, 0xFF000000 | PixelArt.mix(topic.color(), 0xFFFFFF, 0.35F), true);
         PixelArt.flush(graphics);
         boolean researched = ClientKnowledge.get().researched(topic);
-        graphics.text(font, Component.translatable(KEY + (researched ? "researched" : "unresearched")), x0 + 38, y0 + 41,
-                researched ? 0xFF8FE07A : 0xFF000000 | TEXT_MUTED, true);
+        // The status wraps onto a second line under the title; anything longer is cut.
+        List<FormattedCharSequence> status = font.split(Component.translatable(KEY + (researched ? "researched" : "unresearched")), HEADER_TEXT_W);
+        for (int i = 0; i < Math.min(2, status.size()); i++) {
+            graphics.text(font, status.get(i), x0 + 38, y0 + 39 + i * 9, researched ? 0xFF8FE07A : 0xFF000000 | TEXT_MUTED, true);
+        }
+    }
+
+    /** The text cut to a width, with an ellipsis when it did not fit. */
+    private FormattedCharSequence fit(Component text, int width) {
+        if (font.width(text) <= width) {
+            return text.getVisualOrderText();
+        }
+        FormattedText cut = font.substrByWidth(text, width - font.width("..."));
+        return Language.getInstance().getVisualOrder(FormattedText.composite(cut, FormattedText.of("...")));
     }
 
     private void renderEmptyHeader(GuiGraphicsExtractor graphics) {
@@ -691,7 +775,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         graphics.item(new ItemStack(item), 0, 0);
         graphics.pose().popMatrix();
         PixelArt.flush(graphics);
-        graphics.text(font, ResearchText.item(item).copy().withStyle(ChatFormatting.BOLD), x0 + 38, y0 + 29, 0xFF000000 | TEXT, true);
+        graphics.text(font, fit(ResearchText.item(item).copy().withStyle(ChatFormatting.BOLD), HEADER_TEXT_W), x0 + 38, y0 + 29, 0xFF000000 | TEXT, true);
         // Light left: rays as small prisms, spent ones dark; then the essences still hidden.
         for (int i = 0; i < study.maxRays(); i++) {
             boolean left = i >= study.spent();
@@ -942,9 +1026,22 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return;
         }
         syncThread(table, current);
+        if (!done(table) && overBurnButton(mouseX, mouseY)) {
+            if (button == InputConstants.MOUSE_BUTTON_LEFT) {
+                if (burnArmed()) {
+                    burnArmed = 0;
+                    release();
+                    send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.BURN, 0));
+                } else {
+                    burnArmed = Util.getMillis();
+                    sound(SoundEvents.FLINTANDSTEEL_USE, 1.2F, 0.5F);
+                }
+            }
+            return;
+        }
         if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
-            if (cell >= 0 && current.dark(cell) && !inked(cell)) {
-                // A flag on a dark section the researcher suspects (only a mark: it guards against a careless step).
+            if (cell >= 0 && flaggable(current, cell)) {
+                // A flag on a section the researcher suspects (only a mark: it guards against a careless step).
                 BitSet flags = flags(current.topic());
                 flags.flip(cell);
                 sound(SoundEvents.BOOK_PAGE_TURN, flags.get(cell) ? 1.5F : 1.2F, 0.5F);

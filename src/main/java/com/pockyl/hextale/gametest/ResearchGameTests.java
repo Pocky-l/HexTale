@@ -120,15 +120,25 @@ public final class ResearchGameTests {
             helper.assertTrue(par.three() >= 1 && par.three() == par.plain() && par.two() > par.three(), topic.id() + ": sane thresholds " + par);
             helper.assertTrue(!board.wall(HexGrid.CENTRE) && !board.dark(HexGrid.CENTRE), topic.id() + ": the orb is never walled in");
             int darkCount = 0;
+            int curseCount = 0;
             for (int cell = 0; cell < HexGrid.COUNT; cell++) {
                 if (board.dark(cell)) {
                     darkCount++;
                     helper.assertTrue(HexGrid.steps(HexGrid.CENTRE, cell) > 1, topic.id() + ": the orb's neighbours are never dark");
                     helper.assertTrue(board.pointAt(cell) < 0, topic.id() + ": no point lies in a dark field");
                 }
-                helper.assertTrue(!board.cursed(cell) || board.dark(cell), topic.id() + ": only dark sections are cursed");
+                helper.assertTrue(tier == 1 || !board.cursed(cell) || board.dark(cell), topic.id() + ": past tier 1 only dark sections are cursed");
+                if (board.cursed(cell)) {
+                    curseCount++;
+                    helper.assertTrue(HexGrid.steps(HexGrid.CENTRE, cell) > 1 && board.pointAt(cell) < 0, topic.id() + ": curses keep off the orb and the points");
+                }
+                if (HexGrid.isCorner(cell)) {
+                    helper.assertTrue(board.wall(cell) && !board.stone(cell) && !board.dark(cell) && !board.cursed(cell) && board.pointAt(cell) < 0,
+                            topic.id() + ": the corners hold the ink wells and nothing else");
+                }
             }
             helper.assertTrue(tier == 1 ? darkCount == 0 : darkCount > 0, topic.id() + ": dark fields only past tier 1");
+            helper.assertTrue(curseCount > 0, topic.id() + ": every parchment can be lost on a curse");
             int[] tree = ResearchBoards.plainTree(board);
             helper.assertTrue(tree != null, topic.id() + ": a plain drawing exists");
             ResearchSheet.Trace trace = ResearchSheet.trace(board, tree);
@@ -1136,6 +1146,33 @@ public final class ResearchGameTests {
                 helper.assertTrue(ResearchBoards.plainTree(next) != null, "attempt " + attempt + " of " + topic.id() + " can be finished");
             }
         }
+        helper.succeed();
+    }
+
+    /** Burning the parchment on purpose: a paper burns (a blank sheet takes one from the table), the orb stays, a new board. */
+    @HexTest
+    public static void aParchmentCanBeBurntOnPurpose(GameTestHelper helper) {
+        ServerPlayer player = survivalPlayer(helper);
+        ResearchTableBlockEntity table = stockedTable(helper);
+        table.setItem(ResearchTableBlockEntity.PAPER, new ItemStack(Items.PAPER, 4));
+        table.select(player, TOPIC);
+        int papers = table.getItem(ResearchTableBlockEntity.PAPER).getCount();
+        int orbs = table.getItem(ResearchTableBlockEntity.HEXTECH).getCount();
+        table.burn(player);
+        helper.assertTrue(table.sheet().attempt() == 1 && table.sheet().burns() == 1, "the sheet burned and the next attempt lies on the desk");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == papers - 1, "a blank sheet costs a paper from the table");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == orbs, "the orb stays");
+        helper.assertTrue(player.getHealth() == player.getMaxHealth(), "burning on purpose does not hurt");
+
+        ResearchBoard next = ResearchBoards.get(TOPIC, 1);
+        int[] plain = ResearchBoards.plainTree(next);
+        inkTanks(helper, EssenceTankBlockEntity.CAPACITY, next.essences());
+        table.thread(player, Arrays.copyOf(plain, 2));
+        helper.assertTrue(table.sheet().paid() && table.getItem(ResearchTableBlockEntity.PAPER).getCount() == papers - 2, "the new attempt takes its paper");
+        table.burn(player);
+        helper.assertTrue(table.sheet().attempt() == 2 && table.sheet().length() == 0, "a drawn sheet burns too");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == papers - 2, "its own paper burns with it");
+        player.discard();
         helper.succeed();
     }
 

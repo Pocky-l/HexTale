@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   shatter it into dust. A first cut has three planes, a finish five with a narrow window (a master disc feels the
   planes from further off and cuts raw orbs twice as fast). Discs wear with every cut and crack.
 - Crucible, the first vessel of chemtech: sprinkle hextech dust on a cauldron (a water cauldron keeps its water) and
-  it wakes as a blackened iron pot with a copper rim and a green sight glass. Fill it with a water bucket or water
+  it wakes as a pot of plain blackened cast iron on four legs. Fill it with a water bucket or water
   bottles and heat it from below - fire, a campfire or magma, soul fire faster, lava fastest. The water warms, steams,
   simmers and comes to a rolling boil, bubbles breaking all over it. Only boiling water takes things in: bottles and
   jars of essence pour in and swirl into it, tinting the water; items put in or dropped in sink and dissolve with a
@@ -80,13 +80,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Research: every device and tool past the essence works - the altar circle, the gemstone, the lamp, the big jar,
   the pylons, the pickaxes, the lapidary and its master disc, hexsteel, the drain valve - must be researched at the table before it can be crafted
   or made at the altar. Choose it in the book and draw it on a worn parchment with a hexagon of six essences - one per
-  direction, chosen by the device's theme, shown as ink wells on the margin beside the hexagon's corners. Drag ink from
+  direction, chosen by the device's theme, shown as ink wells in the hexagon's corners. Drag ink from
   the hextech orb to every goal - the gold sigils, counted at the top of the sheet; the ink may branch from the orb
   or from any inked section. A step costs ink of the essence its direction points to, a step onto a goal ten of the
-  goal's own essence; right click takes a step back for free. Simple devices have stone walls; deeper ones have dark
-  fields the ink may cross, but some of their sections are cursed - every inked section next to them counts the curses
-  it touches, like a minesweeper. Stepping on a curse bursts the orb: the parchment catches fire and chars away from
-  the curse, and a fresh sheet slides in with a new board for the next attempt. A finished drawing writes
+  goal's own essence; right click takes a step back for free. Every parchment hides curses, and every inked section next to one counts
+  the curses it touches, like a minesweeper (right click flags a suspected section). Simple devices have stone walls
+  and a few curses hidden in plain parchment; deeper ones have dark fields the ink may cross, their curses inside.
+  Stepping on a curse bursts the orb: the parchment catches fire and chars away from the curse, and a fresh sheet
+  slides in with a new board for the next attempt. The flame button in the sheet's corner burns it on purpose (two
+  clicks) to start over on a new board - only the paper is lost. A finished drawing writes
   Research Notes; reading them teaches the device - and notes can be handed to another player.
 - Runes are found, not researched: rune scrolls lie in treasure chests - simple runes in dungeons, temples, mineshafts
   and buried treasure, harder ones in strongholds, mansions, the Nether and trial vaults, the rarest in ancient cities,

@@ -51,6 +51,7 @@ import com.pockyl.hextale.research.ResearchTopics;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchText;
+import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ResearchBoard;
 import com.pockyl.hextale.research.ResearchBoards;
 import com.pockyl.hextale.rune.Essence;
@@ -330,8 +331,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     /**
-     * The ink stepped on a cursed dark rune: the orb bursts. The sheet burns with its paper, the ink drawn so far is spent
-     * and the researcher is hurt by the blast; the next attempt is drawn on a new parchment with another board.
+     * The ink stepped on a cursed section: the orb bursts. The sheet burns with its paper, the ink drawn so far is spent
+     * and the researcher is hurt; the next attempt is drawn on a new parchment with another board.
      */
     private void burst(ServerPlayer player, ResearchBoard board, int cell, ResearchSheet.Trace trace) {
         boolean creative = player.getAbilities().instabuild;
@@ -340,23 +341,54 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             items.get(HEXTECH).shrink(1);
             player.hurtServer((ServerLevel) level, level.damageSources().magic(), BURST_DAMAGE);
         }
-        sheet.burn(cell, Research.of(player).burn(board.topic()));
-        Research.sync(player);
         message(player, Component.translatable("research.hextale.burst", name(board.topic())), ResearchMessagePayload.Tone.BAD);
         if (level instanceof ServerLevel serverLevel) {
             Vec3 orb = orbPosition();
-            serverLevel.sendParticles(ParticleTypes.EXPLOSION, orb.x, orb.y, orb.z, 1, 0, 0, 0, 0);
             serverLevel.sendParticles(ParticleTypes.SQUID_INK, orb.x, orb.y, orb.z, 24, 0.25, 0.15, 0.25, 0.08);
             serverLevel.sendParticles(ParticleTypes.ELECTRIC_SPARK, orb.x, orb.y, orb.z, 20, 0.2, 0.2, 0.2, 0.4);
-            // The parchment catches fire: flames run over it, ash and smoke rise from the desk.
+            level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_FIZZLE, 0);
+        }
+        burnSheet(player, board, cell);
+    }
+
+    /**
+     * The researcher gives up on the parchment and burns it: a fresh one with a new board takes its place. Its paper is
+     * lost: the one the attempt was written on, or a paper from the table if nothing was drawn yet.
+     */
+    public void burn(ServerPlayer player) {
+        ResearchBoard board = board();
+        if (board == null || studyingItem || sheet.isDone() || Requirement.diary(this, player) != null) {
+            return;
+        }
+        if (Research.of(player).attempt(board.topic()) != sheet.attempt()) {
+            sheet.select(board.topic(), Research.of(player).attempt(board.topic()));
+            setChanged();
+            return;
+        }
+        if (!sheet.paid() && !player.getAbilities().instabuild) {
+            Requirement missing = Requirement.paper(this, player);
+            if (missing != null) {
+                message(player, Component.translatable(missing.translationKey()), ResearchMessagePayload.Tone.BAD);
+                return;
+            }
+            items.get(PAPER).shrink(1);
+        }
+        int[] tree = sheet.tree();
+        burnSheet(player, board, tree.length == 0 ? HexGrid.CENTRE : tree[tree.length - 1]);
+        message(player, Component.translatable("research.hextale.burnt", name(board.topic())), ResearchMessagePayload.Tone.INFO);
+    }
+
+    /** The parchment catches fire at a section: flames run over it, ash and smoke rise from the desk. */
+    private void burnSheet(ServerPlayer player, ResearchBoard board, int cell) {
+        sheet.burn(cell, Research.of(player).burn(board.topic()));
+        Research.sync(player);
+        setChanged();
+        if (level instanceof ServerLevel serverLevel) {
             Vec3 sheetAt = TableGeometry.toWorld(worldPosition, facing(), TableGeometry.PARCHMENT.add(0, 0.6, 0));
             serverLevel.sendParticles(ParticleTypes.SMALL_FLAME, sheetAt.x, sheetAt.y, sheetAt.z, 18, 0.22, 0.02, 0.16, 0.01);
             serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, sheetAt.x, sheetAt.y + 0.05, sheetAt.z, 6, 0.18, 0.02, 0.12, 0.02);
             serverLevel.sendParticles(ParticleTypes.WHITE_ASH, sheetAt.x, sheetAt.y + 0.2, sheetAt.z, 30, 0.3, 0.2, 0.25, 0.02);
             level.playSound(null, worldPosition, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.5F, 0.7F);
-            level.playSound(null, worldPosition, ModSounds.ORB_CRACK.get(), SoundSource.BLOCKS, 1.0F, 0.7F);
-            level.playSound(null, worldPosition, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 0.5F, 1.4F);
-            level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_FIZZLE, 0);
         }
     }
 

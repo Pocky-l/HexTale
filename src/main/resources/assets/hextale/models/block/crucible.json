@@ -2,9 +2,7 @@
   "parent": "minecraft:block/block",
   "textures": {
     "particle": "hextale:block/crucible_iron",
-    "iron": "hextale:block/crucible_iron",
-    "gauge": "hextale:block/crucible_gauge",
-    "copper": "minecraft:block/copper_block"
+    "iron": "hextale:block/crucible_iron"
   },
   "elements": [
     {
@@ -689,7 +687,7 @@
       }
     },
     {
-      "name": "rim_n",
+      "name": "iron_rim_n",
       "from": [
         1,
         14,
@@ -708,7 +706,7 @@
             15,
             2
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "east": {
           "uv": [
@@ -717,7 +715,7 @@
             15,
             2
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "south": {
           "uv": [
@@ -726,7 +724,7 @@
             15,
             2
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "west": {
           "uv": [
@@ -735,7 +733,7 @@
             3,
             2
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "up": {
           "uv": [
@@ -744,7 +742,7 @@
             15,
             3
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "down": {
           "uv": [
@@ -753,12 +751,12 @@
             15,
             15
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         }
       }
     },
     {
-      "name": "rim_s",
+      "name": "iron_rim_s",
       "from": [
         1,
         14,
@@ -777,7 +775,7 @@
             15,
             2
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "east": {
           "uv": [
@@ -786,7 +784,7 @@
             3,
             2
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "south": {
           "uv": [
@@ -795,7 +793,7 @@
             15,
             2
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "west": {
           "uv": [
@@ -804,7 +802,7 @@
             15,
             2
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "up": {
           "uv": [
@@ -813,7 +811,7 @@
             15,
             15
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "down": {
           "uv": [
@@ -822,12 +820,12 @@
             15,
             3
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         }
       }
     },
     {
-      "name": "rim_w",
+      "name": "iron_rim_w",
       "from": [
         1,
         14,
@@ -846,7 +844,7 @@
             13,
             2
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "west": {
           "uv": [
@@ -855,7 +853,7 @@
             13,
             2
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "up": {
           "uv": [
@@ -864,7 +862,7 @@
             3,
             13
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "down": {
           "uv": [
@@ -873,12 +871,12 @@
             3,
             13
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         }
       }
     },
     {
-      "name": "rim_e",
+      "name": "iron_rim_e",
       "from": [
         13,
         14,
@@ -897,7 +895,7 @@
             13,
             2
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "west": {
           "uv": [
@@ -906,7 +904,7 @@
             13,
             2
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "up": {
           "uv": [
@@ -915,7 +913,7 @@
             15,
             13
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         },
         "down": {
           "uv": [
@@ -924,7 +922,7 @@
             15,
             13
           ],
-          "texture": "#copper"
+          "texture": "#iron"
         }
       }
     },
@@ -1327,67 +1325,6 @@
             10
           ],
           "texture": "#iron"
-        }
-      }
-    },
-    {
-      "name": "gauge",
-      "from": [
-        6,
-        7,
-        0
-      ],
-      "to": [
-        10,
-        11,
-        1
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            6,
-            5,
-            10,
-            9
-          ],
-          "texture": "#gauge",
-          "cullface": "north"
-        },
-        "east": {
-          "uv": [
-            15,
-            5,
-            16,
-            9
-          ],
-          "texture": "#gauge"
-        },
-        "west": {
-          "uv": [
-            0,
-            5,
-            1,
-            9
-          ],
-          "texture": "#gauge"
-        },
-        "up": {
-          "uv": [
-            6,
-            0,
-            10,
-            1
-          ],
-          "texture": "#gauge"
-        },
-        "down": {
-          "uv": [
-            6,
-            15,
-            10,
-            16
-          ],
-          "texture": "#gauge"
         }
       }
     }

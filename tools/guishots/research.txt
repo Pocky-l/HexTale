@@ -26,6 +26,19 @@ wait 5
 use 0 -60 -3 south
 wait 20
 shot research_tier2
+origin screen
+move 233 39
+wait 3
+shot research_burn_button
+click 233 39
+wait 3
+shot research_burn_armed
+click 233 39
+wait 12
+shot research_burn_manual
+wait 40
+shot research_burn_after
+origin zero
 cmd data merge block 0 -60 -3 {sheet:{burns:1,burn_cell:70,attempt:1,revision:6}}
 wait 10
 shot research_burn_a

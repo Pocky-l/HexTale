@@ -27,6 +27,9 @@ public final class ResearchBoards {
     /** Points ringed by dark sections, and the share of dark sections that are cursed, per tier. */
     private static final int[] RINGS = {0, 0, 1, 2};
     private static final double[] CURSE_SHARE = {0, 0, 0.3, 0.4};
+    /** Chapter I has no dark fields: this many curses hide in its plain parchment, never near the orb. */
+    private static final int HIDDEN_CURSES = 7;
+    private static final int HIDDEN_CURSE_CLEARANCE = 3;
     /** The plain thread of a board is this long at least ... */
     private static final int[] PLAIN_MIN = {0, 14, 22, 32};
     /** ... and at most: deeper topics are longer. */
@@ -153,7 +156,15 @@ public final class ResearchBoards {
                 if (ok.isEmpty()) {
                     break;
                 }
-                points.add(new ResearchBoard.Point(element, ok.get(random.pick(ok.size()))));
+                // The corners hold the ink wells: a point drawn there moves on to the next candidate.
+                int at = random.pick(ok.size());
+                for (int k = 0; k < ok.size() && HexGrid.isCorner(ok.get(at)); k++) {
+                    at = (at + 1) % ok.size();
+                }
+                points.add(new ResearchBoard.Point(element, ok.get(at)));
+            }
+            for (int d = 0; d < 6; d++) {
+                walls[HexGrid.cornerCell(d)] = false;
             }
             if (points.size() < POINTS[tier]) {
                 continue;
@@ -165,6 +176,8 @@ public final class ResearchBoards {
                 dark = walls;
                 walls = new boolean[HexGrid.COUNT];
                 darkFields(dark, cursed, points, tier, new Random32(hash(key + "#curse#" + round)));
+            } else {
+                hiddenCurses(walls, cursed, points, new Random32(hash(key + "#curse#" + round)));
             }
             ResearchBoard draft = new ResearchBoard(topic, essences, walls, dark, cursed, List.copyOf(points), null);
             int[] tree = plainTree(draft);
@@ -278,6 +291,9 @@ public final class ResearchBoards {
         for (ResearchBoard.Point point : points) {
             dark[point.cell()] = false;
         }
+        for (int d = 0; d < 6; d++) {
+            dark[HexGrid.cornerCell(d)] = false;
+        }
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
             if (HexGrid.steps(HexGrid.CENTRE, cell) <= 1) {
                 dark[cell] = false;
@@ -300,6 +316,45 @@ public final class ResearchBoards {
                 }
             }
         }
+    }
+
+    /**
+     * Chapter I: curses hidden in plain parchment, away from the orb, the points and the corners. A curse is only placed
+     * where every point stays reachable around it.
+     */
+    private static void hiddenCurses(boolean[] walls, boolean[] cursed, List<ResearchBoard.Point> points, Random32 random) {
+        for (int placed = 0, tries = 0; placed < HIDDEN_CURSES && tries < 200; tries++) {
+            int cell = random.pick(HexGrid.COUNT);
+            if (walls[cell] || cursed[cell] || HexGrid.isCorner(cell) || HexGrid.steps(HexGrid.CENTRE, cell) < HIDDEN_CURSE_CLEARANCE
+                    || points.stream().anyMatch(p -> p.cell() == cell)) {
+                continue;
+            }
+            cursed[cell] = true;
+            if (allReachable(walls, cursed, points)) {
+                placed++;
+            } else {
+                cursed[cell] = false;
+            }
+        }
+    }
+
+    /** Whether the ink can reach every point from the orb around stone, corners and curses. */
+    private static boolean allReachable(boolean[] walls, boolean[] cursed, List<ResearchBoard.Point> points) {
+        boolean[] seen = new boolean[HexGrid.COUNT];
+        int[] queue = new int[HexGrid.COUNT];
+        int head = 0;
+        int tail = 0;
+        queue[tail++] = HexGrid.CENTRE;
+        seen[HexGrid.CENTRE] = true;
+        while (head < tail) {
+            for (int next : HexGrid.neighbours(queue[head++])) {
+                if (!seen[next] && !walls[next] && !cursed[next] && !HexGrid.isCorner(next)) {
+                    seen[next] = true;
+                    queue[tail++] = next;
+                }
+            }
+        }
+        return points.stream().allMatch(p -> seen[p.cell()]);
     }
 
     private static ResearchBoard withPar(ResearchBoard draft, int plain) {

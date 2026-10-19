@@ -6,14 +6,15 @@ import java.util.List;
 
 /**
  * The parchment of one research topic: stone dark runes (walls the ink cannot cross, chapter I), dark fields (chapters II and III:
- * passable, but some of their sections are cursed and burst the orb, like the mines of a minesweeper), the points the
- * ink must reach and the star thresholds in sections of ink.
+ * passable, but some of their sections are cursed and burst the orb, like the mines of a minesweeper), a few curses hidden in
+ * plain parchment (chapter I), the points the ink must reach and the star thresholds in sections of ink. The six corner
+ * sections hold the ink wells and are never inked.
  *
  * @param essences the essence of each of the six directions ({@link HexGrid#DIRECTIONS}): a step of ink that way pays
  *                 with it; all six belong to the topic's theme
  * @param walls    per section: a stone dark rune
  * @param dark     per section: a dark field section (passable)
- * @param cursed   per section: a cursed dark field section
+ * @param cursed   per section: a cursed section (in a dark field, or hidden in chapter I's plain parchment)
  * @param points   the topic's points; the first two carry the essences nearest its action and its target
  */
 public record ResearchBoard(ResearchTopic topic, List<Essence> essences, boolean[] walls, boolean[] dark, boolean[] cursed, List<Point> points,
@@ -41,7 +42,13 @@ public record ResearchBoard(ResearchTopic topic, List<Essence> essences, boolean
         return topic.tier();
     }
 
+    /** Stone, or a corner: the corners hold the ink wells and are never inked. */
     public boolean wall(int cell) {
+        return walls[cell] || HexGrid.isCorner(cell);
+    }
+
+    /** A stone dark rune (the corners are not drawn as stone). */
+    public boolean stone(int cell) {
         return walls[cell];
     }
 
@@ -61,6 +68,14 @@ public record ResearchBoard(ResearchTopic topic, List<Essence> essences, boolean
             }
         }
         return false;
+    }
+
+    /**
+     * Whether this section, once inked, tells how many curses touch it: next to a dark field, or next to a curse hidden
+     * in plain parchment (tier I has no dark fields, its few curses lie anywhere).
+     */
+    public boolean counted(int cell) {
+        return nearDark(cell) || danger(cell) > 0;
     }
 
     /** How many cursed sections touch this one. */

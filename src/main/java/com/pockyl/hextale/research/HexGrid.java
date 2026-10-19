@@ -83,6 +83,21 @@ public final class HexGrid {
         return new double[]{x(d[0] * RADIUS, d[1] * RADIUS), y(d[1] * RADIUS)};
     }
 
+    /** The section in the corner of a direction: the ink well of that direction's essence, never inked. */
+    public static int cornerCell(int direction) {
+        int[] d = DIRECTIONS[direction];
+        return index(d[0] * RADIUS, d[1] * RADIUS);
+    }
+
+    public static boolean isCorner(int cell) {
+        for (int d = 0; d < 6; d++) {
+            if (cornerCell(d) == cell) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** Whether a point lies inside the parchment's hexagon, at least {@code margin} away from its edges. */
     public static boolean inside(double px, double py, double margin) {
         for (int i = 0; i < 6; i++) {

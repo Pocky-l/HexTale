@@ -64,13 +64,8 @@ final class BoardView {
     private static final int GOLD = 0xE0A21C;
     private static final int GOLD_DARK = 0x8A5A12;
     private static final int SEPIA = 0x5E4526;
-    /**
-     * Ink wells sit beside the hexagon's corners, out on the margin: this far out from the corner and this far turned
-     * clockwise-behind it, so a goal on the corner section never covers its well.
-     */
-    private static final int WELL_OUT = 4;
-    private static final int WELL_ASIDE = 20;
-    private static final int WELL = 14;
+    /** The ink wells in the hexagon's corners: this wide, inside the corner plaques of the desk texture. */
+    private static final int WELL = 13;
     private static final int FREE_INK = 0x8FB4C8;
     private static final long FADE_MILLIS = 450;
     private static final long LIGHT_MILLIS = 700;
@@ -181,7 +176,7 @@ final class BoardView {
      * @param previewFrom the inked section that step would start from
      * @param head        where the line being drawn ends
      * @param known       sections inked in earlier sheets of this attempt (their curse counts stay shown)
-     * @param flags       the researcher's flags on dark sections
+     * @param flags       the researcher's flags on suspected sections
      */
     void renderTopic(GuiGraphicsExtractor graphics, Font font, ResearchBoard board, int[] tree, ResearchSheet.@Nullable Trace trace,
                     boolean done, boolean drawing, int hovered, int preview, int previewFrom, boolean ready, int head,
@@ -200,8 +195,11 @@ final class BoardView {
             inked[cell] = true;
         }
 
-        // Sections: fog, open parchment, stone, dark fields.
+        // Sections: fog, open parchment, stone, dark fields. The corners hold the ink wells, drawn last.
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+            if (HexGrid.isCorner(cell)) {
+                continue;
+            }
             int x = sx(cell);
             int y = sy(cell);
             float fade = revealed[cell] == 0 ? 1 : Math.min(1, (now - revealed[cell]) / (float) FADE_MILLIS);
@@ -213,7 +211,7 @@ final class BoardView {
             if (fade < 1 && !field) {
                 fog(graphics, x, y, cell, now);
             }
-            if (board.wall(cell)) {
+            if (board.stone(cell)) {
                 stone(graphics, x, y, cell, fade);
             } else if (field) {
                 if (inked[cell] && board.cursed(cell)) {
@@ -226,10 +224,15 @@ final class BoardView {
                         flag(graphics, x, y);
                     }
                 }
+            } else if (inked[cell] && board.cursed(cell)) {
+                curse(graphics, x, y, now);
             } else {
                 Essence near = nearestCorner(board, cell);
                 int tint = near == null ? 0xFFF8E8 : PixelArt.mix(0xFFF8E8, near.color(), 0.22F);
                 PixelArt.hex(graphics, x, y, CELL, argb(tint, 0.22F * fade), argb(0x8C7047, 0.28F * fade));
+                if (flags.get(cell) && !inked[cell]) {
+                    flag(graphics, x, y);
+                }
             }
         }
 
@@ -286,7 +289,7 @@ final class BoardView {
         // Curse counts: every inked (or once inked) section next to a dark field tells how many curses touch it.
         PixelArt.flush(graphics);
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-            if ((inked[cell] || known.get(cell)) && cell != HexGrid.CENTRE && board.pointAt(cell) < 0 && board.nearDark(cell)
+            if ((inked[cell] || known.get(cell)) && cell != HexGrid.CENTRE && board.pointAt(cell) < 0 && board.counted(cell)
                     && !board.cursed(cell)) {
                 int danger = board.danger(cell);
                 String text = String.valueOf(danger);
@@ -316,7 +319,7 @@ final class BoardView {
             int[] p = screen(preview);
             PixelArt.dotted(graphics, h[0], h[1], p[0], p[1], 2, 2, (int) (now / 90 % 4), argb(0x3B2A1A, 0.8F));
             PixelArt.hexRing(graphics, p[0], p[1], CELL, argb(board.dark(preview) ? 0xE04A3A : 0xFFFFFF, 0.7F));
-        } else if (hovered >= 0 && !drawing && (visible[hovered] || board.dark(hovered))) {
+        } else if (hovered >= 0 && !drawing && !HexGrid.isCorner(hovered) && (visible[hovered] || board.dark(hovered))) {
             PixelArt.hexRing(graphics, sx(hovered), sy(hovered), CELL, argb(0xFFFFFF, 0.35F));
         }
         if (shakeCell >= 0) {
@@ -425,7 +428,7 @@ final class BoardView {
         int[] neighbours = HexGrid.neighbours(head);
         for (int k = 0; k < neighbours.length; k++) {
             int next = neighbours[k];
-            if (inked[next] || board.wall(next) && visible[next]) {
+            if (inked[next] || board.wall(next) && (visible[next] || HexGrid.isCorner(next))) {
                 continue;
             }
             Essence ink = ResearchSheet.paying(board, head, next);
@@ -800,23 +803,10 @@ final class BoardView {
         renderSigns(graphics, java.util.Collections.nCopies(6, null));
     }
 
-    /**
-     * The six corners of the hexagon: each direction's essence sign on a little plaque; a corner whose essence is still
-     * unknown (an item's hidden strings, an empty parchment) shows a faint question mark.
-     */
-    /** Where the ink well of a corner's essence sits: beside the corner, on the parchment's margin. */
+    /** Where the ink well of a corner's essence sits: in the corner section itself, on the parchment's corner plaque. */
     private int[] well(int d) {
-        double[] corner = HexGrid.corner(d);
-        double x = corner[0] * KX;
-        double y = corner[1] * KY;
-        double length = Math.hypot(x, y);
-        double ux = x / length;
-        double uy = y / length;
-        int wx = Mth.clamp(CX + (int) Math.round(x + ux * WELL_OUT + uy * WELL_ASIDE), PAPER_X + WELL / 2 + 1,
-                PAPER_X + PAPER_W - WELL / 2 - 1);
-        int wy = Mth.clamp(CY + (int) Math.round(y + uy * WELL_OUT - ux * WELL_ASIDE), PAPER_Y + WELL / 2 + 1,
-                PAPER_Y + PAPER_H - WELL / 2 - 1);
-        return new int[]{left + wx, top + wy};
+        int cell = HexGrid.cornerCell(d);
+        return new int[]{sx(cell), sy(cell)};
     }
 
     /** The corner whose ink well is under the mouse, or -1. */
@@ -831,33 +821,16 @@ final class BoardView {
     }
 
     /**
-     * The six essences of the parchment: muted ink wells on the margin, each with a small arrow at its corner pointing
-     * out to it - a step that way is paid with that ink. Kept plain, so they never read as goals.
+     * The six essences of the parchment: an ink well in each corner of the hexagon, a step towards that corner is paid
+     * with its ink. Muted towards the parchment, so they never read as goals.
      */
     private void renderWells(GuiGraphicsExtractor graphics, List<Essence> essences) {
         for (int d = 0; d < 6 && d < essences.size(); d++) {
             Essence essence = essences.get(d);
-            double[] corner = HexGrid.corner(d);
-            int cx = left + CX + (int) Math.round(corner[0] * KX);
-            int cy = top + CY + (int) Math.round(corner[1] * KY);
             int[] at = well(d);
-            double length = Math.hypot(corner[0], corner[1]);
-            double dx = corner[0] / length;
-            double dy = corner[1] / length;
-            // A chevron just outside the corner points the way the ink pays for; a dotted line leads to its well.
-            int tipX = cx + (int) Math.round(dx * 5);
-            int tipY = cy + (int) Math.round(dy * 5);
-            int arrow = argb(SEPIA, 0.8F);
-            for (int side = -1; side <= 1; side += 2) {
-                PixelArt.line(graphics, tipX, tipY, tipX - (int) Math.round(dx * 3 - side * dy * 3),
-                        tipY - (int) Math.round(dy * 3 + side * dx * 3), arrow);
-            }
-            PixelArt.dotted(graphics, tipX, tipY, at[0], at[1], 1, 2, 0, argb(SEPIA, 0.55F));
-            // The well: a round pot of the ink with a rim at its mouth, muted towards the parchment.
             int muted = PixelArt.mix(essence.color(), 0xE8D6B0, 0.45F);
-            PixelArt.disc(graphics, at[0], at[1] + 1, WELL, argb(muted, 1), argb(SEPIA, 0.9F));
-            PixelArt.fill(graphics, at[0] - 4, at[1] - WELL / 2, at[0] + 4, at[1] - WELL / 2 + 2, argb(PixelArt.mix(SEPIA, 0x000000, 0.2F), 0.9F));
-            PixelArt.essence(graphics, essence, at[0] - 4, at[1] - 3, 9, argb(PixelArt.mix(PixelArt.onParchment(essence.color()), 0x1E140A, 0.3F), 1));
+            PixelArt.disc(graphics, at[0], at[1], WELL, argb(muted, 1), argb(SEPIA, 0.9F));
+            PixelArt.essence(graphics, essence, at[0] - 4, at[1] - 4, 9, argb(PixelArt.mix(PixelArt.onParchment(essence.color()), 0x1E140A, 0.3F), 1));
         }
     }
 

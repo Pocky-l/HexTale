@@ -41,7 +41,8 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
         THREAD,
         STRIKE,
         CLOSE_STUDY,
-        FIRE
+        FIRE,
+        BURN
     }
 
     public static ResearchActionPayload of(BlockPos pos, Action action, int value) {
@@ -76,6 +77,7 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
             case STRIKE -> table.strike(player, payload.value());
             case CLOSE_STUDY -> table.closeStudy(player);
             case FIRE -> table.fire(player, payload.value());
+            case BURN -> table.burn(player);
         }
     }
 }
