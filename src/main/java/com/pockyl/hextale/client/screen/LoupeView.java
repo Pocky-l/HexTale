@@ -51,18 +51,18 @@ final class LoupeView {
     private static final int REST_X = 350;
     private static final int REST_Y = 131;
     /** The main lens's rim radius; the boom ends at its yoke. */
-    private static final int RIM = 11;
+    private static final int RIM = 8;
     /** Telescope tubes: length, overlap, widths outermost first. */
     private static final int TUBE = 56;
     private static final int OVERLAP = 6;
-    private static final int[] TUBE_WIDTH = {6, 4, 3};
+    private static final int[] TUBE_WIDTH = {4, 3, 2};
     private static final float MIN_REACH = 30;
     private static final float MAX_REACH = 3 * TUBE - 2 * OVERLAP + RIM + 2;
     /** The hinged lenses (x4, x8): diameters. */
-    private static final int[] SIDE_LENS = {16, 12};
+    private static final int[] SIDE_LENS = {11, 8};
     /** The magnified view: diameter per lens swung in. */
-    private static final int[] VIEW = {34, 46, 58};
-    private static final float[] VIEW_SCALE = {1.5F, 2.25F, 3.0F};
+    private static final int[] VIEW = {28, 38, 48};
+    private static final float[] VIEW_SCALE = {1.25F, 1.75F, 2.25F};
     private static final int MAX_BEADS = 6;
     private static final long POP_MILLIS = 600;
     private static final long FINALE_MILLIS = 900;
@@ -70,7 +70,12 @@ final class LoupeView {
     private static final int OUTLINE = 0x24180A;
     private static final int BRASS = 0xD8A64A;
     private static final int BRASS_LIGHT = 0xF6DC8E;
-    private static final int BRASS_DARK = 0x7A5A26;
+    private static final int BRASS_MID = 0xAE8136;
+    private static final int BRASS_DARK = 0x6E4F20;
+    private static final int IRON = 0x3A2C1C;
+    /** Where the light comes from (up and to the left), as a unit vector in screen space. */
+    private static final float LX = -0.6F;
+    private static final float LY = -0.8F;
     private static final int GLASS = 0x9FD4F0;
     private static final int GLINT = 0xDDF2FF;
     private static final int HEX_BLUE = 0x3281C6;
@@ -346,28 +351,53 @@ final class LoupeView {
                 Component.translatable("gui.hextale.research_table.loupe.hint").withStyle(ChatFormatting.GRAY)) : null;
     }
 
-    /** A soft shadow under the boom and the head; it falls further while the arm is lifted. */
+    /** A soft shadow under the boom and the head; it falls further and fainter while the arm is lifted. */
     private void shadow(GuiGraphicsExtractor graphics, float px, float py, float hx, float hy, float bx, float by) {
-        float lift = held ? 4 : 2;
-        int color = PixelArt.argb(0x000000, held ? 0.22F : 0.32F);
-        bar(graphics, px + 1, py + 2, hx - bx * RIM + lift, hy - by * RIM + lift, 3.5F, color);
-        ellipse(graphics, hx + lift, hy + lift, 1, 0, RIM + 1, RIM + 1, color);
+        float lift = held ? 3.5F : 1.5F;
+        int color = PixelArt.argb(0x000000, held ? 0.2F : 0.3F);
+        bar(graphics, px + lift, py + lift, hx - bx * RIM + lift, hy - by * RIM + lift, 2, color);
+        ellipse(graphics, hx + lift, hy + lift, 1, 0, RIM + 0.5F, RIM + 0.5F, color);
     }
 
-    /** The swivel: a brass disc on a dark plate with a hextech crystal on top and a counterweight behind. */
+    /** The swivel: a turned brass boss on an iron foot, a hextech crystal set in its top, a counterweight behind. */
     private void pivot(GuiGraphicsExtractor graphics, float px, float py, float bx, float by, long now) {
-        bar(graphics, px, py, px - bx * 9, py - by * 9, 4.5F, PixelArt.argb(OUTLINE, 1));
-        bar(graphics, px, py, px - bx * 8, py - by * 8, 3.5F, PixelArt.argb(BRASS_DARK, 1));
-        bar(graphics, px - bx * 5, py - by * 5, px - bx * 8, py - by * 8, 4, PixelArt.argb(BRASS, 1));
-        int x = Math.round(px);
-        int y = Math.round(py);
-        PixelArt.disc(graphics, x, y, 18, PixelArt.argb(0x2A1D10, 1), PixelArt.argb(OUTLINE, 1));
-        PixelArt.disc(graphics, x, y, 14, PixelArt.argb(BRASS, 1), PixelArt.argb(BRASS_DARK, 1));
-        PixelArt.discRing(graphics, x - 1, y - 1, 10, PixelArt.argb(BRASS_LIGHT, 0.7F));
+        tube(graphics, px, py, px - bx * 8, py - by * 8, bx, by, 2);
+        tube(graphics, px - bx * 5, py - by * 5, px - bx * 9, py - by * 9, bx, by, 3);
+        dome(graphics, px + 0.5F, py + 0.5F, 7, IRON, 1);
+        dome(graphics, px, py, 5.5F, BRASS, 1);
         float pulse = 0.5F + 0.5F * Mth.sin(now / 700.0F);
-        PixelArt.disc(graphics, x, y, 8, PixelArt.argb(HEX_BLUE, 0.25F + 0.2F * pulse), 0);
-        PixelArt.disc(graphics, x, y, 5, PixelArt.argb(PixelArt.mix(HEX_BLUE, GLINT, 0.3F + 0.3F * pulse), 1), PixelArt.argb(OUTLINE, 1));
-        PixelArt.fill(graphics, x - 1, y - 2, x, y - 1, PixelArt.argb(GLINT, 0.9F));
+        ellipse(graphics, px, py, 1, 0, 3.2F, 3.2F, PixelArt.argb(OUTLINE, 1));
+        ellipse(graphics, px, py, 1, 0, 2.4F, 2.4F, PixelArt.argb(PixelArt.mix(HEX_BLUE, GLINT, 0.2F + 0.3F * pulse), 1));
+        int x = Mth.floor(px);
+        int y = Mth.floor(py);
+        PixelArt.fill(graphics, x - 1, y - 1, x, y, PixelArt.argb(GLINT, 0.95F));
+        ellipse(graphics, px, py, 1, 0, 9, 9, PixelArt.argb(HEX_BLUE, 0.04F + 0.06F * pulse));
+    }
+
+    /** A turned dome: a disc lit from the top left (bright on the lit side, dark on the far side), outlined. */
+    private static void dome(GuiGraphicsExtractor graphics, float cx, float cy, float r, int base, float alpha) {
+        paint(graphics, cx - r - 1, cy - r - 1, cx + r + 1, cy + r + 1, (x, y) -> {
+            float dx = x - cx;
+            float dy = y - cy;
+            float d = Mth.sqrt(dx * dx + dy * dy);
+            if (d > r + 0.5F) {
+                return 0;
+            }
+            if (d > r - 0.5F) {
+                return PixelArt.argb(OUTLINE, alpha);
+            }
+            float lam = d < 0.01F ? 0 : -(dx * LX + dy * LY) / r;
+            return PixelArt.argb(ramp(base, lam), alpha);
+        });
+    }
+
+    /** Four steps of a material lit at {@code lam} (-1 facing away from the light, 1 facing it). */
+    private static int ramp(int base, float lam) {
+        if (base == BRASS) {
+            return lam > 0.45F ? BRASS_LIGHT : lam > -0.05F ? BRASS : lam > -0.55F ? BRASS_MID : BRASS_DARK;
+        }
+        return lam > 0.45F ? PixelArt.mix(base, 0xFFFFFF, 0.25F) : lam > -0.05F ? base
+                : lam > -0.55F ? PixelArt.mix(base, 0x000000, 0.25F) : PixelArt.mix(base, 0x000000, 0.45F);
     }
 
     /** The telescope: up to three tubes slide out of each other, the thinnest last, with collars where they meet. */
@@ -392,37 +422,56 @@ final class LoupeView {
                 // A collar where the next tube comes out.
                 float cx = px + bx * (to[i] - 2);
                 float cy = py + by * (to[i] - 2);
-                tube(graphics, cx, cy, cx + bx * 3, cy + by * 3, bx, by, w + 1);
+                tube(graphics, cx, cy, cx + bx * 2, cy + by * 2, bx, by, w + 0.75F);
             }
         }
     }
 
-    /** One tube: dark edge, brass body, a lit stripe on its upper side. */
+    /**
+     * One tube, shaded as a cylinder lit from the top left: an outline, then dark, mid and base brass and a bright line
+     * along the side that faces the light.
+     */
     private static void tube(GuiGraphicsExtractor graphics, float ax, float ay, float ex, float ey, float bx, float by, float w) {
-        bar(graphics, ax, ay, ex, ey, w + 1, PixelArt.argb(OUTLINE, 1));
-        bar(graphics, ax, ay, ex, ey, w, PixelArt.argb(BRASS, 1));
-        // The side facing up-left catches the light.
         float nx = -by;
         float ny = bx;
-        if (nx + ny > 0) {
+        if (nx * LX + ny * LY < 0) {
             nx = -nx;
             ny = -ny;
         }
-        float off = w * 0.45F;
-        bar(graphics, ax + nx * off, ay + ny * off, ex + nx * off, ey + ny * off, Math.max(0.6F, w * 0.3F), PixelArt.argb(BRASS_LIGHT, 1));
-        bar(graphics, ax - nx * off, ay - ny * off, ex - nx * off, ey - ny * off, Math.max(0.5F, w * 0.25F), PixelArt.argb(BRASS_DARK, 1));
+        float fnx = nx;
+        float fny = ny;
+        float dx = ex - ax;
+        float dy = ey - ay;
+        float len2 = Math.max(0.0001F, dx * dx + dy * dy);
+        float reach = w + 1;
+        paint(graphics, Math.min(ax, ex) - reach, Math.min(ay, ey) - reach, Math.max(ax, ex) + reach, Math.max(ay, ey) + reach, (x, y) -> {
+            float t = ((x - ax) * dx + (y - ay) * dy) / len2;
+            if (t < 0 || t > 1) {
+                return 0;
+            }
+            float across = (x - ax) * fnx + (y - ay) * fny;
+            float k = across / w;
+            if (Math.abs(k) > 1 + 1 / w) {
+                return 0;
+            }
+            if (Math.abs(k) > 1) {
+                return PixelArt.argb(OUTLINE, 1);
+            }
+            return PixelArt.argb(ramp(BRASS, k), 1);
+        });
     }
 
     /**
      * The head: a yoke on the boom's end holding the main lens; the two hinged lenses beside it fold over it (seen from
-     * above: they flatten to a line over their hinge and open again on top).
+     * above: they flatten to their brass edge over the hinge and open again on top). Each lens throws a small shadow
+     * that falls further while it stands up, so a folding lens rises off the one below.
      */
     private void head(GuiGraphicsExtractor graphics, float hx, float hy, float bx, float by, boolean hover, long now) {
         float yx = hx - bx * RIM;
         float yy = hy - by * RIM;
-        tube(graphics, yx - bx * 2, yy - by * 2, yx + bx, yy + by, bx, by, 2.5F);
+        tube(graphics, yx - bx * 3, yy - by * 3, yx + bx, yy + by, bx, by, 2);
         int stacked = (fold[0] > 0.9F ? 1 : 0) + (fold[1] > 0.9F ? 1 : 0);
-        lens(graphics, hx, hy, 1, 0, RIM * 2 + 2, 1, hover, stacked, now);
+        lens(graphics, hx, hy, 1, 0, RIM, 1, hover, stacked, now);
         // Hinges on the rim, square to the boom.
         float nx = -by;
         float ny = bx;
@@ -437,33 +486,68 @@ final class LoupeView {
             float along = Mth.cos(angle);
             float cx = hingeX + ux * RIM * along;
             float cy = hingeY + uy * RIM * along;
-            PixelArt.fill(graphics, Math.round(hingeX) - 1, Math.round(hingeY) - 1, Math.round(hingeX) + 1, Math.round(hingeY) + 1,
-                    PixelArt.argb(BRASS_DARK, 1));
-            lens(graphics, cx, cy, ux, uy, SIDE_LENS[l], Math.max(0.12F, Math.abs(along)), hover, 0, now);
+            float rise = Mth.sin(Mth.clamp(angle, 0, Mth.PI)) * 2.5F + (fold[l] > 0.5F ? 1 : 0);
+            float r = SIDE_LENS[l] / 2.0F;
+            ellipse(graphics, cx + 1 + rise, cy + 1 + rise, ux, uy, Math.max(0.8F, r * Math.abs(along)) + 0.5F, r + 0.5F,
+                    PixelArt.argb(0x000000, 0.28F));
+            dome(graphics, hingeX, hingeY, 1.5F, BRASS, 1);
+            lens(graphics, cx, cy, ux, uy, r, Math.max(0.14F, Math.abs(along)), hover, 0, now);
         }
     }
 
     /**
-     * A lens in a brass ring, foreshortened along (ux, uy) by {@code squash}: outline, rim, tinted glass (deeper when
-     * other lenses lie on it) and a glint.
+     * A lens in a turned brass ring of radius {@code r}, foreshortened along (ux, uy) by {@code squash}: an outline, the
+     * ring shaded as a rounded rim lit at the top left with a dark inner lip, then glass that is deep under the rim and
+     * clears towards the far side where light passes through (deeper still with other lenses on it), a glint that drifts
+     * slowly and a small second reflection. Edge-on it is only its brass edge.
      */
-    private void lens(GuiGraphicsExtractor graphics, float cx, float cy, float ux, float uy, int diameter, float squash,
+    private void lens(GuiGraphicsExtractor graphics, float cx, float cy, float ux, float uy, float r, float squash,
                       boolean hover, int stacked, long now) {
-        float r = diameter / 2.0F;
         float ra = Math.max(0.8F, r * squash);
-        ellipse(graphics, cx, cy, ux, uy, ra + 0.6F, r + 0.6F, PixelArt.argb(OUTLINE, 1));
-        ellipse(graphics, cx, cy, ux, uy, ra, r, PixelArt.argb(hover ? BRASS_LIGHT : BRASS, 1));
-        if (ra > 2.5F) {
-            float glass = 0.3F + 0.18F * stacked;
-            ellipse(graphics, cx, cy, ux, uy, ra - 2, r - 2, PixelArt.argb(PixelArt.mix(NIGHT, GLASS, 0.55F + 0.1F * stacked), glass + 0.25F));
-            ellipse(graphics, cx, cy, ux, uy, (ra - 2) * 0.55F, (r - 2) * 0.55F, PixelArt.argb(GLASS, 0.15F + 0.1F * stacked));
-            // The glint drifts slowly over the glass.
-            float g = (now % 4000) / 4000.0F;
-            int gx = Math.round(cx - r * 0.35F + g * 2);
-            int gy = Math.round(cy - r * 0.4F);
-            PixelArt.fill(graphics, gx, gy, gx + 2, gy + 1, PixelArt.argb(GLINT, 0.85F));
-            PixelArt.fill(graphics, gx - 1, gy + 1, gx, gy + 3, PixelArt.argb(GLINT, 0.6F));
-        }
+        float rim = Math.max(1.5F, r * 0.25F);
+        float drift = ((now % 6000) / 6000.0F - 0.5F) * 0.6F;
+        paint(graphics, cx - r - 1, cy - r - 1, cx + r + 1, cy + r + 1, (x, y) -> {
+            float dx = x - cx;
+            float dy = y - cy;
+            float a = (dx * ux + dy * uy) / (ra + 0.5F);
+            float b = (-dx * uy + dy * ux) / (r + 0.5F);
+            float q = Mth.sqrt(a * a + b * b);
+            if (q > 1) {
+                return 0;
+            }
+            float d = Mth.sqrt(dx * dx + dy * dy);
+            float lam = d < 0.01F ? 0 : -(dx * LX + dy * LY) / d;
+            float edge = 1 / (Math.min(ra, r) + 0.5F);
+            if (q > 1 - edge) {
+                return PixelArt.argb(OUTLINE, 1);
+            }
+            if (ra < 2.5F) {
+                return PixelArt.argb(ramp(BRASS, lam), 1);
+            }
+            float inner = 1 - (rim + 1) * edge;
+            if (q > inner + edge) {
+                int brass = ramp(BRASS, lam);
+                return PixelArt.argb(hover ? PixelArt.mix(brass, 0xFFFFFF, 0.2F) : brass, 1);
+            }
+            if (q > inner) {
+                // The inner lip is concave: dark on the lit side, catching light on the far side.
+                return PixelArt.argb(lam > 0.2F ? OUTLINE : lam < -0.4F ? BRASS_MID : BRASS_DARK, 1);
+            }
+            float sx = dx + (0.38F + drift * 0.3F) * r;
+            float sy = dy + 0.4F * r;
+            if (sx * sx + sy * sy <= Math.max(0.55F, r * r * 0.045F)) {
+                return PixelArt.argb(GLINT, 0.95F);
+            }
+            float tx = dx - 0.36F * r;
+            float ty = dy - 0.36F * r;
+            if (r > 5 && tx * tx + ty * ty <= 0.6F) {
+                return PixelArt.argb(GLINT, 0.5F);
+            }
+            float through = -lam * q / Math.max(0.01F, inner);
+            int glass = through > 0.4F ? PixelArt.mix(NIGHT, GLASS, 0.72F)
+                    : through > -0.15F ? PixelArt.mix(NIGHT, GLASS, 0.5F) : PixelArt.mix(NIGHT, GLASS, 0.3F);
+            return PixelArt.argb(glass, 0.6F + 0.15F * stacked);
+        });
     }
 
     /**
@@ -497,18 +581,39 @@ final class LoupeView {
         int x = Math.round(vx);
         int y = Math.round(vy);
         float finale = studiedAt == 0 ? 0 : Math.max(0, 1 - (now - studiedAt) / (float) FINALE_MILLIS);
-        PixelArt.disc(graphics, x, y, diameter + 4, PixelArt.argb(OUTLINE, 1), 0);
-        PixelArt.disc(graphics, x, y, diameter, PixelArt.argb(NIGHT, 1), PixelArt.argb(BRASS, 1));
-        PixelArt.discRing(graphics, x, y, diameter - 2, PixelArt.argb(BRASS_DARK, 1));
-        PixelArt.disc(graphics, x, y, Math.max(2, diameter - 12), PixelArt.argb(0x16243F, 1), 0);
+        ellipse(graphics, vx + 2, vy + 2, 1, 0, r + 1.5F, r + 1.5F, PixelArt.argb(0x000000, 0.3F));
         float breathe = 0.85F + 0.15F * Mth.sin(now / 500.0F);
-        PixelArt.disc(graphics, x, y, Math.max(2, diameter / 2), PixelArt.argb(PixelArt.mix(HEX_BLUE, GOLD, finale), (0.25F + 0.4F * finale) * breathe), 0);
-        // Reticle.
-        int in = Math.round(r) - 5;
-        PixelArt.fill(graphics, x - in, y, x - in + 4, y + 1, PixelArt.argb(GLASS, 0.3F));
-        PixelArt.fill(graphics, x + in - 4, y, x + in, y + 1, PixelArt.argb(GLASS, 0.3F));
-        PixelArt.fill(graphics, x, y - in, x + 1, y - in + 4, PixelArt.argb(GLASS, 0.3F));
-        PixelArt.fill(graphics, x, y + in - 4, x + 1, y + in, PixelArt.argb(GLASS, 0.3F));
+        int glow = PixelArt.mix(HEX_BLUE, GOLD, finale);
+        float glowAlpha = (0.22F + 0.4F * finale) * breathe;
+        // The view's lens: a rounded brass bezel, a dark inner lip, deep glass clearing towards the middle, a crescent of
+        // reflected light at its top left and a fine reticle.
+        float viewY = vy;
+        paint(graphics, vx - r - 2, vy - r - 2, vx + r + 2, vy + r + 2, (px, py) -> {
+            float dx = px - vx;
+            float dy = py - viewY;
+            float d = Mth.sqrt(dx * dx + dy * dy);
+            if (d > r + 1) {
+                return 0;
+            }
+            float lam = d < 0.01F ? 0 : -(dx * LX + dy * LY) / d;
+            if (d > r) {
+                return PixelArt.argb(OUTLINE, 1);
+            }
+            if (d > r - 3) {
+                return PixelArt.argb(ramp(BRASS, lam), 1);
+            }
+            if (d > r - 4) {
+                return PixelArt.argb(lam > 0.2F ? OUTLINE : BRASS_DARK, 1);
+            }
+            float k = d / (r - 4);
+            if (k > 0.8F && k < 0.92F && lam > 0.6F) {
+                return PixelArt.argb(PixelArt.mix(0x1B2A48, GLINT, 0.4F), 1);
+            }
+            boolean tick = (Math.abs(dx) < 0.5F || Math.abs(dy) < 0.5F) && k > 0.64F && k < 0.84F;
+            int base = k > 0.82F ? 0x0B1120 : k > 0.55F ? 0x111B33 : 0x16243F;
+            int color = PixelArt.mix(base, glow, k < 0.55F ? glowAlpha : glowAlpha * 0.4F);
+            return PixelArt.argb(tick ? PixelArt.mix(color, GLASS, 0.35F) : color, 1);
+        });
         if (finale > 0) {
             float k = 1 - finale;
             int ring = Math.round(diameter + 4 + k * 30) / 2 * 2;
@@ -532,6 +637,26 @@ final class LoupeView {
         caption(graphics, font, vx, vy, r, above);
     }
 
+    /** An enamel bead: a dark glassy face in a rim of the essence's colour, lit from the top left. */
+    private static void bead(GuiGraphicsExtractor graphics, float cx, float cy, float r, int color) {
+        paint(graphics, cx - r - 1, cy - r - 1, cx + r + 1, cy + r + 1, (x, y) -> {
+            float dx = x - cx;
+            float dy = y - cy;
+            float d = Mth.sqrt(dx * dx + dy * dy);
+            if (d > r + 0.5F) {
+                return 0;
+            }
+            float lam = d < 0.01F ? 0 : -(dx * LX + dy * LY) / d;
+            if (d > r - 0.5F) {
+                return PixelArt.argb(PixelArt.mix(color, 0x000000, 0.55F), 1);
+            }
+            if (d > r - 1.5F) {
+                return PixelArt.argb(ramp(color, lam), 1);
+            }
+            return PixelArt.argb(lam < -0.3F && d > r * 0.5F ? 0x16203A : NIGHT, 1);
+        });
+    }
+
     /** The item's essences, strongest first. */
     private List<Map.Entry<Essence, Integer>> essences() {
         ItemEssences essences = ResearchItems.of(shown);
@@ -553,7 +678,7 @@ final class LoupeView {
         }
         List<Map.Entry<Essence, Integer>> list = essences();
         boolean known = known(shown.getItem());
-        float radius = r + 9;
+        float radius = r + 8;
         for (int i = 0; i < list.size(); i++) {
             Essence essence = list.get(i).getKey();
             float a = (above ? -Mth.HALF_PI : Mth.HALF_PI) + (i - (list.size() - 1) / 2.0F) * 0.5F;
@@ -571,9 +696,10 @@ final class LoupeView {
                     beadBurst[i] = true;
                     burst(x, y, color, now);
                 }
-                int size = 13 + Math.round(pop * 4);
-                PixelArt.disc(graphics, Math.round(x), Math.round(y), size + 6, PixelArt.argb(color, 0.15F + 0.3F * pop), 0);
-                PixelArt.disc(graphics, Math.round(x), Math.round(y), size, PixelArt.argb(NIGHT, 1), PixelArt.argb(color, 1));
+                float size = 5.5F + pop * 2;
+                ellipse(graphics, x, y, 1, 0, size + 3, size + 3, PixelArt.argb(color, 0.12F + 0.3F * pop));
+                ellipse(graphics, x + 1, y + 1.5F, 1, 0, size + 0.5F, size + 0.5F, PixelArt.argb(0x000000, 0.3F));
+                bead(graphics, x, y, size, color);
                 PixelArt.essence(graphics, essence, Math.round(x) - 4, Math.round(y) - 4, PixelArt.ICON, PixelArt.argb(color, 1));
             } else if (beadShown[i] > 0.05F) {
                 float twinkle = 0.6F + 0.4F * Mth.sin(now / 180.0F + i * 1.9F);
@@ -658,6 +784,33 @@ final class LoupeView {
 
     private interface Inside {
         boolean test(float x, float y);
+    }
+
+    /** The colour of a pixel (by its centre), or 0 to leave it. */
+    private interface Shade {
+        int at(float x, float y);
+    }
+
+    /** Fills the box pixel by pixel with the shade's colours, joining equal neighbours into horizontal runs. */
+    private static void paint(GuiGraphicsExtractor graphics, float minX, float minY, float maxX, float maxY, Shade shade) {
+        int x0 = Mth.floor(minX);
+        int x1 = Mth.ceil(maxX);
+        int y0 = Mth.floor(minY);
+        int y1 = Mth.ceil(maxY);
+        for (int y = y0; y <= y1; y++) {
+            int run = x0;
+            int color = 0;
+            for (int x = x0; x <= x1 + 1; x++) {
+                int c = x <= x1 ? shade.at(x + 0.5F, y + 0.5F) : 0;
+                if (c != color) {
+                    if (color != 0) {
+                        PixelArt.fill(graphics, run, y, x, y + 1, color);
+                    }
+                    run = x;
+                    color = c;
+                }
+            }
+        }
     }
 
     /** Fills every pixel of the box whose centre is inside, in horizontal runs. */

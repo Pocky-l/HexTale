@@ -9,67 +9,67 @@
     {
       "name": "brass_knuckle",
       "from": [
-        10,
+        12,
         9,
-        6
+        8
       ],
       "to": [
-        14,
+        13,
         11,
-        10
+        9
       ],
       "faces": {
         "north": {
           "uv": [
-            2,
+            3,
             5,
-            6,
+            4,
             7
           ],
           "texture": "#brass"
         },
         "east": {
           "uv": [
-            6,
+            7,
             5,
-            10,
+            8,
             7
           ],
           "texture": "#brass"
         },
         "south": {
           "uv": [
-            10,
+            12,
             5,
-            14,
+            13,
             7
           ],
           "texture": "#brass"
         },
         "west": {
           "uv": [
-            6,
+            8,
             5,
-            10,
+            9,
             7
           ],
           "texture": "#brass"
         },
         "up": {
           "uv": [
-            10,
-            6,
-            14,
-            10
+            12,
+            8,
+            13,
+            9
           ],
           "texture": "#brass"
         },
         "down": {
           "uv": [
-            10,
-            6,
-            14,
-            10
+            12,
+            7,
+            13,
+            8
           ],
           "texture": "#brass"
         }
@@ -78,37 +78,37 @@
     {
       "name": "brass_boom",
       "from": [
-        8,
+        6,
         10,
-        7
+        8
       ],
       "to": [
-        10,
+        12,
         11,
         9
       ],
       "faces": {
         "north": {
           "uv": [
-            6,
-            5,
-            8,
-            6
-          ],
-          "texture": "#brass"
-        },
-        "south": {
-          "uv": [
-            8,
+            4,
             5,
             10,
             6
           ],
           "texture": "#brass"
         },
+        "south": {
+          "uv": [
+            6,
+            5,
+            12,
+            6
+          ],
+          "texture": "#brass"
+        },
         "west": {
           "uv": [
-            7,
+            8,
             5,
             9,
             6
@@ -117,19 +117,19 @@
         },
         "up": {
           "uv": [
+            6,
             8,
-            7,
-            10,
+            12,
             9
           ],
           "texture": "#brass"
         },
         "down": {
           "uv": [
-            8,
+            6,
             7,
-            10,
-            9
+            12,
+            8
           ],
           "texture": "#brass"
         }
@@ -138,67 +138,67 @@
     {
       "name": "brass_rim_n",
       "from": [
-        4,
+        3,
         9,
-        5
+        6
       ],
       "to": [
-        8,
+        6,
         10,
-        6
+        7
       ],
       "faces": {
         "north": {
           "uv": [
-            8,
+            10,
             6,
-            12,
+            13,
             7
           ],
           "texture": "#brass"
         },
         "east": {
           "uv": [
-            10,
+            9,
             6,
-            11,
+            10,
             7
           ],
           "texture": "#brass"
         },
         "south": {
           "uv": [
-            4,
+            3,
             6,
-            8,
+            6,
             7
           ],
           "texture": "#brass"
         },
         "west": {
           "uv": [
-            5,
             6,
             6,
+            7,
             7
           ],
           "texture": "#brass"
         },
         "up": {
           "uv": [
-            4,
-            5,
-            8,
-            6
+            3,
+            6,
+            6,
+            7
           ],
           "texture": "#brass"
         },
         "down": {
           "uv": [
-            4,
-            10,
-            8,
-            11
+            3,
+            9,
+            6,
+            10
           ],
           "texture": "#brass"
         }
@@ -207,21 +207,21 @@
     {
       "name": "brass_rim_s",
       "from": [
-        4,
+        3,
         9,
         10
       ],
       "to": [
-        8,
+        6,
         10,
         11
       ],
       "faces": {
         "north": {
           "uv": [
-            8,
+            10,
             6,
-            12,
+            13,
             7
           ],
           "texture": "#brass"
@@ -237,9 +237,9 @@
         },
         "south": {
           "uv": [
-            4,
+            3,
             6,
-            8,
+            6,
             7
           ],
           "texture": "#brass"
@@ -255,18 +255,18 @@
         },
         "up": {
           "uv": [
-            4,
+            3,
             10,
-            8,
+            6,
             11
           ],
           "texture": "#brass"
         },
         "down": {
           "uv": [
-            4,
+            3,
             5,
-            8,
+            6,
             6
           ],
           "texture": "#brass"
@@ -276,28 +276,46 @@
     {
       "name": "brass_rim_w",
       "from": [
-        3,
+        2,
         9,
-        6
+        7
       ],
       "to": [
-        4,
+        3,
         10,
         10
       ],
       "faces": {
+        "north": {
+          "uv": [
+            13,
+            6,
+            14,
+            7
+          ],
+          "texture": "#brass"
+        },
         "east": {
           "uv": [
             6,
             6,
-            10,
+            9,
+            7
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            2,
+            6,
+            3,
             7
           ],
           "texture": "#brass"
         },
         "west": {
           "uv": [
-            6,
+            7,
             6,
             10,
             7
@@ -306,19 +324,19 @@
         },
         "up": {
           "uv": [
+            2,
+            7,
             3,
-            6,
-            4,
             10
           ],
           "texture": "#brass"
         },
         "down": {
           "uv": [
-            3,
+            2,
             6,
-            4,
-            10
+            3,
+            9
           ],
           "texture": "#brass"
         }
@@ -327,28 +345,46 @@
     {
       "name": "brass_rim_e",
       "from": [
-        8,
+        6,
         9,
-        6
+        7
       ],
       "to": [
-        9,
+        7,
         10,
         10
       ],
       "faces": {
-        "east": {
+        "north": {
           "uv": [
-            6,
+            9,
             6,
             10,
             7
           ],
           "texture": "#brass"
         },
-        "west": {
+        "east": {
           "uv": [
             6,
+            6,
+            9,
+            7
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            6,
+            6,
+            7,
+            7
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            7,
             6,
             10,
             7
@@ -357,19 +393,19 @@
         },
         "up": {
           "uv": [
-            8,
             6,
-            9,
+            7,
+            7,
             10
           ],
           "texture": "#brass"
         },
         "down": {
           "uv": [
-            8,
             6,
-            9,
-            10
+            6,
+            7,
+            9
           ],
           "texture": "#brass"
         }
@@ -378,31 +414,31 @@
     {
       "name": "glass_lens",
       "from": [
-        4,
+        3,
         9,
-        6
+        7
       ],
       "to": [
-        8,
+        6,
         10,
         10
       ],
       "faces": {
         "up": {
           "uv": [
-            4,
+            3,
+            7,
             6,
-            8,
             10
           ],
           "texture": "#glass"
         },
         "down": {
           "uv": [
-            4,
+            3,
             6,
-            8,
-            10
+            6,
+            9
           ],
           "texture": "#glass"
         }

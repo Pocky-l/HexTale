@@ -23,7 +23,7 @@ public final class TableGeometry {
     public static final Vec3 PARCHMENT = new Vec3(-4.5, 14.25, 7.5);
     /** The loupe arm's swivel post on the desk's right front corner (its foot), and where the lens hangs while it looks. */
     public static final Vec3 LOUPE_PIVOT = new Vec3(-14, 14, 2.5);
-    public static final Vec3 LOUPE_LOOK = new Vec3(-8.2, 19.5, 4.0);
+    public static final Vec3 LOUPE_LOOK = new Vec3(-6.0, 19.5, 2.8);
     /** Centre of the open diary on the slanted book rest. */
     public static final Vec3 DIARY = new Vec3(8.5, 17.2, 12.5);
 
