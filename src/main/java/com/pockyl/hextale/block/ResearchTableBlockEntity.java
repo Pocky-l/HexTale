@@ -19,6 +19,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -44,7 +45,7 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.ItemEssences;
-import com.pockyl.hextale.research.LensStudy;
+import com.pockyl.hextale.research.Loupe;
 import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.research.ResearchTopics;
@@ -59,12 +60,13 @@ import com.pockyl.hextale.rune.Essence;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
 /**
  * The Research Table's contents, its ink and the server side of both mini-games - researching a device or tool of the
- * mod ({@link ResearchTopic}) by drawing an ink thread on its parchment, and studying an item under the Hextech Lens. Every
+ * mod ({@link ResearchTopic}) by drawing an ink thread on its parchment, and studying items under the loupe arm. Every
  * action a client asks for is checked here against the sheet, the table and the researcher's knowledge and inventory
  * before it happens. Contents, both games and a "someone is writing" flag are synced to clients; a finished research
  * reaches every nearby client as a block event so the orb can flare for all.
@@ -73,11 +75,12 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     public static final int DIARY = 0;
     public static final int HEXTECH = 1;
     public static final int OUTPUT = 2;
-    /** The item whose essences are being studied. */
-    public static final int STUDY = 3;
     /** Paper: every finished research is written on one. */
-    public static final int PAPER = 4;
-    public static final int SLOTS = 5;
+    public static final int PAPER = 3;
+    public static final int SLOTS = 4;
+    /** Tables saved before the study slot left keep paper at 4 and an item to study at 3. */
+    private static final int OLD_SLOTS = 5;
+    private static final int LAYOUT = 2;
 
     public static final int EVENT_FUSED = 1;
     public static final int EVENT_FIZZLE = 3;
@@ -86,15 +89,23 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     /** Health a burst orb takes from the researcher (two hearts). */
     private static final float BURST_DAMAGE = 4.0F;
 
-    private static final int[] SIDE_SLOTS = {HEXTECH, STUDY, PAPER};
+    private static final int[] SIDE_SLOTS = {HEXTECH, PAPER};
     private static final int[] BOTTOM_SLOTS = {OUTPUT};
     /** How long the orb keeps stirring after the last symbol. */
     private static final int DRAWING_TICKS = 30;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
     private final ResearchSheet sheet = new ResearchSheet();
-    /** The Hextech Lens of its own tab: the item in the study slot and its wisps. */
-    private final LensStudy lens = new LensStudy();
+    /** Who holds the loupe over which slot of their open table screen, since when (game time); not saved. */
+    @Nullable
+    private UUID loupeBy;
+    private int loupeSlot = -1;
+    private long loupeSince;
+    /** Synced: someone looks through the loupe, so the arm swings over the desk; client: when that began. */
+    private boolean looking;
+    public long lookingSince = Long.MIN_VALUE / 2;
+    /** Left over from an old table's study slot, handed back on the first tick. */
+    private ItemStack orphan = ItemStack.EMPTY;
     private boolean drawing;
     private long drawingUntil;
 
@@ -115,6 +126,14 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ResearchTableBlockEntity table) {
+        if (!table.orphan.isEmpty()) {
+            Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, table.orphan);
+            table.orphan = ItemStack.EMPTY;
+        }
+        if (table.looking && level.getGameTime() % 10 == 0 && !(table.loupeBy != null
+                && level.getPlayerByUUID(table.loupeBy) instanceof ServerPlayer holder && ResearchTableMenu.openTable(holder, pos) == table)) {
+            table.lookAway();
+        }
         if (table.drawing && level.getGameTime() > table.drawingUntil) {
             table.drawing = false;
             table.sync();
@@ -177,8 +196,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return sheet;
     }
 
-    public LensStudy lens() {
-        return lens;
+    public boolean isLooking() {
+        return looking;
     }
 
     /** The board of the topic being researched, or null (none chosen). */
@@ -388,72 +407,69 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     // ---- Studying an item -----------------------------------------------------------------------------------------
 
     /**
-     * The study slot changed in the researcher's hands: an item with essences floats up under the lens (one already
-     * studied shows its essences caught at once), an emptied slot clears the lens.
+     * The researcher holds the loupe over a slot of their open screen ({@code -1}: put it back). The time it rests on one
+     * slot is what {@link #studyUnderLoupe} checks.
      */
-    public void studySlotChanged(ServerPlayer player) {
-        ItemStack stack = items.get(STUDY);
-        if (stack.isEmpty()) {
-            if (lens.item() != null) {
-                lens.clear();
-                setChanged();
+    public void loupe(ServerPlayer player, int slot) {
+        if (level == null) {
+            return;
+        }
+        if (slot < 0) {
+            if (player.getUUID().equals(loupeBy)) {
+                lookAway();
             }
             return;
         }
-        if (lens.item() == stack.getItem()) {
-            return;
+        if (!player.getUUID().equals(loupeBy) || loupeSlot != slot) {
+            loupeBy = player.getUUID();
+            loupeSlot = slot;
+            loupeSince = level.getGameTime();
         }
-        ItemEssences elements = ResearchItems.of(stack);
-        if (elements == null || level == null) {
-            lens.clear();
-        } else {
-            lens.begin(stack.getItem(), elements, level.getRandom().nextInt(), level.getGameTime());
-            if (studied(player, stack.getItem())) {
-                lens.catchAll();
-            }
+        if (!looking) {
+            looking = true;
+            level.playSound(player, worldPosition, ModSounds.LOUPE_LENS.get(), SoundSource.BLOCKS, 0.3F, 0.9F);
+            sync();
         }
-        setChanged();
+    }
+
+    private void lookAway() {
+        loupeBy = null;
+        loupeSlot = -1;
+        if (looking) {
+            looking = false;
+            sync();
+        }
     }
 
     /**
-     * The researcher flashed the lens {@code hundredths} of a tick after the study began (as their screen saw the
-     * wisps): what the wedge held then is caught; the last wisp studies the item. Free and unlimited.
+     * The last lens of the loupe has looked at the item in {@code slot} of the researcher's open screen long enough: the
+     * item is studied. Free and unlimited; refused unless the loupe really rested there for {@link Loupe#STUDY_TICKS}.
      */
-    public void flashLens(ServerPlayer player, int hundredths) {
-        Item item = lens.item();
-        if (item == null || level == null || !items.get(STUDY).is(item) || lens.studied()) {
+    public void studyUnderLoupe(ServerPlayer player, int slot) {
+        if (level == null || !player.getUUID().equals(loupeBy) || loupeSlot != slot
+                || level.getGameTime() - loupeSince < Loupe.STUDY_TICKS - Loupe.SLACK_TICKS
+                || slot >= player.containerMenu.slots.size()) {
             return;
         }
-        int got = lens.flash(hundredths / 100F, level.getGameTime() - lens.began());
-        if (got < 0) {
+        ItemStack stack = player.containerMenu.slots.get(slot).getItem();
+        if (!Loupe.studiable(stack) || studied(player, stack.getItem())) {
             return;
         }
-        for (int i = 0; i < lens.wisps().size(); i++) {
-            if ((got & 1 << i) != 0) {
-                caughtEffects(player, lens.wisps().get(i).essence());
+        Item item = stack.getItem();
+        ResearchersDiaryItem.sign(items.get(DIARY), player);
+        Research.study(player, item);
+        message(player, Component.translatable("research.hextale.study.complete", ResearchText.item(item)), ResearchMessagePayload.Tone.WIN);
+        // The researcher hears the loupe on their screen; the others hear the table.
+        level.playSound(player, worldPosition, ModSounds.LOUPE_STUDIED.get(), SoundSource.BLOCKS, 0.5F, 1.0F);
+        if (level instanceof ServerLevel serverLevel) {
+            Vec3 at = TableGeometry.toWorld(worldPosition, facing(), TableGeometry.LOUPE_LOOK);
+            ItemEssences essences = ResearchItems.of(stack);
+            for (Essence essence : essences.essences().keySet()) {
+                serverLevel.sendParticles(new DustParticleOptions(essence.color(), 0.8F), at.x, at.y, at.z, 4, 0.08, 0.06, 0.08, 0.01);
             }
+            serverLevel.sendParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, 4, 0.06, 0.04, 0.06, 0.015);
         }
-        if (lens.studied()) {
-            ResearchersDiaryItem.sign(items.get(DIARY), player);
-            Research.study(player, item);
-            message(player, Component.translatable("research.hextale.study.complete", ResearchText.item(item)), ResearchMessagePayload.Tone.WIN);
-            // The researcher hears the lens on their screen; the others hear the table.
-            level.playSound(player, worldPosition, ModSounds.LENS_STUDIED.get(), SoundSource.BLOCKS, 0.8F, 1.0F);
-            if (level instanceof ServerLevel serverLevel) {
-                Vec3 orb = orbPosition();
-                serverLevel.sendParticles(ParticleTypes.END_ROD, orb.x, orb.y, orb.z, 10, 0.15, 0.1, 0.15, 0.03);
-            }
-        }
-        setChanged();
-    }
-
-    private void caughtEffects(ServerPlayer researcher, Essence essence) {
-        if (!(level instanceof ServerLevel serverLevel)) {
-            return;
-        }
-        Vec3 orb = orbPosition();
-        serverLevel.sendParticles(new DustParticleOptions(essence.color(), 1.0F), orb.x, orb.y, orb.z, 10, 0.2, 0.15, 0.2, 0.01);
-        level.playSound(researcher, worldPosition, ModSounds.LENS_CATCH.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
+        loupeSince = level.getGameTime();
     }
 
     private void fizzle() {
@@ -577,7 +593,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return switch (slot) {
             case DIARY -> stack.is(ModItems.RESEARCHERS_DIARY.get());
             case HEXTECH -> stack.is(ModItems.UNSTABLE_HEXTECH.get());
-            case STUDY -> ResearchItems.of(stack) != null && !stack.is(ModItems.ESSENCE_FLASK.get());
             case PAPER -> stack.is(Items.PAPER);
             default -> false;
         };
@@ -602,10 +617,24 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(input, items);
+        if (input.getIntOr("layout", 1) < LAYOUT) {
+            NonNullList<ItemStack> old = NonNullList.withSize(OLD_SLOTS, ItemStack.EMPTY);
+            ContainerHelper.loadAllItems(input, old);
+            for (int i = 0; i < OUTPUT + 1; i++) {
+                items.set(i, old.get(i));
+            }
+            items.set(PAPER, old.get(4));
+            orphan = old.get(3);
+        } else {
+            ContainerHelper.loadAllItems(input, items);
+        }
+        boolean wasLooking = looking;
+        looking = input.getBooleanOr("looking", false);
+        if (looking && !wasLooking && level != null) {
+            lookingSince = level.getGameTime();
+        }
         drawing = input.getBooleanOr("drawing", false);
         sheet.load(input.childOrEmpty("sheet"));
-        lens.load(input.childOrEmpty("lens"), item -> ResearchItems.of(new ItemStack(item)));
         inkDraws = JarReach.read(input.getIntArray("ink_draws").orElse(new int[0]));
         inkDrawnAt = input.getLongOr("ink_drawn_at", -1000);
     }
@@ -614,14 +643,15 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
+        output.putInt("layout", LAYOUT);
         sheet.save(output.child("sheet"));
-        lens.save(output.child("lens"));
     }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = saveCustomOnly(registries);
         tag.putBoolean("drawing", drawing);
+        tag.putBoolean("looking", looking);
         if (level != null && level.getGameTime() - inkDrawnAt <= INK_STREAM_TICKS) {
             tag.putIntArray("ink_draws", JarReach.write(inkDraws));
             tag.putLong("ink_drawn_at", inkDrawnAt);

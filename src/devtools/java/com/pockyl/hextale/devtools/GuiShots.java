@@ -49,7 +49,8 @@ import org.slf4j.Logger;
  * {@code useitem}, {@code slot <0-8>}, {@code scale <n>}, {@code origin screen|zero|<x> <y>} (GUI coordinates below
  * are relative to it; {@code screen} = top left of a container screen's panel), {@code move <x> <y>},
  * {@code click <x> <y> [left|right|middle]}, {@code press}/{@code release <x> <y> [button]},
- * {@code drag <x1> <y1> <x2> <y2> [ticks]}, {@code scroll <x> <y> <amount>}, {@code key <name>} (e.g. escape, e),
+ * {@code drag <x1> <y1> <x2> <y2> [ticks] [hold|cont|held]} (hold: keep the button down at the end, cont: it is down
+ * already, held: both), {@code scroll <x> <y> <amount>}, {@code key <name>} (e.g. escape, e),
  * {@code sneak on|off},
  * {@code close}, {@code shot <name>}, {@code quit}.
  */
@@ -75,7 +76,7 @@ public final class GuiShots {
     private static String pendingShot;
     private static final List<String> report = new ArrayList<>();
 
-    private record Drag(double x1, double y1, double x2, double y2, int ticks, int button, int[] step) {
+    private record Drag(double x1, double y1, double x2, double y2, int ticks, int button, int[] step, boolean pressed, boolean keep) {
     }
 
     private GuiShots() {
@@ -207,8 +208,10 @@ public final class GuiShots {
             }
             case "drag" -> {
                 int ticks = a.length > 5 ? Integer.parseInt(a[5]) : 10;
+                String mode = a.length > 6 ? a[6] : "";
                 drag = new Drag(x(minecraft, a[1]), y(minecraft, a[2]), x(minecraft, a[3]), y(minecraft, a[4]), ticks,
-                        InputConstants.MOUSE_BUTTON_LEFT, new int[] {-1});
+                        InputConstants.MOUSE_BUTTON_LEFT, new int[] {-1}, mode.equals("cont") || mode.equals("held"),
+                        mode.equals("hold") || mode.equals("held"));
             }
             case "scroll" -> {
                 move(minecraft, x(minecraft, a[1]), y(minecraft, a[2]));
@@ -270,7 +273,9 @@ public final class GuiShots {
         double y = drag.y1() + (drag.y2() - drag.y1()) * t;
         if (i == 0) {
             move(minecraft, x, y);
-            button(minecraft, drag.button(), true);
+            if (!drag.pressed()) {
+                button(minecraft, drag.button(), true);
+            }
             return;
         }
         double px = minecraft.mouseHandler.getScaledXPos(minecraft.getWindow());
@@ -283,7 +288,9 @@ public final class GuiShots {
             screen.mouseDragged(new MouseButtonEvent(x, y, new MouseButtonInfo(drag.button(), 0)), x - px, y - py);
         }
         if (t >= 1.0) {
-            button(minecraft, drag.button(), false);
+            if (!drag.keep()) {
+                button(minecraft, drag.button(), false);
+            }
             drag = null;
             wait = SETTLE_TICKS;
         }

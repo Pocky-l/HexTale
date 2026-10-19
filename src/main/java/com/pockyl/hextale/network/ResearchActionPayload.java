@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Client to server: something the researcher does at the open table. The server checks everything again.
  *
- * @param value the topic index (SELECT), or (LENS) when the lens flashed, in hundredths of a tick since the study began
+ * @param value the topic index (SELECT), or the menu slot under the loupe (LOUPE: -1 = put back; STUDY: the item looked at)
  * @param cells the whole ink thread from the orb (THREAD)
  */
 public record ResearchActionPayload(BlockPos pos, Action action, int value, List<Integer> cells) implements CustomPacketPayload {
@@ -40,7 +40,8 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
         SELECT,
         THREAD,
         BURN,
-        LENS
+        LOUPE,
+        STUDY
     }
 
     public static ResearchActionPayload of(BlockPos pos, Action action, int value) {
@@ -73,7 +74,8 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
             }
             case THREAD -> table.thread(player, payload.cells().stream().mapToInt(Integer::intValue).toArray());
             case BURN -> table.burn(player);
-            case LENS -> table.flashLens(player, payload.value());
+            case LOUPE -> table.loupe(player, payload.value());
+            case STUDY -> table.studyUnderLoupe(player, payload.value());
         }
     }
 }

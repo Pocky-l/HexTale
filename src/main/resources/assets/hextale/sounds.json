@@ -425,55 +425,42 @@
       }
     ]
   },
-  "lens.pulse": {
-    "subtitle": "subtitles.hextale.lens.pulse",
+  "loupe.grab": {
+    "subtitle": "subtitles.hextale.loupe.grab",
     "sounds": [
       {
-        "name": "hextale:lens_pulse1",
-        "volume": 0.5
+        "name": "hextale:loupe_grab1",
+        "volume": 0.35
       },
       {
-        "name": "hextale:lens_pulse2",
-        "volume": 0.5
-      },
-      {
-        "name": "hextale:lens_pulse3",
-        "volume": 0.5
+        "name": "hextale:loupe_grab2",
+        "volume": 0.35
       }
     ]
   },
-  "lens.catch": {
-    "subtitle": "subtitles.hextale.lens.catch",
+  "loupe.lens": {
+    "subtitle": "subtitles.hextale.loupe.lens",
     "sounds": [
       {
-        "name": "hextale:lens_catch1",
-        "volume": 0.8
+        "name": "hextale:loupe_lens1",
+        "volume": 0.4
       },
       {
-        "name": "hextale:lens_catch2",
-        "volume": 0.8
+        "name": "hextale:loupe_lens2",
+        "volume": 0.4
       },
       {
-        "name": "hextale:lens_catch3",
-        "volume": 0.8
+        "name": "hextale:loupe_lens3",
+        "volume": 0.4
       }
     ]
   },
-  "lens.miss": {
-    "subtitle": "subtitles.hextale.lens.miss",
+  "loupe.studied": {
+    "subtitle": "subtitles.hextale.loupe.studied",
     "sounds": [
       {
-        "name": "hextale:lens_miss",
-        "volume": 0.6
-      }
-    ]
-  },
-  "lens.studied": {
-    "subtitle": "subtitles.hextale.lens.studied",
-    "sounds": [
-      {
-        "name": "hextale:lens_studied",
-        "volume": 0.9
+        "name": "hextale:loupe_studied",
+        "volume": 0.5
       }
     ]
   }

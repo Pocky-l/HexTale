@@ -33,6 +33,10 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> SCROLL = prop("scroll");
     public static final StandaloneModelKey<BlockStateModelPart> RING_OUTER = prop("ring_outer");
     public static final StandaloneModelKey<BlockStateModelPart> RING_INNER = prop("ring_inner");
+    /** The loupe arm: its post, the swivelling boom with the main lens, and a hinged lens (drawn twice). */
+    public static final StandaloneModelKey<BlockStateModelPart> LOUPE_POST = prop("loupe_post");
+    public static final StandaloneModelKey<BlockStateModelPart> LOUPE_ARM = prop("loupe_arm");
+    public static final StandaloneModelKey<BlockStateModelPart> LOUPE_LENS = prop("loupe_lens");
     /** The Hextech Altar's gimbal, larger rings with hextech studs, centred on their block like the table's. */
     public static final StandaloneModelKey<BlockStateModelPart> ALTAR_RING_OUTER = model("block/hextech_altar/ring_outer");
     public static final StandaloneModelKey<BlockStateModelPart> ALTAR_RING_INNER = model("block/hextech_altar/ring_inner");

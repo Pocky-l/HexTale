@@ -79,12 +79,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   lightning) combine into 71 more, from Steam and Ore to Time and Soul; every essence has its own picture. Every item
   carries up to six essences in different amounts, from hand-tuned base materials to anything crafted from them; the
   table comes from a data map (`hextale:essences`), so data packs can change it.
-- Item study, the Hextech Lens - its own tab of the Research Table: put an item into the study slot and it floats in
-  the middle of a dark field while its strongest essences (up to four) leave it as wisps, each circling on its own
-  orbit - the strongest close and slow, the weakest far and quick. The lens on the rim shines a wedge of cold light
-  down onto the item: click (or press Space) when a wisp is in the light and the lens flashes - the wisp bursts into
-  sparks that spiral into the item and stays on its orbit as its essence's sign. A flash at nothing clouds the lens for
-  a moment. A few seconds per item, free and unlimited. A studied item shows its essences in its tooltip.
+- Item study, the loupe arm: a brass telescoping arm with three lenses is fixed to the Research Table. Hold it with
+  the left mouse button on the desk and drag it onto any item in the slots: its lenses fold over one another (x2, x4,
+  x8), a magnified view of the item opens with its essences surfacing around it, and a moment later the item is
+  studied, with a soft sound. Let go and the arm swings back onto its rest. In the world the arm on the desk turns over
+  the parchment and folds its lenses while someone looks through it. Free and unlimited. A studied item shows its
+  essences in its tooltip; a studied item under the loupe shows them at once.
 - Research: every device and tool past the essence works - the altar circle, the gemstone, the lamp, the big jar,
   the pylons, the pickaxes, the lapidary and its master disc, hexsteel, the drain valve - must be researched at the table before it can be crafted
   or made at the altar. Choose it in the book and draw it on a worn parchment with a hexagon of six essences - one per

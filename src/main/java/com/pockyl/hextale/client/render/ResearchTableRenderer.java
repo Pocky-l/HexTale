@@ -54,6 +54,10 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
     private static final float FLARE_TICKS = 40;
     private static final float GLYPH_TICKS = 70;
     private static final float CRACK_TICKS = 24;
+    /** The loupe boom's yaw at rest (lying back along the desk's end) and looking (over the parchment's corner). */
+    private static final float LOUPE_REST_YAW = 90;
+    private static final float LOUPE_LOOK_YAW = 165;
+    private static final int LOUPE_LIGHT = 0x9FD4F0;
 
     private final BookModel book;
     private final ItemModelResolver itemModelResolver;
@@ -75,6 +79,10 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         float outerPhase;
         float innerPhase;
         float glow;
+        /** The loupe arm: swing (0 rest, 1 over the parchment) and its two hinged lenses' fold. */
+        float loupeSwing;
+        float loupeFoldA;
+        float loupeFoldB;
         final List<JarStreamFx.Stream> inkStreams = new ArrayList<>();
     }
 
@@ -111,7 +119,11 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         state.orb = !table.getItem(ResearchTableBlockEntity.HEXTECH).isEmpty();
         state.drawing = table.isDrawing();
         TableAnimation animation = table.animation;
-        animation.update(time, state.drawing, state.flare);
+        animation.update(time, state.drawing, state.flare, table.isLooking());
+        float loupe = animation.loupe * 3;
+        state.loupeSwing = ease(Mth.clamp(loupe, 0, 1));
+        state.loupeFoldA = ease(Mth.clamp(loupe - 1, 0, 1));
+        state.loupeFoldB = ease(Mth.clamp(loupe - 2, 0, 1));
         state.outerPhase = animation.outerPhase;
         state.innerPhase = animation.innerPhase;
         state.glow = animation.glow;
@@ -137,7 +149,17 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
             submitDiary(state, poseStack, collector, light);
         }
         submitRings(state, poseStack, collector, light);
+        submitLoupe(state, poseStack, collector, light);
         poseStack.popPose();
+        if (state.loupeFoldB > 0) {
+            // While the last lens looks, a soft cold light gathers under it.
+            Vec3 lens = TableGeometry.toWorld(BlockPos.ZERO, state.facing, TableGeometry.LOUPE_LOOK);
+            poseStack.pushPose();
+            poseStack.translate(lens.x, lens.y - 0.03, lens.z);
+            float breathe = 0.85F + 0.15F * Mth.sin(state.time * 0.3F);
+            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.22F, LOUPE_LIGHT, 0.35F * state.loupeFoldB * breathe);
+            poseStack.popPose();
+        }
 
         Vec3 orb = TableGeometry.toWorld(BlockPos.ZERO, state.facing, TableGeometry.ORB);
         poseStack.pushPose();
@@ -162,6 +184,43 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         if (state.scroll) {
             TableModels.submit(poseStack, collector, TableModels.SCROLL, light);
         }
+    }
+
+    /**
+     * The loupe arm on the desk's right front corner: a brass post, the boom turning on it from its rest along the
+     * desk's end to over the parchment's corner, and two lenses on hinges beside the main one that fold over it one
+     * after the other (the same three lenses the table's screen shows).
+     */
+    private static void submitLoupe(State state, PoseStack poseStack, SubmitNodeCollector collector, int light) {
+        Vec3 pivot = TableGeometry.LOUPE_PIVOT;
+        poseStack.pushPose();
+        poseStack.translate((pivot.x - 8) / 16, pivot.y / 16, (pivot.z - 8) / 16);
+        TableModels.submit(poseStack, collector, TableModels.LOUPE_POST, light);
+        // The boom's model turns about its knuckle at (12, 8) and sits 4 px lower than drawn (on the post's top at 5);
+        // its lens points along -x at yaw 0.
+        poseStack.translate(0.5, -4 / 16.0, 0.5);
+        poseStack.rotate(Axis.YP.rotationDegrees(Mth.lerp(state.loupeSwing, LOUPE_REST_YAW, LOUPE_LOOK_YAW)));
+        poseStack.translate(-12 / 16.0, 0, -0.5);
+        TableModels.submit(poseStack, collector, TableModels.LOUPE_ARM, light);
+        submitHingedLens(poseStack, collector, light, 10.5F, 10, 0, state.loupeFoldA);
+        submitHingedLens(poseStack, collector, light, 11.5F, 6, 180, state.loupeFoldB);
+        poseStack.popPose();
+    }
+
+    /** A hinged lens: its model's hinge (8, 8.5, 8) goes on the main lens's rim at (6, y, z), turned to its side, then folds over. */
+    private static void submitHingedLens(PoseStack poseStack, SubmitNodeCollector collector, int light, float y, float z, float side,
+                                         float fold) {
+        poseStack.pushPose();
+        poseStack.translate(6 / 16.0, y / 16, z / 16);
+        poseStack.rotate(Axis.YP.rotationDegrees(side));
+        poseStack.rotate(Axis.XN.rotationDegrees(fold * 180));
+        poseStack.translate(-0.5, -8.5 / 16, -0.5);
+        TableModels.submit(poseStack, collector, TableModels.LOUPE_LENS, light);
+        poseStack.popPose();
+    }
+
+    private static float ease(float t) {
+        return t * t * (3 - 2 * t);
     }
 
     /** The diary lies open on the slanted rest; its pages riffle when a research is written into it. */

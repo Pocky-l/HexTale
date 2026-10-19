@@ -51,6 +51,7 @@ import com.pockyl.hextale.item.DiaryOwner;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.knowledge.Research;
+import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModDataComponents;
@@ -58,7 +59,7 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemEssenceResolver;
 import com.pockyl.hextale.research.ItemEssences;
-import com.pockyl.hextale.research.LensStudy;
+import com.pockyl.hextale.research.Loupe;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
@@ -339,80 +340,39 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    // ---- The Hextech Lens ----------------------------------------------------------------------------------------
+    // ---- The loupe -------------------------------------------------------------------------------------------------
 
-    @HexTest
-    public static void lensWispsAreEasyToCatchForEveryItem(GameTestHelper helper) {
-        int items = 0;
-        for (Item item : BuiltInRegistries.ITEM) {
-            ItemEssences essences = ResearchItems.of(new ItemStack(item));
-            if (essences == null) {
-                continue;
-            }
-            items++;
-            int seed = item.hashCode();
-            List<LensStudy.Wisp> wisps = LensStudy.place(essences, seed);
-            helper.assertTrue(wisps.size() == Math.min(LensStudy.MAX_WISPS, essences.essences().size()), item + ": every essence gets a wisp");
-            helper.assertTrue(wisps.equals(LensStudy.place(essences, seed)), item + ": the same seed, the same wisps");
-            for (LensStudy.Wisp wisp : wisps) {
-                helper.assertFalse(wisp.inLens(0), item + ": no wisp starts in the lens");
-                // Within one turn it passes the lens, and stays in it long enough to be caught (at least 5 ticks).
-                int longest = 0;
-                int run = 0;
-                for (float t = 0; t < 80; t += 0.25F) {
-                    run = wisp.inLens(t) ? run + 1 : 0;
-                    longest = Math.max(longest, run);
-                }
-                helper.assertTrue(longest * 0.25F >= 5, item + ": the lens holds a wisp for " + longest * 0.25F + " ticks");
-            }
-        }
-        helper.assertTrue(items > 50, "items with essences were checked: " + items);
-
-        // Flash rules: a miss clouds the lens, a time too far behind or ahead of the clock is refused.
-        LensStudy study = new LensStudy();
-        study.begin(Items.GLASS, ResearchItems.of(new ItemStack(Items.GLASS)), 1, 0);
-        float empty = 0;
-        while (study.inLens(empty) != 0) {
-            empty += 0.5F;
-        }
-        helper.assertTrue(study.flash(empty, empty) == 0, "a flash at nothing catches nothing");
-        helper.assertTrue(study.flash(empty + 10, empty + 10) == -1, "the clouded lens refuses to flash");
-        helper.assertTrue(study.flash(empty + 30, empty + 200) == -1, "a flash claimed long ago is refused");
-        helper.assertTrue(study.flash(empty + 300, empty + 200) == -1, "a flash claimed in the future is refused");
-        helper.succeed();
-    }
-
-    @HexTest(maxTicks = 300)
-    public static void studyingAnItemUnderTheLens(GameTestHelper helper) {
+    @HexTest(maxTicks = 200)
+    public static void theLoupeStudiesWhatItRestsOn(GameTestHelper helper) {
         ServerPlayer player = survivalPlayer(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
-        table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.GLASS, 3));
-        table.studySlotChanged(player);
-        LensStudy lens = table.lens();
-        helper.assertTrue(lens.item() == Items.GLASS && !lens.wisps().isEmpty() && lens.caughtCount() == 0, "glass floats under the lens");
-        int[] misses = {0};
-        // The researcher flashes whenever a wisp is in the wedge (and once at nothing, to see the lens cloud).
-        helper.succeedWhen(() -> {
-            float now = helper.getLevel().getGameTime() - lens.began();
-            if (!lens.studied() && now >= lens.readyAt()) {
-                if (lens.inLens(now) != 0) {
-                    table.flashLens(player, Math.round(now * 100));
-                } else if (misses[0] == 0) {
-                    table.flashLens(player, Math.round(now * 100));
-                    misses[0]++;
-                    helper.assertTrue(lens.readyAt() >= now + LensStudy.CLOUDED - 0.01F, "a miss clouds the lens");
-                }
-            }
-            helper.assertTrue(lens.studied() && Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(Items.GLASS)), "the glass is studied");
-            helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 3, "studying costs nothing");
+        player.getInventory().setItem(0, new ItemStack(Items.GLASS, 3));
+        player.getInventory().setItem(1, new ItemStack(Items.DIRT));
+        player.containerMenu = new ResearchTableMenu(1, player.getInventory(), table, table.getBlockPos());
+        int glass = ResearchTableBlockEntity.SLOTS + 27;
+        int dirt = glass + 1;
+        helper.assertTrue(player.containerMenu.slots.get(glass).getItem().is(Items.GLASS), "the hotbar's first slot holds the glass");
+        Identifier glassId = BuiltInRegistries.ITEM.getKey(Items.GLASS);
 
-            table.setItem(ResearchTableBlockEntity.STUDY, ItemStack.EMPTY);
-            table.studySlotChanged(player);
-            helper.assertTrue(lens.item() == null, "an emptied slot clears the lens");
-            table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.GLASS));
-            table.studySlotChanged(player);
-            helper.assertTrue(lens.studied(), "a studied item shows its essences caught at once");
+        table.loupe(player, glass);
+        helper.assertTrue(table.isLooking(), "the arm swings over the desk for everyone");
+        table.studyUnderLoupe(player, glass);
+        helper.assertFalse(Research.of(player).hasStudied(glassId), "a glance is not a study");
+        helper.runAfterDelay(Loupe.STUDY_TICKS, () -> {
+            table.studyUnderLoupe(player, dirt);
+            helper.assertFalse(Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(Items.DIRT)), "only what the loupe rests on");
+            table.studyUnderLoupe(player, glass);
+            helper.assertTrue(Research.of(player).hasStudied(glassId), "the glass is studied");
+            helper.assertTrue(player.getInventory().getItem(0).getCount() == 3, "studying costs nothing");
+
+            // Moving to the dirt starts the lenses over.
+            table.loupe(player, dirt);
+            table.studyUnderLoupe(player, dirt);
+            helper.assertFalse(Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(Items.DIRT)), "a new item needs its own look");
+            table.loupe(player, -1);
+            helper.assertFalse(table.isLooking(), "put back, the arm returns to its rest");
             player.discard();
+            helper.succeed();
         });
     }
 

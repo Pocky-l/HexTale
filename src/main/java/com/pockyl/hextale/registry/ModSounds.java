@@ -62,17 +62,16 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SCROLL_KNOWLEDGE = register("scroll.knowledge");
     /** Essence siphoned out of a jar into a machine that draws from the jars around it. */
     public static final DeferredHolder<SoundEvent, SoundEvent> ESSENCE_DRAW = register("essence.draw");
-    /** A gathering pylon pulls items off the ground into its gem. */
     /** A crucible at a rolling boil: heavy bubbles breaking in an iron pot. */
     public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_BOIL = register("crucible.boil");
     /** Something sinks into boiling water and dissolves: a hiss and a low gulp. */
     public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_DISSOLVE = register("crucible.dissolve");
     public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_POUR = register("crucible.pour");
-    /** The Hextech Lens flashes; a wisp is caught; a flash catches nothing; the last essence of an item is caught. */
-    public static final DeferredHolder<SoundEvent, SoundEvent> LENS_PULSE = register("lens.pulse");
-    public static final DeferredHolder<SoundEvent, SoundEvent> LENS_CATCH = register("lens.catch");
-    public static final DeferredHolder<SoundEvent, SoundEvent> LENS_MISS = register("lens.miss");
-    public static final DeferredHolder<SoundEvent, SoundEvent> LENS_STUDIED = register("lens.studied");
+    /** The loupe arm is lifted off its rest (lower: set back); a lens swings in; the last lens has seen an item's essences. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> LOUPE_GRAB = register("loupe.grab");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LOUPE_LENS = register("loupe.lens");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LOUPE_STUDIED = register("loupe.studied");
+    /** A gathering pylon pulls items off the ground into its gem. */
     public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_GATHER = register("pylon.gather");
     /** A sending pylon throws items out of its gem. */
     public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_SEND = register("pylon.send");

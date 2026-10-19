@@ -1,0 +1,60 @@
+# The loupe arm on the Research Table's desk: resting, hovered, carried onto items (lenses swing in), studying, home.
+cmd difficulty peaceful
+cmd gamemode creative @s
+cmd gamerule doDaylightCycle false
+cmd time set noon
+cmd tp @s 0.5 -60 0.5 180 35
+cmd fill -6 -60 -8 6 -55 -1 air
+wait 10
+scale 3
+cmd item replace entity @s hotbar.1 with hextale:research_table
+slot 1
+use 0 -61 -3 up
+wait 5
+cmd data merge block 0 -60 -3 {Items:[{Slot:0b,id:"hextale:researchers_diary",count:1},{Slot:1b,id:"hextale:unstable_hextech",count:4},{Slot:3b,id:"minecraft:paper",count:16}]}
+cmd gamemode survival @s
+cmd clear @s
+cmd item replace entity @s hotbar.8 with hextale:scroll_of_oblivion
+slot 8
+useitem
+wait 5
+cmd clear @s
+cmd item replace entity @s hotbar.0 with minecraft:redstone 12
+cmd item replace entity @s hotbar.1 with minecraft:glass 3
+cmd item replace entity @s hotbar.2 with minecraft:dirt 5
+cmd item replace entity @s inventory.4 with minecraft:blaze_powder 2
+wait 5
+use 0 -60 -3 south
+wait 20
+origin screen
+click 430 10
+move 330 200
+shot loupe_rest
+move 350 131
+wait 2
+shot loupe_hover
+drag 350 131 285 234 10 hold
+wait 3
+shot loupe_lens1
+wait 9
+shot loupe_lens2
+wait 9
+shot loupe_lens3
+wait 12
+shot loupe_studied
+drag 285 234 357 198 10 held
+wait 25
+shot loupe_upper
+drag 357 198 303 234 8 held
+wait 6
+shot loupe_glass1
+wait 40
+shot loupe_glass_done
+drag 303 234 286 124 10 held
+wait 20
+shot loupe_orb
+release 286 124
+wait 3
+shot loupe_return
+wait 25
+shot loupe_home
