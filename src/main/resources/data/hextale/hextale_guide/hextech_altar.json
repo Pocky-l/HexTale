@@ -1,0 +1,14 @@
+{
+  "region": "circle",
+  "icon": "hextale:hextech_altar",
+  "parents": ["ink", "magic_stone", "unstable_hextech"],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:hextech_altar"
+  },
+  "research": "hextech_altar",
+  "station": true,
+  "landmark": true,
+  "scene": "altar",
+  "pos": [350, -130]
+}

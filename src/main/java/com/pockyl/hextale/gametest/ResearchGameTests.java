@@ -1036,7 +1036,7 @@ public final class ResearchGameTests {
         table.setItem(ResearchTableBlockEntity.PAPER, new ItemStack(Items.PAPER, 2));
         ResearchBoard board = cursedBoard();
         inkTanks(helper, EssenceTankBlockEntity.CAPACITY, board.essences());
-        openUpTo(Research.of(player), Guide.of(board.topic()));
+        openUpTo(Research.of(player), Guide.server().forTopic(board.topic()));
         int cursed = cursedCell(board);
         int[] tree = ResearchSheet.fromPath(pathTo(board, cursed));
         table.select(player, board.topic());
@@ -1423,7 +1423,7 @@ public final class ResearchGameTests {
         Vec3 pos = helper.absoluteVec(new Vec3(0.5, 1, 2.5));
         player.snapTo(pos.x, pos.y, pos.z, 0, 0);
         // A researcher who got as far as ink at the table: the circle's research is open.
-        openUpTo(Research.of(player), Guide.of(TOPIC));
+        openUpTo(Research.of(player), Guide.server().forTopic(TOPIC));
         return player;
     }
 

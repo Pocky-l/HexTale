@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "essences",
+  "icon": "minecraft:fishing_rod",
+  "parents": ["pump"],
+  "pos": [-70, 327]
+}

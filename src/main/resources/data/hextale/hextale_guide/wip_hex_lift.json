@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "pylons",
+  "icon": "minecraft:piston",
+  "parents": ["pylon_rune"],
+  "pos": [816, 74]
+}

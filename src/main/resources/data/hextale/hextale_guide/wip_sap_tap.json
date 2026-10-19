@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "essences",
+  "icon": "minecraft:honey_bottle",
+  "parents": ["essence_bottle"],
+  "pos": [149, 167]
+}

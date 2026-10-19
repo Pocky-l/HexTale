@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:soul_campfire",
+  "parents": ["wip_shimmer"],
+  "pos": [-617, 167]
+}

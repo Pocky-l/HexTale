@@ -71,7 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and mutations, and the smog that follows. Steps researched at the Research Table always carry an ink drop - bright until the research is done. Only the
   few turning points of the path wear an effect: raw hextech crackles with lightning, the ink, the first rune scroll,
   the hextech crystal and the gemstone glow gold, the radiant pickaxe is circled by blue sparks. A legend in the corner
-  names the signs. The diary opens where your next steps are. A
+  names the signs. The guide's steps are data (`data/<namespace>/hextale_guide/*.json`): data packs can add, change or
+  remove steps, their goals, pictures and places on the map. The diary opens where your next steps are. A
   click opens the step's window in the middle of the page (back arrow, Escape or a click beside it returns to the map):
   the recipe, ritual or structure for a thing and what it opens (on a table, a button that lays its research on the
   parchment), the idea behind a device to come. Finishing a step is marked by a quiet stroke of the pen. The Runes tab

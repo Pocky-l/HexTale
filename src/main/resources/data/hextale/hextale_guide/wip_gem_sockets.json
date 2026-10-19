@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "icon": "minecraft:emerald",
+  "parents": ["hex_lapidary"],
+  "pos": [635, -40]
+}

@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:lingering_potion",
+  "parents": ["wip_chem_vial"],
+  "pos": [-650, -295]
+}

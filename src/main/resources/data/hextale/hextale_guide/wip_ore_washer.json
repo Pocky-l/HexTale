@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "forge",
+  "icon": "minecraft:raw_iron",
+  "parents": ["refined_pickaxe", "pump"],
+  "pos": [833, 165]
+}

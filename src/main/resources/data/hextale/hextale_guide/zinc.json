@@ -1,0 +1,11 @@
+{
+  "region": "workshop",
+  "icon": "hextale:zinc_ingot",
+  "parents": ["sphalerite"],
+  "display": {
+    "kind": "scheme",
+    "ingredients": ["hextale:raw_zinc", "minecraft:furnace"],
+    "result": "hextale:zinc_ingot"
+  },
+  "pos": [-160, 260]
+}

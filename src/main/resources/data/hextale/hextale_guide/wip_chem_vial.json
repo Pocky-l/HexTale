@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:dragon_breath",
+  "parents": ["wip_crucible_brews"],
+  "pos": [-610, -260]
+}

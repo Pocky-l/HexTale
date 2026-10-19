@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:decorated_pot",
+  "parents": ["wip_crucible_brews"],
+  "pos": [-571, -194]
+}

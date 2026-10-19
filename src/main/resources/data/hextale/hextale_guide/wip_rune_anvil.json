@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "forge",
+  "icon": "minecraft:anvil",
+  "parents": ["hexsteel"],
+  "pos": [-295, 230]
+}

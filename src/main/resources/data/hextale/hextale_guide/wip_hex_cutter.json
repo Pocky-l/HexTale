@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "forge",
+  "icon": "minecraft:stonecutter",
+  "parents": ["radiant_pickaxe"],
+  "pos": [927, 200]
+}

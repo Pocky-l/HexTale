@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "pylons",
+  "icon": "minecraft:heavy_weighted_pressure_plate",
+  "parents": ["relay_pylon"],
+  "pos": [1002, -150]
+}

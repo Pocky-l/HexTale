@@ -1,0 +1,11 @@
+{
+  "region": "pylons",
+  "icon": "hextale:sending_pylon",
+  "parents": ["gathering_pylon"],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:sending_pylon"
+  },
+  "research": "sending_pylon",
+  "pos": [860, -130]
+}

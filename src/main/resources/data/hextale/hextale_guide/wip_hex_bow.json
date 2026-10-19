@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "icon": "minecraft:crossbow",
+  "parents": ["hextech_crystal"],
+  "pos": [727, -45]
+}

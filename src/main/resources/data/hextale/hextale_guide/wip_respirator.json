@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "workshop",
+  "icon": "minecraft:leather_helmet",
+  "parents": ["researchers_goggles", "concentrate"],
+  "pos": [-226, -117]
+}

@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "pylons",
+  "icon": "minecraft:observer",
+  "parents": ["sending_pylon", "pylon_filter"],
+  "pos": [900, -169]
+}

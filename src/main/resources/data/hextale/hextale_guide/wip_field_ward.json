@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "essences",
+  "icon": "minecraft:carved_pumpkin",
+  "parents": ["magic_stone"],
+  "pos": [84, 301]
+}

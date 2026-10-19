@@ -22,6 +22,7 @@ public final class ModNetwork {
         registrar.playToClient(OpenDiaryPayload.TYPE, OpenDiaryPayload.STREAM_CODEC);
         registrar.playToClient(InfusionRecipesPayload.TYPE, InfusionRecipesPayload.STREAM_CODEC);
         registrar.playToClient(CraftingRecipesPayload.TYPE, CraftingRecipesPayload.STREAM_CODEC);
+        registrar.playToClient(GuidePayload.TYPE, GuidePayload.STREAM_CODEC);
         registrar.playToClient(OpenStelePayload.TYPE, OpenStelePayload.STREAM_CODEC);
         registrar.playToClient(PylonFlightsPayload.TYPE, PylonFlightsPayload.STREAM_CODEC);
         registrar.playToClient(PylonLinkPayload.TYPE, PylonLinkPayload.STREAM_CODEC);

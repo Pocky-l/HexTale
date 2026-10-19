@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "icon": "minecraft:crafter",
+  "parents": ["pedestal", "hextech_crystal"],
+  "pos": [525, -101]
+}

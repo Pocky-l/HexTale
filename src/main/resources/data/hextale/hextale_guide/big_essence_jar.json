@@ -1,0 +1,15 @@
+{
+  "region": "essences",
+  "icon": "hextale:essence_tank",
+  "parents": ["essence_tank", "unstable_hextech", "ink"],
+  "goal": {
+    "type": "event",
+    "event": "big_essence_jar_formed"
+  },
+  "display": {
+    "kind": "multiblock",
+    "result": "big_essence_jar"
+  },
+  "research": "big_essence_jar",
+  "pos": [240, 320]
+}

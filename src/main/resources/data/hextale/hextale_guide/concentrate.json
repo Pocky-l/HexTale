@@ -1,0 +1,20 @@
+{
+  "region": "essences",
+  "icon": {
+    "id": "hextale:essence_flask",
+    "components": {
+      "hextale:essence": {
+        "water": 16
+      }
+    }
+  },
+  "parents": ["separator"],
+  "goal": {
+    "type": "concentrate"
+  },
+  "display": {
+    "kind": "reagents",
+    "count": 0
+  },
+  "pos": [290, 60]
+}

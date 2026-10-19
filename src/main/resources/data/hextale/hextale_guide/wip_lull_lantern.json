@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "runes",
+  "icon": "minecraft:soul_lantern",
+  "parents": ["written_scroll"],
+  "pos": [-309, -242]
+}

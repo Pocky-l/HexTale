@@ -28,7 +28,6 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.CrucibleBlockEntity;
 import com.pockyl.hextale.block.HexFurnaceBlockEntity;
-import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
@@ -210,9 +209,7 @@ public final class BlockAwakening {
         }
         // The woken block's step in the guide is done by the one who woke it.
         if (pending.player() != null && level.getPlayerByUUID(pending.player()) instanceof net.minecraft.server.level.ServerPlayer player) {
-            net.minecraft.world.item.Item woken = next.getBlock().asItem();
-            Guide.all().stream().filter(quest -> quest.icon().is(woken)).findFirst()
-                    .ifPresent(quest -> Quests.complete(player, quest));
+            Quests.fire(player, Quests.awakened(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(next.getBlock()).getPath()));
         }
         Vec3 centre = Vec3.atCenterOf(pos);
         level.sendParticles(ColorParticleOption.create(ParticleTypes.FLASH, 0xFF000000 | HEXTECH), centre.x, centre.y, centre.z, 1, 0, 0, 0, 0);

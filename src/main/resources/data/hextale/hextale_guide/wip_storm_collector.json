@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "workshop",
+  "icon": "minecraft:lightning_rod",
+  "parents": ["unstable_hextech"],
+  "pos": [-339, 1]
+}

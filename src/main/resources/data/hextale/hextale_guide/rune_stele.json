@@ -1,0 +1,12 @@
+{
+  "region": "circle",
+  "icon": "hextale:rune_stele",
+  "parents": ["hextech_altar"],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:rune_stele"
+  },
+  "research": "hextech_altar",
+  "scene": "stele",
+  "pos": [350, -260]
+}

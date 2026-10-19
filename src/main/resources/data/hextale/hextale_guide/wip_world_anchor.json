@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "icon": "minecraft:respawn_anchor",
+  "parents": ["hextech_crystal", "hextech_gemstone"],
+  "pos": [655, -117]
+}

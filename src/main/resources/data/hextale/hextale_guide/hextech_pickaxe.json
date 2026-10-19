@@ -1,0 +1,14 @@
+{
+  "region": "forge",
+  "icon": "hextale:hextech_pickaxe",
+  "parents": ["hextech_crystal"],
+  "goal": {
+    "type": "pickaxe"
+  },
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:hextech_pickaxe"
+  },
+  "research": "hextech_pickaxe",
+  "pos": [710, 80]
+}

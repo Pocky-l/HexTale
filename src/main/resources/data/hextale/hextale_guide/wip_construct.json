@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "icon": "minecraft:armor_stand",
+  "parents": ["hextech_crystal"],
+  "pos": [655, -3]
+}

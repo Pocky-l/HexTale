@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "icon": "minecraft:spyglass",
+  "parents": ["hextech_lamp"],
+  "pos": [646, -185]
+}

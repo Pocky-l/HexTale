@@ -1,0 +1,11 @@
+{
+  "region": "workshop",
+  "icon": "hextale:unstable_hextech",
+  "display": {
+    "kind": "scheme",
+    "ingredients": ["minecraft:lightning_rod", "minecraft:amethyst_block"],
+    "result": "hextale:unstable_hextech"
+  },
+  "aura": "storm",
+  "pos": [-301, 61]
+}

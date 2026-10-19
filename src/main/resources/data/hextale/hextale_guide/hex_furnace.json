@@ -1,0 +1,25 @@
+{
+  "region": "forge",
+  "icon": "hextale:hex_furnace",
+  "parents": ["hextech_dust"],
+  "goal": {
+    "type": "any_of",
+    "goals": [
+      {
+        "type": "has_item",
+        "item": "hextale:hex_furnace"
+      },
+      {
+        "type": "event",
+        "event": "awakened/hex_furnace"
+      }
+    ]
+  },
+  "display": {
+    "kind": "scheme",
+    "ingredients": ["hextale:hextech_dust", "minecraft:furnace"],
+    "result": "hextale:hex_furnace"
+  },
+  "station": true,
+  "pos": [-220, 130]
+}

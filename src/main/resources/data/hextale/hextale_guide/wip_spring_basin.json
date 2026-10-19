@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "essences",
+  "icon": "minecraft:lily_pad",
+  "parents": ["concentrate"],
+  "pos": [305, 6]
+}

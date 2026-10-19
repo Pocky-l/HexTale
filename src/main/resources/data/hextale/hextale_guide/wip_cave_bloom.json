@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:glow_lichen",
+  "parents": ["crucible"],
+  "pos": [-500, 50]
+}

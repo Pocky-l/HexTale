@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "icon": "minecraft:end_rod",
+  "parents": ["hextech_lamp"],
+  "pos": [715, -224]
+}

@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:totem_of_undying",
+  "parents": ["wip_refined_shimmer"],
+  "pos": [-742, 159]
+}

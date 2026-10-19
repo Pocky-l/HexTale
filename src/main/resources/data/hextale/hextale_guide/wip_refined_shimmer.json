@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:ominous_bottle",
+  "parents": ["wip_shimmer"],
+  "pos": [-690, 150]
+}

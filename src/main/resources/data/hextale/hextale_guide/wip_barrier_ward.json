@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "icon": "minecraft:shield",
+  "parents": ["pedestal"],
+  "pos": [507, -48]
+}

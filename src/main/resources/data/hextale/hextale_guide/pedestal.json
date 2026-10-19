@@ -1,0 +1,12 @@
+{
+  "region": "circle",
+  "icon": "hextale:pedestal",
+  "parents": ["hextech_altar"],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:pedestal"
+  },
+  "research": "hextech_altar",
+  "scene": "pedestal",
+  "pos": [470, -90]
+}

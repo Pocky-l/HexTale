@@ -423,7 +423,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         if (kind == Ritual.Kind.WRITE) {
             // A rune copied onto a scroll: the researchers standing by have learned to pass runes on.
             for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, new AABB(worldPosition).inflate(Ritual.TANK_RADIUS))) {
-                com.pockyl.hextale.quest.Quests.complete(player, com.pockyl.hextale.quest.Guide.WRITTEN_SCROLL);
+                com.pockyl.hextale.quest.Quests.fire(player, com.pockyl.hextale.quest.Quests.RUNE_SCROLL_WRITTEN);
             }
         }
         clearRitual();

@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:brewing_stand",
+  "parents": ["crucible", "separator"],
+  "pos": [-410, 100]
+}

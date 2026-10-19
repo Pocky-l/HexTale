@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "workshop",
+  "icon": "minecraft:writable_book",
+  "parents": ["researchers_diary"],
+  "pos": [-30, -296]
+}

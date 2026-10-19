@@ -14,32 +14,39 @@ import net.neoforged.fml.loading.FMLPaths;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.resources.RegistryOps;
 import com.google.gson.reflect.TypeToken;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.client.ClientKnowledge;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.quest.Guide;
-import com.pockyl.hextale.quest.GuideEdits;
 import com.pockyl.hextale.quest.Quest;
+import com.pockyl.hextale.quest.QuestDefinition;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jspecify.annotations.Nullable;
 
 /**
  * The guide map's editor, only in a development client. Drag a step with the right mouse button to place it by hand; a
  * right click without dragging opens {@link GuideEditScreen} (name, goal, description, icon, parents, aura, workstation,
- * add a step after it, remove it); H shows every step, fog or not. Structural changes go through {@link GuideEdits} and
- * are written to its file in the mod's sources, names and descriptions to the language files there, so the next build
- * ships them; until then they show at once (the texts through a language layered over the game's). Crossing links are
- * reported after every change.
+ * add a step after it, remove it); H shows every step, fog or not. A changed step is written to its data file in the
+ * mod's sources ({@code data/hextale/hextale_guide/<id>.json}), names and descriptions to the language files there, so
+ * the next build ships them; until then they work at once (the guide is built again from the changed data, the texts
+ * show through a language layered over the game's). Crossing links are reported after every change.
  */
 final class GuideEditor {
     private static final int HINT = 0xFFB8B0D0;
@@ -89,7 +96,7 @@ final class GuideEditor {
         }
         moved |= Math.abs(mouseX - pressX) + Math.abs(mouseY - pressY) >= CLICK;
         if (moved) {
-            GuideEdits.drag(dragged, Math.round(book.mapX(mouseX) - grabX), Math.round(book.mapY(mouseY) - grabY));
+            Guide.client().preview(dragged, Math.round(book.mapX(mouseX) - grabX), Math.round(book.mapY(mouseY) - grabY));
         }
         return true;
     }
@@ -105,8 +112,10 @@ final class GuideEditor {
             minecraft.gui.setScreen(new GuideEditScreen(quest, minecraft.gui.screen()));
             return true;
         }
-        GuideEdits.move(quest, Math.round(book.mapX(mouseX) - grabX), Math.round(book.mapY(mouseY) - grabY));
-        report(quest.id() + " -> " + quest.x() + ", " + quest.y(), saveEdits());
+        var pos = new QuestDefinition.Pos(Math.round(book.mapX(mouseX) - grabX), Math.round(book.mapY(mouseY) - grabY));
+        Map<String, @Nullable QuestDefinition> changed = new LinkedHashMap<>();
+        changed.put(quest.id(), quest.definition().withPos(Optional.of(pos)));
+        report(quest.id() + " -> " + pos.x() + ", " + pos.y(), saveSteps(changed));
         return true;
     }
 
@@ -135,7 +144,7 @@ final class GuideEditor {
 
     /** Shows the outcome of a change on the action bar, with a warning when links cross now. */
     static void report(String what, boolean saved) {
-        int crossings = Guide.crossings();
+        int crossings = Guide.client().crossings();
         String text = what + (saved ? "  saved" : "  NOT saved") + (crossings > 0 ? "  -  " + crossings + " link crossing(s)!" : "");
         var player = Minecraft.getInstance().player;
         if (player != null) {
@@ -145,20 +154,62 @@ final class GuideEditor {
 
     // ---- Files --------------------------------------------------------------------------------------------------------
 
-    /** Writes {@link GuideEdits} to its file in the mod's sources; returns whether it worked. */
-    static boolean saveEdits() {
-        Path file = sources().resolve(GuideEdits.FILE);
-        try {
-            Files.createDirectories(file.getParent());
-            Files.writeString(file, GSON.toJson(GuideEdits.toJson()) + "\n", StandardCharsets.UTF_8);
-            // Its moves were read when the guide was built and are in the new file now.
-            Files.deleteIfExists(sources().resolve(GuideEdits.OLD_FILE));
-            return true;
-        } catch (IOException e) {
-            Hextale.LOGGER.warn("Could not save the guide edits to {}", file, e);
-            return false;
+    /**
+     * Puts changed guide steps into effect: writes each changed step's data file in the mod's sources (deletes a removed
+     * one's) and builds the guide again on this client and, in single player, on its server, so the change works at
+     * once. Returns whether every file was written.
+     */
+    static boolean saveSteps(Map<String, @Nullable QuestDefinition> changed) {
+        Map<String, QuestDefinition> steps = new LinkedHashMap<>(Guide.client().definitions());
+        boolean saved = true;
+        for (var entry : changed.entrySet()) {
+            Path file = stepFile(entry.getKey());
+            try {
+                if (entry.getValue() == null) {
+                    steps.remove(entry.getKey());
+                    Files.deleteIfExists(file);
+                } else {
+                    steps.put(entry.getKey(), entry.getValue());
+                    Files.createDirectories(file.getParent());
+                    Files.writeString(file, format(QuestDefinition.CODEC.encodeStart(
+                            RegistryOps.create(JsonOps.INSTANCE, Minecraft.getInstance().level.registryAccess()), entry.getValue()).getOrThrow()),
+                            StandardCharsets.UTF_8);
+                }
+            } catch (IOException | RuntimeException e) {
+                Hextale.LOGGER.warn("Could not save the guide step {}", file, e);
+                saved = false;
+            }
         }
+        Guide.setClient(steps);
+        if (Minecraft.getInstance().hasSingleplayerServer()) {
+            Guide.setServer(steps);
+        }
+        return saved;
     }
+
+    /** Where a step's data file lies in the mod's sources. */
+    private static Path stepFile(String id) {
+        int colon = id.indexOf(':');
+        String namespace = colon < 0 ? Hextale.MOD_ID : id.substring(0, colon);
+        return sources().resolve("data/" + namespace + "/" + Guide.FOLDER + "/" + id.substring(colon + 1) + ".json");
+    }
+
+    /** Pretty JSON with the short lists (place, parents, ingredients) on one line and plain icons as ids, like the files. */
+    private static String format(JsonElement json) {
+        String text = GSON.toJson(json);
+        Matcher lists = SHORT_LIST.matcher(text);
+        StringBuilder out = new StringBuilder();
+        while (lists.find()) {
+            String items = String.join(", ", Arrays.stream(lists.group(2).split(",")).map(String::trim).toList());
+            lists.appendReplacement(out, Matcher.quoteReplacement("\"" + lists.group(1) + "\": [" + items + "]"));
+        }
+        lists.appendTail(out);
+        return ICON.matcher(out).replaceAll("\"icon\": $1") + "\n";
+    }
+
+    /** An icon that is a plain item is written as its id. */
+    private static final Pattern ICON = Pattern.compile("\"icon\": \\{\\s*\"id\": (\"[^\"]+\")\\s*}");
+    private static final Pattern SHORT_LIST = Pattern.compile("\"(pos|parents|ingredients)\": \\[\\s*([^\\]\\[{}]*?)\\s*]");
 
     /**
      * Writes texts to the language file of the language being played (English when it has none) and, for keys the other

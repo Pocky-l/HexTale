@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:wet_sponge",
+  "parents": ["wip_the_gray"],
+  "pos": [-573, -333]
+}

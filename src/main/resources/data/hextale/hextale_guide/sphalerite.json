@@ -1,0 +1,9 @@
+{
+  "region": "workshop",
+  "icon": "hextale:sphalerite_ore",
+  "goal": {
+    "type": "has_item",
+    "item": "hextale:raw_zinc"
+  },
+  "pos": [-250, 250]
+}

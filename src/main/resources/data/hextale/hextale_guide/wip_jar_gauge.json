@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "workshop",
+  "icon": "minecraft:comparator",
+  "parents": ["researchers_goggles"],
+  "pos": [-204, -154]
+}

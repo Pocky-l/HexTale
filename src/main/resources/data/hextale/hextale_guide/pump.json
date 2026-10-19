@@ -1,0 +1,10 @@
+{
+  "region": "essences",
+  "icon": "hextale:pump",
+  "parents": ["brass_pipe"],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:pump"
+  },
+  "pos": [-40, 280]
+}

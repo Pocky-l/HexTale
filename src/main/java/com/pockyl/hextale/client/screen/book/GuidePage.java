@@ -108,19 +108,19 @@ final class GuidePage {
     }
 
     static int minX() {
-        return Guide.left() - MARGIN;
+        return Guide.client().left() - MARGIN;
     }
 
     static int maxX() {
-        return Guide.right() + MARGIN;
+        return Guide.client().right() + MARGIN;
     }
 
     static int minY() {
-        return Guide.top() - MARGIN;
+        return Guide.client().top() - MARGIN;
     }
 
     static int maxY() {
-        return Guide.bottom() + MARGIN;
+        return Guide.client().bottom() + MARGIN;
     }
 
     /**
@@ -130,8 +130,8 @@ final class GuidePage {
      */
     static float[] focus(RuneKnowledge knowledge, float viewWidth, float viewHeight) {
         List<Quest> open = new ArrayList<>();
-        Quest last = Guide.BRASS;
-        for (Quest quest : Guide.all()) {
+        Quest last = null;
+        for (Quest quest : Guide.client().all()) {
             boolean done = Guide.done(quest, knowledge);
             if (!done && quest.kind() != Quest.Kind.WIP && Guide.open(quest, knowledge)) {
                 open.add(quest);
@@ -141,6 +141,9 @@ final class GuidePage {
             }
         }
         if (open.isEmpty()) {
+            if (last == null) {
+                return new float[]{0, 0};
+            }
             open.add(last);
         }
         // Grow a box from the earliest open step, taking every other open step that still keeps it within the view.
@@ -168,7 +171,7 @@ final class GuidePage {
 
     /** Whether any step the reader can see lies inside the view around this point. */
     static boolean anyVisibleNear(RuneKnowledge knowledge, float cx, float cy, float viewWidth, float viewHeight) {
-        for (Quest quest : Guide.all()) {
+        for (Quest quest : Guide.client().all()) {
             if (Guide.visible(quest, knowledge) && Math.abs(quest.x() - cx) < viewWidth / 2 - 16 && Math.abs(quest.y() - cy) < viewHeight / 2 - 16) {
                 return true;
             }
@@ -185,8 +188,8 @@ final class GuidePage {
 
     /** Draws the path in map coordinates (the caller has set up the camera's pose). */
     void renderMap(GuiGraphicsExtractor graphics, RuneKnowledge knowledge, long now, @Nullable Quest hovered) {
-        List<Quest> shown = Guide.all().stream().filter(quest -> seen(quest, knowledge)).toList();
-        List<Quest> ahead = Guide.all().stream().filter(quest -> !revealAll && Guide.ahead(quest, knowledge)).toList();
+        List<Quest> shown = Guide.client().all().stream().filter(quest -> seen(quest, knowledge)).toList();
+        List<Quest> ahead = Guide.client().all().stream().filter(quest -> !revealAll && Guide.ahead(quest, knowledge)).toList();
         focus = hovered;
         renderHaze(graphics, shown);
         for (Quest quest : ahead) {
@@ -657,7 +660,7 @@ final class GuidePage {
         float my = book.mapY(mouseY);
         Quest best = null;
         float bestDistance = Float.MAX_VALUE;
-        for (Quest quest : Guide.all()) {
+        for (Quest quest : Guide.client().all()) {
             if (!seen(quest, knowledge) && !Guide.ahead(quest, knowledge)) {
                 continue;
             }
@@ -974,7 +977,7 @@ final class GuidePage {
         if (studyButton(quest)) {
             StarBook.Host host = book.host();
             ResearchTopic topic = quest.topic();
-            boolean open = Guide.canResearch(topic, knowledge);
+            boolean open = Guide.client().canResearch(topic, knowledge);
             boolean onTable = host.researching() == topic;
             boolean active = open && !onTable;
             Component label = Component.translatable(!open ? "book.hextale.closed" : onTable ? "book.hextale.on_table"
@@ -1624,7 +1627,7 @@ final class GuidePage {
         ResearchTopic topic = quest.topic();
         StarBook.Host host = book.host();
         if (mouseX >= ix && mouseX < ix + innerWidth() && mouseY >= by && mouseY < by + StarBook.BUTTON_HEIGHT
-                && Guide.canResearch(topic, knowledge) && host.researching() != topic) {
+                && Guide.client().canResearch(topic, knowledge) && host.researching() != topic) {
             host.research(topic);
         }
     }

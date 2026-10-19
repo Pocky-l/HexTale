@@ -1,0 +1,12 @@
+{
+  "region": "essences",
+  "icon": "hextale:magic_stone",
+  "parents": ["essence_bottle"],
+  "display": {
+    "kind": "shaped",
+    "ingredients": ["#hextale:soaks_essence", "#hextale:soaks_essence", "#hextale:soaks_essence", "#hextale:soaks_essence", "hextale:essence_flask", "#hextale:soaks_essence", "#hextale:soaks_essence", "#hextale:soaks_essence", "#hextale:soaks_essence"],
+    "result": "hextale:magic_stone",
+    "count": 8
+  },
+  "pos": [60, 250]
+}

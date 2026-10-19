@@ -1,0 +1,11 @@
+{
+  "region": "essences",
+  "icon": "hextale:alembic",
+  "parents": ["hex_workbench", "brass"],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:alembic"
+  },
+  "station": true,
+  "pos": [10, 90]
+}

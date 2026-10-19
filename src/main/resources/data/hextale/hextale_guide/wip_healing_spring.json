@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "essences",
+  "icon": "minecraft:glistering_melon_slice",
+  "parents": ["concentrate"],
+  "pos": [339, 33]
+}

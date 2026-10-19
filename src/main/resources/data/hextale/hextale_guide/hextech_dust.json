@@ -1,0 +1,11 @@
+{
+  "region": "workshop",
+  "icon": "hextale:hextech_dust",
+  "parents": ["unstable_hextech"],
+  "display": {
+    "kind": "scheme",
+    "ingredients": ["hextale:unstable_hextech"],
+    "result": "hextale:hextech_dust"
+  },
+  "pos": [-220, 0]
+}

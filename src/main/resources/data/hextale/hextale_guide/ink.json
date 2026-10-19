@@ -1,0 +1,10 @@
+{
+  "region": "workshop",
+  "icon": "minecraft:ink_sac",
+  "parents": ["item_study", "essence_tank", "concentrate"],
+  "goal": {
+    "type": "ink_at_table"
+  },
+  "aura": "gold",
+  "pos": [200, -130]
+}

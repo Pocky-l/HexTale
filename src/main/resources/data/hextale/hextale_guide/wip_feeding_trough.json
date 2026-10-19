@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "essences",
+  "icon": "minecraft:hay_block",
+  "parents": ["essence_tank"],
+  "pos": [135, 280]
+}

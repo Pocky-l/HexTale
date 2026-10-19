@@ -1,0 +1,10 @@
+{
+  "region": "workshop",
+  "icon": "hextale:researchers_diary",
+  "display": {
+    "kind": "shapeless",
+    "ingredients": ["minecraft:book", "minecraft:amethyst_shard", "minecraft:feather"],
+    "result": "hextale:researchers_diary"
+  },
+  "pos": [-30, -240]
+}

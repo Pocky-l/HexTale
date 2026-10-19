@@ -1,0 +1,13 @@
+{
+  "region": "pylons",
+  "icon": "hextale:rune_stele",
+  "parents": ["gathering_pylon", "rune_stele", "rune_scroll"],
+  "goal": {
+    "type": "pylon_runes"
+  },
+  "display": {
+    "kind": "pylon_runes",
+    "result": "hextale:sending_pylon"
+  },
+  "pos": [800, 20]
+}

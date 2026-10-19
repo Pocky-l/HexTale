@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:amethyst_shard",
+  "parents": ["wip_catalyst_salts", "hextech_crystal"],
+  "pos": [-692, -151]
+}

@@ -1,0 +1,10 @@
+{
+  "region": "runes",
+  "icon": "hextale:rune_scroll",
+  "parents": ["researchers_diary"],
+  "goal": {
+    "type": "runes_known"
+  },
+  "aura": "gold",
+  "pos": [-120, -270]
+}

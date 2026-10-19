@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "essences",
+  "icon": "minecraft:oak_log",
+  "parents": ["magic_stone", "essence_tank"],
+  "pos": [7, 231]
+}

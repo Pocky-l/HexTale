@@ -1,0 +1,25 @@
+{
+  "region": "workshop",
+  "icon": "hextale:hex_workbench",
+  "parents": ["hextech_dust"],
+  "goal": {
+    "type": "any_of",
+    "goals": [
+      {
+        "type": "has_item",
+        "item": "hextale:hex_workbench"
+      },
+      {
+        "type": "event",
+        "event": "awakened/hex_workbench"
+      }
+    ]
+  },
+  "display": {
+    "kind": "scheme",
+    "ingredients": ["hextale:hextech_dust", "minecraft:crafting_table"],
+    "result": "hextale:hex_workbench"
+  },
+  "station": true,
+  "pos": [-100, -20]
+}

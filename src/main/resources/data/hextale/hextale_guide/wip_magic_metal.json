@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "forge",
+  "icon": "minecraft:netherite_scrap",
+  "parents": ["hexsteel", "hextech_gemstone"],
+  "pos": [-338, 233]
+}

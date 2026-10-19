@@ -11,7 +11,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
 
-import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
@@ -61,6 +60,6 @@ public final class BigEssenceJar extends Multiblock {
 
     @Override
     public void onFormed(ServerPlayer player, BlockPos controller) {
-        Quests.complete(player, Guide.BIG_ESSENCE_JAR);
+        Quests.fire(player, Quests.BIG_ESSENCE_JAR_FORMED);
     }
 }

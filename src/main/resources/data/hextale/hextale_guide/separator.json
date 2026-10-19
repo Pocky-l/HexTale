@@ -1,0 +1,10 @@
+{
+  "region": "essences",
+  "icon": "hextale:separator",
+  "parents": ["essence_bottle"],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:separator"
+  },
+  "pos": [200, 110]
+}

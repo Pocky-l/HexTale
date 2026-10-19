@@ -1,0 +1,10 @@
+{
+  "region": "workshop",
+  "icon": "hextale:brass_ingot",
+  "parents": ["hex_furnace", "zinc"],
+  "display": {
+    "kind": "alloy",
+    "result": "hextale:brass_ingot"
+  },
+  "pos": [-120, 150]
+}

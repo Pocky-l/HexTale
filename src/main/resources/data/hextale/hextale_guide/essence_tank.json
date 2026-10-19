@@ -1,0 +1,10 @@
+{
+  "region": "essences",
+  "icon": "hextale:essence_tank",
+  "parents": ["essence_bottle"],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:essence_tank"
+  },
+  "pos": [160, 230]
+}

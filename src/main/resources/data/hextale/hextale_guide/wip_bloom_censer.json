@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "essences",
+  "icon": "minecraft:spore_blossom",
+  "parents": ["brass_pipe"],
+  "pos": [-115, 200]
+}

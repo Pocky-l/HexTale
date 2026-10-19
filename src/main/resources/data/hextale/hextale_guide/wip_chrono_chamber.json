@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "forge",
+  "icon": "minecraft:clock",
+  "parents": ["radiant_pickaxe"],
+  "pos": [893, 225]
+}

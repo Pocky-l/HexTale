@@ -1,0 +1,25 @@
+{
+  "region": "chemtech",
+  "icon": "hextale:crucible",
+  "parents": ["hextech_dust"],
+  "goal": {
+    "type": "any_of",
+    "goals": [
+      {
+        "type": "has_item",
+        "item": "hextale:crucible"
+      },
+      {
+        "type": "event",
+        "event": "awakened/crucible"
+      }
+    ]
+  },
+  "display": {
+    "kind": "scheme",
+    "ingredients": ["hextale:hextech_dust", "minecraft:cauldron"],
+    "result": "hextale:crucible"
+  },
+  "station": true,
+  "pos": [-400, -110]
+}

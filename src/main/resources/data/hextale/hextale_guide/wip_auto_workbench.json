@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "workshop",
+  "icon": "minecraft:dropper",
+  "parents": ["hex_workbench"],
+  "pos": [-33, -31]
+}

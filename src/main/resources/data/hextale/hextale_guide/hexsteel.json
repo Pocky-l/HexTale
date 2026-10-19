@@ -1,0 +1,11 @@
+{
+  "region": "forge",
+  "icon": "hextale:hexsteel_ingot",
+  "parents": ["hex_furnace", "hextech_dust", "ink"],
+  "display": {
+    "kind": "alloy",
+    "result": "hextale:hexsteel_ingot"
+  },
+  "research": "hexsteel",
+  "pos": [-320, 180]
+}

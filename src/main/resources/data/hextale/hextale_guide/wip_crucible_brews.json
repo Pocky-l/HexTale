@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:potion",
+  "parents": ["crucible"],
+  "pos": [-520, -180]
+}

@@ -1,0 +1,16 @@
+{
+  "region": "circle",
+  "icon": "hextale:hex_lapidary",
+  "parents": ["pedestal", "essence_tank"],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:hex_lapidary",
+    "then": {
+      "kind": "infusion",
+      "result": "hextale:cutting_disc"
+    }
+  },
+  "research": "hex_lapidary",
+  "station": true,
+  "pos": [570, -60]
+}

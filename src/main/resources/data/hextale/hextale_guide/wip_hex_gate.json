@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "pylons",
+  "icon": "minecraft:ender_eye",
+  "parents": ["relay_pylon"],
+  "pos": [1001, -193]
+}

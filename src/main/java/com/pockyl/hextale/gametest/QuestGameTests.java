@@ -51,7 +51,7 @@ public final class QuestGameTests {
         MinecraftServer server = helper.getLevel().getServer();
         ContextMap context = ContextMap.builder().set(SlotDisplayContext.REGISTRIES, server.registryAccess())
                 .buildAndValidate(SlotDisplayContext.CONTEXT);
-        for (Quest quest : Guide.all()) {
+        for (Quest quest : Guide.server().all()) {
             QuestDisplay display = quest.display();
             if (display == null || !display.isRecipe()) {
                 continue;
@@ -81,30 +81,39 @@ public final class QuestGameTests {
         return new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse(id)));
     }
 
+    /** The guide comes from its data files, and every step in them made it in (no missing parents, no circles). */
+    @HexTest
+    public static void guideLoadsFromData(GameTestHelper helper) {
+        Guide guide = Guide.server();
+        helper.assertTrue(guide.all().size() > 100, "the guide's data files were read");
+        helper.assertTrue(guide.all().size() == guide.definitions().size(), "every step in the data is in the guide");
+        helper.succeed();
+    }
+
     /** Every step has its own spot, its parents come before it, every research topic has a step. */
     @HexTest
     public static void guideIsLaidOut(GameTestHelper helper) {
         Set<Long> spots = new HashSet<>();
-        for (Quest quest : Guide.all()) {
+        for (Quest quest : Guide.server().all()) {
             helper.assertTrue(spots.add(((long) quest.x() << 32) | (quest.y() & 0xFFFFFFFFL)), quest.id() + " has its own spot");
             for (Quest parent : quest.parents()) {
                 helper.assertTrue(parent.index() < quest.index(), quest.id() + " follows " + parent.id());
                 helper.assertTrue(quest.kind() == Quest.Kind.WIP || parent.kind() != Quest.Kind.WIP,
                         quest.id() + " never waits for a WIP device");
             }
-            helper.assertTrue(quest.parents().isEmpty() == (quest == Guide.UNSTABLE_HEXTECH || quest == Guide.SPHALERITE
-                            || quest == Guide.RESEARCHERS_DIARY),
+            helper.assertTrue(quest.parents().isEmpty() == (quest == step("unstable_hextech") || quest == step("sphalerite")
+                            || quest == step("researchers_diary")),
                     quest.id() + ": only raw hextech, sphalerite and the diary start the guide");
-            for (Quest other : Guide.all()) {
+            for (Quest other : Guide.server().all()) {
                 if (other.index() > quest.index()) {
                     double distance = Math.hypot(other.x() - quest.x(), other.y() - quest.y());
                     helper.assertTrue(distance >= 34, quest.id() + " and " + other.id() + " do not crowd each other");
                 }
             }
-            helper.assertTrue(Guide.byId(quest.id()) == quest, quest.id() + " is found by id");
+            helper.assertTrue(Guide.server().byId(quest.id()) == quest, quest.id() + " is found by id");
         }
         for (ResearchTopic topic : ResearchTopics.all()) {
-            helper.assertTrue(Guide.of(topic).topic() == topic, topic.id() + " has its step");
+            helper.assertTrue(Guide.server().forTopic(topic) != null, topic.id() + " has its step");
         }
         helper.succeed();
     }
@@ -115,7 +124,7 @@ public final class QuestGameTests {
      */
     @HexTest
     public static void guideLinksNeverCross(GameTestHelper helper) {
-        List<Quest> linked = Guide.all().stream().filter(quest -> quest.parent() != null).toList();
+        List<Quest> linked = Guide.server().all().stream().filter(quest -> quest.parent() != null).toList();
         Map<Quest, double[][]> curves = new HashMap<>();
         for (Quest quest : linked) {
             double[][] curve = new double[Guide.LINK_SAMPLES + 1][];
@@ -130,7 +139,7 @@ public final class QuestGameTests {
                     helper.assertFalse(cross(curves.get(a), curves.get(b)), "the links to " + a.id() + " and " + b.id() + " cross");
                 }
             }
-            for (Quest step : Guide.all()) {
+            for (Quest step : Guide.server().all()) {
                 if (step != a && step != a.parent()) {
                     helper.assertTrue(Guide.distanceToCurve(step.x(), step.y(), curves.get(a)) >= 14,
                             "the link to " + a.id() + " runs over " + step.id());
@@ -216,9 +225,9 @@ public final class QuestGameTests {
      */
     @HexTest
     public static void guideOrderIsLogical(GameTestHelper helper) {
-        for (Quest quest : Guide.all()) {
+        for (Quest quest : Guide.server().all()) {
             if (quest.topic() != null) {
-                helper.assertTrue(ancestors(quest).contains(Guide.INK), quest.id() + " is researched, so it comes after the ink");
+                helper.assertTrue(ancestors(quest).contains(step("ink")), quest.id() + " is researched, so it comes after the ink");
             }
             Set<Quest> before = ancestors(quest);
             Set<Identifier> available = new HashSet<>();
@@ -231,10 +240,10 @@ public final class QuestGameTests {
                 case INFUSION -> {
                     InfusionRecipe recipe = InfusionRecipes.get(false).get(Identifier.parse(display.result()));
                     helper.assertTrue(recipe != null, quest.id() + ": ritual " + display.result() + " exists");
-                    helper.assertTrue(before.contains(Guide.HEXTECH_ALTAR), quest.id() + " comes after the altar");
-                    helper.assertTrue(recipe.pedestals().isEmpty() || before.contains(Guide.PEDESTAL), quest.id() + " comes after the Pedestal");
-                    helper.assertTrue(recipe.runes().isEmpty() || before.contains(Guide.RUNE_STELE), quest.id() + " comes after the Rune Stele");
-                    helper.assertTrue(recipe.runes().isEmpty() || before.contains(Guide.RUNE_SCROLL), quest.id() + " comes after a found rune");
+                    helper.assertTrue(before.contains(step("hextech_altar")), quest.id() + " comes after the altar");
+                    helper.assertTrue(recipe.pedestals().isEmpty() || before.contains(step("pedestal")), quest.id() + " comes after the Pedestal");
+                    helper.assertTrue(recipe.runes().isEmpty() || before.contains(step("rune_stele")), quest.id() + " comes after the Rune Stele");
+                    helper.assertTrue(recipe.runes().isEmpty() || before.contains(step("rune_scroll")), quest.id() + " comes after a found rune");
                     List<Ingredient> parts = new ArrayList<>(recipe.pedestals());
                     parts.add(recipe.center());
                     for (Ingredient part : parts) {
@@ -244,7 +253,7 @@ public final class QuestGameTests {
                 case HEX_CRAFTING -> {
                     var recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(false).get(Identifier.parse(display.result()));
                     helper.assertTrue(recipe != null, quest.id() + ": workbench recipe " + display.result() + " exists");
-                    helper.assertTrue(before.contains(Guide.HEX_WORKBENCH), quest.id() + " comes after the Hex Workbench");
+                    helper.assertTrue(before.contains(step("hex_workbench")), quest.id() + " comes after the Hex Workbench");
                     for (var cell : recipe.grid()) {
                         cell.flatMap(part -> part.items().findFirst()).ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
                     }
@@ -252,7 +261,7 @@ public final class QuestGameTests {
                 case ALLOY -> {
                     var recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(false).get(Identifier.parse(display.result()));
                     helper.assertTrue(recipe != null, quest.id() + ": alloy " + display.result() + " exists");
-                    helper.assertTrue(before.contains(Guide.HEX_FURNACE), quest.id() + " comes after the Hex Furnace");
+                    helper.assertTrue(before.contains(step("hex_furnace")), quest.id() + " comes after the Hex Furnace");
                     for (var input : recipe.inputs()) {
                         input.ingredient().items().findFirst().ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
                     }
@@ -275,26 +284,26 @@ public final class QuestGameTests {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         RuneKnowledge knowledge = Research.of(player);
         Quests.check(player);
-        helper.assertFalse(knowledge.questDone(Guide.RESEARCH_TABLE), "nothing is done with empty hands");
+        helper.assertFalse(knowledge.questDone(step("research_table")), "nothing is done with empty hands");
 
         player.getInventory().add(new ItemStack(ModItems.BRASS_INGOT.get()));
         Quests.check(player);
-        helper.assertTrue(knowledge.questDone(Guide.BRASS), "a brass ingot completes Brass");
-        helper.assertFalse(knowledge.questDone(Guide.RESEARCH_TABLE), "the table is still to make");
+        helper.assertTrue(knowledge.questDone(step("brass")), "a brass ingot completes Brass");
+        helper.assertFalse(knowledge.questDone(step("research_table")), "the table is still to make");
 
         knowledge.study(Identifier.withDefaultNamespace("coal"));
         Quests.check(player);
-        helper.assertTrue(knowledge.questDone(Guide.ITEM_STUDY), "one studied item completes Studying Items");
+        helper.assertTrue(knowledge.questDone(step("item_study")), "one studied item completes Studying Items");
 
         player.getInventory().clearContent();
         Quests.check(player);
-        helper.assertTrue(knowledge.questDone(Guide.BRASS), "a done quest stays done");
+        helper.assertTrue(knowledge.questDone(step("brass")), "a done quest stays done");
 
         RuneKnowledge decoded = RuneKnowledge.CODEC.parse(NbtOps.INSTANCE,
                 RuneKnowledge.CODEC.encodeStart(NbtOps.INSTANCE, knowledge).getOrThrow()).getOrThrow();
-        helper.assertTrue(decoded.questDone(Guide.BRASS) && decoded.questDone(Guide.ITEM_STUDY)
-                && !decoded.questDone(Guide.RESEARCH_TABLE), "done quests save and load");
-        helper.assertTrue(knowledge.copy().questDone(Guide.ITEM_STUDY), "done quests are synced");
+        helper.assertTrue(decoded.questDone(step("brass")) && decoded.questDone(step("item_study"))
+                && !decoded.questDone(step("research_table")), "done quests save and load");
+        helper.assertTrue(knowledge.copy().questDone(step("item_study")), "done quests are synced");
         helper.succeed();
     }
 
@@ -302,20 +311,20 @@ public final class QuestGameTests {
     @HexTest
     public static void theGuideBranchesEarly(GameTestHelper helper) {
         RuneKnowledge knowledge = new RuneKnowledge();
-        helper.assertTrue(Guide.visible(Guide.UNSTABLE_HEXTECH, knowledge) && Guide.visible(Guide.SPHALERITE, knowledge)
-                && Guide.visible(Guide.RESEARCHERS_DIARY, knowledge), "three ways to begin");
-        knowledge.completeQuest(Guide.UNSTABLE_HEXTECH);
-        knowledge.completeQuest(Guide.HEXTECH_DUST);
-        helper.assertTrue(Guide.open(Guide.HEX_WORKBENCH, knowledge) && Guide.open(Guide.HEX_FURNACE, knowledge),
+        helper.assertTrue(Guide.visible(step("unstable_hextech"), knowledge) && Guide.visible(step("sphalerite"), knowledge)
+                && Guide.visible(step("researchers_diary"), knowledge), "three ways to begin");
+        knowledge.completeQuest(step("unstable_hextech"));
+        knowledge.completeQuest(step("hextech_dust"));
+        helper.assertTrue(Guide.open(step("hex_workbench"), knowledge) && Guide.open(step("hex_furnace"), knowledge),
                 "dust opens the workbench and the furnace at once");
-        helper.assertFalse(Guide.open(Guide.BRASS, knowledge), "brass also needs zinc");
-        knowledge.completeQuest(Guide.HEX_FURNACE);
-        knowledge.completeQuest(Guide.SPHALERITE);
-        knowledge.completeQuest(Guide.ZINC);
-        helper.assertTrue(Guide.open(Guide.BRASS, knowledge), "the furnace and zinc open brass");
-        knowledge.completeQuest(Guide.BRASS);
-        knowledge.completeQuest(Guide.HEX_WORKBENCH);
-        for (Quest quest : List.of(Guide.RESEARCH_TABLE, Guide.ALEMBIC, Guide.RESEARCHERS_GOGGLES)) {
+        helper.assertFalse(Guide.open(step("brass"), knowledge), "brass also needs zinc");
+        knowledge.completeQuest(step("hex_furnace"));
+        knowledge.completeQuest(step("sphalerite"));
+        knowledge.completeQuest(step("zinc"));
+        helper.assertTrue(Guide.open(step("brass"), knowledge), "the furnace and zinc open brass");
+        knowledge.completeQuest(step("brass"));
+        knowledge.completeQuest(step("hex_workbench"));
+        for (Quest quest : List.of(step("research_table"), step("alembic"), step("researchers_goggles"))) {
             helper.assertTrue(Guide.open(quest, knowledge), quest.id() + " opens with brass on the workbench");
         }
         helper.succeed();
@@ -325,17 +334,17 @@ public final class QuestGameTests {
     @HexTest
     public static void researchOpensAlongTheGuide(GameTestHelper helper) {
         RuneKnowledge knowledge = new RuneKnowledge();
-        helper.assertFalse(Guide.canResearch(ResearchTopics.CIRCLE, knowledge), "the circle waits for ink at the table");
-        helper.assertFalse(Guide.visible(Guide.HEXTECH_ALTAR, knowledge), "and is hidden until then");
-        for (Quest quest : ancestors(Guide.HEXTECH_ALTAR)) {
+        helper.assertFalse(Guide.server().canResearch(ResearchTopics.CIRCLE, knowledge), "the circle waits for ink at the table");
+        helper.assertFalse(Guide.visible(step("hextech_altar"), knowledge), "and is hidden until then");
+        for (Quest quest : ancestors(step("hextech_altar"))) {
             knowledge.completeQuest(quest);
         }
-        helper.assertTrue(Guide.canResearch(ResearchTopics.CIRCLE, knowledge), "the ink opens the circle's research");
-        helper.assertFalse(Guide.canResearch(ResearchTopics.LAPIDARY, knowledge), "the lapidary waits for the pedestal");
-        knowledge.completeQuest(Guide.HEXTECH_ALTAR);
-        knowledge.completeQuest(Guide.PEDESTAL);
-        helper.assertTrue(Guide.canResearch(ResearchTopics.LAPIDARY, knowledge), "the pedestal opens the lapidary");
-        helper.assertFalse(Guide.canResearch(ResearchTopics.RADIANT_PICKAXE, knowledge), "the radiant pickaxe is far away in the fog");
+        helper.assertTrue(Guide.server().canResearch(ResearchTopics.CIRCLE, knowledge), "the ink opens the circle's research");
+        helper.assertFalse(Guide.server().canResearch(ResearchTopics.LAPIDARY, knowledge), "the lapidary waits for the pedestal");
+        knowledge.completeQuest(step("hextech_altar"));
+        knowledge.completeQuest(step("pedestal"));
+        helper.assertTrue(Guide.server().canResearch(ResearchTopics.LAPIDARY, knowledge), "the pedestal opens the lapidary");
+        helper.assertFalse(Guide.server().canResearch(ResearchTopics.RADIANT_PICKAXE, knowledge), "the radiant pickaxe is far away in the fog");
         helper.succeed();
     }
 
@@ -344,15 +353,24 @@ public final class QuestGameTests {
     public static void aFoundScrollOpensTheRuneLore(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         RuneKnowledge knowledge = Research.of(player);
-        knowledge.completeQuest(Guide.BRASS);
-        knowledge.completeQuest(Guide.UNSTABLE_HEXTECH);
-        knowledge.completeQuest(Guide.RESEARCHERS_DIARY);
+        knowledge.completeQuest(step("brass"));
+        knowledge.completeQuest(step("unstable_hextech"));
+        knowledge.completeQuest(step("researchers_diary"));
         Quests.check(player);
-        helper.assertFalse(knowledge.questDone(Guide.RUNE_SCROLL), "no rune, no lore");
+        helper.assertFalse(knowledge.questDone(step("rune_scroll")), "no rune, no lore");
         knowledge.learn(ResearchBook.FIRST, 2);
         Quests.check(player);
-        helper.assertTrue(knowledge.questDone(Guide.RUNE_SCROLL), "the first studied scroll completes the step");
-        helper.assertTrue(Guide.open(Guide.BLANK_SCROLL, knowledge), "and opens the blank scroll");
+        helper.assertTrue(knowledge.questDone(step("rune_scroll")), "the first studied scroll completes the step");
+        helper.assertTrue(Guide.open(step("blank_scroll"), knowledge), "and opens the blank scroll");
         helper.succeed();
+    }
+
+    /** A step of the guide the server loaded, by id. */
+    private static Quest step(String id) {
+        Quest quest = Guide.server().byId(id);
+        if (quest == null) {
+            throw new IllegalStateException("No guide step " + id);
+        }
+        return quest;
     }
 }

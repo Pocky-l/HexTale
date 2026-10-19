@@ -1,0 +1,13 @@
+{
+  "region": "workshop",
+  "icon": "minecraft:paper",
+  "parents": ["research_table", "researchers_diary"],
+  "goal": {
+    "type": "studied"
+  },
+  "display": {
+    "kind": "essences",
+    "count": 0
+  },
+  "pos": [110, -160]
+}

@@ -1,0 +1,11 @@
+{
+  "region": "essences",
+  "icon": "hextale:drain_valve",
+  "parents": ["separator", "brass_pipe", "ink"],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:drain_valve"
+  },
+  "research": "drain_valve",
+  "pos": [300, 170]
+}

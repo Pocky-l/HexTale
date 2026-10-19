@@ -1,0 +1,11 @@
+{
+  "region": "pylons",
+  "icon": "hextale:siphon_pylon",
+  "parents": ["sending_pylon", "essence_tank", "brass_pipe"],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:siphon_pylon"
+  },
+  "research": "siphon_pylon",
+  "pos": [880, -30]
+}

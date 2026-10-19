@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:sugar",
+  "parents": ["wip_crucible_brews"],
+  "pos": [-640, -160]
+}

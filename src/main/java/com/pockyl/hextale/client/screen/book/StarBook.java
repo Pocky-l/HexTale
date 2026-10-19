@@ -100,10 +100,11 @@ public final class StarBook {
         this.runes = new RunesPage(this);
         this.editor = new GuideEditor(this, guide);
         ResearchTopic onTable = host == null ? null : host.researching();
-        if (onTable != null) {
+        Quest onTableStep = onTable == null ? null : Guide.client().forTopic(onTable);
+        if (onTableStep != null) {
             // On a table with a research on it: open on its step.
             tab = Tab.QUESTS;
-            Quest quest = Guide.of(onTable);
+            Quest quest = onTableStep;
             cameraX = quest.x();
             cameraY = quest.y();
             placed = true;

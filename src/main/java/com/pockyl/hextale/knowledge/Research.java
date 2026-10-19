@@ -93,7 +93,7 @@ public final class Research {
         ComplexRunes.all().forEach(rune -> knowledge.learn(rune, 3));
         ResearchTopics.all().forEach(knowledge::research);
         ItemEssenceTable.byId().keySet().forEach(knowledge::study);
-        for (Quest quest : Guide.all()) {
+        for (Quest quest : Guide.server().all()) {
             if (quest.kind() == Quest.Kind.ITEM) {
                 knowledge.completeQuest(quest);
             }

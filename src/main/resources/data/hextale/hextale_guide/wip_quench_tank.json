@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "essences",
+  "icon": "minecraft:water_bucket",
+  "parents": ["pump"],
+  "pos": [-28, 335]
+}

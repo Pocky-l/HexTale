@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "workshop",
+  "icon": "minecraft:sculk_catalyst",
+  "parents": ["item_study"],
+  "pos": [164, -175]
+}

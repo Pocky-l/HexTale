@@ -1,0 +1,11 @@
+{
+  "region": "pylons",
+  "icon": "hextale:gathering_pylon",
+  "parents": ["hextech_crystal"],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:gathering_pylon"
+  },
+  "research": "gathering_pylon",
+  "pos": [770, -80]
+}

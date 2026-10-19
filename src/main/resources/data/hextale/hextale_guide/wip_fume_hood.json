@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:iron_trapdoor",
+  "parents": ["crucible"],
+  "pos": [-440, -240]
+}

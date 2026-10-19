@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "icon": "minecraft:recovery_compass",
+  "parents": ["hextech_altar"],
+  "pos": [391, -201]
+}

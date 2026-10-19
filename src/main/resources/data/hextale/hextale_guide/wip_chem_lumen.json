@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:lantern",
+  "parents": ["wip_chem_burner"],
+  "pos": [-582, -17]
+}

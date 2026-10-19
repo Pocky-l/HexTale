@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:iron_chestplate",
+  "parents": ["wip_chem_boiler"],
+  "pos": [-694, -60]
+}

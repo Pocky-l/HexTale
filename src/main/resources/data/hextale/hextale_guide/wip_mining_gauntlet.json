@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "forge",
+  "icon": "minecraft:mace",
+  "parents": ["hextech_gemstone"],
+  "pos": [551, 196]
+}

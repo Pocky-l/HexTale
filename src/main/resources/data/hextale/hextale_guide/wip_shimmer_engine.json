@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:sculk_shrieker",
+  "parents": ["wip_refined_shimmer"],
+  "pos": [-720, 194]
+}

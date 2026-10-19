@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "essences",
+  "icon": "minecraft:rooted_dirt",
+  "parents": ["magic_stone"],
+  "pos": [41, 303]
+}

@@ -1,0 +1,16 @@
+{
+  "region": "forge",
+  "icon": "hextale:radiant_hextech_pickaxe",
+  "parents": ["refined_pickaxe"],
+  "goal": {
+    "type": "pickaxe",
+    "tier": 3
+  },
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:radiant_hextech_pickaxe"
+  },
+  "research": "radiant_hextech_pickaxe",
+  "aura": "hextech",
+  "pos": [880, 170]
+}

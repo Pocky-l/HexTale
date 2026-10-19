@@ -7,15 +7,20 @@ import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
 
-import com.pockyl.hextale.quest.GuideEdits;
+import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.quest.Quest;
+import com.pockyl.hextale.quest.QuestDefinition;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
@@ -23,7 +28,8 @@ import org.jspecify.annotations.Nullable;
  * The dev editor's window for one guide step (development clients only, opened by a right click on the map): its name,
  * goal and description in the language being played, its icon (an item id), its parents (ids, the first is where its
  * link comes from), its aura and whether it is a workstation; buttons add a device or an item step after it or remove it.
- * A plain vanilla-widget tool on purpose - players never see it. Saving writes through {@link GuideEditor}.
+ * A plain vanilla-widget tool on purpose - players never see it. Saving writes the step's data file and the language
+ * files through {@link GuideEditor}.
  */
 final class GuideEditScreen extends Screen {
     private static final int TEXT = 0xFFE0E0E0;
@@ -123,7 +129,7 @@ final class GuideEditScreen extends Screen {
         super.extractRenderState(graphics, mouseX, mouseY, a);
         int left = (width - WIDTH) / 2;
         graphics.text(font, Component.literal(quest.id() + "  (" + quest.kind().name().toLowerCase(java.util.Locale.ROOT) + ", "
-                + quest.region().name().toLowerCase(java.util.Locale.ROOT) + (GuideEdits.added(quest) ? ", added here" : "") + ")"),
+                + quest.region().name().toLowerCase(java.util.Locale.ROOT) + ")  -  data/hextale/hextale_guide/" + quest.id() + ".json"),
                 left, 8, TEXT, true);
         graphics.text(font, Component.literal("Name"), left, name.getY() - 10, MUTED, false);
         if (goal != null) {
@@ -145,7 +151,34 @@ final class GuideEditScreen extends Screen {
         onClose();
     }
 
+    /** Applies every change to the step's data and texts; false (with the problem shown) when something is wrong. */
     private boolean apply() {
+        QuestDefinition next = quest.definition();
+        String iconId = icon.getValue().trim();
+        if (!iconId.equals(initialIcon)) {
+            Identifier id = Identifier.tryParse(iconId);
+            if (id == null || BuiltInRegistries.ITEM.getOptional(id).isEmpty()) {
+                problem = "No item " + iconId;
+                return false;
+            }
+            next = next.withIcon(new ItemStackTemplate(BuiltInRegistries.ITEM.getValue(id)));
+        }
+        if (!parents.getValue().trim().equals(initialParents)) {
+            List<String> ids = Arrays.stream(parents.getValue().split(",")).map(String::trim).filter(id -> !id.isEmpty()).toList();
+            String wrong = checkParents(ids);
+            if (wrong != null) {
+                problem = wrong;
+                return false;
+            }
+            next = next.withParents(ids);
+        }
+        next = next.withAura(aura).withStation(station);
+        boolean saved = true;
+        if (!next.equals(quest.definition())) {
+            Map<String, @Nullable QuestDefinition> changed = new LinkedHashMap<>();
+            changed.put(quest.id(), next);
+            saved = GuideEditor.saveSteps(changed);
+        }
         Map<String, @Nullable String> texts = new LinkedHashMap<>();
         if (!name.getValue().equals(initialName)) {
             texts.put(quest.translationKey(), name.getValue());
@@ -156,65 +189,101 @@ final class GuideEditScreen extends Screen {
         if (!description.getValue().equals(initialDescription)) {
             texts.put(quest.translationKey() + ".desc", description.getValue());
         }
-        if (!icon.getValue().trim().equals(initialIcon)) {
-            String wrong = GuideEdits.setIcon(quest, icon.getValue().trim());
-            if (wrong != null) {
-                problem = wrong;
-                return false;
-            }
+        if (!texts.isEmpty()) {
+            saved &= GuideEditor.saveTexts(texts);
         }
-        if (!parents.getValue().trim().equals(initialParents)) {
-            List<String> ids = new ArrayList<>(Arrays.stream(parents.getValue().split(",")).map(String::trim).filter(id -> !id.isEmpty()).toList());
-            String wrong = GuideEdits.setParents(quest, ids);
-            if (wrong != null) {
-                problem = wrong;
-                return false;
-            }
-        }
-        if (aura != quest.aura()) {
-            GuideEdits.setAura(quest, aura);
-        }
-        if (station != quest.station()) {
-            GuideEdits.setStation(quest, station);
-        }
-        boolean saved = GuideEditor.saveEdits() & (texts.isEmpty() || GuideEditor.saveTexts(texts));
         GuideEditor.report(quest.id() + " edited", saved);
         return true;
     }
 
+    /** What is wrong with these parents, or null: they must exist, not wait for this step, and an item never waits for a WIP. */
+    @Nullable
+    private String checkParents(List<String> ids) {
+        Guide guide = Guide.client();
+        if (ids.isEmpty() && !quest.parents().isEmpty()) {
+            return "A step needs at least one parent";
+        }
+        Set<Quest> after = guide.descendants(quest);
+        for (String id : ids) {
+            Quest parent = guide.byId(id);
+            if (parent == null) {
+                return "No step " + id;
+            }
+            if (parent == quest || after.contains(parent)) {
+                return id + " waits for " + quest.id() + " - it cannot come first";
+            }
+            if (quest.kind() == Quest.Kind.ITEM && parent.kind() == Quest.Kind.WIP) {
+                return "An item step cannot wait for a device still being worked out";
+            }
+        }
+        return null;
+    }
+
+    /** Adds a step after this one (saving this one first): a book for an icon, next to it on the map, to be edited now. */
     private void addChild(Quest.Kind kind) {
         if (!apply()) {
             return;
         }
-        Quest child = GuideEdits.add(quest, kind);
-        Map<String, @Nullable String> texts = new LinkedHashMap<>();
+        Guide guide = Guide.client();
+        String base = kind == Quest.Kind.WIP ? "wip_custom_" : "custom_";
+        int n = 1;
+        while (guide.byId(base + n) != null) {
+            n++;
+        }
+        String id = base + n;
+        Quest at = guide.byId(quest.id());
+        QuestDefinition definition = new QuestDefinition(kind, quest.region(), new ItemStackTemplate(Items.BOOK), List.of(quest.id()),
+                Optional.empty(), Optional.empty(), Optional.empty(), Quest.Aura.NONE, false, false, Optional.empty(),
+                Optional.of(freeSpot(guide, at != null ? at : quest)));
+        Map<String, @Nullable QuestDefinition> changed = new LinkedHashMap<>();
+        changed.put(id, definition);
+        boolean saved = GuideEditor.saveSteps(changed);
+        Quest child = Guide.client().byId(id);
+        if (child == null) {
+            problem = "The new step could not be built";
+            return;
+        }
         boolean russian = minecraft.getLanguageManager().getSelected().equals("ru_ru");
+        Map<String, @Nullable String> texts = new LinkedHashMap<>();
         texts.put(child.translationKey(), kind == Quest.Kind.WIP ? (russian ? "Новое устройство" : "New device") : (russian ? "Новый шаг" : "New step"));
         texts.put(child.translationKey() + ".desc", "");
         if (kind == Quest.Kind.ITEM) {
             texts.put(child.translationKey() + ".goal", russian ? "получить предмет" : "obtain it");
         }
-        boolean saved = GuideEditor.saveEdits() & GuideEditor.saveTexts(texts);
-        GuideEditor.report(child.id() + " added", saved);
+        saved &= GuideEditor.saveTexts(texts);
+        GuideEditor.report(id + " added", saved);
         minecraft.gui.setScreen(new GuideEditScreen(child, parent));
     }
 
+    /** A place next to a step that keeps clear of every other step. */
+    private static QuestDefinition.Pos freeSpot(Guide guide, Quest near) {
+        for (int ring = 0; ring < 20; ring++) {
+            for (int turn = 0; turn < 12; turn++) {
+                double angle = turn * Math.PI / 6;
+                int x = (int) Math.round(near.x() + Math.cos(angle) * (60 + ring * 12));
+                int y = (int) Math.round(near.y() + Math.sin(angle) * (60 + ring * 12));
+                if (guide.all().stream().allMatch(other -> Math.hypot(other.x() - x, other.y() - y) >= 50)) {
+                    return new QuestDefinition.Pos(x, y);
+                }
+            }
+        }
+        return new QuestDefinition.Pos(near.x() + 60, near.y());
+    }
+
+    /** Removes the step: its data file and its texts. Only a step nothing waits for. */
     private void remove() {
-        boolean added = GuideEdits.added(quest);
-        String wrong = GuideEdits.remove(quest);
-        if (wrong != null) {
-            problem = wrong;
+        if (!quest.children().isEmpty()) {
+            problem = "Remove or move the steps after it first";
             return;
         }
-        boolean saved = GuideEditor.saveEdits();
-        if (added) {
-            // A step added here leaves no trace; the texts of a step written in the code stay for when it comes back.
-            Map<String, @Nullable String> texts = new LinkedHashMap<>();
-            texts.put(quest.translationKey(), null);
-            texts.put(quest.translationKey() + ".desc", null);
-            texts.put(quest.translationKey() + ".goal", null);
-            saved &= GuideEditor.saveTexts(texts);
-        }
+        Map<String, @Nullable QuestDefinition> changed = new LinkedHashMap<>();
+        changed.put(quest.id(), null);
+        boolean saved = GuideEditor.saveSteps(changed);
+        Map<String, @Nullable String> texts = new LinkedHashMap<>();
+        texts.put(quest.translationKey(), null);
+        texts.put(quest.translationKey() + ".desc", null);
+        texts.put(quest.translationKey() + ".goal", null);
+        saved &= GuideEditor.saveTexts(texts);
         GuideEditor.report(quest.id() + " removed", saved);
         onClose();
     }

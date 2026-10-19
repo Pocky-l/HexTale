@@ -1,0 +1,10 @@
+{
+  "region": "workshop",
+  "icon": "hextale:researchers_goggles",
+  "parents": ["hex_workbench", "brass"],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:researchers_goggles"
+  },
+  "pos": [-170, -110]
+}

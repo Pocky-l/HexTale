@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "workshop",
+  "icon": "minecraft:trident",
+  "parents": ["unstable_hextech"],
+  "pos": [-364, 52]
+}

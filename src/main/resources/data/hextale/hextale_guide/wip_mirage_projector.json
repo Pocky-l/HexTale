@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "icon": "minecraft:tinted_glass",
+  "parents": ["hextech_lamp"],
+  "pos": [749, -198]
+}

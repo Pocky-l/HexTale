@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "essences",
+  "icon": "minecraft:shears",
+  "parents": ["essence_tank"],
+  "pos": [213, 212]
+}

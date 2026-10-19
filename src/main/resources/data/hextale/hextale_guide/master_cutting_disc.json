@@ -1,0 +1,11 @@
+{
+  "region": "forge",
+  "icon": "hextale:master_cutting_disc",
+  "parents": ["hextech_crystal", "hexsteel"],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:master_cutting_disc"
+  },
+  "research": "master_cutting_disc",
+  "pos": [600, 50]
+}

@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "essences",
+  "icon": "minecraft:wheat_seeds",
+  "parents": ["essence_tank"],
+  "pos": [178, 283]
+}

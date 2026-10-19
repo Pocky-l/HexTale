@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "icon": "minecraft:beacon",
+  "parents": ["hextech_lamp"],
+  "pos": [672, -219]
+}

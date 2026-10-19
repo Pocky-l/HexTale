@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "runes",
+  "icon": "minecraft:phantom_membrane",
+  "parents": ["rune_scroll"],
+  "pos": [-179, -274]
+}
