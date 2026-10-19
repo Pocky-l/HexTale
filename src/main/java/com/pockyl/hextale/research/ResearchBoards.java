@@ -18,18 +18,22 @@ import org.jetbrains.annotations.Nullable;
  * Builds and caches the research boards (hexagonal parchments, six essences of the topic's theme around them).
  * Generation is deterministic (the topic's id and the researcher's attempt seed it) and identical on client and
  * server, so boards never travel over the network. Every burnt parchment makes way for a new board: attempt 0 is the
- * topic's first board, attempt n its n-th replacement. Every board is checked to be finishable with a plain drawing that
- * never steps on a curse, and its star thresholds come from that drawing's length.
+ * topic's first board, attempt n its n-th replacement. Every board is checked to be solvable without a guess (see
+ * {@link #deducible}) and finishable with a plain drawing that never steps on a curse; its star thresholds come from that
+ * drawing's length.
  */
 public final class ResearchBoards {
     private static final int[] POINTS = {0, 3, 4, 6};
-    private static final int[] WALL_CHAINS = {0, 10, 18, 26};
-    /** Points ringed by dark sections, and the share of dark sections that are cursed, per tier. */
-    private static final int[] RINGS = {0, 0, 1, 2};
-    private static final double[] CURSE_SHARE = {0, 0, 0.3, 0.4};
-    /** Chapter I has no dark fields: this many curses hide in its plain parchment, never near the orb. */
-    private static final int HIDDEN_CURSES = 7;
-    private static final int HIDDEN_CURSE_CLEARANCE = 3;
+    /** Chains of stone dark runes: only chapter I has stone, deeper parchments are dark fields instead. */
+    private static final int[] WALL_CHAINS = {0, 8, 0, 0};
+    /** The share of the open parchment that lies in dark fields, per tier: chapter III is nearly all dark. */
+    private static final double[] DARK_SHARE = {0, 0.3, 0.55, 0.8};
+    /** The share of dark sections that are cursed, per tier. */
+    private static final double[] CURSE_SHARE = {0, 0.16, 0.19, 0.21};
+    /** The orb's surroundings up to this many steps stay open, so the first lines show the first counts. */
+    private static final int CLEARING = 2;
+    /** Curse layouts tried on one dark field before the round gives up on it. */
+    private static final int CURSE_TRIES = 40;
     /** The plain thread of a board is this long at least ... */
     private static final int[] PLAIN_MIN = {0, 14, 22, 32};
     /** ... and at most: deeper topics are longer. */
@@ -169,15 +173,17 @@ public final class ResearchBoards {
             if (points.size() < POINTS[tier]) {
                 continue;
             }
-            boolean[] dark = new boolean[HexGrid.COUNT];
-            boolean[] cursed = new boolean[HexGrid.COUNT];
-            if (tier >= 2) {
-                // Deeper tiers: the dark runes become fields to cross, some points sit inside a ring of them.
-                dark = walls;
-                walls = new boolean[HexGrid.COUNT];
-                darkFields(dark, cursed, points, tier, new Random32(hash(key + "#curse#" + round)));
-            } else {
-                hiddenCurses(walls, cursed, points, new Random32(hash(key + "#curse#" + round)));
+            boolean[] dark = darkFields(walls, points, tier, new Random32(hash(key + "#dark#" + round)));
+            Random32 curseRandom = new Random32(hash(key + "#curse#" + round));
+            boolean[] cursed = null;
+            for (int t = 0; t < CURSE_TRIES && cursed == null; t++) {
+                boolean[] tried = curses(dark, tier, curseRandom);
+                if (deducible(new ResearchBoard(topic, essences, walls, dark, tried, List.copyOf(points), null))) {
+                    cursed = tried;
+                }
+            }
+            if (cursed == null) {
+                continue;
             }
             ResearchBoard draft = new ResearchBoard(topic, essences, walls, dark, cursed, List.copyOf(points), null);
             int[] tree = plainTree(draft);
@@ -277,84 +283,159 @@ public final class ResearchBoards {
     }
 
     /**
-     * Rings the last points with dark sections, keeps the orb's neighbourhood clear and curses a share of the dark
-     * sections. Every ring keeps two safe sections, so a point is never sealed off.
+     * Dark fields: a few blobs of dark ink spread over the parchment until they cover the tier's share of it. The orb's
+     * clearing, the points, the stone and the corners stay open.
      */
-    private static void darkFields(boolean[] dark, boolean[] cursed, List<ResearchBoard.Point> points, int tier, Random32 random) {
-        int rings = Math.min(RINGS[tier], points.size());
-        for (int r = 0; r < rings; r++) {
-            int centre = points.get(points.size() - 1 - r).cell();
-            for (int next : HexGrid.neighbours(centre)) {
-                dark[next] = true;
-            }
+    private static boolean[] darkFields(boolean[] walls, List<ResearchBoard.Point> points, int tier, Random32 random) {
+        int blobs = 3 + 2 * tier;
+        double[][] centres = new double[blobs][3];
+        for (double[] blob : centres) {
+            int cell = random.pick(HexGrid.COUNT);
+            blob[0] = HexGrid.cx(cell);
+            blob[1] = HexGrid.cy(cell);
+            blob[2] = 0.25 + random.next() * 0.35;
         }
-        for (ResearchBoard.Point point : points) {
-            dark[point.cell()] = false;
-        }
-        for (int d = 0; d < 6; d++) {
-            dark[HexGrid.cornerCell(d)] = false;
-        }
+        List<Integer> open = new ArrayList<>();
+        double[] depth = new double[HexGrid.COUNT];
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-            if (HexGrid.steps(HexGrid.CENTRE, cell) <= 1) {
-                dark[cell] = false;
+            int at = cell;
+            if (walls[cell] || HexGrid.isCorner(cell) || HexGrid.steps(HexGrid.CENTRE, cell) <= CLEARING
+                    || points.stream().anyMatch(p -> p.cell() == at)) {
+                continue;
             }
+            double d = 0;
+            for (double[] blob : centres) {
+                d = Math.max(d, 1 - Math.hypot(HexGrid.cx(cell) - blob[0], HexGrid.cy(cell) - blob[1]) / blob[2]);
+            }
+            depth[cell] = d + random.next() * 0.3;
+            open.add(cell);
+        }
+        open.sort((x, y) -> Double.compare(depth[y], depth[x]));
+        boolean[] dark = new boolean[HexGrid.COUNT];
+        int count = (int) Math.round(open.size() * DARK_SHARE[tier]);
+        for (int i = 0; i < count; i++) {
+            dark[open.get(i)] = true;
+        }
+        return dark;
+    }
+
+    /** Curses a share of the dark sections. */
+    private static boolean[] curses(boolean[] dark, int tier, Random32 random) {
+        boolean[] cursed = new boolean[HexGrid.COUNT];
+        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
             cursed[cell] = dark[cell] && random.next() < CURSE_SHARE[tier];
         }
-        for (int r = 0; r < rings; r++) {
-            int[] ring = HexGrid.neighbours(points.get(points.size() - 1 - r).cell());
-            int safe = 0;
-            for (int cell : ring) {
-                if (!cursed[cell]) {
-                    safe++;
-                }
-            }
-            for (int k = 0; safe < 2 && k < ring.length * 3; k++) {
-                int cell = ring[random.pick(ring.length)];
-                if (cursed[cell]) {
-                    cursed[cell] = false;
-                    safe++;
-                }
-            }
-        }
+        return cursed;
     }
 
     /**
-     * Chapter I: curses hidden in plain parchment, away from the orb, the points and the corners. A curse is only placed
-     * where every point stays reachable around it.
+     * Whether a careful researcher reaches every point without a guess. Inking is free until the drawing is finished and
+     * the counts stay known, so they may probe every section they know is safe: plain parchment, and dark sections the
+     * counts prove clean. A count proves its unknown neighbours clean when its curses are all found, cursed when they are
+     * exactly as many as its missing curses; a count whose unknowns lie within another's settles the difference too.
      */
-    private static void hiddenCurses(boolean[] walls, boolean[] cursed, List<ResearchBoard.Point> points, Random32 random) {
-        for (int placed = 0, tries = 0; placed < HIDDEN_CURSES && tries < 200; tries++) {
-            int cell = random.pick(HexGrid.COUNT);
-            if (walls[cell] || cursed[cell] || HexGrid.isCorner(cell) || HexGrid.steps(HexGrid.CENTRE, cell) < HIDDEN_CURSE_CLEARANCE
-                    || points.stream().anyMatch(p -> p.cell() == cell)) {
-                continue;
-            }
-            cursed[cell] = true;
-            if (allReachable(walls, cursed, points)) {
-                placed++;
-            } else {
-                cursed[cell] = false;
-            }
+    public static boolean deducible(ResearchBoard board) {
+        boolean[] inked = new boolean[HexGrid.COUNT];
+        boolean[] safe = new boolean[HexGrid.COUNT];
+        boolean[] cursed = new boolean[HexGrid.COUNT];
+        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+            safe[cell] = !board.wall(cell) && !board.dark(cell);
         }
-    }
-
-    /** Whether the ink can reach every point from the orb around stone, corners and curses. */
-    private static boolean allReachable(boolean[] walls, boolean[] cursed, List<ResearchBoard.Point> points) {
-        boolean[] seen = new boolean[HexGrid.COUNT];
         int[] queue = new int[HexGrid.COUNT];
-        int head = 0;
-        int tail = 0;
-        queue[tail++] = HexGrid.CENTRE;
-        seen[HexGrid.CENTRE] = true;
-        while (head < tail) {
-            for (int next : HexGrid.neighbours(queue[head++])) {
-                if (!seen[next] && !walls[next] && !cursed[next] && !HexGrid.isCorner(next)) {
-                    seen[next] = true;
-                    queue[tail++] = next;
+        inked[HexGrid.CENTRE] = true;
+        boolean progress = true;
+        while (progress) {
+            progress = false;
+            // Ink every safe section the ink can reach.
+            int head = 0;
+            int tail = 0;
+            for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+                if (inked[cell]) {
+                    queue[tail++] = cell;
+                }
+            }
+            while (head < tail) {
+                for (int next : HexGrid.neighbours(queue[head++])) {
+                    if (!inked[next] && safe[next]) {
+                        inked[next] = true;
+                        queue[tail++] = next;
+                        progress = true;
+                    }
+                }
+            }
+            // Read the counts.
+            List<int[]> unknowns = new ArrayList<>();
+            List<Integer> missing = new ArrayList<>();
+            for (int cell = 0; cell < HexGrid.COUNT; cell++) {
+                // Goals carry their sigil, not a count.
+                if (!inked[cell] || !board.nearDark(cell) || board.pointAt(cell) >= 0) {
+                    continue;
+                }
+                int found = 0;
+                List<Integer> open = new ArrayList<>();
+                for (int next : HexGrid.neighbours(cell)) {
+                    if (cursed[next]) {
+                        found++;
+                    } else if (board.dark(next) && !safe[next]) {
+                        open.add(next);
+                    }
+                }
+                if (open.isEmpty()) {
+                    continue;
+                }
+                int left = board.danger(cell) - found;
+                if (left == 0 || left == open.size()) {
+                    for (int next : open) {
+                        if (left == 0) {
+                            safe[next] = true;
+                        } else {
+                            cursed[next] = true;
+                        }
+                    }
+                    progress = true;
+                } else {
+                    unknowns.add(open.stream().mapToInt(Integer::intValue).sorted().toArray());
+                    missing.add(left);
+                }
+            }
+            for (int i = 0; i < unknowns.size() && !progress; i++) {
+                for (int j = 0; j < unknowns.size() && !progress; j++) {
+                    int[] a = unknowns.get(i);
+                    int[] b = unknowns.get(j);
+                    if (a.length >= b.length || !containsAll(b, a)) {
+                        continue;
+                    }
+                    int need = missing.get(j) - missing.get(i);
+                    if (need == 0 || need == b.length - a.length) {
+                        for (int cell : b) {
+                            if (Arrays.binarySearch(a, cell) < 0) {
+                                if (need == 0) {
+                                    safe[cell] = true;
+                                } else {
+                                    cursed[cell] = true;
+                                }
+                            }
+                        }
+                        progress = true;
+                    }
                 }
             }
         }
-        return points.stream().allMatch(p -> seen[p.cell()]);
+        for (ResearchBoard.Point point : board.points()) {
+            if (!inked[point.cell()]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean containsAll(int[] sorted, int[] items) {
+        for (int item : items) {
+            if (Arrays.binarySearch(sorted, item) < 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static ResearchBoard withPar(ResearchBoard draft, int plain) {

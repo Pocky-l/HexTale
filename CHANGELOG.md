@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   bottles and heat it from below - fire, a campfire or magma, soul fire faster, lava fastest. The water warms, steams,
   simmers and comes to a rolling boil, bubbles breaking all over it. Only boiling water takes things in: bottles and
   jars of essence pour in and swirl into it, tinting the water; items put in or dropped in sink and dissolve with a
-  hiss, clouding it; cold water spits them back out. Boiling water slowly evaporates. Use it to see how it stands, an
+  gulp, clouding it; cold water spits them back out. Boiling water slowly evaporates. Use it to see how it stands, an
   empty bucket takes the water back out, sneak-use pours everything out. What it brews is yet to be found.
 - Hextech Lamp: a hextech crystal floating in a cage of polished magic stone and brass, full light. It stands on a block or hangs under
   one, like a lantern.
@@ -83,10 +83,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   direction, chosen by the device's theme, shown as ink wells in the hexagon's corners. Drag ink from
   the hextech orb to every goal - the gold sigils, counted at the top of the sheet; the ink may branch from the orb
   or from any inked section. A step costs ink of the essence its direction points to, a step onto a goal ten of the
-  goal's own essence; right click takes a step back for free. Every parchment hides curses, and every inked section next to one counts
-  the curses it touches, like a minesweeper (right click flags a suspected section). Simple devices have stone walls
-  and a few curses hidden in plain parchment; deeper ones have dark fields the ink may cross, their curses inside.
-  Stepping on a curse bursts the orb: the parchment catches fire and chars away from the curse, and a fresh sheet
+  goal's own essence; right click takes a step back for free. Every parchment is a minesweeper: dark fields the ink may cross hide
+  curses, and every inked section next to them counts the curses it touches (right click flags a suspected section).
+  Simple devices have a third of the sheet dark and a few stone walls, deeper ones more, the deepest are nearly all
+  dark - but every sheet can be finished by reasoning from the counts, without a guess. Stepping on a curse bursts the orb: the parchment catches fire and chars away from the curse, and a fresh sheet
   slides in with a new board for the next attempt. The flame button in the sheet's corner burns it on purpose (two
   clicks) to start over on a new board - only the paper is lost. A finished drawing writes
   Research Notes; reading them teaches the device - and notes can be handed to another player.

@@ -653,23 +653,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
     }
 
-    /**
-     * Where a flag may go: a dark section, or (tier I, whose curses hide in plain parchment) an open section next to an
-     * inked one that counts curses.
-     */
+    /** Where a flag may go: a dark section not inked yet. */
     private boolean flaggable(ResearchBoard current, int cell) {
-        if (inked(cell) || current.wall(cell)) {
-            return false;
-        }
-        if (current.dark(cell)) {
-            return true;
-        }
-        for (int next : HexGrid.neighbours(cell)) {
-            if (inked(next) && current.danger(next) > 0) {
-                return true;
-            }
-        }
-        return false;
+        return !inked(cell) && current.dark(cell);
     }
 
     private boolean overBurnButton(double mouseX, double mouseY) {

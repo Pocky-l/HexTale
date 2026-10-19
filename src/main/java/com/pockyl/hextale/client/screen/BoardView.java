@@ -230,9 +230,7 @@ final class BoardView {
                 Essence near = nearestCorner(board, cell);
                 int tint = near == null ? 0xFFF8E8 : PixelArt.mix(0xFFF8E8, near.color(), 0.22F);
                 PixelArt.hex(graphics, x, y, CELL, argb(tint, 0.22F * fade), argb(0x8C7047, 0.28F * fade));
-                if (flags.get(cell) && !inked[cell]) {
-                    flag(graphics, x, y);
-                }
+
             }
         }
 
@@ -289,7 +287,7 @@ final class BoardView {
         // Curse counts: every inked (or once inked) section next to a dark field tells how many curses touch it.
         PixelArt.flush(graphics);
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-            if ((inked[cell] || known.get(cell)) && cell != HexGrid.CENTRE && board.pointAt(cell) < 0 && board.counted(cell)
+            if ((inked[cell] || known.get(cell)) && cell != HexGrid.CENTRE && board.pointAt(cell) < 0 && board.nearDark(cell)
                     && !board.cursed(cell)) {
                 int danger = board.danger(cell);
                 String text = String.valueOf(danger);
@@ -299,19 +297,12 @@ final class BoardView {
             }
         }
 
-        // The head of the line being drawn, where it can go on, and what is under the mouse.
-        if (!done && ready) {
+        // While a line is being drawn: where it can go on and what each step there costs. No marker sits on its end: a
+        // line may start from any inked section, and the count under it must stay readable.
+        if (!done && ready && drawing) {
             inkCompass(graphics, board, inked, head, now);
         }
-        if (!done && tree.length > 0 && head != HexGrid.CENTRE) {
-            Essence last = null;
-            for (int i = 0; i < steps && trace != null && i < trace.paying().length; i++) {
-                if (tree[2 * i + 1] == head) {
-                    last = trace.paying()[i];
-                }
-            }
-            head(graphics, head, last, now, drawing);
-        } else if (!done && ready && !drawing) {
+        if (!done && ready && !drawing && tree.length == 0) {
             PixelArt.hexRing(graphics, ox, oy, CELL + 8 + 2 * Math.round(pulse * 2), argb(0xFFFFFF, 0.3F + 0.4F * pulse));
         }
         if (preview >= 0 && previewFrom >= 0) {
@@ -448,22 +439,6 @@ final class BoardView {
             }
         }
         return false;
-    }
-
-    private void head(GuiGraphicsExtractor graphics, int cell, @Nullable Essence colour, long now, boolean drawing) {
-        int x = sx(cell);
-        int y = sy(cell);
-        int rgb = colour == null ? 0xFFFFFF : colour.color();
-        float pulse = 0.5F + 0.5F * Mth.sin(now / (drawing ? 90.0F : 200.0F));
-        PixelArt.hex(graphics, x, y, 7, argb(0xFFFFFF, 0.9F), argb(rgb, 1));
-        PixelArt.hexRing(graphics, x, y, CELL + 2 + 2 * Math.round(pulse * 2), argb(rgb, 0.4F + 0.5F * pulse));
-        for (int k = 0; k < 4; k++) {
-            float t = ((now + k * 250L) % 1000) / 1000.0F;
-            double angle = k * 1.7 + now / 700.0;
-            int px = x + (int) Math.round(Math.cos(angle) * (4 + t * 6));
-            int py = y + (int) Math.round(Math.sin(angle) * (4 + t * 6)) - (int) (t * 3);
-            PixelArt.fill(graphics, px, py, px + 1, py + 1, argb(PixelArt.mix(rgb, 0xFFFFFF, 0.5F), 1 - t));
-        }
     }
 
     private void threadSegment(GuiGraphicsExtractor graphics, int from, int to, int rgb, boolean throughWall) {

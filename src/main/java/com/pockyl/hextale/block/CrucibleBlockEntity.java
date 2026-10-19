@@ -388,7 +388,7 @@ public class CrucibleBlockEntity extends BlockEntity {
                 level.addParticle(ParticleTypes.SPLASH, x, y + 0.05, z, 0, 0.1, 0);
             }
             if (random.nextInt(40) == 0) {
-                level.playLocalSound(pos, ModSounds.CRUCIBLE_BOIL.get(), SoundSource.BLOCKS, 0.45F + random.nextFloat() * 0.15F,
+                level.playLocalSound(pos, ModSounds.CRUCIBLE_BOIL.get(), SoundSource.BLOCKS, 0.22F + random.nextFloat() * 0.08F,
                         0.9F + random.nextFloat() * 0.2F, false);
             }
         } else if (phase == Phase.SIMMERING && random.nextInt(6) == 0) {

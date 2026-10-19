@@ -98,6 +98,9 @@ public final class ResearchGameTests {
         long start = System.nanoTime();
         int[] points = {0, 3, 4, 6};
         int[][] lengths = new int[4][2];
+        int[] darkShare = new int[4];
+        int[] curseShare = new int[4];
+        int[] boards = new int[4];
         for (int[] range : lengths) {
             range[0] = Integer.MAX_VALUE;
         }
@@ -127,7 +130,7 @@ public final class ResearchGameTests {
                     helper.assertTrue(HexGrid.steps(HexGrid.CENTRE, cell) > 1, topic.id() + ": the orb's neighbours are never dark");
                     helper.assertTrue(board.pointAt(cell) < 0, topic.id() + ": no point lies in a dark field");
                 }
-                helper.assertTrue(tier == 1 || !board.cursed(cell) || board.dark(cell), topic.id() + ": past tier 1 only dark sections are cursed");
+                helper.assertTrue(!board.cursed(cell) || board.dark(cell), topic.id() + ": only dark sections are cursed");
                 if (board.cursed(cell)) {
                     curseCount++;
                     helper.assertTrue(HexGrid.steps(HexGrid.CENTRE, cell) > 1 && board.pointAt(cell) < 0, topic.id() + ": curses keep off the orb and the points");
@@ -137,7 +140,11 @@ public final class ResearchGameTests {
                             topic.id() + ": the corners hold the ink wells and nothing else");
                 }
             }
-            helper.assertTrue(tier == 1 ? darkCount == 0 : darkCount > 0, topic.id() + ": dark fields only past tier 1");
+            helper.assertTrue(darkCount > 0, topic.id() + ": every parchment has dark fields");
+            helper.assertTrue(ResearchBoards.deducible(board), topic.id() + ": solvable without a guess");
+            darkShare[tier] += darkCount;
+            curseShare[tier] += curseCount;
+            boards[tier]++;
             helper.assertTrue(curseCount > 0, topic.id() + ": every parchment can be lost on a curse");
             int[] tree = ResearchBoards.plainTree(board);
             helper.assertTrue(tree != null, topic.id() + ": a plain drawing exists");
@@ -147,6 +154,9 @@ public final class ResearchGameTests {
             lengths[tier][0] = Math.min(lengths[tier][0], par.plain());
             lengths[tier][1] = Math.max(lengths[tier][1], par.plain());
         }
+        Hextale.LOGGER.info("Dark sections per board by tier: 1 {}, 2 {}, 3 {}; curses: 1 {}, 2 {}, 3 {}",
+                darkShare[1] / Math.max(1, boards[1]), darkShare[2] / Math.max(1, boards[2]), darkShare[3] / Math.max(1, boards[3]),
+                curseShare[1] / Math.max(1, boards[1]), curseShare[2] / Math.max(1, boards[2]), curseShare[3] / Math.max(1, boards[3]));
         StringBuilder themes = new StringBuilder();
         for (ResearchTopic topic : ResearchTopics.all()) {
             themes.append(topic.id()).append('=').append(ResearchBoards.get(topic).essences()).append("; ");
@@ -1143,7 +1153,8 @@ public final class ResearchGameTests {
             for (int attempt = 1; attempt <= 3; attempt++) {
                 ResearchBoard next = ResearchBoards.get(topic, attempt);
                 helper.assertTrue(!next.points().equals(first.points()), "attempt " + attempt + " of " + topic.id() + " is a new board");
-                helper.assertTrue(ResearchBoards.plainTree(next) != null, "attempt " + attempt + " of " + topic.id() + " can be finished");
+                helper.assertTrue(ResearchBoards.plainTree(next) != null && ResearchBoards.deducible(next),
+                        "attempt " + attempt + " of " + topic.id() + " can be finished without a guess");
             }
         }
         helper.succeed();
