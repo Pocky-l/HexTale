@@ -4,41 +4,57 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.util.FormattedCharSequence;
 
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.client.ClientKnowledge;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.quest.Guide;
+import com.pockyl.hextale.quest.GuideEdits;
 import com.pockyl.hextale.quest.Quest;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * The guide map's editor, only in a development client: drag a step with the right mouse button to place it by hand,
- * H shows every step (fog or not). On release the map is laid out again around the moved step (devices still being worked
- * out find new places, links bow anew) and every hand-moved step is written to the layout file
- * ({@link Guide#LAYOUT_FILE}) in the mod's sources, so the next build ships the new map. Crossing links are reported.
+ * The guide map's editor, only in a development client. Drag a step with the right mouse button to place it by hand; a
+ * right click without dragging opens {@link GuideEditScreen} (name, goal, description, icon, parents, aura, workstation,
+ * add a step after it, remove it); H shows every step, fog or not. Structural changes go through {@link GuideEdits} and
+ * are written to its file in the mod's sources, names and descriptions to the language files there, so the next build
+ * ships them; until then they show at once (the texts through a language layered over the game's). Crossing links are
+ * reported after every change.
  */
 final class GuideEditor {
     private static final int HINT = 0xFFB8B0D0;
+    private static final int CLICK = 3;
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    /** Texts edited this session (key -> text, empty = removed), shown over the game's language until a rebuild. */
+    private static final Map<String, String> TEXTS = new HashMap<>();
 
     private final StarBook book;
     private final GuidePage guide;
     @Nullable
     private Quest dragged;
+    private double pressX;
+    private double pressY;
+    private boolean moved;
     /** Where on the step it was grabbed, in map pixels. */
     private float grabX;
     private float grabY;
@@ -58,6 +74,9 @@ final class GuideEditor {
         }
         dragged = guide.questAt(mouseX, mouseY, ClientKnowledge.get());
         if (dragged != null) {
+            pressX = mouseX;
+            pressY = mouseY;
+            moved = false;
             grabX = book.mapX(mouseX) - dragged.x();
             grabY = book.mapY(mouseY) - dragged.y();
         }
@@ -68,7 +87,10 @@ final class GuideEditor {
         if (dragged == null) {
             return false;
         }
-        Guide.drag(dragged, Math.round(book.mapX(mouseX) - grabX), Math.round(book.mapY(mouseY) - grabY));
+        moved |= Math.abs(mouseX - pressX) + Math.abs(mouseY - pressY) >= CLICK;
+        if (moved) {
+            GuideEdits.drag(dragged, Math.round(book.mapX(mouseX) - grabX), Math.round(book.mapY(mouseY) - grabY));
+        }
         return true;
     }
 
@@ -78,15 +100,13 @@ final class GuideEditor {
         }
         Quest quest = dragged;
         dragged = null;
-        Guide.move(quest, Math.round(book.mapX(mouseX) - grabX), Math.round(book.mapY(mouseY) - grabY));
-        Path file = save();
-        int crossings = Guide.crossings();
-        String text = quest.id() + " -> " + quest.x() + ", " + quest.y() + (file != null ? "  saved" : "  NOT saved")
-                + (crossings > 0 ? "  -  " + crossings + " link crossing(s)!" : "");
-        var player = Minecraft.getInstance().player;
-        if (player != null) {
-            player.sendOverlayMessage(Component.literal(text).withColor(crossings > 0 ? 0xFF7060 : 0x8FE07A));
+        if (!moved) {
+            Minecraft minecraft = Minecraft.getInstance();
+            minecraft.gui.setScreen(new GuideEditScreen(quest, minecraft.gui.screen()));
+            return true;
         }
+        GuideEdits.move(quest, Math.round(book.mapX(mouseX) - grabX), Math.round(book.mapY(mouseY) - grabY));
+        report(quest.id() + " -> " + quest.x() + ", " + quest.y(), saveEdits());
         return true;
     }
 
@@ -103,42 +123,96 @@ final class GuideEditor {
         if (!enabled()) {
             return;
         }
+        keepTexts();
         var font = Minecraft.getInstance().font;
-        Component text = Component.literal("DEV: right-drag moves a step, H " + (guide.revealAll ? "brings the fog back" : "shows every step"));
+        Component text = Component.literal("DEV: right-drag moves, right-click edits, H "
+                + (guide.revealAll ? "brings the fog back" : "shows every step"));
         int w = font.width(text);
         PixelArt.fill(graphics, right - w - 6, bottom - 13, right, bottom, PixelArt.argb(0x120C08, 0.82F));
         PixelArt.flush(graphics);
         graphics.text(font, text, right - w - 3, bottom - 11, HINT, false);
     }
 
-    /**
-     * Writes the hand-moved steps to the layout file in the mod's sources (found by walking up from the game folder: the
-     * mod's own run folder or the workspace's playtest folder), else into the game folder. Returns the file, or null.
-     */
-    @Nullable
-    private static Path save() {
-        JsonObject json = new JsonObject();
-        Guide.moved().forEach((id, at) -> {
-            JsonArray pair = new JsonArray();
-            pair.add(at[0]);
-            pair.add(at[1]);
-            json.add(id, pair);
-        });
-        Path file = sources().resolve(Guide.LAYOUT_FILE);
-        try {
-            Files.createDirectories(file.getParent());
-            Files.writeString(file, new GsonBuilder().setPrettyPrinting().create().toJson(json) + "\n", StandardCharsets.UTF_8);
-            return file;
-        } catch (IOException e) {
-            Hextale.LOGGER.warn("Could not save the guide layout to {}", file, e);
-            return null;
+    /** Shows the outcome of a change on the action bar, with a warning when links cross now. */
+    static void report(String what, boolean saved) {
+        int crossings = Guide.crossings();
+        String text = what + (saved ? "  saved" : "  NOT saved") + (crossings > 0 ? "  -  " + crossings + " link crossing(s)!" : "");
+        var player = Minecraft.getInstance().player;
+        if (player != null) {
+            player.sendOverlayMessage(Component.literal(text).withColor(crossings > 0 || !saved ? 0xFF7060 : 0x8FE07A));
         }
     }
 
+    // ---- Files --------------------------------------------------------------------------------------------------------
+
+    /** Writes {@link GuideEdits} to its file in the mod's sources; returns whether it worked. */
+    static boolean saveEdits() {
+        Path file = sources().resolve(GuideEdits.FILE);
+        try {
+            Files.createDirectories(file.getParent());
+            Files.writeString(file, GSON.toJson(GuideEdits.toJson()) + "\n", StandardCharsets.UTF_8);
+            // Its moves were read when the guide was built and are in the new file now.
+            Files.deleteIfExists(sources().resolve(GuideEdits.OLD_FILE));
+            return true;
+        } catch (IOException e) {
+            Hextale.LOGGER.warn("Could not save the guide edits to {}", file, e);
+            return false;
+        }
+    }
+
+    /**
+     * Writes texts to the language file of the language being played (English when it has none) and, for keys the other
+     * file lacks, to that one too, so every language has the key; shows them at once. A null text removes the key.
+     */
+    static boolean saveTexts(Map<String, @Nullable String> texts) {
+        String own = Minecraft.getInstance().getLanguageManager().getSelected().equals("ru_ru") ? "ru_ru" : "en_us";
+        String other = own.equals("ru_ru") ? "en_us" : "ru_ru";
+        boolean saved = writeLang(own, texts, true) & writeLang(other, texts, false);
+        texts.forEach((key, text) -> TEXTS.put(key, text == null ? "" : text));
+        Language current = Language.getInstance();
+        Language.inject(new Layered(current instanceof Layered layered ? layered.base : current));
+        return saved;
+    }
+
+    /** The text a key shows now: edited this session, else the game's language. */
+    static String text(String key) {
+        return Language.getInstance().getOrDefault(key, "");
+    }
+
+    private static boolean writeLang(String code, Map<String, @Nullable String> texts, boolean overwrite) {
+        Path file = sources().resolve("assets/" + Hextale.MOD_ID + "/lang/" + code + ".json");
+        try {
+            Map<String, String> lang = GSON.fromJson(Files.readString(file, StandardCharsets.UTF_8),
+                    new TypeToken<LinkedHashMap<String, String>>() { }.getType());
+            texts.forEach((key, text) -> {
+                if (text == null) {
+                    lang.remove(key);
+                } else if (overwrite || !lang.containsKey(key)) {
+                    lang.put(key, text);
+                }
+            });
+            Files.writeString(file, GSON.toJson(lang) + "\n", StandardCharsets.UTF_8);
+            return true;
+        } catch (IOException | RuntimeException e) {
+            Hextale.LOGGER.warn("Could not save texts to {}", file, e);
+            return false;
+        }
+    }
+
+    /** A resource reload brings a fresh language: lay the edited texts over it again. */
+    private static void keepTexts() {
+        if (!TEXTS.isEmpty() && !(Language.getInstance() instanceof Layered)) {
+            Language.inject(new Layered(Language.getInstance()));
+        }
+    }
+
+    /**
+     * The mod's resources in its sources, found by walking up from the game folder (the mod's own run folder or the
+     * workspace's playtest folder); the game folder itself when there are none.
+     */
     private static Path sources() {
         for (Path dir = FMLPaths.GAMEDIR.get().toAbsolutePath(); dir != null; dir = dir.getParent()) {
-            Path own = dir.resolve("src/main/java/com/pockyl/hextale");
-            if (Files.isDirectory(own)) {
+            if (Files.isDirectory(dir.resolve("src/main/java/com/pockyl/hextale"))) {
                 return dir.resolve("src/main/resources");
             }
             Path workspace = dir.resolve("mods/hextale/src/main/resources");
@@ -147,5 +221,46 @@ final class GuideEditor {
             }
         }
         return FMLPaths.GAMEDIR.get();
+    }
+
+    /** The game's language with the texts edited this session over it. */
+    private static final class Layered extends Language {
+        private final Language base;
+
+        Layered(Language base) {
+            this.base = base;
+        }
+
+        @Override
+        public String getOrDefault(String key, String fallback) {
+            String text = TEXTS.get(key);
+            return text != null && !text.isEmpty() ? text : base.getOrDefault(key, fallback);
+        }
+
+        @Override
+        public boolean has(String key) {
+            String text = TEXTS.get(key);
+            return text != null ? !text.isEmpty() : base.has(key);
+        }
+
+        @Override
+        public boolean isDefaultRightToLeft() {
+            return base.isDefaultRightToLeft();
+        }
+
+        @Override
+        public FormattedCharSequence getVisualOrder(FormattedText text) {
+            return base.getVisualOrder(text);
+        }
+
+        @Override
+        public Map<String, String> getLanguageData() {
+            return base.getLanguageData();
+        }
+
+        @Override
+        public net.minecraft.network.chat.@Nullable Component getComponent(String key) {
+            return TEXTS.containsKey(key) ? null : base.getComponent(key);
+        }
     }
 }

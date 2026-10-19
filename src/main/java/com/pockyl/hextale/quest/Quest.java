@@ -5,7 +5,6 @@ import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.research.ResearchTopic;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -50,15 +49,16 @@ public final class Quest {
 
     private final String id;
     private final Kind kind;
-    private final List<Quest> parents;
-    private final List<Quest> children = new ArrayList<>();
-    private final Supplier<ItemStack> icon;
+    // Parents, icon and aura change only in the book's dev editor (GuideEdits); lists are safe to read while it edits.
+    private List<Quest> parents;
+    private final List<Quest> children = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private Supplier<ItemStack> icon;
     private final Predicate<ServerPlayer> goal;
     @Nullable
     private final QuestDisplay display;
     @Nullable
     private final ResearchTopic topic;
-    private final Aura aura;
+    private Aura aura;
     private final Region region;
     /** A landmark is the heart of the guide: drawn large, with open sky around it. */
     boolean landmark;
@@ -177,6 +177,31 @@ public final class Quest {
     /** The bow of the link from the first parent, map pixels to the side (from {@link Guide}'s layout). */
     public float bow() {
         return bow;
+    }
+
+    void setParents(List<Quest> next) {
+        for (Quest parent : parents) {
+            parent.children.remove(this);
+        }
+        parents = List.copyOf(next);
+        for (Quest parent : parents) {
+            parent.children.add(this);
+        }
+    }
+
+    /** Takes the step off the map: its parents forget it. */
+    void detach() {
+        for (Quest parent : parents) {
+            parent.children.remove(this);
+        }
+    }
+
+    void setIcon(Supplier<ItemStack> next) {
+        icon = next;
+    }
+
+    void setAura(Aura next) {
+        aura = next;
     }
 
     public String translationKey() {

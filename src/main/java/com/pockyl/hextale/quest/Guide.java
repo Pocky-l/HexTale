@@ -17,7 +17,6 @@ import com.pockyl.hextale.runework.HextechPickaxe;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,13 +46,11 @@ public final class Guide {
     /** Points a link's curve is checked at. */
     public static final int LINK_SAMPLES = 16;
 
-    private static final List<Quest> ALL = new ArrayList<>();
-    private static final Map<String, Quest> BY_ID = new HashMap<>();
+    // Safe to read while the book's dev editor changes the guide (the integrated server reads it on its own thread).
+    static final List<Quest> ALL = new java.util.concurrent.CopyOnWriteArrayList<>();
+    static final Map<String, Quest> BY_ID = new java.util.concurrent.ConcurrentHashMap<>();
     /** The steps placed on the map by hand. */
-    private static final Set<Quest> PLACED = new HashSet<>();
-    /** Where the layout file (moved in the book's dev editor) puts steps, over the places written below. */
-    public static final String LAYOUT_FILE = "hextale/guide_layout.json";
-    private static final Map<String, int[]> MOVED = new java.util.TreeMap<>();
+    static final Set<Quest> PLACED = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     // ---- The workshop: raw hextech and its dust, the woken workbench and furnace, brass, the table and the diary -------
 
@@ -389,7 +386,7 @@ public final class Guide {
         HEXTECH_ALTAR.scene = Quest.Scene.ALTAR;
         PEDESTAL.scene = Quest.Scene.PEDESTAL;
         RUNE_STELE.scene = Quest.Scene.STELE;
-        readLayoutFile();
+        GuideEdits.apply();
         layout();
     }
 
@@ -398,7 +395,7 @@ public final class Guide {
 
     // ---- Building -----------------------------------------------------------------------------------------------------
 
-    private static Quest add(Region region, String id, Quest.Kind kind, List<Quest> parents, Supplier<ItemStack> icon,
+    static Quest add(Region region, String id, Quest.Kind kind, List<Quest> parents, Supplier<ItemStack> icon,
                              Predicate<ServerPlayer> goal, @Nullable QuestDisplay display, @Nullable ResearchTopic topic, Quest.Aura aura) {
         Quest quest = new Quest(id, kind, parents, icon, goal, display, topic, aura, region);
         quest.index = ALL.size();
@@ -437,48 +434,6 @@ public final class Guide {
      * Puts a step on the map. Every item step is placed by hand, so the map reads the way it is meant to; devices still
      * being worked out are placed by hand where they start a branch of their own, the rest find a place by themselves.
      */
-    /** Applies the layout file on the classpath: steps moved in the book's dev editor, by id. */
-    private static void readLayoutFile() {
-        try (var in = Guide.class.getResourceAsStream("/" + LAYOUT_FILE)) {
-            if (in == null) {
-                return;
-            }
-            var json = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8))
-                    .getAsJsonObject();
-            for (var entry : json.entrySet()) {
-                Quest quest = BY_ID.get(entry.getKey());
-                if (quest != null) {
-                    var at = entry.getValue().getAsJsonArray();
-                    moveTo(quest, at.get(0).getAsInt(), at.get(1).getAsInt());
-                }
-            }
-        } catch (java.io.IOException | RuntimeException e) {
-            com.pockyl.hextale.Hextale.LOGGER.warn("Could not read the guide layout file", e);
-        }
-    }
-
-    private static void moveTo(Quest quest, int x, int y) {
-        at(quest, x, y);
-        MOVED.put(quest.id(), new int[]{x, y});
-    }
-
-    /** Moves a step while it is dragged in the dev editor: only the step itself, the rest is laid out on {@link #move}. */
-    public static void drag(Quest quest, int x, int y) {
-        quest.x = x;
-        quest.y = y;
-    }
-
-    /** Places a step by hand (the book's dev editor) and lays the map out again around it. */
-    public static void move(Quest quest, int x, int y) {
-        moveTo(quest, x, y);
-        layout();
-    }
-
-    /** The steps moved in the dev editor and their places, by id: what the layout file holds. */
-    public static Map<String, int[]> moved() {
-        return Collections.unmodifiableMap(MOVED);
-    }
-
     /** How many pairs of links cross now (a hand-placed map can make them; the game tests then fail). */
     public static int crossings() {
         List<Quest> linked = ALL.stream().filter(quest -> quest.parent() != null).toList();
@@ -500,7 +455,7 @@ public final class Guide {
         return count;
     }
 
-    private static void at(Quest quest, int x, int y) {
+    static void at(Quest quest, int x, int y) {
         quest.x = x;
         quest.y = y;
         PLACED.add(quest);
@@ -518,7 +473,7 @@ public final class Guide {
      * and runs over no step, and no link runs over it. Then every link bows into a gentle arc, to the side and as far as
      * it can without touching another link or a step. Deterministic, so every reader sees the same sky.
      */
-    private static void layout() {
+    static void layout() {
         List<Quest[]> links = new ArrayList<>();
         for (Quest quest : ALL) {
             if (quest.kind() == Quest.Kind.ITEM) {
