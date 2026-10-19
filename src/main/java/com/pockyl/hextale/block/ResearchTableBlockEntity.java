@@ -44,7 +44,7 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.ItemEssences;
-import com.pockyl.hextale.research.OpticsStudy;
+import com.pockyl.hextale.research.LensStudy;
 import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.research.ResearchTopics;
@@ -64,7 +64,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Research Table's contents, its ink and the server side of both mini-games - researching a device or tool of the
- * mod ({@link ResearchTopic}) by drawing an ink thread on its parchment, and studying an item through the prism. Every
+ * mod ({@link ResearchTopic}) by drawing an ink thread on its parchment, and studying an item under the Hextech Lens. Every
  * action a client asks for is checked here against the sheet, the table and the researcher's knowledge and inventory
  * before it happens. Contents, both games and a "someone is writing" flag are synced to clients; a finished research
  * reaches every nearby client as a block event so the orb can flare for all.
@@ -93,8 +93,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
     private final ResearchSheet sheet = new ResearchSheet();
-    /** The optics bench of its own tab: the item in the study slot, the researcher's lamps and glass. */
-    private final OpticsStudy optics = new OpticsStudy();
+    /** The Hextech Lens of its own tab: the item in the study slot and its wisps. */
+    private final LensStudy lens = new LensStudy();
     private boolean drawing;
     private long drawingUntil;
 
@@ -177,8 +177,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return sheet;
     }
 
-    public OpticsStudy optics() {
-        return optics;
+    public LensStudy lens() {
+        return lens;
     }
 
     /** The board of the topic being researched, or null (none chosen). */
@@ -388,62 +388,72 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     // ---- Studying an item -----------------------------------------------------------------------------------------
 
     /**
-     * The study slot changed in the researcher's hands: an item with essences lies down on the optics bench (one already
-     * studied shows its essences awake at once), an emptied slot clears the bench.
+     * The study slot changed in the researcher's hands: an item with essences floats up under the lens (one already
+     * studied shows its essences caught at once), an emptied slot clears the lens.
      */
     public void studySlotChanged(ServerPlayer player) {
         ItemStack stack = items.get(STUDY);
         if (stack.isEmpty()) {
-            if (optics.item() != null) {
-                optics.clear();
+            if (lens.item() != null) {
+                lens.clear();
                 setChanged();
             }
             return;
         }
-        if (optics.item() == stack.getItem()) {
+        if (lens.item() == stack.getItem()) {
             return;
         }
         ItemEssences elements = ResearchItems.of(stack);
-        if (elements == null) {
-            optics.clear();
+        if (elements == null || level == null) {
+            lens.clear();
         } else {
-            optics.begin(stack.getItem(), elements, level == null ? 0 : level.getRandom().nextInt());
+            lens.begin(stack.getItem(), elements, level.getRandom().nextInt(), level.getGameTime());
             if (studied(player, stack.getItem())) {
-                optics.wakeAll();
+                lens.catchAll();
             }
         }
         setChanged();
     }
 
     /**
-     * The researcher rearranged the optics bench: the light is traced on the server too; spots it wakes stay awake and
-     * the last one studies the item. Free and unlimited.
+     * The researcher flashed the lens {@code hundredths} of a tick after the study began (as their screen saw the
+     * wisps): what the wedge held then is caught; the last wisp studies the item. Free and unlimited.
      */
-    public void arrangeOptics(ServerPlayer player, int[] tools) {
-        Item item = optics.item();
-        if (item == null || !items.get(STUDY).is(item)) {
-            optics.touch();
-            setChanged();
+    public void flashLens(ServerPlayer player, int hundredths) {
+        Item item = lens.item();
+        if (item == null || level == null || !items.get(STUDY).is(item) || lens.studied()) {
             return;
         }
-        boolean before = optics.studied();
-        int woken = optics.setTools(OpticsStudy.decode(tools));
-        for (int i = 0; i < optics.spots().size(); i++) {
-            if ((woken & 1 << i) != 0) {
-                pointEffects(optics.spots().get(i).essence());
+        int got = lens.flash(hundredths / 100F, level.getGameTime() - lens.began());
+        if (got < 0) {
+            return;
+        }
+        for (int i = 0; i < lens.wisps().size(); i++) {
+            if ((got & 1 << i) != 0) {
+                caughtEffects(player, lens.wisps().get(i).essence());
             }
         }
-        if (!before && optics.studied()) {
+        if (lens.studied()) {
             ResearchersDiaryItem.sign(items.get(DIARY), player);
             Research.study(player, item);
             message(player, Component.translatable("research.hextale.study.complete", ResearchText.item(item)), ResearchMessagePayload.Tone.WIN);
-            level.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0F, 1.2F);
+            // The researcher hears the lens on their screen; the others hear the table.
+            level.playSound(player, worldPosition, ModSounds.LENS_STUDIED.get(), SoundSource.BLOCKS, 0.8F, 1.0F);
             if (level instanceof ServerLevel serverLevel) {
                 Vec3 orb = orbPosition();
                 serverLevel.sendParticles(ParticleTypes.END_ROD, orb.x, orb.y, orb.z, 10, 0.15, 0.1, 0.15, 0.03);
             }
         }
         setChanged();
+    }
+
+    private void caughtEffects(ServerPlayer researcher, Essence essence) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        Vec3 orb = orbPosition();
+        serverLevel.sendParticles(new DustParticleOptions(essence.color(), 1.0F), orb.x, orb.y, orb.z, 10, 0.2, 0.15, 0.2, 0.01);
+        level.playSound(researcher, worldPosition, ModSounds.LENS_CATCH.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
     }
 
     private void fizzle() {
@@ -473,17 +483,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         } else if (!player.getInventory().add(scroll)) {
             player.drop(scroll, false, Prediction.SERVER_ONLY);
         }
-    }
-
-    private void pointEffects(Essence element) {
-        if (!(level instanceof ServerLevel serverLevel)) {
-            return;
-        }
-        Vec3 orb = orbPosition();
-        serverLevel.sendParticles(new DustParticleOptions(element.color(), 1.0F), orb.x, orb.y, orb.z, 10,
-                0.2, 0.15, 0.2, 0.01);
-        level.playSound(null, worldPosition, ModSounds.RUNE_RECOGNISED.get(), SoundSource.BLOCKS, 0.8F,
-                0.8F + element.ordinal() * 0.06F);
     }
 
     private void completeEffects(ResearchTopic topic) {
@@ -606,7 +605,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         ContainerHelper.loadAllItems(input, items);
         drawing = input.getBooleanOr("drawing", false);
         sheet.load(input.childOrEmpty("sheet"));
-        optics.load(input.childOrEmpty("optics"), item -> ResearchItems.of(new ItemStack(item)));
+        lens.load(input.childOrEmpty("lens"), item -> ResearchItems.of(new ItemStack(item)));
         inkDraws = JarReach.read(input.getIntArray("ink_draws").orElse(new int[0]));
         inkDrawnAt = input.getLongOr("ink_drawn_at", -1000);
     }
@@ -616,7 +615,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
         sheet.save(output.child("sheet"));
-        optics.save(output.child("optics"));
+        lens.save(output.child("lens"));
     }
 
     @Override

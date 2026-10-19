@@ -20,8 +20,8 @@ import java.util.List;
 /**
  * Client to server: something the researcher does at the open table. The server checks everything again.
  *
- * @param value the topic index (SELECT)
- * @param cells the whole ink thread from the orb (THREAD), or the optics bench's tools (OPTICS, see {@link com.pockyl.hextale.research.OpticsStudy#encode})
+ * @param value the topic index (SELECT), or (LENS) when the lens flashed, in hundredths of a tick since the study began
+ * @param cells the whole ink thread from the orb (THREAD)
  */
 public record ResearchActionPayload(BlockPos pos, Action action, int value, List<Integer> cells) implements CustomPacketPayload {
     public static final Type<ResearchActionPayload> TYPE = new Type<>(Hextale.id("research_action"));
@@ -40,7 +40,7 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
         SELECT,
         THREAD,
         BURN,
-        OPTICS
+        LENS
     }
 
     public static ResearchActionPayload of(BlockPos pos, Action action, int value) {
@@ -49,10 +49,6 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
 
     public static ResearchActionPayload thread(BlockPos pos, int[] cells) {
         return new ResearchActionPayload(pos, Action.THREAD, 0, Arrays.stream(cells).boxed().toList());
-    }
-
-    public static ResearchActionPayload optics(BlockPos pos, int[] tools) {
-        return new ResearchActionPayload(pos, Action.OPTICS, 0, Arrays.stream(tools).boxed().toList());
     }
 
     @Override
@@ -77,7 +73,7 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
             }
             case THREAD -> table.thread(player, payload.cells().stream().mapToInt(Integer::intValue).toArray());
             case BURN -> table.burn(player);
-            case OPTICS -> table.arrangeOptics(player, payload.cells().stream().mapToInt(Integer::intValue).toArray());
+            case LENS -> table.flashLens(player, payload.value());
         }
     }
 }

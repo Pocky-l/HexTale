@@ -79,12 +79,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   lightning) combine into 71 more, from Steam and Ore to Time and Soul; every essence has its own picture. Every item
   carries up to six essences in different amounts, from hand-tuned base materials to anything crafted from them; the
   table comes from a data map (`hextale:essences`), so data packs can change it.
-- Item study, the optics bench - its own tab of the Research Table: put an item into the study slot and it lies large in
-  the middle of a round bench, its strongest essences (up to four) hidden in it as spots. Drag lamps and mirrors out of
-  the tray, slide them around and turn them (wheel, Q / E or the knob); they glide, coast and settle on every 15
-  degrees, a click picks one and carrying it off the bench puts it away. A lamp's white light finds a spot - it glows,
-  tinted towards its essence; a lamp of a primal's colour wakes the spots made of it. Free and unlimited. A studied item
-  shows its essences in its tooltip.
+- Item study, the Hextech Lens - its own tab of the Research Table: put an item into the study slot and it floats in
+  the middle of a dark field while its strongest essences (up to four) leave it as wisps, each circling on its own
+  orbit - the strongest close and slow, the weakest far and quick. The lens on the rim shines a wedge of cold light
+  down onto the item: click (or press Space) when a wisp is in the light and the lens flashes - the wisp bursts into
+  sparks that spiral into the item and stays on its orbit as its essence's sign. A flash at nothing clouds the lens for
+  a moment. A few seconds per item, free and unlimited. A studied item shows its essences in its tooltip.
 - Research: every device and tool past the essence works - the altar circle, the gemstone, the lamp, the big jar,
   the pylons, the pickaxes, the lapidary and its master disc, hexsteel, the drain valve - must be researched at the table before it can be crafted
   or made at the altar. Choose it in the book and draw it on a worn parchment with a hexagon of six essences - one per

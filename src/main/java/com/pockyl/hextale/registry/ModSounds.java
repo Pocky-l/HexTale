@@ -68,6 +68,11 @@ public final class ModSounds {
     /** Something sinks into boiling water and dissolves: a hiss and a low gulp. */
     public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_DISSOLVE = register("crucible.dissolve");
     public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_POUR = register("crucible.pour");
+    /** The Hextech Lens flashes; a wisp is caught; a flash catches nothing; the last essence of an item is caught. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> LENS_PULSE = register("lens.pulse");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LENS_CATCH = register("lens.catch");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LENS_MISS = register("lens.miss");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LENS_STUDIED = register("lens.studied");
     public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_GATHER = register("pylon.gather");
     /** A sending pylon throws items out of its gem. */
     public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_SEND = register("pylon.send");

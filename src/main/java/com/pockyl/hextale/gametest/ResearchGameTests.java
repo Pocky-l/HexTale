@@ -58,7 +58,7 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemEssenceResolver;
 import com.pockyl.hextale.research.ItemEssences;
-import com.pockyl.hextale.research.OpticsStudy;
+import com.pockyl.hextale.research.LensStudy;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
@@ -339,45 +339,10 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    // ---- The optics bench ---------------------------------------------------------------------------------------
-
-    private static OpticsStudy.Tool lamp(float x, float y, float angle, Essence colour) {
-        return new OpticsStudy.Tool(OpticsStudy.Type.LAMP, x, y, angle, colour);
-    }
-
-    private static boolean wakes(OpticsStudy.Spot spot, List<OpticsStudy.Tool> tools) {
-        return OpticsStudy.wakes(spot, OpticsStudy.exposure(List.of(spot), OpticsStudy.trace(tools))[0]);
-    }
+    // ---- The Hextech Lens ----------------------------------------------------------------------------------------
 
     @HexTest
-    public static void opticsLightFollowsTheRules(GameTestHelper helper) {
-        OpticsStudy.Spot fire = new OpticsStudy.Spot(Essence.FIRE, 12, 0, 0, 10);
-        OpticsStudy.Tool white = lamp(-60, 0, 0, null);
-        float[] light = OpticsStudy.exposure(List.of(fire), OpticsStudy.trace(List.of(white)))[0];
-        helper.assertTrue(light[0] > 0 && !wakes(fire, List.of(white)), "white light finds a spot but wakes nothing");
-        helper.assertTrue(wakes(fire, List.of(lamp(-60, 0, 0, Essence.FIRE))), "light of its colour wakes it");
-        helper.assertFalse(wakes(fire, List.of(lamp(-60, 0, 0, Essence.WATER))), "another colour does not");
-        helper.assertFalse(wakes(fire, List.of(lamp(-60, -40, 0, Essence.FIRE))), "a beam passing by does not");
-
-        // A mirror turns the beam: from the left, down onto the spot.
-        OpticsStudy.Tool mirror = new OpticsStudy.Tool(OpticsStudy.Type.MIRROR, 0, -40, 3 * Mth.PI / 4, null);
-        helper.assertTrue(wakes(fire, List.of(lamp(-60, -40, 0, Essence.FIRE), mirror)), "a mirror turns the light onto the spot");
-
-        // A compound wakes under either of its primals.
-        OpticsStudy.Spot forge = new OpticsStudy.Spot(Essence.FORGE, 12, 0, 0, 10);
-        helper.assertTrue(wakes(forge, List.of(lamp(-60, 0, 0, Essence.FIRE))) && wakes(forge, List.of(lamp(-60, 0, 0, Essence.METAL))),
-                "either colour of a compound wakes it");
-        helper.assertFalse(wakes(forge, List.of(lamp(-60, 0, 0, Essence.WATER))), "a colour it lacks does not");
-
-        List<OpticsStudy.Tool> bench = List.of(lamp(-60, 0, 0.5F, Essence.SPARK), mirror);
-        List<OpticsStudy.Tool> decoded = OpticsStudy.decode(OpticsStudy.encode(bench));
-        helper.assertTrue(decoded.size() == 2 && decoded.get(0).color() == Essence.SPARK && Math.abs(decoded.get(0).angle() - 0.5F) < 0.01F
-                && decoded.get(1).color() == null, "a bench survives the packet");
-        helper.succeed();
-    }
-
-    @HexTest
-    public static void opticsSpotsFitEveryItem(GameTestHelper helper) {
+    public static void lensWispsAreEasyToCatchForEveryItem(GameTestHelper helper) {
         int items = 0;
         for (Item item : BuiltInRegistries.ITEM) {
             ItemEssences essences = ResearchItems.of(new ItemStack(item));
@@ -385,46 +350,70 @@ public final class ResearchGameTests {
                 continue;
             }
             items++;
-            List<OpticsStudy.Spot> spots = OpticsStudy.place(essences, item.hashCode());
-            helper.assertTrue(spots.size() == Math.min(OpticsStudy.MAX_SPOTS, essences.essences().size()), item + ": every essence gets a spot");
-            helper.assertTrue(spots.equals(OpticsStudy.place(essences, item.hashCode())), item + ": the same seed, the same spots");
-            for (OpticsStudy.Spot spot : spots) {
-                helper.assertTrue(Mth.sqrt(spot.x() * spot.x() + spot.y() * spot.y()) <= OpticsStudy.ITEM_SIZE / 2, item + ": spots lie in the item");
-                helper.assertTrue(!spot.colours().isEmpty(), item + ": every spot answers some colour");
+            int seed = item.hashCode();
+            List<LensStudy.Wisp> wisps = LensStudy.place(essences, seed);
+            helper.assertTrue(wisps.size() == Math.min(LensStudy.MAX_WISPS, essences.essences().size()), item + ": every essence gets a wisp");
+            helper.assertTrue(wisps.equals(LensStudy.place(essences, seed)), item + ": the same seed, the same wisps");
+            for (LensStudy.Wisp wisp : wisps) {
+                helper.assertFalse(wisp.inLens(0), item + ": no wisp starts in the lens");
+                // Within one turn it passes the lens, and stays in it long enough to be caught (at least 5 ticks).
+                int longest = 0;
+                int run = 0;
+                for (float t = 0; t < 80; t += 0.25F) {
+                    run = wisp.inLens(t) ? run + 1 : 0;
+                    longest = Math.max(longest, run);
+                }
+                helper.assertTrue(longest * 0.25F >= 5, item + ": the lens holds a wisp for " + longest * 0.25F + " ticks");
             }
         }
         helper.assertTrue(items > 50, "items with essences were checked: " + items);
+
+        // Flash rules: a miss clouds the lens, a time too far behind or ahead of the clock is refused.
+        LensStudy study = new LensStudy();
+        study.begin(Items.GLASS, ResearchItems.of(new ItemStack(Items.GLASS)), 1, 0);
+        float empty = 0;
+        while (study.inLens(empty) != 0) {
+            empty += 0.5F;
+        }
+        helper.assertTrue(study.flash(empty, empty) == 0, "a flash at nothing catches nothing");
+        helper.assertTrue(study.flash(empty + 10, empty + 10) == -1, "the clouded lens refuses to flash");
+        helper.assertTrue(study.flash(empty + 30, empty + 200) == -1, "a flash claimed long ago is refused");
+        helper.assertTrue(study.flash(empty + 300, empty + 200) == -1, "a flash claimed in the future is refused");
         helper.succeed();
     }
 
-    /** A lamp of the spot's first colour, aimed at it. */
-    private static List<OpticsStudy.Tool> wakeTools(OpticsStudy.Spot spot) {
-        return List.of(lamp(spot.x() - 60, spot.y(), 0, spot.colours().getFirst()));
-    }
-
-    @HexTest
-    public static void studyingAnItemOnTheOpticsBench(GameTestHelper helper) {
+    @HexTest(maxTicks = 300)
+    public static void studyingAnItemUnderTheLens(GameTestHelper helper) {
         ServerPlayer player = survivalPlayer(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
         table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.GLASS, 3));
         table.studySlotChanged(player);
-        OpticsStudy optics = table.optics();
-        helper.assertTrue(optics.item() == Items.GLASS && !optics.spots().isEmpty() && optics.awakeCount() == 0, "glass lies on the bench");
-        for (int i = 0; i < optics.spots().size(); i++) {
-            table.arrangeOptics(player, OpticsStudy.encode(wakeTools(optics.spots().get(i))));
-            helper.assertTrue(optics.isAwake(i), "spot " + i + " wakes under its colours");
-        }
-        helper.assertTrue(optics.studied() && Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(Items.GLASS)), "the glass is studied");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 3, "studying costs nothing");
+        LensStudy lens = table.lens();
+        helper.assertTrue(lens.item() == Items.GLASS && !lens.wisps().isEmpty() && lens.caughtCount() == 0, "glass floats under the lens");
+        int[] misses = {0};
+        // The researcher flashes whenever a wisp is in the wedge (and once at nothing, to see the lens cloud).
+        helper.succeedWhen(() -> {
+            float now = helper.getLevel().getGameTime() - lens.began();
+            if (!lens.studied() && now >= lens.readyAt()) {
+                if (lens.inLens(now) != 0) {
+                    table.flashLens(player, Math.round(now * 100));
+                } else if (misses[0] == 0) {
+                    table.flashLens(player, Math.round(now * 100));
+                    misses[0]++;
+                    helper.assertTrue(lens.readyAt() >= now + LensStudy.CLOUDED - 0.01F, "a miss clouds the lens");
+                }
+            }
+            helper.assertTrue(lens.studied() && Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(Items.GLASS)), "the glass is studied");
+            helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 3, "studying costs nothing");
 
-        table.setItem(ResearchTableBlockEntity.STUDY, ItemStack.EMPTY);
-        table.studySlotChanged(player);
-        helper.assertTrue(optics.item() == null, "an emptied slot clears the bench");
-        table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.GLASS));
-        table.studySlotChanged(player);
-        helper.assertTrue(optics.studied(), "a studied item shows its essences awake at once");
-        player.discard();
-        helper.succeed();
+            table.setItem(ResearchTableBlockEntity.STUDY, ItemStack.EMPTY);
+            table.studySlotChanged(player);
+            helper.assertTrue(lens.item() == null, "an emptied slot clears the lens");
+            table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.GLASS));
+            table.studySlotChanged(player);
+            helper.assertTrue(lens.studied(), "a studied item shows its essences caught at once");
+            player.discard();
+        });
     }
 
     // ---- The table ------------------------------------------------------------------------------------------------

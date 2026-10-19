@@ -40,7 +40,7 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemEssences;
-import com.pockyl.hextale.research.OpticsStudy;
+import com.pockyl.hextale.research.LensStudy;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchText;
@@ -105,13 +105,15 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private enum Tab {
         BOOK,
         DESK,
-        OPTICS
+        LENS
     }
 
-    private static final Identifier OPTICS_TEXTURE = Hextale.id("textures/gui/research_optics.png");
+    private static final Identifier LENS_TEXTURE = Hextale.id("textures/gui/research_optics.png");
 
     private final BoardView board = new BoardView();
-    private final OpticsView optics = new OpticsView();
+    private final LensView lens = new LensView();
+    /** The frame's partial tick, for the lens's clock in input handlers. */
+    private float partialTick;
     private StarBook book;
     private Tab tab;
     @Nullable
@@ -172,13 +174,13 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
         book.layout(leftPos + 4, topPos + 24, imageWidth - 8, imageHeight - 28);
         board.layout(leftPos, topPos);
-        optics.layout(leftPos, topPos);
+        lens.layout(leftPos, topPos);
         setTab(tab);
     }
 
     private void setTab(Tab tab) {
         this.tab = tab;
-        menu.setSlotsVisible(tab == Tab.DESK, tab == Tab.OPTICS);
+        menu.setSlotsVisible(tab == Tab.DESK, tab == Tab.LENS);
     }
 
     @Nullable
@@ -491,13 +493,13 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         graphics.blit(RenderPipelines.GUI_TEXTURED, switch (tab) {
             case BOOK -> BOOK_TEXTURE;
             case DESK -> DESK_TEXTURE;
-            case OPTICS -> OPTICS_TEXTURE;
+            case LENS -> LENS_TEXTURE;
         }, leftPos, topPos, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
         renderTabs(graphics, mouseX, mouseY);
         if (tab == Tab.DESK) {
             renderDesk(graphics, mouseX, mouseY);
-        } else if (tab == Tab.OPTICS) {
-            renderOptics(graphics, mouseX, mouseY);
+        } else if (tab == Tab.LENS) {
+            renderLens(graphics, mouseX, mouseY, partialTick);
         }
         PixelArt.flush(graphics);
     }
@@ -532,7 +534,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     private void renderTabTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        String[] keys = {"tab.book", "tab.desk", "tab.optics"};
+        String[] keys = {"tab.book", "tab.desk", "tab.lens"};
         for (int i = 0; i < keys.length; i++) {
             if (isOver(mouseX, mouseY, tabX(i), topPos + 1, TAB_WIDTH, TAB_HEIGHT)) {
                 graphics.setTooltipForNextFrame(font, Component.translatable(KEY + keys[i]), mouseX, mouseY);
@@ -742,24 +744,23 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         graphics.text(font, Component.translatable(KEY + "choose"), leftPos + PANEL_X + 8, topPos + 36, 0xFF000000 | TEXT_MUTED, true);
     }
 
-    // ---- The optics bench -------------------------------------------------------------------------------------------
+    // ---- The Hextech Lens --------------------------------------------------------------------------------------------
 
-    /** The optics tab: the bench with the item and the light, the item's header, the tray and what was found. */
-    private void renderOptics(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    /** The lens tab: the field with the item and its wisps, the item's header, the essence cards and the hint. */
+    private void renderLens(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         ResearchTableBlockEntity table = table();
-        OpticsStudy study = table == null ? null : table.optics();
+        LensStudy study = table == null ? new LensStudy() : table.lens();
+        this.partialTick = partialTick;
         int x0 = leftPos + PANEL_X;
         int y0 = topPos;
-        if (study == null || study.item() == null) {
-            optics.render(graphics, font, new OpticsStudy(), mouseX, mouseY);
+        lens.render(graphics, study, partialTick, mouseX, mouseY);
+        if (study.item() == null) {
             PixelArt.flush(graphics);
-            List<FormattedCharSequence> lines = font.split(Component.translatable(KEY + "optics.empty"), HEADER_TEXT_W + 30);
+            List<FormattedCharSequence> lines = font.split(Component.translatable(KEY + "lens.empty"), HEADER_TEXT_W + 30);
             for (int i = 0; i < Math.min(3, lines.size()); i++) {
                 graphics.text(font, lines.get(i), x0 + 8, y0 + 30 + i * 9, 0xFF000000 | TEXT_MUTED, true);
             }
         } else {
-            optics.render(graphics, font, study, mouseX, mouseY);
-            optics.maybeSend(Util.getMillis(), tools -> send(ResearchActionPayload.optics(menu.pos(), tools)));
             Item item = study.item();
             graphics.pose().pushMatrix();
             graphics.pose().translate(x0 + 7, y0 + 29);
@@ -770,35 +771,24 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             PixelArt.flush(graphics);
             graphics.text(font, fit(ResearchText.item(item).copy().withStyle(ChatFormatting.BOLD), HEADER_TEXT_W), x0 + 38, y0 + 29,
                     0xFF000000 | TEXT, true);
-            Component found = study.studied() ? Component.translatable(KEY + "optics.studied")
-                    : Component.translatable(KEY + "optics.found", study.awakeCount(), study.spots().size());
-            graphics.text(font, fit(found, HEADER_TEXT_W), x0 + 38, y0 + 40, study.studied() ? 0xFF8FE07A : 0xFF000000 | TEXT_MUTED, true);
-            // The essences woken so far, beside the item's slot.
-            int fx = leftPos + ResearchTableMenu.STUDY_X + 26;
-            for (int i = 0; i < study.spots().size(); i++) {
-                OpticsStudy.Spot spot = study.spots().get(i);
-                int x = fx + i * 14;
-                int y = topPos + ResearchTableMenu.ROW_Y + 4;
-                if (study.isAwake(i)) {
-                    PixelArt.essence(graphics, spot.essence(), x, y, PixelArt.ICON, PixelArt.argb(spot.essence().color(), 1));
-                } else {
-                    PixelArt.disc(graphics, x + 5, y + 5, 6, PixelArt.argb(0x2A2018, 1), PixelArt.argb(0x6A5226, 1));
-                }
-            }
-            List<Component> tip = optics.tooltip(study, mouseX, mouseY, KEY + "optics.");
-            if (tip != null) {
-                pendingTooltip = tip;
-            }
+            Component status = study.studied() ? Component.translatable(KEY + "lens.studied")
+                    : Component.translatable(KEY + "lens.hint");
+            graphics.text(font, fit(status, HEADER_TEXT_W), x0 + 38, y0 + 40, study.studied() ? 0xFF8FE07A : 0xFF000000 | TEXT_MUTED, true);
+            lens.renderCards(graphics, font, study, Util.getMillis());
         }
-        optics.renderTray(graphics, mouseX, mouseY);
-        if (study == null || study.item() == null || pendingTooltip == null) {
-            List<Component> tip = optics.tooltip(study == null ? new OpticsStudy() : study, mouseX, mouseY, KEY + "optics.");
-            if (tip != null) {
-                pendingTooltip = tip;
-            }
+        List<Component> tip = lens.tooltip(study, partialTick, mouseX, mouseY);
+        if (tip != null) {
+            pendingTooltip = tip;
         }
         if (menu.table().getItem(ResearchTableBlockEntity.STUDY).isEmpty()) {
             ghost(graphics, ResearchTableBlockEntity.STUDY, ResearchTableMenu.STUDY_X, ResearchTableMenu.ROW_Y, GHOST_STUDY);
+        }
+    }
+
+    private void flashLens() {
+        ResearchTableBlockEntity table = table();
+        if (table != null) {
+            lens.flash(table.lens(), partialTick, at -> send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.LENS, at)));
         }
     }
 
@@ -916,7 +906,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     /** A check mark on studied items, and slot hints. */
     private void renderSlotOverlays(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         ItemStack study = menu.table().getItem(ResearchTableBlockEntity.STUDY);
-        if (tab == Tab.OPTICS && !study.isEmpty() && studied(study.getItem())) {
+        if (tab == Tab.LENS && !study.isEmpty() && studied(study.getItem())) {
             PixelArt.flush(graphics);
             graphics.text(font, "✔", leftPos + ResearchTableMenu.STUDY_X + 10, topPos + ResearchTableMenu.ROW_Y - 3, 0xFF8FE07A, true);
         }
@@ -993,7 +983,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             boardPressed(mouseX, mouseY, button);
             return true;
         }
-        if (tab == Tab.OPTICS && optics.mousePressed(mouseX, mouseY, button)) {
+        if (tab == Tab.LENS && lens.overField(mouseX, mouseY)) {
+            if (button == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT) {
+                flashLens();
+            }
             return true;
         }
         return super.mouseClicked(event, doubleClick);
@@ -1085,10 +1078,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             }
             return true;
         }
-        if (tab == Tab.OPTICS && optics.dragging()) {
-            optics.mouseDragged(event.x(), event.y());
-            return true;
-        }
         return super.mouseDragged(event, dragX, dragY);
     }
 
@@ -1101,10 +1090,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             release();
             return true;
         }
-        if (tab == Tab.OPTICS && optics.dragging()) {
-            optics.mouseReleased();
-            return true;
-        }
         return super.mouseReleased(event);
     }
 
@@ -1113,7 +1098,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (tab == Tab.BOOK && book.keyPressed(event)) {
             return true;
         }
-        if (tab == Tab.OPTICS && optics.keyPressed(event.key())) {
+        if (tab == Tab.LENS && event.key() == com.mojang.blaze3d.platform.InputConstants.KEY_SPACE) {
+            flashLens();
             return true;
         }
         return super.keyPressed(event);
@@ -1122,10 +1108,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (tab == Tab.BOOK && book.mouseScrolled(mouseX, mouseY, scrollY)) {
-            return true;
-        }
-        if (tab == Tab.OPTICS && optics.overBench(mouseX, mouseY)) {
-            optics.scrolled(mouseX, mouseY, scrollY);
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
