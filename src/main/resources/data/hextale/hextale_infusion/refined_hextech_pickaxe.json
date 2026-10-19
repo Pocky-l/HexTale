@@ -5,8 +5,8 @@
     "hextale:hextech_gemstone",
     "minecraft:diamond",
     "minecraft:diamond",
-    "hextale:brass_ingot",
-    "hextale:brass_ingot"
+    "hextale:hexsteel_ingot",
+    "hextale:hexsteel_ingot"
   ],
   "essences": {
     "forge": 32,

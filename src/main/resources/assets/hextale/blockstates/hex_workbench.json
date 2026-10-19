@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hextale:block/hex_workbench"
+    },
+    "facing=east": {
+      "model": "hextale:block/hex_workbench",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/hex_workbench",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hextale:block/hex_workbench",
+      "y": 270
+    }
+  }
+}

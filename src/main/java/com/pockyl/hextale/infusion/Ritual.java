@@ -85,7 +85,7 @@ public final class Ritual {
 
     /**
      * The runes that do something for this centre item at the altar: the runes it takes like enchantments (a pickaxe,
-     * a smelter, a pylon) and the runes the recipes it fits ask for on the steles. Null for an empty centre: then any
+     * a pylon) and the runes the recipes it fits ask for on the steles. Null for an empty centre: then any
      * rune goes.
      */
     @Nullable
@@ -341,7 +341,7 @@ public final class Ritual {
     }
 
     /**
-     * Burns every rune chosen on the steles into the pickaxe or the smelter ({@link RuneHolder}) like an enchantment: a
+     * Burns every rune chosen on the steles into the pickaxe or the pylon ({@link RuneHolder}) like an enchantment: a
      * new rune takes a free place (up to the holder's slots), a rune it already carries with fewer stars is raised to the
      * stele's stars. Only runes the holder takes go in, and never two that clash. Runes need no items, only their essence.
      */
@@ -429,7 +429,7 @@ public final class Ritual {
         }
         RuneHolder holder = RuneHolder.of(center);
         if (holder != null && filled.isEmpty() && !circle.chosenRunes().isEmpty()) {
-            // A pickaxe or a smelter alone on the altar with runes on the steles: they are burned in, paid with essence only.
+            // A pickaxe or a pylon alone on the altar with runes on the steles: they are burned in, paid with essence only.
             Engraving engraving = engraving(center, circle);
             if (!engraving.possible()) {
                 return null;

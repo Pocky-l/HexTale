@@ -1,5 +1,9 @@
 {
   "values": [
-    "hextale:brass_block"
+    "hextale:brass_block",
+    "hextale:sphalerite_ore",
+    "hextale:deepslate_sphalerite_ore",
+    "hextale:raw_zinc_block",
+    "hextale:zinc_block"
   ]
 }

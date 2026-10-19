@@ -1,5 +1,7 @@
 {
   "values": [
-    "minecraft:amethyst_block"
+    "minecraft:amethyst_block",
+    "minecraft:amethyst_cluster",
+    "minecraft:large_amethyst_bud"
   ]
 }

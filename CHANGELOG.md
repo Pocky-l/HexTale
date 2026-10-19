@@ -10,12 +10,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Hextech**
 - Unstable hextech: put a lightning rod on an amethyst block and wait for a storm (or call the lightning with a
-  Channeling trident) - the strike shatters the amethyst into lumpy, humming orbs. Raw hextech is volatile: an orb that
+  Channeling trident) - the strike shatters the amethyst into lumpy, humming orbs, and runs on as a crackling wave
+  through every amethyst block and cluster touching it, up to five blocks away, ring after ring, sparks jumping from
+  block to block (budding amethyst carries the spark and stays whole). Raw hextech is volatile: an orb that
   lands after a long fall or is caught in a blast bursts in a flash of sparks that hurts and pushes what stands
-  close. Orbs fresh from the storm are still settling and survive their first fall.
-- Hextech Gemstone: unstable hextech refined at the Hextech Altar into a smooth, steady sphere. It no longer bursts,
-  and every hextech pickaxe and device is built around one.
-- Hextech Lamp: a gemstone floating in a cage of polished magic stone and brass, full light. It stands on a block or hangs under
+  close, leaving hextech dust. Orbs fresh from the storm are still settling and survive their first fall.
+- Hextech Dust: throw an orb (right click, or from a dispenser) and it shatters into glittering dust where it lands; a
+  creature it hits takes a small arcane sting.
+- Three grades of hextech: raw orbs, Hextech Crystals cut on the lapidary (they hold a charge and never burst) and
+  Hextech Gemstones finished from crystals with a master disc. Crystals power most devices and the first pickaxe,
+  gemstones the better pickaxes.
+- Hex Workbench: sprinkle hextech dust on a crafting table and it wakes - the dust swirls into it, sparks climb its
+  sides and it turns into a dark oak table with a polished deepslate worktop, a hexagon of glowing channels and a
+  hextech crystal floating in an iron clamp. Almost every device is crafted here; each craft spends a little charge
+  from the crystal in its socket (raw orb 5, cut crystal 12, gemstone 30), shown in a glass tube. The grid's items
+  lie on the worktop, a craft draws motes out of the crystal and flashes a sigil ring. Devices still to be researched
+  show nothing.
+- Hex Furnace: dust on a furnace wakes it into a kiln of magic stone with a hextech crystal in its crown. It melts up
+  to three metals into an alloy on ordinary fuel, blue tongues among its flames: three copper and a zinc make four
+  brass; iron, two hextech dust and coal make Hexsteel (researched first). Hoppers fill it like a furnace.
+- Zinc: Sphalerite Ore in stone and deepslate (a little rarer than copper, from deep underground up to sea level),
+  raw zinc, zinc ingots, nuggets and blocks (common `c:` tags, so other mods' zinc works too). Block of Hexsteel.
+- Hex Lapidary: a dark oak bench with a treadle and a lap disc, crafted on the workbench; its cutting discs are made
+  at the altar (iron and flint; the master disc of hexsteel and diamond). Cutting is a mini-game: the crystal hangs
+  large over the turning disc - turn it (mouse wheel or A/D, it turns on a little and settles) until the contact line
+  glows green, then hold to grind and watch the facet grind flat. Grinding across the hidden cleavage planes scrapes
+  red and cracks the crystal, so does too much heat; every facet cut cleanly gives the next grade, too many cracks
+  shatter it into dust. A first cut has four planes, a finish seven with a narrow window (a master disc feels the
+  planes from further off and cuts raw orbs twice as fast). Discs wear with every cut and crack.
+- Hextech Lamp: a hextech crystal floating in a cage of polished magic stone and brass, full light. It stands on a block or hangs under
   one, like a lantern.
 
 **Research**
@@ -48,7 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   by two - and read where it leaves; check a section to look inside. Rays and checks share a small budget. A studied
   item shows its essences in its tooltip.
 - Research: every device and tool past the essence works - the altar circle, the gemstone, the lamp, the big jar,
-  the pylons, the pickaxes, the Hex Smelter, the drain valve - must be researched at the table before it can be crafted
+  the pylons, the pickaxes, the lapidary and its master disc, hexsteel, the drain valve - must be researched at the table before it can be crafted
   or made at the altar. Choose it in the book and draw it on a worn parchment with a hexagon of six essences - one per
   direction, chosen by the device's theme. Drag ink from the hextech orb to every point; the ink may branch from the orb
   or from any inked section. A step costs ink of the essence its direction points to, a step onto a point ten of the
@@ -103,26 +126,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Rune works**
 - Hextech Altar circle: the altar, Pedestals within six blocks, Rune Steles within seven and Essence Jars within eight.
-  With an item on the altar, a stele lists only the runes that do something for it (the runes a pickaxe, smelter or
+  With an item on the altar, a stele lists only the runes that do something for it (the runes a pickaxe or a
   pylon takes, and those its rituals ask for) in a tidy, scrollable list: each with its name, your stars, what it does
   on that item, its number and the essence it draws at your stars (a tooltip shows all three star levels with their essence, what it cannot share an item with
   and, for a ritual, the essence the whole ritual draws). The circle stays sensible: a rune stands on one stele only,
-  an item never gets more runes than its slots (the header counts them, e.g. 2/3 on the Hex Smelter; raising the stars
+  an item never gets more runes than its slots (the header counts them, e.g. 2/3 on a pylon; raising the stars
   of a rune it already has takes no slot) and never two incompatible runes - such runes are dimmed with the reason; an empty altar shows the whole codex.
   Sneak-use the altar with an empty hand (or give it a redstone pulse) to start a ritual: the rings turn around the
   centre item, the pedestal items are drawn in one by one, then the essences one after another, and the centre
   becomes something new. A ritual short of essence stalls and, left too long, collapses. Ghosts of the items a ritual
   still lacks hover over the free pedestals.
-- Hex Smelter: a kiln of magic bricks with brass posts and a hextech gem floating in its crown, made at the altar from
-  a blast furnace under the rune of Smelting (find its scroll first). It smelts anything a furnace smelts, twice as fast, and burns fiery
-  essence instead of fuel. While it has something to smelt it draws the essence by itself from the nearest jar of fiery
-  essence within 5 blocks - a braid of light arches out of the jar's lid, waves and twinkling sparks run along it,
-  hex sigils turn on the jar and around the gem, wisps of essence drift off, and the gem swells as it pours in, with a
-  soft siphoning sound; pipes at the
-  back and the sides and bottles work too. The more fire an essence holds, the less of it goes. Its mouth burns with a hextech-blue flame while it works. Runes are burned into it at the altar
-  like into a pickaxe, up to three: Tempering saves essence, Bellows speeds it up, Forge adds ingots from ore, Lens
-  strengthens the others; the gem glows in their colours and the smelter keeps them when broken. JEI, Jade and the
-  goggles show it.
 - Block of Brass.
 - Hextech pickaxes: the Hextech Pickaxe (iron strength), the Refined Hextech Pickaxe (diamond) and the Radiant Hextech
   Pickaxe (netherite, fireproof), each made at the altar from the one before - runes and enchantments carry over. Their
@@ -156,7 +169,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with a block in hand a right click on a pylon places the block. A broken block drops its links by itself, and sneak +
   right click with an empty hand on a linked block unties it from every pylon. The item tooltip tells how.
 - Pylons belong to whoever placed them and deliver on their behalf: they feed the Alembic, the Separator, the Hex
-  Smelter, the Research Table and Pedestals like a hopper would, and the Alembic boils what they bring into its own
+  Furnace, the Research Table and Pedestals like a hopper would, and the Alembic boils what they bring into its own
   essences only if the pylon's owner (online) has studied it. The goggles show a pylon's owner.
 - A pylon with several links takes them in turn: each move goes to the next link that takes something, so every
   linked chest, machine or jar gets its share.
@@ -165,7 +178,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Relay Pylon: neither takes nor gives - it catches items and essence sent to it and passes them on to its own links,
   up to eight relays in a chain. Made of calcite, copper ingots, amethyst and a lightning rod.
 - Siphon Pylon: set on an Essence Jar, it draws the essence up into its glass bulb (swirling in the jar's colour) and
-  sends it as glowing motes arcing along its links, like the essence drawn into the altar - into other jars, a separator, the Hex Smelter, anything that takes
+  sends it as glowing motes arcing along its links, like the essence drawn into the altar - into other jars, a separator, anything that takes
   essence from pipes; relays pass the stream on.
 - Transfer Sigil, written at the Hextech Altar (a brass ingot with string, brass nuggets and an amethyst shard): right click it to set it up - nine slots (click with an item to put it in), "only these" or "all but
   these", matched by kind or exactly (enchantments, contents), and numbers: keep N of each item in the source, or fill

@@ -25,13 +25,12 @@ import com.pockyl.hextale.runework.PickaxeEffects;
 import com.pockyl.hextale.runework.PickaxeRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.RuneHolder;
-import com.pockyl.hextale.runework.SmelterRune;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Burning a rune into a hextech pickaxe or a Hex Smelter at the altar: it lies alone on the altar, the rune on a stele, no pedestal
+ * Burning a rune into a hextech pickaxe or a hex pylon at the altar: it lies alone on the altar, the rune on a stele, no pedestal
  * items - only the rune's essence. Shows what the rune does, how much at one, two and three stars, what each star costs
  * and the runes it is incompatible with.
  */

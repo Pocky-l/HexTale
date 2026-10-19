@@ -39,6 +39,8 @@ public final class TableModels {
     /** The Essence Jar's body (drawn by the jar's renderer so it can rock; four times larger for the Big Essence Jar). */
     public static final StandaloneModelKey<BlockStateModelPart> ESSENCE_JAR = model("block/essence_tank");
     public static final StandaloneModelKey<BlockStateModelPart> CREATIVE_JAR = model("block/creative_essence_tank");
+    /** The Hex Lapidary's lap disc, turned by the lapidary's renderer about its spindle. */
+    public static final StandaloneModelKey<BlockStateModelPart> LAPIDARY_DISC = model("block/hex_lapidary_disc");
 
     private TableModels() {
     }

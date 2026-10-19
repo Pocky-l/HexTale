@@ -15,7 +15,6 @@ import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.runework.PickaxeRune;
 import com.pockyl.hextale.runework.PylonRune;
-import com.pockyl.hextale.runework.SmelterRune;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * The research book's rune page: every rune the researcher has found, in the order they were found, as a plain list -
  * no paths, no dependencies. Each entry shows the rune's sign, name, stars and chapter, what it does and what it is used
- * for now (a pickaxe, the smelter, the pylons, an altar ritual). Runes come from scrolls found in treasure chests; a
+ * for now (a pickaxe, the pylons, an altar ritual). Runes come from scrolls found in treasure chests; a
  * page with none tells where to look.
  */
 final class RunesPage {
@@ -62,10 +61,6 @@ final class RunesPage {
         PickaxeRune pickaxe = PickaxeRune.of(rune);
         if (pickaxe != null) {
             uses.add(Component.translatable("book.hextale.guide.use.pickaxe", Component.translatable(pickaxe.descriptionKey())));
-        }
-        SmelterRune smelter = SmelterRune.of(rune);
-        if (smelter != null) {
-            uses.add(Component.translatable("book.hextale.guide.use.smelter", Component.translatable(smelter.descriptionKey())));
         }
         PylonRune pylon = PylonRune.of(rune);
         if (pylon != null) {

@@ -49,44 +49,49 @@ public final class Guide {
     private static final List<Quest> ALL = new ArrayList<>();
     private static final Map<String, Quest> BY_ID = new HashMap<>();
 
-    // ---- The workshop: brass, raw hextech, the table and the diary --------------------------------------------------
+    // ---- The workshop: raw hextech and its dust, the woken workbench and furnace, brass, the table and the diary -------
 
-    public static final Quest BRASS = item(Region.WORKSHOP, "brass", ModItems.BRASS_INGOT, Quest.Aura.NONE,
-            QuestDisplay.shapeless("hextale:brass_ingot", 2, "minecraft:copper_ingot", "minecraft:copper_ingot",
-                    "minecraft:copper_ingot", "minecraft:gold_ingot"));
     public static final Quest UNSTABLE_HEXTECH = item(Region.WORKSHOP, "unstable_hextech", ModItems.UNSTABLE_HEXTECH, Quest.Aura.STORM,
             QuestDisplay.scheme("hextale:unstable_hextech", "minecraft:lightning_rod", "minecraft:amethyst_block"));
+    // A thrown orb shatters into dust; dust wakes the crafting table and the furnace.
+    public static final Quest HEXTECH_DUST = item(Region.WORKSHOP, "hextech_dust", ModItems.HEXTECH_DUST, Quest.Aura.STORM,
+            QuestDisplay.scheme("hextale:hextech_dust", "hextale:unstable_hextech"), UNSTABLE_HEXTECH);
+    public static final Quest HEX_WORKBENCH = item(Region.WORKSHOP, "hex_workbench", ModItems.HEX_WORKBENCH, Quest.Aura.GOLD,
+            QuestDisplay.scheme("hextale:hex_workbench", "hextale:hextech_dust", "minecraft:crafting_table"), HEXTECH_DUST);
+    public static final Quest HEX_FURNACE = item(Region.FORGE, "hex_furnace", ModItems.HEX_FURNACE, Quest.Aura.FLAME,
+            QuestDisplay.scheme("hextale:hex_furnace", "hextale:hextech_dust", "minecraft:furnace"), HEXTECH_DUST);
+    // Zinc is mined: sphalerite lies in stone and deepslate like copper, a little rarer.
+    public static final Quest SPHALERITE = add(Region.WORKSHOP, "sphalerite", Quest.Kind.ITEM, List.of(),
+            () -> new ItemStack(ModItems.SPHALERITE_ORE.get()), Quests.has(ModItems.RAW_ZINC), null, null, Quest.Aura.NONE);
+    public static final Quest ZINC = item(Region.WORKSHOP, "zinc", ModItems.ZINC_INGOT, Quest.Aura.NONE,
+            QuestDisplay.scheme("hextale:zinc_ingot", "hextale:raw_zinc", "minecraft:furnace"), SPHALERITE);
+    // Brass is the first alloy of the Hex Furnace, free to melt.
+    public static final Quest BRASS = item(Region.WORKSHOP, "brass", ModItems.BRASS_INGOT, Quest.Aura.NONE,
+            QuestDisplay.alloy("hextale:brass_ingot"), HEX_FURNACE, ZINC);
     public static final Quest RESEARCH_TABLE = item(Region.WORKSHOP, "research_table", ModItems.RESEARCH_TABLE, Quest.Aura.GOLD,
-            QuestDisplay.shaped("hextale:research_table", 1, new String[]{"BBB", "PSP", "P P"},
-                    "B=hextale:brass_ingot", "P=#minecraft:planks", "S=minecraft:bookshelf"), BRASS);
+            QuestDisplay.hexCrafting("hextale:research_table"), BRASS, HEX_WORKBENCH);
     public static final Quest RESEARCHERS_DIARY = item(Region.WORKSHOP, "researchers_diary", ModItems.RESEARCHERS_DIARY, Quest.Aura.NONE,
-            QuestDisplay.shapeless("hextale:researchers_diary", 1, "minecraft:book", "hextale:brass_ingot", "hextale:unstable_hextech"),
-            UNSTABLE_HEXTECH, BRASS);
+            QuestDisplay.shapeless("hextale:researchers_diary", 1, "minecraft:book", "minecraft:amethyst_shard", "minecraft:feather"));
     public static final Quest ITEM_STUDY = add(Region.WORKSHOP, "item_study", Quest.Kind.ITEM, List.of(RESEARCH_TABLE, RESEARCHERS_DIARY),
             () -> new ItemStack(Items.PAPER), Quests.studied(1), QuestDisplay.essences(), null, Quest.Aura.NONE);
     public static final Quest RESEARCHERS_GOGGLES = item(Region.WORKSHOP, "researchers_goggles", ModItems.RESEARCHERS_GOGGLES, Quest.Aura.NONE,
-            QuestDisplay.shaped("hextale:researchers_goggles", 1, new String[]{"LBL", "G G"},
-                    "L=minecraft:leather", "B=hextale:brass_ingot", "G=minecraft:glass_pane"), BRASS);
+            QuestDisplay.hexCrafting("hextale:researchers_goggles"), BRASS, HEX_WORKBENCH);
 
     // ---- The essence works: boiling, bottling, separating, storing ---------------------------------------------------
 
     public static final Quest ALEMBIC = item(Region.ESSENCES, "alembic", ModItems.ALEMBIC, Quest.Aura.GOLD,
-            QuestDisplay.shaped("hextale:alembic", 1, new String[]{" B ", "G G", "BGB"}, "B=hextale:brass_ingot", "G=minecraft:glass"),
-            BRASS);
+            QuestDisplay.hexCrafting("hextale:alembic"), BRASS, HEX_WORKBENCH);
     public static final Quest ESSENCE_BOTTLE = add(Region.ESSENCES, "essence_bottle", Quest.Kind.ITEM, List.of(ALEMBIC),
             () -> EssenceFlaskItem.filled(Quests.SAMPLE_MIX), Quests.has(ModItems.ESSENCE_FLASK),
             QuestDisplay.scheme("hextale:essence_flask", "minecraft:glass_bottle", "hextale:alembic"), null, Quest.Aura.NONE);
     public static final Quest BRASS_PIPE = item(Region.ESSENCES, "brass_pipe", ModItems.BRASS_PIPE, Quest.Aura.NONE,
-            QuestDisplay.shaped("hextale:brass_pipe", 8, new String[]{"BBB"}, "B=hextale:brass_ingot"), ALEMBIC);
+            QuestDisplay.hexCrafting("hextale:brass_pipe"), ALEMBIC);
     public static final Quest PUMP = item(Region.ESSENCES, "pump", ModItems.PUMP, Quest.Aura.NONE,
-            QuestDisplay.shaped("hextale:pump", 1, new String[]{" P ", "BXB", "BBB"},
-                    "P=hextale:brass_pipe", "B=hextale:brass_ingot", "X=minecraft:piston"), BRASS_PIPE);
+            QuestDisplay.hexCrafting("hextale:pump"), BRASS_PIPE);
     public static final Quest SEPARATOR = item(Region.ESSENCES, "separator", ModItems.SEPARATOR, Quest.Aura.NONE,
-            QuestDisplay.shaped("hextale:separator", 1, new String[]{"BGB", "G G", "BBB"}, "B=hextale:brass_ingot", "G=minecraft:glass"),
-            ESSENCE_BOTTLE);
+            QuestDisplay.hexCrafting("hextale:separator"), ESSENCE_BOTTLE);
     public static final Quest ESSENCE_TANK = item(Region.ESSENCES, "essence_tank", ModItems.ESSENCE_TANK, Quest.Aura.NONE,
-            QuestDisplay.shaped("hextale:essence_tank", 1, new String[]{"SSS", "G G", "GGG"},
-                    "S=#minecraft:wooden_slabs", "G=minecraft:glass"), ESSENCE_BOTTLE);
+            QuestDisplay.hexCrafting("hextale:essence_tank"), ESSENCE_BOTTLE);
     public static final Quest MAGIC_STONE = item(Region.ESSENCES, "magic_stone", ModItems.MAGIC_STONE, Quest.Aura.NONE,
             QuestDisplay.shaped("hextale:magic_stone", 8, new String[]{"SSS", "SBS", "SSS"},
                     "S=#hextale:soaks_essence", "B=hextale:essence_flask"), ESSENCE_BOTTLE);
@@ -100,8 +105,7 @@ public final class Guide {
 
     // Past the ink every device is researched before it is made.
     public static final Quest DRAIN_VALVE = researched(Region.ESSENCES, "drain_valve", ModItems.DRAIN_VALVE, ResearchTopics.DRAIN_VALVE,
-            Quest.Aura.NONE, QuestDisplay.shaped("hextale:drain_valve", 1, new String[]{" I ", "BPB"},
-                    "I=minecraft:iron_ingot", "B=hextale:brass_ingot", "P=hextale:brass_pipe"), SEPARATOR, BRASS_PIPE, INK);
+            Quest.Aura.NONE, QuestDisplay.hexCrafting("hextale:drain_valve"), SEPARATOR, BRASS_PIPE, INK);
     // The first multiblock: built of glass and slabs, woken with a hextech crystal (Multiblocks completes it).
     public static final Quest BIG_ESSENCE_JAR = add(Region.ESSENCES, "big_essence_jar", Quest.Kind.ITEM, List.of(ESSENCE_TANK, UNSTABLE_HEXTECH, INK),
             () -> new ItemStack(ModItems.ESSENCE_TANK.get()), player -> false, QuestDisplay.multiblock("big_essence_jar"),
@@ -118,21 +122,19 @@ public final class Guide {
     // ---- The hextech circle: the altar, its pedestals and steles, refined hextech ------------------------------------
 
     public static final Quest HEXTECH_ALTAR = researched(Region.CIRCLE, "hextech_altar", ModItems.HEXTECH_ALTAR, ResearchTopics.CIRCLE,
-            Quest.Aura.GOLD, QuestDisplay.shaped("hextale:hextech_altar", 1, new String[]{" H ", "IAI", "CBC"}, "H=hextale:unstable_hextech",
-                    "I=hextale:brass_ingot", "A=minecraft:amethyst_block", "C=hextale:chiseled_magic_bricks", "B=hextale:magic_bricks"),
-            MAGIC_STONE, UNSTABLE_HEXTECH, INK);
+            Quest.Aura.GOLD, QuestDisplay.hexCrafting("hextale:hextech_altar"), MAGIC_STONE, UNSTABLE_HEXTECH, INK);
     public static final Quest PEDESTAL = researched(Region.CIRCLE, "pedestal", ModItems.PEDESTAL, ResearchTopics.CIRCLE, Quest.Aura.NONE,
-            QuestDisplay.shaped("hextale:pedestal", 2, new String[]{" I ", " B ", "BCB"},
-                    "I=hextale:brass_ingot", "B=hextale:magic_bricks", "C=hextale:chiseled_magic_bricks"), HEXTECH_ALTAR);
+            QuestDisplay.hexCrafting("hextale:pedestal"), HEXTECH_ALTAR);
     public static final Quest RUNE_STELE = researched(Region.CIRCLE, "rune_stele", ModItems.RUNE_STELE, ResearchTopics.CIRCLE, Quest.Aura.NONE,
-            QuestDisplay.shaped("hextale:rune_stele", 1, new String[]{" A ", " C ", "BBB"},
-                    "A=minecraft:amethyst_shard", "C=hextale:chiseled_magic_bricks", "B=hextale:magic_bricks"), HEXTECH_ALTAR);
-    // A ritual draws its essences from the jars around the altar.
-    public static final Quest HEXTECH_GEMSTONE = researched(Region.CIRCLE, "hextech_gemstone", ModItems.HEXTECH_GEMSTONE,
-            ResearchTopics.HEXTECH_GEMSTONE, Quest.Aura.HEXTECH, QuestDisplay.infusion("hextale:hextech_gemstone"), PEDESTAL, ESSENCE_TANK);
+            QuestDisplay.hexCrafting("hextale:rune_stele"), HEXTECH_ALTAR);
+    // Crystal cutting: the lapidary from the workbench, its disc from the altar (a ritual draws essence from jars around it).
+    public static final Quest HEX_LAPIDARY = researched(Region.CIRCLE, "hex_lapidary", ModItems.HEX_LAPIDARY, ResearchTopics.LAPIDARY,
+            Quest.Aura.HEXTECH, QuestDisplay.hexCrafting("hextale:hex_lapidary").then(QuestDisplay.infusion("hextale:cutting_disc")),
+            PEDESTAL, ESSENCE_TANK);
+    public static final Quest HEXTECH_CRYSTAL = item(Region.CIRCLE, "hextech_crystal", ModItems.HEXTECH_CRYSTAL, Quest.Aura.HEXTECH,
+            QuestDisplay.scheme("hextale:hextech_crystal", "hextale:unstable_hextech", "hextale:cutting_disc"), HEX_LAPIDARY);
     public static final Quest HEXTECH_LAMP = researched(Region.CIRCLE, "hextech_lamp", ModItems.HEXTECH_LAMP, ResearchTopics.HEXTECH_LAMP,
-            Quest.Aura.HEXTECH, QuestDisplay.shaped("hextale:hextech_lamp", 2, new String[]{" N ", "BGB", " S "}, "N=hextale:brass_nugget",
-                    "B=hextale:brass_ingot", "G=hextale:hextech_gemstone", "S=hextale:magic_brick_slab"), HEXTECH_GEMSTONE);
+            Quest.Aura.HEXTECH, QuestDisplay.hexCrafting("hextale:hextech_lamp"), HEXTECH_CRYSTAL);
 
     // Copying a rune: a blank scroll on the altar, the rune on a stele (HextechAltarBlockEntity completes it).
     public static final Quest WRITTEN_SCROLL = add(Region.RUNES, "written_scroll", Quest.Kind.ITEM, List.of(BLANK_SCROLL, RUNE_STELE),
@@ -142,7 +144,7 @@ public final class Guide {
     // ---- Hex pylons: items carried by hextech, gathered off the ground, thrown to links, passed on by relays ----------
 
     public static final Quest GATHERING_PYLON = researched(Region.PYLONS, "gathering_pylon", ModItems.GATHERING_PYLON,
-            ResearchTopics.GATHERING_PYLON, Quest.Aura.HEXTECH, QuestDisplay.infusion("hextale:gathering_pylon"), HEXTECH_GEMSTONE);
+            ResearchTopics.GATHERING_PYLON, Quest.Aura.HEXTECH, QuestDisplay.infusion("hextale:gathering_pylon"), HEXTECH_CRYSTAL);
     public static final Quest SENDING_PYLON = researched(Region.PYLONS, "sending_pylon", ModItems.SENDING_PYLON, ResearchTopics.SENDING_PYLON,
             Quest.Aura.GOLD, QuestDisplay.infusion("hextale:sending_pylon"), GATHERING_PYLON);
     public static final Quest RELAY_PYLON = researched(Region.PYLONS, "relay_pylon", ModItems.RELAY_PYLON, ResearchTopics.RELAY_PYLON,
@@ -157,24 +159,26 @@ public final class Guide {
     public static final Quest PYLON_RUNE = add(Region.PYLONS, "pylon_rune", Quest.Kind.ITEM, List.of(GATHERING_PYLON, RUNE_STELE, RUNE_SCROLL),
             () -> new ItemStack(ModItems.RUNE_STELE.get()), Quests.pylonRunes(1), QuestDisplay.pylonRunes(), null, Quest.Aura.NONE);
 
-    // ---- The forge: hextech pickaxes and the Hex Smelter --------------------------------------------------------------
+    // ---- The forge: alloys, the master disc and stabilised gemstones, hextech pickaxes ----------------------------------
 
-    public static final Quest HEXTECH_PICKAXE = add(Region.FORGE, "hextech_pickaxe", Quest.Kind.ITEM, List.of(HEXTECH_GEMSTONE),
+    public static final Quest HEXSTEEL = researched(Region.FORGE, "hexsteel", ModItems.HEXSTEEL_INGOT, ResearchTopics.HEXSTEEL,
+            Quest.Aura.FLAME, QuestDisplay.alloy("hextale:hexsteel_ingot"), HEX_FURNACE, HEXTECH_DUST, INK);
+    public static final Quest MASTER_CUTTING_DISC = researched(Region.FORGE, "master_cutting_disc", ModItems.MASTER_CUTTING_DISC,
+            ResearchTopics.MASTER_DISC, Quest.Aura.HEXTECH, QuestDisplay.infusion("hextale:master_cutting_disc"), HEXSTEEL, HEXTECH_CRYSTAL);
+    public static final Quest HEXTECH_GEMSTONE = item(Region.FORGE, "hextech_gemstone", ModItems.HEXTECH_GEMSTONE, Quest.Aura.GOLD,
+            QuestDisplay.scheme("hextale:hextech_gemstone", "hextale:hextech_crystal", "hextale:master_cutting_disc"),
+            MASTER_CUTTING_DISC, HEXTECH_CRYSTAL);
+    public static final Quest HEXTECH_PICKAXE = add(Region.FORGE, "hextech_pickaxe", Quest.Kind.ITEM, List.of(HEXTECH_CRYSTAL),
             () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), Quests.pickaxe(1),
             QuestDisplay.infusion("hextale:hextech_pickaxe"), ResearchTopics.HEXTECH_PICKAXE, Quest.Aura.GOLD);
     public static final Quest PICKAXE_RUNE = add(Region.FORGE, "pickaxe_rune", Quest.Kind.ITEM, List.of(HEXTECH_PICKAXE, RUNE_STELE, RUNE_SCROLL),
             () -> new ItemStack(ModItems.RUNE_SCROLL.get()), Quests.pickaxeRunes(1), QuestDisplay.pickaxeRunes(), null, Quest.Aura.NONE);
-    public static final Quest REFINED_PICKAXE = add(Region.FORGE, "refined_pickaxe", Quest.Kind.ITEM, List.of(HEXTECH_PICKAXE),
+    public static final Quest REFINED_PICKAXE = add(Region.FORGE, "refined_pickaxe", Quest.Kind.ITEM, List.of(HEXTECH_PICKAXE, HEXTECH_GEMSTONE),
             () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.REFINED).get()), Quests.pickaxe(2),
             QuestDisplay.infusion("hextale:refined_hextech_pickaxe"), ResearchTopics.REFINED_PICKAXE, Quest.Aura.HEXTECH);
     public static final Quest RADIANT_PICKAXE = add(Region.FORGE, "radiant_pickaxe", Quest.Kind.ITEM, List.of(REFINED_PICKAXE),
             () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.RADIANT).get()), Quests.pickaxe(3),
             QuestDisplay.infusion("hextale:radiant_hextech_pickaxe"), ResearchTopics.RADIANT_PICKAXE, Quest.Aura.HEXTECH);
-    // The smelter's ritual asks for Smelting on a stele: the rune comes from a found scroll.
-    public static final Quest HEX_SMELTER = researched(Region.FORGE, "hex_smelter", ModItems.HEX_SMELTER, ResearchTopics.HEX_SMELTER,
-            Quest.Aura.GOLD, QuestDisplay.infusion("hextale:hex_smelter"), HEXTECH_PICKAXE, RUNE_STELE, RUNE_SCROLL);
-    public static final Quest SMELTER_RUNE = add(Region.FORGE, "smelter_rune", Quest.Kind.ITEM, List.of(HEX_SMELTER),
-            () -> new ItemStack(ModItems.RUNE_STELE.get()), Quests.smelterRunes(1), QuestDisplay.smelterRunes(), null, Quest.Aura.FLAME);
 
     // ---- Devices still being worked out, each hanging off the step it will grow from ---------------------------------
 
@@ -226,12 +230,12 @@ public final class Guide {
         wip("geode_resonator", Items.SMALL_AMETHYST_BUD, Quest.Aura.STORM, HEXTECH_ALTAR, ESSENCE_TANK);
         wip("nullstone", Items.CRYING_OBSIDIAN, Quest.Aura.CURSED, HEXTECH_ALTAR);
         wip("hexcore", Items.HEART_OF_THE_SEA, Quest.Aura.GOLD, HEXTECH_ALTAR, HEXTECH_GEMSTONE);
-        wip("rune_workbench", Items.CRAFTER, Quest.Aura.HEXTECH, PEDESTAL, HEXTECH_GEMSTONE);
+        wip("rune_workbench", Items.CRAFTER, Quest.Aura.HEXTECH, PEDESTAL, HEXTECH_CRYSTAL);
         wip("barrier_ward", Items.SHIELD, Quest.Aura.HEXTECH, PEDESTAL);
         wip("rune_lock", Items.TRIAL_KEY, Quest.Aura.CURSED, RUNE_STELE);
-        wip("crystal_battery", Items.AMETHYST_CLUSTER, Quest.Aura.STORM, HEXTECH_GEMSTONE);
-        wip("world_anchor", Items.RESPAWN_ANCHOR, Quest.Aura.STORM, HEXTECH_GEMSTONE);
-        wip("construct", Items.ARMOR_STAND, Quest.Aura.HEXTECH, HEXTECH_GEMSTONE);
+        wip("crystal_battery", Items.AMETHYST_CLUSTER, Quest.Aura.STORM, HEXTECH_CRYSTAL);
+        wip("world_anchor", Items.RESPAWN_ANCHOR, Quest.Aura.STORM, HEXTECH_CRYSTAL, HEXTECH_GEMSTONE);
+        wip("construct", Items.ARMOR_STAND, Quest.Aura.HEXTECH, HEXTECH_CRYSTAL);
         wip("star_rod", Items.END_ROD, Quest.Aura.HEXTECH, HEXTECH_LAMP);
         wip("signal_beacon", Items.BEACON, Quest.Aura.NONE, HEXTECH_LAMP);
         wip("mirage_projector", Items.TINTED_GLASS, Quest.Aura.NONE, HEXTECH_LAMP);
@@ -261,11 +265,11 @@ public final class Guide {
         wip("hex_cutter", Items.STONECUTTER, Quest.Aura.NONE, RADIANT_PICKAXE);
         wip("flash_charge", Items.FIREWORK_STAR, Quest.Aura.STORM, RADIANT_PICKAXE);
         wip("chrono_chamber", Items.CLOCK, Quest.Aura.STORM, RADIANT_PICKAXE);
-        wip("hex_flamethrower", Items.FIRE_CHARGE, Quest.Aura.FLAME, HEX_SMELTER);
-        wip("mining_charge", Items.TNT, Quest.Aura.FLAME, HEX_SMELTER);
-        wip("magma_font", Items.LAVA_BUCKET, Quest.Aura.FLAME, HEX_SMELTER);
-        wip("fireproof_coat", Items.MAGMA_CREAM, Quest.Aura.FLAME, SMELTER_RUNE);
-        wip("rune_anvil", Items.ANVIL, Quest.Aura.NONE, SMELTER_RUNE);
+        wip("hex_flamethrower", Items.FIRE_CHARGE, Quest.Aura.FLAME, HEXSTEEL);
+        wip("mining_charge", Items.TNT, Quest.Aura.FLAME, HEX_FURNACE);
+        wip("magma_font", Items.LAVA_BUCKET, Quest.Aura.FLAME, HEX_FURNACE);
+        wip("magic_metal", Items.NETHERITE_SCRAP, Quest.Aura.HEXTECH, HEXSTEEL, HEXTECH_GEMSTONE);
+        wip("rune_anvil", Items.ANVIL, Quest.Aura.NONE, HEXSTEEL);
         // The altar is the heart of the guide: every device past the essence works is made around it.
         HEXTECH_ALTAR.landmark = true;
         HEXTECH_ALTAR.scene = Quest.Scene.ALTAR;

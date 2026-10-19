@@ -21,7 +21,7 @@ public final class ModCapabilities {
     private static void onRegister(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ALEMBIC.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.SEPARATOR.get(), WorldlyContainerWrapper::new);
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.HEX_SMELTER.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.HEX_FURNACE.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.RESEARCH_TABLE.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PEDESTAL.get(), (pedestal, side) -> VanillaContainerWrapper.of(pedestal));
     }

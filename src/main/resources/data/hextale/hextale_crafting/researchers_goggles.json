@@ -1,0 +1,15 @@
+{
+  "pattern": [
+    "LBL",
+    "G G"
+  ],
+  "key": {
+    "L": "minecraft:leather",
+    "B": "hextale:brass_ingot",
+    "G": "minecraft:glass_pane"
+  },
+  "result": {
+    "id": "hextale:researchers_goggles"
+  },
+  "charge": 1
+}

@@ -51,8 +51,25 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEXTECH_ALTAR = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_ALTAR,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEXTECH_LAMP = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_LAMP);
-    public static final DeferredItem<BlockItem> HEX_SMELTER = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_SMELTER,
+    public static final DeferredItem<BlockItem> HEX_FURNACE = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_FURNACE,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> HEX_WORKBENCH = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_WORKBENCH);
+    public static final DeferredItem<BlockItem> HEX_LAPIDARY = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_LAPIDARY);
+    /** An iron disc edged with flint: cuts raw hextech into crystals on the lapidary; wears with every cut and crack. */
+    public static final DeferredItem<Item> CUTTING_DISC = ITEMS.registerItem("cutting_disc", properties -> new Item(properties.durability(64)));
+    /** A hexsteel disc edged with diamond: finishes crystals into stabilised gemstones, and cuts raw ones twice as fast. */
+    public static final DeferredItem<Item> MASTER_CUTTING_DISC = ITEMS.registerItem("master_cutting_disc",
+            properties -> new Item(properties.durability(256).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<BlockItem> SPHALERITE_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.SPHALERITE_ORE);
+    public static final DeferredItem<BlockItem> DEEPSLATE_SPHALERITE_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.DEEPSLATE_SPHALERITE_ORE);
+    public static final DeferredItem<BlockItem> RAW_ZINC_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RAW_ZINC_BLOCK);
+    public static final DeferredItem<BlockItem> ZINC_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.ZINC_BLOCK);
+    public static final DeferredItem<BlockItem> HEXSTEEL_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.HEXSTEEL_BLOCK);
+    public static final DeferredItem<Item> RAW_ZINC = ITEMS.registerSimpleItem("raw_zinc");
+    public static final DeferredItem<Item> ZINC_INGOT = ITEMS.registerSimpleItem("zinc_ingot");
+    public static final DeferredItem<Item> ZINC_NUGGET = ITEMS.registerSimpleItem("zinc_nugget");
+    /** Iron melted with coal and hextech dust in the Hex Furnace: the metal of the better hextech tools. */
+    public static final DeferredItem<Item> HEXSTEEL_INGOT = ITEMS.registerSimpleItem("hexsteel_ingot");
     public static final DeferredItem<BlockItem> BRASS_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_BLOCK);
     public static final DeferredItem<BlockItem> GATHERING_PYLON = ITEMS.registerSimpleBlockItem(ModBlocks.GATHERING_PYLON,
             properties -> properties.rarity(Rarity.UNCOMMON));
@@ -86,9 +103,15 @@ public final class ModItems {
     /** Lightning-born: neither fire nor further lightning harms it. */
     public static final DeferredItem<UnstableHextechItem> UNSTABLE_HEXTECH = ITEMS.registerItem("unstable_hextech",
             properties -> new UnstableHextechItem(properties.rarity(Rarity.UNCOMMON).fireResistant()));
-    /** Unstable hextech refined at the altar: steady, it no longer bursts. */
-    public static final DeferredItem<HextechGemstoneItem> HEXTECH_GEMSTONE = ITEMS.registerItem("hextech_gemstone",
+    /** What a thrown or bursting orb leaves: glittering hextech dust (wakes a crafting table, a furnace, a cauldron). */
+    public static final DeferredItem<HextechGemstoneItem> HEXTECH_DUST = ITEMS.registerItem("hextech_dust",
+            properties -> new HextechGemstoneItem(properties.fireResistant()));
+    /** Unstable hextech cut on the lapidary: the second grade, the heart of most devices. */
+    public static final DeferredItem<HextechGemstoneItem> HEXTECH_CRYSTAL = ITEMS.registerItem("hextech_crystal",
             properties -> new HextechGemstoneItem(properties.rarity(Rarity.UNCOMMON).fireResistant()));
+    /** A cut crystal finished on the lapidary into a stabilised gemstone: the third grade, steady for good. */
+    public static final DeferredItem<HextechGemstoneItem> HEXTECH_GEMSTONE = ITEMS.registerItem("hextech_gemstone",
+            properties -> new HextechGemstoneItem(properties.rarity(Rarity.RARE).fireResistant()));
     public static final DeferredItem<RuneScrollItem> RUNE_SCROLL = ITEMS.registerItem("rune_scroll",
             properties -> new RuneScrollItem(properties.stacksTo(16).rarity(Rarity.UNCOMMON)));
     /** Rolled paper waiting for a rune: written at the altar with a rune chosen on a stele. */

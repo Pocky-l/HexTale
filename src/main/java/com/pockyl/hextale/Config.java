@@ -6,13 +6,21 @@ public final class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.IntValue MIN_ORBS = BUILDER
-            .comment("Fewest unstable hextech orbs a lightning-struck amethyst block shatters into.")
+            .comment("Fewest unstable hextech orbs each amethyst block or cluster shatters into when lightning runs through it.")
             .translation("hextale.configuration.minOrbs")
-            .defineInRange("minOrbs", 1, 1, 16);
+            .defineInRange("minOrbs", 1, 0, 16);
     public static final ModConfigSpec.IntValue MAX_ORBS = BUILDER
-            .comment("Most unstable hextech orbs a lightning-struck amethyst block shatters into.")
+            .comment("Most unstable hextech orbs each amethyst block or cluster shatters into when lightning runs through it.")
             .translation("hextale.configuration.maxOrbs")
-            .defineInRange("maxOrbs", 3, 1, 16);
+            .defineInRange("maxOrbs", 1, 0, 16);
+    public static final ModConfigSpec.IntValue CHAIN_RADIUS = BUILDER
+            .comment("How far (in blocks, every way from the struck block) lightning runs on through touching amethyst.")
+            .translation("hextale.configuration.chainRadius")
+            .defineInRange("chainRadius", 5, 0, 16);
+    public static final ModConfigSpec.IntValue MAX_CHAIN = BUILDER
+            .comment("Most amethyst blocks and clusters one strike shatters.")
+            .translation("hextale.configuration.maxChain")
+            .defineInRange("maxChain", 125, 1, 1024);
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 

@@ -2,12 +2,15 @@ package com.pockyl.hextale.quest;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * The picture on a quest's page in the research book: a crafting grid, a "this plus that" scheme, the nine essences or
  * the separator's blaze powder per essence. Ingredients are item ids or {@code #tag} ids, {@code ""} is an empty cell. Crafting grids
- * mirror the recipe JSON; {@code questRecipesMatchTheRecipes} keeps them honest.
+ * mirror the recipe JSON; {@code questRecipesMatchTheRecipes} keeps them honest. A step may show a second picture under
+ * the first ({@code then}): the lapidary and the disc it cuts with.
  */
-public record QuestDisplay(Kind kind, List<String> ingredients, String result, int count) {
+public record QuestDisplay(Kind kind, List<String> ingredients, String result, int count, @Nullable QuestDisplay then) {
     public enum Kind {
         /** A 3 x 3 crafting grid, row by row. */
         SHAPED,
@@ -23,12 +26,31 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
         INFUSION,
         /** The runes a hextech pickaxe takes, with their costs and clashes. */
         PICKAXE_RUNES,
-        /** The runes a Hex Smelter takes. */
-        SMELTER_RUNES,
         /** The runes the hex pylons take. */
         PYLON_RUNES,
         /** A multiblock layer by layer and the item that wakes it; {@code result} is the multiblock's id. */
-        MULTIBLOCK
+        MULTIBLOCK,
+        /** A Hex Workbench recipe; {@code result} is its id, drawn from the recipes the server sent. */
+        HEX_CRAFTING,
+        /** A Hex Furnace alloy; {@code result} is its id, drawn from the recipes the server sent. */
+        ALLOY
+    }
+
+    QuestDisplay(Kind kind, List<String> ingredients, String result, int count) {
+        this(kind, ingredients, result, count, null);
+    }
+
+    /** This picture with {@code next} drawn under it. */
+    QuestDisplay then(QuestDisplay next) {
+        return new QuestDisplay(kind, ingredients, result, count, next);
+    }
+
+    static QuestDisplay hexCrafting(String recipe) {
+        return new QuestDisplay(Kind.HEX_CRAFTING, List.of(), recipe, 1);
+    }
+
+    static QuestDisplay alloy(String recipe) {
+        return new QuestDisplay(Kind.ALLOY, List.of(), recipe, 1);
     }
 
     /** Rows of up to three cells, spaces for empty cells, keys as in the recipe JSON. */
@@ -72,9 +94,6 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
         return new QuestDisplay(Kind.PICKAXE_RUNES, List.of(), "hextale:hextech_pickaxe", 1);
     }
 
-    static QuestDisplay smelterRunes() {
-        return new QuestDisplay(Kind.SMELTER_RUNES, List.of(), "hextale:hex_smelter", 1);
-    }
 
     static QuestDisplay pylonRunes() {
         return new QuestDisplay(Kind.PYLON_RUNES, List.of(), "hextale:sending_pylon", 1);

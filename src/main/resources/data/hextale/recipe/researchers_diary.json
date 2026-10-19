@@ -3,8 +3,8 @@
   "category": "misc",
   "ingredients": [
     "minecraft:book",
-    "hextale:brass_ingot",
-    "hextale:unstable_hextech"
+    "minecraft:amethyst_shard",
+    "minecraft:feather"
   ],
   "result": {
     "id": "hextale:researchers_diary"

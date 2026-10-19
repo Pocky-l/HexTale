@@ -24,7 +24,8 @@ import com.pockyl.hextale.block.DrainValveBlock;
 import com.pockyl.hextale.block.EssenceTankBlock;
 import com.pockyl.hextale.block.PumpBlock;
 import com.pockyl.hextale.block.HexPylonBlock;
-import com.pockyl.hextale.block.HexSmelterBlock;
+import com.pockyl.hextale.block.HexFurnaceBlock;
+import com.pockyl.hextale.block.HexWorkbenchBlock;
 import com.pockyl.hextale.block.HextechAltarBlock;
 import com.pockyl.hextale.block.HextechLampBlock;
 import com.pockyl.hextale.block.PedestalBlock;
@@ -98,10 +99,34 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.LANTERN)
                     .lightLevel(state -> 15).noOcclusion().pushReaction(PushReaction.POPPED).requiresCorrectToolForDrops());
 
-    /** A furnace of magic bricks that burns fiery essence; light while it smelts. */
-    public static final DeferredBlock<HexSmelterBlock> HEX_SMELTER = BLOCKS.registerBlock("hex_smelter", HexSmelterBlock::new,
+    /** A furnace woken with hextech dust: it melts metals into alloys; light while it burns. */
+    public static final DeferredBlock<HexFurnaceBlock> HEX_FURNACE = BLOCKS.registerBlock("hex_furnace", HexFurnaceBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLUE).strength(3.5F, 6.0F).sound(SoundType.TUFF_BRICKS)
-                    .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> state.getValue(HexSmelterBlock.LIT) ? 13 : 3));
+                    .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> state.getValue(HexFurnaceBlock.LIT) ? 13 : 3));
+    /** A crafting table woken with hextech dust: almost every device is made here, on a crystal's charge. */
+    public static final DeferredBlock<HexWorkbenchBlock> HEX_WORKBENCH = BLOCKS.registerBlock("hex_workbench", HexWorkbenchBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD).noOcclusion()
+                    .lightLevel(state -> 4));
+    /** A bench with a treadle-turned lap disc: hextech crystals are cut here along their cleavage planes. */
+    public static final DeferredBlock<com.pockyl.hextale.block.LapidaryBlock> HEX_LAPIDARY = BLOCKS.registerBlock("hex_lapidary",
+            com.pockyl.hextale.block.LapidaryBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD).noOcclusion());
+    /** Zinc ore: sphalerite in stone and in deepslate, a little rarer than copper. */
+    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> SPHALERITE_ORE = BLOCKS.registerBlock(
+            "sphalerite_ore", properties -> new net.minecraft.world.level.block.DropExperienceBlock(
+                    net.minecraft.util.valueproviders.ConstantInt.of(0), properties),
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_ORE));
+    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> DEEPSLATE_SPHALERITE_ORE = BLOCKS.registerBlock(
+            "deepslate_sphalerite_ore", properties -> new net.minecraft.world.level.block.DropExperienceBlock(
+                    net.minecraft.util.valueproviders.ConstantInt.of(0), properties),
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.DEEPSLATE_IRON_ORE));
+    public static final DeferredBlock<Block> RAW_ZINC_BLOCK = BLOCKS.registerBlock("raw_zinc_block", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.RAW_IRON_BLOCK).mapColor(MapColor.COLOR_LIGHT_GRAY));
+    public static final DeferredBlock<Block> ZINC_BLOCK = BLOCKS.registerBlock("zinc_block", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).mapColor(MapColor.COLOR_LIGHT_GRAY));
+    /** Nine hexsteel ingots: dark blue steel with a faint hextech shimmer. */
+    public static final DeferredBlock<Block> HEXSTEEL_BLOCK = BLOCKS.registerBlock("hexsteel_block", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).mapColor(MapColor.COLOR_BLUE));
     /** Nine brass ingots: a building block with the soft sheen of the machines. */
     public static final DeferredBlock<Block> BRASS_BLOCK = BLOCKS.registerBlock("brass_block", Block::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(4.0F, 6.0F).sound(SoundType.COPPER)

@@ -62,7 +62,7 @@ public final class RuneWorkGameTests {
     }
 
     private static List<ItemStack> pickaxeItems() {
-        return List.of(new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(ModItems.BRASS_INGOT.get()),
+        return List.of(new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), new ItemStack(ModItems.BRASS_INGOT.get()),
                 new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(Items.AMETHYST_SHARD));
     }
 
@@ -156,12 +156,7 @@ public final class RuneWorkGameTests {
             helper.assertTrue(uses.get(i).rune() == PickaxeRune.values()[i].rune() && uses.get(i).holder() != null,
                     "the pickaxe's runes come in the book's order, got " + uses.get(i).rune() + " at " + i);
         }
-        List<Ritual.RuneUse> smelter = Ritual.usesFor(new ItemStack(Items.BLAST_FURNACE), false);
-        helper.assertTrue(smelter.size() == 1 && smelter.getFirst().holder() == null
-                        && smelter.getFirst().makes().getFirst().is(ModItems.HEX_SMELTER.get()),
-                "Smelting on a blast furnace is what makes the Hex Smelter");
-        helper.assertTrue(smelter.getFirst().cost(1).equals(InfusionRecipe.runeEssence(smelter.getFirst().rune()))
-                && uses.getFirst().cost(2).equals(PickaxeRune.values()[0].cost(2)), "the list shows what the altar draws for each rune");
+        helper.assertTrue(uses.getFirst().cost(2).equals(PickaxeRune.values()[0].cost(2)), "the list shows what the altar draws for each rune");
         List<Ritual.RuneUse> scroll = Ritual.usesFor(new ItemStack(ModItems.BLANK_SCROLL.get()), false);
         helper.assertTrue(scroll.size() == ComplexRunes.COUNT && scroll.stream().allMatch(Ritual.RuneUse::writes),
                 "any rune can be written on a blank scroll");
@@ -173,18 +168,18 @@ public final class RuneWorkGameTests {
     /** Steles of one circle: a rune once, no more runes than the item's slots, never two that clash. */
     @HexTest
     public static void stelesKeepTheCircleSensible(GameTestHelper helper) {
-        ItemStack smelter = new ItemStack(ModItems.HEX_SMELTER.get());
-        var tempering = com.pockyl.hextale.runework.SmelterRune.TEMPERING.rune();
-        var bellows = com.pockyl.hextale.runework.SmelterRune.BELLOWS.rune();
-        var forge = com.pockyl.hextale.runework.SmelterRune.FORGE.rune();
-        var lens = com.pockyl.hextale.runework.SmelterRune.LENS.rune();
-        helper.assertTrue(Ritual.steleRefusal(smelter, List.of(), tempering) == null, "the first rune goes");
-        helper.assertTrue(Ritual.steleRefusal(smelter, List.of(tempering), tempering) != null, "the same rune twice does not");
-        helper.assertTrue(Ritual.steleRefusal(smelter, List.of(tempering, bellows), forge) == null, "the third fills the last slot");
-        helper.assertTrue(Ritual.steleRefusal(smelter, List.of(tempering, bellows, forge), lens) != null, "a fourth has no slot");
-        // A rune the smelter already carries takes no new slot: its stars may still be raised.
-        ItemStack carrying = smelter.copy();
-        RuneHolder.SMELTER.set(carrying, PickaxeRunes.EMPTY.with(lens, 1));
+        ItemStack pylon = new ItemStack(ModItems.GATHERING_PYLON.get());
+        var tempering = com.pockyl.hextale.runework.PylonRune.SHIFT.rune();
+        var bellows = com.pockyl.hextale.runework.PylonRune.MOTOR.rune();
+        var forge = com.pockyl.hextale.runework.PylonRune.LIFT.rune();
+        var lens = com.pockyl.hextale.runework.PylonRune.LENS.rune();
+        helper.assertTrue(Ritual.steleRefusal(pylon, List.of(), tempering) == null, "the first rune goes");
+        helper.assertTrue(Ritual.steleRefusal(pylon, List.of(tempering), tempering) != null, "the same rune twice does not");
+        helper.assertTrue(Ritual.steleRefusal(pylon, List.of(tempering, bellows), forge) == null, "the third fills the last slot");
+        helper.assertTrue(Ritual.steleRefusal(pylon, List.of(tempering, bellows, forge), lens) != null, "a fourth has no slot");
+        // A rune the pylon already carries takes no new slot: its stars may still be raised.
+        ItemStack carrying = pylon.copy();
+        RuneHolder.PYLON.set(carrying, PickaxeRunes.EMPTY.with(lens, 1));
         helper.assertTrue(Ritual.steleRefusal(carrying, List.of(tempering, bellows), lens) == null, "raising a carried rune goes");
         helper.assertTrue(Ritual.steleRefusal(carrying, List.of(tempering, bellows), forge) != null, "but the carried one counts");
         ItemStack pickaxe = new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get());
@@ -340,7 +335,7 @@ public final class RuneWorkGameTests {
     @HexTest
     public static void anExtraItemSpoilsTheCircle(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), List.of(new ItemStack(ModItems.BRASS_INGOT.get()),
-                new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(Items.DIRT)),
+                new ItemStack(ModItems.BRASS_INGOT.get()), new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), new ItemStack(Items.DIRT)),
                 PICKAXE_ESSENCE);
         altar.startOrAbort(null);
         helper.assertFalse(altar.active(), "a circle with a wrong item does not start");

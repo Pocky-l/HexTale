@@ -90,8 +90,9 @@ public final class QuestGameTests {
                 helper.assertTrue(parent.index() < quest.index(), quest.id() + " follows " + parent.id());
                 helper.assertTrue(parent.kind() != Quest.Kind.WIP, quest.id() + " never waits for a WIP device");
             }
-            helper.assertTrue(quest.parents().isEmpty() == (quest == Guide.BRASS || quest == Guide.UNSTABLE_HEXTECH),
-                    quest.id() + ": only Brass and raw hextech start the guide");
+            helper.assertTrue(quest.parents().isEmpty() == (quest == Guide.UNSTABLE_HEXTECH || quest == Guide.SPHALERITE
+                            || quest == Guide.RESEARCHERS_DIARY),
+                    quest.id() + ": only raw hextech, sphalerite and the diary start the guide");
             for (Quest other : Guide.all()) {
                 if (other.index() > quest.index()) {
                     double distance = Math.hypot(other.x() - quest.x(), other.y() - quest.y());
@@ -109,6 +110,9 @@ public final class QuestGameTests {
     /** What else a step gives besides its own result: things crafted straight from it. */
     private static final Map<String, List<String>> ALSO = Map.of(
             "brass", List.of("hextale:brass_nugget", "hextale:brass_block", "hextale:brass_grate"),
+            "sphalerite", List.of("hextale:raw_zinc", "hextale:raw_zinc_block", "hextale:deepslate_sphalerite_ore"),
+            "zinc", List.of("hextale:zinc_nugget", "hextale:zinc_block"),
+            "hexsteel", List.of("hextale:hexsteel_block"),
             "magic_stone", List.of("hextale:polished_magic_stone", "hextale:magic_bricks", "hextale:magic_brick_slab",
                     "hextale:magic_brick_stairs", "hextale:magic_brick_wall", "hextale:chiseled_magic_bricks", "hextale:magic_stone_pillar"));
 
@@ -116,14 +120,32 @@ public final class QuestGameTests {
     private static Set<Identifier> yields(Quest quest) {
         Set<Identifier> out = new HashSet<>();
         out.add(BuiltInRegistries.ITEM.getKey(quest.icon().getItem()));
-        QuestDisplay display = quest.display();
-        if (display != null && display.result().contains(":") && display.kind() != QuestDisplay.Kind.INFUSION) {
-            out.add(Identifier.parse(display.result()));
-        }
-        if (display != null && display.kind() == QuestDisplay.Kind.INFUSION) {
-            InfusionRecipe recipe = InfusionRecipes.get(false).get(Identifier.parse(display.result()));
-            if (recipe != null) {
-                out.add(BuiltInRegistries.ITEM.getKey(recipe.result().item().value()));
+        for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
+            Identifier id = display.result().contains(":") ? Identifier.parse(display.result()) : null;
+            switch (display.kind()) {
+                case INFUSION -> {
+                    InfusionRecipe recipe = InfusionRecipes.get(false).get(id);
+                    if (recipe != null) {
+                        out.add(BuiltInRegistries.ITEM.getKey(recipe.result().item().value()));
+                    }
+                }
+                case HEX_CRAFTING -> {
+                    var recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(false).get(id);
+                    if (recipe != null) {
+                        out.add(BuiltInRegistries.ITEM.getKey(recipe.result().item().value()));
+                    }
+                }
+                case ALLOY -> {
+                    var recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(false).get(id);
+                    if (recipe != null) {
+                        out.add(BuiltInRegistries.ITEM.getKey(recipe.result().item().value()));
+                    }
+                }
+                default -> {
+                    if (id != null) {
+                        out.add(id);
+                    }
+                }
             }
         }
         ALSO.getOrDefault(quest.id(), List.of()).forEach(id -> out.add(Identifier.parse(id)));
@@ -154,14 +176,11 @@ public final class QuestGameTests {
             if (quest.topic() != null) {
                 helper.assertTrue(ancestors(quest).contains(Guide.INK), quest.id() + " is researched, so it comes after the ink");
             }
-            QuestDisplay display = quest.display();
-            if (display == null) {
-                continue;
-            }
             Set<Quest> before = ancestors(quest);
             Set<Identifier> available = new HashSet<>();
             before.forEach(step -> available.addAll(yields(step)));
             List<Identifier> needed = new ArrayList<>();
+            for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
             switch (display.kind()) {
                 case SHAPED, SHAPELESS, SCHEME -> display.ingredients().stream().filter(id -> !id.isEmpty() && !id.startsWith("#"))
                         .map(Identifier::parse).forEach(needed::add);
@@ -178,8 +197,25 @@ public final class QuestGameTests {
                         part.items().findFirst().ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
                     }
                 }
+                case HEX_CRAFTING -> {
+                    var recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(false).get(Identifier.parse(display.result()));
+                    helper.assertTrue(recipe != null, quest.id() + ": workbench recipe " + display.result() + " exists");
+                    helper.assertTrue(before.contains(Guide.HEX_WORKBENCH), quest.id() + " comes after the Hex Workbench");
+                    for (var cell : recipe.grid()) {
+                        cell.flatMap(part -> part.items().findFirst()).ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
+                    }
+                }
+                case ALLOY -> {
+                    var recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(false).get(Identifier.parse(display.result()));
+                    helper.assertTrue(recipe != null, quest.id() + ": alloy " + display.result() + " exists");
+                    helper.assertTrue(before.contains(Guide.HEX_FURNACE), quest.id() + " comes after the Hex Furnace");
+                    for (var input : recipe.inputs()) {
+                        input.ingredient().items().findFirst().ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
+                    }
+                }
                 default -> {
                 }
+            }
             }
             for (Identifier id : needed) {
                 if (id.getNamespace().equals(Hextale.MOD_ID)) {
@@ -222,14 +258,22 @@ public final class QuestGameTests {
     @HexTest
     public static void theGuideBranchesEarly(GameTestHelper helper) {
         RuneKnowledge knowledge = new RuneKnowledge();
-        helper.assertTrue(Guide.visible(Guide.BRASS, knowledge) && Guide.visible(Guide.UNSTABLE_HEXTECH, knowledge), "two ways to begin");
-        knowledge.completeQuest(Guide.BRASS);
-        for (Quest quest : List.of(Guide.RESEARCH_TABLE, Guide.ALEMBIC, Guide.RESEARCHERS_GOGGLES)) {
-            helper.assertTrue(Guide.open(quest, knowledge), quest.id() + " opens with brass");
-        }
-        helper.assertFalse(Guide.open(Guide.RESEARCHERS_DIARY, knowledge), "the diary also needs raw hextech");
+        helper.assertTrue(Guide.visible(Guide.UNSTABLE_HEXTECH, knowledge) && Guide.visible(Guide.SPHALERITE, knowledge)
+                && Guide.visible(Guide.RESEARCHERS_DIARY, knowledge), "three ways to begin");
         knowledge.completeQuest(Guide.UNSTABLE_HEXTECH);
-        helper.assertTrue(Guide.open(Guide.RESEARCHERS_DIARY, knowledge), "brass and hextech open the diary");
+        knowledge.completeQuest(Guide.HEXTECH_DUST);
+        helper.assertTrue(Guide.open(Guide.HEX_WORKBENCH, knowledge) && Guide.open(Guide.HEX_FURNACE, knowledge),
+                "dust opens the workbench and the furnace at once");
+        helper.assertFalse(Guide.open(Guide.BRASS, knowledge), "brass also needs zinc");
+        knowledge.completeQuest(Guide.HEX_FURNACE);
+        knowledge.completeQuest(Guide.SPHALERITE);
+        knowledge.completeQuest(Guide.ZINC);
+        helper.assertTrue(Guide.open(Guide.BRASS, knowledge), "the furnace and zinc open brass");
+        knowledge.completeQuest(Guide.BRASS);
+        knowledge.completeQuest(Guide.HEX_WORKBENCH);
+        for (Quest quest : List.of(Guide.RESEARCH_TABLE, Guide.ALEMBIC, Guide.RESEARCHERS_GOGGLES)) {
+            helper.assertTrue(Guide.open(quest, knowledge), quest.id() + " opens with brass on the workbench");
+        }
         helper.succeed();
     }
 
@@ -243,10 +287,10 @@ public final class QuestGameTests {
             knowledge.completeQuest(quest);
         }
         helper.assertTrue(Guide.canResearch(ResearchTopics.CIRCLE, knowledge), "the ink opens the circle's research");
-        helper.assertFalse(Guide.canResearch(ResearchTopics.HEXTECH_GEMSTONE, knowledge), "the gemstone waits for the pedestal");
+        helper.assertFalse(Guide.canResearch(ResearchTopics.LAPIDARY, knowledge), "the lapidary waits for the pedestal");
         knowledge.completeQuest(Guide.HEXTECH_ALTAR);
         knowledge.completeQuest(Guide.PEDESTAL);
-        helper.assertTrue(Guide.canResearch(ResearchTopics.HEXTECH_GEMSTONE, knowledge), "the pedestal opens the gemstone");
+        helper.assertTrue(Guide.canResearch(ResearchTopics.LAPIDARY, knowledge), "the pedestal opens the lapidary");
         helper.assertFalse(Guide.canResearch(ResearchTopics.RADIANT_PICKAXE, knowledge), "the radiant pickaxe is far away in the fog");
         helper.succeed();
     }

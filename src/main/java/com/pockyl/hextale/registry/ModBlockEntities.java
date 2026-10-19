@@ -13,7 +13,7 @@ import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.block.PumpBlockEntity;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
-import com.pockyl.hextale.block.HexSmelterBlockEntity;
+import com.pockyl.hextale.block.HexFurnaceBlockEntity;
 import com.pockyl.hextale.block.HextechAltarBlockEntity;
 import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
@@ -26,8 +26,14 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("research_table",
                     () -> new BlockEntityType<>(ResearchTableBlockEntity::new, ModBlocks.RESEARCH_TABLE.get()));
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HexSmelterBlockEntity>> HEX_SMELTER =
-            BLOCK_ENTITIES.register("hex_smelter", () -> new BlockEntityType<>(HexSmelterBlockEntity::new, ModBlocks.HEX_SMELTER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexWorkbenchBlockEntity>> HEX_WORKBENCH =
+            BLOCK_ENTITIES.register("hex_workbench", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexWorkbenchBlockEntity::new,
+                    ModBlocks.HEX_WORKBENCH.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.LapidaryBlockEntity>> LAPIDARY =
+            BLOCK_ENTITIES.register("hex_lapidary", () -> new BlockEntityType<>(com.pockyl.hextale.block.LapidaryBlockEntity::new,
+                    ModBlocks.HEX_LAPIDARY.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HexFurnaceBlockEntity>> HEX_FURNACE =
+            BLOCK_ENTITIES.register("hex_furnace", () -> new BlockEntityType<>(HexFurnaceBlockEntity::new, ModBlocks.HEX_FURNACE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexPylonBlockEntity>> HEX_PYLON =
             BLOCK_ENTITIES.register("hex_pylon", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexPylonBlockEntity::new,
                     ModBlocks.GATHERING_PYLON.get(), ModBlocks.SENDING_PYLON.get(), ModBlocks.RELAY_PYLON.get(),

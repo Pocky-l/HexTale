@@ -9,7 +9,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.menu.AlembicMenu;
-import com.pockyl.hextale.menu.HexSmelterMenu;
+import com.pockyl.hextale.menu.HexFurnaceMenu;
 import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.menu.SeparatorMenu;
 
@@ -23,8 +23,12 @@ public final class ModMenus {
             MENUS.register("alembic", () -> IMenuTypeExtension.create(AlembicMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<com.pockyl.hextale.menu.ItemFilterMenu>> ITEM_FILTER =
             MENUS.register("item_filter", () -> IMenuTypeExtension.create(com.pockyl.hextale.menu.ItemFilterMenu::new));
-    public static final DeferredHolder<MenuType<?>, MenuType<HexSmelterMenu>> HEX_SMELTER =
-            MENUS.register("hex_smelter", () -> IMenuTypeExtension.create(HexSmelterMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<com.pockyl.hextale.menu.HexWorkbenchMenu>> HEX_WORKBENCH =
+            MENUS.register("hex_workbench", () -> IMenuTypeExtension.create(com.pockyl.hextale.menu.HexWorkbenchMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<com.pockyl.hextale.menu.LapidaryMenu>> LAPIDARY =
+            MENUS.register("hex_lapidary", () -> IMenuTypeExtension.create(com.pockyl.hextale.menu.LapidaryMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<HexFurnaceMenu>> HEX_FURNACE =
+            MENUS.register("hex_furnace", () -> IMenuTypeExtension.create(HexFurnaceMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<SeparatorMenu>> SEPARATOR =
             MENUS.register("separator", () -> IMenuTypeExtension.create(SeparatorMenu::new));
 

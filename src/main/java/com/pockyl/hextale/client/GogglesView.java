@@ -191,11 +191,6 @@ public final class GogglesView {
             rows.add(Row.heading(Component.translatable(KEY + "water", alembic.water(), AlembicBlockEntity.WATER_CAPACITY)));
             return new Reading(name, rows);
         }
-        if (entity instanceof com.pockyl.hextale.block.HexSmelterBlockEntity smelter) {
-            contents(rows, smelter.tank().contents());
-            rows.add(Row.heading(Component.translatable(KEY + "filled", smelter.tank().amount(), smelter.tank().capacity())));
-            return new Reading(name, rows);
-        }
         if (entity instanceof SeparatorBlockEntity separator) {
             section(rows, KEY + "mix", separator.mix().contents());
             section(rows, KEY + "concentrate", separator.extract().contents());

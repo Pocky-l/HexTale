@@ -12,14 +12,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.DrainValveBlock;
 import com.pockyl.hextale.block.DrainValveBlockEntity;
+import com.pockyl.hextale.Config;
+import com.pockyl.hextale.entity.ThrownHextech;
 import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.event.LightningEvents;
 import com.pockyl.hextale.item.UnstableHextechItem;
 import com.pockyl.hextale.registry.ModBlocks;
+import com.pockyl.hextale.registry.ModEntities;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.Essence;
 
@@ -91,7 +96,61 @@ public final class HextechGameTests {
             Vec3 at = helper.absoluteVec(new Vec3(1.5, 1, 0.5));
             helper.getLevel().explode(null, at.x, at.y, at.z, 1.0F, Level.ExplosionInteraction.NONE);
             helper.assertTrue(orb.isRemoved(), "the orb burst in the blast");
+            AABB box = new AABB(helper.absoluteVec(new Vec3(-2, 0, -2)), helper.absoluteVec(new Vec3(3, 4, 3)));
+            helper.assertTrue(count(helper, ModItems.HEXTECH_DUST.get(), box) == 3 * UnstableHextechItem.BURST_DUST, "the burst left dust");
             helper.succeed();
+        });
+    }
+
+    private static int count(GameTestHelper helper, net.minecraft.world.item.Item item, AABB box) {
+        return helper.getLevel().getEntitiesOfClass(ItemEntity.class, box, entity -> entity.getItem().is(item)).stream()
+                .mapToInt(entity -> entity.getItem().getCount()).sum();
+    }
+
+    /**
+     * Lightning on one block of a 3x3x3 amethyst cube runs through all of it, ring by ring: every amethyst block turns
+     * into orbs, the budding amethyst in the middle carries the wave and stays.
+     */
+    @HexTest(maxTicks = 120)
+    public static void lightningRunsThroughTouchingAmethyst(GameTestHelper helper) {
+        for (int x = 0; x < 3; x++) {
+            for (int y = 1; y < 4; y++) {
+                for (int z = 0; z < 3; z++) {
+                    helper.setBlock(new BlockPos(x, y, z), x == 1 && y == 2 && z == 1 ? Blocks.BUDDING_AMETHYST : Blocks.AMETHYST_BLOCK);
+                }
+            }
+        }
+        LightningEvents.strike(helper.getLevel(), helper.absolutePos(new BlockPos(1, 3, 1)));
+        helper.assertBlockPresent(Blocks.AIR, new BlockPos(1, 3, 1));
+        helper.assertBlockPresent(Blocks.AMETHYST_BLOCK, new BlockPos(0, 1, 0));
+        AABB box = new AABB(helper.absoluteVec(new Vec3(-4, -1, -4)), helper.absoluteVec(new Vec3(7, 8, 7)));
+        helper.succeedWhen(() -> {
+            helper.assertFalse(LightningEvents.waving(), "the wave ran out");
+            helper.assertBlockPresent(Blocks.AIR, new BlockPos(0, 1, 0));
+            helper.assertBlockPresent(Blocks.AIR, new BlockPos(2, 3, 2));
+            helper.assertBlockPresent(Blocks.BUDDING_AMETHYST, new BlockPos(1, 2, 1));
+            int orbs = count(helper, ModItems.UNSTABLE_HEXTECH.get(), box);
+            helper.assertTrue(orbs >= 26 * Config.MIN_ORBS.get() && orbs <= 26 * Math.max(Config.MIN_ORBS.get(), Config.MAX_ORBS.get()),
+                    "26 blocks gave their orbs, got " + orbs);
+            helper.setBlock(new BlockPos(1, 2, 1), Blocks.AIR);
+        });
+    }
+
+    /** A thrown orb shatters on the ground into hextech dust. */
+    @HexTest(maxTicks = 80)
+    public static void aThrownOrbShattersIntoDust(GameTestHelper helper) {
+        floor(helper);
+        Vec3 at = helper.absoluteVec(new Vec3(0.5, 4, 0.5));
+        ThrownHextech orb = new ThrownHextech(ModEntities.THROWN_HEXTECH.get(), helper.getLevel());
+        orb.setPos(at.x, at.y, at.z);
+        orb.setItem(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()));
+        orb.setDeltaMovement(0, -0.5, 0);
+        helper.getLevel().addFreshEntity(orb);
+        AABB box = new AABB(helper.absoluteVec(new Vec3(-2, 0, -2)), helper.absoluteVec(new Vec3(3, 6, 3)));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(orb.isRemoved(), "the orb shattered");
+            int dust = count(helper, ModItems.HEXTECH_DUST.get(), box);
+            helper.assertTrue(dust >= ThrownHextech.MIN_DUST && dust <= ThrownHextech.MAX_DUST, "the orb left its dust, got " + dust);
         });
     }
 

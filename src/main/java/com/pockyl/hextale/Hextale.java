@@ -43,6 +43,7 @@ public final class Hextale {
     public Hextale(IEventBus modBus, ModContainer container) {
         ModBlocks.register(modBus);
         ModItems.register(modBus);
+        com.pockyl.hextale.registry.ModEntities.register(modBus);
         ModDataComponents.register(modBus);
         ModBlockEntities.register(modBus);
         ModCapabilities.register(modBus);
@@ -88,8 +89,17 @@ public final class Hextale {
             output.accept(ModItems.MAGIC_BRICK_WALL);
             output.accept(ModItems.CHISELED_MAGIC_BRICKS);
             output.accept(ModItems.HEXTECH_LAMP);
-            output.accept(ModItems.HEX_SMELTER);
+            output.accept(ModItems.HEX_WORKBENCH);
+            output.accept(ModItems.HEX_FURNACE);
+            output.accept(ModItems.HEX_LAPIDARY);
+            output.accept(ModItems.CUTTING_DISC);
+            output.accept(ModItems.MASTER_CUTTING_DISC);
             output.accept(ModItems.BRASS_BLOCK);
+            output.accept(ModItems.SPHALERITE_ORE);
+            output.accept(ModItems.DEEPSLATE_SPHALERITE_ORE);
+            output.accept(ModItems.RAW_ZINC_BLOCK);
+            output.accept(ModItems.ZINC_BLOCK);
+            output.accept(ModItems.HEXSTEEL_BLOCK);
             output.accept(ModItems.BRASS_GRATE);
             output.accept(ModItems.MAGIC_STONE_PILLAR);
             output.accept(ModItems.GATHERING_PYLON);
@@ -101,9 +111,15 @@ public final class Hextale {
             ModItems.PICKAXES.values().forEach(output::accept);
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
+            output.accept(ModItems.HEXTECH_DUST);
+            output.accept(ModItems.HEXTECH_CRYSTAL);
             output.accept(ModItems.HEXTECH_GEMSTONE);
             output.accept(ModItems.BRASS_INGOT);
             output.accept(ModItems.BRASS_NUGGET);
+            output.accept(ModItems.RAW_ZINC);
+            output.accept(ModItems.ZINC_INGOT);
+            output.accept(ModItems.ZINC_NUGGET);
+            output.accept(ModItems.HEXSTEEL_INGOT);
             output.accept(exampleScroll());
             output.accept(ModItems.BLANK_SCROLL);
             com.pockyl.hextale.research.ResearchTopics.all().forEach(topic -> output.accept(com.pockyl.hextale.item.ResearchNotesItem.of(topic)));
@@ -120,7 +136,14 @@ public final class Hextale {
     }
 
     private static void addToVanillaTabs(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+        if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
+            event.accept(ModItems.SPHALERITE_ORE);
+            event.accept(ModItems.DEEPSLATE_SPHALERITE_ORE);
+            event.accept(ModItems.RAW_ZINC_BLOCK);
+        } else if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+            event.accept(ModItems.HEX_WORKBENCH);
+            event.accept(ModItems.HEX_FURNACE);
+            event.accept(ModItems.HEX_LAPIDARY);
             event.accept(ModItems.RESEARCH_TABLE);
             event.accept(ModItems.HEXTECH_ALTAR);
             event.accept(ModItems.PEDESTAL);
@@ -137,7 +160,13 @@ public final class Hextale {
         } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItems.BRASS_INGOT);
             event.accept(ModItems.BRASS_NUGGET);
+            event.accept(ModItems.RAW_ZINC);
+            event.accept(ModItems.ZINC_INGOT);
+            event.accept(ModItems.ZINC_NUGGET);
+            event.accept(ModItems.HEXSTEEL_INGOT);
             event.accept(ModItems.UNSTABLE_HEXTECH);
+            event.accept(ModItems.HEXTECH_DUST);
+            event.accept(ModItems.HEXTECH_CRYSTAL);
             event.accept(ModItems.HEXTECH_GEMSTONE);
         } else if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(ModItems.RESEARCHERS_DIARY);

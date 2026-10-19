@@ -41,11 +41,6 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("pickaxe_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
 
-    /** The runes burned into a Hex Smelter (on its item; the block entity keeps them while placed). */
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SMELTER_RUNES =
-            COMPONENTS.registerComponentType("smelter_runes", builder -> builder
-                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
-
     /** The runes burned into a hex pylon (on its item; the block entity keeps them while placed). */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> PYLON_RUNES =
             COMPONENTS.registerComponentType("pylon_runes", builder -> builder

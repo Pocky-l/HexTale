@@ -61,7 +61,10 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addRecipeCategories(new BoilingCategory(registration.getJeiHelpers().getGuiHelper()),
                 new SeparationCategory(registration.getJeiHelpers().getGuiHelper()),
                 new InfusionCategory(registration.getJeiHelpers().getGuiHelper()),
-                new RuneBurningCategory(registration.getJeiHelpers().getGuiHelper()));
+                new RuneBurningCategory(registration.getJeiHelpers().getGuiHelper()),
+                new HexCraftingCategory(registration.getJeiHelpers().getGuiHelper()),
+                new AlloyingCategory(registration.getJeiHelpers().getGuiHelper()),
+                new HextechWorkingCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -82,7 +85,15 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addRecipes(InfusionCategory.TYPE, InfusionRecipes.get(true).entrySet().stream()
                 .map(entry -> new InfusionCategory.Recipe(entry.getKey(), entry.getValue())).toList());
         registration.addRecipes(RuneBurningCategory.TYPE, RuneBurningCategory.Recipe.all());
-        info(registration, ModItems.HEX_SMELTER.get(), "hex_smelter");
+        registration.addRecipes(HexCraftingCategory.TYPE, com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(true).entrySet().stream()
+                .map(entry -> new HexCraftingCategory.Recipe(entry.getKey(), entry.getValue())).toList());
+        registration.addRecipes(AlloyingCategory.TYPE, com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(true).entrySet().stream()
+                .map(entry -> new AlloyingCategory.Recipe(entry.getKey(), entry.getValue())).toList());
+        registration.addRecipes(HextechWorkingCategory.TYPE, HextechWorkingCategory.all());
+        info(registration, ModItems.HEX_WORKBENCH.get(), "hex_workbench");
+        info(registration, ModItems.HEX_LAPIDARY.get(), "hex_lapidary");
+        info(registration, ModItems.HEXTECH_DUST.get(), "hextech_dust");
+        info(registration, ModItems.HEX_FURNACE.get(), "hex_furnace");
         info(registration, ModItems.GATHERING_PYLON.get(), "gathering_pylon");
         info(registration, ModItems.SENDING_PYLON.get(), "sending_pylon");
         info(registration, ModItems.RELAY_PYLON.get(), "relay_pylon");
@@ -115,7 +126,9 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addCraftingStation(SeparationCategory.TYPE, ModItems.SEPARATOR.get());
         registration.addCraftingStation(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.PEDESTAL.get(), ModItems.RUNE_STELE.get());
         registration.addCraftingStation(RuneBurningCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
-        registration.addCraftingStation(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_SMELTER.get());
+        registration.addCraftingStation(HexCraftingCategory.TYPE, ModItems.HEX_WORKBENCH.get());
+        registration.addCraftingStation(AlloyingCategory.TYPE, ModItems.HEX_FURNACE.get());
+        registration.addCraftingStation(HextechWorkingCategory.TYPE, ModItems.HEX_LAPIDARY.get());
     }
 
     static ItemStack concentrate(Essence essence) {

@@ -1,0 +1,15 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "hextale:block/hex_lapidary"
+      },
+      {
+        "type": "minecraft:model",
+        "model": "hextale:block/hex_lapidary_disc"
+      }
+    ]
+  }
+}

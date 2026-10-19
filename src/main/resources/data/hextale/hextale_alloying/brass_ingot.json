@@ -1,0 +1,18 @@
+{
+  "inputs": [
+    {
+      "ingredient": "minecraft:copper_ingot",
+      "count": 3
+    },
+    {
+      "ingredient": "#c:ingots/zinc",
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "hextale:brass_ingot",
+    "count": 4
+  },
+  "time": 200,
+  "experience": 0.7
+}

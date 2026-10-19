@@ -99,10 +99,6 @@ public final class Quests {
         return player -> player.getInventory().contains(stack -> ModItems.isPylon(stack) && RuneHolder.PYLON.runes(stack).count() >= runes);
     }
 
-    static Predicate<ServerPlayer> smelterRunes(int runes) {
-        return player -> player.getInventory().contains(stack -> stack.is(ModItems.HEX_SMELTER.get())
-                && RuneHolder.SMELTER.runes(stack).count() >= runes);
-    }
 
     /** A bottle of concentrate in the inventory, or a Separator open on the screen with concentrate in it. */
     static boolean concentrate(ServerPlayer player) {

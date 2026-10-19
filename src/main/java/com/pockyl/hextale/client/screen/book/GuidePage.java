@@ -43,7 +43,6 @@ import com.pockyl.hextale.runework.PickaxeRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.PylonRune;
 import com.pockyl.hextale.runework.RuneHolder;
-import com.pockyl.hextale.runework.SmelterRune;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +87,7 @@ final class GuidePage {
     @Nullable
     private Quest focus;
     private int scroll;
-    /** The rune chosen in a runes picture (pickaxe or smelter); where its grid was drawn last (screen coordinates). */
+    /** The rune chosen in a runes picture (pickaxe or pylon); where its grid was drawn last (screen coordinates). */
     @Nullable
     private ComplexRune optionRune;
     private int runeGridX = Integer.MIN_VALUE;
@@ -663,8 +662,8 @@ final class GuidePage {
         if (quest.scene() != null) {
             h += SCENE_HEIGHT + 8;
         }
-        if (quest.display() != null) {
-            h += displayHeight(quest.display()) + 8;
+        for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
+            h += displayHeight(display) + 8;
         }
         h += bodyLines(quest).size() * 10;
         if (quest.kind() == Quest.Kind.WIP) {
@@ -761,8 +760,7 @@ final class GuidePage {
             CircleDiorama.draw(graphics, quest.scene(), now / 50F, ix + 1, y + 1, ix + sw - 1, y + SCENE_HEIGHT - 1, SCENE_SCALE);
             y += SCENE_HEIGHT + 8;
         }
-        QuestDisplay display = quest.display();
-        if (display != null) {
+        for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
             y += 2;
             List<FormattedCharSequence> hover = renderDisplay(graphics, quest, display, ix, y, mouseIn ? mouseX : -1, mouseY, now);
             if (hover != null) {
@@ -837,9 +835,10 @@ final class GuidePage {
             case REAGENTS -> 30;
             case INFUSION -> infusionHeight(display);
             case PICKAXE_RUNES -> optionsHeight(RuneHolder.PICKAXE);
-            case SMELTER_RUNES -> optionsHeight(RuneHolder.SMELTER);
             case PYLON_RUNES -> optionsHeight(RuneHolder.PYLON);
             case MULTIBLOCK -> multiblockHeight(display);
+            case HEX_CRAFTING -> SLOT * 3 + 10;
+            case ALLOY -> SLOT + 10;
         };
     }
 
@@ -913,10 +912,76 @@ final class GuidePage {
             }
             case INFUSION -> tooltip = renderInfusion(graphics, display, x, y, mouseX, mouseY, now);
             case PICKAXE_RUNES -> tooltip = renderOptions(graphics, RuneHolder.PICKAXE, x, y, mouseX, mouseY, now);
-            case SMELTER_RUNES -> tooltip = renderOptions(graphics, RuneHolder.SMELTER, x, y, mouseX, mouseY, now);
             case PYLON_RUNES -> tooltip = renderOptions(graphics, RuneHolder.PYLON, x, y, mouseX, mouseY, now);
             case MULTIBLOCK -> tooltip = renderMultiblock(graphics, display, x, y, mouseX, mouseY, now);
+            case HEX_CRAFTING -> tooltip = renderHexCrafting(graphics, display, x, y, mouseX, mouseY, now);
+            case ALLOY -> tooltip = renderAlloy(graphics, display, x, y, mouseX, mouseY, now);
         }
+        return tooltip;
+    }
+
+    // ---- The Hex Workbench and the Hex Furnace --------------------------------------------------------------------------
+
+    /** A Hex Workbench recipe: the 3 x 3 grid, the arrow, the result, and under it the bench and the charge it spends. */
+    @Nullable
+    private List<FormattedCharSequence> renderHexCrafting(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
+                                                          int mouseY, long now) {
+        com.pockyl.hextale.crafting.HexCraftingRecipe recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(true)
+                .get(Identifier.parse(display.result()));
+        int centre = x + innerWidth() / 2;
+        if (recipe == null) {
+            PixelArt.flush(graphics);
+            graphics.centeredText(font, Component.translatable("book.hextale.quest.infusion.missing"), centre, y + 20, MUTED);
+            return null;
+        }
+        List<FormattedCharSequence> tooltip = null;
+        int gridWidth = SLOT * 3;
+        int left = centre - (gridWidth + 26 + SLOT) / 2;
+        List<java.util.Optional<Ingredient>> cells = recipe.grid();
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = cells.get(i).map(ingredient -> cycle(ingredient, now, 0)).orElse(ItemStack.EMPTY);
+            tooltip = orTooltip(tooltip, slot(graphics, stack, left + i % 3 * SLOT, y + i / 3 * SLOT, mouseX, mouseY, null));
+        }
+        int ax = left + gridWidth + 4;
+        arrow(graphics, ax, y + SLOT + SLOT / 2);
+        tooltip = orTooltip(tooltip, slot(graphics, recipe.result().create(), ax + 22, y + SLOT, mouseX, mouseY, null));
+        PixelArt.flush(graphics);
+        Component caption = Component.translatable(recipe.shapeless() ? "book.hextale.quest.hex_crafting.shapeless" : "book.hextale.quest.hex_crafting",
+                recipe.charge());
+        graphics.centeredText(font, caption, centre, y + SLOT * 3 + 2, 0xFF7FD8FF);
+        return tooltip;
+    }
+
+    /** A Hex Furnace alloy: the metals with their counts, plus signs, the arrow and the ingot, the furnace named under them. */
+    @Nullable
+    private List<FormattedCharSequence> renderAlloy(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
+                                                    int mouseY, long now) {
+        com.pockyl.hextale.crafting.AlloyRecipe recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(true)
+                .get(Identifier.parse(display.result()));
+        int centre = x + innerWidth() / 2;
+        if (recipe == null) {
+            PixelArt.flush(graphics);
+            graphics.centeredText(font, Component.translatable("book.hextale.quest.infusion.missing"), centre, y + 8, MUTED);
+            return null;
+        }
+        List<FormattedCharSequence> tooltip = null;
+        int count = recipe.inputs().size();
+        int width = count * SLOT + (count - 1) * 10 + 26 + SLOT;
+        int sx = centre - width / 2;
+        for (int i = 0; i < count; i++) {
+            var input = recipe.inputs().get(i);
+            ItemStack stack = cycle(input.ingredient(), now, i).copyWithCount(input.count());
+            tooltip = orTooltip(tooltip, slot(graphics, stack, sx, y, mouseX, mouseY, null));
+            sx += SLOT;
+            if (i < count - 1) {
+                plus(graphics, sx + 5, y + SLOT / 2);
+                sx += 10;
+            }
+        }
+        arrow(graphics, sx + 4, y + SLOT / 2);
+        tooltip = orTooltip(tooltip, slot(graphics, recipe.result().create(), sx + 26, y, mouseX, mouseY, null));
+        PixelArt.flush(graphics);
+        graphics.centeredText(font, Component.translatable("book.hextale.quest.alloy"), centre, y + SLOT + 2, 0xFFFFB060);
         return tooltip;
     }
 
@@ -1083,7 +1148,7 @@ final class GuidePage {
         return tooltip;
     }
 
-    // ---- Runes a pickaxe or the smelter takes ---------------------------------------------------------------------------
+    // ---- Runes a pickaxe or a pylon takes ---------------------------------------------------------------------------
 
     /** One rune a holder takes: what it does, how much per strength, its cost per star and what it is incompatible with. */
     private record Option(ComplexRune rune, String descriptionKey, String valueKey, IntFunction<String> amount, EssenceMix costPerStar,
@@ -1243,7 +1308,6 @@ final class GuidePage {
         }
         RuneHolder holder = switch (display.kind()) {
             case PICKAXE_RUNES -> RuneHolder.PICKAXE;
-            case SMELTER_RUNES -> RuneHolder.SMELTER;
             case PYLON_RUNES -> RuneHolder.PYLON;
             default -> null;
         };

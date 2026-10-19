@@ -241,8 +241,8 @@
       }
     ]
   },
-  "smelter.roar": {
-    "subtitle": "subtitles.hextale.smelter.roar",
+  "furnace.roar": {
+    "subtitle": "subtitles.hextale.furnace.roar",
     "sounds": [
       {
         "name": "hextale:smelter_roar1",
@@ -349,6 +349,32 @@
     "sounds": [
       {
         "name": "hextale:pylon_unlink",
+        "volume": 0.8
+      }
+    ]
+  },
+  "workbench.craft": {
+    "subtitle": "subtitles.hextale.workbench.craft",
+    "sounds": [
+      {
+        "name": "hextale:workbench_craft1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:workbench_craft2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:workbench_craft3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "block.awaken": {
+    "subtitle": "subtitles.hextale.block.awaken",
+    "sounds": [
+      {
+        "name": "hextale:block_awaken",
         "volume": 0.8
       }
     ]

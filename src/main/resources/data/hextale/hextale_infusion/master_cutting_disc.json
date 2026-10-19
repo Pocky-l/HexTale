@@ -1,0 +1,16 @@
+{
+  "center": "hextale:hexsteel_ingot",
+  "pedestals": [
+    "minecraft:diamond",
+    "minecraft:diamond",
+    "hextale:hextech_dust",
+    "hextale:hextech_dust",
+    "hextale:hextech_crystal"
+  ],
+  "essences": {
+    "crystal": 24,
+    "order": 16,
+    "forge": 12
+  },
+  "result": "hextale:master_cutting_disc"
+}

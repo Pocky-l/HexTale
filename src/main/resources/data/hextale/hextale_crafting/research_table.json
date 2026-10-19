@@ -1,0 +1,16 @@
+{
+  "pattern": [
+    "BBB",
+    "PSP",
+    "P P"
+  ],
+  "key": {
+    "B": "hextale:brass_ingot",
+    "P": "#minecraft:planks",
+    "S": "minecraft:bookshelf"
+  },
+  "result": {
+    "id": "hextale:research_table"
+  },
+  "charge": 2
+}

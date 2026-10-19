@@ -12,17 +12,7 @@
       "conditions": {
         "items": [
           {
-            "items": "hextale:unstable_hextech"
-          }
-        ]
-      }
-    },
-    "has_item_1": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": "hextale:brass_ingot"
+            "items": "minecraft:amethyst_shard"
           }
         ]
       }
@@ -31,8 +21,7 @@
   "requirements": [
     [
       "has_recipe",
-      "has_item_0",
-      "has_item_1"
+      "has_item_0"
     ]
   ],
   "rewards": {

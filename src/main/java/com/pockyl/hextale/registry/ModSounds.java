@@ -52,8 +52,12 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> RITUAL_COLLAPSE = register("ritual.collapse");
     /** A rune settles into a rune stele. */
     public static final DeferredHolder<SoundEvent, SoundEvent> STELE_SET = register("stele.set");
-    /** The Hex Smelter's low roar while it smelts. */
-    public static final DeferredHolder<SoundEvent, SoundEvent> SMELTER_ROAR = register("smelter.roar");
+    /** The Hex Workbench spends a little of its crystal's charge on a craft. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> WORKBENCH_CRAFT = register("workbench.craft");
+    /** Hextech dust sinks into a block and wakes it. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> BLOCK_AWAKEN = register("block.awaken");
+    /** The Hex Furnace's low roar while it burns. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> FURNACE_ROAR = register("furnace.roar");
     /** A creative scroll unrolling: everything learned, or everything forgotten. */
     public static final DeferredHolder<SoundEvent, SoundEvent> SCROLL_KNOWLEDGE = register("scroll.knowledge");
     /** Essence siphoned out of a jar into a machine that draws from the jars around it. */

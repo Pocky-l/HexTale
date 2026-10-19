@@ -1,7 +1,32 @@
 {
   "mc": "26.3",
   "allow": [
-    {"model": "hextale:block/magic_brick_wall_*", "element": "*", "face": "*", "flags": ["coplanar"],
-     "why": "vanilla wall templates: post and side tops meet in one plane, as in every vanilla wall"}
+    {
+      "model": "hextale:block/magic_brick_wall_*",
+      "element": "*",
+      "face": "*",
+      "flags": [
+        "coplanar"
+      ],
+      "why": "vanilla wall templates: post and side tops meet in one plane, as in every vanilla wall"
+    },
+    {
+      "model": "hextale:block/hex_workbench",
+      "element": "*",
+      "face": "*",
+      "flags": [
+        "outside"
+      ],
+      "why": "the iron clamp holding the crystal and the amethyst shards stand above the worktop; the renderer box covers them"
+    },
+    {
+      "model": "hextale:block/hex_lapidary",
+      "element": "*",
+      "face": "*",
+      "flags": [
+        "outside"
+      ],
+      "why": "the crystal clamp arm rises over the disc and the treadle tilts out at the front"
+    }
   ]
 }

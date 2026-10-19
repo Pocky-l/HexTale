@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  */
 public enum RuneHolder {
     PICKAXE,
-    SMELTER,
     /** The hex pylons share one set of runes. */
     PYLON;
 
@@ -30,16 +29,12 @@ public enum RuneHolder {
         if (HextechPickaxeItem.is(stack)) {
             return PICKAXE;
         }
-        if (stack.is(ModItems.HEX_SMELTER.get())) {
-            return SMELTER;
-        }
         return ModItems.isPylon(stack) ? PYLON : null;
     }
 
     public DataComponentType<PickaxeRunes> component() {
         return switch (this) {
             case PICKAXE -> ModDataComponents.PICKAXE_RUNES.get();
-            case SMELTER -> ModDataComponents.SMELTER_RUNES.get();
             case PYLON -> ModDataComponents.PYLON_RUNES.get();
         };
     }
@@ -59,7 +54,6 @@ public enum RuneHolder {
     public int slots() {
         return switch (this) {
             case PICKAXE -> PickaxeRunes.SLOTS;
-            case SMELTER -> SmelterRune.SLOTS;
             case PYLON -> PylonRune.SLOTS;
         };
     }
@@ -68,7 +62,6 @@ public enum RuneHolder {
     public List<ComplexRune> takes() {
         return switch (this) {
             case PICKAXE -> Arrays.stream(PickaxeRune.values()).map(PickaxeRune::rune).toList();
-            case SMELTER -> Arrays.stream(SmelterRune.values()).map(SmelterRune::rune).toList();
             case PYLON -> Arrays.stream(PylonRune.values()).map(PylonRune::rune).toList();
         };
     }
@@ -76,7 +69,6 @@ public enum RuneHolder {
     public boolean takes(ComplexRune rune) {
         return switch (this) {
             case PICKAXE -> PickaxeRune.of(rune) != null;
-            case SMELTER -> SmelterRune.of(rune) != null;
             case PYLON -> PylonRune.of(rune) != null;
         };
     }
@@ -95,7 +87,6 @@ public enum RuneHolder {
     public EssenceMix cost(ComplexRune rune, int stars) {
         return switch (this) {
             case PICKAXE -> Objects.requireNonNull(PickaxeRune.of(rune)).cost(stars);
-            case SMELTER -> Objects.requireNonNull(SmelterRune.of(rune)).cost(stars);
             case PYLON -> Objects.requireNonNull(PylonRune.of(rune)).cost(stars);
         };
     }
@@ -104,7 +95,6 @@ public enum RuneHolder {
     public String descriptionKey(ComplexRune rune) {
         return switch (this) {
             case PICKAXE -> Objects.requireNonNull(PickaxeRune.of(rune)).descriptionKey();
-            case SMELTER -> Objects.requireNonNull(SmelterRune.of(rune)).descriptionKey();
             case PYLON -> Objects.requireNonNull(PylonRune.of(rune)).descriptionKey();
         };
     }
@@ -113,7 +103,6 @@ public enum RuneHolder {
     public String valueKey(ComplexRune rune) {
         return switch (this) {
             case PICKAXE -> Objects.requireNonNull(PickaxeRune.of(rune)).valueKey();
-            case SMELTER -> Objects.requireNonNull(SmelterRune.of(rune)).valueKey();
             case PYLON -> Objects.requireNonNull(PylonRune.of(rune)).valueKey();
         };
     }
@@ -121,7 +110,6 @@ public enum RuneHolder {
     public String amount(ComplexRune rune, int strength) {
         return switch (this) {
             case PICKAXE -> PickaxeEffects.amount(Objects.requireNonNull(PickaxeRune.of(rune)), strength);
-            case SMELTER -> Objects.requireNonNull(SmelterRune.of(rune)).amount(strength);
             case PYLON -> Objects.requireNonNull(PylonRune.of(rune)).amountText(strength);
         };
     }
@@ -130,7 +118,6 @@ public enum RuneHolder {
     public List<ItemStack> items() {
         return switch (this) {
             case PICKAXE -> ModItems.PICKAXES.values().stream().map(item -> new ItemStack(item.get())).toList();
-            case SMELTER -> List.of(new ItemStack(ModItems.HEX_SMELTER.get()));
             case PYLON -> List.of(new ItemStack(ModItems.GATHERING_PYLON.get()), new ItemStack(ModItems.SENDING_PYLON.get()),
                     new ItemStack(ModItems.RELAY_PYLON.get()), new ItemStack(ModItems.SIPHON_PYLON.get()));
         };

@@ -83,7 +83,7 @@ public final class HextaleClient {
                 event.getToolTip().add(1, contents.describe().append(Component.literal(" (" + contents.total() + "/"
                         + EssenceTankBlockEntity.CAPACITY + ")").withStyle(ChatFormatting.GRAY)));
             }
-            // A smelter's or a pylon's runes, like a pickaxe's: name in its colour and stars.
+            // A pylon's runes, like a pickaxe's: name in its colour and stars.
             com.pockyl.hextale.runework.RuneHolder holder = com.pockyl.hextale.runework.RuneHolder.of(stack);
             if (holder != null && holder != com.pockyl.hextale.runework.RuneHolder.PICKAXE) {
                 int line = 1;
@@ -127,19 +127,25 @@ public final class HextaleClient {
     private static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenus.RESEARCH_TABLE.get(), ResearchTableScreen::new);
         event.register(ModMenus.ALEMBIC.get(), AlembicScreen::new);
-        event.register(ModMenus.HEX_SMELTER.get(), com.pockyl.hextale.client.screen.machine.HexSmelterScreen::new);
+        event.register(ModMenus.LAPIDARY.get(), com.pockyl.hextale.client.screen.machine.LapidaryScreen::new);
+        event.register(ModMenus.HEX_WORKBENCH.get(), com.pockyl.hextale.client.screen.machine.HexWorkbenchScreen::new);
+        event.register(ModMenus.HEX_FURNACE.get(), com.pockyl.hextale.client.screen.machine.HexFurnaceScreen::new);
         event.register(ModMenus.ITEM_FILTER.get(), com.pockyl.hextale.client.screen.ItemFilterScreen::new);
         event.register(ModMenus.SEPARATOR.get(), SeparatorScreen::new);
     }
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THROWN_HEXTECH.get(),
+                net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RESEARCH_TABLE.get(), ResearchTableRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ALEMBIC.get(), AlembicRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SEPARATOR.get(), SeparatorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ESSENCE_TANK.get(), EssenceTankRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.BIG_ESSENCE_JAR.get(), com.pockyl.hextale.client.render.BigEssenceJarRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_ALTAR.get(), HextechAltarRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.HEX_SMELTER.get(), com.pockyl.hextale.client.render.HexSmelterRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.LAPIDARY.get(), com.pockyl.hextale.client.render.LapidaryRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.HEX_WORKBENCH.get(), com.pockyl.hextale.client.render.HexWorkbenchRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.HEX_FURNACE.get(), com.pockyl.hextale.client.render.HexFurnaceRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_PYLON.get(), com.pockyl.hextale.client.render.HexPylonRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL.get(), PedestalRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RUNE_STELE.get(), RuneSteleRenderer::new);

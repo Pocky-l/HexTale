@@ -9,7 +9,10 @@ import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.function.Consumer;
 
-/** Unstable hextech refined at the Hextech Altar: a smooth, steady sphere - the heart of every hextech device. */
+/**
+ * A grade of worked hextech (cut crystal, stabilised gemstone) or its dust: steady, it never bursts. The grey tooltip line
+ * is the item's own {@code <description id>.tooltip}.
+ */
 public class HextechGemstoneItem extends Item {
     public HextechGemstoneItem(Properties properties) {
         super(properties);
@@ -18,6 +21,6 @@ public class HextechGemstoneItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
                                 TooltipFlag flag) {
-        tooltip.accept(Component.translatable("item.hextale.hextech_gemstone.tooltip").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable(getDescriptionId() + ".tooltip").withStyle(ChatFormatting.GRAY));
     }
 }

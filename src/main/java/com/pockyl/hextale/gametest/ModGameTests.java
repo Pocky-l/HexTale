@@ -27,8 +27,10 @@ import java.util.Set;
  * Tests use the 1x1x1 {@code empty} structure unless they need a prepared one.
  */
 public final class ModGameTests {
-    private static final List<String> RECIPES = List.of("brass_ingot", "brass_ingot_from_nuggets", "brass_nugget", "research_table",
-            "researchers_diary");
+    private static final List<String> RECIPES = List.of("brass_ingot_from_nuggets", "brass_nugget", "researchers_diary");
+    /** Hex Workbench and Hex Furnace recipes, loaded by the mod itself. */
+    private static final List<String> HEX_CRAFTING = List.of("research_table", "alembic", "hextech_altar", "hex_lapidary");
+    private static final List<String> ALLOYS = List.of("brass_ingot", "hexsteel_ingot");
     private static final List<String> ADVANCEMENTS = List.of("root", "born_of_storm", "researchers_table", "first_rune");
 
     private ModGameTests() {
@@ -48,6 +50,13 @@ public final class ModGameTests {
                     "recipe " + recipe + " is loaded");
             helper.assertTrue(server.getAdvancements().get(Hextale.id("recipes/misc/" + recipe)) != null,
                     "the advancement unlocking " + recipe + " is loaded");
+        }
+        for (String recipe : HEX_CRAFTING) {
+            helper.assertTrue(com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(false).containsKey(Hextale.id(recipe)),
+                    "hex crafting " + recipe + " is loaded");
+        }
+        for (String recipe : ALLOYS) {
+            helper.assertTrue(com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(false).containsKey(Hextale.id(recipe)), "alloy " + recipe + " is loaded");
         }
         for (String advancement : ADVANCEMENTS) {
             helper.assertTrue(server.getAdvancements().get(Hextale.id("research/" + advancement)) != null,

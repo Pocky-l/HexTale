@@ -1,0 +1,15 @@
+{
+  "pattern": [
+    "SSS",
+    "G G",
+    "GGG"
+  ],
+  "key": {
+    "S": "#minecraft:wooden_slabs",
+    "G": "minecraft:glass"
+  },
+  "result": {
+    "id": "hextale:essence_tank"
+  },
+  "charge": 1
+}

@@ -35,6 +35,10 @@ public final class ClientPayloads {
         event.register(ResearchMessagePayload.TYPE, (payload, context) -> researchMessage(payload));
         event.register(OpenDiaryPayload.TYPE, (payload, context) -> openDiary(payload));
         event.register(InfusionRecipesPayload.TYPE, (payload, context) -> InfusionRecipes.setClient(payload.recipes()));
+        event.register(com.pockyl.hextale.network.CraftingRecipesPayload.TYPE, (payload, context) -> {
+            com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.setClient(payload.crafting());
+            com.pockyl.hextale.crafting.AlloyRecipe.ALL.setClient(payload.alloying());
+        });
         event.register(OpenStelePayload.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new SteleScreen(payload.pos())));
         event.register(com.pockyl.hextale.network.OpenStickerPayload.TYPE, (payload, context) ->
                 Minecraft.getInstance().gui.setScreen(new com.pockyl.hextale.client.screen.StickerScreen(payload.hand())));

@@ -25,8 +25,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * Everything the Research Table teaches. The essence works come first and need no research (their ink is what research
  * is written with); every device and tool past them is worked out on a parchment before it can be crafted or made at
- * the altar. Themes follow what the thing does: the circle is earth and lightning, the pylons air, the smelter fire and
- * metal.
+ * the altar. Themes follow what the thing does: the circle is earth and lightning, the pylons air, the alloys metal and
+ * fire.
  */
 public final class ResearchTopics {
     private static final List<ResearchTopic> ALL = new ArrayList<>();
@@ -44,7 +44,10 @@ public final class ResearchTopics {
     public static final ResearchTopic CIRCLE = add("hextech_altar", 1, Essence.SPARK, Essence.EARTH,
             ModItems.HEXTECH_ALTAR, ModItems.PEDESTAL, ModItems.RUNE_STELE);
     public static final ResearchTopic BIG_ESSENCE_JAR = add("big_essence_jar", 1, Essence.WATER, Essence.LIGHT, ModItems.ESSENCE_TANK);
-    public static final ResearchTopic HEXTECH_GEMSTONE = add("hextech_gemstone", 2, Essence.SPARK, Essence.LIGHT, ModItems.HEXTECH_GEMSTONE);
+    public static final ResearchTopic LAPIDARY = add("hex_lapidary", 1, Essence.EARTH, Essence.SPARK, ModItems.HEX_LAPIDARY,
+            ModItems.CUTTING_DISC);
+    public static final ResearchTopic HEXSTEEL = add("hexsteel", 1, Essence.METAL, Essence.FIRE, ModItems.HEXSTEEL_INGOT);
+    public static final ResearchTopic MASTER_DISC = add("master_cutting_disc", 2, Essence.SPARK, Essence.LIGHT, ModItems.MASTER_CUTTING_DISC);
     public static final ResearchTopic HEXTECH_LAMP = add("hextech_lamp", 2, Essence.LIGHT, Essence.FIRE, ModItems.HEXTECH_LAMP);
     public static final ResearchTopic HEXTECH_PICKAXE = add("hextech_pickaxe", 2, Essence.METAL, Essence.EARTH,
             ModItems.pickaxe(HextechPickaxe.HEXTECH));
@@ -52,7 +55,6 @@ public final class ResearchTopics {
     public static final ResearchTopic SENDING_PYLON = add("sending_pylon", 2, Essence.AIR, Essence.METAL, ModItems.SENDING_PYLON);
     public static final ResearchTopic RELAY_PYLON = add("relay_pylon", 2, Essence.SPARK, Essence.METAL, ModItems.RELAY_PYLON);
     public static final ResearchTopic SIPHON_PYLON = add("siphon_pylon", 3, Essence.WATER, Essence.AIR, ModItems.SIPHON_PYLON);
-    public static final ResearchTopic HEX_SMELTER = add("hex_smelter", 3, Essence.FIRE, Essence.METAL, ModItems.HEX_SMELTER);
     public static final ResearchTopic REFINED_PICKAXE = add("refined_hextech_pickaxe", 3, Essence.METAL, Essence.SPARK,
             ModItems.pickaxe(HextechPickaxe.REFINED));
     public static final ResearchTopic RADIANT_PICKAXE = add("radiant_hextech_pickaxe", 3, Essence.LIGHT, Essence.METAL,
