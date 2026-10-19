@@ -39,8 +39,8 @@ import com.pockyl.hextale.registry.ModSounds;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Hex Furnace: a vanilla furnace woken with hextech dust into a kiln of magic stone with a hextech gem in its crown.
- * It melts metals together into alloys on ordinary fuel; the mouth glows and blue-tinged flames lick out while it burns.
+ * The Hex Furnace: a vanilla furnace woken with hextech dust into a polished stone kiln between dark oak posts, a glowing
+ * channel over its mouth. It melts metals together into alloys on ordinary fuel; the mouth glows and blue-tinged flames lick out while it burns.
  */
 public class HexFurnaceBlock extends BaseEntityBlock implements WorldlyContainerHolder {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
@@ -95,7 +95,7 @@ public class HexFurnaceBlock extends BaseEntityBlock implements WorldlyContainer
         return SHAPE;
     }
 
-    /** While it burns: blue-tinged flames and a little smoke at the mouth, sparks from the crown, a low roar now and then. */
+    /** While it burns: blue-tinged flames and a little smoke at the mouth, a low roar now and then. */
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if (!state.getValue(LIT)) {
@@ -111,10 +111,6 @@ public class HexFurnaceBlock extends BaseEntityBlock implements WorldlyContainer
         level.addParticle(random.nextInt(3) == 0 ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.FLAME, x + ax, y, z + az, 0, 0.005, 0);
         if (random.nextInt(3) == 0) {
             level.addParticle(ParticleTypes.SMOKE, x + ax, y + 0.3, z + az, 0, 0.02, 0);
-        }
-        if (random.nextInt(4) == 0) {
-            level.addParticle(ParticleTypes.ELECTRIC_SPARK, pos.getX() + 0.5, pos.getY() + 1.05, pos.getZ() + 0.5,
-                    (random.nextDouble() - 0.5) * 0.1, 0.05, (random.nextDouble() - 0.5) * 0.1);
         }
         if (random.nextInt(16) == 0) {
             level.playLocalSound(pos, ModSounds.FURNACE_ROAR.get(), SoundSource.BLOCKS, 0.45F + random.nextFloat() * 0.15F,

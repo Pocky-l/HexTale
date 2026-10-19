@@ -28,7 +28,6 @@ import net.minecraft.world.phys.Vec3;
 import com.pockyl.hextale.menu.HexWorkbenchMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModItems;
-import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 
 import java.util.List;
@@ -36,8 +35,8 @@ import java.util.List;
 /**
  * The Hex Workbench's contents: the 3x3 grid (the items stay on the worktop when nobody works at it) and the crystal
  * socket. Every craft spends charge, and the crystal in the socket gives it: an unstable orb {@value #UNSTABLE_CHARGE},
- * a cut crystal {@value #CRYSTAL_CHARGE}, a stabilised gemstone {@value #GEMSTONE_CHARGE}. A crystal is used up only
- * when a craft needs more charge than is left.
+ * a cut crystal {@value #CRYSTAL_CHARGE}, a stabilised gemstone {@value #GEMSTONE_CHARGE}. Crystals in the socket soak
+ * into the bench one by one while there is room under {@value #MAX_CHARGE}; a craft short of charge uses them up at once.
  */
 public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
     public static final int GRID = 9;
@@ -46,6 +45,9 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
     public static final int UNSTABLE_CHARGE = 5;
     public static final int CRYSTAL_CHARGE = 12;
     public static final int GEMSTONE_CHARGE = 30;
+    /** The most charge the bench soaks up from its socket by itself. */
+    public static final int MAX_CHARGE = 60;
+    private static final int SOAK_TICKS = 10;
     /** Block event: a craft was made (clients flash the worktop). */
     public static final int CRAFTED = 1;
 
@@ -108,7 +110,20 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
         return items.subList(0, GRID);
     }
 
-    /** Effects of a craft on the server: the crystal's charge flows into the grid with a soft spend sound. */
+    /** Soaks one crystal from the socket into charge when there is room for it (every {@value #SOAK_TICKS} ticks). */
+    public static void serverTick(net.minecraft.world.level.Level level, BlockPos pos, BlockState state, HexWorkbenchBlockEntity bench) {
+        ItemStack crystal = bench.items.get(CRYSTAL);
+        int value = chargeOf(crystal);
+        if (value <= 0 || bench.charge + value > MAX_CHARGE || level.getGameTime() % SOAK_TICKS != 0) {
+            return;
+        }
+        crystal.shrink(1);
+        bench.charge += value;
+        level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.5F, 1.6F);
+        bench.setChanged();
+    }
+
+    /** Effects of a craft on the server: a soft spend sound. */
     public void crafted(ServerLevel level) {
         level.blockEvent(worldPosition, getBlockState().getBlock(), CRAFTED, 0);
         Vec3 top = Vec3.atLowerCornerOf(worldPosition).add(0.5, 1.02, 0.5);
@@ -121,22 +136,9 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
     public boolean triggerEvent(int id, int param) {
         if (id == CRAFTED && level != null && level.isClientSide()) {
             craftedAt = level.getGameTime();
-            Vec3 crystal = crystalPosition(worldPosition, getBlockState());
-            Vec3 centre = Vec3.atLowerCornerOf(worldPosition).add(0.5, 1.02, 0.5);
-            Vec3 offset = crystal.subtract(centre);
-            for (int i = 0; i < 12; i++) {
-                double spread = (i - 6) * 0.04;
-                level.addParticle(ModParticles.flow(0x7FD8FF), centre.x + spread, centre.y, centre.z - spread, offset.x, offset.y, offset.z);
-            }
             return true;
         }
         return super.triggerEvent(id, param);
-    }
-
-    /** Where the crystal floats in its iron clamp at the back of the worktop. */
-    public static Vec3 crystalPosition(BlockPos pos, BlockState state) {
-        Direction back = state.getValue(HexWorkbenchBlock.FACING).getOpposite();
-        return Vec3.atLowerCornerOf(pos).add(0.5 + back.getStepX() * 0.34, 1.22, 0.5 + back.getStepZ() * 0.34);
     }
 
     // ---- Container ----------------------------------------------------------------------------------------------------

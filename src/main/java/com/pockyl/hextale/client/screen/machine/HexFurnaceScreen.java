@@ -22,6 +22,9 @@ public class HexFurnaceScreen extends MachineScreen<HexFurnaceMenu> {
     private static final int POOL_Y = HexFurnaceMenu.INPUT_Y + 19;
     private static final int POOL_W = 52;
     private static final int FLAME_X = HexFurnaceMenu.FUEL_X + 22;
+    /** The arrow to the alloy (a click opens the recipes in JEI). */
+    public static final int ARROW_X = 92;
+    public static final int ARROW_Y = 44;
 
     public HexFurnaceScreen(HexFurnaceMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -39,7 +42,7 @@ public class HexFurnaceScreen extends MachineScreen<HexFurnaceMenu> {
             tooltip(List.of(Component.translatable("gui.hextale.hex_furnace.fuel"),
                     Component.translatable("gui.hextale.hex_furnace.fuel.hint").withStyle(ChatFormatting.GRAY)));
         }
-        arrow(graphics, x + 92, y + 44, 24, melt);
+        arrow(graphics, x + ARROW_X, y + ARROW_Y, 24, melt);
         if (furnace == null) {
             return;
         }

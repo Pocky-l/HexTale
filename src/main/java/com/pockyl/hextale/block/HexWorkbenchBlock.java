@@ -28,9 +28,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Hex Workbench: a crafting table woken with hextech dust. Its worktop is a slab of polished stone with a hexagon of
- * glowing channels carved into it, and a hextech crystal floats in an iron clamp at its back: the crystal's charge is
- * spent on every craft. Almost every device of the mod is made here.
+ * The Hex Workbench: a crafting table woken with hextech dust. Its flat worktop of polished stone has a 3 x 3 grid of
+ * glowing channels carved into it; the hextech in its socket soaks in as charge, spent on every craft. Almost every
+ * device of the mod is made here.
  */
 public class HexWorkbenchBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
@@ -74,17 +74,11 @@ public class HexWorkbenchBlock extends BaseEntityBlock {
         return SHAPE;
     }
 
-    /** A charged bench: now and then a spark crawls along the channels and a mote rises off the crystal. */
     @Override
-    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        if (!(level.getBlockEntity(pos) instanceof HexWorkbenchBlockEntity bench) || bench.chargeAvailable() <= 0 || random.nextInt(3) != 0) {
-            return;
-        }
-        Vec3 crystal = HexWorkbenchBlockEntity.crystalPosition(pos, state);
-        level.addParticle(ParticleTypes.END_ROD, crystal.x, crystal.y + 0.1, crystal.z, 0, 0.01, 0);
-        double angle = random.nextDouble() * Math.PI * 2;
-        level.addParticle(ParticleTypes.ELECTRIC_SPARK, pos.getX() + 0.5 + Math.cos(angle) * 0.3, pos.getY() + 1.02,
-                pos.getZ() + 0.5 + Math.sin(angle) * 0.3, 0, 0, 0);
+    public <T extends BlockEntity> net.minecraft.world.level.block.entity.@Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state,
+            net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
+        return level.isClientSide() ? null : createTickerHelper(type, com.pockyl.hextale.registry.ModBlockEntities.HEX_WORKBENCH.get(),
+                HexWorkbenchBlockEntity::serverTick);
     }
 
     @Override

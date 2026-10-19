@@ -3,6 +3,7 @@ package com.pockyl.hextale.compat.jei;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
@@ -118,6 +119,17 @@ public class HextaleJeiPlugin implements IModPlugin {
 
     private static void info(IRecipeRegistration registration, ItemLike item, String key) {
         registration.addIngredientInfo(item, Component.translatable("jei.hextale.info." + key));
+    }
+
+    /** A click on the arrow of the workbench or the furnace opens their recipes. */
+    @Override
+    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+        registration.addRecipeClickArea(com.pockyl.hextale.client.screen.machine.HexWorkbenchScreen.class,
+                com.pockyl.hextale.client.screen.machine.HexWorkbenchScreen.ARROW_X, com.pockyl.hextale.client.screen.machine.HexWorkbenchScreen.ARROW_Y,
+                22, 10, HexCraftingCategory.TYPE);
+        registration.addRecipeClickArea(com.pockyl.hextale.client.screen.machine.HexFurnaceScreen.class,
+                com.pockyl.hextale.client.screen.machine.HexFurnaceScreen.ARROW_X, com.pockyl.hextale.client.screen.machine.HexFurnaceScreen.ARROW_Y,
+                30, 10, AlloyingCategory.TYPE);
     }
 
     @Override

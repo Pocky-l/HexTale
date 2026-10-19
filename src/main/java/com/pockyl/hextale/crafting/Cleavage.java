@@ -22,8 +22,8 @@ public final class Cleavage {
 
     /** What is being cut: the first cut (unstable to crystal) or the finish (crystal to stabilised gemstone). */
     public enum Grade {
-        FIRST(4, 10, 3, 36, 9),
-        FINISH(7, 4, 2, 44, 5);
+        FIRST(3, 10, 3, 24, 9),
+        FINISH(5, 5, 2, 30, 6);
 
         public final int facets;
         /** Degrees a plane may be off the disc line and still cut. */

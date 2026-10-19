@@ -7,6 +7,10 @@ wait 10
 cmd setblock -2 -60 -3 hextale:hex_workbench[facing=south]
 cmd setblock 0 -60 -3 hextale:hex_furnace[facing=south]
 cmd setblock 2 -60 -3 hextale:hex_lapidary[facing=south]
+cmd setblock 4 -60 -3 hextale:sphalerite_ore
+cmd setblock 5 -60 -3 minecraft:iron_ore
+cmd setblock 4 -59 -3 hextale:deepslate_sphalerite_ore
+cmd setblock 5 -59 -3 minecraft:deepslate_iron_ore
 cmd data merge block -2 -60 -3 {Items:[{Slot:3b,id:"hextale:brass_ingot",count:1},{Slot:4b,id:"hextale:brass_ingot",count:1},{Slot:5b,id:"hextale:brass_ingot",count:1},{Slot:9b,id:"hextale:unstable_hextech",count:3}]}
 cmd data merge block 0 -60 -3 {Items:[{Slot:0b,id:"minecraft:copper_ingot",count:3},{Slot:1b,id:"hextale:zinc_ingot",count:1},{Slot:3b,id:"minecraft:coal",count:8}]}
 cmd data merge block 2 -60 -3 {Items:[{Slot:0b,id:"hextale:unstable_hextech",count:2},{Slot:1b,id:"hextale:cutting_disc",count:1}]}

@@ -65,6 +65,9 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
     private Cleavage.@Nullable Cut preview;
     private long previewSeed = Long.MIN_VALUE;
     private int previewRevision = -1;
+    /** How close the nearest uncut plane is (0-1) and whether it lies along the disc, from the last frame. */
+    private float lastWarmth;
+    private boolean lastAligned;
 
     public LapidaryScreen(LapidaryMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, LapidaryMenu.WIDTH, LapidaryMenu.INVENTORY_Y + 82);
@@ -302,9 +305,6 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
             }
         }
         PixelArt.fill(graphics, cx - 2, cy - 1, cx + 3, cy + 2, PixelArt.argb(0x3A2A1A, 1));
-        // The bench under it.
-        PixelArt.fill(graphics, cx - rx - 6, cy + ry + 3, cx + rx + 6, cy + ry + 7, PixelArt.argb(0x4A3020, 1));
-        PixelArt.fill(graphics, cx - rx - 6, cy + ry + 3, cx + rx + 6, cy + ry + 4, PixelArt.argb(0x6A4A30, 1));
     }
 
     /**
@@ -451,12 +451,25 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
         float warmth = Mth.clamp(1 - closest / window, 0, 1);
         boolean aligned = closest <= cut.grade.tolerance;
         int lineY = DISC_Y + topPos - 10;
-        int colour = grinding && !aligned ? 0xE0503C : PixelArt.mix(0x5A6A7A, 0x6CFF8A, warmth);
-        float alpha = 0.35F + 0.6F * warmth + (grinding ? 0.2F : 0);
-        PixelArt.fill(graphics, cx - 46, lineY, cx + 46, lineY + 1, PixelArt.argb(colour, Math.min(1, alpha)));
-        if (warmth > 0.5F) {
-            PixelArt.fill(graphics, cx - 40, lineY - 1, cx + 40, lineY + 2, PixelArt.argb(colour, 0.25F * warmth));
+        float pulse = 0.5F + 0.5F * Mth.sin(Util.getMillis() / 120.0F);
+        int colour = grinding && !aligned ? 0xE0503C : aligned ? 0x6CFF8A : PixelArt.mix(0x6A6A78, 0xE8D25A, warmth);
+        // The contact band: three pixels thick, grey when far, warming to yellow as a plane nears, bright pulsing green
+        // when one lies along the disc; arrows at its ends point at it then.
+        PixelArt.fill(graphics, cx - 50, lineY - 1, cx + 50, lineY + 2, PixelArt.argb(0x0A0810, 0.8F));
+        PixelArt.fill(graphics, cx - 49, lineY, cx + 49, lineY + 1, PixelArt.argb(colour, aligned ? 0.75F + 0.25F * pulse : 0.6F + 0.4F * warmth));
+        if (aligned || warmth > 0.3F) {
+            PixelArt.fill(graphics, cx - 49, lineY - 1, cx + 49, lineY, PixelArt.argb(colour, 0.35F * warmth + (aligned ? 0.3F * pulse : 0)));
+            PixelArt.fill(graphics, cx - 49, lineY + 1, cx + 49, lineY + 2, PixelArt.argb(colour, 0.35F * warmth + (aligned ? 0.3F * pulse : 0)));
         }
+        if (aligned && !grinding) {
+            int bob = Math.round(2 * pulse);
+            for (int k = 0; k < 4; k++) {
+                PixelArt.fill(graphics, cx - 60 + k - bob, lineY - 3 + k, cx - 59 + k - bob, lineY + 4 - k, PixelArt.argb(0x6CFF8A, 1));
+                PixelArt.fill(graphics, cx + 59 - k + bob, lineY - 3 + k, cx + 60 - k + bob, lineY + 4 - k, PixelArt.argb(0x6CFF8A, 1));
+            }
+        }
+        lastWarmth = warmth;
+        lastAligned = aligned;
         if (grinding) {
             RandomSource random = RandomSource.create(Util.getMillis() / 50);
             int count = aligned ? 3 : 6;
@@ -503,9 +516,11 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
         if (blocked != null) {
             HexPlate.centered(graphics, font, Component.translatable("gui.hextale.hex_lapidary." + blocked), FIELD_X + FIELD_W / 2,
                     FIELD_Y + FIELD_H / 2 - 4, FIELD_W - 20, HexPlate.MUTED);
-        } else if (cut != null && cut.facetsCut() == 0 && cut.cracks == 0 && !grinding) {
-            HexPlate.centered(graphics, font, Component.translatable("gui.hextale.hex_lapidary.hint"), FIELD_X + FIELD_W / 2,
-                    FIELD_Y + FIELD_H - 12, FIELD_W - 12, HexPlate.MUTED);
+        } else if (cut != null && !grinding) {
+            Component state = Component.translatable(lastAligned ? "gui.hextale.hex_lapidary.aligned"
+                    : lastWarmth > 0 ? "gui.hextale.hex_lapidary.near" : "gui.hextale.hex_lapidary.turn");
+            HexPlate.centered(graphics, font, state, FIELD_X + FIELD_W / 2, FIELD_Y + FIELD_H - 12, FIELD_W - 12,
+                    lastAligned ? 0xFF6CFF8A : lastWarmth > 0 ? 0xFFE8D25A : HexPlate.MUTED);
         }
         if (minecraft != null && minecraft.level != null && minecraft.level.getGameTime() - lapidary.outcomeAt() < 50 && lapidary.outcome() != 0) {
             Component outcome = Component.translatable(lapidary.outcome() > 0 ? "gui.hextale.hex_lapidary.done" : "gui.hextale.hex_lapidary.shattered");

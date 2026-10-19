@@ -1070,7 +1070,7 @@
   "gui.hextale.hex_workbench.cost": "◆ %s",
   "gui.hextale.hex_workbench.locked": "Не исследовано",
   "gui.hextale.hex_workbench.charge": "Заряд: %s",
-  "gui.hextale.hex_workbench.charge.hint": "Каждая работа тратит заряд. Кристалл в гнезде отдаёт его, когда нужно: сырой хекстек %s, хекстек-кристалл %s, самоцвет %s.",
+  "gui.hextale.hex_workbench.charge.hint": "Хекстек в гнезде впитывается в верстак зарядом (сырой %s, кристалл %s, самоцвет %s, до %s); каждая работа тратит часть.",
   "gui.hextale.slot.hex_workbench.crystal": "Кристалл хекстека: его заряд питает работу",
   "gui.hextale.hex_furnace.fuel": "Топливо",
   "gui.hextale.hex_furnace.fuel.hint": "Всё, что горит в обычной печи.",
@@ -1086,7 +1086,6 @@
   "gui.hextale.hex_lapidary.no_disc": "Поставьте гранильный диск",
   "gui.hextale.hex_lapidary.wrong_disc": "Кристалл доводится только мастерским диском",
   "gui.hextale.hex_lapidary.output_full": "Сначала заберите готовый камень",
-  "gui.hextale.hex_lapidary.hint": "Колесо или A/D - поворот, зажатая мышь или пробел - шлифовка",
   "gui.hextale.hex_lapidary.done": "Огранено чисто!",
   "gui.hextale.hex_lapidary.shattered": "Кристалл рассыпался в пыль",
   "gui.hextale.hex_lapidary.heat": "Нагрев",
@@ -1141,5 +1140,8 @@
   "jei.hextale.working.throw": "Брошенная (ПКМ) сфера рассыпается в 2-3 пыли.",
   "jei.hextale.working.awaken": "Насыпьте пыль на блок (ПКМ).",
   "jei.hextale.working.cut": "Огранить по плоскостям спайности на гранильном станке.",
-  "jei.hextale.working.finish": "Довести на гранильном станке мастерским диском."
+  "jei.hextale.working.finish": "Довести на гранильном станке мастерским диском.",
+  "gui.hextale.hex_lapidary.turn": "Поворачивайте кристалл (колесо или A/D), пока полоса не станет зелёной",
+  "gui.hextale.hex_lapidary.near": "Близко - поворачивайте медленнее",
+  "gui.hextale.hex_lapidary.aligned": "Зелёная! Зажмите мышь или пробел - шлифуйте"
 }

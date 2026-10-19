@@ -21,22 +21,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Hextech Gemstones finished from crystals with a master disc. Crystals power most devices and the first pickaxe,
   gemstones the better pickaxes.
 - Hex Workbench: sprinkle hextech dust on a crafting table and it wakes - the dust swirls into it, sparks climb its
-  sides and it turns into a dark oak table with a polished deepslate worktop, a hexagon of glowing channels and a
-  hextech crystal floating in an iron clamp. Almost every device is crafted here; each craft spends a little charge
-  from the crystal in its socket (raw orb 5, cut crystal 12, gemstone 30), shown in a glass tube. The grid's items
-  lie on the worktop, a craft draws motes out of the crystal and flashes a sigil ring. Devices still to be researched
-  show nothing.
-- Hex Furnace: dust on a furnace wakes it into a kiln of magic stone with a hextech crystal in its crown. It melts up
-  to three metals into an alloy on ordinary fuel, blue tongues among its flames: three copper and a zinc make four
+  sides and it turns into a dark oak table with a flat polished deepslate worktop carved with a 3 x 3 grid of
+  glowing channels. Almost every device is crafted here; hextech put into its socket soaks in as charge (raw orb 5,
+  cut crystal 12, gemstone 30, up to 60), shown in a glass tube, and each craft spends a little. The grid's items lie
+  in the worktop's cells. Devices still to be researched show nothing. With JEI, a click on the arrow shows the
+  recipes (the Hex Furnace's too).
+- Hex Furnace: dust on a furnace wakes it into a polished stone kiln between dark oak posts, a glowing channel over
+  its arched mouth, like the workbench. It melts up to three metals into an alloy on ordinary fuel, blue tongues among its flames: three copper and a zinc make four
   brass; iron, two hextech dust and coal make Hexsteel (researched first). Hoppers fill it like a furnace.
 - Zinc: Sphalerite Ore in stone and deepslate (a little rarer than copper, from deep underground up to sea level),
   raw zinc, zinc ingots, nuggets and blocks (common `c:` tags, so other mods' zinc works too). Block of Hexsteel.
 - Hex Lapidary: a dark oak bench with a treadle and a lap disc, crafted on the workbench; its cutting discs are made
   at the altar (iron and flint; the master disc of hexsteel and diamond). Cutting is a mini-game: the crystal hangs
   large over the turning disc - turn it (mouse wheel or A/D, it turns on a little and settles) until the contact line
-  glows green, then hold to grind and watch the facet grind flat. Grinding across the hidden cleavage planes scrapes
+  glows green (it warms to yellow as a plane nears, arrows point at it when it lines up), then hold to grind and watch the facet grind flat. Grinding across the hidden cleavage planes scrapes
   red and cracks the crystal, so does too much heat; every facet cut cleanly gives the next grade, too many cracks
-  shatter it into dust. A first cut has four planes, a finish seven with a narrow window (a master disc feels the
+  shatter it into dust. A first cut has three planes, a finish five with a narrow window (a master disc feels the
   planes from further off and cuts raw orbs twice as fast). Discs wear with every cut and crack.
 - Hextech Lamp: a hextech crystal floating in a cage of polished magic stone and brass, full light. It stands on a block or hangs under
   one, like a lantern.

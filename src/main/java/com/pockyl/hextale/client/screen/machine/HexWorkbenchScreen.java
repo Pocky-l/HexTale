@@ -36,9 +36,9 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
     private static final int GAUGE_W = 10;
     private static final int GAUGE_H = 44;
     /** Charge that fills the tube; more than this shows a full tube. */
-    private static final int GAUGE_FULL = HexWorkbenchBlockEntity.GEMSTONE_CHARGE;
-    private static final int ARROW_X = 106;
-    private static final int ARROW_Y = 40;
+    private static final int GAUGE_FULL = HexWorkbenchBlockEntity.MAX_CHARGE;
+    public static final int ARROW_X = 106;
+    public static final int ARROW_Y = 40;
 
     public HexWorkbenchScreen(HexWorkbenchMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, W, MachineMenu.INVENTORY_Y + 82);
@@ -54,7 +54,6 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
         int y = topPos;
         HexPlate.plate(graphics, x, y, W, imageHeight);
         HexPlate.divider(graphics, x, y + MachineMenu.INVENTORY_Y - 15, W);
-        channels(graphics, x + HexWorkbenchMenu.GRID_X + 26, y + HexWorkbenchMenu.GRID_Y + 26);
         for (Slot slot : menu.slots) {
             if (slot.index == HexWorkbenchBlockEntity.SIZE) {
                 HexPlate.outputSlot(graphics, x + slot.x, y + slot.y);
@@ -66,13 +65,6 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
         PixelArt.flush(graphics);
         MachineScreen.arrow(graphics, x + ARROW_X, y + ARROW_Y, 16, menu.slots.get(HexWorkbenchBlockEntity.SIZE).hasItem() ? 1 : 0);
         PixelArt.flush(graphics);
-    }
-
-    /** A faint hexagon of glowing channels behind the grid, like the one carved into the worktop. */
-    private static void channels(GuiGraphicsExtractor graphics, int cx, int cy) {
-        float pulse = 0.5F + 0.5F * Mth.sin(Util.getMillis() / 700.0F);
-        PixelArt.hexRing(graphics, cx, cy, 70, PixelArt.argb(0x5CC7F2, 0.35F + 0.25F * pulse));
-        PixelArt.hexRing(graphics, cx, cy, 66, PixelArt.argb(0x5CC7F2, 0.15F));
     }
 
     /** A glass tube of charge over the crystal socket: cyan light rising with the charge, a red pulse when short. */
@@ -121,7 +113,8 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
             graphics.setComponentTooltipForNextFrame(font, List.of(
                     Component.translatable("gui.hextale.hex_workbench.charge", menu.charge()),
                     Component.translatable("gui.hextale.hex_workbench.charge.hint", HexWorkbenchBlockEntity.UNSTABLE_CHARGE,
-                            HexWorkbenchBlockEntity.CRYSTAL_CHARGE, HexWorkbenchBlockEntity.GEMSTONE_CHARGE).withStyle(ChatFormatting.GRAY)),
+                            HexWorkbenchBlockEntity.CRYSTAL_CHARGE, HexWorkbenchBlockEntity.GEMSTONE_CHARGE,
+                            HexWorkbenchBlockEntity.MAX_CHARGE).withStyle(ChatFormatting.GRAY)),
                     mouseX, mouseY);
         } else if (menu.why() == HexWorkbenchMenu.Why.LOCKED && mouseX >= x + ARROW_X - 20 && mouseX < x + ARROW_X + 40
                 && mouseY >= y + ARROW_Y - 14 && mouseY < y + ARROW_Y + 10) {

@@ -120,8 +120,8 @@ public final class CraftingGameTests {
         float across = clean.planes[0] + 180.0F / Cleavage.Grade.FIRST.facets / 2;
         rough.stroke(100, across, Cleavage.CRACK_TICKS * Cleavage.Grade.FIRST.maxCracks, 1);
         helper.assertTrue(rough.shattered(), "grinding across the planes shatters it");
-        Cleavage.Cut hot = new Cleavage.Cut(Cleavage.Grade.FIRST, seed);
-        hot.stroke(100, hot.planes[0], (int) Cleavage.MAX_HEAT + 1, 1);
+        Cleavage.Cut hot = new Cleavage.Cut(Cleavage.Grade.FIRST, seed, new int[Cleavage.Grade.FIRST.facets], 0, Cleavage.MAX_HEAT - 1);
+        hot.stroke(0, hot.planes[0], 2, 1);
         helper.assertTrue(hot.cracks == 1, "holding it on the disc too long cracks it");
         helper.succeed();
     }

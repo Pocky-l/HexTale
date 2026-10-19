@@ -1070,7 +1070,7 @@
   "gui.hextale.hex_workbench.cost": "◆ %s",
   "gui.hextale.hex_workbench.locked": "Not researched",
   "gui.hextale.hex_workbench.charge": "Charge: %s",
-  "gui.hextale.hex_workbench.charge.hint": "Every craft spends charge. The crystal in the socket gives it when needed: raw hextech %s, a hextech crystal %s, a gemstone %s.",
+  "gui.hextale.hex_workbench.charge.hint": "Hextech in the socket soaks into the bench as charge (raw %s, crystal %s, gemstone %s, up to %s); every craft spends some.",
   "gui.hextale.slot.hex_workbench.crystal": "A hextech crystal: its charge powers the crafts",
   "gui.hextale.hex_furnace.fuel": "Fuel",
   "gui.hextale.hex_furnace.fuel.hint": "Anything that burns in a furnace.",
@@ -1086,7 +1086,6 @@
   "gui.hextale.hex_lapidary.no_disc": "Fit a cutting disc",
   "gui.hextale.hex_lapidary.wrong_disc": "A crystal is finished only on a master disc",
   "gui.hextale.hex_lapidary.output_full": "Take the finished stone first",
-  "gui.hextale.hex_lapidary.hint": "Wheel or A/D turn, hold the mouse or space to grind",
   "gui.hextale.hex_lapidary.done": "Cut clean!",
   "gui.hextale.hex_lapidary.shattered": "The crystal shattered into dust",
   "gui.hextale.hex_lapidary.heat": "Heat",
@@ -1141,5 +1140,8 @@
   "jei.hextale.working.throw": "Thrown (right click), the orb shatters into 2-3 dust.",
   "jei.hextale.working.awaken": "Sprinkle the dust on the block (right click).",
   "jei.hextale.working.cut": "Cut along the cleavage planes on the Hex Lapidary.",
-  "jei.hextale.working.finish": "Finished on the Hex Lapidary with a master disc."
+  "jei.hextale.working.finish": "Finished on the Hex Lapidary with a master disc.",
+  "gui.hextale.hex_lapidary.turn": "Turn the crystal (wheel or A/D) until the band glows green",
+  "gui.hextale.hex_lapidary.near": "Close - turn slowly",
+  "gui.hextale.hex_lapidary.aligned": "Green! Hold the mouse or space to grind"
 }
