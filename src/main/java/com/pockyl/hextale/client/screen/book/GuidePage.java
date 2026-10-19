@@ -31,6 +31,7 @@ import com.pockyl.hextale.multiblock.MultiblockPattern;
 import com.pockyl.hextale.multiblock.Multiblocks;
 import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.quest.Quest;
+import com.pockyl.hextale.quest.Region;
 import com.pockyl.hextale.quest.QuestDisplay;
 import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.registry.ModItems;
@@ -271,6 +272,10 @@ final class GuidePage {
                 }
                 continue;
             }
+            if (quest.region() == Region.CHEMTECH) {
+                Vines.link(graphics, path, lit, Vines.decay(quest), now, quest.index());
+                continue;
+            }
             for (int[] p : path) {
                 PixelArt.fill(graphics, p[0], p[1], p[0] + 1, p[1] + 1, color);
             }
@@ -358,7 +363,8 @@ final class GuidePage {
             }
         }
         // Done steps keep a quieter brass, tinted by their branch; key steps stay bright gold.
-        int rim = done ? (quest.important() || quest.landmark() ? StarBook.GOLD : PixelArt.mix(0xB08A40, quest.region().color(), 0.25F))
+        int rim = done && quest.region() == Region.CHEMTECH ? Vines.BRONZE
+                : done ? (quest.important() || quest.landmark() ? StarBook.GOLD : PixelArt.mix(0xB08A40, quest.region().color(), 0.25F))
                 : wip ? WIP : PixelArt.mix(0x2B8FB8, 0x7EF0FF, pulse);
         if (quest == selected || hovered) {
             rim = PixelArt.mix(StarBook.GOLD, 0xFFF6D6, pulse);
@@ -385,6 +391,10 @@ final class GuidePage {
                     }
                 }
             }
+        }
+        Vines.Frame frame = Vines.frame(quest);
+        if (frame != Vines.Frame.NONE && quest.kind() != Quest.Kind.WIP) {
+            Vines.ring(graphics, x, y, size, frame == Vines.Frame.HALF, Vines.decay(quest), now, quest.index());
         }
         if (quest == selected) {
             PixelArt.discRing(graphics, x, y, size + 6, PixelArt.argb(StarBook.GOLD, 0.5F + 0.5F * pulse));

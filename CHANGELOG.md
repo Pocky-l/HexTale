@@ -38,6 +38,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   red and cracks the crystal, so does too much heat; every facet cut cleanly gives the next grade, too many cracks
   shatter it into dust. A first cut has three planes, a finish five with a narrow window (a master disc feels the
   planes from further off and cuts raw orbs twice as fast). Discs wear with every cut and crack.
+- The guide grows a chemtech half: its steps are bronze medallions wreathed in vines with leaves, small flowers, dew
+  and drifting pollen, hanging from their parents by vines with leaves and a creeping bud instead of brass lines. The
+  deeper the chemtech branch goes, the more it wilts - leaves brown and fall, rust creeps over the bronze and smog
+  rises. Steps where hextech and chemtech meet wear half a wreath.
 - Crucible, the first vessel of chemtech: sprinkle hextech dust on a cauldron (a water cauldron keeps its water) and
   it wakes as a pot of plain blackened cast iron on four legs. Fill it with a water bucket or water bottles and heat it
   from below - fire, a campfire or magma, soul fire faster, lava fastest. The water warms, steams, simmers and comes
