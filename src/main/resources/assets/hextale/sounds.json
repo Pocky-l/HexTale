@@ -424,14 +424,5 @@
         "volume": 0.8
       }
     ]
-  },
-  "crucible.evaporate": {
-    "subtitle": "subtitles.hextale.crucible.evaporate",
-    "sounds": [
-      {
-        "name": "hextale:crucible_evaporate",
-        "volume": 0.9
-      }
-    ]
   }
 }

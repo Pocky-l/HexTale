@@ -112,7 +112,7 @@ public class CrucibleBlock extends BaseEntityBlock {
         boolean jar = stack.is(ModItems.ESSENCE_TANK.get()) && !EssenceFlaskItem.contents(stack).isEmpty();
         if (bottle || jar) {
             if (!crucible.boiling()) {
-                return say(level, player, crucible.water() <= 0 ? "no_water" : "not_boiling");
+                return say(level, player, crucible.liquid() <= 0 ? "no_water" : "not_boiling");
             }
             if (!level.isClientSide()) {
                 EssenceMix held = EssenceFlaskItem.contents(stack);
@@ -162,7 +162,7 @@ public class CrucibleBlock extends BaseEntityBlock {
 
     /** "Boiling - water 750 mB, essence 32 mB, 5 things dissolved", or what it lacks. */
     public static Component status(CrucibleBlockEntity crucible) {
-        if (crucible.water() <= 0) {
+        if (crucible.liquid() <= 0) {
             return Component.translatable("block.hextale.crucible.say.no_water");
         }
         Component phase = crucible.phase().describe();

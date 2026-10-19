@@ -1,4 +1,4 @@
-# The Research Table's optics bench: a hextech pickaxe under a lamp and fire glass.
+# The Research Table's optics bench: a hextech pickaxe under a lamp, a mirror beside it.
 cmd gamerule doDaylightCycle false
 cmd time set noon
 cmd tp @s 0.5 -60 0.5 180 35
@@ -17,9 +17,9 @@ origin screen
 click 434 11
 wait 5
 shot optics_empty
-drag 277 78 40 141 10
+drag 306 78 40 141 10
 wait 10
-drag 441 78 75 141 10
+drag 408 78 130 60 10
 wait 20
 shot optics_lamp
 move 300 78

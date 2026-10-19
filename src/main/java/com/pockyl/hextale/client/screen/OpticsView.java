@@ -23,11 +23,11 @@ import java.util.function.Consumer;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The optics bench of the Research Table: the item in the middle of a round bench, the researcher's lamps, mirrors,
- * splitters, lenses and coloured glass on it, the light traced through them every frame and the hidden essences
- * answering it (see {@link OpticsStudy}). Tools are dragged out of the tray beside the bench and back off the bench to
- * put them away; they glide after the mouse, coast a little when let go and turn with the wheel (Q / E) or by their knob,
- * settling softly on every 15 degrees. The bench goes to the server whenever it settles.
+ * The optics bench of the Research Table: the item in the middle of a round bench, the researcher's lamps (white or of a
+ * primal's colour) and mirrors on it, the light traced through them every frame and the hidden essences answering it
+ * (see {@link OpticsStudy}). Tools are dragged out of the tray beside the bench and carried off the bench to put them
+ * away; a click only picks one. They glide after the mouse, coast a little when let go and turn with the wheel (Q / E) or
+ * by their knob, settling softly on every 15 degrees. The bench goes to the server whenever it settles.
  */
 final class OpticsView {
     /** The bench's middle and its radius on screen, relative to the screen's top left. */
@@ -42,13 +42,13 @@ final class OpticsView {
     /** The tray of tools and the glass colours, on the side panel. */
     static final int TRAY_X = 258;
     static final int TRAY_Y = 63;
-    static final int TILE_W = 38;
+    static final int TILE_W = 96;
     static final int TILE_H = 30;
-    static final int TILE_STEP = 41;
+    static final int TILE_STEP = 102;
     static final int SWATCH_Y = 97;
-    static final int SWATCH_W = 20;
+    static final int SWATCH_W = 18;
     static final int SWATCH_H = 8;
-    static final int SWATCH_STEP = 22;
+    static final int SWATCH_STEP = 20;
     private static final float KNOB = 14;
     private static final float SNAP = Mth.PI / 12;
     private static final long SEND_DELAY = 120;
@@ -110,8 +110,9 @@ final class OpticsView {
     private int seenRevision = Integer.MIN_VALUE;
     private long sendAt;
     private long lastFrame;
-    private Essence glass = Essence.FIRE;
-    private float[][] rings = new float[0][];
+    /** The colour new lamps shine, and the chosen lamp when one is picked; null = white light. */
+    @Nullable
+    private Essence glass;
     private long[] wokeAt = new long[0];
     private boolean[] wasAwake = new boolean[0];
     private final float[] light = new float[AREA_W * AREA_H * 3];
@@ -131,7 +132,6 @@ final class OpticsView {
             selected = null;
             drag = null;
             sendAt = 0;
-            rings = new float[study.spots().size()][];
             wokeAt = new long[study.spots().size()];
             wasAwake = new boolean[study.spots().size()];
             for (int i = 0; i < wasAwake.length; i++) {
@@ -365,8 +365,8 @@ final class OpticsView {
     }
 
     /**
-     * The hidden essences: white light warms a spot into a soft haze its size, each fitting colour fills its share of a
-     * ring by its strength; a woken spot flares and shows its essence.
+     * The hidden essences: white light warms a spot into a soft haze its size, tinted towards its essence; a woken spot
+     * flares and shows its essence.
      */
     private void spots(GuiGraphicsExtractor graphics, OpticsStudy study, float[][] exposure, long now) {
         List<OpticsStudy.Spot> spots = study.spots();
@@ -388,33 +388,12 @@ final class OpticsView {
             }
             float white = exposure[i][0];
             if (white > 0.05F) {
-                float a = Math.min(0.45F, 0.1F + white * 0.12F);
+                // Found: a warm glow its size, tinted towards its essence - the hint which light will wake it.
+                int tint = PixelArt.mix(WARM, color, 0.6F);
+                float a = Math.min(0.5F, 0.15F + white * 0.15F);
+                float breathe = 0.85F + 0.15F * Mth.sin(now / 300.0F + i);
                 for (int ring = 0; ring < 3; ring++) {
-                    PixelArt.disc(graphics, x, y, diameter + 6 - ring * 4, PixelArt.argb(WARM, a * (0.35F + ring * 0.2F)), 0);
-                }
-            }
-            List<Essence> colours = spot.colours();
-            if (rings[i] == null || rings[i].length != colours.size()) {
-                rings[i] = new float[colours.size()];
-            }
-            PixelArt.Circle circle = PixelArt.Circle.of(diameter);
-            float span = Mth.TWO_PI / colours.size();
-            for (int c = 0; c < colours.size(); c++) {
-                Essence primal = colours.get(c);
-                float want = Math.min(1, exposure[i][1 + Essence.PRIMALS.indexOf(primal)] / spot.need());
-                rings[i][c] += (want - rings[i][c]) * 0.2F;
-                float shown = rings[i][c];
-                if (shown < 0.02F) {
-                    continue;
-                }
-                PixelArt.disc(graphics, x, y, diameter - 2, PixelArt.argb(primal.color(), 0.12F * shown), 0);
-                for (int p = 0; p < circle.pixels.length; p++) {
-                    // Arcs run clockwise from the top, one share per colour.
-                    float along = (circle.angles[p] + Mth.HALF_PI + Mth.TWO_PI) % Mth.TWO_PI - c * span;
-                    if (along >= 0 && along <= span * shown - 0.05F) {
-                        int[] at = circle.pixels[p];
-                        PixelArt.fill(graphics, x + at[0], y + at[1], x + at[0] + 1, y + at[1] + 1, PixelArt.argb(primal.color(), 0.95F));
-                    }
+                    PixelArt.disc(graphics, x, y, diameter + 6 - ring * 4, PixelArt.argb(tint, a * breathe * (0.35F + ring * 0.25F)), 0);
                 }
             }
         }
@@ -447,7 +426,6 @@ final class OpticsView {
         float reach = (half + 3) * scale;
         float cos = Mth.cos(-angle);
         float sin = Mth.sin(-angle);
-        int glass = color == null ? 0xC0E4FF : color.color();
         for (int py = (int) Math.floor(cy - reach); py <= Math.ceil(cy + reach); py++) {
             for (int px = (int) Math.floor(cx - reach); px <= Math.ceil(cx + reach); px++) {
                 float ox = (px + 0.5F - cx) / scale;
@@ -455,19 +433,9 @@ final class OpticsView {
                 float lx = ox * cos - oy * sin;
                 float ly = ox * sin + oy * cos;
                 int argb = switch (type) {
-                    case LAMP -> lamp(lx, ly);
+                    case LAMP -> lamp(lx, ly, color);
                     case MIRROR -> lx >= -2.2F && lx < -0.6F && Math.abs(ly) <= half + 0.8F ? PixelArt.argb(WOOD, 1)
                             : lx >= -0.6F && lx < 1.2F && Math.abs(ly) <= half ? PixelArt.argb(ly < -half * 0.3F && lx > 0.3F ? 0xFFFFFF : 0xDFE8EE, 1) : 0;
-                    case SPLITTER -> Math.abs(lx) <= 1 && Math.abs(ly) > half - 1.2F && Math.abs(ly) <= half + 0.8F ? PixelArt.argb(BRASS_DARK, 1)
-                            : Math.abs(lx) <= 0.9F && Math.abs(ly) <= half ? PixelArt.argb(Math.floorMod((int) Math.floor(ly * 0.8F), 3) == 0 ? 0xFFFFFF : 0x9CCCF0, 0.75F) : 0;
-                    case LENS -> {
-                        float e = lx * lx / 4 + ly * ly / (half * half);
-                        yield Math.abs(lx) <= 1.6F && Math.abs(ly) > half - 0.6F && Math.abs(ly) <= half + 1.2F ? PixelArt.argb(BRASS, 1)
-                                : e <= 1 ? PixelArt.argb(e > 0.7F ? 0xE6F4FF : 0xAADCFF, e > 0.7F ? 0.9F : 0.5F) : 0;
-                    }
-                    case FILTER -> Math.abs(lx) <= 1.8F && Math.abs(ly) <= half + 1.2F
-                            ? Math.abs(lx) <= 1.1F && Math.abs(ly) <= half ? PixelArt.argb(PixelArt.mix(glass, 0xFFFFFF, lx < -0.4F && ly < 0 ? 0.35F : 0), 0.9F)
-                            : PixelArt.argb(WOOD, 1) : 0;
                 };
                 if (argb != 0) {
                     PixelArt.fill(graphics, px, py, px + 1, py + 1, argb);
@@ -476,10 +444,10 @@ final class OpticsView {
         }
     }
 
-    /** A brass lamp: a box with a dark knob, its bright glass at the front. */
-    private static int lamp(float lx, float ly) {
+    /** A brass lamp: a box with a dark knob, its glass at the front in the colour it shines. */
+    private static int lamp(float lx, float ly, @Nullable Essence color) {
         if (lx >= 3 && lx <= 5.5F && Math.abs(ly) <= 3 + (lx - 3) * 0.6F) {
-            return PixelArt.argb(0xFFF3C4, 1);
+            return PixelArt.argb(color == null ? 0xFFF3C4 : color.color(), 1);
         }
         if (lx >= -5 && lx < 3 && Math.abs(ly) <= 4) {
             boolean rim = lx < -4.2F || lx > 2.2F || Math.abs(ly) > 3.2F;
@@ -502,16 +470,22 @@ final class OpticsView {
             PixelArt.fill(graphics, x, y, x + TILE_W, y + 1, PixelArt.argb(BRASS, over ? 0.9F : 0.5F));
             PixelArt.fill(graphics, x, y + TILE_H - 1, x + TILE_W, y + TILE_H, PixelArt.argb(BRASS_DARK, 0.9F));
             float angle = types[i] == Type.LAMP ? 0 : Mth.PI / 4;
-            drawTool(graphics, types[i], types[i] == Type.FILTER ? glass : null, x + TILE_W / 2.0F, y + TILE_H / 2.0F, angle, 1.15F);
+            drawTool(graphics, types[i], types[i] == Type.LAMP ? glass : null, x + TILE_W / 2.0F, y + TILE_H / 2.0F, angle, 1.6F);
         }
-        for (int i = 0; i < Essence.PRIMALS.size(); i++) {
-            Essence primal = Essence.PRIMALS.get(i);
+        for (int i = 0; i <= Essence.PRIMALS.size(); i++) {
+            Essence primal = swatch(i);
             int x = left + TRAY_X + i * SWATCH_STEP;
             int y = top + SWATCH_Y;
             boolean chosen = primal == glass;
             PixelArt.fill(graphics, x - 1, y - 1, x + SWATCH_W + 1, y + SWATCH_H + 1, PixelArt.argb(chosen ? 0xFFF6D6 : 0x0E0A06, 1));
-            PixelArt.fill(graphics, x, y, x + SWATCH_W, y + SWATCH_H, PixelArt.argb(primal.color(), 1));
+            PixelArt.fill(graphics, x, y, x + SWATCH_W, y + SWATCH_H, PixelArt.argb(primal == null ? 0xFFF3C4 : primal.color(), 1));
         }
+    }
+
+    /** The palette: white light first, then the nine primals. */
+    @Nullable
+    private static Essence swatch(int index) {
+        return index == 0 ? null : Essence.PRIMALS.get(index - 1);
     }
 
     // ---- Tooltips ----------------------------------------------------------------------------------------------------
@@ -526,9 +500,10 @@ final class OpticsView {
                         Component.translatable(key + "tool." + name + ".hint").withStyle(ChatFormatting.GRAY));
             }
         }
-        for (int i = 0; i < Essence.PRIMALS.size(); i++) {
+        for (int i = 0; i <= Essence.PRIMALS.size(); i++) {
             if (isOver(mouseX, mouseY, left + TRAY_X + i * SWATCH_STEP, top + SWATCH_Y - 1, SWATCH_W, SWATCH_H + 2)) {
-                return List.of(Component.translatable(key + "glass", ResearchText.essence(Essence.PRIMALS.get(i))));
+                Essence primal = swatch(i);
+                return List.of(primal == null ? Component.translatable(key + "white") : Component.translatable(key + "glass", ResearchText.essence(primal)));
             }
         }
         if (drag == null) {
@@ -609,17 +584,18 @@ final class OpticsView {
                 // A new tool comes out of the tray and follows the mouse onto the bench.
                 float x = toBenchX(mouseX);
                 float y = toBenchY(mouseY);
-                Piece piece = new Piece(types[i], x, y, 0, types[i] == Type.FILTER ? glass : null, Util.getMillis());
+                Piece piece = new Piece(types[i], x, y, 0, types[i] == Type.LAMP ? glass : null, Util.getMillis());
                 pieces.add(piece);
                 selected = piece;
                 drag = new Drag(piece, Grip.MOVE, 0, 0);
                 return true;
             }
         }
-        for (int i = 0; i < Essence.PRIMALS.size(); i++) {
+        for (int i = 0; i <= Essence.PRIMALS.size(); i++) {
             if (isOver(mouseX, mouseY, left + TRAY_X + i * SWATCH_STEP, top + SWATCH_Y - 1, SWATCH_W, SWATCH_H + 2)) {
-                glass = Essence.PRIMALS.get(i);
-                if (selected != null && selected.type == Type.FILTER) {
+                // The colour of new lamps, and of the lamp picked on the bench.
+                glass = swatch(i);
+                if (selected != null && selected.type == Type.LAMP) {
                     selected.color = glass;
                     changed();
                 }
@@ -629,17 +605,14 @@ final class OpticsView {
         if (!overBench(mouseX, mouseY) || item == null) {
             return false;
         }
-        Drag hit = pick(toBenchX(mouseX), toBenchY(mouseY));
-        if (button == 1) {
-            // Right click puts a tool away.
-            if (hit != null) {
-                remove(hit.piece());
-            }
+        if (button != 0) {
             return true;
         }
+        // A click picks a tool (and takes up a lamp's colour); only carrying it off the bench puts it away.
+        Drag hit = pick(toBenchX(mouseX), toBenchY(mouseY));
         selected = hit == null ? null : hit.piece();
         drag = hit;
-        if (hit != null && hit.piece().type == Type.FILTER && hit.piece().color != null) {
+        if (hit != null && hit.piece().type == Type.LAMP) {
             glass = hit.piece().color;
         }
         return true;
@@ -697,7 +670,7 @@ final class OpticsView {
         turn(piece, amount > 0 ? -1 : 1);
     }
 
-    /** Q / E turn the chosen tool, Delete puts it away; true if the key was the bench's. */
+    /** Q / E turn the chosen tool; true if the key was the bench's. */
     boolean keyPressed(int key) {
         if (selected == null) {
             return false;
@@ -705,7 +678,6 @@ final class OpticsView {
         switch (key) {
             case com.mojang.blaze3d.platform.InputConstants.KEY_Q -> turn(selected, -1);
             case com.mojang.blaze3d.platform.InputConstants.KEY_E -> turn(selected, 1);
-            case com.mojang.blaze3d.platform.InputConstants.KEY_DELETE, com.mojang.blaze3d.platform.InputConstants.KEY_BACKSPACE -> remove(selected);
             default -> {
                 return false;
             }

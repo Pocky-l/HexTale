@@ -341,12 +341,8 @@ public final class ResearchGameTests {
 
     // ---- The optics bench ---------------------------------------------------------------------------------------
 
-    private static OpticsStudy.Tool tool(OpticsStudy.Type type, float x, float y, float angle) {
-        return new OpticsStudy.Tool(type, x, y, angle, null);
-    }
-
-    private static OpticsStudy.Tool glass(float x, float y, float angle, Essence colour) {
-        return new OpticsStudy.Tool(OpticsStudy.Type.FILTER, x, y, angle, colour);
+    private static OpticsStudy.Tool lamp(float x, float y, float angle, Essence colour) {
+        return new OpticsStudy.Tool(OpticsStudy.Type.LAMP, x, y, angle, colour);
     }
 
     private static boolean wakes(OpticsStudy.Spot spot, List<OpticsStudy.Tool> tools) {
@@ -355,47 +351,28 @@ public final class ResearchGameTests {
 
     @HexTest
     public static void opticsLightFollowsTheRules(GameTestHelper helper) {
-        OpticsStudy.Spot fire = new OpticsStudy.Spot(Essence.FIRE, 12, 0, 0, 9, 0.75F);
-        OpticsStudy.Tool lamp = tool(OpticsStudy.Type.LAMP, -60, 0, 0);
-        float[] white = OpticsStudy.exposure(List.of(fire), OpticsStudy.trace(List.of(lamp)))[0];
-        helper.assertTrue(white[0] > 0 && !wakes(fire, List.of(lamp)), "white light warms a spot but wakes nothing");
-        helper.assertTrue(wakes(fire, List.of(lamp, glass(-30, 0, 0, Essence.FIRE))), "light through its colour wakes it");
-        helper.assertFalse(wakes(fire, List.of(lamp, glass(-30, 0, 0, Essence.WATER))), "another colour does not");
-        helper.assertFalse(wakes(fire, List.of(lamp, glass(-40, 0, 0, Essence.FIRE), glass(-30, 0, 0, Essence.WATER))),
-                "coloured light is stopped by glass of another colour");
+        OpticsStudy.Spot fire = new OpticsStudy.Spot(Essence.FIRE, 12, 0, 0, 10);
+        OpticsStudy.Tool white = lamp(-60, 0, 0, null);
+        float[] light = OpticsStudy.exposure(List.of(fire), OpticsStudy.trace(List.of(white)))[0];
+        helper.assertTrue(light[0] > 0 && !wakes(fire, List.of(white)), "white light finds a spot but wakes nothing");
+        helper.assertTrue(wakes(fire, List.of(lamp(-60, 0, 0, Essence.FIRE))), "light of its colour wakes it");
+        helper.assertFalse(wakes(fire, List.of(lamp(-60, 0, 0, Essence.WATER))), "another colour does not");
+        helper.assertFalse(wakes(fire, List.of(lamp(-60, -40, 0, Essence.FIRE))), "a beam passing by does not");
 
         // A mirror turns the beam: from the left, down onto the spot.
-        List<OpticsStudy.Tool> turned = List.of(tool(OpticsStudy.Type.LAMP, -60, -40, 0), glass(-30, -40, 0, Essence.FIRE),
-                tool(OpticsStudy.Type.MIRROR, 0, -40, 3 * Mth.PI / 4));
-        helper.assertTrue(wakes(fire, turned), "a mirror turns the light onto the spot");
-        helper.assertFalse(wakes(fire, turned.subList(0, 2)), "without the mirror it passes by");
+        OpticsStudy.Tool mirror = new OpticsStudy.Tool(OpticsStudy.Type.MIRROR, 0, -40, 3 * Mth.PI / 4, null);
+        helper.assertTrue(wakes(fire, List.of(lamp(-60, -40, 0, Essence.FIRE), mirror)), "a mirror turns the light onto the spot");
 
-        // A compound needs both its colours at once.
-        OpticsStudy.Spot forge = new OpticsStudy.Spot(Essence.FORGE, 12, 0, 0, 9, 0.75F);
-        List<OpticsStudy.Tool> fromLeft = List.of(lamp, glass(-30, 0, 0, Essence.FIRE));
-        List<OpticsStudy.Tool> both = new java.util.ArrayList<>(fromLeft);
-        both.add(tool(OpticsStudy.Type.LAMP, 0, -60, Mth.HALF_PI));
-        both.add(glass(0, -30, Mth.HALF_PI, Essence.METAL));
-        helper.assertFalse(wakes(forge, fromLeft), "one colour of a compound is not enough");
-        helper.assertTrue(wakes(forge, both), "both colours wake a compound");
+        // A compound wakes under either of its primals.
+        OpticsStudy.Spot forge = new OpticsStudy.Spot(Essence.FORGE, 12, 0, 0, 10);
+        helper.assertTrue(wakes(forge, List.of(lamp(-60, 0, 0, Essence.FIRE))) && wakes(forge, List.of(lamp(-60, 0, 0, Essence.METAL))),
+                "either colour of a compound wakes it");
+        helper.assertFalse(wakes(forge, List.of(lamp(-60, 0, 0, Essence.WATER))), "a colour it lacks does not");
 
-        // A weak essence needs light gathered by a lens.
-        OpticsStudy.Spot faint = new OpticsStudy.Spot(Essence.FIRE, 3, 0, 0, 4.6F, 2.8F);
-        List<OpticsStudy.Tool> plain = List.of(tool(OpticsStudy.Type.LAMP, -80, 0, 0), glass(-60, 0, 0, Essence.FIRE));
-        List<OpticsStudy.Tool> focused = new java.util.ArrayList<>(plain);
-        focused.add(tool(OpticsStudy.Type.LENS, -OpticsStudy.FOCAL, 0, 0));
-        helper.assertFalse(wakes(faint, plain), "a plain beam is too weak for a faint spot");
-        helper.assertTrue(wakes(faint, focused), "a lens focused on it is strong enough");
-
-        // A splitter sends half each way.
-        List<OpticsStudy.Beam> split = OpticsStudy.trace(List.of(lamp, tool(OpticsStudy.Type.SPLITTER, -20, 0, 3 * Mth.PI / 4)));
-        helper.assertTrue(split.size() >= 3 && split.stream().filter(b -> Math.abs(b.power() - 0.5F) < 0.01F).count() == 2,
-                "a splitter halves the beam into two");
-
-        List<OpticsStudy.Tool> bench = List.of(lamp, glass(-30, 0, 0.5F, Essence.SPARK), tool(OpticsStudy.Type.LENS, 10, 20, -1.2F));
+        List<OpticsStudy.Tool> bench = List.of(lamp(-60, 0, 0.5F, Essence.SPARK), mirror);
         List<OpticsStudy.Tool> decoded = OpticsStudy.decode(OpticsStudy.encode(bench));
-        helper.assertTrue(decoded.size() == 3 && decoded.get(1).color() == Essence.SPARK && Math.abs(decoded.get(2).angle() + 1.2F) < 0.01F,
-                "a bench survives the packet");
+        helper.assertTrue(decoded.size() == 2 && decoded.get(0).color() == Essence.SPARK && Math.abs(decoded.get(0).angle() - 0.5F) < 0.01F
+                && decoded.get(1).color() == null, "a bench survives the packet");
         helper.succeed();
     }
 
@@ -420,19 +397,9 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    /** Tools that wake one spot: per colour a lamp, its glass and a lens focused on the spot, each from its own side. */
+    /** A lamp of the spot's first colour, aimed at it. */
     private static List<OpticsStudy.Tool> wakeTools(OpticsStudy.Spot spot) {
-        List<OpticsStudy.Tool> out = new java.util.ArrayList<>();
-        List<Essence> colours = spot.colours();
-        for (int j = 0; j < colours.size(); j++) {
-            float a = j * 0.5F;
-            float dx = Mth.cos(a);
-            float dy = Mth.sin(a);
-            out.add(tool(OpticsStudy.Type.LAMP, spot.x() - dx * 62, spot.y() - dy * 62, a));
-            out.add(glass(spot.x() - dx * 52, spot.y() - dy * 52, a, colours.get(j)));
-            out.add(tool(OpticsStudy.Type.LENS, spot.x() - dx * OpticsStudy.FOCAL, spot.y() - dy * OpticsStudy.FOCAL, a));
-        }
-        return out;
+        return List.of(lamp(spot.x() - 60, spot.y(), 0, spot.colours().getFirst()));
     }
 
     @HexTest

@@ -421,7 +421,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
      */
     public void arrangeOptics(ServerPlayer player, int[] tools) {
         Item item = optics.item();
-        if (item == null || !items.get(STUDY).is(item) || Requirement.diary(this, player) != null) {
+        if (item == null || !items.get(STUDY).is(item)) {
             optics.touch();
             setChanged();
             return;

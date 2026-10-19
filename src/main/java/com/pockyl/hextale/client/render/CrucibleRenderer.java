@@ -73,7 +73,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         Level level = crucible.getLevel();
         state.time = level == null ? 0 : level.getGameTime() + partialTick;
         state.seed = crucible.getBlockPos().asLong();
-        state.wet = crucible.water() > 0;
+        state.wet = crucible.liquid() > 0;
         state.surface = crucible.surface();
         state.phase = crucible.phase();
         int color = WATER;

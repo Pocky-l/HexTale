@@ -148,7 +148,7 @@ public class CrucibleBlockEntity extends BlockEntity {
         int heat = heat();
         Phase before = phase();
         float next;
-        if (water <= 0) {
+        if (liquid() <= 0) {
             next = Math.max(0, temperature - FALL * 4);
         } else if (heat > 0) {
             next = Math.min(BOILING, temperature + RISE * heat);
@@ -164,11 +164,12 @@ public class CrucibleBlockEntity extends BlockEntity {
             boilDry(level, now);
             return;
         }
-        if (boiling() && now % EVAPORATE_TICKS == 0) {
+        // Only the water boils off; essence stays behind, thickening.
+        if (boiling() && water > 0 && now % EVAPORATE_TICKS == 0) {
             water--;
             dirty = true;
         }
-        if (now % SCAN_TICKS == 0 && water > 0) {
+        if (now % SCAN_TICKS == 0 && liquid() > 0) {
             takeItems(level);
         }
         if (phase() != before || dirty && now % SYNC_TICKS == 0) {
@@ -245,12 +246,12 @@ public class CrucibleBlockEntity extends BlockEntity {
     }
 
     public Phase phase() {
-        return water <= 0 ? Phase.COLD : Phase.of(temperature);
+        return liquid() <= 0 ? Phase.COLD : Phase.of(temperature);
     }
 
     /** The water rolls: only now does it take anything in. */
     public boolean boiling() {
-        return water > 0 && temperature >= BOILING && heat() > 0;
+        return liquid() > 0 && temperature >= BOILING && heat() > 0;
     }
 
     public EssenceMix essence() {
@@ -287,6 +288,11 @@ public class CrucibleBlockEntity extends BlockEntity {
     }
 
     // ---- Filling and emptying ------------------------------------------------------------------------------------
+
+    /** Water and essence: both are liquid, so a crucible boiled down to its essence is not empty. */
+    public int liquid() {
+        return water + essence.total();
+    }
 
     /** Everything in it: water, essence and the room the dissolved items take. */
     public int volume() {
@@ -396,8 +402,8 @@ public class CrucibleBlockEntity extends BlockEntity {
         spillOver();
         sank = stack.copyWithCount(1);
         sankAt = level == null ? 0 : level.getGameTime();
-        playAt(SoundEvents.FISHING_BOBBER_SPLASH, 0.7F, 1.0F + (level == null ? 0 : level.getRandom().nextFloat() * 0.3F));
-        playAt(ModSounds.CRUCIBLE_DISSOLVE.get(), 0.5F, 0.9F + (level == null ? 0 : level.getRandom().nextFloat() * 0.2F));
+        playAt(SoundEvents.FISHING_BOBBER_SPLASH, 0.35F, 1.0F + (level == null ? 0 : level.getRandom().nextFloat() * 0.3F));
+        playAt(ModSounds.CRUCIBLE_DISSOLVE.get(), 0.25F, 0.9F + (level == null ? 0 : level.getRandom().nextFloat() * 0.2F));
         if (level instanceof ServerLevel server) {
             Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
             server.sendParticles(ParticleTypes.SPLASH, at.x, at.y + 0.05, at.z, 8, 0.15, 0.02, 0.15, 0.05);
@@ -422,14 +428,17 @@ public class CrucibleBlockEntity extends BlockEntity {
      * whatever dissolved in it along.
      */
     public void boilAway() {
-        if (water <= 0 || drying() || level == null) {
+        if (liquid() <= 0 || drying() || level == null) {
             return;
         }
         dryingAt = level.getGameTime();
-        dryingFrom = water;
+        // Everything goes up as one cloud: the level sinks from where the liquid stood.
+        dryingFrom = liquid();
+        water = dryingFrom;
         essence = EssenceMix.EMPTY;
         dissolved.clear();
-        playAt(ModSounds.CRUCIBLE_EVAPORATE.get(), 1.0F, 0.9F + level.getRandom().nextFloat() * 0.15F);
+        playAt(SoundEvents.LAVA_EXTINGUISH, 0.8F, 0.75F + level.getRandom().nextFloat() * 0.1F);
+        playAt(SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, 0.6F, 0.9F);
         changed();
     }
 

@@ -18,15 +18,14 @@ import java.util.Random;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Studying an item on the optics bench. The item lies in the middle of a round bench; its essences hide in it as spots
- * of light - a strong essence a big spot, a weak one a small one. The researcher sets lamps, mirrors, beam splitters,
- * lenses and coloured glass on the bench and shines light through the item.
+ * Studying an item on the optics bench. The item lies in the middle of a round bench; its strongest essences hide in it
+ * as spots of light - a strong essence a big spot, a weak one a small one. The researcher sets lamps and mirrors on the
+ * bench and sweeps light through the item.
  * <p>
- * White light only warms a spot (it shows where it is and how big). Coloured glass lets one primal's colour through; a
- * spot wakes when every primal it is made of reaches it at once, each strongly enough: big spots wake under a plain
- * beam, smaller ones need the light a lens gathers into a point. Two beams of one colour add up. A woken spot stays
- * awake and names its essence; all of them awake = the item is studied. There are no limits: the bench is free to
- * rearrange as often as the researcher likes.
+ * White light finds a spot: it glows warm, tinted towards its essence's colour. A lamp of a colour (any primal) wakes a
+ * spot made of that primal - a compound wakes under either of its two. A woken spot stays awake and names its essence;
+ * all of them awake = the item is studied. There are no limits: the bench is free to rearrange as often as the
+ * researcher likes.
  * <p>
  * Pure rules shared by the table (server) and its screen (client copy): the spots follow from the item and a seed
  * chosen when the study begins, the light from the tools.
@@ -37,22 +36,20 @@ public final class OpticsStudy {
     public static final float ITEM_SIZE = 80;
     /** Spots lie within this distance of the middle. */
     private static final float SPOT_FIELD = 26;
-    public static final int MAX_SPOTS = 6;
+    public static final int MAX_SPOTS = 4;
     public static final int MAX_TOOLS = 24;
-    /** A lamp's beam: this wide, gathered to a point this far behind a lens. */
+    /** A lamp's beam: this wide. */
     public static final float BEAM = 8;
-    public static final float FOCAL = 42;
     public static final float MIN_WIDTH = 1.2F;
+    /** Light a spot needs to wake: a lamp's beam is 1, every mirror keeps 95%. */
+    public static final float NEED = 0.5F;
     /** Tools keep this far inside the bench's rim. */
     public static final float RIM_GAP = 6;
     private static final int INTS_PER_TOOL = 5;
 
     public enum Type {
         LAMP(10),
-        MIRROR(19),
-        SPLITTER(19),
-        LENS(20),
-        FILTER(16);
+        MIRROR(19);
 
         /** The length of the tool's glass across the beam (the lamp: its body). */
         public final float length;
@@ -63,10 +60,10 @@ public final class OpticsStudy {
     }
 
     /**
-     * A tool on the bench. Lamps shine along {@code angle}; the glass of the others lies across it (along angle + 90
-     * degrees), so a mirror at angle 0 faces a beam coming from the left.
+     * A tool on the bench. Lamps shine along {@code angle}; a mirror's glass lies across it (along angle + 90 degrees),
+     * so a mirror at angle 0 faces a beam coming from the left.
      *
-     * @param color the primal a filter lets through (null for other tools)
+     * @param color the primal a lamp shines (null: white light; always null for mirrors)
      */
     public record Tool(Type type, float x, float y, float angle, @Nullable Essence color) {
         /** The glass as a segment {@code x0, y0, x1, y1, ux, uy} (unit vector along it). */
@@ -78,13 +75,9 @@ public final class OpticsStudy {
         }
     }
 
-    /**
-     * A hidden essence: where it lies, how big it is and how strong the light of each of its colours must be.
-     *
-     * @param need the light each of its primals must bring (a plain beam is 1)
-     */
-    public record Spot(Essence essence, int amount, float x, float y, float radius, float need) {
-        /** The primals that must all reach it at once. */
+    /** A hidden essence: where it lies and how big it is. */
+    public record Spot(Essence essence, int amount, float x, float y, float radius) {
+        /** The primals whose light wakes it. */
         public List<Essence> colours() {
             List<Essence> out = new ArrayList<>();
             for (Essence primal : Essence.PRIMALS) {
@@ -136,8 +129,7 @@ public final class OpticsStudy {
         List<Spot> out = new ArrayList<>();
         for (Map.Entry<Essence, Integer> entry : sorted.subList(0, Math.min(MAX_SPOTS, sorted.size()))) {
             int amount = entry.getValue();
-            float radius = 3 + Math.min(amount, 12) * 0.55F;
-            float need = amount >= 10 ? 0.75F : amount >= 5 ? 1.6F : 2.8F;
+            float radius = 4 + Math.min(amount, 12) * 0.55F;
             float bestX = 0;
             float bestY = 0;
             float bestGap = -Float.MAX_VALUE;
@@ -159,7 +151,7 @@ public final class OpticsStudy {
                     break;
                 }
             }
-            out.add(new Spot(entry.getKey(), amount, bestX, bestY, radius, need));
+            out.add(new Spot(entry.getKey(), amount, bestX, bestY, radius));
         }
         return List.copyOf(out);
     }
@@ -173,14 +165,14 @@ public final class OpticsStudy {
             if (lamp.type() == Type.LAMP) {
                 float dx = Mth.cos(lamp.angle());
                 float dy = Mth.sin(lamp.angle());
-                trace(tools, lamp, lamp.x() + dx * 6, lamp.y() + dy * 6, dx, dy, 1, BEAM, 0, null, beams, 0);
+                trace(tools, lamp, lamp.x() + dx * 6, lamp.y() + dy * 6, dx, dy, 1, lamp.color(), beams);
             }
         }
         return beams;
     }
 
-    private static void trace(List<Tool> tools, @Nullable Tool from, float x, float y, float dx, float dy, float power, float w, float k,
-                              @Nullable Essence color, List<Beam> beams, int depth) {
+    private static void trace(List<Tool> tools, @Nullable Tool from, float x, float y, float dx, float dy, float power,
+                              @Nullable Essence color, List<Beam> beams) {
         for (int bounce = 0; bounce < 24 && power > 0.03F && beams.size() < 256; bounce++) {
             Tool hit = null;
             float best = Float.MAX_VALUE;
@@ -201,55 +193,18 @@ public final class OpticsStudy {
             float t = Math.min(best, exit);
             float x1 = x + dx * t;
             float y1 = y + dy * t;
-            beams.add(new Beam(x, y, x1, y1, w, k, power, color));
+            beams.add(new Beam(x, y, x1, y1, BEAM, 0, power, color));
             if (hit == null || best > exit || hit.type() == Type.LAMP) {
                 return;
             }
+            // A mirror turns the beam.
             float[] s = hit.segment();
             float nx = -s[5];
             float ny = s[4];
-            float wh = Math.abs(w + k * t);
-            switch (hit.type()) {
-                case MIRROR, SPLITTER -> {
-                    float dot = dx * nx + dy * ny;
-                    float rx = dx - 2 * dot * nx;
-                    float ry = dy - 2 * dot * ny;
-                    if (hit.type() == Type.SPLITTER && depth < 4) {
-                        // Half goes on, half turns away like off a mirror.
-                        trace(tools, hit, x1, y1, rx, ry, power * 0.5F, wh, k, color, beams, depth + 1);
-                        power *= 0.5F;
-                    } else {
-                        dx = rx;
-                        dy = ry;
-                        power *= 0.95F;
-                    }
-                }
-                case LENS -> {
-                    // A thin lens: a ray off its middle by h turns towards the focus; the beam narrows to a point.
-                    float h = (x1 - hit.x()) * s[4] + (y1 - hit.y()) * s[5];
-                    float dn = dx * nx + dy * ny;
-                    float sign = dn < 0 ? -1 : 1;
-                    dn = Math.abs(dn);
-                    float du = dx * s[4] + dy * s[5];
-                    float slope = du / dn - h / FOCAL;
-                    float length = Mth.sqrt(1 + slope * slope);
-                    dx = (nx * sign + s[4] * slope) / length;
-                    dy = (ny * sign + s[5] * slope) / length;
-                    k -= wh / FOCAL;
-                }
-                case FILTER -> {
-                    if (color == null) {
-                        color = hit.color();
-                    } else if (color != hit.color()) {
-                        return;
-                    }
-                    power *= 0.85F;
-                }
-                default -> {
-                }
-            }
-            // Behind a lens the beam narrows from its width there; off other glass it narrows or widens on as it did.
-            w = hit.type() == Type.LENS ? wh : w + k * t;
+            float dot = dx * nx + dy * ny;
+            dx -= 2 * dot * nx;
+            dy -= 2 * dot * ny;
+            power *= 0.95F;
             x = x1;
             y = y1;
             from = hit;
@@ -307,14 +262,14 @@ public final class OpticsStudy {
         return out;
     }
 
-    /** Whether the light wakes this spot: every primal it is made of, each strongly enough. */
+    /** Whether the light wakes this spot: any primal it is made of, strongly enough. */
     public static boolean wakes(Spot spot, float[] exposure) {
         for (Essence primal : spot.colours()) {
-            if (exposure[1 + Essence.PRIMALS.indexOf(primal)] < spot.need()) {
-                return false;
+            if (exposure[1 + Essence.PRIMALS.indexOf(primal)] >= NEED) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     // ---- The study ---------------------------------------------------------------------------------------------------
@@ -387,7 +342,7 @@ public final class OpticsStudy {
         for (Tool tool : next) {
             float reach = BENCH - RIM_GAP + 0.5F;
             if (kept.size() < MAX_TOOLS && tool.x() * tool.x() + tool.y() * tool.y() <= reach * reach && Float.isFinite(tool.angle())
-                    && (tool.type() == Type.FILTER) == (tool.color() != null)) {
+                    && (tool.type() == Type.LAMP || tool.color() == null)) {
                 kept.add(tool);
             }
         }
@@ -406,7 +361,7 @@ public final class OpticsStudy {
 
     // ---- Network and saving ---------------------------------------------------------------------------------------
 
-    /** The tools as ints for a packet: type, x and y in sixteenths, angle in milliradians, filter primal (or -1). */
+    /** The tools as ints for a packet: type, x and y in sixteenths, angle in milliradians, lamp primal (or -1). */
     public static int[] encode(List<Tool> tools) {
         int[] out = new int[tools.size() * INTS_PER_TOOL];
         for (int i = 0; i < tools.size(); i++) {
