@@ -4,11 +4,9 @@
   "ingredients": [
     "minecraft:paper",
     "minecraft:paper",
-    "minecraft:paper",
-    "minecraft:slime_ball"
+    "minecraft:paper"
   ],
   "result": {
-    "id": "hextale:essence_sticker",
-    "count": 6
+    "id": "hextale:blank_scroll"
   }
 }

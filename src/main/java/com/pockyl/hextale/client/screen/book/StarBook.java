@@ -13,6 +13,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.client.ClientKnowledge;
@@ -20,7 +21,8 @@ import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.quest.Quest;
-import com.pockyl.hextale.rune.ComplexRune;
+import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.research.ResearchTopic;
 
 import java.util.List;
 import java.util.Map;
@@ -28,10 +30,11 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Researcher's Diary: a magic book whose page is a dark sky holding the researcher's guide (see {@link GuidePage}):
- * item quests, runes and devices still being worked out, on one branching path. The sky can be dragged around and
- * zoomed with the mouse wheel; a click opens a step's plate - a window in the middle of the sky with a back arrow - and
- * on a Research Table a rune's plate lays the rune on the parchment. Shown by {@link StarBookScreen} in hand and inside the table's screen.
+ * The Researcher's Diary: a magic book with two tabs on a dark sky. The quests tab holds the researcher's guide (see
+ * {@link GuidePage}): item quests and devices still being worked out, each theme growing its own branch. The sky can be
+ * dragged around and zoomed with the mouse wheel; a click opens a step's plate - a window in the middle of the sky with
+ * a back arrow - and on a Research Table a step's plate lays its research on the parchment. The runes tab lists the runes
+ * found so far ({@link RunesPage}). Shown by {@link StarBookScreen} in hand and inside the table's screen.
  */
 public final class StarBook {
     private static final Identifier COSMOS = Hextale.id("textures/gui/cosmos.png");
@@ -45,6 +48,18 @@ public final class StarBook {
     static final int BUTTON_HEIGHT = 16;
     static final int GOLD = 0xE0B85A;
     private static final int DRAG_THRESHOLD = 3;
+    /** The tab chips in the sky's top left corner; the runes page starts below them. */
+    static final int TAB_ROW = 22;
+    private static final int TAB_WIDTH = 24;
+    private static final int TAB_HEIGHT = 18;
+
+    private enum Tab {
+        QUESTS,
+        RUNES
+    }
+
+    /** The tab stays as the reader left it between openings. */
+    private static Tab tab = Tab.QUESTS;
 
     /** The sky stays where the reader left it, between openings, as long as some step can be seen there. */
     private static float cameraX;
@@ -52,13 +67,13 @@ public final class StarBook {
     private static int zoomIndex = 2;
     private static boolean placed;
 
-    /** Where the book is open: in hand (nothing to send runes to) or on a table. */
+    /** Where the book is open: in hand (nothing to research) or on a table. */
     public interface Host {
-        /** The rune lying on the table, or null. */
+        /** The research topic lying on the table, or null. */
         @Nullable
-        ComplexRune studying();
+        ResearchTopic researching();
 
-        void study(ComplexRune rune);
+        void research(ResearchTopic topic);
     }
 
     @Nullable
@@ -69,6 +84,7 @@ public final class StarBook {
     private int width;
     private int height;
     private final GuidePage guide;
+    private final RunesPage runes;
     private boolean dragging;
     private boolean pressed;
     private double pressX;
@@ -80,9 +96,11 @@ public final class StarBook {
         this.host = host;
         this.font = Minecraft.getInstance().font;
         this.guide = new GuidePage(this);
-        ComplexRune onTable = host == null ? null : host.studying();
+        this.runes = new RunesPage(this);
+        ResearchTopic onTable = host == null ? null : host.researching();
         if (onTable != null) {
-            // On a table with a rune on it: open on that rune.
+            // On a table with a research on it: open on its step.
+            tab = Tab.QUESTS;
             Quest quest = Guide.of(onTable);
             cameraX = quest.x();
             cameraY = quest.y();
@@ -179,6 +197,16 @@ public final class StarBook {
         }
         graphics.enableScissor(skyLeft(), skyTop(), skyLeft() + skyWidth(), skyTop() + skyHeight());
         renderSpace(graphics, now);
+        if (tab == Tab.RUNES) {
+            List<FormattedCharSequence> tooltip = runes.render(graphics, knowledge, mouseX, mouseY, now);
+            PixelArt.flush(graphics);
+            List<FormattedCharSequence> tabTip = renderTabs(graphics, mouseX, mouseY);
+            PixelArt.flush(graphics);
+            graphics.disableScissor();
+            renderFrame(graphics);
+            PixelArt.flush(graphics);
+            return tabTip != null ? tabTip : tooltip;
+        }
 
         graphics.pose().pushMatrix();
         graphics.pose().translate(centreX(), centreY());
@@ -191,14 +219,74 @@ public final class StarBook {
         PixelArt.flush(graphics);
         graphics.pose().popMatrix();
 
+        List<FormattedCharSequence> tabTip = guide.selected() == null ? renderTabs(graphics, mouseX, mouseY) : null;
         List<FormattedCharSequence> tooltip = guide.renderPlate(graphics, knowledge, mouseX, mouseY, now);
         // The pixel art is batched: draw it while the scissor still clips it to the sky.
         PixelArt.flush(graphics);
         graphics.disableScissor();
         renderFrame(graphics);
         PixelArt.flush(graphics);
-        if (hovered != null && tooltip == null) {
+        if (tabTip != null) {
+            return tabTip;
+        }
+        if (hovered != null && tooltip == null && !overTabs(mouseX, mouseY)) {
             tooltip = guide.tooltip(hovered, knowledge);
+        }
+        return tooltip;
+    }
+
+    private int tabX(int index) {
+        return skyLeft() + 4 + index * (TAB_WIDTH + 3);
+    }
+
+    private int tabY() {
+        return skyTop() + 3;
+    }
+
+    private boolean overTab(double x, double y, int index) {
+        return x >= tabX(index) && x < tabX(index) + TAB_WIDTH && y >= tabY() && y < tabY() + TAB_HEIGHT;
+    }
+
+    /** The tab bar: a small plate in the sky's corner holding both chips; the map never shows through it. */
+    private boolean overTabs(double x, double y) {
+        return x >= skyLeft() && x < tabX(1) + TAB_WIDTH + 5 && y >= skyTop() && y < tabY() + TAB_HEIGHT + 4;
+    }
+
+    /** The two tab chips: dark glass with a gold rim, the open one lit; returns the tooltip of the one under the mouse. */
+    @Nullable
+    private List<FormattedCharSequence> renderTabs(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        ItemStack[] icons = {new ItemStack(ModItems.RESEARCHERS_DIARY.get()), new ItemStack(ModItems.RUNE_SCROLL.get())};
+        String[] keys = {"book.hextale.tab.quests", "book.hextale.tab.runes"};
+        List<FormattedCharSequence> tooltip = null;
+        // The bar: dark leather-brown glass with a brass edge on the sides that face the sky.
+        int barRight = tabX(1) + TAB_WIDTH + 5;
+        int barBottom = tabY() + TAB_HEIGHT + 4;
+        PixelArt.fill(graphics, skyLeft(), skyTop(), barRight, barBottom, PixelArt.argb(0x120C08, 0.96F));
+        PixelArt.fill(graphics, skyLeft(), barBottom - 1, barRight, barBottom, PixelArt.argb(GOLD, 0.7F));
+        PixelArt.fill(graphics, barRight - 1, skyTop(), barRight, barBottom, PixelArt.argb(GOLD, 0.7F));
+        PixelArt.fill(graphics, barRight - 2, barBottom - 2, barRight + 1, barBottom + 1, PixelArt.argb(0x5CC8F2, 1));
+        for (Tab each : Tab.values()) {
+            int i = each.ordinal();
+            int x = tabX(i);
+            int y = tabY();
+            boolean open = tab == each;
+            boolean hovered = overTab(mouseX, mouseY, i);
+            PixelArt.fill(graphics, x, y, x + TAB_WIDTH, y + TAB_HEIGHT, PixelArt.argb(open ? 0x2A2210 : hovered ? 0x1A1630 : 0x0C0A18, 0.95F));
+            int rim = PixelArt.argb(open ? GOLD : hovered ? 0xC9B48A : 0x5A5080, 1);
+            PixelArt.fill(graphics, x, y, x + TAB_WIDTH, y + 1, rim);
+            PixelArt.fill(graphics, x, y + TAB_HEIGHT - 1, x + TAB_WIDTH, y + TAB_HEIGHT, rim);
+            PixelArt.fill(graphics, x, y, x + 1, y + TAB_HEIGHT, rim);
+            PixelArt.fill(graphics, x + TAB_WIDTH - 1, y, x + TAB_WIDTH, y + TAB_HEIGHT, rim);
+            if (open) {
+                // The open tab glows from below like a lit page.
+                PixelArt.fill(graphics, x + 2, y + TAB_HEIGHT - 3, x + TAB_WIDTH - 2, y + TAB_HEIGHT - 2, PixelArt.argb(0xFFE8A0, 0.9F));
+                PixelArt.fill(graphics, x + 1, y + TAB_HEIGHT, x + TAB_WIDTH - 1, y + TAB_HEIGHT + 2, PixelArt.argb(GOLD, 0.45F));
+            }
+            PixelArt.flush(graphics);
+            graphics.item(icons[i], x + (TAB_WIDTH - 16) / 2, y + 1);
+            if (hovered) {
+                tooltip = List.of(Component.translatable(keys[i]).getVisualOrderText());
+            }
         }
         return tooltip;
     }
@@ -323,6 +411,18 @@ public final class StarBook {
         if (button != InputConstants.MOUSE_BUTTON_LEFT || !overSky(mouseX, mouseY)) {
             return false;
         }
+        if ((guide.selected() == null || tab == Tab.RUNES) && overTabs(mouseX, mouseY)) {
+            for (Tab each : Tab.values()) {
+                if (overTab(mouseX, mouseY, each.ordinal()) && tab != each) {
+                    tab = each;
+                    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.0F, 0.6F));
+                }
+            }
+            return true;
+        }
+        if (tab == Tab.RUNES) {
+            return true;
+        }
         RuneKnowledge knowledge = ClientKnowledge.get();
         if (guide.selected() != null) {
             // The plate is a window over the map: a click inside works it, a click beside it goes back to the map.
@@ -377,6 +477,10 @@ public final class StarBook {
         if (!overSky(mouseX, mouseY) || scrollY == 0) {
             return false;
         }
+        if (tab == Tab.RUNES) {
+            runes.scroll(scrollY);
+            return true;
+        }
         if (guide.selected() != null) {
             guide.scrollPlate(scrollY);
             return true;
@@ -396,7 +500,7 @@ public final class StarBook {
 
     /** Escape closes an open plate before it closes the book. */
     public boolean keyPressed(KeyEvent event) {
-        if (event.isEscape() && guide.selected() != null) {
+        if (event.isEscape() && tab == Tab.QUESTS && guide.selected() != null) {
             guide.close();
             return true;
         }

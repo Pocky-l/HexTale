@@ -37,6 +37,22 @@
     },
     {
       "when": {
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hextale:block/separator_embers"
+      }
+    },
+    {
+      "when": {
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hextale:block/separator_ashes"
+      }
+    },
+    {
+      "when": {
         "north": "inlet"
       },
       "apply": {

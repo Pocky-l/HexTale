@@ -11,9 +11,6 @@
     "ore": 12,
     "energy": 8
   },
-  "runes": [
-    "fire_earth"
-  ],
   "result": "hextale:hextech_pickaxe",
   "keep_components": true
 }

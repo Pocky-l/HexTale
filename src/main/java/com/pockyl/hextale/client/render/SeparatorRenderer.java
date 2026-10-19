@@ -14,17 +14,18 @@ import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.essence.EssenceTank;
 
 /**
- * The liquids in the Separator's glass vessel, layered like in a separating funnel: the mixture and the rest at the
- * bottom (in the mixture's colour while there is any), the drawn-out concentrate floating on them. Each layer is as
- * high as its share of all three tanks.
+ * The liquids in the Separator's flask, layered like in a separating funnel: the mixture and the rest at the bottom (in
+ * the mixture's colour while there is any), the drawn-out concentrate floating on them. Each layer is as high as its
+ * share of all three tanks. They fill the flask's clear waist, the window between its frosted cone and shoulders.
  */
 public class SeparatorRenderer implements BlockEntityRenderer<SeparatorBlockEntity, SeparatorRenderer.State> {
-    // Inside the vessel glass (model: x/z 3-13, y 1-12), inset so no face lies in the glass planes.
+    // Inside the flask's waist (model-gen FLASK_TIERS: x/z 3-13, y 6-10), inset so no face lies in the glass planes;
+    // the top stays under the brass ring so a floating concentrate is always in sight.
     private static final float MIN = 3.5F / 16;
     private static final float MAX = 12.5F / 16;
-    private static final float BOTTOM = 1.1F / 16;
-    private static final float TOP = 11.9F / 16;
-    /** The vessel's corners are cut back by a pixel; the liquid follows them. */
+    private static final float BOTTOM = 6.1F / 16;
+    private static final float TOP = 9.9F / 16;
+    /** The waist's corners are cut back by a pixel; the liquid follows them. */
     private static final float CUT = 1F / 16;
 
     public static final class State extends BlockEntityRenderState {

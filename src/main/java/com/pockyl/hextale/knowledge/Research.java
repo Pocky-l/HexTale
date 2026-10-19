@@ -12,6 +12,8 @@ import com.pockyl.hextale.registry.ModTriggers;
 import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.quest.Quest;
 import com.pockyl.hextale.research.ItemEssenceTable;
+import com.pockyl.hextale.research.ResearchTopic;
+import com.pockyl.hextale.research.ResearchTopics;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 
@@ -30,13 +32,24 @@ public final class Research {
     }
 
     /**
-     * Records a finished sheet: the rune is learned (or its stars improve).
+     * Records a studied rune scroll: the rune is learned (or its stars improve).
      *
      * @return whether the rune was new to the player
      */
-    public static boolean learn(ServerPlayer player, ComplexRune rune, int stars, int symbols) {
+    public static boolean learn(ServerPlayer player, ComplexRune rune, int stars) {
         RuneKnowledge knowledge = of(player);
-        boolean fresh = knowledge.learn(rune, stars, symbols);
+        boolean fresh = knowledge.learn(rune, stars);
+        sync(player);
+        return fresh;
+    }
+
+    /**
+     * Records a researched topic: its items may be made from now on.
+     *
+     * @return whether the topic was new to the player
+     */
+    public static boolean research(ServerPlayer player, ResearchTopic topic) {
+        boolean fresh = of(player).research(topic);
         sync(player);
         return fresh;
     }
@@ -52,7 +65,7 @@ public final class Research {
     public static int learnAll(ServerPlayer player, Collection<ComplexRune> runes, int stars) {
         RuneKnowledge knowledge = of(player);
         int before = knowledge.runeCount();
-        runes.forEach(rune -> knowledge.learn(rune, stars, 0));
+        runes.forEach(rune -> knowledge.learn(rune, stars));
         int added = knowledge.runeCount() - before;
         sync(player);
         return added;
@@ -71,10 +84,14 @@ public final class Research {
         return removed;
     }
 
-    /** The Scroll of Omniscience: every rune with three stars, every item with essences studied, every item quest done. */
+    /**
+     * The Scroll of Omniscience: every rune with three stars, every topic researched, every item with essences studied,
+     * every item quest done.
+     */
     public static void learnEverything(ServerPlayer player) {
         RuneKnowledge knowledge = of(player);
-        ComplexRunes.all().forEach(rune -> knowledge.learn(rune, 3, 0));
+        ComplexRunes.all().forEach(rune -> knowledge.learn(rune, 3));
+        ResearchTopics.all().forEach(knowledge::research);
         ItemEssenceTable.byId().keySet().forEach(knowledge::study);
         for (Quest quest : Guide.all()) {
             if (quest.kind() == Quest.Kind.ITEM) {
@@ -84,10 +101,11 @@ public final class Research {
         sync(player);
     }
 
-    /** The Scroll of Oblivion: runes, studied items, quests and every parchment's memory are gone. */
+    /** The Scroll of Oblivion: runes, research, studied items, quests and every parchment's memory are gone. */
     public static void forgetEverything(ServerPlayer player) {
         RuneKnowledge knowledge = of(player);
         ComplexRunes.all().forEach(knowledge::forget);
+        knowledge.forgetResearch();
         knowledge.forgetItems();
         knowledge.forgetQuests();
         sync(player);

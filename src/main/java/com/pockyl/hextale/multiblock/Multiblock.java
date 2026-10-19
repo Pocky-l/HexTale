@@ -76,6 +76,11 @@ public abstract class Multiblock {
         return Component.translatable("multiblock.hextale." + id + ".formed");
     }
 
+    /** What must be researched before the structure can be woken, or null. */
+    public com.pockyl.hextale.research.@org.jspecify.annotations.Nullable ResearchTopic topic() {
+        return null;
+    }
+
     /** Called once the structure is formed, on the server: quests, advancements. */
     public void onFormed(ServerPlayer player, BlockPos controller) {
     }

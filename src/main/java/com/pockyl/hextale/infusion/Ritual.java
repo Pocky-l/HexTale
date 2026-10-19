@@ -14,6 +14,8 @@ import com.pockyl.hextale.block.HextechAltarBlockEntity;
 import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
 import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.item.RuneScrollItem;
+import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.RuneHolder;
@@ -101,11 +103,27 @@ public final class Ritual {
      * What a rune does for the centre item: burned into it ({@code holder}, the item takes it like an enchantment)
      * and/or asked for by {@code recipes}, the rituals that turn it into {@code makes} (same order).
      */
-    public record RuneUse(ComplexRune rune, @Nullable RuneHolder holder, List<ItemStack> makes, List<InfusionRecipe> recipes) {
-        /** The essence the altar draws for the rune at these stars: burned in, or asked for by a ritual. */
+    public record RuneUse(ComplexRune rune, @Nullable RuneHolder holder, List<ItemStack> makes, List<InfusionRecipe> recipes,
+                          boolean writes) {
+        /** The essence the altar draws for the rune at these stars: burned in, written on a scroll, or asked for by a ritual. */
         public EssenceMix cost(int stars) {
-            return holder != null ? holder.cost(rune, stars) : InfusionRecipe.runeEssence(rune);
+            return holder != null ? holder.cost(rune, stars) : writes ? writingCost(rune, stars) : InfusionRecipe.runeEssence(rune);
         }
+    }
+
+    /** Whether this centre item is a blank scroll waiting for a rune. */
+    public static boolean blankScroll(ItemStack center) {
+        return center.is(ModItems.BLANK_SCROLL.get());
+    }
+
+    /** What writing a rune on a blank scroll draws: the rune's own essence, once per star the scroll will carry. */
+    public static EssenceMix writingCost(ComplexRune rune, int stars) {
+        EssenceMix one = InfusionRecipe.runeEssence(rune);
+        EssenceMix cost = EssenceMix.EMPTY;
+        for (int i = 0; i < stars; i++) {
+            cost = cost.plus(one);
+        }
+        return cost;
     }
 
     /**
@@ -116,6 +134,14 @@ public final class Ritual {
     public static List<RuneUse> usesFor(ItemStack center, boolean clientSide) {
         if (center.isEmpty()) {
             return null;
+        }
+        if (blankScroll(center)) {
+            // Any rune can be written on a blank scroll (the stele offers the ones its researcher knows).
+            List<RuneUse> uses = new ArrayList<>();
+            for (ComplexRune rune : com.pockyl.hextale.rune.ComplexRunes.all()) {
+                uses.add(new RuneUse(rune, null, List.of(RuneScrollItem.of(rune, 1, ModItems.RUNE_SCROLL.get())), List.of(), true));
+            }
+            return uses;
         }
         Map<ComplexRune, List<InfusionRecipe>> asking = new java.util.TreeMap<>(Comparator.comparingInt(ComplexRune::index));
         for (InfusionRecipe recipe : InfusionRecipes.get(clientSide).values()) {
@@ -177,6 +203,9 @@ public final class Ritual {
         if (onOtherSteles.contains(rune)) {
             return Component.translatable("gui.hextale.stele.refuse.twice");
         }
+        if (blankScroll(center) && !onOtherSteles.isEmpty()) {
+            return Component.translatable("gui.hextale.stele.refuse.one_scroll");
+        }
         RuneHolder holder = RuneHolder.of(center);
         if (holder == null || !holder.takes(rune)) {
             return null;
@@ -195,7 +224,7 @@ public final class Ritual {
     }
 
     private static RuneUse use(ComplexRune rune, @Nullable RuneHolder holder, List<InfusionRecipe> recipes, ItemStack center) {
-        return new RuneUse(rune, holder, recipes.stream().map(recipe -> recipe.resultFor(center)).toList(), recipes);
+        return new RuneUse(rune, holder, recipes.stream().map(recipe -> recipe.resultFor(center)).toList(), recipes, false);
     }
 
     /** What the altar's surroundings hold: pedestals, rune steles (clockwise from north) and essence tanks. */
@@ -289,9 +318,12 @@ public final class Ritual {
     public record Chosen(ComplexRune rune, int stars) {
     }
 
-    /** What a ritual does: make something new from the centre item, or burn the steles' runes into a hextech pickaxe. */
+    /**
+     * What a ritual does: make something new from the centre item, burn the steles' runes into a hextech pickaxe (or
+     * another rune holder), or write a stele's rune on a blank scroll.
+     */
     public enum Kind {
-        INFUSE, ENGRAVE
+        INFUSE, ENGRAVE, WRITE
     }
 
     /**
@@ -385,6 +417,16 @@ public final class Ritual {
             return null;
         }
         List<PedestalBlockEntity> filled = circle.filledPedestals();
+        if (blankScroll(center)) {
+            // One rune from one stele onto the scroll, with the stars it is chosen with; paid with its essence only.
+            List<Chosen> chosen = circle.chosenRunes();
+            if (!filled.isEmpty() || chosen.size() != 1) {
+                return null;
+            }
+            Chosen rune = chosen.getFirst();
+            return new Plan(Kind.WRITE, null, List.of(), writingCost(rune.rune(), rune.stars()),
+                    RuneScrollItem.of(rune.rune(), rune.stars(), ModItems.RUNE_SCROLL.get()));
+        }
         RuneHolder holder = RuneHolder.of(center);
         if (holder != null && filled.isEmpty() && !circle.chosenRunes().isEmpty()) {
             // A pickaxe or a smelter alone on the altar with runes on the steles: they are burned in, paid with essence only.

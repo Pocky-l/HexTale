@@ -11,7 +11,7 @@ import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModItems;
-import com.pockyl.hextale.research.RuneBoards;
+import com.pockyl.hextale.research.ResearchBoards;
 
 /** Keeps the client's copy of the knowledge current and checks the researcher's path quests. */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
@@ -22,7 +22,7 @@ public final class PlayerEvents {
     /** Boards take a moment to generate: do it in the background before anyone opens a table. */
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {
-        RuneBoards.warmUp();
+        ResearchBoards.warmUp();
     }
 
     @SubscribeEvent

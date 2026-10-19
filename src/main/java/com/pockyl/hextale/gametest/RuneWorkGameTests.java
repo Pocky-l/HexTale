@@ -23,6 +23,8 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.infusion.InfusionRecipe;
 import com.pockyl.hextale.infusion.InfusionRecipes;
 import com.pockyl.hextale.infusion.Ritual;
+import com.pockyl.hextale.knowledge.Research;
+import com.pockyl.hextale.research.ResearchTopics;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.ComplexRunes;
@@ -105,6 +107,33 @@ public final class RuneWorkGameTests {
         helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(rune.rune(), stars);
     }
 
+    /** A player standing by the altar, who has researched the topic (or nothing, for null). */
+    @SuppressWarnings("removal")
+    private static ServerPlayer researcher(GameTestHelper helper, com.pockyl.hextale.research.@org.jspecify.annotations.Nullable ResearchTopic topic) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        net.minecraft.world.phys.Vec3 at = helper.absoluteVec(new net.minecraft.world.phys.Vec3(ALTAR.getX() + 0.5, ALTAR.getY(), ALTAR.getZ() + 2.5));
+        player.snapTo(at.x, at.y, at.z, 0, 0);
+        if (topic != null) {
+            Research.research(player, topic);
+        }
+        return player;
+    }
+
+    /** A blank scroll on the altar with one rune on a stele becomes a scroll of that rune with the stele's stars. */
+    @HexTest(maxTicks = 300)
+    public static void theAltarWritesARuneOnABlankScroll(GameTestHelper helper) {
+        EssenceMix cost = Ritual.writingCost(PickaxeRune.SMELTING.rune(), 2);
+        HextechAltarBlockEntity altar = circle(helper, new ItemStack(ModItems.BLANK_SCROLL.get()), List.of(), cost);
+        stele(helper, PickaxeRune.SMELTING, 2);
+        altar.startOrAbort(null);
+        helper.assertTrue(altar.active() && altar.kind() == Ritual.Kind.WRITE, "the writing starts");
+        helper.succeedWhen(() -> {
+            helper.assertTrue(com.pockyl.hextale.item.RuneScrollItem.rune(altar.center()) == PickaxeRune.SMELTING.rune()
+                    && com.pockyl.hextale.item.RuneScrollItem.stars(altar.center()) == 2, "a two-star scroll of Smelting");
+            helper.assertTrue(helper.getBlockEntity(TANK, EssenceTankBlockEntity.class).tank().isEmpty(), "the rune's essence was drawn twice");
+        });
+    }
+
     private static Ritual.Circle scan(GameTestHelper helper) {
         return Ritual.Circle.scan(helper.getLevel(), helper.absolutePos(ALTAR));
     }
@@ -120,19 +149,22 @@ public final class RuneWorkGameTests {
             helper.assertTrue(forPickaxe.contains(rune.rune()), "a pickaxe takes " + rune);
         }
         helper.assertFalse(forPickaxe.contains(ComplexRunes.byKey("fire_water")), "but not a rune no pickaxe takes");
-        helper.assertTrue(Ritual.runesFor(new ItemStack(Items.IRON_PICKAXE), false).equals(java.util.Set.of(ComplexRunes.byKey("fire_earth"))),
-                "an iron pickaxe needs only Smelting to become a hextech one");
+        helper.assertTrue(Ritual.runesFor(new ItemStack(Items.IRON_PICKAXE), false).isEmpty(),
+                "an iron pickaxe needs no rune to become a hextech one");
         List<Ritual.RuneUse> uses = Ritual.usesFor(altar.center(), false);
         for (int i = 0; i < PickaxeRune.values().length; i++) {
             helper.assertTrue(uses.get(i).rune() == PickaxeRune.values()[i].rune() && uses.get(i).holder() != null,
                     "the pickaxe's runes come in the book's order, got " + uses.get(i).rune() + " at " + i);
         }
-        List<Ritual.RuneUse> iron = Ritual.usesFor(new ItemStack(Items.IRON_PICKAXE), false);
-        helper.assertTrue(iron.size() == 1 && iron.getFirst().holder() == null
-                        && iron.getFirst().makes().getFirst().is(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()),
-                "Smelting on an iron pickaxe is what makes the hextech pickaxe");
-        helper.assertTrue(iron.getFirst().cost(1).equals(InfusionRecipe.runeEssence(iron.getFirst().rune()))
+        List<Ritual.RuneUse> smelter = Ritual.usesFor(new ItemStack(Items.BLAST_FURNACE), false);
+        helper.assertTrue(smelter.size() == 1 && smelter.getFirst().holder() == null
+                        && smelter.getFirst().makes().getFirst().is(ModItems.HEX_SMELTER.get()),
+                "Smelting on a blast furnace is what makes the Hex Smelter");
+        helper.assertTrue(smelter.getFirst().cost(1).equals(InfusionRecipe.runeEssence(smelter.getFirst().rune()))
                 && uses.getFirst().cost(2).equals(PickaxeRune.values()[0].cost(2)), "the list shows what the altar draws for each rune");
+        List<Ritual.RuneUse> scroll = Ritual.usesFor(new ItemStack(ModItems.BLANK_SCROLL.get()), false);
+        helper.assertTrue(scroll.size() == ComplexRunes.COUNT && scroll.stream().allMatch(Ritual.RuneUse::writes),
+                "any rune can be written on a blank scroll");
         helper.assertTrue(Ritual.runesFor(new ItemStack(Items.DIRT), false).isEmpty(), "dirt takes no rune");
         helper.assertTrue(Ritual.runesFor(ItemStack.EMPTY, false) == null, "an empty altar takes any rune");
         helper.succeed();
@@ -250,12 +282,15 @@ public final class RuneWorkGameTests {
     public static void theAltarMakesTheHextechPickaxe(GameTestHelper helper) {
         ItemStack iron = new ItemStack(Items.IRON_PICKAXE);
         iron.enchant(helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.EFFICIENCY), 2);
-        HextechAltarBlockEntity altar = circle(helper, iron, pickaxeItems(), PICKAXE_ESSENCE.plus(EssenceMix.pure(Essence.ORE, 10))
-                .plus(InfusionRecipe.runeEssence(PickaxeRune.SMELTING.rune())));
-        // The pickaxe is forged under the rune of Smelting.
-        stele(helper, PickaxeRune.SMELTING, 1);
-        altar.startOrAbort(null);
-        helper.assertTrue(altar.active() && altar.kind() == Ritual.Kind.INFUSE, "the ritual starts");
+        HextechAltarBlockEntity altar = circle(helper, iron, pickaxeItems(), PICKAXE_ESSENCE.plus(EssenceMix.pure(Essence.ORE, 10)));
+        ServerPlayer smith = researcher(helper, null);
+        smith.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        altar.startOrAbort(smith);
+        helper.assertFalse(altar.active(), "a smith who has not researched the pickaxe starts nothing");
+        Research.research(smith, ResearchTopics.HEXTECH_PICKAXE);
+        altar.startOrAbort(smith);
+        smith.discard();
+        helper.assertTrue(altar.active() && altar.kind() == Ritual.Kind.INFUSE, "once researched, the ritual starts");
         helper.succeedWhen(() -> {
             helper.assertTrue(altar.center().is(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), "the centre became a Hextech Pickaxe");
             helper.assertTrue(altar.center().isEnchanted(), "it kept its enchantment");
@@ -319,8 +354,10 @@ public final class RuneWorkGameTests {
     public static void aRitualShortOfEssenceStalls(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), pickaxeItems(),
                 EssenceMix.of(Map.of(Essence.FORGE, 16, Essence.ORE, 12)));
-        stele(helper, PickaxeRune.SMELTING, 1);
+        // Started by redstone: a researcher standing by is enough.
+        ServerPlayer smith = researcher(helper, ResearchTopics.HEXTECH_PICKAXE);
         altar.startOrAbort(null);
+        smith.discard();
         helper.runAfterDelay(300, () -> {
             helper.assertTrue(altar.active() && altar.stalled(), "without energy essence the ritual waits");
             helper.assertTrue(altar.center().is(Items.IRON_PICKAXE), "and the centre is untouched");

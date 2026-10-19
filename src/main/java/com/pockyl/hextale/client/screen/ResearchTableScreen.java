@@ -42,9 +42,10 @@ import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchText;
-import com.pockyl.hextale.research.RuneBoard;
-import com.pockyl.hextale.research.RuneBoards;
-import com.pockyl.hextale.rune.ComplexRune;
+import com.pockyl.hextale.research.ResearchBoard;
+import com.pockyl.hextale.research.ResearchBoards;
+import com.pockyl.hextale.research.ResearchTopic;
+import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
@@ -57,8 +58,9 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Research Table, in two tabs: the star book (choose a rune) and the desk - the parchment on the left, the table's
- * ink vials, slots and the player's inventory on the right. The parchment holds one of two games: drawing a rune's ink
+ * The Research Table, in two tabs: the researcher's book (choose a device or tool to research) and the desk - the
+ * parchment on the left, the table's ink vials, slots and the player's inventory on the right. The parchment holds one
+ * of two games: drawing a research topic's ink
  * thread with the mouse, or striking an item's parchment to find its elements by their echoes.
  */
 public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMenu> implements StarBook.Host {
@@ -108,12 +110,12 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private int head = HexGrid.CENTRE;
     /** Steps of the drawing before the current stroke: dragging back only winds up this stroke. */
     private int strokeBase;
-    /** Flags the researcher set on dark sections, per rune; kept while the game runs. */
-    private static final Map<ComplexRune, BitSet> FLAGS = new HashMap<>();
+    /** Flags the researcher set on dark sections, per topic; kept while the game runs. */
+    private static final Map<ResearchTopic, BitSet> FLAGS = new HashMap<>();
     /** The researcher's pencil marks on an item's prism (client only), per item. */
     private static final Map<Item, BitSet> PENCIL = new HashMap<>();
     @Nullable
-    private ComplexRune threadRune;
+    private ResearchTopic threadTopic;
     private int serverRevision = Integer.MIN_VALUE;
     private boolean dragging;
     private ResearchSheet.@Nullable Trace trace;
@@ -144,7 +146,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (book == null) {
             book = new StarBook(this);
             ResearchTableBlockEntity table = table();
-            boolean subject = table != null && (table.isStudyingItem() || table.sheet().rune() != null);
+            boolean subject = table != null && (table.isStudyingItem() || table.sheet().topic() != null);
             setTab(subject || missingDiary() != null ? Tab.DESK : Tab.BOOK);
             Arrays.fill(vialLevel, -1);
         }
@@ -207,14 +209,14 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
 
     @Nullable
     @Override
-    public ComplexRune studying() {
+    public ResearchTopic researching() {
         ResearchTableBlockEntity table = table();
-        return table == null || table.isStudyingItem() ? null : table.sheet().rune();
+        return table == null || table.isStudyingItem() ? null : table.sheet().topic();
     }
 
     @Override
-    public void study(ComplexRune rune) {
-        send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.SELECT, rune.index()));
+    public void research(ResearchTopic topic) {
+        send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.SELECT, topic.index()));
         sound(SoundEvents.BOOK_PAGE_TURN, 1.0F, 1.0F);
         setTab(Tab.DESK);
     }
@@ -222,17 +224,17 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     // ---- The thread -----------------------------------------------------------------------------------------------
 
     @Nullable
-    private RuneBoard currentBoard() {
+    private ResearchBoard currentBoard() {
         ResearchTableBlockEntity table = table();
-        ComplexRune rune = table == null || table.isStudyingItem() ? null : table.sheet().rune();
-        return rune == null ? null : RuneBoards.request(rune).getNow(null);
+        ResearchTopic topic = table == null || table.isStudyingItem() ? null : table.sheet().topic();
+        return topic == null ? null : ResearchBoards.request(topic).getNow(null);
     }
 
     /** Takes the server's drawing whenever the server changed it and the researcher is not drawing. */
-    private void syncThread(ResearchTableBlockEntity table, RuneBoard current) {
+    private void syncThread(ResearchTableBlockEntity table, ResearchBoard current) {
         ResearchSheet sheet = table.sheet();
-        if (threadRune != current.rune()) {
-            threadRune = current.rune();
+        if (threadTopic != current.topic()) {
+            threadTopic = current.topic();
             tree = sheet.tree().clone();
             serverRevision = sheet.revision();
             board.reset();
@@ -281,8 +283,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         return HexGrid.adjacent(HexGrid.CENTRE, cell) ? HexGrid.CENTRE : -1;
     }
 
-    private BitSet flags(ComplexRune rune) {
-        return FLAGS.computeIfAbsent(rune, r -> new BitSet());
+    private BitSet flags(ResearchTopic topic) {
+        return FLAGS.computeIfAbsent(topic, t -> new BitSet());
     }
 
     /** The ink in the Essence Tanks around the desk, read once per frame. */
@@ -320,12 +322,12 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     /** Tries to ink a step from an inked section into its neighbour; on failure the section shakes and says why. */
-    private boolean extend(RuneBoard current, int from, int cell) {
+    private boolean extend(ResearchBoard current, int from, int cell) {
         if (missing() != null) {
             nudgeRequirement(cell);
             return false;
         }
-        if (flags(current.rune()).get(cell)) {
+        if (flags(current.topic()).get(cell)) {
             // A flagged section is the researcher's own warning: take the flag off first.
             refuse(cell, 0.7F);
             return false;
@@ -374,7 +376,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (tree.length / 2 > strokeBase) {
             head = tree[tree.length - 2];
             tree = Arrays.copyOf(tree, tree.length - 2);
-            RuneBoard current = currentBoard();
+            ResearchBoard current = currentBoard();
             trace = current == null ? null : ResearchSheet.trace(current, tree);
         }
     }
@@ -391,7 +393,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     /** Follows the mouse section by section while drawing: forward into new sections, back along this stroke. */
-    private void follow(RuneBoard current, double mouseX, double mouseY) {
+    private void follow(ResearchBoard current, double mouseX, double mouseY) {
         for (int guard = 0; guard < 24; guard++) {
             int target = board.cellAt(mouseX, mouseY);
             if (target < 0 || target == head) {
@@ -477,7 +479,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         PixelArt.flush(graphics);
         graphics.text(font, title, titleLabelX, titleLabelY, 0xFF000000 | TEXT, true);
-        Component codex = Component.translatable(KEY + "codex", ClientKnowledge.get().runeCount(), 72);
+        Component codex = Component.translatable(KEY + "codex", ClientKnowledge.get().runeCount(), ComplexRunes.COUNT);
         PixelArt.flush(graphics);
         graphics.text(font, codex, imageWidth - 2 * TAB_WIDTH - 32 - font.width(codex), titleLabelY, 0xFF000000 | TEXT_MUTED, true);
     }
@@ -526,13 +528,13 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (table != null && table.isStudyingItem() && table.study().item() != null) {
             renderStudy(graphics, table, hovered, mouseX, mouseY);
         } else {
-            RuneBoard current = currentBoard();
+            ResearchBoard current = currentBoard();
             if (table == null || current == null) {
                 board.renderEmpty(graphics, overBoard(mouseX, mouseY));
                 renderEmptyHeader(graphics);
             } else {
                 syncThread(table, current);
-                renderRune(graphics, table, current, hovered, mouseX, mouseY);
+                renderTopic(graphics, table, current, hovered, mouseX, mouseY);
                 shown = current.essences();
                 if (trace != null && !done(table)) {
                     reserved = trace.ink().clone();
@@ -546,21 +548,21 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         renderGhosts(graphics);
     }
 
-    // ---- The rune -------------------------------------------------------------------------------------------------
+    // ---- The research topic -------------------------------------------------------------------------------------------------
 
-    private void renderRune(GuiGraphicsExtractor graphics, ResearchTableBlockEntity table, RuneBoard current, int hovered,
+    private void renderTopic(GuiGraphicsExtractor graphics, ResearchTableBlockEntity table, ResearchBoard current, int hovered,
                             int mouseX, int mouseY) {
-        ComplexRune rune = current.rune();
-        String key = rune.key() + "|" + tree.length + "|" + lastCell() + "|" + ClientKnowledge.version();
+        ResearchTopic topic = current.topic();
+        String key = topic.id() + "|" + tree.length + "|" + lastCell() + "|" + ClientKnowledge.version();
         if (!key.equals(fogKey)) {
             fogKey = key;
-            board.updateFog(ClientKnowledge.get().seen(rune), ResearchSheet.cells(tree));
+            board.updateFog(ClientKnowledge.get().seen(topic), ResearchSheet.cells(tree));
         }
         boolean done = done(table);
         boolean ready = !table.getItem(ResearchTableBlockEntity.HEXTECH).isEmpty() || done;
         int preview = -1;
         int previewFrom = -1;
-        if (!dragging && !done && hovered >= 0 && !inked(hovered) && missing() == null && !flags(rune).get(hovered)) {
+        if (!dragging && !done && hovered >= 0 && !inked(hovered) && missing() == null && !flags(topic).get(hovered)) {
             int from = inkedNeighbour(hovered);
             if (from >= 0) {
                 int[] candidate = Arrays.copyOf(tree, tree.length + 2);
@@ -573,9 +575,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 }
             }
         }
-        BitSet known = ClientKnowledge.get().seen(rune);
-        board.renderRune(graphics, font, current, tree, trace, done, dragging, hovered, preview, previewFrom, ready, head, known,
-                ClientKnowledge.get().curses(rune), flags(rune));
+        BitSet known = ClientKnowledge.get().seen(topic);
+        board.renderTopic(graphics, font, current, tree, trace, done, dragging, hovered, preview, previewFrom, ready, head, known,
+                ClientKnowledge.get().curses(topic), flags(topic));
         if (hovered >= 0 && !dragging) {
             int point = current.pointAt(hovered);
             if (point >= 0) {
@@ -583,33 +585,22 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             }
         }
 
-        // Header: the rune, its stars, and the thread's length against the star marks.
+        // Header: what is researched, and whether the researcher has worked it out already.
         int x0 = leftPos + PANEL_X;
         int y0 = topPos;
-        PixelArt.glyph(graphics, rune, x0 + 7, y0 + 29, 24, PixelArt.argb(rune.color(), 1), 0xFF000000);
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(x0 + 7, y0 + 29);
+        graphics.pose().scale(1.5F, 1.5F);
         PixelArt.flush(graphics);
-        graphics.text(font, Component.translatable(rune.translationKey()).withStyle(ChatFormatting.BOLD), x0 + 38, y0 + 29,
-                0xFF000000 | PixelArt.mix(rune.color(), 0xFFFFFF, 0.35F), true);
+        graphics.item(topic.icon(), 0, 0);
+        graphics.pose().popMatrix();
         PixelArt.flush(graphics);
-        graphics.text(font, starsText(ClientKnowledge.get().stars(rune)), x0 + 38, y0 + 41, 0xFFFFFFFF, true);
-        renderLengthMeter(graphics, current, x0 + 82, y0 + 44);
-    }
-
-    /**
-     * A thin ruler of the thread's length: gold up to three stars, silver up to two; the thread's end slides along it.
-     */
-    private void renderLengthMeter(GuiGraphicsExtractor graphics, RuneBoard current, int x, int y) {
-        int width = 120;
-        int max = current.par().two() + Math.max(6, current.par().two() / 3);
-        int three = x + width * current.par().three() / max;
-        int two = x + width * current.par().two() / max;
-        graphics.fill(x, y, three, y + 3, 0xFFD6AB52);
-        graphics.fill(three, y, two, y + 3, 0xFFB8C4CC);
-        graphics.fill(two, y, x + width, y + 3, 0xFF6E4D2A);
-        int length = tree.length / 2;
-        int at = x + Math.min(width, width * length / max);
-        int colour = length <= current.par().three() ? 0xFFFFF3C0 : length <= current.par().two() ? 0xFFFFFFFF : 0xFFF3A59B;
-        graphics.fill(at - 1, y - 2, at + 1, y + 5, colour);
+        graphics.text(font, Component.translatable(topic.translationKey()).withStyle(ChatFormatting.BOLD), x0 + 38, y0 + 29,
+                0xFF000000 | PixelArt.mix(topic.color(), 0xFFFFFF, 0.35F), true);
+        PixelArt.flush(graphics);
+        boolean researched = ClientKnowledge.get().researched(topic);
+        graphics.text(font, Component.translatable(KEY + (researched ? "researched" : "unresearched")), x0 + 38, y0 + 41,
+                researched ? 0xFF8FE07A : 0xFF000000 | TEXT_MUTED, true);
     }
 
     private void renderEmptyHeader(GuiGraphicsExtractor graphics) {
@@ -734,8 +725,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         ghost(graphics, ResearchTableBlockEntity.STUDY, ResearchTableMenu.STUDY_X, ResearchTableMenu.ROW_Y, GHOST_STUDY);
 
         ResearchTableBlockEntity table = table();
-        boolean wantsRune = table != null && !table.isStudyingItem() && table.sheet().rune() != null;
-        Requirement missing = wantsRune ? missing() : missingDiary();
+        boolean wantsTopic = table != null && !table.isStudyingItem() && table.sheet().topic() != null;
+        Requirement missing = wantsTopic ? missing() : missingDiary();
         float strong = Math.max(0, 1 - (Util.getMillis() - requirementFlash) / 1500.0F);
         if (missing != null) {
             int x = switch (missing) {
@@ -821,11 +812,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
     }
 
-    private static Component starsText(int count) {
-        return Component.literal("★".repeat(count)).withStyle(ChatFormatting.GOLD)
-                .append(Component.literal("★".repeat(3 - count)).withStyle(ChatFormatting.DARK_GRAY));
-    }
-
     // ---- Input ----------------------------------------------------------------------------------------------------
 
     @Override
@@ -890,7 +876,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             }
             return;
         }
-        RuneBoard current = currentBoard();
+        ResearchBoard current = currentBoard();
         if (current == null) {
             if (button == InputConstants.MOUSE_BUTTON_LEFT) {
                 setTab(Tab.BOOK);
@@ -902,7 +888,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
             if (cell >= 0 && current.dark(cell) && !inked(cell)) {
                 // A flag on a dark section the researcher suspects (only a mark: it guards against a careless step).
-                BitSet flags = flags(current.rune());
+                BitSet flags = flags(current.topic());
                 flags.flip(cell);
                 sound(SoundEvents.BOOK_PAGE_TURN, flags.get(cell) ? 1.5F : 1.2F, 0.5F);
             } else if (tree.length > 0 && !done(table)) {
@@ -951,7 +937,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return true;
         }
         if (tab == Tab.DESK && dragging) {
-            RuneBoard current = currentBoard();
+            ResearchBoard current = currentBoard();
             if (current != null) {
                 follow(current, event.x(), event.y());
             }

@@ -1,0 +1,86 @@
+package com.pockyl.hextale.item;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.level.Level;
+
+import com.pockyl.hextale.knowledge.Research;
+import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.research.ResearchTopic;
+
+import java.util.function.Consumer;
+
+import org.jspecify.annotations.Nullable;
+
+/**
+ * A finished research written out at the Research Table. Reading the notes (they are used up) teaches the topic: from
+ * then on the researcher may craft its items or make them at the altar. Any researcher can read them, so a research done
+ * once can be handed to a friend.
+ */
+public class ResearchNotesItem extends Item {
+    public ResearchNotesItem(Properties properties) {
+        super(properties);
+    }
+
+    public static ItemStack of(ResearchTopic topic) {
+        ItemStack stack = new ItemStack(ModItems.RESEARCH_NOTES.get());
+        stack.set(ModDataComponents.TOPIC.get(), topic);
+        return stack;
+    }
+
+    public static @Nullable ResearchTopic topic(ItemStack stack) {
+        return stack.get(ModDataComponents.TOPIC.get());
+    }
+
+    @Override
+    public Component getName(ItemStack stack) {
+        ResearchTopic topic = topic(stack);
+        return topic == null ? super.getName(stack)
+                : Component.translatable("item.hextale.research_notes.named", Component.translatable(topic.translationKey()));
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
+                                TooltipFlag flag) {
+        ResearchTopic topic = topic(stack);
+        if (topic == null) {
+            return;
+        }
+        for (var item : topic.items()) {
+            tooltip.accept(Component.literal("• ").append(Component.translatable(item.get().asItem().getDescriptionId())).withColor(topic.color()));
+        }
+        tooltip.accept(Component.translatable("item.hextale.research_notes.read").withStyle(ChatFormatting.DARK_GRAY));
+    }
+
+    @Override
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        ResearchTopic topic = topic(stack);
+        if (topic == null) {
+            return InteractionResult.PASS;
+        }
+        if (player instanceof ServerPlayer serverPlayer) {
+            Component name = Component.translatable(topic.translationKey()).withColor(topic.color());
+            if (!Research.research(serverPlayer, topic)) {
+                serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.research_notes.known", name));
+                return InteractionResult.FAIL;
+            }
+            stack.consume(1, player);
+            serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.research_notes.learned", name));
+            level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.9F);
+            level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 1.2F);
+        }
+        return InteractionResult.SUCCESS;
+    }
+}

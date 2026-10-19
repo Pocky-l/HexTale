@@ -23,6 +23,11 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ComplexRune>> RUNE =
             COMPONENTS.registerComponentType("rune", builder -> builder
                     .persistent(ComplexRunes.CODEC).networkSynchronized(ComplexRunes.STREAM_CODEC));
+    /** The research topic written in a researcher's notes. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.research.ResearchTopic>> TOPIC =
+            COMPONENTS.registerComponentType("topic", builder -> builder
+                    .persistent(com.pockyl.hextale.research.ResearchTopics.CODEC)
+                    .networkSynchronized(com.pockyl.hextale.research.ResearchTopics.STREAM_CODEC));
     /** Stars the rune on a scroll was studied with (1-3). */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> STARS =
             COMPONENTS.registerComponentType("stars", builder -> builder

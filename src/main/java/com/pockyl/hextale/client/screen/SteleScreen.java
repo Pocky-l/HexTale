@@ -124,7 +124,7 @@ public class SteleScreen extends Screen {
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         long now = Util.getMillis();
         ItemStack altarItem = altarItem();
-        List<Ritual.RuneUse> uses = Ritual.usesFor(altarItem, true);
+        List<Ritual.RuneUse> uses = usesFor(altarItem);
         int w = panelWidth(uses);
         int left = left(uses);
         HexPlate.plate(graphics, left, top, w, PANEL_H);
@@ -338,6 +338,19 @@ public class SteleScreen extends Screen {
         return text;
     }
 
+    /**
+     * The runes this stele offers for the altar's item. A blank scroll takes any rune the researcher knows: only those
+     * are listed (a scroll passes knowledge on, it cannot be written from nothing).
+     */
+    @Nullable
+    private List<Ritual.RuneUse> usesFor(ItemStack altarItem) {
+        List<Ritual.RuneUse> uses = Ritual.usesFor(altarItem, true);
+        if (uses == null || !Ritual.blankScroll(altarItem) || creative()) {
+            return uses;
+        }
+        return uses.stream().filter(use -> ClientKnowledge.get().knows(use.rune())).toList();
+    }
+
     /** Name and stars, and on a holder the rune's number at those stars. */
     private Component firstLine(Ritual.RuneUse use, boolean known) {
         ComplexRune rune = use.rune();
@@ -356,6 +369,9 @@ public class SteleScreen extends Screen {
     private Component secondLine(Ritual.RuneUse use) {
         if (use.holder() != null) {
             return Component.translatable(use.holder().descriptionKey(use.rune()));
+        }
+        if (use.writes()) {
+            return Component.translatable(use.rune().translationKey() + ".effect");
         }
         return makes(use);
     }
@@ -420,7 +436,7 @@ public class SteleScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        List<Ritual.RuneUse> uses = Ritual.usesFor(altarItem(), true);
+        List<Ritual.RuneUse> uses = usesFor(altarItem());
         if (uses != null && scrollY != 0) {
             scroll = Mth.clamp(scroll - (int) Math.signum(scrollY), 0, maxScroll(uses));
             return true;
@@ -438,7 +454,7 @@ public class SteleScreen extends Screen {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double mx = event.x();
         double my = event.y();
-        List<Ritual.RuneUse> uses = Ritual.usesFor(altarItem(), true);
+        List<Ritual.RuneUse> uses = usesFor(altarItem());
         int w = panelWidth(uses);
         int left = left(uses);
         int bx = left + (w - BUTTON_W) / 2;

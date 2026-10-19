@@ -201,6 +201,11 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     public static void serverTick(Level level, BlockPos pos, BlockState state, SeparatorBlockEntity separator) {
         boolean changed = separator.pourFlask();
         changed |= separator.separate();
+        BlockState now = separator.getBlockState();
+        boolean burning = separator.burning();
+        if (now.getValue(SeparatorBlock.LIT) != burning) {
+            level.setBlock(pos, now.setValue(SeparatorBlock.LIT, burning), Block.UPDATE_ALL);
+        }
         changed |= separator.fillFlasks();
         if (level.getGameTime() % EssenceTankBlockEntity.FLOW_EVERY == 0) {
             changed |= separator.drawFromTanks();
@@ -266,6 +271,11 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             }
         }
         return rest.space() < portion.total() - drawn + stain(drawn) ? "rest_full" : null;
+    }
+
+    /** Whether the powder burns: the separator can work and the next portion gives something up. */
+    public boolean burning() {
+        return blocked() == null && drawnOut(portion()) > 0;
     }
 
     /** How much of the chosen essence (or of the unknown one) a portion gives up. */

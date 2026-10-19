@@ -33,9 +33,12 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.infusion.Ritual;
+import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.research.ResearchTopic;
+import com.pockyl.hextale.research.ResearchTopics;
 import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.rune.ComplexRune;
 
@@ -225,6 +228,9 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                     Object[] names = engraving.named().stream()
                             .map(rune -> (Object) Component.translatable(rune.translationKey()).withColor(rune.color())).toArray();
                     player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.engrave." + engraving.refusal(), names));
+                } else if (Ritual.blankScroll(center)) {
+                    // A scroll takes exactly one rune, from one stele, and nothing from the pedestals.
+                    player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.write.one_rune"));
                 } else if (!hint.runes().isEmpty()) {
                     // The recipe this circle is closest to wants runes no stele shows: name them.
                     MutableComponent names = Component.empty();
@@ -238,6 +244,16 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                     player.sendOverlayMessage(Component.translatable(center.isEmpty() ? "block.hextale.hextech_altar.empty"
                             : "block.hextale.hextech_altar.nothing"));
                 }
+            }
+            serverLevel.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 0.6F);
+            return;
+        }
+        ResearchTopic topic = plan.kind() == Ritual.Kind.INFUSE ? ResearchTopics.of(plan.result().getItem()) : null;
+        if (topic != null && !researcherNear(serverLevel, player, topic)) {
+            // Nobody here has worked this out at the table yet: the circle does not know how to make it.
+            if (player != null) {
+                player.sendOverlayMessage(Component.translatable("research.hextale.locked",
+                        Component.translatable(topic.translationKey()).withColor(topic.color())));
             }
             serverLevel.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 0.6F);
             return;
@@ -263,6 +279,22 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         }
         serverLevel.playSound(null, worldPosition, ModSounds.RITUAL_START.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         sync();
+    }
+
+    /**
+     * Whether the ritual's maker knows how: the player who started it (a creative one always does), or - started by
+     * redstone - any player near the altar who has researched the topic.
+     */
+    private boolean researcherNear(ServerLevel level, @Nullable ServerPlayer player, ResearchTopic topic) {
+        if (player != null) {
+            return player.getAbilities().instabuild || Research.of(player).researched(topic);
+        }
+        for (ServerPlayer near : level.getEntitiesOfClass(ServerPlayer.class, new AABB(worldPosition).inflate(Ritual.TANK_RADIUS * 2))) {
+            if (Research.of(near).researched(topic)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // ---- Ticking ----------------------------------------------------------------------------------------------------
@@ -388,6 +420,12 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
 
     private void finish(ServerLevel level) {
         center = result.copy();
+        if (kind == Ritual.Kind.WRITE) {
+            // A rune copied onto a scroll: the researchers standing by have learned to pass runes on.
+            for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, new AABB(worldPosition).inflate(Ritual.TANK_RADIUS))) {
+                com.pockyl.hextale.quest.Quests.complete(player, com.pockyl.hextale.quest.Guide.WRITTEN_SCROLL);
+            }
+        }
         clearRitual();
         Vec3 at = itemPosition();
         level.sendParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, 40, 0.1, 0.1, 0.1, 0.18);

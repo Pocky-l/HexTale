@@ -9,6 +9,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import org.slf4j.Logger;
 
@@ -53,6 +54,8 @@ public final class Hextale {
         modBus.addListener(ModNetwork::register);
         PickaxeEffects.register();
         com.pockyl.hextale.multiblock.Multiblocks.register();
+        com.pockyl.hextale.loot.RuneScrollLoot.register(modBus);
+        com.pockyl.hextale.event.ResearchLocks.register(NeoForge.EVENT_BUS);
         GameTests.register(modBus);
         modBus.addListener(ModDataMaps::register);
         modBus.addListener(Hextale::addToVanillaTabs);
@@ -102,6 +105,8 @@ public final class Hextale {
             output.accept(ModItems.BRASS_INGOT);
             output.accept(ModItems.BRASS_NUGGET);
             output.accept(exampleScroll());
+            output.accept(ModItems.BLANK_SCROLL);
+            com.pockyl.hextale.research.ResearchTopics.all().forEach(topic -> output.accept(com.pockyl.hextale.item.ResearchNotesItem.of(topic)));
             output.accept(ModItems.SCROLL_OF_OMNISCIENCE);
             output.accept(ModItems.SCROLL_OF_OBLIVION);
         });

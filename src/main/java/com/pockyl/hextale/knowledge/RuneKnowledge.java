@@ -9,6 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
 import com.pockyl.hextale.quest.Quest;
+import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 
@@ -26,20 +27,21 @@ import java.util.Set;
  * What a researcher has found out. Lives on the player (a data attachment copied on death), not on the diary item: a
  * lost diary loses nothing. The server copy is authoritative; clients get a copy through {@code KnowledgeSyncPayload}.
  * <p>
- * A rune is learned with 1-3 stars (the best sheet counts). Studied items show their elements, and the parchment of
- * each rune remembers the sections the ink has passed, so walls stay known from sheet to sheet. Done quests of the
- * researcher's path are kept by id.
+ * A rune is learned with 1-3 stars from a scroll found in the world (the best scroll counts). Studied items show their
+ * essences. Researched topics are the devices and tools the researcher may make; the parchment of each topic remembers
+ * the sections the ink has passed and the curses found, so walls stay known from sheet to sheet. Done quests of the
+ * researcher's guide are kept by id.
  */
 public final class RuneKnowledge {
     private static final Codec<Map<String, Integer>> INT_MAP = Codec.unboundedMap(Codec.STRING, Codec.INT);
     private static final Codec<Map<String, List<Long>>> BITS_MAP = Codec.unboundedMap(Codec.STRING, Codec.LONG.listOf());
     public static final MapCodec<RuneKnowledge> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            INT_MAP.optionalFieldOf("stars", Map.of()).forGetter(k -> k.starsByKey()),
-            INT_MAP.optionalFieldOf("best", Map.of()).forGetter(k -> k.bestByKey()),
-            BITS_MAP.optionalFieldOf("seen", Map.of()).forGetter(RuneKnowledge::seenByKey),
+            INT_MAP.optionalFieldOf("stars", Map.of()).forGetter(RuneKnowledge::starsByKey),
+            Codec.STRING.listOf().optionalFieldOf("researched", List.of()).forGetter(k -> List.copyOf(k.researched)),
+            BITS_MAP.optionalFieldOf("seen", Map.of()).forGetter(k -> bitsByKey(k.seen)),
             Codec.STRING.listOf().optionalFieldOf("studied", List.of()).forGetter(k -> List.copyOf(k.studied)),
             Codec.STRING.listOf().optionalFieldOf("quests", List.of()).forGetter(k -> List.copyOf(k.quests)),
-            BITS_MAP.optionalFieldOf("curses", Map.of()).forGetter(RuneKnowledge::cursesByKey)
+            BITS_MAP.optionalFieldOf("curses", Map.of()).forGetter(k -> bitsByKey(k.curses))
     ).apply(instance, RuneKnowledge::new));
     public static final Codec<RuneKnowledge> CODEC = MAP_CODEC.codec();
 
@@ -50,53 +52,42 @@ public final class RuneKnowledge {
             ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_LONG.apply(ByteBufCodecs.list(64)));
     public static final StreamCodec<ByteBuf, RuneKnowledge> STREAM_CODEC = StreamCodec.composite(
             INTS, RuneKnowledge::starsByKey,
-            INTS, RuneKnowledge::bestByKey,
-            BITS, RuneKnowledge::seenByKey,
+            STRINGS, k -> List.copyOf(k.researched),
+            BITS, k -> bitsByKey(k.seen),
             STRINGS, k -> List.copyOf(k.studied),
             STRINGS, k -> List.copyOf(k.quests),
-            BITS, RuneKnowledge::cursesByKey,
+            BITS, k -> bitsByKey(k.curses),
             RuneKnowledge::new);
 
     /** Learned runes in the order of discovery, with their stars (1-3). */
     private final Map<ComplexRune, Integer> stars = new LinkedHashMap<>();
-    /** Fewest symbols of a finished sheet per rune. */
-    private final Map<ComplexRune, Integer> best = new HashMap<>();
-    /** Ids of items whose elements the researcher has studied at the table: their tooltips show the elements. */
+    /** Ids of researched topics, in the order they were researched. */
+    private final Set<String> researched = new LinkedHashSet<>();
+    /** Ids of items whose essences the researcher has studied at the table: their tooltips show the essences. */
     private final Set<String> studied = new LinkedHashSet<>();
-    /** Ids of the researcher's path quests that are done. */
+    /** Ids of the researcher's guide quests that are done. */
     private final Set<String> quests = new LinkedHashSet<>();
-    /** Per rune: parchment sections the ink has passed. */
-    private final Map<ComplexRune, BitSet> seen = new HashMap<>();
-    /** Per rune: cursed dark sections found the hard way (the orb burst there). */
-    private final Map<ComplexRune, BitSet> curses = new HashMap<>();
+    /** Per topic id: parchment sections the ink has passed. */
+    private final Map<String, BitSet> seen = new HashMap<>();
+    /** Per topic id: cursed dark sections found the hard way (the orb burst there). */
+    private final Map<String, BitSet> curses = new HashMap<>();
 
     public RuneKnowledge() {
     }
 
-    private RuneKnowledge(Map<String, Integer> stars, Map<String, Integer> best,
-                          Map<String, List<Long>> seen, List<String> studied, List<String> quests,
-                          Map<String, List<Long>> curses) {
+    private RuneKnowledge(Map<String, Integer> stars, List<String> researched, Map<String, List<Long>> seen, List<String> studied,
+                          List<String> quests, Map<String, List<Long>> curses) {
         stars.forEach((key, value) -> {
             ComplexRune rune = ComplexRunes.byKey(key);
             if (rune != null && value > 0) {
                 this.stars.put(rune, Math.min(3, value));
             }
         });
-        best.forEach((key, value) -> {
-            ComplexRune rune = ComplexRunes.byKey(key);
-            if (rune != null) {
-                this.best.put(rune, value);
-            }
-        });
+        this.researched.addAll(researched);
         this.studied.addAll(studied);
         this.quests.addAll(quests);
+        readBits(seen, this.seen);
         readBits(curses, this.curses);
-        seen.forEach((key, value) -> {
-            ComplexRune rune = ComplexRunes.byKey(key);
-            if (rune != null) {
-                this.seen.put(rune, BitSet.valueOf(value.stream().mapToLong(Long::longValue).toArray()));
-            }
-        });
     }
 
     private Map<String, Integer> starsByKey() {
@@ -105,40 +96,23 @@ public final class RuneKnowledge {
         return out;
     }
 
-    private Map<String, Integer> bestByKey() {
-        Map<String, Integer> out = new LinkedHashMap<>();
-        best.forEach((rune, value) -> out.put(rune.key(), value));
-        return out;
+    private static void readBits(Map<String, List<Long>> in, Map<String, BitSet> out) {
+        in.forEach((key, value) -> out.put(key, BitSet.valueOf(value.stream().mapToLong(Long::longValue).toArray())));
     }
 
-    private static void readBits(Map<String, List<Long>> in, Map<ComplexRune, BitSet> out) {
-        in.forEach((key, value) -> {
-            ComplexRune rune = ComplexRunes.byKey(key);
-            if (rune != null) {
-                out.put(rune, BitSet.valueOf(value.stream().mapToLong(Long::longValue).toArray()));
-            }
-        });
-    }
-
-    private Map<String, List<Long>> cursesByKey() {
-        return bitsByKey(curses);
-    }
-
-    private Map<String, List<Long>> seenByKey() {
-        return bitsByKey(seen);
-    }
-
-    private static Map<String, List<Long>> bitsByKey(Map<ComplexRune, BitSet> source) {
+    private static Map<String, List<Long>> bitsByKey(Map<String, BitSet> source) {
         Map<String, List<Long>> out = new HashMap<>();
-        source.forEach((rune, bits) -> {
+        source.forEach((key, bits) -> {
             List<Long> longs = new ArrayList<>();
             for (long word : bits.toLongArray()) {
                 longs.add(word);
             }
-            out.put(rune.key(), longs);
+            out.put(key, longs);
         });
         return out;
     }
+
+    // ---- Runes --------------------------------------------------------------------------------------------------------
 
     public boolean knows(ComplexRune rune) {
         return stars.containsKey(rune);
@@ -149,29 +123,18 @@ public final class RuneKnowledge {
         return stars.getOrDefault(rune, 0);
     }
 
-    /** Fewest symbols of a finished sheet, or 0. */
-    public int best(ComplexRune rune) {
-        return best.getOrDefault(rune, 0);
-    }
-
     /**
-     * Records a finished sheet.
+     * Learns a rune from a scroll, or raises its stars.
      *
      * @return whether the rune was new
      */
-    public boolean learn(ComplexRune rune, int stars, int symbols) {
+    public boolean learn(ComplexRune rune, int stars) {
         boolean fresh = !knows(rune);
         this.stars.merge(rune, Math.max(1, Math.min(3, stars)), Math::max);
-        if (symbols > 0) {
-            best.merge(rune, symbols, Math::min);
-        }
         return fresh;
     }
 
     public boolean forget(ComplexRune rune) {
-        best.remove(rune);
-        seen.remove(rune);
-        curses.remove(rune);
         return stars.remove(rune) != null;
     }
 
@@ -184,7 +147,55 @@ public final class RuneKnowledge {
         return List.copyOf(stars.keySet());
     }
 
-    /** Whether the item's elements are studied: only studied items show their step and can write on the parchment. */
+    // ---- Researched topics --------------------------------------------------------------------------------------------
+
+    public boolean researched(ResearchTopic topic) {
+        return researched.contains(topic.id());
+    }
+
+    /** @return whether the topic was new */
+    public boolean research(ResearchTopic topic) {
+        return researched.add(topic.id());
+    }
+
+    public void forgetResearch() {
+        researched.clear();
+        seen.clear();
+        curses.clear();
+    }
+
+    /** Sections of this topic's parchment the ink has passed (a copy). */
+    public BitSet seen(ResearchTopic topic) {
+        BitSet bits = seen.get(topic.id());
+        return bits == null ? new BitSet() : (BitSet) bits.clone();
+    }
+
+    /** @return whether anything was new */
+    public boolean see(ResearchTopic topic, int[] cells) {
+        BitSet bits = seen.computeIfAbsent(topic.id(), key -> new BitSet());
+        boolean changed = false;
+        for (int cell : cells) {
+            if (!bits.get(cell)) {
+                bits.set(cell);
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    /** Cursed sections of this topic's parchment found so far (a copy). */
+    public BitSet curses(ResearchTopic topic) {
+        BitSet bits = curses.get(topic.id());
+        return bits == null ? new BitSet() : (BitSet) bits.clone();
+    }
+
+    public void curse(ResearchTopic topic, int cell) {
+        curses.computeIfAbsent(topic.id(), key -> new BitSet()).set(cell);
+    }
+
+    // ---- Studied items and quests -------------------------------------------------------------------------------------
+
+    /** Whether the item's essences are studied: its tooltip shows them. */
     public boolean hasStudied(Identifier item) {
         return studied.contains(item.toString());
     }
@@ -214,36 +225,8 @@ public final class RuneKnowledge {
         quests.clear();
     }
 
-    /** Sections of this rune's parchment the ink has passed (a copy). */
-    public BitSet seen(ComplexRune rune) {
-        BitSet bits = seen.get(rune);
-        return bits == null ? new BitSet() : (BitSet) bits.clone();
-    }
-
-    /** @return whether anything was new */
-    public boolean see(ComplexRune rune, int[] cells) {
-        BitSet bits = seen.computeIfAbsent(rune, r -> new BitSet());
-        boolean changed = false;
-        for (int cell : cells) {
-            if (!bits.get(cell)) {
-                bits.set(cell);
-                changed = true;
-            }
-        }
-        return changed;
-    }
-
-    /** Cursed sections of this rune's parchment found so far (a copy). */
-    public BitSet curses(ComplexRune rune) {
-        BitSet bits = curses.get(rune);
-        return bits == null ? new BitSet() : (BitSet) bits.clone();
-    }
-
-    public void curse(ComplexRune rune, int cell) {
-        curses.computeIfAbsent(rune, r -> new BitSet()).set(cell);
-    }
-
     public RuneKnowledge copy() {
-        return new RuneKnowledge(starsByKey(), bestByKey(), seenByKey(), List.copyOf(studied), List.copyOf(quests), cursesByKey());
+        return new RuneKnowledge(starsByKey(), List.copyOf(researched), bitsByKey(seen), List.copyOf(studied), List.copyOf(quests),
+                bitsByKey(curses));
     }
 }

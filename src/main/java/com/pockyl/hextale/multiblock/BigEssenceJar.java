@@ -45,6 +45,11 @@ public final class BigEssenceJar extends Multiblock {
     }
 
     @Override
+    public com.pockyl.hextale.research.ResearchTopic topic() {
+        return com.pockyl.hextale.research.ResearchTopics.BIG_ESSENCE_JAR;
+    }
+
+    @Override
     public BlockState controller() {
         return ModBlocks.BIG_ESSENCE_JAR.get().defaultBlockState();
     }

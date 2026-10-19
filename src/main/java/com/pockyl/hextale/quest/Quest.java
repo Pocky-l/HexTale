@@ -3,7 +3,7 @@ package com.pockyl.hextale.quest;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
-import com.pockyl.hextale.rune.ComplexRune;
+import com.pockyl.hextale.research.ResearchTopic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,16 +13,25 @@ import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 
 /**
- * One step of the researcher's guide (see {@link Guide}): something to make or obtain (an {@link Kind#ITEM} quest),
- * a rune to study at the table ({@link Kind#RUNE}), or a device still being worked out ({@link Kind#WIP}, never done).
- * A step opens once all its parents are done; the first parent is the one its main link comes from on the page. Texts: items and
- * WIP steps {@code quest.hextale.<id>}, {@code .goal}, {@code .desc}; rune steps use the rune's own keys.
+ * One step of the researcher's guide (see {@link Guide}): something to make or obtain (an {@link Kind#ITEM} quest) or a
+ * device still being worked out ({@link Kind#WIP}, never done). A step opens once all its parents are done; the first
+ * parent is the one its main link comes from on the page. A step with a research {@link #topic()} must be researched
+ * at the Research Table before its item can be made. Texts: {@code quest.hextale.<id>}, {@code .goal}, {@code .desc}.
  */
 public final class Quest {
     public enum Kind {
         ITEM,
-        RUNE,
         WIP
+    }
+
+    /** The part of the ritual circle a step's 3D scene puts in focus. */
+    public enum Scene {
+        /** The whole circle at work: the altar draws the pedestals' items and the jars' essences. */
+        ALTAR,
+        /** The pedestals: their items rise and fly into the altar. */
+        PEDESTAL,
+        /** The steles: their runes stream into the altar. */
+        STELE
     }
 
     /** The effect a step wears in the book: important steps glow, storms crackle, curses smoke. */
@@ -51,22 +60,26 @@ public final class Quest {
     @Nullable
     private final QuestDisplay display;
     @Nullable
-    private final ComplexRune rune;
+    private final ResearchTopic topic;
     private final Aura aura;
     private final Region region;
+    /** A landmark is the heart of the guide: drawn large, with open sky around it. */
+    boolean landmark;
+    @Nullable
+    Scene scene;
     int index;
     int x;
     int y;
 
     Quest(String id, Kind kind, List<Quest> parents, Supplier<ItemStack> icon, Predicate<ServerPlayer> goal,
-          @Nullable QuestDisplay display, @Nullable ComplexRune rune, Aura aura, Region region) {
+          @Nullable QuestDisplay display, @Nullable ResearchTopic topic, Aura aura, Region region) {
         this.id = id;
         this.kind = kind;
         this.parents = List.copyOf(parents);
         this.icon = icon;
         this.goal = goal;
         this.display = display;
-        this.rune = rune;
+        this.topic = topic;
         this.aura = aura;
         this.region = region;
         for (Quest parent : parents) {
@@ -100,7 +113,7 @@ public final class Quest {
         return icon.get();
     }
 
-    /** Whether an item quest's goal is met now (rune and WIP steps are never checked this way). */
+    /** Whether an item quest's goal is met now (WIP steps are never checked this way). */
     public boolean isMet(ServerPlayer player) {
         return kind == Kind.ITEM && goal.test(player);
     }
@@ -110,10 +123,10 @@ public final class Quest {
         return display;
     }
 
-    /** The rune a rune step teaches, else null. */
+    /** What must be researched before this step's item can be made, else null. */
     @Nullable
-    public ComplexRune rune() {
-        return rune;
+    public ResearchTopic topic() {
+        return topic;
     }
 
     public Aura aura() {
@@ -128,6 +141,17 @@ public final class Quest {
     /** Key steps are drawn larger. */
     public boolean important() {
         return aura == Aura.GOLD;
+    }
+
+    /** The step the whole guide turns around: much larger, special, alone in its patch of sky. */
+    public boolean landmark() {
+        return landmark;
+    }
+
+    /** The 3D scene of the ritual circle on the step's plate, or null. */
+    @Nullable
+    public Scene scene() {
+        return scene;
     }
 
     /** Position in the guide's order (parents always come first). */
@@ -145,7 +169,7 @@ public final class Quest {
     }
 
     public String translationKey() {
-        return rune != null ? rune.translationKey() : "quest.hextale." + id;
+        return "quest.hextale." + id;
     }
 
     @Override

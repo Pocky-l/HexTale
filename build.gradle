@@ -21,6 +21,18 @@ sourceSets.main.resources {
     exclude('src/generated/**/.cache')
 }
 
+// Development tools that only exist in dev runs (never in the jar): the GUI screenshot driver (run guiShots).
+sourceSets {
+    devtools {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+configurations {
+    devtoolsCompileClasspath.extendsFrom compileClasspath
+    devtoolsRuntimeClasspath.extendsFrom runtimeClasspath
+}
+
 repositories {
     maven {
         // JEI (optional integration).
@@ -64,6 +76,16 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
+        // Opens the mod's screens by a script and saves screenshots (scripts in tools/guishots/, pictures in
+        // run-guishots/screenshots/). Own game directory and world, never the owner's playtest.
+        guiShots {
+            client()
+            sourceSet = sourceSets.devtools
+            gameDirectory = project.file('run-guishots')
+            programArguments.addAll '--width', '1920', '--height', '1080'
+            systemProperty 'hextale.guishots', project.file('tools/guishots').absolutePath
+        }
+
         data {
             clientData()
             programArguments.addAll '--mod', project.mod_id, '--all',
@@ -80,6 +102,7 @@ neoForge {
     mods {
         "${mod_id}" {
             sourceSet(sourceSets.main)
+            sourceSet(sourceSets.devtools)
         }
     }
 }

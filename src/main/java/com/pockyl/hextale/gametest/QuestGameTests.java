@@ -29,8 +29,8 @@ import com.pockyl.hextale.quest.QuestDisplay;
 import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.ResearchBook;
-import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.ComplexRunes;
+import com.pockyl.hextale.research.ResearchTopic;
+import com.pockyl.hextale.research.ResearchTopics;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -80,7 +80,7 @@ public final class QuestGameTests {
         return new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse(id)));
     }
 
-    /** Every step has its own spot, its parents come before it, every rune is on the guide exactly once. */
+    /** Every step has its own spot, its parents come before it, every research topic has a step. */
     @HexTest
     public static void guideIsLaidOut(GameTestHelper helper) {
         Set<Long> spots = new HashSet<>();
@@ -100,8 +100,8 @@ public final class QuestGameTests {
             }
             helper.assertTrue(Guide.byId(quest.id()) == quest, quest.id() + " is found by id");
         }
-        for (ComplexRune rune : ComplexRunes.all()) {
-            helper.assertTrue(Guide.of(rune).rune() == rune, rune.key() + " has its step");
+        for (ResearchTopic topic : ResearchTopics.all()) {
+            helper.assertTrue(Guide.of(topic).topic() == topic, topic.id() + " has its step");
         }
         helper.succeed();
     }
@@ -145,11 +145,15 @@ public final class QuestGameTests {
     /**
      * The guide's order is the order things can be made in: every mod item a step's recipe (crafting grid, scheme or
      * altar ritual) needs is yielded by a step before it; an altar ritual comes after the altar, its pedestals after
-     * the Pedestal, its runes after the Rune Stele and after the steps that teach them.
+     * the Pedestal, its runes after the Rune Stele and after the first found rune scroll. Research needs ink at the table:
+     * every step with a research topic comes after the Ink step.
      */
     @HexTest
     public static void guideOrderIsLogical(GameTestHelper helper) {
         for (Quest quest : Guide.all()) {
+            if (quest.topic() != null) {
+                helper.assertTrue(ancestors(quest).contains(Guide.INK), quest.id() + " is researched, so it comes after the ink");
+            }
             QuestDisplay display = quest.display();
             if (display == null) {
                 continue;
@@ -167,9 +171,7 @@ public final class QuestGameTests {
                     helper.assertTrue(before.contains(Guide.HEXTECH_ALTAR), quest.id() + " comes after the altar");
                     helper.assertTrue(recipe.pedestals().isEmpty() || before.contains(Guide.PEDESTAL), quest.id() + " comes after the Pedestal");
                     helper.assertTrue(recipe.runes().isEmpty() || before.contains(Guide.RUNE_STELE), quest.id() + " comes after the Rune Stele");
-                    for (ComplexRune rune : recipe.runes()) {
-                        helper.assertTrue(before.contains(Guide.of(rune)), quest.id() + " comes after the rune " + rune.key());
-                    }
+                    helper.assertTrue(recipe.runes().isEmpty() || before.contains(Guide.RUNE_SCROLL), quest.id() + " comes after a found rune");
                     List<Ingredient> parts = new ArrayList<>(recipe.pedestals());
                     parts.add(recipe.center());
                     for (Ingredient part : parts) {
@@ -231,23 +233,38 @@ public final class QuestGameTests {
         helper.succeed();
     }
 
-    /** Runes open along the guide: Smelting after the ink, the runes after it once Smelting is known; steps stay hidden. */
+    /** Research opens along the guide: the circle once the ink is at the table, the gemstone once the pedestal is made. */
     @HexTest
-    public static void runesOpenAlongTheGuide(GameTestHelper helper) {
+    public static void researchOpensAlongTheGuide(GameTestHelper helper) {
         RuneKnowledge knowledge = new RuneKnowledge();
-        ComplexRune smelting = ResearchBook.FIRST;
-        helper.assertFalse(ResearchBook.open(knowledge, smelting), "Smelting waits for ink at the table");
-        helper.assertFalse(Guide.visible(Guide.SMELTING, knowledge), "and is hidden until then");
-        for (Quest quest : ancestors(Guide.SMELTING)) {
+        helper.assertFalse(Guide.canResearch(ResearchTopics.CIRCLE, knowledge), "the circle waits for ink at the table");
+        helper.assertFalse(Guide.visible(Guide.HEXTECH_ALTAR, knowledge), "and is hidden until then");
+        for (Quest quest : ancestors(Guide.HEXTECH_ALTAR)) {
             knowledge.completeQuest(quest);
         }
-        helper.assertTrue(ResearchBook.open(knowledge, smelting), "the ink opens Smelting");
-        helper.assertFalse(ResearchBook.open(knowledge, Guide.TEMPERING.rune()), "Tempering waits for Smelting");
-        helper.assertFalse(Guide.visible(Guide.HEX_SMELTER, knowledge), "the smelter is hidden");
-        knowledge.learn(smelting, 1, 0);
-        helper.assertTrue(ResearchBook.open(knowledge, Guide.TEMPERING.rune()), "Smelting opens Tempering");
-        helper.assertFalse(ResearchBook.open(knowledge, Guide.FORGE.rune()), "Forge waits for Tempering");
-        helper.assertFalse(Guide.visible(Guide.WIP_HEXCORE, knowledge), "the Hexcore is far away in the fog");
+        helper.assertTrue(Guide.canResearch(ResearchTopics.CIRCLE, knowledge), "the ink opens the circle's research");
+        helper.assertFalse(Guide.canResearch(ResearchTopics.HEXTECH_GEMSTONE, knowledge), "the gemstone waits for the pedestal");
+        knowledge.completeQuest(Guide.HEXTECH_ALTAR);
+        knowledge.completeQuest(Guide.PEDESTAL);
+        helper.assertTrue(Guide.canResearch(ResearchTopics.HEXTECH_GEMSTONE, knowledge), "the pedestal opens the gemstone");
+        helper.assertFalse(Guide.canResearch(ResearchTopics.RADIANT_PICKAXE, knowledge), "the radiant pickaxe is far away in the fog");
+        helper.succeed();
+    }
+
+    /** Runes are no steps of the guide; a found scroll alone opens the rune lore. */
+    @HexTest
+    public static void aFoundScrollOpensTheRuneLore(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        RuneKnowledge knowledge = Research.of(player);
+        knowledge.completeQuest(Guide.BRASS);
+        knowledge.completeQuest(Guide.UNSTABLE_HEXTECH);
+        knowledge.completeQuest(Guide.RESEARCHERS_DIARY);
+        Quests.check(player);
+        helper.assertFalse(knowledge.questDone(Guide.RUNE_SCROLL), "no rune, no lore");
+        knowledge.learn(ResearchBook.FIRST, 2);
+        Quests.check(player);
+        helper.assertTrue(knowledge.questDone(Guide.RUNE_SCROLL), "the first studied scroll completes the step");
+        helper.assertTrue(Guide.open(Guide.BLANK_SCROLL, knowledge), "and opens the blank scroll");
         helper.succeed();
     }
 }

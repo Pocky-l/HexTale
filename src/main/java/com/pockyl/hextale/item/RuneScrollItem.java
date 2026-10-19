@@ -17,8 +17,6 @@ import net.minecraft.world.level.Level;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.registry.ModDataComponents;
-import com.pockyl.hextale.research.ResearchBook;
-import com.pockyl.hextale.research.ResearchText;
 import com.pockyl.hextale.rune.ComplexRune;
 
 import java.util.function.Consumer;
@@ -26,9 +24,10 @@ import java.util.function.Consumer;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A complex rune written out by the Research Table. Runes are learned only by studying their scrolls (the scroll is used
- * up): the knowledge lives in the researcher's head, with the scroll's stars. Any researcher can study a scroll, but
- * only once the rune is open to them in the research book.
+ * A complex rune written on a scroll. Scrolls are found in the world's treasure chests (with 1-3 stars, as luck has it)
+ * or written at the Hextech Altar on a blank scroll with a rune the writer knows. Runes are learned only by studying
+ * their scrolls (the scroll is used up): the knowledge lives in the researcher's head, with the scroll's stars. Any
+ * researcher can study any scroll.
  */
 public class RuneScrollItem extends Item {
     public RuneScrollItem(Properties properties) {
@@ -85,16 +84,12 @@ public class RuneScrollItem extends Item {
             Component name = Component.translatable(rune.translationKey()).withColor(rune.color());
             RuneKnowledge knowledge = Research.of(serverPlayer);
             int stars = stars(stack);
-            if (!ResearchBook.open(knowledge, rune)) {
-                serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.rune_scroll.too_early", name));
-                return InteractionResult.FAIL;
-            }
             int before = knowledge.stars(rune);
             if (before >= stars) {
                 serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.rune_scroll.known", name));
                 return InteractionResult.FAIL;
             }
-            Research.learn(serverPlayer, rune, stars, 0);
+            Research.learn(serverPlayer, rune, stars);
             stack.consume(1, player);
             serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.rune_scroll.studied", name,
                     "★".repeat(stars) + "☆".repeat(3 - stars)));

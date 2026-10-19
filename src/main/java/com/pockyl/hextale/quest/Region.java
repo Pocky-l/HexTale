@@ -1,50 +1,35 @@
 package com.pockyl.hextale.quest;
 
 /**
- * A theme of the researcher's guide: its steps gather into one cluster in the book's sky, around the region's anchor,
- * under the region's name and in a faint haze of its colour. Regions are laid out around the workshop: the essence works
- * and the hextech circle to the east, the rune lore to the south.
+ * A theme of the researcher's guide. Its steps grow as one branch in the book's sky, away from the step it starts from,
+ * in the region's own direction, in a faint haze of its colour: the workshop in the middle, the essence works to the
+ * east, the hextech circle south-east with the pylons beyond it, the forge south, the rune lore west.
+ *
+ * @param angle the direction the branch grows in, degrees on screen (0 = east, 90 = south)
  */
 public enum Region {
-    WORKSHOP(0xE0B85A, 0, 0),
-    ESSENCES(0x5CD6C8, 250, -60),
-    FIELDS(0x8FE07A, 250, -300),
-    CHEMTECH(0xA8D84A, 520, -200),
-    CIRCLE(0x5CC8F2, 480, 160),
-    PYLONS(0xB08AE0, 760, 200),
-    FORGE(0xFF9A4A, 60, 300),
-    FIRE(0xFF6A3A, 330, 440),
-    WATERS(0x4AA8FF, 560, 520),
-    EARTH(0xC8A06A, -260, 280),
-    LIGHT(0xFFE89A, -220, 600),
-    STORM(0x9FEFFF, 120, 640),
-    LIFE(0x7AE07A, -560, 320);
+    WORKSHOP(0xE0B85A, 200),
+    ESSENCES(0x3FE0A0, -20),
+    RUNES(0xB07AF0, 150),
+    CIRCLE(0x4A9CFF, 70),
+    PYLONS(0xF07AC0, 15),
+    FORGE(0xFF8A3A, 115);
 
     private final int color;
-    private final int x;
-    private final int y;
+    private final double angle;
 
-    Region(int color, int x, int y) {
+    Region(int color, double angle) {
         this.color = color;
-        this.x = x;
-        this.y = y;
+        this.angle = angle;
     }
 
-    /** The region's tint: its haze and its name in the book. */
+    /** The region's tint: its haze in the book. */
     public int color() {
         return color;
     }
 
-    /** Where the region's cluster gathers on the book's page. */
-    public int x() {
-        return x;
-    }
-
-    public int y() {
-        return y;
-    }
-
-    public String translationKey() {
-        return "book.hextale.region." + name().toLowerCase(java.util.Locale.ROOT);
+    /** The direction the region's branch grows in, radians on screen. */
+    public double angle() {
+        return Math.toRadians(angle);
     }
 }

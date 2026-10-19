@@ -3,6 +3,7 @@ package com.pockyl.hextale.multiblock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -14,6 +15,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+
+import com.pockyl.hextale.knowledge.Research;
+import com.pockyl.hextale.research.ResearchTopic;
 
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModSounds;
@@ -92,6 +96,16 @@ public final class Multiblocks {
         Level level = event.getLevel();
         var found = find(level, event.getPos(), event.getItemStack());
         if (found.isEmpty()) {
+            return;
+        }
+        ResearchTopic topic = found.get().getKey().topic();
+        if (topic != null && !event.getEntity().getAbilities().instabuild
+                && !(level.isClientSide() ? com.pockyl.hextale.client.ClientKnowledge.get() : Research.of(event.getEntity())).researched(topic)) {
+            // Not researched: the structure stays asleep and the click does what it would do anyway.
+            if (event.getEntity() instanceof ServerPlayer player) {
+                player.sendOverlayMessage(Component.translatable("research.hextale.locked",
+                        Component.translatable(topic.translationKey()).withColor(topic.color())));
+            }
             return;
         }
         event.setCanceled(true);

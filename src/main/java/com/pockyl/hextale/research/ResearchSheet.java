@@ -3,8 +3,6 @@ package com.pockyl.hextale.research;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.Arrays;
@@ -12,16 +10,17 @@ import java.util.Arrays;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Learning a rune: ink drawn out from the orb, section by section, until it reaches every point of the rune's parchment.
+ * Researching a topic: ink drawn out from the orb, section by section, until it reaches every point of the topic's
+ * parchment.
  * The ink branches freely: a new line may start at the orb or at any section already inked, so the drawing is a tree
  * rooted at the orb. It is kept as a flat list of steps, {@code [from, to, from, to, ...]}, in the order they were drawn;
  * {@code from} is the orb or an earlier step's {@code to}.
  * <p>
  * Every step costs one section of ink of the essence the parchment gives its direction (see {@link #toward});
  * a step onto a point costs {@value #POINT_COST} sections of that point's own essence instead (see {@link #paying}). Stone dark runes block the ink and no section is inked twice. In
- * chapters II and III the dark runes are fields the ink may cross, but a cursed section bursts the orb: the check stops
+ * tiers 2 and 3 the dark runes are fields the ink may cross, but a cursed section bursts the orb: the check stops
  * there ({@link Trace#burst}). Every inked section next to a dark field shows how many cursed sections touch it.
- * Removing steps is free: ink is only spent when the last point is reached (or the orb bursts). Stars count the sections.
+ * Removing steps is free: ink is only spent when the last point is reached (or the orb bursts).
  * A paper is spent when an attempt starts (its first section).
  * <p>
  * Pure rules shared by the table (server) and its screen (client copy).
@@ -31,10 +30,10 @@ public final class ResearchSheet {
     public static final int POINT_COST = 10;
 
     @Nullable
-    private ComplexRune rune;
+    private ResearchTopic topic;
     /** The drawing, steps as {@code from, to} pairs. */
     private int[] tree = new int[0];
-    /** The drawing bound its rune: it stays shown until a new one is started. */
+    /** The drawing reached every point: it stays shown until a new one is started. */
     private boolean done;
     /** A paper went into this attempt when its first section was drawn. */
     private boolean paid;
@@ -51,7 +50,7 @@ public final class ResearchSheet {
      * @param burst    index of the step into a cursed section, or -1
      */
     public record Trace(int[] ink, int lit, Essence[] paying, int sections, int burst) {
-        public boolean complete(RuneBoard board) {
+        public boolean complete(ResearchBoard board) {
             return burst < 0 && lit == (1 << board.points().size()) - 1;
         }
 
@@ -92,7 +91,7 @@ public final class ResearchSheet {
      * Null when a rule is broken.
      */
     @Nullable
-    public static Trace trace(RuneBoard board, int[] tree) {
+    public static Trace trace(ResearchBoard board, int[] tree) {
         if (tree.length % 2 != 0) {
             return null;
         }
@@ -125,29 +124,29 @@ public final class ResearchSheet {
     }
 
     /** The essence a step pays with: a point's own essence when it steps onto a point, else that of its direction. */
-    public static Essence paying(RuneBoard board, int from, int to) {
+    public static Essence paying(ResearchBoard board, int from, int to) {
         int point = board.pointAt(to);
         return point >= 0 ? board.points().get(point).element() : toward(board, from, to);
     }
 
     /** The essence of a plain step: the one the parchment gives the step's direction. */
-    public static Essence toward(RuneBoard board, int from, int to) {
+    public static Essence toward(ResearchBoard board, int from, int to) {
         return board.essence(Math.max(0, HexGrid.direction(from, to)));
     }
 
     @Nullable
-    public ComplexRune rune() {
-        return rune;
+    public ResearchTopic topic() {
+        return topic;
     }
 
-    /** Chooses the rune to study: a fresh drawing. */
-    public void select(ComplexRune rune) {
-        this.rune = rune;
+    /** Chooses the topic to research: a fresh drawing. */
+    public void select(ResearchTopic topic) {
+        this.topic = topic;
         reset();
     }
 
     public void clear() {
-        this.rune = null;
+        this.topic = null;
         reset();
     }
 
@@ -191,7 +190,7 @@ public final class ResearchSheet {
         revision++;
     }
 
-    /** The drawing bound its rune; the next attempt takes a new paper. */
+    /** The drawing reached every point; the next attempt takes a new paper. */
     public void finish() {
         done = true;
         paid = false;
@@ -212,8 +211,8 @@ public final class ResearchSheet {
     }
 
     public void save(ValueOutput tag) {
-        if (rune != null) {
-            tag.putString("rune", rune.key());
+        if (topic != null) {
+            tag.putString("topic", topic.id());
         }
         tag.putIntArray("tree", tree);
         tag.putBoolean("done", done);
@@ -222,7 +221,7 @@ public final class ResearchSheet {
     }
 
     public void load(ValueInput tag) {
-        rune = tag.getString("rune").map(ComplexRunes::byKey).orElse(null);
+        topic = tag.getString("topic").map(ResearchTopics::byId).orElse(null);
         int[] saved = tag.getIntArray("tree").orElse(new int[0]);
         tree = saved.length % 2 != 0 || Arrays.stream(saved).anyMatch(c -> c < 0 || c >= HexGrid.COUNT) ? new int[0] : saved;
         done = tag.getBooleanOr("done", false);

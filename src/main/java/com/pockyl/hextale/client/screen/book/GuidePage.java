@@ -32,7 +32,7 @@ import com.pockyl.hextale.multiblock.Multiblocks;
 import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.quest.Quest;
 import com.pockyl.hextale.quest.QuestDisplay;
-import com.pockyl.hextale.quest.Region;
+import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
@@ -52,16 +52,17 @@ import java.util.function.IntFunction;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The research book's page: the researcher's guide as one branching path in the dark sky. Only what is done and what is
- * open now can be seen; every path that goes on beyond them fades into the fog. Item quests sit in round brass medallions,
- * runes in hexagons with their glyphs, devices still being worked out (WIP) in turning dashed rings. Important steps wear an
- * aura: gold, storm arcs, hextech sparks, cursed smoke, embers or green motes. A click opens the step's plate on the
- * right: the recipe or scheme for an item, what a rune does and what it opens (and a button that lays it on the table),
- * the idea behind a WIP device.
+ * The research book's quest page: the researcher's guide as branching trees in the dark sky, each theme growing its own
+ * way. Only what is done and what is open now can be seen; every path that goes on beyond them fades into the fog. Item
+ * quests sit in round brass medallions (an ink badge on the ones still to be researched), devices still being worked
+ * out (WIP) in turning dashed rings. Important steps wear an aura: gold, storm arcs, hextech sparks, cursed smoke,
+ * embers or green motes. A click opens the step's plate in the middle: the recipe or scheme for an item and what it
+ * opens (on a table, a button that lays its research on the parchment), the idea behind a WIP device.
  */
 final class GuidePage {
     private static final int ITEM_NODE = 24;
-    private static final int RUNE_NODE = 24;
+    /** The landmark's medallion: the altar, the heart of the guide. */
+    private static final int LANDMARK_NODE = 44;
     private static final int BIG = 6;
     private static final int PLATE_WIDTH = 252;
     /** The back arrow in the plate's top left corner. */
@@ -168,7 +169,7 @@ final class GuidePage {
     }
 
     private static int size(Quest quest) {
-        return (quest.kind() == Quest.Kind.RUNE ? RUNE_NODE : ITEM_NODE) + (quest.important() ? BIG : 0);
+        return quest.landmark() ? LANDMARK_NODE : ITEM_NODE + (quest.important() ? BIG : 0);
     }
 
     // ---- The map --------------------------------------------------------------------------------------------------
@@ -192,22 +193,35 @@ final class GuidePage {
         }
         PixelArt.flush(graphics);
         for (Quest quest : shown) {
-            if (quest.kind() != Quest.Kind.RUNE) {
+            if (quest.landmark()) {
+                // The landmark's item is drawn twice as large, filling its great medallion.
+                graphics.pose().pushMatrix();
+                graphics.pose().translate(quest.x(), quest.y());
+                graphics.pose().scale(2, 2);
+                graphics.item(quest.icon(), -8, -8);
+                graphics.pose().popMatrix();
+            } else {
                 graphics.item(quest.icon(), quest.x() - 8, quest.y() - 8);
             }
         }
+        // Small badges only where they can be read: zoomed out they would only speckle the sky.
+        boolean badges = book.zoom() >= 1;
         for (Quest quest : shown) {
             int badge = Math.round(size(quest) * 0.36F);
             if (quest.kind() == Quest.Kind.WIP) {
                 // Mist over a device still being worked out, and a badge with three dots waiting in turn.
                 PixelArt.disc(graphics, quest.x(), quest.y(), size(quest) - 4, PixelArt.argb(0x120E1E, 0.45F), 0);
                 inProgress(graphics, quest.x() + badge, quest.y() + badge, now, quest.index());
-            } else if (Guide.done(quest, knowledge) && quest.kind() == Quest.Kind.ITEM) {
-                check(graphics, quest.x() + badge - 4, quest.y() + badge - 4);
+            } else if (Guide.done(quest, knowledge)) {
+                if (badges) {
+                    check(graphics, quest.x() + badge - 4, quest.y() + badge - 4);
+                }
+            } else if (quest.topic() != null && !knowledge.researched(quest.topic())) {
+                // Still to be worked out at the table: an ink drop on the medallion's shoulder.
+                inkBadge(graphics, quest.x() - badge, quest.y() - badge, now, quest.index());
             }
         }
         PixelArt.flush(graphics);
-        renderRegionNames(graphics, shown);
     }
 
     /**
@@ -215,36 +229,17 @@ final class GuidePage {
      * reads as a nebula of its own rather than a box.
      */
     private static void renderHaze(GuiGraphicsExtractor graphics, List<Quest> shown) {
+        // Only the branch's own steps breathe the haze (devices to come would blot it), in many faint layers so the
+        // edges melt away instead of showing rings.
         for (Quest quest : shown) {
+            if (quest.kind() == Quest.Kind.WIP) {
+                continue;
+            }
             int color = quest.region().color();
-            PixelArt.disc(graphics, quest.x(), quest.y(), 96, PixelArt.argb(color, 0.022F), 0);
-            PixelArt.disc(graphics, quest.x(), quest.y(), 60, PixelArt.argb(color, 0.03F), 0);
-        }
-    }
-
-    /** Each region's name over its visible steps, in its colour, small and quiet. */
-    private void renderRegionNames(GuiGraphicsExtractor graphics, List<Quest> shown) {
-        java.util.Map<Region, int[]> boxes = new java.util.EnumMap<>(Region.class);
-        for (Quest quest : shown) {
-            // min x, max x, min y, count
-            int[] box = boxes.computeIfAbsent(quest.region(), region -> new int[]{Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, 0});
-            box[0] = Math.min(box[0], quest.x());
-            box[1] = Math.max(box[1], quest.x());
-            box[2] = Math.min(box[2], quest.y());
-            box[3]++;
-        }
-        for (var entry : boxes.entrySet()) {
-            Region region = entry.getKey();
-            int[] box = entry.getValue();
-            Component name = Component.translatable(region.translationKey());
-            int cx = (box[0] + box[1]) / 2;
-            int y = box[2] - 34;
-            int w = font.width(name);
-            int line = PixelArt.argb(region.color(), 0.35F);
-            PixelArt.fill(graphics, cx - w / 2 - 16, y + 4, cx - w / 2 - 4, y + 5, line);
-            PixelArt.fill(graphics, cx + w / 2 + 4, y + 4, cx + w / 2 + 16, y + 5, line);
-            PixelArt.flush(graphics);
-            graphics.centeredText(font, name, cx, y, PixelArt.argb(PixelArt.mix(region.color(), 0xFFFFFF, 0.2F), 0.8F));
+            int widest = quest.landmark() ? 220 : 130;
+            for (int ring = 0; ring < 5; ring++) {
+                PixelArt.disc(graphics, quest.x(), quest.y(), widest - ring * widest / 6, PixelArt.argb(color, 0.009F), 0);
+            }
         }
     }
 
@@ -260,13 +255,14 @@ final class GuidePage {
             }
             boolean lit = done && Guide.done(parent, knowledge);
             float pulse = pulse(now, quest.index());
-            int color = lit ? PixelArt.argb(StarBook.GOLD, 0.7F)
-                    : quest.kind() == Quest.Kind.WIP ? PixelArt.argb(WIP, 0.4F) : PixelArt.argb(OPEN, 0.35F + 0.25F * pulse);
+            // Travelled paths settle into a quiet line of their branch's colour; the open ones keep their cyan pulse.
+            int color = lit ? PixelArt.argb(PixelArt.mix(quest.region().color(), StarBook.GOLD, 0.35F), 0.32F)
+                    : quest.kind() == Quest.Kind.WIP ? PixelArt.argb(WIP, 0.4F) : PixelArt.argb(OPEN, 0.45F + 0.3F * pulse);
             int[][] path = curve(parent, quest);
             if (parent != quest.parent()) {
-                // Second parents: a dotted thread, shown for item quests and for the step in focus only, so the
-                // runes' cross links never criss-cross the whole sky.
-                if (quest.kind() == Quest.Kind.ITEM || quest == selected || quest == focus) {
+                // Second parents: a dotted thread for the step in focus only, so cross links never criss-cross the sky.
+                if (quest == selected || quest == focus) {
+                    color = PixelArt.argb(OPEN, 0.7F);
                     int phase = (int) (now / 120 % 4);
                     for (int i = 0; i < path.length; i++) {
                         if ((i + phase) % 4 == 0) {
@@ -355,35 +351,23 @@ final class GuidePage {
         boolean done = Guide.done(quest, knowledge);
         boolean wip = quest.kind() == Quest.Kind.WIP;
         float pulse = pulse(now, quest.index());
-        boolean round = quest.kind() != Quest.Kind.RUNE;
         if (!done && !wip) {
             // An open step breathes in cyan.
             for (int ring = 0; ring < 3; ring++) {
                 int halo = PixelArt.argb(OPEN, (0.14F - ring * 0.04F) * (0.6F + 0.4F * pulse));
-                if (round) {
-                    PixelArt.disc(graphics, x, y, size + 4 + ring * 4, halo, 0);
-                } else {
-                    PixelArt.hex(graphics, x, y, size + 4 + ring * 4, halo, 0);
-                }
+                PixelArt.disc(graphics, x, y, size + 4 + ring * 4, halo, 0);
             }
         }
-        int rim = done ? StarBook.GOLD : wip ? WIP : PixelArt.mix(0x2B8FB8, 0x7EF0FF, pulse);
+        // Done steps keep a quieter brass, tinted by their branch; key steps stay bright gold.
+        int rim = done ? (quest.important() || quest.landmark() ? StarBook.GOLD : PixelArt.mix(0xB08A40, quest.region().color(), 0.25F))
+                : wip ? WIP : PixelArt.mix(0x2B8FB8, 0x7EF0FF, pulse);
         if (quest == selected || hovered) {
             rim = PixelArt.mix(StarBook.GOLD, 0xFFF6D6, pulse);
         }
+        if (quest.landmark()) {
+            landmarkFrame(graphics, x, y, size, done, now);
+        }
         switch (quest.kind()) {
-            case RUNE -> {
-                ComplexRune rune = quest.rune();
-                int fill = done ? PixelArt.mix(rune.color(), 0x06050D, 0.78F) : 0x0E0C1E;
-                PixelArt.hex(graphics, x, y, size, PixelArt.argb(fill, 1), PixelArt.argb(rim, 1));
-                int glyph = size - 11;
-                int color = done ? PixelArt.mix(rune.color(), 0xFFFFFF, 0.15F) : PixelArt.mix(rune.color(), 0x8A86B0, 0.55F);
-                PixelArt.glyph(graphics, rune, x - glyph / 2, y - glyph / 2, glyph, PixelArt.argb(color, 1));
-                int stars = knowledge.stars(rune);
-                for (int s = 0; s < stars; s++) {
-                    PixelArt.fill(graphics, x - 4 + s * 3, y + size / 2 - 3, x - 2 + s * 3, y + size / 2 - 1, PixelArt.argb(StarBook.GOLD, 1));
-                }
-            }
             case ITEM -> {
                 int fill = done ? 0x2A2210 : 0x0C1A2A;
                 medallion(graphics, x, y, size, rim, fill, done ? PixelArt.mix(fill, StarBook.GOLD, 0.18F) : PixelArt.mix(fill, OPEN, 0.12F));
@@ -404,12 +388,7 @@ final class GuidePage {
             }
         }
         if (quest == selected) {
-            int ring = PixelArt.argb(StarBook.GOLD, 0.5F + 0.5F * pulse);
-            if (round) {
-                PixelArt.discRing(graphics, x, y, size + 6, ring);
-            } else {
-                PixelArt.hexRing(graphics, x, y, size + 6, ring);
-            }
+            PixelArt.discRing(graphics, x, y, size + 6, PixelArt.argb(StarBook.GOLD, 0.5F + 0.5F * pulse));
         }
     }
 
@@ -483,6 +462,52 @@ final class GuidePage {
         graphics.text(font, label, x0 + 3, top + 1, 0xFFD8C0FF, false);
     }
 
+    /**
+     * The landmark's setting: a wide hexagonal plate of dark glass with a brass rim behind the medallion, a ring of sixteen
+     * glowing ticks turning slowly around it and a second, finer ring turning the other way - the altar's gimbal rings
+     * drawn in the sky.
+     */
+    private static void landmarkFrame(GuiGraphicsExtractor graphics, int x, int y, int size, boolean done, long now) {
+        int glow = done ? StarBook.GOLD : OPEN;
+        for (int ring = 0; ring < 4; ring++) {
+            PixelArt.disc(graphics, x, y, size + 26 + ring * 10, PixelArt.argb(0x5CC8F2, 0.05F - ring * 0.01F), 0);
+        }
+        PixelArt.hex(graphics, x, y, size + 18, PixelArt.argb(0x0A0818, 0.92F), PixelArt.argb(PixelArt.mix(StarBook.GOLD, 0x6A4A18, 0.3F), 1));
+        PixelArt.hexRing(graphics, x, y, size + 13, PixelArt.argb(glow, 0.35F));
+        float turn = now / 4200.0F;
+        float outer = size / 2.0F + 15;
+        for (int i = 0; i < 16; i++) {
+            double angle = turn + i * Math.PI / 8;
+            int px = x + (int) Math.round(Math.cos(angle) * outer);
+            int py = y + (int) Math.round(Math.sin(angle) * outer);
+            boolean big = i % 4 == 0;
+            int color = PixelArt.argb(big ? 0xE8FCFF : glow, big ? 0.95F : 0.6F);
+            PixelArt.fill(graphics, px - (big ? 1 : 0), py - (big ? 1 : 0), px + (big ? 2 : 1), py + (big ? 2 : 1), color);
+        }
+        float inner = size / 2.0F + 9;
+        for (int i = 0; i < 24; i++) {
+            double angle = -turn * 1.6 + i * Math.PI / 12;
+            if (i % 3 == 0) {
+                continue;
+            }
+            int px = x + (int) Math.round(Math.cos(angle) * inner);
+            int py = y + (int) Math.round(Math.sin(angle) * inner);
+            PixelArt.fill(graphics, px, py, px + 1, py + 1, PixelArt.argb(0x9FE6FF, 0.5F));
+        }
+    }
+
+    /** A drop of ink in a dark disc, glinting now and then: this step is to be researched at the table first. */
+    private static void inkBadge(GuiGraphicsExtractor graphics, int cx, int cy, long now, int phase) {
+        float glint = Math.max(0, Mth.sin(now / 500.0F + phase));
+        PixelArt.disc(graphics, cx, cy, 10, PixelArt.argb(0x0C1426, 1), PixelArt.argb(PixelArt.mix(0x2B8FB8, 0x9FE6FF, glint), 1));
+        int ink = PixelArt.argb(0x7EF0FF, 1);
+        PixelArt.fill(graphics, cx - 1, cy - 3, cx, cy - 2, ink);
+        PixelArt.fill(graphics, cx - 2, cy - 2, cx + 1, cy, ink);
+        PixelArt.fill(graphics, cx - 3, cy, cx + 2, cy + 2, ink);
+        PixelArt.fill(graphics, cx - 2, cy + 2, cx + 1, cy + 3, ink);
+        PixelArt.fill(graphics, cx - 2, cy, cx - 1, cy + 1, PixelArt.argb(0xFFFFFF, 0.5F + 0.5F * glint));
+    }
+
     /** A small tick in a green disc: the quest is done. */
     private static void check(GuiGraphicsExtractor graphics, int x, int y) {
         PixelArt.disc(graphics, x + 4, y + 4, 10, 0xFF1C3A16, PixelArt.argb(PixelArt.mix(DONE, 0x1C3A16, 0.45F), 1));
@@ -528,17 +553,17 @@ final class GuidePage {
     }
 
     private static Component title(Quest quest) {
-        Component name = Component.translatable(quest.translationKey());
-        return quest.rune() != null ? name.copy().withColor(quest.rune().color()) : name.copy().withColor(StarBook.GOLD);
+        return Component.translatable(quest.translationKey()).withColor(StarBook.GOLD);
     }
 
     private static Component status(Quest quest, RuneKnowledge knowledge) {
         boolean done = Guide.done(quest, knowledge);
         return switch (quest.kind()) {
             case ITEM -> done ? Component.translatable("book.hextale.quest.done").withColor(DONE)
+                    : quest.topic() != null && !knowledge.researched(quest.topic())
+                    ? Component.translatable("book.hextale.quest.research_first", Component.translatable(quest.topic().translationKey()))
+                    .withColor(0x9FE6FF)
                     : Component.translatable("book.hextale.quest.goal", Component.translatable(quest.translationKey() + ".goal")).withColor(OPEN);
-            case RUNE -> done ? StarBook.stars(knowledge.stars(quest.rune()))
-                    : Component.translatable("book.hextale.guide.rune_open").withColor(OPEN);
             case WIP -> Component.translatable("book.hextale.guide.wip_status").withColor(WIP);
         };
     }
@@ -588,54 +613,9 @@ final class GuidePage {
         return font.split(status(quest, knowledge), innerWidth());
     }
 
-    /** The plate's text under the picture: what an item quest is about, what a rune does, the idea behind a device. */
+    /** The plate's text under the picture: what an item quest is about, the idea behind a device. */
     private List<FormattedCharSequence> bodyLines(Quest quest) {
-        Component text = switch (quest.kind()) {
-            case ITEM, WIP -> Component.translatable(quest.translationKey() + ".desc");
-            case RUNE -> Component.translatable(quest.rune().translationKey() + ".effect");
-        };
-        List<FormattedCharSequence> lines = new ArrayList<>(font.split(text, innerWidth()));
-        // A rune step may carry its own note, like how to study the first rune.
-        String note = "quest.hextale." + quest.id() + ".desc";
-        if (quest.kind() == Quest.Kind.RUNE && Language.getInstance().has(note)) {
-            lines.addAll(font.split(Component.translatable(note).withColor(MUTED), innerWidth()));
-        }
-        return lines;
-    }
-
-    /** What a rune is used for now (pickaxe, smelter, recipes) and what it opens: lines with their colours. */
-    private List<FormattedCharSequence> runeUses(Quest quest, RuneKnowledge knowledge) {
-        ComplexRune rune = quest.rune();
-        List<FormattedCharSequence> lines = new ArrayList<>();
-        List<Component> uses = new ArrayList<>();
-        PickaxeRune pickaxe = PickaxeRune.of(rune);
-        if (pickaxe != null) {
-            uses.add(Component.translatable("book.hextale.guide.use.pickaxe", Component.translatable(pickaxe.descriptionKey())));
-        }
-        SmelterRune smelter = SmelterRune.of(rune);
-        if (smelter != null) {
-            uses.add(Component.translatable("book.hextale.guide.use.smelter", Component.translatable(smelter.descriptionKey())));
-        }
-        PylonRune pylon = PylonRune.of(rune);
-        if (pylon != null) {
-            uses.add(Component.translatable("book.hextale.guide.use.pylon", Component.translatable(pylon.descriptionKey())));
-        }
-        for (var entry : InfusionRecipes.get(true).entrySet()) {
-            if (entry.getValue().runes().contains(rune)) {
-                ItemStack result = entry.getValue().result().create();
-                uses.add(Component.translatable("book.hextale.guide.use.recipe", result.getHoverName()));
-            }
-        }
-        if (!uses.isEmpty()) {
-            lines.add(Component.translatable("book.hextale.guide.uses").withColor(StarBook.GOLD).getVisualOrderText());
-            for (Component use : uses) {
-                lines.addAll(font.split(Component.literal("• ").append(use).withColor(0xC8C0DC), innerWidth()));
-            }
-        } else {
-            lines.addAll(font.split(Component.translatable("book.hextale.guide.no_use").withColor(WIP), innerWidth()));
-        }
-        lines.addAll(opens(quest, knowledge));
-        return lines;
+        return new ArrayList<>(font.split(Component.translatable(quest.translationKey() + ".desc"), innerWidth()));
     }
 
     /** "Opens:" and the names of the visible steps after this one; the hidden ones are question marks. */
@@ -673,19 +653,21 @@ final class GuidePage {
         return Math.max(18, titleLines(quest).size() * 10 + 4);
     }
 
+    /** On a table, a step that asks for research shows a button laying its topic on the parchment. */
     private boolean studyButton(Quest quest) {
-        return quest.kind() == Quest.Kind.RUNE && book.host() != null;
+        return quest.topic() != null && book.host() != null;
     }
 
     private int contentHeight(Quest quest, RuneKnowledge knowledge) {
         int h = PAD + headerHeight(quest) + statusLines(quest, knowledge).size() * 10 + 6;
+        if (quest.scene() != null) {
+            h += SCENE_HEIGHT + 8;
+        }
         if (quest.display() != null) {
             h += displayHeight(quest.display()) + 8;
         }
         h += bodyLines(quest).size() * 10;
-        if (quest.kind() == Quest.Kind.RUNE) {
-            h += 4 + runeUses(quest, knowledge).size() * 10;
-        } else if (quest.kind() == Quest.Kind.WIP) {
+        if (quest.kind() == Quest.Kind.WIP) {
             h += 4 + needs(quest).size() * 10;
         } else {
             List<FormattedCharSequence> opens = opens(quest, knowledge);
@@ -748,14 +730,7 @@ final class GuidePage {
         int y = top + PAD - scroll;
         // Header: the step's sign and name.
         int sx = ix + BACK + 4;
-        if (quest.kind() == Quest.Kind.RUNE) {
-            ComplexRune rune = quest.rune();
-            PixelArt.hex(graphics, sx + 8, y + 8, 18, PixelArt.argb(PixelArt.mix(rune.color(), 0x06050D, 0.7F), 1), PixelArt.argb(rune.color(), 1));
-            PixelArt.glyph(graphics, rune, sx + 2, y + 2, 12, PixelArt.argb(PixelArt.mix(rune.color(), 0xFFFFFF, 0.2F), 1), 0xFF000000);
-            PixelArt.flush(graphics);
-        } else {
-            graphics.item(quest.icon(), sx, y);
-        }
+        graphics.item(quest.icon(), sx, y);
         int ty = y + Math.max(0, (headerHeight(quest) - titleLines(quest).size() * 10) / 2 - 1);
         for (FormattedCharSequence line : titleLines(quest)) {
             graphics.text(font, line, ix + TITLE_INDENT, ty, 0xFFFFFFFF, true);
@@ -773,6 +748,19 @@ final class GuidePage {
         PixelArt.fill(graphics, ix, y, ix + innerWidth(), y + 1, PixelArt.argb(StarBook.GOLD, 0.3F));
         y += 4;
 
+        if (quest.scene() != null) {
+            // The circle at work, in 3D: what this step is about stands in a ring of light.
+            int sw = innerWidth();
+            int frame = PixelArt.argb(StarBook.GOLD, 0.35F);
+            PixelArt.fill(graphics, ix, y, ix + sw, y + SCENE_HEIGHT, PixelArt.argb(0x0B0918, 1));
+            PixelArt.fill(graphics, ix, y, ix + sw, y + 1, frame);
+            PixelArt.fill(graphics, ix, y + SCENE_HEIGHT - 1, ix + sw, y + SCENE_HEIGHT, frame);
+            PixelArt.fill(graphics, ix, y + 1, ix + 1, y + SCENE_HEIGHT - 1, frame);
+            PixelArt.fill(graphics, ix + sw - 1, y + 1, ix + sw, y + SCENE_HEIGHT - 1, frame);
+            PixelArt.flush(graphics);
+            CircleDiorama.draw(graphics, quest.scene(), now / 50F, ix + 1, y + 1, ix + sw - 1, y + SCENE_HEIGHT - 1, SCENE_SCALE);
+            y += SCENE_HEIGHT + 8;
+        }
         QuestDisplay display = quest.display();
         if (display != null) {
             y += 2;
@@ -788,7 +776,6 @@ final class GuidePage {
             y += 10;
         }
         List<FormattedCharSequence> extra = switch (quest.kind()) {
-            case RUNE -> runeUses(quest, knowledge);
             case WIP -> needs(quest);
             case ITEM -> opens(quest, knowledge);
         };
@@ -801,12 +788,12 @@ final class GuidePage {
         }
         if (studyButton(quest)) {
             StarBook.Host host = book.host();
-            ComplexRune rune = quest.rune();
-            boolean open = ResearchBook.open(knowledge, rune);
-            boolean onTable = host.studying() == rune;
+            ResearchTopic topic = quest.topic();
+            boolean open = Guide.canResearch(topic, knowledge);
+            boolean onTable = host.researching() == topic;
             boolean active = open && !onTable;
             Component label = Component.translatable(!open ? "book.hextale.closed" : onTable ? "book.hextale.on_table"
-                    : knowledge.knows(rune) ? "book.hextale.restudy" : "book.hextale.study");
+                    : knowledge.researched(topic) ? "book.hextale.research_again" : "book.hextale.research");
             int by = buttonTop(quest, knowledge);
             boolean hovered = active && mouseIn && mouseX >= ix && mouseX < ix + innerWidth() && mouseY >= by && mouseY < by + StarBook.BUTTON_HEIGHT;
             book.magicButton(graphics, ix, by, innerWidth(), label, active, hovered, now);
@@ -837,6 +824,9 @@ final class GuidePage {
     private static final int RUNE_CELL = 24;
     private static final int RUNE_ROW = 22;
     private static final int DIORAMA_HEIGHT = 84;
+    /** The ritual circle's 3D scene on the altar's, pedestal's and stele's plates. */
+    private static final int SCENE_HEIGHT = 128;
+    private static final float SCENE_SCALE = 19;
 
     private int displayHeight(QuestDisplay display) {
         return switch (display.kind()) {
@@ -1365,7 +1355,7 @@ final class GuidePage {
 
     // ---- Input ----------------------------------------------------------------------------------------------------
 
-    /** A click on the plate: picks a rune in a runes picture or presses the study button (laying the rune on the table). */
+    /** A click on the plate: picks a rune in a runes picture or presses the research button (laying the topic on the table). */
     void plateClicked(double mouseX, double mouseY, RuneKnowledge knowledge) {
         Quest quest = selected;
         if (quest == null) {
@@ -1380,11 +1370,11 @@ final class GuidePage {
         }
         int ix = plateLeft() + PAD;
         int by = buttonTop(quest, knowledge);
-        ComplexRune rune = quest.rune();
+        ResearchTopic topic = quest.topic();
         StarBook.Host host = book.host();
         if (mouseX >= ix && mouseX < ix + innerWidth() && mouseY >= by && mouseY < by + StarBook.BUTTON_HEIGHT
-                && ResearchBook.open(knowledge, rune) && host.studying() != rune) {
-            host.study(rune);
+                && Guide.canResearch(topic, knowledge) && host.researching() != topic) {
+            host.research(topic);
         }
     }
 

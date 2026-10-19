@@ -12,7 +12,7 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchSheet;
-import com.pockyl.hextale.research.RuneBoard;
+import com.pockyl.hextale.research.ResearchBoard;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Draws the research parchment in pixel art, for both games: a rune's parchment (fog, stone and dark fields with their
+ * Draws the research parchment in pixel art, for both games: a research topic's parchment (fog, stone and dark fields with their
  * curse counts and flags, points and the branching ink, the six essences at the hexagon's corners) and an item's prism
  * (the item in a misty field, the rim's ports, the rays shone, the essences found).
  * Sections are laid out {@value #COL_STEP} pixels apart in a row and {@value #ROW_STEP} between rows (the background
@@ -98,7 +98,7 @@ final class BoardView {
         return new int[]{sx(cell), sy(cell)};
     }
 
-    /** A new rune or a fresh screen: nothing that is already there animates. */
+    /** A new topic or a fresh screen: nothing that is already there animates. */
     void reset() {
         fogPrimed = false;
         lastLit = -1;
@@ -114,7 +114,7 @@ final class BoardView {
         shakeStart = Util.getMillis();
     }
 
-    // ---- The rune's parchment -------------------------------------------------------------------------------------
+    // ---- A topic's parchment ---------------------------------------------------------------------------------------
 
     /** Lifts the fog around the sections the researcher's threads have passed (and the thread being drawn). */
     void updateFog(BitSet seen, int[] thread) {
@@ -152,7 +152,7 @@ final class BoardView {
      * @param curses      cursed sections found the hard way
      * @param flags       the researcher's flags on dark sections
      */
-    void renderRune(GuiGraphicsExtractor graphics, Font font, RuneBoard board, int[] tree, ResearchSheet.@Nullable Trace trace,
+    void renderTopic(GuiGraphicsExtractor graphics, Font font, ResearchBoard board, int[] tree, ResearchSheet.@Nullable Trace trace,
                     boolean done, boolean drawing, int hovered, int preview, int previewFrom, boolean ready, int head,
                     BitSet known, BitSet curses, BitSet flags) {
         long now = Util.getMillis();
@@ -228,7 +228,7 @@ final class BoardView {
 
         // Points: waiting ones breathe, reached ones shine in their element.
         for (int i = 0; i < board.points().size(); i++) {
-            RuneBoard.Point p = board.points().get(i);
+            ResearchBoard.Point p = board.points().get(i);
             int x = sx(p.cell());
             int y = sy(p.cell());
             int color = PixelArt.onParchment(p.element().color());
@@ -248,10 +248,10 @@ final class BoardView {
             }
         }
 
-        // The orb, ringed with the rune's action ink.
+        // The orb, ringed with the ink of the topic's first essence.
         int ox = sx(HexGrid.CENTRE);
         int oy = sy(HexGrid.CENTRE);
-        int action = board.rune().action().color();
+        int action = board.topic().action().color();
         PixelArt.hex(graphics, ox, oy, CELL + 4, argb(0x5CC8F2, 0.25F + 0.2F * pulse), argb(action, 1));
         PixelArt.hexRing(graphics, ox, oy, CELL + 6, argb(action, 0.35F + 0.35F * pulse));
         if (ready) {
@@ -309,7 +309,7 @@ final class BoardView {
             float t = (now - bindStart) / (float) BIND_MILLIS;
             if (t < 1.4F) {
                 int width = CELL + 2 * (int) (Math.min(1, t) * 40) | 1;
-                PixelArt.hexRing(graphics, ox, oy, width, argb(board.rune().color(), Math.max(0, 1 - t)));
+                PixelArt.hexRing(graphics, ox, oy, width, argb(board.topic().color(), Math.max(0, 1 - t)));
             }
         }
         renderSigns(graphics, board.essences());
@@ -340,7 +340,7 @@ final class BoardView {
         PixelArt.fill(graphics, x - 3, y + 4, x + 2, y + 5, argb(0xE8DCC0, 1));
     }
 
-    private void noticeLit(RuneBoard board, int lit, long now) {
+    private void noticeLit(ResearchBoard board, int lit, long now) {
         if (lastLit >= 0) {
             int added = lit & ~lastLit;
             for (int i = 0; i < board.points().size() && i < litAt.length; i++) {
@@ -356,7 +356,7 @@ final class BoardView {
      * Around the end of the line: a drop of colour towards every open neighbour, the ink a step that way would cost. They
      * breathe one after another, like a compass needle settling.
      */
-    private void inkCompass(GuiGraphicsExtractor graphics, RuneBoard board, boolean[] inked, int head, long now) {
+    private void inkCompass(GuiGraphicsExtractor graphics, ResearchBoard board, boolean[] inked, int head, long now) {
         int hx = sx(head);
         int hy = sy(head);
         int[] neighbours = HexGrid.neighbours(head);
@@ -436,7 +436,7 @@ final class BoardView {
 
     // ---- An item through the prism ------------------------------------------------------------------------------
 
-    /** The prism's field is small: it is drawn this much larger than a rune's parchment. */
+    /** The prism's field is small: it is drawn this much larger than a topic's parchment. */
     private static final float PRISM_SCALE = 1.5F;
     private static final int PRISM_CELL = 19;
     private static final long RAY_STEP_MILLIS = 45;
@@ -720,7 +720,7 @@ final class BoardView {
 
     // ---- Shared -----------------------------------------------------------------------------------------------------
 
-    /** The parchment with nothing on it: the element signs, and a book inviting to choose a rune. */
+    /** The parchment with nothing on it: the element signs, and a book inviting to choose a topic. */
     void renderEmpty(GuiGraphicsExtractor graphics, boolean hovered) {
         long now = Util.getMillis();
         float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
@@ -761,7 +761,7 @@ final class BoardView {
     }
 
     /** The essence of the corner a section lies nearest to (its direction's essence), within reach of the corner. */
-    private static @Nullable Essence nearestCorner(RuneBoard board, int cell) {
+    private static @Nullable Essence nearestCorner(ResearchBoard board, int cell) {
         Essence best = null;
         double distance = 0.55;
         for (int d = 0; d < 6; d++) {

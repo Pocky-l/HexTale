@@ -28,7 +28,7 @@ final class Auras {
         int x = quest.x();
         int y = quest.y();
         int seed = quest.index() * 7919;
-        boolean round = quest.kind() != Quest.Kind.RUNE;
+        boolean round = true;
         switch (quest.aura()) {
             case NONE -> {
             }

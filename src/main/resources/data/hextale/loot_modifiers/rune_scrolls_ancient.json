@@ -1,0 +1,21 @@
+{
+  "type": "hextale:rune_scrolls",
+  "tables": [
+    "minecraft:chests/stronghold_library",
+    "minecraft:chests/ancient_city",
+    "minecraft:chests/bastion_treasure",
+    "minecraft:chests/end_city_treasure",
+    "minecraft:chests/trial_chambers/reward_ominous"
+  ],
+  "chance": 0.55,
+  "chapters": [
+    0,
+    40,
+    60
+  ],
+  "stars": [
+    60,
+    30,
+    10
+  ]
+}

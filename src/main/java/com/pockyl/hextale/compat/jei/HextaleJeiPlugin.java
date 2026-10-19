@@ -99,6 +99,9 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.PUMP.get(), "pump");
         info(registration, ModItems.DRAIN_VALVE.get(), "drain_valve");
         info(registration, ModItems.RESEARCH_TABLE.get(), "research_table");
+        info(registration, ModItems.BLANK_SCROLL.get(), "blank_scroll");
+        info(registration, ModItems.RUNE_SCROLL.get(), "rune_scroll");
+        info(registration, ModItems.RESEARCH_NOTES.get(), "research_notes");
         registration.addItemStackInfo(new ItemStack(ModItems.ESSENCE_FLASK.get()), Component.translatable("jei.hextale.info.essence_flask"));
     }
 

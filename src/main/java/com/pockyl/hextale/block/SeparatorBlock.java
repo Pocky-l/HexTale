@@ -2,6 +2,7 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -27,6 +28,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -39,18 +42,22 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * The Separator: draws the essence chosen on its screen out of a mixture, burning blaze powder. Its front (facing the player who placed it) lets the
- * rest of the mixture out, its top the drawn-out concentrate; pipes bring the mixture in at the back and the sides.
+ * The Separator: a separating flask over a dish of blaze powder that draws the essence chosen on its screen out of a
+ * mixture, burning the powder. What each side does is set per side (see {@link Side}); the top is the gas vent. While
+ * it works ({@link #LIT}) the powder glows, small flames lick the flask and the gas of separation smokes out of the
+ * vent.
  */
 public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerHolder, EssenceMachine {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     /** What each side shows: the joint of the side's mode (see {@link PortMode}), pipe or not, so a change shows at
      * once. The top is the gas vent and the bottom stands on the floor: no pipes there. */
     public static final Map<Direction, EnumProperty<PortMode>> LOOKS = looks();
+    /** Burning blaze powder: the separator is drawing an essence out right now. */
+    public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     public SeparatorBlock(Properties properties) {
         super(properties);
-        BlockState state = stateDefinition.any().setValue(FACING, Direction.NORTH);
+        BlockState state = stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, false);
         for (EnumProperty<PortMode> look : LOOKS.values()) {
             state = state.setValue(look, PortMode.NONE);
         }
@@ -67,7 +74,7 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, LIT);
         LOOKS.values().forEach(builder::add);
     }
 
@@ -173,6 +180,24 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
     @Override
     protected BlockState mirror(BlockState state, Mirror mirror) {
         return rotate(state, mirror.getRotation(state.getValue(FACING)));
+    }
+
+    /** The fire of the powder under the flask's tip, and now and then the gas of separation out of the vent. */
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (!state.getValue(LIT)) {
+            return;
+        }
+        double x = pos.getX() + 0.5;
+        double z = pos.getZ() + 0.5;
+        if (random.nextInt(2) == 0) {
+            level.addParticle(ParticleTypes.SMALL_FLAME, x + (random.nextDouble() - 0.5) * 0.2, pos.getY() + 3.1 / 16,
+                    z + (random.nextDouble() - 0.5) * 0.2, 0, 0.004, 0);
+        }
+        if (random.nextInt(6) == 0) {
+            level.addParticle(ParticleTypes.SMOKE, x, pos.getY() + 1.02, z, (random.nextDouble() - 0.5) * 0.01, 0.03,
+                    (random.nextDouble() - 0.5) * 0.01);
+        }
     }
 
     @Override

@@ -21,20 +21,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Research**
 - Research Table: a two-block dark oak writing desk with brass trim, drawers, a bookshelf, a book rest for the diary,
   an inkwell and a leather writing pad. Unstable hextech hangs over the parchment from a brass arm, turning inside
-  spinning gimbal rings; glyphs stream from the parchment while someone writes, and a freshly drawn rune rises over the
-  desk as a glowing hieroglyph. The table keeps its own paper; every research takes one sheet when it starts.
-- Researcher's Diary: a book signed with its owner's name, holding the Researcher's Guide - a web of steps through the
-  mod in a dark sky to drag and zoom, gathered by theme into loose constellations, each in a haze of its own colour under
-  its name: the Workshop, Essence Works, Fields and Woods, Chemtech, the Hextech Circle, Hex Pylons, and the rune lore of
-  the Forge, Flame, Waters, Deep Earth, Light, Storm and Life. There is no single road: a step needs only what it really
-  needs, so brass and raw hextech both start the journey and several themes open at once - you choose where to go.
-  Things to make, runes to study and devices still being worked out (marked WIP) are linked by gently curving threads;
-  only what is done or open can be seen - the rest fades into the fog. Key steps glow gold, storm steps crackle with
-  lightning, hextech steps are circled by blue sparks, cursed runes smoke, heat steps shed embers. The diary opens where
-  your next steps are. A click opens the step's window in the middle of the page (back arrow, Escape or a click beside it
-  returns to the map): the recipe, ritual or structure for a thing, what a rune does, what it is used for and what it
-  opens (and a button that lays it on the Research Table), the idea behind a device to come. Finishing a step is marked
-  by a quiet stroke of the pen.
+  spinning gimbal rings; glyphs stream from the parchment while someone writes, and the freshly researched device rises
+  over the desk. The table keeps its own paper; every research takes one sheet when it starts.
+- Researcher's Diary: a book signed with its owner's name, with two tabs. The Researcher's Path is a tree of steps
+  through the mod in a dark sky to drag and zoom: every theme - the workshop, the essence works, the rune lore, the
+  hextech circle, the pylons and the forge - grows as its own branch in its own direction, in a haze of its colour.
+  There is no single road: a step needs only what it really needs, so brass and raw hextech both start the journey and
+  several branches open at once - you choose where to go. Devices still being worked out (marked WIP) gather in small
+  fans around the step they will grow from; only what is done or open can be seen - the rest fades into the fog. Key
+  steps glow gold, storm steps crackle with lightning, hextech steps are circled by blue sparks, cursed ones smoke,
+  heat steps shed embers; an ink drop marks what must be researched first. The diary opens where your next steps are. A
+  click opens the step's window in the middle of the page (back arrow, Escape or a click beside it returns to the map):
+  the recipe, ritual or structure for a thing and what it opens (on a table, a button that lays its research on the
+  parchment), the idea behind a device to come. Finishing a step is marked by a quiet stroke of the pen. The Runes tab
+  lists every rune found so far - sign, name, stars, what it does and what it is used for. The Hextech Altar is the heart of the
+  path: a large medallion in a hexagonal brass setting with turning gimbal rings, alone in its own patch of sky. The
+  plates of the altar, the pedestal and the rune stele show the ritual circle at work in a turning 3D scene - the items
+  rise from the pedestals into the altar, the steles' runes beam in, the jars pour their essences, a flash, and the
+  gemstone turns over the altar; the part the step is about stands in a ring of light.
 - Essences: everything is made of them. Nine primal essences (fire, water, earth, air, light, shadow, life, metal,
   lightning) combine into 71 more, from Steam and Ore to Time and Soul; every essence has its own picture. Every item
   carries up to six essences in different amounts, from hand-tuned base materials to anything crafted from them; the
@@ -43,16 +47,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Shine rays in from the brass rim - a ray is absorbed by an essence ahead, bent away by one beside its path, turned back
   by two - and read where it leaves; check a section to look inside. Rays and checks share a small budget. A studied
   item shows its essences in its tooltip.
-- Rune research: choose a rune the guide has opened and draw it on a worn parchment with a hexagon of six
-  essences - one per direction, chosen by the rune's theme. Drag ink from the hextech orb to every point of the rune;
-  the ink may branch from the orb or from any inked section. A step costs ink of the essence its direction points to,
-  a step onto a point ten of the point's own essence; right click takes a step back for free. A shorter drawing earns
-  up to three stars. In chapter I the dark runes are stone; from chapter II they are dark fields the ink may cross,
-  but some of their sections are cursed - every inked section next to them counts the curses it touches, like a
-  minesweeper. Stepping on a curse bursts the orb and burns the sheet. A finished drawing writes the rune's scroll;
-  studying the scroll teaches the rune to the researcher with the scroll's stars. Smelting comes first; every rune
-  opens the runes and devices after it on the guide.
-- Creative mode: the Scroll of Omniscience teaches everything (every rune with three stars, every item, every quest),
+- Research: every device and tool past the essence works - the altar circle, the gemstone, the lamp, the big jar,
+  the pylons, the pickaxes, the Hex Smelter, the drain valve - must be researched at the table before it can be crafted
+  or made at the altar. Choose it in the book and draw it on a worn parchment with a hexagon of six essences - one per
+  direction, chosen by the device's theme. Drag ink from the hextech orb to every point; the ink may branch from the orb
+  or from any inked section. A step costs ink of the essence its direction points to, a step onto a point ten of the
+  point's own essence; right click takes a step back for free. Simple devices have stone walls; deeper ones have dark
+  fields the ink may cross, but some of their sections are cursed - every inked section next to them counts the curses
+  it touches, like a minesweeper. Stepping on a curse bursts the orb and burns the sheet. A finished drawing writes
+  Research Notes; reading them teaches the device - and notes can be handed to another player.
+- Runes are found, not researched: rune scrolls lie in treasure chests - simple runes in dungeons, temples, mineshafts
+  and buried treasure, harder ones in strongholds, mansions, the Nether and trial vaults, the rarest in ancient cities,
+  end cities and bastion treasure. A scroll's stars (one to three) are luck. Studying a scroll teaches the rune.
+- Blank Scroll (three paper): put it on the altar, choose a rune you know on one stele and start the ritual - the altar
+  draws the rune's essence once per star and writes a scroll of that rune with your stars, to pass the rune on.
+- Creative mode: the Scroll of Omniscience teaches everything (every rune with three stars, every research, every item,
+  every quest),
   the Scroll of Oblivion forgets everything.
 
 **Essence works**
@@ -72,7 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Essence Jar: a big glass jar with a wooden lid (glass and wooden slabs, no brass), 256 mB; in through every face - the bottom too - and out at the bottom. Sneak-use
   a side or the lid with an empty hand to stick an enamel label with an essence's sign on it. The Research Table draws
   its ink from jars of concentrate within 5 blocks - every drop it spends streams from its jar into the orb. A Creative Essence Jar holds every essence without end.
-  A jar breaks quickly by hand and keeps its essence and its sticker: the item shows the liquid and the sticker inside
+  A jar breaks quickly by hand and keeps its essence and its sigil: the item shows the liquid and the sticker inside
   its glass, and placed again it holds the same. A right click nudges the jar - it rocks on its foot and settles.
 - Big Essence Jar, the first structure built in the world: a 3 x 3 floor of glass, two rings of glass around a hollow
   middle and a lid of any wooden slabs, woken by a right click with unstable hextech or a hextech gemstone (not used
@@ -104,7 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   becomes something new. A ritual short of essence stalls and, left too long, collapses. Ghosts of the items a ritual
   still lacks hover over the free pedestals.
 - Hex Smelter: a kiln of magic bricks with brass posts and a hextech gem floating in its crown, made at the altar from
-  a blast furnace under the rune of Smelting. It smelts anything a furnace smelts, twice as fast, and burns fiery
+  a blast furnace under the rune of Smelting (find its scroll first). It smelts anything a furnace smelts, twice as fast, and burns fiery
   essence instead of fuel. While it has something to smelt it draws the essence by itself from the nearest jar of fiery
   essence within 5 blocks - a braid of light arches out of the jar's lid, waves and twinkling sparks run along it,
   hex sigils turn on the jar and around the gem, wisps of essence drift off, and the gem swells as it pours in, with a
@@ -114,7 +124,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   strengthens the others; the gem glows in their colours and the smelter keeps them when broken. JEI, Jade and the
   goggles show it.
 - Block of Brass.
-- Hextech pickaxes: the Hextech Pickaxe (iron strength), forged under the rune of Smelting, the Refined Hextech Pickaxe (diamond) and the Radiant Hextech
+- Hextech pickaxes: the Hextech Pickaxe (iron strength), the Refined Hextech Pickaxe (diamond) and the Radiant Hextech
   Pickaxe (netherite, fireproof), each made at the altar from the one before - runes and enchantments carry over. Their
   crystal glows in the colour of the runes they carry.
 - Runes on a pickaxe, like enchantments: put the pickaxe alone on the altar, choose runes on rune steles and start the
@@ -157,16 +167,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Siphon Pylon: set on an Essence Jar, it draws the essence up into its glass bulb (swirling in the jar's colour) and
   sends it as glowing motes arcing along its links, like the essence drawn into the altar - into other jars, a separator, the Hex Smelter, anything that takes
   essence from pipes; relays pass the stream on.
-- Pylon Filter: right click it to set it up - nine slots (click with an item to put it in), "only these" or "all but
+- Transfer Sigil, written at the Hextech Altar (a brass ingot with string, brass nuggets and an amethyst shard): right click it to set it up - nine slots (click with an item to put it in), "only these" or "all but
   these", matched by kind or exactly (enchantments, contents), and numbers: keep N of each item in the source, or fill
   a target only up to N (scroll over a slot to set N). Right click a pylon with it to set it in (the one there comes
   back), sneak + right click to take it out. On a gathering pylon it picks what to gather, on a sending pylon what to
-  send, on a relay what may pass - a few filtered relays sort a storeroom. The filter's items circle the pylon's heart.
-- Essence Sticker: right click to pick its essence from all of them. On an Essence Jar the jar takes only that essence
+  send, on a relay what may pass - a few relays with sigils sort a storeroom. The sigil's items circle the pylon's heart.
+- Essence Sigil, written at the Hextech Altar (paper, slime and an amethyst shard, six at a time): right click to pick its essence from all of them. On an Essence Jar the jar takes only that essence
   (from pipes, bottles and siphons alike); sneak + right click with an empty hand peels it off. On a siphon or a relay
   it lets only that essence through, pure. Pylons never split a mixture - it always travels whole; separating essences
   stays the separator's work.
-  The old per-face signs on jars are gone.
 - Pylon runes, burned in at the altar like a smelter's: Shift (reach and link range), Motor (pace), Lift (items per
   move), Lens. A broken pylon keeps its runes.
 - The magic fetches every item: a tendril of light, two strands twisting around a swaying line, reaches out of the gem,

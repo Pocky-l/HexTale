@@ -9,22 +9,18 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -39,26 +35,24 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
-import com.pockyl.hextale.item.RuneScrollItem;
+import com.pockyl.hextale.item.ResearchNotesItem;
 import com.pockyl.hextale.knowledge.Research;
-import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.network.ResearchMessagePayload;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
-import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ItemStudy;
-import com.pockyl.hextale.research.ResearchBook;
+import com.pockyl.hextale.quest.Guide;
+import com.pockyl.hextale.research.ResearchTopic;
+import com.pockyl.hextale.research.ResearchTopics;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchText;
-import com.pockyl.hextale.research.RuneBoard;
-import com.pockyl.hextale.research.RuneBoards;
-import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.ComplexRunes;
+import com.pockyl.hextale.research.ResearchBoard;
+import com.pockyl.hextale.research.ResearchBoards;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.Arrays;
@@ -68,10 +62,11 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Research Table's contents, its ink and the server side of both mini-games - learning a rune by drawing an ink
- * thread on its parchment and studying an item through the prism. Every action a client asks for is checked here against the sheet, the table and the
- * researcher's knowledge and inventory before it happens. Contents, both games and a "someone is writing" flag are
- * synced to clients; finishing a rune reaches every nearby client as a block event so the orb can flare for all.
+ * The Research Table's contents, its ink and the server side of both mini-games - researching a device or tool of the
+ * mod ({@link ResearchTopic}) by drawing an ink thread on its parchment, and studying an item through the prism. Every
+ * action a client asks for is checked here against the sheet, the table and the researcher's knowledge and inventory
+ * before it happens. Contents, both games and a "someone is writing" flag are synced to clients; a finished research
+ * reaches every nearby client as a block event so the orb can flare for all.
  */
 public class ResearchTableBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
     public static final int DIARY = 0;
@@ -98,16 +93,16 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
     private final ResearchSheet sheet = new ResearchSheet();
     private final ItemStudy study = new ItemStudy();
-    /** Which game lies on the parchment: the item study (true) or the rune (false). */
+    /** Which game lies on the parchment: the item study (true) or a research topic (false). */
     private boolean studyingItem;
     private boolean drawing;
     private long drawingUntil;
 
-    /** Client side: game time of the last finished rune and its colour, and of the last lost sheet. */
+    /** Client side: game time of the last finished research and its colour, and of the last lost sheet. */
     public long flareTime = Long.MIN_VALUE / 2;
     public int flareColor = 0x5CC8F2;
-    /** Client side: index of the last finished rune (its hieroglyph rises over the orb), or -1. */
-    public int flareRune = -1;
+    /** Client side: index of the last researched topic (its item rises over the orb), or -1. */
+    public int flareTopic = -1;
     public long fizzleTime = Long.MIN_VALUE / 2;
     /** The jars the last ink came from and when (game time); synced, the renderer streams them into the orb. */
     private List<JarReach.Draw> inkDraws = List.of();
@@ -186,16 +181,16 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return study;
     }
 
-    /** Whether the parchment shows the item study rather than a rune. */
+    /** Whether the parchment shows the item study rather than a research topic. */
     public boolean isStudyingItem() {
         return studyingItem;
     }
 
-    /** The board of the rune being learned, or null (none chosen). */
+    /** The board of the topic being researched, or null (none chosen). */
     @Nullable
-    public RuneBoard board() {
-        ComplexRune rune = sheet.rune();
-        return rune == null ? null : RuneBoards.get(rune);
+    public ResearchBoard board() {
+        ResearchTopic topic = sheet.topic();
+        return topic == null ? null : ResearchBoards.get(topic);
     }
 
     /** In creative mode every item counts as studied, as if the researcher carried them all. */
@@ -242,32 +237,32 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return (age - 42) / 16;
     }
 
-    // ---- Learning a rune ------------------------------------------------------------------------------------------
+    // ---- Researching a topic ---------------------------------------------------------------------------------------
 
-    /** Lays the book's rune on the table: a new rune, a fresh thread. */
-    public void select(ServerPlayer player, ComplexRune rune) {
+    /** Lays the book's topic on the table: a new topic, a fresh thread. */
+    public void select(ServerPlayer player, ResearchTopic topic) {
         Requirement missing = Requirement.diary(this, player);
         if (missing != null) {
             message(player, Component.translatable(missing.translationKey()), ResearchMessagePayload.Tone.BAD);
             return;
         }
-        if (!ResearchBook.open(Research.of(player), rune)) {
-            message(player, Component.translatable("research.hextale.closed", name(rune)), ResearchMessagePayload.Tone.BAD);
+        if (!Guide.canResearch(topic, Research.of(player))) {
+            message(player, Component.translatable("research.hextale.closed", name(topic)), ResearchMessagePayload.Tone.BAD);
             return;
         }
         ResearchersDiaryItem.sign(items.get(DIARY), player);
-        sheet.select(rune);
+        sheet.select(topic);
         studyingItem = false;
         setChanged();
     }
 
     /**
      * The researcher's new drawing (steps as {@code from, to} pairs). It is checked against the rules, the table and the ink
-     * in the tanks around; a drawing that reaches every point binds the rune at once, one that steps on a curse bursts
+     * in the tanks around; a drawing that reaches every point finishes the research at once, one that steps on a curse bursts
      * the orb.
      */
     public void thread(ServerPlayer player, int[] cells) {
-        RuneBoard board = board();
+        ResearchBoard board = board();
         if (board == null || studyingItem || Requirement.diary(this, player) != null) {
             return;
         }
@@ -298,7 +293,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             level.playSound(null, worldPosition, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 1.0F);
         }
         ResearchersDiaryItem.sign(items.get(DIARY), player);
-        Research.of(player).see(board.rune(), ResearchSheet.cells(cells));
+        Research.of(player).see(board.topic(), ResearchSheet.cells(cells));
         if (trace.burst() >= 0) {
             burst(player, board, cells[cells.length - 1], trace);
         } else if (trace.complete(board)) {
@@ -310,39 +305,38 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     /**
-     * Every point passed: the orb binds the rune, the ink is spent and the rune's scroll comes out. The researcher learns
-     * the rune only by studying the scroll.
+     * Every point passed: the orb binds the research, the ink is spent and the notes come out. The researcher may make
+     * the topic's items only after reading the notes (and may hand them to someone else instead).
      */
-    private void complete(ServerPlayer player, RuneBoard board, ResearchSheet.Trace trace) {
-        ComplexRune rune = board.rune();
-        int stars = board.stars(sheet.length());
+    private void complete(ServerPlayer player, ResearchBoard board, ResearchSheet.Trace trace) {
+        ResearchTopic topic = board.topic();
         if (!player.getAbilities().instabuild) {
             drawInk(trace.ink());
         }
         items.get(HEXTECH).shrink(1);
         sheet.finish();
-        deliver(player, RuneScrollItem.of(rune, stars, ModItems.RUNE_SCROLL.get()));
+        deliver(player, ResearchNotesItem.of(topic));
         Research.sync(player);
-        message(player, Component.translatable("research.hextale.complete", name(rune), "★".repeat(stars) + "☆".repeat(3 - stars)),
+        message(player, Component.translatable("research.hextale.complete", name(topic)),
                 ResearchMessagePayload.Tone.WIN);
-        completeEffects(rune);
+        completeEffects(topic);
     }
 
     /**
      * The ink stepped on a cursed dark rune: the orb bursts. The sheet burns with its paper, the ink drawn so far is spent,
      * the researcher is hurt by the blast and remembers where the curse was.
      */
-    private void burst(ServerPlayer player, RuneBoard board, int cell, ResearchSheet.Trace trace) {
+    private void burst(ServerPlayer player, ResearchBoard board, int cell, ResearchSheet.Trace trace) {
         boolean creative = player.getAbilities().instabuild;
         if (!creative) {
             drawInk(trace.ink());
             items.get(HEXTECH).shrink(1);
             player.hurtServer((ServerLevel) level, level.damageSources().magic(), BURST_DAMAGE);
         }
-        Research.of(player).curse(board.rune(), cell);
+        Research.of(player).curse(board.topic(), cell);
         sheet.burn();
         Research.sync(player);
-        message(player, Component.translatable("research.hextale.burst", name(board.rune())), ResearchMessagePayload.Tone.BAD);
+        message(player, Component.translatable("research.hextale.burst", name(board.topic())), ResearchMessagePayload.Tone.BAD);
         if (level instanceof ServerLevel serverLevel) {
             Vec3 orb = orbPosition();
             serverLevel.sendParticles(ParticleTypes.EXPLOSION, orb.x, orb.y, orb.z, 1, 0, 0, 0, 0);
@@ -469,15 +463,15 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         }
     }
 
-    private static Component name(ComplexRune rune) {
-        return Component.translatable(rune.translationKey()).withColor(rune.color());
+    private static Component name(ResearchTopic topic) {
+        return Component.translatable(topic.translationKey()).withColor(topic.color());
     }
 
     private static void message(ServerPlayer player, Component text, ResearchMessagePayload.Tone tone) {
         ModNetwork.sendToPlayer(player, new ResearchMessagePayload(text, tone));
     }
 
-    /** The scroll goes to the output slot, stacking on equal scrolls; when that is taken, to the researcher. */
+    /** The notes go to the output slot, stacking on equal notes; when that is taken, to the researcher. */
     private void deliver(ServerPlayer player, ItemStack scroll) {
         ItemStack output = items.get(OUTPUT);
         if (output.isEmpty()) {
@@ -500,18 +494,17 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
                 0.8F + element.ordinal() * 0.06F);
     }
 
-    private void completeEffects(ComplexRune rune) {
+    private void completeEffects(ResearchTopic topic) {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
         Vec3 orb = orbPosition();
-        serverLevel.sendParticles(new DustParticleOptions(rune.color(), 1.2F), orb.x, orb.y, orb.z, 28, 0.25, 0.2, 0.25, 0.02);
+        serverLevel.sendParticles(new DustParticleOptions(topic.color(), 1.2F), orb.x, orb.y, orb.z, 28, 0.25, 0.2, 0.25, 0.02);
         serverLevel.sendParticles(ParticleTypes.ELECTRIC_SPARK, orb.x, orb.y, orb.z, 14, 0.15, 0.15, 0.15, 0.25);
         serverLevel.sendParticles(ParticleTypes.END_ROD, orb.x, orb.y, orb.z, 6, 0.1, 0.1, 0.1, 0.05);
         level.playSound(null, worldPosition, ModSounds.RUNE_FUSED.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-        level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_FUSED, rune.index());
+        level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_FUSED, topic.index());
     }
-
 
     @Override
     public boolean triggerEvent(int id, int param) {
@@ -520,8 +513,9 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             switch (id) {
                 case EVENT_FUSED -> {
                     flareTime = now;
-                    flareRune = param >= 0 && param < ComplexRunes.COUNT ? param : -1;
-                    flareColor = flareRune >= 0 ? ComplexRunes.all().get(param).color() : 0x5CC8F2;
+                    ResearchTopic topic = ResearchTopics.byIndex(param);
+                    flareTopic = topic == null ? -1 : param;
+                    flareColor = topic == null ? 0x5CC8F2 : topic.color();
                 }
                 case EVENT_FIZZLE -> fizzleTime = now;
                 default -> {
@@ -587,7 +581,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return accepts(slot, stack);
     }
 
-    /** What each slot holds; the output slot is filled by finished runes only. */
+    /** What each slot holds; the output slot is filled by finished research only. */
     public static boolean accepts(int slot, ItemStack stack) {
         return switch (slot) {
             case DIARY -> stack.is(ModItems.RESEARCHERS_DIARY.get());

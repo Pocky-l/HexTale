@@ -91,6 +91,11 @@ public final class ModItems {
             properties -> new HextechGemstoneItem(properties.rarity(Rarity.UNCOMMON).fireResistant()));
     public static final DeferredItem<RuneScrollItem> RUNE_SCROLL = ITEMS.registerItem("rune_scroll",
             properties -> new RuneScrollItem(properties.stacksTo(16).rarity(Rarity.UNCOMMON)));
+    /** Rolled paper waiting for a rune: written at the altar with a rune chosen on a stele. */
+    public static final DeferredItem<Item> BLANK_SCROLL = ITEMS.registerSimpleItem("blank_scroll");
+    /** A finished research written out: whoever reads it may make the topic's items. */
+    public static final DeferredItem<com.pockyl.hextale.item.ResearchNotesItem> RESEARCH_NOTES = ITEMS.registerItem("research_notes",
+            properties -> new com.pockyl.hextale.item.ResearchNotesItem(properties.stacksTo(16).rarity(Rarity.UNCOMMON)));
     /** Worn on the head: shows the essences inside the essence works and where a Research Table's ink comes from. */
     public static final ResourceKey<EquipmentAsset> GOGGLES_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Hextale.id("researchers_goggles"));
     public static final DeferredItem<Item> RESEARCHERS_GOGGLES = ITEMS.registerItem("researchers_goggles",

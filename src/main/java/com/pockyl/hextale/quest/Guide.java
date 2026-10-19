@@ -9,47 +9,45 @@ import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.registry.ModItems;
-import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.ComplexRunes;
+import com.pockyl.hextale.research.ResearchTopic;
+import com.pockyl.hextale.research.ResearchTopics;
 import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.HextechPickaxe;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * The researcher's guide: everything the mod asks of a researcher, as a web of steps gathered by theme ({@link Region}):
- * the workshop, the essence works, the hextech circle, the pylons, the rune lore and the devices still being worked out
- * (WIP). There is no single road: a step opens when all its parents are done, and parents are only what the step really
- * needs, so several themes are open at once and the researcher picks where to go. A rune can be studied at the table only
- * once its step is open. The order is the order things can really be made in: {@code QuestGameTests.guideOrderIsLogical}
- * checks that every mod item a step's recipe needs comes from a step before it.
+ * The researcher's guide: everything the mod asks of a researcher, as a tree of steps gathered by theme ({@link Region}):
+ * the workshop, the essence works, the rune lore, the hextech circle, the pylons and the forge, with the devices still
+ * being worked out (WIP) hanging off the steps they will grow from. A step opens when all its parents are done, and
+ * parents are only what the step really needs. Devices and tools past the essence works carry a research topic: they
+ * are researched at the table before they can be made. Runes are not on the guide: their scrolls are found in the world
+ * and the book lists them on a page of their own. The order is the order things can really be made in:
+ * {@code QuestGameTests.guideOrderIsLogical} checks that every mod item a step's recipe needs comes from a step before it.
  */
 public final class Guide {
-    /** Map pixels between linked steps of one region. */
-    public static final int SPACING = 50;
-    /** The least distance between two steps of one region, and between steps of different regions. */
-    private static final int GAP = 54;
-    private static final int APART = 120;
-    /** A region's room grows with the square root of its steps; regions keep this margin between them. */
-    private static final int RADIUS = 34;
-    private static final int MARGIN = 60;
-    /** No two steps closer than this, whatever the springs want. */
+    /** Map pixels from a step to its children along the region's direction. */
+    public static final int STEP = 62;
+    /** Map pixels between neighbouring branches across the region's direction. */
+    private static final int LANE = 50;
+    /** A new region's branch keeps this far from every step laid out before it. */
+    private static final int CLEAR = 90;
+    /** Open sky around the landmark: nothing else comes closer. */
+    private static final int ROOM = 112;
+    /** No two steps closer than this, whatever the branches want. */
     private static final int SEPARATE = 46;
 
     private static final List<Quest> ALL = new ArrayList<>();
     private static final Map<String, Quest> BY_ID = new HashMap<>();
-    private static final Map<ComplexRune, Quest> BY_RUNE = new HashMap<>();
 
     // ---- The workshop: brass, raw hextech, the table and the diary --------------------------------------------------
 
@@ -69,7 +67,6 @@ public final class Guide {
     public static final Quest RESEARCHERS_GOGGLES = item(Region.WORKSHOP, "researchers_goggles", ModItems.RESEARCHERS_GOGGLES, Quest.Aura.NONE,
             QuestDisplay.shaped("hextale:researchers_goggles", 1, new String[]{"LBL", "G G"},
                     "L=minecraft:leather", "B=hextale:brass_ingot", "G=minecraft:glass_pane"), BRASS);
-    public static final Quest WIP_JAR_GAUGE = wip(Region.WORKSHOP, "jar_gauge", Items.COMPARATOR, Quest.Aura.NONE, RESEARCHERS_GOGGLES);
 
     // ---- The essence works: boiling, bottling, separating, storing ---------------------------------------------------
 
@@ -93,261 +90,187 @@ public final class Guide {
     public static final Quest MAGIC_STONE = item(Region.ESSENCES, "magic_stone", ModItems.MAGIC_STONE, Quest.Aura.NONE,
             QuestDisplay.shaped("hextale:magic_stone", 8, new String[]{"SSS", "SBS", "SSS"},
                     "S=#hextale:soaks_essence", "B=hextale:essence_flask"), ESSENCE_BOTTLE);
-    // The first multiblock: built of glass and slabs, woken with a hextech crystal (Multiblocks completes it).
-    public static final Quest BIG_ESSENCE_JAR = add(Region.ESSENCES, "big_essence_jar", Quest.Kind.ITEM, List.of(ESSENCE_TANK, UNSTABLE_HEXTECH),
-            () -> new ItemStack(ModItems.ESSENCE_TANK.get()), player -> false, QuestDisplay.multiblock("big_essence_jar"), null, Quest.Aura.GOLD);
-    public static final Quest DRAIN_VALVE = item(Region.ESSENCES, "drain_valve", ModItems.DRAIN_VALVE, Quest.Aura.NONE,
-            QuestDisplay.shaped("hextale:drain_valve", 1, new String[]{" I ", "BPB"},
-                    "I=minecraft:iron_ingot", "B=hextale:brass_ingot", "P=hextale:brass_pipe"), SEPARATOR, BRASS_PIPE);
     public static final Quest CONCENTRATE = add(Region.ESSENCES, "concentrate", Quest.Kind.ITEM, List.of(SEPARATOR),
             () -> EssenceFlaskItem.filled(EssenceMix.pure(Essence.WATER, EssenceFlaskItem.CAPACITY)), Quests::concentrate,
             QuestDisplay.reagents(), null, Quest.Aura.NONE);
 
-    // The table's ink comes from the jars: the workshop and the essence works meet here, and the runes begin.
-    public static final Quest INK = add(Region.WORKSHOP, "ink", Quest.Kind.ITEM, List.of(ITEM_STUDY, ESSENCE_TANK),
-            () -> new ItemStack(Items.INK_SAC), Quests::inkAtTable, null, null, Quest.Aura.NONE);
+    // The table's ink comes from jars of concentrate: the workshop and the essence works meet here, and research begins.
+    public static final Quest INK = add(Region.WORKSHOP, "ink", Quest.Kind.ITEM, List.of(ITEM_STUDY, ESSENCE_TANK, CONCENTRATE),
+            () -> new ItemStack(Items.INK_SAC), Quests::inkAtTable, null, null, Quest.Aura.GOLD);
 
-    // ---- Fields and woods: farms and wood works still being worked out ----------------------------------------------
+    // Past the ink every device is researched before it is made.
+    public static final Quest DRAIN_VALVE = researched(Region.ESSENCES, "drain_valve", ModItems.DRAIN_VALVE, ResearchTopics.DRAIN_VALVE,
+            Quest.Aura.NONE, QuestDisplay.shaped("hextale:drain_valve", 1, new String[]{" I ", "BPB"},
+                    "I=minecraft:iron_ingot", "B=hextale:brass_ingot", "P=hextale:brass_pipe"), SEPARATOR, BRASS_PIPE, INK);
+    // The first multiblock: built of glass and slabs, woken with a hextech crystal (Multiblocks completes it).
+    public static final Quest BIG_ESSENCE_JAR = add(Region.ESSENCES, "big_essence_jar", Quest.Kind.ITEM, List.of(ESSENCE_TANK, UNSTABLE_HEXTECH, INK),
+            () -> new ItemStack(ModItems.ESSENCE_TANK.get()), player -> false, QuestDisplay.multiblock("big_essence_jar"),
+            ResearchTopics.BIG_ESSENCE_JAR, Quest.Aura.GOLD);
 
-    public static final Quest WIP_SAP_TAP = wip(Region.FIELDS, "sap_tap", Items.HONEY_BOTTLE, Quest.Aura.LIFE, ESSENCE_BOTTLE);
-    public static final Quest WIP_SAWMILL = wip(Region.FIELDS, "sawmill", Items.OAK_PLANKS, Quest.Aura.NONE, ALEMBIC);
-    public static final Quest WIP_ESSENCE_SPRINKLER = wip(Region.FIELDS, "essence_sprinkler", Items.POINTED_DRIPSTONE, Quest.Aura.LIFE,
-            BRASS_PIPE, CONCENTRATE);
-    public static final Quest WIP_LIVING_SOIL = wip(Region.FIELDS, "living_soil", Items.ROOTED_DIRT, Quest.Aura.LIFE, MAGIC_STONE);
-    public static final Quest WIP_FIELD_WARD = wip(Region.FIELDS, "field_ward", Items.CARVED_PUMPKIN, Quest.Aura.NONE, MAGIC_STONE);
-    public static final Quest WIP_TREE_FELLER = wip(Region.FIELDS, "tree_feller", Items.OAK_LOG, Quest.Aura.NONE, MAGIC_STONE, ESSENCE_TANK);
-    public static final Quest WIP_SEED_SOWER = wip(Region.FIELDS, "seed_sower", Items.WHEAT_SEEDS, Quest.Aura.NONE, ESSENCE_TANK);
-    public static final Quest WIP_REAPER = wip(Region.FIELDS, "reaper", Items.WHEAT, Quest.Aura.NONE, ESSENCE_TANK);
-    public static final Quest WIP_GROVE_KEEPER = wip(Region.FIELDS, "grove_keeper", Items.OAK_SAPLING, Quest.Aura.LIFE, ESSENCE_TANK);
-    public static final Quest WIP_FEEDING_TROUGH = wip(Region.FIELDS, "feeding_trough", Items.HAY_BLOCK, Quest.Aura.LIFE, ESSENCE_TANK);
-    public static final Quest WIP_FISH_WEIR = wip(Region.FIELDS, "fish_weir", Items.FISHING_ROD, Quest.Aura.NONE, PUMP);
-    public static final Quest WIP_COMPOST_VAT = wip(Region.FIELDS, "compost_vat", Items.COMPOSTER, Quest.Aura.NONE, DRAIN_VALVE);
+    // ---- Rune lore: scrolls found in the world, copied at the altar --------------------------------------------------
 
-    // ---- Chemtech: what the waste of the separator could become -------------------------------------------------------
+    public static final Quest RUNE_SCROLL = add(Region.RUNES, "rune_scroll", Quest.Kind.ITEM, List.of(RESEARCHERS_DIARY),
+            () -> new ItemStack(ModItems.RUNE_SCROLL.get()), Quests.knowledge(knowledge -> knowledge.runeCount() > 0), null, null,
+            Quest.Aura.GOLD);
+    public static final Quest BLANK_SCROLL = item(Region.RUNES, "blank_scroll", ModItems.BLANK_SCROLL, Quest.Aura.NONE,
+            QuestDisplay.shapeless("hextale:blank_scroll", 1, "minecraft:paper", "minecraft:paper", "minecraft:paper"), RUNE_SCROLL);
 
-    public static final Quest WIP_THE_GRAY = wip(Region.CHEMTECH, "the_gray", Items.GUNPOWDER, Quest.Aura.CURSED, DRAIN_VALVE);
-    public static final Quest WIP_CHEM_BURNER = wip(Region.CHEMTECH, "chem_burner", Items.CAMPFIRE, Quest.Aura.FLAME, SEPARATOR);
-    public static final Quest WIP_LAB_BENCH = wip(Region.CHEMTECH, "lab_bench", Items.BREWING_STAND, Quest.Aura.NONE, SEPARATOR);
-    public static final Quest WIP_EXPERIMENT_POT = wip(Region.CHEMTECH, "experiment_pot", Items.FLOWER_POT, Quest.Aura.LIFE, SEPARATOR, CONCENTRATE);
-    public static final Quest WIP_SPECIMEN_CAGE = wip(Region.CHEMTECH, "specimen_cage", Items.IRON_BARS, Quest.Aura.CURSED, SEPARATOR);
+    // ---- The hextech circle: the altar, its pedestals and steles, refined hextech ------------------------------------
 
-    // ---- Smelting: the first rune, the key to the rune lore and the tools of the circle -----------------------------
-
-    public static final Quest SMELTING = rune(Region.FORGE, "fire_earth", Quest.Aura.GOLD, INK);
-
-    // ---- The hextech circle: the altar, its pedestals and steles, refined hextech and its tools -----------------------
-
-    public static final Quest HEXTECH_ALTAR = item(Region.CIRCLE, "hextech_altar", ModItems.HEXTECH_ALTAR, Quest.Aura.GOLD,
-            QuestDisplay.shaped("hextale:hextech_altar", 1, new String[]{" H ", "IAI", "CBC"}, "H=hextale:unstable_hextech",
+    public static final Quest HEXTECH_ALTAR = researched(Region.CIRCLE, "hextech_altar", ModItems.HEXTECH_ALTAR, ResearchTopics.CIRCLE,
+            Quest.Aura.GOLD, QuestDisplay.shaped("hextale:hextech_altar", 1, new String[]{" H ", "IAI", "CBC"}, "H=hextale:unstable_hextech",
                     "I=hextale:brass_ingot", "A=minecraft:amethyst_block", "C=hextale:chiseled_magic_bricks", "B=hextale:magic_bricks"),
-            MAGIC_STONE, UNSTABLE_HEXTECH);
-    public static final Quest PEDESTAL = item(Region.CIRCLE, "pedestal", ModItems.PEDESTAL, Quest.Aura.NONE,
+            MAGIC_STONE, UNSTABLE_HEXTECH, INK);
+    public static final Quest PEDESTAL = researched(Region.CIRCLE, "pedestal", ModItems.PEDESTAL, ResearchTopics.CIRCLE, Quest.Aura.NONE,
             QuestDisplay.shaped("hextale:pedestal", 2, new String[]{" I ", " B ", "BCB"},
                     "I=hextale:brass_ingot", "B=hextale:magic_bricks", "C=hextale:chiseled_magic_bricks"), HEXTECH_ALTAR);
-    public static final Quest RUNE_STELE = item(Region.CIRCLE, "rune_stele", ModItems.RUNE_STELE, Quest.Aura.NONE,
+    public static final Quest RUNE_STELE = researched(Region.CIRCLE, "rune_stele", ModItems.RUNE_STELE, ResearchTopics.CIRCLE, Quest.Aura.NONE,
             QuestDisplay.shaped("hextale:rune_stele", 1, new String[]{" A ", " C ", "BBB"},
                     "A=minecraft:amethyst_shard", "C=hextale:chiseled_magic_bricks", "B=hextale:magic_bricks"), HEXTECH_ALTAR);
     // A ritual draws its essences from the jars around the altar.
-    public static final Quest HEXTECH_GEMSTONE = item(Region.CIRCLE, "hextech_gemstone", ModItems.HEXTECH_GEMSTONE, Quest.Aura.HEXTECH,
-            QuestDisplay.infusion("hextale:hextech_gemstone"), PEDESTAL, ESSENCE_TANK);
-    public static final Quest HEXTECH_LAMP = item(Region.CIRCLE, "hextech_lamp", ModItems.HEXTECH_LAMP, Quest.Aura.HEXTECH,
-            QuestDisplay.shaped("hextale:hextech_lamp", 2, new String[]{" N ", "BGB", " S "}, "N=hextale:brass_nugget",
+    public static final Quest HEXTECH_GEMSTONE = researched(Region.CIRCLE, "hextech_gemstone", ModItems.HEXTECH_GEMSTONE,
+            ResearchTopics.HEXTECH_GEMSTONE, Quest.Aura.HEXTECH, QuestDisplay.infusion("hextale:hextech_gemstone"), PEDESTAL, ESSENCE_TANK);
+    public static final Quest HEXTECH_LAMP = researched(Region.CIRCLE, "hextech_lamp", ModItems.HEXTECH_LAMP, ResearchTopics.HEXTECH_LAMP,
+            Quest.Aura.HEXTECH, QuestDisplay.shaped("hextale:hextech_lamp", 2, new String[]{" N ", "BGB", " S "}, "N=hextale:brass_nugget",
                     "B=hextale:brass_ingot", "G=hextale:hextech_gemstone", "S=hextale:magic_brick_slab"), HEXTECH_GEMSTONE);
-    public static final Quest HEX_SMELTER = item(Region.CIRCLE, "hex_smelter", ModItems.HEX_SMELTER, Quest.Aura.GOLD,
-            QuestDisplay.infusion("hextale:hex_smelter"), HEXTECH_GEMSTONE, RUNE_STELE, SMELTING);
-    public static final Quest SMELTER_RUNE = add(Region.CIRCLE, "smelter_rune", Quest.Kind.ITEM, List.of(HEX_SMELTER),
-            () -> new ItemStack(ModItems.RUNE_STELE.get()), Quests.smelterRunes(1), QuestDisplay.smelterRunes(), null, Quest.Aura.FLAME);
-    public static final Quest HEXTECH_PICKAXE = add(Region.CIRCLE, "hextech_pickaxe", Quest.Kind.ITEM, List.of(HEXTECH_GEMSTONE, RUNE_STELE, SMELTING),
-            () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), Quests.pickaxe(1),
-            QuestDisplay.infusion("hextale:hextech_pickaxe"), null, Quest.Aura.GOLD);
-    public static final Quest PICKAXE_RUNE = add(Region.CIRCLE, "pickaxe_rune", Quest.Kind.ITEM, List.of(HEXTECH_PICKAXE),
-            () -> new ItemStack(ModItems.RUNE_SCROLL.get()), Quests.pickaxeRunes(1), QuestDisplay.pickaxeRunes(), null, Quest.Aura.NONE);
-    public static final Quest REFINED_PICKAXE = add(Region.CIRCLE, "refined_pickaxe", Quest.Kind.ITEM, List.of(HEXTECH_PICKAXE),
-            () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.REFINED).get()), Quests.pickaxe(2),
-            QuestDisplay.infusion("hextale:refined_hextech_pickaxe"), null, Quest.Aura.HEXTECH);
-    public static final Quest RADIANT_PICKAXE = add(Region.CIRCLE, "radiant_pickaxe", Quest.Kind.ITEM, List.of(REFINED_PICKAXE),
-            () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.RADIANT).get()), Quests.pickaxe(3),
-            QuestDisplay.infusion("hextale:radiant_hextech_pickaxe"), null, Quest.Aura.HEXTECH);
-    public static final Quest WIP_GEODE_RESONATOR = wip(Region.CIRCLE, "geode_resonator", Items.SMALL_AMETHYST_BUD, Quest.Aura.STORM,
-            HEXTECH_ALTAR, ESSENCE_TANK);
-    public static final Quest WIP_RUNE_WORKBENCH = wip(Region.CIRCLE, "rune_workbench", Items.CRAFTER, Quest.Aura.HEXTECH, PEDESTAL, HEXTECH_GEMSTONE);
-    public static final Quest WIP_HEXTECH_AXE = wip(Region.CIRCLE, "hextech_axe", Items.IRON_AXE, Quest.Aura.HEXTECH, HEXTECH_PICKAXE);
-    public static final Quest WIP_HEXTECH_HOE = wip(Region.CIRCLE, "hextech_hoe", Items.IRON_HOE, Quest.Aura.LIFE, HEXTECH_PICKAXE);
+
+    // Copying a rune: a blank scroll on the altar, the rune on a stele (HextechAltarBlockEntity completes it).
+    public static final Quest WRITTEN_SCROLL = add(Region.RUNES, "written_scroll", Quest.Kind.ITEM, List.of(BLANK_SCROLL, RUNE_STELE),
+            () -> new ItemStack(ModItems.RUNE_SCROLL.get()), player -> false,
+            QuestDisplay.scheme("hextale:rune_scroll", "hextale:blank_scroll", "hextale:rune_stele"), null, Quest.Aura.HEXTECH);
 
     // ---- Hex pylons: items carried by hextech, gathered off the ground, thrown to links, passed on by relays ----------
 
-    public static final Quest GATHERING_PYLON = item(Region.PYLONS, "gathering_pylon", ModItems.GATHERING_PYLON, Quest.Aura.HEXTECH,
-            QuestDisplay.infusion("hextale:gathering_pylon"), HEXTECH_GEMSTONE);
-    public static final Quest SENDING_PYLON = item(Region.PYLONS, "sending_pylon", ModItems.SENDING_PYLON, Quest.Aura.GOLD,
-            QuestDisplay.infusion("hextale:sending_pylon"), HEXTECH_GEMSTONE);
-    public static final Quest RELAY_PYLON = item(Region.PYLONS, "relay_pylon", ModItems.RELAY_PYLON, Quest.Aura.HEXTECH,
-            QuestDisplay.infusion("hextale:relay_pylon"), SENDING_PYLON);
-    public static final Quest SIPHON_PYLON = item(Region.PYLONS, "siphon_pylon", ModItems.SIPHON_PYLON, Quest.Aura.HEXTECH,
-            QuestDisplay.infusion("hextale:siphon_pylon"), HEXTECH_GEMSTONE, ESSENCE_TANK, BRASS_PIPE);
-    public static final Quest PYLON_FILTER = item(Region.PYLONS, "pylon_filter", ModItems.PYLON_FILTER, Quest.Aura.NONE,
-            QuestDisplay.shaped("hextale:pylon_filter", 1, new String[]{"N N", " S ", "N N"}, "N=hextale:brass_nugget", "S=minecraft:string"),
-            GATHERING_PYLON);
-    public static final Quest ESSENCE_STICKER = item(Region.PYLONS, "essence_sticker", ModItems.ESSENCE_STICKER, Quest.Aura.NONE,
-            QuestDisplay.shapeless("hextale:essence_sticker", 6, "minecraft:paper", "minecraft:paper", "minecraft:paper", "minecraft:slime_ball"),
-            SIPHON_PYLON);
-    public static final Quest PYLON_RUNE = add(Region.PYLONS, "pylon_rune", Quest.Kind.ITEM, List.of(GATHERING_PYLON, RUNE_STELE),
+    public static final Quest GATHERING_PYLON = researched(Region.PYLONS, "gathering_pylon", ModItems.GATHERING_PYLON,
+            ResearchTopics.GATHERING_PYLON, Quest.Aura.HEXTECH, QuestDisplay.infusion("hextale:gathering_pylon"), HEXTECH_GEMSTONE);
+    public static final Quest SENDING_PYLON = researched(Region.PYLONS, "sending_pylon", ModItems.SENDING_PYLON, ResearchTopics.SENDING_PYLON,
+            Quest.Aura.GOLD, QuestDisplay.infusion("hextale:sending_pylon"), GATHERING_PYLON);
+    public static final Quest RELAY_PYLON = researched(Region.PYLONS, "relay_pylon", ModItems.RELAY_PYLON, ResearchTopics.RELAY_PYLON,
+            Quest.Aura.HEXTECH, QuestDisplay.infusion("hextale:relay_pylon"), SENDING_PYLON);
+    // The sigils that steer the pylons are written at the altar.
+    public static final Quest PYLON_FILTER = item(Region.PYLONS, "pylon_filter", ModItems.PYLON_FILTER, Quest.Aura.HEXTECH,
+            QuestDisplay.infusion("hextale:pylon_filter"), GATHERING_PYLON);
+    public static final Quest SIPHON_PYLON = researched(Region.PYLONS, "siphon_pylon", ModItems.SIPHON_PYLON, ResearchTopics.SIPHON_PYLON,
+            Quest.Aura.HEXTECH, QuestDisplay.infusion("hextale:siphon_pylon"), SENDING_PYLON, ESSENCE_TANK, BRASS_PIPE);
+    public static final Quest ESSENCE_STICKER = item(Region.PYLONS, "essence_sticker", ModItems.ESSENCE_STICKER, Quest.Aura.HEXTECH,
+            QuestDisplay.infusion("hextale:essence_sticker"), SIPHON_PYLON);
+    public static final Quest PYLON_RUNE = add(Region.PYLONS, "pylon_rune", Quest.Kind.ITEM, List.of(GATHERING_PYLON, RUNE_STELE, RUNE_SCROLL),
             () -> new ItemStack(ModItems.RUNE_STELE.get()), Quests.pylonRunes(1), QuestDisplay.pylonRunes(), null, Quest.Aura.NONE);
 
-    // ---- Rune lore. Chapter I runes open straight from Smelting; each starts a theme of its own ---------------------
+    // ---- The forge: hextech pickaxes and the Hex Smelter --------------------------------------------------------------
 
-    // The forge: heat and metal.
-    public static final Quest TEMPERING = rune(Region.FORGE, "earth_fire", Quest.Aura.FLAME, SMELTING);
-    public static final Quest FORGE = rune(Region.FORGE, "metal_fire", Quest.Aura.FLAME, TEMPERING);
-    public static final Quest REINFORCEMENT = rune(Region.FORGE, "earth_metal", Quest.Aura.NONE, TEMPERING);
-    public static final Quest REFORGING = rune(Region.FORGE, "fire_metal", Quest.Aura.NONE, FORGE);
-    public static final Quest MOTOR = rune(Region.FORGE, "metal_spark", Quest.Aura.STORM, FORGE);
-    public static final Quest BLADES = rune(Region.FORGE, "metal_air", Quest.Aura.NONE, REFORGING);
-    public static final Quest MAGNET = rune(Region.FORGE, "spark_metal", Quest.Aura.STORM, MOTOR);
-    public static final Quest LOCK = rune(Region.FORGE, "metal_shadow", Quest.Aura.CURSED, REINFORCEMENT);
-    public static final Quest WIP_RUNE_LOCK = wip(Region.FORGE, "rune_lock", Items.TRIAL_KEY, Quest.Aura.CURSED, LOCK);
+    public static final Quest HEXTECH_PICKAXE = add(Region.FORGE, "hextech_pickaxe", Quest.Kind.ITEM, List.of(HEXTECH_GEMSTONE),
+            () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), Quests.pickaxe(1),
+            QuestDisplay.infusion("hextale:hextech_pickaxe"), ResearchTopics.HEXTECH_PICKAXE, Quest.Aura.GOLD);
+    public static final Quest PICKAXE_RUNE = add(Region.FORGE, "pickaxe_rune", Quest.Kind.ITEM, List.of(HEXTECH_PICKAXE, RUNE_STELE, RUNE_SCROLL),
+            () -> new ItemStack(ModItems.RUNE_SCROLL.get()), Quests.pickaxeRunes(1), QuestDisplay.pickaxeRunes(), null, Quest.Aura.NONE);
+    public static final Quest REFINED_PICKAXE = add(Region.FORGE, "refined_pickaxe", Quest.Kind.ITEM, List.of(HEXTECH_PICKAXE),
+            () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.REFINED).get()), Quests.pickaxe(2),
+            QuestDisplay.infusion("hextale:refined_hextech_pickaxe"), ResearchTopics.REFINED_PICKAXE, Quest.Aura.HEXTECH);
+    public static final Quest RADIANT_PICKAXE = add(Region.FORGE, "radiant_pickaxe", Quest.Kind.ITEM, List.of(REFINED_PICKAXE),
+            () -> new ItemStack(ModItems.pickaxe(HextechPickaxe.RADIANT).get()), Quests.pickaxe(3),
+            QuestDisplay.infusion("hextale:radiant_hextech_pickaxe"), ResearchTopics.RADIANT_PICKAXE, Quest.Aura.HEXTECH);
+    // The smelter's ritual asks for Smelting on a stele: the rune comes from a found scroll.
+    public static final Quest HEX_SMELTER = researched(Region.FORGE, "hex_smelter", ModItems.HEX_SMELTER, ResearchTopics.HEX_SMELTER,
+            Quest.Aura.GOLD, QuestDisplay.infusion("hextale:hex_smelter"), HEXTECH_PICKAXE, RUNE_STELE, RUNE_SCROLL);
+    public static final Quest SMELTER_RUNE = add(Region.FORGE, "smelter_rune", Quest.Kind.ITEM, List.of(HEX_SMELTER),
+            () -> new ItemStack(ModItems.RUNE_STELE.get()), Quests.smelterRunes(1), QuestDisplay.smelterRunes(), null, Quest.Aura.FLAME);
 
-    // Fire: bellows, flames and blasts.
-    public static final Quest BELLOWS = rune(Region.FIRE, "air_fire", Quest.Aura.NONE, TEMPERING);
-    public static final Quest FLAMETHROWER = rune(Region.FIRE, "fire_air", Quest.Aura.FLAME, BELLOWS);
-    public static final Quest EXPLOSION = rune(Region.FIRE, "fire_spark", Quest.Aura.FLAME, BELLOWS);
-    public static final Quest SCORCH = rune(Region.FIRE, "fire_life", Quest.Aura.FLAME, FLAMETHROWER);
-    public static final Quest DETONATOR = rune(Region.FIRE, "spark_fire", Quest.Aura.STORM, EXPLOSION);
-    public static final Quest WIP_FLAMETHROWER = wip(Region.FIRE, "hex_flamethrower", Items.FIRE_CHARGE, Quest.Aura.FLAME, FLAMETHROWER);
-    public static final Quest WIP_MINING_CHARGE = wip(Region.FIRE, "mining_charge", Items.TNT, Quest.Aura.FLAME, EXPLOSION, DETONATOR);
-
-    // Waters: quenching, steam, pumps and what water eats away.
-    public static final Quest QUENCHING = rune(Region.WATERS, "water_fire", Quest.Aura.NONE, TEMPERING);
-    public static final Quest STEAM = rune(Region.WATERS, "fire_water", Quest.Aura.NONE, QUENCHING);
-    public static final Quest PUMP_RUNE = rune(Region.WATERS, "air_water", Quest.Aura.NONE, QUENCHING);
-    public static final Quest HEAT_EATER = rune(Region.WATERS, "shadow_fire", Quest.Aura.CURSED, QUENCHING);
-    public static final Quest FOG = rune(Region.WATERS, "water_air", Quest.Aura.NONE, STEAM);
-    public static final Quest PIPES = rune(Region.WATERS, "metal_water", Quest.Aura.NONE, PUMP_RUNE);
-    public static final Quest CORROSION = rune(Region.WATERS, "water_metal", Quest.Aura.NONE, PUMP_RUNE);
-    public static final Quest WHIRLPOOL = rune(Region.WATERS, "water_shadow", Quest.Aura.CURSED, FOG);
-    public static final Quest HUSH = rune(Region.WATERS, "air_shadow", Quest.Aura.CURSED, FOG);
-    public static final Quest INVISIBILITY = rune(Region.WATERS, "shadow_air", Quest.Aura.CURSED, HUSH);
-    public static final Quest BLIGHT = rune(Region.WATERS, "shadow_metal", Quest.Aura.CURSED, CORROSION);
-    public static final Quest WIP_QUENCH_TANK = wip(Region.WATERS, "quench_tank", Items.WATER_BUCKET, Quest.Aura.NONE, QUENCHING);
-    public static final Quest WIP_STEAM_BOILER = wip(Region.WATERS, "steam_boiler", Items.CAULDRON, Quest.Aura.NONE, STEAM);
-    public static final Quest WIP_COOLER = wip(Region.WATERS, "cooler", Items.BLUE_ICE, Quest.Aura.NONE, HEAT_EATER);
-    public static final Quest WIP_VEIL = wip(Region.WATERS, "veil", Items.PHANTOM_MEMBRANE, Quest.Aura.CURSED, INVISIBILITY);
-    public static final Quest WIP_RUNE_PUMP = wip(Region.WATERS, "rune_pump", Items.HOPPER, Quest.Aura.NONE, PUMP_RUNE, PIPES);
-    public static final Quest WIP_ACID_BATH = wip(Region.WATERS, "acid_bath", Items.FERMENTED_SPIDER_EYE, Quest.Aura.CURSED, CORROSION, BLIGHT);
-    public static final Quest WIP_MUTATION_INJECTOR = wip(Region.WATERS, "mutation_injector", Items.SPIDER_EYE, Quest.Aura.CURSED, BLIGHT);
-    public static final Quest WIP_CRYSTAL_VAT = wip(Region.WATERS, "crystal_vat", Items.BUDDING_AMETHYST, Quest.Aura.CURSED, CORROSION,
-            HEXTECH_GEMSTONE);
-
-    // The deep earth: what the pickaxe digs.
-    public static final Quest EROSION = rune(Region.EARTH, "water_earth", Quest.Aura.NONE, SMELTING);
-    public static final Quest INSIGHT = rune(Region.EARTH, "light_earth", Quest.Aura.NONE, SMELTING);
-    public static final Quest DRILL = rune(Region.EARTH, "metal_earth", Quest.Aura.NONE, EROSION);
-    public static final Quest DAM = rune(Region.EARTH, "earth_water", Quest.Aura.NONE, EROSION);
-    public static final Quest GEMSTONE = rune(Region.EARTH, "earth_light", Quest.Aura.NONE, INSIGHT);
-    public static final Quest CACHE = rune(Region.EARTH, "earth_shadow", Quest.Aura.CURSED, GEMSTONE);
-    public static final Quest PASSAGE = rune(Region.EARTH, "shadow_earth", Quest.Aura.CURSED, DRILL);
-    public static final Quest QUAKE = rune(Region.EARTH, "spark_earth", Quest.Aura.STORM, DRILL);
-    public static final Quest SPONGE = rune(Region.EARTH, "shadow_water", Quest.Aura.CURSED, DAM);
-    public static final Quest WIP_DRAINER = wip(Region.EARTH, "drainer", Items.SPONGE, Quest.Aura.NONE, SPONGE);
-    public static final Quest WIP_XP_CONDENSER = wip(Region.EARTH, "xp_condenser", Items.SCULK_CATALYST, Quest.Aura.HEXTECH, INSIGHT);
-    public static final Quest WIP_ORE_WASHER = wip(Region.EARTH, "ore_washer", Items.RAW_IRON, Quest.Aura.NONE, EROSION, PUMP);
-    public static final Quest WIP_HEX_BORE = wip(Region.EARTH, "hex_bore", Items.DIAMOND_PICKAXE, Quest.Aura.HEXTECH, DRILL, MOTOR);
-    public static final Quest WIP_SHADOW_COFFER = wip(Region.EARTH, "shadow_coffer", Items.ENDER_CHEST, Quest.Aura.CURSED, CACHE);
-
-    // Light: lenses, beams and mirrors.
-    public static final Quest LENS = rune(Region.LIGHT, "water_light", Quest.Aura.HEXTECH, SMELTING);
-    public static final Quest BEAM = rune(Region.LIGHT, "light_fire", Quest.Aura.NONE, LENS);
-    public static final Quest MIRROR = rune(Region.LIGHT, "metal_light", Quest.Aura.NONE, LENS);
-    public static final Quest PURIFICATION = rune(Region.LIGHT, "light_water", Quest.Aura.NONE, LENS);
-    public static final Quest ETERNAL_FLAME = rune(Region.LIGHT, "fire_light", Quest.Aura.FLAME, BEAM);
-    public static final Quest SUNLIGHT_CELL = rune(Region.LIGHT, "light_spark", Quest.Aura.STORM, BEAM);
-    public static final Quest BANISHING = rune(Region.LIGHT, "light_shadow", Quest.Aura.CURSED, BEAM);
-    public static final Quest SIGNAL = rune(Region.LIGHT, "light_air", Quest.Aura.NONE, MIRROR);
-    public static final Quest ENGRAVING = rune(Region.LIGHT, "light_metal", Quest.Aura.NONE, MIRROR);
-    public static final Quest MIRAGE = rune(Region.LIGHT, "air_light", Quest.Aura.NONE, SIGNAL);
-    public static final Quest FLASH = rune(Region.LIGHT, "spark_light", Quest.Aura.STORM, SUNLIGHT_CELL);
-    public static final Quest ECLIPSE = rune(Region.LIGHT, "shadow_light", Quest.Aura.CURSED, BANISHING);
-    public static final Quest PURIFYING_FIRE = rune(Region.LIGHT, "fire_shadow", Quest.Aura.CURSED, ETERNAL_FLAME);
-    public static final Quest WIP_STAR_ROD = wip(Region.LIGHT, "star_rod", Items.END_ROD, Quest.Aura.HEXTECH, ETERNAL_FLAME, HEXTECH_LAMP);
-    public static final Quest WIP_MAGMA_FONT = wip(Region.LIGHT, "magma_font", Items.LAVA_BUCKET, Quest.Aura.FLAME, ETERNAL_FLAME);
-    public static final Quest WIP_BEAM_RELAY = wip(Region.LIGHT, "beam_relay", Items.SPYGLASS, Quest.Aura.NONE, MIRROR, BEAM);
-    public static final Quest WIP_HEX_CUTTER = wip(Region.LIGHT, "hex_cutter", Items.STONECUTTER, Quest.Aura.NONE, BEAM, BLADES);
-    public static final Quest WIP_SIGNAL_BEACON = wip(Region.LIGHT, "signal_beacon", Items.BEACON, Quest.Aura.NONE, SIGNAL);
-    public static final Quest WIP_MIRAGE_PROJECTOR = wip(Region.LIGHT, "mirage_projector", Items.TINTED_GLASS, Quest.Aura.NONE, MIRAGE);
-    public static final Quest WIP_RUNE_ENGRAVER = wip(Region.LIGHT, "rune_engraver", Items.BRUSH, Quest.Aura.NONE, ENGRAVING);
-    public static final Quest WIP_FLASH_CHARGE = wip(Region.LIGHT, "flash_charge", Items.FIREWORK_STAR, Quest.Aura.STORM, FLASH);
-    public static final Quest WIP_PURIFIER = wip(Region.LIGHT, "purifier", Items.CONDUIT, Quest.Aura.HEXTECH, PURIFICATION, PURIFYING_FIRE);
-    public static final Quest WIP_HEX_ARCHIVE = wip(Region.LIGHT, "hex_archive", Items.CHISELED_BOOKSHELF, Quest.Aura.HEXTECH, ENGRAVING, CACHE);
-
-    // The storm: grounding lightning, conducting it, lifting things.
-    public static final Quest GROUNDING = rune(Region.STORM, "earth_spark", Quest.Aura.STORM, SMELTING);
-    public static final Quest CONDUCTOR = rune(Region.STORM, "water_spark", Quest.Aura.STORM, GROUNDING);
-    public static final Quest GRAVITY = rune(Region.STORM, "earth_air", Quest.Aura.NONE, GROUNDING);
-    public static final Quest WINDMILL = rune(Region.STORM, "air_spark", Quest.Aura.STORM, CONDUCTOR);
-    public static final Quest SHOCK = rune(Region.STORM, "spark_water", Quest.Aura.STORM, CONDUCTOR);
-    public static final Quest INSULATOR = rune(Region.STORM, "shadow_spark", Quest.Aura.CURSED, CONDUCTOR);
-    public static final Quest CHAIN_LIGHTNING = rune(Region.STORM, "spark_air", Quest.Aura.STORM, SHOCK);
-    public static final Quest LIFT = rune(Region.STORM, "air_metal", Quest.Aura.NONE, GRAVITY);
-    public static final Quest SHIFT = rune(Region.STORM, "air_earth", Quest.Aura.NONE, GRAVITY);
-    public static final Quest BLINK = rune(Region.STORM, "spark_shadow", Quest.Aura.CURSED, SHIFT);
-    public static final Quest WIP_STORM_COLLECTOR = wip(Region.STORM, "storm_collector", Items.LIGHTNING_ROD.asList().getFirst(), Quest.Aura.STORM,
-            GROUNDING);
-    public static final Quest WIP_WORLD_ANCHOR = wip(Region.STORM, "world_anchor", Items.RESPAWN_ANCHOR, Quest.Aura.STORM, GROUNDING, GRAVITY);
-    public static final Quest WIP_CRYSTAL_BATTERY = wip(Region.STORM, "crystal_battery", Items.AMETHYST_CLUSTER, Quest.Aura.STORM, CONDUCTOR,
-            SUNLIGHT_CELL);
-    public static final Quest WIP_WIND_TURBINE = wip(Region.STORM, "wind_turbine", Items.BREEZE_ROD, Quest.Aura.NONE, WINDMILL);
-    public static final Quest WIP_LEVITATION_PLATE = wip(Region.STORM, "levitation_plate", Items.HEAVY_WEIGHTED_PRESSURE_PLATE, Quest.Aura.HEXTECH,
-            LIFT, GRAVITY);
-    public static final Quest WIP_HEX_LIFT = wip(Region.STORM, "hex_lift", Items.PISTON, Quest.Aura.NONE, LIFT);
-    public static final Quest WIP_HEX_GATE = wip(Region.STORM, "hex_gate", Items.ENDER_EYE, Quest.Aura.HEXTECH, SHIFT, BLINK);
-    public static final Quest WIP_FOLDING_GATE = wip(Region.STORM, "folding_gate", Items.ENDER_PEARL, Quest.Aura.CURSED, BLINK);
-    public static final Quest WIP_HEX_TURRET = wip(Region.STORM, "hex_turret", Items.DISPENSER, Quest.Aura.STORM, CHAIN_LIGHTNING, BEAM);
-    public static final Quest WIP_HEX_BLADE = wip(Region.STORM, "hex_blade", Items.IRON_SWORD, Quest.Aura.STORM, CHAIN_LIGHTNING, BLADES);
-    public static final Quest WIP_NULLSTONE = wip(Region.STORM, "nullstone", Items.CRYING_OBSIDIAN, Quest.Aura.CURSED, INSULATOR, ECLIPSE);
-    public static final Quest WIP_RAIN_CALLER = wip(Region.STORM, "rain_caller", Items.TRIDENT, Quest.Aura.STORM, CONDUCTOR, FOG);
-    public static final Quest WIP_ESSENCE_RESONATOR = wip(Region.STORM, "essence_resonator", Items.GLASS_BOTTLE, Quest.Aura.HEXTECH, CONDUCTOR,
-            PIPES);
-    public static final Quest WIP_BARRIER_WARD = wip(Region.FORGE, "barrier_ward", Items.SHIELD, Quest.Aura.HEXTECH, REINFORCEMENT, HUSH);
-
-    // Life: growth, healing, constructs - and the Hexcore at the very end.
-    public static final Quest FERTILITY = rune(Region.LIFE, "earth_life", Quest.Aura.LIFE, EROSION);
-    public static final Quest GROWTH = rune(Region.LIFE, "life_earth", Quest.Aura.LIFE, FERTILITY);
-    public static final Quest SPRING = rune(Region.LIFE, "life_water", Quest.Aura.LIFE, FERTILITY);
-    public static final Quest POLLEN = rune(Region.LIFE, "life_air", Quest.Aura.LIFE, GROWTH);
-    public static final Quest PHOTOSYNTHESIS = rune(Region.LIFE, "light_life", Quest.Aura.LIFE, GROWTH);
-    public static final Quest BREATH = rune(Region.LIFE, "air_life", Quest.Aura.LIFE, GROWTH);
-    public static final Quest RADIANCE = rune(Region.LIFE, "life_light", Quest.Aura.LIFE, PHOTOSYNTHESIS);
-    public static final Quest HEALING = rune(Region.LIFE, "water_life", Quest.Aura.LIFE, SPRING);
-    public static final Quest FIREPROOFING = rune(Region.LIFE, "life_fire", Quest.Aura.NONE, HEALING);
-    public static final Quest MENDING = rune(Region.LIFE, "life_metal", Quest.Aura.NONE, HEALING);
-    public static final Quest REVIVAL = rune(Region.LIFE, "life_spark", Quest.Aura.STORM, HEALING);
-    public static final Quest CONSTRUCT = rune(Region.LIFE, "metal_life", Quest.Aura.NONE, MENDING);
-    public static final Quest HASTE = rune(Region.LIFE, "spark_life", Quest.Aura.STORM, REVIVAL);
-    public static final Quest SLUMBER = rune(Region.LIFE, "life_shadow", Quest.Aura.CURSED, BREATH);
-    public static final Quest WITHERING = rune(Region.LIFE, "shadow_life", Quest.Aura.CURSED, SLUMBER);
-    public static final Quest WIP_HERD_WARDEN = wip(Region.LIFE, "herd_warden", Items.SHEARS, Quest.Aura.LIFE, FERTILITY);
-    public static final Quest WIP_SPRING_BASIN = wip(Region.LIFE, "spring_basin", Items.LILY_PAD, Quest.Aura.LIFE, SPRING);
-    public static final Quest WIP_BLOOM_CENSER = wip(Region.LIFE, "bloom_censer", Items.SPORE_BLOSSOM, Quest.Aura.LIFE, POLLEN);
-    public static final Quest WIP_GREENHOUSE = wip(Region.LIFE, "greenhouse", Items.FLOWERING_AZALEA, Quest.Aura.LIFE, GROWTH, PHOTOSYNTHESIS);
-    public static final Quest WIP_GLOWBLOOM_BED = wip(Region.LIFE, "glowbloom_bed", Items.GLOW_BERRIES, Quest.Aura.LIFE, RADIANCE);
-    public static final Quest WIP_HEALING_SPRING = wip(Region.LIFE, "healing_spring", Items.GLISTERING_MELON_SLICE, Quest.Aura.LIFE, HEALING);
-    public static final Quest WIP_REGEN_TANK = wip(Region.LIFE, "regen_tank", Items.AXOLOTL_BUCKET, Quest.Aura.CURSED, HEALING, PIPES);
-    public static final Quest WIP_RESPIRATOR = wip(Region.LIFE, "respirator", Items.LEATHER_HELMET, Quest.Aura.NONE, BREATH, PURIFICATION);
-    public static final Quest WIP_FIREPROOF_COAT = wip(Region.LIFE, "fireproof_coat", Items.MAGMA_CREAM, Quest.Aura.FLAME, FIREPROOFING, SCORCH);
-    public static final Quest WIP_RUNE_ANVIL = wip(Region.LIFE, "rune_anvil", Items.ANVIL, Quest.Aura.NONE, MENDING, REFORGING);
-    public static final Quest WIP_CONSTRUCT = wip(Region.LIFE, "construct", Items.ARMOR_STAND, Quest.Aura.HEXTECH, CONSTRUCT, MOTOR);
-    public static final Quest WIP_HARVEST_CONSTRUCT = wip(Region.LIFE, "harvest_construct", Items.GOLDEN_HOE, Quest.Aura.HEXTECH, CONSTRUCT, BLADES);
-    public static final Quest WIP_FORESTER_CONSTRUCT = wip(Region.LIFE, "forester_construct", Items.GOLDEN_AXE, Quest.Aura.HEXTECH, CONSTRUCT,
-            GROWTH);
-    public static final Quest WIP_WINGED_COURIER = wip(Region.LIFE, "winged_courier", Items.FEATHER, Quest.Aura.HEXTECH, CONSTRUCT, LIFT);
-    public static final Quest WIP_LULL_LANTERN = wip(Region.LIFE, "lull_lantern", Items.SOUL_LANTERN, Quest.Aura.CURSED, SLUMBER);
-    public static final Quest WIP_CHRONO_CHAMBER = wip(Region.LIFE, "chrono_chamber", Items.CLOCK, Quest.Aura.STORM, HASTE);
-    public static final Quest WIP_SHIMMER = wip(Region.LIFE, "shimmer", Items.EXPERIENCE_BOTTLE, Quest.Aura.CURSED, HASTE, WITHERING);
-    public static final Quest WIP_HEXCORE = wip(Region.LIFE, "hexcore", Items.HEART_OF_THE_SEA, Quest.Aura.GOLD, REVIVAL, CONSTRUCT, RADIANCE);
-
-    // A device the pylons and the light will share.
-    public static final Quest WIP_SORTING_MATRIX = wip(Region.PYLONS, "sorting_matrix", Items.OBSERVER, Quest.Aura.HEXTECH, SENDING_PYLON, MIRROR);
+    // ---- Devices still being worked out, each hanging off the step it will grow from ---------------------------------
 
     static {
+        // The workshop.
+        wip("jar_gauge", Items.COMPARATOR, Quest.Aura.NONE, RESEARCHERS_GOGGLES);
+        wip("respirator", Items.LEATHER_HELMET, Quest.Aura.NONE, RESEARCHERS_GOGGLES, CONCENTRATE);
+        wip("storm_collector", Items.LIGHTNING_ROD.asList().getFirst(), Quest.Aura.STORM, UNSTABLE_HEXTECH);
+        wip("rain_caller", Items.TRIDENT, Quest.Aura.STORM, UNSTABLE_HEXTECH);
+        wip("xp_condenser", Items.SCULK_CATALYST, Quest.Aura.HEXTECH, ITEM_STUDY);
+        wip("hex_archive", Items.CHISELED_BOOKSHELF, Quest.Aura.HEXTECH, INK);
+        // The essence works, the fields and the woods.
+        wip("sawmill", Items.OAK_PLANKS, Quest.Aura.NONE, ALEMBIC);
+        wip("sap_tap", Items.HONEY_BOTTLE, Quest.Aura.LIFE, ESSENCE_BOTTLE);
+        wip("essence_sprinkler", Items.POINTED_DRIPSTONE, Quest.Aura.LIFE, BRASS_PIPE, CONCENTRATE);
+        wip("bloom_censer", Items.SPORE_BLOSSOM, Quest.Aura.LIFE, BRASS_PIPE);
+        wip("quench_tank", Items.WATER_BUCKET, Quest.Aura.NONE, PUMP);
+        wip("steam_boiler", Items.CAULDRON, Quest.Aura.NONE, PUMP);
+        wip("fish_weir", Items.FISHING_ROD, Quest.Aura.NONE, PUMP);
+        wip("rune_pump", Items.HOPPER, Quest.Aura.NONE, PUMP);
+        wip("chem_burner", Items.CAMPFIRE, Quest.Aura.FLAME, SEPARATOR);
+        wip("lab_bench", Items.BREWING_STAND, Quest.Aura.NONE, SEPARATOR);
+        wip("experiment_pot", Items.FLOWER_POT, Quest.Aura.LIFE, SEPARATOR, CONCENTRATE);
+        wip("specimen_cage", Items.IRON_BARS, Quest.Aura.CURSED, SEPARATOR);
+        wip("seed_sower", Items.WHEAT_SEEDS, Quest.Aura.NONE, ESSENCE_TANK);
+        wip("reaper", Items.WHEAT, Quest.Aura.NONE, ESSENCE_TANK);
+        wip("feeding_trough", Items.HAY_BLOCK, Quest.Aura.LIFE, ESSENCE_TANK);
+        wip("herd_warden", Items.SHEARS, Quest.Aura.LIFE, ESSENCE_TANK);
+        wip("living_soil", Items.ROOTED_DIRT, Quest.Aura.LIFE, MAGIC_STONE);
+        wip("field_ward", Items.CARVED_PUMPKIN, Quest.Aura.NONE, MAGIC_STONE);
+        wip("tree_feller", Items.OAK_LOG, Quest.Aura.NONE, MAGIC_STONE, ESSENCE_TANK);
+        wip("greenhouse", Items.FLOWERING_AZALEA, Quest.Aura.LIFE, MAGIC_STONE);
+        wip("mutation_injector", Items.SPIDER_EYE, Quest.Aura.CURSED, CONCENTRATE);
+        wip("healing_spring", Items.GLISTERING_MELON_SLICE, Quest.Aura.LIFE, CONCENTRATE);
+        wip("spring_basin", Items.LILY_PAD, Quest.Aura.LIFE, CONCENTRATE);
+        wip("shimmer", Items.EXPERIENCE_BOTTLE, Quest.Aura.CURSED, CONCENTRATE);
+        wip("compost_vat", Items.COMPOSTER, Quest.Aura.NONE, DRAIN_VALVE);
+        wip("the_gray", Items.GUNPOWDER, Quest.Aura.CURSED, DRAIN_VALVE);
+        wip("acid_bath", Items.FERMENTED_SPIDER_EYE, Quest.Aura.CURSED, DRAIN_VALVE);
+        wip("cooler", Items.BLUE_ICE, Quest.Aura.NONE, DRAIN_VALVE);
+        wip("crystal_vat", Items.BUDDING_AMETHYST, Quest.Aura.CURSED, BIG_ESSENCE_JAR, HEXTECH_GEMSTONE);
+        wip("regen_tank", Items.AXOLOTL_BUCKET, Quest.Aura.CURSED, BIG_ESSENCE_JAR);
+        wip("grove_keeper", Items.OAK_SAPLING, Quest.Aura.LIFE, BIG_ESSENCE_JAR);
+        // Rune lore.
+        wip("rune_engraver", Items.BRUSH, Quest.Aura.NONE, WRITTEN_SCROLL);
+        wip("lull_lantern", Items.SOUL_LANTERN, Quest.Aura.CURSED, WRITTEN_SCROLL);
+        wip("veil", Items.PHANTOM_MEMBRANE, Quest.Aura.CURSED, RUNE_SCROLL);
+        // The circle.
+        wip("geode_resonator", Items.SMALL_AMETHYST_BUD, Quest.Aura.STORM, HEXTECH_ALTAR, ESSENCE_TANK);
+        wip("nullstone", Items.CRYING_OBSIDIAN, Quest.Aura.CURSED, HEXTECH_ALTAR);
+        wip("hexcore", Items.HEART_OF_THE_SEA, Quest.Aura.GOLD, HEXTECH_ALTAR, HEXTECH_GEMSTONE);
+        wip("rune_workbench", Items.CRAFTER, Quest.Aura.HEXTECH, PEDESTAL, HEXTECH_GEMSTONE);
+        wip("barrier_ward", Items.SHIELD, Quest.Aura.HEXTECH, PEDESTAL);
+        wip("rune_lock", Items.TRIAL_KEY, Quest.Aura.CURSED, RUNE_STELE);
+        wip("crystal_battery", Items.AMETHYST_CLUSTER, Quest.Aura.STORM, HEXTECH_GEMSTONE);
+        wip("world_anchor", Items.RESPAWN_ANCHOR, Quest.Aura.STORM, HEXTECH_GEMSTONE);
+        wip("construct", Items.ARMOR_STAND, Quest.Aura.HEXTECH, HEXTECH_GEMSTONE);
+        wip("star_rod", Items.END_ROD, Quest.Aura.HEXTECH, HEXTECH_LAMP);
+        wip("signal_beacon", Items.BEACON, Quest.Aura.NONE, HEXTECH_LAMP);
+        wip("mirage_projector", Items.TINTED_GLASS, Quest.Aura.NONE, HEXTECH_LAMP);
+        wip("beam_relay", Items.SPYGLASS, Quest.Aura.NONE, HEXTECH_LAMP);
+        wip("glowbloom_bed", Items.GLOW_BERRIES, Quest.Aura.LIFE, HEXTECH_LAMP);
+        // The pylons.
+        wip("harvest_construct", Items.GOLDEN_HOE, Quest.Aura.HEXTECH, GATHERING_PYLON);
+        wip("forester_construct", Items.GOLDEN_AXE, Quest.Aura.HEXTECH, GATHERING_PYLON);
+        wip("sorting_matrix", Items.OBSERVER, Quest.Aura.HEXTECH, SENDING_PYLON, PYLON_FILTER);
+        wip("winged_courier", Items.FEATHER, Quest.Aura.HEXTECH, SENDING_PYLON);
+        wip("hex_gate", Items.ENDER_EYE, Quest.Aura.HEXTECH, RELAY_PYLON);
+        wip("folding_gate", Items.ENDER_PEARL, Quest.Aura.CURSED, RELAY_PYLON);
+        wip("levitation_plate", Items.HEAVY_WEIGHTED_PRESSURE_PLATE, Quest.Aura.HEXTECH, RELAY_PYLON);
+        wip("hex_turret", Items.DISPENSER, Quest.Aura.STORM, RELAY_PYLON);
+        wip("essence_resonator", Items.GLASS_BOTTLE, Quest.Aura.HEXTECH, SIPHON_PYLON);
+        wip("purifier", Items.CONDUIT, Quest.Aura.HEXTECH, SIPHON_PYLON);
+        wip("hex_lift", Items.PISTON, Quest.Aura.NONE, PYLON_RUNE);
+        wip("wind_turbine", Items.BREEZE_ROD, Quest.Aura.NONE, PYLON_RUNE);
+        // The forge.
+        wip("hextech_axe", Items.IRON_AXE, Quest.Aura.HEXTECH, HEXTECH_PICKAXE);
+        wip("hextech_hoe", Items.IRON_HOE, Quest.Aura.LIFE, HEXTECH_PICKAXE);
+        wip("hex_bore", Items.DIAMOND_PICKAXE, Quest.Aura.HEXTECH, HEXTECH_PICKAXE);
+        wip("drainer", Items.SPONGE, Quest.Aura.NONE, PICKAXE_RUNE);
+        wip("shadow_coffer", Items.ENDER_CHEST, Quest.Aura.CURSED, PICKAXE_RUNE);
+        wip("hex_blade", Items.IRON_SWORD, Quest.Aura.STORM, REFINED_PICKAXE);
+        wip("ore_washer", Items.RAW_IRON, Quest.Aura.NONE, REFINED_PICKAXE, PUMP);
+        wip("hex_cutter", Items.STONECUTTER, Quest.Aura.NONE, RADIANT_PICKAXE);
+        wip("flash_charge", Items.FIREWORK_STAR, Quest.Aura.STORM, RADIANT_PICKAXE);
+        wip("chrono_chamber", Items.CLOCK, Quest.Aura.STORM, RADIANT_PICKAXE);
+        wip("hex_flamethrower", Items.FIRE_CHARGE, Quest.Aura.FLAME, HEX_SMELTER);
+        wip("mining_charge", Items.TNT, Quest.Aura.FLAME, HEX_SMELTER);
+        wip("magma_font", Items.LAVA_BUCKET, Quest.Aura.FLAME, HEX_SMELTER);
+        wip("fireproof_coat", Items.MAGMA_CREAM, Quest.Aura.FLAME, SMELTER_RUNE);
+        wip("rune_anvil", Items.ANVIL, Quest.Aura.NONE, SMELTER_RUNE);
+        // The altar is the heart of the guide: every device past the essence works is made around it.
+        HEXTECH_ALTAR.landmark = true;
+        HEXTECH_ALTAR.scene = Quest.Scene.ALTAR;
+        PEDESTAL.scene = Quest.Scene.PEDESTAL;
+        RUNE_STELE.scene = Quest.Scene.STELE;
         layout();
     }
 
@@ -357,15 +280,12 @@ public final class Guide {
     // ---- Building -----------------------------------------------------------------------------------------------------
 
     private static Quest add(Region region, String id, Quest.Kind kind, List<Quest> parents, Supplier<ItemStack> icon,
-                             Predicate<ServerPlayer> goal, @Nullable QuestDisplay display, @Nullable ComplexRune rune, Quest.Aura aura) {
-        Quest quest = new Quest(id, kind, parents, icon, goal, display, rune, aura, region);
+                             Predicate<ServerPlayer> goal, @Nullable QuestDisplay display, @Nullable ResearchTopic topic, Quest.Aura aura) {
+        Quest quest = new Quest(id, kind, parents, icon, goal, display, topic, aura, region);
         quest.index = ALL.size();
         ALL.add(quest);
         if (BY_ID.put(id, quest) != null) {
             throw new IllegalStateException("Two guide steps named " + id);
-        }
-        if (rune != null && BY_RUNE.put(rune, quest) != null) {
-            throw new IllegalStateException("Rune " + rune.key() + " is on the guide twice");
         }
         return quest;
     }
@@ -376,81 +296,90 @@ public final class Guide {
                 display, null, aura);
     }
 
-    private static Quest rune(Region region, String key, Quest.Aura aura, Quest... parents) {
-        ComplexRune rune = Objects.requireNonNull(ComplexRunes.byKey(key), key);
-        return add(region, key, Quest.Kind.RUNE, List.of(parents), () -> new ItemStack(ModItems.RUNE_SCROLL.get()), player -> false, null,
-                rune, aura);
+    /** An item step whose item must be researched at the table first. */
+    private static Quest researched(Region region, String id, Supplier<? extends ItemLike> item, ResearchTopic topic, Quest.Aura aura,
+                                    @Nullable QuestDisplay display, Quest... parents) {
+        return add(region, id, Quest.Kind.ITEM, List.of(parents), () -> new ItemStack(item.get()), Quests.has(() -> item.get().asItem()),
+                display, topic, aura);
     }
 
-    private static Quest wip(Region region, String id, ItemLike icon, Quest.Aura aura, Quest... parents) {
-        return add(region, "wip_" + id, Quest.Kind.WIP, List.of(parents), () -> new ItemStack(icon), player -> false, null, null, aura);
+    /** A device still being worked out: it sits in its first parent's region, on that parent's branch. */
+    private static void wip(String id, ItemLike icon, Quest.Aura aura, Quest... parents) {
+        add(parents[0].region(), "wip_" + id, Quest.Kind.WIP, List.of(parents), () -> new ItemStack(icon), player -> false, null, null, aura);
     }
 
     // ---- Layout -------------------------------------------------------------------------------------------------------
 
+    /** A laid-out subtree: positions relative to its root ({@code u} along the region, {@code v} across) and its contour. */
+    private record Shape(Map<Quest, double[]> positions, List<double[]> contour) {
+    }
+
     /**
-     * Lays the steps out as loose clusters, one per region, like constellations rather than a grid. First the regions
-     * find their places: each takes room for its steps, they push apart and regions linked by steps draw together.
-     * Then the steps: a region's first steps sit around its anchor, every other step grows out of its main parent, away
-     * from the anchor, its siblings fanned out; and the web relaxes - steps push each other apart (far apart across
-     * regions), links pull like springs and every step leans gently towards its anchor. Deterministic, so every reader
-     * sees the same sky.
+     * Lays every region out as a tree growing in the region's own direction: a step's children stand one {@link #STEP}
+     * further along, side by side across it, siblings' branches packed as close as their outlines allow (a tidy tree).
+     * The workshop sits in the middle; every other region starts next to the step its first step comes from and moves
+     * further out along its direction until it keeps {@link #CLEAR} from everything laid out before it - its devices
+     * still being worked out included, which gather around their steps right after the region's items. The landmark
+     * keeps {@link #ROOM} of open sky around itself. A small steady wobble keeps the sky from looking like a grid.
+     * Deterministic, so every reader sees the same sky.
      */
     private static void layout() {
-        Map<Region, double[]> anchors = placeRegions();
+        Map<Quest, double[]> placed = new LinkedHashMap<>();
+        for (Region region : Region.values()) {
+            List<Quest> roots = new ArrayList<>();
+            for (Quest quest : ALL) {
+                if (quest.region() == region && quest.kind() != Quest.Kind.WIP && layoutParent(quest) == null) {
+                    roots.add(quest);
+                }
+            }
+            if (roots.isEmpty()) {
+                continue;
+            }
+            Shape forest = arrange(roots);
+            double centre = 0;
+            for (Quest root : roots) {
+                centre += forest.positions().get(root)[1];
+            }
+            centre /= roots.size();
+            double[] origin = {0, 0};
+            double start = 0;
+            Quest from = roots.getFirst().parent();
+            if (from != null && placed.containsKey(from)) {
+                origin = placed.get(from);
+                start = roots.getFirst().landmark() ? ROOM : STEP;
+            }
+            double angle = region.angle();
+            double cos = Math.cos(angle);
+            double sin = Math.sin(angle);
+            Map<Quest, double[]> world = new LinkedHashMap<>();
+            for (int push = 0; push < 200; push++) {
+                world.clear();
+                double along = start + push * 16;
+                for (var entry : forest.positions().entrySet()) {
+                    double u = entry.getValue()[0] + along;
+                    double v = entry.getValue()[1] - centre;
+                    world.put(entry.getKey(), new double[]{origin[0] + u * cos - v * sin, origin[1] + u * sin + v * cos});
+                }
+                if (clear(world, placed)) {
+                    break;
+                }
+            }
+            placed.putAll(world);
+            placeDevices(region, placed);
+        }
         int n = ALL.size();
         double[] x = new double[n];
         double[] y = new double[n];
-        Map<Region, List<Quest>> entries = new EnumMap<>(Region.class);
         for (Quest quest : ALL) {
-            if (!grows(quest)) {
-                entries.computeIfAbsent(quest.region(), region -> new ArrayList<>()).add(quest);
-            }
+            double[] at = placed.get(quest);
+            x[quest.index] = at[0] + jitter(quest, 1) * 5;
+            y[quest.index] = at[1] + jitter(quest, 2) * 5;
         }
-        for (Quest quest : ALL) {
-            Region region = quest.region();
-            double[] anchor = anchors.get(region);
-            double angle;
-            double cx;
-            double cy;
-            double distance;
-            if (grows(quest)) {
-                Quest parent = quest.parent();
-                List<Quest> siblings = parent.children().stream().filter(child -> child.parent() == parent && grows(child)).toList();
-                cx = x[parent.index];
-                cy = y[parent.index];
-                double ox = cx - anchor[0];
-                double oy = cy - anchor[1];
-                int k = siblings.indexOf(quest);
-                int m = siblings.size();
-                if (ox * ox + oy * oy < 1) {
-                    angle = jitter(parent, 0) * Math.PI + k * Math.PI * 2 / m;
-                } else {
-                    angle = Math.atan2(oy, ox) + (k - (m - 1) / 2.0) * 0.8;
-                }
-                distance = SPACING;
-            } else {
-                List<Quest> first = entries.get(region);
-                int k = first.indexOf(quest);
-                cx = anchor[0];
-                cy = anchor[1];
-                angle = region.ordinal() * 1.3 + k * Math.PI * 2 / first.size();
-                distance = first.size() == 1 ? 0 : SPACING * 0.7;
-            }
-            x[quest.index] = cx + Math.cos(angle) * distance + jitter(quest, 1) * 8;
-            y[quest.index] = cy + Math.sin(angle) * distance + jitter(quest, 2) * 8;
-        }
-        int steps = 400;
-        double[] fx = new double[n];
-        double[] fy = new double[n];
-        for (int step = 0; step < steps; step++) {
-            Arrays.fill(fx, 0);
-            Arrays.fill(fy, 0);
+        // Last, no two steps closer than SEPARATE (nothing closer than ROOM to the landmark).
+        for (int pass = 0; pass < 80; pass++) {
             for (int i = 0; i < n; i++) {
-                Quest a = ALL.get(i);
                 for (int j = i + 1; j < n; j++) {
-                    Quest b = ALL.get(j);
-                    double want = a.region() == b.region() ? GAP : APART;
+                    double want = spacing(ALL.get(i), ALL.get(j), SEPARATE);
                     double dx = x[j] - x[i];
                     double dy = y[j] - y[i];
                     if (Math.abs(dx) >= want || Math.abs(dy) >= want) {
@@ -459,67 +388,17 @@ public final class Guide {
                     double d = Math.sqrt(dx * dx + dy * dy);
                     if (d < want) {
                         if (d < 0.01) {
-                            dx = jitter(b, step) + 0.5;
-                            dy = jitter(a, step) - 0.5;
-                            d = Math.sqrt(dx * dx + dy * dy);
-                        }
-                        double push = (want - d) / d * 0.5;
-                        fx[i] -= dx * push;
-                        fy[i] -= dy * push;
-                        fx[j] += dx * push;
-                        fy[j] += dy * push;
-                    }
-                }
-                for (Quest parent : a.parents()) {
-                    int j = parent.index;
-                    double dx = x[j] - x[i];
-                    double dy = y[j] - y[i];
-                    double d = Math.max(0.01, Math.sqrt(dx * dx + dy * dy));
-                    double pull;
-                    if (parent.region() != a.region()) {
-                        // Across regions only a faint pull, so a region's entries face the regions they come from.
-                        pull = d > APART ? (d - APART) / d * 0.004 : 0;
-                    } else {
-                        pull = (d - SPACING) / d * (parent == a.parent() ? 0.12 : 0.04);
-                    }
-                    fx[i] += dx * pull;
-                    fy[i] += dy * pull;
-                    fx[j] -= dx * pull;
-                    fy[j] -= dy * pull;
-                }
-                double[] anchor = anchors.get(a.region());
-                fx[i] += (anchor[0] - x[i]) * 0.004;
-                fy[i] += (anchor[1] - y[i]) * 0.004;
-            }
-            double limit = 10 * (1 - 0.85 * step / steps);
-            for (int i = 0; i < n; i++) {
-                double d = Math.sqrt(fx[i] * fx[i] + fy[i] * fy[i]);
-                double scale = d > limit ? limit / d : 1;
-                x[i] += fx[i] * scale;
-                y[i] += fy[i] * scale;
-            }
-        }
-        // Last, no two steps closer than SEPARATE, whatever the springs wanted.
-        for (int pass = 0; pass < 60; pass++) {
-            for (int i = 0; i < n; i++) {
-                for (int j = i + 1; j < n; j++) {
-                    double dx = x[j] - x[i];
-                    double dy = y[j] - y[i];
-                    if (Math.abs(dx) >= SEPARATE || Math.abs(dy) >= SEPARATE) {
-                        continue;
-                    }
-                    double d = Math.sqrt(dx * dx + dy * dy);
-                    if (d < SEPARATE) {
-                        if (d < 0.01) {
                             dx = 1;
                             dy = 0;
                             d = 1;
                         }
-                        double push = (SEPARATE - d) / d * 0.5;
-                        x[i] -= dx * push;
-                        y[i] -= dy * push;
-                        x[j] += dx * push;
-                        y[j] += dy * push;
+                        double push = (want - d) / d * 0.5;
+                        // The landmark stays where its branch put it; the others make room.
+                        double share = ALL.get(i).landmark() ? 0 : ALL.get(j).landmark() ? 2 : 1;
+                        x[i] -= dx * push * share;
+                        y[i] -= dy * push * share;
+                        x[j] += dx * push * (2 - share);
+                        y[j] += dy * push * (2 - share);
                     }
                 }
             }
@@ -530,74 +409,137 @@ public final class Guide {
         }
     }
 
-    /**
-     * Where the regions gather: starting from their anchors in {@link Region}, each region takes a round room growing
-     * with the square root of its steps; overlapping rooms push apart, regions linked by steps draw together until their
-     * rooms touch. The workshop stays put.
-     */
-    private static Map<Region, double[]> placeRegions() {
-        Region[] regions = Region.values();
-        int count = regions.length;
-        double[] ax = new double[count];
-        double[] ay = new double[count];
-        double[] radius = new double[count];
-        int[][] links = new int[count][count];
-        for (Region region : regions) {
-            ax[region.ordinal()] = region.x();
-            ay[region.ordinal()] = region.y();
-        }
-        for (Quest quest : ALL) {
-            radius[quest.region().ordinal()] += 1;
-            for (Quest parent : quest.parents()) {
-                if (parent.region() != quest.region()) {
-                    links[parent.region().ordinal()][quest.region().ordinal()]++;
-                    links[quest.region().ordinal()][parent.region().ordinal()]++;
-                }
-            }
-        }
-        for (int i = 0; i < count; i++) {
-            radius[i] = RADIUS * Math.sqrt(radius[i]);
-        }
-        for (int step = 0; step < 400; step++) {
-            double[] fx = new double[count];
-            double[] fy = new double[count];
-            for (int i = 0; i < count; i++) {
-                for (int j = i + 1; j < count; j++) {
-                    double dx = ax[j] - ax[i];
-                    double dy = ay[j] - ay[i];
-                    double d = Math.max(0.01, Math.sqrt(dx * dx + dy * dy));
-                    double want = radius[i] + radius[j] + MARGIN;
-                    double push;
-                    if (d < want) {
-                        push = (want - d) / d * 0.5;
-                    } else if (links[i][j] > 0) {
-                        push = -(d - want) / d * 0.05 * Math.min(3, links[i][j]);
-                    } else {
-                        continue;
-                    }
-                    fx[i] -= dx * push;
-                    fy[i] -= dy * push;
-                    fx[j] += dx * push;
-                    fy[j] += dy * push;
-                }
-            }
-            for (int i = 0; i < count; i++) {
-                if (regions[i] != Region.WORKSHOP) {
-                    ax[i] += Math.clamp(fx[i], -12, 12);
-                    ay[i] += Math.clamp(fy[i], -12, 12);
-                }
-            }
-        }
-        Map<Region, double[]> anchors = new EnumMap<>(Region.class);
-        for (Region region : regions) {
-            anchors.put(region, new double[]{Math.round(ax[region.ordinal()]), Math.round(ay[region.ordinal()])});
-        }
-        return anchors;
+    /** The least distance between two steps: {@code base}, or {@link #ROOM} next to the landmark. */
+    private static double spacing(Quest a, Quest b, double base) {
+        return a.landmark() || b.landmark() ? Math.max(base, ROOM) : base;
     }
 
-    /** Whether a step grows out of its main parent in the layout (it shares the parent's region). */
-    private static boolean grows(Quest quest) {
-        return quest.parent() != null && quest.parent().region() == quest.region();
+    /**
+     * Devices still being worked out gather in a small fan around the step they hang from, on its outer side (away from
+     * the step it grows from, so the fan leans the branch's way): each takes the first free spot on rings around the
+     * step, trying the outward direction first and then turning left and right, never back past the sides.
+     */
+    private static void placeDevices(Region region, Map<Quest, double[]> placed) {
+        for (Quest quest : ALL) {
+            if (quest.kind() != Quest.Kind.WIP || quest.region() != region) {
+                continue;
+            }
+            Quest parent = quest.parent();
+            double[] at = placed.get(parent);
+            Quest grand = parent.parent();
+            double outward = grand != null && placed.containsKey(grand)
+                    ? Math.atan2(at[1] - placed.get(grand)[1], at[0] - placed.get(grand)[0]) : parent.region().angle();
+            double[] spot = null;
+            double first = parent.landmark() ? ROOM : 50;
+            for (int ring = 0; spot == null && ring < 14; ring++) {
+                double radius = first + ring * 14;
+                for (int turn = 0; turn < 7 && spot == null; turn++) {
+                    double angle = outward + (turn % 2 == 0 ? 1 : -1) * ((turn + 1) / 2) * 0.5;
+                    double[] candidate = {at[0] + Math.cos(angle) * radius, at[1] + Math.sin(angle) * radius};
+                    if (free(quest, candidate, placed)) {
+                        spot = candidate;
+                    }
+                }
+            }
+            placed.put(quest, spot != null ? spot : new double[]{at[0] + Math.cos(outward) * 260, at[1] + Math.sin(outward) * 260});
+        }
+    }
+
+    private static boolean free(Quest quest, double[] spot, Map<Quest, double[]> placed) {
+        for (var entry : placed.entrySet()) {
+            double want = spacing(quest, entry.getKey(), SEPARATE);
+            double dx = spot[0] - entry.getValue()[0];
+            double dy = spot[1] - entry.getValue()[1];
+            if (dx * dx + dy * dy < want * want) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Whether every new position keeps {@link #CLEAR} from every step placed before. */
+    private static boolean clear(Map<Quest, double[]> fresh, Map<Quest, double[]> placed) {
+        for (var a : fresh.entrySet()) {
+            for (var b : placed.entrySet()) {
+                double want = spacing(a.getKey(), b.getKey(), CLEAR);
+                double dx = a.getValue()[0] - b.getValue()[0];
+                double dy = a.getValue()[1] - b.getValue()[1];
+                if (dx * dx + dy * dy < want * want) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /** The step a step grows from on the page: its first parent when that is in the same region. */
+    @Nullable
+    private static Quest layoutParent(Quest quest) {
+        Quest parent = quest.parent();
+        return parent != null && parent.region() == quest.region() ? parent : null;
+    }
+
+    private static Shape shape(Quest quest) {
+        List<Quest> children = new ArrayList<>();
+        for (Quest child : quest.children()) {
+            if (layoutParent(child) == quest && child.kind() != Quest.Kind.WIP) {
+                children.add(child);
+            }
+        }
+        if (children.isEmpty()) {
+            Map<Quest, double[]> positions = new LinkedHashMap<>();
+            positions.put(quest, new double[]{0, 0});
+            List<double[]> contour = new ArrayList<>();
+            contour.add(new double[]{0, 0});
+            return new Shape(positions, contour);
+        }
+        Shape below = arrange(children);
+        double first = below.positions().get(children.getFirst())[1];
+        double last = below.positions().get(children.getLast())[1];
+        double middle = (first + last) / 2;
+        Map<Quest, double[]> positions = new LinkedHashMap<>();
+        positions.put(quest, new double[]{0, 0});
+        double along = quest.landmark() ? ROOM : STEP;
+        below.positions().forEach((step, at) -> positions.put(step, new double[]{at[0] + along, at[1] - middle}));
+        List<double[]> contour = new ArrayList<>();
+        contour.add(new double[]{0, 0});
+        for (double[] level : below.contour()) {
+            contour.add(new double[]{level[0] - middle, level[1] - middle});
+        }
+        return new Shape(positions, contour);
+    }
+
+    /**
+     * Steps side by side across the region (their branches following them along it): each next branch is pushed across
+     * until its outline keeps {@link #LANE} from the outlines before it at every depth they share.
+     */
+    private static Shape arrange(List<Quest> steps) {
+        Map<Quest, double[]> positions = new LinkedHashMap<>();
+        List<double[]> contour = new ArrayList<>();
+        for (Quest step : steps) {
+            Shape shape = shape(step);
+            double offset = 0;
+            if (!contour.isEmpty()) {
+                offset = -Double.MAX_VALUE;
+                for (int depth = 0; depth < Math.min(contour.size(), shape.contour().size()); depth++) {
+                    offset = Math.max(offset, contour.get(depth)[1] - shape.contour().get(depth)[0] + LANE);
+                }
+            }
+            for (var entry : shape.positions().entrySet()) {
+                positions.put(entry.getKey(), new double[]{entry.getValue()[0], entry.getValue()[1] + offset});
+            }
+            for (int depth = 0; depth < shape.contour().size(); depth++) {
+                double low = shape.contour().get(depth)[0] + offset;
+                double high = shape.contour().get(depth)[1] + offset;
+                if (depth < contour.size()) {
+                    contour.get(depth)[0] = Math.min(contour.get(depth)[0], low);
+                    contour.get(depth)[1] = Math.max(contour.get(depth)[1], high);
+                } else {
+                    contour.add(new double[]{low, high});
+                }
+            }
+        }
+        return new Shape(positions, contour);
     }
 
     /** A steady pseudo-random number in -1..1 for a step and a salt. */
@@ -621,18 +563,19 @@ public final class Guide {
         return BY_ID.get(id);
     }
 
-    /** The step that teaches a rune. Every rune has one. */
-    public static Quest of(ComplexRune rune) {
-        return Objects.requireNonNull(BY_RUNE.get(rune), rune.key());
+    /** The first step that asks for this research topic. Every topic has one. */
+    public static Quest of(ResearchTopic topic) {
+        for (Quest quest : ALL) {
+            if (quest.topic() == topic) {
+                return quest;
+            }
+        }
+        throw new IllegalStateException("Research topic " + topic.id() + " is on no guide step");
     }
 
-    /** An item quest when its goal was met, a rune step when the rune is known; WIP steps never. */
+    /** An item quest when its goal was met; WIP steps never. */
     public static boolean done(Quest quest, RuneKnowledge knowledge) {
-        return switch (quest.kind()) {
-            case ITEM -> knowledge.questDone(quest);
-            case RUNE -> knowledge.knows(Objects.requireNonNull(quest.rune()));
-            case WIP -> false;
-        };
+        return quest.kind() == Quest.Kind.ITEM && knowledge.questDone(quest);
     }
 
     /** Every parent is done. */
@@ -650,13 +593,17 @@ public final class Guide {
         return done(quest, knowledge) || open(quest, knowledge);
     }
 
-    /** Whether the researcher may study this rune at the table: its step is open (or already learned). */
-    public static boolean canStudy(ComplexRune rune, RuneKnowledge knowledge) {
-        Quest quest = of(rune);
-        return done(quest, knowledge) || open(quest, knowledge);
+    /** Whether the researcher may research this topic at the table: a step asking for it is open (or done). */
+    public static boolean canResearch(ResearchTopic topic, RuneKnowledge knowledge) {
+        for (Quest quest : ALL) {
+            if (quest.topic() == topic && visible(quest, knowledge)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    /** Bounds of the laid-out web (for the camera). */
+    /** Bounds of the laid-out tree (for the camera). */
     public static int left() {
         return ALL.stream().mapToInt(Quest::x).min().orElse(0);
     }

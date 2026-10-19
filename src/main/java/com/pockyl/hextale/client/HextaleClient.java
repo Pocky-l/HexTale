@@ -47,7 +47,7 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import com.pockyl.hextale.research.EssencesTooltip;
 import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ResearchItems;
-import com.pockyl.hextale.research.RuneBoards;
+import com.pockyl.hextale.research.ResearchBoards;
 
 @Mod(value = Hextale.MOD_ID, dist = Dist.CLIENT)
 public final class HextaleClient {
@@ -68,6 +68,7 @@ public final class HextaleClient {
         modBus.addListener((RegisterParticleProvidersEvent event) -> event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new));
         modBus.addListener(GogglesView::registerLayer);
         modBus.addListener(com.pockyl.hextale.client.screen.book.AltarDiorama::register);
+        modBus.addListener(com.pockyl.hextale.client.screen.book.CircleDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.render.HexGlow::registerPipelines);
         NeoForge.EVENT_BUS.addListener(GogglesView::tick);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
@@ -106,7 +107,7 @@ public final class HextaleClient {
         });
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());
         ClientPylons.register();
-        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> RuneBoards.warmUp());
+        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> ResearchBoards.warmUp());
     }
 
     /** A studied item shows its elements under its name; in creative mode every item does. */

@@ -1,7 +1,5 @@
 package com.pockyl.hextale.research;
 
-import com.pockyl.hextale.knowledge.RuneKnowledge;
-import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
@@ -11,9 +9,10 @@ import java.util.stream.Stream;
 import java.util.Objects;
 
 /**
- * The runes' chapters = how hard their parchments are: chapter I is Smelting and the five runes around it, chapter III
- * every rune acting with shadow or lightning, or acting on shadow, chapter II the rest. Which rune may be studied is
- * decided by the guide ({@link Guide}): a rune opens when the steps before it are done.
+ * The runes' chapters = how rare and costly they are: chapter I is Smelting and the five runes around it, chapter III
+ * every rune acting with shadow or lightning, or acting on shadow, chapter II the rest. Runes are found as scrolls in
+ * the world's treasure chests: chapter I in plain dungeons, chapter III in the deepest places (see the rune scroll loot
+ * modifiers). A chapter also sets a rune's essence cost at the altar.
  */
 public final class ResearchBook {
     public static final ComplexRune FIRST = Objects.requireNonNull(ComplexRunes.byKey("fire_earth"));
@@ -39,10 +38,5 @@ public final class ResearchBook {
 
     public static List<ComplexRune> runes(int chapter) {
         return ComplexRunes.all().stream().filter(rune -> chapter(rune) == chapter).toList();
-    }
-
-    /** Whether the researcher may study this rune at the table: its step on the guide is open. */
-    public static boolean open(RuneKnowledge knowledge, ComplexRune rune) {
-        return Guide.canStudy(rune, knowledge);
     }
 }

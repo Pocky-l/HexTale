@@ -11,7 +11,8 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
 import com.pockyl.hextale.menu.ResearchTableMenu;
-import com.pockyl.hextale.rune.ComplexRunes;
+import com.pockyl.hextale.research.ResearchTopic;
+import com.pockyl.hextale.research.ResearchTopics;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
 /**
  * Client to server: something the researcher does at the open table. The server checks everything again.
  *
- * @param value the rune index (SELECT), the field section to check (STRIKE) or the port to shine from (FIRE)
+ * @param value the topic index (SELECT), the field section to check (STRIKE) or the port to shine from (FIRE)
  * @param cells the whole ink thread from the orb (THREAD)
  */
 public record ResearchActionPayload(BlockPos pos, Action action, int value, List<Integer> cells) implements CustomPacketPayload {
@@ -66,8 +67,9 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
         }
         switch (payload.action()) {
             case SELECT -> {
-                if (payload.value() >= 0 && payload.value() < ComplexRunes.COUNT) {
-                    table.select(player, ComplexRunes.all().get(payload.value()));
+                ResearchTopic topic = ResearchTopics.byIndex(payload.value());
+                if (topic != null) {
+                    table.select(player, topic);
                 }
             }
             case THREAD -> table.thread(player, payload.cells().stream().mapToInt(Integer::intValue).toArray());

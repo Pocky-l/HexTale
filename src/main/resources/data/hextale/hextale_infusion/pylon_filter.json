@@ -1,0 +1,14 @@
+{
+  "center": "hextale:brass_ingot",
+  "pedestals": [
+    "minecraft:string",
+    "hextale:brass_nugget",
+    "hextale:brass_nugget",
+    "minecraft:amethyst_shard"
+  ],
+  "essences": {
+    "order": 8,
+    "motion": 6
+  },
+  "result": "hextale:pylon_filter"
+}

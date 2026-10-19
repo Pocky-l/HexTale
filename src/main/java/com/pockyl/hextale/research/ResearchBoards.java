@@ -1,8 +1,6 @@
 package com.pockyl.hextale.research;
 
 import com.pockyl.hextale.Hextale;
-import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
@@ -17,23 +15,24 @@ import java.util.concurrent.Executors;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Builds and caches the 72 boards (hexagonal parchments, six essences of the rune's theme around them). Generation is deterministic (the rune's key seeds it) and identical on client and
+ * Builds and caches the research boards (hexagonal parchments, six essences of the topic's theme around them).
+ * Generation is deterministic (the topic's id seeds it) and identical on client and
  * server, so boards never travel over the network. Every board is checked to be finishable with a plain drawing that
  * never steps on a curse, and its star thresholds come from that drawing's length.
  */
-public final class RuneBoards {
+public final class ResearchBoards {
     private static final int[] POINTS = {0, 3, 4, 6};
     private static final int[] WALL_CHAINS = {0, 10, 18, 26};
-    /** Points ringed by dark sections, and the share of dark sections that are cursed, per chapter. */
+    /** Points ringed by dark sections, and the share of dark sections that are cursed, per tier. */
     private static final int[] RINGS = {0, 0, 1, 2};
     private static final double[] CURSE_SHARE = {0, 0, 0.3, 0.4};
     /** The plain thread of a board is this long at least ... */
     private static final int[] PLAIN_MIN = {0, 14, 22, 32};
-    /** ... and at most: harder runes are longer. */
+    /** ... and at most: deeper topics are longer. */
     private static final int[] PLAIN_MAX = {0, 30, 46, 66};
-    private static final Map<ComplexRune, CompletableFuture<RuneBoard>> CACHE = new ConcurrentHashMap<>();
+    private static final Map<ResearchTopic, CompletableFuture<ResearchBoard>> CACHE = new ConcurrentHashMap<>();
     /**
-     * One low-priority daemon thread of our own: the game's background pool also loads chunks, and 72 boards queued
+     * One low-priority daemon thread of our own: the game's background pool also loads chunks, and boards queued
      * there at world start would hold the world back.
      */
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
@@ -43,28 +42,28 @@ public final class RuneBoards {
         return thread;
     });
 
-    private RuneBoards() {
+    private ResearchBoards() {
     }
 
     /** The board; generated right here if it is not ready yet, rather than waiting for the queue. */
-    public static RuneBoard get(ComplexRune rune) {
-        CompletableFuture<RuneBoard> future = request(rune);
+    public static ResearchBoard get(ResearchTopic topic) {
+        CompletableFuture<ResearchBoard> future = request(topic);
         if (!future.isDone()) {
-            future.complete(generate(rune));
+            future.complete(generate(topic));
         }
         return future.join();
     }
 
     /** The board, generated in the background if needed. */
-    public static CompletableFuture<RuneBoard> request(ComplexRune rune) {
-        return CACHE.computeIfAbsent(rune, r -> CompletableFuture.supplyAsync(() -> generate(r), EXECUTOR));
+    public static CompletableFuture<ResearchBoard> request(ResearchTopic topic) {
+        return CACHE.computeIfAbsent(topic, t -> CompletableFuture.supplyAsync(() -> generate(t), EXECUTOR));
     }
 
     /** Generates every board in the background, so screens rarely wait. */
     public static void warmUp() {
         long start = System.nanoTime();
-        CompletableFuture.allOf(ComplexRunes.all().stream().map(RuneBoards::request).toArray(CompletableFuture[]::new))
-                .thenRun(() -> Hextale.LOGGER.debug("Generated {} research boards in {} ms", ComplexRunes.COUNT,
+        CompletableFuture.allOf(ResearchTopics.all().stream().map(ResearchBoards::request).toArray(CompletableFuture[]::new))
+                .thenRun(() -> Hextale.LOGGER.debug("Generated {} research boards in {} ms", ResearchTopics.all().size(),
                         (System.nanoTime() - start) / 1_000_000));
     }
 
@@ -97,15 +96,15 @@ public final class RuneBoards {
         return h;
     }
 
-    static RuneBoard generate(ComplexRune rune) {
-        int tier = ResearchBook.chapter(rune);
-        String key = rune.action().id() + ">" + rune.target().id();
-        List<Essence> essences = theme(rune, new Random32(hash(key + "#theme")));
-        RuneBoard fallback = null;
+    static ResearchBoard generate(ResearchTopic topic) {
+        int tier = topic.tier();
+        String key = topic.id();
+        List<Essence> essences = theme(topic, new Random32(hash(key + "#theme")));
+        ResearchBoard fallback = null;
         int fallbackMiss = Integer.MAX_VALUE;
         for (int attempt = 0; attempt < 300; attempt++) {
             Random32 random = new Random32(hash(key + "#thread#" + attempt));
-            List<Essence> elements = new ArrayList<>(List.of(nearest(essences, rune.action()), nearest(essences, rune.target())));
+            List<Essence> elements = new ArrayList<>(List.of(nearest(essences, topic.action()), nearest(essences, topic.target())));
             if (elements.get(1) == elements.get(0)) {
                 elements.set(1, essences.get((essences.indexOf(elements.get(0)) + 3) % 6));
             }
@@ -132,14 +131,14 @@ public final class RuneBoards {
                     candidates.add(cell);
                 }
             }
-            List<RuneBoard.Point> points = new ArrayList<>();
+            List<ResearchBoard.Point> points = new ArrayList<>();
             for (Essence element : elements) {
                 List<Integer> ok = candidates.stream()
                         .filter(cell -> points.stream().allMatch(p -> HexGrid.distance(p.cell(), cell) > 0.32)).toList();
                 if (ok.isEmpty()) {
                     break;
                 }
-                points.add(new RuneBoard.Point(element, ok.get(random.pick(ok.size()))));
+                points.add(new ResearchBoard.Point(element, ok.get(random.pick(ok.size()))));
             }
             if (points.size() < POINTS[tier]) {
                 continue;
@@ -147,12 +146,12 @@ public final class RuneBoards {
             boolean[] dark = new boolean[HexGrid.COUNT];
             boolean[] cursed = new boolean[HexGrid.COUNT];
             if (tier >= 2) {
-                // Later chapters: the dark runes become fields to cross, some points sit inside a ring of them.
+                // Deeper tiers: the dark runes become fields to cross, some points sit inside a ring of them.
                 dark = walls;
                 walls = new boolean[HexGrid.COUNT];
                 darkFields(dark, cursed, points, tier, new Random32(hash(key + "#curse#" + attempt)));
             }
-            RuneBoard draft = new RuneBoard(rune, essences, walls, dark, cursed, List.copyOf(points), null);
+            ResearchBoard draft = new ResearchBoard(topic, essences, walls, dark, cursed, List.copyOf(points), null);
             int[] tree = plainTree(draft);
             if (tree == null) {
                 continue;
@@ -168,24 +167,24 @@ public final class RuneBoards {
             }
         }
         if (fallback == null) {
-            throw new IllegalStateException("No board for rune " + rune.key());
+            throw new IllegalStateException("No board for topic " + topic.id());
         }
         return fallback;
     }
 
-    /** How many essences of each tier (primal, of two primals, deeper) a chapter's parchment holds. */
+    /** How many essences of each tier (primal, of two primals, deeper) a tier's parchment holds. */
     private static final int[][] THEME_TIERS = {{}, {2, 4, 0}, {1, 3, 2}, {0, 2, 4}};
 
     /**
-     * The six essences of a rune's parchment: all of its theme - essences made of the rune's action and target primals.
-     * Chapter I keeps both primals and adds compounds of two primals; later chapters trade primals for deeper compounds,
+     * The six essences of a topic's parchment: all of its theme - essences made of the topic's two primals.
+     * Tier 1 keeps both primals and adds compounds of two primals; deeper tiers trade primals for deeper compounds,
      * which take more distilling to gather. Picks favour the most fitting essences, alternating between the action's
-     * and the target's side, so both halves of the rune are always present; their order around the hexagon is shuffled.
+     * and the target's side, so both halves of the theme are always present; their order around the hexagon is shuffled.
      */
-    static List<Essence> theme(ComplexRune rune, Random32 random) {
-        Essence a = rune.action();
-        Essence b = rune.target();
-        int[] plan = THEME_TIERS[ResearchBook.chapter(rune)];
+    static List<Essence> theme(ResearchTopic topic, Random32 random) {
+        Essence a = topic.action();
+        Essence b = topic.target();
+        int[] plan = THEME_TIERS[topic.tier()];
         List<Essence> picked = new ArrayList<>();
         if (plan[0] >= 1) {
             picked.add(a);
@@ -200,7 +199,7 @@ public final class RuneBoards {
                 boolean fits = tier == 2 ? e.tier() >= 2 : e.tier() == 1;
                 double fit = e.share(a) + e.share(b);
                 if (fits && !picked.contains(e) && fit > 0) {
-                    // Best fit first; a little randomness among equals so boards of related runes differ.
+                    // Best fit first; a little randomness among equals so boards of related topics differ.
                     scored.add(new double[]{e.ordinal(), fit + (e.share(a) > 0 && e.share(b) > 0 ? 0.5 : 0) + random.next() * 0.2});
                 }
             }
@@ -253,7 +252,7 @@ public final class RuneBoards {
      * Rings the last points with dark sections, keeps the orb's neighbourhood clear and curses a share of the dark
      * sections. Every ring keeps two safe sections, so a point is never sealed off.
      */
-    private static void darkFields(boolean[] dark, boolean[] cursed, List<RuneBoard.Point> points, int tier, Random32 random) {
+    private static void darkFields(boolean[] dark, boolean[] cursed, List<ResearchBoard.Point> points, int tier, Random32 random) {
         int rings = Math.min(RINGS[tier], points.size());
         for (int r = 0; r < rings; r++) {
             int centre = points.get(points.size() - 1 - r).cell();
@@ -261,7 +260,7 @@ public final class RuneBoards {
                 dark[next] = true;
             }
         }
-        for (RuneBoard.Point point : points) {
+        for (ResearchBoard.Point point : points) {
             dark[point.cell()] = false;
         }
         for (int cell = 0; cell < HexGrid.COUNT; cell++) {
@@ -288,9 +287,9 @@ public final class RuneBoards {
         }
     }
 
-    private static RuneBoard withPar(RuneBoard draft, int plain) {
-        return new RuneBoard(draft.rune(), draft.essences(), draft.walls(), draft.dark(), draft.cursed(), draft.points(),
-                new RuneBoard.Par(plain, plain + Math.max(3, plain / 4), plain));
+    private static ResearchBoard withPar(ResearchBoard draft, int plain) {
+        return new ResearchBoard(draft.topic(), draft.essences(), draft.walls(), draft.dark(), draft.cursed(), draft.points(),
+                new ResearchBoard.Par(plain, plain + Math.max(3, plain / 4), plain));
     }
 
     /**
@@ -301,7 +300,7 @@ public final class RuneBoards {
      * @return the steps ({@link ResearchSheet} pairs), or null when a point cannot be reached
      */
     @Nullable
-    public static int[] plainTree(RuneBoard board) {
+    public static int[] plainTree(ResearchBoard board) {
         boolean[] inked = new boolean[HexGrid.COUNT];
         inked[HexGrid.CENTRE] = true;
         List<Integer> steps = new ArrayList<>();

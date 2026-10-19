@@ -9,12 +9,16 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -27,8 +31,8 @@ import com.pockyl.hextale.block.TableAnimation;
 import com.pockyl.hextale.block.TableGeometry;
 import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.registry.ModItems;
-import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.ComplexRunes;
+import com.pockyl.hextale.research.ResearchTopic;
+import com.pockyl.hextale.research.ResearchTopics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +40,8 @@ import java.util.List;
 /**
  * Shows what lies on the Research Table - the open diary on its rest, parchment, ink and brush, a finished scroll - and
  * the unstable hextech hanging from the brass arm: a faceted crystal turning inside two spinning gimbal rings, wrapped in
- * a soft glow with motes circling it. While someone draws, the rings and motes speed up and the orb brightens; a fusion
- * flares in the rune's colour and lifts the new rune's hieroglyph over the desk; a lost sheet shakes the orb and greys it for a moment.
+ * a soft glow with motes circling it. While someone draws, the rings and motes speed up and the orb brightens; a finished
+ * research flares in the topic's colour and lifts the researched item over the desk; a lost sheet shakes the orb and greys it for a moment.
  * Glow sprites use real alpha (not additive blending over black), so they look right with shader packs too.
  *
  * <p>The table is read into a {@link State} on extraction; {@link #submit} only turns that state into geometry.
@@ -52,6 +56,7 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
     private static final float CRACK_TICKS = 24;
 
     private final BookModel book;
+    private final ItemModelResolver itemModelResolver;
 
     /** What the renderer needs of one table in one frame. */
     public static final class State extends BlockEntityRenderState {
@@ -61,7 +66,8 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         float sinceFlare;
         float sinceFizzle;
         int flareColor;
-        int flareRune = -1;
+        /** The researched item rising over the orb, empty when none. */
+        final ItemStackRenderState flareItem = new ItemStackRenderState();
         boolean diary;
         boolean scroll;
         boolean orb;
@@ -74,6 +80,7 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
 
     public ResearchTableRenderer(BlockEntityRendererProvider.Context context) {
         this.book = new BookModel(context.bakeLayer(ModelLayers.BOOK));
+        this.itemModelResolver = context.itemModelResolver();
     }
 
     @Override
@@ -93,7 +100,12 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         state.sinceFizzle = time - table.fizzleTime;
         state.flare = fade(state.sinceFlare, FLARE_TICKS);
         state.flareColor = table.flareColor;
-        state.flareRune = table.flareRune;
+        ResearchTopic topic = ResearchTopics.byIndex(table.flareTopic);
+        if (topic != null && state.sinceFlare >= 0 && state.sinceFlare <= GLYPH_TICKS) {
+            itemModelResolver.updateForTopItem(state.flareItem, topic.icon(), ItemDisplayContext.GROUND, level, null, 0);
+        } else {
+            state.flareItem.clear();
+        }
         state.diary = !table.getItem(ResearchTableBlockEntity.DIARY).isEmpty();
         state.scroll = table.getItem(ResearchTableBlockEntity.OUTPUT).is(ModItems.RUNE_SCROLL.get());
         state.orb = !table.getItem(ResearchTableBlockEntity.HEXTECH).isEmpty();
@@ -152,7 +164,7 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         }
     }
 
-    /** The diary lies open on the slanted rest; its pages riffle when a new rune is written into it. */
+    /** The diary lies open on the slanted rest; its pages riffle when a research is written into it. */
     private void submitDiary(State state, PoseStack poseStack, SubmitNodeCollector collector, int light) {
         Vec3 at = TableGeometry.DIARY;
         poseStack.pushPose();
@@ -235,21 +247,20 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         }
     }
 
-    /** The hieroglyph of a freshly fused rune rises over the orb in the rune's colour and fades. */
+    /** The item of a freshly finished research rises over the orb, turning, and shrinks away. */
     private static void submitGlyph(State state, PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera) {
         float since = state.sinceFlare;
-        if (state.flareRune < 0 || since < 0 || since > GLYPH_TICKS) {
+        if (state.flareItem.isEmpty() || since < 0 || since > GLYPH_TICKS) {
             return;
         }
-        ComplexRune rune = ComplexRunes.all().get(state.flareRune);
         float t = since / GLYPH_TICKS;
-        float alpha = Math.min(1, since / 8) * (t > 0.6F ? 1 - (t - 0.6F) / 0.4F : 1);
-        float size = 0.42F + 0.08F * Math.min(1, since / 10);
-        int color = rune.color();
+        float scale = 0.45F * Math.min(1, since / 8) * (t > 0.7F ? 1 - (t - 0.7F) / 0.3F : 1);
         poseStack.pushPose();
-        poseStack.translate(0, 0.32F + t * 0.18F, 0);
-        poseStack.rotate(camera);
-        HexFx.glyph(poseStack, collector, rune, size, color, alpha);
+        poseStack.translate(0, 0.28F + t * 0.22F, 0);
+        poseStack.rotate(Axis.YP.rotationDegrees(state.time * 6));
+        poseStack.scale(scale, scale, scale);
+        poseStack.translate(0, -0.15, 0);
+        state.flareItem.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
         poseStack.popPose();
     }
 
