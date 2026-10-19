@@ -21,7 +21,8 @@ import org.jetbrains.annotations.Nullable;
  * tiers 2 and 3 the dark runes are fields the ink may cross, but a cursed section bursts the orb: the check stops
  * there ({@link Trace#burst}). Every inked section next to a dark field shows how many cursed sections touch it.
  * Removing steps is free: ink is only spent when the last point is reached (or the orb bursts).
- * A paper is spent when an attempt starts (its first section).
+ * A paper is spent when an attempt starts (its first section). A burst burns the parchment: the next attempt is drawn on
+ * a new board ({@link ResearchBoards#get(ResearchTopic, int)}).
  * <p>
  * Pure rules shared by the table (server) and its screen (client copy).
  */
@@ -31,6 +32,12 @@ public final class ResearchSheet {
 
     @Nullable
     private ResearchTopic topic;
+    /** Which of the topic's boards lies on the desk: the researcher's attempt. */
+    private int attempt;
+    /** How many parchments burned on this desk, so screens notice a new burn and play it. */
+    private int burns;
+    /** The section the last parchment caught fire at. */
+    private int burnCell = HexGrid.CENTRE;
     /** The drawing, steps as {@code from, to} pairs. */
     private int[] tree = new int[0];
     /** The drawing reached every point: it stays shown until a new one is started. */
@@ -139,15 +146,29 @@ public final class ResearchSheet {
         return topic;
     }
 
-    /** Chooses the topic to research: a fresh drawing. */
-    public void select(ResearchTopic topic) {
+    /** Chooses the topic to research on the board of the researcher's attempt: a fresh drawing. */
+    public void select(ResearchTopic topic, int attempt) {
         this.topic = topic;
+        this.attempt = attempt;
         reset();
     }
 
     public void clear() {
         this.topic = null;
+        this.attempt = 0;
         reset();
+    }
+
+    public int attempt() {
+        return attempt;
+    }
+
+    public int burns() {
+        return burns;
+    }
+
+    public int burnCell() {
+        return burnCell;
     }
 
     private void reset() {
@@ -197,8 +218,14 @@ public final class ResearchSheet {
         revision++;
     }
 
-    /** The orb burst: the sheet is burnt, the next attempt starts from a bare orb on a new paper. */
-    public void burn() {
+    /**
+     * The orb burst at {@code cell}: the sheet is burnt, the next attempt starts from a bare orb on a new paper with a new
+     * board.
+     */
+    public void burn(int cell, int nextAttempt) {
+        burnCell = cell;
+        burns++;
+        attempt = nextAttempt;
         tree = new int[0];
         done = false;
         paid = false;
@@ -214,6 +241,9 @@ public final class ResearchSheet {
         if (topic != null) {
             tag.putString("topic", topic.id());
         }
+        tag.putInt("attempt", attempt);
+        tag.putInt("burns", burns);
+        tag.putInt("burn_cell", burnCell);
         tag.putIntArray("tree", tree);
         tag.putBoolean("done", done);
         tag.putBoolean("paid", paid);
@@ -222,6 +252,9 @@ public final class ResearchSheet {
 
     public void load(ValueInput tag) {
         topic = tag.getString("topic").map(ResearchTopics::byId).orElse(null);
+        attempt = Math.max(0, tag.getIntOr("attempt", 0));
+        burns = tag.getIntOr("burns", 0);
+        burnCell = Math.clamp(tag.getIntOr("burn_cell", HexGrid.CENTRE), 0, HexGrid.COUNT - 1);
         int[] saved = tag.getIntArray("tree").orElse(new int[0]);
         tree = saved.length % 2 != 0 || Arrays.stream(saved).anyMatch(c -> c < 0 || c >= HexGrid.COUNT) ? new int[0] : saved;
         done = tag.getBooleanOr("done", false);

@@ -73,11 +73,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Research: every device and tool past the essence works - the altar circle, the gemstone, the lamp, the big jar,
   the pylons, the pickaxes, the lapidary and its master disc, hexsteel, the drain valve - must be researched at the table before it can be crafted
   or made at the altar. Choose it in the book and draw it on a worn parchment with a hexagon of six essences - one per
-  direction, chosen by the device's theme. Drag ink from the hextech orb to every point; the ink may branch from the orb
-  or from any inked section. A step costs ink of the essence its direction points to, a step onto a point ten of the
-  point's own essence; right click takes a step back for free. Simple devices have stone walls; deeper ones have dark
+  direction, chosen by the device's theme, shown as ink wells on the margin beside the hexagon's corners. Drag ink from
+  the hextech orb to every goal - the gold sigils, counted at the top of the sheet; the ink may branch from the orb
+  or from any inked section. A step costs ink of the essence its direction points to, a step onto a goal ten of the
+  goal's own essence; right click takes a step back for free. Simple devices have stone walls; deeper ones have dark
   fields the ink may cross, but some of their sections are cursed - every inked section next to them counts the curses
-  it touches, like a minesweeper. Stepping on a curse bursts the orb and burns the sheet. A finished drawing writes
+  it touches, like a minesweeper. Stepping on a curse bursts the orb: the parchment catches fire and chars away from
+  the curse, and a fresh sheet slides in with a new board for the next attempt. A finished drawing writes
   Research Notes; reading them teaches the device - and notes can be handed to another player.
 - Runes are found, not researched: rune scrolls lie in treasure chests - simple runes in dungeons, temples, mineshafts
   and buried treasure, harder ones in strongholds, mansions, the Nether and trial vaults, the rarest in ancient cities,

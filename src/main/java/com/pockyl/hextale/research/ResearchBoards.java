@@ -16,8 +16,9 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Builds and caches the research boards (hexagonal parchments, six essences of the topic's theme around them).
- * Generation is deterministic (the topic's id seeds it) and identical on client and
- * server, so boards never travel over the network. Every board is checked to be finishable with a plain drawing that
+ * Generation is deterministic (the topic's id and the researcher's attempt seed it) and identical on client and
+ * server, so boards never travel over the network. Every burnt parchment makes way for a new board: attempt 0 is the
+ * topic's first board, attempt n its n-th replacement. Every board is checked to be finishable with a plain drawing that
  * never steps on a curse, and its star thresholds come from that drawing's length.
  */
 public final class ResearchBoards {
@@ -30,7 +31,7 @@ public final class ResearchBoards {
     private static final int[] PLAIN_MIN = {0, 14, 22, 32};
     /** ... and at most: deeper topics are longer. */
     private static final int[] PLAIN_MAX = {0, 30, 46, 66};
-    private static final Map<ResearchTopic, CompletableFuture<ResearchBoard>> CACHE = new ConcurrentHashMap<>();
+    private static final Map<Key, CompletableFuture<ResearchBoard>> CACHE = new ConcurrentHashMap<>();
     /**
      * One low-priority daemon thread of our own: the game's background pool also loads chunks, and boards queued
      * there at world start would hold the world back.
@@ -45,18 +46,31 @@ public final class ResearchBoards {
     private ResearchBoards() {
     }
 
-    /** The board; generated right here if it is not ready yet, rather than waiting for the queue. */
+    private record Key(ResearchTopic topic, int attempt) {
+    }
+
+    /** The topic's first board. */
     public static ResearchBoard get(ResearchTopic topic) {
-        CompletableFuture<ResearchBoard> future = request(topic);
+        return get(topic, 0);
+    }
+
+    /** The board of an attempt; generated right here if it is not ready yet, rather than waiting for the queue. */
+    public static ResearchBoard get(ResearchTopic topic, int attempt) {
+        CompletableFuture<ResearchBoard> future = request(topic, attempt);
         if (!future.isDone()) {
-            future.complete(generate(topic));
+            future.complete(generate(topic, attempt));
         }
         return future.join();
     }
 
-    /** The board, generated in the background if needed. */
     public static CompletableFuture<ResearchBoard> request(ResearchTopic topic) {
-        return CACHE.computeIfAbsent(topic, t -> CompletableFuture.supplyAsync(() -> generate(t), EXECUTOR));
+        return request(topic, 0);
+    }
+
+    /** The board of an attempt, generated in the background if needed. */
+    public static CompletableFuture<ResearchBoard> request(ResearchTopic topic, int attempt) {
+        return CACHE.computeIfAbsent(new Key(topic, Math.max(0, attempt)),
+                key -> CompletableFuture.supplyAsync(() -> generate(key.topic(), key.attempt()), EXECUTOR));
     }
 
     /** Generates every board in the background, so screens rarely wait. */
@@ -96,14 +110,15 @@ public final class ResearchBoards {
         return h;
     }
 
-    static ResearchBoard generate(ResearchTopic topic) {
+    static ResearchBoard generate(ResearchTopic topic, int attempt) {
         int tier = topic.tier();
-        String key = topic.id();
+        // The first attempt keeps the seed boards always had; later ones are seeded apart.
+        String key = attempt == 0 ? topic.id() : topic.id() + "@" + attempt;
         List<Essence> essences = theme(topic, new Random32(hash(key + "#theme")));
         ResearchBoard fallback = null;
         int fallbackMiss = Integer.MAX_VALUE;
-        for (int attempt = 0; attempt < 300; attempt++) {
-            Random32 random = new Random32(hash(key + "#thread#" + attempt));
+        for (int round = 0; round < 300; round++) {
+            Random32 random = new Random32(hash(key + "#thread#" + round));
             List<Essence> elements = new ArrayList<>(List.of(nearest(essences, topic.action()), nearest(essences, topic.target())));
             if (elements.get(1) == elements.get(0)) {
                 elements.set(1, essences.get((essences.indexOf(elements.get(0)) + 3) % 6));
@@ -149,7 +164,7 @@ public final class ResearchBoards {
                 // Deeper tiers: the dark runes become fields to cross, some points sit inside a ring of them.
                 dark = walls;
                 walls = new boolean[HexGrid.COUNT];
-                darkFields(dark, cursed, points, tier, new Random32(hash(key + "#curse#" + attempt)));
+                darkFields(dark, cursed, points, tier, new Random32(hash(key + "#curse#" + round)));
             }
             ResearchBoard draft = new ResearchBoard(topic, essences, walls, dark, cursed, List.copyOf(points), null);
             int[] tree = plainTree(draft);

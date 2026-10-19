@@ -75,10 +75,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private static final int TEXT = 0xF0E3C2;
     private static final int TEXT_MUTED = 0xC9B48A;
     private static final int PANEL_X = 252;
-    private static final int BOARD_X = 4;
-    private static final int BOARD_Y = 24;
-    private static final int BOARD_W = 244;
-    private static final int BOARD_H = 234;
+    private static final int BOARD_X = BoardView.SHEET_X;
+    private static final int BOARD_Y = BoardView.SHEET_Y;
+    private static final int BOARD_W = BoardView.SHEET_W;
+    private static final int BOARD_H = BoardView.SHEET_H;
     /** Ink vials: nine glass tubes in ring order. */
     private static final int VIAL_X = 258;
     private static final int VIAL_Y = 64;
@@ -116,10 +116,17 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private static final Map<Item, BitSet> PENCIL = new HashMap<>();
     @Nullable
     private ResearchTopic threadTopic;
+    private int threadAttempt;
     private int serverRevision = Integer.MIN_VALUE;
     private boolean dragging;
     private ResearchSheet.@Nullable Trace trace;
     private String fogKey = "";
+    /** Parchments burned on this desk as last seen, -1 before the first look: a new burn plays {@link #burning}. */
+    private int seenBurns = -1;
+    /** The board drawn last frame, and the burning parchment while it burns. */
+    @Nullable
+    private ResearchBoard lastBoard;
+    private BoardView.@Nullable Burn burning;
 
     // Feedback.
     private Component toast = Component.empty();
@@ -227,14 +234,15 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private ResearchBoard currentBoard() {
         ResearchTableBlockEntity table = table();
         ResearchTopic topic = table == null || table.isStudyingItem() ? null : table.sheet().topic();
-        return topic == null ? null : ResearchBoards.request(topic).getNow(null);
+        return topic == null ? null : ResearchBoards.request(topic, table.sheet().attempt()).getNow(null);
     }
 
     /** Takes the server's drawing whenever the server changed it and the researcher is not drawing. */
     private void syncThread(ResearchTableBlockEntity table, ResearchBoard current) {
         ResearchSheet sheet = table.sheet();
-        if (threadTopic != current.topic()) {
+        if (threadTopic != current.topic() || threadAttempt != sheet.attempt()) {
             threadTopic = current.topic();
+            threadAttempt = sheet.attempt();
             tree = sheet.tree().clone();
             serverRevision = sheet.revision();
             board.reset();
@@ -529,12 +537,28 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             renderStudy(graphics, table, hovered, mouseX, mouseY);
         } else {
             ResearchBoard current = currentBoard();
+            if (table != null) {
+                noticeBurn(table);
+            }
+            if (burning != null && board.renderBurn(graphics, font, burning, current)) {
+                renderHeader(graphics, burning.board().topic());
+                renderVials(graphics, reserved, burning.board().essences(), mouseX, mouseY);
+                renderGhosts(graphics);
+                return;
+            }
+            boolean burnt = burning != null;
+            burning = null;
             if (table == null || current == null) {
                 board.renderEmpty(graphics, overBoard(mouseX, mouseY));
                 renderEmptyHeader(graphics);
             } else {
                 syncThread(table, current);
+                if (burnt) {
+                    board.freshSheet();
+                    fogKey = "";
+                }
                 renderTopic(graphics, table, current, hovered, mouseX, mouseY);
+                lastBoard = current;
                 shown = current.essences();
                 if (trace != null && !done(table)) {
                     reserved = trace.ink().clone();
@@ -550,10 +574,26 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
 
     // ---- The research topic -------------------------------------------------------------------------------------------------
 
+    /**
+     * The server burned the parchment (the orb burst): the old board, with the drawing that set it alight, chars away from
+     * the burst and a fresh sheet slides in with the new board.
+     */
+    private void noticeBurn(ResearchTableBlockEntity table) {
+        int burns = table.sheet().burns();
+        if (seenBurns >= 0 && burns != seenBurns && lastBoard != null && burning == null) {
+            dragging = false;
+            burning = new BoardView.Burn(lastBoard, tree.clone(), trace, table.sheet().burnCell(), Util.getMillis());
+            FLAGS.remove(lastBoard.topic());
+            sound(SoundEvents.FIRECHARGE_USE, 0.8F, 0.5F);
+            sound(SoundEvents.FIRE_AMBIENT, 1.0F, 0.8F);
+        }
+        seenBurns = burns;
+    }
+
     private void renderTopic(GuiGraphicsExtractor graphics, ResearchTableBlockEntity table, ResearchBoard current, int hovered,
                             int mouseX, int mouseY) {
         ResearchTopic topic = current.topic();
-        String key = topic.id() + "|" + tree.length + "|" + lastCell() + "|" + ClientKnowledge.version();
+        String key = topic.id() + "|" + current.hashCode() + "|" + tree.length + "|" + lastCell() + "|" + ClientKnowledge.version();
         if (!key.equals(fogKey)) {
             fogKey = key;
             board.updateFog(ClientKnowledge.get().seen(topic), ResearchSheet.cells(tree));
@@ -577,15 +617,32 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
         BitSet known = ClientKnowledge.get().seen(topic);
         board.renderTopic(graphics, font, current, tree, trace, done, dragging, hovered, preview, previewFrom, ready, head, known,
-                ClientKnowledge.get().curses(topic), flags(topic));
+                flags(topic));
         if (hovered >= 0 && !dragging) {
             int point = current.pointAt(hovered);
             if (point >= 0) {
-                pendingTooltip = List.of(ResearchText.essence(current.points().get(point).element()));
+                boolean reached = trace != null && (trace.lit() & 1 << point) != 0;
+                pendingTooltip = List.of(
+                        Component.translatable(KEY + "goal", ResearchText.essence(current.points().get(point).element())),
+                        Component.translatable(reached ? KEY + "goal.reached" : KEY + "goal.hint", ResearchSheet.POINT_COST)
+                                .withStyle(reached ? ChatFormatting.GREEN : ChatFormatting.GRAY));
             }
         }
+        int corner = !dragging && overBoard(mouseX, mouseY) ? board.cornerAt(mouseX, mouseY) : -1;
+        if (corner >= 0) {
+            pendingTooltip = List.of(Component.translatable(KEY + "corner", ResearchText.essence(current.essence(corner))),
+                    Component.translatable(KEY + "corner.hint").withStyle(ChatFormatting.GRAY));
+        }
 
-        // Header: what is researched, and whether the researcher has worked it out already.
+        renderHeader(graphics, topic);
+        if (!done) {
+            board.renderGoals(graphics, font, current, trace == null ? 0 : trace.lit(),
+                    Component.translatable(KEY + "goals", Integer.bitCount(trace == null ? 0 : trace.lit()), current.points().size()));
+        }
+    }
+
+    /** Header: what is researched, and whether the researcher has worked it out already. */
+    private void renderHeader(GuiGraphicsExtractor graphics, ResearchTopic topic) {
         int x0 = leftPos + PANEL_X;
         int y0 = topPos;
         graphics.pose().pushMatrix();
@@ -841,7 +898,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
 
     private void boardPressed(double mouseX, double mouseY, int button) {
         ResearchTableBlockEntity table = table();
-        if (table == null) {
+        if (table == null || burning != null) {
             return;
         }
         int cell = board.cellAt(mouseX, mouseY);

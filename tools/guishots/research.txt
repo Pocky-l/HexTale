@@ -1,0 +1,42 @@
+# The Research Table's desk: parchments of one topic per tier, and a parchment burning.
+cmd gamerule doDaylightCycle false
+cmd time set noon
+cmd tp @s 0.5 -60 0.5 180 35
+cmd fill -6 -60 -8 6 -55 -1 air
+wait 10
+scale 3
+cmd item replace entity @s hotbar.1 with hextale:research_table
+slot 1
+use 0 -61 -3 up
+wait 5
+cmd data merge block 0 -60 -3 {Items:[{Slot:0b,id:"hextale:researchers_diary",count:1},{Slot:1b,id:"hextale:unstable_hextech",count:4},{Slot:4b,id:"minecraft:paper",count:16}],sheet:{topic:"hextech_altar",attempt:0,burns:0}}
+wait 5
+use 0 -60 -3 south
+wait 20
+shot research_tier1
+close
+cmd data merge block 0 -60 -3 {sheet:{topic:"radiant_hextech_pickaxe",revision:9}}
+wait 5
+use 0 -60 -3 south
+wait 20
+shot research_tier3
+close
+cmd data merge block 0 -60 -3 {sheet:{topic:"hextech_pickaxe",revision:5}}
+wait 5
+use 0 -60 -3 south
+wait 20
+shot research_tier2
+cmd data merge block 0 -60 -3 {sheet:{burns:1,burn_cell:70,attempt:1,revision:6}}
+wait 10
+shot research_burn_a
+wait 10
+shot research_burn_b
+wait 12
+shot research_burn_c
+wait 3
+shot research_burn_d
+wait 3
+shot research_burn_f
+wait 20
+shot research_burn_e
+close

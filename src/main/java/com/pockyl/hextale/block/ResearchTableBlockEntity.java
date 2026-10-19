@@ -190,7 +190,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     @Nullable
     public ResearchBoard board() {
         ResearchTopic topic = sheet.topic();
-        return topic == null ? null : ResearchBoards.get(topic);
+        return topic == null ? null : ResearchBoards.get(topic, sheet.attempt());
     }
 
     /** In creative mode every item counts as studied, as if the researcher carried them all. */
@@ -251,7 +251,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             return;
         }
         ResearchersDiaryItem.sign(items.get(DIARY), player);
-        sheet.select(topic);
+        sheet.select(topic, Research.of(player).attempt(topic));
         studyingItem = false;
         setChanged();
     }
@@ -264,6 +264,13 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     public void thread(ServerPlayer player, int[] cells) {
         ResearchBoard board = board();
         if (board == null || studyingItem || Requirement.diary(this, player) != null) {
+            return;
+        }
+        int attempt = Research.of(player).attempt(board.topic());
+        if (attempt != sheet.attempt()) {
+            // Someone else's parchment of this topic lies on the desk: this researcher starts on their own.
+            sheet.select(board.topic(), attempt);
+            setChanged();
             return;
         }
         if (cells.length == 0) {
@@ -323,8 +330,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     }
 
     /**
-     * The ink stepped on a cursed dark rune: the orb bursts. The sheet burns with its paper, the ink drawn so far is spent,
-     * the researcher is hurt by the blast and remembers where the curse was.
+     * The ink stepped on a cursed dark rune: the orb bursts. The sheet burns with its paper, the ink drawn so far is spent
+     * and the researcher is hurt by the blast; the next attempt is drawn on a new parchment with another board.
      */
     private void burst(ServerPlayer player, ResearchBoard board, int cell, ResearchSheet.Trace trace) {
         boolean creative = player.getAbilities().instabuild;
@@ -333,8 +340,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             items.get(HEXTECH).shrink(1);
             player.hurtServer((ServerLevel) level, level.damageSources().magic(), BURST_DAMAGE);
         }
-        Research.of(player).curse(board.topic(), cell);
-        sheet.burn();
+        sheet.burn(cell, Research.of(player).burn(board.topic()));
         Research.sync(player);
         message(player, Component.translatable("research.hextale.burst", name(board.topic())), ResearchMessagePayload.Tone.BAD);
         if (level instanceof ServerLevel serverLevel) {
@@ -342,6 +348,12 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             serverLevel.sendParticles(ParticleTypes.EXPLOSION, orb.x, orb.y, orb.z, 1, 0, 0, 0, 0);
             serverLevel.sendParticles(ParticleTypes.SQUID_INK, orb.x, orb.y, orb.z, 24, 0.25, 0.15, 0.25, 0.08);
             serverLevel.sendParticles(ParticleTypes.ELECTRIC_SPARK, orb.x, orb.y, orb.z, 20, 0.2, 0.2, 0.2, 0.4);
+            // The parchment catches fire: flames run over it, ash and smoke rise from the desk.
+            Vec3 sheetAt = TableGeometry.toWorld(worldPosition, facing(), TableGeometry.PARCHMENT.add(0, 0.6, 0));
+            serverLevel.sendParticles(ParticleTypes.SMALL_FLAME, sheetAt.x, sheetAt.y, sheetAt.z, 18, 0.22, 0.02, 0.16, 0.01);
+            serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, sheetAt.x, sheetAt.y + 0.05, sheetAt.z, 6, 0.18, 0.02, 0.12, 0.02);
+            serverLevel.sendParticles(ParticleTypes.WHITE_ASH, sheetAt.x, sheetAt.y + 0.2, sheetAt.z, 30, 0.3, 0.2, 0.25, 0.02);
+            level.playSound(null, worldPosition, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.5F, 0.7F);
             level.playSound(null, worldPosition, ModSounds.ORB_CRACK.get(), SoundSource.BLOCKS, 1.0F, 0.7F);
             level.playSound(null, worldPosition, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 0.5F, 1.4F);
             level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_FIZZLE, 0);

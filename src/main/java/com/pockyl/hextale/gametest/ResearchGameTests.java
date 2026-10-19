@@ -1099,8 +1099,9 @@ public final class ResearchGameTests {
     }
 
     /**
-     * Stepping on a curse at the table: the orb bursts, the sheet burns and the researcher remembers it. (The blast's
-     * damage is not checked: a mock player counts as still loading and takes none.)
+     * Stepping on a curse at the table: the orb bursts, the sheet burns and the next attempt lies on a new board with
+     * nothing of the old one remembered. (The blast's damage is not checked: a mock player counts as still loading and
+     * takes none.)
      */
     @HexTest
     public static void aCurseBurstsTheOrbAtTheTable(GameTestHelper helper) {
@@ -1116,8 +1117,25 @@ public final class ResearchGameTests {
         table.thread(player, tree);
         helper.assertTrue(table.sheet().length() == 0 && !table.sheet().paid(), "the sheet burnt with its paper");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "the orb burst");
-        helper.assertTrue(Research.of(player).curses(board.topic()).get(cursed), "the curse is remembered");
+        helper.assertTrue(Research.of(player).attempt(board.topic()) == 1 && table.sheet().attempt() == 1, "the next attempt starts");
+        helper.assertTrue(table.sheet().burns() == 1 && table.sheet().burnCell() == cursed, "the screen learns where it burned");
+        helper.assertTrue(table.board() != board && !table.board().points().equals(board.points()), "a new board lies on the desk");
+        helper.assertTrue(Research.of(player).seen(board.topic()).isEmpty(), "the burnt parchment is forgotten");
         player.discard();
+        helper.succeed();
+    }
+
+    /** Every topic gets new, finishable boards for the attempts after a burn. */
+    @HexTest
+    public static void burntParchmentsGetNewBoards(GameTestHelper helper) {
+        for (ResearchTopic topic : ResearchTopics.all()) {
+            ResearchBoard first = ResearchBoards.get(topic);
+            for (int attempt = 1; attempt <= 3; attempt++) {
+                ResearchBoard next = ResearchBoards.get(topic, attempt);
+                helper.assertTrue(!next.points().equals(first.points()), "attempt " + attempt + " of " + topic.id() + " is a new board");
+                helper.assertTrue(ResearchBoards.plainTree(next) != null, "attempt " + attempt + " of " + topic.id() + " can be finished");
+            }
+        }
         helper.succeed();
     }
 

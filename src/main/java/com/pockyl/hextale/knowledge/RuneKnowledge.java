@@ -29,8 +29,8 @@ import java.util.Set;
  * <p>
  * A rune is learned with 1-3 stars from a scroll found in the world (the best scroll counts). Studied items show their
  * essences. Researched topics are the devices and tools the researcher may make; the parchment of each topic remembers
- * the sections the ink has passed and the curses found, so walls stay known from sheet to sheet. Done quests of the
- * researcher's guide are kept by id.
+ * the sections the ink has passed, so walls stay known from sheet to sheet, until a burst orb burns it: the next attempt
+ * is drawn on a new parchment. Done quests of the researcher's guide are kept by id.
  */
 public final class RuneKnowledge {
     private static final Codec<Map<String, Integer>> INT_MAP = Codec.unboundedMap(Codec.STRING, Codec.INT);
@@ -41,7 +41,7 @@ public final class RuneKnowledge {
             BITS_MAP.optionalFieldOf("seen", Map.of()).forGetter(k -> bitsByKey(k.seen)),
             Codec.STRING.listOf().optionalFieldOf("studied", List.of()).forGetter(k -> List.copyOf(k.studied)),
             Codec.STRING.listOf().optionalFieldOf("quests", List.of()).forGetter(k -> List.copyOf(k.quests)),
-            BITS_MAP.optionalFieldOf("curses", Map.of()).forGetter(k -> bitsByKey(k.curses))
+            INT_MAP.optionalFieldOf("attempts", Map.of()).forGetter(k -> Map.copyOf(k.attempts))
     ).apply(instance, RuneKnowledge::new));
     public static final Codec<RuneKnowledge> CODEC = MAP_CODEC.codec();
 
@@ -56,7 +56,7 @@ public final class RuneKnowledge {
             BITS, k -> bitsByKey(k.seen),
             STRINGS, k -> List.copyOf(k.studied),
             STRINGS, k -> List.copyOf(k.quests),
-            BITS, k -> bitsByKey(k.curses),
+            INTS, k -> new LinkedHashMap<>(k.attempts),
             RuneKnowledge::new);
 
     /** Learned runes in the order of discovery, with their stars (1-3). */
@@ -69,14 +69,14 @@ public final class RuneKnowledge {
     private final Set<String> quests = new LinkedHashSet<>();
     /** Per topic id: parchment sections the ink has passed. */
     private final Map<String, BitSet> seen = new HashMap<>();
-    /** Per topic id: cursed dark sections found the hard way (the orb burst there). */
-    private final Map<String, BitSet> curses = new HashMap<>();
+    /** Per topic id: how many parchments burned; the next attempt is drawn on a new parchment. */
+    private final Map<String, Integer> attempts = new HashMap<>();
 
     public RuneKnowledge() {
     }
 
     private RuneKnowledge(Map<String, Integer> stars, List<String> researched, Map<String, List<Long>> seen, List<String> studied,
-                          List<String> quests, Map<String, List<Long>> curses) {
+                          List<String> quests, Map<String, Integer> attempts) {
         stars.forEach((key, value) -> {
             ComplexRune rune = ComplexRunes.byKey(key);
             if (rune != null && value > 0) {
@@ -87,7 +87,11 @@ public final class RuneKnowledge {
         this.studied.addAll(studied);
         this.quests.addAll(quests);
         readBits(seen, this.seen);
-        readBits(curses, this.curses);
+        attempts.forEach((key, value) -> {
+            if (value > 0) {
+                this.attempts.put(key, value);
+            }
+        });
     }
 
     private Map<String, Integer> starsByKey() {
@@ -161,7 +165,7 @@ public final class RuneKnowledge {
     public void forgetResearch() {
         researched.clear();
         seen.clear();
-        curses.clear();
+        attempts.clear();
     }
 
     /** Sections of this topic's parchment the ink has passed (a copy). */
@@ -183,14 +187,20 @@ public final class RuneKnowledge {
         return changed;
     }
 
-    /** Cursed sections of this topic's parchment found so far (a copy). */
-    public BitSet curses(ResearchTopic topic) {
-        BitSet bits = curses.get(topic.id());
-        return bits == null ? new BitSet() : (BitSet) bits.clone();
+    /** The researcher's attempt at this topic: 0 until a parchment of it burns. */
+    public int attempt(ResearchTopic topic) {
+        return attempts.getOrDefault(topic.id(), 0);
     }
 
-    public void curse(ResearchTopic topic, int cell) {
-        curses.computeIfAbsent(topic.id(), key -> new BitSet()).set(cell);
+    /**
+     * The orb burst and the parchment burned: the next attempt is drawn on a new one, so what the ink found on the old
+     * one is forgotten.
+     *
+     * @return the new attempt
+     */
+    public int burn(ResearchTopic topic) {
+        seen.remove(topic.id());
+        return attempts.merge(topic.id(), 1, Integer::sum);
     }
 
     // ---- Studied items and quests -------------------------------------------------------------------------------------
@@ -227,6 +237,6 @@ public final class RuneKnowledge {
 
     public RuneKnowledge copy() {
         return new RuneKnowledge(starsByKey(), List.copyOf(researched), bitsByKey(seen), List.copyOf(studied), List.copyOf(quests),
-                bitsByKey(curses));
+                Map.copyOf(attempts));
     }
 }

@@ -2,12 +2,17 @@ package com.pockyl.hextale.client.screen;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.client.render.PixelArt;
+import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemStudy;
@@ -23,8 +28,9 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Draws the research parchment in pixel art, for both games: a research topic's parchment (fog, stone and dark fields with their
- * curse counts and flags, points and the branching ink, the six essences at the hexagon's corners) and an item's prism
- * (the item in a misty field, the rim's ports, the rays shone, the essences found).
+ * curse counts and flags, the goals - gold sigils - and the branching ink, the six essences as ink wells on the margin
+ * beyond the hexagon's corners, a burning parchment) and an item's prism (the item in a misty field, the rim's ports, the
+ * rays shone, the essences found).
  * Sections are laid out {@value #COL_STEP} pixels apart in a row and {@value #ROW_STEP} between rows (the background
  * texture uses the same numbers, see the texture generator).
  */
@@ -36,6 +42,17 @@ final class BoardView {
     static final int COL_STEP = 14;
     static final int ROW_STEP = 12;
     static final int CELL = 13;
+    /** The parchment on the desk, relative to the screen's top left (the desk texture draws it there). */
+    static final int SHEET_X = 4;
+    static final int SHEET_Y = 24;
+    static final int SHEET_W = 244;
+    static final int SHEET_H = 234;
+    /** The paper itself inside that area (the burn chars only the paper). */
+    private static final int PAPER_X = 8;
+    private static final int PAPER_Y = 28;
+    private static final int PAPER_W = 236;
+    private static final int PAPER_H = 226;
+    private static final Identifier DESK_TEXTURE = Hextale.id("textures/gui/research_desk.png");
     private static final double KX = COL_STEP / (HexGrid.HS * HexGrid.SQ3);
     private static final double KY = ROW_STEP / (HexGrid.HS * 1.5);
     private static final int WALL = 0x241A2E;
@@ -45,6 +62,15 @@ final class BoardView {
     /** Colours of the curse counts 0..6, like a minesweeper's. */
     private static final int[] DANGER = {0x8C7A60, 0x2A5FC0, 0x2E8A3A, 0xC03028, 0x6A2A9A, 0x8A2A1A, 0x1A6A7A};
     private static final int GOLD = 0xE0A21C;
+    private static final int GOLD_DARK = 0x8A5A12;
+    private static final int SEPIA = 0x5E4526;
+    /**
+     * Ink wells sit beside the hexagon's corners, out on the margin: this far out from the corner and this far turned
+     * clockwise-behind it, so a goal on the corner section never covers its well.
+     */
+    private static final int WELL_OUT = 4;
+    private static final int WELL_ASIDE = 20;
+    private static final int WELL = 14;
     private static final int FREE_INK = 0x8FB4C8;
     private static final long FADE_MILLIS = 450;
     private static final long LIGHT_MILLIS = 700;
@@ -98,6 +124,12 @@ final class BoardView {
         return new int[]{sx(cell), sy(cell)};
     }
 
+    /** A fresh parchment after a burn: everything on it fades in out of the blank sheet. */
+    void freshSheet() {
+        Arrays.fill(visible, false);
+        fogPrimed = true;
+    }
+
     /** A new topic or a fresh screen: nothing that is already there animates. */
     void reset() {
         fogPrimed = false;
@@ -148,13 +180,12 @@ final class BoardView {
      * @param preview     a section a click would ink, or -1
      * @param previewFrom the inked section that step would start from
      * @param head        where the line being drawn ends
-     * @param known       sections inked in earlier attempts (their curse counts stay shown)
-     * @param curses      cursed sections found the hard way
+     * @param known       sections inked in earlier sheets of this attempt (their curse counts stay shown)
      * @param flags       the researcher's flags on dark sections
      */
     void renderTopic(GuiGraphicsExtractor graphics, Font font, ResearchBoard board, int[] tree, ResearchSheet.@Nullable Trace trace,
                     boolean done, boolean drawing, int hovered, int preview, int previewFrom, boolean ready, int head,
-                    BitSet known, BitSet curses, BitSet flags) {
+                    BitSet known, BitSet flags) {
         long now = Util.getMillis();
         float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
         int lit = trace == null ? 0 : trace.lit();
@@ -185,7 +216,7 @@ final class BoardView {
             if (board.wall(cell)) {
                 stone(graphics, x, y, cell, fade);
             } else if (field) {
-                if (curses.get(cell)) {
+                if (inked[cell] && board.cursed(cell)) {
                     curse(graphics, x, y, now);
                 } else if (inked[cell] || known.get(cell)) {
                     PixelArt.hex(graphics, x, y, CELL, argb(0x6A5A86, 0.55F), argb(DARK_RIM, 0.9F));
@@ -226,25 +257,18 @@ final class BoardView {
             }
         }
 
-        // Points: waiting ones breathe, reached ones shine in their element.
+        // Goals: gold sigils. Waiting ones send out rays that run around them, reached ones fill with their essence.
         for (int i = 0; i < board.points().size(); i++) {
             ResearchBoard.Point p = board.points().get(i);
             int x = sx(p.cell());
             int y = sy(p.cell());
-            int color = PixelArt.onParchment(p.element().color());
-            if ((lit & 1 << i) != 0) {
-                PixelArt.hex(graphics, x, y, CELL + 2, argb(p.element().color(), 1), argb(PixelArt.mix(color, 0x000000, 0.3F), 1));
-                PixelArt.essence(graphics, p.element(), x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(color, 0x000000, 0.2F));
-                float t = litAt[i] == 0 ? 1 : (now - litAt[i]) / (float) LIGHT_MILLIS;
-                if (t < 1) {
-                    int width = CELL + 2 * (int) (t * 12) | 1;
-                    PixelArt.hexRing(graphics, x, y, width, argb(p.element().color(), 1 - t));
-                    PixelArt.hexRing(graphics, x, y, width + 4, argb(0xFFFFFF, (1 - t) * 0.6F));
-                }
-            } else {
-                PixelArt.hex(graphics, x, y, CELL + 2, argb(0xFBF2DA, 1), argb(PixelArt.mix(color, 0xFFFFFF, 0.3F * pulse), 1));
-                PixelArt.essence(graphics, p.element(), x - 4, y - 4, 9, argb(color, 0.85F));
-                PixelArt.hexRing(graphics, x, y, CELL + 4, argb(p.element().color(), 0.25F + 0.35F * pulse));
+            boolean reached = (lit & 1 << i) != 0;
+            goal(graphics, x, y, p.element(), reached, now + i * 517L);
+            float t = reached && litAt[i] != 0 ? (now - litAt[i]) / (float) LIGHT_MILLIS : 1;
+            if (t < 1) {
+                int width = CELL + 2 * (int) (t * 12) | 1;
+                PixelArt.hexRing(graphics, x, y, width, argb(p.element().color(), 1 - t));
+                PixelArt.hexRing(graphics, x, y, width + 4, argb(0xFFF3C0, (1 - t) * 0.8F));
             }
         }
 
@@ -312,7 +336,46 @@ final class BoardView {
                 PixelArt.hexRing(graphics, ox, oy, width, argb(board.topic().color(), Math.max(0, 1 - t)));
             }
         }
-        renderSigns(graphics, board.essences());
+        renderWells(graphics, board.essences());
+    }
+
+    /**
+     * A goal: a gold-framed sigil with the essence it asks for. While it waits, six rays leave its corners and a bright
+     * one runs around it; reached, it fills with its essence and the rays go out.
+     */
+    private static void goal(GuiGraphicsExtractor graphics, int x, int y, Essence essence, boolean reached, long now) {
+        float pulse = 0.5F + 0.5F * Mth.sin(now / 300.0F);
+        int color = essence.color();
+        if (!reached) {
+            int lead = (int) (now / 160 % 6);
+            for (int k = 0; k < 6; k++) {
+                double angle = Math.PI / 6 + k * Math.PI / 3;
+                float bright = k == lead ? 1 : k == (lead + 5) % 6 ? 0.6F : 0.3F;
+                int r0 = CELL / 2 + 3;
+                int r1 = r0 + 2 + Math.round((k == lead ? 2 : 1) * pulse);
+                PixelArt.line(graphics, x + (int) Math.round(Math.cos(angle) * r0), y + (int) Math.round(Math.sin(angle) * r0),
+                        x + (int) Math.round(Math.cos(angle) * r1), y + (int) Math.round(Math.sin(angle) * r1),
+                        argb(PixelArt.mix(GOLD, 0xFFF3C0, bright * 0.6F), 0.35F + 0.6F * bright));
+            }
+            PixelArt.hex(graphics, x, y, CELL + 4, argb(0xFFF8E6, 1), argb(PixelArt.mix(GOLD_DARK, GOLD, pulse), 1));
+            PixelArt.hexRing(graphics, x, y, CELL + 2, argb(GOLD, 0.55F + 0.3F * pulse));
+            PixelArt.essence(graphics, essence, x - 4, y - 4, 9, argb(PixelArt.onParchment(color), 1));
+        } else {
+            PixelArt.hex(graphics, x, y, CELL + 4, argb(color, 1), argb(GOLD_DARK, 1));
+            PixelArt.hexRing(graphics, x, y, CELL + 2, argb(GOLD, 0.9F));
+            PixelArt.essence(graphics, essence, x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(PixelArt.onParchment(color), 0x000000, 0.35F));
+        }
+    }
+
+    /** The goals still to reach, counted on the parchment's top left: a small gold sigil and "Goals n/m". */
+    void renderGoals(GuiGraphicsExtractor graphics, Font font, ResearchBoard board, int lit, Component label) {
+        int width = 12 + font.width(label);
+        int x = left + CX - width / 2 - 10;
+        int y = top + PAPER_Y + 8;
+        boolean all = Integer.bitCount(lit) == board.points().size();
+        PixelArt.hex(graphics, x, y, 9, argb(all ? GOLD : 0xFFF8E6, 1), argb(GOLD_DARK, 1));
+        PixelArt.flush(graphics);
+        graphics.text(font, label, x + 8, y - 4, 0xFF000000 | PixelArt.mix(GOLD_DARK, 0x2A1A0A, 0.4F), false);
     }
 
     /** An unexplored dark field section: a dark ink blot whose sheen drifts. */
@@ -741,7 +804,65 @@ final class BoardView {
      * The six corners of the hexagon: each direction's essence sign on a little plaque; a corner whose essence is still
      * unknown (an item's hidden strings, an empty parchment) shows a faint question mark.
      */
-    private void renderSigns(GuiGraphicsExtractor graphics, java.util.List<@Nullable Essence> essences) {
+    /** Where the ink well of a corner's essence sits: beside the corner, on the parchment's margin. */
+    private int[] well(int d) {
+        double[] corner = HexGrid.corner(d);
+        double x = corner[0] * KX;
+        double y = corner[1] * KY;
+        double length = Math.hypot(x, y);
+        double ux = x / length;
+        double uy = y / length;
+        int wx = Mth.clamp(CX + (int) Math.round(x + ux * WELL_OUT + uy * WELL_ASIDE), PAPER_X + WELL / 2 + 1,
+                PAPER_X + PAPER_W - WELL / 2 - 1);
+        int wy = Mth.clamp(CY + (int) Math.round(y + uy * WELL_OUT - ux * WELL_ASIDE), PAPER_Y + WELL / 2 + 1,
+                PAPER_Y + PAPER_H - WELL / 2 - 1);
+        return new int[]{left + wx, top + wy};
+    }
+
+    /** The corner whose ink well is under the mouse, or -1. */
+    int cornerAt(double mouseX, double mouseY) {
+        for (int d = 0; d < 6; d++) {
+            int[] at = well(d);
+            if (Math.hypot(mouseX - at[0], mouseY - at[1]) <= WELL / 2.0 + 1) {
+                return d;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * The six essences of the parchment: muted ink wells on the margin, each with a small arrow at its corner pointing
+     * out to it - a step that way is paid with that ink. Kept plain, so they never read as goals.
+     */
+    private void renderWells(GuiGraphicsExtractor graphics, List<Essence> essences) {
+        for (int d = 0; d < 6 && d < essences.size(); d++) {
+            Essence essence = essences.get(d);
+            double[] corner = HexGrid.corner(d);
+            int cx = left + CX + (int) Math.round(corner[0] * KX);
+            int cy = top + CY + (int) Math.round(corner[1] * KY);
+            int[] at = well(d);
+            double length = Math.hypot(corner[0], corner[1]);
+            double dx = corner[0] / length;
+            double dy = corner[1] / length;
+            // A chevron just outside the corner points the way the ink pays for; a dotted line leads to its well.
+            int tipX = cx + (int) Math.round(dx * 5);
+            int tipY = cy + (int) Math.round(dy * 5);
+            int arrow = argb(SEPIA, 0.8F);
+            for (int side = -1; side <= 1; side += 2) {
+                PixelArt.line(graphics, tipX, tipY, tipX - (int) Math.round(dx * 3 - side * dy * 3),
+                        tipY - (int) Math.round(dy * 3 + side * dx * 3), arrow);
+            }
+            PixelArt.dotted(graphics, tipX, tipY, at[0], at[1], 1, 2, 0, argb(SEPIA, 0.55F));
+            // The well: a round pot of the ink with a rim at its mouth, muted towards the parchment.
+            int muted = PixelArt.mix(essence.color(), 0xE8D6B0, 0.45F);
+            PixelArt.disc(graphics, at[0], at[1] + 1, WELL, argb(muted, 1), argb(SEPIA, 0.9F));
+            PixelArt.fill(graphics, at[0] - 4, at[1] - WELL / 2, at[0] + 4, at[1] - WELL / 2 + 2, argb(PixelArt.mix(SEPIA, 0x000000, 0.2F), 0.9F));
+            PixelArt.essence(graphics, essence, at[0] - 4, at[1] - 3, 9, argb(PixelArt.mix(PixelArt.onParchment(essence.color()), 0x1E140A, 0.3F), 1));
+        }
+    }
+
+    /** Signs at the hexagon's corners (the prism and a blank sheet): an essence, or a question mark for a hidden one. */
+    private void renderSigns(GuiGraphicsExtractor graphics, List<@Nullable Essence> essences) {
         for (int d = 0; d < 6; d++) {
             double[] corner = HexGrid.corner(d);
             int x = left + CX + (int) Math.round(corner[0] * KX);
@@ -751,16 +872,168 @@ final class BoardView {
                 PixelArt.hex(graphics, x, y, 15, argb(0x1E1608, 0.85F), argb(PixelArt.mix(essence.color(), 0x000000, 0.2F), 1));
                 PixelArt.essence(graphics, essence, x - 4, y - 4, 9, argb(essence.color(), 1));
             } else {
-                PixelArt.hex(graphics, x, y, 15, argb(0x5E4526, 0.12F), argb(0x5E4526, 0.35F));
-                PixelArt.fill(graphics, x - 1, y - 3, x + 2, y - 2, argb(0x5E4526, 0.6F));
-                PixelArt.fill(graphics, x + 1, y - 2, x + 2, y, argb(0x5E4526, 0.6F));
-                PixelArt.fill(graphics, x, y, x + 1, y + 1, argb(0x5E4526, 0.6F));
-                PixelArt.fill(graphics, x, y + 2, x + 1, y + 3, argb(0x5E4526, 0.6F));
+                PixelArt.hex(graphics, x, y, 15, argb(SEPIA, 0.12F), argb(SEPIA, 0.35F));
+                PixelArt.fill(graphics, x - 1, y - 3, x + 2, y - 2, argb(SEPIA, 0.6F));
+                PixelArt.fill(graphics, x + 1, y - 2, x + 2, y, argb(SEPIA, 0.6F));
+                PixelArt.fill(graphics, x, y, x + 1, y + 1, argb(SEPIA, 0.6F));
+                PixelArt.fill(graphics, x, y + 2, x + 1, y + 3, argb(SEPIA, 0.6F));
             }
         }
     }
 
-    /** The essence of the corner a section lies nearest to (its direction's essence), within reach of the corner. */
+    // ---- A burning parchment ---------------------------------------------------------------------------------------
+
+    /** The fire eats the sheet in this time, the char lies a moment, then a fresh sheet slides in. */
+    private static final long BURN_MILLIS = 1500;
+    private static final long CHAR_MILLIS = 450;
+    private static final long SLIDE_MILLIS = 550;
+    /** The char is drawn in blocks of this many pixels. */
+    private static final int BURN_BLOCK = 2;
+    private static final int EDGE = 7;
+    private static final int SCORCH = 10;
+    private static final int EMBERS = 36;
+    private static final long EMBER_MILLIS = 650;
+
+    /** A parchment burning: the board and drawing that set it alight, the section where the orb burst and when. */
+    record Burn(ResearchBoard board, int[] tree, ResearchSheet.@Nullable Trace trace, int cell, long start) {
+    }
+
+    /**
+     * Plays a burn: the fire spreads from the burst over the old board with a ragged glowing edge and embers rising off
+     * it, the char lies a moment, then a fresh sheet slides in from above.
+     *
+     * @param next the new board (null while it is still generated)
+     * @return false once it is over
+     */
+    boolean renderBurn(GuiGraphicsExtractor graphics, Font font, Burn burn, @Nullable ResearchBoard next) {
+        long now = Util.getMillis();
+        long age = now - burn.start();
+        if (age >= BURN_MILLIS + CHAR_MILLIS + SLIDE_MILLIS) {
+            return false;
+        }
+        int x0 = left + PAPER_X;
+        int y0 = top + PAPER_Y;
+        int ox = sx(burn.cell());
+        int oy = sy(burn.cell());
+        double reach = 0;
+        for (int corner = 0; corner < 4; corner++) {
+            reach = Math.max(reach, Math.hypot(x0 + (corner & 1) * PAPER_W - ox, y0 + (corner >> 1) * PAPER_H - oy));
+        }
+        reach += EDGE + 14;
+        if (age < BURN_MILLIS + CHAR_MILLIS) {
+            renderTopic(graphics, font, burn.board(), burn.tree(), burn.trace(), false, false, -1, -1, -1, true, burn.cell(),
+                    new BitSet(), new BitSet());
+        }
+        double radius = reach * Math.pow(Math.min(1, age / (float) BURN_MILLIS), 1.35);
+        int seed = burn.cell() * 31 + (int) burn.start();
+        for (int by = y0; by < y0 + PAPER_H; by += BURN_BLOCK) {
+            int runColor = 0;
+            int runStart = x0;
+            for (int bx = x0; bx < x0 + PAPER_W; bx += BURN_BLOCK) {
+                double d = Math.hypot(bx + 1 - ox, by + 1 - oy) + noise(bx - x0, by - y0, seed) * 9;
+                int color = burnColor(bx - x0, by - y0, radius - d, age, seed);
+                if (color != runColor) {
+                    PixelArt.fill(graphics, runStart, by, bx, by + BURN_BLOCK, runColor);
+                    runColor = color;
+                    runStart = bx;
+                }
+            }
+            PixelArt.fill(graphics, runStart, by, x0 + PAPER_W, by + BURN_BLOCK, runColor);
+        }
+        // The first flash of the burst, then embers rising off the burning edge.
+        if (age < 300) {
+            float f = age / 300.0F;
+            PixelArt.disc(graphics, ox, oy, 6 + 2 * Math.round(f * 14), argb(0xFFE9A0, 0.9F * (1 - f)), argb(0xFF8A1E, 1 - f));
+        }
+        for (int k = 0; k < EMBERS; k++) {
+            long shifted = age + k * 97L;
+            long cycle = shifted / EMBER_MILLIS;
+            float phase = (shifted % EMBER_MILLIS) / (float) EMBER_MILLIS;
+            float born = age - phase * EMBER_MILLIS;
+            if (born < 0 || born > BURN_MILLIS) {
+                continue;
+            }
+            double at = reach * Math.pow(born / BURN_MILLIS, 1.35);
+            double angle = (rnd(k, (int) cycle, seed) + 1) * Math.PI;
+            int px = ox + (int) Math.round(Math.cos(angle) * at + Math.sin(phase * 9 + k) * 2);
+            int py = oy + (int) Math.round(Math.sin(angle) * at - phase * 18);
+            if (px < x0 || px >= x0 + PAPER_W - 1 || py < y0 || py >= y0 + PAPER_H - 1) {
+                continue;
+            }
+            int size = phase < 0.35F ? 2 : 1;
+            PixelArt.fill(graphics, px, py, px + size, py + size, argb(PixelArt.mix(0xFFE070, 0xC0400A, phase), 1 - phase));
+        }
+        // A fresh sheet slides in from above over the char, with a soft shadow under its edge.
+        if (age > BURN_MILLIS + CHAR_MILLIS) {
+            float t = (age - BURN_MILLIS - CHAR_MILLIS) / (float) SLIDE_MILLIS;
+            float eased = 1 - (1 - t) * (1 - t) * (1 - t);
+            int dy = -Math.round(PAPER_H * (1 - eased));
+            PixelArt.flush(graphics);
+            graphics.enableScissor(x0, y0, x0 + PAPER_W, y0 + PAPER_H);
+            PixelArt.fill(graphics, x0, y0 + PAPER_H + dy, x0 + PAPER_W, y0 + PAPER_H + dy + 4, argb(0x000000, 0.35F));
+            PixelArt.flush(graphics);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, DESK_TEXTURE, x0, y0 + dy, PAPER_X, PAPER_Y, PAPER_W, PAPER_H,
+                    ResearchTableMenu.IMAGE_WIDTH, ResearchTableMenu.IMAGE_HEIGHT);
+            if (next != null) {
+                graphics.pose().pushMatrix();
+                graphics.pose().translate(0, dy);
+                renderWells(graphics, next.essences());
+                PixelArt.flush(graphics);
+                graphics.pose().popMatrix();
+            }
+            PixelArt.flush(graphics);
+            graphics.disableScissor();
+        }
+        return true;
+    }
+
+    /**
+     * The colour of a block of the burning sheet {@code depth} pixels behind the fire's edge (negative: still ahead of
+     * it): char with dying embers, the glowing edge, a brown scorch running ahead, or nothing.
+     */
+    private static int burnColor(int x, int y, double depth, long age, int seed) {
+        if (depth > EDGE) {
+            float ember = rnd(x / BURN_BLOCK, y / BURN_BLOCK, seed + 7);
+            if (ember > 0.9F && depth < EDGE + 40) {
+                float cool = (float) ((depth - EDGE) / 40);
+                float flicker = 0.6F + 0.4F * Mth.sin(age / 70.0F + ember * 40);
+                return argb(PixelArt.mix(0xFF7A1A, 0x1C1008, Math.min(1, cool + 0.2F * (1 - flicker))), 1);
+            }
+            return argb(ember < -0.6F ? 0x24160C : 0x1A0F07, 0.96F);
+        }
+        if (depth > 0) {
+            float e = (float) (depth / EDGE);
+            float flicker = 0.85F + 0.15F * Mth.sin(age / 55.0F + x * 0.7F + y * 0.3F);
+            int rgb = e > 0.6F ? PixelArt.mix(0xFF8A1E, 0x7A2408, (e - 0.6F) / 0.4F)
+                    : PixelArt.mix(0xFFE070, 0xFF8A1E, e / 0.6F);
+            return argb(rgb, flicker);
+        }
+        if (depth > -SCORCH) {
+            return argb(0x6A3A10, 0.55F * (float) (1 + depth / SCORCH));
+        }
+        return 0;
+    }
+
+    /** Smooth value noise in -1..1 on an 8 pixel lattice, for the fire's ragged edge. */
+    private static float noise(int x, int y, int seed) {
+        int gx = Math.floorDiv(x, 8);
+        int gy = Math.floorDiv(y, 8);
+        float fx = (x - gx * 8) / 8.0F;
+        float fy = (y - gy * 8) / 8.0F;
+        fx = fx * fx * (3 - 2 * fx);
+        fy = fy * fy * (3 - 2 * fy);
+        float top = Mth.lerp(fx, rnd(gx, gy, seed), rnd(gx + 1, gy, seed));
+        float bottom = Mth.lerp(fx, rnd(gx, gy + 1, seed), rnd(gx + 1, gy + 1, seed));
+        return Mth.lerp(fy, top, bottom);
+    }
+
+    /** A hashed number in -1..1. */
+    private static float rnd(int x, int y, int seed) {
+        int h = x * 374761393 + y * 668265263 + seed * 1442695041;
+        h = (h ^ h >>> 13) * 1274126177;
+        return ((h ^ h >>> 16) & 0xFFFF) / 65535.0F * 2 - 1;
+    }
+
     private static @Nullable Essence nearestCorner(ResearchBoard board, int cell) {
         Essence best = null;
         double distance = 0.55;
