@@ -117,7 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   essences in its tooltip; a studied item under the loupe shows them at once.
 - Research: every device and tool past the essence works - the altar circle, the gemstone, the lamp, the big jar,
   the pylons, the pickaxes, the lapidary and its master disc, hexsteel, the drain valve, the pump, the
-  researcher's goggles, the essence and transfer sigils - must be researched at the table before it can be crafted
+  researcher's goggles, the filter and the essence sticker - must be researched at the table before it can be crafted
   or made at the altar. Choose it in the book and draw it on a worn parchment with a hexagon of six essences - one per
   direction, chosen by the device's theme, shown as ink wells in the hexagon's corners. Drag ink from
   the hextech orb to every goal - the gold sigils, counted at the top of the sheet; the ink may branch from the orb
@@ -156,7 +156,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Essence Jar: a big glass jar with a wooden lid (glass and wooden slabs, no brass), 256 mB; in through every face - the bottom too - and out at the bottom. Sneak-use
   a side or the lid with an empty hand to stick an enamel label with an essence's sign on it. The Research Table draws
   its ink from jars of concentrate within 5 blocks - every drop it spends streams from its jar into the orb. A Creative Essence Jar holds every essence without end.
-  A jar breaks quickly by hand and keeps its essence and its sigil: the item shows the liquid and the sticker inside
+  A jar breaks quickly by hand and keeps its essence and its sticker: the item shows the liquid and the sticker inside
   its glass, and placed again it holds the same. A right click nudges the jar - it rocks on its foot and settles.
 - Big Essence Jar, the first structure built in the world: a 3 x 3 floor of glass, two rings of glass around a hollow
   middle and a lid of any wooden slabs, woken by a right click with unstable hextech or a hextech gemstone (not used
@@ -233,15 +233,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Siphon Pylon: set on an Essence Jar, it draws the essence up into its glass bulb (swirling in the jar's colour) and
   sends it as glowing motes arcing along its links, like the essence drawn into the altar - into other jars, a separator, anything that takes
   essence from pipes; relays pass the stream on.
-- Transfer Sigil, written at the Hextech Altar (a brass ingot with string, brass nuggets and an amethyst shard): right click it to set it up - nine slots (click with an item to put it in), "only these" or "all but
+- Filter, made at the Hextech Altar (a brass ingot with string, brass nuggets and an amethyst shard): right click it to set it up - nine slots (click with an item to put it in), "only these" or "all but
   these", matched by kind or exactly (enchantments, contents), and numbers: keep N of each item in the source, or fill
   a target only up to N (scroll over a slot to set N). Right click a pylon with it to set it in (the one there comes
   back), sneak + right click to take it out. On a gathering pylon it picks what to gather, on a sending pylon what to
-  send, on a relay what may pass - a few relays with sigils sort a storeroom. The sigil's items circle the pylon's heart.
-- Essence Sigil, written at the Hextech Altar (paper, slime and an amethyst shard, six at a time): right click to pick its essence from all of them. On an Essence Jar the jar takes only that essence
+  send, on a relay what may pass - a few relays with filters sort a storeroom. The filter's items circle the pylon's heart.
+- Essence Sticker, made at the Hextech Altar (paper, slime and an amethyst shard, six at a time): right click to pick its essence from all of them. On an Essence Jar the jar takes only that essence
   (from pipes, bottles and siphons alike); sneak + right click with an empty hand peels it off. On a siphon or a relay
   it lets only that essence through, pure. Pylons never split a mixture - it always travels whole; separating essences
   stays the separator's work.
+- Sorting Matrix, made at the Hextech Altar (a hextech crystal, an observer, a comparator, glass and brass): a lattice
+  of eight lenses turning on its corner around a hextech gem inside a brass frame. Set it on a chest - the dump chest -
+  and it reads what lies there and sends every item home, up to eight kinds at a time: to any chest, barrel or shulker
+  box within 6 blocks that already holds that item (want a chest for cobblestone? put one cobblestone in it), or along
+  its links - through relays too, and a relay whose Filter names an item makes the chest behind it that item's home.
+  Linked furnaces get the ores and food nobody keeps, and more of the fuel they already burn. What has no home stays
+  in the dump chest; a chest that carries a pylon is never filled. Linking another pylon to the matrix sends into its
+  chest, so gathering and sending pylons feed it. It holds eight links; Shift widens its reach, Motor quickens it,
+  Lift moves more at once. With the researcher's goggles, the storages it sorts into show a turning ring on their lids.
 - Pylon runes, burned in at the altar like a smelter's: Shift (reach and link range), Motor (pace), Lift (items per
   move), Lens. A broken pylon keeps its runes.
 - The magic fetches every item: a tendril of light, two strands twisting around a swaying line, reaches out of the gem,

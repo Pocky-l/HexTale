@@ -15,6 +15,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -48,8 +49,10 @@ import com.pockyl.hextale.transport.PylonLinking;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -67,9 +70,19 @@ import org.jspecify.annotations.Nullable;
  * within the range of the pylon it leaves. Furnaces are filled by {@link PylonInsert}: what they cook into the input,
  * fuel into the fuel slot. Nothing to do = the pylon sleeps longer each time (up to four intervals), so idle pylons cost
  * almost nothing.
+ *
+ * <p>Sorting: the matrix reads the container under it and sends each item to its home - a storage within the radius or
+ * on a link that already holds that item, or a link whose relay filter names it; what has no home goes to a linked
+ * machine that takes it (a furnace what it cooks or burns), and what nobody wants stays in the container below.
  */
 public class HexPylonBlockEntity extends BlockEntity {
     public static final int MAX_LINKS = 4;
+    /** A sorting matrix is a hub: it holds more links. */
+    public static final int SORTING_LINKS = 8;
+    /** Item kinds a sorting matrix sends per move, each to its own home. */
+    public static final int SORT_KINDS = 8;
+    /** Ticks between two looks of a sorting matrix for the storages around it. */
+    private static final int SCAN_TICKS = 100;
     public static final int MAX_HOPS = 8;
     /** Flights shown per move: a stack of 64 shows a few items in the air, not 64. */
     public static final int SHOWN_FLIGHTS = 6;
@@ -147,6 +160,11 @@ public class HexPylonBlockEntity extends BlockEntity {
         return PylonRune.amount(strength(PylonRune.LIFT));
     }
 
+    /** How many links it holds: four, a sorting matrix eight. */
+    public int maxLinks() {
+        return kind() == PylonKind.SORTING ? SORTING_LINKS : MAX_LINKS;
+    }
+
     // ---- Filter and sticker ---------------------------------------------------------------------------------------------
 
     /** The filter's settings, or null when it has none. */
@@ -201,7 +219,7 @@ public class HexPylonBlockEntity extends BlockEntity {
         if (unlink(link.pos())) {
             return true;
         }
-        if (links.size() >= MAX_LINKS) {
+        if (links.size() >= maxLinks()) {
             return false;
         }
         links.add(link);
@@ -311,6 +329,7 @@ public class HexPylonBlockEntity extends BlockEntity {
             case GATHERING -> pylon.gather(server, flights);
             case SENDING -> pylon.send(server, flights);
             case SIPHON -> pylon.siphon(server, flights);
+            case SORTING -> pylon.sort(server, flights);
             case RELAY -> {
             }
         }
@@ -460,6 +479,177 @@ public class HexPylonBlockEntity extends BlockEntity {
                 return;
             }
         }
+    }
+
+    // ---- Sorting ------------------------------------------------------------------------------------------------------
+
+    /** The storages around a sorting matrix (nearest first), found every {@value #SCAN_TICKS} ticks. */
+    private List<BlockPos> storages = List.of();
+    private long scannedAt = -SCAN_TICKS;
+
+    /**
+     * Sorts the container under the matrix: up to {@value #SORT_KINDS} kinds of item per move, each to its home
+     * ({@link #homes}); a home with room for only a part takes that part, the rest waits for the next move or the next home.
+     */
+    void sort(ServerLevel level, List<PylonFlight> flights) {
+        BlockPos belowPos = worldPosition.below();
+        ResourceHandler<ItemResource> from = level.getCapability(Capabilities.Item.BLOCK, belowPos, Direction.DOWN);
+        if (from == null) {
+            return;
+        }
+        List<Destination> routes = sortingRoutes(level);
+        if (routes.isEmpty()) {
+            return;
+        }
+        ItemFilter own = filter();
+        Map<BlockPos, Set<Item>> held = new HashMap<>();
+        Set<Item> seen = new HashSet<>();
+        Vec3 start = Vec3.atBottomCenterOf(worldPosition).add(0, 0.05, 0);
+        int kinds = 0;
+        for (int slot = 0; slot < from.size() && kinds < SORT_KINDS; slot++) {
+            ItemResource resource = from.getResource(slot);
+            int available = from.getAmountAsInt(slot);
+            if (resource.isEmpty() || available <= 0 || own != null && !own.passes(resource) || !seen.add(resource.getItem())) {
+                continue;
+            }
+            int budget = Math.min(amount(), available);
+            if (own != null) {
+                budget = Math.min(budget, own.sendable(resource, own.count(from, resource)));
+            }
+            if (budget <= 0) {
+                continue;
+            }
+            for (Destination route : homes(level, routes, resource, held)) {
+                int want = Math.min(budget, room(level, route, resource));
+                if (want <= 0) {
+                    continue;
+                }
+                int way = onTheWay(route.pos(), resource);
+                int moved;
+                try (Transaction trial = Transaction.openRoot()) {
+                    int extracted = from.extract(slot, resource, want, trial);
+                    moved = extracted <= 0 ? 0
+                            : Math.min(extracted, PylonInsert.insert(level, route.pos(), route.face(), resource, extracted + way, trial, owner) - way);
+                }
+                if (moved <= 0) {
+                    continue;
+                }
+                try (Transaction transaction = Transaction.openRoot()) {
+                    if (from.extract(slot, resource, moved, transaction) != moved) {
+                        continue;
+                    }
+                    transaction.commit();
+                }
+                kinds++;
+                List<Vec3> path = new ArrayList<>();
+                path.add(start);
+                path.add(gem());
+                path.addAll(route.path());
+                ship(level, flights, new PylonFlight(resource.toStack(1), path, false), resource.toStack(moved), EssenceMix.EMPTY,
+                        route.pos(), route.face());
+                break;
+            }
+        }
+    }
+
+    /**
+     * Where an item may go, best first: its homes - a route whose relay filter names it, or a storage that already
+     * holds it - then the linked machines (not plain storages) that take it; a furnace only what it cooks (fuel only as a
+     * home: a furnace burning coal gets more coal). A plain storage that does not hold the item never gets it: a chest
+     * becomes the home of an item by holding one.
+     */
+    private List<Destination> homes(ServerLevel level, List<Destination> routes, ItemResource resource, Map<BlockPos, Set<Item>> held) {
+        List<Destination> homes = new ArrayList<>();
+        List<Destination> machines = new ArrayList<>();
+        for (Destination route : routes) {
+            if (!route.passes(resource)) {
+                continue;
+            }
+            if (route.lists(resource) || held.computeIfAbsent(route.pos(), pos -> itemsIn(level, pos, route.face())).contains(resource.getItem())) {
+                homes.add(route);
+            } else if (!isSortingStorage(level.getBlockState(route.pos()))
+                    && (!PylonInsert.isFurnace(level, route.pos()) || PylonInsert.cooks(level, route.pos(), resource))) {
+                machines.add(route);
+            }
+        }
+        homes.addAll(machines);
+        return homes;
+    }
+
+    /** The kinds of item a block holds, looked at through any face (a furnace's every slot), else through the link's. */
+    private static Set<Item> itemsIn(ServerLevel level, BlockPos pos, Direction face) {
+        ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, pos, null);
+        if (handler == null) {
+            handler = level.getCapability(Capabilities.Item.BLOCK, pos, face);
+        }
+        Set<Item> items = new HashSet<>();
+        if (handler != null) {
+            for (int i = 0; i < handler.size(); i++) {
+                ItemResource there = handler.getResource(i);
+                if (!there.isEmpty() && handler.getAmountAsInt(i) > 0) {
+                    items.add(there.getItem());
+                }
+            }
+        }
+        return items;
+    }
+
+    /** The matrix's routes: its links (through relays too), then the storages around it that no link already names. */
+    private List<Destination> sortingRoutes(ServerLevel level) {
+        List<Destination> routes = new ArrayList<>(destinations(level));
+        routes.removeIf(route -> route.pos().equals(worldPosition.below()));
+        Set<BlockPos> linked = new HashSet<>();
+        for (Destination route : routes) {
+            linked.add(route.pos());
+        }
+        long now = level.getGameTime();
+        if (now - scannedAt >= SCAN_TICKS || now < scannedAt) {
+            storages = sortingStorages(level, worldPosition, radius());
+            scannedAt = now;
+        }
+        for (BlockPos pos : storages) {
+            if (!linked.contains(pos) && level.getCapability(Capabilities.Item.BLOCK, pos, Direction.UP) != null) {
+                PylonLink link = new PylonLink(pos, Direction.UP);
+                routes.add(new Destination(pos, Direction.UP, List.of(link.approach(), link.entry()), List.of()));
+            }
+        }
+        return routes;
+    }
+
+    /** Look for the storages around again at the next move (a storage was placed or broken nearby). */
+    public void rescan() {
+        scannedAt = -SCAN_TICKS;
+        wake();
+    }
+
+    /**
+     * The plain storages (chests, barrels, shulker boxes: block tag {@code hextale:sorting_storage}) within {@code radius}
+     * of a sorting matrix at {@code pos}, nearest first - without the one under it and without any that carries a pylon
+     * (that one feeds a pylon, it is no store). Both sides use it: the goggles show them.
+     */
+    public static List<BlockPos> sortingStorages(Level level, BlockPos pos, int radius) {
+        List<BlockPos> out = new ArrayList<>();
+        BlockPos below = pos.below();
+        for (int cx = (pos.getX() - radius) >> 4; cx <= (pos.getX() + radius) >> 4; cx++) {
+            for (int cz = (pos.getZ() - radius) >> 4; cz <= (pos.getZ() + radius) >> 4; cz++) {
+                if (!(level.getChunkSource().getChunkNow(cx, cz) instanceof net.minecraft.world.level.chunk.LevelChunk chunk)) {
+                    continue;
+                }
+                for (BlockPos at : chunk.getBlockEntities().keySet()) {
+                    if (Math.abs(at.getX() - pos.getX()) <= radius && Math.abs(at.getY() - pos.getY()) <= radius
+                            && Math.abs(at.getZ() - pos.getZ()) <= radius && !at.equals(below)
+                            && isSortingStorage(level.getBlockState(at)) && !(level.getBlockEntity(at.above()) instanceof HexPylonBlockEntity)) {
+                        out.add(at.immutable());
+                    }
+                }
+            }
+        }
+        out.sort(Comparator.comparingDouble(at -> at.distSqr(pos)));
+        return out;
+    }
+
+    public static boolean isSortingStorage(BlockState state) {
+        return state.is(com.pockyl.hextale.registry.ModTags.SORTING_STORAGE);
     }
 
     /** Which route is served first next time: a pylon with several links takes them in turn. */
@@ -723,6 +913,17 @@ public class HexPylonBlockEntity extends BlockEntity {
                 }
             }
             return true;
+        }
+
+        /** Whether a relay's filter on the way names the item: for a sorting matrix that makes the way its home. */
+        boolean lists(ItemResource resource) {
+            for (HexPylonBlockEntity relay : through) {
+                ItemFilter filter = relay.filter();
+                if (filter != null && filter.lists(resource)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

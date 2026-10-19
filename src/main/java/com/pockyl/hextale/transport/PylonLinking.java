@@ -69,7 +69,7 @@ public final class PylonLinking {
         PENDING.put(player.getUUID(), new Pending(player.level().dimension(), pylon.getBlockPos(), player.level().getGameTime()));
         ModNetwork.sendToPlayer(player, new PylonLinkPayload(Optional.of(pylon.getBlockPos())));
         player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.start", pylon.range(), pylon.links().size(),
-                HexPylonBlockEntity.MAX_LINKS).withStyle(ChatFormatting.AQUA));
+                pylon.maxLinks()).withStyle(ChatFormatting.AQUA));
         player.level().playSound(null, pylon.getBlockPos(), ModSounds.PYLON_LINK.get(), SoundSource.BLOCKS, 0.4F, 1.3F);
     }
 
@@ -238,6 +238,12 @@ public final class PylonLinking {
             return;
         }
         PylonLink link;
+        if (level.getBlockEntity(target) instanceof HexPylonBlockEntity other && other.kind() == PylonKind.SORTING
+                && !pylon.kind().essence() && level.getCapability(Capabilities.Item.BLOCK, target.below(), Direction.UP) != null) {
+            // A sorting matrix: what is sent to it goes into the container it reads, to be sorted from there.
+            target = target.below();
+            face = Direction.UP;
+        }
         if (level.getBlockEntity(target) instanceof HexPylonBlockEntity other) {
             if (other.kind() != PylonKind.RELAY) {
                 // Another gathering or sending pylon: link from that one instead.
@@ -270,14 +276,14 @@ public final class PylonLinking {
             return;
         }
         if (!pylon.toggleLink(link)) {
-            player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.full", HexPylonBlockEntity.MAX_LINKS)
+            player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.full", pylon.maxLinks())
                     .withStyle(ChatFormatting.RED));
             stop(player);
             return;
         }
         stop(player);
         player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.added", name, pylon.links().size(),
-                HexPylonBlockEntity.MAX_LINKS).withStyle(ChatFormatting.GOLD));
+                pylon.maxLinks()).withStyle(ChatFormatting.GOLD));
         level.playSound(null, target, ModSounds.PYLON_LINK.get(), SoundSource.BLOCKS, 0.7F, 1.0F);
         Vec3 at = link.entry();
         level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y, at.z, 12, 0.15, 0.15, 0.15, 0.05);

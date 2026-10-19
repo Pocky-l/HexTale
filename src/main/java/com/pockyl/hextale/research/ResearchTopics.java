@@ -43,8 +43,8 @@ public final class ResearchTopics {
     public static final ResearchTopic DRAIN_VALVE = add("drain_valve", 1, Essence.WATER, Essence.EARTH, ModItems.DRAIN_VALVE);
     public static final ResearchTopic PUMP = add("pump", 1, Essence.AIR, Essence.WATER, ModItems.PUMP);
     public static final ResearchTopic GOGGLES = add("researchers_goggles", 1, Essence.LIGHT, Essence.SHADOW, ModItems.RESEARCHERS_GOGGLES);
-    public static final ResearchTopic ESSENCE_SIGIL = add("essence_sticker", 2, Essence.LIFE, Essence.WATER, ModItems.ESSENCE_STICKER);
-    public static final ResearchTopic TRANSFER_SIGIL = add("pylon_filter", 2, Essence.AIR, Essence.LIGHT, ModItems.PYLON_FILTER);
+    public static final ResearchTopic ESSENCE_STICKER = add("essence_sticker", 2, Essence.LIFE, Essence.WATER, ModItems.ESSENCE_STICKER);
+    public static final ResearchTopic PYLON_FILTER = add("pylon_filter", 2, Essence.AIR, Essence.LIGHT, ModItems.PYLON_FILTER);
     public static final ResearchTopic CIRCLE = add("hextech_altar", 1, Essence.SPARK, Essence.EARTH,
             ModItems.HEXTECH_ALTAR, ModItems.PEDESTAL, ModItems.RUNE_STELE);
     public static final ResearchTopic BIG_ESSENCE_JAR = add("big_essence_jar", 1, Essence.WATER, Essence.LIGHT, ModItems.ESSENCE_TANK);
@@ -62,6 +62,7 @@ public final class ResearchTopics {
     public static final ResearchTopic SENDING_PYLON = add("sending_pylon", 2, Essence.AIR, Essence.METAL, ModItems.SENDING_PYLON);
     public static final ResearchTopic RELAY_PYLON = add("relay_pylon", 2, Essence.SPARK, Essence.METAL, ModItems.RELAY_PYLON);
     public static final ResearchTopic SIPHON_PYLON = add("siphon_pylon", 3, Essence.WATER, Essence.AIR, ModItems.SIPHON_PYLON);
+    public static final ResearchTopic SORTING_MATRIX = add("sorting_matrix", 3, Essence.LIGHT, Essence.METAL, ModItems.SORTING_MATRIX);
     public static final ResearchTopic REFINED_PICKAXE = add("refined_hextech_pickaxe", 3, Essence.METAL, Essence.SPARK,
             ModItems.pickaxe(HextechPickaxe.REFINED));
     public static final ResearchTopic RADIANT_PICKAXE = add("radiant_hextech_pickaxe", 3, Essence.LIGHT, Essence.METAL,

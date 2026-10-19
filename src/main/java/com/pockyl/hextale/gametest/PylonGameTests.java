@@ -590,4 +590,77 @@ public final class PylonGameTests {
             helper.succeed();
         });
     }
+
+    private static Container chest(GameTestHelper helper, BlockPos pos) {
+        helper.setBlock(pos, Blocks.CHEST);
+        return (Container) helper.getBlockEntity(pos, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+    }
+
+    /**
+     * A sorting matrix sends every item home: cobblestone to the chest that already keeps some, raw iron to a linked
+     * furnace's input, coal to the furnace already burning coal; a chest that carries a pylon is no home, an empty chest
+     * gets nothing, and what has no home stays in the dump chest.
+     */
+    @HexTest(maxTicks = 300)
+    public static void aSortingMatrixSendsItemsHome(GameTestHelper helper) {
+        clear(helper, 8);
+        Container dump = chest(helper, BASE);
+        dump.setItem(0, new ItemStack(Items.COBBLESTONE, 10));
+        dump.setItem(1, new ItemStack(Items.RAW_IRON, 4));
+        dump.setItem(2, new ItemStack(Items.COAL, 3));
+        dump.setItem(3, new ItemStack(Items.DIAMOND, 2));
+        dump.setItem(4, new ItemStack(Items.STICK, 5));
+        Container cobble = chest(helper, BASE.offset(3, 0, 0));
+        cobble.setItem(5, new ItemStack(Items.COBBLESTONE, 1));
+        Container empty = chest(helper, BASE.offset(0, 0, 3));
+        // A diamond lies in a chest under a pylon: that chest feeds the pylon, it is no store.
+        Container fed = chest(helper, BASE.offset(-3, 0, 0));
+        fed.setItem(0, new ItemStack(Items.DIAMOND, 1));
+        place(helper, ModBlocks.SENDING_PYLON.get(), BASE.offset(-3, 1, 0));
+        BlockPos furnacePos = BASE.offset(3, 0, 3);
+        helper.setBlock(furnacePos, Blocks.FURNACE);
+        FurnaceBlockEntity furnace = helper.getBlockEntity(furnacePos, FurnaceBlockEntity.class);
+        furnace.setItem(1, new ItemStack(Items.COAL, 1));
+        HexPylonBlockEntity matrix = place(helper, ModBlocks.SORTING_MATRIX.get(), BASE.above());
+        matrix.toggleLink(link(helper, furnacePos, Direction.UP));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(count(cobble, Items.COBBLESTONE) == 11, "the cobblestone went to the chest that keeps it");
+            // The furnace lights up with the coal and starts smelting: count what left the dump chest.
+            helper.assertTrue(count(dump, Items.RAW_IRON) == 0 && furnace.getItem(0).is(Items.RAW_IRON), "the ore went into the furnace");
+            helper.assertTrue(count(dump, Items.COAL) == 0 && furnace.getItem(1).is(Items.COAL), "the furnace burning coal got the coal");
+            helper.assertTrue(count(dump, Items.DIAMOND) == 2 && count(fed, Items.DIAMOND) == 1, "a chest under a pylon is no home");
+            helper.assertTrue(count(dump, Items.STICK) == 5 && count(empty, Items.STICK) == 0, "what has no home stays in the dump chest");
+            helper.assertTrue(matrix.cargo().isEmpty(), "nothing is still on its way");
+        });
+    }
+
+    /**
+     * A relay with a filter naming sticks makes the empty chest behind it their home; a sending pylon linked to the matrix
+     * ties to its dump chest and feeds it.
+     */
+    @HexTest(maxTicks = 300)
+    public static void aFilteredRelayIsAHomeAndPylonsFeedTheMatrix(GameTestHelper helper) {
+        clear(helper, 8);
+        Container dump = chest(helper, BASE);
+        BlockPos relayPos = BASE.offset(0, 0, 4);
+        Container sticks = chest(helper, BASE.offset(4, 0, 4));
+        HexPylonBlockEntity relay = place(helper, ModBlocks.RELAY_PYLON.get(), relayPos);
+        relay.setFilter(filter(only(Items.STICK, 1)));
+        relay.toggleLink(link(helper, BASE.offset(4, 0, 4), Direction.UP));
+        HexPylonBlockEntity matrix = place(helper, ModBlocks.SORTING_MATRIX.get(), BASE.above());
+        matrix.toggleLink(link(helper, relayPos, Direction.UP));
+        // A sending pylon two blocks away, linked by clicks to the matrix: the link ties to the matrix's chest.
+        Container source = chest(helper, BASE.offset(-3, 0, 0));
+        source.setItem(0, new ItemStack(Items.STICK, 6));
+        HexPylonBlockEntity sender = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.offset(-3, 1, 0));
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        PylonLinking.start(player, sender);
+        PylonLinking.link(player, helper.absolutePos(BASE.above()), Direction.UP);
+        helper.assertTrue(sender.links().size() == 1 && sender.links().getFirst().pos().equals(helper.absolutePos(BASE)),
+                "a link to the matrix goes into its chest");
+        helper.succeedWhen(() -> {
+            helper.assertTrue(count(sticks, Items.STICK) == 6 && count(dump, Items.STICK) == 0 && count(source, Items.STICK) == 0,
+                    "the sticks went through the matrix to the chest behind the filtered relay");
+        });
+    }
 }

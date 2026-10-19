@@ -46,7 +46,7 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexPylonBlockEntity>> HEX_PYLON =
             BLOCK_ENTITIES.register("hex_pylon", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexPylonBlockEntity::new,
                     ModBlocks.GATHERING_PYLON.get(), ModBlocks.SENDING_PYLON.get(), ModBlocks.RELAY_PYLON.get(),
-                    ModBlocks.SIPHON_PYLON.get()));
+                    ModBlocks.SIPHON_PYLON.get(), ModBlocks.SORTING_MATRIX.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AlembicBlockEntity>> ALEMBIC =
             BLOCK_ENTITIES.register("alembic", () -> new BlockEntityType<>(AlembicBlockEntity::new, ModBlocks.ALEMBIC.get()));
 

@@ -80,6 +80,8 @@ public final class ModItems {
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> SIPHON_PYLON = ITEMS.registerSimpleBlockItem(ModBlocks.SIPHON_PYLON,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> SORTING_MATRIX = ITEMS.registerSimpleBlockItem(ModBlocks.SORTING_MATRIX,
+            properties -> properties.rarity(Rarity.RARE));
     public static final DeferredItem<BlockItem> MAGIC_STONE_PILLAR = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_STONE_PILLAR);
     // The magic tree's wood set; the sprout comes out of a crucible.
     public static final DeferredItem<BlockItem> MAGIC_SAPLING = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_SAPLING,
@@ -186,6 +188,7 @@ public final class ModItems {
 
     /** Any of the hex pylons. */
     public static boolean isPylon(net.minecraft.world.item.ItemStack stack) {
-        return stack.is(GATHERING_PYLON.get()) || stack.is(SENDING_PYLON.get()) || stack.is(RELAY_PYLON.get()) || stack.is(SIPHON_PYLON.get());
+        return stack.is(GATHERING_PYLON.get()) || stack.is(SENDING_PYLON.get()) || stack.is(RELAY_PYLON.get()) || stack.is(SIPHON_PYLON.get())
+                || stack.is(SORTING_MATRIX.get());
     }
 }

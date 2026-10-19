@@ -50,6 +50,19 @@ public final class PylonInsert {
         return handler == null ? 0 : Deliverer.as(owner, () -> ResourceHandlerUtil.insertStacking(handler, resource, amount, transaction));
     }
 
+    /**
+     * Whether the block is a furnace that cooks this item. A sorting matrix sends a furnace only what it cooks, never fuel
+     * it does not burn yet: everything that burns would end up in the fire.
+     */
+    public static boolean cooks(ServerLevel level, BlockPos pos, ItemResource resource) {
+        return level.getBlockEntity(pos) instanceof AbstractFurnaceBlockEntity furnace && furnaceSide(level, furnace, resource.toStack(1)) == Direction.UP;
+    }
+
+    /** Whether the block is a furnace (furnace, blast furnace, smoker). */
+    public static boolean isFurnace(ServerLevel level, BlockPos pos) {
+        return level.getBlockEntity(pos) instanceof AbstractFurnaceBlockEntity;
+    }
+
     /** The furnace face for this item: the top for what it cooks, a side for fuel, null for neither. */
     @Nullable
     static Direction furnaceSide(ServerLevel level, AbstractFurnaceBlockEntity furnace, ItemStack stack) {

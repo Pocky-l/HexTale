@@ -43,6 +43,7 @@ public class HexPylonBlock extends BaseEntityBlock {
     private static final VoxelShape RELAY_SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 1, 13), Block.box(5, 1, 5, 11, 15, 11));
     private static final VoxelShape SIPHON_SHAPE = Shapes.or(Block.box(5, 0, 5, 11, 4, 11), Block.box(4, 4, 4, 12, 11, 12),
             Block.box(5, 11, 5, 11, 15, 11));
+    private static final VoxelShape SORTING_SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 3, 15), Block.box(3, 3, 3, 13, 14, 13));
 
     private final PylonKind kind;
 
@@ -138,13 +139,15 @@ public class HexPylonBlock extends BaseEntityBlock {
         String seconds = String.format(Locale.ROOT, "%.1f", pylon.interval() / 20.0F);
         return switch (pylon.kind()) {
             case GATHERING -> Component.translatable("block.hextale.hex_pylon.status.gathering", pylon.radius(), seconds, pylon.amount(),
-                    pylon.links().size(), HexPylonBlockEntity.MAX_LINKS);
+                    pylon.links().size(), pylon.maxLinks());
             case SENDING -> Component.translatable("block.hextale.hex_pylon.status.sending", pylon.amount(), seconds, pylon.range(),
-                    pylon.links().size(), HexPylonBlockEntity.MAX_LINKS);
+                    pylon.links().size(), pylon.maxLinks());
             case RELAY -> Component.translatable("block.hextale.hex_pylon.status.relay", pylon.range(), pylon.links().size(),
-                    HexPylonBlockEntity.MAX_LINKS);
+                    pylon.maxLinks());
             case SIPHON -> Component.translatable("block.hextale.hex_pylon.status.siphon", pylon.essenceAmount(), seconds, pylon.range(),
-                    pylon.links().size(), HexPylonBlockEntity.MAX_LINKS);
+                    pylon.links().size(), pylon.maxLinks());
+            case SORTING -> Component.translatable("block.hextale.hex_pylon.status.sorting", pylon.amount(), seconds, pylon.radius(),
+                    pylon.links().size(), pylon.maxLinks());
         };
     }
 
@@ -164,6 +167,7 @@ public class HexPylonBlock extends BaseEntityBlock {
             case SENDING -> SENDING_SHAPE;
             case RELAY -> RELAY_SHAPE;
             case SIPHON -> SIPHON_SHAPE;
+            case SORTING -> SORTING_SHAPE;
         };
     }
 

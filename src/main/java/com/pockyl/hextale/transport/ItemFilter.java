@@ -146,6 +146,11 @@ public record ItemFilter(List<Entry> entries, boolean whitelist, boolean exact, 
         return passes(resource.toStack(1));
     }
 
+    /** Whether the item is named on a whitelist (not merely let through by an empty filter or a blacklist). */
+    public boolean lists(ItemResource resource) {
+        return whitelist && match(resource) != null;
+    }
+
     /**
      * How many of this item a sending pylon may take out of a container that holds {@code held} of it, after
      * {@link Rule#KEEP}: all of them otherwise.

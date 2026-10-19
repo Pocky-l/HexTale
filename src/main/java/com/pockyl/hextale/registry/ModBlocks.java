@@ -162,6 +162,11 @@ public final class ModBlocks {
     public static final DeferredBlock<HexPylonBlock> SIPHON_PYLON = BLOCKS.registerBlock("siphon_pylon",
             properties -> new HexPylonBlock(PylonKind.SIPHON, properties),
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(SoundType.GLASS).noOcclusion().lightLevel(state -> 5));
+    /** A lattice of lenses over a brass frame: sends what the container under it holds to the storages that keep it. */
+    public static final DeferredBlock<HexPylonBlock> SORTING_MATRIX = BLOCKS.registerBlock("sorting_matrix",
+            properties -> new HexPylonBlock(PylonKind.SORTING, properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(3.0F, 6.0F).sound(SoundType.COPPER).noOcclusion()
+                    .requiresCorrectToolForDrops().lightLevel(state -> 6));
     /** Brass mast and wind vanes on a magic stone foot: sends whirls of wind to reap the ripe plants around it. */
     public static final DeferredBlock<com.pockyl.hextale.block.WhirlReaperBlock> WHIRL_REAPER = BLOCKS.registerBlock("whirl_reaper",
             com.pockyl.hextale.block.WhirlReaperBlock::new,

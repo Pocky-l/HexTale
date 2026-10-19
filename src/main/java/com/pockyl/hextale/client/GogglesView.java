@@ -247,6 +247,11 @@ public final class GogglesView {
             }
             case SENDING -> rows.add(new Row(null, Component.translatable(KEY + "pylon.pace", seconds, pylon.amount()), TEXT));
             case SIPHON -> rows.add(new Row(null, Component.translatable(KEY + "pylon.pace_mb", seconds, pylon.essenceAmount()), TEXT));
+            case SORTING -> {
+                rows.add(new Row(null, Component.translatable(KEY + "pylon.pace_kinds", seconds, pylon.amount(), HexPylonBlockEntity.SORT_KINDS), TEXT));
+                rows.add(new Row(null, Component.translatable(KEY + "pylon.storages", pylon.radius(),
+                        HexPylonBlockEntity.sortingStorages(level, pylon.getBlockPos(), pylon.radius()).size()), TEXT));
+            }
             case RELAY -> {
             }
         }
@@ -254,7 +259,7 @@ public final class GogglesView {
         if (!pylon.ownerName().isEmpty()) {
             rows.add(new Row(null, Component.translatable(KEY + "pylon.owner", pylon.ownerName()), TEXT));
         }
-        rows.add(Row.heading(Component.translatable(KEY + "pylon.links", pylon.links().size(), HexPylonBlockEntity.MAX_LINKS)));
+        rows.add(Row.heading(Component.translatable(KEY + "pylon.links", pylon.links().size(), pylon.maxLinks())));
         for (PylonLink link : pylon.links()) {
             BlockState target = level.getBlockState(link.pos());
             Vec3 to = level.getBlockEntity(link.pos()) instanceof HexPylonBlockEntity relay ? relay.gem() : Vec3.atCenterOf(link.pos());

@@ -23,6 +23,8 @@ public final class ModTags {
     public static final TagKey<Block> WHIRL_GOURDS = TagKey.create(Registries.BLOCK, Hextale.id("whirl_gourds"));
     /** Plants that grow in a column: a Whirl Reaper cuts all but the lowest block. */
     public static final TagKey<Block> WHIRL_STALKS = TagKey.create(Registries.BLOCK, Hextale.id("whirl_stalks"));
+    /** Plain item storages a Sorting Matrix sorts into by what they hold (and never fills with what they do not). */
+    public static final TagKey<Block> SORTING_STORAGE = TagKey.create(Registries.BLOCK, Hextale.id("sorting_storage"));
 
     private ModTags() {
     }

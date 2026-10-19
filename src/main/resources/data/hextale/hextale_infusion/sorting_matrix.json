@@ -1,0 +1,17 @@
+{
+  "center": "hextale:hextech_crystal",
+  "pedestals": [
+    "minecraft:observer",
+    "minecraft:comparator",
+    "minecraft:glass",
+    "minecraft:glass",
+    "hextale:brass_ingot",
+    "hextale:brass_ingot"
+  ],
+  "essences": {
+    "order": 16,
+    "knowledge": 12,
+    "motion": 8
+  },
+  "result": "hextale:sorting_matrix"
+}

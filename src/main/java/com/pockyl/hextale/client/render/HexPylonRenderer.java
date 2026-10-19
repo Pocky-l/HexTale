@@ -111,7 +111,15 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         // The gathering reach on the ground, while the goggles look at the pylon or it is being linked.
         HitResult looked = Minecraft.getInstance().hitResult;
         boolean lookedAt = looked instanceof BlockHitResult block && looked.getType() == HitResult.Type.BLOCK && block.getBlockPos().equals(pos);
-        state.reach = pylon.kind() == PylonKind.GATHERING && (linkingHere || goggles && lookedAt) ? pylon.radius() : 0;
+        boolean reaches = pylon.kind() == PylonKind.GATHERING || pylon.kind() == PylonKind.SORTING;
+        state.reach = reaches && (linkingHere || goggles && lookedAt) ? pylon.radius() : 0;
+        // The storages a sorting matrix fills, marked on their lids while it is looked at or linked.
+        state.storages.clear();
+        if (pylon.kind() == PylonKind.SORTING && state.reach > 0 && level != null) {
+            for (BlockPos storage : HexPylonBlockEntity.sortingStorages(level, pos, pylon.radius())) {
+                state.storages.add(Vec3.atCenterOf(storage).add(0, 0.52, 0).subtract(origin));
+            }
+        }
         state.links.clear();
         if (showLinks && level != null) {
             for (PylonLink link : pylon.links()) {
@@ -187,6 +195,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
                 poseStack.rotate(Axis.XP.rotationDegrees(70));
                 HexFx.sigilRing(poseStack, collector, 0.15F, 3, state.color, 0.35F + 0.4F * state.flare);
             }
+            case SORTING -> lattice(poseStack, collector, camera, eye, state, gem.add(0, bob, 0), time);
             case SIPHON -> {
                 // Under the cap, turning: the siphon's sigil.
                 poseStack.translate(0.5, 10.8 / 16, 0.5);
@@ -215,7 +224,8 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             }
         } else {
             // The heart and its halo.
-            float scale = state.kind == PylonKind.SENDING ? 0.32F : state.kind == PylonKind.RELAY ? 0.36F : 0.42F;
+            float scale = state.kind == PylonKind.SENDING ? 0.32F : state.kind == PylonKind.RELAY ? 0.36F
+                    : state.kind == PylonKind.SORTING ? 0.24F : 0.42F;
             poseStack.pushPose();
             poseStack.translate(gem.x, gem.y + bob, gem.z);
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.45F + 0.3F * state.flare, state.color, 0.35F + 0.4F * state.flare);
@@ -259,6 +269,17 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             HexFx.sigilRing(poseStack, collector, state.reach + 0.5F, 36, state.color, 0.35F);
             poseStack.popPose();
         }
+        for (int i = 0; i < state.storages.size(); i++) {
+            // A sorting matrix's storages: a small turning ring on each lid, the nearest ones lighting first.
+            Vec3 at = state.storages.get(i);
+            float pulse = 0.5F + 0.5F * Mth.sin(time * 0.15F - i * 0.6F);
+            poseStack.pushPose();
+            poseStack.translate(at.x, at.y, at.z);
+            poseStack.rotate(Axis.XP.rotationDegrees(90));
+            poseStack.rotate(Axis.ZP.rotationDegrees(time * 0.8F + i * 40));
+            HexFx.sigilRing(poseStack, collector, 0.3F, 6, GOLD, 0.3F + 0.3F * pulse);
+            poseStack.popPose();
+        }
         if (state.pending != null) {
             float pulse = 0.5F + 0.5F * Mth.sin(time * 0.3F);
             thread(poseStack, collector, camera, eye, gem, state.pending, LINK_CYAN, 0.3F + 0.25F * pulse, time * 2);
@@ -272,6 +293,64 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         for (int i = 0; i < state.flightCount; i++) {
             flight(poseStack, collector, camera, eye, state, state.flights.get(i));
         }
+    }
+
+    /** Corners of the sorting matrix's lattice: a cube of lenses around the gem. */
+    private static final float[][] LATTICE = {
+            {-1, -1, -1}, {1, -1, -1}, {1, 1, -1}, {-1, 1, -1}, {-1, -1, 1}, {1, -1, 1}, {1, 1, 1}, {-1, 1, 1}};
+    private static final int[][] LATTICE_EDGES = {
+            {0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6}, {6, 7}, {7, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
+
+    /**
+     * The sorting matrix's heart: a cube of eight lenses turning on its corner around the gem, joined by faint threads of
+     * light, inside three crossed rings that turn on their own axes. A move spins it up and lights the lenses; the
+     * lattice breathes a little, as if it read each item passing.
+     */
+    private static void lattice(PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, Vec3 eye, State state, Vec3 at,
+                                float time) {
+        float spin = 1 + 6 * state.flare;
+        poseStack.pushPose();
+        poseStack.translate(at.x, at.y, at.z);
+        // Three crossed rings, each on its own axis.
+        for (int ring = 0; ring < 3; ring++) {
+            poseStack.pushPose();
+            poseStack.rotate(Axis.YP.rotationDegrees(ring * 60 + time * 0.7F * spin));
+            poseStack.rotate(Axis.XP.rotationDegrees(55 + ring * 35));
+            poseStack.rotate(Axis.ZP.rotationDegrees((ring % 2 == 0 ? 1 : -1) * time * (1.6F + ring * 0.5F) * spin));
+            HexFx.sigilRing(poseStack, collector, 0.25F - ring * 0.02F, 4, state.color, 0.35F + 0.35F * state.flare);
+            poseStack.popPose();
+        }
+        // The lens lattice: corners rotated with the cube, then drawn as camera-facing lenses and threads between them.
+        float half = 0.13F + 0.012F * Mth.sin(time * 0.09F) + 0.03F * state.flare;
+        org.joml.Quaternionf turn = new org.joml.Quaternionf()
+                .rotateY(time * 0.012F * spin)
+                .rotateX(0.6155F)
+                .rotateZ(Mth.PI / 4);
+        Vector3f[] corners = new Vector3f[LATTICE.length];
+        for (int i = 0; i < LATTICE.length; i++) {
+            corners[i] = turn.transform(new Vector3f(LATTICE[i][0] * half, LATTICE[i][1] * half, LATTICE[i][2] * half));
+        }
+        Vector3f toCamera = eye.subtract(at).toVector3f();
+        for (int[] edge : LATTICE_EDGES) {
+            Vector3f a = corners[edge[0]];
+            Vector3f b = corners[edge[1]];
+            poseStack.pushPose();
+            poseStack.translate(a.x, a.y, a.z);
+            HexFx.beam(poseStack, collector, b.x - a.x, b.y - a.y, b.z - a.z, 0.018F, state.color, 0.25F + 0.35F * state.flare,
+                    new Vector3f(toCamera).sub(a));
+            poseStack.popPose();
+        }
+        for (int i = 0; i < corners.length; i++) {
+            Vector3f c = corners[i];
+            float glint = 0.5F + 0.5F * Mth.sin(time * 0.2F + i * 0.8F);
+            poseStack.pushPose();
+            poseStack.translate(c.x, c.y, c.z);
+            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.1F + 0.05F * state.flare, state.color, 0.3F + 0.3F * glint);
+            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.MOTE, 0.055F, RuneDrawing.lighten(state.color, 0.5F),
+                    0.7F + 0.3F * state.flare);
+            poseStack.popPose();
+        }
+        poseStack.popPose();
     }
 
     /** A thin glowing line from the gem to {@code to} with three motes running along it. */
@@ -445,7 +524,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         }
         if (pos.equals(PylonLinking.clientFrom)) {
             box = box.inflate(pylon.range() + 2);
-        } else if (pylon.kind() == PylonKind.GATHERING && ClientPylons.goggles()) {
+        } else if ((pylon.kind() == PylonKind.GATHERING || pylon.kind() == PylonKind.SORTING) && ClientPylons.goggles()) {
             box = box.inflate(pylon.radius() + 1, 1, pylon.radius() + 1);
         }
         return box;
@@ -455,6 +534,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         final ItemStackRenderState gem = new ItemStackRenderState();
         final List<FlightState> flights = new ArrayList<>();
         final List<Vec3> links = new ArrayList<>();
+        final List<Vec3> storages = new ArrayList<>();
         @Nullable
         Vec3 pending;
         PylonKind kind = PylonKind.RELAY;

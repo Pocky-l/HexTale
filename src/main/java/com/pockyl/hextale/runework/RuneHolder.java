@@ -145,7 +145,8 @@ public enum RuneHolder {
         return switch (this) {
             case PICKAXE -> ModItems.PICKAXES.values().stream().map(item -> new ItemStack(item.get())).toList();
             case PYLON -> List.of(new ItemStack(ModItems.GATHERING_PYLON.get()), new ItemStack(ModItems.SENDING_PYLON.get()),
-                    new ItemStack(ModItems.RELAY_PYLON.get()), new ItemStack(ModItems.SIPHON_PYLON.get()));
+                    new ItemStack(ModItems.RELAY_PYLON.get()), new ItemStack(ModItems.SIPHON_PYLON.get()),
+                    new ItemStack(ModItems.SORTING_MATRIX.get()));
             case REAPER -> List.of(new ItemStack(ModItems.WHIRL_REAPER.get()));
             case SAWMILL -> List.of(new ItemStack(ModItems.HEX_SAWMILL.get()));
         };

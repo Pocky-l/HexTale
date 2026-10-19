@@ -1,0 +1,11 @@
+{
+  "region": "pylons",
+  "icon": "hextale:sorting_matrix",
+  "parents": ["sending_pylon", "pylon_filter"],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:sorting_matrix"
+  },
+  "research": "sorting_matrix",
+  "pos": [900, -169]
+}

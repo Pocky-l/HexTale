@@ -7,13 +7,15 @@ import net.minecraft.world.phys.Vec3;
  * The hex pylons. A gathering pylon (a brass bowl) pulls items lying around into the container under it, a sending
  * pylon (a plate with claws) throws what the container under it gives out to its links, a relay (calcite, copper and
  * amethyst) passes items and essence on from pylon to pylon, a siphon pylon (a glass bulb on a jar) draws essence out of
- * the jar under it and pours it to its links.
+ * the jar under it and pours it to its links, a sorting matrix (a lattice of lenses over a brass frame) reads what the
+ * container under it holds and sends every item to the storage around that already keeps it.
  */
 public enum PylonKind {
     GATHERING(9.0 / 16),
     SENDING(8.5 / 16),
     RELAY(15.0 / 16),
-    SIPHON(7.5 / 16);
+    SIPHON(7.5 / 16),
+    SORTING(10.0 / 16);
 
     /** How high the heart (gem, crystal, swirl) floats over the block's floor. */
     private final double gemHeight;
