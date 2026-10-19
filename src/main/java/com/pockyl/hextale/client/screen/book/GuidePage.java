@@ -88,6 +88,8 @@ final class GuidePage {
 
     private final StarBook book;
     private final Font font;
+    /** The dev editor shows every step, fog or not. */
+    boolean revealAll;
     @Nullable
     private Quest selected;
     /** The step under the mouse while the map is drawn. */
@@ -183,8 +185,8 @@ final class GuidePage {
 
     /** Draws the path in map coordinates (the caller has set up the camera's pose). */
     void renderMap(GuiGraphicsExtractor graphics, RuneKnowledge knowledge, long now, @Nullable Quest hovered) {
-        List<Quest> shown = Guide.all().stream().filter(quest -> Guide.visible(quest, knowledge)).toList();
-        List<Quest> ahead = Guide.all().stream().filter(quest -> Guide.ahead(quest, knowledge)).toList();
+        List<Quest> shown = Guide.all().stream().filter(quest -> seen(quest, knowledge)).toList();
+        List<Quest> ahead = Guide.all().stream().filter(quest -> !revealAll && Guide.ahead(quest, knowledge)).toList();
         focus = hovered;
         renderHaze(graphics, shown);
         for (Quest quest : ahead) {
@@ -314,7 +316,7 @@ final class GuidePage {
     private void renderLinks(GuiGraphicsExtractor graphics, Quest quest, RuneKnowledge knowledge, long now) {
         boolean done = Guide.done(quest, knowledge);
         for (Quest parent : quest.parents()) {
-            if (!Guide.visible(parent, knowledge)) {
+            if (!seen(parent, knowledge)) {
                 continue;
             }
             boolean lit = done && Guide.done(parent, knowledge);
@@ -358,7 +360,7 @@ final class GuidePage {
     /** Paths into the fog: a few fading dots from a visible step towards each hidden one, no further. */
     private void renderTrails(GuiGraphicsExtractor graphics, Quest quest, RuneKnowledge knowledge, long now) {
         for (Quest child : quest.children()) {
-            if (Guide.visible(child, knowledge) || Guide.ahead(child, knowledge) || child.parent() != quest) {
+            if (seen(child, knowledge) || Guide.ahead(child, knowledge) || child.parent() != quest) {
                 continue;
             }
             float dx = child.x() - quest.x();
@@ -656,7 +658,7 @@ final class GuidePage {
         Quest best = null;
         float bestDistance = Float.MAX_VALUE;
         for (Quest quest : Guide.all()) {
-            if (!Guide.visible(quest, knowledge) && !Guide.ahead(quest, knowledge)) {
+            if (!seen(quest, knowledge) && !Guide.ahead(quest, knowledge)) {
                 continue;
             }
             float reach = Math.max(size(quest) / 2.0F + 1, 8 / book.zoom());
@@ -673,7 +675,7 @@ final class GuidePage {
 
     List<FormattedCharSequence> tooltip(Quest quest, RuneKnowledge knowledge) {
         List<FormattedCharSequence> lines = new ArrayList<>();
-        if (Guide.ahead(quest, knowledge)) {
+        if (!revealAll && Guide.ahead(quest, knowledge)) {
             // Not reachable yet: the name, and what has to be done first.
             lines.add(Component.translatable(quest.translationKey()).withColor(0xA8A6B8).getVisualOrderText());
             lines.add(Component.translatable("book.hextale.guide.ahead").withColor(0x8A8898).getVisualOrderText());
@@ -727,8 +729,13 @@ final class GuidePage {
     }
 
     /** Whether a click on this step opens its plate: steps beyond the reachable ones only show their name. */
-    static boolean clickable(Quest quest, RuneKnowledge knowledge) {
-        return Guide.visible(quest, knowledge);
+    boolean clickable(Quest quest, RuneKnowledge knowledge) {
+        return seen(quest, knowledge);
+    }
+
+    /** Whether the map shows a step as done or open (the dev editor shows them all). */
+    private boolean seen(Quest quest, RuneKnowledge knowledge) {
+        return revealAll || Guide.visible(quest, knowledge);
     }
 
     private static Component title(Quest quest) {

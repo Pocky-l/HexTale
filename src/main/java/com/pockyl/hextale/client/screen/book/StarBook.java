@@ -85,6 +85,7 @@ public final class StarBook {
     private int height;
     private final GuidePage guide;
     private final RunesPage runes;
+    private final GuideEditor editor;
     private boolean dragging;
     private boolean pressed;
     private double pressX;
@@ -97,6 +98,7 @@ public final class StarBook {
         this.font = Minecraft.getInstance().font;
         this.guide = new GuidePage(this);
         this.runes = new RunesPage(this);
+        this.editor = new GuideEditor(this, guide);
         ResearchTopic onTable = host == null ? null : host.researching();
         if (onTable != null) {
             // On a table with a research on it: open on its step.
@@ -219,6 +221,7 @@ public final class StarBook {
         PixelArt.flush(graphics);
         graphics.pose().popMatrix();
         guide.renderLegend(graphics, skyLeft() + 4, skyTop() + skyHeight() - 4, now);
+        editor.renderHint(graphics, skyLeft() + skyWidth() - 4, skyTop() + skyHeight() - 4);
 
         List<FormattedCharSequence> tabTip = guide.selected() == null ? renderTabs(graphics, mouseX, mouseY) : null;
         List<FormattedCharSequence> tooltip = guide.renderPlate(graphics, knowledge, mouseX, mouseY, now);
@@ -409,6 +412,9 @@ public final class StarBook {
     // ---- Input ----------------------------------------------------------------------------------------------------
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == InputConstants.MOUSE_BUTTON_RIGHT && tab == Tab.QUESTS && guide.selected() == null && overSky(mouseX, mouseY)) {
+            return editor.press(mouseX, mouseY);
+        }
         if (button != InputConstants.MOUSE_BUTTON_LEFT || !overSky(mouseX, mouseY)) {
             return false;
         }
@@ -444,6 +450,9 @@ public final class StarBook {
     }
 
     public boolean mouseDragged(double mouseX, double mouseY, int button) {
+        if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
+            return editor.drag(mouseX, mouseY);
+        }
         if (!pressed || button != InputConstants.MOUSE_BUTTON_LEFT) {
             return false;
         }
@@ -459,6 +468,9 @@ public final class StarBook {
     }
 
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
+            return editor.release(mouseX, mouseY);
+        }
         if (!pressed || button != InputConstants.MOUSE_BUTTON_LEFT) {
             return false;
         }
@@ -466,7 +478,7 @@ public final class StarBook {
         if (!dragging) {
             RuneKnowledge knowledge = ClientKnowledge.get();
             Quest quest = guide.questAt(mouseX, mouseY, knowledge);
-            if (quest != null && !GuidePage.clickable(quest, knowledge)) {
+            if (quest != null && !guide.clickable(quest, knowledge)) {
                 // A step not reachable yet only shows its name.
                 quest = null;
             }
@@ -509,7 +521,7 @@ public final class StarBook {
             guide.close();
             return true;
         }
-        return false;
+        return tab == Tab.QUESTS && editor.keyPressed(event);
     }
 
     private void clampCamera() {

@@ -49,8 +49,11 @@ public final class Guide {
 
     private static final List<Quest> ALL = new ArrayList<>();
     private static final Map<String, Quest> BY_ID = new HashMap<>();
-    /** The item steps placed on the map by hand. */
+    /** The steps placed on the map by hand. */
     private static final Set<Quest> PLACED = new HashSet<>();
+    /** Where the layout file (moved in the book's dev editor) puts steps, over the places written below. */
+    public static final String LAYOUT_FILE = "hextale/guide_layout.json";
+    private static final Map<String, int[]> MOVED = new java.util.TreeMap<>();
 
     // ---- The workshop: raw hextech and its dust, the woken workbench and furnace, brass, the table and the diary -------
 
@@ -386,6 +389,7 @@ public final class Guide {
         HEXTECH_ALTAR.scene = Quest.Scene.ALTAR;
         PEDESTAL.scene = Quest.Scene.PEDESTAL;
         RUNE_STELE.scene = Quest.Scene.STELE;
+        readLayoutFile();
         layout();
     }
 
@@ -433,6 +437,69 @@ public final class Guide {
      * Puts a step on the map. Every item step is placed by hand, so the map reads the way it is meant to; devices still
      * being worked out are placed by hand where they start a branch of their own, the rest find a place by themselves.
      */
+    /** Applies the layout file on the classpath: steps moved in the book's dev editor, by id. */
+    private static void readLayoutFile() {
+        try (var in = Guide.class.getResourceAsStream("/" + LAYOUT_FILE)) {
+            if (in == null) {
+                return;
+            }
+            var json = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8))
+                    .getAsJsonObject();
+            for (var entry : json.entrySet()) {
+                Quest quest = BY_ID.get(entry.getKey());
+                if (quest != null) {
+                    var at = entry.getValue().getAsJsonArray();
+                    moveTo(quest, at.get(0).getAsInt(), at.get(1).getAsInt());
+                }
+            }
+        } catch (java.io.IOException | RuntimeException e) {
+            com.pockyl.hextale.Hextale.LOGGER.warn("Could not read the guide layout file", e);
+        }
+    }
+
+    private static void moveTo(Quest quest, int x, int y) {
+        at(quest, x, y);
+        MOVED.put(quest.id(), new int[]{x, y});
+    }
+
+    /** Moves a step while it is dragged in the dev editor: only the step itself, the rest is laid out on {@link #move}. */
+    public static void drag(Quest quest, int x, int y) {
+        quest.x = x;
+        quest.y = y;
+    }
+
+    /** Places a step by hand (the book's dev editor) and lays the map out again around it. */
+    public static void move(Quest quest, int x, int y) {
+        moveTo(quest, x, y);
+        layout();
+    }
+
+    /** The steps moved in the dev editor and their places, by id: what the layout file holds. */
+    public static Map<String, int[]> moved() {
+        return Collections.unmodifiableMap(MOVED);
+    }
+
+    /** How many pairs of links cross now (a hand-placed map can make them; the game tests then fail). */
+    public static int crossings() {
+        List<Quest> linked = ALL.stream().filter(quest -> quest.parent() != null).toList();
+        Map<Quest, double[][]> curves = new HashMap<>();
+        for (Quest quest : linked) {
+            curves.put(quest, curve(quest.parent(), quest, quest.bow));
+        }
+        int count = 0;
+        for (int i = 0; i < linked.size(); i++) {
+            for (int j = i + 1; j < linked.size(); j++) {
+                Quest a = linked.get(i);
+                Quest b = linked.get(j);
+                Quest shared = a.parent() == b.parent() ? a.parent() : a.parent() == b ? b : b.parent() == a ? a : null;
+                if (curvesCross(curves.get(a), curves.get(b), shared)) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
     private static void at(Quest quest, int x, int y) {
         quest.x = x;
         quest.y = y;
@@ -510,6 +577,7 @@ public final class Guide {
     private static void bowLinks(List<Quest> placed, List<Quest[]> links) {
         Map<Quest, double[][]> curves = new HashMap<>();
         for (Quest[] link : links) {
+            link[1].bow = 0;
             curves.put(link[1], curve(link[0], link[1], 0));
         }
         for (Quest[] link : links) {
