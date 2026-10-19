@@ -205,6 +205,35 @@ public final class EssenceMix {
         return new EssenceMix(out);
     }
 
+    /** Whether this holds at least as much of every essence as {@code other}. */
+    public boolean holds(EssenceMix other) {
+        for (int i = 0; i < SLOTS; i++) {
+            if (amounts[i] < other.amounts[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** How many times over this holds {@code other} (an empty {@code other} fits any number of times). */
+    public int timesHolds(EssenceMix other) {
+        int times = Integer.MAX_VALUE;
+        for (int i = 0; i < SLOTS; i++) {
+            if (other.amounts[i] > 0) {
+                times = Math.min(times, amounts[i] / other.amounts[i]);
+            }
+        }
+        return times;
+    }
+
+    public EssenceMix times(int factor) {
+        int[] out = amounts.clone();
+        for (int i = 0; i < SLOTS; i++) {
+            out[i] *= factor;
+        }
+        return new EssenceMix(out);
+    }
+
     public EssenceMix minus(EssenceMix other) {
         int[] out = amounts.clone();
         for (int i = 0; i < SLOTS; i++) {

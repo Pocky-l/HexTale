@@ -50,10 +50,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from below - fire, a campfire or magma, soul fire faster, lava fastest. The water warms, steams, simmers and comes
   to a rolling boil, bubbles breaking all over it. Only boiling water takes things in: essence poured from bottles and
   jars falls in a stream, blooms over the water and swirls into it, tinting it; items thrown over the pot are drawn
-  in, plop into the water, sink and dissolve, clouding it; cold water spits them back out. It holds 1500 mB - water,
-  essence and 30 mB for every dissolved item; more brims over the rim, spilling water and essence alike, so water
-  dilutes and essence crowds out water. The water never boils off by itself. Use it to see how it stands, an empty bucket takes the water back out, sneak-use boils it all away in a
-  cloud of steam (essence counts as liquid too: a crucible boiled down to its essence still holds it). What it brews is yet to be found.
+  in, plop into the water, sink and dissolve into their essences (two lapis lazuli give 6 mB of magic, 6 of gem and
+  2 of water); cold water and items without essences are spat back out. An item that is a recipe's catalyst does not
+  dissolve when the water holds what the recipe needs: it takes those essences and rises out as the result, even from
+  cold water. Wearing researcher's goggles you see every essence in the water floating over the pot as its icon with
+  its amount; an essence that grows swells and draws motes up from the water. It holds 1500 mB of water and essence;
+  more brims over the rim, spilling water and essence alike, so water dilutes and essence crowds out water. The water
+  never boils off by itself. Use it to see how it stands, an empty bucket takes the water back out, sneak-use boils it
+  all away in a cloud of steam (essence counts as liquid too: a crucible boiled down to its essence still holds it).
+  Crucible recipes are data (`data/<namespace>/hextale_crucible/`) and show in JEI.
+- Essences as items: each of the 80 essences is an item with its pictogram in its colour - in the creative tab and in
+  JEI, where crucible recipes ask for them. Typing an essence's name in the creative search or in JEI also finds every
+  item you have studied that carries it (unstudied items stay hidden). The creative tab keeps one jar of essence, the
+  Creative Essence Jar.
 - Hextech Lamp: a hextech crystal floating in a cage of polished magic stone and brass, full light. It stands on a block or hangs under
   one, like a lantern.
 
@@ -97,7 +106,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the parchment and folds its lenses while someone looks through it. Free and unlimited. A studied item shows its
   essences in its tooltip; a studied item under the loupe shows them at once.
 - Research: every device and tool past the essence works - the altar circle, the gemstone, the lamp, the big jar,
-  the pylons, the pickaxes, the lapidary and its master disc, hexsteel, the drain valve, brass pipes, the pump, the
+  the pylons, the pickaxes, the lapidary and its master disc, hexsteel, the drain valve, the pump, the
   researcher's goggles, the essence and transfer sigils - must be researched at the table before it can be crafted
   or made at the altar. Choose it in the book and draw it on a worn parchment with a hexagon of six essences - one per
   direction, chosen by the device's theme, shown as ink wells in the hexagon's corners. Drag ink from
@@ -182,9 +191,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The guide shows a turning 3D altar burning the chosen rune into a pickaxe or the smelter; pick any rune they take to
   see what it does, how strong it is at one, two and three stars, what it costs and which runes it is incompatible
   with. JEI shows the same for every rune, next to every pickaxe recipe.
-- Magic stone: stone that has drunk magic - flat plates of a dusky violet stone with nothing set into it. Throw stone,
-  cobblestone, deepslate, tuff, andesite, diorite, granite, calcite or smooth stone into a crucible holding magic
-  essence: each block sinks, takes 5 mB of magic, and rises out as magic stone in a burst of violet light. An open
+- Magic stone: stone that has drunk magic - flat plates of a dusky violet stone with nothing set into it. Throw two lapis
+  lazuli into a boiling crucible, then stone, cobblestone, deepslate, tuff, andesite, diorite, granite, calcite or
+  smooth stone: each block sinks, takes 6 mB of the magic, and rises out as magic stone in a burst of violet light. An open
   Drain Valve over such stone soaks it too: the essence it pours soaks in where the stream lands, one block per 16 mB. Polished magic stone, magic bricks with stairs, slab and wall, and chiseled magic bricks with the
   circle's hexagon cut into them: the stone of the ritual circle.
 

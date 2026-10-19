@@ -61,6 +61,11 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("sticker", builder -> builder
                     .persistent(com.pockyl.hextale.rune.Essence.ID_CODEC).networkSynchronized(com.pockyl.hextale.rune.Essence.STREAM_CODEC));
 
+    /** Which essence an essence item is. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.rune.Essence>> ESSENCE_KIND =
+            COMPONENTS.registerComponentType("essence_kind", builder -> builder
+                    .persistent(com.pockyl.hextale.rune.Essence.ID_CODEC).networkSynchronized(com.pockyl.hextale.rune.Essence.STREAM_CODEC));
+
     /** The essence in a flask or a tank item. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<EssenceMix>> ESSENCE =
             COMPONENTS.registerComponentType("essence", builder -> builder

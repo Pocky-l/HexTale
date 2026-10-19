@@ -44,6 +44,13 @@ public class HextaleJeiPlugin implements IModPlugin {
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         registration.registerFromDataComponentTypes(ModItems.ESSENCE_FLASK.get(), ModDataComponents.ESSENCE.get());
+        registration.registerFromDataComponentTypes(ModItems.ESSENCE.get(), ModDataComponents.ESSENCE_KIND.get());
+    }
+
+    /** Typing an essence's name also finds the studied items that carry it. */
+    @Override
+    public void registerAdvancedSearch(mezz.jei.api.registration.IAdvancedSearchRegistration registration) {
+        registration.replaceSearchStorage(EssenceSearch.wrap(registration.getDefaultSearchStorageBuilderFactory()));
     }
 
     /** A bottle of each concentrate and one of unknown essence, so they can be looked up. */
@@ -65,7 +72,8 @@ public class HextaleJeiPlugin implements IModPlugin {
                 new RuneBurningCategory(registration.getJeiHelpers().getGuiHelper()),
                 new HexCraftingCategory(registration.getJeiHelpers().getGuiHelper()),
                 new AlloyingCategory(registration.getJeiHelpers().getGuiHelper()),
-                new HextechWorkingCategory(registration.getJeiHelpers().getGuiHelper()));
+                new HextechWorkingCategory(registration.getJeiHelpers().getGuiHelper()),
+                new CrucibleCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -91,6 +99,9 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addRecipes(AlloyingCategory.TYPE, com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(true).entrySet().stream()
                 .map(entry -> new AlloyingCategory.Recipe(entry.getKey(), entry.getValue())).toList());
         registration.addRecipes(HextechWorkingCategory.TYPE, HextechWorkingCategory.all());
+        registration.addRecipes(CrucibleCategory.TYPE, com.pockyl.hextale.crafting.CrucibleRecipe.ALL.get(true).entrySet().stream()
+                .map(entry -> new CrucibleCategory.Recipe(entry.getKey(), entry.getValue())).toList());
+        info(registration, ModItems.ESSENCE.get(), "essence");
         info(registration, ModItems.HEX_WORKBENCH.get(), "hex_workbench");
         info(registration, ModItems.HEX_LAPIDARY.get(), "hex_lapidary");
         info(registration, ModItems.HEXTECH_DUST.get(), "hextech_dust");
@@ -142,6 +153,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addCraftingStation(HexCraftingCategory.TYPE, ModItems.HEX_WORKBENCH.get());
         registration.addCraftingStation(AlloyingCategory.TYPE, ModItems.HEX_FURNACE.get());
         registration.addCraftingStation(HextechWorkingCategory.TYPE, ModItems.HEX_LAPIDARY.get());
+        registration.addCraftingStation(CrucibleCategory.TYPE, ModItems.CRUCIBLE.get());
     }
 
     static ItemStack concentrate(Essence essence) {

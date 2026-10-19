@@ -61,6 +61,8 @@ public final class HextaleClient {
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("essence"), EssenceTint.MAP_CODEC));
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("rune"), RuneTint.MAP_CODEC));
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
+                event.register(Hextale.id("essence_kind"), com.pockyl.hextale.client.render.EssenceKindTint.MAP_CODEC));
+        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
                 event.register(Hextale.id("sticker"), com.pockyl.hextale.client.render.StickerTint.MAP_CODEC));
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
                 event.register(Hextale.id("pickaxe_runes"), com.pockyl.hextale.client.render.PickaxeRuneTint.MAP_CODEC));
@@ -110,6 +112,7 @@ public final class HextaleClient {
         });
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());
         ClientPylons.register();
+        EssenceLookup.register();
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> ResearchBoards.warmUp());
     }
 

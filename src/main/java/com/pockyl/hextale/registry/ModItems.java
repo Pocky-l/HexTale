@@ -87,6 +87,9 @@ public final class ModItems {
     /** A label with one essence: a jar wearing it takes only that essence, a siphon or relay carries only it. */
     public static final DeferredItem<com.pockyl.hextale.item.EssenceStickerItem> ESSENCE_STICKER = ITEMS.registerItem("essence_sticker",
             com.pockyl.hextale.item.EssenceStickerItem::new);
+    /** One essence as an item: what recipes ask for and what items are made of, shown in JEI and the creative tab. */
+    public static final DeferredItem<com.pockyl.hextale.item.EssenceItem> ESSENCE = ITEMS.registerItem("essence",
+            com.pockyl.hextale.item.EssenceItem::new);
     public static final DeferredItem<BlockItem> BRASS_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_GRATE);
     /** Creative only: everything known at once - every rune with three stars, every item studied, every quest done. */
     public static final DeferredItem<KnowledgeScrollItem> SCROLL_OF_OMNISCIENCE = ITEMS.registerItem("scroll_of_omniscience",

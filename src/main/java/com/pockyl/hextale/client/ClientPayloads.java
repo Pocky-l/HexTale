@@ -39,6 +39,7 @@ public final class ClientPayloads {
         event.register(com.pockyl.hextale.network.CraftingRecipesPayload.TYPE, (payload, context) -> {
             com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.setClient(payload.crafting());
             com.pockyl.hextale.crafting.AlloyRecipe.ALL.setClient(payload.alloying());
+            com.pockyl.hextale.crafting.CrucibleRecipe.ALL.setClient(payload.crucible());
         });
         event.register(OpenStelePayload.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new SteleScreen(payload.pos())));
         event.register(com.pockyl.hextale.network.OpenStickerPayload.TYPE, (payload, context) ->

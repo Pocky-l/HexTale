@@ -43,8 +43,9 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Crucible: a cauldron woken with hextech dust. A water bucket (or water bottles) fills it, a fire, campfire, magma
- * or lava below heats it. Once it boils, bottles and jars of essence pour into it and items sink and dissolve (put in
- * by hand one at a time, or dropped in by the stack). An empty bucket takes the water back out, losing what is in it;
+ * or lava below heats it. Once it boils, bottles and jars of essence pour into it and items sink and dissolve into their
+ * essences (put in by hand one at a time, or dropped in by the stack); a recipe's catalyst takes its essences and rises
+ * as the result instead. An empty bucket takes the water back out, losing what is in it;
  * sneak-use with an empty hand boils it all away in a cloud of steam. A plain use says how the water stands.
  */
 public class CrucibleBlock extends BaseEntityBlock {
@@ -130,18 +131,19 @@ public class CrucibleBlock extends BaseEntityBlock {
             }
             return InteractionResult.SUCCESS;
         }
-        if (crucible.boiling()) {
-            if (!level.isClientSide()) {
-                if (crucible.dissolve(stack, 1) == 0) {
-                    return say(level, player, "items_full");
-                }
-                if (!creative) {
-                    stack.shrink(1);
-                }
-            }
-            return InteractionResult.SUCCESS;
+        if (crucible.liquid() <= 0) {
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
-        return InteractionResult.TRY_WITH_EMPTY_HAND;
+        if (!level.isClientSide()) {
+            if (crucible.take(stack, 1, true) == 0) {
+                // Neither a catalyst the water can pay for, nor anything boiling water could dissolve.
+                return say(level, player, crucible.boiling() ? "no_essences" : "not_boiling");
+            }
+            if (!creative) {
+                stack.shrink(1);
+            }
+        }
+        return InteractionResult.SUCCESS;
     }
 
     /** Sneaking boils the water away; otherwise the crucible says how its water stands. */
@@ -160,7 +162,7 @@ public class CrucibleBlock extends BaseEntityBlock {
         return InteractionResult.SUCCESS;
     }
 
-    /** "Boiling - water 750 mB, essence 32 mB, 5 things dissolved", or what it lacks. */
+    /** "Boiling - water 750 mB, essence 32 mB", or what it lacks. */
     public static Component status(CrucibleBlockEntity crucible) {
         if (crucible.liquid() <= 0) {
             return Component.translatable("block.hextale.crucible.say.no_water");
@@ -169,8 +171,7 @@ public class CrucibleBlock extends BaseEntityBlock {
         if (crucible.heat() <= 0 && !crucible.boiling()) {
             return Component.translatable("block.hextale.crucible.status.cold", phase, crucible.water());
         }
-        return Component.translatable("block.hextale.crucible.status", phase, crucible.water(), crucible.essence().total(),
-                crucible.dissolvedCount());
+        return Component.translatable("block.hextale.crucible.status", phase, crucible.water(), crucible.essence().total());
     }
 
     private static InteractionResult say(Level level, Player player, String key) {

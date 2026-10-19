@@ -191,9 +191,6 @@ public final class GogglesView {
             rows.add(Row.heading(Component.translatable(KEY + "filled", crucible.volume(), com.pockyl.hextale.block.CrucibleBlockEntity.CAPACITY)));
             rows.add(Row.heading(Component.translatable(KEY + "water", crucible.water(), com.pockyl.hextale.block.CrucibleBlockEntity.CAPACITY)));
             contents(rows, crucible.essence());
-            for (net.minecraft.world.item.ItemStack stack : crucible.dissolved()) {
-                rows.add(Row.heading(Component.translatable(KEY + "crucible.dissolved", stack.getHoverName(), stack.getCount())));
-            }
             return new Reading(name, rows);
         }
         if (entity instanceof AlembicBlockEntity alembic) {

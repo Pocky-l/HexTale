@@ -13,7 +13,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import org.slf4j.Logger;
 
-import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.gametest.GameTests;
@@ -66,15 +65,16 @@ public final class Hextale {
             output.accept(ModItems.ALEMBIC);
             output.accept(ModItems.SEPARATOR);
             output.accept(ModItems.ESSENCE_TANK);
-            // For creative building: the Creative Essence Tank (every essence, endless), full tanks and bottles of primals.
+            // For creative building: the Creative Essence Tank (every essence, endless) is the one jar of essence; bottles of primals.
             output.accept(ModItems.CREATIVE_ESSENCE_TANK);
-            for (Essence essence : Essence.PRIMALS) {
-                output.accept(withEssence(ModItems.ESSENCE_TANK.get(), EssenceMix.pure(essence, EssenceTankBlockEntity.CAPACITY)));
-            }
             for (Essence essence : Essence.PRIMALS) {
                 output.accept(EssenceFlaskItem.filled(EssenceMix.pure(essence, EssenceFlaskItem.CAPACITY)));
             }
             output.accept(EssenceFlaskItem.filled(EssenceMix.unknown(EssenceFlaskItem.CAPACITY)));
+            // Every essence as an item, in catalogue order: primals, pairs, deeper compounds.
+            for (Essence essence : Essence.values()) {
+                output.accept(com.pockyl.hextale.item.EssenceItem.of(essence));
+            }
             output.accept(ModItems.BRASS_PIPE);
             output.accept(ModItems.PUMP);
             output.accept(ModItems.DRAIN_VALVE);
@@ -178,11 +178,5 @@ public final class Hextale {
 
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);
-    }
-
-    private static ItemStack withEssence(Item item, EssenceMix contents) {
-        ItemStack stack = new ItemStack(item);
-        stack.set(ModDataComponents.ESSENCE.get(), contents);
-        return stack;
     }
 }

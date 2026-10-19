@@ -1,0 +1,978 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:component",
+    "component": "hextale:essence_kind",
+    "cases": [
+      {
+        "when": "fire",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/fire",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "water",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/water",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "earth",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/earth",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "air",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/air",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "light",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/light",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "shadow",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/shadow",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "life",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/life",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "metal",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/metal",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "spark",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/spark",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "steam",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/steam",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "magma",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/magma",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "smoke",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/smoke",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "sun",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/sun",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "ash",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/ash",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "fury",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/fury",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "forge",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/forge",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "blast",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/blast",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "clay",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/clay",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "mist",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/mist",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "purity",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/purity",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "cold",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/cold",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "sap",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/sap",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "rust",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/rust",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "storm",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/storm",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "dust",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/dust",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "crystal",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/crystal",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "depths",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/depths",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "soil",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/soil",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "ore",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/ore",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "quake",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/quake",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "sky",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/sky",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "silence",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/silence",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "breath",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/breath",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "motion",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/motion",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "thunder",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/thunder",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "illusion",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/illusion",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "spirit",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/spirit",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "gleam",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/gleam",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "energy",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/energy",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "decay",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/decay",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "corruption",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/corruption",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "rift",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/rift",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "craft",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/craft",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "vigor",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/vigor",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "circuit",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/circuit",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "ice",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/ice",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "glass",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/glass",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "gem",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/gem",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "gold",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/gold",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "plant",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/plant",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "wood",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/wood",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "seed",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/seed",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "flesh",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/flesh",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "bone",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/bone",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "beast",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/beast",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "fiber",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/fiber",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "slime",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/slime",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "venom",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/venom",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "sweet",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/sweet",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "knowledge",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/knowledge",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "ender",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/ender",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "hell",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/hell",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "echo",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/echo",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "food",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/food",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "cloth",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/cloth",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "mechanism",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/mechanism",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "weapon",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/weapon",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "protection",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/protection",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "time",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/time",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "magic",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/magic",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "chaos",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/chaos",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "order",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/order",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "ocean",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/ocean",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "dream",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/dream",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "soul",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/soul",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "wind",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/wind",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "tool",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/tool",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "dye",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/dye",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "star",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/star",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      },
+      {
+        "when": "blood",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/essence/blood",
+          "tints": [
+            {
+              "type": "hextale:essence_kind"
+            }
+          ]
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "hextale:item/essence/magic",
+      "tints": [
+        {
+          "type": "hextale:essence_kind"
+        }
+      ]
+    }
+  }
+}

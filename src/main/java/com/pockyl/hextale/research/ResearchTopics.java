@@ -41,7 +41,6 @@ public final class ResearchTopics {
     }, ResearchTopic::id);
 
     public static final ResearchTopic DRAIN_VALVE = add("drain_valve", 1, Essence.WATER, Essence.EARTH, ModItems.DRAIN_VALVE);
-    public static final ResearchTopic BRASS_PIPE = add("brass_pipe", 1, Essence.WATER, Essence.METAL, ModItems.BRASS_PIPE);
     public static final ResearchTopic PUMP = add("pump", 1, Essence.AIR, Essence.WATER, ModItems.PUMP);
     public static final ResearchTopic GOGGLES = add("researchers_goggles", 1, Essence.LIGHT, Essence.SHADOW, ModItems.RESEARCHERS_GOGGLES);
     public static final ResearchTopic ESSENCE_SIGIL = add("essence_sticker", 2, Essence.LIFE, Essence.WATER, ModItems.ESSENCE_STICKER);

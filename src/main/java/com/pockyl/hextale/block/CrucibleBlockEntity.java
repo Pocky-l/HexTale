@@ -27,6 +27,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.tags.BlockTags;
 
+import com.pockyl.hextale.crafting.CrucibleRecipe;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModSounds;
@@ -38,30 +39,24 @@ import java.util.Locale;
 /**
  * The Crucible: a cauldron woken with hextech dust, the first vessel of chemtech. It holds water over a heat source;
  * the water warms by the heat's strength and cools without it. Only boiling water takes things in: bottles and jars of
- * essence pour into it, items dropped or put in sink and dissolve. What it makes of them comes later - for now it keeps
- * every essence and item that went in. It holds {@value #CAPACITY} mB: water, essence and every dissolved item
- * ({@value #ITEM_VOLUME} mB each); more brims over the rim and spills liquid in proportion. The water never boils off by
- * itself. Stone thrown into a crucible holding magic essence soaks it up and comes back out as magic stone
- * ({@value #MAGIC_PER_STONE} mB of magic a block), boiling or not.
+ * essence pour into it, items dropped or put in sink and dissolve into their essences (lapis lazuli: 3 mB of gem, 3 of
+ * magic, 1 of water). An item that is the catalyst of a {@link CrucibleRecipe} the water can pay for does not dissolve:
+ * it takes the recipe's essences out of the water and rises as the result (stone in water holding 6 mB of magic comes
+ * back as magic stone) - that happens in cold water too. It holds {@value #CAPACITY} mB of water and essence; more brims
+ * over the rim and spills in proportion. The water never boils off by itself.
  */
 public class CrucibleBlockEntity extends BlockEntity {
-    /** What it holds in all: water, essence and the dissolved items. */
+    /** What it holds in all: water and essence. */
     public static final int CAPACITY = 1500;
-    /** Room a dissolved item takes. */
-    public static final int ITEM_VOLUME = 30;
-    /** Items never crowd out the last of the liquid. */
-    private static final int MIN_LIQUID = 200;
     public static final int BUCKET = 1000;
     public static final int WATER_BOTTLE = 250;
-    /** Different things it can hold dissolved. */
-    public static final int MAX_KINDS = 16;
     public static final float BOILING = 100;
     /** Degrees a tick per point of heat, and degrees a tick it cools without heat. */
     public static final float RISE = 0.1F;
     public static final float FALL = 0.15F;
-    /** Magic essence a block of stone soaks up to become magic stone. */
-    public static final int MAGIC_PER_STONE = 5;
-    /** Ticks a soaking stone lies under the surface before it rises out as magic stone. */
+    /** mB of essence an item's essence point dissolves into. */
+    public static final int MB_PER_POINT = 1;
+    /** Ticks a catalyst lies under the surface before it rises out as the recipe's result. */
     public static final int SOAK_TICKS = 24;
     /** How often the crucible looks for items over it, and how often the clients hear of its temperature. */
     private static final int SCAN_TICKS = 2;
@@ -108,7 +103,6 @@ public class CrucibleBlockEntity extends BlockEntity {
     private int water;
     private float temperature;
     private EssenceMix essence = EssenceMix.EMPTY;
-    private final List<ItemStack> dissolved = new ArrayList<>();
     private boolean dirty;
     /** Client animations: when essence was poured in last and its colour, when an item sank and which. */
     private long pouredAt = -1000;
@@ -120,10 +114,12 @@ public class CrucibleBlockEntity extends BlockEntity {
     /** When the water started boiling dry (sneak-use), and how much there was. */
     private long dryingAt = -1000;
     private int dryingFrom;
-    /** Stones soaking in the magic now, and when they rise out as magic stone. */
-    private int soaking;
-    private long soakedAt;
-    /** Magic stone just thrown out: no crucible catches it again for a moment. */
+    /** Results of transmutations under way, and when they rise out of the water. */
+    private final List<ItemStack> rising = new ArrayList<>();
+    private long risesAt;
+    /** Client only: when each essence last grew in the water, for the icons over the crucible. */
+    private final long[] grewAt = new long[com.pockyl.hextale.rune.Essence.values().length];
+    /** Results just thrown out: no crucible catches them again for a moment. */
     private final java.util.Map<java.util.UUID, Long> thrownOut = new java.util.HashMap<>();
 
     public CrucibleBlockEntity(BlockPos pos, BlockState state) {
@@ -172,8 +168,8 @@ public class CrucibleBlockEntity extends BlockEntity {
             boilDry(level, now);
             return;
         }
-        if (soaking > 0 && now >= soakedAt) {
-            riseAsMagicStone(level);
+        if (!rising.isEmpty() && now >= risesAt) {
+            rise(level);
         }
         if (now % SCAN_TICKS == 0 && liquid() > 0) {
             takeItems(level);
@@ -203,10 +199,7 @@ public class CrucibleBlockEntity extends BlockEntity {
             }
             ItemStack stack = entity.getItem();
             float caughtAt = (float) Math.max(surface(), entity.getY() - y);
-            int taken = soaks(stack) ? soak(stack, stack.getCount(), entity.getBoundingBox().intersects(inside) || boiling()) : 0;
-            if (taken == 0 && boiling()) {
-                taken = dissolve(stack, stack.getCount());
-            }
+            int taken = take(stack, stack.getCount(), entity.getBoundingBox().intersects(inside) || boiling());
             if (taken > 0) {
                 sankFrom = caughtAt;
                 stack.shrink(taken);
@@ -223,68 +216,89 @@ public class CrucibleBlockEntity extends BlockEntity {
         }
     }
 
-    /** Whether this item is stone that soaks up essence (the blocks a drain valve turns into magic stone). */
-    public static boolean soaks(ItemStack stack) {
-        return stack.getItem() instanceof net.minecraft.world.item.BlockItem block
-                && block.getBlock().defaultBlockState().is(com.pockyl.hextale.registry.ModTags.SOAKS_ESSENCE);
-    }
-
     /**
-     * Lets up to {@code count} stones sink into the magic: each takes {@value #MAGIC_PER_STONE} mB of magic essence and
-     * rises out as magic stone {@value #SOAK_TICKS} ticks later. Stones already soaking hold the next ones back.
+     * Takes up to {@code count} of the item: a catalyst whose recipe the water can pay for transmutes (cold water too),
+     * anything else with essences dissolves into them while the water boils. A catalyst the water cannot pay for yet is
+     * not special: boiling water dissolves it like the rest.
      *
-     * @param reached whether the stone has reached the liquid
-     * @return how many sank
+     * @param reached whether the item has reached the liquid (boiling water draws items in from over it)
+     * @return how many were taken
      */
-    public int soak(ItemStack stack, int count, boolean reached) {
-        int magic = essence.get(com.pockyl.hextale.rune.Essence.MAGIC);
-        count = Math.min(count, magic / MAGIC_PER_STONE);
-        if (!reached || soaking > 0 || drying() || count <= 0 || !soaks(stack)) {
+    public int take(ItemStack stack, int count, boolean reached) {
+        if (stack.isEmpty() || count <= 0 || drying() || liquid() <= 0) {
             return 0;
         }
-        essence = essence.minus(EssenceMix.pure(com.pockyl.hextale.rune.Essence.MAGIC, count * MAGIC_PER_STONE));
-        soaking = count;
-        soakedAt = (level == null ? 0 : level.getGameTime()) + SOAK_TICKS;
-        // It sinks like anything dropped in, and the magic swirls in after it.
+        CrucibleRecipe recipe = CrucibleRecipe.find(stack, essence);
+        if (recipe != null) {
+            return reached ? transmute(recipe, stack, count) : 0;
+        }
+        return dissolve(stack, count);
+    }
+
+    /** The catalysts sink, the recipe's essences swirl in after them, and the results rise out a moment later. */
+    private int transmute(CrucibleRecipe recipe, ItemStack stack, int count) {
+        count = Math.min(count, essence.timesHolds(recipe.essences()));
+        if (count <= 0) {
+            return 0;
+        }
+        essence = essence.minus(recipe.essences().times(count));
+        ItemStack result = recipe.result().create();
+        result.setCount(result.getCount() * count);
+        boolean merged = false;
+        for (ItemStack held : rising) {
+            if (!merged && ItemStack.isSameItemSameComponents(held, result)) {
+                held.grow(result.getCount());
+                merged = true;
+            }
+        }
+        if (!merged) {
+            rising.add(result);
+        }
+        long now = level == null ? 0 : level.getGameTime();
+        risesAt = now + SOAK_TICKS;
         sank = stack.copyWithCount(1);
-        sankAt = level == null ? 0 : level.getGameTime();
-        pouredColor = com.pockyl.hextale.rune.Essence.MAGIC.color();
-        pouredAt = sankAt;
+        sankAt = now;
+        pouredColor = recipe.essences().color();
+        pouredAt = now;
         playAt(SoundEvents.FISHING_BOBBER_SPLASH, 0.4F, 0.8F);
         playAt(ModSounds.CRUCIBLE_DISSOLVE.get(), 0.4F, 0.7F);
         if (level instanceof ServerLevel server) {
             Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
             server.sendParticles(ParticleTypes.SPLASH, at.x, at.y + 0.05, at.z, 10, 0.15, 0.02, 0.15, 0.05);
-            server.sendParticles(new DustParticleOptions(com.pockyl.hextale.rune.Essence.MAGIC.color(), 1.2F), at.x, at.y + 0.08, at.z,
-                    16, 0.2, 0.03, 0.2, 0);
+            server.sendParticles(new DustParticleOptions(pouredColor, 1.2F), at.x, at.y + 0.08, at.z, 16, 0.2, 0.03, 0.2, 0);
         }
         changed();
         return count;
     }
 
-    /** The soaked stones rise out of the liquid as magic stone, thrown up over the rim with a burst of the magic's light. */
-    private void riseAsMagicStone(ServerLevel level) {
-        int count = soaking;
-        soaking = 0;
+    /** The transmuted items rise out of the liquid, thrown up over the rim with a burst of the essences' light. */
+    private void rise(ServerLevel level) {
         Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface() + 0.15, 0.5);
         var random = level.getRandom();
-        while (count > 0) {
-            ItemStack stone = new ItemStack(com.pockyl.hextale.registry.ModItems.MAGIC_STONE.get(), Math.min(64, count));
-            count -= stone.getCount();
-            ItemEntity entity = new ItemEntity(level, at.x, at.y, at.z, stone);
-            double angle = random.nextDouble() * Math.PI * 2;
-            entity.setDeltaMovement(Math.cos(angle) * 0.12, 0.38, Math.sin(angle) * 0.12);
-            entity.setPickUpDelay(10);
-            thrownOut.put(entity.getUUID(), level.getGameTime());
-            level.addFreshEntity(entity);
+        for (ItemStack result : rising) {
+            while (!result.isEmpty()) {
+                ItemStack part = result.split(result.getMaxStackSize());
+                ItemEntity entity = new ItemEntity(level, at.x, at.y, at.z, part);
+                double angle = random.nextDouble() * Math.PI * 2;
+                entity.setDeltaMovement(Math.cos(angle) * 0.12, 0.38, Math.sin(angle) * 0.12);
+                entity.setPickUpDelay(10);
+                thrownOut.put(entity.getUUID(), level.getGameTime());
+                level.addFreshEntity(entity);
+            }
         }
-        int magic = com.pockyl.hextale.rune.Essence.MAGIC.color();
-        level.sendParticles(new DustParticleOptions(magic, 1.4F), at.x, at.y, at.z, 24, 0.22, 0.12, 0.22, 0);
+        rising.clear();
+        level.sendParticles(new DustParticleOptions(pouredColor, 1.4F), at.x, at.y, at.z, 24, 0.22, 0.12, 0.22, 0);
         level.sendParticles(ParticleTypes.WITCH, at.x, at.y + 0.1, at.z, 12, 0.2, 0.2, 0.2, 0.05);
         level.sendParticles(ParticleTypes.SPLASH, at.x, at.y, at.z, 14, 0.2, 0.02, 0.2, 0.1);
         playAt(ModSounds.BLOCK_AWAKEN.get(), 0.6F, 1.2F);
         playAt(SoundEvents.GENERIC_SPLASH, 0.35F, 1.2F);
         changed();
+    }
+
+    /** What the item dissolves into: its essences, {@value #MB_PER_POINT} mB a point (empty for an item without any). */
+    public static EssenceMix essencesOf(ItemStack stack) {
+        com.pockyl.hextale.research.ItemEssences essences = com.pockyl.hextale.research.ResearchItems.of(stack);
+        return essences == null ? EssenceMix.EMPTY : EssenceMix.boiled(essences, MB_PER_POINT);
     }
 
     /** Whether the water is boiling dry (sneak-use): it goes up in steam over {@link #BOIL_DRY_TICKS}. */
@@ -336,13 +350,14 @@ public class CrucibleBlockEntity extends BlockEntity {
         return essence;
     }
 
-    /** What went in and dissolved (a copy). */
-    public List<ItemStack> dissolved() {
-        return dissolved.stream().map(ItemStack::copy).toList();
+    /** Results of transmutations about to rise (a copy). */
+    public List<ItemStack> rising() {
+        return rising.stream().map(ItemStack::copy).toList();
     }
 
-    public int dissolvedCount() {
-        return dissolved.stream().mapToInt(ItemStack::getCount).sum();
+    /** Client: game time when this essence last grew in the water (long ago if never). */
+    public long grewAt(com.pockyl.hextale.rune.Essence essence) {
+        return grewAt[essence.ordinal()];
     }
 
     public long pouredAt() {
@@ -372,9 +387,9 @@ public class CrucibleBlockEntity extends BlockEntity {
         return water + essence.total();
     }
 
-    /** Everything in it: water, essence and the room the dissolved items take. */
+    /** Everything in it: water and essence. */
     public int volume() {
-        return water + essence.total() + ITEM_VOLUME * dissolvedCount();
+        return water + essence.total();
     }
 
     /**
@@ -384,7 +399,7 @@ public class CrucibleBlockEntity extends BlockEntity {
      * @return the water taken (all of {@code amount} or nothing)
      */
     public int fillWater(int amount, boolean simulate) {
-        if (drying() || water >= CAPACITY && essence.isEmpty() && dissolved.isEmpty()) {
+        if (drying() || water >= CAPACITY && essence.isEmpty()) {
             return 0;
         }
         if (!simulate) {
@@ -397,7 +412,7 @@ public class CrucibleBlockEntity extends BlockEntity {
     }
 
     /**
-     * Whatever rises past the brim spills over the rim: water and essence leave in proportion, the dissolved items stay.
+     * Whatever rises past the brim spills over the rim: water and essence leave in proportion.
      */
     private void spillOver() {
         int excess = volume() - CAPACITY;
@@ -453,39 +468,26 @@ public class CrucibleBlockEntity extends BlockEntity {
     }
 
     /**
-     * Dissolves up to {@code count} of the item in boiling water.
+     * Dissolves up to {@code count} of the item in boiling water into its essences. Items without essences are refused.
      *
      * @return how many were taken
      */
     public int dissolve(ItemStack stack, int count) {
-        // Items take room but never crowd out the last of the liquid.
-        count = Math.min(count, (CAPACITY - MIN_LIQUID - ITEM_VOLUME * dissolvedCount()) / ITEM_VOLUME);
-        if (!boiling() || stack.isEmpty() || count <= 0) {
+        EssenceMix each = essencesOf(stack);
+        if (!boiling() || stack.isEmpty() || count <= 0 || each.isEmpty()) {
             return 0;
         }
-        ItemStack same = null;
-        for (ItemStack held : dissolved) {
-            if (ItemStack.isSameItemSameComponents(held, stack)) {
-                same = held;
-            }
-        }
-        if (same == null) {
-            if (dissolved.size() >= MAX_KINDS) {
-                return 0;
-            }
-            dissolved.add(stack.copyWithCount(count));
-        } else {
-            same.grow(count);
-        }
+        essence = essence.plus(each.times(count));
         spillOver();
         sank = stack.copyWithCount(1);
         sankAt = level == null ? 0 : level.getGameTime();
+        pouredColor = each.color();
         playAt(SoundEvents.FISHING_BOBBER_SPLASH, 0.35F, 1.0F + (level == null ? 0 : level.getRandom().nextFloat() * 0.3F));
         playAt(ModSounds.CRUCIBLE_DISSOLVE.get(), 0.25F, 0.9F + (level == null ? 0 : level.getRandom().nextFloat() * 0.2F));
         if (level instanceof ServerLevel server) {
             Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
             server.sendParticles(ParticleTypes.SPLASH, at.x, at.y + 0.05, at.z, 8, 0.15, 0.02, 0.15, 0.05);
-            server.sendParticles(ParticleTypes.WHITE_SMOKE, at.x, at.y + 0.1, at.z, 4, 0.12, 0.05, 0.12, 0.01);
+            server.sendParticles(new DustParticleOptions(each.color(), 1.0F), at.x, at.y + 0.1, at.z, 8, 0.12, 0.05, 0.12, 0);
         }
         changed();
         return count;
@@ -503,7 +505,7 @@ public class CrucibleBlockEntity extends BlockEntity {
 
     /**
      * Boils the water dry at once (sneak-use): it goes up in a cloud of steam over a moment, taking the essence and
-     * whatever dissolved in it along.
+     * whatever is under way along.
      */
     public void boilAway() {
         if (liquid() <= 0 || drying() || level == null) {
@@ -514,7 +516,7 @@ public class CrucibleBlockEntity extends BlockEntity {
         dryingFrom = liquid();
         water = dryingFrom;
         essence = EssenceMix.EMPTY;
-        dissolved.clear();
+        rising.clear();
         playAt(SoundEvents.LAVA_EXTINGUISH, 0.8F, 0.75F + level.getRandom().nextFloat() * 0.1F);
         playAt(SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, 0.6F, 0.9F);
         changed();
@@ -524,7 +526,7 @@ public class CrucibleBlockEntity extends BlockEntity {
         water = 0;
         temperature = 0;
         essence = EssenceMix.EMPTY;
-        dissolved.clear();
+        rising.clear();
         changed();
     }
 
@@ -592,9 +594,17 @@ public class CrucibleBlockEntity extends BlockEntity {
         super.loadAdditional(input);
         water = Mth.clamp(input.getIntOr("water", 0), 0, CAPACITY);
         temperature = Mth.clamp(input.getFloatOr("temperature", 0), 0, BOILING);
+        EssenceMix before = essence;
         essence = input.read("essence", EssenceMix.CODEC).orElse(EssenceMix.EMPTY);
-        dissolved.clear();
-        dissolved.addAll(input.read("dissolved", ItemStack.CODEC.listOf()).orElse(List.of()));
+        if (level != null && level.isClientSide()) {
+            for (com.pockyl.hextale.rune.Essence e : com.pockyl.hextale.rune.Essence.values()) {
+                if (essence.get(e) > before.get(e)) {
+                    grewAt[e.ordinal()] = level.getGameTime();
+                }
+            }
+        }
+        rising.clear();
+        rising.addAll(input.read("rising", ItemStack.CODEC.listOf()).orElse(List.of()));
         pouredAt = input.getLongOr("poured_at", -1000);
         pouredColor = input.getIntOr("poured_color", 0);
         sankAt = input.getLongOr("sank_at", -1000);
@@ -602,8 +612,7 @@ public class CrucibleBlockEntity extends BlockEntity {
         sankFrom = input.getFloatOr("sank_from", 1);
         dryingAt = input.getLongOr("drying_at", -1000);
         dryingFrom = input.getIntOr("drying_from", 0);
-        soaking = input.getIntOr("soaking", 0);
-        soakedAt = input.getLongOr("soaked_at", 0);
+        risesAt = input.getLongOr("rises_at", 0);
     }
 
     @Override
@@ -614,8 +623,9 @@ public class CrucibleBlockEntity extends BlockEntity {
         if (!essence.isEmpty()) {
             output.store("essence", EssenceMix.CODEC, essence);
         }
-        if (!dissolved.isEmpty()) {
-            output.store("dissolved", ItemStack.CODEC.listOf(), List.copyOf(dissolved));
+        if (!rising.isEmpty()) {
+            output.store("rising", ItemStack.CODEC.listOf(), List.copyOf(rising));
+            output.putLong("rises_at", risesAt);
         }
         // The last pour and the last item sunk, for the clients' animations (kept: they are small).
         output.putLong("poured_at", pouredAt);
@@ -624,10 +634,6 @@ public class CrucibleBlockEntity extends BlockEntity {
         output.putFloat("sank_from", sankFrom);
         output.putLong("drying_at", dryingAt);
         output.putInt("drying_from", dryingFrom);
-        if (soaking > 0) {
-            output.putInt("soaking", soaking);
-            output.putLong("soaked_at", soakedAt);
-        }
         if (!sank.isEmpty()) {
             output.store("sank", ItemStack.CODEC, sank);
         }

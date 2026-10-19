@@ -8,13 +8,15 @@ import net.minecraft.resources.Identifier;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.crafting.AlloyRecipe;
+import com.pockyl.hextale.crafting.CrucibleRecipe;
 import com.pockyl.hextale.crafting.HexCraftingRecipe;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Server to client: every Hex Workbench and Hex Furnace recipe, sent on login and after data packs reload. */
-public record CraftingRecipesPayload(Map<Identifier, HexCraftingRecipe> crafting, Map<Identifier, AlloyRecipe> alloying)
+/** Server to client: every Hex Workbench, Hex Furnace and Crucible recipe, sent on login and after data packs reload. */
+public record CraftingRecipesPayload(Map<Identifier, HexCraftingRecipe> crafting, Map<Identifier, AlloyRecipe> alloying,
+                                     Map<Identifier, CrucibleRecipe> crucible)
         implements CustomPacketPayload {
     public static final Type<CraftingRecipesPayload> TYPE = new Type<>(Hextale.id("crafting_recipes"));
 
@@ -23,6 +25,8 @@ public record CraftingRecipesPayload(Map<Identifier, HexCraftingRecipe> crafting
             payload -> new LinkedHashMap<>(payload.crafting()),
             ByteBufCodecs.map(LinkedHashMap<Identifier, AlloyRecipe>::new, Identifier.STREAM_CODEC, AlloyRecipe.STREAM_CODEC),
             payload -> new LinkedHashMap<>(payload.alloying()),
+            ByteBufCodecs.map(LinkedHashMap<Identifier, CrucibleRecipe>::new, Identifier.STREAM_CODEC, CrucibleRecipe.STREAM_CODEC),
+            payload -> new LinkedHashMap<>(payload.crucible()),
             CraftingRecipesPayload::new);
 
     @Override

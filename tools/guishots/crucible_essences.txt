@@ -1,0 +1,14 @@
+# Essence icons over a crucible, seen in researcher's goggles.
+cmd difficulty peaceful
+cmd gamemode creative @s
+cmd gamerule doDaylightCycle false
+cmd time set noon
+cmd tp @s -1.5 -59 2.5 180 5
+cmd fill -6 -60 -8 6 -55 -1 air
+wait 10
+cmd item replace entity @s armor.head with hextale:researchers_goggles
+cmd setblock -2 -60 -2 minecraft:soul_campfire[lit=true]
+cmd setblock -2 -59 -2 hextale:crucible[facing=south]
+cmd data merge block -2 -59 -2 {water:800,temperature:100.0f,essence:{magic:6,gem:6,water:2,fire:40,earth:13}}
+wait 40
+shot crucible_essences

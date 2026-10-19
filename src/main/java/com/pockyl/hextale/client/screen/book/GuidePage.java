@@ -248,10 +248,10 @@ final class GuidePage {
                 // Worked out at the table: until then the item lies under a violet seal, a loupe on its corner.
                 boolean researched = knowledge.researched(quest.topic());
                 if (!researched) {
+                    // The loupe only marks what is still to be researched: once done, the step looks like any other.
                     seal(graphics, quest, now);
+                    loupeBadge(graphics, quest.x() - badge, quest.y() + badge, now, quest.index(), InkState.TO_RESEARCH);
                 }
-                loupeBadge(graphics, quest.x() - badge, quest.y() + badge, now, quest.index(),
-                        researched ? InkState.RESEARCHED : InkState.TO_RESEARCH);
             }
             if (badges && Guide.done(quest, knowledge)) {
                 check(graphics, quest.x() + badge - 4, quest.y() + badge - 4);
