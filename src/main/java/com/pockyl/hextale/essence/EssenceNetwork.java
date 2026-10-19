@@ -12,9 +12,16 @@ import com.pockyl.hextale.block.PipeSide;
 
 import org.jspecify.annotations.Nullable;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Moves liquids through brass pipes: essence and water share the pipes. A block pushes out of one of its faces; the
@@ -27,8 +34,36 @@ import java.util.Set;
  */
 public final class EssenceNetwork {
     public static final int MAX_PIPES = 256;
+    /** A remembered network is walked again after this many ticks even if no pipe changed (chunks loaded meanwhile). */
+    private static final int CACHE_TICKS = 100;
+
+    /** Bumped whenever a pipe or a block beside one changes: every remembered network is forgotten. */
+    private static final AtomicInteger EPOCH = new AtomicInteger();
+    /** Server side: the networks walked from each start pipe, so a jar pouring every few ticks does not walk them again. */
+    private static final Map<Level, Cache> CACHES = new WeakHashMap<>();
 
     private EssenceNetwork() {
+    }
+
+    /** The pipes joined to a start pipe, nearest first, and every open pipe side towards a block that is no pipe of it. */
+    private record Network(Set<BlockPos> pipes, List<Outlet> outlets) {
+    }
+
+    /** A pipe side towards a block beside the network: {@code at}, reached from the pipe going {@code direction}. */
+    private record Outlet(BlockPos at, Direction direction, PipeSide side) {
+    }
+
+    private record Entry(long builtAt, Network network) {
+    }
+
+    private static final class Cache {
+        int epoch = EPOCH.get();
+        final Long2ObjectOpenHashMap<Entry> networks = new Long2ObjectOpenHashMap<>();
+    }
+
+    /** A pipe or a block beside one changed: networks must be walked again. */
+    public static void invalidate() {
+        EPOCH.incrementAndGet();
     }
 
     /** Something that takes essence in through some of its faces. */
@@ -108,23 +143,20 @@ public final class EssenceNetwork {
             // That pipe side lets nothing out of this block (in only, or shut).
             return 0;
         }
-        Set<BlockPos> pipes = network(level, start);
-        for (BlockPos pipe : pipes) {
-            BlockState state = level.getBlockState(pipe);
-            for (Direction direction : Direction.values()) {
-                BlockPos at = pipe.relative(direction);
-                if (!BrassPipeBlock.side(state, direction).intoBlock() || at.equals(from) || pipes.contains(at)) {
-                    continue;
-                }
-                BlockEntity vessel = level.getBlockEntity(at);
-                if (vessel == null || source != null && EssenceTankBlockEntity.at(level, at) == source
-                        || vessel instanceof Receiver receiver && feedsBack(at, receiver, pipes, direction.getOpposite())) {
-                    continue;
-                }
-                int taken = taker.take(vessel, direction.getOpposite());
-                if (taken > 0) {
-                    return taken;
-                }
+        Network network = cached(level, start);
+        for (Outlet outlet : network.outlets()) {
+            BlockPos at = outlet.at();
+            if (!outlet.side().intoBlock() || at.equals(from) || !level.isLoaded(at)) {
+                continue;
+            }
+            BlockEntity vessel = level.getBlockEntity(at);
+            if (vessel == null || source != null && EssenceTankBlockEntity.at(level, at) == source
+                    || vessel instanceof Receiver receiver && feedsBack(at, receiver, network.pipes(), outlet.direction().getOpposite())) {
+                continue;
+            }
+            int taken = taker.take(vessel, outlet.direction().getOpposite());
+            if (taken > 0) {
+                return taken;
             }
         }
         return 0;
@@ -152,21 +184,18 @@ public final class EssenceNetwork {
         if (!BrassPipeBlock.side(first, face.getOpposite()).intoBlock()) {
             return EssenceMix.EMPTY;
         }
-        Set<BlockPos> pipes = network(level, start);
-        if (feedsBack(to, vessel, pipes, face)) {
+        Network network = cached(level, start);
+        if (feedsBack(to, vessel, network.pipes(), face)) {
             return EssenceMix.EMPTY;
         }
-        for (BlockPos pipe : pipes) {
-            BlockState state = level.getBlockState(pipe);
-            for (Direction direction : Direction.values()) {
-                BlockPos at = pipe.relative(direction);
-                if (!BrassPipeBlock.side(state, direction).outOfBlock() || at.equals(to) || pipes.contains(at)) {
-                    continue;
-                }
-                EssenceTankBlockEntity tank = EssenceTankBlockEntity.at(level, at);
-                if (tank != null && !tank.tank().isEmpty()) {
-                    return take(tank, amount);
-                }
+        for (Outlet outlet : network.outlets()) {
+            BlockPos at = outlet.at();
+            if (!outlet.side().outOfBlock() || at.equals(to) || !level.isLoaded(at)) {
+                continue;
+            }
+            EssenceTankBlockEntity tank = EssenceTankBlockEntity.at(level, at);
+            if (tank != null && !tank.tank().isEmpty()) {
+                return take(tank, amount);
             }
         }
         return EssenceMix.EMPTY;
@@ -185,6 +214,30 @@ public final class EssenceNetwork {
      * is no pipe (a drain valve) reaches the pipes joined to it.
      */
     public static Set<BlockPos> network(Level level, BlockPos start) {
+        return walk(level, start).pipes();
+    }
+
+    /** The network from {@code start}: remembered on the server until a pipe changes, walked afresh on a client. */
+    private static Network cached(Level level, BlockPos start) {
+        if (level.isClientSide()) {
+            return walk(level, start);
+        }
+        Cache cache = CACHES.computeIfAbsent(level, l -> new Cache());
+        int epoch = EPOCH.get();
+        if (cache.epoch != epoch) {
+            cache.epoch = epoch;
+            cache.networks.clear();
+        }
+        long now = level.getGameTime();
+        Entry entry = cache.networks.get(start.asLong());
+        if (entry == null || now - entry.builtAt() > CACHE_TICKS || now < entry.builtAt()) {
+            entry = new Entry(now, walk(level, start));
+            cache.networks.put(start.asLong(), entry);
+        }
+        return entry.network();
+    }
+
+    private static Network walk(Level level, BlockPos start) {
         Set<BlockPos> pipes = new LinkedHashSet<>();
         ArrayDeque<BlockPos> queue = new ArrayDeque<>();
         pipes.add(start);
@@ -195,7 +248,7 @@ public final class EssenceNetwork {
             boolean isPipe = state.getBlock() instanceof BrassPipeBlock;
             for (Direction direction : Direction.values()) {
                 BlockPos next = pipe.relative(direction);
-                if (pipes.contains(next)) {
+                if (pipes.contains(next) || !level.isLoaded(next)) {
                     continue;
                 }
                 PipeSide back = BrassPipeBlock.side(level.getBlockState(next), direction.getOpposite());
@@ -206,7 +259,18 @@ public final class EssenceNetwork {
                 }
             }
         }
-        return pipes;
+        List<Outlet> outlets = new ArrayList<>();
+        for (BlockPos pipe : pipes) {
+            BlockState state = level.getBlockState(pipe);
+            for (Direction direction : Direction.values()) {
+                BlockPos at = pipe.relative(direction);
+                PipeSide side = BrassPipeBlock.side(state, direction);
+                if ((side.intoBlock() || side.outOfBlock()) && !pipes.contains(at)) {
+                    outlets.add(new Outlet(at, direction, side));
+                }
+            }
+        }
+        return new Network(pipes, List.copyOf(outlets));
     }
 
     /**

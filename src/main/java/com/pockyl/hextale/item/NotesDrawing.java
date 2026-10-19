@@ -22,7 +22,7 @@ public record NotesDrawing(int attempt, List<Integer> steps) {
     ).apply(instance, NotesDrawing::new));
     public static final StreamCodec<ByteBuf, NotesDrawing> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, NotesDrawing::attempt,
-            ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()), NotesDrawing::steps,
+            ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list(HexGrid.COUNT * 2)), NotesDrawing::steps,
             NotesDrawing::new);
 
     public NotesDrawing {

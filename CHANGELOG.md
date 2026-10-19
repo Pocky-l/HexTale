@@ -97,7 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   dark - but every sheet can be finished by reasoning from the counts, without a guess. Stepping on a curse bursts the orb: the parchment catches fire and chars away from the curse, and a fresh sheet
   slides in with a new board for the next attempt. The flame button in the sheet's corner burns it on purpose (two
   clicks) to start over on a new board - only the paper is lost. A finished drawing writes
-  Research Notes; reading them teaches the device - and notes can be handed to another player.
+  Research Notes; reading them teaches the device - and notes can be handed to another player. The notes keep the drawing: laid back into the table, they show it on the parchment again.
 - Runes are found, not researched: rune scrolls lie in treasure chests - simple runes in dungeons, temples, mineshafts
   and buried treasure, harder ones in strongholds, mansions, the Nether and trial vaults, the rarest in ancient cities,
   end cities and bastion treasure. A scroll's stars (one to three) are luck. Studying a scroll teaches the rune.

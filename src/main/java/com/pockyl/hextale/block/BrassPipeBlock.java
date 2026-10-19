@@ -122,6 +122,8 @@ public class BrassPipeBlock extends Block {
 
     @Override
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState old, boolean movedByPiston) {
+        // Called for every new state of a pipe (placed, joined, a side set by hand): networks are walked again.
+        EssenceNetwork.invalidate();
         if (!old.is(this) && !level.isClientSide()) {
             // Set by a command or a structure, not by a player: join the neighbours the way placing it would.
             BlockState joined = joined(level, pos, state);
@@ -133,6 +135,12 @@ public class BrassPipeBlock extends Block {
         if (pumps(state)) {
             level.scheduleTick(pos, this, PUMP_EVERY);
         }
+    }
+
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+        EssenceNetwork.invalidate();
     }
 
     private static boolean pumps(BlockState state) {
