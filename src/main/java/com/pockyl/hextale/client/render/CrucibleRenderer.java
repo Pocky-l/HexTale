@@ -22,8 +22,9 @@ import com.pockyl.hextale.block.CrucibleBlockEntity.Phase;
 
 /**
  * The water in the Crucible: tinted by the essence poured into it and clouded by what dissolved in it. It sways as it
- * heats; at a boil bubbles swell and break all over its surface. Essence poured in swirls into the middle; an item
- * dropped in sinks, turning and shrinking, while rings spread over the water.
+ * heats; at a boil bubbles swell and break all over its surface. Essence poured in falls in a stream, blooms over the
+ * surface and swirls into the middle; an item drawn in falls from where it was caught, then sinks, turning and
+ * shrinking, while rings spread over the water. Boiling dry, the whole surface heaves as it sinks.
  */
 public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity, CrucibleRenderer.State> {
     private static final float MIN = CrucibleBlockEntity.INSIDE_MIN + 0.01F;
@@ -32,7 +33,10 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
     /** What dissolved in the water clouds it towards this murky green. */
     private static final int MURK = 0x55602E;
     private static final float POUR_TICKS = 40;
-    private static final float SINK_TICKS = 26;
+    private static final float SINK_TICKS = 32;
+    /** The first part of the sink animation: the item falls from where it was caught onto the water. */
+    private static final float FALL_SHARE = 0.3F;
+    private static final float STREAM_TICKS = 12;
     private static final int SWIRL_MOTES = 12;
     private static final int RIPPLE_BEADS = 14;
 
@@ -48,6 +52,8 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         float pourAge;
         int pourColor;
         float sinkAge;
+        float sinkFrom;
+        boolean drying;
         final ItemStackRenderState sinking = new ItemStackRenderState();
     }
 
@@ -78,6 +84,8 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         state.pourAge = state.time - crucible.pouredAt();
         state.pourColor = crucible.pouredColor();
         state.sinkAge = state.time - crucible.sankAt();
+        state.sinkFrom = crucible.sankFrom();
+        state.drying = crucible.drying();
         if (state.sinkAge < SINK_TICKS && !crucible.sank().isEmpty()) {
             itemModelResolver.updateForTopItem(state.sinking, crucible.sank(), ItemDisplayContext.FIXED, level, null, (int) state.seed);
         } else {
@@ -97,7 +105,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
             case BOILING -> 0.25F;
         };
         float top = state.surface + Mth.sin(state.time * 0.35F) * stir / 16;
-        int bubbles = switch (state.phase) {
+        int bubbles = state.drying ? 16 : switch (state.phase) {
             case COLD -> 0;
             case WARMING -> 2;
             case SIMMERING -> 4;
@@ -105,10 +113,11 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         };
         LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, CrucibleBlockEntity.BOTTOM, top, RuneDrawing.argb(state.color, 0.86F),
                 state.time, state.seed, bubbles);
-        if (state.phase == Phase.BOILING || state.phase == Phase.SIMMERING) {
-            rollingSurface(state, poseStack, collector, top, state.phase == Phase.BOILING ? 11 : 4);
+        if (state.drying || state.phase == Phase.BOILING || state.phase == Phase.SIMMERING) {
+            rollingSurface(state, poseStack, collector, top, state.drying ? 20 : state.phase == Phase.BOILING ? 11 : 4);
         }
         if (state.pourAge >= 0 && state.pourAge < POUR_TICKS) {
+            pour(state, poseStack, collector, top);
             swirl(state, poseStack, collector, top);
         }
         if (state.sinkAge >= 0 && state.sinkAge < SINK_TICKS) {
@@ -138,6 +147,25 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         }
     }
 
+    /**
+     * Essence just poured in: a stream of it falls from over the rim into the middle, thinning as the bottle empties,
+     * and a bloom of its colour spreads over the surface and fades into the water.
+     */
+    private static void pour(State state, PoseStack poseStack, SubmitNodeCollector collector, float top) {
+        float t = state.pourAge / POUR_TICKS;
+        int color = RuneDrawing.mix(state.pourColor, 0xFFFFFF, 0.15F);
+        if (state.pourAge < STREAM_TICKS) {
+            float half = 0.6F / 16 * (1 - state.pourAge / STREAM_TICKS * 0.7F);
+            // The head of the stream reaches the water in three ticks; it keeps falling from over the rim.
+            float head = top + 0.95F * (1 - Math.min(1, state.pourAge / 3));
+            LiquidBox.submit(poseStack, collector, 0.5F - half, 0.5F - half, 0.5F + half, 0.5F + half, head, top + 0.95F,
+                    RuneDrawing.argb(color, 0.85F));
+        }
+        float reach = Math.min(0.5F - MIN, 0.04F + (0.5F - MIN) * Math.min(1, t * 2.2F));
+        LiquidBox.submit(poseStack, collector, 0.5F - reach, 0.5F - reach, 0.5F + reach, 0.5F + reach, top - 0.1F / 16, top + 0.04F / 16,
+                RuneDrawing.argb(color, 0.55F * (1 - t)));
+    }
+
     /** Essence just poured in: beads of its colour spiral into the middle and fade into the water. */
     private static void swirl(State state, PoseStack poseStack, SubmitNodeCollector collector, float top) {
         float t = state.pourAge / POUR_TICKS;
@@ -154,18 +182,28 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         }
     }
 
-    /** An item going under: it turns, sinks and shrinks away while two rings spread from where it fell. */
+    /**
+     * An item drawn in: it falls from where it was caught onto the water, then turns, sinks and shrinks away while two
+     * rings spread from where it fell.
+     */
     private void sink(State state, PoseStack poseStack, SubmitNodeCollector collector, float top) {
-        float t = state.sinkAge / SINK_TICKS;
+        float age = state.sinkAge / SINK_TICKS;
+        float fall = Math.min(1, age / FALL_SHARE);
+        // The rest of the animation runs from the moment it hits the water.
+        float t = Math.max(0, (age - FALL_SHARE) / (1 - FALL_SHARE));
         if (!state.sinking.isEmpty()) {
+            float y = fall < 1 ? Mth.lerp(fall * fall, Math.max(state.sinkFrom, top + 0.12F), top + 0.12F) : top + 0.12F - t * 0.4F;
             poseStack.pushPose();
-            poseStack.translate(0.5F, top + 0.12F - t * 0.4F, 0.5F);
+            poseStack.translate(0.5F, y, 0.5F);
             poseStack.rotate(Axis.YP.rotationDegrees(state.time * 9));
             poseStack.rotate(Axis.XP.rotationDegrees(25 + t * 40));
             float scale = 0.32F * (1 - t * 0.7F);
             poseStack.scale(scale, scale, scale);
             state.sinking.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
+        }
+        if (fall < 1) {
+            return;
         }
         int ring = RuneDrawing.mix(state.color, 0xFFFFFF, 0.6F);
         float bead = 0.3F / 16;

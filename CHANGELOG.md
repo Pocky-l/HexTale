@@ -39,12 +39,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   shatter it into dust. A first cut has three planes, a finish five with a narrow window (a master disc feels the
   planes from further off and cuts raw orbs twice as fast). Discs wear with every cut and crack.
 - Crucible, the first vessel of chemtech: sprinkle hextech dust on a cauldron (a water cauldron keeps its water) and
-  it wakes as a pot of plain blackened cast iron on four legs. Fill it with a water bucket or water
-  bottles and heat it from below - fire, a campfire or magma, soul fire faster, lava fastest. The water warms, steams,
-  simmers and comes to a rolling boil, bubbles breaking all over it. Only boiling water takes things in: bottles and
-  jars of essence pour in and swirl into it, tinting the water; items put in or dropped in sink and dissolve with a
-  gulp, clouding it; cold water spits them back out. Boiling water slowly evaporates. Use it to see how it stands, an
-  empty bucket takes the water back out, sneak-use pours everything out. What it brews is yet to be found.
+  it wakes as a pot of plain blackened cast iron on four legs. Fill it with a water bucket or water bottles and heat it
+  from below - fire, a campfire or magma, soul fire faster, lava fastest. The water warms, steams, simmers and comes
+  to a rolling boil, bubbles breaking all over it. Only boiling water takes things in: essence poured from bottles and
+  jars falls in a stream, blooms over the water and swirls into it, tinting it; items thrown over the pot are drawn
+  in, plop into the water, sink and dissolve, clouding it; cold water spits them back out. Boiling water slowly
+  evaporates. Use it to see how it stands, an empty bucket takes the water back out, sneak-use boils it all away in a
+  cloud of steam. What it brews is yet to be found.
 - Hextech Lamp: a hextech crystal floating in a cage of polished magic stone and brass, full light. It stands on a block or hangs under
   one, like a lantern.
 

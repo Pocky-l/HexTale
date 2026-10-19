@@ -49,6 +49,20 @@ public final class CrucibleGameTests {
         helper.succeed();
     }
 
+    /** Sneak-use boils the water away in a moment, essence and all. */
+    @HexTest(maxTicks = 80)
+    public static void theWaterBoilsAway(GameTestHelper helper) {
+        helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
+        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
+        crucible.boilAway();
+        helper.assertTrue(crucible.drying() && crucible.fillWater(CrucibleBlockEntity.WATER_BOTTLE, true) == 0, "it boils dry and takes no water meanwhile");
+        helper.succeedWhen(() -> {
+            helper.assertTrue(crucible.water() == 0 && !crucible.drying(), "the water is gone");
+            helper.assertTrue(crucible.fillWater(CrucibleBlockEntity.WATER_BOTTLE, true) > 0, "then it can be filled again");
+        });
+    }
+
     /** Over a lit soul campfire the water boils; then essence pours in, dropped sticks dissolve and the water evaporates. */
     @HexTest(maxTicks = 700)
     public static void heatBoilsTheWaterAndItTakesThingsIn(GameTestHelper helper) {
@@ -63,9 +77,11 @@ public final class CrucibleGameTests {
             if (!dropped[0]) {
                 dropped[0] = true;
                 helper.assertTrue(crucible.pour(EssenceMix.pure(Essence.FIRE, 16)).total() == 16, "boiling water takes essence");
-                Vec3 at = Vec3.atLowerCornerOf(helper.absolutePos(AT)).add(0.5, crucible.surface(), 0.5);
+                // Thrown over the pot, well above the water: boiling water draws it in from there.
+                Vec3 at = Vec3.atLowerCornerOf(helper.absolutePos(AT)).add(0.5, 2.2, 0.5);
                 ItemEntity sticks = new ItemEntity(helper.getLevel(), at.x, at.y, at.z, new ItemStack(Items.STICK, 3));
                 sticks.setDeltaMovement(Vec3.ZERO);
+                sticks.setNoGravity(true);
                 helper.getLevel().addFreshEntity(sticks);
             }
             helper.assertTrue(crucible.dissolvedCount() == 3, "the dropped sticks dissolve");

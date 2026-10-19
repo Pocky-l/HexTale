@@ -1,4 +1,4 @@
-# The Crucible in the world: cold water, a rolling boil, an item sinking.
+# The Crucible in the world: cold water, a rolling boil, an item drawn in from above, essence poured in, boiling dry.
 cmd gamerule doDaylightCycle false
 cmd time set noon
 cmd tp @s 0.5 -59 1.5 180 40
@@ -13,9 +13,27 @@ wait 40
 shot crucible_world
 cmd item replace entity @s hotbar.3 with minecraft:redstone 16
 slot 3
-use -2 -59 -2 up
-wait 6
+cmd summon minecraft:item -1.5 -56.8 -1.5 {Item:{id:"minecraft:redstone",count:1},Motion:[0.0,0.0,0.0]}
+wait 3
+shot crucible_catch
+wait 4
 shot crucible_sink
+wait 30
+cmd item replace entity @s hotbar.4 with hextale:essence_flask[hextale:essence={fire:64}]
+slot 4
+use -2 -59 -2 up
+wait 2
+shot crucible_pour_a
+wait 8
+shot crucible_pour_b
+wait 40
+cmd item replace entity @s hotbar.5 with minecraft:air
+slot 5
+sneak on
+use -2 -59 -2 up
+sneak off
+wait 10
+shot crucible_dry
 wait 40
 cmd tp @s -1.5 -57.6 -1.0 180 75
 wait 10

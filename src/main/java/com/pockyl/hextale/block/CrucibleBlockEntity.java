@@ -2,6 +2,7 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -54,8 +55,12 @@ public class CrucibleBlockEntity extends BlockEntity {
     public static final float FALL = 0.15F;
     /** Boiling water loses a millibucket every this many ticks. */
     public static final int EVAPORATE_TICKS = 8;
-    /** How often the crucible looks for items lying in it, and how often the clients hear of its temperature. */
-    private static final int SCAN_TICKS = 5;
+    /** How often the crucible looks for items over it, and how often the clients hear of its temperature. */
+    private static final int SCAN_TICKS = 2;
+    /** Items this far over the crucible (in blocks above it) are drawn into boiling water. */
+    private static final double CAPTURE_HEIGHT = 2.5;
+    /** Sneak-use boils the water dry in this many ticks. */
+    public static final int BOIL_DRY_TICKS = 30;
     private static final int SYNC_TICKS = 10;
     /** The water's surface: from the bottom of the bowl up to just under its rim, and the bowl's inside. */
     public static final float BOTTOM = 4F / 16;
@@ -102,6 +107,11 @@ public class CrucibleBlockEntity extends BlockEntity {
     private int pouredColor;
     private long sankAt = -1000;
     private ItemStack sank = ItemStack.EMPTY;
+    /** Where the last item was caught, in blocks above the crucible's floor: it falls from there into the water. */
+    private float sankFrom = 1;
+    /** When the water started boiling dry (sneak-use), and how much there was. */
+    private long dryingAt = -1000;
+    private int dryingFrom;
 
     public CrucibleBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CRUCIBLE.get(), pos, state);
@@ -145,12 +155,16 @@ public class CrucibleBlockEntity extends BlockEntity {
             dirty = true;
         }
         long now = level.getGameTime();
+        if (drying()) {
+            boilDry(level, now);
+            return;
+        }
         if (boiling() && now % EVAPORATE_TICKS == 0) {
             water--;
             dirty = true;
         }
         if (now % SCAN_TICKS == 0 && water > 0) {
-            takeItemsLyingIn(level);
+            takeItems(level);
         }
         if (phase() != before || dirty && now % SYNC_TICKS == 0) {
             dirty = false;
@@ -159,25 +173,56 @@ public class CrucibleBlockEntity extends BlockEntity {
         }
     }
 
-    /** Items lying in the water: boiling, it dissolves them; otherwise they bob up and over the rim. */
-    private void takeItemsLyingIn(ServerLevel level) {
-        AABB inside = new AABB(worldPosition.getX() + INSIDE_MIN, worldPosition.getY() + BOTTOM, worldPosition.getZ() + INSIDE_MIN,
-                worldPosition.getX() + INSIDE_MAX, worldPosition.getY() + surface() + 0.1, worldPosition.getZ() + INSIDE_MAX);
-        for (ItemEntity entity : level.getEntitiesOfClass(ItemEntity.class, inside, ItemEntity::isAlive)) {
+    /**
+     * Items over the crucible: boiling water draws them in at once (a thrown item is caught over the pot, it need not land
+     * in the water); cold water lets them fall in and bob back up and out.
+     */
+    private void takeItems(ServerLevel level) {
+        double x = worldPosition.getX();
+        double y = worldPosition.getY();
+        double z = worldPosition.getZ();
+        AABB over = new AABB(x, y + BOTTOM, z, x + 1, y + 1 + CAPTURE_HEIGHT, z + 1);
+        AABB inside = new AABB(x + INSIDE_MIN, y + BOTTOM, z + INSIDE_MIN, x + INSIDE_MAX, y + surface() + 0.1, z + INSIDE_MAX);
+        for (ItemEntity entity : level.getEntitiesOfClass(ItemEntity.class, boiling() ? over : inside, ItemEntity::isAlive)) {
             ItemStack stack = entity.getItem();
+            float caughtAt = (float) Math.max(surface(), entity.getY() - y);
             int taken = boiling() ? dissolve(stack, stack.getCount()) : 0;
             if (taken > 0) {
+                sankFrom = caughtAt;
                 stack.shrink(taken);
                 if (stack.isEmpty()) {
                     entity.discard();
                 } else {
                     entity.setItem(stack);
                 }
-            } else if (entity.getDeltaMovement().y <= 0.05) {
+            } else if (entity.getBoundingBox().intersects(inside) && entity.getDeltaMovement().y <= 0.05) {
                 // Cold water, or no room: the crucible will not take it - it bobs back up and out.
                 entity.setDeltaMovement((level.getRandom().nextDouble() - 0.5) * 0.25, 0.35, (level.getRandom().nextDouble() - 0.5) * 0.25);
                 level.playSound(null, worldPosition, SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS, 0.3F, 1.4F);
             }
+        }
+    }
+
+    /** Whether the water is boiling dry (sneak-use): it goes up in steam over {@link #BOIL_DRY_TICKS}. */
+    public boolean drying() {
+        return level != null && level.getGameTime() - dryingAt < BOIL_DRY_TICKS;
+    }
+
+    private void boilDry(ServerLevel level, long now) {
+        float t = Math.min(1, (now - dryingAt + 1) / (float) BOIL_DRY_TICKS);
+        water = Math.round(dryingFrom * (1 - t * t));
+        Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
+        level.sendParticles(ParticleTypes.CLOUD, at.x, at.y + 0.1, at.z, 3, 0.2, 0.05, 0.2, 0.03);
+        level.sendParticles(ParticleTypes.WHITE_SMOKE, at.x, at.y + 0.3, at.z, 4, 0.25, 0.2, 0.25, 0.02);
+        if (now % 3 == 0) {
+            level.sendParticles(ParticleTypes.BUBBLE_POP, at.x, at.y + 0.02, at.z, 6, 0.25, 0, 0.25, 0.02);
+        }
+        if (t >= 1) {
+            dryingAt = -1000;
+            empty();
+        } else {
+            setChanged();
+            sync();
         }
     }
 
@@ -232,11 +277,15 @@ public class CrucibleBlockEntity extends BlockEntity {
         return sank;
     }
 
+    public float sankFrom() {
+        return sankFrom;
+    }
+
     // ---- Filling and emptying ------------------------------------------------------------------------------------
 
     /** @return the water taken (all of {@code amount} or nothing) */
     public int fillWater(int amount, boolean simulate) {
-        if (water + amount > WATER_CAPACITY) {
+        if (water + amount > WATER_CAPACITY || drying()) {
             return 0;
         }
         if (!simulate) {
@@ -269,7 +318,12 @@ public class CrucibleBlockEntity extends BlockEntity {
         essence = essence.plus(taken);
         pouredColor = taken.color();
         pouredAt = level == null ? 0 : level.getGameTime();
-        playAt(ModSounds.TANK_GLUG.get(), 0.8F, 0.8F);
+        playAt(ModSounds.CRUCIBLE_POUR.get(), 1.0F, 0.9F + (level == null ? 0 : level.getRandom().nextFloat() * 0.2F));
+        if (level instanceof ServerLevel server) {
+            Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
+            server.sendParticles(ParticleTypes.SPLASH, at.x, at.y + 0.05, at.z, 10, 0.12, 0.02, 0.12, 0.05);
+            server.sendParticles(new DustParticleOptions(taken.color(), 1.2F), at.x, at.y + 0.1, at.z, 14, 0.18, 0.04, 0.18, 0);
+        }
         changed();
         return taken;
     }
@@ -299,7 +353,8 @@ public class CrucibleBlockEntity extends BlockEntity {
         }
         sank = stack.copyWithCount(1);
         sankAt = level == null ? 0 : level.getGameTime();
-        playAt(ModSounds.CRUCIBLE_DISSOLVE.get(), 0.8F, 0.9F + (level == null ? 0 : level.getRandom().nextFloat() * 0.2F));
+        playAt(ModSounds.CRUCIBLE_PLOP.get(), 0.9F, 0.9F + (level == null ? 0 : level.getRandom().nextFloat() * 0.25F));
+        playAt(ModSounds.CRUCIBLE_DISSOLVE.get(), 0.5F, 0.9F + (level == null ? 0 : level.getRandom().nextFloat() * 0.2F));
         if (level instanceof ServerLevel server) {
             Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
             server.sendParticles(ParticleTypes.SPLASH, at.x, at.y + 0.05, at.z, 8, 0.15, 0.02, 0.15, 0.05);
@@ -319,20 +374,20 @@ public class CrucibleBlockEntity extends BlockEntity {
         return true;
     }
 
-    /** Pours everything out on the ground: water, essence and whatever dissolved in it. */
-    public void pourOut() {
-        if (water <= 0 && essence.isEmpty() && dissolved.isEmpty()) {
+    /**
+     * Boils the water dry at once (sneak-use): it goes up in a cloud of steam over a moment, taking the essence and
+     * whatever dissolved in it along.
+     */
+    public void boilAway() {
+        if (water <= 0 || drying() || level == null) {
             return;
         }
-        if (level instanceof ServerLevel server) {
-            Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
-            server.sendParticles(ParticleTypes.SPLASH, at.x, at.y, at.z, 30, 0.35, 0.1, 0.35, 0.1);
-            if (temperature > Phase.SIMMERING.from) {
-                server.sendParticles(ParticleTypes.CLOUD, at.x, at.y + 0.2, at.z, 6, 0.25, 0.1, 0.25, 0.02);
-            }
-        }
-        playAt(SoundEvents.GENERIC_SPLASH, 0.6F, 0.9F);
-        empty();
+        dryingAt = level.getGameTime();
+        dryingFrom = water;
+        essence = EssenceMix.EMPTY;
+        dissolved.clear();
+        playAt(ModSounds.CRUCIBLE_EVAPORATE.get(), 1.0F, 0.9F + level.getRandom().nextFloat() * 0.15F);
+        changed();
     }
 
     private void empty() {
@@ -414,6 +469,9 @@ public class CrucibleBlockEntity extends BlockEntity {
         pouredColor = input.getIntOr("poured_color", 0);
         sankAt = input.getLongOr("sank_at", -1000);
         sank = input.read("sank", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+        sankFrom = input.getFloatOr("sank_from", 1);
+        dryingAt = input.getLongOr("drying_at", -1000);
+        dryingFrom = input.getIntOr("drying_from", 0);
     }
 
     @Override
@@ -431,6 +489,9 @@ public class CrucibleBlockEntity extends BlockEntity {
         output.putLong("poured_at", pouredAt);
         output.putInt("poured_color", pouredColor);
         output.putLong("sank_at", sankAt);
+        output.putFloat("sank_from", sankFrom);
+        output.putLong("drying_at", dryingAt);
+        output.putInt("drying_from", dryingFrom);
         if (!sank.isEmpty()) {
             output.store("sank", ItemStack.CODEC, sank);
         }

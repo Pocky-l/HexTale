@@ -411,5 +411,40 @@
         "volume": 0.7
       }
     ]
+  },
+  "crucible.pour": {
+    "subtitle": "subtitles.hextale.crucible.pour",
+    "sounds": [
+      {
+        "name": "hextale:crucible_pour1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:crucible_pour2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "crucible.plop": {
+    "subtitle": "subtitles.hextale.crucible.plop",
+    "sounds": [
+      {
+        "name": "hextale:crucible_plop1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:crucible_plop2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "crucible.evaporate": {
+    "subtitle": "subtitles.hextale.crucible.evaporate",
+    "sounds": [
+      {
+        "name": "hextale:crucible_evaporate",
+        "volume": 0.9
+      }
+    ]
   }
 }

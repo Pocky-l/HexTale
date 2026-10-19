@@ -50,6 +50,7 @@ import org.slf4j.Logger;
  * are relative to it; {@code screen} = top left of a container screen's panel), {@code move <x> <y>},
  * {@code click <x> <y> [left|right|middle]}, {@code press}/{@code release <x> <y> [button]},
  * {@code drag <x1> <y1> <x2> <y2> [ticks]}, {@code scroll <x> <y> <amount>}, {@code key <name>} (e.g. escape, e),
+ * {@code sneak on|off},
  * {@code close}, {@code shot <name>}, {@code quit}.
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID, value = Dist.CLIENT)
@@ -212,6 +213,10 @@ public final class GuiShots {
             case "scroll" -> {
                 move(minecraft, x(minecraft, a[1]), y(minecraft, a[2]));
                 minecraft.mouseHandler.onScroll(minecraft.getWindow().handle(), 0, Double.parseDouble(a[3]));
+                wait = SETTLE_TICKS;
+            }
+            case "sneak" -> {
+                minecraft.options.keyShift.setDown(a[1].equals("on"));
                 wait = SETTLE_TICKS;
             }
             case "key" -> {

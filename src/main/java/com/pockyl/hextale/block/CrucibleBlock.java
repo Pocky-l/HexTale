@@ -45,7 +45,7 @@ import org.jspecify.annotations.Nullable;
  * The Crucible: a cauldron woken with hextech dust. A water bucket (or water bottles) fills it, a fire, campfire, magma
  * or lava below heats it. Once it boils, bottles and jars of essence pour into it and items sink and dissolve (put in
  * by hand one at a time, or dropped in by the stack). An empty bucket takes the water back out, losing what is in it;
- * sneak-use with an empty hand pours everything out. A plain use says how the water stands.
+ * sneak-use with an empty hand boils it all away in a cloud of steam. A plain use says how the water stands.
  */
 public class CrucibleBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
@@ -147,7 +147,7 @@ public class CrucibleBlock extends BaseEntityBlock {
         return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
-    /** Sneaking pours everything out; otherwise the crucible says how its water stands. */
+    /** Sneaking boils the water away; otherwise the crucible says how its water stands. */
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!(level.getBlockEntity(pos) instanceof CrucibleBlockEntity crucible)) {
@@ -155,7 +155,7 @@ public class CrucibleBlock extends BaseEntityBlock {
         }
         if (!level.isClientSide()) {
             if (player.isSecondaryUseActive()) {
-                crucible.pourOut();
+                crucible.boilAway();
             } else {
                 player.sendOverlayMessage(status(crucible));
             }
