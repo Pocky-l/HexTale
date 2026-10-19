@@ -378,5 +378,38 @@
         "volume": 0.8
       }
     ]
+  },
+  "crucible.boil": {
+    "subtitle": "subtitles.hextale.crucible.boil",
+    "sounds": [
+      {
+        "name": "hextale:crucible_boil1",
+        "volume": 0.5,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:crucible_boil2",
+        "volume": 0.5,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:crucible_boil3",
+        "volume": 0.5,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "crucible.dissolve": {
+    "subtitle": "subtitles.hextale.crucible.dissolve",
+    "sounds": [
+      {
+        "name": "hextale:crucible_dissolve1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:crucible_dissolve2",
+        "volume": 0.7
+      }
+    ]
   }
 }

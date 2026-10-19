@@ -38,6 +38,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   red and cracks the crystal, so does too much heat; every facet cut cleanly gives the next grade, too many cracks
   shatter it into dust. A first cut has three planes, a finish five with a narrow window (a master disc feels the
   planes from further off and cuts raw orbs twice as fast). Discs wear with every cut and crack.
+- Crucible, the first vessel of chemtech: sprinkle hextech dust on a cauldron (a water cauldron keeps its water) and
+  it wakes as a blackened iron pot with a copper rim and a green sight glass. Fill it with a water bucket or water
+  bottles and heat it from below - fire, a campfire or magma, soul fire faster, lava fastest. The water warms, steams,
+  simmers and comes to a rolling boil, bubbles breaking all over it. Only boiling water takes things in: bottles and
+  jars of essence pour in and swirl into it, tinting the water; items put in or dropped in sink and dissolve with a
+  hiss, clouding it; cold water spits them back out. Boiling water slowly evaporates. Use it to see how it stands, an
+  empty bucket takes the water back out, sneak-use pours everything out. What it brews is yet to be found.
 - Hextech Lamp: a hextech crystal floating in a cage of polished magic stone and brass, full light. It stands on a block or hangs under
   one, like a lantern.
 

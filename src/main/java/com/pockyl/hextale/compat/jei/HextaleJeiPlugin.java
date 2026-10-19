@@ -95,6 +95,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEX_LAPIDARY.get(), "hex_lapidary");
         info(registration, ModItems.HEXTECH_DUST.get(), "hextech_dust");
         info(registration, ModItems.HEX_FURNACE.get(), "hex_furnace");
+        info(registration, ModItems.CRUCIBLE.get(), "crucible");
         info(registration, ModItems.GATHERING_PYLON.get(), "gathering_pylon");
         info(registration, ModItems.SENDING_PYLON.get(), "sending_pylon");
         info(registration, ModItems.RELAY_PYLON.get(), "relay_pylon");

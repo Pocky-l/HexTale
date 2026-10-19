@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -25,7 +26,10 @@ import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.block.CrucibleBlockEntity;
 import com.pockyl.hextale.block.HexFurnaceBlockEntity;
+import com.pockyl.hextale.quest.Guide;
+import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
@@ -40,7 +44,8 @@ import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Hextech dust wakes ordinary blocks: sprinkled on a crafting table it makes a Hex Workbench, on a furnace a Hex Furnace.
+ * Hextech dust wakes ordinary blocks: sprinkled on a crafting table it makes a Hex Workbench, on a furnace a Hex Furnace,
+ * on a cauldron a Crucible (keeping the cauldron's water).
  * The change takes {@value #TICKS} ticks: the dust swirls into the block, sparks climb its sides, and the new block
  * appears in a flash. Breaking or changing the block meanwhile stops it and gives the dust back.
  */
@@ -55,7 +60,9 @@ public final class BlockAwakening {
 
     private static final List<Awakening> TABLE = List.of(
             new Awakening(Blocks.CRAFTING_TABLE, ModBlocks.HEX_WORKBENCH),
-            new Awakening(Blocks.FURNACE, ModBlocks.HEX_FURNACE));
+            new Awakening(Blocks.FURNACE, ModBlocks.HEX_FURNACE),
+            new Awakening(Blocks.CAULDRON, ModBlocks.CRUCIBLE),
+            new Awakening(Blocks.WATER_CAULDRON, ModBlocks.CRUCIBLE));
 
     private record Pending(ResourceKey<Level> dimension, BlockPos pos, Awakening awakening, Direction facing, @Nullable UUID player,
                            long start, boolean refund) {
@@ -186,16 +193,26 @@ public final class BlockAwakening {
         if (level.getBlockEntity(pos) instanceof net.minecraft.world.Container container) {
             Containers.dropContents(level, pos, container);
         }
+        BlockState old = level.getBlockState(pos);
         BlockState next = pending.awakening().to().get().defaultBlockState();
         if (next.hasProperty(HorizontalDirectionalBlock.FACING)) {
             next = next.setValue(HorizontalDirectionalBlock.FACING, pending.facing());
         }
         level.setBlock(pos, next, Block.UPDATE_ALL);
+        if (old.is(Blocks.WATER_CAULDRON) && level.getBlockEntity(pos) instanceof CrucibleBlockEntity crucible) {
+            crucible.setWater(old.getValue(LayeredCauldronBlock.LEVEL) * CrucibleBlockEntity.WATER_CAPACITY / LayeredCauldronBlock.MAX_FILL_LEVEL);
+        }
         if (pending.player() != null && level.getBlockEntity(pos) instanceof HexFurnaceBlockEntity furnace) {
             Player player = level.getPlayerByUUID(pending.player());
             if (player != null) {
                 furnace.setOwner(player);
             }
+        }
+        // The woken block's step in the guide is done by the one who woke it.
+        if (pending.player() != null && level.getPlayerByUUID(pending.player()) instanceof net.minecraft.server.level.ServerPlayer player) {
+            net.minecraft.world.item.Item woken = next.getBlock().asItem();
+            Guide.all().stream().filter(quest -> quest.icon().is(woken)).findFirst()
+                    .ifPresent(quest -> Quests.complete(player, quest));
         }
         Vec3 centre = Vec3.atCenterOf(pos);
         level.sendParticles(ColorParticleOption.create(ParticleTypes.FLASH, 0xFF000000 | HEXTECH), centre.x, centre.y, centre.z, 1, 0, 0, 0, 0);

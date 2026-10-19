@@ -13,7 +13,8 @@ public enum Region {
     RUNES(0xB07AF0, 150),
     CIRCLE(0x4A9CFF, 70),
     PYLONS(0xF07AC0, 15),
-    FORGE(0xFF8A3A, 115);
+    FORGE(0xFF8A3A, 115),
+    CHEMTECH(0x7FD05A, 250);
 
     private final int color;
     private final double angle;

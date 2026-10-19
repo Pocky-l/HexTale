@@ -145,6 +145,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_ALTAR.get(), HextechAltarRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LAPIDARY.get(), com.pockyl.hextale.client.render.LapidaryRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_WORKBENCH.get(), com.pockyl.hextale.client.render.HexWorkbenchRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.CRUCIBLE.get(), com.pockyl.hextale.client.render.CrucibleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_PYLON.get(), com.pockyl.hextale.client.render.HexPylonRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL.get(), PedestalRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RUNE_STELE.get(), RuneSteleRenderer::new);

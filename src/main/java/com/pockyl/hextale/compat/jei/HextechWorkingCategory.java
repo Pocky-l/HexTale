@@ -39,6 +39,8 @@ public class HextechWorkingCategory extends AbstractRecipeCategory<HextechWorkin
                         new ItemStack(ModItems.HEX_WORKBENCH.get()), "awaken"),
                 new Recipe(List.of(new ItemStack(ModItems.HEXTECH_DUST.get()), new ItemStack(Items.FURNACE)),
                         new ItemStack(ModItems.HEX_FURNACE.get()), "awaken"),
+                new Recipe(List.of(new ItemStack(ModItems.HEXTECH_DUST.get()), new ItemStack(Items.CAULDRON)),
+                        new ItemStack(ModItems.CRUCIBLE.get()), "awaken"),
                 new Recipe(List.of(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(ModItems.CUTTING_DISC.get())),
                         new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), "cut"),
                 new Recipe(List.of(new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), new ItemStack(ModItems.MASTER_CUTTING_DISC.get())),

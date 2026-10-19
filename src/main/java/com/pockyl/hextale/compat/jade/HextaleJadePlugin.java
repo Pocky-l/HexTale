@@ -37,6 +37,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, EssenceTankBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, SeparatorBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, AlembicBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.CrucibleBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, DrainValveBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, PumpBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexFurnaceBlock.class);
@@ -67,6 +68,11 @@ public class HextaleJadePlugin implements IWailaPlugin {
                 String blocked = separator.blocked();
                 if ("no_essence".equals(blocked) || "no_fuel".equals(blocked)) {
                     tooltip.add(Component.translatable("gui.hextale.separator." + blocked).withStyle(ChatFormatting.RED));
+                }
+            } else if (entity instanceof com.pockyl.hextale.block.CrucibleBlockEntity crucible) {
+                tooltip.add(com.pockyl.hextale.block.CrucibleBlock.status(crucible));
+                if (!crucible.essence().isEmpty()) {
+                    tooltip.add(crucible.essence().describe().withStyle(ChatFormatting.GRAY));
                 }
             } else if (entity instanceof AlembicBlockEntity alembic) {
                 tooltip.add(Component.translatable("gui.hextale.alembic.water", alembic.water(), AlembicBlockEntity.WATER_CAPACITY));

@@ -90,6 +90,7 @@ public final class Hextale {
             output.accept(ModItems.CHISELED_MAGIC_BRICKS);
             output.accept(ModItems.HEXTECH_LAMP);
             output.accept(ModItems.HEX_WORKBENCH);
+            output.accept(ModItems.CRUCIBLE);
             output.accept(ModItems.HEX_FURNACE);
             output.accept(ModItems.HEX_LAPIDARY);
             output.accept(ModItems.CUTTING_DISC);
@@ -142,6 +143,7 @@ public final class Hextale {
             event.accept(ModItems.RAW_ZINC_BLOCK);
         } else if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(ModItems.HEX_WORKBENCH);
+            event.accept(ModItems.CRUCIBLE);
             event.accept(ModItems.HEX_FURNACE);
             event.accept(ModItems.HEX_LAPIDARY);
             event.accept(ModItems.RESEARCH_TABLE);

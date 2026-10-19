@@ -60,6 +60,9 @@ public final class Guide {
             QuestDisplay.scheme("hextale:hex_workbench", "hextale:hextech_dust", "minecraft:crafting_table"), HEXTECH_DUST);
     public static final Quest HEX_FURNACE = item(Region.FORGE, "hex_furnace", ModItems.HEX_FURNACE, Quest.Aura.FLAME,
             QuestDisplay.scheme("hextale:hex_furnace", "hextale:hextech_dust", "minecraft:furnace"), HEXTECH_DUST);
+    // Chemtech begins with dust on a cauldron: the crucible boils water and dissolves essences and items in it.
+    public static final Quest CRUCIBLE = item(Region.CHEMTECH, "crucible", ModItems.CRUCIBLE, Quest.Aura.LIFE,
+            QuestDisplay.scheme("hextale:crucible", "hextale:hextech_dust", "minecraft:cauldron"), HEXTECH_DUST);
     // Zinc is mined: sphalerite lies in stone and deepslate like copper, a little rarer.
     public static final Quest SPHALERITE = add(Region.WORKSHOP, "sphalerite", Quest.Kind.ITEM, List.of(),
             () -> new ItemStack(ModItems.SPHALERITE_ORE.get()), Quests.has(ModItems.RAW_ZINC), null, null, Quest.Aura.NONE);

@@ -55,6 +55,7 @@ public final class ModItems {
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEX_WORKBENCH = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_WORKBENCH);
     public static final DeferredItem<BlockItem> HEX_LAPIDARY = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_LAPIDARY);
+    public static final DeferredItem<BlockItem> CRUCIBLE = ITEMS.registerSimpleBlockItem(ModBlocks.CRUCIBLE);
     /** An iron disc edged with flint: cuts raw hextech into crystals on the lapidary; wears with every cut and crack. */
     public static final DeferredItem<Item> CUTTING_DISC = ITEMS.registerItem("cutting_disc", properties -> new Item(properties.durability(64)));
     /** A hexsteel disc edged with diamond: finishes crystals into stabilised gemstones, and cuts raw ones twice as fast. */

@@ -63,6 +63,10 @@ public final class ModSounds {
     /** Essence siphoned out of a jar into a machine that draws from the jars around it. */
     public static final DeferredHolder<SoundEvent, SoundEvent> ESSENCE_DRAW = register("essence.draw");
     /** A gathering pylon pulls items off the ground into its gem. */
+    /** A crucible at a rolling boil: heavy bubbles breaking in an iron pot. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_BOIL = register("crucible.boil");
+    /** Something sinks into boiling water and dissolves: a hiss and a low gulp. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_DISSOLVE = register("crucible.dissolve");
     public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_GATHER = register("pylon.gather");
     /** A sending pylon throws items out of its gem. */
     public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_SEND = register("pylon.send");

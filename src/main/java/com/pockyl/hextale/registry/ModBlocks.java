@@ -107,6 +107,11 @@ public final class ModBlocks {
     public static final DeferredBlock<HexWorkbenchBlock> HEX_WORKBENCH = BLOCKS.registerBlock("hex_workbench", HexWorkbenchBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD).noOcclusion()
                     .lightLevel(state -> 4));
+    /** A cauldron woken with hextech dust: boils water over heat and dissolves essences and items in it. */
+    public static final DeferredBlock<com.pockyl.hextale.block.CrucibleBlock> CRUCIBLE = BLOCKS.registerBlock("crucible",
+            com.pockyl.hextale.block.CrucibleBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.5F).sound(SoundType.METAL).noOcclusion()
+                    .requiresCorrectToolForDrops());
     /** A bench with a treadle-turned lap disc: hextech crystals are cut here along their cleavage planes. */
     public static final DeferredBlock<com.pockyl.hextale.block.LapidaryBlock> HEX_LAPIDARY = BLOCKS.registerBlock("hex_lapidary",
             com.pockyl.hextale.block.LapidaryBlock::new,

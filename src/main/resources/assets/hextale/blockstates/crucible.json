@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hextale:block/crucible"
+    },
+    "facing=east": {
+      "model": "hextale:block/crucible",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/crucible",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hextale:block/crucible",
+      "y": 270
+    }
+  }
+}
