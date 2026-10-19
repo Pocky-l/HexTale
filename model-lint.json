@@ -27,6 +27,24 @@
         "outside"
       ],
       "why": "the crystal clamp arm rises over the disc and the treadle tilts out at the front"
+    },
+    {
+      "model": "hextale:block/magic_fence_gate*_open",
+      "element": "*",
+      "face": "*",
+      "flags": [
+        "stretch"
+      ],
+      "why": "vanilla fence gate template: the open gate's side faces squash a 2x3 texel strip, as in every vanilla gate"
+    },
+    {
+      "model": "hextale:block/*magic_sapling",
+      "element": "*",
+      "face": "*",
+      "flags": [
+        "stretch"
+      ],
+      "why": "vanilla cross / flower_pot_cross templates rescale the diagonal planes, as for every vanilla sapling"
     }
   ]
 }

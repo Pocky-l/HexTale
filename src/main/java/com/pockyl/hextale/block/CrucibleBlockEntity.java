@@ -10,10 +10,12 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -29,12 +31,15 @@ import net.minecraft.tags.BlockTags;
 
 import com.pockyl.hextale.crafting.CrucibleRecipe;
 import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModSounds;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import org.jspecify.annotations.Nullable;
 
 /**
  * The Crucible: a cauldron woken with hextech dust, the first vessel of chemtech. It holds water over a heat source;
@@ -199,7 +204,8 @@ public class CrucibleBlockEntity extends BlockEntity {
             }
             ItemStack stack = entity.getItem();
             float caughtAt = (float) Math.max(surface(), entity.getY() - y);
-            int taken = take(stack, stack.getCount(), entity.getBoundingBox().intersects(inside) || boiling());
+            Player thrower = entity.getOwner() instanceof Player player ? player : null;
+            int taken = take(stack, stack.getCount(), entity.getBoundingBox().intersects(inside) || boiling(), thrower);
             if (taken > 0) {
                 sankFrom = caughtAt;
                 stack.shrink(taken);
@@ -221,18 +227,26 @@ public class CrucibleBlockEntity extends BlockEntity {
      * anything else with essences dissolves into them while the water boils. A catalyst the water cannot pay for yet is
      * not special: boiling water dissolves it like the rest.
      *
-     * @param reached whether the item has reached the liquid (boiling water draws items in from over it)
+     * @param reached    whether the item has reached the liquid (boiling water draws items in from over it)
+     * @param researcher who threw or put the item in (null: nobody): results that must be researched come only for them
      * @return how many were taken
      */
-    public int take(ItemStack stack, int count, boolean reached) {
+    public int take(ItemStack stack, int count, boolean reached, @Nullable Player researcher) {
         if (stack.isEmpty() || count <= 0 || drying() || liquid() <= 0) {
             return 0;
         }
-        CrucibleRecipe recipe = CrucibleRecipe.find(stack, essence);
+        CrucibleRecipe recipe = CrucibleRecipe.find(stack, essence, researcher);
         if (recipe != null) {
             return reached ? transmute(recipe, stack, count) : 0;
         }
-        return dissolve(stack, count);
+        ResearchTopic locked = CrucibleRecipe.lockedFor(stack, essence, researcher);
+        int dissolved = dissolve(stack, count);
+        if (dissolved > 0 && locked != null && researcher instanceof ServerPlayer player) {
+            // The brew was right, the researcher was not ready: the item only dissolved.
+            player.sendOverlayMessage(Component.translatable("research.hextale.locked",
+                    Component.translatable(locked.translationKey()).withColor(locked.color())));
+        }
+        return dissolved;
     }
 
     /** The catalysts sink, the recipe's essences swirl in after them, and the results rise out a moment later. */

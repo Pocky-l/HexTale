@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "hextale:block/magic_slab"
+    },
+    "type=double": {
+      "model": "hextale:block/magic_planks"
+    },
+    "type=top": {
+      "model": "hextale:block/magic_slab_top"
+    }
+  }
+}

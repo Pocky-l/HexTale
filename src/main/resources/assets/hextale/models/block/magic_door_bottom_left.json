@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/door_bottom_left",
+  "textures": {
+    "bottom": "hextale:block/magic_door_bottom"
+  }
+}

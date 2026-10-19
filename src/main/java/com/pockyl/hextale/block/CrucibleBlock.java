@@ -135,7 +135,7 @@ public class CrucibleBlock extends BaseEntityBlock {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (!level.isClientSide()) {
-            if (crucible.take(stack, 1, true) == 0) {
+            if (crucible.take(stack, 1, true, player) == 0) {
                 // Neither a catalyst the water can pay for, nor anything boiling water could dissolve.
                 return say(level, player, crucible.boiling() ? "no_essences" : "not_boiling");
             }

@@ -70,6 +70,7 @@ public final class HextaleClient {
         modBus.addListener((RegisterParticleProvidersEvent event) -> {
             event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new);
             event.registerSpriteSet(ModParticles.RUNE_SHARD.get(), com.pockyl.hextale.client.render.RuneShardParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.MAGIC_LEAF.get(), com.pockyl.hextale.client.render.MagicLeafParticle.Provider::new);
         });
         modBus.addListener(GogglesView::registerLayer);
         modBus.addListener(com.pockyl.hextale.client.screen.book.AltarDiorama::register);

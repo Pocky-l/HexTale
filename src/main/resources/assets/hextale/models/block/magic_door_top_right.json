@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/door_top_right",
+  "textures": {
+    "top": "hextale:block/magic_door_top"
+  }
+}

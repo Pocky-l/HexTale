@@ -53,6 +53,7 @@ public final class ResearchTopics {
     public static final ResearchTopic HEXSTEEL = add("hexsteel", 1, Essence.METAL, Essence.FIRE, ModItems.HEXSTEEL_INGOT);
     public static final ResearchTopic MASTER_DISC = add("master_cutting_disc", 2, Essence.SPARK, Essence.LIGHT, ModItems.MASTER_CUTTING_DISC);
     public static final ResearchTopic HEXTECH_LAMP = add("hextech_lamp", 2, Essence.LIGHT, Essence.FIRE, ModItems.HEXTECH_LAMP);
+    public static final ResearchTopic MAGIC_TREE = add("magic_sapling", 1, Essence.LIFE, Essence.LIGHT, ModItems.MAGIC_SAPLING);
     public static final ResearchTopic HEXTECH_PICKAXE = add("hextech_pickaxe", 2, Essence.METAL, Essence.EARTH,
             ModItems.pickaxe(HextechPickaxe.HEXTECH));
     public static final ResearchTopic GATHERING_PYLON = add("gathering_pylon", 2, Essence.AIR, Essence.SPARK, ModItems.GATHERING_PYLON);

@@ -1,7 +1,18 @@
 package com.pockyl.hextale.registry;
 
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ButtonBlock;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.FlowerPotBlock;
+import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -28,6 +39,8 @@ import com.pockyl.hextale.block.HexFurnaceBlock;
 import com.pockyl.hextale.block.HexWorkbenchBlock;
 import com.pockyl.hextale.block.HextechAltarBlock;
 import com.pockyl.hextale.block.HextechLampBlock;
+import com.pockyl.hextale.block.MagicLeavesBlock;
+import com.pockyl.hextale.block.MagicSaplingBlock;
 import com.pockyl.hextale.block.PedestalBlock;
 import com.pockyl.hextale.block.RuneSteleBlock;
 import com.pockyl.hextale.block.SeparatorBlock;
@@ -158,7 +171,66 @@ public final class ModBlocks {
                     .noOcclusion().requiresCorrectToolForDrops().isValidSpawn((state, level, pos, type) -> false)
                     .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false));
 
+    // The magic tree: a sapling that soaked up magic, plant and sap in a crucible grows into it. Its bark carries glowing
+    // channels, its canopy weeps and sheds glowing leaves; the wood never burns.
+    public static final BlockSetType MAGIC_SET = new BlockSetType("hextale_magic", true, true, true,
+            BlockSetType.PressurePlateSensitivity.EVERYTHING, SoundType.CHERRY_WOOD,
+            SoundEvents.CHERRY_WOOD_DOOR_CLOSE, SoundEvents.CHERRY_WOOD_DOOR_OPEN,
+            SoundEvents.CHERRY_WOOD_TRAPDOOR_CLOSE, SoundEvents.CHERRY_WOOD_TRAPDOOR_OPEN,
+            SoundEvents.CHERRY_WOOD_PRESSURE_PLATE_CLICK_OFF, SoundEvents.CHERRY_WOOD_PRESSURE_PLATE_CLICK_ON,
+            SoundEvents.CHERRY_WOOD_BUTTON_CLICK_OFF, SoundEvents.CHERRY_WOOD_BUTTON_CLICK_ON);
+    public static final WoodType MAGIC_WOOD_TYPE = new WoodType("hextale_magic", MAGIC_SET, SoundType.CHERRY_WOOD,
+            SoundType.CHERRY_WOOD_HANGING_SIGN, SoundEvents.CHERRY_WOOD_FENCE_GATE_CLOSE, SoundEvents.CHERRY_WOOD_FENCE_GATE_OPEN);
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_MAGIC_LOG = BLOCKS.registerBlock("stripped_magic_log",
+            RotatedPillarBlock::new, ModBlocks::magicWoodProperties);
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_MAGIC_WOOD = BLOCKS.registerBlock("stripped_magic_wood",
+            RotatedPillarBlock::new, ModBlocks::magicWoodProperties);
+    /** An axe strips it (data map {@code neoforge:transformables}) and bares the glowing heartwood. */
+    public static final DeferredBlock<RotatedPillarBlock> MAGIC_LOG = BLOCKS.registerBlock("magic_log",
+            RotatedPillarBlock::new, ModBlocks::magicWoodProperties);
+    public static final DeferredBlock<RotatedPillarBlock> MAGIC_WOOD = BLOCKS.registerBlock("magic_wood",
+            RotatedPillarBlock::new, ModBlocks::magicWoodProperties);
+    public static final DeferredBlock<Block> MAGIC_PLANKS = BLOCKS.registerBlock("magic_planks", Block::new,
+            () -> magicWoodProperties().strength(2.0F, 3.0F));
+    public static final DeferredBlock<StairBlock> MAGIC_STAIRS = BLOCKS.registerBlock("magic_stairs",
+            properties -> new StairBlock(MAGIC_PLANKS.get().defaultBlockState(), properties), () -> magicWoodProperties().strength(2.0F, 3.0F));
+    public static final DeferredBlock<SlabBlock> MAGIC_SLAB = BLOCKS.registerBlock("magic_slab", SlabBlock::new,
+            () -> magicWoodProperties().strength(2.0F, 3.0F));
+    public static final DeferredBlock<FenceBlock> MAGIC_FENCE = BLOCKS.registerBlock("magic_fence", FenceBlock::new,
+            () -> magicWoodProperties().strength(2.0F, 3.0F));
+    public static final DeferredBlock<FenceGateBlock> MAGIC_FENCE_GATE = BLOCKS.registerBlock("magic_fence_gate",
+            properties -> new FenceGateBlock(MAGIC_WOOD_TYPE, properties), () -> magicWoodProperties().strength(2.0F, 3.0F).forceSolidOn());
+    public static final DeferredBlock<DoorBlock> MAGIC_DOOR = BLOCKS.registerBlock("magic_door",
+            properties -> new DoorBlock(MAGIC_SET, properties),
+            () -> magicWoodProperties().strength(3.0F).noOcclusion().pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<TrapDoorBlock> MAGIC_TRAPDOOR = BLOCKS.registerBlock("magic_trapdoor",
+            properties -> new TrapDoorBlock(MAGIC_SET, properties),
+            () -> magicWoodProperties().strength(3.0F).noOcclusion().isValidSpawn((state, level, pos, type) -> false));
+    public static final DeferredBlock<ButtonBlock> MAGIC_BUTTON = BLOCKS.registerBlock("magic_button",
+            properties -> new ButtonBlock(MAGIC_SET, 30, properties),
+            () -> BlockBehaviour.Properties.of().noCollision().strength(0.5F).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<PressurePlateBlock> MAGIC_PRESSURE_PLATE = BLOCKS.registerBlock("magic_pressure_plate",
+            properties -> new PressurePlateBlock(MAGIC_SET, properties),
+            () -> magicWoodProperties().forceSolidOn().noCollision().strength(0.5F).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<MagicLeavesBlock> MAGIC_LEAVES = BLOCKS.registerBlock("magic_leaves", MagicLeavesBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(0.2F).randomTicks()
+                    .sound(SoundType.CHERRY_LEAVES).noOcclusion().isValidSpawn((state, level, pos, type) -> false)
+                    .isSuffocating((state, level, pos) -> false)
+                    .pushReaction(PushReaction.POPPED).isRedstoneConductor((state, level, pos) -> false));
+    public static final DeferredBlock<MagicSaplingBlock> MAGIC_SAPLING = BLOCKS.registerBlock("magic_sapling", MagicSaplingBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).noCollision().randomTicks().instabreak()
+                    .sound(SoundType.CHERRY_SAPLING).lightLevel(state -> 4).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<FlowerPotBlock> POTTED_MAGIC_SAPLING = BLOCKS.registerBlock("potted_magic_sapling",
+            properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, MAGIC_SAPLING, properties),
+            () -> BlockBehaviour.Properties.of().instabreak().noOcclusion().lightLevel(state -> 4).pushReaction(PushReaction.POPPED));
+
     private ModBlocks() {
+    }
+
+    /** Magic wood: dark violet, strong as oak, and it never catches fire (magic burned out of it would leave ash). */
+    private static BlockBehaviour.Properties magicWoodProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.BASS)
+                .strength(2.0F).sound(SoundType.CHERRY_WOOD);
     }
 
     private static BlockBehaviour.Properties magicStoneProperties() {

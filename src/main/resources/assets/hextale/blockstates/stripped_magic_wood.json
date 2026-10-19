@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "hextale:block/stripped_magic_wood",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "hextale:block/stripped_magic_wood"
+    },
+    "axis=z": {
+      "model": "hextale:block/stripped_magic_wood",
+      "x": 90
+    }
+  }
+}

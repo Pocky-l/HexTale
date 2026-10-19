@@ -1,0 +1,17 @@
+{
+  "values": [
+    "hextale:magic_log",
+    "hextale:magic_wood",
+    "hextale:stripped_magic_log",
+    "hextale:stripped_magic_wood",
+    "hextale:magic_planks",
+    "hextale:magic_stairs",
+    "hextale:magic_slab",
+    "hextale:magic_fence",
+    "hextale:magic_fence_gate",
+    "hextale:magic_door",
+    "hextale:magic_trapdoor",
+    "hextale:magic_button",
+    "hextale:magic_pressure_plate"
+  ]
+}

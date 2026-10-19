@@ -59,6 +59,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   never boils off by itself. Use it to see how it stands, an empty bucket takes the water back out, sneak-use boils it
   all away in a cloud of steam (essence counts as liquid too: a crucible boiled down to its essence still holds it).
   Crucible recipes are data (`data/<namespace>/hextale_crucible/`) and show in JEI.
+- Magic Tree: research it at the Research Table, then throw any sapling into a crucible holding 8 mB of magic, 6 of
+  plant and 4 of sap - it drinks them in and rises out as a Magic Tree Sprout (anyone who has not researched the tree
+  only dissolves the sapling, and is told what to research). The sprout glimmers and grows like any sapling; when it
+  shoots up, light runs up the new trunk and the crown sheds its first leaves. The tree: a slender dark violet trunk
+  that may kink once, bark buttresses and roots biting into the ground, three or four long branches and a tiered
+  umbrella of flat leaf pads with short hanging strands. Hextech-blue light glows in the cracks of its bark and in its
+  canopy at night, glowing leaves drift down from it and motes of light rise out of it. Its wood never burns. A full
+  wood set: log, wood, stripped log and wood (an axe bares the glowing heartwood), planks, stairs, slab, fence, fence
+  gate, door and trapdoor with a hexagon window and a blue inlay, button, pressure plate, leaves (they drop the sprout
+  now and then) and the sprout in a flower pot. Magic wood carries a little magic essence.
 - Essences as items: each of the 80 essences is an item with its pictogram in its colour - in the creative tab and in
   JEI, where crucible recipes ask for them. Typing an essence's name in the creative search or in JEI also finds every
   item you have studied that carries it (unstudied items stay hidden). The creative tab keeps one jar of essence, the

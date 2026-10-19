@@ -1,0 +1,11 @@
+{
+  "catalyst": "#hextale:magic_tree_catalysts",
+  "essences": {
+    "magic": 8,
+    "plant": 6,
+    "sap": 4
+  },
+  "result": {
+    "id": "hextale:magic_sapling"
+  }
+}

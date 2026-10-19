@@ -458,6 +458,58 @@
         "magic": 1
       },
       "tier": 1
+    },
+    "hextale:magic_sapling": {
+      "essences": {
+        "seed": 3,
+        "magic": 3,
+        "plant": 2,
+        "sap": 1
+      },
+      "tier": 2
+    },
+    "hextale:magic_log": {
+      "essences": {
+        "wood": 4,
+        "magic": 1,
+        "sap": 1,
+        "plant": 1
+      },
+      "tier": 2
+    },
+    "hextale:magic_wood": {
+      "essences": {
+        "wood": 4,
+        "magic": 1,
+        "sap": 1,
+        "plant": 1
+      },
+      "tier": 2
+    },
+    "hextale:stripped_magic_log": {
+      "essences": {
+        "wood": 4,
+        "magic": 1,
+        "energy": 1
+      },
+      "tier": 2
+    },
+    "hextale:stripped_magic_wood": {
+      "essences": {
+        "wood": 4,
+        "magic": 1,
+        "energy": 1
+      },
+      "tier": 2
+    },
+    "hextale:magic_leaves": {
+      "essences": {
+        "plant": 4,
+        "magic": 1,
+        "light": 1,
+        "air": 1
+      },
+      "tier": 2
     }
   }
 }

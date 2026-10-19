@@ -81,6 +81,24 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> SIPHON_PYLON = ITEMS.registerSimpleBlockItem(ModBlocks.SIPHON_PYLON,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> MAGIC_STONE_PILLAR = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_STONE_PILLAR);
+    // The magic tree's wood set; the sprout comes out of a crucible.
+    public static final DeferredItem<BlockItem> MAGIC_SAPLING = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_SAPLING,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> MAGIC_LEAVES = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_LEAVES);
+    public static final DeferredItem<BlockItem> MAGIC_LOG = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_LOG);
+    public static final DeferredItem<BlockItem> MAGIC_WOOD = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_WOOD);
+    public static final DeferredItem<BlockItem> STRIPPED_MAGIC_LOG = ITEMS.registerSimpleBlockItem(ModBlocks.STRIPPED_MAGIC_LOG);
+    public static final DeferredItem<BlockItem> STRIPPED_MAGIC_WOOD = ITEMS.registerSimpleBlockItem(ModBlocks.STRIPPED_MAGIC_WOOD);
+    public static final DeferredItem<BlockItem> MAGIC_PLANKS = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_PLANKS);
+    public static final DeferredItem<BlockItem> MAGIC_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_STAIRS);
+    public static final DeferredItem<BlockItem> MAGIC_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_SLAB);
+    public static final DeferredItem<BlockItem> MAGIC_FENCE = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_FENCE);
+    public static final DeferredItem<BlockItem> MAGIC_FENCE_GATE = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_FENCE_GATE);
+    public static final DeferredItem<net.minecraft.world.item.DoubleHighBlockItem> MAGIC_DOOR = ITEMS.registerItem("magic_door",
+            properties -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.MAGIC_DOOR.get(), properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> MAGIC_TRAPDOOR = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_TRAPDOOR);
+    public static final DeferredItem<BlockItem> MAGIC_BUTTON = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_BUTTON);
+    public static final DeferredItem<BlockItem> MAGIC_PRESSURE_PLATE = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_PRESSURE_PLATE);
     /** Rules what a pylon moves: white or black list, numbers to keep or to fill up to. */
     public static final DeferredItem<com.pockyl.hextale.item.PylonFilterItem> PYLON_FILTER = ITEMS.registerItem("pylon_filter",
             properties -> new com.pockyl.hextale.item.PylonFilterItem(properties.stacksTo(16)));

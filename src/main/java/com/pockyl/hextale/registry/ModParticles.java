@@ -3,6 +3,7 @@ package com.pockyl.hextale.registry;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,6 +27,10 @@ public final class ModParticles {
      * {@link #FLOW}). Rune steles feed the altar with them.
      */
     public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> RUNE_SHARD = colored("rune_shard");
+
+    /** A glowing leaf of the magic tree drifting down out of its crown. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MAGIC_LEAF = PARTICLES.register("magic_leaf",
+            () -> new SimpleParticleType(false));
 
     private static DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> colored(String name) {
         return PARTICLES.register(name, () -> new ParticleType<ColorParticleOption>(false) {
