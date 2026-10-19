@@ -11,6 +11,7 @@
     "hextale:magic_door",
     "hextale:magic_trapdoor",
     "hextale:magic_button",
-    "hextale:magic_pressure_plate"
+    "hextale:magic_pressure_plate",
+    "hextale:hex_sawmill"
   ]
 }

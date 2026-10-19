@@ -83,6 +83,14 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> WHIRL_LAUNCH = register("whirl.launch");
     /** A whirl reaps a plant. */
     public static final DeferredHolder<SoundEvent, SoundEvent> WHIRL_REAP = register("whirl.reap");
+    /** A Hex Sawmill's saw flies out. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> SAW_LAUNCH = register("saw.launch");
+    /** The saw bites into a trunk. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> SAW_CUT = register("saw.cut");
+    /** The sawn tree creaks and starts to fall. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> SAW_FELL = register("saw.fell");
+    /** The tree hits the ground. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> SAW_LAND = register("saw.land");
 
     private ModSounds() {
     }

@@ -1,0 +1,17 @@
+{
+  "center": "hextale:hextech_crystal",
+  "pedestals": [
+    "minecraft:iron_axe",
+    "minecraft:dark_oak_log",
+    "minecraft:dark_oak_log",
+    "minecraft:oak_sapling",
+    "hextale:brass_ingot",
+    "hextale:brass_ingot"
+  ],
+  "essences": {
+    "wind": 16,
+    "wood": 12,
+    "metal": 8
+  },
+  "result": "hextale:hex_sawmill"
+}

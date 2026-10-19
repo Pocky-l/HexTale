@@ -274,6 +274,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Light on the server: it reads its field block by block only when it looks, and an idle reaper looks more and
     more rarely; the clients play each whirl from one small message.
 - Whorled Magic Stone: polished magic stone with a carved spiral (stonecutter).
+- Hex Sawmill: a dark oak stump with a hextech saw disc of blued steel turning in a slot under a brass guard, a
+  crystal floating over it. Researched at the Research Table, made at the altar (hextech crystal, iron axe, dark oak
+  logs, an oak sapling, brass; wind, wood and metal essence). It throws a glowing copy of its disc at the nearest grown
+  tree within 6 blocks (3 up and down): the disc flies over, saws through the trunk in sawdust and sparks, and the whole
+  tree tips over away from the mill, slowly and then faster, and breaks apart where it hits the ground. Every log and
+  every leaf of it is taken; the drops (logs, saplings, sticks, apples) land on its stump and a sapling from them is
+  planted where it stood - four on the four feet of a big tree when four dropped.
+  - Only trees grown from the ground are felled: logs on dirt with grown leaves. Log walls, pillars and trees whose
+    leaves were placed by hand are never touched; roots under the ground stay.
+  - Each tree takes 2 mB of wind essence from a jar within 5 blocks (the jar's stream runs into the crystal); without
+    wind it stands becalmed. Runes at the altar: Shift (farther trees), Motor (saws more often), Lens; a broken sawmill
+    keeps them. Right click shows its grove, pace and wind; Jade too. Sounds: the disc whirring off, the bite into
+    wood, the trunk creaking over, the crash and the rustle of leaves.
 
 **Sound and integrations**
 - Synthesized sounds: the alembic simmers, the separator drips, the pump strokes, the valve's handwheel turns, jars

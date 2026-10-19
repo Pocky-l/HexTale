@@ -96,7 +96,8 @@ public final class WhirlReaperGameTests {
             helper.succeedWhen(() -> {
                 helper.assertBlockProperty(crop, CropBlock.AGE, 0);
                 helper.assertTrue(lying(helper, Items.WHEAT, crop) >= 1, "the wheat lies where it grew");
-                helper.assertBlockProperty(young, CropBlock.AGE, 3);
+                // Still growing on its own (random ticks may age it), never reaped while young.
+                helper.assertTrue(helper.getBlockState(young).getValue(CropBlock.AGE) >= 3, "the young wheat is left alone");
                 helper.assertBlockPresent(Blocks.AIR, melon);
                 helper.assertTrue(lying(helper, Items.MELON_SLICE, melon) >= 3, "the melon broke into slices where it lay");
                 helper.assertBlockPresent(Blocks.SUGAR_CANE, cane);

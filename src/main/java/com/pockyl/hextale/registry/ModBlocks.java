@@ -166,6 +166,11 @@ public final class ModBlocks {
     public static final DeferredBlock<com.pockyl.hextale.block.WhirlReaperBlock> WHIRL_REAPER = BLOCKS.registerBlock("whirl_reaper",
             com.pockyl.hextale.block.WhirlReaperBlock::new,
             () -> magicStoneProperties().strength(2.5F, 6.0F).sound(SoundType.COPPER).noOcclusion().lightLevel(state -> 4));
+    /** A dark oak stump with a hextech saw disc: fells the grown trees around it and plants them again. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HexSawmillBlock> HEX_SAWMILL = BLOCKS.registerBlock("hex_sawmill",
+            com.pockyl.hextale.block.HexSawmillBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(2.5F, 6.0F).sound(SoundType.WOOD).noOcclusion()
+                    .lightLevel(state -> 4));
     /** Polished magic stone with a whirl carved into it, the stone a reaper's field is laid out with. */
     public static final DeferredBlock<Block> WHORLED_MAGIC_STONE = BLOCKS.registerBlock("whorled_magic_stone", Block::new,
             () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF));

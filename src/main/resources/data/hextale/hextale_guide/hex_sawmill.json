@@ -1,0 +1,12 @@
+{
+  "region": "pylons",
+  "icon": "hextale:hex_sawmill",
+  "parents": [
+    "hextech_crystal"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:hex_sawmill"
+  },
+  "research": "hex_sawmill"
+}

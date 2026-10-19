@@ -480,5 +480,61 @@
         "volume": 0.6
       }
     ]
+  },
+  "saw.launch": {
+    "subtitle": "subtitles.hextale.saw.launch",
+    "sounds": [
+      {
+        "name": "hextale:saw_launch1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:saw_launch2",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:saw_launch3",
+        "volume": 0.7
+      }
+    ]
+  },
+  "saw.cut": {
+    "subtitle": "subtitles.hextale.saw.cut",
+    "sounds": [
+      {
+        "name": "hextale:saw_cut1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:saw_cut2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "saw.fell": {
+    "subtitle": "subtitles.hextale.saw.fell",
+    "sounds": [
+      {
+        "name": "hextale:saw_fell1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:saw_fell2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "saw.land": {
+    "subtitle": "subtitles.hextale.saw.land",
+    "sounds": [
+      {
+        "name": "hextale:saw_land1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:saw_land2",
+        "volume": 0.7
+      }
+    ]
   }
 }

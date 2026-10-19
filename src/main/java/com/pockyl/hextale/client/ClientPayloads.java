@@ -45,6 +45,12 @@ public final class ClientPayloads {
         event.register(com.pockyl.hextale.network.OpenStickerPayload.TYPE, (payload, context) ->
                 Minecraft.getInstance().gui.setScreen(new com.pockyl.hextale.client.screen.StickerScreen(payload.hand())));
         event.register(PylonFlightsPayload.TYPE, (payload, context) -> pylonFlights(payload));
+        event.register(com.pockyl.hextale.network.SawPayload.TYPE, (payload, context) -> {
+            ClientLevel level = Minecraft.getInstance().level;
+            if (level != null && level.getBlockEntity(payload.mill()) instanceof com.pockyl.hextale.block.HexSawmillBlockEntity mill) {
+                mill.show(payload, level.getGameTime());
+            }
+        });
         event.register(com.pockyl.hextale.network.WhirlPayload.TYPE, (payload, context) -> {
             ClientLevel level = Minecraft.getInstance().level;
             if (level != null && level.getBlockEntity(payload.reaper()) instanceof com.pockyl.hextale.block.WhirlReaperBlockEntity reaper) {
