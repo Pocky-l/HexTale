@@ -51,6 +51,11 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("pylon_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
 
+    /** The runes burned into a Whirl Reaper (on its item; the block entity keeps them while placed). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> REAPER_RUNES =
+            COMPONENTS.registerComponentType("reaper_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+
     /** The settings of a Pylon Filter. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.transport.ItemFilter>> ITEM_FILTER =
             COMPONENTS.registerComponentType("item_filter", builder -> builder

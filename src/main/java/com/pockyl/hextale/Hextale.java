@@ -118,11 +118,13 @@ public final class Hextale {
             output.accept(ModItems.ZINC_BLOCK);
             output.accept(ModItems.HEXSTEEL_BLOCK);
             output.accept(ModItems.BRASS_GRATE);
+            output.accept(ModItems.WHORLED_MAGIC_STONE);
             output.accept(ModItems.MAGIC_STONE_PILLAR);
             output.accept(ModItems.GATHERING_PYLON);
             output.accept(ModItems.SENDING_PYLON);
             output.accept(ModItems.RELAY_PYLON);
             output.accept(ModItems.SIPHON_PYLON);
+            output.accept(ModItems.WHIRL_REAPER);
             output.accept(ModItems.PYLON_FILTER);
             output.accept(ModItems.ESSENCE_STICKER);
             ModItems.PICKAXES.values().forEach(output::accept);

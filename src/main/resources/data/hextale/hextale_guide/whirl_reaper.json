@@ -1,0 +1,12 @@
+{
+  "region": "pylons",
+  "icon": "hextale:whirl_reaper",
+  "parents": [
+    "hextech_crystal"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:whirl_reaper"
+  },
+  "research": "whirl_reaper"
+}

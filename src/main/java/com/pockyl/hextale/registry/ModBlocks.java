@@ -162,6 +162,13 @@ public final class ModBlocks {
     public static final DeferredBlock<HexPylonBlock> SIPHON_PYLON = BLOCKS.registerBlock("siphon_pylon",
             properties -> new HexPylonBlock(PylonKind.SIPHON, properties),
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(SoundType.GLASS).noOcclusion().lightLevel(state -> 5));
+    /** Brass mast and wind vanes on a magic stone foot: sends whirls of wind to reap the ripe plants around it. */
+    public static final DeferredBlock<com.pockyl.hextale.block.WhirlReaperBlock> WHIRL_REAPER = BLOCKS.registerBlock("whirl_reaper",
+            com.pockyl.hextale.block.WhirlReaperBlock::new,
+            () -> magicStoneProperties().strength(2.5F, 6.0F).sound(SoundType.COPPER).noOcclusion().lightLevel(state -> 4));
+    /** Polished magic stone with a whirl carved into it, the stone a reaper's field is laid out with. */
+    public static final DeferredBlock<Block> WHORLED_MAGIC_STONE = BLOCKS.registerBlock("whorled_magic_stone", Block::new,
+            () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF));
     /** A fluted column of polished magic stone, like a quartz pillar. */
     public static final DeferredBlock<RotatedPillarBlock> MAGIC_STONE_PILLAR = BLOCKS.registerBlock("magic_stone_pillar",
             RotatedPillarBlock::new, () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF));

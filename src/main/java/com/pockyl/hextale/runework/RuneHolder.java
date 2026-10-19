@@ -22,12 +22,17 @@ import org.jspecify.annotations.Nullable;
 public enum RuneHolder {
     PICKAXE,
     /** The hex pylons share one set of runes. */
-    PYLON;
+    PYLON,
+    /** The Whirl Reaper. */
+    REAPER;
 
     @Nullable
     public static RuneHolder of(ItemStack stack) {
         if (HextechPickaxeItem.is(stack)) {
             return PICKAXE;
+        }
+        if (stack.is(ModItems.WHIRL_REAPER.get())) {
+            return REAPER;
         }
         return ModItems.isPylon(stack) ? PYLON : null;
     }
@@ -36,6 +41,7 @@ public enum RuneHolder {
         return switch (this) {
             case PICKAXE -> ModDataComponents.PICKAXE_RUNES.get();
             case PYLON -> ModDataComponents.PYLON_RUNES.get();
+            case REAPER -> ModDataComponents.REAPER_RUNES.get();
         };
     }
 
@@ -55,6 +61,7 @@ public enum RuneHolder {
         return switch (this) {
             case PICKAXE -> PickaxeRunes.SLOTS;
             case PYLON -> PylonRune.SLOTS;
+            case REAPER -> ReaperRune.SLOTS;
         };
     }
 
@@ -63,6 +70,7 @@ public enum RuneHolder {
         return switch (this) {
             case PICKAXE -> Arrays.stream(PickaxeRune.values()).map(PickaxeRune::rune).toList();
             case PYLON -> Arrays.stream(PylonRune.values()).map(PylonRune::rune).toList();
+            case REAPER -> Arrays.stream(ReaperRune.values()).map(ReaperRune::rune).toList();
         };
     }
 
@@ -70,6 +78,7 @@ public enum RuneHolder {
         return switch (this) {
             case PICKAXE -> PickaxeRune.of(rune) != null;
             case PYLON -> PylonRune.of(rune) != null;
+            case REAPER -> ReaperRune.of(rune) != null;
         };
     }
 
@@ -88,6 +97,7 @@ public enum RuneHolder {
         return switch (this) {
             case PICKAXE -> Objects.requireNonNull(PickaxeRune.of(rune)).cost(stars);
             case PYLON -> Objects.requireNonNull(PylonRune.of(rune)).cost(stars);
+            case REAPER -> Objects.requireNonNull(ReaperRune.of(rune)).cost(stars);
         };
     }
 
@@ -96,6 +106,7 @@ public enum RuneHolder {
         return switch (this) {
             case PICKAXE -> Objects.requireNonNull(PickaxeRune.of(rune)).descriptionKey();
             case PYLON -> Objects.requireNonNull(PylonRune.of(rune)).descriptionKey();
+            case REAPER -> Objects.requireNonNull(ReaperRune.of(rune)).descriptionKey();
         };
     }
 
@@ -104,6 +115,7 @@ public enum RuneHolder {
         return switch (this) {
             case PICKAXE -> Objects.requireNonNull(PickaxeRune.of(rune)).valueKey();
             case PYLON -> Objects.requireNonNull(PylonRune.of(rune)).valueKey();
+            case REAPER -> Objects.requireNonNull(ReaperRune.of(rune)).valueKey();
         };
     }
 
@@ -111,6 +123,7 @@ public enum RuneHolder {
         return switch (this) {
             case PICKAXE -> PickaxeEffects.amount(Objects.requireNonNull(PickaxeRune.of(rune)), strength);
             case PYLON -> Objects.requireNonNull(PylonRune.of(rune)).amountText(strength);
+            case REAPER -> Objects.requireNonNull(ReaperRune.of(rune)).amountText(strength);
         };
     }
 
@@ -120,6 +133,7 @@ public enum RuneHolder {
             case PICKAXE -> ModItems.PICKAXES.values().stream().map(item -> new ItemStack(item.get())).toList();
             case PYLON -> List.of(new ItemStack(ModItems.GATHERING_PYLON.get()), new ItemStack(ModItems.SENDING_PYLON.get()),
                     new ItemStack(ModItems.RELAY_PYLON.get()), new ItemStack(ModItems.SIPHON_PYLON.get()));
+            case REAPER -> List.of(new ItemStack(ModItems.WHIRL_REAPER.get()));
         };
     }
 

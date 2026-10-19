@@ -256,6 +256,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Built to be cheap: items move straight between inventories in one transaction (only the fetching is drawn), idle
   pylons look four times rarer, and the clients get one small message per move.
 
+**Farming: the Whirl Reaper**
+- Whirl Reaper: a brass mast on a foot of whorled magic stone, three framed sails turning round it and a hextech
+  crystal floating on top in a little whirl of its own. Researched at the Research Table and made at the altar
+  (hextech crystal, feathers, an iron hoe, brass, polished magic stone; wind, plant and crystal essence). Set among
+  the beds, it sends a whirl of wind to the nearest ripe plant within 4 blocks (3 up and down): the whirl leaves the
+  crystal, flies over to the plant and stands on it as a turning funnel of light, crumbs of the plant swirling up it.
+  - Wheat, carrots, potatoes, beetroot (and modded crops), nether wart, cocoa and sweet berries are reaped where
+    they stand: they start again from a sprout, one seed stays in the ground, the harvest falls on their own block.
+  - A melon or pumpkin on its stem is lifted off into the whirl, spun and broken open where it lay.
+  - Sugar cane, cactus and bamboo three blocks tall are twisted off above the root; the pieces rise turning round
+    the funnel and drop beside the root (a cactus would burn them on top of itself).
+  - Every whirl drinks wind essence from a jar within 5 blocks (1 mB for four whirls; feathers boil into wind); the
+    jar's stream runs into the crystal. Without wind it stands becalmed, its sails barely turning.
+  - A Gathering Pylon nearby picks up the harvest. Runes at the altar: Shift (wider field), Motor (whirls more often),
+    Lens; a broken reaper keeps them. Right click shows its field, pace and wind; Jade too.
+  - Light on the server: it reads its field block by block only when it looks, and an idle reaper looks more and
+    more rarely; the clients play each whirl from one small message.
+- Whorled Magic Stone: polished magic stone with a carved spiral (stonecutter).
+
 **Sound and integrations**
 - Synthesized sounds: the alembic simmers, the separator drips, the pump strokes, the valve's handwheel turns, jars
   glug, ink drips with every step; rituals hum, draw and finish with layered drones, whooshes and soft impacts.

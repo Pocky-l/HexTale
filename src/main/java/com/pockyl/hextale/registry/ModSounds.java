@@ -79,6 +79,10 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_LINK = register("pylon.link");
     /** A link between pylons is untied. */
     public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_UNLINK = register("pylon.unlink");
+    /** A whirl leaves a Whirl Reaper's crystal. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> WHIRL_LAUNCH = register("whirl.launch");
+    /** A whirl reaps a plant. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> WHIRL_REAP = register("whirl.reap");
 
     private ModSounds() {
     }

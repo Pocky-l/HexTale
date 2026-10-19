@@ -45,6 +45,7 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> CREATIVE_JAR = model("block/creative_essence_tank");
     /** The Hex Lapidary's lap disc, turned by the lapidary's renderer about its spindle. */
     public static final StandaloneModelKey<BlockStateModelPart> LAPIDARY_DISC = model("block/hex_lapidary_disc");
+    public static final StandaloneModelKey<BlockStateModelPart> WHIRL_REAPER_VANES = model("block/whirl_reaper_vanes");
 
     private TableModels() {
     }

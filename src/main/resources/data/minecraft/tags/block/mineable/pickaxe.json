@@ -30,6 +30,8 @@
     "hextale:raw_zinc_block",
     "hextale:zinc_block",
     "hextale:hexsteel_block",
-    "hextale:crucible"
+    "hextale:crucible",
+    "hextale:whirl_reaper",
+    "hextale:whorled_magic_stone"
   ]
 }

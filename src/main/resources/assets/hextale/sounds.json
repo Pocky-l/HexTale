@@ -446,5 +446,39 @@
         "volume": 0.5
       }
     ]
+  },
+  "whirl.launch": {
+    "subtitle": "subtitles.hextale.whirl.launch",
+    "sounds": [
+      {
+        "name": "hextale:whirl_launch1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:whirl_launch2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:whirl_launch3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "whirl.reap": {
+    "subtitle": "subtitles.hextale.whirl.reap",
+    "sounds": [
+      {
+        "name": "hextale:whirl_reap1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:whirl_reap2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:whirl_reap3",
+        "volume": 0.6
+      }
+    ]
   }
 }

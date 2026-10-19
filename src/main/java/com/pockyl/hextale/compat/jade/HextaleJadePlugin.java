@@ -42,6 +42,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, PumpBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexFurnaceBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexPylonBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.WhirlReaperBlock.class);
     }
 
     private enum Machines implements IBlockComponentProvider {
@@ -88,6 +89,8 @@ public class HextaleJadePlugin implements IWailaPlugin {
                 if (!furnace.blocked().isEmpty()) {
                     tooltip.add(Component.translatable("gui.hextale.hex_furnace." + furnace.blocked()).withStyle(ChatFormatting.RED));
                 }
+            } else if (entity instanceof com.pockyl.hextale.block.WhirlReaperBlockEntity reaper) {
+                tooltip.add(com.pockyl.hextale.block.WhirlReaperBlock.status(reaper).copy().withStyle(ChatFormatting.GRAY));
             } else if (entity instanceof com.pockyl.hextale.block.HexPylonBlockEntity pylon) {
                 tooltip.add(com.pockyl.hextale.block.HexPylonBlock.status(pylon).copy().withStyle(ChatFormatting.GRAY));
                 for (var entry : pylon.runes().entries()) {

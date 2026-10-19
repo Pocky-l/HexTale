@@ -109,6 +109,9 @@ public final class ModItems {
     public static final DeferredItem<com.pockyl.hextale.item.EssenceItem> ESSENCE = ITEMS.registerItem("essence",
             com.pockyl.hextale.item.EssenceItem::new);
     public static final DeferredItem<BlockItem> BRASS_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_GRATE);
+    public static final DeferredItem<BlockItem> WHIRL_REAPER = ITEMS.registerSimpleBlockItem(ModBlocks.WHIRL_REAPER,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> WHORLED_MAGIC_STONE = ITEMS.registerSimpleBlockItem(ModBlocks.WHORLED_MAGIC_STONE);
     /** Creative only: everything known at once - every rune with three stars, every item studied, every quest done. */
     public static final DeferredItem<KnowledgeScrollItem> SCROLL_OF_OMNISCIENCE = ITEMS.registerItem("scroll_of_omniscience",
             properties -> new KnowledgeScrollItem(true, properties.stacksTo(1).rarity(Rarity.EPIC)));

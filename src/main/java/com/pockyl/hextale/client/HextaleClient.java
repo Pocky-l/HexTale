@@ -98,6 +98,9 @@ public final class HextaleClient {
                             .append(Component.literal(" " + "★".repeat(entry.stars())).withStyle(ChatFormatting.GOLD)));
                 }
             }
+            if (stack.is(ModItems.WHIRL_REAPER.get())) {
+                event.getToolTip().add(Component.translatable("block.hextale.whirl_reaper.hint").withStyle(ChatFormatting.GRAY));
+            }
             // How a pipe's sides are set.
             if (stack.is(ModItems.BRASS_PIPE.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.brass_pipe.hint").withStyle(ChatFormatting.DARK_AQUA));
@@ -149,6 +152,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.BIG_ESSENCE_JAR.get(), com.pockyl.hextale.client.render.BigEssenceJarRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_ALTAR.get(), HextechAltarRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LAPIDARY.get(), com.pockyl.hextale.client.render.LapidaryRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.WHIRL_REAPER.get(), com.pockyl.hextale.client.render.WhirlReaperRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_WORKBENCH.get(), com.pockyl.hextale.client.render.HexWorkbenchRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CRUCIBLE.get(), com.pockyl.hextale.client.render.CrucibleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_PYLON.get(), com.pockyl.hextale.client.render.HexPylonRenderer::new);
