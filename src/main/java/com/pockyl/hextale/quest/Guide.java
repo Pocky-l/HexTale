@@ -37,10 +37,15 @@ import org.jspecify.annotations.Nullable;
  */
 public final class Guide {
     /** Devices still being worked out stand this far out from their step's rim, then further ring by ring. */
-    private static final int DEVICE_RING = 30;
+    private static final int DEVICE_RING = 36;
     private static final int DEVICE_RING_STEP = 8;
     /** No two steps closer than this, centre to centre. */
     private static final int CROWD = 34;
+    /** How far a link bows out of the straight line at most, and as a share of its length. */
+    private static final double BOW = 22;
+    private static final double BOW_SHARE = 0.18;
+    /** Points a link's curve is checked at. */
+    public static final int LINK_SAMPLES = 16;
 
     private static final List<Quest> ALL = new ArrayList<>();
     private static final Map<String, Quest> BY_ID = new HashMap<>();
@@ -191,6 +196,43 @@ public final class Guide {
         wip("rain_caller", Items.TRIDENT, UNSTABLE_HEXTECH);
         wip("xp_condenser", Items.SCULK_CATALYST, ITEM_STUDY);
         wip("hex_archive", Items.CHISELED_BOOKSHELF, INK);
+        wip("auto_workbench", Items.DROPPER, HEX_WORKBENCH);
+        wip("dust_charge", Items.GLOWSTONE_DUST, HEXTECH_DUST);
+        wip("field_notes", Items.WRITABLE_BOOK, RESEARCHERS_DIARY);
+        wip("star_chart", Items.MAP, RESEARCH_TABLE);
+        wip("clockwork", Items.LEVER, BRASS);
+        // Chemtech: what the crucible will grow into. Green and lush near the crucible, smog and rust further out.
+        Quest brews = wip("crucible_brews", Items.POTION, CRUCIBLE);
+        Quest vials = wip("chem_vial", Items.DRAGON_BREATH, brews);
+        wip("gas_grenade", Items.LINGERING_POTION, vials);
+        wip("mutation_injector", Items.SPIDER_EYE, vials, CONCENTRATE);
+        Quest salts = wip("catalyst_salts", Items.SUGAR, brews);
+        wip("synthetic_crystal", Items.AMETHYST_SHARD, salts, HEXTECH_CRYSTAL);
+        wip("chem_still", Items.DECORATED_POT, brews);
+        Quest burner = wip("chem_burner", Items.CAMPFIRE, CRUCIBLE, SEPARATOR);
+        Quest boiler = wip("chem_boiler", Items.BLAST_FURNACE, burner);
+        wip("chem_press", Items.STICKY_PISTON, boiler);
+        wip("chem_drill", Items.NETHERITE_PICKAXE, boiler);
+        wip("chem_tank_suit", Items.IRON_CHESTPLATE, boiler);
+        wip("chem_lumen", Items.LANTERN, burner);
+        Quest bloom = wip("cave_bloom", Items.GLOW_LICHEN, CRUCIBLE);
+        Quest shimmer = wip("shimmer", Items.EXPERIENCE_BOTTLE, bloom, CONCENTRATE);
+        Quest refined = wip("refined_shimmer", Items.OMINOUS_BOTTLE, shimmer);
+        wip("apex_shimmer", Items.TOTEM_OF_UNDYING, refined);
+        wip("shimmer_engine", Items.SCULK_SHRIEKER, refined);
+        wip("shimmer_arm", Items.CHAINMAIL_CHESTPLATE, refined);
+        wip("pink_brazier", Items.SOUL_CAMPFIRE, shimmer);
+        Quest bench = wip("lab_bench", Items.BREWING_STAND, CRUCIBLE, SEPARATOR);
+        wip("experiment_pot", Items.FLOWER_POT, bench, CONCENTRATE);
+        wip("growth_serum", Items.BONE_MEAL, bench);
+        Quest cage = wip("specimen_cage", Items.IRON_BARS, bench);
+        Quest tissue = wip("mutant_reagents", Items.ROTTEN_FLESH, cage);
+        wip("mutated_beasts", Items.GOAT_HORN, tissue);
+        Quest hood = wip("fume_hood", Items.IRON_TRAPDOOR, CRUCIBLE);
+        Quest gray = wip("the_gray", Items.GUNPOWDER, hood, DRAIN_VALVE);
+        wip("acid_bath", Items.FERMENTED_SPIDER_EYE, gray, DRAIN_VALVE);
+        wip("smog_scrubber", Items.WET_SPONGE, gray);
+        wip("rust_blight", Items.IRON_NUGGET, gray);
         // The essence works, the fields and the woods.
         wip("sawmill", Items.OAK_PLANKS, ALEMBIC);
         wip("sap_tap", Items.HONEY_BOTTLE, ESSENCE_BOTTLE);
@@ -200,10 +242,6 @@ public final class Guide {
         wip("steam_boiler", Items.CAULDRON, PUMP);
         wip("fish_weir", Items.FISHING_ROD, PUMP);
         wip("rune_pump", Items.HOPPER, PUMP);
-        wip("chem_burner", Items.CAMPFIRE, SEPARATOR);
-        wip("lab_bench", Items.BREWING_STAND, SEPARATOR);
-        wip("experiment_pot", Items.FLOWER_POT, SEPARATOR, CONCENTRATE);
-        wip("specimen_cage", Items.IRON_BARS, SEPARATOR);
         wip("seed_sower", Items.WHEAT_SEEDS, ESSENCE_TANK);
         wip("reaper", Items.WHEAT, ESSENCE_TANK);
         wip("feeding_trough", Items.HAY_BLOCK, ESSENCE_TANK);
@@ -212,13 +250,9 @@ public final class Guide {
         wip("field_ward", Items.CARVED_PUMPKIN, MAGIC_STONE);
         wip("tree_feller", Items.OAK_LOG, MAGIC_STONE, ESSENCE_TANK);
         wip("greenhouse", Items.FLOWERING_AZALEA, MAGIC_STONE);
-        wip("mutation_injector", Items.SPIDER_EYE, CONCENTRATE);
         wip("healing_spring", Items.GLISTERING_MELON_SLICE, CONCENTRATE);
         wip("spring_basin", Items.LILY_PAD, CONCENTRATE);
-        wip("shimmer", Items.EXPERIENCE_BOTTLE, CONCENTRATE);
         wip("compost_vat", Items.COMPOSTER, DRAIN_VALVE);
-        wip("the_gray", Items.GUNPOWDER, DRAIN_VALVE);
-        wip("acid_bath", Items.FERMENTED_SPIDER_EYE, DRAIN_VALVE);
         wip("cooler", Items.BLUE_ICE, DRAIN_VALVE);
         wip("crystal_vat", Items.BUDDING_AMETHYST, BIG_ESSENCE_JAR, HEXTECH_GEMSTONE);
         wip("regen_tank", Items.AXOLOTL_BUCKET, BIG_ESSENCE_JAR);
@@ -231,6 +265,10 @@ public final class Guide {
         wip("geode_resonator", Items.SMALL_AMETHYST_BUD, HEXTECH_ALTAR, ESSENCE_TANK);
         wip("nullstone", Items.CRYING_OBSIDIAN, HEXTECH_ALTAR);
         wip("hexcore", Items.HEART_OF_THE_SEA, HEXTECH_ALTAR, HEXTECH_GEMSTONE);
+        wip("recall_device", Items.RECOVERY_COMPASS, HEXTECH_ALTAR);
+        wip("gem_sockets", Items.EMERALD, HEX_LAPIDARY);
+        wip("hex_bow", Items.CROSSBOW, HEXTECH_CRYSTAL);
+        wip("mining_gauntlet", Items.MACE, HEXTECH_GEMSTONE);
         wip("rune_workbench", Items.CRAFTER, PEDESTAL, HEXTECH_CRYSTAL);
         wip("barrier_ward", Items.SHIELD, PEDESTAL);
         wip("rune_lock", Items.TRIAL_KEY, RUNE_STELE);
@@ -269,6 +307,7 @@ public final class Guide {
         wip("hex_flamethrower", Items.FIRE_CHARGE, HEXSTEEL);
         wip("mining_charge", Items.TNT, HEX_FURNACE);
         wip("magma_font", Items.LAVA_BUCKET, HEX_FURNACE);
+        wip("hex_bronze", Items.COPPER_INGOT, HEX_FURNACE);
         wip("magic_metal", Items.NETHERITE_SCRAP, HEXSTEEL, HEXTECH_GEMSTONE);
         wip("rune_anvil", Items.ANVIL, HEXSTEEL);
         // Workstations: the steps that grow from them stand around them. The altar is the heart of the guide.
@@ -283,7 +322,7 @@ public final class Guide {
         at(HEXTECH_DUST, -220, 0);
         at(HEX_WORKBENCH, -100, -20);
         at(HEX_FURNACE, -220, 130);
-        at(CRUCIBLE, -250, -130);
+        at(CRUCIBLE, -400, -110);
         at(SPHALERITE, -250, 250);
         at(ZINC, -160, 260);
         at(BRASS, -120, 150);
@@ -330,6 +369,20 @@ public final class Guide {
         at(PICKAXE_RUNE, 660, 170);
         at(REFINED_PICKAXE, 800, 120);
         at(RADIANT_PICKAXE, 880, 170);
+        // West: chemtech, the crucible's devices to come. Its branches are placed by hand, their leaves gather around them.
+        at(brews, -520, -180);
+        at(vials, -610, -260);
+        at(salts, -640, -160);
+        at(burner, -540, -50);
+        at(boiler, -650, -30);
+        at(bloom, -500, 50);
+        at(shimmer, -580, 130);
+        at(refined, -690, 150);
+        at(bench, -410, 100);
+        at(cage, -460, 200);
+        at(tissue, -560, 250);
+        at(hood, -440, -240);
+        at(gray, -520, -330);
         HEXTECH_ALTAR.scene = Quest.Scene.ALTAR;
         PEDESTAL.scene = Quest.Scene.PEDESTAL;
         RUNE_STELE.scene = Quest.Scene.STELE;
@@ -365,15 +418,21 @@ public final class Guide {
                 display, topic, aura);
     }
 
-    /** A device still being worked out: it sits in its first parent's region, on that parent's branch. */
-    private static void wip(String id, ItemLike icon, Quest... parents) {
-        add(parents[0].region(), "wip_" + id, Quest.Kind.WIP, List.of(parents), () -> new ItemStack(icon), player -> false, null, null,
+    /**
+     * A device still being worked out: it sits in its first parent's region, on that parent's branch. Devices may grow from
+     * other devices still being worked out, so the guide can show where a theme is heading.
+     */
+    private static Quest wip(String id, ItemLike icon, Quest... parents) {
+        return add(parents[0].region(), "wip_" + id, Quest.Kind.WIP, List.of(parents), () -> new ItemStack(icon), player -> false, null, null,
                 Quest.Aura.NONE);
     }
 
     // ---- Layout -------------------------------------------------------------------------------------------------------
 
-    /** Puts an item step on the map. Every item step is placed by hand, so the map reads the way it is meant to. */
+    /**
+     * Puts a step on the map. Every item step is placed by hand, so the map reads the way it is meant to; devices still
+     * being worked out are placed by hand where they start a branch of their own, the rest find a place by themselves.
+     */
     private static void at(Quest quest, int x, int y) {
         quest.x = x;
         quest.y = y;
@@ -389,7 +448,8 @@ public final class Guide {
      * Places the devices still being worked out around the steps they hang from (the item steps are placed by hand): each
      * takes the first free spot on rings around its step, trying the direction away from where the step grows from first
      * and then turning left and right. A spot is free when it keeps clear of every step, its link crosses no other link
-     * and runs over no step, and no link runs over it. Deterministic, so every reader sees the same sky.
+     * and runs over no step, and no link runs over it. Then every link bows into a gentle arc, to the side and as far as
+     * it can without touching another link or a step. Deterministic, so every reader sees the same sky.
      */
     private static void layout() {
         List<Quest[]> links = new ArrayList<>();
@@ -403,12 +463,22 @@ public final class Guide {
                 }
             }
         }
-        List<Quest> placed = new ArrayList<>(PLACED);
+        List<Quest> placed = new ArrayList<>();
+        for (Quest quest : ALL) {
+            if (quest.kind() == Quest.Kind.ITEM) {
+                placed.add(quest);
+            }
+        }
         for (Quest quest : ALL) {
             if (quest.kind() != Quest.Kind.WIP) {
                 continue;
             }
             Quest parent = quest.parent();
+            if (PLACED.contains(quest)) {
+                placed.add(quest);
+                links.add(new Quest[]{parent, quest});
+                continue;
+            }
             Quest grand = parent.parent();
             double out = grand != null ? Math.atan2(parent.y - grand.y, parent.x - grand.x) : -Math.PI / 2;
             boolean found = false;
@@ -429,6 +499,121 @@ public final class Guide {
             placed.add(quest);
             links.add(new Quest[]{parent, quest});
         }
+        bowLinks(placed, links);
+    }
+
+    /**
+     * Bows every link, in order, as far as it can: first to the side its pair prefers (so neighbouring links bow
+     * differently), then to the other side, then less and less. A bow is kept only when the curve keeps clear of every
+     * step and crosses no other link as it is now; a straight link is always clear, so the map never gets a crossing.
+     */
+    private static void bowLinks(List<Quest> placed, List<Quest[]> links) {
+        Map<Quest, double[][]> curves = new HashMap<>();
+        for (Quest[] link : links) {
+            curves.put(link[1], curve(link[0], link[1], 0));
+        }
+        for (Quest[] link : links) {
+            Quest from = link[0];
+            Quest to = link[1];
+            double most = Math.min(BOW, Math.hypot(to.x - from.x, to.y - from.y) * BOW_SHARE);
+            double side = (from.index + to.index) % 2 == 0 ? 1 : -1;
+            for (double bow : new double[]{side * most, -side * most, side * most * 0.6, -side * most * 0.6, side * most * 0.3,
+                    -side * most * 0.3}) {
+                double[][] curve = curve(from, to, bow);
+                if (clearCurve(from, to, curve, placed, links, curves)) {
+                    to.bow = (float) bow;
+                    curves.put(to, curve);
+                    break;
+                }
+            }
+        }
+    }
+
+    private static boolean clearCurve(Quest from, Quest to, double[][] curve, List<Quest> placed, List<Quest[]> links,
+                                      Map<Quest, double[][]> curves) {
+        for (Quest step : placed) {
+            if (step != from && step != to && distanceToCurve(step.x, step.y, curve) < Math.max(14, body(step) - 6)) {
+                return false;
+            }
+        }
+        for (Quest[] link : links) {
+            if (link[1] == to) {
+                continue;
+            }
+            double[][] other = curves.get(link[1]);
+            // Links meeting at a step are compared only outside that step's medallion.
+            Quest shared = link[0] == from || link[0] == to ? link[0] : link[1] == from ? link[1] : null;
+            if (curvesCross(curve, other, shared)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** A link's curve sampled from its first parent's centre to its step's centre. */
+    private static double[][] curve(Quest from, Quest to, double bow) {
+        double[][] points = new double[LINK_SAMPLES + 1][];
+        for (int i = 0; i <= LINK_SAMPLES; i++) {
+            points[i] = linkPoint(from, to, bow, i / (double) LINK_SAMPLES);
+        }
+        return points;
+    }
+
+    /**
+     * A point of the link from {@code from} to {@code to} at {@code t} (0..1): a quadratic curve whose middle bows
+     * {@code bow} map pixels to the side (positive = to the right of the way from {@code from}).
+     */
+    public static double[] linkPoint(Quest from, Quest to, double bow, double t) {
+        double dx = to.x - from.x;
+        double dy = to.y - from.y;
+        double length = Math.max(1, Math.hypot(dx, dy));
+        double cx = (from.x + to.x) / 2.0 - dy / length * bow;
+        double cy = (from.y + to.y) / 2.0 + dx / length * bow;
+        double u = 1 - t;
+        return new double[]{u * u * from.x + 2 * u * t * cx + t * t * to.x, u * u * from.y + 2 * u * t * cy + t * t * to.y};
+    }
+
+    private static boolean curvesCross(double[][] a, double[][] b, @Nullable Quest shared) {
+        double room = shared == null ? 0 : body(shared) + 4;
+        for (int i = 0; i + 1 < a.length; i++) {
+            if (near(a[i], shared, room) || near(a[i + 1], shared, room)) {
+                continue;
+            }
+            for (int j = 0; j + 1 < b.length; j++) {
+                if (near(b[j], shared, room) || near(b[j + 1], shared, room)) {
+                    continue;
+                }
+                if (segmentsCross(a[i], a[i + 1], b[j], b[j + 1])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean near(double[] point, @Nullable Quest step, double room) {
+        return step != null && Math.hypot(point[0] - step.x, point[1] - step.y) <= room;
+    }
+
+    /** Whether two segments cross (touching ends do not count). */
+    public static boolean segmentsCross(double[] a0, double[] a1, double[] b0, double[] b1) {
+        return turn(b0, b1, a0) * turn(b0, b1, a1) < 0 && turn(a0, a1, b0) * turn(a0, a1, b1) < 0;
+    }
+
+    private static int turn(double[] from, double[] to, double[] point) {
+        return (int) Math.signum((to[0] - from[0]) * (point[1] - from[1]) - (to[1] - from[1]) * (point[0] - from[0]));
+    }
+
+    /** The distance from a point to a sampled curve. */
+    public static double distanceToCurve(double x, double y, double[][] curve) {
+        double best = Double.MAX_VALUE;
+        for (int i = 0; i + 1 < curve.length; i++) {
+            double dx = curve[i + 1][0] - curve[i][0];
+            double dy = curve[i + 1][1] - curve[i][1];
+            double t = Math.clamp(((x - curve[i][0]) * dx + (y - curve[i][1]) * dy) / Math.max(1e-9, dx * dx + dy * dy), 0, 1);
+            best = Math.min(best, Math.hypot(curve[i][0] + dx * t - x, curve[i][1] + dy * t - y));
+        }
+        return best;
     }
 
     private static boolean free(Quest quest, Quest parent, List<Quest> placed, List<Quest[]> links) {
@@ -493,10 +678,10 @@ public final class Guide {
         return quest.kind() == Quest.Kind.ITEM && knowledge.questDone(quest);
     }
 
-    /** Every parent is done. */
+    /** Every parent is done (a device still being worked out that another one grows from only has to be seen). */
     public static boolean open(Quest quest, RuneKnowledge knowledge) {
         for (Quest parent : quest.parents()) {
-            if (!done(parent, knowledge)) {
+            if (parent.kind() == Quest.Kind.WIP ? !visible(parent, knowledge) : !done(parent, knowledge)) {
                 return false;
             }
         }

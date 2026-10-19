@@ -378,23 +378,23 @@ final class GuidePage {
     }
 
     /**
-     * The pixels of a link from a parent's rim to a child's rim, in order: a straight line, as the map is laid out so that
-     * straight links never cross. Every pixel appears once, so translucent links stay even.
+     * The pixels of a link from a parent's rim to a child's rim, in order: a gentle arc. The link from the first parent
+     * bows as the guide's layout chose (so links never cross); other parents' threads, shown only for the step in focus,
+     * bow a little to the side their pair prefers. Every pixel appears once, so translucent links stay even.
      */
     private static int[][] line(Quest from, Quest to) {
-        float ax = from.x();
-        float ay = from.y();
-        float dx = to.x() - ax;
-        float dy = to.y() - ay;
+        float dx = to.x() - from.x();
+        float dy = to.y() - from.y();
         float length = Math.max(1, Mth.sqrt(dx * dx + dy * dy));
+        float bow = from == to.parent() ? to.bow() : ((from.index() + to.index()) % 2 == 0 ? 1 : -1) * Math.min(12, length * 0.12F);
         float t0 = Math.min(0.45F, (size(from) / 2.0F + 2) / length);
         float t1 = Math.max(0.55F, 1 - (size(to) / 2.0F + 2) / length);
         int steps = Math.max(2, Math.round(length * 1.6F));
         List<int[]> points = new ArrayList<>();
         java.util.Set<Long> seen = new java.util.HashSet<>();
         for (int i = 0; i <= steps; i++) {
-            float t = t0 + (t1 - t0) * i / steps;
-            point(points, seen, Math.round(ax + dx * t), Math.round(ay + dy * t));
+            double[] p = Guide.linkPoint(from, to, bow, t0 + (t1 - t0) * i / steps);
+            point(points, seen, (int) Math.round(p[0]), (int) Math.round(p[1]));
         }
         return points.toArray(int[][]::new);
     }

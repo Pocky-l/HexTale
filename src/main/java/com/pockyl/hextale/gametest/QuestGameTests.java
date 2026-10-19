@@ -33,6 +33,7 @@ import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.research.ResearchTopics;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -88,7 +89,8 @@ public final class QuestGameTests {
             helper.assertTrue(spots.add(((long) quest.x() << 32) | (quest.y() & 0xFFFFFFFFL)), quest.id() + " has its own spot");
             for (Quest parent : quest.parents()) {
                 helper.assertTrue(parent.index() < quest.index(), quest.id() + " follows " + parent.id());
-                helper.assertTrue(parent.kind() != Quest.Kind.WIP, quest.id() + " never waits for a WIP device");
+                helper.assertTrue(quest.kind() == Quest.Kind.WIP || parent.kind() != Quest.Kind.WIP,
+                        quest.id() + " never waits for a WIP device");
             }
             helper.assertTrue(quest.parents().isEmpty() == (quest == Guide.UNSTABLE_HEXTECH || quest == Guide.SPHALERITE
                             || quest == Guide.RESEARCHERS_DIARY),
@@ -109,43 +111,44 @@ public final class QuestGameTests {
 
     /**
      * The guide reads at a glance: no two links cross, and no link runs over a step it does not join (links go from a
-     * step's first parent to the step, straight).
+     * step's first parent to the step, bowed as the layout chose).
      */
     @HexTest
     public static void guideLinksNeverCross(GameTestHelper helper) {
         List<Quest> linked = Guide.all().stream().filter(quest -> quest.parent() != null).toList();
+        Map<Quest, double[][]> curves = new HashMap<>();
+        for (Quest quest : linked) {
+            double[][] curve = new double[Guide.LINK_SAMPLES + 1][];
+            for (int i = 0; i <= Guide.LINK_SAMPLES; i++) {
+                curve[i] = Guide.linkPoint(quest.parent(), quest, quest.bow(), i / (double) Guide.LINK_SAMPLES);
+            }
+            curves.put(quest, curve);
+        }
         for (Quest a : linked) {
             for (Quest b : linked) {
                 if (a.index() < b.index() && a.parent() != b.parent() && a.parent() != b && b.parent() != a) {
-                    helper.assertFalse(crosses(a.parent(), a, b.parent(), b), "the links to " + a.id() + " and " + b.id() + " cross");
+                    helper.assertFalse(cross(curves.get(a), curves.get(b)), "the links to " + a.id() + " and " + b.id() + " cross");
                 }
             }
             for (Quest step : Guide.all()) {
                 if (step != a && step != a.parent()) {
-                    helper.assertTrue(distanceToLink(step, a.parent(), a) >= 14, "the link to " + a.id() + " runs over " + step.id());
+                    helper.assertTrue(Guide.distanceToCurve(step.x(), step.y(), curves.get(a)) >= 14,
+                            "the link to " + a.id() + " runs over " + step.id());
                 }
             }
         }
         helper.succeed();
     }
 
-    private static boolean crosses(Quest a0, Quest a1, Quest b0, Quest b1) {
-        long d1 = side(b0, b1, a0);
-        long d2 = side(b0, b1, a1);
-        long d3 = side(a0, a1, b0);
-        long d4 = side(a0, a1, b1);
-        return (d1 > 0) != (d2 > 0) && (d3 > 0) != (d4 > 0) && d1 != 0 && d2 != 0 && d3 != 0 && d4 != 0;
-    }
-
-    private static long side(Quest from, Quest to, Quest point) {
-        return Long.signum((long) (to.x() - from.x()) * (point.y() - from.y()) - (long) (to.y() - from.y()) * (point.x() - from.x()));
-    }
-
-    private static double distanceToLink(Quest point, Quest from, Quest to) {
-        double dx = to.x() - from.x();
-        double dy = to.y() - from.y();
-        double t = Math.clamp(((point.x() - from.x()) * dx + (point.y() - from.y()) * dy) / Math.max(1, dx * dx + dy * dy), 0, 1);
-        return Math.hypot(from.x() + dx * t - point.x(), from.y() + dy * t - point.y());
+    private static boolean cross(double[][] a, double[][] b) {
+        for (int i = 0; i + 1 < a.length; i++) {
+            for (int j = 0; j + 1 < b.length; j++) {
+                if (Guide.segmentsCross(a[i], a[i + 1], b[j], b[j + 1])) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /** What else a step gives besides its own result: things crafted straight from it. */

@@ -62,11 +62,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Researcher's Diary: a book signed with its owner's name, with two tabs. The Researcher's Path is a map of steps
   through the mod in a dark sky to drag and zoom. Workstations - the hex workbench and furnace, the crucible, the
   Research Table, the alembic, the lapidary and, largest of all, the hextech altar - stand out in brass cog rings, and
-  what they make stands around them; the links never cross. There is no single road: a step needs only what it really
+  what they make stands around them; the links curve gently and never cross. There is no single road: a step needs only what it really
   needs, so several branches open at once - you choose where to go. You see what is done and what you can do now, and
   one step further, greyed out as "not reachable yet" (its name and what it waits for show under the mouse); the rest
   stays in the fog. Devices still being worked out (marked WIP) gather in small rings around the step they will grow
-  from. Steps researched at the Research Table always carry an ink drop - bright until the research is done. Only the
+  from, and some grow from each other to show where the mod is heading - above all chemtech, a whole branch of plans
+  west of the crucible: brews and chem vials, the chem burner and boiler, glowbloom extract and shimmer, the lab bench
+  and mutations, and the smog that follows. Steps researched at the Research Table always carry an ink drop - bright until the research is done. Only the
   few turning points of the path wear an effect: raw hextech crackles with lightning, the ink, the first rune scroll,
   the hextech crystal and the gemstone glow gold, the radiant pickaxe is circled by blue sparks. A legend in the corner
   names the signs. The diary opens where your next steps are. A

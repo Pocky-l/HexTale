@@ -69,6 +69,8 @@ public final class Quest {
     int index;
     int x;
     int y;
+    /** How far the link from the first parent bows out of the straight line (see {@link Guide#linkPoint}). */
+    float bow;
 
     Quest(String id, Kind kind, List<Quest> parents, Supplier<ItemStack> icon, Predicate<ServerPlayer> goal,
           @Nullable QuestDisplay display, @Nullable ResearchTopic topic, Aura aura, Region region) {
@@ -170,6 +172,11 @@ public final class Quest {
 
     public int y() {
         return y;
+    }
+
+    /** The bow of the link from the first parent, map pixels to the side (from {@link Guide}'s layout). */
+    public float bow() {
+        return bow;
     }
 
     public String translationKey() {
