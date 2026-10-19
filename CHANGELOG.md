@@ -47,8 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from below - fire, a campfire or magma, soul fire faster, lava fastest. The water warms, steams, simmers and comes
   to a rolling boil, bubbles breaking all over it. Only boiling water takes things in: essence poured from bottles and
   jars falls in a stream, blooms over the water and swirls into it, tinting it; items thrown over the pot are drawn
-  in, plop into the water, sink and dissolve, clouding it; cold water spits them back out. Boiling water slowly
-  evaporates. Use it to see how it stands, an empty bucket takes the water back out, sneak-use boils it all away in a
+  in, plop into the water, sink and dissolve, clouding it; cold water spits them back out. It holds 1500 mB - water,
+  essence and 30 mB for every dissolved item; more brims over the rim, spilling water and essence alike, so water
+  dilutes and essence crowds out water. Boiling water evaporates, a bucket in under two minutes. Use it to see how it stands, an empty bucket takes the water back out, sneak-use boils it all away in a
   cloud of steam. What it brews is yet to be found.
 - Hextech Lamp: a hextech crystal floating in a cage of polished magic stone and brass, full light. It stands on a block or hangs under
   one, like a lantern.

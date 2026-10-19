@@ -71,7 +71,7 @@ public class CrucibleBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
-        if (!(level.getBlockEntity(pos) instanceof CrucibleBlockEntity crucible)) {
+        if (stack.isEmpty() || !(level.getBlockEntity(pos) instanceof CrucibleBlockEntity crucible)) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         boolean creative = player.getAbilities().instabuild;
@@ -88,7 +88,7 @@ public class CrucibleBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
         if (stack.is(Items.BUCKET)) {
-            if (crucible.water() < CrucibleBlockEntity.BUCKET) {
+            if (crucible.water() + crucible.essence().total() < CrucibleBlockEntity.BUCKET) {
                 return say(level, player, "not_a_bucket");
             }
             if (!level.isClientSide() && crucible.takeBucket() && !creative) {
@@ -117,9 +117,6 @@ public class CrucibleBlock extends BaseEntityBlock {
             if (!level.isClientSide()) {
                 EssenceMix held = EssenceFlaskItem.contents(stack);
                 EssenceMix taken = crucible.pour(held);
-                if (taken.isEmpty()) {
-                    return say(level, player, "essence_full");
-                }
                 if (!creative) {
                     EssenceMix left = held.minus(taken);
                     if (bottle) {

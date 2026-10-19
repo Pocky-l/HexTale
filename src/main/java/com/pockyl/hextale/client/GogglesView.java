@@ -188,7 +188,8 @@ public final class GogglesView {
         }
         if (entity instanceof com.pockyl.hextale.block.CrucibleBlockEntity crucible) {
             rows.add(Row.heading(Component.translatable(KEY + "crucible", crucible.phase().describe(), Math.round(crucible.temperature()))));
-            rows.add(Row.heading(Component.translatable(KEY + "water", crucible.water(), com.pockyl.hextale.block.CrucibleBlockEntity.WATER_CAPACITY)));
+            rows.add(Row.heading(Component.translatable(KEY + "filled", crucible.volume(), com.pockyl.hextale.block.CrucibleBlockEntity.CAPACITY)));
+            rows.add(Row.heading(Component.translatable(KEY + "water", crucible.water(), com.pockyl.hextale.block.CrucibleBlockEntity.CAPACITY)));
             contents(rows, crucible.essence());
             for (net.minecraft.world.item.ItemStack stack : crucible.dissolved()) {
                 rows.add(Row.heading(Component.translatable(KEY + "crucible.dissolved", stack.getHoverName(), stack.getCount())));

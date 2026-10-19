@@ -39,22 +39,27 @@ import java.util.Locale;
  * The Crucible: a cauldron woken with hextech dust, the first vessel of chemtech. It holds water over a heat source;
  * the water warms by the heat's strength and cools without it. Only boiling water takes things in: bottles and jars of
  * essence pour into it, items dropped or put in sink and dissolve. What it makes of them comes later - for now it keeps
- * every essence and item that went in. Boiling water slowly evaporates.
+ * every essence and item that went in. It holds {@value #CAPACITY} mB: water, essence and every dissolved item
+ * ({@value #ITEM_VOLUME} mB each); more brims over the rim and spills liquid in proportion. Boiling water slowly
+ * evaporates.
  */
 public class CrucibleBlockEntity extends BlockEntity {
-    public static final int WATER_CAPACITY = 1000;
+    /** What it holds in all: water, essence and the dissolved items. */
+    public static final int CAPACITY = 1500;
+    /** Room a dissolved item takes. */
+    public static final int ITEM_VOLUME = 30;
+    /** Items never crowd out the last of the liquid. */
+    private static final int MIN_LIQUID = 200;
     public static final int BUCKET = 1000;
     public static final int WATER_BOTTLE = 250;
-    /** Essence it holds: as much as a jar. */
-    public static final int ESSENCE_CAPACITY = 256;
     /** Different things it can hold dissolved. */
-    public static final int MAX_KINDS = 9;
+    public static final int MAX_KINDS = 16;
     public static final float BOILING = 100;
     /** Degrees a tick per point of heat, and degrees a tick it cools without heat. */
     public static final float RISE = 0.1F;
     public static final float FALL = 0.15F;
-    /** Boiling water loses a millibucket every this many ticks. */
-    public static final int EVAPORATE_TICKS = 8;
+    /** Boiling water loses a millibucket every this many ticks (a bucket boils off in under two minutes). */
+    public static final int EVAPORATE_TICKS = 2;
     /** How often the crucible looks for items over it, and how often the clients hear of its temperature. */
     private static final int SCAN_TICKS = 2;
     /** Items this far over the crucible (in blocks above it) are drawn into boiling water. */
@@ -228,7 +233,7 @@ public class CrucibleBlockEntity extends BlockEntity {
 
     /** Height of the water's surface in the block (the bottom of the bowl when empty). */
     public float surface() {
-        return BOTTOM + (BRIM - BOTTOM) * Math.min(1, water / (float) WATER_CAPACITY);
+        return BOTTOM + (BRIM - BOTTOM) * Math.min(1, volume() / (float) CAPACITY);
     }
 
     public int water() {
@@ -283,27 +288,64 @@ public class CrucibleBlockEntity extends BlockEntity {
 
     // ---- Filling and emptying ------------------------------------------------------------------------------------
 
-    /** @return the water taken (all of {@code amount} or nothing) */
+    /** Everything in it: water, essence and the room the dissolved items take. */
+    public int volume() {
+        return water + essence.total() + ITEM_VOLUME * dissolvedCount();
+    }
+
+    /**
+     * Pours water in; past the brim the mix spills over (so water dilutes what is in it). Refused only while it boils
+     * dry, or when it is brim-full of plain water already.
+     *
+     * @return the water taken (all of {@code amount} or nothing)
+     */
     public int fillWater(int amount, boolean simulate) {
-        if (water + amount > WATER_CAPACITY || drying()) {
+        if (drying() || water >= CAPACITY && essence.isEmpty() && dissolved.isEmpty()) {
             return 0;
         }
         if (!simulate) {
             water += amount;
+            spillOver();
             changed();
             playAt(SoundEvents.BUCKET_EMPTY, 0.8F, 1.0F);
         }
         return amount;
     }
 
+    /**
+     * Whatever rises past the brim spills over the rim: water and essence leave in proportion, the dissolved items stay.
+     */
+    private void spillOver() {
+        int excess = volume() - CAPACITY;
+        if (excess <= 0) {
+            return;
+        }
+        int liquid = water + essence.total();
+        int waterLoss = liquid <= 0 ? 0 : Math.round(excess * water / (float) liquid);
+        water = Math.max(0, water - waterLoss);
+        essence = essence.part(Math.max(0, essence.total() - (excess - waterLoss)));
+        if (level instanceof ServerLevel server) {
+            // Over the rim and down the sides, on every side.
+            double x = worldPosition.getX() + 0.5;
+            double y = worldPosition.getY() + BRIM + 0.05;
+            double z = worldPosition.getZ() + 0.5;
+            server.sendParticles(ParticleTypes.SPLASH, x, y, z, 24, 0.42, 0.02, 0.42, 0.08);
+            server.sendParticles(ParticleTypes.FALLING_WATER, x, y - 0.1, z, 16, 0.48, 0.05, 0.48, 0);
+            if (!essence.isEmpty()) {
+                server.sendParticles(new DustParticleOptions(essence.color(), 1.0F), x, y, z, 10, 0.45, 0.04, 0.45, 0);
+            }
+        }
+        playAt(SoundEvents.GENERIC_SPLASH, 0.35F, 1.3F);
+    }
+
     /** Carried over from a water cauldron that woke into this crucible. */
     public void setWater(int water) {
-        this.water = Mth.clamp(water, 0, WATER_CAPACITY);
+        this.water = Mth.clamp(water, 0, CAPACITY);
         changed();
     }
 
     /**
-     * Pours essence in, as much as there is room for; boiling water only.
+     * Pours essence in, all of it; boiling water only. Past the brim the mix spills over.
      *
      * @return what was taken
      */
@@ -311,11 +353,9 @@ public class CrucibleBlockEntity extends BlockEntity {
         if (!boiling() || offer.isEmpty()) {
             return EssenceMix.EMPTY;
         }
-        EssenceMix taken = offer.part(Math.min(offer.total(), ESSENCE_CAPACITY - essence.total()));
-        if (taken.isEmpty()) {
-            return EssenceMix.EMPTY;
-        }
+        EssenceMix taken = offer;
         essence = essence.plus(taken);
+        spillOver();
         pouredColor = taken.color();
         pouredAt = level == null ? 0 : level.getGameTime();
         playAt(ModSounds.CRUCIBLE_POUR.get(), 1.0F, 0.9F + (level == null ? 0 : level.getRandom().nextFloat() * 0.2F));
@@ -334,6 +374,8 @@ public class CrucibleBlockEntity extends BlockEntity {
      * @return how many were taken
      */
     public int dissolve(ItemStack stack, int count) {
+        // Items take room but never crowd out the last of the liquid.
+        count = Math.min(count, (CAPACITY - MIN_LIQUID - ITEM_VOLUME * dissolvedCount()) / ITEM_VOLUME);
         if (!boiling() || stack.isEmpty() || count <= 0) {
             return 0;
         }
@@ -351,9 +393,10 @@ public class CrucibleBlockEntity extends BlockEntity {
         } else {
             same.grow(count);
         }
+        spillOver();
         sank = stack.copyWithCount(1);
         sankAt = level == null ? 0 : level.getGameTime();
-        playAt(ModSounds.CRUCIBLE_PLOP.get(), 0.9F, 0.9F + (level == null ? 0 : level.getRandom().nextFloat() * 0.25F));
+        playAt(SoundEvents.FISHING_BOBBER_SPLASH, 0.7F, 1.0F + (level == null ? 0 : level.getRandom().nextFloat() * 0.3F));
         playAt(ModSounds.CRUCIBLE_DISSOLVE.get(), 0.5F, 0.9F + (level == null ? 0 : level.getRandom().nextFloat() * 0.2F));
         if (level instanceof ServerLevel server) {
             Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
@@ -366,7 +409,7 @@ public class CrucibleBlockEntity extends BlockEntity {
 
     /** Takes a bucket of water out (contents and all are lost with it); true if there was a bucket of water. */
     public boolean takeBucket() {
-        if (water < BUCKET) {
+        if (water + essence.total() < BUCKET) {
             return false;
         }
         empty();
@@ -460,7 +503,7 @@ public class CrucibleBlockEntity extends BlockEntity {
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        water = Mth.clamp(input.getIntOr("water", 0), 0, WATER_CAPACITY);
+        water = Mth.clamp(input.getIntOr("water", 0), 0, CAPACITY);
         temperature = Mth.clamp(input.getFloatOr("temperature", 0), 0, BOILING);
         essence = input.read("essence", EssenceMix.CODEC).orElse(EssenceMix.EMPTY);
         dissolved.clear();

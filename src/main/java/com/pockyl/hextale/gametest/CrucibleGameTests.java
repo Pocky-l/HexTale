@@ -33,7 +33,7 @@ public final class CrucibleGameTests {
         BlockAwakening.start(helper.getLevel(), helper.absolutePos(AT), Direction.SOUTH, null, false);
         helper.succeedWhen(() -> {
             helper.assertBlockPresent(ModBlocks.CRUCIBLE.get(), AT);
-            helper.assertTrue(helper.getBlockEntity(AT, CrucibleBlockEntity.class).water() == CrucibleBlockEntity.WATER_CAPACITY,
+            helper.assertTrue(helper.getBlockEntity(AT, CrucibleBlockEntity.class).water() == CrucibleBlockEntity.BUCKET,
                     "the cauldron's water stays in the crucible");
         });
     }
@@ -45,8 +45,35 @@ public final class CrucibleGameTests {
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         helper.assertTrue(crucible.dissolve(new ItemStack(Items.STICK), 1) == 0, "cold water dissolves nothing");
         helper.assertTrue(crucible.pour(EssenceMix.pure(Essence.FIRE, 16)).isEmpty(), "cold water takes no essence");
-        helper.assertTrue(crucible.fillWater(CrucibleBlockEntity.WATER_BOTTLE, true) == 0, "a full crucible takes no more water");
+        crucible.setWater(CrucibleBlockEntity.CAPACITY);
+        helper.assertTrue(crucible.fillWater(CrucibleBlockEntity.WATER_BOTTLE, true) == 0, "a crucible brim-full of water takes no more");
         helper.succeed();
+    }
+
+    /** Past the brim the liquid spills over in proportion; dissolved items stay and take their room. */
+    @HexTest(maxTicks = 700)
+    public static void itBrimsOver(GameTestHelper helper) {
+        helper.setBlock(AT.below(), Blocks.LAVA);
+        helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
+        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
+        boolean[] done = {false};
+        helper.succeedWhen(() -> {
+            helper.assertTrue(crucible.boiling(), "the water boils");
+            if (!done[0]) {
+                crucible.setWater(1400);
+                int water = crucible.water();
+                crucible.pour(EssenceMix.pure(Essence.FIRE, 300));
+                helper.assertTrue(crucible.volume() == CrucibleBlockEntity.CAPACITY, "it holds no more than its capacity");
+                helper.assertTrue(crucible.water() < water && crucible.essence().get(Essence.FIRE) < 300, "water and essence spill in proportion");
+                crucible.dissolve(new ItemStack(Items.STICK), 2);
+                helper.assertTrue(crucible.dissolvedCount() == 2 && crucible.volume() == CrucibleBlockEntity.CAPACITY,
+                        "an item takes its room and pushes liquid over the rim");
+                helper.assertTrue(crucible.dissolve(new ItemStack(Items.STONE), 64) < 64, "items never crowd out all the liquid");
+                // Set only once every check passed: a failed check is tried again until the test times out.
+                done[0] = true;
+            }
+        });
     }
 
     /** Sneak-use boils the water away in a moment, essence and all. */
@@ -86,7 +113,7 @@ public final class CrucibleGameTests {
             }
             helper.assertTrue(crucible.dissolvedCount() == 3, "the dropped sticks dissolve");
             helper.assertTrue(crucible.essence().get(Essence.FIRE) == 16, "the essence stays in the water");
-            helper.assertTrue(crucible.water() < CrucibleBlockEntity.WATER_CAPACITY, "boiling water evaporates");
+            helper.assertTrue(crucible.water() < CrucibleBlockEntity.BUCKET, "boiling water evaporates");
         });
     }
 }

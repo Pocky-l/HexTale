@@ -78,7 +78,9 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         state.phase = crucible.phase();
         int color = WATER;
         if (!crucible.essence().isEmpty()) {
-            color = RuneDrawing.mix(color, crucible.essence().color(), 0.3F + 0.5F * Math.min(1, crucible.essence().total() / 64F));
+            // Tinted by how much of the liquid is essence.
+            float share = crucible.essence().total() / (float) Math.max(1, crucible.water() + crucible.essence().total());
+            color = RuneDrawing.mix(color, crucible.essence().color(), 0.3F + 0.6F * Math.min(1, share * 4));
         }
         state.color = RuneDrawing.mix(color, MURK, Math.min(0.55F, crucible.dissolvedCount() / 40F));
         state.pourAge = state.time - crucible.pouredAt();

@@ -425,19 +425,6 @@
       }
     ]
   },
-  "crucible.plop": {
-    "subtitle": "subtitles.hextale.crucible.plop",
-    "sounds": [
-      {
-        "name": "hextale:crucible_plop1",
-        "volume": 0.8
-      },
-      {
-        "name": "hextale:crucible_plop2",
-        "volume": 0.8
-      }
-    ]
-  },
   "crucible.evaporate": {
     "subtitle": "subtitles.hextale.crucible.evaporate",
     "sounds": [

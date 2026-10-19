@@ -68,7 +68,6 @@ public final class ModSounds {
     /** Something sinks into boiling water and dissolves: a hiss and a low gulp. */
     public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_DISSOLVE = register("crucible.dissolve");
     public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_POUR = register("crucible.pour");
-    public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_PLOP = register("crucible.plop");
     public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_EVAPORATE = register("crucible.evaporate");
     public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_GATHER = register("pylon.gather");
     /** A sending pylon throws items out of its gem. */
