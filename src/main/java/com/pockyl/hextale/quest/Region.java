@@ -1,36 +1,26 @@
 package com.pockyl.hextale.quest;
 
 /**
- * A theme of the researcher's guide. Its steps grow as one branch in the book's sky, away from the step it starts from,
- * in the region's own direction, in a faint haze of its colour: the workshop in the middle, the essence works to the
- * east, the hextech circle south-east with the pylons beyond it, the forge south, the rune lore west.
- *
- * @param angle the direction the branch grows in, degrees on screen (0 = east, 90 = south)
+ * A theme of the researcher's guide: the workshop, the essence works, the rune lore, the hextech circle, the pylons, the
+ * forge and chemtech. Its steps breathe a faint haze of its colour in the book.
  */
 public enum Region {
-    WORKSHOP(0xE0B85A, 200),
-    ESSENCES(0x3FE0A0, -20),
-    RUNES(0xB07AF0, 150),
-    CIRCLE(0x4A9CFF, 70),
-    PYLONS(0xF07AC0, 15),
-    FORGE(0xFF8A3A, 115),
-    CHEMTECH(0x7FD05A, 250);
+    WORKSHOP(0xE0B85A),
+    ESSENCES(0x3FE0A0),
+    RUNES(0xB07AF0),
+    CIRCLE(0x4A9CFF),
+    PYLONS(0xF07AC0),
+    FORGE(0xFF8A3A),
+    CHEMTECH(0x7FD05A);
 
     private final int color;
-    private final double angle;
 
-    Region(int color, double angle) {
+    Region(int color) {
         this.color = color;
-        this.angle = angle;
     }
 
     /** The region's tint: its haze in the book. */
     public int color() {
         return color;
-    }
-
-    /** The direction the region's branch grows in, radians on screen. */
-    public double angle() {
-        return Math.toRadians(angle);
     }
 }

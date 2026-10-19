@@ -59,14 +59,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   an inkwell and a leather writing pad. Unstable hextech hangs over the parchment from a brass arm, turning inside
   spinning gimbal rings; glyphs stream from the parchment while someone writes, and the freshly researched device rises
   over the desk. The table keeps its own paper; every research takes one sheet when it starts.
-- Researcher's Diary: a book signed with its owner's name, with two tabs. The Researcher's Path is a tree of steps
-  through the mod in a dark sky to drag and zoom: every theme - the workshop, the essence works, the rune lore, the
-  hextech circle, the pylons and the forge - grows as its own branch in its own direction, in a haze of its colour.
-  There is no single road: a step needs only what it really needs, so brass and raw hextech both start the journey and
-  several branches open at once - you choose where to go. Devices still being worked out (marked WIP) gather in small
-  fans around the step they will grow from; only what is done or open can be seen - the rest fades into the fog. Key
-  steps glow gold, storm steps crackle with lightning, hextech steps are circled by blue sparks, cursed ones smoke,
-  heat steps shed embers; an ink drop marks what must be researched first. The diary opens where your next steps are. A
+- Researcher's Diary: a book signed with its owner's name, with two tabs. The Researcher's Path is a map of steps
+  through the mod in a dark sky to drag and zoom. Workstations - the hex workbench and furnace, the crucible, the
+  Research Table, the alembic, the lapidary and, largest of all, the hextech altar - stand out in brass cog rings, and
+  what they make stands around them; the links never cross. There is no single road: a step needs only what it really
+  needs, so several branches open at once - you choose where to go. You see what is done and what you can do now, and
+  one step further, greyed out as "not reachable yet" (its name and what it waits for show under the mouse); the rest
+  stays in the fog. Devices still being worked out (marked WIP) gather in small rings around the step they will grow
+  from. Steps researched at the Research Table always carry an ink drop - bright until the research is done. Only the
+  few turning points of the path wear an effect: raw hextech crackles with lightning, the ink, the first rune scroll,
+  the hextech crystal and the gemstone glow gold, the radiant pickaxe is circled by blue sparks. A legend in the corner
+  names the signs. The diary opens where your next steps are. A
   click opens the step's window in the middle of the page (back arrow, Escape or a click beside it returns to the map):
   the recipe, ritual or structure for a thing and what it opens (on a table, a button that lays its research on the
   parchment), the idea behind a device to come. Finishing a step is marked by a quiet stroke of the pen. The Runes tab

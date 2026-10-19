@@ -34,7 +34,10 @@ public final class Quest {
         STELE
     }
 
-    /** The effect a step wears in the book: important steps glow, storms crackle, curses smoke. */
+    /**
+     * The effect a step wears in the book. Only a handful of steps wear one, the turning points of the path, so an effect
+     * always means "this one matters".
+     */
     public enum Aura {
         NONE,
         /** A key step of the path: a larger frame with a slow golden halo. */
@@ -42,13 +45,7 @@ public final class Quest {
         /** Lightning and raw hextech: electric arcs jumping around the frame. */
         STORM,
         /** Refined hextech: blue sparks orbiting the frame. */
-        HEXTECH,
-        /** Shadow and forbidden things: dark smoke creeping around the frame. */
-        CURSED,
-        /** Heat and smelting: embers rising from the frame. */
-        FLAME,
-        /** Life: green motes drifting up. */
-        LIFE
+        HEXTECH
     }
 
     private final String id;
@@ -65,6 +62,8 @@ public final class Quest {
     private final Region region;
     /** A landmark is the heart of the guide: drawn large, with open sky around it. */
     boolean landmark;
+    /** A workstation: drawn large in a cog ring, the steps that grow from it stand around it. */
+    boolean station;
     @Nullable
     Scene scene;
     int index;
@@ -146,6 +145,11 @@ public final class Quest {
     /** The step the whole guide turns around: much larger, special, alone in its patch of sky. */
     public boolean landmark() {
         return landmark;
+    }
+
+    /** A workstation (bench, furnace, table, altar...): drawn large, its steps gather around it. */
+    public boolean station() {
+        return station;
     }
 
     /** The 3D scene of the ritual circle on the step's plate, or null. */

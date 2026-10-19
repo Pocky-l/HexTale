@@ -96,7 +96,7 @@ public final class QuestGameTests {
             for (Quest other : Guide.all()) {
                 if (other.index() > quest.index()) {
                     double distance = Math.hypot(other.x() - quest.x(), other.y() - quest.y());
-                    helper.assertTrue(distance >= 40, quest.id() + " and " + other.id() + " do not crowd each other");
+                    helper.assertTrue(distance >= 34, quest.id() + " and " + other.id() + " do not crowd each other");
                 }
             }
             helper.assertTrue(Guide.byId(quest.id()) == quest, quest.id() + " is found by id");
@@ -105,6 +105,47 @@ public final class QuestGameTests {
             helper.assertTrue(Guide.of(topic).topic() == topic, topic.id() + " has its step");
         }
         helper.succeed();
+    }
+
+    /**
+     * The guide reads at a glance: no two links cross, and no link runs over a step it does not join (links go from a
+     * step's first parent to the step, straight).
+     */
+    @HexTest
+    public static void guideLinksNeverCross(GameTestHelper helper) {
+        List<Quest> linked = Guide.all().stream().filter(quest -> quest.parent() != null).toList();
+        for (Quest a : linked) {
+            for (Quest b : linked) {
+                if (a.index() < b.index() && a.parent() != b.parent() && a.parent() != b && b.parent() != a) {
+                    helper.assertFalse(crosses(a.parent(), a, b.parent(), b), "the links to " + a.id() + " and " + b.id() + " cross");
+                }
+            }
+            for (Quest step : Guide.all()) {
+                if (step != a && step != a.parent()) {
+                    helper.assertTrue(distanceToLink(step, a.parent(), a) >= 14, "the link to " + a.id() + " runs over " + step.id());
+                }
+            }
+        }
+        helper.succeed();
+    }
+
+    private static boolean crosses(Quest a0, Quest a1, Quest b0, Quest b1) {
+        long d1 = side(b0, b1, a0);
+        long d2 = side(b0, b1, a1);
+        long d3 = side(a0, a1, b0);
+        long d4 = side(a0, a1, b1);
+        return (d1 > 0) != (d2 > 0) && (d3 > 0) != (d4 > 0) && d1 != 0 && d2 != 0 && d3 != 0 && d4 != 0;
+    }
+
+    private static long side(Quest from, Quest to, Quest point) {
+        return Long.signum((long) (to.x() - from.x()) * (point.y() - from.y()) - (long) (to.y() - from.y()) * (point.x() - from.x()));
+    }
+
+    private static double distanceToLink(Quest point, Quest from, Quest to) {
+        double dx = to.x() - from.x();
+        double dy = to.y() - from.y();
+        double t = Math.clamp(((point.x() - from.x()) * dx + (point.y() - from.y()) * dy) / Math.max(1, dx * dx + dy * dy), 0, 1);
+        return Math.hypot(from.x() + dx * t - point.x(), from.y() + dy * t - point.y());
     }
 
     /** What else a step gives besides its own result: things crafted straight from it. */

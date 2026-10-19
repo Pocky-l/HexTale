@@ -218,6 +218,7 @@ public final class StarBook {
         guide.renderMap(graphics, knowledge, now, hovered);
         PixelArt.flush(graphics);
         graphics.pose().popMatrix();
+        guide.renderLegend(graphics, skyLeft() + 4, skyTop() + skyHeight() - 4, now);
 
         List<FormattedCharSequence> tabTip = guide.selected() == null ? renderTabs(graphics, mouseX, mouseY) : null;
         List<FormattedCharSequence> tooltip = guide.renderPlate(graphics, knowledge, mouseX, mouseY, now);
@@ -465,6 +466,10 @@ public final class StarBook {
         if (!dragging) {
             RuneKnowledge knowledge = ClientKnowledge.get();
             Quest quest = guide.questAt(mouseX, mouseY, knowledge);
+            if (quest != null && !GuidePage.clickable(quest, knowledge)) {
+                // A step not reachable yet only shows its name.
+                quest = null;
+            }
             if (guide.select(quest) && quest != null) {
                 sound(Guide.done(quest, knowledge) ? 1.4F : 1.1F);
             }

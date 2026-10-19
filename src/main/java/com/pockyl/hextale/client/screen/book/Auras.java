@@ -7,19 +7,14 @@ import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.quest.Quest;
 
 /**
- * The effects around important steps of the guide, drawn in pixels behind the frames: a golden halo for key steps, arcs
- * of lightning jumping off storm steps, blue sparks circling refined hextech, dark smoke creeping out of cursed ones,
- * embers over heat and green motes over life. Everything runs on the wall clock and each step's index, so neighbours
- * never move in step.
+ * The effects around the few steps of the guide that matter most, drawn in pixels behind the frames: a golden halo for
+ * key steps, arcs of lightning jumping off raw hextech, blue sparks circling refined hextech. Everything runs on the wall
+ * clock and each step's index, so neighbours never move in step.
  */
 final class Auras {
     private static final int GOLD = 0xE0B85A;
     private static final int ARC = 0x9FEFFF;
     private static final int HEXTECH = 0x5CC8F2;
-    private static final int SMOKE = 0x1A0A26;
-    private static final int CURSE = 0x7A3AB0;
-    private static final int EMBER = 0xFFB02E;
-    private static final int LIFE = 0x8FE07A;
 
     private Auras() {
     }
@@ -35,9 +30,6 @@ final class Auras {
             case GOLD -> gold(graphics, round, x, y, size, now, seed);
             case STORM -> storm(graphics, round, x, y, size, now, seed);
             case HEXTECH -> hextech(graphics, round, x, y, size, now, seed);
-            case CURSED -> cursed(graphics, round, x, y, size, now, seed);
-            case FLAME -> flame(graphics, round, x, y, size, now, seed);
-            case LIFE -> life(graphics, x, y, size, now, seed);
         }
     }
 
@@ -108,70 +100,12 @@ final class Auras {
         shape(graphics, round, x, y, size + 4, PixelArt.argb(HEXTECH, 0.08F), 0);
     }
 
-    /** Dark smoke puffs creeping out and up, with a sickly violet flicker at the rim. */
-    private static void cursed(GuiGraphicsExtractor graphics, boolean round, int x, int y, int size, long now, int seed) {
-        for (int i = 0; i < 8; i++) {
-            float period = 2400 + (hash(seed + i) % 900);
-            float t = ((now + i * 377L) % (long) period) / period;
-            float angle = (hash(seed * 3 + i) % 628) / 100.0F;
-            float r = size / 2.0F + t * 7;
-            int px = x + Math.round(Mth.cos(angle) * r);
-            int py = y + Math.round(Mth.sin(angle) * r - t * 6);
-            int radius = 2 + Math.round(t * 3);
-            disc(graphics, px, py, radius, PixelArt.argb(PixelArt.mix(SMOKE, CURSE, 0.25F * (1 - t)), 0.55F * (1 - t)));
-        }
-        float flicker = 0.5F + 0.5F * Mth.sin(now / 130.0F + seed) * Mth.sin(now / 370.0F);
-        ring(graphics, round, x, y, size + 3, PixelArt.argb(CURSE, 0.15F + 0.3F * flicker));
-        shape(graphics, round, x, y, size + 10, PixelArt.argb(SMOKE, 0.25F), 0);
-    }
-
-    /** Embers rising from below the frame, swaying and dying out. */
-    private static void flame(GuiGraphicsExtractor graphics, boolean round, int x, int y, int size, long now, int seed) {
-        for (int i = 0; i < 7; i++) {
-            float period = 1300 + (hash(seed + i * 13) % 700);
-            float t = ((now + i * 211L) % (long) period) / period;
-            int spread = size / 2 + 2;
-            int px = x - spread + (int) (hash(seed + i * 5) % (spread * 2)) + Math.round(Mth.sin(t * 6 + i) * 2);
-            int py = y + size / 2 - Math.round(t * (size + 6));
-            int color = PixelArt.mix(EMBER, 0xFF4A1C, t);
-            PixelArt.fill(graphics, px, py, px + 1, py + 1, PixelArt.argb(color, 1 - t));
-        }
-        float glow = 0.5F + 0.5F * Mth.sin(now / 300.0F + seed);
-        shape(graphics, round, x, y + 2, size + 6, PixelArt.argb(0xFF7A1C, 0.06F + 0.05F * glow), 0);
-    }
-
-    /** Green motes drifting up with a gentle sway. */
-    private static void life(GuiGraphicsExtractor graphics, int x, int y, int size, long now, int seed) {
-        for (int i = 0; i < 5; i++) {
-            float period = 2600 + (hash(seed + i * 17) % 900);
-            float t = ((now + i * 523L) % (long) period) / period;
-            int px = x - size / 2 + (int) (hash(seed + i * 7) % size) + Math.round(Mth.sin(t * 5 + i) * 3);
-            int py = y + size / 3 - Math.round(t * (size + 4));
-            PixelArt.fill(graphics, px, py, px + 1, py + 1, PixelArt.argb(LIFE, 0.9F * Mth.sin(t * Mth.PI)));
-        }
-    }
-
     /** A filled hexagon around a rune, a disc around the round item and device medallions. */
     private static void shape(GuiGraphicsExtractor graphics, boolean round, int x, int y, int size, int fill, int outline) {
         if (round) {
             PixelArt.disc(graphics, x, y, size + 1 & ~1, fill, outline);
         } else {
             PixelArt.hex(graphics, x, y, size | 1, fill, outline);
-        }
-    }
-
-    private static void ring(GuiGraphicsExtractor graphics, boolean round, int x, int y, int size, int argb) {
-        if (round) {
-            PixelArt.discRing(graphics, x, y, size + 1 & ~1, argb);
-        } else {
-            PixelArt.hexRing(graphics, x, y, size | 1, argb);
-        }
-    }
-
-    private static void disc(GuiGraphicsExtractor graphics, int cx, int cy, int r, int argb) {
-        for (int dy = -r; dy <= r; dy++) {
-            int half = (int) Math.floor(Math.sqrt(r * r - dy * dy + 0.5));
-            PixelArt.fill(graphics, cx - half, cy + dy, cx + half + 1, cy + dy + 1, argb);
         }
     }
 
