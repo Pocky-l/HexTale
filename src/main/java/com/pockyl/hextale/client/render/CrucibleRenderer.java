@@ -189,8 +189,8 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
     }
 
     /**
-     * What the water holds, floating over the crucible for a researcher in goggles: each essence's pictogram on a dark
-     * disc, tinted in its colour, with its amount under it, in rows of {@value #PER_ROW} turned to the viewer. An essence
+     * What the water holds, floating over the crucible for a researcher in goggles: each essence's pictogram in a soft
+     * glow of its colour, brightly tinted, with its amount under it, in rows of {@value #PER_ROW} turned to the viewer. An essence
      * that just grew swells for a moment while motes of its colour rise to it from the water. Seen from up to
      * {@value #SEEN_FROM} blocks.
      */
@@ -226,8 +226,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
             poseStack.rotate(camera.orientation);
             poseStack.translate(x, 0, 0);
             float size = ICON_SIZE * (1 + 0.35F * pop);
-            HexFx.sprite(poseStack, collector, facing, HexFx.HALO, size * 2.1F, 0x0A0812, 0.7F * fade);
-            HexFx.sprite(poseStack, collector, facing, HexFx.HALO, size * (1.7F + pop), color, (0.28F + 0.5F * pop) * fade);
+            HexFx.sprite(poseStack, collector, facing, HexFx.HALO, size * (1.9F + pop), color, (0.45F + 0.4F * pop) * fade);
             icon(poseStack, collector, essence, size, color, fade);
             amount(poseStack, collector, state.amounts.get(i), color, fade, size);
             poseStack.popPose();
@@ -241,7 +240,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         float v0 = essence.ordinal() / ICONS_PER_ROW * 20F / 128;
         float u1 = u0 + ICON_U;
         float v1 = v0 + ICON_V;
-        int tint = RuneDrawing.lighten(color, 0.35F);
+        int tint = RuneDrawing.lighten(color, 0.5F);
         collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(ICONS), (pose, consumer) -> {
             HexFx.vertex(consumer, pose, -h, -h, 0.002F, u0, v1, tint, alpha);
             HexFx.vertex(consumer, pose, h, -h, 0.002F, u1, v1, tint, alpha);
