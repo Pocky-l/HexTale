@@ -241,23 +241,6 @@
       }
     ]
   },
-  "furnace.roar": {
-    "subtitle": "subtitles.hextale.furnace.roar",
-    "sounds": [
-      {
-        "name": "hextale:smelter_roar1",
-        "volume": 0.5
-      },
-      {
-        "name": "hextale:smelter_roar2",
-        "volume": 0.5
-      },
-      {
-        "name": "hextale:smelter_roar3",
-        "volume": 0.5
-      }
-    ]
-  },
   "scroll.knowledge": {
     "subtitle": "subtitles.hextale.scroll.knowledge",
     "sounds": [

@@ -56,8 +56,6 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> WORKBENCH_CRAFT = register("workbench.craft");
     /** Hextech dust sinks into a block and wakes it. */
     public static final DeferredHolder<SoundEvent, SoundEvent> BLOCK_AWAKEN = register("block.awaken");
-    /** The Hex Furnace's low roar while it burns. */
-    public static final DeferredHolder<SoundEvent, SoundEvent> FURNACE_ROAR = register("furnace.roar");
     /** A creative scroll unrolling: everything learned, or everything forgotten. */
     public static final DeferredHolder<SoundEvent, SoundEvent> SCROLL_KNOWLEDGE = register("scroll.knowledge");
     /** Essence siphoned out of a jar into a machine that draws from the jars around it. */

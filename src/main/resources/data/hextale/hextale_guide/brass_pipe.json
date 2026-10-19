@@ -1,10 +1,11 @@
 {
   "region": "essences",
   "icon": "hextale:brass_pipe",
-  "parents": ["alembic"],
+  "parents": ["alembic", "ink"],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:brass_pipe"
   },
-  "pos": [-60, 190]
+  "pos": [-60, 190],
+  "research": "brass_pipe"
 }

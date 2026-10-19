@@ -99,7 +99,7 @@ public final class Multiblocks {
             return;
         }
         ResearchTopic topic = found.get().getKey().topic();
-        if (topic != null && !event.getEntity().getAbilities().instabuild
+        if (topic != null
                 && !(level.isClientSide() ? com.pockyl.hextale.client.ClientKnowledge.get() : Research.of(event.getEntity())).researched(topic)) {
             // Not researched: the structure stays asleep and the click does what it would do anyway.
             if (event.getEntity() instanceof ServerPlayer player) {

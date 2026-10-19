@@ -27,6 +27,12 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.CookingFuel;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
@@ -55,7 +61,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Hex Furnace's contents: up to three metals in its input slots melt together into an alloy ({@link AlloyRecipe}) on
- * ordinary furnace fuel. Alloys guarded by a research topic melt only when the furnace's owner (whoever placed or woke
+ * ordinary furnace fuel; anything else a furnace smelts it smelts too, up to three of the same item at once. Alloys guarded by a research topic melt only when the furnace's owner (whoever placed or woke
  * it) has researched them; what the owner knows is remembered whenever they are about, so the furnace keeps working
  * while they are away. Hoppers feed the inputs from the top, fuel from the sides, and take the alloy from below.
  */
@@ -68,6 +74,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
     private static final int[] SIDES = {FUEL};
     private static final int[] BOTTOM = {OUTPUT};
     private static final int REFRESH_TICKS = 100;
+    private static final RecipeManager.CachedCheck<SingleRecipeInput, SmeltingRecipe> SMELTING = RecipeManager.createCheck(RecipeType.SMELTING);
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private int litTime;
@@ -78,9 +85,8 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
     /** Why it waits, for the screen: "" while working or idle. */
     private String blocked = "";
     private @Nullable UUID owner;
-    /** The owner's researched topics as last seen (and whether they build in creative). */
+    /** The owner's researched topics as last seen. */
     private Set<String> known = new HashSet<>();
-    private boolean ownerCreative;
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -143,10 +149,8 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
                 now.add(topic.id());
             }
         }
-        boolean creative = player.getAbilities().instabuild;
-        if (!now.equals(known) || creative != ownerCreative) {
+        if (!now.equals(known)) {
             known = now;
-            ownerCreative = creative;
             setChanged();
         }
     }
@@ -154,7 +158,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
     /** Whether the owner may melt this alloy: free alloys always, researched ones once the owner knows them. */
     public boolean mayMake(ItemStackTemplate result) {
         ResearchTopic topic = ResearchTopics.of(result.item().value());
-        return topic == null || ownerCreative || known.contains(topic.id());
+        return topic == null || known.contains(topic.id());
     }
 
     // ---- Ticking ------------------------------------------------------------------------------------------------------
@@ -183,18 +187,89 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         return items.subList(0, INPUTS);
     }
 
-    private void work(ServerLevel level) {
+    /** One melt: what comes out, how long it takes, its experience, and which input slots give how much. */
+    private record Melt(ItemStack result, int time, float experience, int[] slots, int[] counts) {
+    }
+
+    /** What the inputs melt into now: an alloy, else plain smelting of one to three of the same item at once. */
+    @Nullable
+    private Melt melt(ServerLevel level) {
         Map.Entry<Identifier, AlloyRecipe> found = AlloyRecipe.find(inputs(), false);
-        if (found == null) {
-            cool("");
+        if (found != null) {
+            AlloyRecipe recipe = found.getValue();
+            int[] slots = recipe.assign(inputs());
+            if (slots == null) {
+                return null;
+            }
+            int[] counts = new int[slots.length];
+            for (int i = 0; i < slots.length; i++) {
+                counts[i] = recipe.inputs().get(i).count();
+            }
+            if (!mayMake(recipe.result())) {
+                blocked = "locked";
+                return null;
+            }
+            return new Melt(recipe.result().create(), recipe.time(), recipe.experience(), slots, counts);
+        }
+        return smelt(level);
+    }
+
+    /**
+     * Plain smelting: every filled input holds the same item and it has a furnace recipe - all of them melt in one go
+     * (three ores give three ingots in one furnace's time).
+     */
+    @Nullable
+    private Melt smelt(ServerLevel level) {
+        ItemStack first = ItemStack.EMPTY;
+        int filled = 0;
+        for (ItemStack stack : inputs()) {
+            if (stack.isEmpty()) {
+                continue;
+            }
+            if (!first.isEmpty() && !ItemStack.isSameItemSameComponents(first, stack)) {
+                return null;
+            }
+            if (first.isEmpty()) {
+                first = stack;
+            }
+            filled++;
+        }
+        if (first.isEmpty()) {
+            return null;
+        }
+        SingleRecipeInput input = new SingleRecipeInput(first);
+        RecipeHolder<? extends AbstractCookingRecipe> recipe = SMELTING.getRecipeFor(input, level).orElse(null);
+        if (recipe == null) {
+            return null;
+        }
+        ItemStack result = recipe.value().assemble(input);
+        if (result.isEmpty()) {
+            return null;
+        }
+        result.setCount(result.getCount() * filled);
+        int[] slots = new int[filled];
+        int[] counts = new int[filled];
+        int n = 0;
+        for (int slot = 0; slot < INPUTS; slot++) {
+            if (!items.get(slot).isEmpty()) {
+                slots[n] = slot;
+                counts[n++] = 1;
+            }
+        }
+        return new Melt(result, recipe.value().cookingTime(), recipe.value().experience() * filled, slots, counts);
+    }
+
+    private void work(ServerLevel level) {
+        String before = blocked;
+        blocked = "";
+        Melt melt = melt(level);
+        if (melt == null) {
+            String reason = blocked;
+            blocked = before;
+            cool(reason);
             return;
         }
-        AlloyRecipe recipe = found.getValue();
-        if (!mayMake(recipe.result())) {
-            cool("locked");
-            return;
-        }
-        ItemStack result = recipe.result().create();
+        ItemStack result = melt.result();
         ItemStack out = items.get(OUTPUT);
         if (!out.isEmpty() && (!ItemStack.isSameItemSameComponents(out, result) || out.getCount() + result.getCount() > out.getMaxStackSize())) {
             cool("output_full");
@@ -205,25 +280,21 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
             return;
         }
         blocked = "";
-        total = recipe.time();
+        total = melt.time();
         progress++;
         if (progress < total) {
             return;
         }
         progress = 0;
-        int[] slots = recipe.assign(inputs());
-        if (slots == null) {
-            return;
-        }
-        for (int i = 0; i < slots.length; i++) {
-            items.get(slots[i]).shrink(recipe.inputs().get(i).count());
+        for (int i = 0; i < melt.slots().length; i++) {
+            items.get(melt.slots()[i]).shrink(melt.counts()[i]);
         }
         if (out.isEmpty()) {
             items.set(OUTPUT, result);
         } else {
             out.grow(result.getCount());
         }
-        experience += recipe.experience();
+        experience += melt.experience();
         Vec3 mouth = Vec3.atCenterOf(worldPosition);
         level.playSound(null, mouth.x, mouth.y, mouth.z, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.5F, 0.8F + level.getRandom().nextFloat() * 0.2F);
         setChanged();
@@ -365,7 +436,6 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         blocked = input.getStringOr("blocked", "");
         owner = input.read("owner", UUIDUtil.CODEC).orElse(null);
         known = new HashSet<>(input.read("known", Codec.STRING.listOf()).orElse(List.of()));
-        ownerCreative = input.getBooleanOr("owner_creative", false);
     }
 
     @Override
@@ -382,7 +452,6 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
             output.store("owner", UUIDUtil.CODEC, owner);
         }
         output.store("known", Codec.STRING.listOf(), List.copyOf(known));
-        output.putBoolean("owner_creative", ownerCreative);
     }
 
     @Override

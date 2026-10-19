@@ -288,10 +288,20 @@ public final class QuestGameTests {
 
         player.getInventory().add(new ItemStack(ModItems.BRASS_INGOT.get()));
         Quests.check(player);
+        helper.assertFalse(knowledge.questDone(step("brass")), "the path is walked in order: brass waits for the furnace and zinc");
+        for (Quest quest : ancestors(step("brass"))) {
+            knowledge.completeQuest(quest);
+        }
+        Quests.check(player);
         helper.assertTrue(knowledge.questDone(step("brass")), "a brass ingot completes Brass");
         helper.assertFalse(knowledge.questDone(step("research_table")), "the table is still to make");
 
         knowledge.study(Identifier.withDefaultNamespace("coal"));
+        Quests.check(player);
+        helper.assertFalse(knowledge.questDone(step("item_study")), "a studied item waits for the table and the diary");
+        for (Quest quest : ancestors(step("item_study"))) {
+            knowledge.completeQuest(quest);
+        }
         Quests.check(player);
         helper.assertTrue(knowledge.questDone(step("item_study")), "one studied item completes Studying Items");
 
@@ -302,8 +312,28 @@ public final class QuestGameTests {
         RuneKnowledge decoded = RuneKnowledge.CODEC.parse(NbtOps.INSTANCE,
                 RuneKnowledge.CODEC.encodeStart(NbtOps.INSTANCE, knowledge).getOrThrow()).getOrThrow();
         helper.assertTrue(decoded.questDone(step("brass")) && decoded.questDone(step("item_study"))
-                && !decoded.questDone(step("research_table")), "done quests save and load");
+                && !decoded.questDone(step("alembic")), "done quests save and load");
         helper.assertTrue(knowledge.copy().questDone(step("item_study")), "done quests are synced");
+        helper.succeed();
+    }
+
+    /** A step that asks for research is done by researching it: holding the item (found, given) teaches nothing. */
+    @HexTest
+    public static void researchStepsWantTheResearch(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        RuneKnowledge knowledge = Research.of(player);
+        for (Quest quest : ancestors(step("separator"))) {
+            knowledge.completeQuest(quest);
+        }
+        for (Quest quest : ancestors(step("drain_valve"))) {
+            knowledge.completeQuest(quest);
+        }
+        player.getInventory().add(new ItemStack(ModItems.DRAIN_VALVE.get()));
+        Quests.check(player);
+        helper.assertFalse(knowledge.questDone(step("drain_valve")), "a drain valve in the pocket is not the research");
+        Research.research(player, ResearchTopics.DRAIN_VALVE);
+        Quests.check(player);
+        helper.assertTrue(knowledge.questDone(step("drain_valve")), "researching it completes the step");
         helper.succeed();
     }
 
@@ -324,7 +354,7 @@ public final class QuestGameTests {
         helper.assertTrue(Guide.open(step("brass"), knowledge), "the furnace and zinc open brass");
         knowledge.completeQuest(step("brass"));
         knowledge.completeQuest(step("hex_workbench"));
-        for (Quest quest : List.of(step("research_table"), step("alembic"), step("researchers_goggles"))) {
+        for (Quest quest : List.of(step("research_table"), step("alembic"))) {
             helper.assertTrue(Guide.open(quest, knowledge), quest.id() + " opens with brass on the workbench");
         }
         helper.succeed();
@@ -361,7 +391,9 @@ public final class QuestGameTests {
         knowledge.learn(ResearchBook.FIRST, 2);
         Quests.check(player);
         helper.assertTrue(knowledge.questDone(step("rune_scroll")), "the first studied scroll completes the step");
-        helper.assertTrue(Guide.open(step("blank_scroll"), knowledge), "and opens the blank scroll");
+        helper.assertFalse(Guide.visible(step("blank_scroll"), knowledge), "the blank scroll waits for the altar");
+        knowledge.completeQuest(step("hextech_altar"));
+        helper.assertTrue(Guide.open(step("blank_scroll"), knowledge), "the altar opens the blank scroll");
         helper.succeed();
     }
 

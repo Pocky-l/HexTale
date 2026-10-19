@@ -24,11 +24,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   sides and it turns into a dark oak table with a flat polished deepslate worktop carved with a 3 x 3 grid of
   glowing channels. Almost every device is crafted here; hextech put into its socket soaks in as charge (raw orb 5,
   cut crystal 12, gemstone 30, up to 60), shown in a glass tube, and each craft spends a little. The grid's items lie
-  in the worktop's cells. Devices still to be researched show nothing. With JEI, a click on the arrow shows the
+  in the worktop's cells. Devices still to be researched show nothing. Every ordinary crafting table recipe works on it
+  too, free of charge. With JEI, a click on the arrow shows the
   recipes (the Hex Furnace's too).
 - Hex Furnace: dust on a furnace wakes it into a polished stone kiln between dark oak posts, a glowing channel over
   its arched mouth, like the workbench. It melts up to three metals into an alloy on ordinary fuel, blue tongues among its flames: three copper and a zinc make four
-  brass; iron, two hextech dust and coal make Hexsteel (researched first). Hoppers fill it like a furnace.
+  brass; iron, two hextech dust and coal make Hexsteel (researched first). Anything else a furnace smelts it smelts
+  too, up to three of the same item at once - three iron ore give three ingots in one furnace's time. It crackles
+  like a furnace. Hoppers fill it like a furnace.
 - Zinc: Sphalerite Ore in stone and deepslate (a little rarer than copper, from deep underground up to sea level),
   raw zinc, zinc ingots, nuggets and blocks (common `c:` tags, so other mods' zinc works too). Block of Hexsteel.
 - Hex Lapidary: a dark oak bench with a treadle and a lap disc, crafted on the workbench; its cutting discs are made
@@ -49,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   jars falls in a stream, blooms over the water and swirls into it, tinting it; items thrown over the pot are drawn
   in, plop into the water, sink and dissolve, clouding it; cold water spits them back out. It holds 1500 mB - water,
   essence and 30 mB for every dissolved item; more brims over the rim, spilling water and essence alike, so water
-  dilutes and essence crowds out water. Boiling water evaporates, a bucket in under two minutes. Use it to see how it stands, an empty bucket takes the water back out, sneak-use boils it all away in a
+  dilutes and essence crowds out water. The water never boils off by itself. Use it to see how it stands, an empty bucket takes the water back out, sneak-use boils it all away in a
   cloud of steam (essence counts as liquid too: a crucible boiled down to its essence still holds it). What it brews is yet to be found.
 - Hextech Lamp: a hextech crystal floating in a cage of polished magic stone and brass, full light. It stands on a block or hangs under
   one, like a lantern.
@@ -68,14 +71,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stays in the fog. Devices still being worked out (marked WIP) gather in small rings around the step they will grow
   from, and some grow from each other to show where the mod is heading - above all chemtech, a whole branch of plans
   west of the crucible: brews and chem vials, the chem burner and boiler, glowbloom extract and shimmer, the lab bench
-  and mutations, and the smog that follows. Steps researched at the Research Table always carry an ink drop - bright until the research is done. Only the
+  and mutations, and the smog that follows. Steps researched at the Research Table are hexagons, like the sections of
+  the research parchment, with a loupe on their corner: violet with the item sealed under a turning violet mist until
+  the research is done, brass after. Such a step is done by researching it - finding or being given the item teaches
+  nothing - and every step counts only once the steps before it are done. Only the
   few turning points of the path wear an effect: raw hextech crackles with lightning, the ink, the first rune scroll,
-  the hextech crystal and the gemstone glow gold, the radiant pickaxe is circled by blue sparks. A legend in the corner
-  names the signs. The guide's steps are data (`data/<namespace>/hextale_guide/*.json`): data packs can add, change or
+  the hextech crystal and the gemstone glow gold, the radiant pickaxe is circled by blue sparks. The guide's steps are data (`data/<namespace>/hextale_guide/*.json`): data packs can add, change or
   remove steps, their goals, pictures and places on the map. The diary opens where your next steps are. A
   click opens the step's window in the middle of the page (back arrow, Escape or a click beside it returns to the map):
   the recipe, ritual or structure for a thing and what it opens (on a table, a button that lays its research on the
-  parchment), the idea behind a device to come. Finishing a step is marked by a quiet stroke of the pen. The Runes tab
+  parchment, always in reach under the text), the idea behind a device to come. Finishing a step is marked by a quiet stroke of the pen. The Runes tab
   lists every rune found so far - sign, name, stars, what it does and what it is used for. The Hextech Altar is the heart of the
   path: a large medallion in a hexagonal brass setting with turning gimbal rings, alone in its own patch of sky. The
   plates of the altar, the pedestal and the rune stele show the ritual circle at work in a turning 3D scene - the items
@@ -92,7 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the parchment and folds its lenses while someone looks through it. Free and unlimited. A studied item shows its
   essences in its tooltip; a studied item under the loupe shows them at once.
 - Research: every device and tool past the essence works - the altar circle, the gemstone, the lamp, the big jar,
-  the pylons, the pickaxes, the lapidary and its master disc, hexsteel, the drain valve - must be researched at the table before it can be crafted
+  the pylons, the pickaxes, the lapidary and its master disc, hexsteel, the drain valve, brass pipes, the pump, the
+  researcher's goggles, the essence and transfer sigils - must be researched at the table before it can be crafted
   or made at the altar. Choose it in the book and draw it on a worn parchment with a hexagon of six essences - one per
   direction, chosen by the device's theme, shown as ink wells in the hexagon's corners. Drag ink from
   the hextech orb to every goal - the gold sigils, counted at the top of the sheet; the ink may branch from the orb
@@ -111,7 +117,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   draws the rune's essence once per star and writes a scroll of that rune with your stars, to pass the rune on.
 - Creative mode: the Scroll of Omniscience teaches everything (every rune with three stars, every research, every item,
   every quest),
-  the Scroll of Oblivion forgets everything.
+  the Scroll of Oblivion forgets everything. Creative mode itself knows nothing and draws no free ink: what is not
+  learned stays locked, in creative as in survival.
 
 **Essence works**
 - Essence is one mixed liquid measured in millibuckets, one millibucket per point of an item's essence (the number in
@@ -158,8 +165,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   an item never gets more runes than its slots (the header counts them, e.g. 2/3 on a pylon; raising the stars
   of a rune it already has takes no slot) and never two incompatible runes - such runes are dimmed with the reason; an empty altar shows the whole codex.
   Sneak-use the altar with an empty hand (or give it a redstone pulse) to start a ritual: the rings turn around the
-  centre item, the pedestal items are drawn in one by one, then the essences one after another, and the centre
-  becomes something new. A ritual short of essence stalls and, left too long, collapses. Ghosts of the items a ritual
+  centre item, the pedestal items are drawn in one by one, then the essences one after another, while shards of each
+  stele's hieroglyph peel off and wind in a corkscrew into the work, white-hot, cooling into the rune's colour, and
+  the centre becomes something new. The runes go into the work: after a ritual every stele of the circle goes dark
+  and waits for a rune to be chosen again. A ritual short of essence stalls and, left too long, collapses. Ghosts of the items a ritual
   still lacks hover over the free pedestals.
 - Block of Brass.
 - Hextech pickaxes: the Hextech Pickaxe (iron strength), the Refined Hextech Pickaxe (diamond) and the Radiant Hextech
@@ -173,10 +182,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The guide shows a turning 3D altar burning the chosen rune into a pickaxe or the smelter; pick any rune they take to
   see what it does, how strong it is at one, two and three stars, what it costs and which runes it is incompatible
   with. JEI shows the same for every rune, next to every pickaxe recipe.
-- Magic stone: stone that has drunk essence - flat plates of a dusky violet stone with nothing set into it. Craft eight stone,
-  cobblestone, deepslate, tuff, andesite, diorite, granite or calcite around a bottle of any essence (the bottle comes
-  back), or open a Drain Valve over such stone: the essence it pours soaks into the stone where the stream lands, one
-  block per 16 mB. Polished magic stone, magic bricks with stairs, slab and wall, and chiseled magic bricks with the
+- Magic stone: stone that has drunk magic - flat plates of a dusky violet stone with nothing set into it. Throw stone,
+  cobblestone, deepslate, tuff, andesite, diorite, granite, calcite or smooth stone into a crucible holding magic
+  essence: each block sinks, takes 5 mB of magic, and rises out as magic stone in a burst of violet light. An open
+  Drain Valve over such stone soaks it too: the essence it pours soaks in where the stream lands, one block per 16 mB. Polished magic stone, magic bricks with stairs, slab and wall, and chiseled magic bricks with the
   circle's hexagon cut into them: the stone of the ritual circle.
 
 **Item transport: hex pylons**

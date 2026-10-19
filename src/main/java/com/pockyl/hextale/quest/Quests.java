@@ -26,12 +26,17 @@ public final class Quests {
     private Quests() {
     }
 
-    /** Marks every step whose goal the player meets now; tells the player and syncs the knowledge if any. */
+    /**
+     * Marks every open step whose goal the player meets now; tells the player and syncs the knowledge if any. The path is
+     * walked in order: a step counts only once every step it waits for is done (the guide lists parents first, so a
+     * chain the player has already gone through completes in one check).
+     */
     public static void check(ServerPlayer player) {
         RuneKnowledge knowledge = Research.of(player);
+        Guide guide = Guide.server();
         boolean changed = false;
-        for (Quest quest : Guide.server().all()) {
-            if (quest.kind() == Quest.Kind.ITEM && !knowledge.questDone(quest) && quest.isMet(player)) {
+        for (Quest quest : guide.all()) {
+            if (quest.kind() == Quest.Kind.ITEM && !knowledge.questDone(quest) && Guide.open(quest, knowledge) && quest.isMet(player, guide)) {
                 knowledge.completeQuest(quest);
                 announce(player, quest);
                 changed = true;
@@ -42,12 +47,12 @@ public final class Quests {
         }
     }
 
-    /** Reports an event (one of the names above): every step whose goal waits for it is done for this player. */
+    /** Reports an event (one of the names above): every open step whose goal waits for it is done for this player. */
     public static void fire(ServerPlayer player, String event) {
         RuneKnowledge knowledge = Research.of(player);
         boolean changed = false;
         for (Quest quest : Guide.server().all()) {
-            if (!knowledge.questDone(quest) && quest.answers(event)) {
+            if (!knowledge.questDone(quest) && Guide.open(quest, knowledge) && quest.answers(event)) {
                 knowledge.completeQuest(quest);
                 announce(player, quest);
                 changed = true;

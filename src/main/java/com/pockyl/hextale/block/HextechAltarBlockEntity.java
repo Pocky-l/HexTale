@@ -282,12 +282,12 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     }
 
     /**
-     * Whether the ritual's maker knows how: the player who started it (a creative one always does), or - started by
+     * Whether the ritual's maker knows how: the player who started it, or - started by
      * redstone - any player near the altar who has researched the topic.
      */
     private boolean researcherNear(ServerLevel level, @Nullable ServerPlayer player, ResearchTopic topic) {
         if (player != null) {
-            return player.getAbilities().instabuild || Research.of(player).researched(topic);
+            return Research.of(player).researched(topic);
         }
         for (ServerPlayer near : level.getEntitiesOfClass(ServerPlayer.class, new AABB(worldPosition).inflate(Ritual.TANK_RADIUS * 2))) {
             if (Research.of(near).researched(topic)) {
@@ -427,6 +427,12 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             }
         }
         clearRitual();
+        // The runes went into the work: every stele of the circle goes dark until a rune is chosen again.
+        for (RuneSteleBlockEntity stele : Ritual.Circle.scan(level, worldPosition).steles()) {
+            if (stele.rune() != null) {
+                stele.choose(null, 1);
+            }
+        }
         Vec3 at = itemPosition();
         level.sendParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, 40, 0.1, 0.1, 0.1, 0.18);
         level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y, at.z, 20, 0.3, 0.3, 0.3, 0.3);
@@ -502,13 +508,13 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                 }
             }
         }
-        // Rune steles feed the centre glyph light for the whole ritual.
-        {
-            for (RuneSteleBlockEntity stele : circle.steles()) {
-                if (stele.rune() != null && random.nextInt(3) == 0) {
-                    Vec3 from = Vec3.atCenterOf(stele.getBlockPos()).add(0, 1.05, 0);
-                    spawnFlow(level, target, from, stele.rune().color());
-                }
+        // Rune steles shed shards of their glyphs into the work for the whole ritual.
+        for (RuneSteleBlockEntity stele : circle.steles()) {
+            if (stele.rune() != null && random.nextInt(4) == 0) {
+                Vec3 from = Vec3.atCenterOf(stele.getBlockPos()).add((random.nextDouble() - 0.5) * 0.3, 1.05 + random.nextDouble() * 0.2,
+                        (random.nextDouble() - 0.5) * 0.3);
+                Vec3 offset = from.subtract(target);
+                level.addParticle(ModParticles.runeShard(stele.rune().color()), target.x, target.y, target.z, offset.x, offset.y, offset.z);
             }
         }
         BlockPos drawing = altar.drawing();

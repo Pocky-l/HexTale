@@ -17,6 +17,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
 
 import com.pockyl.hextale.block.HexWorkbenchBlockEntity;
 import com.pockyl.hextale.crafting.HexCraftingRecipe;
@@ -30,7 +33,8 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Hex Workbench: the 3x3 grid, the crystal socket and the result. The result shows only what this researcher may make
+ * The Hex Workbench: the 3x3 grid, the crystal socket and the result. It makes the hextech recipes and everything an
+ * ordinary crafting table makes (those cost no charge). The result shows only what this researcher may make
  * (researched topics) and the bench can pay for; taking it spends the grid and the crystal's charge. Data: 0 = charge
  * left, 1 = charge the shown recipe costs (0 when none), 2 = why there is no result (see {@link Why}).
  */
@@ -153,6 +157,18 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
             } else {
                 shown = made;
             }
+        } else if (player.level() instanceof ServerLevel level) {
+            // Everything an ordinary crafting table makes, the bench makes too, free of charge.
+            CraftingInput input = entity.input().input();
+            RecipeHolder<CraftingRecipe> plain = plainRecipe(level, input);
+            if (plain != null) {
+                ItemStack made = plain.value().assemble(input);
+                if (!ResearchTopics.mayMake(player, made, Research.of(player))) {
+                    why = Why.LOCKED;
+                } else {
+                    shown = made;
+                }
+            }
         }
         data.set(1, cost);
         data.set(2, why.ordinal());
@@ -165,14 +181,21 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
             return;
         }
         CraftingInput.Positioned positioned = entity.input();
-        Map.Entry<Identifier, HexCraftingRecipe> found = HexCraftingRecipe.find(positioned.input(), false);
+        CraftingInput input = positioned.input();
+        Map.Entry<Identifier, HexCraftingRecipe> found = HexCraftingRecipe.find(input, false);
         if (found == null) {
+            RecipeHolder<CraftingRecipe> plain = plainRecipe(level, input);
+            if (plain != null) {
+                craftPlain(taker, entity, positioned, plain.value().getRemainingItems(input));
+                entity.crafted(level);
+                seenRevision = -1;
+                broadcastChanges();
+            }
             return;
         }
         if (!taker.getAbilities().instabuild) {
             entity.spend(found.getValue().charge());
         }
-        CraftingInput input = positioned.input();
         for (int y = 0; y < input.height(); y++) {
             for (int x = 0; x < input.width(); x++) {
                 int slot = x + positioned.left() + (y + positioned.top()) * 3;
@@ -195,6 +218,35 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
         entity.crafted(level);
         seenRevision = -1;
         broadcastChanges();
+    }
+
+    /** The ordinary crafting recipe the grid holds (when no hextech recipe does), or null. */
+    @Nullable
+    private static RecipeHolder<CraftingRecipe> plainRecipe(ServerLevel level, CraftingInput input) {
+        return input.isEmpty() ? null : level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level).orElse(null);
+    }
+
+    /** An ordinary craft: one of everything in the grid is used, the recipe's remainders stay in place or go to the taker. */
+    private static void craftPlain(Player taker, HexWorkbenchBlockEntity entity, CraftingInput.Positioned positioned,
+                                   java.util.List<ItemStack> remaining) {
+        CraftingInput input = positioned.input();
+        for (int y = 0; y < input.height(); y++) {
+            for (int x = 0; x < input.width(); x++) {
+                int slot = x + positioned.left() + (y + positioned.top()) * 3;
+                if (!entity.getItem(slot).isEmpty()) {
+                    entity.removeItem(slot, 1);
+                }
+                ItemStack rest = remaining.get(x + y * input.width());
+                if (rest.isEmpty()) {
+                    continue;
+                }
+                if (entity.getItem(slot).isEmpty()) {
+                    entity.setItem(slot, rest);
+                } else if (!taker.getInventory().add(rest)) {
+                    taker.getInventory().placeItemBackInInventory(rest, net.minecraft.util.Prediction.SERVER_ONLY);
+                }
+            }
+        }
     }
 
     // ---- Moving items -------------------------------------------------------------------------------------------------

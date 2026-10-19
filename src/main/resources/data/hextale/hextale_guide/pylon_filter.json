@@ -6,5 +6,6 @@
     "kind": "infusion",
     "result": "hextale:pylon_filter"
   },
-  "pos": [800, -180]
+  "pos": [800, -180],
+  "research": "pylon_filter"
 }

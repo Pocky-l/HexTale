@@ -82,6 +82,8 @@ final class GuidePage {
     private static final int DONE = 0x8FE07A;
     private static final int OPEN = 0x5CC8F2;
     private static final int WIP = 0xB08AE0;
+    /** The arcane violet of what is still to be worked out at the Research Table. */
+    private static final int RESEARCH = 0xB98CFF;
     private static final int MARGIN = 90;
     private static final int BRASS_LIGHT = 0xFFF0B8;
     private static final int BRASS_DARK = 0x6A4A18;
@@ -227,9 +229,9 @@ final class GuidePage {
         // it tells which steps go through the table.
         boolean badges = book.zoom() >= 1;
         for (Quest quest : ahead) {
-            if (quest.topic() != null) {
+            if (researchStep(quest)) {
                 int badge = Math.round(size(quest) * 0.36F);
-                inkBadge(graphics, quest.x() - badge, quest.y() - badge, now, quest.index(), InkState.AHEAD);
+                loupeBadge(graphics, quest.x() - badge, quest.y() + badge, now, quest.index(), InkState.AHEAD);
             }
         }
         for (Quest quest : shown) {
@@ -242,10 +244,14 @@ final class GuidePage {
                 }
                 continue;
             }
-            if (quest.topic() != null) {
-                // Worked out at the table: an ink drop on the medallion's shoulder, bright until the research is done.
-                inkBadge(graphics, quest.x() - badge, quest.y() - badge, now, quest.index(),
-                        knowledge.researched(quest.topic()) ? InkState.RESEARCHED : InkState.TO_RESEARCH);
+            if (researchStep(quest)) {
+                // Worked out at the table: until then the item lies under a violet seal, a loupe on its corner.
+                boolean researched = knowledge.researched(quest.topic());
+                if (!researched) {
+                    seal(graphics, quest, now);
+                }
+                loupeBadge(graphics, quest.x() - badge, quest.y() + badge, now, quest.index(),
+                        researched ? InkState.RESEARCHED : InkState.TO_RESEARCH);
             }
             if (badges && Guide.done(quest, knowledge)) {
                 check(graphics, quest.x() + badge - 4, quest.y() + badge - 4);
@@ -290,7 +296,11 @@ final class GuidePage {
         if (quest.station()) {
             cogRing(graphics, quest.x(), quest.y(), size, rim, 0.7F);
         }
-        medallion(graphics, quest.x(), quest.y(), size, rim, 0x15141C, 0x1C1A24, 0.75F);
+        if (researchStep(quest) && !quest.station() && !quest.landmark()) {
+            hexMedallion(graphics, quest.x(), quest.y(), size, rim, 0x15141C, 0x1C1A24, 0.75F);
+        } else {
+            medallion(graphics, quest.x(), quest.y(), size, rim, 0x15141C, 0x1C1A24, 0.75F);
+        }
     }
 
     /**
@@ -418,9 +428,10 @@ final class GuidePage {
         boolean wip = quest.kind() == Quest.Kind.WIP;
         float pulse = pulse(now, quest.index());
         if (!done && !wip) {
-            // An open step breathes in cyan.
+            // An open step breathes in cyan, one waiting for its research in violet.
+            int breath = researchStep(quest) && !knowledge.researched(quest.topic()) ? RESEARCH : OPEN;
             for (int ring = 0; ring < 3; ring++) {
-                int halo = PixelArt.argb(OPEN, (0.14F - ring * 0.04F) * (0.6F + 0.4F * pulse));
+                int halo = PixelArt.argb(breath, (0.14F - ring * 0.04F) * (0.6F + 0.4F * pulse));
                 PixelArt.disc(graphics, x, y, size + 4 + ring * 4, halo, 0);
             }
         }
@@ -438,8 +449,17 @@ final class GuidePage {
         }
         switch (quest.kind()) {
             case ITEM -> {
-                int fill = done ? 0x2A2210 : 0x0C1A2A;
-                medallion(graphics, x, y, size, rim, fill, done ? PixelArt.mix(fill, StarBook.GOLD, 0.18F) : PixelArt.mix(fill, OPEN, 0.12F), 1);
+                if (researchStep(quest) && !quest.landmark() && !quest.station()) {
+                    // A research step is a hexagon, like the sections of the research parchment: violet until worked
+                    // out at the table, brass once researched.
+                    boolean researched = knowledge.researched(quest.topic());
+                    int hexRim = done || quest == selected || hovered ? rim : researched ? 0xC8A050 : PixelArt.mix(0x7A4FD0, RESEARCH, pulse);
+                    int fill = done ? 0x2A2210 : researched ? 0x1E1A10 : 0x1A1030;
+                    hexMedallion(graphics, x, y, size, hexRim, fill, PixelArt.mix(fill, researched || done ? StarBook.GOLD : RESEARCH, 0.16F), 1);
+                } else {
+                    int fill = done ? 0x2A2210 : 0x0C1A2A;
+                    medallion(graphics, x, y, size, rim, fill, done ? PixelArt.mix(fill, StarBook.GOLD, 0.18F) : PixelArt.mix(fill, OPEN, 0.12F), 1);
+                }
             }
             case WIP -> {
                 // A dashed ring turning slowly around a dim disc: a device still being drawn up.
@@ -482,6 +502,20 @@ final class GuidePage {
         PixelArt.disc(graphics, cx, cy, size - 2, PixelArt.argb(fill, alpha), PixelArt.argb(PixelArt.mix(rim, BRASS_DARK, 0.7F), alpha));
         PixelArt.disc(graphics, cx, cy, size - 8, PixelArt.argb(glow, 0.8F * alpha), 0);
         PixelArt.discRing(graphics, cx, cy, size - 4, PixelArt.argb(rim, 0.22F * alpha));
+    }
+
+    /**
+     * A hexagonal brass plate for a research step, pointy top like the parchment's sections: a dark outline, a bevelled
+     * rim (a light edge on top, a dark one below) and a face glowing a little towards its centre.
+     */
+    private static void hexMedallion(GuiGraphicsExtractor graphics, int cx, int cy, int size, int rim, int fill, int glow, float alpha) {
+        int width = size + 3;
+        PixelArt.hex(graphics, cx, cy, width + 2, 0, PixelArt.argb(0x05040A, 0.85F * alpha));
+        PixelArt.hex(graphics, cx, cy, width, PixelArt.argb(PixelArt.mix(rim, BRASS_DARK, 0.45F), alpha), 0);
+        PixelArt.hex(graphics, cx, cy - 1, width - 2, PixelArt.argb(PixelArt.mix(rim, BRASS_LIGHT, 0.3F), alpha), 0);
+        PixelArt.hex(graphics, cx, cy, width - 4, PixelArt.argb(fill, alpha), PixelArt.argb(PixelArt.mix(rim, BRASS_DARK, 0.7F), alpha));
+        PixelArt.hex(graphics, cx, cy, width - 10, PixelArt.argb(glow, 0.8F * alpha), 0);
+        PixelArt.hexRing(graphics, cx, cy, width - 6, PixelArt.argb(rim, 0.22F * alpha));
     }
 
     /**
@@ -607,36 +641,69 @@ final class GuidePage {
         }
     }
 
-    /** How a research step's ink drop looks. */
+    /** How a research step's loupe looks. */
     private enum InkState {
-        /** Still to be researched at the table: bright, glinting now and then. */
+        /** Still to be researched at the table: violet, the lens glinting now and then. */
         TO_RESEARCH,
-        /** Researched already: a quiet brass drop. */
+        /** Researched already: a quiet brass loupe. */
         RESEARCHED,
         /** On a step not reachable yet: grey. */
         AHEAD
     }
 
-    /** A drop of ink in a dark disc: this step is researched at the Research Table. */
-    private static void inkBadge(GuiGraphicsExtractor graphics, int cx, int cy, long now, int phase, InkState state) {
+    /** Whether the step is worked out at the Research Table (an item step asking for a research). */
+    private static boolean researchStep(Quest quest) {
+        return quest.kind() == Quest.Kind.ITEM && quest.topic() != null;
+    }
+
+    /**
+     * A loupe in a dark disc on the medallion's lower left: this step is researched at the Research Table - the same
+     * loupe the table's arm swings over the items.
+     */
+    private static void loupeBadge(GuiGraphicsExtractor graphics, int cx, int cy, long now, int phase, InkState state) {
         float glint = state == InkState.TO_RESEARCH ? Math.max(0, Mth.sin(now / 500.0F + phase)) : 0;
         int edge = switch (state) {
-            case TO_RESEARCH -> PixelArt.mix(0x2B8FB8, 0x9FE6FF, glint);
+            case TO_RESEARCH -> PixelArt.mix(0x6A3FC0, 0xD8C0FF, glint);
             case RESEARCHED -> 0x8A6A2A;
             case AHEAD -> 0x5A5868;
         };
-        int drop = switch (state) {
-            case TO_RESEARCH -> 0x7EF0FF;
+        int metal = switch (state) {
+            case TO_RESEARCH -> 0xE0D0FF;
             case RESEARCHED -> 0xD8B868;
             case AHEAD -> 0x8A8898;
         };
-        PixelArt.disc(graphics, cx, cy, 10, PixelArt.argb(state == InkState.RESEARCHED ? 0x1E180C : 0x0C1426, 1), PixelArt.argb(edge, 1));
-        int ink = PixelArt.argb(drop, 1);
-        PixelArt.fill(graphics, cx - 1, cy - 3, cx, cy - 2, ink);
-        PixelArt.fill(graphics, cx - 2, cy - 2, cx + 1, cy, ink);
-        PixelArt.fill(graphics, cx - 3, cy, cx + 2, cy + 2, ink);
-        PixelArt.fill(graphics, cx - 2, cy + 2, cx + 1, cy + 3, ink);
-        PixelArt.fill(graphics, cx - 2, cy, cx - 1, cy + 1, PixelArt.argb(0xFFFFFF, 0.5F + 0.5F * glint));
+        PixelArt.disc(graphics, cx, cy, 12, PixelArt.argb(state == InkState.RESEARCHED ? 0x1E180C : 0x140C26, 1), PixelArt.argb(edge, 1));
+        int ring = PixelArt.argb(metal, 1);
+        // The lens: a ring four pixels across, up and to the right of the centre.
+        PixelArt.fill(graphics, cx - 1, cy - 4, cx + 3, cy - 3, ring);
+        PixelArt.fill(graphics, cx - 1, cy + 1, cx + 3, cy + 2, ring);
+        PixelArt.fill(graphics, cx - 2, cy - 3, cx - 1, cy + 1, ring);
+        PixelArt.fill(graphics, cx + 3, cy - 3, cx + 4, cy + 1, ring);
+        PixelArt.fill(graphics, cx - 1, cy - 3, cx + 3, cy + 1, PixelArt.argb(state == InkState.AHEAD ? 0x3A3848 : 0x7EF0FF, 0.35F + 0.4F * glint));
+        PixelArt.fill(graphics, cx, cy - 2, cx + 1, cy - 1, PixelArt.argb(0xFFFFFF, 0.5F + 0.5F * glint));
+        // The handle, down to the left.
+        PixelArt.fill(graphics, cx - 3, cy + 1, cx - 2, cy + 2, ring);
+        PixelArt.fill(graphics, cx - 4, cy + 2, cx - 2, cy + 3, ring);
+        PixelArt.fill(graphics, cx - 5, cy + 3, cx - 3, cy + 4, ring);
+    }
+
+    /**
+     * The seal over an item still to be researched: a violet mist the item shows through dimly, and six motes turning
+     * slowly around it - what the thing really is becomes clear only once it is worked out at the table.
+     */
+    private static void seal(GuiGraphicsExtractor graphics, Quest quest, long now) {
+        int size = size(quest);
+        PixelArt.disc(graphics, quest.x(), quest.y(), size - 6, PixelArt.argb(0x1A0E30, 0.5F), 0);
+        float turn = now / 1800.0F + quest.index();
+        float breath = 0.5F + 0.5F * Mth.sin(now / 700.0F + quest.index());
+        float radius = size / 2.0F - 5;
+        for (int i = 0; i < 6; i++) {
+            double angle = turn + i * Math.PI / 3;
+            int px = quest.x() + (int) Math.round(Math.cos(angle) * radius);
+            int py = quest.y() + (int) Math.round(Math.sin(angle) * radius);
+            PixelArt.fill(graphics, px - 1, py, px + 1, py + 1, PixelArt.argb(RESEARCH, 0.45F + 0.4F * breath));
+            PixelArt.fill(graphics, px, py - 1, px + 1, py + 1, PixelArt.argb(0xE8DCFF, 0.35F + 0.4F * breath));
+        }
     }
 
     /** A small tick in a green disc: the quest is done. */
@@ -702,33 +769,6 @@ final class GuidePage {
             lines.add(Component.translatable("book.hextale.guide.researched_at_table").withColor(0xC8A860).getVisualOrderText());
         }
         return lines;
-    }
-
-    /**
-     * The legend in the sky's bottom left corner (screen coordinates): the signs the map uses - the cog ring of a
-     * workstation, the ink drop of a step researched at the table, the grey of a step not reachable yet.
-     */
-    void renderLegend(GuiGraphicsExtractor graphics, int left, int bottom, long now) {
-        String[] keys = {"book.hextale.guide.legend.station", "book.hextale.guide.legend.research", "book.hextale.guide.legend.ahead"};
-        int width = 0;
-        for (String key : keys) {
-            width = Math.max(width, font.width(Component.translatable(key)));
-        }
-        int w = width + 28;
-        int h = keys.length * 13 + 5;
-        int top = bottom - h;
-        PixelArt.fill(graphics, left, top, left + w, bottom, PixelArt.argb(0x120C08, 0.82F));
-        PixelArt.fill(graphics, left, top, left + w, top + 1, PixelArt.argb(StarBook.GOLD, 0.5F));
-        int cx = left + 9;
-        int cy = top + 9;
-        cogRing(graphics, cx, cy, 8, StarBook.GOLD, 1);
-        medallion(graphics, cx, cy, 8, StarBook.GOLD, 0x2A2210, 0x2A2210, 1);
-        inkBadge(graphics, cx, cy + 13, now, 0, InkState.TO_RESEARCH);
-        medallion(graphics, cx, cy + 26, 10, AHEAD, 0x15141C, 0x1C1A24, 0.75F);
-        PixelArt.flush(graphics);
-        for (int i = 0; i < keys.length; i++) {
-            graphics.text(font, Component.translatable(keys[i]), left + 21, top + 5 + i * 13, MUTED, false);
-        }
     }
 
     /** Whether a click on this step opens its plate: steps beyond the reachable ones only show their name. */
@@ -862,10 +902,12 @@ final class GuidePage {
             List<FormattedCharSequence> opens = opens(quest, knowledge);
             h += opens.isEmpty() ? 0 : 4 + opens.size() * 10;
         }
-        if (studyButton(quest)) {
-            h += 6 + StarBook.BUTTON_HEIGHT;
-        }
-        return h + PAD;
+        return h + PAD + footerHeight(quest);
+    }
+
+    /** The plate's foot that never scrolls: the research button stays in reach however long the text is. */
+    private int footerHeight(Quest quest) {
+        return studyButton(quest) ? StarBook.BUTTON_HEIGHT + PAD + 2 : 0;
     }
 
     private int maxPlateHeight() {
@@ -891,7 +933,7 @@ final class GuidePage {
     }
 
     private int buttonTop(Quest quest, RuneKnowledge knowledge) {
-        return plateTop(quest, knowledge) + contentHeight(quest, knowledge) - PAD - StarBook.BUTTON_HEIGHT - scroll;
+        return plateTop(quest, knowledge) + plateHeight(quest, knowledge) - PAD - StarBook.BUTTON_HEIGHT;
     }
 
     /** Draws the selected step's plate; returns the tooltip of what is under the mouse, or null. */
@@ -911,8 +953,9 @@ final class GuidePage {
         PixelArt.fill(graphics, book.skyLeft(), book.skyTop(), book.skyLeft() + book.skyWidth(), book.skyTop() + book.skyHeight(), 0xB0040310);
         StarBook.plateBackground(graphics, x, top, w, h);
         PixelArt.flush(graphics);
-        graphics.enableScissor(x + 1, top + 1, x + w - 1, top + h - 1);
-        boolean mouseIn = mouseX >= x && mouseX < x + w && mouseY >= top && mouseY < top + h;
+        int footer = footerHeight(quest);
+        graphics.enableScissor(x + 1, top + 1, x + w - 1, top + h - 1 - footer);
+        boolean mouseIn = mouseX >= x && mouseX < x + w && mouseY >= top && mouseY < top + h - footer;
         List<FormattedCharSequence> tooltip = null;
 
         int ix = x + PAD;
@@ -974,7 +1017,12 @@ final class GuidePage {
                 y += 10;
             }
         }
+        PixelArt.flush(graphics);
+        graphics.disableScissor();
         if (studyButton(quest)) {
+            // The foot: a gold line under the scrolling text, the button below it.
+            PixelArt.fill(graphics, ix, top + h - footer, ix + innerWidth(), top + h - footer + 1, PixelArt.argb(StarBook.GOLD, 0.3F));
+            boolean overFoot = mouseX >= x && mouseX < x + w && mouseY >= top + h - footer && mouseY < top + h;
             StarBook.Host host = book.host();
             ResearchTopic topic = quest.topic();
             boolean open = Guide.client().canResearch(topic, knowledge);
@@ -983,11 +1031,10 @@ final class GuidePage {
             Component label = Component.translatable(!open ? "book.hextale.closed" : onTable ? "book.hextale.on_table"
                     : knowledge.researched(topic) ? "book.hextale.research_again" : "book.hextale.research");
             int by = buttonTop(quest, knowledge);
-            boolean hovered = active && mouseIn && mouseX >= ix && mouseX < ix + innerWidth() && mouseY >= by && mouseY < by + StarBook.BUTTON_HEIGHT;
+            boolean hovered = active && overFoot && mouseX >= ix && mouseX < ix + innerWidth() && mouseY >= by && mouseY < by + StarBook.BUTTON_HEIGHT;
             book.magicButton(graphics, ix, by, innerWidth(), label, active, hovered, now);
         }
         PixelArt.flush(graphics);
-        graphics.disableScissor();
         boolean back = overBack(mouseX, mouseY, knowledge);
         backArrow(graphics, x + 4, top + 4, back, now);
         if (back) {

@@ -125,10 +125,18 @@ public final class Quest {
         return icon;
     }
 
-    /** Whether an item step's goal is met now: its own goal, or by default holding its icon's item. WIP steps never. */
-    public boolean isMet(ServerPlayer player) {
+    /**
+     * Whether an item step's goal is met now. The step that asks for a research is met only by researching it (reading
+     * the notes): finding or being given the item teaches nothing. Other steps: their own goal, or by default holding
+     * their icon's item. WIP steps never.
+     */
+    public boolean isMet(ServerPlayer player, Guide guide) {
         if (kind() != Kind.ITEM) {
             return false;
+        }
+        ResearchTopic topic = topic();
+        if (topic != null && guide.forTopic(topic) == this) {
+            return com.pockyl.hextale.knowledge.Research.of(player).researched(topic);
         }
         return definition.goal().map(goal -> goal.isMet(player))
                 .orElseGet(() -> player.getInventory().contains(stack -> stack.is(icon().getItem())));

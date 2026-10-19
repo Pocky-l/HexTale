@@ -1,7 +1,7 @@
 {
   "region": "runes",
   "icon": "hextale:blank_scroll",
-  "parents": ["rune_scroll"],
+  "parents": ["rune_scroll", "hextech_altar"],
   "display": {
     "kind": "shapeless",
     "ingredients": ["minecraft:paper", "minecraft:paper", "minecraft:paper"],

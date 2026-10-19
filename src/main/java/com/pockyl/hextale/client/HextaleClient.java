@@ -65,7 +65,10 @@ public final class HextaleClient {
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
                 event.register(Hextale.id("pickaxe_runes"), com.pockyl.hextale.client.render.PickaxeRuneTint.MAP_CODEC));
         modBus.addListener(TableModels::register);
-        modBus.addListener((RegisterParticleProvidersEvent event) -> event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new));
+        modBus.addListener((RegisterParticleProvidersEvent event) -> {
+            event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.RUNE_SHARD.get(), com.pockyl.hextale.client.render.RuneShardParticle.Provider::new);
+        });
         modBus.addListener(GogglesView::registerLayer);
         modBus.addListener(com.pockyl.hextale.client.screen.book.AltarDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.screen.book.CircleDiorama::register);
@@ -110,12 +113,10 @@ public final class HextaleClient {
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> ResearchBoards.warmUp());
     }
 
-    /** A studied item shows its elements under its name; in creative mode every item does. */
+    /** A studied item shows its elements under its name. */
     private static void addElementsToTooltip(RenderTooltipEvent.GatherComponents event) {
         ItemStack stack = event.getItemStack();
-        Minecraft minecraft = Minecraft.getInstance();
-        boolean creative = minecraft.player != null && minecraft.player.getAbilities().instabuild;
-        if (stack.isEmpty() || !creative && !ClientKnowledge.get().hasStudied(BuiltInRegistries.ITEM.getKey(stack.getItem()))) {
+        if (stack.isEmpty() || !ClientKnowledge.get().hasStudied(BuiltInRegistries.ITEM.getKey(stack.getItem()))) {
             return;
         }
         ItemEssences elements = ResearchItems.of(stack);

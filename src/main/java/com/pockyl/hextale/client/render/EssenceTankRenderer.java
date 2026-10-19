@@ -130,7 +130,7 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
             // The surface breathes a little, unless the jar is brim-full.
             float wave = fill < 0.98F ? Mth.sin(time * 0.08F + seed % 7) * 0.12F / 16 : 0;
             float top = Math.min(TOP, BOTTOM + (TOP - BOTTOM) * Math.min(1, fill) + wave);
-            LiquidBox.submitCutCorners(poseStack, collector, MIN, MIN, MAX, MAX, CUT, BOTTOM, top, RuneDrawing.argb(color, 0.82F), time, seed, 3);
+            LiquidBox.submitCutCorners(poseStack, collector, MIN, MIN, MAX, MAX, CUT, BOTTOM, top, RuneDrawing.argb(vivid(color), 0.9F), time, seed, 3);
         }
         boolean any = false;
         for (Essence label : labels) {
@@ -147,6 +147,26 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
                 }
             }
         });
+    }
+
+    /**
+     * The liquid's colour as the jar shows it: the glass and the liquid's texture dull an essence's own colour, and mixtures
+     * average into murk, so the jar lifts its saturation and brightness - every essence reads clearly through the glass.
+     */
+    static int vivid(int rgb) {
+        float r = (rgb >> 16 & 0xFF) / 255F;
+        float g = (rgb >> 8 & 0xFF) / 255F;
+        float b = (rgb & 0xFF) / 255F;
+        float max = Math.max(r, Math.max(g, b));
+        float min = Math.min(r, Math.min(g, b));
+        float delta = max - min;
+        float hue = 0;
+        if (delta > 0) {
+            hue = max == r ? (g - b) / delta : max == g ? 2 + (b - r) / delta : 4 + (r - g) / delta;
+            hue = (hue / 6 + 1) % 1;
+        }
+        float saturation = max <= 0 ? 0 : delta / max;
+        return Mth.hsvToRgb(hue, Math.min(1, saturation * 1.45F + 0.06F), Math.min(1, Math.max(max * 1.2F, 0.88F))) & 0xFFFFFF;
     }
 
     /** One sticker on a face, seen upright from outside: sides with up = +Y, the top with up = north. */

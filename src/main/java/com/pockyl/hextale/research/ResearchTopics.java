@@ -41,6 +41,11 @@ public final class ResearchTopics {
     }, ResearchTopic::id);
 
     public static final ResearchTopic DRAIN_VALVE = add("drain_valve", 1, Essence.WATER, Essence.EARTH, ModItems.DRAIN_VALVE);
+    public static final ResearchTopic BRASS_PIPE = add("brass_pipe", 1, Essence.WATER, Essence.METAL, ModItems.BRASS_PIPE);
+    public static final ResearchTopic PUMP = add("pump", 1, Essence.AIR, Essence.WATER, ModItems.PUMP);
+    public static final ResearchTopic GOGGLES = add("researchers_goggles", 1, Essence.LIGHT, Essence.SHADOW, ModItems.RESEARCHERS_GOGGLES);
+    public static final ResearchTopic ESSENCE_SIGIL = add("essence_sticker", 2, Essence.LIFE, Essence.WATER, ModItems.ESSENCE_STICKER);
+    public static final ResearchTopic TRANSFER_SIGIL = add("pylon_filter", 2, Essence.AIR, Essence.LIGHT, ModItems.PYLON_FILTER);
     public static final ResearchTopic CIRCLE = add("hextech_altar", 1, Essence.SPARK, Essence.EARTH,
             ModItems.HEXTECH_ALTAR, ModItems.PEDESTAL, ModItems.RUNE_STELE);
     public static final ResearchTopic BIG_ESSENCE_JAR = add("big_essence_jar", 1, Essence.WATER, Essence.LIGHT, ModItems.ESSENCE_TANK);
@@ -103,9 +108,9 @@ public final class ResearchTopics {
         return null;
     }
 
-    /** Whether this researcher may make the item: no topic guards it, it is researched, or they play in creative. */
+    /** Whether this researcher may make the item: no topic guards it or it is researched. */
     public static boolean mayMake(Player player, ItemStack stack, RuneKnowledge knowledge) {
         ResearchTopic topic = stack.isEmpty() ? null : of(stack.getItem());
-        return topic == null || player.getAbilities().instabuild || knowledge.researched(topic);
+        return topic == null || knowledge.researched(topic);
     }
 }

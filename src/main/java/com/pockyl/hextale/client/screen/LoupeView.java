@@ -277,8 +277,7 @@ final class LoupeView {
 
     private boolean known(Item item) {
         Minecraft minecraft = Minecraft.getInstance();
-        return studiedHere.contains(item) || minecraft.player != null && minecraft.player.getAbilities().instabuild
-                || ClientKnowledge.get().hasStudied(BuiltInRegistries.ITEM.getKey(item));
+        return studiedHere.contains(item) || ClientKnowledge.get().hasStudied(BuiltInRegistries.ITEM.getKey(item));
     }
 
     /**

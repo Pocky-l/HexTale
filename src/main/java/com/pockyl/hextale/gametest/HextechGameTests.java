@@ -154,13 +154,11 @@ public final class HextechGameTests {
         });
     }
 
-    /** The crafted way: eight stone around a bottle of essence; the bottle comes back. */
+    /** Magic stone is no longer crafted: it is soaked in a crucible (see CrucibleGameTests) or under a drain valve. */
     @HexTest
-    public static void magicStoneIsCraftedAroundABottle(GameTestHelper helper) {
-        helper.assertTrue(helper.getLevel().getServer().getRecipeManager().byKey(ResourceKey.create(Registries.RECIPE,
-                Hextale.id("magic_stone"))).isPresent(), "the magic stone recipe is loaded");
-        ItemStack bottle = new ItemStack(ModItems.ESSENCE_FLASK.get());
-        helper.assertTrue(bottle.getItem().getCraftingRemainder(bottle).is(Items.GLASS_BOTTLE), "the bottle comes back as a glass bottle");
+    public static void magicStoneIsNotCrafted(GameTestHelper helper) {
+        helper.assertFalse(helper.getLevel().getServer().getRecipeManager().byKey(ResourceKey.create(Registries.RECIPE,
+                Hextale.id("magic_stone"))).isPresent(), "there is no magic stone crafting recipe");
         helper.succeed();
     }
 

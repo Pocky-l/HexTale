@@ -40,8 +40,9 @@ import java.util.Locale;
  * the water warms by the heat's strength and cools without it. Only boiling water takes things in: bottles and jars of
  * essence pour into it, items dropped or put in sink and dissolve. What it makes of them comes later - for now it keeps
  * every essence and item that went in. It holds {@value #CAPACITY} mB: water, essence and every dissolved item
- * ({@value #ITEM_VOLUME} mB each); more brims over the rim and spills liquid in proportion. Boiling water slowly
- * evaporates.
+ * ({@value #ITEM_VOLUME} mB each); more brims over the rim and spills liquid in proportion. The water never boils off by
+ * itself. Stone thrown into a crucible holding magic essence soaks it up and comes back out as magic stone
+ * ({@value #MAGIC_PER_STONE} mB of magic a block), boiling or not.
  */
 public class CrucibleBlockEntity extends BlockEntity {
     /** What it holds in all: water, essence and the dissolved items. */
@@ -58,8 +59,10 @@ public class CrucibleBlockEntity extends BlockEntity {
     /** Degrees a tick per point of heat, and degrees a tick it cools without heat. */
     public static final float RISE = 0.1F;
     public static final float FALL = 0.15F;
-    /** Boiling water loses a millibucket every this many ticks (a bucket boils off in under two minutes). */
-    public static final int EVAPORATE_TICKS = 2;
+    /** Magic essence a block of stone soaks up to become magic stone. */
+    public static final int MAGIC_PER_STONE = 5;
+    /** Ticks a soaking stone lies under the surface before it rises out as magic stone. */
+    public static final int SOAK_TICKS = 24;
     /** How often the crucible looks for items over it, and how often the clients hear of its temperature. */
     private static final int SCAN_TICKS = 2;
     /** Items this far over the crucible (in blocks above it) are drawn into boiling water. */
@@ -117,6 +120,11 @@ public class CrucibleBlockEntity extends BlockEntity {
     /** When the water started boiling dry (sneak-use), and how much there was. */
     private long dryingAt = -1000;
     private int dryingFrom;
+    /** Stones soaking in the magic now, and when they rise out as magic stone. */
+    private int soaking;
+    private long soakedAt;
+    /** Magic stone just thrown out: no crucible catches it again for a moment. */
+    private final java.util.Map<java.util.UUID, Long> thrownOut = new java.util.HashMap<>();
 
     public CrucibleBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CRUCIBLE.get(), pos, state);
@@ -164,10 +172,8 @@ public class CrucibleBlockEntity extends BlockEntity {
             boilDry(level, now);
             return;
         }
-        // Only the water boils off; essence stays behind, thickening.
-        if (boiling() && water > 0 && now % EVAPORATE_TICKS == 0) {
-            water--;
-            dirty = true;
+        if (soaking > 0 && now >= soakedAt) {
+            riseAsMagicStone(level);
         }
         if (now % SCAN_TICKS == 0 && liquid() > 0) {
             takeItems(level);
@@ -189,10 +195,18 @@ public class CrucibleBlockEntity extends BlockEntity {
         double z = worldPosition.getZ();
         AABB over = new AABB(x, y + BOTTOM, z, x + 1, y + 1 + CAPTURE_HEIGHT, z + 1);
         AABB inside = new AABB(x + INSIDE_MIN, y + BOTTOM, z + INSIDE_MIN, x + INSIDE_MAX, y + surface() + 0.1, z + INSIDE_MAX);
+        long now = level.getGameTime();
+        thrownOut.values().removeIf(at -> now - at > 40);
         for (ItemEntity entity : level.getEntitiesOfClass(ItemEntity.class, boiling() ? over : inside, ItemEntity::isAlive)) {
+            if (thrownOut.containsKey(entity.getUUID())) {
+                continue;
+            }
             ItemStack stack = entity.getItem();
             float caughtAt = (float) Math.max(surface(), entity.getY() - y);
-            int taken = boiling() ? dissolve(stack, stack.getCount()) : 0;
+            int taken = soaks(stack) ? soak(stack, stack.getCount(), entity.getBoundingBox().intersects(inside) || boiling()) : 0;
+            if (taken == 0 && boiling()) {
+                taken = dissolve(stack, stack.getCount());
+            }
             if (taken > 0) {
                 sankFrom = caughtAt;
                 stack.shrink(taken);
@@ -207,6 +221,70 @@ public class CrucibleBlockEntity extends BlockEntity {
                 level.playSound(null, worldPosition, SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS, 0.3F, 1.4F);
             }
         }
+    }
+
+    /** Whether this item is stone that soaks up essence (the blocks a drain valve turns into magic stone). */
+    public static boolean soaks(ItemStack stack) {
+        return stack.getItem() instanceof net.minecraft.world.item.BlockItem block
+                && block.getBlock().defaultBlockState().is(com.pockyl.hextale.registry.ModTags.SOAKS_ESSENCE);
+    }
+
+    /**
+     * Lets up to {@code count} stones sink into the magic: each takes {@value #MAGIC_PER_STONE} mB of magic essence and
+     * rises out as magic stone {@value #SOAK_TICKS} ticks later. Stones already soaking hold the next ones back.
+     *
+     * @param reached whether the stone has reached the liquid
+     * @return how many sank
+     */
+    public int soak(ItemStack stack, int count, boolean reached) {
+        int magic = essence.get(com.pockyl.hextale.rune.Essence.MAGIC);
+        count = Math.min(count, magic / MAGIC_PER_STONE);
+        if (!reached || soaking > 0 || drying() || count <= 0 || !soaks(stack)) {
+            return 0;
+        }
+        essence = essence.minus(EssenceMix.pure(com.pockyl.hextale.rune.Essence.MAGIC, count * MAGIC_PER_STONE));
+        soaking = count;
+        soakedAt = (level == null ? 0 : level.getGameTime()) + SOAK_TICKS;
+        // It sinks like anything dropped in, and the magic swirls in after it.
+        sank = stack.copyWithCount(1);
+        sankAt = level == null ? 0 : level.getGameTime();
+        pouredColor = com.pockyl.hextale.rune.Essence.MAGIC.color();
+        pouredAt = sankAt;
+        playAt(SoundEvents.FISHING_BOBBER_SPLASH, 0.4F, 0.8F);
+        playAt(ModSounds.CRUCIBLE_DISSOLVE.get(), 0.4F, 0.7F);
+        if (level instanceof ServerLevel server) {
+            Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
+            server.sendParticles(ParticleTypes.SPLASH, at.x, at.y + 0.05, at.z, 10, 0.15, 0.02, 0.15, 0.05);
+            server.sendParticles(new DustParticleOptions(com.pockyl.hextale.rune.Essence.MAGIC.color(), 1.2F), at.x, at.y + 0.08, at.z,
+                    16, 0.2, 0.03, 0.2, 0);
+        }
+        changed();
+        return count;
+    }
+
+    /** The soaked stones rise out of the liquid as magic stone, thrown up over the rim with a burst of the magic's light. */
+    private void riseAsMagicStone(ServerLevel level) {
+        int count = soaking;
+        soaking = 0;
+        Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface() + 0.15, 0.5);
+        var random = level.getRandom();
+        while (count > 0) {
+            ItemStack stone = new ItemStack(com.pockyl.hextale.registry.ModItems.MAGIC_STONE.get(), Math.min(64, count));
+            count -= stone.getCount();
+            ItemEntity entity = new ItemEntity(level, at.x, at.y, at.z, stone);
+            double angle = random.nextDouble() * Math.PI * 2;
+            entity.setDeltaMovement(Math.cos(angle) * 0.12, 0.38, Math.sin(angle) * 0.12);
+            entity.setPickUpDelay(10);
+            thrownOut.put(entity.getUUID(), level.getGameTime());
+            level.addFreshEntity(entity);
+        }
+        int magic = com.pockyl.hextale.rune.Essence.MAGIC.color();
+        level.sendParticles(new DustParticleOptions(magic, 1.4F), at.x, at.y, at.z, 24, 0.22, 0.12, 0.22, 0);
+        level.sendParticles(ParticleTypes.WITCH, at.x, at.y + 0.1, at.z, 12, 0.2, 0.2, 0.2, 0.05);
+        level.sendParticles(ParticleTypes.SPLASH, at.x, at.y, at.z, 14, 0.2, 0.02, 0.2, 0.1);
+        playAt(ModSounds.BLOCK_AWAKEN.get(), 0.6F, 1.2F);
+        playAt(SoundEvents.GENERIC_SPLASH, 0.35F, 1.2F);
+        changed();
     }
 
     /** Whether the water is boiling dry (sneak-use): it goes up in steam over {@link #BOIL_DRY_TICKS}. */
@@ -524,6 +602,8 @@ public class CrucibleBlockEntity extends BlockEntity {
         sankFrom = input.getFloatOr("sank_from", 1);
         dryingAt = input.getLongOr("drying_at", -1000);
         dryingFrom = input.getIntOr("drying_from", 0);
+        soaking = input.getIntOr("soaking", 0);
+        soakedAt = input.getLongOr("soaked_at", 0);
     }
 
     @Override
@@ -544,6 +624,10 @@ public class CrucibleBlockEntity extends BlockEntity {
         output.putFloat("sank_from", sankFrom);
         output.putLong("drying_at", dryingAt);
         output.putInt("drying_from", dryingFrom);
+        if (soaking > 0) {
+            output.putInt("soaking", soaking);
+            output.putLong("soaked_at", soakedAt);
+        }
         if (!sank.isEmpty()) {
             output.store("sank", ItemStack.CODEC, sank);
         }

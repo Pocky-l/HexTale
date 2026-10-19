@@ -43,8 +43,7 @@ public record SteleRunePayload(BlockPos pos, int rune) implements CustomPacketPa
         }
         ComplexRune rune = ComplexRunes.all().get(payload.rune);
         RuneKnowledge knowledge = Research.of(player);
-        boolean creative = player.getAbilities().instabuild;
-        if (!creative && !knowledge.knows(rune)) {
+        if (!knowledge.knows(rune)) {
             return;
         }
         // With an item on the altar only the runes that do something for it may be chosen (the screen shows no others).
@@ -62,8 +61,7 @@ public record SteleRunePayload(BlockPos pos, int rune) implements CustomPacketPa
                 return;
             }
         }
-        // Creative researchers choose runes they never studied with full stars.
-        stele.choose(rune, knowledge.knows(rune) ? knowledge.stars(rune) : 3);
+        stele.choose(rune, knowledge.stars(rune));
         player.level().playSound(null, payload.pos, ModSounds.STELE_SET.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
     }
 }

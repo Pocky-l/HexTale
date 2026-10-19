@@ -1,10 +1,11 @@
 {
   "region": "workshop",
   "icon": "hextale:researchers_goggles",
-  "parents": ["hex_workbench", "brass"],
+  "parents": ["hex_workbench", "brass", "ink"],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:researchers_goggles"
   },
-  "pos": [-170, -110]
+  "pos": [-170, -110],
+  "research": "researchers_goggles"
 }

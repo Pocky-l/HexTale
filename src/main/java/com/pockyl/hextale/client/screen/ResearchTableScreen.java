@@ -193,10 +193,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         return minecraft == null || minecraft.player == null ? null : Requirement.firstMissing(menu.table(), minecraft.player, paid);
     }
 
-    private boolean creative() {
-        return minecraft != null && minecraft.player != null && minecraft.player.getAbilities().instabuild;
-    }
-
     private void send(ResearchActionPayload payload) {
         ClientPacketDistributor.sendToServer(payload);
     }
@@ -350,7 +346,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             refuse(cell, 0.6F);
             return false;
         }
-        if (!creative() && !next.affordable(ink())) {
+        if (!next.affordable(ink())) {
             vialFlash[ResearchSheet.paying(current, from, cell).ordinal()] = Util.getMillis();
             refuse(cell, 0.8F);
             return false;
@@ -617,7 +613,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 candidate[tree.length] = from;
                 candidate[tree.length + 1] = hovered;
                 ResearchSheet.Trace next = ResearchSheet.trace(current, candidate);
-                if (next != null && (creative() || next.affordable(ink()))) {
+                if (next != null && next.affordable(ink())) {
                     preview = hovered;
                     previewFrom = from;
                 }
@@ -742,14 +738,13 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         long now = Util.getMillis();
         int[] ink = inkMb();
         int[] capacity = inkCapacity();
-        boolean infinite = creative();
         for (int i = 0; i < shown.size(); i++) {
             Essence element = shown.get(i);
             int e = element.ordinal();
             int x = leftPos + VIAL_X + (9 - shown.size()) * VIAL_STEP / 2 + i * VIAL_STEP;
             int y = topPos + VIAL_Y;
-            int full = infinite ? 1 : Math.max(1, capacity[e]);
-            int amount = infinite ? 1 : ink[e];
+            int full = Math.max(1, capacity[e]);
+            int amount = ink[e];
             if (vialLevel[e] < 0) {
                 vialLevel[e] = amount;
             }
@@ -757,7 +752,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             vialLevel[e] += (amount - vialLevel[e]) * 0.12F;
             float level = Math.min(1, vialLevel[e] / full);
             int liquid = Math.round(level * VIAL_H);
-            int spend = infinite ? 0 : Math.min(liquid, Math.round(Math.min(reserved[e], amount) / (float) full * VIAL_H));
+            int spend = Math.min(liquid, Math.round(Math.min(reserved[e], amount) / (float) full * VIAL_H));
             int color = element.color();
             float flash = Math.max(0, 1 - (now - vialFlash[e]) / (float) FLASH_MILLIS);
             int shake = flash > 0 ? Math.round(Mth.sin(now / 25.0F) * 2 * flash) : 0;
@@ -783,7 +778,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                     }
                 }
             }
-            if (rising || infinite) {
+            if (rising) {
                 for (int b = 0; b < 3; b++) {
                     float t = ((now + b * 377L + i * 91L) % 900) / 900.0F;
                     int bx = x + 2 + (b * 4 + i) % (VIAL_W - 3);
@@ -795,8 +790,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             graphics.fill(x + 1, y + 1, x + 2, y + VIAL_H - 2, 0x40FFFFFF);
             PixelArt.essence(graphics, element, x + VIAL_W / 2 - 4, y + VIAL_H + 4, 9, PixelArt.argb(color, 1));
             if (isOver(mouseX, mouseY, x - 2, y - 2, VIAL_W + 4, VIAL_H + 16)) {
-                Component count = infinite ? Component.literal("∞") : Component.literal(ink[e] + "/" + capacity[e] + " mB");
-                boolean noStorage = !infinite && capacity[e] == 0;
+                Component count = Component.literal(ink[e] + "/" + capacity[e] + " mB");
+                boolean noStorage = capacity[e] == 0;
                 pendingTooltip = List.of(Component.translatable(KEY + "ink", ResearchText.essence(element)),
                         count.copy().withStyle(noStorage ? ChatFormatting.RED : ChatFormatting.GRAY),
                         Component.translatable(KEY + (noStorage ? "ink.no_storage" : "ink.hint"), ResearchText.essence(element))

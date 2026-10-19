@@ -6,5 +6,6 @@
     "kind": "hex_crafting",
     "result": "hextale:pump"
   },
-  "pos": [-40, 280]
+  "pos": [-40, 280],
+  "research": "pump"
 }

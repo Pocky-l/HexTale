@@ -6,5 +6,6 @@
     "kind": "infusion",
     "result": "hextale:essence_sticker"
   },
-  "pos": [970, 0]
+  "pos": [970, 0],
+  "research": "essence_sticker"
 }

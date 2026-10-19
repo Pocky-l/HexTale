@@ -151,9 +151,9 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         return state.hasProperty(AlembicBlock.LIT) && state.getValue(AlembicBlock.LIT);
     }
 
-    /** Whether this player may boil the item: studied (or creative). */
+    /** Whether this player may boil the item: studied. */
     public static boolean studied(Player player, ItemStack stack) {
-        return player.getAbilities().instabuild || Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(stack.getItem()));
+        return Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(stack.getItem()));
     }
 
     /** The player put the input in: it boils into its essences if they have studied it. */

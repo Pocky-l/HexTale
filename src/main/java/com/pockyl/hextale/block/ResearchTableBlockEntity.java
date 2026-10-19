@@ -208,9 +208,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return topic == null ? null : ResearchBoards.get(topic, sheet.attempt());
     }
 
-    /** In creative mode every item counts as studied, as if the researcher carried them all. */
     private static boolean studied(ServerPlayer player, Item item) {
-        return player.getAbilities().instabuild || Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(item));
+        return Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(item));
     }
 
     // ---- Ink ------------------------------------------------------------------------------------------------------
@@ -293,9 +292,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             return;
         }
         ResearchSheet.Trace trace = ResearchSheet.trace(board, cells);
-        boolean creative = player.getAbilities().instabuild;
         boolean fresh = sheet.isDone() || !sheet.paid();
-        if (Requirement.firstMissing(this, player, !fresh) != null || trace == null || !creative && !trace.affordable(inkSupply().sections())) {
+        if (Requirement.firstMissing(this, player, !fresh) != null || trace == null || !trace.affordable(inkSupply().sections())) {
             sheet.touch();
             setChanged();
             return;
@@ -307,9 +305,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         sheet.setTree(cells);
         if (fresh) {
             // The attempt starts: it is written on a paper from the table.
-            if (!creative) {
-                items.get(PAPER).shrink(1);
-            }
+            items.get(PAPER).shrink(1);
             sheet.pay();
             level.playSound(null, worldPosition, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 1.0F);
         }
@@ -331,9 +327,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
      */
     private void complete(ServerPlayer player, ResearchBoard board, ResearchSheet.Trace trace) {
         ResearchTopic topic = board.topic();
-        if (!player.getAbilities().instabuild) {
-            drawInk(trace.ink());
-        }
+        drawInk(trace.ink());
         items.get(HEXTECH).shrink(1);
         sheet.finish();
         deliver(player, ResearchNotesItem.of(topic, sheet.attempt(), sheet.tree()));
@@ -348,12 +342,9 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
      * and the researcher is hurt; the next attempt is drawn on a new parchment with another board.
      */
     private void burst(ServerPlayer player, ResearchBoard board, int cell, ResearchSheet.Trace trace) {
-        boolean creative = player.getAbilities().instabuild;
-        if (!creative) {
-            drawInk(trace.ink());
-            items.get(HEXTECH).shrink(1);
-            player.hurtServer((ServerLevel) level, level.damageSources().magic(), BURST_DAMAGE);
-        }
+        drawInk(trace.ink());
+        items.get(HEXTECH).shrink(1);
+        player.hurtServer((ServerLevel) level, level.damageSources().magic(), BURST_DAMAGE);
         message(player, Component.translatable("research.hextale.burst", name(board.topic())), ResearchMessagePayload.Tone.BAD);
         if (level instanceof ServerLevel serverLevel) {
             Vec3 orb = orbPosition();
@@ -378,7 +369,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             setChanged();
             return;
         }
-        if (!sheet.paid() && !player.getAbilities().instabuild) {
+        if (!sheet.paid()) {
             Requirement missing = Requirement.paper(this, player);
             if (missing != null) {
                 message(player, Component.translatable(missing.translationKey()), ResearchMessagePayload.Tone.BAD);

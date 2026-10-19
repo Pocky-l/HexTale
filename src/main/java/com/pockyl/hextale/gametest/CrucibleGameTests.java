@@ -19,7 +19,7 @@ import com.pockyl.hextale.rune.Essence;
 
 /**
  * The Crucible: dust wakes a cauldron into it (keeping its water), heat below brings the water to a boil, and only
- * boiling water takes essence and items in; it evaporates while it boils.
+ * boiling water takes essence and items in; the water never boils off by itself. Stone soaks up its magic essence.
  */
 public final class CrucibleGameTests {
     private CrucibleGameTests() {
@@ -90,7 +90,7 @@ public final class CrucibleGameTests {
         });
     }
 
-    /** Over a lit soul campfire the water boils; then essence pours in, dropped sticks dissolve and the water evaporates. */
+    /** Over a lit soul campfire the water boils; then essence pours in, dropped sticks dissolve and the water stays. */
     @HexTest(maxTicks = 700)
     public static void heatBoilsTheWaterAndItTakesThingsIn(GameTestHelper helper) {
         helper.setBlock(AT.below(), Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
@@ -113,7 +113,33 @@ public final class CrucibleGameTests {
             }
             helper.assertTrue(crucible.dissolvedCount() == 3, "the dropped sticks dissolve");
             helper.assertTrue(crucible.essence().get(Essence.FIRE) == 16, "the essence stays in the water");
-            helper.assertTrue(crucible.water() < CrucibleBlockEntity.BUCKET, "boiling water evaporates");
+            helper.assertTrue(crucible.water() == CrucibleBlockEntity.BUCKET, "boiling water does not boil off by itself");
+        });
+    }
+
+    /** Stone thrown into a crucible with magic essence sinks, takes five of the magic each and rises as magic stone. */
+    @HexTest(maxTicks = 700)
+    public static void stoneSoaksUpMagicIntoMagicStone(GameTestHelper helper) {
+        helper.setBlock(AT.below(), Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
+        helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
+        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
+        boolean[] thrown = {false};
+        helper.succeedWhen(() -> {
+            helper.assertTrue(crucible.boiling(), "the water boils");
+            if (!thrown[0]) {
+                thrown[0] = true;
+                crucible.pour(EssenceMix.pure(Essence.MAGIC, CrucibleBlockEntity.MAGIC_PER_STONE * 2 + 3));
+                Vec3 at = Vec3.atLowerCornerOf(helper.absolutePos(AT)).add(0.5, 1.5, 0.5);
+                ItemEntity stone = new ItemEntity(helper.getLevel(), at.x, at.y, at.z, new ItemStack(Items.STONE, 3));
+                stone.setDeltaMovement(Vec3.ZERO);
+                stone.setNoGravity(true);
+                helper.getLevel().addFreshEntity(stone);
+            }
+            helper.assertTrue(crucible.essence().get(Essence.MAGIC) == 3, "two stones took five magic each, the third found too little");
+            helper.assertTrue(!helper.getLevel().getEntitiesOfClass(ItemEntity.class, new net.minecraft.world.phys.AABB(helper.absolutePos(AT)).inflate(3),
+                    item -> item.getItem().is(com.pockyl.hextale.registry.ModItems.MAGIC_STONE.get()) && item.getItem().getCount() == 2).isEmpty(),
+                    "two magic stones rose out");
         });
     }
 }

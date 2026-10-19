@@ -221,7 +221,6 @@ public final class StarBook {
         guide.renderMap(graphics, knowledge, now, hovered);
         PixelArt.flush(graphics);
         graphics.pose().popMatrix();
-        guide.renderLegend(graphics, skyLeft() + 4, skyTop() + skyHeight() - 4, now);
         editor.renderHint(graphics, skyLeft() + skyWidth() - 4, skyTop() + skyHeight() - 4);
 
         List<FormattedCharSequence> tabTip = guide.selected() == null ? renderTabs(graphics, mouseX, mouseY) : null;

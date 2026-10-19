@@ -369,6 +369,8 @@ public final class RuneWorkGameTests {
         helper.getBlockEntity(creative, EssenceTankBlockEntity.class).tank().set(EssenceTankBlockEntity.CREATIVE);
         stele(helper, PickaxeRune.SMELTING, 1);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        // Creative mode knows nothing by itself: the maker must have researched the pickaxe.
+        Research.research(player, ResearchTopics.HEXTECH_PICKAXE);
         player.setShiftKeyDown(true);
         BlockPos abs = helper.absolutePos(ALTAR);
         net.minecraft.world.phys.BlockHitResult hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(abs),

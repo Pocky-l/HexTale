@@ -1,12 +1,11 @@
 {
-  "region": "essences",
+  "region": "chemtech",
   "icon": "hextale:magic_stone",
-  "parents": ["essence_bottle"],
+  "parents": ["crucible", "essence_bottle"],
   "display": {
-    "kind": "shaped",
-    "ingredients": ["#hextale:soaks_essence", "#hextale:soaks_essence", "#hextale:soaks_essence", "#hextale:soaks_essence", "hextale:essence_flask", "#hextale:soaks_essence", "#hextale:soaks_essence", "#hextale:soaks_essence", "#hextale:soaks_essence"],
-    "result": "hextale:magic_stone",
-    "count": 8
+    "kind": "scheme",
+    "ingredients": ["minecraft:stone", "hextale:crucible"],
+    "result": "hextale:magic_stone"
   },
-  "pos": [60, 250]
+  "pos": [-320, -170]
 }

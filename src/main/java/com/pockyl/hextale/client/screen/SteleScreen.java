@@ -97,18 +97,13 @@ public class SteleScreen extends Screen {
         return altar == null ? ItemStack.EMPTY : altar.center();
     }
 
-    private boolean creative() {
-        return minecraft != null && minecraft.player != null && minecraft.player.getAbilities().instabuild;
-    }
-
     private boolean knows(ComplexRune rune) {
-        return creative() || ClientKnowledge.get().knows(rune);
+        return ClientKnowledge.get().knows(rune);
     }
 
-    /** The stars the researcher would set the rune with (creative: full). */
+    /** The stars the researcher would set the rune with. */
     private int stars(ComplexRune rune) {
-        RuneKnowledge knowledge = ClientKnowledge.get();
-        return knowledge.knows(rune) ? knowledge.stars(rune) : 3;
+        return ClientKnowledge.get().stars(rune);
     }
 
     private static int panelWidth(@Nullable List<Ritual.RuneUse> uses) {
@@ -345,7 +340,7 @@ public class SteleScreen extends Screen {
     @Nullable
     private List<Ritual.RuneUse> usesFor(ItemStack altarItem) {
         List<Ritual.RuneUse> uses = Ritual.usesFor(altarItem, true);
-        if (uses == null || !Ritual.blankScroll(altarItem) || creative()) {
+        if (uses == null || !Ritual.blankScroll(altarItem)) {
             return uses;
         }
         return uses.stream().filter(use -> ClientKnowledge.get().knows(use.rune())).toList();

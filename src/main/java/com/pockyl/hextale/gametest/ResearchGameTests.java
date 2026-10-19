@@ -1094,14 +1094,16 @@ public final class ResearchGameTests {
     }
 
     @HexTest
-    public static void creativeResearchersHaveEverything(GameTestHelper helper) {
+    public static void creativeResearchersStillNeedKnowledge(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         player.setGameMode(GameType.CREATIVE);
         player.getInventory().clearContent();
         ResearchTableBlockEntity table = stockedTable(helper);
         table.select(player, TOPIC);
         table.thread(player, ResearchBoards.plainTree(ResearchBoards.get(TOPIC)));
-        helper.assertTrue(table.sheet().isDone(), "no ink and no paper are needed in creative mode");
+        helper.assertFalse(table.sheet().isDone(), "creative mode gives no ink: knowledge scrolls give progress instead");
+        ItemStack pickaxe = new ItemStack(ModItems.pickaxe(com.pockyl.hextale.runework.HextechPickaxe.HEXTECH).get());
+        helper.assertFalse(ResearchTopics.mayMake(player, pickaxe, Research.of(player)), "nor any research");
         player.discard();
         helper.succeed();
     }
@@ -1289,7 +1291,7 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    /** Devices past the essence works are made only once researched; plain materials and creative players need nothing. */
+    /** Devices past the essence works are made only once researched; plain materials need nothing. */
     @HexTest
     public static void unresearchedDevicesCannotBeMade(GameTestHelper helper) {
         ServerPlayer player = survivalPlayer(helper);
