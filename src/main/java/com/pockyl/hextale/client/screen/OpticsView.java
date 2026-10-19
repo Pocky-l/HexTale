@@ -109,6 +109,9 @@ final class OpticsView {
     private Item item;
     private int seenRevision = Integer.MIN_VALUE;
     private long sendAt;
+    /** When the bench was last sent: the server's answer is awaited this long before its bench may replace ours. */
+    private long sentAt;
+    private static final long ECHO_MILLIS = 500;
     private long lastFrame;
     /** The colour new lamps shine, and the chosen lamp when one is picked; null = white light. */
     @Nullable
@@ -138,12 +141,15 @@ final class OpticsView {
                 wasAwake[i] = study.isAwake(i);
             }
         }
-        if (newItem || study.revision() != seenRevision && drag == null && sendAt == 0
+        // The server's bench wins only once everything here has come to rest and been sent: never mid-move.
+        if (newItem || study.revision() != seenRevision && !settling() && sendAt == 0 && now - sentAt > ECHO_MILLIS
                 && !Arrays.equals(OpticsStudy.encode(study.tools()), OpticsStudy.encode(targets()))) {
+            int chosen = selected == null ? -1 : pieces.indexOf(selected);
             pieces.clear();
             for (OpticsStudy.Tool tool : study.tools()) {
                 pieces.add(new Piece(tool.type(), tool.x(), tool.y(), tool.angle(), tool.color(), 0));
             }
+            selected = chosen >= 0 && chosen < pieces.size() ? pieces.get(chosen) : null;
         }
         seenRevision = study.revision();
         for (int i = 0; i < wasAwake.length && i < study.spots().size(); i++) {
@@ -164,10 +170,25 @@ final class OpticsView {
         return out;
     }
 
-    /** Sends the bench once it has settled for a moment. */
+    /** Whether anything is still moving: held, coasting or easing to where it is headed. */
+    private boolean settling() {
+        if (drag != null) {
+            return true;
+        }
+        for (Piece piece : pieces) {
+            if (Math.abs(piece.vx) + Math.abs(piece.vy) > 0.02F || Math.abs(piece.tx - piece.x) + Math.abs(piece.ty - piece.y) > 0.05F
+                    || Math.abs(piece.ta - piece.a) > 0.01F) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Sends the bench once it has come to rest. */
     void maybeSend(long now, Consumer<int[]> send) {
-        if (sendAt != 0 && now >= sendAt && drag == null) {
+        if (sendAt != 0 && now >= sendAt && !settling()) {
             sendAt = 0;
+            sentAt = now;
             send.accept(OpticsStudy.encode(targets()));
         }
     }
@@ -605,7 +626,7 @@ final class OpticsView {
         if (!overBench(mouseX, mouseY) || item == null) {
             return false;
         }
-        if (button != 0) {
+        if (button != com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT) {
             return true;
         }
         // A click picks a tool (and takes up a lamp's colour); only carrying it off the bench puts it away.

@@ -1,0 +1,32 @@
+# Optics bench: a placed lamp is dragged again and turned.
+cmd difficulty peaceful
+cmd gamemode creative @s
+cmd gamerule doDaylightCycle false
+cmd time set noon
+cmd tp @s 0.5 -60 0.5 180 35
+cmd fill -6 -60 -8 6 -55 -1 air
+wait 10
+scale 3
+cmd item replace entity @s hotbar.1 with hextale:research_table
+slot 1
+use 0 -61 -3 up
+wait 5
+cmd data merge block 0 -60 -3 {Items:[{Slot:0b,id:"hextale:researchers_diary",count:1},{Slot:3b,id:"hextale:hextech_pickaxe",count:1}]}
+wait 5
+use 0 -60 -3 south
+wait 20
+origin screen
+click 434 11
+wait 5
+drag 306 78 40 141 10
+wait 20
+shot drag_a
+drag 55 141 70 210 10
+wait 20
+shot drag_b
+scroll 70 210 1
+wait 10
+scroll 70 210 1
+wait 10
+shot drag_c
+close

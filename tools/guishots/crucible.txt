@@ -1,4 +1,6 @@
 # The Crucible in the world: cold water, a rolling boil, an item drawn in from above, essence poured in, boiling dry.
+cmd difficulty peaceful
+cmd gamemode creative @s
 cmd gamerule doDaylightCycle false
 cmd time set noon
 cmd tp @s 0.5 -59 1.5 180 40

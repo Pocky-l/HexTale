@@ -1,4 +1,6 @@
 # A parchment burning on the Research Table: the slide of the fresh sheet.
+cmd difficulty peaceful
+cmd gamemode creative @s
 cmd tp @s 0.5 -60 0.5 180 35
 scale 3
 cmd data merge block 0 -60 -3 {sheet:{topic:"hextech_pickaxe",attempt:1,burns:1,revision:20}}

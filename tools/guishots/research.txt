@@ -1,4 +1,6 @@
 # The Research Table's desk: parchments of one topic per tier, and a parchment burning.
+cmd difficulty peaceful
+cmd gamemode creative @s
 cmd gamerule doDaylightCycle false
 cmd time set noon
 cmd tp @s 0.5 -60 0.5 180 35

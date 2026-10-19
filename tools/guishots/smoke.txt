@@ -1,4 +1,6 @@
 # Smoke test of the screenshot driver: a few screens at GUI scale 3.
+cmd difficulty peaceful
+cmd gamemode creative @s
 cmd gamerule doDaylightCycle false
 cmd time set noon
 cmd tp @s 0.5 -60 0.5 180 35
