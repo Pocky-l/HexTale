@@ -35,6 +35,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.essence.JarReach;
+import com.pockyl.hextale.item.NotesDrawing;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.ResearchNotesItem;
 import com.pockyl.hextale.knowledge.Research;
@@ -335,7 +336,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         }
         items.get(HEXTECH).shrink(1);
         sheet.finish();
-        deliver(player, ResearchNotesItem.of(topic));
+        deliver(player, ResearchNotesItem.of(topic, sheet.attempt(), sheet.tree()));
         Research.sync(player);
         message(player, Component.translatable("research.hextale.complete", name(topic)),
                 ResearchMessagePayload.Tone.WIN);
@@ -489,16 +490,70 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         ModNetwork.sendToPlayer(player, new ResearchMessagePayload(text, tone));
     }
 
-    /** The notes go to the output slot, stacking on equal notes; when that is taken, to the researcher. */
-    private void deliver(ServerPlayer player, ItemStack scroll) {
-        ItemStack output = items.get(OUTPUT);
-        if (output.isEmpty()) {
-            items.set(OUTPUT, scroll);
-        } else if (ItemStack.isSameItemSameComponents(output, scroll) && output.getCount() < output.getMaxStackSize()) {
-            output.grow(1);
-        } else if (!player.getInventory().add(scroll)) {
-            player.drop(scroll, false, Prediction.SERVER_ONLY);
+    /**
+     * The notes go to the output slot, where they hold the drawing shown on the parchment; older notes left there go to
+     * the researcher.
+     */
+    private void deliver(ServerPlayer player, ItemStack notes) {
+        ItemStack older = items.get(OUTPUT);
+        items.set(OUTPUT, notes);
+        if (!older.isEmpty() && !player.getInventory().add(older)) {
+            player.drop(older, false, Prediction.SERVER_ONLY);
         }
+    }
+
+    /**
+     * The parchment follows the notes in the output slot: when they are taken out, their finished drawing leaves the desk;
+     * notes put back show their drawing again (unless an attempt is under way). {@code show} false only clears.
+     */
+    private boolean matchNotes(boolean show) {
+        ItemStack output = items.get(OUTPUT);
+        NotesDrawing drawing = ResearchNotesItem.drawing(output);
+        ResearchTopic topic = ResearchNotesItem.topic(output);
+        if (drawing != null && topic != null) {
+            int[] tree = drawing.tree();
+            if (show && !sheet.shows(topic, drawing.attempt(), tree) && !sheet.inProgress()) {
+                sheet.show(topic, drawing.attempt(), tree);
+                return true;
+            }
+            return false;
+        }
+        if (sheet.isDone()) {
+            sheet.clear();
+            return true;
+        }
+        return false;
+    }
+
+    /** Notes may be laid back into the output slot to show their drawing, but never over an attempt under way. */
+    public boolean acceptsNotes(ItemStack stack) {
+        return ResearchNotesItem.drawing(stack) != null && !sheet.inProgress();
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        super.setItem(slot, stack);
+        if (slot == OUTPUT && matchNotes(true)) {
+            setChanged();
+        }
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        ItemStack taken = super.removeItem(slot, amount);
+        if (slot == OUTPUT && matchNotes(true)) {
+            setChanged();
+        }
+        return taken;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        ItemStack taken = super.removeItemNoUpdate(slot);
+        if (slot == OUTPUT && matchNotes(true)) {
+            setChanged();
+        }
+        return taken;
     }
 
     private void completeEffects(ResearchTopic topic) {
@@ -635,6 +690,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         }
         drawing = input.getBooleanOr("drawing", false);
         sheet.load(input.childOrEmpty("sheet"));
+        // Tables saved before the notes kept their drawing may show one whose notes are gone.
+        matchNotes(false);
         inkDraws = JarReach.read(input.getIntArray("ink_draws").orElse(new int[0]));
         inkDrawnAt = input.getLongOr("ink_drawn_at", -1000);
     }

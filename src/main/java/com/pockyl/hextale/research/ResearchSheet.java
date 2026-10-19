@@ -232,6 +232,26 @@ public final class ResearchSheet {
         revision++;
     }
 
+    /** Lays a finished drawing back on the desk (its notes were put in the output slot). */
+    public void show(ResearchTopic topic, int attempt, int[] tree) {
+        this.topic = topic;
+        this.attempt = attempt;
+        this.tree = tree.clone();
+        done = true;
+        paid = false;
+        revision++;
+    }
+
+    /** Whether this finished drawing is the one on the desk. */
+    public boolean shows(ResearchTopic topic, int attempt, int[] tree) {
+        return done && this.topic == topic && this.attempt == attempt && Arrays.equals(this.tree, tree);
+    }
+
+    /** An attempt is under way: its paper is spent and the drawing is not finished. */
+    public boolean inProgress() {
+        return paid && !done;
+    }
+
     /** Nothing changed, but screens should take the server's drawing again (a refused update). */
     public void touch() {
         revision++;

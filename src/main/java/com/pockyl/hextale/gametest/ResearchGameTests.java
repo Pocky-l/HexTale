@@ -1007,6 +1007,13 @@ public final class ResearchGameTests {
         }
         ItemStack notes = table.getItem(ResearchTableBlockEntity.OUTPUT);
         helper.assertTrue(ResearchNotesItem.topic(notes) == TOPIC, "the circle's research notes come out");
+        ItemStack taken = table.removeItem(ResearchTableBlockEntity.OUTPUT, 1);
+        helper.assertTrue(table.sheet().topic() == null && !table.sheet().isDone(), "taking the notes takes the drawing off the desk");
+        helper.assertTrue(table.acceptsNotes(taken), "the notes may be laid back");
+        table.setItem(ResearchTableBlockEntity.OUTPUT, taken);
+        helper.assertTrue(table.sheet().isDone() && table.sheet().topic() == TOPIC && Arrays.equals(table.sheet().tree(), tree),
+                "notes laid back show their drawing again");
+        notes = table.getItem(ResearchTableBlockEntity.OUTPUT);
         player.setItemInHand(InteractionHand.MAIN_HAND, notes.copy());
         player.getMainHandItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
         helper.assertTrue(knowledge.researched(TOPIC), "reading the notes teaches the topic");

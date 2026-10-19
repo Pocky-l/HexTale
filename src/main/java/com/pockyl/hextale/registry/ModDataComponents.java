@@ -28,6 +28,11 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("topic", builder -> builder
                     .persistent(com.pockyl.hextale.research.ResearchTopics.CODEC)
                     .networkSynchronized(com.pockyl.hextale.research.ResearchTopics.STREAM_CODEC));
+    /** The finished drawing written into research notes, shown again when they lie on a Research Table. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.item.NotesDrawing>> NOTES_DRAWING =
+            COMPONENTS.registerComponentType("notes_drawing", builder -> builder
+                    .persistent(com.pockyl.hextale.item.NotesDrawing.CODEC)
+                    .networkSynchronized(com.pockyl.hextale.item.NotesDrawing.STREAM_CODEC));
     /** Stars the rune on a scroll was studied with (1-3). */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> STARS =
             COMPONENTS.registerComponentType("stars", builder -> builder

@@ -158,7 +158,7 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         }
     }
 
-    /** A table slot: accepts only what the table accepts there (nothing in the output slot). */
+    /** A table slot: accepts only what the table accepts there (in the output slot: notes with their drawing). */
     private class TableSlot extends HiddenSlot {
         TableSlot(Container container, int index, int x, int y) {
             super(container, index, x, y);
@@ -166,6 +166,10 @@ public class ResearchTableMenu extends AbstractContainerMenu {
 
         @Override
         public boolean mayPlace(ItemStack stack) {
+            if (getContainerSlot() == ResearchTableBlockEntity.OUTPUT) {
+                // Notes laid back show their drawing on the parchment.
+                return player.level().getBlockEntity(pos) instanceof ResearchTableBlockEntity table && table.acceptsNotes(stack);
+            }
             return ResearchTableBlockEntity.accepts(getContainerSlot(), stack);
         }
 

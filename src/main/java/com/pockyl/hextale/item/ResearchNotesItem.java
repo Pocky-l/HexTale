@@ -39,8 +39,20 @@ public class ResearchNotesItem extends Item {
         return stack;
     }
 
+    /** Notes written at a table: they keep the drawing, so the parchment shows it while they lie in the output slot. */
+    public static ItemStack of(ResearchTopic topic, int attempt, int[] tree) {
+        ItemStack stack = of(topic);
+        stack.set(ModDataComponents.NOTES_DRAWING.get(), NotesDrawing.of(attempt, tree));
+        return stack;
+    }
+
     public static @Nullable ResearchTopic topic(ItemStack stack) {
         return stack.get(ModDataComponents.TOPIC.get());
+    }
+
+    /** The drawing these notes were written from, or null (not notes, or notes without one). */
+    public static @Nullable NotesDrawing drawing(ItemStack stack) {
+        return stack.is(ModItems.RESEARCH_NOTES.get()) && topic(stack) != null ? stack.get(ModDataComponents.NOTES_DRAWING.get()) : null;
     }
 
     @Override
