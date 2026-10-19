@@ -18,8 +18,9 @@ import com.pockyl.hextale.registry.ModMenus;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The Research Table. Its screen has two tabs - the research book and the desk (the parchment with the table's slots
- * and the player's inventory beside it); slots exist on both tabs but are only shown and clickable on the desk.
+ * The Research Table. Its screen has three tabs - the research book, the desk (the parchment with the table's slots and
+ * the player's inventory beside it) and the optics bench (the study slot and the inventory); slots exist on every tab
+ * but are only shown and clickable where they belong.
  */
 public class ResearchTableMenu extends AbstractContainerMenu {
     public static final int IMAGE_WIDTH = 468;
@@ -42,8 +43,9 @@ public class ResearchTableMenu extends AbstractContainerMenu {
     private final Container container;
     private final BlockPos pos;
     private final Player player;
-    /** Client side: whether the table tab is open (slots are hidden on the other tabs). */
-    private boolean slotsVisible = true;
+    /** Client side: whether the desk or the optics tab is open (slots are hidden on the book). */
+    private boolean deskVisible = true;
+    private boolean opticsVisible;
 
     public ResearchTableMenu(int containerId, Inventory inventory, RegistryFriendlyByteBuf buf) {
         this(containerId, inventory, new SimpleContainer(TABLE_SLOTS), buf.readBlockPos());
@@ -70,6 +72,10 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         for (int col = 0; col < 9; col++) {
             addSlot(new HiddenSlot(inventory, col, INVENTORY_X + col * 18, INVENTORY_Y + 60));
         }
+        // An item put in the study slot by a hopper (or before) lies down on the optics bench when the table is opened.
+        if (container instanceof ResearchTableBlockEntity table && inventory.player instanceof ServerPlayer researcher) {
+            table.studySlotChanged(researcher);
+        }
     }
 
     /** The table whose screen this player has open at {@code pos}, or null (stale or forged packets). */
@@ -91,8 +97,9 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         return container;
     }
 
-    public void setSlotsVisible(boolean visible) {
-        slotsVisible = visible;
+    public void setSlotsVisible(boolean desk, boolean optics) {
+        deskVisible = desk;
+        opticsVisible = optics;
     }
 
     /** The table on the server side: an item put into the study slot starts its study for this researcher. */
@@ -154,7 +161,7 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         }
     }
 
-    /** A player inventory slot shown only on the table tab. */
+    /** A player inventory slot shown on the desk and the optics tab. */
     private class HiddenSlot extends Slot {
         HiddenSlot(Container container, int index, int x, int y) {
             super(container, index, x, y);
@@ -162,7 +169,8 @@ public class ResearchTableMenu extends AbstractContainerMenu {
 
         @Override
         public boolean isActive() {
-            return slotsVisible;
+            // The server's copy never hides a slot: tabs are the screen's business.
+            return !player.level().isClientSide() || deskVisible || opticsVisible;
         }
     }
 
@@ -170,6 +178,12 @@ public class ResearchTableMenu extends AbstractContainerMenu {
     private class TableSlot extends HiddenSlot {
         TableSlot(Container container, int index, int x, int y) {
             super(container, index, x, y);
+        }
+
+        @Override
+        public boolean isActive() {
+            // The study slot belongs to the optics bench, the others to the desk.
+            return !player.level().isClientSide() || (getContainerSlot() == ResearchTableBlockEntity.STUDY ? opticsVisible : deskVisible);
         }
 
         @Override

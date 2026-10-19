@@ -40,7 +40,7 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemEssences;
-import com.pockyl.hextale.research.ItemStudy;
+import com.pockyl.hextale.research.OpticsStudy;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchText;
@@ -104,10 +104,14 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
 
     private enum Tab {
         BOOK,
-        DESK
+        DESK,
+        OPTICS
     }
 
+    private static final Identifier OPTICS_TEXTURE = Hextale.id("textures/gui/research_optics.png");
+
     private final BoardView board = new BoardView();
+    private final OpticsView optics = new OpticsView();
     private StarBook book;
     private Tab tab;
     @Nullable
@@ -121,8 +125,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private int strokeBase;
     /** Flags the researcher set on dark sections, per topic; kept while the game runs. */
     private static final Map<ResearchTopic, BitSet> FLAGS = new HashMap<>();
-    /** The researcher's pencil marks on an item's prism (client only), per item. */
-    private static final Map<Item, BitSet> PENCIL = new HashMap<>();
     @Nullable
     private ResearchTopic threadTopic;
     private int threadAttempt;
@@ -164,18 +166,19 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (book == null) {
             book = new StarBook(this);
             ResearchTableBlockEntity table = table();
-            boolean subject = table != null && (table.isStudyingItem() || table.sheet().topic() != null);
+            boolean subject = table != null && table.sheet().topic() != null;
             setTab(subject || missingDiary() != null ? Tab.DESK : Tab.BOOK);
             Arrays.fill(vialLevel, -1);
         }
         book.layout(leftPos + 4, topPos + 24, imageWidth - 8, imageHeight - 28);
         board.layout(leftPos, topPos);
+        optics.layout(leftPos, topPos);
         setTab(tab);
     }
 
     private void setTab(Tab tab) {
         this.tab = tab;
-        menu.setSlotsVisible(tab == Tab.DESK);
+        menu.setSlotsVisible(tab == Tab.DESK, tab == Tab.OPTICS);
     }
 
     @Nullable
@@ -229,7 +232,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     @Override
     public ResearchTopic researching() {
         ResearchTableBlockEntity table = table();
-        return table == null || table.isStudyingItem() ? null : table.sheet().topic();
+        return table == null ? null : table.sheet().topic();
     }
 
     @Override
@@ -244,7 +247,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     @Nullable
     private ResearchBoard currentBoard() {
         ResearchTableBlockEntity table = table();
-        ResearchTopic topic = table == null || table.isStudyingItem() ? null : table.sheet().topic();
+        ResearchTopic topic = table == null ? null : table.sheet().topic();
         return topic == null ? null : ResearchBoards.request(topic, table.sheet().attempt()).getNow(null);
     }
 
@@ -485,11 +488,16 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         pendingTooltip = null;
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         PixelArt.flush(graphics);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, tab == Tab.BOOK ? BOOK_TEXTURE : DESK_TEXTURE, leftPos, topPos, 0, 0,
-                imageWidth, imageHeight, imageWidth, imageHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, switch (tab) {
+            case BOOK -> BOOK_TEXTURE;
+            case DESK -> DESK_TEXTURE;
+            case OPTICS -> OPTICS_TEXTURE;
+        }, leftPos, topPos, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
         renderTabs(graphics, mouseX, mouseY);
         if (tab == Tab.DESK) {
             renderDesk(graphics, mouseX, mouseY);
+        } else if (tab == Tab.OPTICS) {
+            renderOptics(graphics, mouseX, mouseY);
         }
         PixelArt.flush(graphics);
     }
@@ -500,16 +508,17 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         graphics.text(font, title, titleLabelX, titleLabelY, 0xFF000000 | TEXT, true);
         Component codex = Component.translatable(KEY + "codex", ClientKnowledge.get().runeCount(), ComplexRunes.COUNT);
         PixelArt.flush(graphics);
-        graphics.text(font, codex, imageWidth - 2 * TAB_WIDTH - 32 - font.width(codex), titleLabelY, 0xFF000000 | TEXT_MUTED, true);
+        graphics.text(font, codex, imageWidth - 3 * TAB_WIDTH - 34 - font.width(codex), titleLabelY, 0xFF000000 | TEXT_MUTED, true);
     }
 
     private int tabX(int index) {
-        return leftPos + imageWidth - 20 - (2 - index) * (TAB_WIDTH + 2);
+        return leftPos + imageWidth - 20 - (3 - index) * (TAB_WIDTH + 2);
     }
 
     private void renderTabs(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        ItemStack[] icons = {new ItemStack(ModItems.RESEARCHERS_DIARY.get()), new ItemStack(ModItems.RESEARCH_TABLE.get())};
-        for (int i = 0; i < 2; i++) {
+        ItemStack[] icons = {new ItemStack(ModItems.RESEARCHERS_DIARY.get()), new ItemStack(ModItems.RESEARCH_TABLE.get()),
+                new ItemStack(ModItems.RESEARCHERS_GOGGLES.get())};
+        for (int i = 0; i < icons.length; i++) {
             int x = tabX(i);
             int y = topPos + 1;
             boolean selected = tab.ordinal() == i;
@@ -523,8 +532,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     private void renderTabTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        String[] keys = {"tab.book", "tab.desk"};
-        for (int i = 0; i < 2; i++) {
+        String[] keys = {"tab.book", "tab.desk", "tab.optics"};
+        for (int i = 0; i < keys.length; i++) {
             if (isOver(mouseX, mouseY, tabX(i), topPos + 1, TAB_WIDTH, TAB_HEIGHT)) {
                 graphics.setTooltipForNextFrame(font, Component.translatable(KEY + keys[i]), mouseX, mouseY);
             }
@@ -544,9 +553,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         int hovered = overBoard(mouseX, mouseY) ? board.cellAt(mouseX, mouseY) : -1;
         int[] reserved = new int[Essence.COUNT];
         List<Essence> shown = List.of();
-        if (table != null && table.isStudyingItem() && table.study().item() != null) {
-            renderStudy(graphics, table, hovered, mouseX, mouseY);
-        } else {
+        {
             ResearchBoard current = currentBoard();
             if (table != null) {
                 noticeBurn(table);
@@ -735,40 +742,64 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         graphics.text(font, Component.translatable(KEY + "choose"), leftPos + PANEL_X + 8, topPos + 36, 0xFF000000 | TEXT_MUTED, true);
     }
 
-    // ---- The item study -------------------------------------------------------------------------------------------
+    // ---- The optics bench -------------------------------------------------------------------------------------------
 
-    private static BitSet pencil(Item item) {
-        return PENCIL.computeIfAbsent(item, k -> new BitSet());
-    }
-
-    private void renderStudy(GuiGraphicsExtractor graphics, ResearchTableBlockEntity table, int hovered, int mouseX, int mouseY) {
-        ItemStudy study = table.study();
-        Item item = study.item();
-        if (item == null) {
-            return;
-        }
-        boolean over = overBoard(mouseX, mouseY);
-        int port = over ? board.portAt(mouseX, mouseY) : -1;
-        int cell = over && port < 0 ? board.prismCellAt(mouseX, mouseY) : -1;
-        board.renderStudy(graphics, font, item, study, cell, port, pencil(item));
-
+    /** The optics tab: the bench with the item and the light, the item's header, the tray and what was found. */
+    private void renderOptics(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        ResearchTableBlockEntity table = table();
+        OpticsStudy study = table == null ? null : table.optics();
         int x0 = leftPos + PANEL_X;
         int y0 = topPos;
-        graphics.pose().pushMatrix();
-        graphics.pose().translate(x0 + 7, y0 + 29);
-        graphics.pose().scale(1.5F, 1.5F);
-        PixelArt.flush(graphics);
-        graphics.item(new ItemStack(item), 0, 0);
-        graphics.pose().popMatrix();
-        PixelArt.flush(graphics);
-        graphics.text(font, fit(ResearchText.item(item).copy().withStyle(ChatFormatting.BOLD), HEADER_TEXT_W), x0 + 38, y0 + 29, 0xFF000000 | TEXT, true);
-        // Light left: rays as small prisms, spent ones dark; then the essences still hidden.
-        for (int i = 0; i < study.maxRays(); i++) {
-            boolean left = i >= study.spent();
-            PixelArt.hex(graphics, x0 + 42 + i % 12 * 8, y0 + 44 + i / 12 * 8, 5, PixelArt.argb(left ? 0xFFF3C0 : 0x2A2018, 1),
-                    PixelArt.argb(left ? 0x9C7230 : 0x4A3A28, 1));
+        if (study == null || study.item() == null) {
+            optics.render(graphics, font, new OpticsStudy(), mouseX, mouseY);
+            PixelArt.flush(graphics);
+            List<FormattedCharSequence> lines = font.split(Component.translatable(KEY + "optics.empty"), HEADER_TEXT_W + 30);
+            for (int i = 0; i < Math.min(3, lines.size()); i++) {
+                graphics.text(font, lines.get(i), x0 + 8, y0 + 30 + i * 9, 0xFF000000 | TEXT_MUTED, true);
+            }
+        } else {
+            optics.render(graphics, font, study, mouseX, mouseY);
+            optics.maybeSend(Util.getMillis(), tools -> send(ResearchActionPayload.optics(menu.pos(), tools)));
+            Item item = study.item();
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(x0 + 7, y0 + 29);
+            graphics.pose().scale(1.5F, 1.5F);
+            PixelArt.flush(graphics);
+            graphics.item(new ItemStack(item), 0, 0);
+            graphics.pose().popMatrix();
+            PixelArt.flush(graphics);
+            graphics.text(font, fit(ResearchText.item(item).copy().withStyle(ChatFormatting.BOLD), HEADER_TEXT_W), x0 + 38, y0 + 29,
+                    0xFF000000 | TEXT, true);
+            Component found = study.studied() ? Component.translatable(KEY + "optics.studied")
+                    : Component.translatable(KEY + "optics.found", study.awakeCount(), study.spots().size());
+            graphics.text(font, fit(found, HEADER_TEXT_W), x0 + 38, y0 + 40, study.studied() ? 0xFF8FE07A : 0xFF000000 | TEXT_MUTED, true);
+            // The essences woken so far, beside the item's slot.
+            int fx = leftPos + ResearchTableMenu.STUDY_X + 26;
+            for (int i = 0; i < study.spots().size(); i++) {
+                OpticsStudy.Spot spot = study.spots().get(i);
+                int x = fx + i * 14;
+                int y = topPos + ResearchTableMenu.ROW_Y + 4;
+                if (study.isAwake(i)) {
+                    PixelArt.essence(graphics, spot.essence(), x, y, PixelArt.ICON, PixelArt.argb(spot.essence().color(), 1));
+                } else {
+                    PixelArt.disc(graphics, x + 5, y + 5, 6, PixelArt.argb(0x2A2018, 1), PixelArt.argb(0x6A5226, 1));
+                }
+            }
+            List<Component> tip = optics.tooltip(study, mouseX, mouseY, KEY + "optics.");
+            if (tip != null) {
+                pendingTooltip = tip;
+            }
         }
-        // No tooltips over the prism: they would cover the field. Hovering a used port highlights its ray instead.
+        optics.renderTray(graphics, mouseX, mouseY);
+        if (study == null || study.item() == null || pendingTooltip == null) {
+            List<Component> tip = optics.tooltip(study == null ? new OpticsStudy() : study, mouseX, mouseY, KEY + "optics.");
+            if (tip != null) {
+                pendingTooltip = tip;
+            }
+        }
+        if (menu.table().getItem(ResearchTableBlockEntity.STUDY).isEmpty()) {
+            ghost(graphics, ResearchTableBlockEntity.STUDY, ResearchTableMenu.STUDY_X, ResearchTableMenu.ROW_Y, GHOST_STUDY);
+        }
     }
 
     // ---- Vials, slots, toast --------------------------------------------------------------------------------------
@@ -849,10 +880,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         ghost(graphics, ResearchTableBlockEntity.DIARY, ResearchTableMenu.DIARY_X, ResearchTableMenu.ROW_Y, GHOST_DIARY);
         ghost(graphics, ResearchTableBlockEntity.HEXTECH, ResearchTableMenu.HEXTECH_X, ResearchTableMenu.ROW_Y, GHOST_ORB);
         ghost(graphics, ResearchTableBlockEntity.PAPER, ResearchTableMenu.PAPER_X, ResearchTableMenu.ROW_Y, GHOST_PAPER);
-        ghost(graphics, ResearchTableBlockEntity.STUDY, ResearchTableMenu.STUDY_X, ResearchTableMenu.ROW_Y, GHOST_STUDY);
 
         ResearchTableBlockEntity table = table();
-        boolean wantsTopic = table != null && !table.isStudyingItem() && table.sheet().topic() != null;
+        boolean wantsTopic = table != null && table.sheet().topic() != null;
         Requirement missing = wantsTopic ? missing() : missingDiary();
         float strong = Math.max(0, 1 - (Util.getMillis() - requirementFlash) / 1500.0F);
         if (missing != null) {
@@ -886,7 +916,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     /** A check mark on studied items, and slot hints. */
     private void renderSlotOverlays(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         ItemStack study = menu.table().getItem(ResearchTableBlockEntity.STUDY);
-        if (!study.isEmpty() && studied(study.getItem())) {
+        if (tab == Tab.OPTICS && !study.isEmpty() && studied(study.getItem())) {
             PixelArt.flush(graphics);
             graphics.text(font, "✔", leftPos + ResearchTableMenu.STUDY_X + 10, topPos + ResearchTableMenu.ROW_Y - 3, 0xFF8FE07A, true);
         }
@@ -946,7 +976,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         double mouseX = event.x();
         double mouseY = event.y();
         int button = event.button();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < Tab.values().length; i++) {
             if (button == InputConstants.MOUSE_BUTTON_LEFT && isOver(mouseX, mouseY, tabX(i), topPos + 1, TAB_WIDTH, TAB_HEIGHT)) {
                 if (tab.ordinal() != i) {
                     release();
@@ -963,6 +993,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             boardPressed(mouseX, mouseY, button);
             return true;
         }
+        if (tab == Tab.OPTICS && optics.mousePressed(mouseX, mouseY, button)) {
+            return true;
+        }
         return super.mouseClicked(event, doubleClick);
     }
 
@@ -972,37 +1005,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return;
         }
         int cell = board.cellAt(mouseX, mouseY);
-        if (table.isStudyingItem() && table.study().item() != null) {
-            ItemStudy study = table.study();
-            int port = board.portAt(mouseX, mouseY);
-            int field = port < 0 ? board.prismCellAt(mouseX, mouseY) : -1;
-            if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
-                // A pencil mark where the researcher suspects an essence: free, only a note.
-                if (field >= 0 && !study.checked(field)) {
-                    BitSet pencil = pencil(study.item());
-                    pencil.flip(field);
-                    sound(SoundEvents.BOOK_PAGE_TURN, pencil.get(field) ? 1.6F : 1.3F, 0.5F);
-                }
-                return;
-            }
-            if (button != InputConstants.MOUSE_BUTTON_LEFT) {
-                return;
-            }
-            if (!study.isActive()) {
-                PENCIL.remove(study.item());
-                send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.CLOSE_STUDY, 0));
-            } else if (!study.started() && Requirement.paper(menu.table(), minecraft.player) != null) {
-                nudgeRequirement(field < 0 ? HexGrid.CENTRE : field);
-            } else if (port >= 0 && study.canFire(port)) {
-                send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.FIRE, port));
-                sound(SoundEvents.AMETHYST_CLUSTER_PLACE, 1.4F, 0.6F);
-            } else if (field >= 0 && study.canCheck(field)) {
-                pencil(study.item()).clear(field);
-                send(ResearchActionPayload.of(menu.pos(), ResearchActionPayload.Action.STRIKE, field));
-                sound(SoundEvents.AMETHYST_BLOCK_HIT, 1.2F, 0.6F);
-            }
-            return;
-        }
         ResearchBoard current = currentBoard();
         if (current == null) {
             if (button == InputConstants.MOUSE_BUTTON_LEFT) {
@@ -1083,6 +1085,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             }
             return true;
         }
+        if (tab == Tab.OPTICS && optics.dragging()) {
+            optics.mouseDragged(event.x(), event.y());
+            return true;
+        }
         return super.mouseDragged(event, dragX, dragY);
     }
 
@@ -1095,6 +1101,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             release();
             return true;
         }
+        if (tab == Tab.OPTICS && optics.dragging()) {
+            optics.mouseReleased();
+            return true;
+        }
         return super.mouseReleased(event);
     }
 
@@ -1103,12 +1113,19 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         if (tab == Tab.BOOK && book.keyPressed(event)) {
             return true;
         }
+        if (tab == Tab.OPTICS && optics.keyPressed(event.key())) {
+            return true;
+        }
         return super.keyPressed(event);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (tab == Tab.BOOK && book.mouseScrolled(mouseX, mouseY, scrollY)) {
+            return true;
+        }
+        if (tab == Tab.OPTICS && optics.overBench(mouseX, mouseY)) {
+            optics.scrolled(mouseX, mouseY, scrollY);
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);

@@ -79,10 +79,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   lightning) combine into 71 more, from Steam and Ore to Time and Soul; every essence has its own picture. Every item
   carries up to six essences in different amounts, from hand-tuned base materials to anything crafted from them; the
   table comes from a data map (`hextale:essences`), so data packs can change it.
-- Item study, the prism: put an item into the study slot and find where its essences hide in a misty hexagonal field.
-  Shine rays in from the brass rim - a ray is absorbed by an essence ahead, bent away by one beside its path, turned back
-  by two - and read where it leaves; check a section to look inside. Rays and checks share a small budget. A studied
-  item shows its essences in its tooltip.
+- Item study, the optics bench - its own tab of the Research Table: put an item into the study slot and it lies large in
+  the middle of a round bench, its essences hidden in it as spots. Drag lamps, mirrors, beam splitters, lenses and
+  coloured glass out of the tray, slide them around and turn them (wheel, Q / E or the knob); they glide, coast and
+  settle on every 15 degrees. White light only warms a spot, showing where it is; glass lets one primal's colour
+  through, and a spot wakes when every primal it is made of reaches it at once - faint essences only in the bright point
+  a lens gathers. No limits and no cost: rearrange as long as you like. A studied item shows its essences in its tooltip.
 - Research: every device and tool past the essence works - the altar circle, the gemstone, the lamp, the big jar,
   the pylons, the pickaxes, the lapidary and its master disc, hexsteel, the drain valve - must be researched at the table before it can be crafted
   or made at the altar. Choose it in the book and draw it on a worn parchment with a hexagon of six essences - one per

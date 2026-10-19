@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.Hextale;
@@ -15,7 +14,6 @@ import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.HexGrid;
-import com.pockyl.hextale.research.ItemStudy;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchBoard;
 import com.pockyl.hextale.rune.Essence;
@@ -27,10 +25,9 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Draws the research parchment in pixel art, for both games: a research topic's parchment (fog, stone and dark fields with their
- * curse counts and flags, the goals - gold sigils - and the branching ink, the six essences as ink wells on the margin
- * beyond the hexagon's corners, a burning parchment) and an item's prism (the item in a misty field, the rim's ports, the
- * rays shone, the essences found).
+ * Draws the research parchment in pixel art: a research topic's parchment (fog, stone and dark fields with their curse
+ * counts and flags, the goals - gold sigils - and the branching ink, the six essences as ink wells in the hexagon's
+ * corners, a burning parchment) and a blank sheet.
  * Sections are laid out {@value #COL_STEP} pixels apart in a row and {@value #ROW_STEP} between rows (the background
  * texture uses the same numbers, see the texture generator).
  */
@@ -130,7 +127,6 @@ final class BoardView {
         fogPrimed = false;
         lastLit = -1;
         lastDone = false;
-        lastRays = -1;
         Arrays.fill(litAt, 0);
         shakeCell = -1;
     }
@@ -475,290 +471,6 @@ final class BoardView {
         PixelArt.fill(graphics, x - 2, y - 4, x, y - 3, argb(0x6A5890, alpha));
     }
 
-    // ---- An item through the prism ------------------------------------------------------------------------------
-
-    /** The prism's field is small: it is drawn this much larger than a topic's parchment. */
-    private static final float PRISM_SCALE = 1.5F;
-    private static final int PRISM_CELL = 19;
-    private static final long RAY_STEP_MILLIS = 45;
-    private static final int PALE_LIGHT = 0xFFF3C0;
-    private int lastRays = -1;
-    private long rayStart;
-
-    private int psx(int cell) {
-        return left + CX + Math.round((px(cell) - CX) * PRISM_SCALE);
-    }
-
-    private int psy(int cell) {
-        return top + CY + Math.round((py(cell) - CY) * PRISM_SCALE);
-    }
-
-    /** Screen position of a port: on the edge between its rim section and the field section it shines into. */
-    private int[] portScreen(int port) {
-        int rim = ItemStudy.portCell(port);
-        int target = ItemStudy.portTarget(port);
-        return new int[]{Math.round((psx(rim) * 0.58F + psx(target) * 0.42F)), Math.round((psy(rim) * 0.58F + psy(target) * 0.42F))};
-    }
-
-    /** The field section under the mouse on the prism, or -1. */
-    int prismCellAt(double mouseX, double mouseY) {
-        double ux = ((mouseX - left - CX) / PRISM_SCALE - 0.5) / KX;
-        double uy = ((mouseY - top - CY) / PRISM_SCALE - 0.5) / KY;
-        int cell = HexGrid.cellAt(ux, uy);
-        return ItemStudy.inField(cell) ? cell : -1;
-    }
-
-    /** The port nearest the mouse (within a few pixels), or -1. */
-    int portAt(double mouseX, double mouseY) {
-        int best = -1;
-        double bestDistance = 6.5;
-        for (int i = 0; i < ItemStudy.portCount(); i++) {
-            int port = ItemStudy.port(i);
-            int[] at = portScreen(port);
-            double d = Math.hypot(mouseX - at[0], mouseY - at[1]);
-            if (d < bestDistance) {
-                bestDistance = d;
-                best = port;
-            }
-        }
-        return best;
-    }
-
-    /** The colour of a ray: the essences it touched mixed, pale light when it touched none. */
-    private static int rayColor(ItemStudy study, ItemStudy.Ray ray) {
-        int color = -1;
-        int count = 0;
-        for (int b = 0; b < study.bodies().size(); b++) {
-            if ((ray.touched() & 1 << b) != 0) {
-                int c = study.bodies().get(b).essence().color();
-                color = count == 0 ? c : PixelArt.mix(color, c, 1F / (count + 1));
-                count++;
-            }
-        }
-        return count == 0 ? PALE_LIGHT : color;
-    }
-
-    /**
-     * The prism: a mist-filled hexagonal field in a brass rim with ports; the rays shone so far marked at the ports they
-     * went in and came out (numbered, in the colours of the essences they touched) and drawn along their paths, the mist
-     * lifted from every section a ray proved empty, revealed essences, empty checks and the researcher's pencil marks.
-     *
-     * @param hoveredCell a field section under the mouse, or -1
-     * @param hoveredPort a port under the mouse, or -1
-     * @param pencil      the researcher's own marks (client only)
-     */
-    void renderStudy(GuiGraphicsExtractor graphics, Font font, Item item, ItemStudy study, int hoveredCell, int hoveredPort, BitSet pencil) {
-        long now = Util.getMillis();
-        float pulse = 0.5F + 0.5F * Mth.sin(now / 320.0F);
-        boolean active = study.isActive();
-        boolean lost = study.lost();
-        List<ItemStudy.Ray> rays = study.rays();
-        if (rays.size() != lastRays) {
-            rayStart = lastRays < 0 ? 0 : now;
-            lastRays = rays.size();
-        }
-        ItemStudy.Ray newest = rays.isEmpty() ? null : rays.get(rays.size() - 1);
-        boolean[] empty = new boolean[HexGrid.COUNT];
-        for (ItemStudy.Ray ray : rays) {
-            if (ray == newest && rayStart != 0 && (now - rayStart) / (float) RAY_STEP_MILLIS < ray.path().length) {
-                continue;
-            }
-            for (int cell : ray.empty()) {
-                empty[cell] = true;
-            }
-        }
-        float run = newest == null || rayStart == 0 ? Float.MAX_VALUE : (now - rayStart) / (float) RAY_STEP_MILLIS;
-        boolean running = newest != null && run < newest.path().length + 2;
-
-        // The rim: brass sections around the field.
-        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-            int ring = HexGrid.steps(cell, HexGrid.CENTRE);
-            if (ring == ItemStudy.RIM) {
-                PixelArt.hex(graphics, psx(cell), psy(cell), PRISM_CELL, argb(0x6E4A16, 0.55F), argb(0x3B2A10, 0.8F));
-            }
-        }
-        // The field: mist drifting over the parchment.
-        for (int cell = 0; cell < HexGrid.COUNT; cell++) {
-            if (!ItemStudy.inField(cell)) {
-                continue;
-            }
-            int x = psx(cell);
-            int y = psy(cell);
-            if (empty[cell]) {
-                // Proved empty by a ray: the mist has lifted, clean parchment.
-                PixelArt.hex(graphics, x, y, PRISM_CELL, argb(0xFFF8E8, 0.12F), argb(0x8C7047, 0.18F));
-                PixelArt.fill(graphics, x, y, x + 1, y + 1, argb(0x8C7047, 0.5F));
-                continue;
-            }
-            float drift = 0.5F + 0.5F * Mth.sin(now / 1300.0F + cell * 0.53F);
-            PixelArt.hex(graphics, x, y, PRISM_CELL, argb(0xBFAE90, 0.55F + 0.1F * drift), argb(0x6E5634, 0.55F));
-        }
-
-        // The rays' paths: each in its colour, the newest drawing itself section by section, the hovered one bright.
-        for (ItemStudy.Ray ray : rays) {
-            boolean fresh = ray == newest && running;
-            boolean hot = ray.port() == hoveredPort || ray.exit() == hoveredPort;
-            int color = PixelArt.onParchment(rayColor(study, ray));
-            int[] path = ray.path();
-            int segments = fresh ? Math.min(path.length - 1, (int) run) : path.length - 1;
-            float alpha = hot || fresh ? 1 : 0.55F;
-            int[] from = portScreen(ray.port());
-            for (int k = 1; k <= segments; k++) {
-                int cell = path[k];
-                int[] to = k == path.length - 1 && ray.outcome() != ItemStudy.Outcome.HIT
-                        ? (ray.exit() >= 0 ? portScreen(ray.exit()) : portScreen(ray.port()))
-                        : new int[]{psx(cell), psy(cell)};
-                PixelArt.line(graphics, from[0], from[1] + 1, to[0], to[1] + 1, argb(PixelArt.mix(color, 0x000000, 0.4F), alpha * 0.7F));
-                PixelArt.line(graphics, from[0], from[1], to[0], to[1], argb(color, alpha));
-                if (hot) {
-                    PixelArt.line(graphics, from[0] + 1, from[1], to[0] + 1, to[1], argb(color, alpha));
-                }
-                from = to;
-            }
-            if (ray.outcome() == ItemStudy.Outcome.HIT && segments == path.length - 1) {
-                int end = path[path.length - 1];
-                PixelArt.hexRing(graphics, psx(end), psy(end), PRISM_CELL - 4, argb(color, alpha));
-            }
-        }
-
-        // Revealed essences, empty checks and pencil marks.
-        for (int b = 0; b < study.bodies().size(); b++) {
-            if (!study.isRevealed(b)) {
-                continue;
-            }
-            ItemStudy.Body body = study.bodies().get(b);
-            Essence essence = body.essence();
-            for (int cell : body.cells()) {
-                PixelArt.hex(graphics, psx(cell), psy(cell), PRISM_CELL, argb(essence.color(), cell == body.centre() ? 0.95F : 0.55F),
-                        argb(PixelArt.mix(essence.color(), 0x000000, 0.35F), 1));
-            }
-            int x = psx(body.centre());
-            int y = psy(body.centre());
-            PixelArt.hex(graphics, x, y, PRISM_CELL + 6, argb(essence.color(), 0.2F + 0.15F * pulse), 0);
-            PixelArt.essence(graphics, essence, x - 4, y - 4, 9, 0xFF000000 | PixelArt.mix(essence.color(), 0x000000, 0.45F));
-            sparkle(graphics, x, y, now, body.centre());
-        }
-        for (int cell : study.misses()) {
-            int x = psx(cell);
-            int y = psy(cell);
-            int red = argb(0x9A3A2A, 0.8F);
-            PixelArt.line(graphics, x - 3, y - 3, x + 3, y + 3, red);
-            PixelArt.line(graphics, x - 3, y + 3, x + 3, y - 3, red);
-        }
-        for (int cell = pencil.nextSetBit(0); cell >= 0; cell = pencil.nextSetBit(cell + 1)) {
-            if (ItemStudy.inField(cell) && !study.checked(cell)) {
-                PixelArt.hexRing(graphics, psx(cell), psy(cell), PRISM_CELL - 6, argb(0x3B2A1A, 0.85F));
-                PixelArt.fill(graphics, psx(cell) - 1, psy(cell) - 1, psx(cell) + 1, psy(cell) + 1, argb(0x3B2A1A, 0.85F));
-            }
-        }
-
-        // Ports: free ones as small brass studs, used ones as badges of the ray's colour.
-        ItemStudy.Ray highlighted = null;
-        for (ItemStudy.Ray ray : rays) {
-            if (ray.port() == hoveredPort || ray.exit() == hoveredPort) {
-                highlighted = ray;
-            }
-        }
-        for (int i = 0; i < ItemStudy.portCount(); i++) {
-            int port = ItemStudy.port(i);
-            int[] at = portScreen(port);
-            if (!study.used(port)) {
-                boolean over = port == hoveredPort && active;
-                PixelArt.hex(graphics, at[0], at[1], over ? 7 : 5, argb(over ? 0xFFF3C0 : 0xD6AB52, 1), argb(0x6E4A16, 1));
-                if (over) {
-                    // Where it would shine: a short dotted line into the field.
-                    int target = ItemStudy.portTarget(port);
-                    PixelArt.dotted(graphics, at[0], at[1], psx(target), psy(target), 1, 2, (int) (now / 90 % 3), argb(0xFFF3C0, 0.9F));
-                    PixelArt.hexRing(graphics, at[0], at[1], 11 + 2 * Math.round(pulse * 2), argb(0xFFFFFF, 0.7F));
-                }
-            }
-        }
-        PixelArt.flush(graphics);
-        for (int r = 0; r < rays.size(); r++) {
-            ItemStudy.Ray ray = rays.get(r);
-            boolean fresh = ray == newest && running;
-            if (fresh && run < ray.path().length) {
-                // The badges appear when the light has made its way.
-                badge(graphics, font, portScreen(ray.port()), r, rayColor(study, ray), ItemStudy.Outcome.EXIT, ray == highlighted, true);
-                continue;
-            }
-            int color = rayColor(study, ray);
-            badge(graphics, font, portScreen(ray.port()), r, color, ray.outcome(), ray == highlighted, false);
-            if (ray.outcome() == ItemStudy.Outcome.EXIT && ray.exit() >= 0) {
-                badge(graphics, font, portScreen(ray.exit()), r, color, ItemStudy.Outcome.EXIT, ray == highlighted, false);
-            }
-            if (fresh) {
-                float t = (run - ray.path().length) / 2;
-                int[] at = portScreen(ray.outcome() == ItemStudy.Outcome.EXIT && ray.exit() >= 0 ? ray.exit() : ray.port());
-                PixelArt.hexRing(graphics, at[0], at[1], 9 + Math.round(t * 10), argb(color, Math.max(0, 1 - t)));
-            }
-        }
-        if (highlighted != null && highlighted.outcome() == ItemStudy.Outcome.EXIT && highlighted.exit() >= 0) {
-            int[] a = portScreen(highlighted.port());
-            int[] b = portScreen(highlighted.exit());
-            PixelArt.dotted(graphics, a[0], a[1], b[0], b[1], 1, 3, (int) (now / 120 % 4), argb(rayColor(study, highlighted), 0.6F));
-        }
-
-        if (hoveredCell >= 0 && active && study.canCheck(hoveredCell)) {
-            PixelArt.hexRing(graphics, psx(hoveredCell), psy(hoveredCell), PRISM_CELL + 2 + 2 * Math.round(pulse * 2), argb(0xFFFFFF, 0.7F));
-        }
-
-        // The item in the middle of the field.
-        int ox = psx(HexGrid.CENTRE);
-        int oy = psy(HexGrid.CENTRE);
-        PixelArt.hex(graphics, ox, oy, PRISM_CELL + 4, argb(0xFFF8E8, 0.6F), argb(lost ? 0x6A6058 : GOLD, 0.6F + 0.4F * pulse));
-        if (study.won()) {
-            float t = Math.min(1, (now - rayStart) / 900.0F);
-            PixelArt.hexRing(graphics, ox, oy, PRISM_CELL + 2 * (int) (t * 40) | 1, argb(GOLD, 1 - t));
-        }
-        PixelArt.flush(graphics);
-        graphics.item(new ItemStack(item), ox - 8, oy - 8);
-        if (lost) {
-            PixelArt.line(graphics, ox - 6, oy - 6, ox + 6, oy + 6, argb(0x3B2A1A, 0.8F));
-            PixelArt.line(graphics, ox + 6, oy - 6, ox - 6, oy + 6, argb(0x3B2A1A, 0.8F));
-        }
-        renderSigns(graphics, study.signs());
-    }
-
-    /** A used port's badge: numbered for a ray that came out, a cross for one absorbed, a ring for one reflected. */
-    private static void badge(GuiGraphicsExtractor graphics, Font font, int[] at, int index, int color, ItemStudy.Outcome outcome,
-                              boolean highlight, boolean pending) {
-        int x = at[0];
-        int y = at[1];
-        if (pending) {
-            PixelArt.hex(graphics, x, y, 7, argb(0xFFF3C0, 0.9F), argb(0x6E4A16, 1));
-            return;
-        }
-        PixelArt.hex(graphics, x, y, 11, argb(PixelArt.mix(color, 0x000000, outcome == ItemStudy.Outcome.HIT ? 0.55F : 0.15F), 1),
-                argb(PixelArt.mix(color, 0x000000, 0.5F), 1));
-        if (highlight) {
-            PixelArt.hexRing(graphics, x, y, 15, argb(0xFFFFFF, 0.9F));
-        }
-        switch (outcome) {
-            case HIT -> {
-                int c = argb(PixelArt.mix(color, 0xFFFFFF, 0.3F), 1);
-                PixelArt.line(graphics, x - 2, y - 2, x + 2, y + 2, c);
-                PixelArt.line(graphics, x - 2, y + 2, x + 2, y - 2, c);
-            }
-            case REFLECT -> PixelArt.hexRing(graphics, x, y, 7, argb(0xFFFFFF, 0.9F));
-            case EXIT -> {
-                PixelArt.flush(graphics);
-                String text = String.valueOf(index + 1);
-                graphics.text(font, text, x - font.width(text) / 2 + 1, y - 3, 0xFF1A1208, false);
-            }
-        }
-    }
-
-    private static void sparkle(GuiGraphicsExtractor graphics, int x, int y, long now, int seed) {
-        for (int k = 0; k < 3; k++) {
-            float t = ((now + seed * 137L + k * 333L) % 1000) / 1000.0F;
-            double angle = (seed * 1.7 + k * 2.1) % (Math.PI * 2);
-            int sx = x + (int) Math.round(Math.cos(angle) * (5 + t * 5));
-            int sy = y + (int) Math.round(Math.sin(angle) * (5 + t * 5)) - (int) (t * 3);
-            PixelArt.fill(graphics, sx, sy, sx + 1, sy + 1, argb(0xFFF6D6, 1 - t));
-        }
-    }
-
     // ---- Shared -----------------------------------------------------------------------------------------------------
 
     /** The parchment with nothing on it: the element signs, and a book inviting to choose a topic. */
@@ -809,7 +521,7 @@ final class BoardView {
         }
     }
 
-    /** Signs at the hexagon's corners (the prism and a blank sheet): an essence, or a question mark for a hidden one. */
+    /** Signs at the hexagon's corners of a blank sheet: an essence, or a question mark for a hidden one. */
     private void renderSigns(GuiGraphicsExtractor graphics, List<@Nullable Essence> essences) {
         for (int d = 0; d < 6; d++) {
             double[] corner = HexGrid.corner(d);

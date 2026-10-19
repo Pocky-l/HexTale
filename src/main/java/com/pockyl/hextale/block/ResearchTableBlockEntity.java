@@ -44,7 +44,7 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.ItemEssences;
-import com.pockyl.hextale.research.ItemStudy;
+import com.pockyl.hextale.research.OpticsStudy;
 import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.research.ResearchTopics;
@@ -93,9 +93,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
     private final ResearchSheet sheet = new ResearchSheet();
-    private final ItemStudy study = new ItemStudy();
-    /** Which game lies on the parchment: the item study (true) or a research topic (false). */
-    private boolean studyingItem;
+    /** The optics bench of its own tab: the item in the study slot, the researcher's lamps and glass. */
+    private final OpticsStudy optics = new OpticsStudy();
     private boolean drawing;
     private long drawingUntil;
 
@@ -178,13 +177,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return sheet;
     }
 
-    public ItemStudy study() {
-        return study;
-    }
-
-    /** Whether the parchment shows the item study rather than a research topic. */
-    public boolean isStudyingItem() {
-        return studyingItem;
+    public OpticsStudy optics() {
+        return optics;
     }
 
     /** The board of the topic being researched, or null (none chosen). */
@@ -253,7 +247,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         }
         ResearchersDiaryItem.sign(items.get(DIARY), player);
         sheet.select(topic, Research.of(player).attempt(topic));
-        studyingItem = false;
         setChanged();
     }
 
@@ -264,7 +257,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
      */
     public void thread(ServerPlayer player, int[] cells) {
         ResearchBoard board = board();
-        if (board == null || studyingItem || Requirement.diary(this, player) != null) {
+        if (board == null || Requirement.diary(this, player) != null) {
             return;
         }
         int attempt = Research.of(player).attempt(board.topic());
@@ -357,7 +350,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
      */
     public void burn(ServerPlayer player) {
         ResearchBoard board = board();
-        if (board == null || studyingItem || sheet.isDone() || Requirement.diary(this, player) != null) {
+        if (board == null || sheet.isDone() || Requirement.diary(this, player) != null) {
             return;
         }
         if (Research.of(player).attempt(board.topic()) != sheet.attempt()) {
@@ -395,95 +388,53 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     // ---- Studying an item -----------------------------------------------------------------------------------------
 
     /**
-     * The study slot changed in the researcher's hands: an unstudied item starts its study at once, an emptied slot
-     * (before the first ray) takes the study off the parchment.
+     * The study slot changed in the researcher's hands: an item with essences lies down on the optics bench (one already
+     * studied shows its essences awake at once), an emptied slot clears the bench.
      */
     public void studySlotChanged(ServerPlayer player) {
         ItemStack stack = items.get(STUDY);
-        Item current = study.item();
-        if (studyingItem && current != null && study.started() && study.isActive()) {
+        if (stack.isEmpty()) {
+            if (optics.item() != null) {
+                optics.clear();
+                setChanged();
+            }
+            return;
+        }
+        if (optics.item() == stack.getItem()) {
             return;
         }
         ItemEssences elements = ResearchItems.of(stack);
-        if (elements != null && !studied(player, stack.getItem()) && Requirement.diary(this, player) == null) {
-            if (!studyingItem || current != stack.getItem() || study.started()) {
-                ResearchersDiaryItem.sign(items.get(DIARY), player);
-                study.begin(stack.getItem(), elements, level == null ? 0 : level.getRandom().nextInt());
-                studyingItem = true;
-                setChanged();
+        if (elements == null) {
+            optics.clear();
+        } else {
+            optics.begin(stack.getItem(), elements, level == null ? 0 : level.getRandom().nextInt());
+            if (studied(player, stack.getItem())) {
+                optics.wakeAll();
             }
-        } else if (studyingItem && (stack.isEmpty() || !study.started() || current != stack.getItem())) {
-            studyingItem = false;
-            study.clear();
-            setChanged();
         }
-    }
-
-    /** A click on a finished study: try a lost item again, or put the study away. */
-    public void closeStudy(ServerPlayer player) {
-        if (!studyingItem || study.item() != null && study.isActive()) {
-            return;
-        }
-        study.clear();
-        studyingItem = false;
-        studySlotChanged(player);
         setChanged();
     }
 
-    /** Whether the researcher may act on the study now; the first action takes one of the item and a paper. */
-    private boolean studyAction(ServerPlayer player) {
-        Item item = study.item();
-        if (!studyingItem || item == null || Requirement.diary(this, player) != null || !study.isActive()) {
-            return false;
+    /**
+     * The researcher rearranged the optics bench: the light is traced on the server too; spots it wakes stay awake and
+     * the last one studies the item. Free and unlimited.
+     */
+    public void arrangeOptics(ServerPlayer player, int[] tools) {
+        Item item = optics.item();
+        if (item == null || !items.get(STUDY).is(item) || Requirement.diary(this, player) != null) {
+            optics.touch();
+            setChanged();
+            return;
         }
-        if (!study.started()) {
-            if (!items.get(STUDY).is(item) || Requirement.paper(this, player) != null) {
-                return false;
+        boolean before = optics.studied();
+        int woken = optics.setTools(OpticsStudy.decode(tools));
+        for (int i = 0; i < optics.spots().size(); i++) {
+            if ((woken & 1 << i) != 0) {
+                pointEffects(optics.spots().get(i).essence());
             }
-            if (!player.getAbilities().instabuild) {
-                items.get(STUDY).shrink(1);
-                items.get(PAPER).shrink(1);
-            }
         }
-        return true;
-    }
-
-    /** Shines a ray into the item's field from a port of the rim. */
-    public void fire(ServerPlayer player, int port) {
-        if (!study.canFire(port) || !studyAction(player)) {
-            return;
-        }
-        ItemStudy.Ray ray = study.fire(port);
-        if (ray == null) {
-            return;
-        }
-        float pitch = switch (ray.outcome()) {
-            case HIT -> 0.6F;
-            case REFLECT -> 1.5F;
-            case EXIT -> Math.max(0.7F, 1.3F - ray.path().length * 0.04F);
-        };
-        level.playSound(null, worldPosition, ray.outcome() == ItemStudy.Outcome.HIT ? SoundEvents.AMETHYST_BLOCK_HIT
-                : SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.9F, pitch);
-        afterStudyAction(player);
-    }
-
-    /** Checks a field section: a hidden essence there is revealed, an empty one costs a ray. */
-    public void strike(ServerPlayer player, int cell) {
-        if (!study.canCheck(cell) || !studyAction(player)) {
-            return;
-        }
-        ItemStudy.Body found = study.check(cell);
-        if (found != null) {
-            pointEffects(found.essence());
-        } else {
-            level.playSound(null, worldPosition, SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 0.8F, 0.8F);
-        }
-        afterStudyAction(player);
-    }
-
-    private void afterStudyAction(ServerPlayer player) {
-        Item item = study.item();
-        if (study.won()) {
+        if (!before && optics.studied()) {
+            ResearchersDiaryItem.sign(items.get(DIARY), player);
             Research.study(player, item);
             message(player, Component.translatable("research.hextale.study.complete", ResearchText.item(item)), ResearchMessagePayload.Tone.WIN);
             level.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0F, 1.2F);
@@ -491,9 +442,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
                 Vec3 orb = orbPosition();
                 serverLevel.sendParticles(ParticleTypes.END_ROD, orb.x, orb.y, orb.z, 10, 0.15, 0.1, 0.15, 0.03);
             }
-        } else if (study.lost()) {
-            message(player, Component.translatable("research.hextale.study.lost", ResearchText.item(item)), ResearchMessagePayload.Tone.BAD);
-            fizzle();
         }
         setChanged();
     }
@@ -658,8 +606,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         ContainerHelper.loadAllItems(input, items);
         drawing = input.getBooleanOr("drawing", false);
         sheet.load(input.childOrEmpty("sheet"));
-        study.load(input.childOrEmpty("study"));
-        studyingItem = input.getBooleanOr("studying_item", false);
+        optics.load(input.childOrEmpty("optics"), item -> ResearchItems.of(new ItemStack(item)));
         inkDraws = JarReach.read(input.getIntArray("ink_draws").orElse(new int[0]));
         inkDrawnAt = input.getLongOr("ink_drawn_at", -1000);
     }
@@ -669,8 +616,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
         sheet.save(output.child("sheet"));
-        study.save(output.child("study"));
-        output.putBoolean("studying_item", studyingItem);
+        optics.save(output.child("optics"));
     }
 
     @Override

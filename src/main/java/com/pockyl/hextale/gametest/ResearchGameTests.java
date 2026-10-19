@@ -17,6 +17,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightningRodBlock;
@@ -57,7 +58,7 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemEssenceResolver;
 import com.pockyl.hextale.research.ItemEssences;
-import com.pockyl.hextale.research.ItemStudy;
+import com.pockyl.hextale.research.OpticsStudy;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
@@ -338,141 +339,123 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
-    // ---- The prism ------------------------------------------------------------------------------------------------
+    // ---- The optics bench ---------------------------------------------------------------------------------------
 
-    /** A port whose ray runs straight towards the centre for at least three sections. */
-    private static int straightPort() {
-        for (int i = 0; i < ItemStudy.portCount(); i++) {
-            int port = ItemStudy.port(i);
-            int d = ItemStudy.portDirection(port);
-            int cell = ItemStudy.portTarget(port);
-            boolean inward = true;
-            for (int k = 0; k < 3 && inward; k++) {
-                int next = HexGrid.step(cell, d);
-                inward = HexGrid.steps(next, HexGrid.CENTRE) < HexGrid.steps(cell, HexGrid.CENTRE);
-                cell = next;
-            }
-            if (inward) {
-                return port;
-            }
-        }
-        throw new IllegalStateException("no straight port");
+    private static OpticsStudy.Tool tool(OpticsStudy.Type type, float x, float y, float angle) {
+        return new OpticsStudy.Tool(type, x, y, angle, null);
     }
 
-    private static ItemStudy.Body light(int cell) {
-        return new ItemStudy.Body(Essence.FIRE, 3, cell, false);
+    private static OpticsStudy.Tool glass(float x, float y, float angle, Essence colour) {
+        return new OpticsStudy.Tool(OpticsStudy.Type.FILTER, x, y, angle, colour);
+    }
+
+    private static boolean wakes(OpticsStudy.Spot spot, List<OpticsStudy.Tool> tools) {
+        return OpticsStudy.wakes(spot, OpticsStudy.exposure(List.of(spot), OpticsStudy.trace(tools))[0]);
     }
 
     @HexTest
-    public static void prismRaysFollowTheRules(GameTestHelper helper) {
-        helper.assertTrue(ItemStudy.portCount() == 6 + 6 * (ItemStudy.RIM - 1) * 2, "every rim section has its ports, got " + ItemStudy.portCount());
-        int port = straightPort();
-        int d = ItemStudy.portDirection(port);
-        int t1 = ItemStudy.portTarget(port);
-        int t2 = HexGrid.step(t1, d);
-        int t3 = HexGrid.step(t2, d);
+    public static void opticsLightFollowsTheRules(GameTestHelper helper) {
+        OpticsStudy.Spot fire = new OpticsStudy.Spot(Essence.FIRE, 12, 0, 0, 9, 0.75F);
+        OpticsStudy.Tool lamp = tool(OpticsStudy.Type.LAMP, -60, 0, 0);
+        float[] white = OpticsStudy.exposure(List.of(fire), OpticsStudy.trace(List.of(lamp)))[0];
+        helper.assertTrue(white[0] > 0 && !wakes(fire, List.of(lamp)), "white light warms a spot but wakes nothing");
+        helper.assertTrue(wakes(fire, List.of(lamp, glass(-30, 0, 0, Essence.FIRE))), "light through its colour wakes it");
+        helper.assertFalse(wakes(fire, List.of(lamp, glass(-30, 0, 0, Essence.WATER))), "another colour does not");
+        helper.assertFalse(wakes(fire, List.of(lamp, glass(-40, 0, 0, Essence.FIRE), glass(-30, 0, 0, Essence.WATER))),
+                "coloured light is stopped by glass of another colour");
 
-        ItemStudy.Ray free = ItemStudy.trace(List.of(), port);
-        helper.assertTrue(free.outcome() == ItemStudy.Outcome.EXIT && free.exit() >= 0 && free.touched() == 0, "an empty field lets a ray through");
-        for (int k = 1; k < free.path().length; k++) {
-            helper.assertTrue(HexGrid.direction(free.path()[k - 1], free.path()[k]) == d, "and it runs straight");
-        }
-        helper.assertTrue(ItemStudy.trace(List.of(), free.exit()).exit() == port, "a ray from the far end comes back the same way");
+        // A mirror turns the beam: from the left, down onto the spot.
+        List<OpticsStudy.Tool> turned = List.of(tool(OpticsStudy.Type.LAMP, -60, -40, 0), glass(-30, -40, 0, Essence.FIRE),
+                tool(OpticsStudy.Type.MIRROR, 0, -40, 3 * Mth.PI / 4));
+        helper.assertTrue(wakes(fire, turned), "a mirror turns the light onto the spot");
+        helper.assertFalse(wakes(fire, turned.subList(0, 2)), "without the mirror it passes by");
 
-        ItemStudy.Ray hit = ItemStudy.trace(List.of(light(t3)), port);
-        helper.assertTrue(hit.outcome() == ItemStudy.Outcome.HIT && hit.path()[hit.path().length - 1] == t3 && hit.touched() == 1,
-                "a body in the way absorbs the ray");
+        // A compound needs both its colours at once.
+        OpticsStudy.Spot forge = new OpticsStudy.Spot(Essence.FORGE, 12, 0, 0, 9, 0.75F);
+        List<OpticsStudy.Tool> fromLeft = List.of(lamp, glass(-30, 0, 0, Essence.FIRE));
+        List<OpticsStudy.Tool> both = new java.util.ArrayList<>(fromLeft);
+        both.add(tool(OpticsStudy.Type.LAMP, 0, -60, Mth.HALF_PI));
+        both.add(glass(0, -30, Mth.HALF_PI, Essence.METAL));
+        helper.assertFalse(wakes(forge, fromLeft), "one colour of a compound is not enough");
+        helper.assertTrue(wakes(forge, both), "both colours wake a compound");
 
-        ItemStudy.Ray rim = ItemStudy.trace(List.of(light(HexGrid.step(t1, (d + 1) % 6))), port);
-        helper.assertTrue(rim.outcome() == ItemStudy.Outcome.REFLECT, "a body beside the first section reflects the ray at the rim");
+        // A weak essence needs light gathered by a lens.
+        OpticsStudy.Spot faint = new OpticsStudy.Spot(Essence.FIRE, 3, 0, 0, 4.6F, 2.8F);
+        List<OpticsStudy.Tool> plain = List.of(tool(OpticsStudy.Type.LAMP, -80, 0, 0), glass(-60, 0, 0, Essence.FIRE));
+        List<OpticsStudy.Tool> focused = new java.util.ArrayList<>(plain);
+        focused.add(tool(OpticsStudy.Type.LENS, -OpticsStudy.FOCAL, 0, 0));
+        helper.assertFalse(wakes(faint, plain), "a plain beam is too weak for a faint spot");
+        helper.assertTrue(wakes(faint, focused), "a lens focused on it is strong enough");
 
-        ItemStudy.Ray bent = ItemStudy.trace(List.of(light(HexGrid.step(t3, (d + 1) % 6))), port);
-        helper.assertTrue(bent.outcome() == ItemStudy.Outcome.EXIT && bent.touched() == 1 && bent.exit() != free.exit(), "a body beside the path bends it");
-        helper.assertTrue(bent.path()[2] == t2 && bent.path()[3] == HexGrid.step(t2, (d + 5) % 6), "away from the body, by one direction");
+        // A splitter sends half each way.
+        List<OpticsStudy.Beam> split = OpticsStudy.trace(List.of(lamp, tool(OpticsStudy.Type.SPLITTER, -20, 0, 3 * Mth.PI / 4)));
+        helper.assertTrue(split.size() >= 3 && split.stream().filter(b -> Math.abs(b.power() - 0.5F) < 0.01F).count() == 2,
+                "a splitter halves the beam into two");
 
-        ItemStudy.Ray back = ItemStudy.trace(List.of(light(HexGrid.step(t3, (d + 1) % 6)), light(HexGrid.step(t3, (d + 5) % 6))), port);
-        helper.assertTrue(back.outcome() == ItemStudy.Outcome.REFLECT && back.touched() == 3, "bodies on both sides turn the ray back");
-
-        ItemStudy.Body big = new ItemStudy.Body(Essence.EARTH, 20, t3, true);
-        ItemStudy.Ray heavy = ItemStudy.trace(List.of(big), port);
-        helper.assertTrue(heavy.outcome() == ItemStudy.Outcome.HIT && heavy.path()[heavy.path().length - 1] == t2, "a strong essence fills seven sections");
+        List<OpticsStudy.Tool> bench = List.of(lamp, glass(-30, 0, 0.5F, Essence.SPARK), tool(OpticsStudy.Type.LENS, 10, 20, -1.2F));
+        List<OpticsStudy.Tool> decoded = OpticsStudy.decode(OpticsStudy.encode(bench));
+        helper.assertTrue(decoded.size() == 3 && decoded.get(1).color() == Essence.SPARK && Math.abs(decoded.get(2).angle() + 1.2F) < 0.01F,
+                "a bench survives the packet");
         helper.succeed();
     }
 
-    /** Every item's essences fit into the prism, and every body shows itself to some ray. */
-    @HexTest(maxTicks = 600)
-    public static void prismBodiesFitEveryItem(GameTestHelper helper) {
+    @HexTest
+    public static void opticsSpotsFitEveryItem(GameTestHelper helper) {
         int items = 0;
-        int hidden = 0;
-        int[] budget = new int[ItemStudy.MAX_BODIES + 1];
         for (Item item : BuiltInRegistries.ITEM) {
-            ItemEssences essences = ResearchItems.of(item);
+            ItemEssences essences = ResearchItems.of(new ItemStack(item));
             if (essences == null) {
                 continue;
             }
-            for (int seed = 0; seed < 3; seed++) {
-                List<ItemStudy.Body> bodies = ItemStudy.place(essences, item.hashCode() + seed);
-                helper.assertTrue(bodies.size() == Math.min(ItemStudy.MAX_BODIES, essences.essences().size()), item + ": every essence gets a body");
-                helper.assertTrue(bodies.equals(ItemStudy.place(essences, item.hashCode() + seed)), item + ": the same seed, the same bodies");
-                int seen = 0;
-                for (int b = 0; b < bodies.size(); b++) {
-                    for (int cell : bodies.get(b).cells()) {
-                        helper.assertTrue(ItemStudy.inField(cell), item + ": bodies lie in the field");
-                        helper.assertTrue(ItemStudy.bodyAt(bodies, cell) == b, item + ": bodies never overlap");
-                    }
-                }
-                for (int p = 0; p < ItemStudy.portCount(); p++) {
-                    ItemStudy.Ray ray = ItemStudy.trace(bodies, ItemStudy.port(p));
-                    seen |= ray.touched();
-                    for (int cell : ray.empty()) {
-                        helper.assertTrue(ItemStudy.bodyAt(bodies, cell) < 0, item + ": a section a ray proves empty holds no essence");
-                    }
-                }
-                hidden += bodies.size() - Integer.bitCount(seen);
-                items++;
-                budget[bodies.size()] = ItemStudy.maxRays(bodies);
+            items++;
+            List<OpticsStudy.Spot> spots = OpticsStudy.place(essences, item.hashCode());
+            helper.assertTrue(spots.size() == Math.min(OpticsStudy.MAX_SPOTS, essences.essences().size()), item + ": every essence gets a spot");
+            helper.assertTrue(spots.equals(OpticsStudy.place(essences, item.hashCode())), item + ": the same seed, the same spots");
+            for (OpticsStudy.Spot spot : spots) {
+                helper.assertTrue(Mth.sqrt(spot.x() * spot.x() + spot.y() * spot.y()) <= OpticsStudy.ITEM_SIZE / 2, item + ": spots lie in the item");
+                helper.assertTrue(!spot.colours().isEmpty(), item + ": every spot answers some colour");
             }
         }
-        Hextale.LOGGER.info("Prism: {} placements, {} bodies no ray touches; rays by essences 1-6: {}", items, hidden,
-                Arrays.toString(Arrays.copyOfRange(budget, 1, budget.length)));
-        helper.assertTrue(hidden <= items / 100, "nearly every body shows itself to some ray, " + hidden + " hidden in " + items);
+        helper.assertTrue(items > 50, "items with essences were checked: " + items);
         helper.succeed();
     }
 
+    /** Tools that wake one spot: per colour a lamp, its glass and a lens focused on the spot, each from its own side. */
+    private static List<OpticsStudy.Tool> wakeTools(OpticsStudy.Spot spot) {
+        List<OpticsStudy.Tool> out = new java.util.ArrayList<>();
+        List<Essence> colours = spot.colours();
+        for (int j = 0; j < colours.size(); j++) {
+            float a = j * 0.5F;
+            float dx = Mth.cos(a);
+            float dy = Mth.sin(a);
+            out.add(tool(OpticsStudy.Type.LAMP, spot.x() - dx * 62, spot.y() - dy * 62, a));
+            out.add(glass(spot.x() - dx * 52, spot.y() - dy * 52, a, colours.get(j)));
+            out.add(tool(OpticsStudy.Type.LENS, spot.x() - dx * OpticsStudy.FOCAL, spot.y() - dy * OpticsStudy.FOCAL, a));
+        }
+        return out;
+    }
+
     @HexTest
-    public static void studyingAnItemAtTheTable(GameTestHelper helper) {
+    public static void studyingAnItemOnTheOpticsBench(GameTestHelper helper) {
         ServerPlayer player = survivalPlayer(helper);
         ResearchTableBlockEntity table = stockedTable(helper);
-        table.setItem(ResearchTableBlockEntity.HEXTECH, ItemStack.EMPTY);
-        table.setItem(ResearchTableBlockEntity.PAPER, new ItemStack(Items.PAPER, 2));
         table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.GLASS, 3));
         table.studySlotChanged(player);
-        helper.assertTrue(table.isStudyingItem() && table.study().item() == Items.GLASS, "glass lies on the parchment, no orb needed");
-        table.fire(player, ItemStudy.port(0));
-        helper.assertTrue(table.study().rays().size() == 1, "a ray was shone");
-        for (ItemStudy.Body body : table.study().bodies()) {
-            table.strike(player, body.centre());
+        OpticsStudy optics = table.optics();
+        helper.assertTrue(optics.item() == Items.GLASS && !optics.spots().isEmpty() && optics.awakeCount() == 0, "glass lies on the bench");
+        for (int i = 0; i < optics.spots().size(); i++) {
+            table.arrangeOptics(player, OpticsStudy.encode(wakeTools(optics.spots().get(i))));
+            helper.assertTrue(optics.isAwake(i), "spot " + i + " wakes under its colours");
         }
-        Identifier glass = BuiltInRegistries.ITEM.getKey(Items.GLASS);
-        helper.assertTrue(Research.of(player).hasStudied(glass), "glass is studied");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 2, "one glass went into the study");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "the study took one paper from the table");
-        table.closeStudy(player);
-        helper.assertFalse(table.isStudyingItem(), "a studied item is not studied again");
+        helper.assertTrue(optics.studied() && Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(Items.GLASS)), "the glass is studied");
+        helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 3, "studying costs nothing");
 
-        // A lost study: empty checks until the light runs out; the item is used once.
-        table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.FEATHER, 2));
+        table.setItem(ResearchTableBlockEntity.STUDY, ItemStack.EMPTY);
         table.studySlotChanged(player);
-        for (int cell = 0; cell < HexGrid.COUNT && table.study().isActive(); cell++) {
-            if (ItemStudy.inField(cell) && ItemStudy.bodyAt(table.study().bodies(), cell) < 0) {
-                table.strike(player, cell);
-            }
-        }
-        helper.assertTrue(table.study().lost(), "the light ran out");
-        helper.assertTrue(table.getItem(ResearchTableBlockEntity.STUDY).getCount() == 1, "the study used one feather");
-        helper.assertFalse(Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(Items.FEATHER)), "a lost study teaches nothing");
-        table.closeStudy(player);
-        helper.assertTrue(table.isStudyingItem() && !table.study().started(), "a click on a lost study tries the next feather");
+        helper.assertTrue(optics.item() == null, "an emptied slot clears the bench");
+        table.setItem(ResearchTableBlockEntity.STUDY, new ItemStack(Items.GLASS));
+        table.studySlotChanged(player);
+        helper.assertTrue(optics.studied(), "a studied item shows its essences awake at once");
         player.discard();
         helper.succeed();
     }

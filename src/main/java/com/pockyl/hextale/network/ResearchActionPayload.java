@@ -20,8 +20,8 @@ import java.util.List;
 /**
  * Client to server: something the researcher does at the open table. The server checks everything again.
  *
- * @param value the topic index (SELECT), the field section to check (STRIKE) or the port to shine from (FIRE)
- * @param cells the whole ink thread from the orb (THREAD)
+ * @param value the topic index (SELECT)
+ * @param cells the whole ink thread from the orb (THREAD), or the optics bench's tools (OPTICS, see {@link com.pockyl.hextale.research.OpticsStudy#encode})
  */
 public record ResearchActionPayload(BlockPos pos, Action action, int value, List<Integer> cells) implements CustomPacketPayload {
     public static final Type<ResearchActionPayload> TYPE = new Type<>(Hextale.id("research_action"));
@@ -39,10 +39,8 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
     public enum Action {
         SELECT,
         THREAD,
-        STRIKE,
-        CLOSE_STUDY,
-        FIRE,
-        BURN
+        BURN,
+        OPTICS
     }
 
     public static ResearchActionPayload of(BlockPos pos, Action action, int value) {
@@ -51,6 +49,10 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
 
     public static ResearchActionPayload thread(BlockPos pos, int[] cells) {
         return new ResearchActionPayload(pos, Action.THREAD, 0, Arrays.stream(cells).boxed().toList());
+    }
+
+    public static ResearchActionPayload optics(BlockPos pos, int[] tools) {
+        return new ResearchActionPayload(pos, Action.OPTICS, 0, Arrays.stream(tools).boxed().toList());
     }
 
     @Override
@@ -74,10 +76,8 @@ public record ResearchActionPayload(BlockPos pos, Action action, int value, List
                 }
             }
             case THREAD -> table.thread(player, payload.cells().stream().mapToInt(Integer::intValue).toArray());
-            case STRIKE -> table.strike(player, payload.value());
-            case CLOSE_STUDY -> table.closeStudy(player);
-            case FIRE -> table.fire(player, payload.value());
             case BURN -> table.burn(player);
+            case OPTICS -> table.arrangeOptics(player, payload.cells().stream().mapToInt(Integer::intValue).toArray());
         }
     }
 }
