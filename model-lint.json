@@ -55,6 +55,36 @@
         "intersect"
       ],
       "why": "hex ring bars, arm segments and diamond settings are turned around z (free 26.x rotations), so their corners leave the grid; ring corners, arm joints and the stones set in brass overlap at the joints by design"
+    },
+    {
+      "model": "hextale:item/hextech_axe",
+      "element": "*",
+      "face": "*",
+      "flags": [
+        "offgrid",
+        "intersect"
+      ],
+      "why": "hex ring bars, arm segments and diamond settings are turned around z (free 26.x rotations), so their corners leave the grid; ring corners, arm joints and the stones set in brass overlap at the joints by design"
+    },
+    {
+      "model": "hextale:item/hextech_shovel",
+      "element": "*",
+      "face": "*",
+      "flags": [
+        "offgrid",
+        "intersect"
+      ],
+      "why": "hex ring bars, arm segments and diamond settings are turned around z (free 26.x rotations), so their corners leave the grid; ring corners, arm joints and the stones set in brass overlap at the joints by design"
+    },
+    {
+      "model": "hextale:item/hextech_sword",
+      "element": "*",
+      "face": "*",
+      "flags": [
+        "offgrid",
+        "intersect"
+      ],
+      "why": "hex ring bars, arm segments and diamond settings are turned around z (free 26.x rotations), so their corners leave the grid; ring corners, arm joints and the stones set in brass overlap at the joints by design"
     }
   ]
 }

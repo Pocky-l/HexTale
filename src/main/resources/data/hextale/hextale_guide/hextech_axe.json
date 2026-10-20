@@ -1,0 +1,16 @@
+{
+  "region": "forge",
+  "icon": "hextale:hextech_axe",
+  "parents": [
+    "hextech_pickaxe"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:hextech_axe"
+  },
+  "research": "hextech_axe",
+  "pos": [
+    725,
+    134
+  ]
+}

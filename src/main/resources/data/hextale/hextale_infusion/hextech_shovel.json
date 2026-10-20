@@ -1,0 +1,16 @@
+{
+  "center": "minecraft:iron_shovel",
+  "pedestals": [
+    "hextale:hextech_crystal",
+    "hextale:brass_ingot",
+    "hextale:brass_ingot",
+    "minecraft:flint"
+  ],
+  "essences": {
+    "soil": 16,
+    "forge": 12,
+    "energy": 8
+  },
+  "result": "hextale:hextech_shovel",
+  "keep_components": true
+}

@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "forge",
-  "icon": "minecraft:iron_axe",
-  "parents": ["hextech_pickaxe"],
-  "pos": [725, 134]
-}

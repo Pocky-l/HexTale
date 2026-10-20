@@ -178,6 +178,14 @@ public final class ModItems {
         return PICKAXES.get(kind);
     }
 
+    /** The hextech axe, shovel and sword: iron tools charged at the altar, as strong as the plain hextech pickaxe. */
+    public static final DeferredItem<Item> HEXTECH_AXE = ITEMS.registerItem("hextech_axe",
+            properties -> new Item(properties.axe(PICKAXE_MATERIALS[0], 6.0F, -3.1F).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<Item> HEXTECH_SHOVEL = ITEMS.registerItem("hextech_shovel",
+            properties -> new Item(properties.shovel(PICKAXE_MATERIALS[0], 1.5F, -3.0F).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<Item> HEXTECH_SWORD = ITEMS.registerItem("hextech_sword",
+            properties -> new Item(properties.sword(PICKAXE_MATERIALS[0], 3.0F, -2.4F).rarity(Rarity.UNCOMMON)));
+
     private ModItems() {
     }
 

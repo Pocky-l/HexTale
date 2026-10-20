@@ -272,6 +272,29 @@ public final class RuneWorkGameTests {
         helper.succeed();
     }
 
+    /**
+     * The hextech axe, shovel and sword are charged from their iron tools, each needs its research, and each still works
+     * as its kind of tool (the axe strips logs, the shovel digs dirt fast, the sword is a sword).
+     */
+    @HexTest
+    public static void theHextechToolsHaveTheirRecipes(GameTestHelper helper) {
+        Map<String, ItemStack> irons = Map.of("hextech_axe", new ItemStack(Items.IRON_AXE), "hextech_shovel", new ItemStack(Items.IRON_SHOVEL),
+                "hextech_sword", new ItemStack(Items.IRON_SWORD));
+        Map<String, ItemStack> tools = Map.of("hextech_axe", new ItemStack(ModItems.HEXTECH_AXE.get()),
+                "hextech_shovel", new ItemStack(ModItems.HEXTECH_SHOVEL.get()), "hextech_sword", new ItemStack(ModItems.HEXTECH_SWORD.get()));
+        for (String id : irons.keySet()) {
+            InfusionRecipe recipe = InfusionRecipes.get(false).get(Hextale.id(id));
+            helper.assertTrue(recipe != null, id + " has an altar recipe");
+            helper.assertTrue(recipe.center().test(irons.get(id)), id + " is made from its iron tool");
+            helper.assertTrue(recipe.result().item().value() == tools.get(id).getItem(), id + " makes itself");
+            helper.assertTrue(ResearchTopics.of(tools.get(id).getItem()) != null, id + " needs its research");
+        }
+        helper.assertTrue(tools.get("hextech_axe").has(net.minecraft.core.component.DataComponents.BLOCK_TRANSFORMER), "the axe strips logs");
+        helper.assertTrue(tools.get("hextech_shovel").getDestroySpeed(Blocks.DIRT.defaultBlockState()) > 6.0F, "the shovel digs dirt fast");
+        helper.assertTrue(tools.get("hextech_sword").is(net.minecraft.tags.ItemTags.SWORDS), "the sword counts as a sword");
+        helper.succeed();
+    }
+
     /** An iron pickaxe, four items and three essences become a Hextech Pickaxe that keeps its enchantment. */
     @HexTest(maxTicks = 360)
     public static void theAltarMakesTheHextechPickaxe(GameTestHelper helper) {

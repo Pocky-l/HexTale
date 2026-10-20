@@ -1,0 +1,16 @@
+{
+  "center": "minecraft:iron_sword",
+  "pedestals": [
+    "hextale:hextech_crystal",
+    "hextale:brass_ingot",
+    "hextale:brass_ingot",
+    "minecraft:amethyst_shard"
+  ],
+  "essences": {
+    "weapon": 16,
+    "forge": 12,
+    "energy": 8
+  },
+  "result": "hextale:hextech_sword",
+  "keep_components": true
+}

@@ -130,6 +130,9 @@ public final class Hextale {
             output.accept(ModItems.PYLON_FILTER);
             output.accept(ModItems.ESSENCE_STICKER);
             ModItems.PICKAXES.values().forEach(output::accept);
+            output.accept(ModItems.HEXTECH_AXE);
+            output.accept(ModItems.HEXTECH_SHOVEL);
+            output.accept(ModItems.HEXTECH_SWORD);
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
             output.accept(ModItems.HEXTECH_DUST);
@@ -193,6 +196,10 @@ public final class Hextale {
         } else if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(ModItems.RESEARCHERS_DIARY);
             ModItems.PICKAXES.values().forEach(event::accept);
+            event.accept(ModItems.HEXTECH_AXE);
+            event.accept(ModItems.HEXTECH_SHOVEL);
+        } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
+            event.accept(ModItems.HEXTECH_SWORD);
         }
     }
 
