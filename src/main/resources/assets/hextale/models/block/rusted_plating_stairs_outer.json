@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "hextale:block/rusted_plating",
+    "side": "hextale:block/rusted_plating",
+    "top": "hextale:block/rusted_plating"
+  }
+}

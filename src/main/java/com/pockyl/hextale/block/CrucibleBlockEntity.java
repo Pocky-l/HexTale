@@ -29,7 +29,15 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.tags.BlockTags;
 
+import com.pockyl.hextale.chem.Brew;
+import com.pockyl.hextale.chem.ChemVialItem;
+import com.pockyl.hextale.chem.HeatUser;
+import com.pockyl.hextale.crafting.BrewRecipe;
 import com.pockyl.hextale.crafting.CrucibleRecipe;
+import com.pockyl.hextale.research.ResearchTopics;
+import com.pockyl.hextale.runework.BurnerRune;
+import com.pockyl.hextale.runework.HolderRune;
+import com.pockyl.hextale.runework.ToolEffects;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -49,8 +57,13 @@ import org.jspecify.annotations.Nullable;
  * it takes the recipe's essences out of the water and rises as the result (stone in water holding 6 mB of magic comes
  * back as magic stone) - that happens in cold water too. It holds {@value #CAPACITY} mB of water and essence; more brims
  * over the rim and spills in proportion. The water never boils off by itself.
+ * <p>
+ * Chemtech starts here: a catalyst of a {@link BrewRecipe} sinking into water that boils hot enough and holds the brew's
+ * essences takes them, and the water turns into doses of a brew (one kind at a time, up to {@value #MAX_DOSES}); a glass
+ * bottle takes one dose as a Chem Vial. A Chem Burner below is the hottest heat (5); its runes may add a dose and give
+ * experience for every brew.
  */
-public class CrucibleBlockEntity extends BlockEntity {
+public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
     /** What it holds in all: water and essence. */
     public static final int CAPACITY = 1500;
     public static final int BUCKET = 1000;
@@ -76,6 +89,8 @@ public class CrucibleBlockEntity extends BlockEntity {
     public static final float INSIDE_MIN = 3F / 16;
     public static final float INSIDE_MAX = 13F / 16;
     private static final int STEAM = 0xE8EEF2;
+    /** Doses of one brew the water holds at most. */
+    public static final int MAX_DOSES = 12;
 
     /** How the water stands, by its temperature. */
     public enum Phase {
@@ -108,6 +123,9 @@ public class CrucibleBlockEntity extends BlockEntity {
     private int water;
     private float temperature;
     private EssenceMix essence = EssenceMix.EMPTY;
+    /** The brew the water has turned into, and how many doses of it are left. */
+    private @Nullable Brew brew;
+    private int doses;
     private boolean dirty;
     /** Client animations: when essence was poured in last and its colour, when an item sank and which. */
     private long pouredAt = -1000;
@@ -131,8 +149,14 @@ public class CrucibleBlockEntity extends BlockEntity {
         super(ModBlockEntities.CRUCIBLE.get(), pos, state);
     }
 
-    /** How strongly the block under the crucible heats it: fire and campfires 2, their soul kin 3, magma 2, lava 4. */
+    /**
+     * How strongly the block under the crucible heats it: fire and campfires 2, their soul kin 3, magma 2, lava 4, a
+     * burning Chem Burner 5.
+     */
     public static int heat(BlockState below) {
+        if (ChemBurnerBlock.isLit(below)) {
+            return BrewRecipe.BURNER_HEAT;
+        }
         if (below.is(Blocks.CAMPFIRE) || below.is(Blocks.SOUL_CAMPFIRE)) {
             return below.getValue(CampfireBlock.LIT) ? below.is(Blocks.SOUL_CAMPFIRE) ? 3 : 2 : 0;
         }
@@ -240,6 +264,17 @@ public class CrucibleBlockEntity extends BlockEntity {
             return reached ? transmute(recipe, stack, count) : 0;
         }
         ResearchTopic locked = CrucibleRecipe.lockedFor(stack, essence, researcher);
+        if (boiling()) {
+            BrewRecipe brewing = BrewRecipe.find(stack, essence, heat(), brew);
+            if (brewing != null && BrewRecipe.mayBrew(researcher)) {
+                // When the water already holds all the doses it can, the catalyst bobs back out rather than dissolve.
+                return reached ? brew(brewing, stack, count) : 0;
+            } else if (brewing != null) {
+                locked = ResearchTopics.CHEM_VIAL;
+            } else if (researcher instanceof ServerPlayer player) {
+                hintBrew(stack, player);
+            }
+        }
         int dissolved = dissolve(stack, count);
         if (dissolved > 0 && locked != null && researcher instanceof ServerPlayer player) {
             // The brew was right, the researcher was not ready: the item only dissolved.
@@ -247,6 +282,93 @@ public class CrucibleBlockEntity extends BlockEntity {
                     Component.translatable(locked.translationKey()).withColor(locked.color())));
         }
         return dissolved;
+    }
+
+    /**
+     * The catalysts sink and the water turns into the brew: the recipe's essences are taken, the doses added (a Chem
+     * Burner's Steam may add one more for each catalyst, its Radiance gives experience). No more than fit under
+     * {@value #MAX_DOSES} doses are taken.
+     */
+    private int brew(BrewRecipe recipe, ItemStack stack, int count) {
+        count = Math.min(count, Math.min(essence.timesHolds(recipe.essences()), (MAX_DOSES - doses) / recipe.doses()));
+        if (count <= 0 || level == null) {
+            return 0;
+        }
+        essence = essence.minus(recipe.essences().times(count));
+        int made = recipe.doses() * count;
+        ChemBurnerBlockEntity burner = ChemBurnerBlockEntity.under(level, worldPosition);
+        Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
+        if (burner != null && level instanceof ServerLevel server) {
+            int steam = burner.strength(BurnerRune.STEAM);
+            for (int i = 0; i < count && steam > 0; i++) {
+                if (server.getRandom().nextFloat() < HolderRune.at(BurnerRune.MORE_DOSES, steam)) {
+                    made++;
+                    ToolEffects.puff(server, at.add(0, 0.2, 0), BurnerRune.STEAM.rune(), 10, 0.25);
+                }
+            }
+            int radiance = burner.strength(BurnerRune.RADIANCE);
+            if (radiance > 0) {
+                net.minecraft.world.entity.ExperienceOrb.award(server, at.add(0, 0.4, 0), HolderRune.at(BurnerRune.EXPERIENCE, radiance) * count);
+                ToolEffects.puff(server, at.add(0, 0.3, 0), BurnerRune.RADIANCE.rune(), 8, 0.25);
+            }
+        }
+        brew = recipe.brew();
+        doses = Math.min(MAX_DOSES, doses + made);
+        long now = level.getGameTime();
+        sank = stack.copyWithCount(1);
+        sankAt = now;
+        pouredColor = recipe.brew().color();
+        pouredAt = now;
+        playAt(ModSounds.CRUCIBLE_BREW.get(), 0.8F, 0.95F + level.getRandom().nextFloat() * 0.1F);
+        if (level instanceof ServerLevel server) {
+            server.sendParticles(new DustParticleOptions(recipe.brew().color(), 1.4F), at.x, at.y + 0.1, at.z, 24, 0.22, 0.05, 0.22, 0);
+            server.sendParticles(ParticleTypes.BUBBLE_POP, at.x, at.y + 0.05, at.z, 14, 0.22, 0.02, 0.22, 0.05);
+            server.sendParticles(ParticleTypes.WITCH, at.x, at.y + 0.3, at.z, 8, 0.2, 0.2, 0.2, 0.05);
+        }
+        changed();
+        return count;
+    }
+
+    /** Why a catalyst of a brew only dissolved: the flame is too weak for it, or another brew is in the water. */
+    private void hintBrew(ItemStack stack, ServerPlayer player) {
+        BrewRecipe hot = BrewRecipe.find(stack, essence, BrewRecipe.BURNER_HEAT, brew);
+        if (hot != null && hot.heat() > heat()) {
+            player.sendOverlayMessage(Component.translatable("block.hextale.crucible.say.needs_heat",
+                    Component.translatable("block.hextale.crucible.heat." + hot.heat())));
+        } else if (brew != null && BrewRecipe.find(stack, essence, BrewRecipe.BURNER_HEAT, null) != null) {
+            player.sendOverlayMessage(Component.translatable("block.hextale.crucible.say.other_brew",
+                    Component.translatable(brew.translationKey()).withColor(brew.color())));
+        }
+    }
+
+    /** The brew in the water (null: plain water), and its doses left. */
+    public @Nullable Brew brew() {
+        return brew;
+    }
+
+    public int doses() {
+        return doses;
+    }
+
+    /** A glass bottle takes one dose: the Chem Vial, or empty when there is no brew. */
+    public ItemStack bottle() {
+        if (brew == null || doses <= 0) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack vial = ChemVialItem.of(brew);
+        if (--doses <= 0) {
+            brew = null;
+            doses = 0;
+        }
+        playAt(SoundEvents.BOTTLE_FILL, 0.8F, 1.0F);
+        changed();
+        return vial;
+    }
+
+    /** It keeps its water hot while there is any. */
+    @Override
+    public boolean wantsHeat() {
+        return liquid() > 0 && !drying();
     }
 
     /** The catalysts sink, the recipe's essences swirl in after them, and the results rise out a moment later. */
@@ -530,6 +652,8 @@ public class CrucibleBlockEntity extends BlockEntity {
         dryingFrom = liquid();
         water = dryingFrom;
         essence = EssenceMix.EMPTY;
+        brew = null;
+        doses = 0;
         rising.clear();
         playAt(SoundEvents.LAVA_EXTINGUISH, 0.8F, 0.75F + level.getRandom().nextFloat() * 0.1F);
         playAt(SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, 0.6F, 0.9F);
@@ -540,6 +664,8 @@ public class CrucibleBlockEntity extends BlockEntity {
         water = 0;
         temperature = 0;
         essence = EssenceMix.EMPTY;
+        brew = null;
+        doses = 0;
         rising.clear();
         changed();
     }
@@ -617,6 +743,8 @@ public class CrucibleBlockEntity extends BlockEntity {
                 }
             }
         }
+        brew = input.read("brew", Brew.CODEC).orElse(null);
+        doses = brew == null ? 0 : Mth.clamp(input.getIntOr("doses", 0), 0, MAX_DOSES);
         rising.clear();
         rising.addAll(input.read("rising", ItemStack.CODEC.listOf()).orElse(List.of()));
         pouredAt = input.getLongOr("poured_at", -1000);
@@ -636,6 +764,10 @@ public class CrucibleBlockEntity extends BlockEntity {
         output.putFloat("temperature", temperature);
         if (!essence.isEmpty()) {
             output.store("essence", EssenceMix.CODEC, essence);
+        }
+        if (brew != null) {
+            output.store("brew", Brew.CODEC, brew);
+            output.putInt("doses", doses);
         }
         if (!rising.isEmpty()) {
             output.store("rising", ItemStack.CODEC.listOf(), List.copyOf(rising));

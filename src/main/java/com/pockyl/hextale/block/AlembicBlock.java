@@ -107,7 +107,7 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
         if (below.is(Blocks.CAMPFIRE) || below.is(Blocks.SOUL_CAMPFIRE)) {
             return below.getValue(CampfireBlock.LIT);
         }
-        return below.is(BlockTags.FIRE) || below.is(Blocks.LAVA) || below.is(Blocks.MAGMA_BLOCK);
+        return below.is(BlockTags.FIRE) || below.is(Blocks.LAVA) || below.is(Blocks.MAGMA_BLOCK) || ChemBurnerBlock.isLit(below);
     }
 
     @Override

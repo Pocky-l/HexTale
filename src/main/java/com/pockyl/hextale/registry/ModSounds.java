@@ -65,6 +65,16 @@ public final class ModSounds {
     /** Something sinks into boiling water and dissolves: a hiss and a low gulp. */
     public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_DISSOLVE = register("crucible.dissolve");
     public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_POUR = register("crucible.pour");
+    /** The water in a crucible turns into a brew: a deep gulp, a rising fizz, a soft settling bloom. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_BREW = register("crucible.brew");
+    /** A Chem Burner catches: a soft whump of gas and a breathy rise. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_BURNER_IGNITE = register("chem_burner.ignite");
+    /** A lit Chem Burner: a low, throaty gas roar. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_BURNER_ROAR = register("chem_burner.roar");
+    /** A thrown Chem Vial splashes: a wet slap and a spreading fizz. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VIAL_SPLASH = register("chem_vial.splash");
+    /** Acid eats stone: a long seething hiss with crackles. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> ACID_HISS = register("acid.hiss");
     /** The loupe arm is lifted off its rest (lower: set back); a lens swings in; the last lens has seen an item's essences. */
     public static final DeferredHolder<SoundEvent, SoundEvent> LOUPE_GRAB = register("loupe.grab");
     public static final DeferredHolder<SoundEvent, SoundEvent> LOUPE_LENS = register("loupe.lens");

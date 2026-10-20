@@ -1,0 +1,10 @@
+{
+  "catalyst": "minecraft:snowball",
+  "essences": {
+    "cold": 8,
+    "ice": 4
+  },
+  "brew": "coolant",
+  "heat": 2,
+  "doses": 3
+}

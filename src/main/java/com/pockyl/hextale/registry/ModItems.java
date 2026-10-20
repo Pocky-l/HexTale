@@ -57,6 +57,18 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEX_WORKBENCH = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_WORKBENCH);
     public static final DeferredItem<BlockItem> HEX_LAPIDARY = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_LAPIDARY);
     public static final DeferredItem<BlockItem> CRUCIBLE = ITEMS.registerSimpleBlockItem(ModBlocks.CRUCIBLE);
+    public static final DeferredItem<BlockItem> CHEM_BURNER = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_BURNER,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> CHEM_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_GLASS);
+    public static final DeferredItem<BlockItem> CHEM_GLASS_PANE = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_GLASS_PANE);
+    public static final DeferredItem<BlockItem> RUSTED_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_PLATING);
+    public static final DeferredItem<BlockItem> RUSTED_PLATING_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_PLATING_STAIRS);
+    public static final DeferredItem<BlockItem> RUSTED_PLATING_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_PLATING_SLAB);
+    public static final DeferredItem<BlockItem> RIVETED_RUSTED_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.RIVETED_RUSTED_PLATING);
+    /** A stoppered glass vial of a crucible brew (component {@code hextale:brew}). */
+    public static final DeferredItem<com.pockyl.hextale.chem.ChemVialItem> CHEM_VIAL = ITEMS.registerItem("chem_vial",
+            properties -> new com.pockyl.hextale.chem.ChemVialItem(properties.stacksTo(16)
+                    .craftRemainder(net.minecraft.world.item.Items.GLASS_BOTTLE)));
     /** An iron disc edged with flint: cuts raw hextech into crystals on the lapidary; wears with every cut and crack. */
     public static final DeferredItem<Item> CUTTING_DISC = ITEMS.registerItem("cutting_disc", properties -> new Item(properties.durability(64)));
     /** A hexsteel disc edged with diamond: finishes crystals into stabilised gemstones, and cuts raw ones twice as fast. */

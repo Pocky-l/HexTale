@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": "hextale:rusted_plating"
+  },
+  "result": {
+    "id": "hextale:rusted_plating_stairs",
+    "count": 4
+  }
+}

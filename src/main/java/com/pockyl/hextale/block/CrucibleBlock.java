@@ -131,6 +131,15 @@ public class CrucibleBlock extends BaseEntityBlock {
             }
             return InteractionResult.SUCCESS;
         }
+        if (stack.is(Items.GLASS_BOTTLE) && crucible.brew() != null) {
+            if (!level.isClientSide()) {
+                ItemStack vial = crucible.bottle();
+                if (!vial.isEmpty()) {
+                    give(player, hand, stack, vial);
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
         if (crucible.liquid() <= 0) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
@@ -170,6 +179,10 @@ public class CrucibleBlock extends BaseEntityBlock {
         Component phase = crucible.phase().describe();
         if (crucible.heat() <= 0 && !crucible.boiling()) {
             return Component.translatable("block.hextale.crucible.status.cold", phase, crucible.water());
+        }
+        if (crucible.brew() != null) {
+            return Component.translatable("block.hextale.crucible.status.brew", phase,
+                    Component.translatable(crucible.brew().translationKey()).withColor(crucible.brew().color()), crucible.doses());
         }
         return Component.translatable("block.hextale.crucible.status", phase, crucible.water(), crucible.essence().total());
     }

@@ -1,0 +1,10 @@
+{
+  "catalyst": "minecraft:glowstone_dust",
+  "essences": {
+    "light": 6,
+    "slime": 4
+  },
+  "brew": "glow",
+  "heat": 3,
+  "doses": 3
+}

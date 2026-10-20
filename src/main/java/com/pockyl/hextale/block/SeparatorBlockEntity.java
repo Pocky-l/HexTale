@@ -49,7 +49,8 @@ import org.jspecify.annotations.Nullable;
  * split. The dark unknown essence can be chosen too: it is filtered out of a mixture into its own vessel, and then no
  * unknown essence is added to the rest - that is the way to clean a mixture.
  */
-public class SeparatorBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.Receiver {
+public class SeparatorBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.Receiver,
+        com.pockyl.hextale.chem.HeatUser {
     public static final int POUR = 0;
     public static final int FUEL = 1;
     public static final int SUPPLY = 2;
@@ -261,7 +262,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         EssenceMix portion = portion();
         int drawn = drawnOut(portion);
         if (drawn > 0) {
-            if (charge + (isFuel(items.get(FUEL)) ? FUEL_BINDS : 0) < drawn) {
+            if (!burnerBelow() && charge + (isFuel(items.get(FUEL)) ? FUEL_BINDS : 0) < drawn) {
                 return "no_fuel";
             }
             boolean other = !extract.isEmpty() && (unknown ? extract.contents().unknown() != extract.amount()
@@ -271,6 +272,17 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             }
         }
         return rest.space() < portion.total() - drawn + stain(drawn) ? "rest_full" : null;
+    }
+
+    /** A burning Chem Burner under it heats the flask: no blaze powder is burned while it does. */
+    private boolean burnerBelow() {
+        return level != null && ChemBurnerBlock.isLit(level.getBlockState(worldPosition.below()));
+    }
+
+    /** A Chem Burner under it burns while an essence is drawn out of the mix. */
+    @Override
+    public boolean wantsHeat() {
+        return !mix.isEmpty() && (separating() != null || separatingUnknown()) && drawnOut(portion()) > 0;
     }
 
     /** Whether the powder burns: the separator can work and the next portion gives something up. */
@@ -301,7 +313,8 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         step = 0;
         EssenceMix portion = portion();
         int drawn = drawnOut(portion);
-        if (drawn > charge) {
+        boolean burner = burnerBelow();
+        if (!burner && drawn > charge) {
             items.get(FUEL).shrink(1);
             charge += FUEL_BINDS;
         }
@@ -309,7 +322,9 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         EssenceMix out = separatingUnknown() ? EssenceMix.unknown(drawn) : EssenceMix.pure(separating(), drawn);
         if (drawn > 0) {
             extract.fill(out, false);
-            charge -= drawn;
+            if (!burner) {
+                charge -= drawn;
+            }
         }
         // What is left goes on as the rest, and drawing an essence out leaves a dark unknown essence on top of it.
         EssenceMix left = portion.minus(out);

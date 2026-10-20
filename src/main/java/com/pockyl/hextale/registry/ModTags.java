@@ -26,6 +26,11 @@ public final class ModTags {
     /** Plain item storages a Sorting Matrix sorts into by what they hold (and never fills with what they do not). */
     public static final TagKey<Block> SORTING_STORAGE = TagKey.create(Registries.BLOCK, Hextale.id("sorting_storage"));
 
+    /** Stone a splash of acid eats away (ores and everything else stay). */
+    public static final TagKey<Block> ACID_DISSOLVES = TagKey.create(Registries.BLOCK, Hextale.id("acid_dissolves"));
+    /** Catalysts of the combustible mix (coal and charcoal by default). */
+    public static final TagKey<Item> FUEL_CATALYSTS = TagKey.create(Registries.ITEM, Hextale.id("fuel_catalysts"));
+
     private ModTags() {
     }
 }

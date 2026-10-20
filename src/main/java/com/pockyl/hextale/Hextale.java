@@ -108,6 +108,16 @@ public final class Hextale {
             output.accept(ModItems.HEXTECH_LAMP);
             output.accept(ModItems.HEX_WORKBENCH);
             output.accept(ModItems.CRUCIBLE);
+            output.accept(ModItems.CHEM_BURNER);
+            for (com.pockyl.hextale.chem.Brew brew : com.pockyl.hextale.chem.Brew.values()) {
+                output.accept(com.pockyl.hextale.chem.ChemVialItem.of(brew));
+            }
+            output.accept(ModItems.CHEM_GLASS);
+            output.accept(ModItems.CHEM_GLASS_PANE);
+            output.accept(ModItems.RUSTED_PLATING);
+            output.accept(ModItems.RUSTED_PLATING_STAIRS);
+            output.accept(ModItems.RUSTED_PLATING_SLAB);
+            output.accept(ModItems.RIVETED_RUSTED_PLATING);
             output.accept(ModItems.HEX_FURNACE);
             output.accept(ModItems.HEX_LAPIDARY);
             output.accept(ModItems.CUTTING_DISC);

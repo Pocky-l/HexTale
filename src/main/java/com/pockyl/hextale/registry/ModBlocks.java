@@ -8,6 +8,9 @@ import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FlowerPotBlock;
+import net.minecraft.world.level.block.GlowLichenBlock;
+import net.minecraft.world.level.block.IronBarsBlock;
+import net.minecraft.world.level.block.MultifaceBlock;
 import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
@@ -246,6 +249,32 @@ public final class ModBlocks {
             properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, MAGIC_SAPLING, properties),
             () -> BlockBehaviour.Properties.of().instabreak().noOcclusion().lightLevel(state -> 4).pushReaction(PushReaction.POPPED));
 
+    /** Chemtech's cheap heat: a riveted iron stove burning a green flame. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemBurnerBlock> CHEM_BURNER = BLOCKS.registerBlock("chem_burner",
+            com.pockyl.hextale.block.ChemBurnerBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(3.0F, 6.0F).sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops().noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChemBurnerBlock.LIT) ? 10 : 0));
+    /** Patches of cold green light a splash of glow mix leaves on the blocks it hits. */
+    public static final DeferredBlock<MultifaceBlock> CHEM_GLOW = BLOCKS.registerBlock("chem_glow", MultifaceBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GLOW_LICHEN).replaceable().noCollision().instabreak().noLootTable()
+                    .sound(SoundType.SLIME_BLOCK).lightLevel(GlowLichenBlock.emission(12)).pushReaction(PushReaction.POPPED));
+    /** Green-tinted glass in a rusty frame: glass boiled with venom in a crucible. */
+    public static final DeferredBlock<TransparentBlock> CHEM_GLASS = BLOCKS.registerBlock("chem_glass", TransparentBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).strength(0.6F).sound(SoundType.GLASS).noOcclusion()
+                    .isValidSpawn((state, level, pos, type) -> false).isRedstoneConductor((state, level, pos) -> false)
+                    .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos, box) -> false));
+    public static final DeferredBlock<IronBarsBlock> CHEM_GLASS_PANE = BLOCKS.registerBlock("chem_glass_pane", IronBarsBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).strength(0.3F).sound(SoundType.GLASS).noOcclusion());
+    /** Iron eaten by acid: chemtech's building metal, brown and pitted. */
+    public static final DeferredBlock<Block> RUSTED_PLATING = BLOCKS.registerBlock("rusted_plating", Block::new, ModBlocks::platingProperties);
+    public static final DeferredBlock<StairBlock> RUSTED_PLATING_STAIRS = BLOCKS.registerBlock("rusted_plating_stairs",
+            properties -> new StairBlock(RUSTED_PLATING.get().defaultBlockState(), properties), ModBlocks::platingProperties);
+    public static final DeferredBlock<SlabBlock> RUSTED_PLATING_SLAB = BLOCKS.registerBlock("rusted_plating_slab", SlabBlock::new,
+            ModBlocks::platingProperties);
+    public static final DeferredBlock<Block> RIVETED_RUSTED_PLATING = BLOCKS.registerBlock("riveted_rusted_plating", Block::new,
+            ModBlocks::platingProperties);
+
     private ModBlocks() {
     }
 
@@ -262,6 +291,11 @@ public final class ModBlocks {
 
     private static BlockBehaviour.Properties pylonProperties() {
         return magicStoneProperties().strength(2.5F, 6.0F).sound(SoundType.POLISHED_TUFF).noOcclusion().lightLevel(state -> 5);
+    }
+
+    private static BlockBehaviour.Properties platingProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                .requiresCorrectToolForDrops().strength(4.0F, 6.0F).sound(SoundType.COPPER);
     }
 
     private static BlockBehaviour.Properties brickProperties() {

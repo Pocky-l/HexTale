@@ -1,0 +1,9 @@
+{
+  "catalyst": "minecraft:glass",
+  "essences": {
+    "venom": 3
+  },
+  "result": {
+    "id": "hextale:chem_glass"
+  }
+}

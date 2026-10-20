@@ -2,6 +2,11 @@
   "kind": "wip",
   "region": "chemtech",
   "icon": "minecraft:sugar",
-  "parents": ["wip_crucible_brews"],
-  "pos": [-640, -160]
+  "parents": [
+    "chem_vial"
+  ],
+  "pos": [
+    -640,
+    -160
+  ]
 }

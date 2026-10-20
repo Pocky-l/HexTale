@@ -87,6 +87,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         float sinkAge;
         float sinkFrom;
         boolean drying;
+        boolean brewed;
         final ItemStackRenderState sinking = new ItemStackRenderState();
         /** The essences in the water, most first, with their amounts and when each last grew (only seen in goggles). */
         final List<Essence> shown = new ArrayList<>();
@@ -122,6 +123,11 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
             float share = crucible.essence().total() / (float) Math.max(1, crucible.water() + crucible.essence().total());
             color = RuneDrawing.mix(color, crucible.essence().color(), 0.3F + 0.6F * Math.min(1, share * 4));
         }
+        if (crucible.brew() != null) {
+            // A brew colours the whole pot, more deeply the more doses are left.
+            color = RuneDrawing.mix(color, crucible.brew().color(), 0.7F + 0.25F * crucible.doses() / (float) CrucibleBlockEntity.MAX_DOSES);
+        }
+        state.brewed = crucible.brew() != null;
         state.color = color;
         state.shown.clear();
         state.amounts.clear();
@@ -173,7 +179,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
             case WARMING -> 2;
             case SIMMERING -> 4;
             case BOILING -> 9;
-        };
+        } + (state.brewed ? 5 : 0);
         LiquidBox.submit(poseStack, collector, MIN, MIN, MAX, MAX, CrucibleBlockEntity.BOTTOM, top, RuneDrawing.argb(state.color, 0.86F),
                 state.time, state.seed, bubbles);
         if (state.drying || state.phase == Phase.BOILING || state.phase == Phase.SIMMERING) {

@@ -45,6 +45,7 @@ public class HextaleJeiPlugin implements IModPlugin {
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         registration.registerFromDataComponentTypes(ModItems.ESSENCE_FLASK.get(), ModDataComponents.ESSENCE.get());
         registration.registerFromDataComponentTypes(ModItems.ESSENCE.get(), ModDataComponents.ESSENCE_KIND.get());
+        registration.registerFromDataComponentTypes(ModItems.CHEM_VIAL.get(), ModDataComponents.BREW.get());
     }
 
     /** Typing an essence's name also finds the studied items that carry it. */
@@ -73,7 +74,8 @@ public class HextaleJeiPlugin implements IModPlugin {
                 new HexCraftingCategory(registration.getJeiHelpers().getGuiHelper()),
                 new AlloyingCategory(registration.getJeiHelpers().getGuiHelper()),
                 new HextechWorkingCategory(registration.getJeiHelpers().getGuiHelper()),
-                new CrucibleCategory(registration.getJeiHelpers().getGuiHelper()));
+                new CrucibleCategory(registration.getJeiHelpers().getGuiHelper()),
+                new BrewingCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -106,7 +108,12 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEX_LAPIDARY.get(), "hex_lapidary");
         info(registration, ModItems.HEXTECH_DUST.get(), "hextech_dust");
         info(registration, ModItems.HEX_FURNACE.get(), "hex_furnace");
+        registration.addRecipes(BrewingCategory.TYPE, com.pockyl.hextale.crafting.BrewRecipe.ALL.get(true).entrySet().stream()
+                .map(entry -> new BrewingCategory.Recipe(entry.getKey(), entry.getValue())).toList());
         info(registration, ModItems.CRUCIBLE.get(), "crucible");
+        info(registration, ModItems.CHEM_BURNER.get(), "chem_burner");
+        info(registration, ModItems.CHEM_VIAL.get(), "chem_vial");
+        info(registration, ModItems.RUSTED_PLATING.get(), "rusted_plating");
         info(registration, ModItems.GATHERING_PYLON.get(), "gathering_pylon");
         info(registration, ModItems.SENDING_PYLON.get(), "sending_pylon");
         info(registration, ModItems.RELAY_PYLON.get(), "relay_pylon");
@@ -158,6 +165,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addCraftingStation(AlloyingCategory.TYPE, ModItems.HEX_FURNACE.get());
         registration.addCraftingStation(HextechWorkingCategory.TYPE, ModItems.HEX_LAPIDARY.get());
         registration.addCraftingStation(CrucibleCategory.TYPE, ModItems.CRUCIBLE.get());
+        registration.addCraftingStation(BrewingCategory.TYPE, ModItems.CRUCIBLE.get(), ModItems.CHEM_BURNER.get());
     }
 
     static ItemStack concentrate(Essence essence) {

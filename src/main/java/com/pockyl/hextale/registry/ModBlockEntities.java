@@ -29,6 +29,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.CrucibleBlockEntity>> CRUCIBLE =
             BLOCK_ENTITIES.register("crucible", () -> new BlockEntityType<>(com.pockyl.hextale.block.CrucibleBlockEntity::new,
                     ModBlocks.CRUCIBLE.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemBurnerBlockEntity>> CHEM_BURNER =
+            BLOCK_ENTITIES.register("chem_burner", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemBurnerBlockEntity::new,
+                    ModBlocks.CHEM_BURNER.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexWorkbenchBlockEntity>> HEX_WORKBENCH =
             BLOCK_ENTITIES.register("hex_workbench", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexWorkbenchBlockEntity::new,
                     ModBlocks.HEX_WORKBENCH.get()));

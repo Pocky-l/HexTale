@@ -536,5 +536,66 @@
         "volume": 0.7
       }
     ]
+  },
+  "crucible.brew": {
+    "subtitle": "subtitles.hextale.crucible.brew",
+    "sounds": [
+      {
+        "name": "hextale:crucible_brew1"
+      },
+      {
+        "name": "hextale:crucible_brew2"
+      }
+    ]
+  },
+  "chem_burner.ignite": {
+    "subtitle": "subtitles.hextale.chem_burner.ignite",
+    "sounds": [
+      {
+        "name": "hextale:chem_burner_ignite1"
+      },
+      {
+        "name": "hextale:chem_burner_ignite2"
+      }
+    ]
+  },
+  "chem_burner.roar": {
+    "subtitle": "subtitles.hextale.chem_burner.roar",
+    "sounds": [
+      {
+        "name": "hextale:chem_burner_breath1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:chem_burner_breath2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:chem_burner_breath3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "chem_vial.splash": {
+    "subtitle": "subtitles.hextale.chem_vial.splash",
+    "sounds": [
+      {
+        "name": "hextale:vial_splash1"
+      },
+      {
+        "name": "hextale:vial_splash2"
+      }
+    ]
+  },
+  "acid.hiss": {
+    "subtitle": "subtitles.hextale.acid.hiss",
+    "sounds": [
+      {
+        "name": "hextale:acid_hiss1"
+      },
+      {
+        "name": "hextale:acid_hiss2"
+      }
+    ]
   }
 }

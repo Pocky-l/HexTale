@@ -190,7 +190,19 @@ public final class GogglesView {
             rows.add(Row.heading(Component.translatable(KEY + "crucible", crucible.phase().describe(), Math.round(crucible.temperature()))));
             rows.add(Row.heading(Component.translatable(KEY + "filled", crucible.volume(), com.pockyl.hextale.block.CrucibleBlockEntity.CAPACITY)));
             rows.add(Row.heading(Component.translatable(KEY + "water", crucible.water(), com.pockyl.hextale.block.CrucibleBlockEntity.CAPACITY)));
+            if (crucible.brew() != null) {
+                rows.add(new Row(null, Component.translatable(KEY + "brew", Component.translatable(crucible.brew().translationKey()),
+                        crucible.doses()), 0xFF000000 | crucible.brew().color()));
+            }
             contents(rows, crucible.essence());
+            return new Reading(name, rows);
+        }
+        if (entity instanceof com.pockyl.hextale.block.ChemBurnerBlockEntity burner) {
+            rows.add(Row.heading(burner.status()));
+            if (!burner.fuel().isEmpty()) {
+                rows.add(Row.heading(Component.translatable(KEY + "burner.vials", burner.fuel().getCount())));
+            }
+            contents(rows, burner.tank());
             return new Reading(name, rows);
         }
         if (entity instanceof AlembicBlockEntity alembic) {

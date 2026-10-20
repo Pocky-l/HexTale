@@ -19,6 +19,12 @@ public final class ModEntities {
             id -> EntityType.Builder.<ThrownHextech>of(ThrownHextech::new, MobCategory.MISC).noLootTable().sized(0.25F, 0.25F)
                     .clientTrackingRange(4).updateInterval(10).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
+    /** A Chem Vial thrown like a splash potion: it shatters and splashes its brew. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.ThrownChemVial>> THROWN_CHEM_VIAL =
+            ENTITIES.register("thrown_chem_vial", id -> EntityType.Builder.<com.pockyl.hextale.entity.ThrownChemVial>of(
+                            com.pockyl.hextale.entity.ThrownChemVial::new, MobCategory.MISC).noLootTable().sized(0.25F, 0.25F)
+                    .clientTrackingRange(4).updateInterval(10).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
     private ModEntities() {
     }
 

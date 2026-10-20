@@ -42,6 +42,28 @@ scrolls in treasure chests, so every scroll you find now has more places to go.
 - The guide shows the runes of the reaper, the sawmill, the furnace and the three tools under their recipes, and JEI
   lists them with their numbers per star.
 
+Chemtech begins: the cheap, dirty answer to hextech - chemicals instead of crystals, a green flame, rust.
+
+- Crucible brews (researched at the Research Table): a catalyst thrown into boiling water that holds its essences
+  turns the water into doses of a brew, one kind at a time; a glass bottle takes a dose as a Chem Vial. Five brews:
+  Combustible Mix (coal into fire and ash), Growth Tonic (bone meal into plant and sap), Coolant (a snowball into
+  cold and ice), Glow Mix (glowstone dust into light and slime, over soul fire at least) and Acid (a fermented spider
+  eye into venom and decay, only over a Chem Burner). Hotter brews say what heat they need.
+- Thrown vials splash: the growth tonic makes the plants around shoot up and young animals grow up, the coolant puts
+  fire out and freezes lava into obsidian, the glow mix leaves patches of cold green Chem Glow on the blocks around,
+  the acid eats away the stone around (ores stay), rusts iron blocks, weathers copper and burns monsters. Dispensers
+  throw them too. A vial of combustible mix burns in any furnace as long as a blaze rod.
+- Chem Burner (researched, made at the Hex Workbench): a riveted iron stove with a green window, the hottest heat
+  there is. It heats a crucible, an alembic, a separator (which then burns no blaze powder) or a Hex Furnace (which
+  then needs no fuel) standing on it, and burns only while that machine has work. It feeds on vials of combustible mix
+  (by hand or hoppers) or on any essence through pipes at its back and sides - the separator's dark unknown waste
+  burns twice as long. Up to three runes: Eternal Flame (fuel may last twice as long), Steam (a brew boiled over it may
+  give one more dose), Radiance (brews give experience), Fireproofing (players beside it keep Fire Resistance) and Lens.
+- Chem Glass (glass dropped into water holding venom) and its panes, Rusted Plating (iron blocks splashed with acid)
+  with stairs, slabs and riveted plating.
+- The guide's chemtech branch has the brews, the glass, the burner and the plating in place of their sketches; JEI
+  lists the brews.
+
 ### Fixed
 - The altar named the right refusal when a rune did not fit a reaper or a sawmill, or when they were full.
 

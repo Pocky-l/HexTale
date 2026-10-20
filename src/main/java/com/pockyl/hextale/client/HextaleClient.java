@@ -65,6 +65,8 @@ public final class HextaleClient {
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
                 event.register(Hextale.id("sticker"), com.pockyl.hextale.client.render.StickerTint.MAP_CODEC));
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
+                event.register(Hextale.id("brew"), com.pockyl.hextale.client.render.BrewTint.MAP_CODEC));
+        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
                 event.register(Hextale.id("pickaxe_runes"), com.pockyl.hextale.client.render.PickaxeRuneTint.MAP_CODEC));
         modBus.addListener(TableModels::register);
         modBus.addListener((RegisterParticleProvidersEvent event) -> {
@@ -147,6 +149,8 @@ public final class HextaleClient {
 
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THROWN_HEXTECH.get(),
+                net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THROWN_CHEM_VIAL.get(),
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RESEARCH_TABLE.get(), ResearchTableRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ALEMBIC.get(), AlembicRenderer::new);

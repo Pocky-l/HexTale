@@ -53,6 +53,9 @@ public final class ResearchTopics {
     public static final ResearchTopic HEXSTEEL = add("hexsteel", 1, Essence.METAL, Essence.FIRE, ModItems.HEXSTEEL_INGOT);
     public static final ResearchTopic MASTER_DISC = add("master_cutting_disc", 2, Essence.SPARK, Essence.LIGHT, ModItems.MASTER_CUTTING_DISC);
     public static final ResearchTopic HEXTECH_LAMP = add("hextech_lamp", 2, Essence.LIGHT, Essence.FIRE, ModItems.HEXTECH_LAMP);
+    /** Brewing in the Crucible: the vials are what the topic opens. */
+    public static final ResearchTopic CHEM_VIAL = add("chem_vial", 1, Essence.WATER, Essence.LIFE, ModItems.CHEM_VIAL);
+    public static final ResearchTopic CHEM_BURNER = add("chem_burner", 1, Essence.FIRE, Essence.SHADOW, ModItems.CHEM_BURNER);
     public static final ResearchTopic MAGIC_TREE = add("magic_sapling", 1, Essence.LIFE, Essence.LIGHT, ModItems.MAGIC_SAPLING);
     public static final ResearchTopic HEXTECH_PICKAXE = add("hextech_pickaxe", 2, Essence.METAL, Essence.EARTH,
             ModItems.pickaxe(HextechPickaxe.HEXTECH));

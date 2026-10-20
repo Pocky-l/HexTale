@@ -33,6 +33,11 @@
     "hextale:hexsteel_block",
     "hextale:crucible",
     "hextale:whirl_reaper",
-    "hextale:whorled_magic_stone"
+    "hextale:whorled_magic_stone",
+    "hextale:chem_burner",
+    "hextale:rusted_plating",
+    "hextale:rusted_plating_stairs",
+    "hextale:rusted_plating_slab",
+    "hextale:riveted_rusted_plating"
   ]
 }

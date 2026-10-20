@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "chemtech",
-  "icon": "minecraft:campfire",
-  "parents": ["crucible", "separator"],
-  "pos": [-540, -50]
-}

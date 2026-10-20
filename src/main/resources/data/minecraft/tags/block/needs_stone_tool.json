@@ -4,6 +4,10 @@
     "hextale:sphalerite_ore",
     "hextale:deepslate_sphalerite_ore",
     "hextale:raw_zinc_block",
-    "hextale:zinc_block"
+    "hextale:zinc_block",
+    "hextale:rusted_plating",
+    "hextale:rusted_plating_stairs",
+    "hextale:rusted_plating_slab",
+    "hextale:riveted_rusted_plating"
   ]
 }

@@ -31,6 +31,7 @@ public final class InfusionEvents {
         event.addListener(Hextale.id("hex_crafting"), HexCraftingRecipe.ALL.loader(event.getServerResources().getRegistryLookup()));
         event.addListener(Hextale.id("alloying"), AlloyRecipe.ALL.loader(event.getServerResources().getRegistryLookup()));
         event.addListener(Hextale.id("crucible"), com.pockyl.hextale.crafting.CrucibleRecipe.ALL.loader(event.getServerResources().getRegistryLookup()));
+        event.addListener(Hextale.id("brewing"), com.pockyl.hextale.crafting.BrewRecipe.ALL.loader(event.getServerResources().getRegistryLookup()));
         event.addListener(Hextale.id("guide"), Guide.loader(event.getServerResources().getRegistryLookup()));
     }
 
@@ -42,7 +43,7 @@ public final class InfusionEvents {
     private static void send(ServerPlayer player) {
         ModNetwork.sendToPlayer(player, new InfusionRecipesPayload(InfusionRecipes.get(false)));
         ModNetwork.sendToPlayer(player, new CraftingRecipesPayload(HexCraftingRecipe.ALL.get(false), AlloyRecipe.ALL.get(false),
-                com.pockyl.hextale.crafting.CrucibleRecipe.ALL.get(false)));
+                com.pockyl.hextale.crafting.CrucibleRecipe.ALL.get(false), com.pockyl.hextale.crafting.BrewRecipe.ALL.get(false)));
         ModNetwork.sendToPlayer(player, new GuidePayload(Guide.server().definitions()));
     }
 }

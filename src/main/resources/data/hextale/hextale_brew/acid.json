@@ -1,0 +1,10 @@
+{
+  "catalyst": "minecraft:fermented_spider_eye",
+  "essences": {
+    "venom": 6,
+    "decay": 6
+  },
+  "brew": "acid",
+  "heat": 5,
+  "doses": 3
+}

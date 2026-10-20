@@ -81,6 +81,16 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("essence_kind", builder -> builder
                     .persistent(com.pockyl.hextale.rune.Essence.ID_CODEC).networkSynchronized(com.pockyl.hextale.rune.Essence.STREAM_CODEC));
 
+    /** The brew in a Chem Vial. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.chem.Brew>> BREW =
+            COMPONENTS.registerComponentType("brew", builder -> builder
+                    .persistent(com.pockyl.hextale.chem.Brew.CODEC).networkSynchronized(com.pockyl.hextale.chem.Brew.STREAM_CODEC));
+
+    /** The runes burned into a Chem Burner. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> BURNER_RUNES =
+            COMPONENTS.registerComponentType("burner_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+
     /** The essence in a flask or a tank item. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<EssenceMix>> ESSENCE =
             COMPONENTS.registerComponentType("essence", builder -> builder

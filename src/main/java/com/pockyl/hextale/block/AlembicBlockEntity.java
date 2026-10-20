@@ -56,7 +56,8 @@ import org.jspecify.annotations.Nullable;
  * the pylon's owner ({@link Deliverer}); for hoppers it is the alembic's owner (who placed it). Knowledge is read from
  * an online player only: anyone offline counts as nobody.
  */
-public class AlembicBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.WaterReceiver {
+public class AlembicBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.WaterReceiver,
+        com.pockyl.hextale.chem.HeatUser {
     public static final int INPUT = 0;
     public static final int FLASK_IN = 1;
     public static final int FLASK_OUT = 2;
@@ -144,6 +145,12 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
 
     public ItemStack input() {
         return items.get(INPUT);
+    }
+
+    /** A Chem Burner under it burns while there is something to boil and water to boil it in. */
+    @Override
+    public boolean wantsHeat() {
+        return ResearchItems.of(input()) != null && water >= WATER_PER_ITEM;
     }
 
     private boolean heated() {

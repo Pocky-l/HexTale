@@ -33,6 +33,8 @@ public enum RuneHolder {
     SAWMILL(() -> ModDataComponents.SAWMILL_RUNES.get(), SawmillRune.SLOTS, SawmillRune.values()),
     /** The Hex Furnace. */
     FURNACE(() -> ModDataComponents.FURNACE_RUNES.get(), FurnaceRune.SLOTS, FurnaceRune.values()),
+    /** The Chem Burner. */
+    BURNER(() -> ModDataComponents.BURNER_RUNES.get(), BurnerRune.SLOTS, BurnerRune.values()),
     /** The hextech axe, shovel and sword keep their runes where the pickaxe does. */
     AXE(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.AXE)),
     SHOVEL(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.SHOVEL)),
@@ -66,6 +68,9 @@ public enum RuneHolder {
         }
         if (item == ModItems.HEX_FURNACE.get()) {
             return FURNACE;
+        }
+        if (item == ModItems.CHEM_BURNER.get()) {
+            return BURNER;
         }
         if (item == ModItems.HEXTECH_AXE.get()) {
             return AXE;
@@ -170,6 +175,7 @@ public enum RuneHolder {
             case REAPER -> List.of(new ItemStack(ModItems.WHIRL_REAPER.get()));
             case SAWMILL -> List.of(new ItemStack(ModItems.HEX_SAWMILL.get()));
             case FURNACE -> List.of(new ItemStack(ModItems.HEX_FURNACE.get()));
+            case BURNER -> List.of(new ItemStack(ModItems.CHEM_BURNER.get()));
             case AXE -> List.of(new ItemStack(ModItems.HEXTECH_AXE.get()));
             case SHOVEL -> List.of(new ItemStack(ModItems.HEXTECH_SHOVEL.get()));
             case SWORD -> List.of(new ItemStack(ModItems.HEXTECH_SWORD.get()));

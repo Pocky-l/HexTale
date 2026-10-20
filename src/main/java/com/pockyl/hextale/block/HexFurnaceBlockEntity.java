@@ -74,7 +74,7 @@ import org.jspecify.annotations.Nullable;
  * it) has researched them; what the owner knows is remembered whenever they are about, so the furnace keeps working
  * while they are away. Hoppers feed the inputs from the top, fuel from the sides, and take the alloy from below.
  */
-public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
+public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, com.pockyl.hextale.chem.HeatUser {
     public static final int INPUTS = AlloyRecipe.SLOTS;
     public static final int FUEL = 3;
     public static final int OUTPUT = 4;
@@ -95,6 +95,8 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
     private float experience;
     /** Why it waits, for the screen: "" while working or idle. */
     private String blocked = "";
+    /** Ticks of fire a Chem Burner below gives at a time (it keeps giving them while it burns). */
+    private static final int BURNER_SECONDS = 20;
     private @Nullable UUID owner;
     /** The owner's researched topics as last seen. */
     private Set<String> known = new HashSet<>();
@@ -394,8 +396,20 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         return more;
     }
 
-    /** Burns the next piece of fuel; false when there is none. */
+    /** A Chem Burner under it burns while there is metal to melt and room for the result. */
+    @Override
+    public boolean wantsHeat() {
+        return inputs().stream().anyMatch(stack -> !stack.isEmpty()) && !"output_full".equals(blocked) && !"locked".equals(blocked);
+    }
+
+    /** Burns the next piece of fuel (or a second of a Chem Burner's flame below it); false when there is none. */
     private boolean ignite(ServerLevel level) {
+        if (ChemBurnerBlock.isLit(level.getBlockState(worldPosition.below()))) {
+            litTime = BURNER_SECONDS;
+            litDuration = BURNER_SECONDS;
+            setChanged();
+            return true;
+        }
         ItemStack fuel = items.get(FUEL);
         int burn = fuel.isEmpty() ? 0
                 : ResolvableInt.getFromItem(fuel, DataComponents.COOKING_FUEL, CookingFuel::burnTime, getLootContext(level, fuel), 0);

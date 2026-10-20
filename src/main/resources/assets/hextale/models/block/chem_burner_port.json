@@ -1,0 +1,72 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/brass_pipe",
+    "brass_pipe": "hextale:block/brass_pipe"
+  },
+  "elements": [
+    {
+      "name": "pipe_flange",
+      "from": [
+        6,
+        6,
+        0
+      ],
+      "to": [
+        10,
+        10,
+        1
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            0,
+            9,
+            4
+          ],
+          "texture": "#brass_pipe",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ],
+          "rotation": 90,
+          "texture": "#brass_pipe"
+        },
+        "west": {
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ],
+          "rotation": 90,
+          "texture": "#brass_pipe"
+        },
+        "up": {
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ],
+          "texture": "#brass_pipe"
+        },
+        "down": {
+          "uv": [
+            0,
+            8,
+            4,
+            9
+          ],
+          "texture": "#brass_pipe"
+        }
+      }
+    }
+  ]
+}

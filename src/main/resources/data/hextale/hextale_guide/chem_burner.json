@@ -1,0 +1,22 @@
+{
+  "region": "chemtech",
+  "icon": "hextale:chem_burner",
+  "parents": [
+    "chem_glass",
+    "ink"
+  ],
+  "research": "chem_burner",
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:chem_burner",
+    "then": {
+      "kind": "runes",
+      "result": "burner"
+    }
+  },
+  "station": true,
+  "pos": [
+    -540,
+    -50
+  ]
+}
