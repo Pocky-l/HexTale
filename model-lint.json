@@ -45,6 +45,16 @@
         "stretch"
       ],
       "why": "vanilla cross / flower_pot_cross templates rescale the diagonal planes, as for every vanilla sapling"
+    },
+    {
+      "model": "hextale:item/hextech_pickaxe_base",
+      "element": "*",
+      "face": "*",
+      "flags": [
+        "offgrid",
+        "intersect"
+      ],
+      "why": "hex ring bars, arm segments and diamond settings are turned around z (free 26.x rotations), so their corners leave the grid; ring corners, arm joints and the stones set in brass overlap at the joints by design"
     }
   ]
 }
