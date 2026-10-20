@@ -3,5 +3,5 @@
   "region": "circle",
   "icon": "minecraft:small_amethyst_bud",
   "parents": ["hextech_altar", "essence_tank"],
-  "pos": [432, -130]
+  "pos": [416, -83]
 }

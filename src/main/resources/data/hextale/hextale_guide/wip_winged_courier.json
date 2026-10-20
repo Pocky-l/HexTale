@@ -3,5 +3,5 @@
   "region": "pylons",
   "icon": "minecraft:feather",
   "parents": ["sending_pylon"],
-  "pos": [916, -129]
+  "pos": [916, -114]
 }

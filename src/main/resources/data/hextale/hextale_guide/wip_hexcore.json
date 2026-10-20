@@ -3,5 +3,5 @@
   "region": "circle",
   "icon": "minecraft:heart_of_the_sea",
   "parents": ["hextech_altar", "hextech_gemstone"],
-  "pos": [408, -72]
+  "pos": [371, -48]
 }
