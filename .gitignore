@@ -38,3 +38,6 @@ repo/
 !**/src/**/repo/
 logs/
 run-guishots/
+
+# Asset sources (Aseprite, Blockbench) stay local
+/art/
