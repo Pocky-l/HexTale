@@ -4,7 +4,7 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - Unreleased
+## [1.0.0-beta.1] - Unreleased
 
 ### Added
 
@@ -298,6 +298,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     wood, the trunk creaking over, the crash and the rustle of leaves.
 
 **Sound and integrations**
+- The Researcher's Diary opens with the sound of its leather cover and turning pages.
 - Synthesized sounds: the alembic simmers, the separator drips, the pump strokes, the valve's handwheel turns, jars
   glug, ink drips with every step; rituals hum, draw and finish with layered drones, whooshes and soft impacts.
 - [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) shows boiling, separation, the altar's infusions and an info

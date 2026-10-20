@@ -1,6 +1,8 @@
 package com.pockyl.hextale.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvents;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
@@ -89,6 +91,10 @@ public final class ClientPayloads {
     }
 
     public static void openDiary(OpenDiaryPayload payload) {
-        Minecraft.getInstance().gui.setScreen(new StarBookScreen(payload.owner()));
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.gui.setScreen(new StarBookScreen(payload.owner()));
+        // The leather cover opens, then the pages riffle.
+        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.ARMOR_EQUIP_LEATHER.value(), 1.2F, 0.5F));
+        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 0.9F, 1.0F));
     }
 }

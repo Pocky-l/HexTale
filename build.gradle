@@ -213,7 +213,8 @@ var releaseNotesTask = tasks.register('releaseNotes') {
 publishMods {
     file = tasks.named('jar', Jar).flatMap { it.archiveFile }
     changelog = releaseNotes ?: ''
-    type = STABLE
+    def releaseType = providers.gradleProperty('release_type').getOrElse('release')
+    type = releaseType == 'beta' ? BETA : releaseType == 'alpha' ? ALPHA : STABLE
     displayName = "${mod_name} ${mod_version}"
     modLoaders.add('neoforge')
     dryRun = providers.gradleProperty('dryRun').map { it != 'false' }.orElse(false)
