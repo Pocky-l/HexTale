@@ -1,0 +1,23 @@
+{
+  "region": "chemtech",
+  "icon": {
+    "id": "hextale:chem_vial",
+    "components": {
+      "hextale:brew": "coolant"
+    }
+  },
+  "parents": [
+    "chem_vial",
+    "lab_bench"
+  ],
+  "research": "coolant",
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "minecraft:snowball",
+      "hextale:crucible",
+      "minecraft:glass_bottle"
+    ],
+    "result": "hextale:chem_vial"
+  }
+}

@@ -662,5 +662,57 @@
         "volume": 0.6
       }
     ]
+  },
+  "lab_bench.drop": {
+    "subtitle": "subtitles.hextale.lab_bench.drop",
+    "sounds": [
+      {
+        "name": "hextale:lab_bench_drop1"
+      },
+      {
+        "name": "hextale:lab_bench_drop2"
+      },
+      {
+        "name": "hextale:lab_bench_drop3"
+      }
+    ]
+  },
+  "lab_bench.react": {
+    "subtitle": "subtitles.hextale.lab_bench.react",
+    "sounds": [
+      {
+        "name": "hextale:lab_bench_react1"
+      },
+      {
+        "name": "hextale:lab_bench_react2"
+      }
+    ]
+  },
+  "lab_bench.vent": {
+    "subtitle": "subtitles.hextale.lab_bench.vent",
+    "sounds": [
+      {
+        "name": "hextale:lab_bench_vent1"
+      },
+      {
+        "name": "hextale:lab_bench_vent2"
+      }
+    ]
+  },
+  "lab_bench.seal": {
+    "subtitle": "subtitles.hextale.lab_bench.seal",
+    "sounds": [
+      {
+        "name": "hextale:lab_bench_seal"
+      }
+    ]
+  },
+  "lab_bench.burst": {
+    "subtitle": "subtitles.hextale.lab_bench.burst",
+    "sounds": [
+      {
+        "name": "hextale:lab_bench_burst"
+      }
+    ]
   }
 }

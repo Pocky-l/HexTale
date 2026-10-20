@@ -106,7 +106,7 @@ public final class ResearchGameTests {
         for (int[] range : lengths) {
             range[0] = Integer.MAX_VALUE;
         }
-        for (ResearchTopic topic : ResearchTopics.all()) {
+        for (ResearchTopic topic : ResearchTopics.table()) {
             ResearchBoard board = ResearchBoards.get(topic);
             int tier = board.tier();
             ResearchBoard.Par par = board.par();
@@ -160,12 +160,12 @@ public final class ResearchGameTests {
                 darkShare[1] / Math.max(1, boards[1]), darkShare[2] / Math.max(1, boards[2]), darkShare[3] / Math.max(1, boards[3]),
                 curseShare[1] / Math.max(1, boards[1]), curseShare[2] / Math.max(1, boards[2]), curseShare[3] / Math.max(1, boards[3]));
         StringBuilder themes = new StringBuilder();
-        for (ResearchTopic topic : ResearchTopics.all()) {
+        for (ResearchTopic topic : ResearchTopics.table()) {
             themes.append(topic.id()).append('=').append(ResearchBoards.get(topic).essences()).append("; ");
         }
         Hextale.LOGGER.info("Board themes: {}", themes);
         Hextale.LOGGER.info("Checked {} research boards in {} ms; plain drawings by tier: 1 {}-{}, 2 {}-{}, 3 {}-{}",
-                ResearchTopics.all().size(), (System.nanoTime() - start) / 1_000_000, lengths[1][0], lengths[1][1], lengths[2][0], lengths[2][1],
+                ResearchTopics.table().size(), (System.nanoTime() - start) / 1_000_000, lengths[1][0], lengths[1][1], lengths[2][0], lengths[2][1],
                 lengths[3][0], lengths[3][1]);
         helper.succeed();
     }
@@ -1054,7 +1054,7 @@ public final class ResearchGameTests {
     /** Every topic gets new, finishable boards for the attempts after a burn. */
     @HexTest
     public static void burntParchmentsGetNewBoards(GameTestHelper helper) {
-        for (ResearchTopic topic : ResearchTopics.all()) {
+        for (ResearchTopic topic : ResearchTopics.table()) {
             ResearchBoard first = ResearchBoards.get(topic);
             for (int attempt = 1; attempt <= 3; attempt++) {
                 ResearchBoard next = ResearchBoards.get(topic, attempt);
@@ -1334,7 +1334,7 @@ public final class ResearchGameTests {
     /** The shortest open way from the orb to a section, around dark runes; the orb itself when unreachable. */
     /** A deeper topic's board (the first one with a reachable curse). */
     private static ResearchBoard cursedBoard() {
-        for (ResearchTopic topic : ResearchTopics.all()) {
+        for (ResearchTopic topic : ResearchTopics.table()) {
             ResearchBoard board = ResearchBoards.get(topic);
             if (topic.tier() >= 2 && cursedCell(board) >= 0) {
                 return board;

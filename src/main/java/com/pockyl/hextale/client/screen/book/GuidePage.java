@@ -790,7 +790,8 @@ final class GuidePage {
         return switch (quest.kind()) {
             case ITEM -> done ? Component.translatable("book.hextale.quest.done").withColor(DONE)
                     : quest.topic() != null && !knowledge.researched(quest.topic())
-                    ? Component.translatable("book.hextale.quest.research_first", Component.translatable(quest.topic().translationKey()))
+                    ? Component.translatable(quest.topic().lab() ? "book.hextale.quest.lab_first" : "book.hextale.quest.research_first",
+                            Component.translatable(quest.topic().translationKey()))
                     .withColor(0x9FE6FF)
                     : Component.translatable("book.hextale.quest.goal", Component.translatable(quest.translationKey() + ".goal")).withColor(OPEN);
             case WIP -> Component.translatable("book.hextale.guide.wip_status").withColor(WIP);
@@ -1027,9 +1028,9 @@ final class GuidePage {
             ResearchTopic topic = quest.topic();
             boolean open = Guide.client().canResearch(topic, knowledge);
             boolean onTable = host.researching() == topic;
-            boolean active = open && !onTable;
-            Component label = Component.translatable(!open ? "book.hextale.closed" : onTable ? "book.hextale.on_table"
-                    : knowledge.researched(topic) ? "book.hextale.research_again" : "book.hextale.research");
+            boolean active = open && !onTable && !topic.lab();
+            Component label = Component.translatable(!open ? "book.hextale.closed" : topic.lab() ? "book.hextale.at_lab_bench"
+                    : onTable ? "book.hextale.on_table" : knowledge.researched(topic) ? "book.hextale.research_again" : "book.hextale.research");
             int by = buttonTop(quest, knowledge);
             boolean hovered = active && overFoot && mouseX >= ix && mouseX < ix + innerWidth() && mouseY >= by && mouseY < by + StarBook.BUTTON_HEIGHT;
             book.magicButton(graphics, ix, by, innerWidth(), label, active, hovered, now);
@@ -1685,7 +1686,7 @@ final class GuidePage {
         ResearchTopic topic = quest.topic();
         StarBook.Host host = book.host();
         if (mouseX >= ix && mouseX < ix + innerWidth() && mouseY >= by && mouseY < by + StarBook.BUTTON_HEIGHT
-                && Guide.client().canResearch(topic, knowledge) && host.researching() != topic) {
+                && Guide.client().canResearch(topic, knowledge) && host.researching() != topic && !topic.lab()) {
             host.research(topic);
         }
     }

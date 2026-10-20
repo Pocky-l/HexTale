@@ -1,0 +1,23 @@
+{
+  "region": "chemtech",
+  "icon": {
+    "id": "hextale:chem_vial",
+    "components": {
+      "hextale:brew": "growth"
+    }
+  },
+  "parents": [
+    "chem_vial",
+    "lab_bench"
+  ],
+  "research": "growth_tonic",
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "minecraft:bone_meal",
+      "hextale:crucible",
+      "minecraft:glass_bottle"
+    ],
+    "result": "hextale:chem_vial"
+  }
+}

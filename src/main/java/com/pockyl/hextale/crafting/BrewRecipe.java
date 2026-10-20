@@ -12,6 +12,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import com.pockyl.hextale.chem.Brew;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.knowledge.Research;
+import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.research.ResearchTopics;
 
 import java.util.Comparator;
@@ -21,8 +22,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * A Crucible brew, read from {@code data/<namespace>/hextale_brew/<name>.json}: a {@code catalyst} that sinks into water
  * boiling over at least {@code heat} (fire 2, soul fire 3, lava 4, a Chem Burner 5) and holding the recipe's
- * {@code essences} takes them and turns the water into {@code doses} doses of the {@code brew}. Brewing must be
- * researched (the Chem Vials topic) by whoever threw or put the catalyst in; for anyone else it is just another item.
+ * {@code essences} takes them and turns the water into {@code doses} doses of the {@code brew}. The brew's reaction
+ * must be worked out at the Lab Bench by whoever threw or put the catalyst in; for anyone else it is just another item.
  */
 public record BrewRecipe(Ingredient catalyst, EssenceMix essences, Brew brew, int heat, int doses) {
     public static final Codec<BrewRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -47,9 +48,10 @@ public record BrewRecipe(Ingredient catalyst, EssenceMix essences, Brew brew, in
     /** Heat of a Chem Burner, the hottest there is. */
     public static final int BURNER_HEAT = 5;
 
-    /** Whether this researcher may brew: they have researched the Chem Vials. */
-    public static boolean mayBrew(@Nullable Player researcher) {
-        return researcher != null && Research.of(researcher).researched(ResearchTopics.CHEM_VIAL);
+    /** Whether this researcher may brew it: they have worked out its reaction at the Lab Bench. */
+    public boolean mayBrew(@Nullable Player researcher) {
+        ResearchTopic topic = ResearchTopics.forBrew(brew);
+        return researcher != null && (topic == null || Research.of(researcher).researched(topic));
     }
 
     /**

@@ -14,6 +14,12 @@ public final class ModSounds {
 
     /** A soft brush stroke on parchment. */
     public static final DeferredHolder<SoundEvent, SoundEvent> BRUSH_STROKE = register("brush.stroke");
+    /** The Lab Bench: a drop into the flask, a reaction taking off, the vent, a sealed flask, a burst one. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> LAB_DROP = register("lab_bench.drop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LAB_REACT = register("lab_bench.react");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LAB_VENT = register("lab_bench.vent");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LAB_SEAL = register("lab_bench.seal");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LAB_BURST = register("lab_bench.burst");
     /** Shimmer: the axolotl sheds slime, the still drips and mutters, the brazier catches and breathes. */
     public static final DeferredHolder<SoundEvent, SoundEvent> AXOLOTL_TANK_SHED = register("axolotl_tank.shed");
     public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_STILL_DRIP = register("chem_still.drip");

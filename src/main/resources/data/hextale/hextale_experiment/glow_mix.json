@@ -1,0 +1,7 @@
+{
+  "topic": "glow_mix",
+  "target": "slime",
+  "amount": 8,
+  "purity": 0.65,
+  "sample": "minecraft:glowstone_dust"
+}

@@ -266,11 +266,11 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
         ResearchTopic locked = CrucibleRecipe.lockedFor(stack, essence, researcher);
         if (boiling()) {
             BrewRecipe brewing = BrewRecipe.find(stack, essence, heat(), brew);
-            if (brewing != null && BrewRecipe.mayBrew(researcher)) {
+            if (brewing != null && brewing.mayBrew(researcher)) {
                 // When the water already holds all the doses it can, the catalyst bobs back out rather than dissolve.
                 return reached ? brew(brewing, stack, count) : 0;
             } else if (brewing != null) {
-                locked = ResearchTopics.CHEM_VIAL;
+                locked = ResearchTopics.forBrew(brewing.brew());
             } else if (researcher instanceof ServerPlayer player) {
                 hintBrew(stack, player);
             }

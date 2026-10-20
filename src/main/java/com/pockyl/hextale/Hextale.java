@@ -123,6 +123,7 @@ public final class Hextale {
             output.accept(ModItems.SHIMMER_MOSS_CARPET);
             output.accept(ModItems.REGENERATIVE_SLIME);
             output.accept(ModItems.AXOLOTL_TANK);
+            output.accept(ModItems.LAB_BENCH);
             output.accept(ModItems.CHEM_STILL);
             output.accept(ModItems.PINK_BRAZIER);
             output.accept(ModItems.SYNTHETIC_CRYSTAL);

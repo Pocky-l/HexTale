@@ -49,7 +49,7 @@ public final class ChemGameTests {
             crucible.pour(EssenceMix.pure(Essence.FIRE, 8).plus(EssenceMix.pure(Essence.ASH, 4)));
             helper.assertTrue(crucible.take(new ItemStack(Items.COAL), 1, true, player) == 1, "the coal goes in");
             helper.assertTrue(crucible.brew() == null, "without the research it only dissolves");
-            Research.research(player, ResearchTopics.CHEM_VIAL);
+            Research.research(player, ResearchTopics.COMBUSTIBLE_MIX);
             helper.assertTrue(crucible.take(new ItemStack(Items.COAL), 1, true, player) == 1, "the second coal goes in");
             helper.assertTrue(crucible.brew() == Brew.FUEL && crucible.doses() == 4, "the water is four doses of combustible mix");
             ItemStack vial = crucible.bottle();
@@ -71,7 +71,7 @@ public final class ChemGameTests {
         CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        Research.research(player, ResearchTopics.CHEM_VIAL);
+        Research.research(player, ResearchTopics.ACID);
         boolean[] done = {false};
         helper.succeedWhen(() -> {
             helper.assertTrue(ChemBurnerBlock.isLit(helper.getBlockState(AT.below())), "the burner burns under the crucible");

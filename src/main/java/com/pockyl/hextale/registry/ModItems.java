@@ -70,6 +70,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> SHIMMER_MOSS_CARPET = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMER_MOSS_CARPET);
     public static final DeferredItem<BlockItem> AXOLOTL_TANK = ITEMS.registerSimpleBlockItem(ModBlocks.AXOLOTL_TANK,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> LAB_BENCH = ITEMS.registerSimpleBlockItem(ModBlocks.LAB_BENCH,
+            properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> CHEM_STILL = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_STILL,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> PINK_BRAZIER = ITEMS.registerSimpleBlockItem(ModBlocks.PINK_BRAZIER,

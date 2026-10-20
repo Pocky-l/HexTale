@@ -1,0 +1,22 @@
+{
+  "region": "chemtech",
+  "icon": "hextale:lab_bench",
+  "parents": [
+    "crucible",
+    "chem_glass",
+    "hex_workbench"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:lab_bench",
+    "then": {
+      "kind": "runes",
+      "result": "lab"
+    }
+  },
+  "station": true,
+  "pos": [
+    -410,
+    100
+  ]
+}

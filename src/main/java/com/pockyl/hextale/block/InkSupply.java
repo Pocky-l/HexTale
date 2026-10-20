@@ -36,10 +36,15 @@ public final class InkSupply {
 
     /** The tanks around the desk whose main block is at {@code main}. */
     public static InkSupply around(Level level, BlockPos main, Direction facing) {
-        InkSupply supply = new InkSupply();
         BlockPos side = main.relative(TablePart.MAIN.toOther(facing));
         BlockPos min = new BlockPos(Math.min(main.getX(), side.getX()), main.getY(), Math.min(main.getZ(), side.getZ()));
         BlockPos max = new BlockPos(Math.max(main.getX(), side.getX()), main.getY(), Math.max(main.getZ(), side.getZ()));
+        return around(level, min, max);
+    }
+
+    /** The tanks of concentrate within reach of the box {@code min..max} (the Lab Bench is one block). */
+    public static InkSupply around(Level level, BlockPos min, BlockPos max) {
+        InkSupply supply = new InkSupply();
         for (EssenceTankBlockEntity tank : JarReach.around(level, min, max)) {
             if (tank.isCreative()) {
                 for (Essence essence : Essence.values()) {

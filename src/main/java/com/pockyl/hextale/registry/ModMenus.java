@@ -25,6 +25,8 @@ public final class ModMenus {
             MENUS.register("item_filter", () -> IMenuTypeExtension.create(com.pockyl.hextale.menu.ItemFilterMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<com.pockyl.hextale.menu.HexWorkbenchMenu>> HEX_WORKBENCH =
             MENUS.register("hex_workbench", () -> IMenuTypeExtension.create(com.pockyl.hextale.menu.HexWorkbenchMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<com.pockyl.hextale.menu.LabBenchMenu>> LAB_BENCH =
+            MENUS.register("lab_bench", () -> IMenuTypeExtension.create(com.pockyl.hextale.menu.LabBenchMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<com.pockyl.hextale.menu.LapidaryMenu>> LAPIDARY =
             MENUS.register("hex_lapidary", () -> IMenuTypeExtension.create(com.pockyl.hextale.menu.LapidaryMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<HexFurnaceMenu>> HEX_FURNACE =

@@ -260,7 +260,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             message(player, Component.translatable(missing.translationKey()), ResearchMessagePayload.Tone.BAD);
             return;
         }
-        if (!Guide.server().canResearch(topic, Research.of(player))) {
+        if (topic.lab() || !Guide.server().canResearch(topic, Research.of(player))) {
             message(player, Component.translatable("research.hextale.closed", name(topic)), ResearchMessagePayload.Tone.BAD);
             return;
         }

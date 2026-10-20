@@ -54,6 +54,18 @@ public final class Research {
         return fresh;
     }
 
+    /** Records compounds seen forming in a Lab Bench flask: the journal shows their zones from now on. */
+    public static boolean observe(ServerPlayer player, java.util.Collection<com.pockyl.hextale.rune.Essence> compounds) {
+        boolean fresh = false;
+        for (com.pockyl.hextale.rune.Essence compound : compounds) {
+            fresh |= of(player).observe(compound);
+        }
+        if (fresh) {
+            sync(player);
+        }
+        return fresh;
+    }
+
     /** Records a studied item: its tooltip shows its elements from now on. */
     public static boolean study(ServerPlayer player, Item item) {
         boolean fresh = of(player).study(BuiltInRegistries.ITEM.getKey(item));

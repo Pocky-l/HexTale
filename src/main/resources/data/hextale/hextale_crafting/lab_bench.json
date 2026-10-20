@@ -1,0 +1,17 @@
+{
+  "pattern": [
+    "GBG",
+    "SSS",
+    "I I"
+  ],
+  "key": {
+    "G": "hextale:chem_glass",
+    "B": "minecraft:brewing_stand",
+    "S": "minecraft:dark_oak_slab",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "hextale:lab_bench"
+  },
+  "charge": 2
+}

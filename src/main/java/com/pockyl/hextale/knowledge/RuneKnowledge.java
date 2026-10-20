@@ -12,6 +12,7 @@ import com.pockyl.hextale.quest.Quest;
 import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
+import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -41,7 +42,8 @@ public final class RuneKnowledge {
             BITS_MAP.optionalFieldOf("seen", Map.of()).forGetter(k -> bitsByKey(k.seen)),
             Codec.STRING.listOf().optionalFieldOf("studied", List.of()).forGetter(k -> List.copyOf(k.studied)),
             Codec.STRING.listOf().optionalFieldOf("quests", List.of()).forGetter(k -> List.copyOf(k.quests)),
-            INT_MAP.optionalFieldOf("attempts", Map.of()).forGetter(k -> Map.copyOf(k.attempts))
+            INT_MAP.optionalFieldOf("attempts", Map.of()).forGetter(k -> Map.copyOf(k.attempts)),
+            Codec.STRING.listOf().optionalFieldOf("observed", List.of()).forGetter(k -> List.copyOf(k.observed))
     ).apply(instance, RuneKnowledge::new));
     public static final Codec<RuneKnowledge> CODEC = MAP_CODEC.codec();
 
@@ -57,6 +59,7 @@ public final class RuneKnowledge {
             STRINGS, k -> List.copyOf(k.studied),
             STRINGS, k -> List.copyOf(k.quests),
             INTS, k -> new LinkedHashMap<>(k.attempts),
+            STRINGS, k -> List.copyOf(k.observed),
             RuneKnowledge::new);
 
     /** Learned runes in the order of discovery, with their stars (1-3). */
@@ -71,12 +74,14 @@ public final class RuneKnowledge {
     private final Map<String, BitSet> seen = new HashMap<>();
     /** Per topic id: how many parchments burned; the next attempt is drawn on a new parchment. */
     private final Map<String, Integer> attempts = new HashMap<>();
+    /** Ids of compounds the researcher has seen form in a Lab Bench flask: the journal shows the zone they form in. */
+    private final Set<String> observed = new LinkedHashSet<>();
 
     public RuneKnowledge() {
     }
 
     private RuneKnowledge(Map<String, Integer> stars, List<String> researched, Map<String, List<Long>> seen, List<String> studied,
-                          List<String> quests, Map<String, Integer> attempts) {
+                          List<String> quests, Map<String, Integer> attempts, List<String> observed) {
         stars.forEach((key, value) -> {
             ComplexRune rune = ComplexRunes.byKey(key);
             if (rune != null && value > 0) {
@@ -92,6 +97,7 @@ public final class RuneKnowledge {
                 this.attempts.put(key, value);
             }
         });
+        this.observed.addAll(observed);
     }
 
     private Map<String, Integer> starsByKey() {
@@ -166,6 +172,17 @@ public final class RuneKnowledge {
         researched.clear();
         seen.clear();
         attempts.clear();
+        observed.clear();
+    }
+
+    /** Whether the researcher has seen this compound form in a flask (and so knows its zone). */
+    public boolean observed(Essence compound) {
+        return observed.contains(compound.id());
+    }
+
+    /** @return whether the compound was new */
+    public boolean observe(Essence compound) {
+        return observed.add(compound.id());
     }
 
     /** Sections of this topic's parchment the ink has passed (a copy). */
@@ -237,6 +254,6 @@ public final class RuneKnowledge {
 
     public RuneKnowledge copy() {
         return new RuneKnowledge(starsByKey(), List.copyOf(researched), bitsByKey(seen), List.copyOf(studied), List.copyOf(quests),
-                Map.copyOf(attempts));
+                Map.copyOf(attempts), List.copyOf(observed));
     }
 }

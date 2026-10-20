@@ -3,7 +3,7 @@
   "icon": "hextale:chem_burner",
   "parents": [
     "chem_glass",
-    "ink"
+    "lab_bench"
   ],
   "research": "chem_burner",
   "display": {

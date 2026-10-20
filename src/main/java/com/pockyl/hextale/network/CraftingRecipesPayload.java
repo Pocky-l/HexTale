@@ -11,13 +11,18 @@ import com.pockyl.hextale.crafting.AlloyRecipe;
 import com.pockyl.hextale.crafting.BrewRecipe;
 import com.pockyl.hextale.crafting.CrucibleRecipe;
 import com.pockyl.hextale.crafting.HexCraftingRecipe;
+import com.pockyl.hextale.research.ExperimentPlan;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Server to client: every Hex Workbench, Hex Furnace, Crucible and brew recipe, sent on login and after data packs reload. */
+/**
+ * Server to client: every Hex Workbench, Hex Furnace, Crucible and brew recipe and every Lab Bench experiment, sent on login
+ * and after data packs reload.
+ */
 public record CraftingRecipesPayload(Map<Identifier, HexCraftingRecipe> crafting, Map<Identifier, AlloyRecipe> alloying,
-                                     Map<Identifier, CrucibleRecipe> crucible, Map<Identifier, BrewRecipe> brewing)
+                                     Map<Identifier, CrucibleRecipe> crucible, Map<Identifier, BrewRecipe> brewing,
+                                     Map<Identifier, ExperimentPlan> experiments)
         implements CustomPacketPayload {
     public static final Type<CraftingRecipesPayload> TYPE = new Type<>(Hextale.id("crafting_recipes"));
 
@@ -30,6 +35,8 @@ public record CraftingRecipesPayload(Map<Identifier, HexCraftingRecipe> crafting
             payload -> new LinkedHashMap<>(payload.crucible()),
             ByteBufCodecs.map(LinkedHashMap<Identifier, BrewRecipe>::new, Identifier.STREAM_CODEC, BrewRecipe.STREAM_CODEC),
             payload -> new LinkedHashMap<>(payload.brewing()),
+            ByteBufCodecs.map(LinkedHashMap<Identifier, ExperimentPlan>::new, Identifier.STREAM_CODEC, ExperimentPlan.STREAM_CODEC),
+            payload -> new LinkedHashMap<>(payload.experiments()),
             CraftingRecipesPayload::new);
 
     @Override

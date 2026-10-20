@@ -83,8 +83,8 @@ public final class ResearchBoards {
     /** Generates every board in the background, so screens rarely wait. */
     public static void warmUp() {
         long start = System.nanoTime();
-        CompletableFuture.allOf(ResearchTopics.all().stream().map(ResearchBoards::request).toArray(CompletableFuture[]::new))
-                .thenRun(() -> Hextale.LOGGER.debug("Generated {} research boards in {} ms", ResearchTopics.all().size(),
+        CompletableFuture.allOf(ResearchTopics.table().stream().map(ResearchBoards::request).toArray(CompletableFuture[]::new))
+                .thenRun(() -> Hextale.LOGGER.debug("Generated {} research boards in {} ms", ResearchTopics.table().size(),
                         (System.nanoTime() - start) / 1_000_000));
     }
 

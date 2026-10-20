@@ -10,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
+import com.pockyl.hextale.chem.Brew;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.Essence;
@@ -23,10 +24,10 @@ import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Everything the Research Table teaches. The essence works come first and need no research (their ink is what research
- * is written with); every device and tool past them is worked out on a parchment before it can be crafted or made at
- * the altar. Themes follow what the thing does: the circle is earth and lightning, the pylons air, the alloys metal and
- * fire.
+ * Everything research teaches. The essence works come first and need no research (their ink is what research is written
+ * with); every hextech device and tool past them is worked out on a parchment at the Research Table before it can be
+ * crafted or made at the altar. Themes follow what the thing does: the circle is earth and lightning, the pylons air, the
+ * alloys metal and fire. Chemtech - its devices and its brews - is worked out in the flask of the Lab Bench instead.
  */
 public final class ResearchTopics {
     private static final List<ResearchTopic> ALL = new ArrayList<>();
@@ -53,14 +54,19 @@ public final class ResearchTopics {
     public static final ResearchTopic HEXSTEEL = add("hexsteel", 1, Essence.METAL, Essence.FIRE, ModItems.HEXSTEEL_INGOT);
     public static final ResearchTopic MASTER_DISC = add("master_cutting_disc", 2, Essence.SPARK, Essence.LIGHT, ModItems.MASTER_CUTTING_DISC);
     public static final ResearchTopic HEXTECH_LAMP = add("hextech_lamp", 2, Essence.LIGHT, Essence.FIRE, ModItems.HEXTECH_LAMP);
-    /** Brewing in the Crucible: the vials are what the topic opens. */
-    public static final ResearchTopic CHEM_VIAL = add("chem_vial", 1, Essence.WATER, Essence.LIFE, ModItems.CHEM_VIAL);
-    public static final ResearchTopic CHEM_BURNER = add("chem_burner", 1, Essence.FIRE, Essence.SHADOW, ModItems.CHEM_BURNER);
-    public static final ResearchTopic MAGIC_TREE = add("magic_sapling", 1, Essence.LIFE, Essence.LIGHT, ModItems.MAGIC_SAPLING);
-    public static final ResearchTopic AXOLOTL_TANK = add("axolotl_tank", 1, Essence.WATER, Essence.LIFE, ModItems.AXOLOTL_TANK);
-    public static final ResearchTopic CHEM_STILL = add("chem_still", 2, Essence.FIRE, Essence.WATER, ModItems.CHEM_STILL);
-    public static final ResearchTopic PINK_BRAZIER = add("pink_brazier", 2, Essence.LIFE, Essence.FIRE, ModItems.PINK_BRAZIER);
-    public static final ResearchTopic SYNTHETIC_CRYSTAL = add("synthetic_crystal", 2, Essence.LIGHT, Essence.LIFE, ModItems.SYNTHETIC_CRYSTAL);
+    public static final ResearchTopic CHEM_BURNER = lab("chem_burner", 1, Essence.FIRE, Essence.AIR, ModItems.CHEM_BURNER);
+    public static final ResearchTopic MAGIC_TREE = lab("magic_sapling", 2, Essence.LIFE, Essence.LIGHT, ModItems.MAGIC_SAPLING);
+    public static final ResearchTopic AXOLOTL_TANK = lab("axolotl_tank", 1, Essence.WATER, Essence.LIFE, ModItems.AXOLOTL_TANK);
+    public static final ResearchTopic CHEM_STILL = lab("chem_still", 2, Essence.FIRE, Essence.EARTH, ModItems.CHEM_STILL);
+    public static final ResearchTopic PINK_BRAZIER = lab("pink_brazier", 2, Essence.FIRE, Essence.SPARK, ModItems.PINK_BRAZIER);
+    public static final ResearchTopic SYNTHETIC_CRYSTAL = lab("synthetic_crystal", 2, Essence.LIGHT, Essence.EARTH, ModItems.SYNTHETIC_CRYSTAL);
+    // Chemtech reactions: each brew is worked out at the Lab Bench before the Crucible brews it for the researcher.
+    public static final ResearchTopic COMBUSTIBLE_MIX = brew("combustible_mix", 1, Brew.FUEL, Essence.FIRE, Essence.SHADOW);
+    public static final ResearchTopic GROWTH_TONIC = brew("growth_tonic", 2, Brew.GROWTH, Essence.LIFE, Essence.LIGHT);
+    public static final ResearchTopic COOLANT = brew("coolant", 2, Brew.COOLANT, Essence.WATER, Essence.SHADOW);
+    public static final ResearchTopic GLOW_MIX = brew("glow_mix", 2, Brew.GLOW, Essence.WATER, Essence.LIFE);
+    public static final ResearchTopic ACID = brew("acid", 2, Brew.ACID, Essence.SHADOW, Essence.WATER);
+    public static final ResearchTopic RAW_SHIMMER = brew("raw_shimmer", 3, Brew.RAW_SHIMMER, Essence.LIGHT, Essence.LIFE);
     public static final ResearchTopic HEXTECH_PICKAXE = add("hextech_pickaxe", 2, Essence.METAL, Essence.EARTH,
             ModItems.pickaxe(HextechPickaxe.HEXTECH));
     public static final ResearchTopic HEXTECH_AXE = add("hextech_axe", 2, Essence.METAL, Essence.LIFE, ModItems.HEXTECH_AXE);
@@ -83,13 +89,48 @@ public final class ResearchTopics {
 
     @SafeVarargs
     private static ResearchTopic add(String id, int tier, Essence action, Essence target, Supplier<? extends ItemLike>... items) {
-        ResearchTopic topic = new ResearchTopic(id, List.of(items), action, target, tier);
+        return register(new ResearchTopic(id, List.of(items), action, target, tier, ResearchTopic.Bench.TABLE, null));
+    }
+
+    /** A chemtech device, worked out at the Lab Bench. */
+    @SafeVarargs
+    private static ResearchTopic lab(String id, int tier, Essence action, Essence target, Supplier<? extends ItemLike>... items) {
+        return register(new ResearchTopic(id, List.of(items), action, target, tier, ResearchTopic.Bench.LAB, null));
+    }
+
+    /** A chemtech reaction: brewing it in the Crucible, worked out at the Lab Bench. */
+    private static ResearchTopic brew(String id, int tier, Brew brew, Essence action, Essence target) {
+        return register(new ResearchTopic(id, List.of(), action, target, tier, ResearchTopic.Bench.LAB, brew));
+    }
+
+    private static ResearchTopic register(ResearchTopic topic) {
         ALL.add(topic);
         return topic;
     }
 
     public static List<ResearchTopic> all() {
         return Collections.unmodifiableList(ALL);
+    }
+
+    /** The topics worked out at the Research Table (they have parchment boards). */
+    public static List<ResearchTopic> table() {
+        return ALL.stream().filter(topic -> !topic.lab()).toList();
+    }
+
+    /** The chemtech topics worked out at the Lab Bench, in the order its journal lists them. */
+    public static List<ResearchTopic> lab() {
+        return ALL.stream().filter(ResearchTopic::lab).toList();
+    }
+
+    /** The reaction topic that opens brewing this brew, or null (a brew no recipe makes, like refined shimmer). */
+    @Nullable
+    public static ResearchTopic forBrew(Brew brew) {
+        for (ResearchTopic topic : ALL) {
+            if (topic.brew() == brew) {
+                return topic;
+            }
+        }
+        return null;
     }
 
     @Nullable

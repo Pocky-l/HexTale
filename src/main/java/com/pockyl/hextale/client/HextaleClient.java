@@ -142,6 +142,7 @@ public final class HextaleClient {
         event.register(ModMenus.RESEARCH_TABLE.get(), ResearchTableScreen::new);
         event.register(ModMenus.ALEMBIC.get(), AlembicScreen::new);
         event.register(ModMenus.LAPIDARY.get(), com.pockyl.hextale.client.screen.machine.LapidaryScreen::new);
+        event.register(ModMenus.LAB_BENCH.get(), com.pockyl.hextale.client.screen.machine.LabBenchScreen::new);
         event.register(ModMenus.HEX_WORKBENCH.get(), com.pockyl.hextale.client.screen.machine.HexWorkbenchScreen::new);
         event.register(ModMenus.HEX_FURNACE.get(), com.pockyl.hextale.client.screen.machine.HexFurnaceScreen::new);
         event.register(ModMenus.ITEM_FILTER.get(), com.pockyl.hextale.client.screen.ItemFilterScreen::new);
@@ -165,6 +166,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_WORKBENCH.get(), com.pockyl.hextale.client.render.HexWorkbenchRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.AXOLOTL_TANK.get(), com.pockyl.hextale.client.render.AxolotlTankRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CHEM_STILL.get(), com.pockyl.hextale.client.render.ChemStillRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.LAB_BENCH.get(), com.pockyl.hextale.client.render.LabBenchRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CRUCIBLE.get(), com.pockyl.hextale.client.render.CrucibleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_PYLON.get(), com.pockyl.hextale.client.render.HexPylonRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL.get(), PedestalRenderer::new);

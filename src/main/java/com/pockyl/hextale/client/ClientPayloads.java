@@ -43,6 +43,7 @@ public final class ClientPayloads {
             com.pockyl.hextale.crafting.AlloyRecipe.ALL.setClient(payload.alloying());
             com.pockyl.hextale.crafting.CrucibleRecipe.ALL.setClient(payload.crucible());
             com.pockyl.hextale.crafting.BrewRecipe.ALL.setClient(payload.brewing());
+            com.pockyl.hextale.research.ExperimentPlan.ALL.setClient(payload.experiments());
         });
         event.register(OpenStelePayload.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new SteleScreen(payload.pos())));
         event.register(com.pockyl.hextale.network.OpenStickerPayload.TYPE, (payload, context) ->
@@ -87,6 +88,8 @@ public final class ClientPayloads {
 
     public static void researchMessage(ResearchMessagePayload payload) {
         if (Minecraft.getInstance().gui.screen() instanceof ResearchTableScreen screen) {
+            screen.onMessage(payload.text(), payload.tone());
+        } else if (Minecraft.getInstance().gui.screen() instanceof com.pockyl.hextale.client.screen.machine.LabBenchScreen screen) {
             screen.onMessage(payload.text(), payload.tone());
         }
     }

@@ -1,0 +1,6 @@
+{
+  "topic": "chem_burner",
+  "target": "smoke",
+  "amount": 6,
+  "purity": 0.6
+}

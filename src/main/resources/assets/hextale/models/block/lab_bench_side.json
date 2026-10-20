@@ -1,0 +1,859 @@
+{
+  "parent": "minecraft:block/block",
+  "__lint_allow": [
+    "outside"
+  ],
+  "textures": {
+    "particle": "minecraft:block/dark_oak_planks",
+    "planks": "minecraft:block/dark_oak_planks",
+    "worktop": "hextale:block/lab_bench/worktop",
+    "props": "hextale:block/lab_bench/props"
+  },
+  "elements": [
+    {
+      "name": "wood_leg_side_front",
+      "from": [
+        1,
+        0,
+        2
+      ],
+      "to": [
+        3,
+        10,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13,
+            6,
+            15,
+            16
+          ],
+          "texture": "#planks"
+        },
+        "east": {
+          "uv": [
+            12,
+            6,
+            14,
+            16
+          ],
+          "texture": "#planks"
+        },
+        "south": {
+          "uv": [
+            1,
+            6,
+            3,
+            16
+          ],
+          "texture": "#planks"
+        },
+        "west": {
+          "uv": [
+            2,
+            6,
+            4,
+            16
+          ],
+          "texture": "#planks"
+        },
+        "down": {
+          "uv": [
+            1,
+            12,
+            3,
+            14
+          ],
+          "texture": "#planks",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "wood_leg_side_back",
+      "from": [
+        1,
+        0,
+        12
+      ],
+      "to": [
+        3,
+        10,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13,
+            6,
+            15,
+            16
+          ],
+          "texture": "#planks"
+        },
+        "east": {
+          "uv": [
+            2,
+            6,
+            4,
+            16
+          ],
+          "texture": "#planks"
+        },
+        "south": {
+          "uv": [
+            1,
+            6,
+            3,
+            16
+          ],
+          "texture": "#planks"
+        },
+        "west": {
+          "uv": [
+            12,
+            6,
+            14,
+            16
+          ],
+          "texture": "#planks"
+        },
+        "down": {
+          "uv": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "texture": "#planks",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "wood_shelf_side",
+      "from": [
+        3,
+        2,
+        4
+      ],
+      "to": [
+        16,
+        3,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            13,
+            13,
+            14
+          ],
+          "texture": "#planks"
+        },
+        "south": {
+          "uv": [
+            3,
+            13,
+            16,
+            14
+          ],
+          "texture": "#planks"
+        },
+        "west": {
+          "uv": [
+            4,
+            13,
+            12,
+            14
+          ],
+          "texture": "#planks"
+        },
+        "up": {
+          "uv": [
+            3,
+            4,
+            16,
+            12
+          ],
+          "texture": "#planks"
+        },
+        "down": {
+          "uv": [
+            3,
+            4,
+            16,
+            12
+          ],
+          "texture": "#planks"
+        }
+      }
+    },
+    {
+      "name": "top_side",
+      "from": [
+        0,
+        10,
+        1
+      ],
+      "to": [
+        16,
+        12,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            16,
+            6
+          ],
+          "texture": "#planks"
+        },
+        "south": {
+          "uv": [
+            0,
+            4,
+            16,
+            6
+          ],
+          "texture": "#planks"
+        },
+        "west": {
+          "uv": [
+            1,
+            4,
+            15,
+            6
+          ],
+          "texture": "#planks",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            1,
+            16,
+            15
+          ],
+          "texture": "#worktop"
+        },
+        "down": {
+          "uv": [
+            0,
+            1,
+            16,
+            15
+          ],
+          "texture": "#planks"
+        }
+      }
+    },
+    {
+      "name": "rack_base",
+      "from": [
+        2,
+        12,
+        10
+      ],
+      "to": [
+        14,
+        13,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            3,
+            4.25
+          ],
+          "texture": "#props"
+        },
+        "east": {
+          "uv": [
+            6.5,
+            4,
+            7.25,
+            4.25
+          ],
+          "texture": "#props"
+        },
+        "south": {
+          "uv": [
+            3.25,
+            4,
+            6.25,
+            4.25
+          ],
+          "texture": "#props"
+        },
+        "west": {
+          "uv": [
+            7.5,
+            4,
+            8.25,
+            4.25
+          ],
+          "texture": "#props"
+        },
+        "up": {
+          "uv": [
+            8.5,
+            4,
+            11.5,
+            4.75
+          ],
+          "texture": "#props"
+        }
+      }
+    },
+    {
+      "name": "rack_top",
+      "from": [
+        2,
+        15,
+        10
+      ],
+      "to": [
+        14,
+        16,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            5,
+            3,
+            5.25
+          ],
+          "texture": "#props"
+        },
+        "east": {
+          "uv": [
+            6.5,
+            5,
+            7.25,
+            5.25
+          ],
+          "texture": "#props"
+        },
+        "south": {
+          "uv": [
+            3.25,
+            5,
+            6.25,
+            5.25
+          ],
+          "texture": "#props"
+        },
+        "west": {
+          "uv": [
+            7.5,
+            5,
+            8.25,
+            5.25
+          ],
+          "texture": "#props"
+        },
+        "up": {
+          "uv": [
+            8.5,
+            5,
+            11.5,
+            5.75
+          ],
+          "texture": "#props",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            11.75,
+            5,
+            14.75,
+            5.75
+          ],
+          "texture": "#props"
+        }
+      }
+    },
+    {
+      "name": "rack_post_a",
+      "from": [
+        2,
+        13,
+        11
+      ],
+      "to": [
+        3,
+        15,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6,
+            0.25,
+            6.5
+          ],
+          "texture": "#props"
+        },
+        "east": {
+          "uv": [
+            1,
+            6,
+            1.25,
+            6.5
+          ],
+          "texture": "#props"
+        },
+        "south": {
+          "uv": [
+            0.5,
+            6,
+            0.75,
+            6.5
+          ],
+          "texture": "#props"
+        },
+        "west": {
+          "uv": [
+            1.5,
+            6,
+            1.75,
+            6.5
+          ],
+          "texture": "#props"
+        }
+      }
+    },
+    {
+      "name": "rack_post_b",
+      "from": [
+        13,
+        13,
+        11
+      ],
+      "to": [
+        14,
+        15,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            6,
+            3.25,
+            6.5
+          ],
+          "texture": "#props"
+        },
+        "east": {
+          "uv": [
+            4,
+            6,
+            4.25,
+            6.5
+          ],
+          "texture": "#props"
+        },
+        "south": {
+          "uv": [
+            3.5,
+            6,
+            3.75,
+            6.5
+          ],
+          "texture": "#props"
+        },
+        "west": {
+          "uv": [
+            4.5,
+            6,
+            4.75,
+            6.5
+          ],
+          "texture": "#props"
+        }
+      }
+    },
+    {
+      "name": "dropper_a",
+      "from": [
+        4,
+        13,
+        11
+      ],
+      "to": [
+        5,
+        18,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            6,
+            6.25,
+            7.25
+          ],
+          "texture": "#props"
+        },
+        "east": {
+          "uv": [
+            7,
+            6,
+            7.25,
+            7.25
+          ],
+          "texture": "#props"
+        },
+        "south": {
+          "uv": [
+            6.5,
+            6,
+            6.75,
+            7.25
+          ],
+          "texture": "#props"
+        },
+        "west": {
+          "uv": [
+            7.5,
+            6,
+            7.75,
+            7.25
+          ],
+          "texture": "#props"
+        },
+        "up": {
+          "uv": [
+            8,
+            6,
+            8.25,
+            6.25
+          ],
+          "texture": "#props"
+        }
+      }
+    },
+    {
+      "name": "dropper_b",
+      "from": [
+        6,
+        13,
+        11
+      ],
+      "to": [
+        7,
+        18,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9,
+            6,
+            9.25,
+            7.25
+          ],
+          "texture": "#props"
+        },
+        "east": {
+          "uv": [
+            10,
+            6,
+            10.25,
+            7.25
+          ],
+          "texture": "#props"
+        },
+        "south": {
+          "uv": [
+            9.5,
+            6,
+            9.75,
+            7.25
+          ],
+          "texture": "#props"
+        },
+        "west": {
+          "uv": [
+            10.5,
+            6,
+            10.75,
+            7.25
+          ],
+          "texture": "#props"
+        },
+        "up": {
+          "uv": [
+            11,
+            6,
+            11.25,
+            6.25
+          ],
+          "texture": "#props"
+        }
+      }
+    },
+    {
+      "name": "dropper_c",
+      "from": [
+        8,
+        13,
+        11
+      ],
+      "to": [
+        9,
+        18,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            6,
+            12.25,
+            7.25
+          ],
+          "texture": "#props"
+        },
+        "east": {
+          "uv": [
+            13,
+            6,
+            13.25,
+            7.25
+          ],
+          "texture": "#props"
+        },
+        "south": {
+          "uv": [
+            12.5,
+            6,
+            12.75,
+            7.25
+          ],
+          "texture": "#props"
+        },
+        "west": {
+          "uv": [
+            13.5,
+            6,
+            13.75,
+            7.25
+          ],
+          "texture": "#props"
+        },
+        "up": {
+          "uv": [
+            14,
+            6,
+            14.25,
+            6.25
+          ],
+          "texture": "#props"
+        }
+      }
+    },
+    {
+      "name": "dropper_d",
+      "from": [
+        10,
+        13,
+        11
+      ],
+      "to": [
+        11,
+        18,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            7.5,
+            0.25,
+            8.75
+          ],
+          "texture": "#props"
+        },
+        "east": {
+          "uv": [
+            1,
+            7.5,
+            1.25,
+            8.75
+          ],
+          "texture": "#props"
+        },
+        "south": {
+          "uv": [
+            0.5,
+            7.5,
+            0.75,
+            8.75
+          ],
+          "texture": "#props"
+        },
+        "west": {
+          "uv": [
+            1.5,
+            7.5,
+            1.75,
+            8.75
+          ],
+          "texture": "#props"
+        },
+        "up": {
+          "uv": [
+            2,
+            7.5,
+            2.25,
+            7.75
+          ],
+          "texture": "#props"
+        }
+      }
+    },
+    {
+      "name": "journal",
+      "from": [
+        4,
+        12,
+        2
+      ],
+      "to": [
+        11,
+        13,
+        7
+      ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "y",
+        "origin": [
+          7.5,
+          12,
+          4.5
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            7.5,
+            4.75,
+            7.75
+          ],
+          "texture": "#props"
+        },
+        "east": {
+          "uv": [
+            7,
+            7.5,
+            8.25,
+            7.75
+          ],
+          "texture": "#props"
+        },
+        "south": {
+          "uv": [
+            5,
+            7.5,
+            6.75,
+            7.75
+          ],
+          "texture": "#props"
+        },
+        "west": {
+          "uv": [
+            8.5,
+            7.5,
+            9.75,
+            7.75
+          ],
+          "texture": "#props"
+        },
+        "up": {
+          "uv": [
+            10,
+            7.5,
+            11.75,
+            8.75
+          ],
+          "texture": "#props"
+        }
+      }
+    },
+    {
+      "name": "beaker",
+      "from": [
+        12,
+        12,
+        2
+      ],
+      "to": [
+        15,
+        16,
+        5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            9,
+            0.75,
+            10
+          ],
+          "texture": "#props"
+        },
+        "east": {
+          "uv": [
+            2,
+            9,
+            2.75,
+            10
+          ],
+          "texture": "#props"
+        },
+        "south": {
+          "uv": [
+            1,
+            9,
+            1.75,
+            10
+          ],
+          "texture": "#props"
+        },
+        "west": {
+          "uv": [
+            3,
+            9,
+            3.75,
+            10
+          ],
+          "texture": "#props"
+        },
+        "up": {
+          "uv": [
+            4,
+            9,
+            4.75,
+            9.75
+          ],
+          "texture": "#props",
+          "cullface": "up"
+        }
+      }
+    }
+  ]
+}

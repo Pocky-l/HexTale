@@ -90,6 +90,25 @@ with no price to pay (yet), and the first bridge from chemtech to hextech.
   grown hextech that the workbench burns for charge.
 - The guide's shimmer branch has its real steps in place of the sketches; JEI and Jade show the new devices.
 
+The Lab Bench: chemtech is no longer worked out on the parchment - it is found out in a flask.
+
+- Lab Bench (made at the Hex Workbench): a two-block bench with a tiled top, a flask in a ring stand over a small
+  burner, a rack of droppers and an open journal. A glass bottle on the stand is the flask; the droppers fill from the
+  Essence Jars of pure essence within 5 blocks, and every drop runs from its jar into the flask.
+- Every chemtech topic is worked out here: the Chem Burner, the Axolotl Tank, the Chem Still, the Pink Brazier, the
+  Synthetic Crystal, the Magic Tree Sprout and every brew - Combustible Mix, Growth Tonic, Coolant, Glow Mix, Acid and
+  Raw Shimmer each on its own. The Crucible brews only what you have worked out.
+- The chemistry is the essences': every compound forms from its two parents, but only in its own heat zone on the
+  thermometer (cold, cool, warm, hot, searing), and what forms heats the flask further. Pick a topic in the bench's
+  journal, let drops fall, turn the flame and watch the liquid change colour, bubble and flash as compounds form. Make
+  enough of the topic's compound, pure enough, put its sample on the bench and seal the flask: Research Notes come out.
+- Side reactions steal what you add at the wrong heat or in the wrong order; gas and searing heat build pressure - vent
+  it (some of everything leaves with the steam) or the flask bursts and everything in it is lost. A zone you have seen
+  a compound form in is written into your journal and marked on the thermometer.
+- Up to three runes: Dam (a drop may cost no essence), Tempering (pressure builds slower), Haste (reactions run
+  faster), Radiance (experience for every sealed flask), Heat Eater (a flask about to burst may let its pressure out by
+  itself) and Lens.
+
 ### Fixed
 - The altar named the right refusal when a rune did not fit a reaper or a sawmill, or when they were full.
 

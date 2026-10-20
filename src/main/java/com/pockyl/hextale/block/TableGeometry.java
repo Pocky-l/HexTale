@@ -59,8 +59,20 @@ public final class TableGeometry {
 
     /** The boxes of one half: x = offset - u, clipped to the block. */
     private static VoxelShape shape(double offset, Direction facing) {
+        return shape(BOXES, offset, facing);
+    }
+
+    /**
+     * The shape of one half of any two-block desk built like this one (the Lab Bench too): {@code boxes} in design space
+     * ({u0, y0, z0, u1, y1, z1}, u along the desk from the viewer's left end), {@code part} the half.
+     */
+    public static VoxelShape shape(double[][] boxes, TablePart part, Direction facing) {
+        return shape(boxes, part == TablePart.MAIN ? 16 : 32, facing);
+    }
+
+    private static VoxelShape shape(double[][] boxes, double offset, Direction facing) {
         VoxelShape shape = Shapes.empty();
-        for (double[] b : BOXES) {
+        for (double[] b : boxes) {
             double x0 = Math.max(0, offset - b[3]);
             double x1 = Math.min(16, offset - b[0]);
             if (x1 <= x0) {

@@ -2,6 +2,11 @@
   "kind": "wip",
   "region": "chemtech",
   "icon": "minecraft:iron_bars",
-  "parents": ["wip_lab_bench"],
-  "pos": [-460, 200]
+  "parents": [
+    "lab_bench"
+  ],
+  "pos": [
+    -460,
+    200
+  ]
 }

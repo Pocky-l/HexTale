@@ -1,0 +1,23 @@
+{
+  "region": "chemtech",
+  "icon": {
+    "id": "hextale:chem_vial",
+    "components": {
+      "hextale:brew": "glow"
+    }
+  },
+  "parents": [
+    "chem_vial",
+    "lab_bench"
+  ],
+  "research": "glow_mix",
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "minecraft:glowstone_dust",
+      "hextale:crucible",
+      "minecraft:glass_bottle"
+    ],
+    "result": "hextale:chem_vial"
+  }
+}

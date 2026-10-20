@@ -35,6 +35,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.AxolotlTankBlockEntity>> AXOLOTL_TANK =
             BLOCK_ENTITIES.register("axolotl_tank", () -> new BlockEntityType<>(com.pockyl.hextale.block.AxolotlTankBlockEntity::new,
                     ModBlocks.AXOLOTL_TANK.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.LabBenchBlockEntity>> LAB_BENCH =
+            BLOCK_ENTITIES.register("lab_bench", () -> new BlockEntityType<>(com.pockyl.hextale.block.LabBenchBlockEntity::new,
+                    ModBlocks.LAB_BENCH.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemStillBlockEntity>> CHEM_STILL =
             BLOCK_ENTITIES.register("chem_still", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemStillBlockEntity::new,
                     ModBlocks.CHEM_STILL.get()));

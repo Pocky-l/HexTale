@@ -7,7 +7,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModNetwork {
-    private static final String PROTOCOL_VERSION = "8";
+    private static final String PROTOCOL_VERSION = "9";
 
     private ModNetwork() {
     }
@@ -33,6 +33,7 @@ public final class ModNetwork {
         registrar.playToServer(PylonCancelPayload.TYPE, PylonCancelPayload.STREAM_CODEC, PylonCancelPayload::handle);
         registrar.playToServer(SteleRunePayload.TYPE, SteleRunePayload.STREAM_CODEC, SteleRunePayload::handle);
         registrar.playToServer(LapidaryStrokePayload.TYPE, LapidaryStrokePayload.STREAM_CODEC, LapidaryStrokePayload::handle);
+        registrar.playToServer(LabActionPayload.TYPE, LabActionPayload.STREAM_CODEC, LabActionPayload::handle);
     }
 
     /** Sends to the player if their client has this mod (fake and game-test players do not). */

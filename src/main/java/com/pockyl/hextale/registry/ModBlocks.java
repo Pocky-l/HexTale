@@ -297,6 +297,12 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(2.0F, 6.0F).sound(SoundType.COPPER)
                     .noOcclusion().lightLevel(state -> 6).isValidSpawn((state, level, pos, type) -> false)
                     .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false));
+    /** Where chemtech is worked out: a flask over a small burner, drops of essence from the jars around. */
+    public static final DeferredBlock<com.pockyl.hextale.block.LabBenchBlock> LAB_BENCH = BLOCKS.registerBlock("lab_bench",
+            com.pockyl.hextale.block.LabBenchBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(2.5F, 6.0F).sound(SoundType.WOOD)
+                    .noOcclusion().lightLevel(state -> state.getValue(com.pockyl.hextale.block.LabBenchBlock.LIT) ? 6 : 0)
+                    .pushReaction(net.minecraft.world.level.material.PushReaction.IMMOVEABLE));
     /** A copper pot still that refines raw shimmer over a Chem Burner. */
     public static final DeferredBlock<com.pockyl.hextale.block.ChemStillBlock> CHEM_STILL = BLOCKS.registerBlock("chem_still",
             com.pockyl.hextale.block.ChemStillBlock::new,

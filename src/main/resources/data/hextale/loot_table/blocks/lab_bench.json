@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "hextale:lab_bench",
+            "state": {
+              "part": "main"
+            }
+          },
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "minecraft:custom_name",
+              "hextale:lab_runes"
+            ],
+            "source": "block_entity"
+          },
+          "name": "hextale:lab_bench"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "hextale:blocks/lab_bench"
+}

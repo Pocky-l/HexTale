@@ -3,18 +3,18 @@
   "icon": {
     "id": "hextale:chem_vial",
     "components": {
-      "hextale:brew": "growth"
+      "hextale:brew": "fuel"
     }
   },
   "parents": [
     "crucible",
-    "ink"
+    "lab_bench"
   ],
-  "research": "chem_vial",
+  "research": "combustible_mix",
   "display": {
     "kind": "scheme",
     "ingredients": [
-      "minecraft:bone_meal",
+      "minecraft:coal",
       "hextale:crucible",
       "minecraft:glass_bottle"
     ],

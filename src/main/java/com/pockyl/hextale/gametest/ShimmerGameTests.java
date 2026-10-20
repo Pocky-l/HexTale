@@ -105,7 +105,7 @@ public final class ShimmerGameTests {
         CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        Research.research(player, ResearchTopics.CHEM_VIAL);
+        Research.research(player, ResearchTopics.RAW_SHIMMER);
 
         BlockPos still = new BlockPos(5, 2, 5);
         helper.setBlock(still.below(), ModBlocks.CHEM_BURNER.get());
