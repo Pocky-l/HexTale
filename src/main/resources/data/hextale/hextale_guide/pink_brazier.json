@@ -1,9 +1,7 @@
 {
   "region": "chemtech",
   "icon": "hextale:pink_brazier",
-  "parents": [
-    "refined_shimmer"
-  ],
+  "parents": ["refined_shimmer", "lab_bench"],
   "research": "pink_brazier",
   "display": {
     "kind": "hex_crafting",
@@ -13,8 +11,5 @@
       "result": "brazier"
     }
   },
-  "pos": [
-    -617,
-    167
-  ]
+  "pos": [-780, 300]
 }

@@ -2,11 +2,6 @@
   "kind": "wip",
   "region": "chemtech",
   "icon": "minecraft:chainmail_chestplate",
-  "parents": [
-    "refined_shimmer"
-  ],
-  "pos": [
-    -734,
-    120
-  ]
+  "parents": ["refined_shimmer"],
+  "pos": [-880, 175]
 }

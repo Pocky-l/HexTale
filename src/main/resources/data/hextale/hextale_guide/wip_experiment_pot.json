@@ -2,12 +2,6 @@
   "kind": "wip",
   "region": "chemtech",
   "icon": "minecraft:flower_pot",
-  "parents": [
-    "lab_bench",
-    "concentrate"
-  ],
-  "pos": [
-    -413,
-    153
-  ]
+  "parents": ["lab_bench", "concentrate"],
+  "pos": [-500, 145]
 }

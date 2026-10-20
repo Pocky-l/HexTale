@@ -221,13 +221,13 @@ public final class QuestGameTests {
      * The guide's order is the order things can be made in: every mod item a step's recipe (crafting grid, scheme or
      * altar ritual) needs is yielded by a step before it; an altar ritual comes after the altar, its pedestals after
      * the Pedestal, its runes after the Rune Stele and after the first found rune scroll. Research needs ink at the table:
-     * every step with a research topic comes after the Ink step (a chemtech topic after the Lab Bench).
+     * every step with a research topic comes after the Ink step; a chemtech topic hangs straight off the Lab Bench.
      */
     @HexTest
     public static void guideOrderIsLogical(GameTestHelper helper) {
         for (Quest quest : Guide.server().all()) {
             if (quest.topic() != null && quest.topic().lab()) {
-                helper.assertTrue(ancestors(quest).contains(step("lab_bench")), quest.id() + " is worked out at the Lab Bench, so it comes after it");
+                helper.assertTrue(quest.parents().contains(step("lab_bench")), quest.id() + " is worked out at the Lab Bench, so it hangs off it");
             } else if (quest.topic() != null) {
                 helper.assertTrue(ancestors(quest).contains(step("ink")), quest.id() + " is researched, so it comes after the ink");
             }

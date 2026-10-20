@@ -221,7 +221,7 @@ public final class StarBook {
         guide.renderMap(graphics, knowledge, now, hovered);
         PixelArt.flush(graphics);
         graphics.pose().popMatrix();
-        editor.renderHint(graphics, skyLeft() + skyWidth() - 4, skyTop() + skyHeight() - 4);
+        editor.renderHint(graphics, skyLeft() + skyWidth() - 4, skyTop() + skyHeight() - 4, mouseX, mouseY);
 
         List<FormattedCharSequence> tabTip = guide.selected() == null ? renderTabs(graphics, mouseX, mouseY) : null;
         List<FormattedCharSequence> tooltip = guide.renderPlate(graphics, knowledge, mouseX, mouseY, now);
@@ -428,6 +428,9 @@ public final class StarBook {
             return true;
         }
         if (tab == Tab.RUNES) {
+            return true;
+        }
+        if (guide.selected() == null && editor.clickWipSwitch(mouseX, mouseY)) {
             return true;
         }
         RuneKnowledge knowledge = ClientKnowledge.get();

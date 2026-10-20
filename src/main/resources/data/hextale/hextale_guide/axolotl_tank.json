@@ -1,11 +1,7 @@
 {
   "region": "chemtech",
   "icon": "hextale:axolotl_tank",
-  "parents": [
-    "chem_glass",
-    "rusted_plating",
-    "lab_bench"
-  ],
+  "parents": ["lab_bench", "chem_glass", "rusted_plating"],
   "research": "axolotl_tank",
   "display": {
     "kind": "hex_crafting",
@@ -16,8 +12,5 @@
     }
   },
   "station": true,
-  "pos": [
-    -500,
-    30
-  ]
+  "pos": [-620, 115]
 }

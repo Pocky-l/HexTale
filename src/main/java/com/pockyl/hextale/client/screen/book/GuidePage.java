@@ -92,6 +92,8 @@ final class GuidePage {
     private final Font font;
     /** The dev editor shows every step, fog or not. */
     boolean revealAll;
+    /** The dev editor's switch: devices still being worked out (WIP) leave the map. Kept until the game closes. */
+    static boolean hideWip;
     @Nullable
     private Quest selected;
     /** The step under the mouse while the map is drawn. */
@@ -226,12 +228,12 @@ final class GuidePage {
             icon(graphics, quest);
         }
         // Small badges only where they can be read: zoomed out they would only speckle the sky. The research badge stays:
-        // it tells which steps go through the table.
+        // it tells which steps go through a research bench.
         boolean badges = book.zoom() >= 1;
         for (Quest quest : ahead) {
             if (researchStep(quest)) {
                 int badge = Math.round(size(quest) * 0.36F);
-                loupeBadge(graphics, quest.x() - badge, quest.y() + badge, now, quest.index(), InkState.AHEAD);
+                researchBadge(graphics, quest, quest.x() - badge, quest.y() + badge, now, InkState.AHEAD);
             }
         }
         for (Quest quest : shown) {
@@ -245,12 +247,13 @@ final class GuidePage {
                 continue;
             }
             if (researchStep(quest)) {
-                // Worked out at the table: until then the item lies under a violet seal, a loupe on its corner.
+                // Worked out at a bench: until then the item lies under a violet seal, a loupe (Research Table) or a flask
+                // (Lab Bench) on its corner.
                 boolean researched = knowledge.researched(quest.topic());
                 if (!researched) {
-                    // The loupe only marks what is still to be researched: once done, the step looks like any other.
+                    // The badge only marks what is still to be researched: once done, the step looks like any other.
                     seal(graphics, quest, now);
-                    loupeBadge(graphics, quest.x() - badge, quest.y() + badge, now, quest.index(), InkState.TO_RESEARCH);
+                    researchBadge(graphics, quest, quest.x() - badge, quest.y() + badge, now, InkState.TO_RESEARCH);
                 }
             }
             if (badges && Guide.done(quest, knowledge)) {
@@ -373,7 +376,7 @@ final class GuidePage {
     /** Paths into the fog: a few fading dots from a visible step towards each hidden one, no further. */
     private void renderTrails(GuiGraphicsExtractor graphics, Quest quest, RuneKnowledge knowledge, long now) {
         for (Quest child : quest.children()) {
-            if (seen(child, knowledge) || Guide.ahead(child, knowledge) || child.parent() != quest) {
+            if (seen(child, knowledge) || Guide.ahead(child, knowledge) || child.parent() != quest || hiddenWip(child)) {
                 continue;
             }
             float dx = child.x() - quest.x();
@@ -641,9 +644,9 @@ final class GuidePage {
         }
     }
 
-    /** How a research step's loupe looks. */
+    /** How a research step's badge (loupe or flask) looks. */
     private enum InkState {
-        /** Still to be researched at the table: violet, the lens glinting now and then. */
+        /** Still to be researched at its bench: violet, the lens or the brew glinting now and then. */
         TO_RESEARCH,
         /** Researched already: a quiet brass loupe. */
         RESEARCHED,
@@ -651,9 +654,65 @@ final class GuidePage {
         AHEAD
     }
 
-    /** Whether the step is worked out at the Research Table (an item step asking for a research). */
+    /** Whether the step is worked out at a bench - the Research Table or the Lab Bench (an item step asking for a research). */
     private static boolean researchStep(Quest quest) {
         return quest.kind() == Quest.Kind.ITEM && quest.topic() != null;
+    }
+
+    /** The research step's badge: the loupe of the Research Table, or the flask of the Lab Bench for chemtech. */
+    private static void researchBadge(GuiGraphicsExtractor graphics, Quest quest, int cx, int cy, long now, InkState state) {
+        if (quest.topic() != null && quest.topic().lab()) {
+            flaskBadge(graphics, cx, cy, now, quest.index(), state);
+        } else {
+            loupeBadge(graphics, cx, cy, now, quest.index(), state);
+        }
+    }
+
+    /** Where the step is researched, for its tooltip. */
+    private static String researchedAt(Quest quest) {
+        return quest.topic() != null && quest.topic().lab() ? "book.hextale.guide.researched_at_lab" : "book.hextale.guide.researched_at_table";
+    }
+
+    /** The rim and the metal (or glass) of a research badge in its state; the glint makes a step still to research shine. */
+    private static int badgeEdge(InkState state, float glint) {
+        return switch (state) {
+            case TO_RESEARCH -> PixelArt.mix(0x6A3FC0, 0xD8C0FF, glint);
+            case RESEARCHED -> 0x8A6A2A;
+            case AHEAD -> 0x5A5868;
+        };
+    }
+
+    private static int badgeMetal(InkState state) {
+        return switch (state) {
+            case TO_RESEARCH -> 0xE0D0FF;
+            case RESEARCHED -> 0xD8B868;
+            case AHEAD -> 0x8A8898;
+        };
+    }
+
+    /**
+     * A flask in a dark disc on the medallion's lower left: this step is worked out at the Lab Bench - the flask the
+     * bench's reactions run in, a green brew in it.
+     */
+    private static void flaskBadge(GuiGraphicsExtractor graphics, int cx, int cy, long now, int phase, InkState state) {
+        float glint = state == InkState.TO_RESEARCH ? Math.max(0, Mth.sin(now / 500.0F + phase)) : 0;
+        PixelArt.disc(graphics, cx, cy, 12, PixelArt.argb(state == InkState.RESEARCHED ? 0x1E180C : 0x140C26, 1),
+                PixelArt.argb(badgeEdge(state, glint), 1));
+        int glass = PixelArt.argb(badgeMetal(state), 1);
+        // Rim, neck, shoulders, belly and the flat bottom.
+        PixelArt.fill(graphics, cx - 2, cy - 4, cx + 3, cy - 3, glass);
+        PixelArt.fill(graphics, cx - 1, cy - 3, cx, cy, glass);
+        PixelArt.fill(graphics, cx + 1, cy - 3, cx + 2, cy, glass);
+        PixelArt.fill(graphics, cx - 2, cy, cx - 1, cy + 1, glass);
+        PixelArt.fill(graphics, cx + 2, cy, cx + 3, cy + 1, glass);
+        PixelArt.fill(graphics, cx - 3, cy + 1, cx - 2, cy + 3, glass);
+        PixelArt.fill(graphics, cx + 3, cy + 1, cx + 4, cy + 3, glass);
+        PixelArt.fill(graphics, cx - 3, cy + 3, cx + 4, cy + 4, glass);
+        // The brew, breathing brighter while the step waits for its research, and a bubble rising through it.
+        int brew = state == InkState.AHEAD ? 0x3A3848 : 0x7CF07A;
+        PixelArt.fill(graphics, cx - 1, cy, cx + 2, cy + 1, PixelArt.argb(brew, 0.45F + 0.4F * glint));
+        PixelArt.fill(graphics, cx - 2, cy + 1, cx + 3, cy + 3, PixelArt.argb(brew, 0.6F + 0.4F * glint));
+        PixelArt.fill(graphics, cx, cy - 2, cx + 1, cy - 1, PixelArt.argb(0xFFFFFF, 0.25F + 0.6F * glint));
     }
 
     /**
@@ -662,16 +721,8 @@ final class GuidePage {
      */
     private static void loupeBadge(GuiGraphicsExtractor graphics, int cx, int cy, long now, int phase, InkState state) {
         float glint = state == InkState.TO_RESEARCH ? Math.max(0, Mth.sin(now / 500.0F + phase)) : 0;
-        int edge = switch (state) {
-            case TO_RESEARCH -> PixelArt.mix(0x6A3FC0, 0xD8C0FF, glint);
-            case RESEARCHED -> 0x8A6A2A;
-            case AHEAD -> 0x5A5868;
-        };
-        int metal = switch (state) {
-            case TO_RESEARCH -> 0xE0D0FF;
-            case RESEARCHED -> 0xD8B868;
-            case AHEAD -> 0x8A8898;
-        };
+        int edge = badgeEdge(state, glint);
+        int metal = badgeMetal(state);
         PixelArt.disc(graphics, cx, cy, 12, PixelArt.argb(state == InkState.RESEARCHED ? 0x1E180C : 0x140C26, 1), PixelArt.argb(edge, 1));
         int ring = PixelArt.argb(metal, 1);
         // The lens: a ring four pixels across, up and to the right of the centre.
@@ -759,14 +810,14 @@ final class GuidePage {
             }
             lines.add(Component.translatable("book.hextale.guide.needs").withColor(0x8A8898).append(" ").append(first).getVisualOrderText());
             if (quest.topic() != null) {
-                lines.add(Component.translatable("book.hextale.guide.researched_at_table").withColor(0x8A8898).getVisualOrderText());
+                lines.add(Component.translatable(researchedAt(quest)).withColor(0x8A8898).getVisualOrderText());
             }
             return lines;
         }
         lines.add(title(quest).getVisualOrderText());
         lines.add(status(quest, knowledge).getVisualOrderText());
         if (quest.topic() != null && quest.kind() == Quest.Kind.ITEM && (Guide.done(quest, knowledge) || knowledge.researched(quest.topic()))) {
-            lines.add(Component.translatable("book.hextale.guide.researched_at_table").withColor(0xC8A860).getVisualOrderText());
+            lines.add(Component.translatable(researchedAt(quest)).withColor(0xC8A860).getVisualOrderText());
         }
         return lines;
     }
@@ -778,7 +829,11 @@ final class GuidePage {
 
     /** Whether the map shows a step as done or open (the dev editor shows them all). */
     private boolean seen(Quest quest, RuneKnowledge knowledge) {
-        return revealAll || Guide.visible(quest, knowledge);
+        return !hiddenWip(quest) && (revealAll || Guide.visible(quest, knowledge));
+    }
+
+    private static boolean hiddenWip(Quest quest) {
+        return hideWip && quest.kind() == Quest.Kind.WIP;
     }
 
     private static Component title(Quest quest) {

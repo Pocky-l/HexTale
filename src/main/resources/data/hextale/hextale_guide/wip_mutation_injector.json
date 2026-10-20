@@ -2,12 +2,6 @@
   "kind": "wip",
   "region": "chemtech",
   "icon": "minecraft:spider_eye",
-  "parents": [
-    "chem_vial",
-    "concentrate"
-  ],
-  "pos": [
-    -663,
-    -257
-  ]
+  "parents": ["chem_vial", "concentrate"],
+  "pos": [-644, -223]
 }

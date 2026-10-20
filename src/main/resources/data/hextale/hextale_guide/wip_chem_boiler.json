@@ -2,11 +2,6 @@
   "kind": "wip",
   "region": "chemtech",
   "icon": "minecraft:blast_furnace",
-  "parents": [
-    "chem_burner"
-  ],
-  "pos": [
-    -650,
-    -30
-  ]
+  "parents": ["chem_burner"],
+  "pos": [-740, 20]
 }

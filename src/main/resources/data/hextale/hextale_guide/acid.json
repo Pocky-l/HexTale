@@ -6,18 +6,12 @@
       "hextale:brew": "acid"
     }
   },
-  "parents": [
-    "chem_vial",
-    "lab_bench"
-  ],
+  "parents": ["chem_vial", "lab_bench"],
   "research": "acid",
   "display": {
     "kind": "scheme",
-    "ingredients": [
-      "minecraft:fermented_spider_eye",
-      "hextale:crucible",
-      "minecraft:glass_bottle"
-    ],
+    "ingredients": ["minecraft:fermented_spider_eye", "hextale:crucible", "minecraft:glass_bottle"],
     "result": "hextale:chem_vial"
-  }
+  },
+  "pos": [-537, -184]
 }

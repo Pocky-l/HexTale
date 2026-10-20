@@ -3,5 +3,5 @@
   "region": "chemtech",
   "icon": "minecraft:rotten_flesh",
   "parents": ["wip_specimen_cage"],
-  "pos": [-560, 250]
+  "pos": [-600, 265]
 }

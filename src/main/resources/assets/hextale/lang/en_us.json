@@ -748,6 +748,7 @@
   "book.hextale.guide.needs": "Needs:",
   "book.hextale.guide.ahead": "Not reachable yet",
   "book.hextale.guide.researched_at_table": "Researched at the Research Table",
+  "book.hextale.guide.researched_at_lab": "Worked out at the Lab Bench",
   "block.hextale.brass_block": "Block of Brass",
   "item.hextale.scroll_of_omniscience": "Scroll of Omniscience",
   "item.hextale.scroll_of_omniscience.desc": "Right click: learn every rune with three stars, study every item, complete every quest.",

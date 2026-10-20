@@ -748,6 +748,7 @@
   "book.hextale.guide.needs": "Понадобится:",
   "book.hextale.guide.ahead": "Пока недостижимо",
   "book.hextale.guide.researched_at_table": "Изучается на столе исследователя",
+  "book.hextale.guide.researched_at_lab": "Изучается на лабораторном столе",
   "block.hextale.brass_block": "Латунный блок",
   "item.hextale.scroll_of_omniscience": "Свиток всезнания",
   "item.hextale.scroll_of_omniscience.desc": "ПКМ: выучить все руны на три звезды, изучить все предметы и выполнить все квесты.",

@@ -2,11 +2,6 @@
   "kind": "wip",
   "region": "chemtech",
   "icon": "minecraft:bone_meal",
-  "parents": [
-    "lab_bench"
-  ],
-  "pos": [
-    -374,
-    139
-  ]
+  "parents": ["lab_bench"],
+  "pos": [-440, 165]
 }

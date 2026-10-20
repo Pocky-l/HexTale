@@ -1,21 +1,11 @@
 {
   "region": "chemtech",
   "icon": "hextale:rusted_plating",
-  "parents": [
-    "chem_burner",
-    "chem_vial"
-  ],
+  "parents": ["chem_burner", "chem_vial"],
   "display": {
     "kind": "scheme",
-    "ingredients": [
-      "minecraft:fermented_spider_eye",
-      "hextale:chem_vial",
-      "minecraft:iron_block"
-    ],
+    "ingredients": ["minecraft:fermented_spider_eye", "hextale:chem_vial", "minecraft:iron_block"],
     "result": "hextale:rusted_plating"
   },
-  "pos": [
-    -610,
-    -110
-  ]
+  "pos": [-710, -60]
 }

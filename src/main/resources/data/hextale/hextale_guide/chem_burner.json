@@ -1,10 +1,7 @@
 {
   "region": "chemtech",
   "icon": "hextale:chem_burner",
-  "parents": [
-    "chem_glass",
-    "lab_bench"
-  ],
+  "parents": ["lab_bench", "chem_glass"],
   "research": "chem_burner",
   "display": {
     "kind": "hex_crafting",
@@ -15,8 +12,5 @@
     }
   },
   "station": true,
-  "pos": [
-    -540,
-    -50
-  ]
+  "pos": [-660, 0]
 }

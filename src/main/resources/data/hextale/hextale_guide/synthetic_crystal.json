@@ -1,17 +1,11 @@
 {
   "region": "chemtech",
   "icon": "hextale:synthetic_crystal",
-  "parents": [
-    "refined_shimmer",
-    "hextech_crystal"
-  ],
+  "parents": ["refined_shimmer", "hextech_crystal", "lab_bench"],
   "research": "synthetic_crystal",
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:synthetic_crystal"
   },
-  "pos": [
-    -680,
-    240
-  ]
+  "pos": [-820, 330]
 }

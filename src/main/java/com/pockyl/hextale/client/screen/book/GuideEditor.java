@@ -2,10 +2,12 @@ package com.pockyl.hextale.client.screen.book;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -43,7 +45,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * The guide map's editor, only in a development client. Drag a step with the right mouse button to place it by hand; a
  * right click without dragging opens {@link GuideEditScreen} (name, goal, description, icon, parents, aura, workstation,
- * add a step after it, remove it); H shows every step, fog or not. A changed step is written to its data file in the
+ * add a step after it, remove it); H shows every step, fog or not; a button above the hint hides the WIP steps. A changed step is written to its data file in the
  * mod's sources ({@code data/hextale/hextale_guide/<id>.json}), names and descriptions to the language files there, so
  * the next build ships them; until then they work at once (the guide is built again from the changed data, the texts
  * show through a language layered over the game's). Crossing links are reported after every change.
@@ -65,6 +67,11 @@ final class GuideEditor {
     /** Where on the step it was grabbed, in map pixels. */
     private float grabX;
     private float grabY;
+    /** The WIP switch as drawn last (screen coordinates); none before the first frame. */
+    private int wipLeft = Integer.MIN_VALUE;
+    private int wipTop;
+    private int wipRight;
+    private int wipBottom;
 
     GuideEditor(StarBook book, GuidePage guide) {
         this.book = book;
@@ -127,8 +134,11 @@ final class GuideEditor {
         return true;
     }
 
-    /** A line in the sky's bottom right corner (screen coordinates) naming the editor's controls. */
-    void renderHint(GuiGraphicsExtractor graphics, int right, int bottom) {
+    /**
+     * A line in the sky's bottom right corner (screen coordinates) naming the editor's controls, and over it the switch
+     * that takes the WIP steps off the map (lit while they are hidden).
+     */
+    void renderHint(GuiGraphicsExtractor graphics, int right, int bottom, int mouseX, int mouseY) {
         if (!enabled()) {
             return;
         }
@@ -138,8 +148,36 @@ final class GuideEditor {
                 + (guide.revealAll ? "brings the fog back" : "shows every step"));
         int w = font.width(text);
         PixelArt.fill(graphics, right - w - 6, bottom - 13, right, bottom, PixelArt.argb(0x120C08, 0.82F));
+
+        Component label = Component.literal(GuidePage.hideWip ? "WIP steps: hidden" : "WIP steps: shown");
+        wipRight = right;
+        wipBottom = bottom - 16;
+        wipLeft = wipRight - font.width(label) - 10;
+        wipTop = wipBottom - 14;
+        boolean hovered = overWipSwitch(mouseX, mouseY);
+        int rim = PixelArt.argb(GuidePage.hideWip ? 0xF0C860 : hovered ? 0xB8A880 : 0x6A5A38, 1);
+        PixelArt.fill(graphics, wipLeft, wipTop, wipRight, wipBottom, PixelArt.argb(GuidePage.hideWip ? 0x3A2C10 : hovered ? 0x2A2214 : 0x120C08, 0.9F));
+        PixelArt.fill(graphics, wipLeft, wipTop, wipRight, wipTop + 1, rim);
+        PixelArt.fill(graphics, wipLeft, wipBottom - 1, wipRight, wipBottom, rim);
+        PixelArt.fill(graphics, wipLeft, wipTop, wipLeft + 1, wipBottom, rim);
+        PixelArt.fill(graphics, wipRight - 1, wipTop, wipRight, wipBottom, rim);
         PixelArt.flush(graphics);
         graphics.text(font, text, right - w - 3, bottom - 11, HINT, false);
+        graphics.text(font, label, wipLeft + 5, wipTop + 3, GuidePage.hideWip ? 0xFFF0D890 : HINT, false);
+    }
+
+    private boolean overWipSwitch(double mouseX, double mouseY) {
+        return enabled() && wipLeft != Integer.MIN_VALUE && mouseX >= wipLeft && mouseX < wipRight && mouseY >= wipTop && mouseY < wipBottom;
+    }
+
+    /** A left click on the WIP switch hides or shows the WIP steps; returns whether it was one. */
+    boolean clickWipSwitch(double mouseX, double mouseY) {
+        if (!overWipSwitch(mouseX, mouseY)) {
+            return false;
+        }
+        GuidePage.hideWip = !GuidePage.hideWip;
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        return true;
     }
 
     /** Shows the outcome of a change on the action bar, with a warning when links cross now. */

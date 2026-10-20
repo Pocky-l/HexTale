@@ -6,18 +6,12 @@
       "hextale:brew": "coolant"
     }
   },
-  "parents": [
-    "chem_vial",
-    "lab_bench"
-  ],
+  "parents": ["chem_vial", "lab_bench"],
   "research": "coolant",
   "display": {
     "kind": "scheme",
-    "ingredients": [
-      "minecraft:snowball",
-      "hextale:crucible",
-      "minecraft:glass_bottle"
-    ],
+    "ingredients": ["minecraft:snowball", "hextale:crucible", "minecraft:glass_bottle"],
     "result": "hextale:chem_vial"
-  }
+  },
+  "pos": [-685, -123]
 }

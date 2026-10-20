@@ -6,24 +6,15 @@
       "hextale:brew": "refined_shimmer"
     }
   },
-  "parents": [
-    "chem_still"
-  ],
+  "parents": ["chem_still"],
   "goal": {
     "type": "has_brew",
     "brew": "refined_shimmer"
   },
   "display": {
     "kind": "scheme",
-    "ingredients": [
-      "hextale:chem_vial",
-      "hextale:chem_still",
-      "hextale:chem_burner"
-    ],
+    "ingredients": ["hextale:chem_vial", "hextale:chem_still", "hextale:chem_burner"],
     "result": "hextale:chem_vial"
   },
-  "pos": [
-    -690,
-    150
-  ]
+  "pos": [-830, 250]
 }

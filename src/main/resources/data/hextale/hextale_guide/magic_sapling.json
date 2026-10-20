@@ -1,24 +1,12 @@
 {
   "region": "chemtech",
   "icon": "hextale:magic_sapling",
-  "parents": [
-    "crucible",
-    "lab_bench"
-  ],
+  "parents": ["lab_bench", "crucible"],
   "display": {
     "kind": "scheme",
-    "ingredients": [
-      "#hextale:magic_tree_catalysts",
-      "minecraft:lapis_lazuli",
-      "#minecraft:leaves",
-      "minecraft:honey_bottle",
-      "hextale:crucible"
-    ],
+    "ingredients": ["#hextale:magic_tree_catalysts", "minecraft:lapis_lazuli", "#minecraft:leaves", "minecraft:honey_bottle", "hextale:crucible"],
     "result": "hextale:magic_sapling"
   },
   "research": "magic_sapling",
-  "pos": [
-    -480,
-    -110
-  ]
+  "pos": [-465, 95]
 }

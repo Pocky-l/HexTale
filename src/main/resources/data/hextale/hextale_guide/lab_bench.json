@@ -1,11 +1,7 @@
 {
   "region": "chemtech",
   "icon": "hextale:lab_bench",
-  "parents": [
-    "crucible",
-    "chem_glass",
-    "hex_workbench"
-  ],
+  "parents": ["chem_glass", "crucible", "hex_workbench"],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:lab_bench",
@@ -15,8 +11,5 @@
     }
   },
   "station": true,
-  "pos": [
-    -410,
-    100
-  ]
+  "pos": [-550, 40]
 }
