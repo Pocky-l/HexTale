@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "chemtech",
-  "icon": "minecraft:experience_bottle",
-  "parents": ["wip_cave_bloom", "concentrate"],
-  "pos": [-580, 130]
-}

@@ -1,0 +1,33 @@
+{
+  "region": "chemtech",
+  "icon": {
+    "id": "hextale:chem_vial",
+    "components": {
+      "hextale:brew": "raw_shimmer"
+    }
+  },
+  "parents": [
+    "regenerative_slime",
+    "shimmerbloom",
+    "chem_vial"
+  ],
+  "goal": {
+    "type": "has_brew",
+    "brew": "raw_shimmer"
+  },
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "hextale:shimmerbloom",
+      "hextale:regenerative_slime",
+      "hextale:crucible",
+      "minecraft:glass_bottle"
+    ],
+    "result": "hextale:chem_vial"
+  },
+  "aura": "gold",
+  "pos": [
+    -580,
+    130
+  ]
+}

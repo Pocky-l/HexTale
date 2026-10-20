@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:flower_pot"
+        }
+      ],
+      "rolls": 1
+    },
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:shimmerbloom"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "hextale:blocks/potted_shimmerbloom"
+}

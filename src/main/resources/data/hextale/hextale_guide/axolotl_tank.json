@@ -1,0 +1,23 @@
+{
+  "region": "chemtech",
+  "icon": "hextale:axolotl_tank",
+  "parents": [
+    "chem_glass",
+    "rusted_plating",
+    "ink"
+  ],
+  "research": "axolotl_tank",
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:axolotl_tank",
+    "then": {
+      "kind": "runes",
+      "result": "tank"
+    }
+  },
+  "station": true,
+  "pos": [
+    -500,
+    30
+  ]
+}

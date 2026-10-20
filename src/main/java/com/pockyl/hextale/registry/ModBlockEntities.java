@@ -32,6 +32,15 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemBurnerBlockEntity>> CHEM_BURNER =
             BLOCK_ENTITIES.register("chem_burner", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemBurnerBlockEntity::new,
                     ModBlocks.CHEM_BURNER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.AxolotlTankBlockEntity>> AXOLOTL_TANK =
+            BLOCK_ENTITIES.register("axolotl_tank", () -> new BlockEntityType<>(com.pockyl.hextale.block.AxolotlTankBlockEntity::new,
+                    ModBlocks.AXOLOTL_TANK.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemStillBlockEntity>> CHEM_STILL =
+            BLOCK_ENTITIES.register("chem_still", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemStillBlockEntity::new,
+                    ModBlocks.CHEM_STILL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.PinkBrazierBlockEntity>> PINK_BRAZIER =
+            BLOCK_ENTITIES.register("pink_brazier", () -> new BlockEntityType<>(com.pockyl.hextale.block.PinkBrazierBlockEntity::new,
+                    ModBlocks.PINK_BRAZIER.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexWorkbenchBlockEntity>> HEX_WORKBENCH =
             BLOCK_ENTITIES.register("hex_workbench", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexWorkbenchBlockEntity::new,
                     ModBlocks.HEX_WORKBENCH.get()));

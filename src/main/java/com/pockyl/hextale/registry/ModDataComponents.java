@@ -90,6 +90,15 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> BURNER_RUNES =
             COMPONENTS.registerComponentType("burner_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> TANK_RUNES =
+            COMPONENTS.registerComponentType("tank_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> STILL_RUNES =
+            COMPONENTS.registerComponentType("still_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> BRAZIER_RUNES =
+            COMPONENTS.registerComponentType("brazier_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
 
     /** The essence in a flask or a tank item. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<EssenceMix>> ESSENCE =

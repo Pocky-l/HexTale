@@ -118,6 +118,14 @@ public final class Hextale {
             output.accept(ModItems.RUSTED_PLATING_STAIRS);
             output.accept(ModItems.RUSTED_PLATING_SLAB);
             output.accept(ModItems.RIVETED_RUSTED_PLATING);
+            output.accept(ModItems.SHIMMERBLOOM);
+            output.accept(ModItems.SHIMMER_MOSS);
+            output.accept(ModItems.SHIMMER_MOSS_CARPET);
+            output.accept(ModItems.REGENERATIVE_SLIME);
+            output.accept(ModItems.AXOLOTL_TANK);
+            output.accept(ModItems.CHEM_STILL);
+            output.accept(ModItems.PINK_BRAZIER);
+            output.accept(ModItems.SYNTHETIC_CRYSTAL);
             output.accept(ModItems.HEX_FURNACE);
             output.accept(ModItems.HEX_LAPIDARY);
             output.accept(ModItems.CUTTING_DISC);

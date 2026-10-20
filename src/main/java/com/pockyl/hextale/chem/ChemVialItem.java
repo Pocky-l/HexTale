@@ -16,17 +16,28 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.component.CookingFuel;
+import net.minecraft.world.item.component.UseCooldown;
+import net.minecraft.world.item.component.UseRemainder;
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
+import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.entity.ThrownChemVial;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModEntities;
 import com.pockyl.hextale.registry.ModItems;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
@@ -34,10 +45,15 @@ import org.jspecify.annotations.Nullable;
 /**
  * A stoppered glass vial of a crucible brew (component {@code hextale:brew}): a glass bottle on a crucible that holds a
  * brew takes one dose. Splash brews are thrown (right click, or from a dispenser); a vial of combustible mix feeds a
- * Chem Burner and burns in any furnace as long as a blaze rod, leaving the glass bottle.
+ * Chem Burner and burns in any furnace as long as a blaze rod, leaving the glass bottle. Refined shimmer is drunk: a
+ * rush of strength, speed, toughness and healing with no price to pay, and then a while before the next vial works.
  */
 public class ChemVialItem extends Item implements ProjectileItem {
     private static final int THROW_COOLDOWN = 8;
+    /** Seconds before the next vial of refined shimmer can be drunk. */
+    public static final float SHIMMER_COOLDOWN = 120;
+    /** What a vial of refined shimmer gives: all buffs, nothing taken. */
+    public static final int SHIMMER_TICKS = 1200;
 
     public ChemVialItem(Properties properties) {
         super(properties);
@@ -53,8 +69,22 @@ public class ChemVialItem extends Item implements ProjectileItem {
         if (brew == Brew.FUEL) {
             stack.set(DataComponents.COOKING_FUEL,
                     new CookingFuel(ContextIntProviders.COOKING_TIME_BLAZE_ROD, ContextFloatProviders.COOKING_DEFAULT_SPEED_MULTIPLIER));
+        } else if (brew == Brew.REFINED_SHIMMER) {
+            stack.set(DataComponents.CONSUMABLE, Consumables.defaultDrink().sound(SoundEvents.HONEY_DRINK)
+                    .onConsume(new ApplyStatusEffectsConsumeEffect(shimmerEffects())).build());
+            stack.set(DataComponents.USE_REMAINDER, new UseRemainder(new ItemStackTemplate(Items.GLASS_BOTTLE)));
+            stack.set(DataComponents.USE_COOLDOWN, new UseCooldown(SHIMMER_COOLDOWN, Optional.of(Hextale.id("shimmer"))));
         }
         return stack;
+    }
+
+    /** The rush of a vial of refined shimmer. */
+    public static List<MobEffectInstance> shimmerEffects() {
+        return List.of(new MobEffectInstance(MobEffects.STRENGTH, SHIMMER_TICKS, 1),
+                new MobEffectInstance(MobEffects.SPEED, SHIMMER_TICKS, 0),
+                new MobEffectInstance(MobEffects.RESISTANCE, SHIMMER_TICKS, 0),
+                new MobEffectInstance(MobEffects.REGENERATION, SHIMMER_TICKS / 3, 1),
+                new MobEffectInstance(MobEffects.HASTE, SHIMMER_TICKS, 0));
     }
 
     /** The brew in a vial, or null for anything that is not a filled vial. */
@@ -77,6 +107,8 @@ public class ChemVialItem extends Item implements ProjectileItem {
             tooltip.accept(Component.translatable(brew.useKey()).withStyle(ChatFormatting.GRAY));
             if (brew.thrown()) {
                 tooltip.accept(Component.translatable("item.hextale.chem_vial.throw").withStyle(ChatFormatting.DARK_GRAY));
+            } else if (brew == Brew.REFINED_SHIMMER) {
+                tooltip.accept(Component.translatable("item.hextale.chem_vial.drink").withStyle(ChatFormatting.DARK_GRAY));
             }
         }
     }
@@ -86,7 +118,7 @@ public class ChemVialItem extends Item implements ProjectileItem {
         ItemStack stack = player.getItemInHand(hand);
         Brew brew = brew(stack);
         if (brew == null || !brew.thrown()) {
-            return InteractionResult.PASS;
+            return super.use(level, player, hand);
         }
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SPLASH_POTION_THROW, SoundSource.PLAYERS, 0.5F,
                 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));

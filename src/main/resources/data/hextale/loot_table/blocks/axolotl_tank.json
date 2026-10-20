@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:axolotl_tank",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:tank_runes"
+            ],
+            "source": "block_entity"
+          }
+        }
+      ]
+    }
+  ],
+  "random_sequence": "hextale:blocks/axolotl_tank"
+}

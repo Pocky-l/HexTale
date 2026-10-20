@@ -510,6 +510,48 @@
         "air": 1
       },
       "tier": 2
+    },
+    "hextale:shimmerbloom": {
+      "essences": {
+        "dream": 2,
+        "light": 2,
+        "plant": 2,
+        "magic": 1
+      },
+      "tier": 2
+    },
+    "hextale:shimmer_moss": {
+      "essences": {
+        "plant": 3,
+        "dream": 1,
+        "light": 1
+      },
+      "tier": 1
+    },
+    "hextale:shimmer_moss_carpet": {
+      "essences": {
+        "plant": 2,
+        "dream": 1
+      },
+      "tier": 1
+    },
+    "hextale:regenerative_slime": {
+      "essences": {
+        "slime": 3,
+        "vigor": 3,
+        "life": 2,
+        "flesh": 1
+      },
+      "tier": 2
+    },
+    "hextale:synthetic_crystal": {
+      "essences": {
+        "crystal": 4,
+        "dream": 2,
+        "magic": 2,
+        "energy": 1
+      },
+      "tier": 2
     }
   }
 }

@@ -197,6 +197,27 @@ public final class GogglesView {
             contents(rows, crucible.essence());
             return new Reading(name, rows);
         }
+        if (entity instanceof com.pockyl.hextale.block.AxolotlTankBlockEntity tank) {
+            rows.add(Row.heading(tank.status()));
+            rows.add(Row.heading(Component.translatable(KEY + "tank.meals", tank.meals() + tank.getItem(com.pockyl.hextale.block.AxolotlTankBlockEntity.FOOD).getCount())));
+            if (!tank.output().isEmpty()) {
+                rows.add(Row.heading(Component.translatable(KEY + "tank.slime", tank.output().getCount())));
+            }
+            return new Reading(name, rows);
+        }
+        if (entity instanceof com.pockyl.hextale.block.ChemStillBlockEntity still) {
+            rows.add(Row.heading(still.status()));
+            rows.add(Row.heading(Component.translatable(KEY + "still.raw", still.input().getCount())));
+            rows.add(Row.heading(Component.translatable(KEY + "still.refined", still.output().getCount())));
+            return new Reading(name, rows);
+        }
+        if (entity instanceof com.pockyl.hextale.block.PinkBrazierBlockEntity brazier) {
+            rows.add(Row.heading(brazier.status()));
+            if (!brazier.fuel().isEmpty()) {
+                rows.add(Row.heading(Component.translatable(KEY + "brazier.vials", brazier.fuel().getCount())));
+            }
+            return new Reading(name, rows);
+        }
         if (entity instanceof com.pockyl.hextale.block.ChemBurnerBlockEntity burner) {
             rows.add(Row.heading(burner.status()));
             if (!burner.fuel().isEmpty()) {

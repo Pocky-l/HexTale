@@ -29,17 +29,18 @@ import java.util.Map;
  * not per step.
  */
 public interface QuestGoal {
-    Map<String, MapCodec<? extends QuestGoal>> TYPES = Map.of(
-            "has_item", HasItem.CODEC,
-            "studied", Studied.CODEC,
-            "runes_known", RunesKnown.CODEC,
-            "pickaxe", Pickaxe.CODEC,
-            "pickaxe_runes", PickaxeRunesCount.CODEC,
-            "pylon_runes", PylonRunes.CODEC,
-            "concentrate", Concentrate.CODEC,
-            "ink_at_table", InkAtTable.CODEC,
-            "event", Event.CODEC,
-            "any_of", AnyOf.CODEC);
+    Map<String, MapCodec<? extends QuestGoal>> TYPES = Map.ofEntries(
+            Map.entry("has_item", HasItem.CODEC),
+            Map.entry("has_brew", HasBrew.CODEC),
+            Map.entry("studied", Studied.CODEC),
+            Map.entry("runes_known", RunesKnown.CODEC),
+            Map.entry("pickaxe", Pickaxe.CODEC),
+            Map.entry("pickaxe_runes", PickaxeRunesCount.CODEC),
+            Map.entry("pylon_runes", PylonRunes.CODEC),
+            Map.entry("concentrate", Concentrate.CODEC),
+            Map.entry("ink_at_table", InkAtTable.CODEC),
+            Map.entry("event", Event.CODEC),
+            Map.entry("any_of", AnyOf.CODEC));
 
     Codec<QuestGoal> CODEC = Codec.STRING.dispatch("type", QuestGoal::type, type -> {
         MapCodec<? extends QuestGoal> codec = TYPES.get(type);
@@ -73,6 +74,22 @@ public interface QuestGoal {
         @Override
         public boolean isMet(ServerPlayer player) {
             return player.getInventory().contains(stack -> stack.is(item));
+        }
+    }
+
+    /** A Chem Vial of this brew in the inventory. */
+    record HasBrew(com.pockyl.hextale.chem.Brew brew) implements QuestGoal {
+        static final MapCodec<HasBrew> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                com.pockyl.hextale.chem.Brew.CODEC.fieldOf("brew").forGetter(HasBrew::brew)).apply(i, HasBrew::new));
+
+        @Override
+        public String type() {
+            return "has_brew";
+        }
+
+        @Override
+        public boolean isMet(ServerPlayer player) {
+            return player.getInventory().contains(stack -> com.pockyl.hextale.chem.ChemVialItem.brew(stack) == brew);
         }
     }
 

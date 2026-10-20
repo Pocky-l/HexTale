@@ -597,5 +597,70 @@
         "name": "hextale:acid_hiss2"
       }
     ]
+  },
+  "axolotl_tank.shed": {
+    "subtitle": "subtitles.hextale.axolotl_tank.shed",
+    "sounds": [
+      {
+        "name": "hextale:axolotl_tank_shed1"
+      },
+      {
+        "name": "hextale:axolotl_tank_shed2"
+      },
+      {
+        "name": "hextale:axolotl_tank_shed3"
+      }
+    ]
+  },
+  "chem_still.drip": {
+    "subtitle": "subtitles.hextale.chem_still.drip",
+    "sounds": [
+      {
+        "name": "hextale:chem_still_drip1"
+      },
+      {
+        "name": "hextale:chem_still_drip2"
+      },
+      {
+        "name": "hextale:chem_still_drip3"
+      }
+    ]
+  },
+  "chem_still.boil": {
+    "subtitle": "subtitles.hextale.chem_still.boil",
+    "sounds": [
+      {
+        "name": "hextale:chem_still_boil1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:chem_still_boil2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "pink_brazier.ignite": {
+    "subtitle": "subtitles.hextale.pink_brazier.ignite",
+    "sounds": [
+      {
+        "name": "hextale:pink_brazier_ignite1"
+      },
+      {
+        "name": "hextale:pink_brazier_ignite2"
+      }
+    ]
+  },
+  "pink_brazier.breath": {
+    "subtitle": "subtitles.hextale.pink_brazier.breath",
+    "sounds": [
+      {
+        "name": "hextale:pink_brazier_breath1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:pink_brazier_breath2",
+        "volume": 0.6
+      }
+    ]
   }
 }

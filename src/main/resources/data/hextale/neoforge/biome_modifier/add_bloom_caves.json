@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": "hextale:bloom_caves",
+  "step": "vegetal_decoration"
+}

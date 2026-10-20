@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "hextale:block/pink_brazier"
+    },
+    "lit=true": {
+      "model": "hextale:block/pink_brazier_lit"
+    }
+  }
+}

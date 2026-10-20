@@ -1,0 +1,527 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/rusted_plating",
+    "rusted_plating": "hextale:block/rusted_plating",
+    "chem_glass": "hextale:block/chem_glass",
+    "sand": "minecraft:block/sand",
+    "copper_block": "minecraft:block/copper_block"
+  },
+  "elements": [
+    {
+      "name": "plating_base",
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        2,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "east": {
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "south": {
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "west": {
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "up": {
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ],
+          "texture": "#rusted_plating"
+        },
+        "down": {
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ],
+          "texture": "#rusted_plating",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "sand_bed",
+      "from": [
+        2,
+        2,
+        2
+      ],
+      "to": [
+        14,
+        3,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            13,
+            14,
+            14
+          ],
+          "texture": "#sand"
+        },
+        "east": {
+          "uv": [
+            2,
+            13,
+            14,
+            14
+          ],
+          "texture": "#sand"
+        },
+        "south": {
+          "uv": [
+            2,
+            13,
+            14,
+            14
+          ],
+          "texture": "#sand"
+        },
+        "west": {
+          "uv": [
+            2,
+            13,
+            14,
+            14
+          ],
+          "texture": "#sand"
+        },
+        "up": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#sand"
+        }
+      }
+    },
+    {
+      "name": "glass_walls",
+      "from": [
+        1,
+        2,
+        1
+      ],
+      "to": [
+        15,
+        14,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            2,
+            15,
+            14
+          ],
+          "texture": "#chem_glass"
+        },
+        "east": {
+          "uv": [
+            1,
+            2,
+            15,
+            14
+          ],
+          "texture": "#chem_glass"
+        },
+        "south": {
+          "uv": [
+            1,
+            2,
+            15,
+            14
+          ],
+          "texture": "#chem_glass"
+        },
+        "west": {
+          "uv": [
+            1,
+            2,
+            15,
+            14
+          ],
+          "texture": "#chem_glass"
+        }
+      }
+    },
+    {
+      "name": "plating_post_nw",
+      "from": [
+        0.97,
+        1.97,
+        0.97
+      ],
+      "to": [
+        2.03,
+        14.03,
+        2.03
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            14,
+            2,
+            15,
+            14
+          ],
+          "texture": "#rusted_plating"
+        },
+        "east": {
+          "uv": [
+            14,
+            2,
+            15,
+            14
+          ],
+          "texture": "#rusted_plating"
+        },
+        "south": {
+          "uv": [
+            1,
+            2,
+            2,
+            14
+          ],
+          "texture": "#rusted_plating"
+        },
+        "west": {
+          "uv": [
+            1,
+            2,
+            2,
+            14
+          ],
+          "texture": "#rusted_plating"
+        }
+      }
+    },
+    {
+      "name": "plating_post_ne",
+      "from": [
+        13.97,
+        1.97,
+        0.97
+      ],
+      "to": [
+        15.03,
+        14.03,
+        2.03
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            2,
+            2,
+            14
+          ],
+          "texture": "#rusted_plating"
+        },
+        "east": {
+          "uv": [
+            14,
+            2,
+            15,
+            14
+          ],
+          "texture": "#rusted_plating"
+        },
+        "south": {
+          "uv": [
+            14,
+            2,
+            15,
+            14
+          ],
+          "texture": "#rusted_plating"
+        },
+        "west": {
+          "uv": [
+            1,
+            2,
+            2,
+            14
+          ],
+          "texture": "#rusted_plating"
+        }
+      }
+    },
+    {
+      "name": "plating_post_sw",
+      "from": [
+        0.97,
+        1.97,
+        13.97
+      ],
+      "to": [
+        2.03,
+        14.03,
+        15.03
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            14,
+            2,
+            15,
+            14
+          ],
+          "texture": "#rusted_plating"
+        },
+        "east": {
+          "uv": [
+            1,
+            2,
+            2,
+            14
+          ],
+          "texture": "#rusted_plating"
+        },
+        "south": {
+          "uv": [
+            1,
+            2,
+            2,
+            14
+          ],
+          "texture": "#rusted_plating"
+        },
+        "west": {
+          "uv": [
+            14,
+            2,
+            15,
+            14
+          ],
+          "texture": "#rusted_plating"
+        }
+      }
+    },
+    {
+      "name": "plating_post_se",
+      "from": [
+        13.97,
+        1.97,
+        13.97
+      ],
+      "to": [
+        15.03,
+        14.03,
+        15.03
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            2,
+            2,
+            14
+          ],
+          "texture": "#rusted_plating"
+        },
+        "east": {
+          "uv": [
+            1,
+            2,
+            2,
+            14
+          ],
+          "texture": "#rusted_plating"
+        },
+        "south": {
+          "uv": [
+            14,
+            2,
+            15,
+            14
+          ],
+          "texture": "#rusted_plating"
+        },
+        "west": {
+          "uv": [
+            14,
+            2,
+            15,
+            14
+          ],
+          "texture": "#rusted_plating"
+        }
+      }
+    },
+    {
+      "name": "plating_lid",
+      "from": [
+        1,
+        14,
+        1
+      ],
+      "to": [
+        15,
+        15,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            1,
+            15,
+            2
+          ],
+          "texture": "#rusted_plating"
+        },
+        "east": {
+          "uv": [
+            1,
+            1,
+            15,
+            2
+          ],
+          "texture": "#rusted_plating"
+        },
+        "south": {
+          "uv": [
+            1,
+            1,
+            15,
+            2
+          ],
+          "texture": "#rusted_plating"
+        },
+        "west": {
+          "uv": [
+            1,
+            1,
+            15,
+            2
+          ],
+          "texture": "#rusted_plating"
+        },
+        "up": {
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ],
+          "texture": "#rusted_plating"
+        },
+        "down": {
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ],
+          "texture": "#rusted_plating"
+        }
+      }
+    },
+    {
+      "name": "copper_hatch",
+      "from": [
+        5,
+        15,
+        5
+      ],
+      "to": [
+        11,
+        16,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ],
+          "texture": "#copper_block"
+        },
+        "east": {
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ],
+          "texture": "#copper_block"
+        },
+        "south": {
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ],
+          "texture": "#copper_block"
+        },
+        "west": {
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ],
+          "texture": "#copper_block"
+        },
+        "up": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#copper_block",
+          "cullface": "up"
+        }
+      }
+    }
+  ]
+}

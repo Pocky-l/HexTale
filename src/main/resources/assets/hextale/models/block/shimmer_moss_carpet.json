@@ -1,0 +1,109 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/shimmer_moss",
+    "shimmer_moss": "hextale:block/shimmer_moss",
+    "shimmer_moss_glow": "hextale:block/shimmer_moss_glow"
+  },
+  "elements": [
+    {
+      "name": "moss",
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        1,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ],
+          "texture": "#shimmer_moss",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ],
+          "texture": "#shimmer_moss",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ],
+          "texture": "#shimmer_moss",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ],
+          "texture": "#shimmer_moss",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#shimmer_moss"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#shimmer_moss",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "glow_moss",
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        1,
+        16
+      ],
+      "light_emission": 15,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#shimmer_moss_glow"
+        }
+      }
+    }
+  ]
+}

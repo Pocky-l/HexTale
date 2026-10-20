@@ -1,0 +1,10 @@
+{
+  "catalyst": "hextale:regenerative_slime",
+  "essences": {
+    "dream": 6,
+    "light": 4
+  },
+  "brew": "raw_shimmer",
+  "heat": 3,
+  "doses": 3
+}

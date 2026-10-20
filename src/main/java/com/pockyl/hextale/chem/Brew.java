@@ -10,8 +10,10 @@ import java.util.Locale;
 
 /**
  * A chemtech brew: what a boiling Crucible turns its water into when a catalyst meets the essences a brew recipe asks
- * for. Brews are bottled into Chem Vials. The fuel feeds a Chem Burner (and any furnace); the others are thrown and
- * splash ({@link BrewEffects}).
+ * for. Brews are bottled into Chem Vials. The fuel feeds a Chem Burner (and any furnace); the splash brews are thrown
+ * ({@link BrewEffects}). Shimmer comes in two grades: raw, boiled from shimmerbloom and an axolotl's regenerative slime,
+ * burns long in a burner and goes into the Chem Still; refined, out of the still, is drunk for strength and burns
+ * longest of all.
  */
 public enum Brew implements StringRepresentable {
     /** Combustible mix: fuel for the Chem Burner and for furnaces. */
@@ -23,7 +25,14 @@ public enum Brew implements StringRepresentable {
     /** Glow mix: green patches of cold light where it splashes. */
     GLOW(0x9CFF6A, true),
     /** Acid: eats away stone, rusts iron, burns monsters. */
-    ACID(0xC9EE24, true);
+    ACID(0xC9EE24, true),
+    /** Raw shimmer: a cloudy violet fuel, and what the Chem Still refines. */
+    RAW_SHIMMER(0xA04CF0, false),
+    /** Refined shimmer: glowing magenta, drunk for strength; the longest-burning fuel there is. */
+    REFINED_SHIMMER(0xF052D8, false);
+
+    /** Ticks of flame a vial of combustible mix gives a Chem Burner (a blaze rod's worth). */
+    public static final int FUEL_TICKS = 2400;
 
     public static final Codec<Brew> CODEC = StringRepresentable.fromEnum(Brew::values);
     public static final StreamCodec<ByteBuf, Brew> STREAM_CODEC = ByteBufCodecs.idMapper(i -> values()[i], Brew::ordinal);
@@ -44,6 +53,21 @@ public enum Brew implements StringRepresentable {
     /** Whether a vial of it is thrown to splash (fuel is not). */
     public boolean thrown() {
         return thrown;
+    }
+
+    /** Ticks of flame a vial of it gives a Chem Burner; 0 for brews that do not burn. */
+    public int burnTicks() {
+        return switch (this) {
+            case FUEL -> FUEL_TICKS;
+            case RAW_SHIMMER -> FUEL_TICKS * 2;
+            case REFINED_SHIMMER -> FUEL_TICKS * 4;
+            default -> 0;
+        };
+    }
+
+    /** Whether it burns in the pink flame of shimmer. */
+    public boolean shimmer() {
+        return this == RAW_SHIMMER || this == REFINED_SHIMMER;
     }
 
     public String id() {

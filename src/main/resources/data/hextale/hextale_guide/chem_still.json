@@ -1,0 +1,22 @@
+{
+  "region": "chemtech",
+  "icon": "hextale:chem_still",
+  "parents": [
+    "raw_shimmer",
+    "chem_burner"
+  ],
+  "research": "chem_still",
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:chem_still",
+    "then": {
+      "kind": "runes",
+      "result": "still"
+    }
+  },
+  "station": true,
+  "pos": [
+    -650,
+    95
+  ]
+}

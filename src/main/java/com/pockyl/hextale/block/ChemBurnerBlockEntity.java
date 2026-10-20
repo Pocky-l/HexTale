@@ -51,8 +51,9 @@ import org.jspecify.annotations.Nullable;
 public class ChemBurnerBlockEntity extends BlockEntity implements Container, EssenceNetwork.Receiver {
     /** Essence it holds for burning. */
     public static final int TANK = 1000;
-    /** Ticks of flame from a vial of combustible mix, from a millibucket of essence and of unknown essence. */
-    public static final int VIAL_TICKS = 2400;
+    /** Ticks of flame from a vial of combustible mix (shimmer burns longer, {@link Brew#burnTicks()}), from a millibucket
+     *  of essence and of unknown essence. */
+    public static final int VIAL_TICKS = Brew.FUEL_TICKS;
     public static final int ESSENCE_TICKS = 20;
     public static final int UNKNOWN_TICKS = 40;
     private static final int SYNC_TICKS = 20;
@@ -62,6 +63,8 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
     private EssenceMix tank = EssenceMix.EMPTY;
     private int burn;
     private int burnFull = 1;
+    /** Whether the portion burning now is shimmer: the flame turns pink. */
+    private boolean pink;
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
     private boolean dirty;
 
@@ -129,11 +132,20 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
         } else if (!tank.isEmpty()) {
             tank = tank.minus(tank.part(1));
             ticks = ESSENCE_TICKS;
-        } else if (ChemVialItem.brew(fuel) == Brew.FUEL) {
+        } else if (burnTicks(fuel) > 0) {
+            Brew brew = ChemVialItem.brew(fuel);
+            ticks = brew.burnTicks();
             fuel.shrink(1);
-            ticks = VIAL_TICKS;
+            if (pink != brew.shimmer()) {
+                pink = brew.shimmer();
+                sync();
+            }
         } else {
             return;
+        }
+        if (ticks < VIAL_TICKS && pink) {
+            pink = false;
+            sync();
         }
         int flame = strength(BurnerRune.ETERNAL_FLAME);
         if (flame > 0 && level.getRandom().nextFloat() < HolderRune.at(BurnerRune.LONGER_BURN, flame)) {
@@ -196,12 +208,23 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
     /** Ticks of flame in everything it holds. */
     public int fuelTicks() {
         return burn + tank.unknown() * UNKNOWN_TICKS + (tank.total() - tank.unknown()) * ESSENCE_TICKS
-                + (ChemVialItem.brew(fuel) == Brew.FUEL ? fuel.getCount() * VIAL_TICKS : 0);
+                + fuel.getCount() * burnTicks(fuel);
+    }
+
+    /** Ticks of flame one vial of this gives (0: it does not burn). */
+    public static int burnTicks(ItemStack stack) {
+        Brew brew = ChemVialItem.brew(stack);
+        return brew == null ? 0 : brew.burnTicks();
+    }
+
+    /** Whether the flame is shimmer's pink one. */
+    public boolean pink() {
+        return pink;
     }
 
     /** Takes as much of the vials as fits; returns how many. */
     public int feed(ItemStack stack) {
-        if (ChemVialItem.brew(stack) != Brew.FUEL || !fuel.isEmpty() && !ItemStack.isSameItemSameComponents(fuel, stack)) {
+        if (burnTicks(stack) <= 0 || !fuel.isEmpty() && !ItemStack.isSameItemSameComponents(fuel, stack)) {
             return 0;
         }
         int room = stack.getMaxStackSize() - fuel.getCount();
@@ -308,7 +331,7 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return ChemVialItem.brew(stack) == Brew.FUEL;
+        return burnTicks(stack) > 0;
     }
 
     @Override
@@ -331,6 +354,7 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
         burn = input.getIntOr("burn", 0);
         burnFull = Math.max(1, input.getIntOr("burn_full", 1));
         runes = input.read("runes", PickaxeRunes.CODEC).orElse(PickaxeRunes.EMPTY);
+        pink = input.getBooleanOr("pink", false);
     }
 
     @Override
@@ -344,6 +368,7 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
         }
         output.putInt("burn", burn);
         output.putInt("burn_full", burnFull);
+        output.putBoolean("pink", pink);
         if (!runes.isEmpty()) {
             output.store("runes", PickaxeRunes.CODEC, runes);
         }

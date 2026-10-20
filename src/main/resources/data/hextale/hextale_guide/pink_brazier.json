@@ -1,0 +1,20 @@
+{
+  "region": "chemtech",
+  "icon": "hextale:pink_brazier",
+  "parents": [
+    "refined_shimmer"
+  ],
+  "research": "pink_brazier",
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:pink_brazier",
+    "then": {
+      "kind": "runes",
+      "result": "brazier"
+    }
+  },
+  "pos": [
+    -617,
+    167
+  ]
+}

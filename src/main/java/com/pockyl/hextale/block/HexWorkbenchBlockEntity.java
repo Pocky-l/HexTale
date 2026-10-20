@@ -35,7 +35,8 @@ import java.util.List;
 /**
  * The Hex Workbench's contents: the 3x3 grid (the items stay on the worktop when nobody works at it) and the crystal
  * socket. Every craft spends charge, and the crystal in the socket gives it: an unstable orb {@value #UNSTABLE_CHARGE},
- * a cut crystal {@value #CRYSTAL_CHARGE}, a stabilised gemstone {@value #GEMSTONE_CHARGE}. Crystals in the socket soak
+ * a crystal grown in shimmer {@value #SYNTHETIC_CHARGE}, a cut crystal {@value #CRYSTAL_CHARGE}, a stabilised gemstone
+ * {@value #GEMSTONE_CHARGE}. Crystals in the socket soak
  * into the bench one by one while there is room under {@value #MAX_CHARGE}; a craft short of charge uses them up at once.
  */
 public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
@@ -43,6 +44,7 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
     public static final int CRYSTAL = 9;
     public static final int SIZE = 10;
     public static final int UNSTABLE_CHARGE = 5;
+    public static final int SYNTHETIC_CHARGE = 8;
     public static final int CRYSTAL_CHARGE = 12;
     public static final int GEMSTONE_CHARGE = 30;
     /** The most charge the bench soaks up from its socket by itself. */
@@ -66,6 +68,9 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
     public static int chargeOf(ItemStack stack) {
         if (stack.is(ModItems.UNSTABLE_HEXTECH.get())) {
             return UNSTABLE_CHARGE;
+        }
+        if (stack.is(ModItems.SYNTHETIC_CRYSTAL.get())) {
+            return SYNTHETIC_CHARGE;
         }
         if (stack.is(ModItems.HEXTECH_CRYSTAL.get())) {
             return CRYSTAL_CHARGE;

@@ -57,6 +57,10 @@ public final class ResearchTopics {
     public static final ResearchTopic CHEM_VIAL = add("chem_vial", 1, Essence.WATER, Essence.LIFE, ModItems.CHEM_VIAL);
     public static final ResearchTopic CHEM_BURNER = add("chem_burner", 1, Essence.FIRE, Essence.SHADOW, ModItems.CHEM_BURNER);
     public static final ResearchTopic MAGIC_TREE = add("magic_sapling", 1, Essence.LIFE, Essence.LIGHT, ModItems.MAGIC_SAPLING);
+    public static final ResearchTopic AXOLOTL_TANK = add("axolotl_tank", 1, Essence.WATER, Essence.LIFE, ModItems.AXOLOTL_TANK);
+    public static final ResearchTopic CHEM_STILL = add("chem_still", 2, Essence.FIRE, Essence.WATER, ModItems.CHEM_STILL);
+    public static final ResearchTopic PINK_BRAZIER = add("pink_brazier", 2, Essence.LIFE, Essence.FIRE, ModItems.PINK_BRAZIER);
+    public static final ResearchTopic SYNTHETIC_CRYSTAL = add("synthetic_crystal", 2, Essence.LIGHT, Essence.LIFE, ModItems.SYNTHETIC_CRYSTAL);
     public static final ResearchTopic HEXTECH_PICKAXE = add("hextech_pickaxe", 2, Essence.METAL, Essence.EARTH,
             ModItems.pickaxe(HextechPickaxe.HEXTECH));
     public static final ResearchTopic HEXTECH_AXE = add("hextech_axe", 2, Essence.METAL, Essence.LIFE, ModItems.HEXTECH_AXE);

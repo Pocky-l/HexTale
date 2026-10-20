@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hextale:block/axolotl_tank"
+    },
+    "facing=east": {
+      "model": "hextale:block/axolotl_tank",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/axolotl_tank",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hextale:block/axolotl_tank",
+      "y": 270
+    }
+  }
+}

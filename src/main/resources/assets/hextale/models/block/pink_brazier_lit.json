@@ -1,0 +1,496 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/rusted_plating",
+    "rusted_plating": "hextale:block/rusted_plating",
+    "pink_brazier_top": "hextale:block/pink_brazier_top",
+    "pink_brazier_top_glow": "hextale:block/pink_brazier_top_glow",
+    "pink_brazier_fire": "hextale:block/pink_brazier_fire"
+  },
+  "elements": [
+    {
+      "name": "plating_leg_nw",
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        5,
+        6,
+        5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11,
+            10,
+            13,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "east": {
+          "uv": [
+            11,
+            10,
+            13,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "south": {
+          "uv": [
+            3,
+            10,
+            5,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "west": {
+          "uv": [
+            3,
+            10,
+            5,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "down": {
+          "uv": [
+            3,
+            11,
+            5,
+            13
+          ],
+          "texture": "#rusted_plating",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "plating_leg_ne",
+      "from": [
+        11,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        6,
+        5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            10,
+            5,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "east": {
+          "uv": [
+            11,
+            10,
+            13,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "south": {
+          "uv": [
+            11,
+            10,
+            13,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "west": {
+          "uv": [
+            3,
+            10,
+            5,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "down": {
+          "uv": [
+            11,
+            11,
+            13,
+            13
+          ],
+          "texture": "#rusted_plating",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "plating_leg_sw",
+      "from": [
+        3,
+        0,
+        11
+      ],
+      "to": [
+        5,
+        6,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11,
+            10,
+            13,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "east": {
+          "uv": [
+            3,
+            10,
+            5,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "south": {
+          "uv": [
+            3,
+            10,
+            5,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "west": {
+          "uv": [
+            11,
+            10,
+            13,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "down": {
+          "uv": [
+            3,
+            3,
+            5,
+            5
+          ],
+          "texture": "#rusted_plating",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "plating_leg_se",
+      "from": [
+        11,
+        0,
+        11
+      ],
+      "to": [
+        13,
+        6,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            10,
+            5,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "east": {
+          "uv": [
+            3,
+            10,
+            5,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "south": {
+          "uv": [
+            11,
+            10,
+            13,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "west": {
+          "uv": [
+            11,
+            10,
+            13,
+            16
+          ],
+          "texture": "#rusted_plating"
+        },
+        "down": {
+          "uv": [
+            11,
+            3,
+            13,
+            5
+          ],
+          "texture": "#rusted_plating",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "plating_bowl",
+      "from": [
+        3,
+        6,
+        3
+      ],
+      "to": [
+        13,
+        8,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            8,
+            13,
+            10
+          ],
+          "texture": "#rusted_plating"
+        },
+        "east": {
+          "uv": [
+            3,
+            8,
+            13,
+            10
+          ],
+          "texture": "#rusted_plating"
+        },
+        "south": {
+          "uv": [
+            3,
+            8,
+            13,
+            10
+          ],
+          "texture": "#rusted_plating"
+        },
+        "west": {
+          "uv": [
+            3,
+            8,
+            13,
+            10
+          ],
+          "texture": "#rusted_plating"
+        },
+        "down": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#rusted_plating"
+        }
+      }
+    },
+    {
+      "name": "plating_rim",
+      "from": [
+        2,
+        8,
+        2
+      ],
+      "to": [
+        14,
+        10,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            6,
+            14,
+            8
+          ],
+          "texture": "#rusted_plating"
+        },
+        "east": {
+          "uv": [
+            2,
+            6,
+            14,
+            8
+          ],
+          "texture": "#rusted_plating"
+        },
+        "south": {
+          "uv": [
+            2,
+            6,
+            14,
+            8
+          ],
+          "texture": "#rusted_plating"
+        },
+        "west": {
+          "uv": [
+            2,
+            6,
+            14,
+            8
+          ],
+          "texture": "#rusted_plating"
+        },
+        "up": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#pink_brazier_top"
+        },
+        "down": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#rusted_plating"
+        }
+      }
+    },
+    {
+      "name": "glow_coals",
+      "from": [
+        2,
+        8,
+        2
+      ],
+      "to": [
+        14,
+        10,
+        14
+      ],
+      "light_emission": 15,
+      "faces": {
+        "up": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#pink_brazier_top_glow"
+        }
+      }
+    },
+    {
+      "name": "flame_a",
+      "from": [
+        2,
+        10,
+        8
+      ],
+      "to": [
+        14,
+        22,
+        8
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          8,
+          8
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            4,
+            14,
+            16
+          ],
+          "texture": "#pink_brazier_fire"
+        },
+        "south": {
+          "uv": [
+            2,
+            4,
+            14,
+            16
+          ],
+          "texture": "#pink_brazier_fire"
+        }
+      }
+    },
+    {
+      "name": "flame_b",
+      "from": [
+        8,
+        10,
+        2
+      ],
+      "to": [
+        8,
+        22,
+        14
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          8,
+          8
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "east": {
+          "uv": [
+            2,
+            4,
+            14,
+            16
+          ],
+          "texture": "#pink_brazier_fire"
+        },
+        "west": {
+          "uv": [
+            2,
+            4,
+            14,
+            16
+          ],
+          "texture": "#pink_brazier_fire"
+        }
+      }
+    }
+  ]
+}

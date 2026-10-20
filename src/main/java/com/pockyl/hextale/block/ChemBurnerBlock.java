@@ -54,6 +54,8 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     private static final int FLAME = 0x8CFF5A;
     private static final int SMOKE = 0x3A4A34;
+    private static final int PINK_FLAME = 0xFF6FD8;
+    private static final int PINK_SMOKE = 0x4A2F4A;
 
     public ChemBurnerBlock(Properties properties) {
         super(properties);
@@ -103,7 +105,7 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         boolean creative = player.getAbilities().instabuild;
-        if (ChemVialItem.brew(stack) == Brew.FUEL) {
+        if (ChemBurnerBlockEntity.burnTicks(stack) > 0) {
             if (!level.isClientSide()) {
                 int taken = burner.feed(stack);
                 if (taken <= 0) {
@@ -162,7 +164,8 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
         Vec3 window = Vec3.atBottomCenterOf(pos).add(facing.getStepX() * 0.52, 0.32, facing.getStepZ() * 0.52);
         Direction side = facing.getClockWise();
         double along = (random.nextDouble() - 0.5) * 0.4;
-        level.addParticle(new DustColorTransitionOptions(FLAME, SMOKE, 0.6F),
+        boolean pink = level.getBlockEntity(pos) instanceof ChemBurnerBlockEntity burner && burner.pink();
+        level.addParticle(pink ? new DustColorTransitionOptions(PINK_FLAME, PINK_SMOKE, 0.7F) : new DustColorTransitionOptions(FLAME, SMOKE, 0.6F),
                 window.x + side.getStepX() * along, window.y + random.nextDouble() * 0.15, window.z + side.getStepZ() * along,
                 0, 0.02, 0);
         if (random.nextInt(3) == 0) {
@@ -171,6 +174,9 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
             Vec3 flue = Vec3.atBottomCenterOf(pos).add(back.getStepX() * 0.34 + side.getStepX() * 0.3, 1.05,
                     back.getStepZ() * 0.34 + side.getStepZ() * 0.3);
             level.addParticle(ParticleTypes.SMOKE, flue.x, flue.y, flue.z, 0, 0.04, 0);
+        }
+        if (pink && random.nextInt(4) == 0) {
+            level.addParticle(com.pockyl.hextale.registry.ModParticles.SHIMMER_MOTE.get(), window.x, window.y + 0.1, window.z, 0, 0.02, 0);
         }
         if (random.nextInt(120) == 0) {
             level.playLocalSound(pos, ModSounds.CHEM_BURNER_ROAR.get(), SoundSource.BLOCKS, 0.35F + random.nextFloat() * 0.1F,

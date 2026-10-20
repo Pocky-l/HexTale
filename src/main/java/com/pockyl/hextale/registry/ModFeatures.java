@@ -16,6 +16,8 @@ public final class ModFeatures {
 
     public static final DeferredHolder<MapCodec<? extends Feature>, MapCodec<MagicTreeFeature>> MAGIC_TREE =
             FEATURE_TYPES.register("magic_tree", () -> MagicTreeFeature.CODEC);
+    public static final DeferredHolder<MapCodec<? extends Feature>, MapCodec<com.pockyl.hextale.world.BloomCaveFeature>> BLOOM_CAVES =
+            FEATURE_TYPES.register("bloom_caves", () -> com.pockyl.hextale.world.BloomCaveFeature.CODEC);
 
     private ModFeatures() {
     }

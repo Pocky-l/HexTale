@@ -1,0 +1,17 @@
+{
+  "pattern": [
+    "CCB",
+    "C G",
+    "PCP"
+  ],
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "B": "minecraft:copper_bars",
+    "G": "hextale:chem_glass",
+    "P": "hextale:rusted_plating"
+  },
+  "result": {
+    "id": "hextale:chem_still"
+  },
+  "charge": 3
+}

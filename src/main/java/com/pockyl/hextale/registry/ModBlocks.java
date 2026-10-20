@@ -4,6 +4,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ButtonBlock;
+import net.minecraft.world.level.block.CarpetBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
@@ -274,6 +275,40 @@ public final class ModBlocks {
             ModBlocks::platingProperties);
     public static final DeferredBlock<Block> RIVETED_RUSTED_PLATING = BLOCKS.registerBlock("riveted_rusted_plating", Block::new,
             ModBlocks::platingProperties);
+
+    /** Shimmerbloom: the glowing purple flower of deep caves, standing on the floor or hanging from the ceiling. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ShimmerbloomBlock> SHIMMERBLOOM = BLOCKS.registerBlock("shimmerbloom",
+            com.pockyl.hextale.block.ShimmerbloomBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().instabreak().sound(SoundType.SPORE_BLOSSOM)
+                    .lightLevel(state -> 10).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<FlowerPotBlock> POTTED_SHIMMERBLOOM = BLOCKS.registerBlock("potted_shimmerbloom",
+            properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, SHIMMERBLOOM, properties),
+            () -> BlockBehaviour.Properties.of().instabreak().noOcclusion().lightLevel(state -> 10).pushReaction(PushReaction.POPPED));
+    /** The violet moss that carpets bloom caves, faintly glowing. */
+    public static final DeferredBlock<Block> SHIMMER_MOSS = BLOCKS.registerBlock("shimmer_moss", Block::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.1F).sound(SoundType.MOSS).lightLevel(state -> 4)
+                    .pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<CarpetBlock> SHIMMER_MOSS_CARPET = BLOCKS.registerBlock("shimmer_moss_carpet", CarpetBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.1F).sound(SoundType.MOSS_CARPET)
+                    .lightLevel(state -> 3).pushReaction(PushReaction.POPPED));
+    /** A rusted aquarium where an axolotl lives and sheds regenerative slime. */
+    public static final DeferredBlock<com.pockyl.hextale.block.AxolotlTankBlock> AXOLOTL_TANK = BLOCKS.registerBlock("axolotl_tank",
+            com.pockyl.hextale.block.AxolotlTankBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(2.0F, 6.0F).sound(SoundType.COPPER)
+                    .noOcclusion().lightLevel(state -> 6).isValidSpawn((state, level, pos, type) -> false)
+                    .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false));
+    /** A copper pot still that refines raw shimmer over a Chem Burner. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemStillBlock> CHEM_STILL = BLOCKS.registerBlock("chem_still",
+            com.pockyl.hextale.block.ChemStillBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(3.0F, 6.0F).sound(SoundType.COPPER)
+                    .requiresCorrectToolForDrops().noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChemStillBlock.WORKING) ? 7 : 3));
+    /** An iron bowl of burning shimmer whose pink light makes plants grow. */
+    public static final DeferredBlock<com.pockyl.hextale.block.PinkBrazierBlock> PINK_BRAZIER = BLOCKS.registerBlock("pink_brazier",
+            com.pockyl.hextale.block.PinkBrazierBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(3.0F, 6.0F).sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops().noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.PinkBrazierBlock.LIT) ? 15 : 0));
 
     private ModBlocks() {
     }

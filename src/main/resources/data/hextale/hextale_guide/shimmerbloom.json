@@ -1,0 +1,11 @@
+{
+  "region": "chemtech",
+  "icon": "hextale:shimmerbloom",
+  "parents": [
+    "crucible"
+  ],
+  "pos": [
+    -430,
+    40
+  ]
+}

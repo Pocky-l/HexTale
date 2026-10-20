@@ -39,6 +39,9 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, AlembicBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.CrucibleBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemBurnerBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.AxolotlTankBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ChemStillBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.PinkBrazierBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, DrainValveBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, PumpBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexFurnaceBlock.class);
@@ -77,6 +80,12 @@ public class HextaleJadePlugin implements IWailaPlugin {
                 if (!crucible.essence().isEmpty()) {
                     tooltip.add(crucible.essence().describe().withStyle(ChatFormatting.GRAY));
                 }
+            } else if (entity instanceof com.pockyl.hextale.block.AxolotlTankBlockEntity tank) {
+                tooltip.add(tank.status());
+            } else if (entity instanceof com.pockyl.hextale.block.ChemStillBlockEntity still) {
+                tooltip.add(still.status());
+            } else if (entity instanceof com.pockyl.hextale.block.PinkBrazierBlockEntity brazier) {
+                tooltip.add(brazier.status());
             } else if (entity instanceof com.pockyl.hextale.block.ChemBurnerBlockEntity burner) {
                 tooltip.add(burner.status());
                 if (!burner.tank().isEmpty()) {

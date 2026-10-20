@@ -65,6 +65,19 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RUSTED_PLATING_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_PLATING_STAIRS);
     public static final DeferredItem<BlockItem> RUSTED_PLATING_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_PLATING_SLAB);
     public static final DeferredItem<BlockItem> RIVETED_RUSTED_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.RIVETED_RUSTED_PLATING);
+    public static final DeferredItem<BlockItem> SHIMMERBLOOM = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMERBLOOM);
+    public static final DeferredItem<BlockItem> SHIMMER_MOSS = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMER_MOSS);
+    public static final DeferredItem<BlockItem> SHIMMER_MOSS_CARPET = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMER_MOSS_CARPET);
+    public static final DeferredItem<BlockItem> AXOLOTL_TANK = ITEMS.registerSimpleBlockItem(ModBlocks.AXOLOTL_TANK,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> CHEM_STILL = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_STILL,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> PINK_BRAZIER = ITEMS.registerSimpleBlockItem(ModBlocks.PINK_BRAZIER,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    /** What an axolotl in a tank sheds as it heals: the living half of shimmer. */
+    public static final DeferredItem<Item> REGENERATIVE_SLIME = ITEMS.registerSimpleItem("regenerative_slime");
+    /** A hextech crystal grown in refined shimmer: cheaper and weaker than a cut one. */
+    public static final DeferredItem<Item> SYNTHETIC_CRYSTAL = ITEMS.registerSimpleItem("synthetic_crystal");
     /** A stoppered glass vial of a crucible brew (component {@code hextale:brew}). */
     public static final DeferredItem<com.pockyl.hextale.chem.ChemVialItem> CHEM_VIAL = ITEMS.registerItem("chem_vial",
             properties -> new com.pockyl.hextale.chem.ChemVialItem(properties.stacksTo(16)

@@ -14,6 +14,12 @@ public final class ModSounds {
 
     /** A soft brush stroke on parchment. */
     public static final DeferredHolder<SoundEvent, SoundEvent> BRUSH_STROKE = register("brush.stroke");
+    /** Shimmer: the axolotl sheds slime, the still drips and mutters, the brazier catches and breathes. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> AXOLOTL_TANK_SHED = register("axolotl_tank.shed");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_STILL_DRIP = register("chem_still.drip");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_STILL_BOIL = register("chem_still.boil");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PINK_BRAZIER_IGNITE = register("pink_brazier.ignite");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PINK_BRAZIER_BREATH = register("pink_brazier.breath");
     /** The orb recognises a simple rune; played at the element's pitch. */
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_RECOGNISED = register("rune.recognised");
     /** The orb does not know the drawing. */

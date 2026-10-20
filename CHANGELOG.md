@@ -64,6 +64,32 @@ Chemtech begins: the cheap, dirty answer to hextech - chemicals instead of cryst
 - The guide's chemtech branch has the brews, the glass, the burner and the plating in place of their sketches; JEI
   lists the brews.
 
+Shimmer: a bright violet liquid boiled from cave flowers and the healing of an axolotl - strong fuel, a strong draught
+with no price to pay (yet), and the first bridge from chemtech to hextech.
+
+- Shimmerbloom grows in bloom caves deep underground: some stretches of caves glow violet from wall to wall, carpeted
+  with Shimmer Moss and hung with blooms from the ceiling, and most caves have none at all. Bone meal makes a new bloom
+  take root nearby; it goes into a flower pot. Shimmer Moss and its carpet glow faintly.
+- Axolotl Tank (researched, made at the Hex Workbench): an axolotl brought in a bucket lives in it, swimming slowly
+  round; fed fish (by hand or hopper) or a bucket of tropical fish, it sheds a lump of Regenerative Slime every 90
+  seconds. Nothing is done to the animal, and an empty bucket takes it out again whole. Up to three runes: Spring (one
+  more slime), Haste (sooner), Dam (a meal spared), Healing (Regeneration for players around), Radiance (experience)
+  and Lens.
+- Raw Shimmer: regenerative slime thrown into boiling water holding dream and light (from dissolved blooms), over soul
+  fire or hotter. It burns in a Chem Burner twice as long as combustible mix, in a pink flame.
+- Chem Still (researched, made at the Hex Workbench): a copper pot still over a Chem Burner refines two raw vials into
+  one of Refined Shimmer; the boiler's sight glass and the receiver show the liquids. Up to three runes: Steam (a
+  second vial), Haste, Radiance and Purification (now and then a Synthetic Crystal grows out of the purest drops).
+- Refined Shimmer is drunk: a minute of Strength II, Speed, Resistance, Haste and Regeneration II, then two minutes
+  before the next vial works - no downside. It is the longest-burning fuel there is.
+- Pink Brazier (researched, made at the Hex Workbench): burns shimmer in a cold pink flame; every two seconds a few
+  plants in its light grow a stage. Up to three runes: Shift (its light reaches further), Pollen (a plant may grow as
+  if bone-mealed), Healing (Regeneration for players in its light), Eternal Flame (a vial may burn twice as long) and
+  Lens.
+- Synthetic Crystal (researched, made at the Hex Workbench from amethyst, hextech dust and refined shimmer): cheap
+  grown hextech that the workbench burns for charge.
+- The guide's shimmer branch has its real steps in place of the sketches; JEI and Jade show the new devices.
+
 ### Fixed
 - The altar named the right refusal when a rune did not fit a reaper or a sawmill, or when they were full.
 

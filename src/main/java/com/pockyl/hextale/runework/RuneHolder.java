@@ -35,6 +35,12 @@ public enum RuneHolder {
     FURNACE(() -> ModDataComponents.FURNACE_RUNES.get(), FurnaceRune.SLOTS, FurnaceRune.values()),
     /** The Chem Burner. */
     BURNER(() -> ModDataComponents.BURNER_RUNES.get(), BurnerRune.SLOTS, BurnerRune.values()),
+    /** The Axolotl Tank. */
+    TANK(() -> ModDataComponents.TANK_RUNES.get(), TankRune.SLOTS, TankRune.values()),
+    /** The Chem Still. */
+    STILL(() -> ModDataComponents.STILL_RUNES.get(), StillRune.SLOTS, StillRune.values()),
+    /** The Pink Brazier. */
+    BRAZIER(() -> ModDataComponents.BRAZIER_RUNES.get(), BrazierRune.SLOTS, BrazierRune.values()),
     /** The hextech axe, shovel and sword keep their runes where the pickaxe does. */
     AXE(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.AXE)),
     SHOVEL(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.SHOVEL)),
@@ -71,6 +77,15 @@ public enum RuneHolder {
         }
         if (item == ModItems.CHEM_BURNER.get()) {
             return BURNER;
+        }
+        if (item == ModItems.AXOLOTL_TANK.get()) {
+            return TANK;
+        }
+        if (item == ModItems.CHEM_STILL.get()) {
+            return STILL;
+        }
+        if (item == ModItems.PINK_BRAZIER.get()) {
+            return BRAZIER;
         }
         if (item == ModItems.HEXTECH_AXE.get()) {
             return AXE;
@@ -176,6 +191,9 @@ public enum RuneHolder {
             case SAWMILL -> List.of(new ItemStack(ModItems.HEX_SAWMILL.get()));
             case FURNACE -> List.of(new ItemStack(ModItems.HEX_FURNACE.get()));
             case BURNER -> List.of(new ItemStack(ModItems.CHEM_BURNER.get()));
+            case TANK -> List.of(new ItemStack(ModItems.AXOLOTL_TANK.get()));
+            case STILL -> List.of(new ItemStack(ModItems.CHEM_STILL.get()));
+            case BRAZIER -> List.of(new ItemStack(ModItems.PINK_BRAZIER.get()));
             case AXE -> List.of(new ItemStack(ModItems.HEXTECH_AXE.get()));
             case SHOVEL -> List.of(new ItemStack(ModItems.HEXTECH_SHOVEL.get()));
             case SWORD -> List.of(new ItemStack(ModItems.HEXTECH_SWORD.get()));

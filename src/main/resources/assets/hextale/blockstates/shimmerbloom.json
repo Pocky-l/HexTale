@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "hanging=false": {
+      "model": "hextale:block/shimmerbloom"
+    },
+    "hanging=true": {
+      "model": "hextale:block/shimmerbloom_hanging"
+    }
+  }
+}
