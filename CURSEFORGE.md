@@ -4,38 +4,44 @@
 
 📦 **Requires** [NeoForge](https://neoforged.net) for Minecraft 26.3, on client and server. ⚠️ **Beta** - back up your worlds.
 
-## 📖 From the diary
+## 📖 The researcher's diary
 
-⛈️ **Day 1. The storm.** I put a lightning rod on an amethyst block and waited for thunder. The strike shattered the
-crystal into humming orbs of raw hextech, and the spark ran on through every amethyst touching it. Raw hextech is
-volatile: drop it from a height and it bursts.
+I always thought amethyst was good for nothing but spyglasses. Then, one stormy night, I set a lightning rod on an
+amethyst block - and the strike shattered it into humming orbs of **raw hextech**, the spark running on through every
+crystal around. I learned the hard way that raw hextech is volatile: one orb slipped from my hands on a cliff and burst
+at my feet.
 
-🔨 **Day 3. A woken workshop.** A pinch of hextech dust woke my crafting table, furnace and cauldron. The Hex Workbench
-runs on crystal charge, the Hex Furnace melts brass and hexsteel, and at the lapidary I cut raw orbs into crystals by
-feel, turning the stone until its cleavage plane glows.
+Its dust turned out to be the key. A pinch of it **woke my crafting table, furnace and cauldron**: the Hex Workbench now
+runs on crystal charge, the Hex Furnace melts brass and hexsteel, and at the **lapidary** I cut raw orbs into true
+crystals by feel, turning the stone until its hidden cleavage plane glows.
 
-🧪 **Day 6. Everything is made of essences.** Eighty of them, from Fire and Water to Time and Soul, and every item holds
-its own mix - the loupe on my desk shows it. I boil items down in the alembic, split the essence in the separator,
-keep it in jars and pipe it wherever it is needed.
+Soon I understood that **everything is made of essences** - eighty of them, from Fire and Water to Time and Soul - and
+every item holds its own mix. The loupe on my desk reveals it, the **alembic** boils items down, the **separator** splits
+the brew, **jars and brass pipes** keep it and carry it wherever I need it.
 
-📜 **Day 9. Nothing is built before it is drawn.** Every device has to be researched first: on a worn parchment I lead
-the ink from the hextech orb to every goal. Dark fields hide curses, and only the numbers along my ink tell me where it
-is safe. One wrong step and the sheet burns.
+![The Research Table: drawing a device on the parchment](https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/screenshots/research-table.jpg)
 
-🌳 **Day 12. The crucible.** Boiling water dissolves whatever I throw into it; a catalyst rises out transformed. A common
-sapling, fed with magic, plant and sap, came out as the sprout of a magic tree - violet wood with glowing veins that
-never burns.
+Nothing here is built before it is understood. At the **Research Table** I draw every device on a worn parchment,
+leading ink from the hextech orb to each goal. Dark fields hide curses, and only the numbers along my ink tell me where
+it is safe - one careless step and the sheet goes up in flames. Every finished drawing becomes notes I can read myself
+or hand to a friend.
 
-✨ **Day 15. Runes.** Rune scrolls lie in old dungeon chests, their stars a matter of luck. At the Hextech Altar the
-pedestals give their items, the steles their runes, the jars pour essence - and the ritual burns runes into my pickaxe
-like enchantments: smelting, vein mining, ore sight, tunnels.
+The **crucible** taught me transmutation: boiling water swallows whatever I throw in, and a catalyst rises out changed.
+An ordinary sapling, fed with magic, plant and sap, became the sprout of a **magic tree** - violet wood with glowing
+veins that never burns.
 
-🌀 **Day 20. Machines that move by themselves.** Pylons catch items with tendrils of light and carry them between
-chests and furnaces; a Sorting Matrix sends every item home. The Whirl Reaper harvests my fields with whirlwinds, the
-Hex Sawmill fells whole trees and plants them again.
+The **runes** I did not invent - I found them, as scrolls in old dungeon chests, their stars a matter of luck. At the
+**Hextech Altar** the pedestals give up their items, the steles their runes, the jars their essence, and the ritual
+burns runes into my pickaxe like enchantments: smelting, vein mining, ore sight, tunnels through rock.
 
-🗺️ **The last page.** The diary keeps my path: what is done, what I can do now and one step further into the fog. Many
-pages are still blank - plans of chemtech, shimmer and the hexcore are waiting.
+Now my workshop runs on its own. **Pylons** catch items with tendrils of light and carry them between chests and
+furnaces, a **Sorting Matrix** sends every item home, the **Whirl Reaper** harvests my fields with whirlwinds and the
+**Hex Sawmill** fells whole trees and plants them again.
+
+All of it is in my diary - the path I walked, the steps I can take now and one more into the fog. Many of its pages are
+still blank: plans for chemtech, shimmer and the hexcore are waiting to be written.
+
+![The Researcher's Diary: the path through the mod](https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/screenshots/researchers-path.jpg)
 
 ## 🧩 Compatibility
 
