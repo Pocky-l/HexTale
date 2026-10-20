@@ -1,1740 +1,342 @@
 {
-  "gui_light": "front",
-  "textures": {
-    "particle": "hextale:item/hextech_tools",
-    "tools": "hextale:item/hextech_tools"
-  },
-  "elements": [
-    {
-      "name": "brass_ring_0",
-      "from": [
-        5.5,
-        17,
-        6.5
-      ],
-      "to": [
-        10.5,
-        18,
-        9.5
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            4,
-            5,
-            5
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            5,
-            3,
-            6
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            4,
-            5,
-            5
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            5,
-            3,
-            6
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            5,
-            5,
-            8
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            5,
-            5,
-            8
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "brass_ring_1",
-      "from": [
-        8.7811,
-        15.683,
-        7
-      ],
-      "to": [
-        12.7811,
-        16.683,
-        9
-      ],
-      "rotation": {
-        "x": 0,
-        "y": 0,
-        "z": -60,
-        "origin": [
-          10.7811,
-          16.183,
-          8
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            4,
-            4,
-            5
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            4,
-            4,
-            5
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            5,
-            2,
-            6
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            5,
-            4,
-            7
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            5,
-            4,
-            7
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "brass_ring_2",
-      "from": [
-        8.7811,
-        11.317,
-        7
-      ],
-      "to": [
-        12.7811,
-        12.317,
-        9
-      ],
-      "rotation": {
-        "x": 0,
-        "y": 0,
-        "z": 60,
-        "origin": [
-          10.7811,
-          11.817,
-          8
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            4,
-            4,
-            5
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            4,
-            4,
-            5
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            5,
-            2,
-            6
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            5,
-            4,
-            7
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            5,
-            4,
-            7
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "brass_ring_3",
-      "from": [
-        5.5,
-        10,
-        6.5
-      ],
-      "to": [
-        10.5,
-        11,
-        9.5
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            4,
-            5,
-            5
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            5,
-            3,
-            6
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            4,
-            5,
-            5
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            5,
-            3,
-            6
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            5,
-            5,
-            8
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            5,
-            5,
-            8
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "brass_ring_4",
-      "from": [
-        3.2189,
-        15.683,
-        7
-      ],
-      "to": [
-        7.2189,
-        16.683,
-        9
-      ],
-      "rotation": {
-        "x": 0,
-        "y": 0,
-        "z": 60,
-        "origin": [
-          5.2189,
-          16.183,
-          8
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            4,
-            4,
-            5
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            5,
-            2,
-            6
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            4,
-            4,
-            5
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            5,
-            4,
-            7
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            5,
-            4,
-            7
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "brass_ring_5",
-      "from": [
-        3.2189,
-        11.317,
-        7
-      ],
-      "to": [
-        7.2189,
-        12.317,
-        9
-      ],
-      "rotation": {
-        "x": 0,
-        "y": 0,
-        "z": -60,
-        "origin": [
-          5.2189,
-          11.817,
-          8
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            4,
-            4,
-            5
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            5,
-            2,
-            6
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            4,
-            4,
-            5
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            5,
-            4,
-            7
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            5,
-            4,
-            7
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "crystal_heart",
-      "from": [
-        6,
-        12,
-        6.5
-      ],
-      "to": [
-        10,
-        16,
-        9.5
-      ],
-      "rotation": {
-        "angle": 45,
-        "axis": "z",
-        "origin": [
-          8,
-          14,
-          8
-        ]
-      },
-      "light_emission": 15,
-      "faces": {
-        "north": {
-          "uv": [
-            8,
-            0,
-            12,
-            4
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "east": {
-          "uv": [
-            8,
-            0,
-            11,
-            4
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "south": {
-          "uv": [
-            8,
-            0,
-            12,
-            4
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "west": {
-          "uv": [
-            8,
-            0,
-            11,
-            4
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "up": {
-          "uv": [
-            8,
-            0,
-            12,
-            3
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "down": {
-          "uv": [
-            8,
-            0,
-            12,
-            3
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        }
-      }
-    },
-    {
-      "name": "brass_finial",
-      "from": [
-        7,
-        18.1,
-        6
-      ],
-      "to": [
-        9,
-        20.1,
-        10
-      ],
-      "rotation": {
-        "angle": 45,
-        "axis": "z",
-        "origin": [
-          8,
-          19.1,
-          8
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            2,
-            2
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            4,
-            2
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            2,
-            2
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            4,
-            2
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            2,
-            4
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            2,
-            4
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "steel_neck",
-      "from": [
-        1,
-        12,
-        6.5
-      ],
-      "to": [
-        5,
-        16,
-        9.5
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            8,
-            4,
-            12
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            13,
-            4,
-            16
-          ],
-          "rotation": 90,
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            8,
-            4,
-            12
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            13,
-            4,
-            16
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            13,
-            4,
-            16
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "steel_rib",
-      "from": [
-        -4,
-        12,
-        6.5
-      ],
-      "to": [
-        1,
-        16,
-        9.5
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            8,
-            5,
-            12
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            8,
-            5,
-            12
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            13,
-            4,
-            16
-          ],
-          "rotation": 90,
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            13,
-            5,
-            16
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            13,
-            5,
-            16
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "steel_web",
-      "from": [
-        -4,
-        10,
-        7.5
-      ],
-      "to": [
-        -2,
-        18,
-        8.5
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            8,
-            8,
-            10
-          ],
-          "rotation": 90,
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            8,
-            8,
-            10
-          ],
-          "rotation": 90,
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            13,
-            2,
-            14
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            13,
-            2,
-            14
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "steel_cheek_up",
-      "from": [
-        -4,
-        13.5,
-        7
-      ],
-      "to": [
-        1,
-        17.5,
-        9
-      ],
-      "rotation": {
-        "angle": -38,
-        "axis": "z",
-        "origin": [
-          1,
-          15.5,
-          8
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            8,
-            5,
-            12
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            13,
-            4,
-            15
-          ],
-          "rotation": 90,
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            8,
-            5,
-            12
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            13,
-            4,
-            15
-          ],
-          "rotation": 90,
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            13,
-            5,
-            15
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            13,
-            5,
-            15
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "steel_cheek_down",
-      "from": [
-        -4,
-        10.5,
-        7
-      ],
-      "to": [
-        1,
-        14.5,
-        9
-      ],
-      "rotation": {
-        "angle": 38,
-        "axis": "z",
-        "origin": [
-          1,
-          12.5,
-          8
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            8,
-            5,
-            12
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            13,
-            4,
-            15
-          ],
-          "rotation": 90,
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            8,
-            5,
-            12
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            13,
-            4,
-            15
-          ],
-          "rotation": 90,
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            13,
-            5,
-            15
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            13,
-            5,
-            15
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "crystal_edge",
-      "from": [
-        -5,
-        8,
-        7.5
-      ],
-      "to": [
-        -4,
-        20,
-        8.5
-      ],
-      "light_emission": 15,
-      "faces": {
-        "north": {
-          "uv": [
-            8,
-            4,
-            9,
-            16
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "east": {
-          "uv": [
-            8,
-            4,
-            9,
-            16
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "south": {
-          "uv": [
-            8,
-            4,
-            9,
-            16
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "west": {
-          "uv": [
-            8,
-            4,
-            9,
-            16
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "up": {
-          "uv": [
-            8,
-            0,
-            9,
-            1
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "down": {
-          "uv": [
-            8,
-            0,
-            9,
-            1
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        }
-      }
-    },
-    {
-      "name": "steel_poll",
-      "from": [
-        11.0415,
-        13,
-        6.5
-      ],
-      "to": [
-        14.0415,
-        15,
-        9.5
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            8,
-            3,
-            10
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            13,
-            3,
-            15
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            8,
-            3,
-            10
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            13,
-            3,
-            15
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            13,
-            3,
-            16
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            13,
-            3,
-            16
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "crystal_poll",
-      "from": [
-        13.5415,
-        13.5,
-        7.5
-      ],
-      "to": [
-        16.5415,
-        14.5,
-        8.5
-      ],
-      "rotation": {
-        "angle": -20,
-        "axis": "z",
-        "origin": [
-          14.0415,
-          14,
-          8
-        ]
-      },
-      "light_emission": 15,
-      "faces": {
-        "north": {
-          "uv": [
-            8,
-            0,
-            11,
-            1
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "east": {
-          "uv": [
-            8,
-            0,
-            9,
-            1
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "south": {
-          "uv": [
-            8,
-            0,
-            11,
-            1
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "up": {
-          "uv": [
-            8,
-            0,
-            11,
-            1
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "down": {
-          "uv": [
-            8,
-            0,
-            11,
-            1
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        }
-      }
-    },
-    {
-      "name": "brass_socket",
-      "from": [
-        6,
-        8,
-        6
-      ],
-      "to": [
-        10,
-        10,
-        10
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            4,
-            2
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            4,
-            2
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            4,
-            2
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            4,
-            2
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            4,
-            4
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            4,
-            4
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "wood_shaft",
-      "from": [
-        7,
-        4,
-        7
-      ],
-      "to": [
-        9,
-        8,
-        9
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            12,
-            0,
-            14,
-            4
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            12,
-            0,
-            14,
-            4
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            12,
-            0,
-            14,
-            4
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            12,
-            0,
-            14,
-            4
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "brass_band",
-      "from": [
-        6,
-        3,
-        6
-      ],
-      "to": [
-        10,
-        4,
-        10
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            4,
-            1
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            4,
-            1
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            4,
-            1
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            4,
-            1
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            4,
-            4
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            4,
-            4
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "leather_grip",
-      "from": [
-        7,
-        -3,
-        7
-      ],
-      "to": [
-        9,
-        3,
-        9
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            14,
-            0,
-            16,
-            6
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            14,
-            0,
-            16,
-            6
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            14,
-            0,
-            16,
-            6
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            14,
-            0,
-            16,
-            6
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "brass_pommel_ring",
-      "from": [
-        6,
-        -4,
-        6
-      ],
-      "to": [
-        10,
-        -3,
-        10
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            4,
-            1
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            4,
-            1
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            4,
-            1
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            4,
-            1
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            4,
-            4
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            4,
-            4
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "brass_pommel",
-      "from": [
-        6.5,
-        -7.1,
-        7
-      ],
-      "to": [
-        9.5,
-        -4.1,
-        9
-      ],
-      "rotation": {
-        "angle": 45,
-        "axis": "z",
-        "origin": [
-          8,
-          -5.6,
-          8
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            3,
-            3
-          ],
-          "texture": "#tools"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            2,
-            3
-          ],
-          "texture": "#tools"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            3,
-            3
-          ],
-          "texture": "#tools"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            2,
-            3
-          ],
-          "texture": "#tools"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            3,
-            2
-          ],
-          "texture": "#tools"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            3,
-            2
-          ],
-          "texture": "#tools"
-        }
-      }
-    },
-    {
-      "name": "crystal_pommel",
-      "from": [
-        7,
-        -6.6,
-        6.5
-      ],
-      "to": [
-        9,
-        -4.6,
-        9.5
-      ],
-      "rotation": {
-        "angle": 45,
-        "axis": "z",
-        "origin": [
-          8,
-          -5.6,
-          8
-        ]
-      },
-      "light_emission": 15,
-      "faces": {
-        "north": {
-          "uv": [
-            8,
-            0,
-            10,
-            2
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "east": {
-          "uv": [
-            8,
-            0,
-            11,
-            2
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "south": {
-          "uv": [
-            8,
-            0,
-            10,
-            2
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "west": {
-          "uv": [
-            8,
-            0,
-            11,
-            2
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "up": {
-          "uv": [
-            8,
-            0,
-            10,
-            3
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        },
-        "down": {
-          "uv": [
-            8,
-            0,
-            10,
-            3
-          ],
-          "texture": "#tools",
-          "tintindex": 0
-        }
-      }
-    }
-  ],
-  "display": {
-    "thirdperson_righthand": {
-      "rotation": [
-        0,
-        -90,
-        -35
-      ],
-      "translation": [
-        0,
-        7.5,
-        3
-      ],
-      "scale": [
-        0.7,
-        0.7,
-        0.7
-      ]
-    },
-    "thirdperson_lefthand": {
-      "rotation": [
-        0,
-        90,
-        35
-      ],
-      "translation": [
-        0,
-        7.5,
-        3
-      ],
-      "scale": [
-        0.7,
-        0.7,
-        0.7
-      ]
-    },
-    "firstperson_righthand": {
-      "rotation": [
-        0,
-        -90,
-        -20
-      ],
-      "translation": [
-        1.13,
-        4.6,
-        1.13
-      ],
-      "scale": [
-        0.55,
-        0.55,
-        0.55
-      ]
-    },
-    "firstperson_lefthand": {
-      "rotation": [
-        0,
-        90,
-        -70
-      ],
-      "translation": [
-        1.13,
-        4.6,
-        1.13
-      ],
-      "scale": [
-        0.55,
-        0.55,
-        0.55
-      ]
-    },
-    "ground": {
-      "rotation": [
-        0,
-        0,
-        -45
-      ],
-      "translation": [
-        0,
-        2,
-        0
-      ],
-      "scale": [
-        0.45,
-        0.45,
-        0.45
-      ]
-    },
-    "gui": {
-      "rotation": [
-        0,
-        0,
-        -45
-      ],
-      "scale": [
-        0.56,
-        0.56,
-        0.56
-      ]
-    },
-    "head": {
-      "rotation": [
-        0,
-        -180,
-        -45
-      ],
-      "translation": [
-        0,
-        13,
-        7
-      ]
-    },
-    "fixed": {
-      "rotation": [
-        0,
-        -180,
-        -45
-      ],
-      "scale": [
-        0.9,
-        0.9,
-        0.9
-      ]
-    }
-  }
+	"format_version": "26.3",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"particle": "hextale:item/hextech_tools",
+		"tools": "hextale:item/hextech_tools"
+	},
+	"elements": [
+		{
+			"name": "brass_ring_0",
+			"from": [5.5, 17, 6.5],
+			"to": [10.5, 18, 9.5],
+			"faces": {
+				"north": {"uv": [0, 4, 5, 5], "texture": "#tools"},
+				"east": {"uv": [0, 5, 3, 6], "texture": "#tools"},
+				"south": {"uv": [0, 4, 5, 5], "texture": "#tools"},
+				"west": {"uv": [0, 5, 3, 6], "texture": "#tools"},
+				"up": {"uv": [0, 5, 5, 8], "texture": "#tools"},
+				"down": {"uv": [0, 5, 5, 8], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "brass_ring_1",
+			"from": [8.7811, 15.683, 7],
+			"to": [12.7811, 16.683, 9],
+			"rotation": {"x": 0, "y": 0, "z": -60, "origin": [10.7811, 16.183, 8]},
+			"faces": {
+				"north": {"uv": [0, 4, 4, 5], "texture": "#tools"},
+				"south": {"uv": [0, 4, 4, 5], "texture": "#tools"},
+				"west": {"uv": [0, 5, 2, 6], "texture": "#tools"},
+				"up": {"uv": [0, 5, 4, 7], "texture": "#tools"},
+				"down": {"uv": [0, 5, 4, 7], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "brass_ring_2",
+			"from": [8.7811, 11.317, 7],
+			"to": [12.7811, 12.317, 9],
+			"rotation": {"x": 0, "y": 0, "z": 60, "origin": [10.7811, 11.817, 8]},
+			"faces": {
+				"north": {"uv": [0, 4, 4, 5], "texture": "#tools"},
+				"south": {"uv": [0, 4, 4, 5], "texture": "#tools"},
+				"west": {"uv": [0, 5, 2, 6], "texture": "#tools"},
+				"up": {"uv": [0, 5, 4, 7], "texture": "#tools"},
+				"down": {"uv": [0, 5, 4, 7], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "brass_ring_3",
+			"from": [5.5, 10, 6.5],
+			"to": [10.5, 11, 9.5],
+			"faces": {
+				"north": {"uv": [0, 4, 5, 5], "texture": "#tools"},
+				"east": {"uv": [0, 5, 3, 6], "texture": "#tools"},
+				"south": {"uv": [0, 4, 5, 5], "texture": "#tools"},
+				"west": {"uv": [0, 5, 3, 6], "texture": "#tools"},
+				"up": {"uv": [0, 5, 5, 8], "texture": "#tools"},
+				"down": {"uv": [0, 5, 5, 8], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "brass_ring_4",
+			"from": [3.1989, 15.663, 6.98],
+			"to": [7.2389, 16.703, 9.02],
+			"rotation": {"x": 0, "y": 0, "z": 60, "origin": [5.2189, 16.183, 8]},
+			"faces": {
+				"north": {"uv": [0, 4, 4, 5], "texture": "#tools"},
+				"east": {"uv": [0, 5, 2, 6], "texture": "#tools"},
+				"south": {"uv": [0, 4, 4, 5], "texture": "#tools"},
+				"up": {"uv": [0, 5, 4, 7], "texture": "#tools"},
+				"down": {"uv": [0, 5, 4, 7], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "brass_ring_5",
+			"from": [3.1989, 11.297, 6.98],
+			"to": [7.2389, 12.337, 9.02],
+			"rotation": {"x": 0, "y": 0, "z": -60, "origin": [5.2189, 11.817, 8]},
+			"faces": {
+				"north": {"uv": [0, 4, 4, 5], "texture": "#tools"},
+				"east": {"uv": [0, 5, 2, 6], "texture": "#tools"},
+				"south": {"uv": [0, 4, 4, 5], "texture": "#tools"},
+				"up": {"uv": [0, 5, 4, 7], "texture": "#tools"},
+				"down": {"uv": [0, 5, 4, 7], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "brass_finial",
+			"from": [7, 18.1, 6],
+			"to": [9, 20.1, 10],
+			"rotation": {"angle": 45, "axis": "z", "origin": [8, 19.1, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 2], "texture": "#tools"},
+				"east": {"uv": [0, 0, 4, 2], "texture": "#tools"},
+				"south": {"uv": [0, 0, 2, 2], "texture": "#tools"},
+				"west": {"uv": [0, 0, 4, 2], "texture": "#tools"},
+				"up": {"uv": [0, 0, 2, 4], "texture": "#tools"},
+				"down": {"uv": [0, 0, 2, 4], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "steel_neck",
+			"from": [6, 12, 6.5],
+			"to": [10, 16, 9.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [5, 0, 0]},
+			"faces": {
+				"north": {"uv": [0, 8, 4, 12], "texture": "#tools"},
+				"east": {"uv": [0, 13, 4, 16], "rotation": 90, "texture": "#tools"},
+				"south": {"uv": [0, 8, 4, 12], "texture": "#tools"},
+				"up": {"uv": [0, 13, 4, 16], "texture": "#tools"},
+				"down": {"uv": [0, 13, 4, 16], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "steel_rib",
+			"from": [1, 12, 6.5],
+			"to": [6, 16, 9.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [5, 0, 0]},
+			"faces": {
+				"north": {"uv": [0, 8, 5, 12], "texture": "#tools"},
+				"south": {"uv": [0, 8, 5, 12], "texture": "#tools"},
+				"west": {"uv": [0, 13, 4, 16], "rotation": 90, "texture": "#tools"},
+				"up": {"uv": [0, 13, 5, 16], "texture": "#tools"},
+				"down": {"uv": [0, 13, 5, 16], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "steel_web",
+			"from": [1, 10, 7.5],
+			"to": [3, 18, 8.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [5, 0, 0]},
+			"faces": {
+				"north": {"uv": [0, 8, 8, 10], "rotation": 90, "texture": "#tools"},
+				"south": {"uv": [0, 8, 8, 10], "rotation": 90, "texture": "#tools"},
+				"up": {"uv": [0, 13, 2, 14], "texture": "#tools"},
+				"down": {"uv": [0, 13, 2, 14], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "steel_cheek_up",
+			"from": [1, 13.5, 7],
+			"to": [6, 17.5, 9],
+			"rotation": {"angle": -38, "axis": "z", "origin": [6, 15.5, 8]},
+			"faces": {
+				"north": {"uv": [0, 8, 5, 12], "texture": "#tools"},
+				"east": {"uv": [0, 13, 4, 15], "rotation": 90, "texture": "#tools"},
+				"south": {"uv": [0, 8, 5, 12], "texture": "#tools"},
+				"west": {"uv": [0, 13, 4, 15], "rotation": 90, "texture": "#tools"},
+				"up": {"uv": [0, 13, 5, 15], "texture": "#tools"},
+				"down": {"uv": [0, 13, 5, 15], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "steel_cheek_down",
+			"from": [1, 10.5, 7],
+			"to": [6, 14.5, 9],
+			"rotation": {"angle": 38, "axis": "z", "origin": [6, 12.5, 8]},
+			"faces": {
+				"north": {"uv": [0, 8, 5, 12], "texture": "#tools"},
+				"east": {"uv": [0, 13, 4, 15], "rotation": 90, "texture": "#tools"},
+				"south": {"uv": [0, 8, 5, 12], "texture": "#tools"},
+				"west": {"uv": [0, 13, 4, 15], "rotation": 90, "texture": "#tools"},
+				"up": {"uv": [0, 13, 5, 15], "texture": "#tools"},
+				"down": {"uv": [0, 13, 5, 15], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "crystal_edge",
+			"from": [0, 8, 7.5],
+			"to": [1, 20, 8.5],
+			"light_emission": 15,
+			"rotation": {"angle": 0, "axis": "y", "origin": [5, 0, 0]},
+			"faces": {
+				"north": {"uv": [8, 4, 9, 16], "texture": "#tools", "tintindex": 0},
+				"east": {"uv": [8, 4, 9, 16], "texture": "#tools", "tintindex": 0},
+				"south": {"uv": [8, 4, 9, 16], "texture": "#tools", "tintindex": 0},
+				"west": {"uv": [8, 4, 9, 16], "texture": "#tools", "tintindex": 0},
+				"up": {"uv": [8, 0, 9, 1], "texture": "#tools", "tintindex": 0},
+				"down": {"uv": [8, 0, 9, 1], "texture": "#tools", "tintindex": 0}
+			}
+		},
+		{
+			"name": "steel_poll",
+			"from": [11.0415, 13, 6.5],
+			"to": [14.0415, 15, 9.5],
+			"faces": {
+				"north": {"uv": [0, 8, 3, 10], "texture": "#tools"},
+				"east": {"uv": [0, 13, 3, 15], "texture": "#tools"},
+				"south": {"uv": [0, 8, 3, 10], "texture": "#tools"},
+				"west": {"uv": [0, 13, 3, 15], "texture": "#tools"},
+				"up": {"uv": [0, 13, 3, 16], "texture": "#tools"},
+				"down": {"uv": [0, 13, 3, 16], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "crystal_poll",
+			"from": [13.5415, 13.5, 7.5],
+			"to": [16.5415, 14.5, 8.5],
+			"light_emission": 15,
+			"rotation": {"angle": -20, "axis": "z", "origin": [14.0415, 14, 8]},
+			"faces": {
+				"north": {"uv": [8, 0, 11, 1], "texture": "#tools", "tintindex": 0},
+				"east": {"uv": [8, 0, 9, 1], "texture": "#tools", "tintindex": 0},
+				"south": {"uv": [8, 0, 11, 1], "texture": "#tools", "tintindex": 0},
+				"up": {"uv": [8, 0, 11, 1], "texture": "#tools", "tintindex": 0},
+				"down": {"uv": [8, 0, 11, 1], "texture": "#tools", "tintindex": 0}
+			}
+		},
+		{
+			"name": "brass_socket",
+			"from": [6, 8, 6],
+			"to": [10, 10, 10],
+			"faces": {
+				"north": {"uv": [0, 0, 4, 2], "texture": "#tools"},
+				"east": {"uv": [0, 0, 4, 2], "texture": "#tools"},
+				"south": {"uv": [0, 0, 4, 2], "texture": "#tools"},
+				"west": {"uv": [0, 0, 4, 2], "texture": "#tools"},
+				"up": {"uv": [0, 0, 4, 4], "texture": "#tools"},
+				"down": {"uv": [0, 0, 4, 4], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "wood_shaft",
+			"from": [7, 4, 7],
+			"to": [9, 8, 9],
+			"faces": {
+				"north": {"uv": [12, 0, 14, 4], "texture": "#tools"},
+				"east": {"uv": [12, 0, 14, 4], "texture": "#tools"},
+				"south": {"uv": [12, 0, 14, 4], "texture": "#tools"},
+				"west": {"uv": [12, 0, 14, 4], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "brass_band",
+			"from": [6, 3, 6],
+			"to": [10, 4, 10],
+			"faces": {
+				"north": {"uv": [0, 0, 4, 1], "texture": "#tools"},
+				"east": {"uv": [0, 0, 4, 1], "texture": "#tools"},
+				"south": {"uv": [0, 0, 4, 1], "texture": "#tools"},
+				"west": {"uv": [0, 0, 4, 1], "texture": "#tools"},
+				"up": {"uv": [0, 0, 4, 4], "texture": "#tools"},
+				"down": {"uv": [0, 0, 4, 4], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "leather_grip",
+			"from": [7, -3, 7],
+			"to": [9, 3, 9],
+			"faces": {
+				"north": {"uv": [14, 0, 16, 6], "texture": "#tools"},
+				"east": {"uv": [14, 0, 16, 6], "texture": "#tools"},
+				"south": {"uv": [14, 0, 16, 6], "texture": "#tools"},
+				"west": {"uv": [14, 0, 16, 6], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "brass_pommel_ring",
+			"from": [6, -4, 6],
+			"to": [10, -3, 10],
+			"faces": {
+				"north": {"uv": [0, 0, 4, 1], "texture": "#tools"},
+				"east": {"uv": [0, 0, 4, 1], "texture": "#tools"},
+				"south": {"uv": [0, 0, 4, 1], "texture": "#tools"},
+				"west": {"uv": [0, 0, 4, 1], "texture": "#tools"},
+				"up": {"uv": [0, 0, 4, 4], "texture": "#tools"},
+				"down": {"uv": [0, 0, 4, 4], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "brass_pommel",
+			"from": [6.5, -7.1, 7],
+			"to": [9.5, -4.1, 9],
+			"rotation": {"angle": 45, "axis": "z", "origin": [8, -5.6, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 3, 3], "texture": "#tools"},
+				"east": {"uv": [0, 0, 2, 3], "texture": "#tools"},
+				"south": {"uv": [0, 0, 3, 3], "texture": "#tools"},
+				"west": {"uv": [0, 0, 2, 3], "texture": "#tools"},
+				"up": {"uv": [0, 0, 3, 2], "texture": "#tools"},
+				"down": {"uv": [0, 0, 3, 2], "texture": "#tools"}
+			}
+		},
+		{
+			"name": "crystal_pommel",
+			"from": [7, -6.6, 6.5],
+			"to": [9, -4.6, 9.5],
+			"light_emission": 15,
+			"rotation": {"angle": 45, "axis": "z", "origin": [8, -5.6, 8]},
+			"faces": {
+				"north": {"uv": [8, 0, 10, 2], "texture": "#tools", "tintindex": 0},
+				"east": {"uv": [8, 0, 11, 2], "texture": "#tools", "tintindex": 0},
+				"south": {"uv": [8, 0, 10, 2], "texture": "#tools", "tintindex": 0},
+				"west": {"uv": [8, 0, 11, 2], "texture": "#tools", "tintindex": 0},
+				"up": {"uv": [8, 0, 10, 3], "texture": "#tools", "tintindex": 0},
+				"down": {"uv": [8, 0, 10, 3], "texture": "#tools", "tintindex": 0}
+			}
+		}
+	],
+	"gui_light": "front",
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [-27, -90, -35],
+			"translation": [0, 4, 1.25],
+			"scale": [0.7, 0.7, 0.7]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [8.25, 90, 0],
+			"translation": [0, 4, 1.25],
+			"scale": [0.7, 0.7, 0.7]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, -90, -20],
+			"translation": [1.63, 2.85, 0.63],
+			"scale": [0.45, 0.45, 0.45]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, 90, 0],
+			"translation": [1.63, 2.85, 0.63],
+			"scale": [0.45, 0.45, 0.45]
+		},
+		"ground": {
+			"rotation": [0, 0, -45],
+			"translation": [0, 2, 0],
+			"scale": [0.45, 0.45, 0.45]
+		},
+		"gui": {
+			"rotation": [0, 0, -45],
+			"translation": [-0.25, -1, 0],
+			"scale": [0.6, 0.6, 0.6]
+		},
+		"head": {
+			"rotation": [0, -180, -45],
+			"translation": [0, 13, 7]
+		},
+		"fixed": {
+			"rotation": [0, -180, -45],
+			"translation": [0.5, -0.5, 0],
+			"scale": [0.6, 0.6, 0.6]
+		}
+	}
 }
