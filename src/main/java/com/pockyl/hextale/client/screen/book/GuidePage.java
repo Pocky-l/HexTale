@@ -1073,6 +1073,7 @@ final class GuidePage {
             case INFUSION -> infusionHeight(display);
             case PICKAXE_RUNES -> optionsHeight(RuneHolder.PICKAXE);
             case PYLON_RUNES -> optionsHeight(RuneHolder.PYLON);
+            case RUNES -> optionsHeight(holderOf(display));
             case MULTIBLOCK -> multiblockHeight(display);
             case HEX_CRAFTING -> SLOT * 3 + 10;
             case ALLOY -> SLOT + 10;
@@ -1150,6 +1151,7 @@ final class GuidePage {
             case INFUSION -> tooltip = renderInfusion(graphics, display, x, y, mouseX, mouseY, now);
             case PICKAXE_RUNES -> tooltip = renderOptions(graphics, RuneHolder.PICKAXE, x, y, mouseX, mouseY, now);
             case PYLON_RUNES -> tooltip = renderOptions(graphics, RuneHolder.PYLON, x, y, mouseX, mouseY, now);
+            case RUNES -> tooltip = renderOptions(graphics, holderOf(display), x, y, mouseX, mouseY, now);
             case MULTIBLOCK -> tooltip = renderMultiblock(graphics, display, x, y, mouseX, mouseY, now);
             case HEX_CRAFTING -> tooltip = renderHexCrafting(graphics, display, x, y, mouseX, mouseY, now);
             case ALLOY -> tooltip = renderAlloy(graphics, display, x, y, mouseX, mouseY, now);
@@ -1537,17 +1539,26 @@ final class GuidePage {
         return tooltip;
     }
 
+    /** The holder a {@code runes} display names; the pickaxe when the id is unknown. */
+    private static RuneHolder holderOf(QuestDisplay display) {
+        RuneHolder holder = RuneHolder.byId(display.result());
+        return holder == null ? RuneHolder.PICKAXE : holder;
+    }
+
     /** Picks the rune under the mouse in the last drawn runes grid; true when one was hit. */
     private boolean pickRune(double mouseX, double mouseY) {
-        QuestDisplay display = selected == null ? null : selected.display();
-        if (display == null || runeGridX == Integer.MIN_VALUE) {
+        if (selected == null || runeGridX == Integer.MIN_VALUE) {
             return false;
         }
-        RuneHolder holder = switch (display.kind()) {
-            case PICKAXE_RUNES -> RuneHolder.PICKAXE;
-            case PYLON_RUNES -> RuneHolder.PYLON;
-            default -> null;
-        };
+        RuneHolder holder = null;
+        for (QuestDisplay display = selected.display(); display != null && holder == null; display = display.then()) {
+            holder = switch (display.kind()) {
+                case PICKAXE_RUNES -> RuneHolder.PICKAXE;
+                case PYLON_RUNES -> RuneHolder.PYLON;
+                case RUNES -> holderOf(display);
+                default -> null;
+            };
+        }
         if (holder == null) {
             return false;
         }

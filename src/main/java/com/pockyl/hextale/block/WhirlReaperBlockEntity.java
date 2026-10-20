@@ -22,6 +22,17 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.BonemealSource;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.FarmlandBlock;
+import net.minecraft.world.level.block.LevelEvent;
 
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.JarReach;
@@ -34,7 +45,9 @@ import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.PickaxeRunes;
+import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.ReaperRune;
+import com.pockyl.hextale.runework.ToolEffects;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -227,16 +240,87 @@ public class WhirlReaperBlockEntity extends BlockEntity {
 
     private void harvest(ServerLevel level, Pending whirl) {
         boolean reaped;
+        BlockPos target = whirl.target();
         if (whirl.kind() == WhirlKind.CROP) {
-            reaped = Reaping.reapCrop(level, whirl.target());
+            reaped = Reaping.reapCrop(level, target, drops -> enrich(level, target, drops));
         } else {
-            Reaping.drop(level, whirl.target(), whirl.kind(), whirl.taken(), worldPosition);
+            Reaping.drop(level, target, whirl.kind(), whirl.taken(), worldPosition, drops -> enrich(level, target, drops));
             reaped = !whirl.taken().isEmpty();
         }
         if (reaped) {
-            Vec3 at = Vec3.atCenterOf(whirl.target());
+            Vec3 at = Vec3.atCenterOf(target);
             level.playSound(null, at.x, at.y, at.z, ModSounds.WHIRL_REAP.get(), SoundSource.BLOCKS, 0.5F,
                     0.9F + level.getRandom().nextFloat() * 0.2F);
+            afterHarvest(level, target);
+        }
+    }
+
+    private int strength(ReaperRune rune) {
+        return runes.strength(rune.rune());
+    }
+
+    /** Pollen: one or two more of the produce; Photosynthesis: now and then a golden fruit. */
+    void enrich(ServerLevel level, BlockPos pos, List<ItemStack> drops) {
+        RandomSource random = level.getRandom();
+        Vec3 at = Vec3.atCenterOf(pos);
+        ItemStack produce = drops.stream().filter(stack -> !stack.isEmpty()).findFirst().orElse(ItemStack.EMPTY);
+        if (produce.isEmpty()) {
+            return;
+        }
+        int pollen = strength(ReaperRune.POLLEN);
+        if (pollen > 0 && random.nextFloat() < HolderRune.at(ReaperRune.MORE, pollen)) {
+            drops.add(produce.copyWithCount(1 + random.nextInt(2)));
+            ToolEffects.puff(level, at, ReaperRune.POLLEN.rune(), 6, 0.3);
+        }
+        int light = strength(ReaperRune.PHOTOSYNTHESIS);
+        if (light > 0 && random.nextFloat() < HolderRune.at(ReaperRune.GOLDEN, light)) {
+            drops.add(new ItemStack(golden(drops)));
+            ToolEffects.puff(level, at, ReaperRune.PHOTOSYNTHESIS.rune(), 14, 0.4);
+            level.sendParticles(ParticleTypes.WAX_ON, at.x, at.y, at.z, 10, 0.3, 0.3, 0.3, 0.05);
+            level.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_CLUSTER_PLACE, SoundSource.BLOCKS, 0.6F, 0.7F);
+        }
+    }
+
+    /** The golden fruit of a harvest: a golden carrot from carrots, a glistering slice from melons, else a golden apple. */
+    static Item golden(List<ItemStack> drops) {
+        for (ItemStack stack : drops) {
+            if (stack.is(Items.CARROT)) {
+                return Items.GOLDEN_CARROT;
+            }
+            if (stack.is(Items.MELON_SLICE)) {
+                return Items.GLISTERING_MELON_SLICE;
+            }
+        }
+        return Items.GOLDEN_APPLE;
+    }
+
+    /** Fertility: the plant may be bonemealed; Spring: the farmland around is wetted and the plants around may grow; Radiance: experience. */
+    void afterHarvest(ServerLevel level, BlockPos pos) {
+        RandomSource random = level.getRandom();
+        int fertility = strength(ReaperRune.FERTILITY);
+        BlockState plant = level.getBlockState(pos);
+        if (fertility > 0 && plant.getBlock() instanceof BonemealableBlock meal && meal.isValidBonemealTarget(level, pos, plant, BonemealSource.MOB)
+                && random.nextFloat() < HolderRune.at(ReaperRune.BONEMEAL, fertility)) {
+            meal.performBonemeal(level, random, pos, plant, BonemealSource.MOB);
+            level.levelEvent(LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, pos, 15);
+            ToolEffects.puff(level, Vec3.atCenterOf(pos), ReaperRune.FERTILITY.rune(), 6, 0.3);
+        }
+        int spring = strength(ReaperRune.SPRING);
+        if (spring > 0) {
+            for (BlockPos near : BlockPos.betweenClosed(pos.offset(-1, -1, -1), pos.offset(1, 0, 1))) {
+                BlockState state = level.getBlockState(near);
+                if (state.getBlock() instanceof FarmlandBlock && state.getValue(FarmlandBlock.MOISTURE) < FarmlandBlock.MAX_MOISTURE) {
+                    level.setBlock(near, state.setValue(FarmlandBlock.MOISTURE, FarmlandBlock.MAX_MOISTURE), Block.UPDATE_CLIENTS);
+                } else if (near.getY() == pos.getY() && !near.equals(pos) && state.isRandomlyTicking()
+                        && random.nextFloat() < HolderRune.at(ReaperRune.QUICKEN, spring)) {
+                    state.randomTick(level, near.immutable(), random);
+                }
+            }
+            level.sendParticles(ParticleTypes.SPLASH, pos.getX() + 0.5, pos.getY() + 0.2, pos.getZ() + 0.5, 10, 0.6, 0.1, 0.6, 0.1);
+        }
+        int radiance = strength(ReaperRune.RADIANCE);
+        if (radiance > 0 && random.nextFloat() < HolderRune.at(ReaperRune.EXPERIENCE, radiance)) {
+            ExperienceOrb.award(level, crystal(worldPosition), 1);
         }
     }
 
@@ -307,7 +391,10 @@ public class WhirlReaperBlockEntity extends BlockEntity {
         if (kind == null) {
             return;
         }
-        charges--;
+        int dam = strength(ReaperRune.DAM);
+        if (dam == 0 || level.getRandom().nextFloat() >= HolderRune.at(ReaperRune.THRIFT, dam)) {
+            charges--;
+        }
         int travel = travelTicks(worldPosition, target);
         long now = level.getGameTime();
         pending.add(new Pending(target.immutable(), kind, now + travel, now + travel + kind.work(), false, List.of()));

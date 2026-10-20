@@ -6,7 +6,11 @@
   ],
   "display": {
     "kind": "infusion",
-    "result": "hextale:hextech_axe"
+    "result": "hextale:hextech_axe",
+    "then": {
+      "kind": "runes",
+      "result": "axe"
+    }
   },
   "research": "hextech_axe",
   "pos": [

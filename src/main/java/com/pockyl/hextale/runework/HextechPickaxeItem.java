@@ -1,6 +1,5 @@
 package com.pockyl.hextale.runework;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -13,7 +12,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
-import com.pockyl.hextale.rune.ComplexRune;
 
 import java.util.function.Consumer;
 
@@ -39,21 +37,24 @@ public class HextechPickaxeItem extends Item {
         return stack.getItem() instanceof HextechPickaxeItem;
     }
 
-    /** Tempering: points of wear are often shrugged off. */
+    /** Tempering: points of wear are often shrugged off; Mending shrugs off more and mends a point. */
     @Override
     public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<ItemStack> onBroken) {
-        int strength = PickaxeRunes.of(stack).strength(PickaxeRune.TEMPERING);
-        if (strength == 0 || entity == null || entity.level().isClientSide()) {
+        if (entity == null || entity.level().isClientSide()) {
             return amount;
         }
-        float chance = PickaxeEffects.temperChance(strength);
+        PickaxeRunes runes = PickaxeRunes.of(stack);
+        int strength = runes.strength(PickaxeRune.TEMPERING);
         int left = amount;
-        for (int i = 0; i < amount; i++) {
-            if (entity.getRandom().nextFloat() < chance) {
-                left--;
+        if (strength > 0) {
+            float chance = PickaxeEffects.temperChance(strength);
+            for (int i = 0; i < amount; i++) {
+                if (entity.getRandom().nextFloat() < chance) {
+                    left--;
+                }
             }
         }
-        return left;
+        return ToolEffects.mend(stack, left, entity, runes.strength(PickaxeRune.MENDING));
     }
 
     /** Right click: the pickaxe's right-click rune, if it carries one; then it rests a moment. */
@@ -76,14 +77,6 @@ public class HextechPickaxeItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
                                 TooltipFlag flag) {
-        PickaxeRunes runes = PickaxeRunes.of(stack);
-        for (PickaxeRunes.Entry entry : runes.entries()) {
-            ComplexRune rune = entry.rune();
-            tooltip.accept(Component.translatable(rune.translationKey()).withColor(rune.color())
-                    .append(Component.literal(" " + "★".repeat(entry.stars())).withStyle(ChatFormatting.GOLD))
-                    .append(Component.literal("★".repeat(3 - entry.stars())).withStyle(ChatFormatting.DARK_GRAY)));
-        }
-        tooltip.accept(Component.translatable("item.hextale.hextech_pickaxe.slots", runes.count(), PickaxeRunes.SLOTS)
-                .withStyle(ChatFormatting.DARK_GRAY));
+        HextechToolItem.listRunes(PickaxeRunes.of(stack), tooltip);
     }
 }

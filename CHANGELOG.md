@@ -4,6 +4,47 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-beta.2] - 2026-10-20
+### Added
+Every hextech tool and every working device now takes runes, and most runes are gifts you feel while you work: luck,
+free buffs, rare golden finds. A rune that works shows it with a puff of dust in its colour. Runes are still found as
+scrolls in treasure chests, so every scroll you find now has more places to go.
+
+- Hextech pickaxe, eight new runes: Haste (a chance of Haste while digging, Haste II at three stars), Fertility (drops
+  as with Fortune, on top of the enchantment), Radiance (more experience from ores, now and then some from stone),
+  Breath (a chance to be fed a little; under water every block gives breath back), Banishing (Night Vision while
+  digging in the dark), Fireproofing (Fire Resistance the moment a block opens lava), Eternal Flame (in the dark a hex
+  wisp may stay where the block was - a mote of cold light that lights the tunnel for good and goes out at a touch)
+  and Mending (wear may be shrugged off and a point mended).
+- Hextech axe, shovel and sword take up to four runes like the pickaxe; a grindstone takes them off.
+  - Axe: Gravity (the whole tree comes down at one blow, its leaves too; sneak for one block; a log wall without
+    leaves is never felled), Growth (a tree cut at its foot is planted again, from a sapling in your bag or with a
+    chance out of nothing), Pollen (leaves as with Fortune), Corrosion (a blow may eat through armour: more damage
+    and the armour wears), Haste, Mending, Lens.
+  - Shovel: Cache (soil, sand and gravel may hide a treasure - bones, flint, nuggets, clay, an emerald, a pottery
+    sherd, a diamond, even a rune scroll), Erosion (digs 3 x 3 of soil, 3 x 3 x 2 at three stars; never the stone
+    among it), Fertility (grass and soil give seeds, bulbs and saplings), Haste, Mending, Lens.
+  - Sword: Withering (a blow may heal you), Chain Lightning (a blow may jump on as lightning to the hostile creatures
+    around), Spoils (more loot, as with Looting), Radiance (more experience), Bellows (a kill may give Strength),
+    Flash (the first blow on an unhurt creature strikes harder), Engraving (a kill may leave the head of a zombie,
+    skeleton, creeper or piglin), Mending, Lens.
+- Whirl Reaper, three runes instead of two and six new ones: Fertility (a reaped crop may be bonemealed at once),
+  Pollen (one or two more of the produce), Photosynthesis (now and then a golden carrot, a glistering melon slice or a
+  golden apple), Spring (every harvest wets the farmland around and may quicken the plants next to it), Radiance
+  (harvests give experience, gathered over the reaper) and Dam (a whirl may cost no wind).
+- Hex Sawmill, three runes instead of two and six new ones: Growth (a planted sapling may grow a stage at once), Pollen
+  (leaves as with Fortune), Blades (a log may give one more), Photosynthesis (a felled tree may leave a golden apple),
+  Hush (bee nests and hives on a felled tree come down whole, bees and honey inside) and Dam (a tree may cost no wind).
+- Hex Furnace takes up to three runes (it alone on the altar) and keeps them when broken: Forge (each ore may give one
+  more ingot), Radiance (more experience), Eternal Flame (a melt may burn no fuel), Bellows (the longer it works
+  without a pause, the faster it melts, up to three times), Reforging (iron, gold and copper tools and armour melt
+  into ingots, not a nugget) and Lens.
+- The guide shows the runes of the reaper, the sawmill, the furnace and the three tools under their recipes, and JEI
+  lists them with their numbers per star.
+
+### Fixed
+- The altar named the right refusal when a rune did not fit a reaper or a sawmill, or when they were full.
+
 ## [1.0.0-beta.1] - 2026-10-20
 ### Added
 

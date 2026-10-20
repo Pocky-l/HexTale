@@ -8,7 +8,14 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "hextale:hex_furnace"
+          "name": "hextale:hex_furnace",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:furnace_runes"
+            ],
+            "source": "block_entity"
+          }
         }
       ],
       "rolls": 1

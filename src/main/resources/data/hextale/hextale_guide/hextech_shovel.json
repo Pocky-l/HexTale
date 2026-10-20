@@ -6,7 +6,11 @@
   ],
   "display": {
     "kind": "infusion",
-    "result": "hextale:hextech_shovel"
+    "result": "hextale:hextech_shovel",
+    "then": {
+      "kind": "runes",
+      "result": "shovel"
+    }
   },
   "research": "hextech_shovel"
 }

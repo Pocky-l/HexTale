@@ -2,16 +2,23 @@ package com.pockyl.hextale.farm;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BonemealSource;
+import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
@@ -145,8 +152,15 @@ public final class Felling {
      * an axe would cut it. Blocks that changed since it was found (a player broke them) are skipped.
      */
     public static List<ItemStack> fell(ServerLevel level, Tree tree) {
+        return fell(level, tree, new ItemStack(Items.IRON_AXE), 0);
+    }
+
+    /**
+     * {@link #fell(ServerLevel, Tree)} with the axe the leaves are cut with (Fortune on it: richer leaves) and a chance of
+     * every log to give one more.
+     */
+    public static List<ItemStack> fell(ServerLevel level, Tree tree, ItemStack axe, float moreLogs) {
         List<ItemStack> drops = new ArrayList<>();
-        ItemStack axe = new ItemStack(Items.IRON_AXE);
         List<BlockPos> order = new ArrayList<>(tree.leaves());
         List<BlockPos> logs = new ArrayList<>(tree.logs());
         logs.sort((a, b) -> Integer.compare(b.getY(), a.getY()));
@@ -156,7 +170,11 @@ public final class Felling {
             if (!state.is(BlockTags.LOGS) && !state.is(BlockTags.LEAVES)) {
                 continue;
             }
+            boolean log = state.is(BlockTags.LOGS);
             for (ItemStack drop : Block.getDrops(state, level, pos, level.getBlockEntity(pos), null, axe)) {
+                if (log && moreLogs > 0 && level.getRandom().nextFloat() < moreLogs) {
+                    drop.grow(1);
+                }
                 add(drops, drop);
             }
             level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
@@ -186,6 +204,11 @@ public final class Felling {
      * @return how many were planted
      */
     public static int replant(ServerLevel level, BlockPos foot, List<BlockPos> feet, List<ItemStack> drops) {
+        return replant(level, foot, feet, drops, new ArrayList<>());
+    }
+
+    /** {@link #replant(ServerLevel, BlockPos, List, List)}, adding where it planted to {@code planted}. */
+    public static int replant(ServerLevel level, BlockPos foot, List<BlockPos> feet, List<ItemStack> drops, List<BlockPos> plantedAt) {
         ItemStack best = ItemStack.EMPTY;
         for (ItemStack stack : drops) {
             if (stack.getItem() instanceof BlockItem item && item.getBlock().defaultBlockState().is(BlockTags.SAPLINGS)
@@ -204,12 +227,48 @@ public final class Felling {
                 continue;
             }
             level.setBlock(spot, sapling, Block.UPDATE_ALL);
+            plantedAt.add(spot);
             level.gameEvent(GameEvent.BLOCK_PLACE, spot, GameEvent.Context.of(sapling));
             best.shrink(1);
             planted++;
         }
         drops.removeIf(ItemStack::isEmpty);
         return planted;
+    }
+
+    /** A planted sapling grows a stage at once (a second stage would be the grown tree). */
+    public static void grow(ServerLevel level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        if (state.getBlock() instanceof SaplingBlock sapling) {
+            sapling.advanceTree(level, pos, state, level.getRandom());
+        } else if (state.getBlock() instanceof BonemealableBlock meal && meal.isValidBonemealTarget(level, pos, state, BonemealSource.MOB)) {
+            meal.performBonemeal(level, level.getRandom(), pos, state, BonemealSource.MOB);
+        }
+        level.levelEvent(LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, pos, 15);
+    }
+
+    /**
+     * Takes the bee nests and hives hanging on the felled tree's logs out of the world whole, as with Silk Touch: bees and
+     * honey stay inside. Returns them as items.
+     */
+    public static List<ItemStack> takeNests(ServerLevel level, Tree tree) {
+        List<ItemStack> nests = new ArrayList<>();
+        ItemStack silk = new ItemStack(Items.IRON_AXE);
+        silk.enchant(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH), 1);
+        Set<BlockPos> seen = new HashSet<>();
+        for (BlockPos log : tree.logs()) {
+            for (Direction side : Direction.values()) {
+                BlockPos pos = log.relative(side);
+                BlockState state = level.getBlockState(pos);
+                if (!seen.add(pos) || !(state.getBlock() instanceof BeehiveBlock)) {
+                    continue;
+                }
+                nests.addAll(Block.getDrops(state, level, pos, level.getBlockEntity(pos), null, silk));
+                level.removeBlockEntity(pos);
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+            }
+        }
+        return nests;
     }
 
     /** Lets the felled tree's drops fall on its foot, a few stacks at a time thrown a little apart. */

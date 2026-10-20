@@ -1,0 +1,52 @@
+package com.pockyl.hextale.runework;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+
+import java.util.function.Consumer;
+
+import org.jspecify.annotations.Nullable;
+
+/**
+ * The hextech axe, shovel and sword: tools of their kind carrying up to four runes like the pickaxe, listed in the
+ * tooltip like enchantments. Their effects live in {@link ToolEffects}.
+ */
+public class HextechToolItem extends Item {
+    public HextechToolItem(Properties properties) {
+        super(properties);
+    }
+
+    /** Mending: points of wear are often shrugged off and mended. */
+    @Override
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<ItemStack> onBroken) {
+        RuneHolder holder = RuneHolder.of(stack);
+        if (holder == null || entity == null) {
+            return amount;
+        }
+        ToolRune.Tool tool = ToolEffects.tool(holder);
+        int strength = tool == null ? 0 : ToolEffects.strength(stack, tool, ToolRune.MENDING);
+        return ToolEffects.mend(stack, amount, entity, strength);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
+                                TooltipFlag flag) {
+        listRunes(PickaxeRunes.of(stack), tooltip);
+    }
+
+    /** The runes like enchantments: name in the rune's colour and stars, then how many places are taken. */
+    static void listRunes(PickaxeRunes runes, Consumer<Component> tooltip) {
+        for (PickaxeRunes.Entry entry : runes.entries()) {
+            tooltip.accept(Component.translatable(entry.rune().translationKey()).withColor(entry.rune().color())
+                    .append(Component.literal(" " + "★".repeat(entry.stars())).withStyle(ChatFormatting.GOLD))
+                    .append(Component.literal("★".repeat(3 - entry.stars())).withStyle(ChatFormatting.DARK_GRAY)));
+        }
+        tooltip.accept(Component.translatable("item.hextale.hextech_pickaxe.slots", runes.count(), PickaxeRunes.SLOTS)
+                .withStyle(ChatFormatting.DARK_GRAY));
+    }
+}

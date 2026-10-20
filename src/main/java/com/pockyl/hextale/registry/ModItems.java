@@ -29,6 +29,7 @@ import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.item.UnstableHextechItem;
 import com.pockyl.hextale.runework.HextechPickaxe;
 import com.pockyl.hextale.runework.HextechPickaxeItem;
+import com.pockyl.hextale.runework.HextechToolItem;
 
 public final class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Hextale.MOD_ID);
@@ -179,12 +180,12 @@ public final class ModItems {
     }
 
     /** The hextech axe, shovel and sword: iron tools charged at the altar, as strong as the plain hextech pickaxe. */
-    public static final DeferredItem<Item> HEXTECH_AXE = ITEMS.registerItem("hextech_axe",
-            properties -> new Item(properties.axe(PICKAXE_MATERIALS[0], 6.0F, -3.1F).rarity(Rarity.UNCOMMON)));
-    public static final DeferredItem<Item> HEXTECH_SHOVEL = ITEMS.registerItem("hextech_shovel",
-            properties -> new Item(properties.shovel(PICKAXE_MATERIALS[0], 1.5F, -3.0F).rarity(Rarity.UNCOMMON)));
-    public static final DeferredItem<Item> HEXTECH_SWORD = ITEMS.registerItem("hextech_sword",
-            properties -> new Item(properties.sword(PICKAXE_MATERIALS[0], 3.0F, -2.4F).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<HextechToolItem> HEXTECH_AXE = ITEMS.registerItem("hextech_axe",
+            properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[0], 6.0F, -3.1F).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<HextechToolItem> HEXTECH_SHOVEL = ITEMS.registerItem("hextech_shovel",
+            properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[0], 1.5F, -3.0F).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<HextechToolItem> HEXTECH_SWORD = ITEMS.registerItem("hextech_sword",
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[0], 3.0F, -2.4F).rarity(Rarity.UNCOMMON)));
 
     private ModItems() {
     }

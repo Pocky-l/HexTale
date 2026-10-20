@@ -1,7 +1,9 @@
 {
   "region": "forge",
   "icon": "hextale:hex_furnace",
-  "parents": ["hextech_dust"],
+  "parents": [
+    "hextech_dust"
+  ],
   "goal": {
     "type": "any_of",
     "goals": [
@@ -17,9 +19,19 @@
   },
   "display": {
     "kind": "scheme",
-    "ingredients": ["hextale:hextech_dust", "minecraft:furnace"],
-    "result": "hextale:hex_furnace"
+    "ingredients": [
+      "hextale:hextech_dust",
+      "minecraft:furnace"
+    ],
+    "result": "hextale:hex_furnace",
+    "then": {
+      "kind": "runes",
+      "result": "furnace"
+    }
   },
   "station": true,
-  "pos": [-220, 130]
+  "pos": [
+    -220,
+    130
+  ]
 }

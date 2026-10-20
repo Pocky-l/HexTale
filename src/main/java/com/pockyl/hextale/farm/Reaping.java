@@ -108,6 +108,11 @@ public final class Reaping {
      * is no longer ripe.
      */
     public static boolean reapCrop(ServerLevel level, BlockPos pos) {
+        return reapCrop(level, pos, drops -> { });
+    }
+
+    /** {@link #reapCrop(ServerLevel, BlockPos)}, letting {@code more} add to the drops before they fall (the reaper's runes). */
+    public static boolean reapCrop(ServerLevel level, BlockPos pos, java.util.function.Consumer<List<ItemStack>> more) {
         BlockState state = level.getBlockState(pos);
         IntegerProperty age = age(state);
         if (ripe(level, pos, state) != WhirlKind.CROP || age == null) {
@@ -122,6 +127,7 @@ public final class Reaping {
         BlockState young = state.setValue(age, bush ? Math.min(1, max(age)) : min(age));
         level.setBlock(pos, young, Block.UPDATE_ALL);
         level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(young));
+        more.accept(drops);
         for (ItemStack drop : drops) {
             Block.popResource(level, pos, drop);
         }
@@ -175,15 +181,24 @@ public final class Reaping {
      * came from ({@code from} = the reaper).
      */
     public static void drop(ServerLevel level, BlockPos pos, WhirlKind kind, List<BlockState> taken, BlockPos from) {
+        drop(level, pos, kind, taken, from, drops -> { });
+    }
+
+    /** {@link #drop(ServerLevel, BlockPos, WhirlKind, List, BlockPos)}, letting {@code more} add to the drops first. */
+    public static void drop(ServerLevel level, BlockPos pos, WhirlKind kind, List<BlockState> taken, BlockPos from,
+                            java.util.function.Consumer<List<ItemStack>> more) {
         Vec3 at = kind == WhirlKind.STALK ? beside(pos, from) : Vec3.atCenterOf(pos);
+        List<ItemStack> drops = new ArrayList<>();
         for (BlockState state : taken) {
-            for (ItemStack drop : Block.getDrops(state, level, pos, null)) {
-                ItemEntity item = new ItemEntity(level, at.x + (level.getRandom().nextDouble() - 0.5) * 0.3, at.y,
-                        at.z + (level.getRandom().nextDouble() - 0.5) * 0.3, drop);
-                item.setDeltaMovement((level.getRandom().nextDouble() - 0.5) * 0.06, 0.12, (level.getRandom().nextDouble() - 0.5) * 0.06);
-                item.setDefaultPickUpDelay();
-                level.addFreshEntity(item);
-            }
+            drops.addAll(Block.getDrops(state, level, pos, null));
+        }
+        more.accept(drops);
+        for (ItemStack drop : drops) {
+            ItemEntity item = new ItemEntity(level, at.x + (level.getRandom().nextDouble() - 0.5) * 0.3, at.y,
+                    at.z + (level.getRandom().nextDouble() - 0.5) * 0.3, drop);
+            item.setDeltaMovement((level.getRandom().nextDouble() - 0.5) * 0.06, 0.12, (level.getRandom().nextDouble() - 0.5) * 0.06);
+            item.setDefaultPickUpDelay();
+            level.addFreshEntity(item);
         }
     }
 

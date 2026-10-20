@@ -15,6 +15,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -72,6 +73,17 @@ public final class PickaxeEffects {
     private static final int[] QUAKE_RADIUS = {2, 3, 4, 5};
     private static final int[] QUAKE_COOLDOWN = {120, 100, 80, 60};
     /** Gem odds out of 100 by strength: amethyst, lapis, emerald, diamond. */
+    /** Ore experience is multiplied by 1 + this; stone gives a point now and then. */
+    private static final float[] RADIANCE_ORE = {0.5F, 1.0F, 1.5F, 2.0F};
+    private static final float[] RADIANCE_STONE = {0.03F, 0.05F, 0.07F, 0.09F};
+    private static final float[] FEED = {0.02F, 0.035F, 0.05F, 0.065F};
+    /** Air given back under water per block, in ticks. */
+    private static final int[] BREATH_AIR = {30, 45, 60, 80};
+    private static final int[] NIGHT_SIGHT = {300, 500, 800, 1200};
+    private static final int[] FIRE_SHIELD = {120, 200, 300, 400};
+    private static final float[] WISP = {0.10F, 0.20F, 0.30F, 0.40F};
+    /** Light at the digging spot this dark or darker counts as "the dark". */
+    private static final int DARK = 7;
     private static final int[][] GEM_TABLE = {{60, 25, 12, 3}, {50, 25, 17, 8}, {40, 25, 22, 13}, {30, 25, 25, 20}};
     /** Blocks harder than this count as hard stone for Tempering (deepslate is 3). */
     private static final float HARD = 2.9F;
@@ -109,6 +121,14 @@ public final class PickaxeEffects {
             case EROSION -> Integer.toString(VEIN[i]);
             case INSIGHT -> Integer.toString(REVEAL_RADIUS[i]);
             case LENS, CACHE -> "";
+            case HASTE -> percent(ToolRune.HASTE_CHANCE[i]);
+            case FERTILITY -> HolderRune.roman(i + 1);
+            case RADIANCE -> "+" + percent(RADIANCE_ORE[i]);
+            case BREATH -> percent(FEED[i]);
+            case BANISHING -> HolderRune.seconds(NIGHT_SIGHT[i]);
+            case FIREPROOFING -> HolderRune.seconds(FIRE_SHIELD[i]);
+            case ETERNAL_FLAME -> percent(WISP[i]);
+            case MENDING -> percent(ToolRune.MEND[i]);
             case DRILL -> {
                 int side = AREA_RADIUS[i] * 2 + 1;
                 yield side + "×" + side + (AREA_DEPTH[i] > 1 ? "×" + AREA_DEPTH[i] : "");
@@ -190,6 +210,10 @@ public final class PickaxeEffects {
             }
         }
         RandomSource random = level.getRandom();
+        int fertility = runes.strength(PickaxeRune.FERTILITY);
+        if (fertility > 0) {
+            ToolEffects.rerollWithFortune(event, player, fertility);
+        }
         int forge = runes.strength(PickaxeRune.FORGE);
         if (forge > 0 && ore) {
             List<ItemEntity> more = new ArrayList<>();
@@ -209,6 +233,7 @@ public final class PickaxeEffects {
         if (smelting > 0) {
             smelt(event, ore, smelting - 1);
         }
+        gifts(event, level, player, runes, ore);
         if (runes.strength(PickaxeRune.CACHE) > 0) {
             for (Iterator<ItemEntity> it = event.getDrops().iterator(); it.hasNext(); ) {
                 ItemStack stack = it.next().getItem();
@@ -218,6 +243,68 @@ public final class PickaxeEffects {
                 }
             }
         }
+    }
+
+    /** The passive gifts of digging: Radiance, Haste, Breath, Banishing, Fireproofing, Eternal Flame. */
+    private static void gifts(BlockDropsEvent event, ServerLevel level, Player player, PickaxeRunes runes, boolean ore) {
+        RandomSource random = level.getRandom();
+        BlockPos pos = event.getPos();
+        Vec3 at = Vec3.atCenterOf(pos);
+        BlockState state = event.getState();
+        int radiance = runes.strength(PickaxeRune.RADIANCE);
+        if (radiance > 0) {
+            if (ore && event.getDroppedExperience() > 0) {
+                event.setDroppedExperience(Math.round(event.getDroppedExperience() * (1 + RADIANCE_ORE[radiance - 1])));
+                ToolEffects.puff(level, at, PickaxeRune.RADIANCE.rune(), 5, 0.3);
+            } else if (state.is(BlockTags.BASE_STONE_OVERWORLD) && random.nextFloat() < RADIANCE_STONE[radiance - 1]) {
+                event.setDroppedExperience(event.getDroppedExperience() + 1 + random.nextInt(2));
+                ToolEffects.puff(level, at, PickaxeRune.RADIANCE.rune(), 5, 0.3);
+            }
+        }
+        ToolEffects.haste(level, player, PickaxeRune.HASTE.rune(), runes.strength(PickaxeRune.HASTE));
+        int breath = runes.strength(PickaxeRune.BREATH);
+        if (breath > 0) {
+            if (player.isUnderWater() && player.getAirSupply() < player.getMaxAirSupply()) {
+                player.setAirSupply(Math.min(player.getMaxAirSupply(), player.getAirSupply() + BREATH_AIR[breath - 1]));
+                level.sendParticles(ParticleTypes.BUBBLE, player.getX(), player.getEyeY(), player.getZ(), 6, 0.3, 0.2, 0.3, 0.05);
+            }
+            if (player.getFoodData().needsFood() && random.nextFloat() < FEED[breath - 1]) {
+                player.getFoodData().eat(1, 0.5F);
+                ToolEffects.puff(level, player.position().add(0, 1, 0), PickaxeRune.BREATH.rune(), 8, 0.4);
+                ToolEffects.sound(level, player.position(), SoundEvents.BREEZE_IDLE_GROUND, 0.4F, 1.2F);
+            }
+        }
+        boolean dark = level.getMaxLocalRawBrightness(player.blockPosition()) <= DARK;
+        int banishing = runes.strength(PickaxeRune.BANISHING);
+        if (banishing > 0 && dark && ToolEffects.keep(player, MobEffects.NIGHT_VISION, NIGHT_SIGHT[banishing - 1], 0)) {
+            ToolEffects.puff(level, player.position().add(0, 1.4, 0), PickaxeRune.BANISHING.rune(), 10, 0.4);
+        }
+        int fireproofing = runes.strength(PickaxeRune.FIREPROOFING);
+        if (fireproofing > 0 && nextToLava(level, pos) && ToolEffects.keep(player, MobEffects.FIRE_RESISTANCE, FIRE_SHIELD[fireproofing - 1], 0)) {
+            level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 1, player.getZ(), 16, 0.4, 0.6, 0.4, 0.02);
+            ToolEffects.puff(level, player.position().add(0, 1, 0), PickaxeRune.FIREPROOFING.rune(), 12, 0.5);
+            ToolEffects.sound(level, player.position(), SoundEvents.FIRECHARGE_USE, 0.5F, 0.6F);
+        }
+        int flame = runes.strength(PickaxeRune.ETERNAL_FLAME);
+        if (flame > 0 && !CHAINING.get() && level.getMaxLocalRawBrightness(pos) <= DARK && random.nextFloat() < WISP[flame - 1]) {
+            // The block is gone by the time the drops fall; a wisp takes its place on the next tick, if nothing else does.
+            level.getServer().execute(() -> {
+                if (level.getBlockState(pos).isAir()) {
+                    level.setBlockAndUpdate(pos, com.pockyl.hextale.registry.ModBlocks.HEX_WISP.get().defaultBlockState());
+                    ToolEffects.puff(level, at, PickaxeRune.ETERNAL_FLAME.rune(), 10, 0.2);
+                    ToolEffects.sound(level, at, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.4F, 0.8F);
+                }
+            });
+        }
+    }
+
+    private static boolean nextToLava(ServerLevel level, BlockPos pos) {
+        for (Direction side : Direction.values()) {
+            if (level.getFluidState(pos.relative(side)).is(net.minecraft.tags.FluidTags.LAVA)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static ItemStack gem(RandomSource random, int[] odds) {
@@ -274,6 +361,12 @@ public final class PickaxeEffects {
 
     /** The blocks around the broken one on the face it was struck from: 3x3, two deep, or 5x5. */
     private static void area(BlockDropsEvent event, Player player, ItemStack tool, int radius, int depth) {
+        area(event, player, tool, radius, depth, state -> true);
+    }
+
+    /** {@link #area} over the blocks that pass {@code which} only (a shovel's soil). */
+    static void area(BlockDropsEvent event, Player player, ItemStack tool, int radius, int depth,
+                     java.util.function.Predicate<BlockState> which) {
         ServerLevel level = event.getLevel();
         HitResult hit = player.pick(6, 0, false);
         Direction face = hit instanceof BlockHitResult block ? block.getDirection() : Direction.UP;
@@ -288,7 +381,7 @@ public final class PickaxeEffects {
                             continue;
                         }
                         BlockState state = level.getBlockState(at);
-                        if (state.getDestroySpeed(level, at) <= hardness * 1.5F + 0.5F && !take(level, player, tool, at)) {
+                        if (which.test(state) && state.getDestroySpeed(level, at) <= hardness * 1.5F + 0.5F && !take(level, player, tool, at)) {
                             return;
                         }
                     }
@@ -325,7 +418,12 @@ public final class PickaxeEffects {
         });
     }
 
-    private static void chain(Runnable work) {
+    /** Whether a tool is breaking extra blocks right now (their drops must not start another chain). */
+    static boolean chaining() {
+        return CHAINING.get();
+    }
+
+    static void chain(Runnable work) {
         CHAINING.set(true);
         try {
             work.run();
@@ -338,7 +436,7 @@ public final class PickaxeEffects {
      * Breaks one extra block as the player with the pickaxe (drops go through the pickaxe's abilities) and wears the
      * pickaxe; false when the pickaxe broke. Blocks the pickaxe may not take are skipped.
      */
-    private static boolean take(ServerLevel level, Player player, ItemStack tool, BlockPos at) {
+    static boolean take(ServerLevel level, Player player, ItemStack tool, BlockPos at) {
         if (tool.isEmpty()) {
             return false;
         }

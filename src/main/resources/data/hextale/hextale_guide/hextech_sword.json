@@ -6,7 +6,11 @@
   ],
   "display": {
     "kind": "infusion",
-    "result": "hextale:hextech_sword"
+    "result": "hextale:hextech_sword",
+    "then": {
+      "kind": "runes",
+      "result": "sword"
+    }
   },
   "research": "hextech_sword"
 }

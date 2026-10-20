@@ -91,7 +91,7 @@ public final class HextaleClient {
             }
             // A pylon's runes, like a pickaxe's: name in its colour and stars.
             com.pockyl.hextale.runework.RuneHolder holder = com.pockyl.hextale.runework.RuneHolder.of(stack);
-            if (holder != null && holder != com.pockyl.hextale.runework.RuneHolder.PICKAXE) {
+            if (holder != null && !holder.handTool()) {
                 int line = 1;
                 for (var entry : holder.runes(stack).entries()) {
                     event.getToolTip().add(line++, Component.translatable(entry.rune().translationKey()).withColor(entry.rune().color())

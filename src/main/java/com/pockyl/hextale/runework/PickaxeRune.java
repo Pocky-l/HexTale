@@ -1,10 +1,7 @@
 package com.pockyl.hextale.runework;
 
-import com.pockyl.hextale.essence.EssenceMix;
-import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.rune.Essence;
 
 import java.util.Objects;
 
@@ -17,7 +14,7 @@ import org.jspecify.annotations.Nullable;
  * {@link PickaxeEffects}; the book and JEI describe them in one short line ({@link #descriptionKey()}) with the amount
  * per star ({@link #valueKey()}, {@link PickaxeEffects#amount}).
  */
-public enum PickaxeRune {
+public enum PickaxeRune implements HolderRune {
     // Chapter I
     SMELTING("fire_earth", null),
     TEMPERING("earth_fire", null),
@@ -33,10 +30,24 @@ public enum PickaxeRune {
     MAGNET("spark_metal", null),
     CACHE("earth_shadow", null),
     PASSAGE("shadow_earth", Clash.POWER),
-    QUAKE("spark_earth", Clash.POWER);
-
-    /** mB of a rune's own essence per star, by its chapter (I, II, III). */
-    private static final int[] MB_PER_STAR = {12, 18, 24};
+    QUAKE("spark_earth", Clash.POWER),
+    // Passive gifts while digging (2026-10-20)
+    /** A chance of Haste while digging. */
+    HASTE("spark_life", null),
+    /** Drops fall as with Fortune. */
+    FERTILITY("earth_life", null),
+    /** More experience from ores; stone now and then gives some too. */
+    RADIANCE("life_light", null),
+    /** A chance to be fed a little; under water every block gives breath back. */
+    BREATH("air_life", null),
+    /** Digging in the dark gives Night Vision. */
+    BANISHING("light_shadow", null),
+    /** Opening lava gives Fire Resistance at once. */
+    FIREPROOFING("life_fire", null),
+    /** In the dark a hex wisp may stay where the block was: a lasting light. */
+    ETERNAL_FLAME("fire_light", null),
+    /** Wear may be shrugged off and mended a point. */
+    MENDING("life_metal", null);
 
     private final ComplexRune rune;
     private final @Nullable Clash clash;
@@ -46,6 +57,7 @@ public enum PickaxeRune {
         this.clash = clash;
     }
 
+    @Override
     public ComplexRune rune() {
         return rune;
     }
@@ -54,14 +66,14 @@ public enum PickaxeRune {
         return clash;
     }
 
-    /** What the rune does, one short line for the book and JEI. */
-    public String descriptionKey() {
-        return "pickaxe_rune.hextale." + name().toLowerCase(java.util.Locale.ROOT) + ".desc";
+    @Override
+    public String prefix() {
+        return "pickaxe";
     }
 
-    /** How much it does at a strength: a pattern for {@link PickaxeEffects#amount}. */
-    public String valueKey() {
-        return "pickaxe_rune.hextale." + name().toLowerCase(java.util.Locale.ROOT) + ".value";
+    @Override
+    public String amountText(int strength) {
+        return PickaxeEffects.amount(this, strength);
     }
 
     /** Whether this rune works on right click (only one such rune per pickaxe). */
@@ -74,20 +86,9 @@ public enum PickaxeRune {
         return other != this && clash != null && clash == other.clash;
     }
 
-    /** What burning this rune in with these stars costs at the altar: its own essence (the compound of its primals). */
-    public EssenceMix cost(int stars) {
-        Essence pair = Objects.requireNonNull(Essence.pair(rune.action(), rune.target()), rune.key());
-        return EssenceMix.pure(pair, MB_PER_STAR[ResearchBook.chapter(rune) - 1] * stars);
-    }
-
     @Nullable
     public static PickaxeRune of(ComplexRune rune) {
-        for (PickaxeRune value : values()) {
-            if (value.rune == rune) {
-                return value;
-            }
-        }
-        return null;
+        return HolderRune.find(values(), rune);
     }
 
     /** Groups of runes that exclude each other on one pickaxe. */

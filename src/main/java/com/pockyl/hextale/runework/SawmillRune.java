@@ -2,11 +2,8 @@ package com.pockyl.hextale.runework;
 
 import net.minecraft.util.Mth;
 
-import com.pockyl.hextale.essence.EssenceMix;
-import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.rune.Essence;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -15,23 +12,41 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The runes a Hex Sawmill takes - burned in at the Hextech Altar like a reaper's, up to {@link #SLOTS}. Strength = stars,
- * one more with a Lens (1-4); index 0 of every table is the sawmill without the rune.
+ * one more with a Lens (1-4); index 0 of the radius and interval tables is the sawmill without the rune. Besides the
+ * grove and the pace, runes make every tree give more: a sapling that shoots up, richer leaves, more logs, a rare golden
+ * apple, bee nests taken whole, or wind saved.
  */
-public enum SawmillRune {
+public enum SawmillRune implements HolderRune {
     /** A wider grove. */
     SHIFT("air_earth"),
     /** Saws fly out more often. */
     MOTOR("metal_spark"),
     /** The other runes work one star stronger. */
-    LENS("water_light");
+    LENS("water_light"),
+    /** A planted sapling may grow a stage at once. */
+    GROWTH("life_earth"),
+    /** Leaves drop as with Fortune: more saplings, sticks and apples. */
+    POLLEN("life_air"),
+    /** A log may give one more. */
+    BLADES("metal_air"),
+    /** A felled tree may leave a golden apple. */
+    PHOTOSYNTHESIS("light_life"),
+    /** Bee nests and hives on a felled tree come down whole, bees and honey inside. */
+    HUSH("air_shadow"),
+    /** A tree may cost no wind. */
+    DAM("earth_water");
 
-    public static final int SLOTS = 2;
+    public static final int SLOTS = 3;
     /** Blocks around the sawmill it fells, by strength. */
     private static final int[] RADIUS = {6, 8, 10, 12, 14};
     /** Ticks between two saws, by strength. */
     private static final int[] INTERVAL = {60, 44, 32, 22, 14};
-    /** mB of the rune's own essence per star, by its chapter (I, II, III). */
-    private static final int[] MB_PER_STAR = {12, 18, 24};
+    public static final float[] GROW = {0.2F, 0.35F, 0.5F, 0.65F};
+    /** Fortune level the leaves fall with. */
+    public static final int[] LEAF_FORTUNE = {1, 2, 3, 4};
+    public static final float[] MORE_LOGS = {0.1F, 0.2F, 0.3F, 0.4F};
+    public static final float[] GOLDEN = {0.03F, 0.05F, 0.07F, 0.09F};
+    public static final float[] THRIFT = {0.2F, 0.35F, 0.5F, 0.6F};
 
     private final ComplexRune rune;
 
@@ -39,24 +54,19 @@ public enum SawmillRune {
         this.rune = Objects.requireNonNull(ComplexRunes.byKey(key), key);
     }
 
+    @Override
     public ComplexRune rune() {
         return rune;
     }
 
-    @Nullable
-    public static SawmillRune of(ComplexRune rune) {
-        for (SawmillRune value : values()) {
-            if (value.rune == rune) {
-                return value;
-            }
-        }
-        return null;
+    @Override
+    public String prefix() {
+        return "sawmill";
     }
 
-    /** What burning this rune in with these stars costs: its own essence (the compound of its primals). */
-    public EssenceMix cost(int stars) {
-        Essence pair = Objects.requireNonNull(Essence.pair(rune.action(), rune.target()), rune.key());
-        return EssenceMix.pure(pair, MB_PER_STAR[ResearchBook.chapter(rune) - 1] * stars);
+    @Nullable
+    public static SawmillRune of(ComplexRune rune) {
+        return HolderRune.find(values(), rune);
     }
 
     public static int radius(int strength) {
@@ -67,21 +77,18 @@ public enum SawmillRune {
         return INTERVAL[Mth.clamp(strength, 0, 4)];
     }
 
-    public String descriptionKey() {
-        return "sawmill_rune.hextale." + name().toLowerCase(Locale.ROOT) + ".desc";
-    }
-
-    public String valueKey() {
-        return "sawmill_rune.hextale." + name().toLowerCase(Locale.ROOT) + ".value";
-    }
-
-    /** The number behind a strength, for {@link #valueKey()}. */
+    @Override
     public String amountText(int strength) {
         int i = Mth.clamp(strength, 1, 4);
         return switch (this) {
             case SHIFT -> Integer.toString(radius(i));
             case MOTOR -> String.format(Locale.ROOT, "%.2f", interval(i) / 20.0F);
-            case LENS -> "";
+            case LENS, HUSH -> "";
+            case GROWTH -> HolderRune.percent(HolderRune.at(GROW, i));
+            case POLLEN -> HolderRune.roman(HolderRune.at(LEAF_FORTUNE, i));
+            case BLADES -> HolderRune.percent(HolderRune.at(MORE_LOGS, i));
+            case PHOTOSYNTHESIS -> HolderRune.percent(HolderRune.at(GOLDEN, i));
+            case DAM -> HolderRune.percent(HolderRune.at(THRIFT, i));
         };
     }
 }

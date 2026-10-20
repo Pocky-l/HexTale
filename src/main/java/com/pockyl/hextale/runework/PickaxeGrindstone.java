@@ -8,7 +8,7 @@ import net.neoforged.neoforge.event.GrindstoneEvent;
 import com.pockyl.hextale.Hextale;
 
 /**
- * A grindstone grinds the runes off a hextech pickaxe, as it grinds enchantments off other tools: a pickaxe with runes
+ * A grindstone grinds the runes off a hextech pickaxe (or axe, shovel, sword), as it grinds enchantments off other tools: a pickaxe with runes
  * alone in the grindstone comes out without them (its enchantments stay; grind it again for those).
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
@@ -21,7 +21,8 @@ public final class PickaxeGrindstone {
         ItemStack top = event.getTopItem();
         ItemStack bottom = event.getBottomItem();
         ItemStack pickaxe = top.isEmpty() ? bottom : bottom.isEmpty() ? top : ItemStack.EMPTY;
-        if (!HextechPickaxeItem.is(pickaxe) || PickaxeRunes.of(pickaxe).isEmpty()) {
+        RuneHolder holder = RuneHolder.of(pickaxe);
+        if (holder == null || !holder.handTool() || PickaxeRunes.of(pickaxe).isEmpty()) {
             return;
         }
         ItemStack out = pickaxe.copy();

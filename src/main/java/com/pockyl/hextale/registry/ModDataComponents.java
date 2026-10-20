@@ -61,6 +61,11 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("sawmill_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
 
+    /** The runes burned into a Hex Furnace. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> FURNACE_RUNES =
+            COMPONENTS.registerComponentType("furnace_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+
     /** The settings of a Pylon Filter. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.transport.ItemFilter>> ITEM_FILTER =
             COMPONENTS.registerComponentType("item_filter", builder -> builder

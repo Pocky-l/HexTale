@@ -43,6 +43,8 @@ public record QuestDisplay(Kind kind, List<String> ingredients, String result, i
         PICKAXE_RUNES,
         /** The runes the hex pylons take. */
         PYLON_RUNES,
+        /** The runes any other rune holder takes; {@code result} is the holder's id ({@code RuneHolder#id}, e.g. "reaper"). */
+        RUNES,
         /** A multiblock layer by layer and the item that wakes it; {@code result} is the multiblock's id. */
         MULTIBLOCK,
         /** A Hex Workbench recipe; {@code result} is its id, drawn from the recipes the server sent. */

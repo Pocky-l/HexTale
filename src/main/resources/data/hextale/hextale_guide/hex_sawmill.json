@@ -1,11 +1,20 @@
 {
   "region": "pylons",
   "icon": "hextale:hex_sawmill",
-  "parents": ["hextech_crystal"],
+  "parents": [
+    "hextech_crystal"
+  ],
   "display": {
     "kind": "infusion",
-    "result": "hextale:hex_sawmill"
+    "result": "hextale:hex_sawmill",
+    "then": {
+      "kind": "runes",
+      "result": "sawmill"
+    }
   },
   "research": "hex_sawmill",
-  "pos": [645, -131]
+  "pos": [
+    645,
+    -131
+  ]
 }

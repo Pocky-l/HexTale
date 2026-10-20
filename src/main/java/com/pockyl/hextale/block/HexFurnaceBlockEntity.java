@@ -5,7 +5,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -48,6 +51,12 @@ import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.menu.HexFurnaceMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.runework.FurnaceRune;
+import com.pockyl.hextale.runework.HolderRune;
+import com.pockyl.hextale.runework.PickaxeRunes;
+import com.pockyl.hextale.runework.ToolEffects;
+import net.neoforged.neoforge.common.Tags;
 import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.research.ResearchTopics;
 
@@ -74,6 +83,8 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
     private static final int[] SIDES = {FUEL};
     private static final int[] BOTTOM = {OUTPUT};
     private static final int REFRESH_TICKS = 100;
+    /** Ticks of steady work until Bellows reaches its top speed. */
+    private static final int HEAT_UP = 600;
     private static final RecipeManager.CachedCheck<SingleRecipeInput, SmeltingRecipe> SMELTING = RecipeManager.createCheck(RecipeType.SMELTING);
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
@@ -87,6 +98,11 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
     private @Nullable UUID owner;
     /** The owner's researched topics as last seen. */
     private Set<String> known = new HashSet<>();
+    private PickaxeRunes runes = PickaxeRunes.EMPTY;
+    /** Bellows: ticks it has worked without a pause, up to {@link #HEAT_UP}. */
+    private int heat;
+    /** Progress left over from a fast tick (Bellows), in hundredths. */
+    private int spare;
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -117,6 +133,29 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
 
     public HexFurnaceBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.HEX_FURNACE.get(), pos, state);
+    }
+
+    public PickaxeRunes runes() {
+        return runes;
+    }
+
+    /** The runes it works with (an altar burns them into its item; placing that item brings them here). */
+    public void setRunes(PickaxeRunes runes) {
+        this.runes = runes;
+        setChanged();
+    }
+
+    private int strength(FurnaceRune rune) {
+        return runes.strength(rune.rune());
+    }
+
+    /** How fast it melts now: 1, and up to Bellows' top speed after a while of steady work. */
+    public float speed() {
+        int bellows = strength(FurnaceRune.BELLOWS);
+        if (bellows == 0) {
+            return 1;
+        }
+        return 1 + (HolderRune.at(FurnaceRune.TOP_SPEED, bellows) - 1) * heat / (float) HEAT_UP;
     }
 
     public String blocked() {
@@ -187,8 +226,11 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         return items.subList(0, INPUTS);
     }
 
-    /** One melt: what comes out, how long it takes, its experience, and which input slots give how much. */
-    private record Melt(ItemStack result, int time, float experience, int[] slots, int[] counts) {
+    /**
+     * One melt: what comes out, how long it takes, its experience, which input slots give how much, and how many ores
+     * went in (each may give one more with Forge).
+     */
+    private record Melt(ItemStack result, int time, float experience, int[] slots, int[] counts, int ores) {
     }
 
     /** What the inputs melt into now: an alloy, else plain smelting of one to three of the same item at once. */
@@ -209,7 +251,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
                 blocked = "locked";
                 return null;
             }
-            return new Melt(recipe.result().create(), recipe.time(), recipe.experience(), slots, counts);
+            return new Melt(recipe.result().create(), recipe.time(), recipe.experience(), slots, counts, 0);
         }
         return smelt(level);
     }
@@ -246,6 +288,14 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         if (result.isEmpty()) {
             return null;
         }
+        boolean ore = first.is(Tags.Items.ORES) || first.is(Tags.Items.RAW_MATERIALS);
+        int reforging = strength(FurnaceRune.REFORGING);
+        ItemStack ingot = reforging > 0 && first.isDamageableItem() ? ingotOf(result) : ItemStack.EMPTY;
+        if (!ingot.isEmpty()) {
+            // Reforging: an old tool or armour piece melts back into ingots, not a nugget.
+            result = ingot;
+            result.setCount(HolderRune.at(FurnaceRune.INGOTS_BACK, reforging));
+        }
         result.setCount(result.getCount() * filled);
         int[] slots = new int[filled];
         int[] counts = new int[filled];
@@ -256,7 +306,17 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
                 counts[n++] = 1;
             }
         }
-        return new Melt(result, recipe.value().cookingTime(), recipe.value().experience() * filled, slots, counts);
+        return new Melt(result, recipe.value().cookingTime(), recipe.value().experience() * filled, slots, counts, ore ? filled : 0);
+    }
+
+    /** The ingot of a metal nugget (iron_nugget -> iron_ingot), or empty when the result is no nugget. */
+    private static ItemStack ingotOf(ItemStack result) {
+        Identifier id = BuiltInRegistries.ITEM.getKey(result.getItem());
+        if (!id.getPath().endsWith("_nugget")) {
+            return ItemStack.EMPTY;
+        }
+        Identifier ingot = Identifier.fromNamespaceAndPath(id.getNamespace(), id.getPath().replace("_nugget", "_ingot"));
+        return BuiltInRegistries.ITEM.getOptional(ingot).map(ItemStack::new).orElse(ItemStack.EMPTY);
     }
 
     private void work(ServerLevel level) {
@@ -281,11 +341,15 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         }
         blocked = "";
         total = melt.time();
-        progress++;
+        heat = Math.min(HEAT_UP, heat + 1);
+        spare += Math.round(speed() * 100);
+        progress += spare / 100;
+        spare %= 100;
         if (progress < total) {
             return;
         }
         progress = 0;
+        result = bonus(level, melt, result, out);
         for (int i = 0; i < melt.slots().length; i++) {
             items.get(melt.slots()[i]).shrink(melt.counts()[i]);
         }
@@ -294,10 +358,40 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         } else {
             out.grow(result.getCount());
         }
-        experience += melt.experience();
+        experience += melt.experience() * (strength(FurnaceRune.RADIANCE) > 0 ? HolderRune.at(FurnaceRune.EXPERIENCE, strength(FurnaceRune.RADIANCE)) : 1);
+        int flame = strength(FurnaceRune.ETERNAL_FLAME);
+        if (flame > 0 && level.getRandom().nextFloat() < HolderRune.at(FurnaceRune.FREE_FUEL, flame)) {
+            // This melt burned nothing: its time goes back into the fire.
+            litTime = Math.min(litTime + melt.time(), litDuration + melt.time());
+            ToolEffects.puff(level, Vec3.atCenterOf(worldPosition).add(0, 0.6, 0), FurnaceRune.ETERNAL_FLAME.rune(), 6, 0.25);
+        }
         Vec3 mouth = Vec3.atCenterOf(worldPosition);
         level.playSound(null, mouth.x, mouth.y, mouth.z, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.5F, 0.8F + level.getRandom().nextFloat() * 0.2F);
         setChanged();
+    }
+
+    /** Forge: every ore that went in may give one more, as far as the output has room. */
+    private ItemStack bonus(ServerLevel level, Melt melt, ItemStack result, ItemStack out) {
+        int forge = strength(FurnaceRune.FORGE);
+        if (forge == 0 || melt.ores() == 0) {
+            return result;
+        }
+        int room = result.getMaxStackSize() - result.getCount() - (out.isEmpty() ? 0 : out.getCount());
+        int extra = 0;
+        for (int i = 0; i < melt.ores() && extra < room; i++) {
+            if (level.getRandom().nextFloat() < HolderRune.at(FurnaceRune.MORE_INGOTS, forge)) {
+                extra++;
+            }
+        }
+        if (extra == 0) {
+            return result;
+        }
+        ItemStack more = result.copy();
+        more.grow(extra);
+        Vec3 mouth = Vec3.atCenterOf(worldPosition);
+        ToolEffects.puff(level, mouth, FurnaceRune.FORGE.rune(), 8, 0.35);
+        level.sendParticles(net.minecraft.core.particles.ParticleTypes.WAX_ON, mouth.x, mouth.y, mouth.z, 6, 0.3, 0.3, 0.3, 0.05);
+        return more;
     }
 
     /** Burns the next piece of fuel; false when there is none. */
@@ -321,6 +415,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
 
     /** No alloy to make: the half-melted metal slowly cools back. */
     private void cool(String reason) {
+        heat = Math.max(0, heat - 4);
         boolean changed = !blocked.equals(reason);
         blocked = reason;
         if (progress > 0) {
@@ -436,6 +531,28 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         blocked = input.getStringOr("blocked", "");
         owner = input.read("owner", UUIDUtil.CODEC).orElse(null);
         known = new HashSet<>(input.read("known", Codec.STRING.listOf()).orElse(List.of()));
+        runes = input.read("runes", PickaxeRunes.CODEC).orElse(PickaxeRunes.EMPTY);
+        heat = input.getIntOr("heat", 0);
+    }
+
+    @Override
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+        runes = components.getOrDefault(ModDataComponents.FURNACE_RUNES.get(), PickaxeRunes.EMPTY);
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        if (!runes.isEmpty()) {
+            components.set(ModDataComponents.FURNACE_RUNES.get(), runes);
+        }
+    }
+
+    @Override
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+        output.discard("runes");
     }
 
     @Override
@@ -452,6 +569,10 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
             output.store("owner", UUIDUtil.CODEC, owner);
         }
         output.store("known", Codec.STRING.listOf(), List.copyOf(known));
+        if (!runes.isEmpty()) {
+            output.store("runes", PickaxeRunes.CODEC, runes);
+        }
+        output.putInt("heat", heat);
     }
 
     @Override

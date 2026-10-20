@@ -1,6 +1,7 @@
 package com.pockyl.hextale.runework;
 
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.essence.EssenceMix;
@@ -12,43 +13,79 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * Things that take runes like enchantments at the Hextech Altar: what each one takes, how many, which runes exclude each
- * other and what burning one in costs. The runes live on the item as a {@link PickaxeRunes} component.
+ * Things that take runes like enchantments at the Hextech Altar: what each one takes ({@link HolderRune}s), how many,
+ * which runes exclude each other and what burning one in costs. The runes live on the item as a {@link PickaxeRunes}
+ * component; a placed device's block entity keeps them while it stands. Every device and tool of the mod is meant to be
+ * one (see the mod's rune direction).
  */
 public enum RuneHolder {
-    PICKAXE,
+    PICKAXE(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, PickaxeRune.values()),
     /** The hex pylons share one set of runes. */
-    PYLON,
+    PYLON(() -> ModDataComponents.PYLON_RUNES.get(), PylonRune.SLOTS, PylonRune.values()),
     /** The Whirl Reaper. */
-    REAPER,
+    REAPER(() -> ModDataComponents.REAPER_RUNES.get(), ReaperRune.SLOTS, ReaperRune.values()),
     /** The Hex Sawmill. */
-    SAWMILL;
+    SAWMILL(() -> ModDataComponents.SAWMILL_RUNES.get(), SawmillRune.SLOTS, SawmillRune.values()),
+    /** The Hex Furnace. */
+    FURNACE(() -> ModDataComponents.FURNACE_RUNES.get(), FurnaceRune.SLOTS, FurnaceRune.values()),
+    /** The hextech axe, shovel and sword keep their runes where the pickaxe does. */
+    AXE(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.AXE)),
+    SHOVEL(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.SHOVEL)),
+    SWORD(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.SWORD));
+
+    private final Supplier<DataComponentType<PickaxeRunes>> component;
+    private final int slots;
+    private final List<HolderRune> runes;
+
+    RuneHolder(Supplier<DataComponentType<PickaxeRunes>> component, int slots, HolderRune[] runes) {
+        this.component = component;
+        this.slots = slots;
+        this.runes = List.of(runes);
+    }
+
+    private static HolderRune[] tool(ToolRune.Tool tool) {
+        return Arrays.stream(ToolRune.values()).filter(rune -> rune.on(tool)).toArray(HolderRune[]::new);
+    }
 
     @Nullable
     public static RuneHolder of(ItemStack stack) {
         if (HextechPickaxeItem.is(stack)) {
             return PICKAXE;
         }
-        if (stack.is(ModItems.WHIRL_REAPER.get())) {
+        Item item = stack.getItem();
+        if (item == ModItems.WHIRL_REAPER.get()) {
             return REAPER;
         }
-        if (stack.is(ModItems.HEX_SAWMILL.get())) {
+        if (item == ModItems.HEX_SAWMILL.get()) {
             return SAWMILL;
+        }
+        if (item == ModItems.HEX_FURNACE.get()) {
+            return FURNACE;
+        }
+        if (item == ModItems.HEXTECH_AXE.get()) {
+            return AXE;
+        }
+        if (item == ModItems.HEXTECH_SHOVEL.get()) {
+            return SHOVEL;
+        }
+        if (item == ModItems.HEXTECH_SWORD.get()) {
+            return SWORD;
         }
         return ModItems.isPylon(stack) ? PYLON : null;
     }
 
     public DataComponentType<PickaxeRunes> component() {
-        return switch (this) {
-            case PICKAXE -> ModDataComponents.PICKAXE_RUNES.get();
-            case PYLON -> ModDataComponents.PYLON_RUNES.get();
-            case REAPER -> ModDataComponents.REAPER_RUNES.get();
-            case SAWMILL -> ModDataComponents.SAWMILL_RUNES.get();
-        };
+        return component.get();
+    }
+
+    /** Whether it is a tool held in the hand (it lists its runes in its own tooltip and loses them at a grindstone). */
+    public boolean handTool() {
+        return this == PICKAXE || this == AXE || this == SHOVEL || this == SWORD;
     }
 
     public PickaxeRunes runes(ItemStack stack) {
@@ -64,31 +101,34 @@ public enum RuneHolder {
     }
 
     public int slots() {
-        return switch (this) {
-            case PICKAXE -> PickaxeRunes.SLOTS;
-            case PYLON -> PylonRune.SLOTS;
-            case REAPER -> ReaperRune.SLOTS;
-            case SAWMILL -> SawmillRune.SLOTS;
-        };
+        return slots;
     }
 
     /** Every rune it takes, in the order the book and JEI show them. */
+    public List<HolderRune> holderRunes() {
+        return runes;
+    }
+
     public List<ComplexRune> takes() {
-        return switch (this) {
-            case PICKAXE -> Arrays.stream(PickaxeRune.values()).map(PickaxeRune::rune).toList();
-            case PYLON -> Arrays.stream(PylonRune.values()).map(PylonRune::rune).toList();
-            case REAPER -> Arrays.stream(ReaperRune.values()).map(ReaperRune::rune).toList();
-            case SAWMILL -> Arrays.stream(SawmillRune.values()).map(SawmillRune::rune).toList();
-        };
+        return runes.stream().map(HolderRune::rune).toList();
+    }
+
+    @Nullable
+    public HolderRune find(ComplexRune rune) {
+        for (HolderRune value : runes) {
+            if (value.rune() == rune) {
+                return value;
+            }
+        }
+        return null;
     }
 
     public boolean takes(ComplexRune rune) {
-        return switch (this) {
-            case PICKAXE -> PickaxeRune.of(rune) != null;
-            case PYLON -> PylonRune.of(rune) != null;
-            case REAPER -> ReaperRune.of(rune) != null;
-            case SAWMILL -> SawmillRune.of(rune) != null;
-        };
+        return find(rune) != null;
+    }
+
+    private HolderRune get(ComplexRune rune) {
+        return Objects.requireNonNull(find(rune), () -> rune.key() + " on " + this);
     }
 
     /** Whether the two runes cannot share one holder (only pickaxe runes clash). */
@@ -103,41 +143,21 @@ public enum RuneHolder {
 
     /** Essence for burning the rune in with these stars. */
     public EssenceMix cost(ComplexRune rune, int stars) {
-        return switch (this) {
-            case PICKAXE -> Objects.requireNonNull(PickaxeRune.of(rune)).cost(stars);
-            case PYLON -> Objects.requireNonNull(PylonRune.of(rune)).cost(stars);
-            case REAPER -> Objects.requireNonNull(ReaperRune.of(rune)).cost(stars);
-            case SAWMILL -> Objects.requireNonNull(SawmillRune.of(rune)).cost(stars);
-        };
+        return get(rune).cost(stars);
     }
 
     /** What the rune does here, one short line. */
     public String descriptionKey(ComplexRune rune) {
-        return switch (this) {
-            case PICKAXE -> Objects.requireNonNull(PickaxeRune.of(rune)).descriptionKey();
-            case PYLON -> Objects.requireNonNull(PylonRune.of(rune)).descriptionKey();
-            case REAPER -> Objects.requireNonNull(ReaperRune.of(rune)).descriptionKey();
-            case SAWMILL -> Objects.requireNonNull(SawmillRune.of(rune)).descriptionKey();
-        };
+        return get(rune).descriptionKey();
     }
 
     /** The line with the rune's number at a strength ({@code %s} = {@link #amount}). */
     public String valueKey(ComplexRune rune) {
-        return switch (this) {
-            case PICKAXE -> Objects.requireNonNull(PickaxeRune.of(rune)).valueKey();
-            case PYLON -> Objects.requireNonNull(PylonRune.of(rune)).valueKey();
-            case REAPER -> Objects.requireNonNull(ReaperRune.of(rune)).valueKey();
-            case SAWMILL -> Objects.requireNonNull(SawmillRune.of(rune)).valueKey();
-        };
+        return get(rune).valueKey();
     }
 
     public String amount(ComplexRune rune, int strength) {
-        return switch (this) {
-            case PICKAXE -> PickaxeEffects.amount(Objects.requireNonNull(PickaxeRune.of(rune)), strength);
-            case PYLON -> Objects.requireNonNull(PylonRune.of(rune)).amountText(strength);
-            case REAPER -> Objects.requireNonNull(ReaperRune.of(rune)).amountText(strength);
-            case SAWMILL -> Objects.requireNonNull(SawmillRune.of(rune)).amountText(strength);
-        };
+        return get(rune).amountText(strength);
     }
 
     /** What it looks like on the altar and in JEI: every item of the kind. */
@@ -149,12 +169,26 @@ public enum RuneHolder {
                     new ItemStack(ModItems.SORTING_MATRIX.get()));
             case REAPER -> List.of(new ItemStack(ModItems.WHIRL_REAPER.get()));
             case SAWMILL -> List.of(new ItemStack(ModItems.HEX_SAWMILL.get()));
+            case FURNACE -> List.of(new ItemStack(ModItems.HEX_FURNACE.get()));
+            case AXE -> List.of(new ItemStack(ModItems.HEXTECH_AXE.get()));
+            case SHOVEL -> List.of(new ItemStack(ModItems.HEXTECH_SHOVEL.get()));
+            case SWORD -> List.of(new ItemStack(ModItems.HEXTECH_SWORD.get()));
         };
     }
 
-    /** Lower-case name used in translation keys. */
+    /** Lower-case name used in translation keys and guide displays. */
     public String id() {
         return name().toLowerCase(Locale.ROOT);
+    }
+
+    @Nullable
+    public static RuneHolder byId(String id) {
+        for (RuneHolder holder : values()) {
+            if (holder.id().equals(id)) {
+                return holder;
+            }
+        }
+        return null;
     }
 
     /** The note under the runes in the book: "up to %s runes ...". */
@@ -169,7 +203,7 @@ public enum RuneHolder {
 
     /** The altar's refusal when a stele's rune does not go on this holder. */
     public String notTakenRefusal() {
-        return "not_" + id();
+        return this == PICKAXE ? "not_pickaxe" : "not_" + id();
     }
 
     /** Suffix of the altar's refusal keys: the pickaxe keeps the old keys. */

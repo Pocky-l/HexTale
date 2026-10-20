@@ -24,6 +24,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.item.Items;
 
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.JarReach;
@@ -35,7 +37,9 @@ import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.PickaxeRunes;
+import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.SawmillRune;
+import com.pockyl.hextale.runework.ToolEffects;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -223,7 +227,7 @@ public class HexSawmillBlockEntity extends BlockEntity {
         for (int i = 0; i < pending.size(); i++) {
             Pending saw = pending.get(i);
             if (!saw.felled() && now >= saw.cut()) {
-                List<ItemStack> drops = Felling.fell(level, saw.tree());
+                List<ItemStack> drops = fellWithRunes(level, saw);
                 saw = new Pending(saw.foot(), saw.feet(), saw.logs(), saw.leaves(), saw.cut(), saw.done(), true, drops);
                 pending.set(i, saw);
                 dirty = true;
@@ -241,9 +245,53 @@ public class HexSawmillBlockEntity extends BlockEntity {
         }
     }
 
-    private static void land(ServerLevel level, Pending saw) {
+    private int strength(SawmillRune rune) {
+        return runes.strength(rune.rune());
+    }
+
+    /**
+     * The tree comes down with the sawmill's runes: Pollen cuts the leaves with Fortune, Blades may give more logs, Hush
+     * takes bee nests whole, Photosynthesis may leave a golden apple.
+     */
+    private List<ItemStack> fellWithRunes(ServerLevel level, Pending saw) {
+        ItemStack axe = new ItemStack(Items.IRON_AXE);
+        int pollen = strength(SawmillRune.POLLEN);
+        if (pollen > 0) {
+            ItemStack lucky = ToolEffects.withFortune(level, axe, HolderRune.at(SawmillRune.LEAF_FORTUNE, pollen));
+            axe = lucky == null ? axe : lucky;
+        }
+        int blades = strength(SawmillRune.BLADES);
+        List<ItemStack> drops = new ArrayList<>(Felling.fell(level, saw.tree(), axe, blades == 0 ? 0 : HolderRune.at(SawmillRune.MORE_LOGS, blades)));
+        Vec3 crown = Vec3.atCenterOf(saw.foot()).add(0, 2, 0);
+        if (strength(SawmillRune.HUSH) > 0) {
+            List<ItemStack> nests = Felling.takeNests(level, saw.tree());
+            if (!nests.isEmpty()) {
+                drops.addAll(nests);
+                ToolEffects.puff(level, crown, SawmillRune.HUSH.rune(), 10, 0.6);
+            }
+        }
+        int light = strength(SawmillRune.PHOTOSYNTHESIS);
+        if (light > 0 && level.getRandom().nextFloat() < HolderRune.at(SawmillRune.GOLDEN, light)) {
+            drops.add(new ItemStack(Items.GOLDEN_APPLE));
+            ToolEffects.puff(level, crown, SawmillRune.PHOTOSYNTHESIS.rune(), 16, 0.8);
+            level.sendParticles(ParticleTypes.WAX_ON, crown.x, crown.y, crown.z, 12, 0.6, 0.6, 0.6, 0.05);
+        }
+        return drops;
+    }
+
+    private void land(ServerLevel level, Pending saw) {
         List<ItemStack> drops = new ArrayList<>(saw.drops().stream().map(ItemStack::copy).toList());
-        Felling.replant(level, saw.foot(), saw.feet(), drops);
+        List<BlockPos> planted = new ArrayList<>();
+        Felling.replant(level, saw.foot(), saw.feet(), drops, planted);
+        int growth = strength(SawmillRune.GROWTH);
+        if (growth > 0 && level.getRandom().nextFloat() < HolderRune.at(SawmillRune.GROW, growth)) {
+            for (BlockPos sapling : planted) {
+                Felling.grow(level, sapling);
+            }
+            if (!planted.isEmpty()) {
+                ToolEffects.puff(level, Vec3.atCenterOf(saw.foot()), SawmillRune.GROWTH.rune(), 10, 0.4);
+            }
+        }
         Felling.drop(level, saw.foot(), drops);
         Vec3 at = Vec3.atCenterOf(saw.foot());
         level.playSound(null, at.x, at.y, at.z, ModSounds.SAW_LAND.get(), SoundSource.BLOCKS, 0.8F, 0.9F + level.getRandom().nextFloat() * 0.2F);
@@ -319,7 +367,10 @@ public class HexSawmillBlockEntity extends BlockEntity {
     }
 
     private void launch(ServerLevel level, Felling.Tree tree) {
-        wind -= MB_PER_TREE;
+        int dam = strength(SawmillRune.DAM);
+        if (dam == 0 || level.getRandom().nextFloat() >= HolderRune.at(SawmillRune.THRIFT, dam)) {
+            wind -= MB_PER_TREE;
+        }
         int travel = travelTicks(worldPosition, tree.foot());
         long now = level.getGameTime();
         pending.add(new Pending(tree.foot(), tree.feet(), tree.logs(), tree.leaves(), now + travel + SAW_TICKS,

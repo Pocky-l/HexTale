@@ -39,6 +39,7 @@ import com.pockyl.hextale.block.HexFurnaceBlock;
 import com.pockyl.hextale.block.HexWorkbenchBlock;
 import com.pockyl.hextale.block.HextechAltarBlock;
 import com.pockyl.hextale.block.HextechLampBlock;
+import com.pockyl.hextale.block.HexWispBlock;
 import com.pockyl.hextale.block.MagicLeavesBlock;
 import com.pockyl.hextale.block.MagicSaplingBlock;
 import com.pockyl.hextale.block.PedestalBlock;
@@ -107,6 +108,10 @@ public final class ModBlocks {
     public static final DeferredBlock<RuneSteleBlock> RUNE_STELE = BLOCKS.registerBlock("rune_stele", RuneSteleBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> state.getValue(RuneSteleBlock.LIT) ? 9 : 2));
+    /** A mote of hextech light a pickaxe with the Eternal Flame rune leaves in the dark: no body, no drops, goes out at a touch. */
+    public static final DeferredBlock<HexWispBlock> HEX_WISP = BLOCKS.registerBlock("hex_wisp", HexWispBlock::new,
+            () -> BlockBehaviour.Properties.of().replaceable().noCollision().instabreak().noLootTable().lightLevel(state -> 13)
+                    .sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.POPPED));
     /** A refined gemstone in a brass cage: stands or hangs like a lantern, full light. */
     public static final DeferredBlock<HextechLampBlock> HEXTECH_LAMP = BLOCKS.registerBlock("hextech_lamp", HextechLampBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.LANTERN)
