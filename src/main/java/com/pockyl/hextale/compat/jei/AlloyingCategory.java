@@ -25,7 +25,8 @@ public class AlloyingCategory extends AbstractRecipeCategory<AlloyingCategory.Re
     }
 
     public AlloyingCategory(IGuiHelper guiHelper) {
-        super(TYPE, Component.translatable("block.hextale.hex_furnace"), guiHelper.createDrawableItemLike(ModItems.HEX_FURNACE.get()), 120, 40);
+        super(TYPE, Component.translatable("block.hextale.hex_furnace"), guiHelper.createDrawableItemLike(ModItems.HEX_FURNACE.get()),
+                StepCategory.WIDTH, 48);
     }
 
     @Override
@@ -33,17 +34,18 @@ public class AlloyingCategory extends AbstractRecipeCategory<AlloyingCategory.Re
         for (int i = 0; i < recipe.recipe().inputs().size(); i++) {
             var input = recipe.recipe().inputs().get(i);
             List<ItemStack> stacks = input.ingredient().items().map(item -> new ItemStack(item, input.count())).toList();
-            builder.addInputSlot(1 + i * 18, 1).setStandardSlotBackground().addItemStacks(stacks);
+            builder.addInputSlot(1 + i * 18, StepCategory.ROW_Y).setStandardSlotBackground().addItemStacks(stacks);
         }
-        builder.addOutputSlot(99, 1).setOutputSlotBackground().add(recipe.recipe().result());
+        builder.addOutputSlot(StepCategory.RESULT_X, StepCategory.ROW_Y).setOutputSlotBackground().add(recipe.recipe().result());
     }
 
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Recipe recipe, IFocusGroup focuses) {
-        builder.addAnimatedRecipeArrowWidget(recipe.recipe().time()).setPosition(64, 1);
-        builder.addAnimatedRecipeFlame(300).setPosition(20, 22);
+        builder.addAnimatedRecipeArrowWidget(recipe.recipe().time()).setPosition(StepCategory.ARROW_X, StepCategory.ROW_Y);
+        builder.addAnimatedRecipeFlame(300).setPosition(1, StepCategory.ROW_Y + 22);
         if (ResearchTopics.of(recipe.recipe().result().item().value()) != null) {
-            builder.addText(Component.translatable("gui.hextale.hex_furnace.locked"), 90, 10).setPosition(36, 26).setColor(0xFF8A4A1C);
+            builder.addText(Component.translatable("gui.hextale.hex_furnace.locked"), StepCategory.WIDTH - 20, 20)
+                    .setPosition(20, StepCategory.ROW_Y + 22).setColor(0xFF8A4A1C);
         }
     }
 

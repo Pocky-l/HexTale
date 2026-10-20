@@ -11,7 +11,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.locale.Language;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -105,7 +107,9 @@ public class InfusionCategory extends AbstractRecipeCategory<InfusionCategory.Re
             int ry = y + r / RUNES_PER_ROW * 13;
             PixelArt.glyph(graphics, rune, x, ry, 11, PixelArt.argb(rune.color(), 1), 0xFF000000);
             PixelArt.flush(graphics);
-            graphics.text(font, Component.translatable(rune.translationKey()), x + 14, ry + 2, 0xFF000000 | rune.color(), true);
+            FormattedCharSequence name = Language.getInstance().getVisualOrder(
+                    font.substrByWidth(Component.translatable(rune.translationKey()), runeColumn - 16));
+            graphics.text(font, name, x + 14, ry + 2, 0xFF000000 | rune.color(), true);
         }
         if (!runes.isEmpty()) {
             y += (runes.size() + RUNES_PER_ROW - 1) / RUNES_PER_ROW * 13;

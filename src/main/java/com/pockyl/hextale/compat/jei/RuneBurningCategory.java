@@ -135,8 +135,10 @@ public class RuneBurningCategory extends AbstractRecipeCategory<RuneBurningCateg
             }
         }
         if (!clashes.isEmpty()) {
-            graphics.text(font, Component.translatable("jei.hextale.rune_burning.clash", clashes.toString()), 4, y, 0xFFB03A2E, false);
-            y += 10;
+            for (FormattedCharSequence line : font.split(Component.translatable("jei.hextale.rune_burning.clash", clashes.toString()), WIDTH - 8)) {
+                graphics.text(font, line, 4, y, 0xFFB03A2E, false);
+                y += 10;
+            }
         }
         String note = rune.holder().jeiNoteKey();
         for (FormattedCharSequence line : font.split(Component.translatable(note, rune.holder().slots()), WIDTH - 8)) {

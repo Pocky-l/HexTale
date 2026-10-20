@@ -42,8 +42,9 @@ public class HexCraftingCategory extends AbstractRecipeCategory<HexCraftingCateg
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Recipe recipe, IFocusGroup focuses) {
         builder.addRecipeArrowWidget().setPosition(61, 19);
-        builder.addText(Component.translatable("book.hextale.quest.hex_crafting", recipe.recipe().charge()), 52, 10)
-                .setPosition(60, 40).setColor(0xFF2A7FB8);
+        builder.addText(Component.translatable("jei.hextale.hex_crafting.charge", recipe.recipe().charge()), 56, 10)
+                .setPosition(60, 42).setColor(0xFF2A7FB8)
+                .setTooltip(Component.translatable("jei.hextale.hex_crafting.charge.tooltip", recipe.recipe().charge()));
     }
 
     @Override

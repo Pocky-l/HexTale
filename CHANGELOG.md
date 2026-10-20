@@ -108,9 +108,19 @@ The Lab Bench: chemtech is no longer worked out on the parchment - it is found o
 - Up to three runes: Dam (a drop may cost no essence), Tempering (pressure builds slower), Haste (reactions run
   faster), Radiance (experience for every sealed flask), Heat Eater (a flask about to burst may let its pressure out by
   itself) and Lens.
+- JEI shows every way the mod makes something: Lab Bench experiments (what the flask must hold and the reactions that
+  lead there), what the Chem Burner and the Pink Brazier burn and for how long, the Chem Still, the Axolotl Tank,
+  stone soaked under a Drain Valve and a rune written onto a blank scroll at the altar.
+
+### Changed
+- JEI: crucible recipes list their essences in a column with the millibuckets beside each, the brews say how hot the
+  crucible must be, and every simple step is laid out the same way. "Rune on a Pickaxe" is now "Burning a Rune In".
 
 ### Fixed
 - The altar named the right refusal when a rune did not fit a reaper or a sawmill, or when they were full.
+- A long caption under a recipe in the guide ran out of the page; it now wraps.
+- JEI: the millibuckets of crucible essences ran into each other, the plus sign in Hextech Working covered a slot,
+  and the workbench charge and the furnace's research note were cut off.
 
 ## [1.0.0-beta.1] - 2026-10-20
 ### Added

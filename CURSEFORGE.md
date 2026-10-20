@@ -45,7 +45,7 @@ still blank: plans for chemtech, shimmer and the hexcore are waiting to be writt
 
 ## 🧩 Compatibility
 
-[![JEI](https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/compat/jei.png)](https://www.curseforge.com/minecraft/mc-mods/jei) ✅ **[JEI](https://www.curseforge.com/minecraft/mc-mods/jei)** (optional) - every recipe of the mod: workbench, alloys, crucible, altar rituals, boiling and separation.
+[![JEI](https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/compat/jei.png)](https://www.curseforge.com/minecraft/mc-mods/jei) ✅ **[JEI](https://www.curseforge.com/minecraft/mc-mods/jei)** (optional) - every recipe of the mod: workbench, alloys, crucible and brews, altar rituals and runes, boiling and separation, lab experiments, chemtech fuel and devices.
 
 [![Jade](https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/compat/jade.png)](https://www.curseforge.com/minecraft/mc-mods/jade) ✅ **[Jade](https://www.curseforge.com/minecraft/mc-mods/jade)** (optional) - what jars, machines and mechanisms hold and do.
 

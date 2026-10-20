@@ -27,9 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * JEI: how essence is made - boiling in the Alembic and splitting in the Separator - one bottle per concentrate, the
- * Hextech Altar's rituals, and an info page for every block of the essence works and the ritual circle. What an item boils down to stays a secret of the research: the boiling
- * page shows no item's essences.
+ * JEI: every way the mod makes something - boiling and separating essence, the altar's rituals, rune burning and rune
+ * writing, the hex workbench and furnace, hextech working, the crucible's transmutations and brews, Lab Bench experiments,
+ * what the chem burner and the brazier burn, the still, the axolotl tank, the drain valve's soaking - and an info page for
+ * every device. What an item boils down to stays a secret of the research: the boiling page shows no item's essences.
  */
 @JeiPlugin
 public class HextaleJeiPlugin implements IModPlugin {
@@ -73,9 +74,14 @@ public class HextaleJeiPlugin implements IModPlugin {
                 new RuneBurningCategory(registration.getJeiHelpers().getGuiHelper()),
                 new HexCraftingCategory(registration.getJeiHelpers().getGuiHelper()),
                 new AlloyingCategory(registration.getJeiHelpers().getGuiHelper()),
-                new HextechWorkingCategory(registration.getJeiHelpers().getGuiHelper()),
+                HextechWorkingCategory.create(registration.getJeiHelpers().getGuiHelper()),
                 new CrucibleCategory(registration.getJeiHelpers().getGuiHelper()),
-                new BrewingCategory(registration.getJeiHelpers().getGuiHelper()));
+                new BrewingCategory(registration.getJeiHelpers().getGuiHelper()),
+                new LabExperimentCategory(registration.getJeiHelpers().getGuiHelper()),
+                new ChemFuelCategory(registration.getJeiHelpers().getGuiHelper()));
+        for (StepCategory category : DeviceSteps.categories(registration.getJeiHelpers().getGuiHelper())) {
+            registration.addRecipeCategories(category);
+        }
     }
 
     @Override
@@ -110,6 +116,12 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEX_FURNACE.get(), "hex_furnace");
         registration.addRecipes(BrewingCategory.TYPE, com.pockyl.hextale.crafting.BrewRecipe.ALL.get(true).entrySet().stream()
                 .map(entry -> new BrewingCategory.Recipe(entry.getKey(), entry.getValue())).toList());
+        registration.addRecipes(LabExperimentCategory.TYPE, LabExperimentCategory.all());
+        registration.addRecipes(ChemFuelCategory.TYPE, ChemFuelCategory.all());
+        registration.addRecipes(DeviceSteps.STILL, DeviceSteps.still());
+        registration.addRecipes(DeviceSteps.TANK, DeviceSteps.tank());
+        registration.addRecipes(DeviceSteps.SOAKING, DeviceSteps.soaking());
+        registration.addRecipes(DeviceSteps.WRITING, DeviceSteps.writing());
         info(registration, ModItems.CRUCIBLE.get(), "crucible");
         info(registration, ModItems.CHEM_BURNER.get(), "chem_burner");
         info(registration, ModItems.CHEM_VIAL.get(), "chem_vial");
@@ -173,6 +185,12 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addCraftingStation(HextechWorkingCategory.TYPE, ModItems.HEX_LAPIDARY.get());
         registration.addCraftingStation(CrucibleCategory.TYPE, ModItems.CRUCIBLE.get());
         registration.addCraftingStation(BrewingCategory.TYPE, ModItems.CRUCIBLE.get(), ModItems.CHEM_BURNER.get());
+        registration.addCraftingStation(LabExperimentCategory.TYPE, ModItems.LAB_BENCH.get());
+        registration.addCraftingStation(ChemFuelCategory.TYPE, ModItems.CHEM_BURNER.get(), ModItems.PINK_BRAZIER.get());
+        registration.addCraftingStation(DeviceSteps.STILL, ModItems.CHEM_STILL.get(), ModItems.CHEM_BURNER.get());
+        registration.addCraftingStation(DeviceSteps.TANK, ModItems.AXOLOTL_TANK.get());
+        registration.addCraftingStation(DeviceSteps.SOAKING, ModItems.DRAIN_VALVE.get());
+        registration.addCraftingStation(DeviceSteps.WRITING, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
     }
 
     static ItemStack concentrate(Essence essence) {

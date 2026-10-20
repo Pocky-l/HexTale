@@ -1123,7 +1123,7 @@ final class GuidePage {
         return switch (display.kind()) {
             case SHAPED -> SLOT * 3;
             case SHAPELESS -> SLOT * 3 + 10;
-            case SCHEME -> SLOT + (Language.getInstance().has(captionKey(display)) ? 10 : 0);
+            case SCHEME -> SLOT + captionLines(display).size() * 10;
             case ESSENCES -> SLOT;
             case REAGENTS -> 30;
             case INFUSION -> infusionHeight(display);
@@ -1138,6 +1138,12 @@ final class GuidePage {
 
     private static String captionKey(QuestDisplay display) {
         return "book.hextale.quest.scheme." + display.result().substring(display.result().indexOf(':') + 1);
+    }
+
+    /** A scheme's caption wrapped to the plate's width; none when it has no caption. */
+    private List<FormattedCharSequence> captionLines(QuestDisplay display) {
+        String caption = captionKey(display);
+        return Language.getInstance().has(caption) ? font.split(Component.translatable(caption), innerWidth() - 4) : List.of();
     }
 
     @Nullable
@@ -1175,10 +1181,12 @@ final class GuidePage {
                 }
                 arrow(graphics, sx + 4, y + SLOT / 2);
                 tooltip = orTooltip(tooltip, slot(graphics, result(quest, display), sx + 26, y, mouseX, mouseY, null));
-                String caption = captionKey(display);
-                if (Language.getInstance().has(caption)) {
+                List<FormattedCharSequence> caption = captionLines(display);
+                if (!caption.isEmpty()) {
                     PixelArt.flush(graphics);
-                    graphics.centeredText(font, Component.translatable(caption), centre, y + SLOT + 2, MUTED);
+                    for (int i = 0; i < caption.size(); i++) {
+                        graphics.centeredText(font, caption.get(i), centre, y + SLOT + 2 + i * 10, MUTED);
+                    }
                 }
             }
             case ESSENCES -> {
