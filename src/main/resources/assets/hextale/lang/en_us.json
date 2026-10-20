@@ -1679,8 +1679,8 @@
   "gui.hextale.lab_bench.thermometer.hint": "Each compound forms only in its zone. Reactions give off heat. Scroll to turn the flame.",
   "gui.hextale.lab_bench.pressure": "Pressure: %s / 100",
   "gui.hextale.lab_bench.pressure.hint": "Gas and searing heat build it; a cool flask lets it go slowly. At 100 the flask bursts.",
-  "gui.hextale.lab_bench.flame": "Flame: %s / 4",
-  "gui.hextale.lab_bench.flame.hint": "Click the halves or scroll to turn it",
+  "gui.hextale.lab_bench.flame": "Flame %s of 4: heats the flask to %s",
+  "gui.hextale.lab_bench.flame.hint": "Click a tile, drag along them or turn the mouse wheel",
   "gui.hextale.lab_bench.vent": "Vent",
   "gui.hextale.lab_bench.vent.hint": "Lets the pressure out at once and cools the flask; some of everything leaves with the vapour",
   "gui.hextale.lab_bench.pour": "Pour out",
@@ -1697,5 +1697,10 @@
   "subtitles.hextale.lab_bench.react": "Flask fizzes",
   "subtitles.hextale.lab_bench.vent": "Flask vents",
   "subtitles.hextale.lab_bench.seal": "Flask is sealed",
-  "subtitles.hextale.lab_bench.burst": "Flask bursts"
+  "subtitles.hextale.lab_bench.burst": "Flask bursts",
+  "gui.hextale.lab_bench.caption.flask": "Flask",
+  "gui.hextale.lab_bench.caption.sample": "Sample",
+  "gui.hextale.lab_bench.caption.notes": "Notes",
+  "gui.hextale.lab_bench.sample": "Seal with:",
+  "gui.hextale.lab_bench.sample.none": "No sample"
 }
