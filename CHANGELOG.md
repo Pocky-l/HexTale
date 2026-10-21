@@ -14,6 +14,8 @@ A warmer, cosier look for the things you see most.
 - Magic stone and its whole family (polished, bricks, chiseled, whorled, pillar, stairs, slabs and walls) are now a warm
   cream stone instead of violet, and the altar circle, lamps and pylons built from it turned light with it.
 - The Researcher's Diary has a cleaner, warmer icon that reads well at a glance.
+- Zinc, brass and hexsteel ingots, zinc and brass nuggets and raw zinc are redrawn: solid cast bars and chunks that sit
+  right next to the vanilla metals, and raw zinc shows amber flecks of the sphalerite it comes from.
 
 ## [1.0.0-beta.2] - 2026-10-20
 ### Added
