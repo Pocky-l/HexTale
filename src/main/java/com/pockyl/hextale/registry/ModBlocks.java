@@ -239,12 +239,12 @@ public final class ModBlocks {
             properties -> new PressurePlateBlock(MAGIC_SET, properties),
             () -> magicWoodProperties().forceSolidOn().noCollision().strength(0.5F).pushReaction(PushReaction.POPPED));
     public static final DeferredBlock<MagicLeavesBlock> MAGIC_LEAVES = BLOCKS.registerBlock("magic_leaves", MagicLeavesBlock::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(0.2F).randomTicks()
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(0.2F).randomTicks()
                     .sound(SoundType.CHERRY_LEAVES).noOcclusion().isValidSpawn((state, level, pos, type) -> false)
                     .isSuffocating((state, level, pos) -> false)
                     .pushReaction(PushReaction.POPPED).isRedstoneConductor((state, level, pos) -> false));
     public static final DeferredBlock<MagicSaplingBlock> MAGIC_SAPLING = BLOCKS.registerBlock("magic_sapling", MagicSaplingBlock::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).noCollision().randomTicks().instabreak()
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).noCollision().randomTicks().instabreak()
                     .sound(SoundType.CHERRY_SAPLING).lightLevel(state -> 4).pushReaction(PushReaction.POPPED));
     public static final DeferredBlock<FlowerPotBlock> POTTED_MAGIC_SAPLING = BLOCKS.registerBlock("potted_magic_sapling",
             properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, MAGIC_SAPLING, properties),
@@ -319,9 +319,9 @@ public final class ModBlocks {
     private ModBlocks() {
     }
 
-    /** Magic wood: warm honey heartwood, strong as oak, and it never catches fire (magic burned out of it would leave ash). */
+    /** Magic wood: white with golden sap, strong as oak, and it never catches fire (magic burned out of it would leave ash). */
     private static BlockBehaviour.Properties magicWoodProperties() {
-        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).instrument(NoteBlockInstrument.BASS)
+        return BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).instrument(NoteBlockInstrument.BASS)
                 .strength(2.0F).sound(SoundType.CHERRY_WOOD);
     }
 
