@@ -4,6 +4,17 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-beta.3] - Unreleased
+### Changed
+A warmer, cosier look for the things you see most.
+
+- Magic tree redrawn: a dark trunk with glowing golden sap in its cracks under a crown of white leaves that sparkle
+  gold at night. Its wood, planks, doors and trapdoor are now clean white, and the sapling has a dark stem with white
+  leaf tufts. Golden motes drift over the leaves instead of blue ones.
+- Magic stone and its whole family (polished, bricks, chiseled, whorled, pillar, stairs, slabs and walls) are now a warm
+  cream stone instead of violet, and the altar circle, lamps and pylons built from it turned light with it.
+- The Researcher's Diary has a cleaner, warmer icon that reads well at a glance.
+
 ## [1.0.0-beta.2] - 2026-10-20
 ### Added
 Every hextech tool and every working device now takes runes, and most runes are gifts you feel while you work: luck,
