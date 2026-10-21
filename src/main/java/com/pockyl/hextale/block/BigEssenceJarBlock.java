@@ -75,6 +75,7 @@ public class BigEssenceJarBlock extends EssenceTankBlock {
 
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.BIG_ESSENCE_JAR.get(), EssenceTankBlockEntity::serverTick);
+        return createTickerHelper(type, ModBlockEntities.BIG_ESSENCE_JAR.get(),
+                level.isClientSide() ? EssenceTankBlockEntity::clientTick : EssenceTankBlockEntity::serverTick);
     }
 }

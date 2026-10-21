@@ -1,7 +1,6 @@
 package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -11,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import com.pockyl.hextale.registry.ModParticles;
 
 /**
  * A hextech lamp: a refined gemstone floating in a brass cage, standing on a stone foot or hanging from the block above
@@ -41,6 +41,6 @@ public class HextechLampBlock extends LanternBlock {
         }
         double x = pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.3;
         double z = pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.3;
-        level.addParticle(new DustParticleOptions(0x5CC8F2, 0.5F), x, pos.getY() + 0.5, z, 0, 0.02, 0);
+        level.addParticle(ModParticles.glint(ModParticles.HEXTECH), x, pos.getY() + 0.5, z, 0, 0.01, 0);
     }
 }

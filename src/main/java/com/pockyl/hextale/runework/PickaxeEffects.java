@@ -47,6 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import com.pockyl.hextale.registry.ModParticles;
 
 /**
  * What the pickaxe runes do. Every value is chosen by a rune's strength - its stars, one more with a Lens (1-4, index
@@ -227,7 +228,7 @@ public final class PickaxeEffects {
         int gemstone = runes.strength(PickaxeRune.GEMSTONE);
         if (gemstone > 0 && state.is(BlockTags.BASE_STONE_OVERWORLD) && random.nextFloat() < GEMS[gemstone - 1]) {
             event.getDrops().add(drop(level, event.getPos(), gem(random, GEM_TABLE[gemstone - 1])));
-            burst(level, Vec3.atCenterOf(event.getPos()), ParticleTypes.WAX_ON, 8);
+            burst(level, Vec3.atCenterOf(event.getPos()), ModParticles.glint(ModParticles.GOLD), 8);
         }
         int smelting = runes.strength(PickaxeRune.SMELTING);
         if (smelting > 0) {
@@ -266,7 +267,7 @@ public final class PickaxeEffects {
         if (breath > 0) {
             if (player.isUnderWater() && player.getAirSupply() < player.getMaxAirSupply()) {
                 player.setAirSupply(Math.min(player.getMaxAirSupply(), player.getAirSupply() + BREATH_AIR[breath - 1]));
-                level.sendParticles(ParticleTypes.BUBBLE, player.getX(), player.getEyeY(), player.getZ(), 6, 0.3, 0.2, 0.3, 0.05);
+                level.sendParticles(ModParticles.bubble(ModParticles.WATER), player.getX(), player.getEyeY(), player.getZ(), 6, 0.3, 0.2, 0.3, 0.05);
             }
             if (player.getFoodData().needsFood() && random.nextFloat() < FEED[breath - 1]) {
                 player.getFoodData().eat(1, 0.5F);
@@ -281,7 +282,7 @@ public final class PickaxeEffects {
         }
         int fireproofing = runes.strength(PickaxeRune.FIREPROOFING);
         if (fireproofing > 0 && nextToLava(level, pos) && ToolEffects.keep(player, MobEffects.FIRE_RESISTANCE, FIRE_SHIELD[fireproofing - 1], 0)) {
-            level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 1, player.getZ(), 16, 0.4, 0.6, 0.4, 0.02);
+            level.sendParticles(ModParticles.flame(ModParticles.FIRE), player.getX(), player.getY() + 1, player.getZ(), 16, 0.4, 0.6, 0.4, 0.02);
             ToolEffects.puff(level, player.position().add(0, 1, 0), PickaxeRune.FIREPROOFING.rune(), 12, 0.5);
             ToolEffects.sound(level, player.position(), SoundEvents.FIRECHARGE_USE, 0.5F, 0.6F);
         }
@@ -354,8 +355,8 @@ public final class PickaxeEffects {
         }
         event.setDroppedExperience(event.getDroppedExperience() + xp);
         Vec3 at = Vec3.atCenterOf(event.getPos());
-        level.sendParticles(ParticleTypes.FLAME, at.x, at.y, at.z, 6, 0.25, 0.25, 0.25, 0.01);
-        level.sendParticles(ParticleTypes.SMOKE, at.x, at.y + 0.2, at.z, 3, 0.2, 0.1, 0.2, 0.01);
+        level.sendParticles(ModParticles.flame(ModParticles.FIRE), at.x, at.y, at.z, 6, 0.25, 0.25, 0.25, 0.01);
+        level.sendParticles(ModParticles.vapour(ModParticles.SMOKE), at.x, at.y + 0.2, at.z, 3, 0.2, 0.1, 0.2, 0.01);
         level.playSound(null, event.getPos(), SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.2F, 1.6F + level.getRandom().nextFloat() * 0.3F);
     }
 
@@ -410,7 +411,7 @@ public final class PickaxeEffects {
                     if (!take(level, player, tool, pos)) {
                         return;
                     }
-                    level.sendParticles(ParticleTypes.ELECTRIC_SPARK, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 3, 0.2, 0.2, 0.2, 0.05);
+                    level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 3, 0.2, 0.2, 0.2, 0.05);
                     taken++;
                     queue.add(pos);
                 }
@@ -518,7 +519,7 @@ public final class PickaxeEffects {
             EXPIRING.add(new Expiring(level, marker, level.getGameTime() + ticks));
             shown++;
         }
-        level.sendParticles(ParticleTypes.END_ROD, player.getX(), player.getY() + 1, player.getZ(), 24, 1.5, 1, 1.5, 0.05);
+        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), player.getX(), player.getY() + 1, player.getZ(), 24, 1.5, 1, 1.5, 0.05);
         level.playSound(null, centre, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 0.6F);
         return true;
     }
@@ -551,7 +552,7 @@ public final class PickaxeEffects {
                         if (level.getBlockState(at).isAir()) {
                             dug[0]++;
                             if (dug[0] % 3 == 0) {
-                                level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 2, 0.3, 0.3, 0.3, 0.05);
+                                level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 2, 0.3, 0.3, 0.3, 0.05);
                             }
                         }
                     }
@@ -587,7 +588,7 @@ public final class PickaxeEffects {
             }
             level.destroyBlock(at, false, player);
             if (++shattered % 4 == 0) {
-                level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 3, 0.3, 0.3, 0.3, 0.1);
+                level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 3, 0.3, 0.3, 0.3, 0.1);
             }
         }
         if (shattered == 0) {
@@ -595,6 +596,8 @@ public final class PickaxeEffects {
         }
         tool.hurtAndBreak(1 + shattered / 8, player, EquipmentSlot.MAINHAND);
         level.sendParticles(ParticleTypes.EXPLOSION, centre.getX() + 0.5, centre.getY() + 0.5, centre.getZ() + 0.5, 1, 0, 0, 0, 0);
+        level.sendParticles(ModParticles.ring(PickaxeRune.QUAKE.rune().color()), centre.getX() + 0.5, centre.getY() + 0.5, centre.getZ() + 0.5,
+                0, 2.5, 0, 0, 1);
         level.playSound(null, centre, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.7F, 0.5F);
         level.playSound(null, centre, SoundEvents.DEEPSLATE_BREAK, SoundSource.BLOCKS, 1.0F, 0.5F);
         return true;

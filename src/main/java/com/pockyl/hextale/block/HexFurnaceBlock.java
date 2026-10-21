@@ -2,7 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -35,6 +34,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModParticles;
 
 import org.jspecify.annotations.Nullable;
 
@@ -108,9 +108,9 @@ public class HexFurnaceBlock extends BaseEntityBlock implements WorldlyContainer
         double y = pos.getY() + 0.3 + random.nextDouble() * 0.25;
         double ax = front.getAxis() == Direction.Axis.X ? 0 : across;
         double az = front.getAxis() == Direction.Axis.Z ? 0 : across;
-        level.addParticle(random.nextInt(3) == 0 ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.FLAME, x + ax, y, z + az, 0, 0.005, 0);
+        level.addParticle(ModParticles.flame(random.nextInt(3) == 0 ? ModParticles.SOUL_FIRE : ModParticles.FIRE), x + ax, y, z + az, 0, 0.005, 0);
         if (random.nextInt(3) == 0) {
-            level.addParticle(ParticleTypes.SMOKE, x + ax, y + 0.3, z + az, 0, 0.02, 0);
+            level.addParticle(ModParticles.vapour(ModParticles.SMOKE), x + ax, y + 0.3, z + az, 0, 0.02, 0);
         }
         if (random.nextInt(10) == 0) {
             level.playLocalSound(pos, SoundEvents.FURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 1.0F, 1.0F, false);

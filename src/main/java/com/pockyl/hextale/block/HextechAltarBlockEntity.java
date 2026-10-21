@@ -413,7 +413,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         ItemStack item = pedestal.take();
         Vec3 at = Vec3.atCenterOf(pedestal.getBlockPos()).add(0, 0.6, 0);
         level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, item.getItem()), at.x, at.y, at.z, 10, 0.12, 0.12, 0.12, 0.06);
-        level.sendParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
+        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
         level.playSound(null, pedestal.getBlockPos(), ModSounds.RITUAL_ABSORB.get(), SoundSource.BLOCKS, 0.9F,
                 0.85F + 0.3F * (itemsTotal - inputs.size()) / Math.max(1, itemsTotal));
     }
@@ -434,8 +434,11 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             }
         }
         Vec3 at = itemPosition();
-        level.sendParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, 40, 0.1, 0.1, 0.1, 0.18);
-        level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y, at.z, 20, 0.3, 0.3, 0.3, 0.3);
+        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 40, 0.1, 0.1, 0.1, 0.18);
+        level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 20, 0.3, 0.3, 0.3, 0.3);
+        level.sendParticles(ModParticles.ring(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 0, 1.4, 0, 0, 1);
+        level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), worldPosition.getX() + 0.5, worldPosition.getY() + 0.05,
+                worldPosition.getZ() + 0.5, 0, 3.5, 1, 0, 1);
         level.playSound(null, worldPosition, ModSounds.RITUAL_COMPLETE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         level.blockEvent(worldPosition, getBlockState().getBlock(), 1, 0);
         sync();
@@ -445,9 +448,9 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     private void collapse(ServerLevel level) {
         clearRitual();
         Vec3 at = itemPosition();
-        level.sendParticles(ParticleTypes.EXPLOSION, at.x, at.y, at.z, 2, 0.3, 0.3, 0.3, 0);
-        level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y, at.z, 50, 0.8, 0.5, 0.8, 0.5);
-        level.sendParticles(ParticleTypes.LARGE_SMOKE, at.x, at.y, at.z, 16, 0.5, 0.3, 0.5, 0.02);
+        level.sendParticles(ModParticles.ring(0xFF5A4A), at.x, at.y, at.z, 0, 2.2, 0, 0, 1);
+        level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 50, 0.8, 0.5, 0.8, 0.5);
+        level.sendParticles(ModParticles.vapour(ModParticles.SOOT), at.x, at.y, at.z, 16, 0.5, 0.3, 0.5, 0.02);
         level.playSound(null, worldPosition, ModSounds.RITUAL_COLLAPSE.get(), SoundSource.BLOCKS, 1.2F, 1.0F);
         for (Player player : level.getEntitiesOfClass(Player.class, new AABB(worldPosition).inflate(4))) {
             player.hurtServer(level, level.damageSources().magic(), 4.0F);
@@ -525,7 +528,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             }
         }
         if (altar.stalled() && random.nextInt(4) == 0) {
-            level.addParticle(ParticleTypes.ELECTRIC_SPARK, target.x + (random.nextDouble() - 0.5) * 0.8, target.y + random.nextDouble() * 0.4,
+            level.addParticle(ModParticles.spark(ModParticles.HEXTECH), target.x + (random.nextDouble() - 0.5) * 0.8, target.y + random.nextDouble() * 0.4,
                     target.z + (random.nextDouble() - 0.5) * 0.8, 0, 0.02, 0);
         }
     }

@@ -1,7 +1,6 @@
 package com.pockyl.hextale.multiblock;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,6 +20,7 @@ import com.pockyl.hextale.research.ResearchTopic;
 
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.registry.ModParticles;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -144,7 +144,7 @@ public final class Multiblocks {
             }
         }
         for (BlockPos pos : cells) {
-            level.sendParticles(ParticleTypes.END_ROD, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 2, 0.3, 0.3, 0.3, 0.01);
+            level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 2, 0.3, 0.3, 0.3, 0.01);
         }
         level.playSound(null, controllerPos, ModSounds.RUNE_FUSED.get(), SoundSource.BLOCKS, 0.7F, 1.0F);
         if (player != null) {

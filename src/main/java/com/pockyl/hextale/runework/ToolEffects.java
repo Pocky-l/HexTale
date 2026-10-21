@@ -3,7 +3,6 @@ package com.pockyl.hextale.runework;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -49,9 +48,10 @@ import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 
-import com.pockyl.hextale.registry.ModItems;
-import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.item.RuneScrollItem;
+import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
 
 import java.util.ArrayDeque;
@@ -184,9 +184,10 @@ public final class ToolEffects {
         }
     }
 
-    /** A puff of dust in the rune's colour: the sign that a rune just worked. */
+    /** Glints and a ring of light in the rune's colour: the sign that a rune just worked (more glints = a bigger proc). */
     public static void puff(ServerLevel level, Vec3 at, ComplexRune rune, int count, double spread) {
-        level.sendParticles(new DustParticleOptions(rune.color(), 1.0F), at.x, at.y, at.z, count, spread, spread * 0.6, spread, 0.02);
+        level.sendParticles(ModParticles.glint(rune.color()), at.x, at.y, at.z, count, spread, spread * 0.6, spread, 0.03);
+        level.sendParticles(ModParticles.ring(rune.color()), at.x, at.y, at.z, 0, 0.4 + spread * 1.2, 0, 0, 1);
     }
 
     public static void sound(ServerLevel level, Vec3 at, SoundEvent sound, float volume, float pitch) {
@@ -388,7 +389,7 @@ public final class ToolEffects {
         if (cache > 0 && soil(state) && random.nextFloat() < HolderRune.at(ToolRune.TREASURE, cache)) {
             event.getDrops().add(drop(level, pos, treasure(level, random)));
             puff(level, Vec3.atCenterOf(pos), ToolRune.CACHE.rune(), 12, 0.35);
-            level.sendParticles(ParticleTypes.WAX_ON, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 8, 0.3, 0.3, 0.3, 0.05);
+            level.sendParticles(ModParticles.glint(ModParticles.GOLD), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 8, 0.3, 0.3, 0.3, 0.05);
             sound(level, Vec3.atCenterOf(pos), SoundEvents.BRUSH_GRAVEL_COMPLETED, 0.8F, 0.9F);
         }
         int fertility = runes.strength(ToolRune.FERTILITY.rune());
@@ -493,7 +494,7 @@ public final class ToolEffects {
         if (flash > 0 && target.getHealth() >= target.getMaxHealth()) {
             event.setAmount(event.getAmount() * (1 + HolderRune.at(ToolRune.FIRST_STRIKE, flash)));
             puff(level, target.position().add(0, target.getBbHeight() * 0.6, 0), ToolRune.FLASH.rune(), 10, 0.3);
-            level.sendParticles(ParticleTypes.END_ROD, target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 6, 0.2, 0.2, 0.2, 0.08);
+            level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 6, 0.2, 0.2, 0.2, 0.08);
         }
         int corrosion = strength(weapon, ToolRune.Tool.AXE, ToolRune.CORROSION);
         if (corrosion > 0 && level.getRandom().nextFloat() < HolderRune.at(ToolRune.CORRODE, corrosion)) {
@@ -571,7 +572,7 @@ public final class ToolEffects {
         int points = Math.max(4, (int) (step.length() * 4));
         for (int i = 0; i <= points; i++) {
             Vec3 at = from.add(step.scale(i / (double) points));
-            level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y, at.z, 1, 0.05, 0.05, 0.05, 0);
+            level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 1, 0.05, 0.05, 0.05, 0);
         }
         puff(level, to, ToolRune.CHAIN_LIGHTNING.rune(), 6, 0.2);
     }
@@ -588,7 +589,7 @@ public final class ToolEffects {
         int bellows = strength(killer(event.getSource()), ToolRune.Tool.SWORD, ToolRune.BELLOWS);
         if (bellows > 0 && level.getRandom().nextFloat() < HolderRune.at(ToolRune.RAGE, bellows)) {
             player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, HolderRune.at(ToolRune.RAGE_TICKS, bellows), 0, true, true));
-            level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 1, player.getZ(), 12, 0.4, 0.5, 0.4, 0.03);
+            level.sendParticles(ModParticles.flame(ModParticles.FIRE), player.getX(), player.getY() + 1, player.getZ(), 12, 0.4, 0.5, 0.4, 0.03);
             puff(level, player.position().add(0, 1, 0), ToolRune.BELLOWS.rune(), 10, 0.5);
             sound(level, player.position(), SoundEvents.BLAZE_SHOOT, 0.4F, 0.6F);
         }
@@ -628,7 +629,7 @@ public final class ToolEffects {
             if (head != null && event.getDrops().stream().noneMatch(drop -> drop.getItem().is(head))) {
                 event.getDrops().add(new ItemEntity(level, dead.getX(), dead.getY() + 0.5, dead.getZ(), new ItemStack(head)));
                 puff(level, dead.position().add(0, 1, 0), ToolRune.ENGRAVING.rune(), 16, 0.5);
-                level.sendParticles(ParticleTypes.WAX_ON, dead.getX(), dead.getY() + 1, dead.getZ(), 10, 0.4, 0.4, 0.4, 0.05);
+                level.sendParticles(ModParticles.glint(ModParticles.GOLD), dead.getX(), dead.getY() + 1, dead.getZ(), 10, 0.4, 0.4, 0.4, 0.05);
                 sound(level, dead.position(), SoundEvents.AMETHYST_CLUSTER_BREAK, 0.8F, 0.6F);
             }
         }

@@ -3,7 +3,6 @@ package com.pockyl.hextale.event;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -130,7 +129,7 @@ public final class LightningEvents {
         }
         Vec3 centre = Vec3.atCenterOf(base);
         level.playSound(null, base, ModSounds.ORB_AWAKEN.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
-        level.sendParticles(ParticleTypes.ELECTRIC_SPARK, centre.x, centre.y, centre.z, 30, 0.4, 0.4, 0.4, 0.4);
+        level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), centre.x, centre.y, centre.z, 30, 0.4, 0.4, 0.4, 0.4);
         tickWaves(level);
     }
 
@@ -191,7 +190,7 @@ public final class LightningEvents {
         }
         for (int i = 1; i <= 4; i++) {
             Vec3 at = end.add(offset.scale(i / 5.0));
-            level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y, at.z, 2, 0.08, 0.08, 0.08, 0.05);
+            level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 2, 0.08, 0.08, 0.08, 0.05);
         }
     }
 
@@ -213,8 +212,9 @@ public final class LightningEvents {
             level.addFreshEntity(orb);
         }
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, crystal), centre.x, centre.y, centre.z, 24, 0.3, 0.3, 0.3, 0.15);
-        level.sendParticles(ParticleTypes.ELECTRIC_SPARK, centre.x, centre.y, centre.z, 14, 0.35, 0.35, 0.35, 0.35);
-        level.sendParticles(new DustParticleOptions(0x5CC7F2, 1.4F), centre.x, centre.y, centre.z, 10, 0.35, 0.35, 0.35, 0.02);
+        level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), centre.x, centre.y, centre.z, 14, 0.35, 0.35, 0.35, 0.35);
+        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), centre.x, centre.y, centre.z, 8, 0.35, 0.35, 0.35, 0.03);
+        level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), centre.x, centre.y, centre.z, 0, 0.9, 0, 0, 1);
         level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.BLOCKS, 1.2F, Math.min(1.8F, 0.8F + ring * 0.08F));
     }
 }

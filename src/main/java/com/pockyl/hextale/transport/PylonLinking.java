@@ -3,7 +3,6 @@ package com.pockyl.hextale.transport;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -26,6 +25,7 @@ import com.pockyl.hextale.block.HexPylonBlockEntity;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.network.PylonLinkPayload;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 
 import java.util.HashMap;
@@ -286,7 +286,7 @@ public final class PylonLinking {
                 pylon.maxLinks()).withStyle(ChatFormatting.GOLD));
         level.playSound(null, target, ModSounds.PYLON_LINK.get(), SoundSource.BLOCKS, 0.7F, 1.0F);
         Vec3 at = link.entry();
-        level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y, at.z, 12, 0.15, 0.15, 0.15, 0.05);
+        level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 12, 0.15, 0.15, 0.15, 0.05);
     }
 
     /** Pending links time out; a player who left forgets theirs. */
@@ -326,7 +326,7 @@ public final class PylonLinking {
                         SoundSource.BLOCKS, 0.35F,
                         0.9F + level.getRandom().nextFloat() * 0.2F, false);
                 for (int i = 0; i < 4; i++) {
-                    level.addParticle(ParticleTypes.ELECTRIC_SPARK, end.x, end.y, end.z, (level.getRandom().nextDouble() - 0.5) * 0.12,
+                    level.addParticle(ModParticles.spark(ModParticles.HEXTECH), end.x, end.y, end.z, (level.getRandom().nextDouble() - 0.5) * 0.12,
                             level.getRandom().nextDouble() * 0.08, (level.getRandom().nextDouble() - 0.5) * 0.12);
                 }
             }
@@ -351,7 +351,7 @@ public final class PylonLinking {
         for (int i = 0; i < 2; i++) {
             Vec3 start = from.add((random.nextDouble() - 0.5) * 0.25, (random.nextDouble() - 0.5) * 0.2, (random.nextDouble() - 0.5) * 0.25);
             Vec3 offset = start.subtract(to);
-            level.addParticle(com.pockyl.hextale.registry.ModParticles.flow(shown.flight.color()), to.x, to.y, to.z, offset.x, offset.y, offset.z);
+            level.addParticle(ModParticles.flow(shown.flight.color()), to.x, to.y, to.z, offset.x, offset.y, offset.z);
         }
     }
 

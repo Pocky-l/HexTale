@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -42,10 +41,11 @@ import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.network.WhirlPayload;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.HolderRune;
+import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.ReaperRune;
 import com.pockyl.hextale.runework.ToolEffects;
 
@@ -276,7 +276,7 @@ public class WhirlReaperBlockEntity extends BlockEntity {
         if (light > 0 && random.nextFloat() < HolderRune.at(ReaperRune.GOLDEN, light)) {
             drops.add(new ItemStack(golden(drops)));
             ToolEffects.puff(level, at, ReaperRune.PHOTOSYNTHESIS.rune(), 14, 0.4);
-            level.sendParticles(ParticleTypes.WAX_ON, at.x, at.y, at.z, 10, 0.3, 0.3, 0.3, 0.05);
+            level.sendParticles(ModParticles.glint(ModParticles.GOLD), at.x, at.y, at.z, 10, 0.3, 0.3, 0.3, 0.05);
             level.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_CLUSTER_PLACE, SoundSource.BLOCKS, 0.6F, 0.7F);
         }
     }
@@ -316,7 +316,7 @@ public class WhirlReaperBlockEntity extends BlockEntity {
                     state.randomTick(level, near.immutable(), random);
                 }
             }
-            level.sendParticles(ParticleTypes.SPLASH, pos.getX() + 0.5, pos.getY() + 0.2, pos.getZ() + 0.5, 10, 0.6, 0.1, 0.6, 0.1);
+            level.sendParticles(ModParticles.drop(ModParticles.WATER), pos.getX() + 0.5, pos.getY() + 0.2, pos.getZ() + 0.5, 10, 0.6, 0.1, 0.6, 0.1);
         }
         int radiance = strength(ReaperRune.RADIANCE);
         if (radiance > 0 && random.nextFloat() < HolderRune.at(ReaperRune.EXPERIENCE, radiance)) {

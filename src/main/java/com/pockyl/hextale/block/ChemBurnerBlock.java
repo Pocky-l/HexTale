@@ -2,8 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.DustColorTransitionOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
@@ -40,6 +38,7 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 
 import org.jspecify.annotations.Nullable;
@@ -165,7 +164,7 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
         Direction side = facing.getClockWise();
         double along = (random.nextDouble() - 0.5) * 0.4;
         boolean pink = level.getBlockEntity(pos) instanceof ChemBurnerBlockEntity burner && burner.pink();
-        level.addParticle(pink ? new DustColorTransitionOptions(PINK_FLAME, PINK_SMOKE, 0.7F) : new DustColorTransitionOptions(FLAME, SMOKE, 0.6F),
+        level.addParticle(ModParticles.flame(pink ? PINK_FLAME : FLAME),
                 window.x + side.getStepX() * along, window.y + random.nextDouble() * 0.15, window.z + side.getStepZ() * along,
                 0, 0.02, 0);
         if (random.nextInt(3) == 0) {
@@ -173,10 +172,10 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
             Direction back = facing.getOpposite();
             Vec3 flue = Vec3.atBottomCenterOf(pos).add(back.getStepX() * 0.34 + side.getStepX() * 0.3, 1.05,
                     back.getStepZ() * 0.34 + side.getStepZ() * 0.3);
-            level.addParticle(ParticleTypes.SMOKE, flue.x, flue.y, flue.z, 0, 0.04, 0);
+            level.addParticle(ModParticles.vapour(pink ? PINK_SMOKE : SMOKE), flue.x, flue.y, flue.z, 0, 0.03, 0);
         }
         if (pink && random.nextInt(4) == 0) {
-            level.addParticle(com.pockyl.hextale.registry.ModParticles.SHIMMER_MOTE.get(), window.x, window.y + 0.1, window.z, 0, 0.02, 0);
+            level.addParticle(ModParticles.SHIMMER_MOTE.get(), window.x, window.y + 0.1, window.z, 0, 0.02, 0);
         }
         if (random.nextInt(120) == 0) {
             level.playLocalSound(pos, ModSounds.CHEM_BURNER_ROAR.get(), SoundSource.BLOCKS, 0.35F + random.nextFloat() * 0.1F,

@@ -4,6 +4,28 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-beta.4] - 2026-10-21
+### Changed
+Every particle and light effect of the mod is new: hand-made, high-resolution sprites with their own motion, each
+fitting what it shows.
+
+- Essence is alive now: drops of glowing liquid seep out from under the lid of every filled Essence Jar and float up
+  slowly, wobbling and changing shape as they evaporate - in the colours of the essences inside. Push a jar and it
+  spills a little cloud of them. A Big Essence Jar breathes along its whole lid.
+- Essence drawn from jars into machines (Research Table, Lab Bench, Whirl Reaper, Hex Sawmill) flows as a chain of those
+  living drops along a soft channel of light, gathering over the jar's lid and sinking into the machine.
+- New particles everywhere instead of the vanilla ones: drops that fall and splash, bubbles that wobble and burst, soft
+  steam and smoke that swells as it rises, crackling hextech sparks, twinkling glints, tongues of coloured flame, and
+  rings of light that rush out when a ritual ends, a block wakes, a lens is cut or a brew splashes.
+- The crucible boils, bubbles and splashes in the colour of what is in it; the drain valve pours a real stream of drops
+  in the colour of the essence it drains.
+- Rune procs show glints and a ring of light in the rune's colour; the altar's motes, the steles' rune shards, the
+  shimmer motes and the magic tree's falling leaves are redrawn.
+- Whirl Reaper whirls carry puffs of air and glints up the funnel; pylon tendrils glint at their root and tip.
+
+### Fixed
+- The drain valve's drops showed a random colour: the colour did not survive the trip to the client.
+
 ## [1.0.0-beta.3] - 2026-10-21
 ### Changed
 A warmer, cosier look for the things you see most.

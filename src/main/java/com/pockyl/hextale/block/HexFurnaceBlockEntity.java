@@ -59,6 +59,7 @@ import com.pockyl.hextale.runework.ToolEffects;
 import net.neoforged.neoforge.common.Tags;
 import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.research.ResearchTopics;
+import com.pockyl.hextale.registry.ModParticles;
 
 import java.util.HashSet;
 import java.util.List;
@@ -392,7 +393,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         more.grow(extra);
         Vec3 mouth = Vec3.atCenterOf(worldPosition);
         ToolEffects.puff(level, mouth, FurnaceRune.FORGE.rune(), 8, 0.35);
-        level.sendParticles(net.minecraft.core.particles.ParticleTypes.WAX_ON, mouth.x, mouth.y, mouth.z, 6, 0.3, 0.3, 0.3, 0.05);
+        level.sendParticles(ModParticles.glint(ModParticles.GOLD), mouth.x, mouth.y, mouth.z, 6, 0.3, 0.3, 0.3, 0.05);
         return more;
     }
 

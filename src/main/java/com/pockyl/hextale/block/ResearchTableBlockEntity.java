@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -36,26 +35,27 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.item.NotesDrawing;
-import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.item.ResearchNotesItem;
+import com.pockyl.hextale.item.ResearchersDiaryItem;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.network.ResearchMessagePayload;
+import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.research.HexGrid;
 import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.Loupe;
-import com.pockyl.hextale.quest.Guide;
-import com.pockyl.hextale.research.ResearchTopic;
-import com.pockyl.hextale.research.ResearchTopics;
+import com.pockyl.hextale.research.ResearchBoard;
+import com.pockyl.hextale.research.ResearchBoards;
 import com.pockyl.hextale.research.ResearchItems;
 import com.pockyl.hextale.research.ResearchSheet;
 import com.pockyl.hextale.research.ResearchText;
-import com.pockyl.hextale.research.HexGrid;
-import com.pockyl.hextale.research.ResearchBoard;
-import com.pockyl.hextale.research.ResearchBoards;
+import com.pockyl.hextale.research.ResearchTopic;
+import com.pockyl.hextale.research.ResearchTopics;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.Arrays;
@@ -159,13 +159,13 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         if (random.nextInt(table.drawing ? 4 : 50) == 0) {
             double angle = random.nextDouble() * Math.PI * 2;
             double speed = table.drawing ? 0.05 : 0.015;
-            level.addParticle(ParticleTypes.ELECTRIC_SPARK, orb.x, orb.y, orb.z,
+            level.addParticle(ModParticles.spark(ModParticles.HEXTECH), orb.x, orb.y, orb.z,
                     Math.cos(angle) * speed, (random.nextDouble() - 0.3) * speed, Math.sin(angle) * speed);
         }
         if (table.drawing && random.nextInt(2) == 0) {
             Vec3 from = TableGeometry.toWorld(pos, table.facing(), TableGeometry.PARCHMENT.add(
                     (random.nextDouble() - 0.5) * 9, 0.4, (random.nextDouble() - 0.5) * 6));
-            level.addParticle(ParticleTypes.ENCHANT, orb.x, orb.y, orb.z, from.x - orb.x, from.y - orb.y, from.z - orb.z);
+            level.addParticle(ModParticles.runeShard(ModParticles.HEXTECH), orb.x, orb.y, orb.z, from.x - orb.x, from.y - orb.y, from.z - orb.z);
         }
     }
 
@@ -348,8 +348,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         message(player, Component.translatable("research.hextale.burst", name(board.topic())), ResearchMessagePayload.Tone.BAD);
         if (level instanceof ServerLevel serverLevel) {
             Vec3 orb = orbPosition();
-            serverLevel.sendParticles(ParticleTypes.SQUID_INK, orb.x, orb.y, orb.z, 24, 0.25, 0.15, 0.25, 0.08);
-            serverLevel.sendParticles(ParticleTypes.ELECTRIC_SPARK, orb.x, orb.y, orb.z, 20, 0.2, 0.2, 0.2, 0.4);
+            serverLevel.sendParticles(ModParticles.wisp(ModParticles.INK), orb.x, orb.y, orb.z, 24, 0.25, 0.15, 0.25, 0.08);
+            serverLevel.sendParticles(ModParticles.spark(ModParticles.HEXTECH), orb.x, orb.y, orb.z, 20, 0.2, 0.2, 0.2, 0.4);
             level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_FIZZLE, 0);
         }
         burnSheet(player, board, cell);
@@ -389,8 +389,8 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         setChanged();
         if (level instanceof ServerLevel serverLevel) {
             Vec3 sheetAt = TableGeometry.toWorld(worldPosition, facing(), TableGeometry.PARCHMENT.add(0, 0.6, 0));
-            serverLevel.sendParticles(ParticleTypes.SMALL_FLAME, sheetAt.x, sheetAt.y, sheetAt.z, 18, 0.22, 0.02, 0.16, 0.01);
-            serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, sheetAt.x, sheetAt.y + 0.05, sheetAt.z, 6, 0.18, 0.02, 0.12, 0.02);
+            serverLevel.sendParticles(ModParticles.flame(ModParticles.FIRE), sheetAt.x, sheetAt.y, sheetAt.z, 18, 0.22, 0.02, 0.16, 0.01);
+            serverLevel.sendParticles(ModParticles.vapour(ModParticles.SOOT), sheetAt.x, sheetAt.y + 0.05, sheetAt.z, 6, 0.18, 0.02, 0.12, 0.02);
             serverLevel.sendParticles(ParticleTypes.WHITE_ASH, sheetAt.x, sheetAt.y + 0.2, sheetAt.z, 30, 0.3, 0.2, 0.25, 0.02);
             level.playSound(null, worldPosition, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.5F, 0.7F);
         }
@@ -457,9 +457,9 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             Vec3 at = TableGeometry.toWorld(worldPosition, facing(), TableGeometry.LOUPE_LOOK);
             ItemEssences essences = ResearchItems.of(stack);
             for (Essence essence : essences.essences().keySet()) {
-                serverLevel.sendParticles(new DustParticleOptions(essence.color(), 0.8F), at.x, at.y, at.z, 4, 0.08, 0.06, 0.08, 0.01);
+                serverLevel.sendParticles(ModParticles.glint(essence.color()), at.x, at.y, at.z, 3, 0.08, 0.06, 0.08, 0.02);
             }
-            serverLevel.sendParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, 4, 0.06, 0.04, 0.06, 0.015);
+            serverLevel.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 4, 0.06, 0.04, 0.06, 0.015);
         }
         loupeSince = level.getGameTime();
     }
@@ -467,7 +467,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     private void fizzle() {
         if (level instanceof ServerLevel serverLevel) {
             Vec3 orb = orbPosition();
-            serverLevel.sendParticles(ParticleTypes.SMOKE, orb.x, orb.y, orb.z, 6, 0.08, 0.05, 0.08, 0.01);
+            serverLevel.sendParticles(ModParticles.vapour(ModParticles.SMOKE), orb.x, orb.y, orb.z, 6, 0.08, 0.05, 0.08, 0.01);
             level.playSound(null, worldPosition, ModSounds.RUNE_FAILED.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
             level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_FIZZLE, 0);
         }
@@ -552,9 +552,10 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             return;
         }
         Vec3 orb = orbPosition();
-        serverLevel.sendParticles(new DustParticleOptions(topic.color(), 1.2F), orb.x, orb.y, orb.z, 28, 0.25, 0.2, 0.25, 0.02);
-        serverLevel.sendParticles(ParticleTypes.ELECTRIC_SPARK, orb.x, orb.y, orb.z, 14, 0.15, 0.15, 0.15, 0.25);
-        serverLevel.sendParticles(ParticleTypes.END_ROD, orb.x, orb.y, orb.z, 6, 0.1, 0.1, 0.1, 0.05);
+        serverLevel.sendParticles(ModParticles.glint(topic.color()), orb.x, orb.y, orb.z, 20, 0.25, 0.2, 0.25, 0.03);
+        serverLevel.sendParticles(ModParticles.ring(topic.color()), orb.x, orb.y, orb.z, 0, 0.9, 0, 0, 1);
+        serverLevel.sendParticles(ModParticles.spark(ModParticles.HEXTECH), orb.x, orb.y, orb.z, 14, 0.15, 0.15, 0.15, 0.25);
+        serverLevel.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), orb.x, orb.y, orb.z, 6, 0.1, 0.1, 0.1, 0.05);
         level.playSound(null, worldPosition, ModSounds.RUNE_FUSED.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_FUSED, topic.index());
     }

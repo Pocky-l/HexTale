@@ -4,7 +4,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -28,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.entity.ThrownHextech;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 
 import java.util.Map;
@@ -117,11 +117,12 @@ public class UnstableHextechItem extends Item implements ProjectileItem {
             Vec3 push = distance < 1.0E-3 ? new Vec3(0, 1, 0) : away.normalize();
             victim.push(push.x * 0.6, 0.35, push.z * 0.6);
         }
-        level.sendParticles(ParticleTypes.ELECTRIC_SPARK, centre.x, centre.y, centre.z, 24 + count * 2, 0.25, 0.25, 0.25, 0.6);
-        level.sendParticles(new DustParticleOptions(0x98E3FB, 1.6F), centre.x, centre.y, centre.z, 18, 0.4, 0.3, 0.4, 0.05);
+        level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), centre.x, centre.y, centre.z, 24 + count * 2, 0.25, 0.25, 0.25, 0.6);
+        level.sendParticles(ModParticles.glint(0x98E3FB), centre.x, centre.y, centre.z, 14, 0.4, 0.3, 0.4, 0.05);
+        level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), centre.x, centre.y, centre.z, 0, 1.2 + count * 0.05, 0, 0, 1);
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.AMETHYST_CLUSTER.defaultBlockState()),
                 centre.x, centre.y, centre.z, 20, 0.2, 0.2, 0.2, 0.2);
-        level.sendParticles(ParticleTypes.END_ROD, centre.x, centre.y, centre.z, 6, 0.1, 0.1, 0.1, 0.12);
+        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), centre.x, centre.y, centre.z, 6, 0.1, 0.1, 0.1, 0.12);
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.ORB_CRACK.get(), SoundSource.BLOCKS, 1.4F, 0.9F);
         level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.BLOCKS, 1.2F, 0.7F);
         for (int dust = count * BURST_DUST; dust > 0; dust -= 64) {

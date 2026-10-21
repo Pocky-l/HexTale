@@ -305,6 +305,22 @@ public final class EssenceMix {
         return (int) r << 16 | (int) g << 8 | (int) b;
     }
 
+    /** The colour of one drop picked at random by the amounts: a mixture shows its essences one by one, not their blend. */
+    public int dropColor(net.minecraft.util.RandomSource random) {
+        int total = total();
+        if (total == 0) {
+            return color();
+        }
+        int pick = random.nextInt(total);
+        for (int i = 0; i < SLOTS; i++) {
+            pick -= amounts[i];
+            if (pick < 0) {
+                return i == UNKNOWN ? UNKNOWN_COLOR : Essence.values()[i].color();
+            }
+        }
+        return color();
+    }
+
     /** "Life 8, Earth 6, Unknown essence 2" with coloured names (millibuckets). */
     public MutableComponent describe() {
         MutableComponent out = Component.empty();

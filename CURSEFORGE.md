@@ -56,7 +56,8 @@ still blank: plans for chemtech, shimmer and the hexcore are waiting to be writt
 ## 💜 Credits
 
 Made by **Pocky**. Inspired by the hextech of **Arcane** and by
-[Thaumcraft](https://www.curseforge.com/minecraft/mc-mods/thaumcraft). Source code on
+[Thaumcraft](https://www.curseforge.com/minecraft/mc-mods/thaumcraft). Some particle sprites are built on the
+[Particle Pack](https://kenney.nl/assets/particle-pack) by Kenney (CC0). Source code on
 [GitHub](https://github.com/Pocky-l/HexTale) (MIT).
 
 <!-- more-mods:start -->

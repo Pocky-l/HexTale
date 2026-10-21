@@ -1,5 +1,10 @@
 {
   "textures": [
-    "minecraft:glow"
+    "hextale:shimmer_mote_0",
+    "hextale:shimmer_mote_1",
+    "hextale:shimmer_mote_2",
+    "hextale:shimmer_mote_3",
+    "hextale:shimmer_mote_4",
+    "hextale:shimmer_mote_5"
   ]
 }

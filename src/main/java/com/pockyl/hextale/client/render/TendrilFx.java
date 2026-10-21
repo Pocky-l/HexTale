@@ -37,8 +37,6 @@ public final class TendrilFx {
         int core = RuneDrawing.mix(color, 0xFFFFFF, 0.7F);
         float phase = (seed & 255) / 255F * Mth.TWO_PI;
         Vector3f eye = new Vector3f((float) cameraLocal.x, (float) cameraLocal.y, (float) cameraLocal.z);
-        Vector3f right = camera.transform(new Vector3f(1, 0, 0));
-        Vector3f up = camera.transform(new Vector3f(0, 1, 0));
         Vec3 a = flight.path().get(leg);
         Vec3 b = flight.path().get(leg + 1);
         Vec3 along = b.subtract(a);
@@ -82,11 +80,20 @@ public final class TendrilFx {
                 light[i] = taper(s[i]);
             }
             JarStreamFx.strip(consumer, pose, spine, light, eye, 0.13F, color, 0.18F * alpha);
-            // The root glows where the tendril leaves the gem, the tip twinkles.
-            JarStreamFx.star(consumer, pose, spine[0], right, up, 0.3F, time * 0.05F + phase, color, core, 0.6F * alpha);
-            JarStreamFx.star(consumer, pose, spine[SEGMENTS], right, up, 0.2F + 0.05F * Mth.sin(time * 0.6F + phase), -time * 0.08F, color,
-                    core, 0.9F * alpha);
         });
+        // The root glows where the tendril leaves the gem, the tip twinkles: a glint over a soft halo at each.
+        Vec3 root = spine[0];
+        Vec3 tip = spine[SEGMENTS];
+        float flicker = 0.85F + 0.15F * Mth.sin(time * 0.6F + phase);
+        HexFx.sheet(poseStack, collector, camera, HexFx.GLINT, HexFx.GLINT_FRAMES, java.util.List.of(
+                HexFx.quad(root.x, root.y, root.z, 0.11F, 0, time * 0.04F + phase, 0.7F * alpha, core),
+                HexFx.quad(tip.x, tip.y, tip.z, 0.085F * flicker, 1, -time * 0.07F, 0.95F * alpha, core)));
+        for (Vec3 end : new Vec3[]{root, tip}) {
+            poseStack.pushPose();
+            poseStack.translate(end.x, end.y, end.z);
+            HexFx.sprite(poseStack, collector, camera, HexFx.HALO, end == root ? 0.42F : 0.3F, color, 0.35F * alpha);
+            poseStack.popPose();
+        }
     }
 
     /** Bright at the root, thinning to the tip, never quite gone. */

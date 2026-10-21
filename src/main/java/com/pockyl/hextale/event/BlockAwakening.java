@@ -182,7 +182,7 @@ public final class BlockAwakening {
             double along = level.getRandom().nextDouble() - 0.5;
             double x = centre.x + side.getStepX() * 0.52 + (side.getAxis() == Direction.Axis.Z ? along : 0);
             double z = centre.z + side.getStepZ() * 0.52 + (side.getAxis() == Direction.Axis.X ? along : 0);
-            level.sendParticles(ParticleTypes.ELECTRIC_SPARK, x, pos.getY() + progress, z, 2, 0.02, 0.1, 0.02, 0.02);
+            level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), x, pos.getY() + progress, z, 2, 0.02, 0.1, 0.02, 0.02);
         }
     }
 
@@ -213,8 +213,10 @@ public final class BlockAwakening {
         }
         Vec3 centre = Vec3.atCenterOf(pos);
         level.sendParticles(ColorParticleOption.create(ParticleTypes.FLASH, 0xFF000000 | HEXTECH), centre.x, centre.y, centre.z, 1, 0, 0, 0, 0);
-        level.sendParticles(ParticleTypes.END_ROD, centre.x, centre.y, centre.z, 16, 0.35, 0.35, 0.35, 0.08);
-        level.sendParticles(ParticleTypes.ELECTRIC_SPARK, centre.x, centre.y + 0.5, centre.z, 20, 0.4, 0.2, 0.4, 0.3);
+        level.sendParticles(ModParticles.ring(HEXTECH), centre.x, centre.y, centre.z, 0, 1.3, 0, 0, 1);
+        level.sendParticles(ModParticles.ring(HEXTECH), centre.x, pos.getY() + 0.05, centre.z, 0, 1.8, 1, 0, 1);
+        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), centre.x, centre.y, centre.z, 16, 0.35, 0.35, 0.35, 0.08);
+        level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), centre.x, centre.y + 0.5, centre.z, 20, 0.4, 0.2, 0.4, 0.3);
         level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0F, 1.2F);
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.ORB_AWAKEN.get(), SoundSource.BLOCKS, 0.6F, 1.4F);
     }

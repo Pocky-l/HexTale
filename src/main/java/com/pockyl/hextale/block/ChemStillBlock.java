@@ -2,8 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -122,10 +120,10 @@ public class ChemStillBlock extends BaseEntityBlock {
         }
         Vec3 drip = dripPoint(state).add(pos.getX(), pos.getY(), pos.getZ());
         if (random.nextInt(4) == 0) {
-            level.addParticle(new DustParticleOptions(DRIP, 0.5F), drip.x, drip.y, drip.z, 0, -0.05, 0);
+            level.addParticle(ModParticles.drop(DRIP), drip.x, drip.y, drip.z, 0, -0.02, 0);
         }
         if (random.nextInt(5) == 0) {
-            level.addParticle(ParticleTypes.WHITE_SMOKE, pos.getX() + 0.5, pos.getY() + 0.95, pos.getZ() + 0.5, 0, 0.02, 0);
+            level.addParticle(ModParticles.vapour(ModParticles.STEAM), pos.getX() + 0.5, pos.getY() + 0.95, pos.getZ() + 0.5, 0, 0.02, 0);
         }
         if (random.nextInt(8) == 0) {
             level.addParticle(ModParticles.SHIMMER_MOTE.get(), pos.getX() + 0.3 + random.nextDouble() * 0.3, pos.getY() + 0.5,

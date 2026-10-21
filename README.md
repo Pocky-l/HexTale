@@ -99,7 +99,8 @@ The jar is written to `build/libs/`.
 
 - Author: **Pocky**.
 - Inspired by the hextech of **Arcane** and by [Thaumcraft](https://www.curseforge.com/minecraft/mc-mods/thaumcraft).
-- All textures, models and sounds are made for this mod.
+- All textures, models and sounds are made for this mod. Some particle sprites are built on the
+  [Particle Pack](https://kenney.nl/assets/particle-pack) by Kenney (CC0).
 
 <!-- more-mods:start -->
 ## More mods by Pocky

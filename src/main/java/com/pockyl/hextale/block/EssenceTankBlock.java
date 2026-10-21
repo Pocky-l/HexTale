@@ -2,7 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -39,6 +38,7 @@ import net.minecraft.network.chat.Component;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.registry.ModParticles;
 
 import org.jspecify.annotations.Nullable;
 
@@ -136,7 +136,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             level.playSound(null, pos, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 1.3F);
             if (level instanceof ServerLevel serverLevel) {
                 Vec3 at = hitResult.getLocation();
-                serverLevel.sendParticles(ParticleTypes.WAX_ON, at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
+                serverLevel.sendParticles(ModParticles.glint(ModParticles.GOLD), at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
             }
             player.sendOverlayMessage(Component.translatable("block.hextale.essence_tank.sticker", Component.translatable(essence.translationKey())));
             return InteractionResult.SUCCESS;
@@ -191,6 +191,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
 
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.ESSENCE_TANK.get(), EssenceTankBlockEntity::serverTick);
+        return createTickerHelper(type, ModBlockEntities.ESSENCE_TANK.get(),
+                level.isClientSide() ? EssenceTankBlockEntity::clientTick : EssenceTankBlockEntity::serverTick);
     }
 }

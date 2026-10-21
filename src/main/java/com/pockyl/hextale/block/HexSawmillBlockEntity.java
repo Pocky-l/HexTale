@@ -24,7 +24,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.item.Items;
 
 import com.pockyl.hextale.essence.EssenceMix;
@@ -34,10 +33,11 @@ import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.network.SawPayload;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
-import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.HolderRune;
+import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.SawmillRune;
 import com.pockyl.hextale.runework.ToolEffects;
 
@@ -274,7 +274,7 @@ public class HexSawmillBlockEntity extends BlockEntity {
         if (light > 0 && level.getRandom().nextFloat() < HolderRune.at(SawmillRune.GOLDEN, light)) {
             drops.add(new ItemStack(Items.GOLDEN_APPLE));
             ToolEffects.puff(level, crown, SawmillRune.PHOTOSYNTHESIS.rune(), 16, 0.8);
-            level.sendParticles(ParticleTypes.WAX_ON, crown.x, crown.y, crown.z, 12, 0.6, 0.6, 0.6, 0.05);
+            level.sendParticles(ModParticles.glint(ModParticles.GOLD), crown.x, crown.y, crown.z, 12, 0.6, 0.6, 0.6, 0.05);
         }
         return drops;
     }

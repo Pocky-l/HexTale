@@ -2,30 +2,34 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 
+import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.essence.JarReach;
 
 /**
- * Essence drawn out of a jar into a machine ({@link JarReach}), in the same light as the runes on the steles: additive
- * glow ({@link HexGlow}), nothing painted on top of the world. Three thin strands braid around the arc from the jar's
- * lid into the machine, waves of light run along them towards the machine, twinkling four-pointed sparks ride the
- * waves, a hex sigil turns on the jar's lid and another around the point where the essence pours in. The stream grows
- * out of the jar when the draw starts ({@code head} 0 -> 1) and runs into the machine when it ends ({@code tail} 0 -> 1).
- * Wisps shed along the way are particles ({@link JarReach#shed}). Positions are relative to the pose origin.
+ * Essence drawn out of a jar into a machine ({@link JarReach}) as living liquid: a chain of glowing drops (the
+ * essence wisp's frames, {@link #BLOB}) crawls along the arc from the jar's lid into the machine - each drop wobbling
+ * out of line, changing shape and turning, the chain swelling and thinning like a pulse. Under it runs a faint
+ * channel of additive light ({@link HexGlow}). Over the lid the essence gathers into a drop that bulges and lets the
+ * chain go; at the machine the drops sink into a soft glow. The stream grows out of the jar when the draw starts
+ * ({@code head} 0 -> 1) and runs into the machine when it ends ({@code tail} 0 -> 1). Wisps shed along the way are
+ * particles ({@link JarReach#shed}). Positions are relative to the pose origin.
  */
 public final class JarStreamFx {
-    private static final int SEGMENTS = 40;
-    private static final int STRANDS = 3;
-    private static final int WAVES = 3;
-    private static final int SPARKS = 6;
-    /** Ticks a wave takes from the jar to the machine. */
-    private static final float TRAVEL_TICKS = 24;
+    /** Eight frames of a living drop side by side (from the Krita particle art). */
+    public static final Identifier BLOB = Hextale.id("textures/misc/essence_blob.png");
+    private static final int BLOB_FRAMES = 8;
+    private static final int SEGMENTS = 32;
+    /** Ticks a drop takes from the jar to the machine. */
+    private static final float TRAVEL_TICKS = 46;
+    /** Drops per block of arc. */
+    private static final float DROPS_PER_BLOCK = 7;
 
     private JarStreamFx() {
     }
@@ -43,91 +47,93 @@ public final class JarStreamFx {
         }
         Vec3 from = stream.from();
         Vec3 to = stream.to();
-        int color = vivid(stream.color());
-        int core = RuneDrawing.mix(color, 0xFFFFFF, 0.65F);
+        int color = liquid(stream.color());
+        int glow = vivid(stream.color());
         float phase = (stream.seed() & 255) / 255F * Mth.TWO_PI;
         Vector3f eye = new Vector3f((float) cameraLocal.x, (float) cameraLocal.y, (float) cameraLocal.z);
-        Vector3f right = camera.transform(new Vector3f(1, 0, 0));
-        Vector3f up = camera.transform(new Vector3f(0, 1, 0));
         Vec3 along = to.subtract(from);
         Vec3 sideA = new Vec3(-along.z, 0, along.x);
         sideA = sideA.lengthSqr() < 1.0E-6 ? new Vec3(1, 0, 0) : sideA.normalize();
         Vec3 sideB = sideA.cross(along.normalize()).normalize();
-        Vec3 sideAf = sideA;
-        float headF = head;
-        float tailF = tail;
+        float length = (float) along.length() + 1;
 
+        // The channel: a faint band of light under the drops, brighter where the pulse runs.
+        Vec3 sideAf = sideA;
         collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
-            // The braid: each strand winds around the arc, thickest in the middle, pinched at the jar and the machine.
             Vec3[] points = new Vec3[SEGMENTS + 1];
             float[] light = new float[SEGMENTS + 1];
-            for (int strand = 0; strand < STRANDS; strand++) {
-                float offset = strand * Mth.TWO_PI / STRANDS;
-                for (int i = 0; i <= SEGMENTS; i++) {
-                    float t = Mth.lerp(i / (float) SEGMENTS, tailF, headF);
-                    float radius = 0.025F + 0.075F * Mth.sin(t * Mth.PI);
-                    float angle = t * 16 - time * 0.22F + offset + phase;
-                    points[i] = JarReach.arc(from, to, t).add(sideAf.scale(Mth.cos(angle) * radius)).add(sideB.scale(Mth.sin(angle) * radius));
-                    light[i] = ends(t, tailF, headF) * (0.3F + 0.7F * waves(t, time, phase));
-                }
-                strip(consumer, pose, points, light, eye, 0.07F, color, 0.55F);
-                strip(consumer, pose, points, light, eye, 0.022F, core, 0.9F);
+            for (int i = 0; i <= SEGMENTS; i++) {
+                float t = Mth.lerp(i / (float) SEGMENTS, tail, head);
+                points[i] = JarReach.arc(from, to, t).add(sideAf.scale(0.02F * Mth.sin(t * 9 - time * 0.15F + phase)));
+                light[i] = ends(t, tail, head) * (0.45F + 0.55F * pulse(t, time, phase));
             }
-            // Sparks riding the waves, twinkling.
-            for (int k = 0; k < SPARKS; k++) {
-                float t = frac(time / TRAVEL_TICKS + k / (float) SPARKS + phase);
-                if (t < tailF || t > headF) {
-                    continue;
-                }
-                float twinkle = 0.6F + 0.4F * Mth.sin(time * 0.9F + k * 2.3F);
-                float angle = t * 16 - time * 0.22F + k * 2.1F + phase;
-                Vec3 at = JarReach.arc(from, to, t).add(sideAf.scale(Mth.cos(angle) * 0.06F)).add(sideB.scale(Mth.sin(angle) * 0.06F));
-                star(consumer, pose, at, right, up, (k % 2 == 0 ? 0.22F : 0.15F) * twinkle, time * 0.05F + k, color, core,
-                        ends(t, tailF, headF));
-            }
-            // The light gathering over the jar and pouring into the machine.
-            if (tailF < 0.05F) {
-                float strength = 1 - tailF / 0.05F;
-                star(consumer, pose, from.add(0, 0.06, 0), right, up, 0.35F + 0.08F * Mth.sin(time * 0.4F), -time * 0.03F, color, core,
-                        0.7F * strength);
-            }
-            if (headF >= 0.98F) {
-                float pulse = waves(1, time, phase);
-                star(consumer, pose, to, right, up, 0.4F + 0.25F * pulse, time * 0.04F, color, core, (0.5F + 0.5F * pulse) * (1 - tailF));
-            }
+            strip(consumer, pose, points, light, eye, 0.2F, glow, 0.16F);
+            strip(consumer, pose, points, light, eye, 0.05F, glow, 0.3F);
         });
 
-        // Hex sigils: one lying on the jar's lid, one around the point where the essence pours in.
+        // The drops: each rides the arc at its own pace, wobbling around it; the chain swells with the pulse.
+        int drops = Math.max(5, Math.round(length * DROPS_PER_BLOCK));
+        java.util.List<float[]> quads = new java.util.ArrayList<>(drops + 1);
+        for (int k = 0; k < drops; k++) {
+            float jitter = hash(stream.seed() * 31 + k);
+            float t = frac(time / (TRAVEL_TICKS * length * 0.5F) + (k + jitter * 0.6F) / drops);
+            if (t < tail || t > head) {
+                continue;
+            }
+            float wobble = 0.045F + 0.035F * Mth.sin(t * Mth.PI);
+            float angle = time * 0.13F + k * 2.4F + phase;
+            Vec3 at = JarReach.arc(from, to, t).add(sideA.scale(Mth.cos(angle) * wobble)).add(sideB.scale(Mth.sin(angle * 1.3F) * wobble));
+            float size = (0.065F + 0.05F * jitter) * (0.75F + 0.45F * pulse(t, time, phase)) * ends(t, tail, head)
+                    * (0.7F + 0.3F * Mth.sin(t * Mth.PI));
+            int frame = Math.floorMod((int) (time / 4) + k * 3, BLOB_FRAMES);
+            quads.add(HexFx.quad(at.x, at.y, at.z, size, frame, angle * 0.4F, 0.92F, color));
+        }
+        // The drop gathering over the lid, swelling and letting the chain go.
         if (tail < 0.05F) {
-            float strength = (1 - tail / 0.05F) * Math.min(1, head * 4);
+            float strength = (1 - tail / 0.05F) * Math.min(1, head * 5);
+            float swell = 0.13F + 0.035F * Mth.sin(time * 0.35F + phase);
+            quads.add(HexFx.quad(from.x, from.y + 0.05, from.z, swell * strength, Math.floorMod((int) (time / 5), BLOB_FRAMES), time * 0.02F,
+                    0.95F, color));
+        }
+        HexFx.sheet(poseStack, collector, camera, BLOB, BLOB_FRAMES, quads);
+        if (head >= 0.98F) {
+            float strength = 1 - tail;
+            float beat = pulse(1, time, phase);
             poseStack.pushPose();
-            poseStack.translate(from.x, from.y - 0.01, from.z);
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
-            poseStack.rotate(Axis.ZP.rotation(time * 0.05F + phase));
-            HexFx.sigilRing(poseStack, collector, 0.26F, 6, color, 0.75F * strength);
+            poseStack.translate(to.x, to.y, to.z);
+            HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.55F + 0.2F * beat, glow, (0.35F + 0.35F * beat) * strength);
+            HexFx.sprite(poseStack, collector, camera, HexFx.MOTE, 0.16F + 0.06F * beat, RuneDrawing.mix(glow, 0xFFFFFF, 0.5F),
+                    0.8F * strength);
             poseStack.popPose();
         }
-        if (head >= 0.98F) {
-            float pulse = waves(1, time, phase);
+        if (tail < 0.05F) {
             poseStack.pushPose();
-            poseStack.translate(to.x, to.y - 0.12, to.z);
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
-            poseStack.rotate(Axis.ZP.rotation(-time * 0.07F - phase));
-            HexFx.sigilRing(poseStack, collector, 0.3F + 0.03F * pulse, 6, color, (0.55F + 0.4F * pulse) * (1 - tail));
+            poseStack.translate(from.x, from.y + 0.04, from.z);
+            HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.6F, glow, 0.3F * (1 - tail / 0.05F) * Math.min(1, head * 5));
             poseStack.popPose();
         }
     }
 
-    /** Light of the waves running towards the machine at {@code t} (0-1 along the arc): 0 between them, 1 on a crest. */
-    private static float waves(float t, float time, float phase) {
-        float light = 0;
-        for (int j = 0; j < WAVES; j++) {
-            float crest = frac(time / TRAVEL_TICKS + j / (float) WAVES + phase);
-            float d = Math.abs(t - crest);
-            d = Math.min(d, 1 - d);
-            light += (float) Math.exp(-d * d / 0.004);
-        }
-        return Math.min(1, light);
+    /** The pulse running towards the machine at {@code t} (0-1 along the arc): 0 between beats, 1 on a beat. */
+    private static float pulse(float t, float time, float phase) {
+        float beat = frac(time / 30 + phase);
+        float d = Math.abs(t - beat);
+        d = Math.min(d, 1 - d);
+        return (float) Math.exp(-d * d / 0.01);
+    }
+
+    /** A stable 0-1 number for a drop. */
+    private static float hash(int seed) {
+        int h = seed * 0x9E3779B1;
+        h ^= h >>> 15;
+        h *= 0x85EBCA77;
+        h ^= h >>> 13;
+        return (h & 0xFFFF) / 65535F;
+    }
+
+    /** The colour the drops are tinted: the essence's own colour lifted a little, so dark essences still read. */
+    private static int liquid(int rgb) {
+        return RuneDrawing.mix(rgb, vivid(rgb), 0.45F);
     }
 
     /** Thins the stream out at its ends and at the growing head / running-out tail. */
@@ -183,43 +189,6 @@ public final class JarStreamFx {
                 vertex(consumer, pose, centre[i + 1], c1);
             }
         }
-    }
-
-    /** A twinkling four-pointed star of light facing the camera: a soft disc and four thin rays, turned by {@code spin}. */
-    static void star(VertexConsumer consumer, PoseStack.Pose pose, Vec3 at, Vector3f right, Vector3f up, float size, float spin,
-                             int color, int core, float alpha) {
-        if (alpha <= 0.01F) {
-            return;
-        }
-        Vector3f c = new Vector3f((float) at.x, (float) at.y, (float) at.z);
-        int centre = argb(color, alpha * 0.55F);
-        int edge = argb(color, 0);
-        int segments = 12;
-        float disc = size * 0.35F;
-        for (int i = 0; i < segments; i++) {
-            float a0 = Mth.TWO_PI * i / segments;
-            float a1 = Mth.TWO_PI * (i + 1) / segments;
-            vertex(consumer, pose, c, centre);
-            vertex(consumer, pose, onPlane(c, right, up, a0, disc), edge);
-            vertex(consumer, pose, onPlane(c, right, up, a1, disc), edge);
-            vertex(consumer, pose, c, centre);
-        }
-        int ray = argb(core, alpha);
-        for (int k = 0; k < 4; k++) {
-            float a = spin + k * Mth.HALF_PI;
-            float length = size * (k % 2 == 0 ? 0.5F : 0.36F);
-            Vector3f tip = onPlane(c, right, up, a, length);
-            Vector3f left = onPlane(c, right, up, a + Mth.HALF_PI, size * 0.045F);
-            Vector3f rightSide = onPlane(c, right, up, a - Mth.HALF_PI, size * 0.045F);
-            vertex(consumer, pose, c, ray);
-            vertex(consumer, pose, left, edge);
-            vertex(consumer, pose, tip, edge);
-            vertex(consumer, pose, rightSide, edge);
-        }
-    }
-
-    private static Vector3f onPlane(Vector3f centre, Vector3f right, Vector3f up, float angle, float radius) {
-        return new Vector3f(right).mul(Mth.cos(angle) * radius).add(new Vector3f(up).mul(Mth.sin(angle) * radius)).add(centre);
     }
 
     private static int argb(int rgb, float alpha) {

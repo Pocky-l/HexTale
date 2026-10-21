@@ -2,8 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -23,6 +21,7 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModBlocks;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModTags;
 
 /**
@@ -36,7 +35,6 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
     public static final int WATER_PER_TICK = 100;
     /** Block event: a splash of this colour pours out (param = RGB). */
     private static final int EVENT_POUR = 1;
-    private static final int WATER_COLOR = 0x3F76E4;
     public static final int ESSENCE_PER_STONE = 16;
     public static final int FALL = 6;
 
@@ -59,7 +57,7 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
         for (Direction side : Direction.Plane.HORIZONTAL) {
             EssenceMix drawn = EssenceNetwork.draw(level, pos, side, EssenceTankBlockEntity.FLOW, valve);
             if (!drawn.isEmpty()) {
-                valve.splash(drawn.color());
+                valve.splash(drawn);
                 valve.soak(drawn.total());
             }
         }
@@ -88,7 +86,7 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
         int taken = Math.min(offer.total(), DROPS_PER_TICK - dropsThisTick);
         if (taken > 0 && !simulate) {
             dropsThisTick += taken;
-            splash(offer.color());
+            splash(offer);
             soak(taken);
         }
         return Math.max(0, taken);
@@ -103,7 +101,7 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
         int taken = Math.min(amount, WATER_PER_TICK - waterThisTick);
         if (taken > 0 && !simulate) {
             waterThisTick += taken;
-            splash(WATER_COLOR);
+            splash(null);
         }
         return Math.max(0, taken);
     }
@@ -189,11 +187,25 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
         output.putInt("soaked", soaked);
     }
 
-    /** Tells clients now and then to show the liquid pouring out of the spout. */
-    private void splash(int color) {
+    /**
+     * Tells clients now and then to show the liquid pouring out of the spout. The block event carries one byte, so
+     * it names the strongest essence (ordinal + 1), 0 for water, 255 for an unknown mixture - never the colour.
+     */
+    private void splash(@org.jspecify.annotations.Nullable EssenceMix mix) {
+        int code = 0;
+        if (mix != null) {
+            code = 255;
+            int most = 0;
+            for (var entry : mix.asMap().entrySet()) {
+                if (entry.getValue() > most) {
+                    most = entry.getValue();
+                    code = entry.getKey().ordinal() + 1;
+                }
+            }
+        }
         if (level != null && level.getGameTime() - lastSplash >= 4) {
             lastSplash = level.getGameTime();
-            level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_POUR, color);
+            level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_POUR, code);
             if (level.getRandom().nextInt(4) == 0) {
                 level.playSound(null, worldPosition, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 0.25F, 1.4F);
             }
@@ -209,13 +221,16 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
         double x = worldPosition.getX() + 0.5;
         double y = worldPosition.getY() - 0.05;
         double z = worldPosition.getZ() + 0.5;
-        for (int i = 0; i < 4; i++) {
-            if (param == WATER_COLOR) {
-                level.addParticle(ParticleTypes.FALLING_WATER, x + (random.nextDouble() - 0.5) * 0.1, y, z + (random.nextDouble() - 0.5) * 0.1, 0, 0, 0);
-            } else {
-                level.addParticle(new DustParticleOptions(param, 0.8F), x + (random.nextDouble() - 0.5) * 0.12, y - random.nextDouble() * 0.4,
-                        z + (random.nextDouble() - 0.5) * 0.12, 0, -0.2, 0);
-            }
+        int color = param == 0 ? ModParticles.WATER : param > com.pockyl.hextale.rune.Essence.COUNT ? EssenceMix.UNKNOWN_COLOR
+                : com.pockyl.hextale.rune.Essence.values()[param - 1].color();
+        // A short thick stream: drops one after another, falling and splashing below.
+        for (int i = 0; i < 5; i++) {
+            level.addParticle(ModParticles.drop(color), x + (random.nextDouble() - 0.5) * 0.08, y - i * 0.07,
+                    z + (random.nextDouble() - 0.5) * 0.08, 0, -0.08 - i * 0.03, 0);
+        }
+        if (param != 0 && random.nextInt(3) == 0) {
+            level.addParticle(ModParticles.wisp(color), x, y - 0.1, z, (random.nextDouble() - 0.5) * 0.01, 0.004,
+                    (random.nextDouble() - 0.5) * 0.01);
         }
         return true;
     }

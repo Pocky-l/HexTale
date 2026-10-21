@@ -1,7 +1,6 @@
 package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.ParticleUtils;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
@@ -32,8 +31,8 @@ public class MagicLeavesBlock extends FallingParticlesLeavesBlock {
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         super.animateTick(state, level, pos, random);
         if (random.nextFloat() < MOTE_CHANCE && level.getBlockState(pos.above()).isAir()) {
-            level.addParticle(ParticleTypes.WAX_ON, pos.getX() + random.nextDouble(), pos.getY() + 1.05, pos.getZ() + random.nextDouble(),
-                    0, 0.03 + random.nextDouble() * 0.03, 0);
+            level.addParticle(ModParticles.glint(ModParticles.GOLD), pos.getX() + random.nextDouble(), pos.getY() + 1.05, pos.getZ() + random.nextDouble(),
+                    0, 0.01 + random.nextDouble() * 0.015, 0);
         }
     }
 }

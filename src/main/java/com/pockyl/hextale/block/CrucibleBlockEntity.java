@@ -2,8 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -34,14 +32,15 @@ import com.pockyl.hextale.chem.ChemVialItem;
 import com.pockyl.hextale.chem.HeatUser;
 import com.pockyl.hextale.crafting.BrewRecipe;
 import com.pockyl.hextale.crafting.CrucibleRecipe;
+import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.research.ResearchTopics;
 import com.pockyl.hextale.runework.BurnerRune;
 import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.ToolEffects;
-import com.pockyl.hextale.essence.EssenceMix;
-import com.pockyl.hextale.research.ResearchTopic;
-import com.pockyl.hextale.registry.ModBlockEntities;
-import com.pockyl.hextale.registry.ModSounds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -321,9 +320,9 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
         pouredAt = now;
         playAt(ModSounds.CRUCIBLE_BREW.get(), 0.8F, 0.95F + level.getRandom().nextFloat() * 0.1F);
         if (level instanceof ServerLevel server) {
-            server.sendParticles(new DustParticleOptions(recipe.brew().color(), 1.4F), at.x, at.y + 0.1, at.z, 24, 0.22, 0.05, 0.22, 0);
-            server.sendParticles(ParticleTypes.BUBBLE_POP, at.x, at.y + 0.05, at.z, 14, 0.22, 0.02, 0.22, 0.05);
-            server.sendParticles(ParticleTypes.WITCH, at.x, at.y + 0.3, at.z, 8, 0.2, 0.2, 0.2, 0.05);
+            server.sendParticles(ModParticles.wisp(recipe.brew().color()), at.x, at.y + 0.1, at.z, 10, 0.22, 0.05, 0.22, 0.01);
+            server.sendParticles(ModParticles.bubble(recipe.brew().color()), at.x, at.y + 0.02, at.z, 14, 0.22, 0.01, 0.22, 0.01);
+            server.sendParticles(ModParticles.glint(recipe.brew().color()), at.x, at.y + 0.3, at.z, 8, 0.2, 0.2, 0.2, 0.03);
         }
         changed();
         return count;
@@ -400,8 +399,8 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
         playAt(ModSounds.CRUCIBLE_DISSOLVE.get(), 0.4F, 0.7F);
         if (level instanceof ServerLevel server) {
             Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
-            server.sendParticles(ParticleTypes.SPLASH, at.x, at.y + 0.05, at.z, 10, 0.15, 0.02, 0.15, 0.05);
-            server.sendParticles(new DustParticleOptions(pouredColor, 1.2F), at.x, at.y + 0.08, at.z, 16, 0.2, 0.03, 0.2, 0);
+            server.sendParticles(ModParticles.drop(pouredColor), at.x, at.y + 0.05, at.z, 8, 0.12, 0.02, 0.12, 0.08);
+            server.sendParticles(ModParticles.wisp(pouredColor), at.x, at.y + 0.08, at.z, 5, 0.2, 0.03, 0.2, 0.008);
         }
         changed();
         return count;
@@ -423,9 +422,10 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
             }
         }
         rising.clear();
-        level.sendParticles(new DustParticleOptions(pouredColor, 1.4F), at.x, at.y, at.z, 24, 0.22, 0.12, 0.22, 0);
-        level.sendParticles(ParticleTypes.WITCH, at.x, at.y + 0.1, at.z, 12, 0.2, 0.2, 0.2, 0.05);
-        level.sendParticles(ParticleTypes.SPLASH, at.x, at.y, at.z, 14, 0.2, 0.02, 0.2, 0.1);
+        level.sendParticles(ModParticles.wisp(pouredColor), at.x, at.y, at.z, 10, 0.22, 0.12, 0.22, 0.01);
+        level.sendParticles(ModParticles.glint(pouredColor), at.x, at.y + 0.1, at.z, 12, 0.2, 0.2, 0.2, 0.04);
+        level.sendParticles(ModParticles.drop(pouredColor), at.x, at.y, at.z, 12, 0.2, 0.02, 0.2, 0.1);
+        level.sendParticles(ModParticles.ring(pouredColor), at.x, at.y + 0.02, at.z, 0, 0.6, 1, 0, 1);
         playAt(ModSounds.BLOCK_AWAKEN.get(), 0.6F, 1.2F);
         playAt(SoundEvents.GENERIC_SPLASH, 0.35F, 1.2F);
         changed();
@@ -446,10 +446,9 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
         float t = Math.min(1, (now - dryingAt + 1) / (float) BOIL_DRY_TICKS);
         water = Math.round(dryingFrom * (1 - t * t));
         Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
-        level.sendParticles(ParticleTypes.CLOUD, at.x, at.y + 0.1, at.z, 3, 0.2, 0.05, 0.2, 0.03);
-        level.sendParticles(ParticleTypes.WHITE_SMOKE, at.x, at.y + 0.3, at.z, 4, 0.25, 0.2, 0.25, 0.02);
+        level.sendParticles(ModParticles.vapour(ModParticles.STEAM), at.x, at.y + 0.1, at.z, 4, 0.22, 0.05, 0.22, 0.02);
         if (now % 3 == 0) {
-            level.sendParticles(ParticleTypes.BUBBLE_POP, at.x, at.y + 0.02, at.z, 6, 0.25, 0, 0.25, 0.02);
+            level.sendParticles(ModParticles.bubble(liquidColor()), at.x, at.y + 0.02, at.z, 6, 0.25, 0, 0.25, 0.005);
         }
         if (t >= 1) {
             dryingAt = -1000;
@@ -564,11 +563,8 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
             double x = worldPosition.getX() + 0.5;
             double y = worldPosition.getY() + BRIM + 0.05;
             double z = worldPosition.getZ() + 0.5;
-            server.sendParticles(ParticleTypes.SPLASH, x, y, z, 24, 0.42, 0.02, 0.42, 0.08);
-            server.sendParticles(ParticleTypes.FALLING_WATER, x, y - 0.1, z, 16, 0.48, 0.05, 0.48, 0);
-            if (!essence.isEmpty()) {
-                server.sendParticles(new DustParticleOptions(essence.color(), 1.0F), x, y, z, 10, 0.45, 0.04, 0.45, 0);
-            }
+            server.sendParticles(ModParticles.drop(liquidColor()), x, y, z, 24, 0.42, 0.02, 0.42, 0.06);
+            server.sendParticles(ModParticles.drop(liquidColor()), x, y - 0.1, z, 16, 0.48, 0.05, 0.48, 0);
         }
         playAt(SoundEvents.GENERIC_SPLASH, 0.35F, 1.3F);
     }
@@ -596,8 +592,8 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
         playAt(ModSounds.CRUCIBLE_POUR.get(), 1.0F, 0.9F + (level == null ? 0 : level.getRandom().nextFloat() * 0.2F));
         if (level instanceof ServerLevel server) {
             Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
-            server.sendParticles(ParticleTypes.SPLASH, at.x, at.y + 0.05, at.z, 10, 0.12, 0.02, 0.12, 0.05);
-            server.sendParticles(new DustParticleOptions(taken.color(), 1.2F), at.x, at.y + 0.1, at.z, 14, 0.18, 0.04, 0.18, 0);
+            server.sendParticles(ModParticles.drop(taken.color()), at.x, at.y + 0.05, at.z, 8, 0.12, 0.02, 0.12, 0.07);
+            server.sendParticles(ModParticles.wisp(taken.color()), at.x, at.y + 0.1, at.z, 6, 0.18, 0.04, 0.18, 0.008);
         }
         changed();
         return taken;
@@ -622,8 +618,8 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
         playAt(ModSounds.CRUCIBLE_DISSOLVE.get(), 0.25F, 0.9F + (level == null ? 0 : level.getRandom().nextFloat() * 0.2F));
         if (level instanceof ServerLevel server) {
             Vec3 at = Vec3.atLowerCornerOf(worldPosition).add(0.5, surface(), 0.5);
-            server.sendParticles(ParticleTypes.SPLASH, at.x, at.y + 0.05, at.z, 8, 0.15, 0.02, 0.15, 0.05);
-            server.sendParticles(new DustParticleOptions(each.color(), 1.0F), at.x, at.y + 0.1, at.z, 8, 0.12, 0.05, 0.12, 0);
+            server.sendParticles(ModParticles.drop(liquidColor()), at.x, at.y + 0.05, at.z, 6, 0.15, 0.02, 0.15, 0.06);
+            server.sendParticles(ModParticles.wisp(each.color()), at.x, at.y + 0.1, at.z, 4, 0.12, 0.05, 0.12, 0.008);
         }
         changed();
         return count;
@@ -705,22 +701,35 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
             default -> 3;
         };
         if (random.nextInt(steamEvery) == 0) {
-            level.addParticle(ParticleTypes.WHITE_SMOKE, x, y + 0.05, z, 0, 0.02 + random.nextDouble() * 0.02, 0);
+            level.addParticle(ModParticles.vapour(ModParticles.STEAM), x, y + 0.05, z, 0, 0.01 + random.nextDouble() * 0.015, 0);
         }
         if (phase == Phase.BOILING) {
             if (random.nextInt(2) == 0) {
-                level.addParticle(ParticleTypes.BUBBLE_POP, x, y + 0.02, z, 0, 0.02, 0);
+                level.addParticle(ModParticles.bubble(crucible.liquidColor()), x, y + 0.01, z, 0, 0, 0);
             }
             if (random.nextInt(14) == 0) {
-                level.addParticle(ParticleTypes.SPLASH, x, y + 0.05, z, 0, 0.1, 0);
+                level.addParticle(ModParticles.drop(crucible.liquidColor()), x, y + 0.05, z, (random.nextDouble() - 0.5) * 0.06, 0.12, (random.nextDouble() - 0.5) * 0.06);
             }
             if (random.nextInt(40) == 0) {
                 level.playLocalSound(pos, ModSounds.CRUCIBLE_BOIL.get(), SoundSource.BLOCKS, 0.22F + random.nextFloat() * 0.08F,
                         0.9F + random.nextFloat() * 0.2F, false);
             }
         } else if (phase == Phase.SIMMERING && random.nextInt(6) == 0) {
-            level.addParticle(ParticleTypes.BUBBLE_POP, x, y + 0.02, z, 0, 0.01, 0);
+            level.addParticle(ModParticles.bubble(crucible.liquidColor()), x, y + 0.01, z, 0, 0, 0);
         }
+    }
+
+    /** The colour the liquid shows: water, tinted by its essences and by a brew. */
+    public int liquidColor() {
+        int color = essence.isEmpty() ? ModParticles.WATER : mix(ModParticles.WATER, essence.color(), Math.min(1, essence.total() / 128F));
+        return brew == null ? color : mix(color, brew.color(), 0.7F);
+    }
+
+    private static int mix(int from, int to, float t) {
+        int r = Math.round(Mth.lerp(t, from >> 16 & 0xFF, to >> 16 & 0xFF));
+        int g = Math.round(Mth.lerp(t, from >> 8 & 0xFF, to >> 8 & 0xFF));
+        int b = Math.round(Mth.lerp(t, from & 0xFF, to & 0xFF));
+        return r << 16 | g << 8 | b;
     }
 
     public static int steamColor() {

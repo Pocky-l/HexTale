@@ -15,6 +15,7 @@ import org.joml.Vector3f;
 
 import com.pockyl.hextale.block.HexSawmillBlockEntity;
 import com.pockyl.hextale.essence.JarReach;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 
 /**
@@ -97,7 +98,7 @@ public final class SawTimeline {
                             0.12 + random.nextDouble() * 0.1, toward.getStepZ() * 0.15 + (random.nextDouble() - 0.5) * 0.2);
                 }
                 if (random.nextInt(2) == 0) {
-                    level.addParticle(ParticleTypes.ELECTRIC_SPARK, cut.x, cut.y, cut.z, (random.nextDouble() - 0.5) * 0.4, 0.15,
+                    level.addParticle(ModParticles.spark(ModParticles.HEXTECH), cut.x, cut.y, cut.z, (random.nextDouble() - 0.5) * 0.4, 0.15,
                             (random.nextDouble() - 0.5) * 0.4);
                 }
             }

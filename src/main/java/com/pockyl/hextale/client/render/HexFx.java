@@ -29,6 +29,12 @@ public final class HexFx {
     public static final Identifier CORE = Hextale.id("textures/misc/orb_core.png");
     public static final Identifier MOTE = Hextale.id("textures/misc/mote.png");
     public static final Identifier WHITE = Hextale.id("textures/misc/white.png");
+    /** Four-pointed glints, 4 frames side by side (the glint particle's art). */
+    public static final Identifier GLINT = Hextale.id("textures/misc/glint.png");
+    public static final int GLINT_FRAMES = 4;
+    /** Soft puffs of vapour, 6 frames side by side (the vapour particle's art). */
+    public static final Identifier VAPOUR = Hextale.id("textures/misc/vapour.png");
+    public static final int VAPOUR_FRAMES = 6;
     public static final int HEXTECH = 0x5CC8F2;
 
     private static final float[][] CUBE_FACES = {
@@ -72,6 +78,43 @@ public final class HexFx {
             vertex(consumer, pose, -h, -h, 0, 1, color, alpha);
         });
         poseStack.popPose();
+    }
+
+    /**
+     * Camera-facing quads cut from a sheet of {@code frames} sprites side by side, in one batch. Each quad is
+     * {x, y, z, half size, frame, roll, alpha, rgb} relative to the pose origin.
+     */
+    public static void sheet(PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera, Identifier texture, int frames,
+                             java.util.List<float[]> quads) {
+        if (quads.isEmpty()) {
+            return;
+        }
+        Vector3f right = camera.transform(new Vector3f(1, 0, 0));
+        Vector3f up = camera.transform(new Vector3f(0, 1, 0));
+        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(texture), (pose, consumer) -> {
+            for (float[] q : quads) {
+                float s = q[3];
+                if (s <= 0.002F || q[6] <= 0.004F) {
+                    continue;
+                }
+                float cos = Mth.cos(q[5]) * s;
+                float sin = Mth.sin(q[5]) * s;
+                Vector3f r = new Vector3f(right).mul(cos).add(new Vector3f(up).mul(sin));
+                Vector3f u = new Vector3f(up).mul(cos).sub(new Vector3f(right).mul(sin));
+                float u0 = q[4] / frames;
+                float u1 = (q[4] + 1) / frames;
+                int color = (int) q[7];
+                vertex(consumer, pose, q[0] - r.x - u.x, q[1] - r.y - u.y, q[2] - r.z - u.z, u0, 1, color, q[6]);
+                vertex(consumer, pose, q[0] + r.x - u.x, q[1] + r.y - u.y, q[2] + r.z - u.z, u1, 1, color, q[6]);
+                vertex(consumer, pose, q[0] + r.x + u.x, q[1] + r.y + u.y, q[2] + r.z + u.z, u1, 0, color, q[6]);
+                vertex(consumer, pose, q[0] - r.x + u.x, q[1] - r.y + u.y, q[2] - r.z + u.z, u0, 0, color, q[6]);
+            }
+        });
+    }
+
+    /** A sheet quad: see {@link #sheet}. */
+    public static float[] quad(double x, double y, double z, float size, int frame, float roll, float alpha, int rgb) {
+        return new float[]{(float) x, (float) y, (float) z, size, frame, roll, alpha, rgb & 0xFFFFFF};
     }
 
     /** A cube of edge {@code size} (blocks) centred on the pose origin, each face showing the whole core texture. */

@@ -1,8 +1,6 @@
 package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.DustColorTransitionOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -96,7 +94,7 @@ public class PinkBrazierBlock extends BaseEntityBlock {
         double y = pos.getY() + 0.75;
         double z = pos.getZ() + 0.5;
         for (int i = 0; i < 2; i++) {
-            level.addParticle(new DustColorTransitionOptions(FLAME, FADE, 0.9F), x + (random.nextDouble() - 0.5) * 0.45,
+            level.addParticle(ModParticles.flame(random.nextInt(3) == 0 ? FADE : FLAME), x + (random.nextDouble() - 0.5) * 0.45,
                     y + random.nextDouble() * 0.2, z + (random.nextDouble() - 0.5) * 0.45, 0, 0.04, 0);
         }
         if (random.nextInt(3) == 0) {
@@ -104,7 +102,7 @@ public class PinkBrazierBlock extends BaseEntityBlock {
                     z + (random.nextDouble() - 0.5) * 0.4, 0, 0.03, 0);
         }
         if (random.nextInt(6) == 0) {
-            level.addParticle(ParticleTypes.SMALL_FLAME, x + (random.nextDouble() - 0.5) * 0.3, y + 0.1,
+            level.addParticle(ModParticles.glint(FLAME), x + (random.nextDouble() - 0.5) * 0.3, y + 0.1,
                     z + (random.nextDouble() - 0.5) * 0.3, 0, 0.02, 0);
         }
         if (random.nextInt(80) == 0) {

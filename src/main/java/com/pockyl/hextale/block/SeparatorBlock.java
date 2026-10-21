@@ -2,7 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -34,6 +33,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModParticles;
 
 import org.jspecify.annotations.Nullable;
 
@@ -191,11 +191,11 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
         double x = pos.getX() + 0.5;
         double z = pos.getZ() + 0.5;
         if (random.nextInt(2) == 0) {
-            level.addParticle(ParticleTypes.SMALL_FLAME, x + (random.nextDouble() - 0.5) * 0.2, pos.getY() + 3.1 / 16,
+            level.addParticle(ModParticles.flame(0xFFB040), x + (random.nextDouble() - 0.5) * 0.2, pos.getY() + 3.1 / 16,
                     z + (random.nextDouble() - 0.5) * 0.2, 0, 0.004, 0);
         }
         if (random.nextInt(6) == 0) {
-            level.addParticle(ParticleTypes.SMOKE, x, pos.getY() + 1.02, z, (random.nextDouble() - 0.5) * 0.01, 0.03,
+            level.addParticle(ModParticles.vapour(ModParticles.SMOKE), x, pos.getY() + 1.02, z, (random.nextDouble() - 0.5) * 0.01, 0.03,
                     (random.nextDouble() - 0.5) * 0.01);
         }
     }

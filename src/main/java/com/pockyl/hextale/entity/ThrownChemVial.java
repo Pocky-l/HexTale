@@ -1,6 +1,5 @@
 package com.pockyl.hextale.entity;
 
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,6 +16,7 @@ import com.pockyl.hextale.chem.BrewEffects;
 import com.pockyl.hextale.chem.ChemVialItem;
 import com.pockyl.hextale.registry.ModEntities;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModParticles;
 
 /** A thrown Chem Vial: it shatters where it lands and splashes its brew ({@link BrewEffects}). */
 public class ThrownChemVial extends ThrowableItemProjectile {
@@ -44,7 +44,7 @@ public class ThrownChemVial extends ThrowableItemProjectile {
         super.tick();
         Brew brew = ChemVialItem.brew(getItem());
         if (level().isClientSide() && brew != null && tickCount % 2 == 0) {
-            level().addParticle(new DustParticleOptions(brew.color(), 0.7F), getX(), getY(), getZ(), 0, 0, 0);
+            level().addParticle(ModParticles.drop(brew.color()), getX(), getY(), getZ(), 0, 0, 0);
         }
     }
 

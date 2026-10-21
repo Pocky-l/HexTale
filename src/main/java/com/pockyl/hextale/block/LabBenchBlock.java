@@ -2,8 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
@@ -40,6 +38,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.chem.Flask;
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 
 import java.util.EnumMap;
@@ -165,13 +164,13 @@ public class LabBenchBlock extends BaseEntityBlock implements WorldlyContainerHo
         }
         Vec3 flask = bench.flaskPosition();
         if (random.nextInt(3) == 0) {
-            level.addParticle(new DustParticleOptions(0x7CFF6A, 0.4F), flask.x + (random.nextDouble() - 0.5) * 0.06, flask.y - 0.25,
+            level.addParticle(ModParticles.flame(0x7CFF6A), flask.x + (random.nextDouble() - 0.5) * 0.06, flask.y - 0.25,
                     flask.z + (random.nextDouble() - 0.5) * 0.06, 0, 0.01, 0);
         }
         Flask contents = bench.flask();
         if (!contents.isEmpty() && contents.temperature() > 55 && random.nextInt(4) == 0) {
             Vec3 mouth = bench.mouthPosition();
-            level.addParticle(ParticleTypes.WHITE_SMOKE, mouth.x, mouth.y, mouth.z, 0, 0.02, 0);
+            level.addParticle(ModParticles.vapour(ModParticles.STEAM), mouth.x, mouth.y, mouth.z, 0, 0.02, 0);
         }
         if (random.nextInt(50) == 0) {
             level.playLocalSound(pos, ModSounds.CHEM_BURNER_ROAR.get(), SoundSource.BLOCKS, 0.25F, 1.3F + random.nextFloat() * 0.2F, false);

@@ -2,7 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -32,6 +31,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModParticles;
 
 import org.jspecify.annotations.Nullable;
 
@@ -135,8 +135,8 @@ public class AxolotlTankBlock extends BaseEntityBlock {
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if (random.nextInt(3) == 0 && level.getBlockEntity(pos) instanceof AxolotlTankBlockEntity tank && tank.hasAxolotl()) {
-            level.addParticle(ParticleTypes.BUBBLE, pos.getX() + 0.2 + random.nextDouble() * 0.6, pos.getY() + 0.15,
-                    pos.getZ() + 0.2 + random.nextDouble() * 0.6, 0, 0.04, 0);
+            level.addParticle(ModParticles.bubble(ModParticles.WATER), pos.getX() + 0.2 + random.nextDouble() * 0.6, pos.getY() + 0.15,
+                    pos.getZ() + 0.2 + random.nextDouble() * 0.6, 0, 0.03, 0);
         }
     }
 

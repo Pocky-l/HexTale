@@ -13,12 +13,39 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
 
+/**
+ * The mod's particles. Most take a colour ({@link ColorParticleOption}): their sprites are white and the colour tints
+ * them. Spawned with a count of 0 (or {@code addParticle}), the speed arguments are the particle's velocity.
+ */
 public final class ModParticles {
     public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(Registries.PARTICLE_TYPE, Hextale.MOD_ID);
 
+    /** Hextech blue: crystals, sparks, the altar. */
+    public static final int HEXTECH = 0x5CC8F2;
+    /** Hextech light, almost white: glints of crystals and finished work. */
+    public static final int HEX_LIGHT = 0xCFF3FF;
+    /** Warm gold: the magic tree, wax and polish, a job done well. */
+    public static final int GOLD = 0xFFD27A;
+    /** Clean white steam of boiling water and stills. */
+    public static final int STEAM = 0xF4F6F8;
+    /** Warm grey smoke of fuel and burners. */
+    public static final int SMOKE = 0x7A7068;
+    /** Heavy dark smoke of a blast or burnt paper. */
+    public static final int SOOT = 0x3C3632;
+    /** Plain water (axolotl tank, pumps). */
+    public static final int WATER = 0xA6DCF6;
+    /** An ordinary flame. */
+    public static final int FIRE = 0xFFA24A;
+    /** A cold blue flame of hextech fuel. */
+    public static final int SOUL_FIRE = 0x7BE6F2;
+    /** Shimmer's violet-pink. */
+    public static final int SHIMMER = 0xE07AF0;
+    /** Research ink. */
+    public static final int INK = 0x3A2C58;
+
     /**
      * A glowing mote that flies along an arc into the point it was spawned at: spawn it AT the destination with the
-     * offset to its start as speed (like the enchanting table's glyphs). Coloured: essence streams, pedestal draws.
+     * offset to its start as speed (like the enchanting table's glyphs). Essence streams, pedestal draws.
      */
     public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> FLOW = colored("flow");
 
@@ -28,7 +55,34 @@ public final class ModParticles {
      */
     public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> RUNE_SHARD = colored("rune_shard");
 
-    /** A glowing leaf of the magic tree drifting down out of its crown. */
+    /** Living essence: a slow, wobbling blob of glowing liquid that drifts upwards and evaporates. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> ESSENCE_WISP = colored("essence_wisp");
+
+    /** A drop of liquid: falls (or is thrown up and falls) and splashes where it lands. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> ESSENCE_DROP = colored("essence_drop");
+
+    /** A bubble rising through liquid, wobbling, and bursting. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> ESSENCE_BUBBLE = colored("essence_bubble");
+
+    /** A soft puff of steam or smoke that rises, swells and thins out. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> VAPOUR = colored("vapour");
+
+    /** A crackle of hextech lightning: a short-lived flickering spark. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> HEX_SPARK = colored("hex_spark");
+
+    /** A four-pointed glint that twinkles once: polish, magic, a finished job. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> GLINT = colored("glint");
+
+    /**
+     * An expanding ring of light. Velocity x = the ring's final radius in blocks (0 = 1), y &gt; 0 lays it flat on the
+     * ground, otherwise it faces the camera.
+     */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> HEX_RING = colored("hex_ring");
+
+    /** A tongue of flame licking upwards. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> HEX_FLAME = colored("hex_flame");
+
+    /** A leaf of the magic tree drifting down out of its crown. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MAGIC_LEAF = PARTICLES.register("magic_leaf",
             () -> new SimpleParticleType(false));
 
@@ -53,12 +107,48 @@ public final class ModParticles {
     private ModParticles() {
     }
 
+    private static ColorParticleOption of(DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> type, int rgb) {
+        return ColorParticleOption.create(type.get(), 0xFF000000 | rgb);
+    }
+
     public static ColorParticleOption flow(int rgb) {
-        return ColorParticleOption.create(FLOW.get(), 0xFF000000 | rgb);
+        return of(FLOW, rgb);
     }
 
     public static ColorParticleOption runeShard(int rgb) {
-        return ColorParticleOption.create(RUNE_SHARD.get(), 0xFF000000 | rgb);
+        return of(RUNE_SHARD, rgb);
+    }
+
+    public static ColorParticleOption wisp(int rgb) {
+        return of(ESSENCE_WISP, rgb);
+    }
+
+    public static ColorParticleOption drop(int rgb) {
+        return of(ESSENCE_DROP, rgb);
+    }
+
+    public static ColorParticleOption bubble(int rgb) {
+        return of(ESSENCE_BUBBLE, rgb);
+    }
+
+    public static ColorParticleOption vapour(int rgb) {
+        return of(VAPOUR, rgb);
+    }
+
+    public static ColorParticleOption spark(int rgb) {
+        return of(HEX_SPARK, rgb);
+    }
+
+    public static ColorParticleOption glint(int rgb) {
+        return of(GLINT, rgb);
+    }
+
+    public static ColorParticleOption ring(int rgb) {
+        return of(HEX_RING, rgb);
+    }
+
+    public static ColorParticleOption flame(int rgb) {
+        return of(HEX_FLAME, rgb);
     }
 
     public static void register(IEventBus modBus) {

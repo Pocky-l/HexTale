@@ -6,7 +6,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -133,7 +132,7 @@ public class AxolotlTankBlockEntity extends BlockEntity implements WorldlyContai
         } else {
             output.grow(Math.min(made, output.getMaxStackSize() - output.getCount()));
         }
-        level.sendParticles(ParticleTypes.BUBBLE, at.x, at.y - 0.1, at.z, 14, 0.2, 0.2, 0.2, 0.02);
+        level.sendParticles(ModParticles.bubble(ModParticles.WATER), at.x, at.y - 0.1, at.z, 14, 0.2, 0.2, 0.2, 0.02);
         level.sendParticles(ModParticles.SHIMMER_MOTE.get(), at.x, at.y + 0.1, at.z, 6, 0.2, 0.15, 0.2, 0.005);
         level.playSound(null, worldPosition, ModSounds.AXOLOTL_TANK_SHED.get(), SoundSource.BLOCKS, 0.6F,
                 0.9F + level.getRandom().nextFloat() * 0.2F);

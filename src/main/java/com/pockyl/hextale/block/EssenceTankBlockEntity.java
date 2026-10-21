@@ -174,6 +174,46 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
         }
     }
 
+    /** Seams under the lid, in sixteenths: the lid's square edge at y 13 runs from 3 to 13 on both axes. */
+    private static final double SEAM_Y = 12.9 / 16;
+    private static final double SEAM_HALF = 5.2 / 16;
+
+    /**
+     * Client: the essence in a jar is alive - drops of it seep out under the lid, now and then, and float up slowly
+     * (more often the fuller the jar); a push spills a little cloud of them. A big jar seeps along its wider seam.
+     */
+    public static void clientTick(Level level, BlockPos pos, BlockState state, EssenceTankBlockEntity jar) {
+        EssenceMix contents = jar.tank.contents();
+        if (contents.isEmpty()) {
+            return;
+        }
+        var random = level.getRandom();
+        boolean big = jar instanceof BigEssenceJarBlockEntity;
+        boolean pushed = jar.pushedAt >= 0 && level.getGameTime() - jar.pushedAt < 1;
+        float fill = Math.min(1, jar.tank.amount() / (float) jar.tank.capacity());
+        if (!pushed && random.nextFloat() * (big ? 5 : 16) > 0.35F + fill * 0.9F) {
+            return;
+        }
+        double scale = big ? 4 : 1;
+        double originX = pos.getX() + (big ? -1.5 : 0);
+        double originZ = pos.getZ() + (big ? -1.5 : 0);
+        int count = pushed ? (big ? 8 : 4) + random.nextInt(3) : 1;
+        for (int i = 0; i < count; i++) {
+            // A point on the square seam and the way out of the jar there.
+            int side = random.nextInt(4);
+            double along = (random.nextDouble() * 2 - 1) * SEAM_HALF;
+            double outX = side == 0 ? 1 : side == 1 ? -1 : 0;
+            double outZ = side == 2 ? 1 : side == 3 ? -1 : 0;
+            double localX = 0.5 + (outX != 0 ? outX * SEAM_HALF : along);
+            double localZ = 0.5 + (outZ != 0 ? outZ * SEAM_HALF : along);
+            double push = pushed ? 0.02 + random.nextDouble() * 0.015 : 0.004 + random.nextDouble() * 0.004;
+            int color = jar.isCreative() ? Essence.values()[random.nextInt(Essence.COUNT)].color() : contents.dropColor(random);
+            level.addParticle(com.pockyl.hextale.registry.ModParticles.wisp(color), originX + localX * scale, pos.getY() + SEAM_Y * scale,
+                    originZ + localZ * scale, outX * push + (random.nextDouble() - 0.5) * 0.003, (pushed ? 0.012 : 0.003) + random.nextDouble() * 0.004,
+                    outZ * push + (random.nextDouble() - 0.5) * 0.003);
+        }
+    }
+
     /**
      * The jar pours out at the bottom (unless the pipe there is set to "in only" or shut) and through every side
      * whose pipe pumps it out.

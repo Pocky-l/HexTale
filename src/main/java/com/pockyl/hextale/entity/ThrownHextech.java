@@ -1,7 +1,6 @@
 package com.pockyl.hextale.entity;
 
 import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -21,6 +20,7 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.registry.ModEntities;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 
 /**
@@ -50,7 +50,7 @@ public class ThrownHextech extends ThrowableItemProjectile {
     public void tick() {
         super.tick();
         if (level().isClientSide() && tickCount % 2 == 0) {
-            level().addParticle(ParticleTypes.ELECTRIC_SPARK, getX(), getY(), getZ(), 0, 0, 0);
+            level().addParticle(ModParticles.spark(ModParticles.HEXTECH), getX(), getY(), getZ(), 0, 0, 0);
         }
     }
 
@@ -84,9 +84,10 @@ public class ThrownHextech extends ThrowableItemProjectile {
         }
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.AMETHYST_CLUSTER.defaultBlockState()),
                 at.x, at.y, at.z, 16, 0.15, 0.15, 0.15, 0.15);
-        level.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y, at.z, 18, 0.2, 0.2, 0.2, 0.5);
-        level.sendParticles(new DustParticleOptions(0x98E3FB, 1.2F), at.x, at.y, at.z, 14, 0.3, 0.25, 0.3, 0.02);
-        level.sendParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, 4, 0.05, 0.05, 0.05, 0.08);
+        level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 18, 0.2, 0.2, 0.2, 0.5);
+        level.sendParticles(ModParticles.glint(0x98E3FB), at.x, at.y, at.z, 10, 0.3, 0.25, 0.3, 0.03);
+        level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.x, at.y, at.z, 0, 0.9, 0, 0, 1);
+        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 4, 0.05, 0.05, 0.05, 0.08);
         level.playSound(null, at.x, at.y, at.z, ModSounds.ORB_CRACK.get(), SoundSource.NEUTRAL, 0.9F, 1.25F);
         level.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.NEUTRAL, 1.0F, 1.1F);
     }

@@ -2,12 +2,12 @@ package com.pockyl.hextale.essence;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ColorParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
@@ -83,22 +83,25 @@ public final class JarReach {
     }
 
     /**
-     * Client: wisps of the essence shed by a stream ({@code from}/{@code to} in world space, drawn between {@code tail}
-     * and {@code head}) - potion-like swirls in its colour along the arc and rising from the jar. Call every client tick.
+     * Client: living essence shed by a stream ({@code from}/{@code to} in world space, drawn between {@code tail} and
+     * {@code head}) - now and then a drop slips off the arc and floats away, and the jar breathes a drop out of its lid
+     * while it is being drawn. Call every client tick.
      */
     public static void shed(Level level, Vec3 from, Vec3 to, int color, float head, float tail) {
         if (head <= tail) {
             return;
         }
         var random = level.getRandom();
-        ColorParticleOption swirl = ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0xFF000000 | color);
-        if (random.nextInt(3) == 0) {
+        ColorParticleOption wisp = ModParticles.wisp(color);
+        if (random.nextInt(9) == 0) {
             Vec3 at = arc(from, to, tail + random.nextFloat() * (head - tail));
-            level.addParticle(swirl, at.x + (random.nextDouble() - 0.5) * 0.15, at.y + (random.nextDouble() - 0.5) * 0.15,
-                    at.z + (random.nextDouble() - 0.5) * 0.15, 0, 0, 0);
+            Vec3 next = arc(from, to, Math.min(1, tail + random.nextFloat() * (head - tail) + 0.05F));
+            Vec3 drift = next.subtract(at).normalize().scale(0.01);
+            level.addParticle(wisp, at.x, at.y, at.z, drift.x, drift.y + 0.004, drift.z);
         }
-        if (tail <= 0 && random.nextInt(4) == 0) {
-            level.addParticle(swirl, from.x + (random.nextDouble() - 0.5) * 0.3, from.y - 0.05, from.z + (random.nextDouble() - 0.5) * 0.3, 0, 0, 0);
+        if (tail <= 0 && random.nextInt(10) == 0) {
+            level.addParticle(wisp, from.x + (random.nextDouble() - 0.5) * 0.3, from.y - 0.08, from.z + (random.nextDouble() - 0.5) * 0.3,
+                    0, 0.005, 0);
         }
     }
 

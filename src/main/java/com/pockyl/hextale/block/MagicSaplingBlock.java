@@ -1,7 +1,6 @@
 package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -43,10 +42,11 @@ public class MagicSaplingBlock extends SaplingBlock {
             height++;
         }
         for (int y = 0; y <= height; y++) {
-            level.sendParticles(ParticleTypes.WAX_ON, x, pos.getY() + y + 0.5, z, 6, 0.35, 0.4, 0.35, 0.02);
+            level.sendParticles(ModParticles.glint(ModParticles.GOLD), x, pos.getY() + y + 0.5, z, 6, 0.35, 0.4, 0.35, 0.02);
         }
         level.sendParticles(ModParticles.MAGIC_LEAF.get(), x, pos.getY() + height + 1.5, z, 40, 2.5, 1.2, 2.5, 0);
-        level.sendParticles(ParticleTypes.WAX_ON, x, pos.getY() + height + 1.5, z, 30, 2.0, 1.0, 2.0, 0.05);
+        level.sendParticles(ModParticles.glint(ModParticles.GOLD), x, pos.getY() + height + 1.5, z, 30, 2.0, 1.0, 2.0, 0.05);
+        level.sendParticles(ModParticles.ring(ModParticles.GOLD), x, pos.getY() + 0.1, z, 0, 3.0, 1, 0, 1);
         level.playSound(null, pos, ModSounds.BLOCK_AWAKEN.get(), SoundSource.BLOCKS, 1.0F, 0.7F);
         level.playSound(null, pos, SoundEvents.CHERRY_LEAVES_PLACE, SoundSource.BLOCKS, 1.0F, 0.8F);
     }
@@ -54,7 +54,7 @@ public class MagicSaplingBlock extends SaplingBlock {
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if (random.nextInt(5) == 0) {
-            level.addParticle(ParticleTypes.WAX_ON, pos.getX() + 0.3 + random.nextDouble() * 0.4, pos.getY() + 0.4 + random.nextDouble() * 0.4,
+            level.addParticle(ModParticles.glint(ModParticles.GOLD), pos.getX() + 0.3 + random.nextDouble() * 0.4, pos.getY() + 0.4 + random.nextDouble() * 0.4,
                     pos.getZ() + 0.3 + random.nextDouble() * 0.4, 0, 0.02, 0);
         }
     }

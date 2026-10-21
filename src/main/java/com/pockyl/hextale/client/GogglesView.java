@@ -7,7 +7,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Util;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -391,14 +390,13 @@ public final class GogglesView {
         long time = level.getGameTime();
         for (Essence essence : Essence.values()) {
             for (EssenceTankBlockEntity tank : supply.tanks(essence)) {
-                Vec3 from = Vec3.atCenterOf(tank.getBlockPos());
-                DustParticleOptions dust = new DustParticleOptions(essence.color(), 0.7F);
-                for (int k = 0; k < 2; k++) {
-                    float t = ((time + k * 10 + tank.getBlockPos().hashCode()) % 20) / 20F;
-                    // A gentle arc above the straight line.
-                    Vec3 at = from.lerp(orb, t).add(0, Math.sin(t * Math.PI) * 0.35, 0);
-                    level.addParticle(dust, at.x, at.y, at.z, 0, 0, 0);
+                if ((time + tank.getBlockPos().hashCode()) % 4 != 0) {
+                    continue;
                 }
+                // A mote of the ink flies from the jar's lid into the orb (flow motes start at their offset).
+                Vec3 offset = com.pockyl.hextale.essence.JarReach.mouth(tank.getBlockPos()).subtract(orb);
+                level.addParticle(com.pockyl.hextale.registry.ModParticles.flow(essence.color()), orb.x, orb.y, orb.z, offset.x, offset.y,
+                        offset.z);
             }
         }
     }

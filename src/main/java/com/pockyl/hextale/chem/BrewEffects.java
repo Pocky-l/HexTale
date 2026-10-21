@@ -3,7 +3,6 @@ package com.pockyl.hextale.chem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -33,6 +32,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.registry.ModBlocks;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.registry.ModTags;
 
@@ -68,7 +68,9 @@ public final class BrewEffects {
     }
 
     public static void splash(ServerLevel level, Vec3 at, Brew brew, @Nullable Entity thrower) {
-        level.sendParticles(new DustParticleOptions(brew.color(), 1.4F), at.x, at.y, at.z, 30, 0.6, 0.35, 0.6, 0.02);
+        level.sendParticles(ModParticles.drop(brew.color()), at.x, at.y, at.z, 26, 0.2, 0.15, 0.2, 0.18);
+        level.sendParticles(ModParticles.wisp(brew.color()), at.x, at.y, at.z, 10, 0.6, 0.35, 0.6, 0.01);
+        level.sendParticles(ModParticles.ring(brew.color()), at.x, at.y + 0.05, at.z, 0, 1.6, 1, 0, 1);
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.GLASS.defaultBlockState()), at.x, at.y, at.z, 10,
                 0.15, 0.15, 0.15, 0.15);
         level.playSound(null, at.x, at.y, at.z, SoundEvents.SPLASH_POTION_BREAK, SoundSource.NEUTRAL, 0.8F,
@@ -81,7 +83,7 @@ public final class BrewEffects {
             case COOLANT -> coolant(level, center);
             case GLOW -> glow(level, center);
             case ACID -> acid(level, at, thrower);
-            case FUEL -> level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, at.x, at.y, at.z, 16, 0.4, 0.2, 0.4, 0.03);
+            case FUEL -> level.sendParticles(ModParticles.flame(ModParticles.SOUL_FIRE), at.x, at.y, at.z, 16, 0.4, 0.2, 0.4, 0.03);
         }
     }
 
@@ -106,7 +108,7 @@ public final class BrewEffects {
         for (AgeableMob mob : level.getEntitiesOfClass(AgeableMob.class, new AABB(center).inflate(GROWTH_RADIUS + 1))) {
             if (mob.isBaby()) {
                 mob.setAge(0);
-                level.sendParticles(ParticleTypes.HAPPY_VILLAGER, mob.getX(), mob.getY() + mob.getBbHeight() * 0.6, mob.getZ(),
+                level.sendParticles(ModParticles.glint(0x9BE36F), mob.getX(), mob.getY() + mob.getBbHeight() * 0.6, mob.getZ(),
                         8, 0.3, 0.3, 0.3, 0);
             }
         }
@@ -132,7 +134,7 @@ public final class BrewEffects {
             if (into != null) {
                 BlockPos at = pos.immutable();
                 level.setBlock(at, into, Block.UPDATE_ALL);
-                level.sendParticles(ParticleTypes.LARGE_SMOKE, at.getX() + 0.5, at.getY() + 0.8, at.getZ() + 0.5, 2, 0.2, 0.1, 0.2, 0.01);
+                level.sendParticles(ModParticles.vapour(ModParticles.SOOT), at.getX() + 0.5, at.getY() + 0.8, at.getZ() + 0.5, 2, 0.2, 0.1, 0.2, 0.01);
                 hissed = true;
             }
         }
@@ -179,7 +181,7 @@ public final class BrewEffects {
         for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(center).inflate(GLOW_RADIUS + 1))) {
             entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, GLOWING_TICKS));
         }
-        level.sendParticles(ParticleTypes.GLOW, center.getX() + 0.5, center.getY() + 0.5, center.getZ() + 0.5, 16, 1.0, 0.6, 1.0, 0.02);
+        level.sendParticles(ModParticles.glint(Brew.GLOW.color()), center.getX() + 0.5, center.getY() + 0.5, center.getZ() + 0.5, 16, 1.0, 0.6, 1.0, 0.02);
     }
 
     private static void acid(ServerLevel level, Vec3 at, @Nullable Entity thrower) {
@@ -203,9 +205,9 @@ public final class BrewEffects {
             }
             if (into != null) {
                 level.setBlock(here, into, Block.UPDATE_ALL);
-                level.sendParticles(new DustParticleOptions(Brew.ACID.color(), 1.0F), here.getX() + 0.5, here.getY() + 0.5, here.getZ() + 0.5,
+                level.sendParticles(ModParticles.wisp(Brew.ACID.color()), here.getX() + 0.5, here.getY() + 0.5, here.getZ() + 0.5,
                         4, 0.3, 0.3, 0.3, 0);
-                level.sendParticles(ParticleTypes.SMOKE, here.getX() + 0.5, here.getY() + 0.5, here.getZ() + 0.5, 2, 0.25, 0.25, 0.25, 0.01);
+                level.sendParticles(ModParticles.vapour(ModParticles.SMOKE), here.getX() + 0.5, here.getY() + 0.5, here.getZ() + 0.5, 2, 0.25, 0.25, 0.25, 0.01);
             }
         }
         for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(BlockPos.containing(at)).inflate(ACID_RADIUS + 0.5))) {

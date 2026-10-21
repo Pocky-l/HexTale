@@ -1,8 +1,6 @@
 package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -12,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import com.pockyl.hextale.registry.ModParticles;
 
 /**
  * A hex wisp: a mote of cold hextech light a pickaxe with the Eternal Flame rune leaves in the dark where it dug. It has
@@ -49,10 +48,10 @@ public class HexWispBlock extends Block {
             double a = angle + i * Math.PI;
             double x = pos.getX() + 0.5 + Math.cos(a) * 0.15;
             double z = pos.getZ() + 0.5 + Math.sin(a) * 0.15;
-            level.addParticle(new DustParticleOptions(i == 0 ? BLUE : WHITE, 0.6F), x, pos.getY() + 0.45 + random.nextDouble() * 0.1, z, 0, 0.01, 0);
+            level.addParticle(ModParticles.glint(i == 0 ? BLUE : WHITE), x, pos.getY() + 0.45 + random.nextDouble() * 0.1, z, 0, 0.01, 0);
         }
         if (random.nextInt(6) == 0) {
-            level.addParticle(ParticleTypes.END_ROD, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+            level.addParticle(ModParticles.glint(ModParticles.HEX_LIGHT), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                     (random.nextDouble() - 0.5) * 0.01, 0.01, (random.nextDouble() - 0.5) * 0.01);
         }
     }

@@ -31,6 +31,7 @@ import com.pockyl.hextale.crafting.Cleavage;
 import com.pockyl.hextale.menu.LapidaryMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 
 import java.util.Arrays;
@@ -184,11 +185,12 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
         Vec3 at = Vec3.atCenterOf(worldPosition).add(0, 0.5, 0);
         if (success) {
             level.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0F, 1.2F);
-            level.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD, at.x, at.y, at.z, 12, 0.2, 0.2, 0.2, 0.05);
+            level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 12, 0.2, 0.2, 0.2, 0.05);
+            level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.x, at.y, at.z, 0, 0.8, 0, 0, 1);
         } else {
             level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(net.minecraft.core.particles.ParticleTypes.BLOCK,
                     net.minecraft.world.level.block.Blocks.AMETHYST_CLUSTER.defaultBlockState()), at.x, at.y, at.z, 16, 0.15, 0.1, 0.15, 0.15);
-            level.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK, at.x, at.y, at.z, 14, 0.2, 0.1, 0.2, 0.4);
+            level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 14, 0.2, 0.1, 0.2, 0.4);
             level.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.BLOCKS, 1.0F, 0.8F);
         }
         freshCut();

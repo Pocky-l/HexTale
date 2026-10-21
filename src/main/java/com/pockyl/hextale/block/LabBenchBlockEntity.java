@@ -7,7 +7,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -46,6 +45,7 @@ import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.ExperimentPlan;
 import com.pockyl.hextale.research.ResearchTopic;
@@ -293,8 +293,8 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
         }
         flask.vent();
         Vec3 at = flaskPosition().add(0, 0.25, 0);
-        server.sendParticles(ParticleTypes.WHITE_SMOKE, at.x, at.y, at.z, 10, 0.05, 0.05, 0.05, 0.03);
-        server.sendParticles(new DustParticleOptions(flask.color(), 0.8F), at.x, at.y, at.z, 6, 0.08, 0.08, 0.08, 0.01);
+        server.sendParticles(ModParticles.vapour(ModParticles.STEAM), at.x, at.y, at.z, 10, 0.05, 0.05, 0.05, 0.03);
+        server.sendParticles(ModParticles.wisp(flask.color()), at.x, at.y, at.z, 4, 0.08, 0.08, 0.08, 0.01);
         server.playSound(null, worldPosition, ModSounds.LAB_VENT.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
         changed();
     }
@@ -337,8 +337,9 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
             ExperienceOrb.award(server, at.add(0, 0.4, 0), HolderRune.at(LabRune.EXPERIENCE, radiance));
             ToolEffects.puff(server, at.add(0, 0.3, 0), LabRune.RADIANCE.rune(), 8, 0.25);
         }
-        server.sendParticles(new DustParticleOptions(plan.target().color(), 1.2F), at.x, at.y + 0.1, at.z, 20, 0.15, 0.15, 0.15, 0.02);
-        server.sendParticles(ParticleTypes.END_ROD, at.x, at.y + 0.2, at.z, 6, 0.08, 0.1, 0.08, 0.03);
+        server.sendParticles(ModParticles.glint(plan.target().color()), at.x, at.y + 0.1, at.z, 16, 0.15, 0.15, 0.15, 0.03);
+        server.sendParticles(ModParticles.ring(plan.target().color()), at.x, at.y + 0.1, at.z, 0, 0.7, 0, 0, 1);
+        server.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y + 0.2, at.z, 6, 0.08, 0.1, 0.08, 0.03);
         server.playSound(null, worldPosition, ModSounds.LAB_SEAL.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
         message(player, Component.translatable("gui.hextale.lab_bench.say.sealed",
                 Component.translatable(done.translationKey()).withColor(done.color())), ResearchMessagePayload.Tone.WIN);
@@ -363,8 +364,9 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
         outcome = OUTCOME_BURST;
         outcomeAt = server.getGameTime();
         server.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.GLASS.defaultBlockState()), at.x, at.y, at.z, 24, 0.12, 0.12, 0.12, 0.15);
-        server.sendParticles(new DustParticleOptions(color, 1.6F), at.x, at.y, at.z, 30, 0.25, 0.2, 0.25, 0.05);
-        server.sendParticles(ParticleTypes.LARGE_SMOKE, at.x, at.y + 0.1, at.z, 8, 0.15, 0.1, 0.15, 0.03);
+        server.sendParticles(ModParticles.drop(color), at.x, at.y, at.z, 24, 0.15, 0.1, 0.15, 0.15);
+        server.sendParticles(ModParticles.wisp(color), at.x, at.y, at.z, 8, 0.2, 0.15, 0.2, 0.02);
+        server.sendParticles(ModParticles.vapour(ModParticles.SOOT), at.x, at.y + 0.1, at.z, 8, 0.15, 0.1, 0.15, 0.03);
         server.playSound(null, worldPosition, ModSounds.LAB_BURST.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         server.playSound(null, worldPosition, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 0.8F, 1.1F);
         for (ServerPlayer viewer : viewers(server)) {
