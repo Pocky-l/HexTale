@@ -7,13 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0-beta.4] - 2026-10-21
 ### Added
 - Hextech Skypack: two brass tanks of air essence around a hextech gemstone, worn on the back like elytra. Jump, then
-  jump again in the air, and it glides - and its jets push like a firework rocket that never burns out, until the air
-  does. Sneak to cut the jets and glide for free. Refill it from Essence Jars: right click a jar with the pack, or sneak
-  beside jars while wearing it. Researched at the Research Table and made at the Hextech Altar (gemstone, phantom
-  membranes, hexsteel, brass pipes, leather). It shows on the back, with tongues of hextech flame, sparks and a trail of
-  air from both nozzles, its own roar, and a cough when the air runs low.
-- Six runes for the skypack (three at a time): Motor (faster), Bellows (a kick when the jets catch), Dam (seconds of
-  flight that cost no air), Breath (softer walls and landings), Fireproofing (fire resistance in flight) and Lens.
+  jump again in the air: a take-off from the ground fires its jets for two seconds like a firework rocket, then it
+  glides until the next take-off from the ground. Every take-off costs a little air. Refill it from Essence Jars: right
+  click a jar with the pack, or sneak beside jars while wearing it. Researched at the Research Table and made at the
+  Hextech Altar (gemstone, phantom membranes, hexsteel, brass pipes, leather). It shows on the back; during the
+  take-off tongues of hextech flame, sparks and a trail of air burst from both nozzles with a roar, then die out in a
+  puff of air. The jets cough when the air runs low.
+- Six runes for the skypack (three at a time): Motor (faster), Bellows (a kick when the jets catch), Dam (take-offs
+  that cost no air), Breath (softer walls and landings), Fireproofing (fire resistance in flight) and Lens.
 
 ### Changed
 Every particle and light effect of the mod is new: hand-made, high-resolution sprites with their own motion, each

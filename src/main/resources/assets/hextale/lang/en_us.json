@@ -1675,8 +1675,8 @@
   "jei.hextale.lab_experiment.chain": "Reactions: %s",
   "item.hextale.hextech_skypack": "Hextech Skypack",
   "item.hextale.hextech_skypack.air": "Air: %s / %s mB",
-  "item.hextale.hextech_skypack.hint": "Two tanks of air around a crystal. While there is air in them the crystal holds me up, and the jets push like a rocket that never burns out. Only the air does - I must keep an eye on it.",
-  "item.hextale.hextech_skypack.controls": "(Jump, then jump again in the air · Sneak: jets off · Sneak beside jars: refill · Right click a jar: refill)",
+  "item.hextale.hextech_skypack.hint": "Two tanks of air around a crystal. A take-off from the ground fires the jets for a couple of seconds, then the crystal just holds me up as I glide. Every take-off drinks some air - I must keep an eye on it.",
+  "item.hextale.hextech_skypack.controls": "(Jump, then jump again in the air · Sneak beside jars: refill · Right click a jar: refill)",
   "item.hextale.hextech_skypack.no_air": "No air essence in this jar",
   "subtitles.hextale.skypack.ignite": "Skypack jets catch",
   "subtitles.hextale.skypack.thrust": "Skypack jets roar",
@@ -1685,11 +1685,11 @@
   "skypack_rune.hextale.motor.value": "+%s speed",
   "skypack_rune.hextale.bellows.desc": "The jets catch with a kick that throws me forward.",
   "skypack_rune.hextale.bellows.value": "kick x%s",
-  "skypack_rune.hextale.dam.desc": "Sometimes a second of flight costs no air.",
+  "skypack_rune.hextale.dam.desc": "Sometimes a take-off costs no air.",
   "skypack_rune.hextale.dam.value": "%s",
   "skypack_rune.hextale.breath.desc": "Walls and the ground seem softer while I fly and right after.",
   "skypack_rune.hextale.breath.value": "-%s damage",
-  "skypack_rune.hextale.fireproofing.desc": "Fire does not touch me while the jets burn.",
+  "skypack_rune.hextale.fireproofing.desc": "Fire does not touch me while I fly.",
   "skypack_rune.hextale.fireproofing.value": "%s s after landing",
   "skypack_rune.hextale.lens.desc": "The other runes seem to burn one star brighter.",
   "skypack_rune.hextale.lens.value": "+1 ★",
@@ -1701,5 +1701,5 @@
   "quest.hextale.hextech_skypack": "Hextech Skypack",
   "quest.hextale.hextech_skypack.goal": "make a Hextech Skypack at the altar",
   "quest.hextale.hextech_skypack.desc": "If a stable gemstone can make things float, could it carry me? Air essence in two tanks, the crystal between them, nozzles below. A jump, a second jump in the air - and then what?",
-  "jei.hextale.info.hextech_skypack": "Worn like elytra. With air essence in its tanks: jump, then jump again in the air to glide, and its jets push like a firework rocket. Sneak to cut the jets. Refill from Essence Jars: right click one with the pack, or sneak beside them wearing it."
+  "jei.hextale.info.hextech_skypack": "Worn like elytra. With air essence in its tanks: jump, then jump again in the air. A take-off from the ground fires the jets for two seconds like a firework rocket; after that it glides until the next take-off from the ground. Each take-off costs air. Refill from Essence Jars: right click one with the pack, or sneak beside them wearing it."
 }

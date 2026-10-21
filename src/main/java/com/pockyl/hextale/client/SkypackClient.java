@@ -15,6 +15,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 import com.pockyl.hextale.item.HextechSkypackItem;
+import com.pockyl.hextale.item.SkypackFlight;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
@@ -24,14 +25,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The client side of the Hextech Skypack. The wearer's own client pushes them like a firework rocket does (player
- * movement is the client's), with a kick when the jets catch; every client draws the jets of the packs it sees - hextech
- * flame, glints and a trail of pale air from both nozzles - and plays their roar as a loop following the flyer.
+ * The client side of the Hextech Skypack. Every client follows each wearer's flight ({@link SkypackFlight}); during the
+ * boost of a launch the wearer's own client pushes them like a firework rocket does (player movement is the client's),
+ * with a kick when the jets catch, and every client draws the jets - hextech flame, glints and a trail of pale air from
+ * both nozzles, thinning out at the end - and plays their roar following the flyer. Then a last puff, and only gliding.
  */
 public final class SkypackClient {
     /** Blocks around the camera whose flyers get jets and sound. */
     private static final double SEEN = 64;
-    private static boolean wasThrusting;
+    /** Ticks at the end of a boost over which the jets fade. */
+    public static final int FADE_TICKS = 10;
     private static final Map<Integer, JetSound> SOUNDS = new HashMap<>();
 
     private SkypackClient() {
@@ -46,42 +49,56 @@ public final class SkypackClient {
         if (minecraft.level == null || minecraft.player == null || minecraft.isPaused()) {
             return;
         }
-        push(minecraft.player);
+        long now = minecraft.level.getGameTime();
         for (Player player : minecraft.level.players()) {
+            ItemStack pack = HextechSkypackItem.worn(player);
+            if (pack.isEmpty()) {
+                SkypackFlight.forget(player);
+                continue;
+            }
+            boolean launch = SkypackFlight.tick(player, pack, now);
+            if (player == minecraft.player) {
+                push(minecraft.player, pack, launch, now);
+            }
+            int left = SkypackFlight.boostLeft(player, now);
             if (player.distanceToSqr(minecraft.player) > SEEN * SEEN) {
                 continue;
             }
-            ItemStack pack = HextechSkypackItem.worn(player);
-            if (!pack.isEmpty() && HextechSkypackItem.jetsOn(player, pack)) {
-                jets(minecraft.level, player, pack);
+            if (left > 0) {
+                jets(minecraft.level, player, pack, left);
                 JetSound sound = SOUNDS.get(player.getId());
                 if (sound == null || sound.isStopped()) {
                     sound = new JetSound(player);
                     SOUNDS.put(player.getId(), sound);
                     minecraft.getSoundManager().play(sound);
                 }
+            } else if (player.isFallFlying() && SOUNDS.containsKey(player.getId()) && !SOUNDS.get(player.getId()).fading) {
+                // The boost is over: the jets die out in a last breath of pale air.
+                SOUNDS.get(player.getId()).fading = true;
+                fizzle(minecraft.level, player);
             }
         }
         SOUNDS.values().removeIf(AbstractTickableSoundInstance::isStopped);
     }
 
-    /** The wearer's own thrust: a firework's push towards the look, with Motor's top speed; Bellows' kick at the start. */
-    private static void push(LocalPlayer player) {
-        ItemStack pack = HextechSkypackItem.worn(player);
-        boolean thrusting = !pack.isEmpty() && HextechSkypackItem.jetsOn(player, pack);
-        if (thrusting) {
-            Vec3 look = player.getLookAngle();
-            Vec3 motion = player.getDeltaMovement();
-            if (!wasThrusting) {
-                motion = motion.add(look.scale(SkypackRune.kick(HextechSkypackItem.strength(pack, SkypackRune.BELLOWS))));
-            }
-            double power = SkypackRune.thrust(HextechSkypackItem.strength(pack, SkypackRune.MOTOR));
-            player.setDeltaMovement(motion.add(
-                    look.x * 0.1 + (look.x * power - motion.x) * 0.5,
-                    look.y * 0.1 + (look.y * power - motion.y) * 0.5,
-                    look.z * 0.1 + (look.z * power - motion.z) * 0.5));
+    /**
+     * The wearer's own thrust while the boost of a launch lasts: a firework's push towards the look with Motor's top
+     * speed, and Bellows' kick on the launch itself. After the boost the pack only glides.
+     */
+    private static void push(LocalPlayer player, ItemStack pack, boolean launch, long now) {
+        if (!SkypackFlight.boosting(player, now)) {
+            return;
         }
-        wasThrusting = thrusting;
+        Vec3 look = player.getLookAngle();
+        Vec3 motion = player.getDeltaMovement();
+        if (launch) {
+            motion = motion.add(look.scale(SkypackRune.kick(HextechSkypackItem.strength(pack, SkypackRune.BELLOWS))));
+        }
+        double power = SkypackRune.thrust(HextechSkypackItem.strength(pack, SkypackRune.MOTOR));
+        player.setDeltaMovement(motion.add(
+                look.x * 0.1 + (look.x * power - motion.x) * 0.5,
+                look.y * 0.1 + (look.y * power - motion.y) * 0.5,
+                look.z * 0.1 + (look.z * power - motion.z) * 0.5));
     }
 
     /**
@@ -102,8 +119,12 @@ public final class SkypackClient {
     }
 
     /** One tick of both jets: flame and glints rushing back, a trail of pale air; a cough of smoke when the air runs low. */
-    private static void jets(Level level, Player player, ItemStack pack) {
+    private static void jets(Level level, Player player, ItemStack pack, int left) {
         RandomSource random = level.getRandom();
+        // The last half second the jets thin out before they die.
+        if (left < FADE_TICKS && random.nextInt(FADE_TICKS) >= left) {
+            return;
+        }
         Vec3 look = player.getLookAngle();
         Vec3 exhaust = look.scale(-0.22);
         boolean low = HextechSkypackItem.air(pack) < HextechSkypackItem.LOW;
@@ -129,10 +150,25 @@ public final class SkypackClient {
         }
     }
 
+    /** The end of a boost: a soft puff of pale air and a few glints out of both nozzles. */
+    private static void fizzle(Level level, Player player) {
+        RandomSource random = level.getRandom();
+        Vec3 drift = player.getDeltaMovement().scale(0.3);
+        for (Vec3 nozzle : nozzles(player, 1)) {
+            for (int i = 0; i < 4; i++) {
+                level.addParticle(ModParticles.vapour(Essence.AIR.color()), nozzle.x, nozzle.y, nozzle.z,
+                        drift.x + random.nextGaussian() * 0.03, drift.y + random.nextGaussian() * 0.03, drift.z + random.nextGaussian() * 0.03);
+            }
+            level.addParticle(ModParticles.glint(ModParticles.HEX_LIGHT), nozzle.x, nozzle.y, nozzle.z, drift.x, drift.y, drift.z);
+        }
+    }
+
     /** The jets' roar, following a flyer while they burn and fading out when they stop. */
     private static final class JetSound extends AbstractTickableSoundInstance {
         private final Player player;
         private float level;
+        /** Set once the boost has ended: the roar only fades from then on. */
+        boolean fading;
 
         JetSound(Player player) {
             super(ModSounds.SKYPACK_THRUST.get(), SoundSource.PLAYERS, SoundInstance.createUnseededRandom());
@@ -151,8 +187,10 @@ public final class SkypackClient {
                 stop();
                 return;
             }
-            ItemStack pack = HextechSkypackItem.worn(player);
-            boolean on = !pack.isEmpty() && HextechSkypackItem.jetsOn(player, pack);
+            boolean on = SkypackFlight.boostLeft(player, player.level().getGameTime()) > 0;
+            if (on) {
+                fading = false;
+            }
             level = Mth.clamp(level + (on ? 0.12F : -0.15F), 0, 1);
             if (level <= 0 && !on) {
                 stop();

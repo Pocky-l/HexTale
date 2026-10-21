@@ -33,19 +33,20 @@ import java.util.function.Consumer;
 
 /**
  * The Hextech Skypack: two brass tanks of air essence around a hextech crystal, worn on the back. While its tanks hold
- * air the wearer may glide like on elytra (jump, then jump again in the air), and while gliding its jets push like a
- * firework rocket that never burns out - until the air does. Sneaking cuts the jets (a free glide). The air is drawn out
- * of Essence Jars: a click on a jar with the pack in hand, or sneaking on the ground with it on near jars.
+ * air the wearer may glide like on elytra (jump, then jump again in the air). A take-off from the ground launches: the
+ * jets burn for {@link SkypackFlight#BOOST_TICKS} and push like a firework rocket, then the pack only glides until the
+ * next take-off. Each launch costs {@link #LAUNCH_AIR} of air. The air is drawn out of Essence Jars: a click on a jar
+ * with the pack in hand, or sneaking on the ground with it on near jars.
  *
- * <p>The thrust itself is applied on the wearer's client ({@code SkypackClient}), like a firework's; the server only
- * spends the air: one mB a second of thrust, taken by {@link #onGlideDamage} (vanilla calls it every second of a
- * glide). The pack can glide only while it holds air ({@code SkypackEvents} gives it the gliding attribute).
+ * <p>The thrust itself is applied on the wearer's client ({@code SkypackClient}), like a firework's; the server spends
+ * the air of a launch ({@link #launch}). The pack can glide only while it holds air ({@code SkypackEvents} gives it the
+ * gliding attribute).
  */
 public class HextechSkypackItem extends Item {
     /** mB of air the tanks hold. */
     public static final int CAPACITY = 160;
-    /** mB of air a second of thrust costs. */
-    public static final int AIR_PER_SECOND = 1;
+    /** mB of air a launch costs. */
+    public static final int LAUNCH_AIR = 8;
     /** mB of air drawn from a jar at a time while sneaking beside it. */
     public static final int SIP_MB = 8;
     /** Ticks between two sips. */
@@ -92,32 +93,36 @@ public class HextechSkypackItem extends Item {
         return RuneHolder.SKYPACK.runes(stack).strength(rune.rune());
     }
 
-    /** Whether the jets of a gliding wearer burn: air in the tanks and not sneaking. */
-    public static boolean jetsOn(LivingEntity wearer, ItemStack pack) {
-        return wearer.isFallFlying() && air(pack) > 0 && !wearer.isShiftKeyDown();
-    }
-
-    /** Called by vanilla every second of a glide: the jets spend their air, and the runes that work in flight work. */
+    /** Called by vanilla every second of a glide: Fireproofing keeps fire away. Gliding itself costs nothing. */
     @Override
     public void onGlideDamage(ItemStack stack, LivingEntity wearer, EquipmentSlot slot) {
-        if (!(wearer.level() instanceof ServerLevel level) || wearer.isShiftKeyDown()) {
-            return;
-        }
         int fire = strength(stack, SkypackRune.FIREPROOFING);
-        if (fire > 0) {
+        if (fire > 0 && wearer.level() instanceof ServerLevel) {
             ToolEffects.keep(wearer, MobEffects.FIRE_RESISTANCE, HolderRune.at(SkypackRune.FIRE_TICKS, fire), 0);
         }
-        int dam = strength(stack, SkypackRune.DAM);
+    }
+
+    /**
+     * Whether there is air for a launch. A launch never takes the last of it: the pack must still glide when its boost
+     * ends (an empty pack drops the glide).
+     */
+    public static boolean canLaunch(ItemStack pack) {
+        return air(pack) > LAUNCH_AIR;
+    }
+
+    /** A take-off from the ground: the launch spends its air (Dam may spare it); the jets cough when little is left. */
+    public static void launch(ServerLevel level, LivingEntity wearer, ItemStack pack) {
+        int dam = strength(pack, SkypackRune.DAM);
         if (dam > 0 && level.getRandom().nextFloat() < HolderRune.at(SkypackRune.THRIFT, dam)) {
-            ToolEffects.puff(level, wearer.position().add(0, 0.6, 0), SkypackRune.DAM.rune(), 4, 0.3);
+            ToolEffects.puff(level, wearer.position().add(0, 0.6, 0), SkypackRune.DAM.rune(), 6, 0.3);
             return;
         }
-        int air = air(stack) - AIR_PER_SECOND;
-        setAir(stack, air);
-        if (air <= 0 || air == LOW) {
-            // The jets cough: the tanks are nearly or wholly empty.
+        int air = air(pack) - LAUNCH_AIR;
+        setAir(pack, air);
+        if (air < LOW) {
+            // Little air left: the jets cough (deeper when this was the last launch).
             level.playSound(null, wearer.getX(), wearer.getY(), wearer.getZ(), ModSounds.SKYPACK_SPUTTER.get(), SoundSource.PLAYERS, 0.8F,
-                    air <= 0 ? 0.9F : 1.1F);
+                    air <= LAUNCH_AIR ? 0.9F : 1.1F);
         }
     }
 

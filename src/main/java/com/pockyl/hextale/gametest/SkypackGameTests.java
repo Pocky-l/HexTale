@@ -20,7 +20,7 @@ import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.RuneHolder;
 import com.pockyl.hextale.runework.SkypackRune;
 
-/** The Hextech Skypack glides only with air in its tanks, spends it in flight and drinks only the air out of a jar. */
+/** The Hextech Skypack glides only with air in its tanks, spends it on launches and drinks only the air out of a jar. */
 public final class SkypackGameTests {
     private static final BlockPos AT = new BlockPos(1, 1, 1);
 
@@ -39,21 +39,18 @@ public final class SkypackGameTests {
     }
 
     @HexTest
-    public static void theSkypackSpendsAirInFlight(GameTestHelper helper) {
+    public static void aLaunchSpendsAirAndTheGlideIsFree(GameTestHelper helper) {
         Zombie wearer = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, AT);
         ItemStack pack = HextechSkypackItem.full();
+        HextechSkypackItem.launch(helper.getLevel(), wearer, pack);
+        helper.assertTrue(HextechSkypackItem.air(pack) == HextechSkypackItem.CAPACITY - HextechSkypackItem.LAUNCH_AIR,
+                "a launch costs air, left " + HextechSkypackItem.air(pack));
         pack.onGlideDamage(wearer, EquipmentSlot.CHEST);
-        helper.assertTrue(HextechSkypackItem.air(pack) == HextechSkypackItem.CAPACITY - HextechSkypackItem.AIR_PER_SECOND,
-                "a second of thrust costs air, left " + HextechSkypackItem.air(pack));
-        wearer.setShiftKeyDown(true);
-        pack.onGlideDamage(wearer, EquipmentSlot.CHEST);
-        helper.assertTrue(HextechSkypackItem.air(pack) == HextechSkypackItem.CAPACITY - HextechSkypackItem.AIR_PER_SECOND,
-                "a glide with the jets off is free");
-        wearer.setShiftKeyDown(false);
-        HextechSkypackItem.setAir(pack, 1);
-        pack.onGlideDamage(wearer, EquipmentSlot.CHEST);
-        helper.assertFalse(LivingEntity.canGlideUsing(pack, EquipmentSlot.CHEST), "out of air, the pack stops gliding");
-        // Dam at full strength still pays most seconds, but the table must be read without errors.
+        helper.assertTrue(HextechSkypackItem.air(pack) == HextechSkypackItem.CAPACITY - HextechSkypackItem.LAUNCH_AIR,
+                "gliding is free");
+        HextechSkypackItem.setAir(pack, HextechSkypackItem.LAUNCH_AIR);
+        helper.assertFalse(HextechSkypackItem.canLaunch(pack), "the last of the air is kept for gliding, not launched");
+        helper.assertTrue(LivingEntity.canGlideUsing(pack, EquipmentSlot.CHEST), "with that little air it still glides");
         RuneHolder.SKYPACK.set(pack, PickaxeRunes.EMPTY.with(SkypackRune.DAM.rune(), 3));
         helper.assertTrue(HextechSkypackItem.strength(pack, SkypackRune.DAM) == 3, "the pack reads its runes");
         helper.succeed();

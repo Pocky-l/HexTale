@@ -20,18 +20,20 @@ import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.client.SkypackClient;
 import com.pockyl.hextale.item.HextechSkypackItem;
+import com.pockyl.hextale.item.SkypackFlight;
 
 import org.joml.Vector3f;
 
 /**
  * The Hextech Skypack worn on a player's back: its item model strapped to the body (it follows every pose, the elytra
- * dive included) and, while the jets burn, two tongues of hextech flame out of the nozzles - additive light, flickering,
+ * dive included) and, through the boost of a launch, two tongues of hextech flame out of the nozzles - additive light, flickering,
  * longer the faster the flyer goes. The skypack hides the cape it would cut through.
  */
 public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
     /** What the layer needs, read off the player when its render state is extracted. */
-    public record Worn(ItemStackRenderState item, boolean jets, boolean low, float time, float speed) {
+    public record Worn(ItemStackRenderState item, float jets, boolean low, float time, float speed) {
     }
 
     public static final ContextKey<Worn> WORN = new ContextKey<>(Hextale.id("skypack"));
@@ -77,7 +79,10 @@ public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
         ItemStackRenderState item = new ItemStackRenderState();
         Minecraft.getInstance().getItemModelResolver().updateForLiving(item, pack, ItemDisplayContext.NONE, entity);
         state.showCape = false;
-        state.setRenderData(WORN, new Worn(item, HextechSkypackItem.jetsOn(entity, pack), HextechSkypackItem.air(pack) < HextechSkypackItem.LOW,
+        // The jets burn through a launch's boost and fade over its last ticks.
+        int left = SkypackFlight.boostLeft(entity, entity.level().getGameTime());
+        float jets = Math.min(1, left / (float) SkypackClient.FADE_TICKS);
+        state.setRenderData(WORN, new Worn(item, jets, HextechSkypackItem.air(pack) < HextechSkypackItem.LOW,
                 HexFx.time(entity.level(), state.partialTick), (float) entity.getDeltaMovement().length()));
     }
 
@@ -92,7 +97,7 @@ public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
         poseStack.translate(0, Y, Z);
         poseStack.scale(SCALE, -SCALE, -SCALE);
         worn.item().submit(poseStack, collector, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
-        if (worn.jets()) {
+        if (worn.jets() > 0) {
             for (int i = 0; i < NOZZLES.length; i++) {
                 float[] n = NOZZLES[i];
                 poseStack.pushPose();
@@ -109,13 +114,14 @@ public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
         float t = worn.time();
         float flicker = 0.85F + 0.15F * Mth.sin(t * 2.7F + index * 1.9F) * Mth.sin(t * 1.3F + index);
         float sputter = worn.low() && Mth.sin(t * 0.9F + index * 2) > 0.3F ? 0.35F : 1;
-        float length = (0.32F + Mth.clamp(worn.speed() / 2.0F, 0, 1) * 0.28F) * flicker * sputter;
+        float length = (0.32F + Mth.clamp(worn.speed() / 2.0F, 0, 1) * 0.28F) * flicker * sputter * (0.4F + 0.6F * worn.jets());
+        float fade = sputter * worn.jets();
         collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
             for (int k = 0; k < 3; k++) {
                 float angle = k * Mth.PI / 3 + t * 0.15F;
                 Vector3f side = new Vector3f(Mth.cos(angle), 0, Mth.sin(angle));
-                tongue(consumer, pose, side, length, 0.11F, FLAME, 0.55F * sputter);
-                tongue(consumer, pose, side, length * 0.6F, 0.045F, CORE, 0.9F * sputter);
+                tongue(consumer, pose, side, length, 0.11F, FLAME, 0.55F * fade);
+                tongue(consumer, pose, side, length * 0.6F, 0.045F, CORE, 0.9F * fade);
             }
         });
     }

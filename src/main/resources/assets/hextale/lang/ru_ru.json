@@ -1675,8 +1675,8 @@
   "jei.hextale.lab_experiment.chain": "Реакции: %s",
   "item.hextale.hextech_skypack": "Небесный ранец",
   "item.hextale.hextech_skypack.air": "Воздух: %s / %s мБ",
-  "item.hextale.hextech_skypack.hint": "Два баллона воздуха вокруг кристалла. Пока в них есть воздух, кристалл держит меня, а сопла толкают, как ракета, которая не догорает. Догорает только воздух — за ним стоит следить.",
-  "item.hextale.hextech_skypack.controls": "(Прыжок и ещё прыжок в воздухе · Shift: сопла выкл. · Shift рядом с банками: заправка · ПКМ по банке: заправка)",
+  "item.hextale.hextech_skypack.hint": "Два баллона воздуха вокруг кристалла. Взлёт с земли зажигает сопла на пару секунд, а дальше кристалл просто держит меня в планировании. Каждый взлёт пьёт воздух — за ним стоит следить.",
+  "item.hextale.hextech_skypack.controls": "(Прыжок и ещё прыжок в воздухе · Shift рядом с банками: заправка · ПКМ по банке: заправка)",
   "item.hextale.hextech_skypack.no_air": "В этой банке нет воздушной эссенции",
   "subtitles.hextale.skypack.ignite": "Вспыхивают сопла ранца",
   "subtitles.hextale.skypack.thrust": "Ревут сопла ранца",
@@ -1685,11 +1685,11 @@
   "skypack_rune.hextale.motor.value": "+%s скорости",
   "skypack_rune.hextale.bellows.desc": "Сопла вспыхивают с толчком, который бросает меня вперёд.",
   "skypack_rune.hextale.bellows.value": "толчок x%s",
-  "skypack_rune.hextale.dam.desc": "Иногда секунда полёта не стоит ни капли воздуха.",
+  "skypack_rune.hextale.dam.desc": "Иногда взлёт не стоит ни капли воздуха.",
   "skypack_rune.hextale.dam.value": "%s",
   "skypack_rune.hextale.breath.desc": "Стены и земля будто мягче, пока лечу, и сразу после.",
   "skypack_rune.hextale.breath.value": "-%s урона",
-  "skypack_rune.hextale.fireproofing.desc": "Пока горят сопла, огонь меня не трогает.",
+  "skypack_rune.hextale.fireproofing.desc": "Пока лечу, огонь меня не трогает.",
   "skypack_rune.hextale.fireproofing.value": "%s с после посадки",
   "skypack_rune.hextale.lens.desc": "Остальные руны будто горят на звезду ярче.",
   "skypack_rune.hextale.lens.value": "+1 ★",
@@ -1701,5 +1701,5 @@
   "quest.hextale.hextech_skypack": "Небесный ранец",
   "quest.hextale.hextech_skypack.goal": "сделать небесный ранец на алтаре",
   "quest.hextale.hextech_skypack.desc": "Если стабильный самоцвет заставляет вещи парить, удержит ли он меня? Воздушная эссенция в двух баллонах, кристалл между ними, сопла снизу. Прыжок, ещё прыжок в воздухе — а дальше что?",
-  "jei.hextale.info.hextech_skypack": "Надевается как элитры. С воздушной эссенцией в баллонах: прыжок и ещё прыжок в воздухе — полёт, а сопла толкают, как фейерверк. Shift гасит сопла. Заправка из банок с эссенцией: ПКМ ранцем по банке или Shift рядом с ними, когда ранец надет."
+  "jei.hextale.info.hextech_skypack": "Надевается как элитры. С воздушной эссенцией в баллонах: прыжок и ещё прыжок в воздухе. Взлёт с земли зажигает сопла на две секунды, как фейерверк; дальше ранец планирует до следующего взлёта с земли. Каждый взлёт тратит воздух. Заправка из банок с эссенцией: ПКМ ранцем по банке или Shift рядом с ними, когда ранец надет."
 }
