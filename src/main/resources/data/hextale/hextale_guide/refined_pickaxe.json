@@ -3,13 +3,13 @@
   "icon": "hextale:refined_hextech_pickaxe",
   "parents": ["hextech_pickaxe", "hextech_gemstone"],
   "goal": {
-    "type": "pickaxe",
-    "tier": 2
+    "tier": 2,
+    "type": "pickaxe"
   },
   "display": {
     "kind": "infusion",
     "result": "hextale:refined_hextech_pickaxe"
   },
   "research": "refined_hextech_pickaxe",
-  "pos": [800, 120]
+  "pos": [790, 78]
 }

@@ -3,5 +3,5 @@
   "region": "pylons",
   "icon": "minecraft:breeze_rod",
   "parents": ["pylon_rune"],
-  "pos": [773, 69]
+  "pos": [760, -10]
 }

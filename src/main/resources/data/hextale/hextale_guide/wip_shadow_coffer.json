@@ -3,5 +3,5 @@
   "region": "forge",
   "icon": "minecraft:ender_chest",
   "parents": ["pickaxe_rune"],
-  "pos": [675, 224]
+  "pos": [596, 255]
 }

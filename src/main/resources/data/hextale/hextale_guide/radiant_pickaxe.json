@@ -3,8 +3,8 @@
   "icon": "hextale:radiant_hextech_pickaxe",
   "parents": ["refined_pickaxe"],
   "goal": {
-    "type": "pickaxe",
-    "tier": 3
+    "tier": 3,
+    "type": "pickaxe"
   },
   "display": {
     "kind": "infusion",
@@ -12,5 +12,5 @@
   },
   "research": "radiant_hextech_pickaxe",
   "aura": "hextech",
-  "pos": [880, 170]
+  "pos": [869, 86]
 }

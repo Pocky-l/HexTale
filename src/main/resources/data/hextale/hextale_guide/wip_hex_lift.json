@@ -3,5 +3,5 @@
   "region": "pylons",
   "icon": "minecraft:piston",
   "parents": ["pylon_rune"],
-  "pos": [816, 74]
+  "pos": [848, 56]
 }

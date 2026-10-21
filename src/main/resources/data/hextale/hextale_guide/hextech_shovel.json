@@ -1,9 +1,7 @@
 {
   "region": "forge",
   "icon": "hextale:hextech_shovel",
-  "parents": [
-    "hextech_pickaxe"
-  ],
+  "parents": ["hextech_pickaxe"],
   "display": {
     "kind": "infusion",
     "result": "hextale:hextech_shovel",
@@ -12,5 +10,6 @@
       "result": "shovel"
     }
   },
-  "research": "hextech_shovel"
+  "research": "hextech_shovel",
+  "pos": [783, 161]
 }
