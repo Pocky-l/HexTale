@@ -32,7 +32,7 @@ public class MagicLeavesBlock extends FallingParticlesLeavesBlock {
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         super.animateTick(state, level, pos, random);
         if (random.nextFloat() < MOTE_CHANCE && level.getBlockState(pos.above()).isAir()) {
-            level.addParticle(ParticleTypes.GLOW, pos.getX() + random.nextDouble(), pos.getY() + 1.05, pos.getZ() + random.nextDouble(),
+            level.addParticle(ParticleTypes.WAX_ON, pos.getX() + random.nextDouble(), pos.getY() + 1.05, pos.getZ() + random.nextDouble(),
                     0, 0.03 + random.nextDouble() * 0.03, 0);
         }
     }
