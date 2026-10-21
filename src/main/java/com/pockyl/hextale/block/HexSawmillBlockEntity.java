@@ -54,8 +54,8 @@ import org.jspecify.annotations.Nullable;
  * tree ({@link Felling}) and sends its saw: a disc of hextech light that flies to the trunk ({@code travel} ticks), saws
  * through it ({@value #SAW_TICKS}), and the tree falls ({@value #FALL_TICKS}). The server keeps the same timeline: the
  * tree leaves the world when the saw is through (the clients draw it falling), and its drops land on the foot with
- * saplings from its own leaves planted back when it has fallen. Every tree costs {@value #MB_PER_TREE} mB of wind
- * essence from a jar within {@link JarReach#RADIUS}; no wind = becalmed. Idle, it looks more and more rarely.
+ * saplings from its own leaves planted back when it has fallen. Every tree costs {@value #MB_PER_TREE} mB of air
+ * essence from a jar within {@link JarReach#RADIUS}; no air = becalmed. Idle, it looks more and more rarely.
  */
 public class HexSawmillBlockEntity extends BlockEntity {
     public static final int SAW_TICKS = 30;
@@ -72,7 +72,7 @@ public class HexSawmillBlockEntity extends BlockEntity {
     private static final int FORGET_TICKS = 1200;
 
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
-    /** Wind essence paid in, mB. */
+    /** Air essence paid in, mB. */
     private int wind;
     private boolean becalmed;
     private final List<Pending> pending = new ArrayList<>();
@@ -340,11 +340,11 @@ public class HexSawmillBlockEntity extends BlockEntity {
 
     private boolean drawWind(ServerLevel level) {
         for (EssenceTankBlockEntity jar : JarReach.around(level, worldPosition)) {
-            int taken = Math.min(DRAW_MB, jar.tank().contents().get(Essence.WIND));
+            int taken = Math.min(DRAW_MB, jar.tank().contents().get(Essence.AIR));
             if (taken <= 0) {
                 continue;
             }
-            jar.tank().remove(EssenceMix.pure(Essence.WIND, taken));
+            jar.tank().remove(EssenceMix.pure(Essence.AIR, taken));
             jar.setChanged();
             wind += taken;
             drewFrom = jar.getBlockPos();

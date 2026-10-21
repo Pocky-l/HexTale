@@ -72,8 +72,8 @@ public final class Reactions {
         return PRODUCT[a.ordinal()][b.ordinal()];
     }
 
-    /** Whether forming it gives off gas that presses on the flask: airy things, steam and blasts. */
+    /** Whether forming it gives off gas that presses on the flask: airy things and steam. */
     public static boolean gas(Essence essence) {
-        return essence.share(Essence.AIR) >= 0.4 || essence == Essence.STEAM || essence == Essence.BLAST;
+        return essence.share(Essence.AIR) >= 0.4 || essence == Essence.STEAM;
     }
 }

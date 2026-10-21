@@ -11,7 +11,7 @@ import java.util.List;
  * six corner sections hold the ink wells and are never inked.
  *
  * @param essences the essence of each of the six directions ({@link HexGrid#DIRECTIONS}): a step of ink that way pays
- *                 with it; all six belong to the topic's theme
+ *                 with it; a parchment of three inks gives opposite directions the same essence
  * @param walls    per section: a stone dark rune
  * @param dark     per section: a dark field section (passable)
  * @param cursed   per section: a cursed dark field section
@@ -31,6 +31,11 @@ public record ResearchBoard(ResearchTopic topic, List<Essence> essences, boolean
      * @param plain the plain drawing the generator found (sections from the orb to every point)
      */
     public record Par(int three, int two, int plain) {
+    }
+
+    /** The different inks the parchment asks for, in direction order. */
+    public List<Essence> inks() {
+        return essences.stream().distinct().toList();
     }
 
     /** The essence a step in this direction pays with. */

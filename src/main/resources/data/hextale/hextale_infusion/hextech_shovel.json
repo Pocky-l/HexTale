@@ -7,9 +7,9 @@
     "minecraft:flint"
   ],
   "essences": {
-    "soil": 16,
-    "forge": 12,
-    "energy": 8
+    "plant": 16,
+    "metal": 12,
+    "magic": 8
   },
   "result": "hextale:hextech_shovel",
   "keep_components": true

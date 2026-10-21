@@ -13,8 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * The essences an item carries (roughly like aspects) and how much of each: up to six (one per side of the research
- * hexagon), strongest first - an item boils into that many mB of each. {@code tier} says how valuable the item is (1
+ * The essences an item carries (roughly like aspects) and how much of each: up to three, strongest first - an item
+ * boils into that many mB of each. {@code tier} says how valuable the item is (1
  * simple, 2 valuable, 3 rare). Entry order matters (strongest first, it breaks ties), so maps keep their insertion order.
  */
 public record ItemEssences(Map<Essence, Integer> essences, int tier) {

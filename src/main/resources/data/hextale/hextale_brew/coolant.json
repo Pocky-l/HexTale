@@ -2,7 +2,7 @@
   "catalyst": "minecraft:snowball",
   "essences": {
     "cold": 8,
-    "ice": 4
+    "water": 4
   },
   "brew": "coolant",
   "heat": 2,

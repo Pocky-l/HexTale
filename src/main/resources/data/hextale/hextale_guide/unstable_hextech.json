@@ -1,5 +1,6 @@
 {
   "region": "workshop",
+  "parents": ["researchers_diary"],
   "icon": "hextale:unstable_hextech",
   "display": {
     "kind": "scheme",

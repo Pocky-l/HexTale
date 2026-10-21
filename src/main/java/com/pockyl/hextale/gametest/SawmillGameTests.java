@@ -77,7 +77,7 @@ public final class SawmillGameTests {
         oak(helper, build, true);
         BlockPos jarPos = BASE.offset(0, 0, -3);
         helper.setBlock(jarPos, ModBlocks.ESSENCE_TANK.get());
-        helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.WIND, 4));
+        helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.AIR, 4));
         helper.setBlock(BASE, ModBlocks.HEX_SAWMILL.get());
         helper.succeedWhen(() -> {
             for (int dy = 0; dy < 4; dy++) {

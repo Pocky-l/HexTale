@@ -13,10 +13,8 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
-import com.pockyl.hextale.rune.Essence;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * One thing the Hextech Altar makes, read from {@code data/<namespace>/hextale_infusion/<name>.json}: the centre item,
@@ -49,10 +47,9 @@ public record InfusionRecipe(Ingredient center, List<Ingredient> pedestals, Esse
             ByteBufCodecs.BOOL, InfusionRecipe::keepComponents,
             InfusionRecipe::new);
 
-    /** What a rune costs at the altar: its own essence - the compound of its two primals - by its chapter. */
+    /** What a rune costs at the altar: the compound of its two primals (or both primals), by its chapter. */
     public static EssenceMix runeEssence(ComplexRune rune) {
-        Essence pair = Objects.requireNonNull(Essence.pair(rune.action(), rune.target()), rune.key());
-        return EssenceMix.pure(pair, RUNE_MB[ResearchBook.chapter(rune) - 1]);
+        return EssenceMix.ofRune(rune, RUNE_MB[ResearchBook.chapter(rune) - 1]);
     }
 
     /** The recipe's essences plus its runes'. */

@@ -54,7 +54,7 @@ public final class CircleDiorama {
     private static final float JAR_R = 3.0F;
     private static final float CENTRE_Y = 1.35F;
     private static final float TILT = 30;
-    private static final List<Essence> DRAWN = List.of(Essence.CRYSTAL, Essence.ORDER, Essence.ENERGY);
+    private static final List<Essence> DRAWN = List.of(Essence.CRYSTAL, Essence.MAGIC, Essence.SPARK);
 
     private CircleDiorama() {
     }

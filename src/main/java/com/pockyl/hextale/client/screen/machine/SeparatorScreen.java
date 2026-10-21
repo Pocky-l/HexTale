@@ -232,7 +232,10 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         }
     }
 
-    /** The picker, over everything else: every essence in its colour, the chosen one framed in gold. */
+    /**
+     * The picker, over everything else: every essence, the chosen one framed in gold. The essences the mixture in the
+     * flask holds glow on a lit cell and say how much there is; the others are dim - drawing them out would do nothing.
+     */
     private void renderPicker(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         graphics.nextStratum();
         int x = pickLeft();
@@ -248,22 +251,40 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         }
         Essence chosen = menu.chosen();
         Essence over = pickedAt(mouseX, mouseY);
+        SeparatorBlockEntity separator = blockEntity(SeparatorBlockEntity.class);
+        EssenceMix inside = separator == null ? EssenceMix.EMPTY : separator.mix().contents();
         for (Essence essence : Essence.values()) {
             int[] at = pickCell(essence);
+            boolean held = inside.get(essence) > 0;
+            if (held) {
+                lit(graphics, at[0], at[1], essence.color());
+            }
             HexPlate.cell(graphics, at[0], at[1], PICK_CELL, essence == chosen, essence == over);
-            PixelArt.essence(graphics, essence, at[0] + 1, at[1] + 1, 9, PixelArt.argb(essence.color(), 1));
+            PixelArt.essence(graphics, essence, at[0] + 1, at[1] + 1, 9, PixelArt.argb(held ? essence.color() : PixelArt.mix(essence.color(), 0x1A1426, 0.6F), held ? 1 : 0.55F));
         }
         int[] unknown = unknownCell();
         boolean overDark = overUnknown(mouseX, mouseY);
+        if (inside.unknown() > 0) {
+            lit(graphics, unknown[0], unknown[1], 0x8A78B0);
+        }
         HexPlate.cell(graphics, unknown[0], unknown[1], PICK_CELL, menu.chosenUnknown(), overDark);
         PixelArt.flush(graphics);
         unknownSign(graphics, unknown[0] + 1, unknown[1] + 1);
         if (over != null) {
-            graphics.setComponentTooltipForNextFrame(font, List.of(ResearchText.essence(over)), mouseX, mouseY);
+            int held = inside.get(over);
+            graphics.setComponentTooltipForNextFrame(font, List.of(ResearchText.essence(over), held > 0
+                    ? Component.translatable("gui.hextale.separator.held", held).withStyle(ChatFormatting.GRAY)
+                    : Component.translatable("gui.hextale.separator.missing").withStyle(ChatFormatting.DARK_GRAY)), mouseX, mouseY);
         } else if (overDark) {
             graphics.setComponentTooltipForNextFrame(font, List.of(Component.translatable("essence.hextale.unknown"),
                     Component.translatable("gui.hextale.separator.unknown.hint").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);
         }
+    }
+
+    /** A cell lit from within in an essence's colour: the mixture holds that essence. */
+    private static void lit(GuiGraphicsExtractor graphics, int x, int y, int color) {
+        PixelArt.fill(graphics, x, y, x + PICK_CELL, y + PICK_CELL, PixelArt.argb(color, 0.55F));
+        PixelArt.fill(graphics, x + 1, y + 1, x + PICK_CELL - 1, y + PICK_CELL - 1, PixelArt.argb(PixelArt.mix(color, 0x120E1C, 0.72F), 1));
     }
 
     @Override
@@ -358,14 +379,19 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
             PixelArt.flush(graphics);
             graphics.centeredText(font, "?", rx + 8, ry - 13, 0xFF8A7A60);
         }
-        if ("no_essence".equals(blocked)) {
+        if ("no_essence".equals(blocked) || "missing".equals(blocked)) {
             warn(graphics, rx, ry - 15, 16, 13);
         }
         if (overPlate) {
-            tooltip(List.of(menu.chosenUnknown() ? Component.translatable("gui.hextale.separator.binds", Component.translatable("essence.hextale.unknown"))
-                            : element == null ? Component.translatable("gui.hextale.separator.no_essence")
-                            : Component.translatable("gui.hextale.separator.binds", ResearchText.essence(element)),
-                    Component.translatable("gui.hextale.separator.choose.hint").withStyle(ChatFormatting.GRAY)));
+            List<Component> lines = new java.util.ArrayList<>();
+            lines.add(menu.chosenUnknown() ? Component.translatable("gui.hextale.separator.binds", Component.translatable("essence.hextale.unknown"))
+                    : element == null ? Component.translatable("gui.hextale.separator.no_essence")
+                    : Component.translatable("gui.hextale.separator.binds", ResearchText.essence(element)));
+            if ("missing".equals(blocked)) {
+                lines.add(Component.translatable("gui.hextale.separator.missing").withStyle(ChatFormatting.RED));
+            }
+            lines.add(Component.translatable("gui.hextale.separator.choose.hint").withStyle(ChatFormatting.GRAY));
+            tooltip(lines);
         }
         if ("no_fuel".equals(blocked)) {
             warn(graphics, rx, ry, 16, 16);

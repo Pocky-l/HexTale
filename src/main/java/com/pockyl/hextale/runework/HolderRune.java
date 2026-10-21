@@ -5,10 +5,8 @@ import net.minecraft.util.Mth;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.Essence;
 
 import java.util.Locale;
-import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
@@ -42,11 +40,10 @@ public interface HolderRune {
         return prefix() + "_rune.hextale." + name().toLowerCase(Locale.ROOT) + ".value";
     }
 
-    /** What burning this rune in with these stars costs: its own essence (the compound of its primals). */
+    /** What burning this rune in with these stars costs: the compound of its primals (or both primals). */
     default EssenceMix cost(int stars) {
         ComplexRune rune = rune();
-        Essence pair = Objects.requireNonNull(Essence.pair(rune.action(), rune.target()), rune.key());
-        return EssenceMix.pure(pair, MB_PER_STAR[ResearchBook.chapter(rune) - 1] * stars);
+        return EssenceMix.ofRune(rune, MB_PER_STAR[ResearchBook.chapter(rune) - 1] * stars);
     }
 
     /** The value of a table indexed by strength 1-4 (index 0-3). */

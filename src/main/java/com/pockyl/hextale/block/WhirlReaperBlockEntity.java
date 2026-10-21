@@ -57,12 +57,12 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * A Whirl Reaper's state and work. Every interval it looks over its field for the nearest ripe plant nobody is reaping
- * yet and sends a whirl of wind to it. The whirl is a timeline the clients play from one {@link WhirlPayload}: it flies
+ * yet and sends a whirl of air to it. The whirl is a timeline the clients play from one {@link WhirlPayload}: it flies
  * for {@code travel} ticks, then works over the plant for the kind's {@link WhirlKind#work()} ticks. The server keeps the
  * same timeline as a {@link Pending} and acts when the clients see it happen: a fruit or stalk is taken up when the whirl
  * arrives, the harvest falls when it is done.
  *
- * <p>Every whirl costs wind essence: one mB of it drawn out of a jar within {@link JarReach#RADIUS} gives
+ * <p>Every whirl costs air essence: one mB of it drawn out of a jar within {@link JarReach#RADIUS} gives
  * {@value #WHIRLS_PER_MB} whirls. Without wind the reaper stands still ({@link #becalmed()}). Nothing ripe = it looks
  * more and more rarely (up to {@value #MAX_SLEEP} ticks), so a sleeping field costs almost nothing; the field is only
  * read block by block, never searched for entities.
@@ -71,7 +71,7 @@ public class WhirlReaperBlockEntity extends BlockEntity {
     /** Whirls in the air at once. */
     public static final int MAX_WHIRLS = 4;
     public static final int WHIRLS_PER_MB = 4;
-    /** mB of wind drawn at once. */
+    /** mB of air drawn at once. */
     public static final int DRAW_MB = 4;
     /** Field height below and above the reaper. */
     public static final int DOWN = 3;
@@ -145,7 +145,7 @@ public class WhirlReaperBlockEntity extends BlockEntity {
         return charges;
     }
 
-    /** Whether it found something ripe but had no wind essence to send a whirl. */
+    /** Whether it found something ripe but had no air essence to send a whirl. */
     public boolean becalmed() {
         return becalmed;
     }
@@ -357,14 +357,14 @@ public class WhirlReaperBlockEntity extends BlockEntity {
         return false;
     }
 
-    /** Draws wind essence out of the nearest jar that holds some; false when none does. */
+    /** Draws air essence out of the nearest jar that holds some; false when none does. */
     private boolean drawWind(ServerLevel level) {
         for (EssenceTankBlockEntity jar : JarReach.around(level, worldPosition)) {
-            int taken = Math.min(DRAW_MB, jar.tank().contents().get(Essence.WIND));
+            int taken = Math.min(DRAW_MB, jar.tank().contents().get(Essence.AIR));
             if (taken <= 0) {
                 continue;
             }
-            jar.tank().remove(EssenceMix.pure(Essence.WIND, taken));
+            jar.tank().remove(EssenceMix.pure(Essence.AIR, taken));
             jar.setChanged();
             charges += taken * WHIRLS_PER_MB;
             drewFrom = jar.getBlockPos();

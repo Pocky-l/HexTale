@@ -45,8 +45,8 @@ import org.jspecify.annotations.Nullable;
  * mixture comes in through inlets, the concentrate (the wanted product) and the rest (the by-product) leave through
  * their outlets; by default the mixture comes in at the back and the left, the concentrate leaves at the right and the
  * rest at the front. The top is the gas vent. Both products can be bottled. Drawing an essence out burns blaze powder:
- * one powder draws {@value #FUEL_BINDS} mB of whatever essence is chosen. Without a chosen essence or powder nothing is
- * split. The dark unknown essence can be chosen too: it is filtered out of a mixture into its own vessel, and then no
+ * one powder draws {@value #FUEL_BINDS} mB of whatever essence is chosen. Without a chosen essence or powder, or when the
+ * mixture holds none of the chosen essence, nothing is split. The dark unknown essence can be chosen too: it is filtered out of a mixture into its own vessel, and then no
  * unknown essence is added to the rest - that is the way to clean a mixture.
  */
 public class SeparatorBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.Receiver,
@@ -258,6 +258,10 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         boolean unknown = separatingUnknown();
         if (element == null && !unknown) {
             return "no_essence";
+        }
+        // Nothing of the chosen essence in the flask: it waits for one that holds some instead of passing it all on.
+        if (unknown ? mix.contents().unknown() == 0 : mix.contents().get(element) == 0) {
+            return "missing";
         }
         EssenceMix portion = portion();
         int drawn = drawnOut(portion);

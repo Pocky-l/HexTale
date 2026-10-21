@@ -111,7 +111,8 @@ public class RuneBurningCategory extends AbstractRecipeCategory<RuneBurningCateg
         y = Math.max(y, 60) + 2;
 
         // One, two and three stars: how strong, and what it costs.
-        Map.Entry<Essence, Integer> cost = rune.holder().cost(complex, 1).asMap().entrySet().iterator().next();
+        // A rune of a pair without a compound costs both its primals.
+        Map<Essence, Integer> cost = rune.holder().cost(complex, 1).asMap();
         int column = (WIDTH - 8) / 3;
         PixelArt.fill(graphics, 4, y - 2, WIDTH - 4, y + 31, PixelArt.argb(0x8B8B8B, 0.35F));
         PixelArt.flush(graphics);
@@ -120,11 +121,18 @@ public class RuneBurningCategory extends AbstractRecipeCategory<RuneBurningCateg
             graphics.centeredText(font, Component.literal("★".repeat(stars)), cx, y, 0xFF000000 | GOLD);
             Component value = Component.translatable(rune.valueKey(), rune.amount(stars));
             graphics.text(font, value, cx - font.width(value) / 2, y + 10, 0xFF000000, false);
-            String mb = cost.getValue() * stars + " mB";
-            int ex = cx - (PixelArt.ICON + 2 + font.width(mb)) / 2;
-            PixelArt.essence(graphics, cost.getKey(), ex, y + 20, PixelArt.ICON, PixelArt.argb(cost.getKey().color(), 1));
-            PixelArt.flush(graphics);
-            graphics.text(font, mb, ex + PixelArt.ICON + 2, y + 21, INK, false);
+            int width = 0;
+            for (int amount : cost.values()) {
+                width += PixelArt.ICON + 2 + font.width(amountText(amount * stars, cost.size())) + 4;
+            }
+            int ex = cx - (width - 4) / 2;
+            for (Map.Entry<Essence, Integer> entry : cost.entrySet()) {
+                String mb = amountText(entry.getValue() * stars, cost.size());
+                PixelArt.essence(graphics, entry.getKey(), ex, y + 20, PixelArt.ICON, PixelArt.argb(entry.getKey().color(), 1));
+                PixelArt.flush(graphics);
+                graphics.text(font, mb, ex + PixelArt.ICON + 2, y + 21, INK, false);
+                ex += PixelArt.ICON + 2 + font.width(mb) + 4;
+            }
         }
         y += 35;
 
@@ -151,12 +159,18 @@ public class RuneBurningCategory extends AbstractRecipeCategory<RuneBurningCateg
     public void getTooltip(ITooltipBuilder tooltip, Recipe rune, IRecipeSlotsView slots, double mouseX, double mouseY) {
         // The essence icons name their essence.
         if (mouseY >= 0 && mouseX >= 0) {
-            Map.Entry<Essence, Integer> cost = rune.holder().cost(rune.rune(), 1).asMap().entrySet().iterator().next();
             int top = costTop(rune);
             if (mouseY >= top && mouseY < top + 10 && mouseX >= 4 && mouseX < WIDTH - 4) {
-                tooltip.add(Component.translatable(cost.getKey().translationKey()).withColor(cost.getKey().color()));
+                for (Essence essence : rune.holder().cost(rune.rune(), 1).asMap().keySet()) {
+                    tooltip.add(Component.translatable(essence.translationKey()).withColor(essence.color()));
+                }
             }
         }
+    }
+
+    /** One essence's amount: "16 mB" alone, a bare number beside another essence (the column is narrow). */
+    private static String amountText(int mb, int essences) {
+        return essences > 1 ? Integer.toString(mb) : mb + " mB";
     }
 
     private static int costTop(Recipe rune) {

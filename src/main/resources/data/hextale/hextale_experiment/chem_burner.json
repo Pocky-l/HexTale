@@ -1,6 +1,6 @@
 {
   "topic": "chem_burner",
-  "target": "smoke",
+  "target": "magma",
   "amount": 6,
   "purity": 0.6
 }

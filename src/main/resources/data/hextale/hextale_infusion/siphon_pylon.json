@@ -9,7 +9,7 @@
   ],
   "essences": {
     "water": 16,
-    "motion": 12,
+    "air": 12,
     "magic": 8
   },
   "result": "hextale:siphon_pylon"

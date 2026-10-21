@@ -7,9 +7,9 @@
     "minecraft:dark_oak_log"
   ],
   "essences": {
-    "wood": 16,
-    "forge": 12,
-    "energy": 8
+    "plant": 16,
+    "metal": 12,
+    "magic": 8
   },
   "result": "hextale:hextech_axe",
   "keep_components": true

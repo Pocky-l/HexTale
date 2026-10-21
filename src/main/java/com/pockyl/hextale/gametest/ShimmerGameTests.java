@@ -117,7 +117,7 @@ public final class ShimmerGameTests {
         helper.succeedWhen(() -> {
             if (!brewed[0]) {
                 helper.assertTrue(crucible.boiling(), "the water boils");
-                crucible.pour(EssenceMix.pure(Essence.DREAM, 6).plus(EssenceMix.pure(Essence.LIGHT, 4)));
+                crucible.pour(EssenceMix.pure(Essence.RIFT, 6).plus(EssenceMix.pure(Essence.LIGHT, 4)));
                 helper.assertTrue(crucible.take(new ItemStack(ModItems.REGENERATIVE_SLIME.get()), 1, true, player) == 1, "the slime goes in");
                 helper.assertTrue(crucible.brew() == Brew.RAW_SHIMMER && crucible.doses() == 3, "the water is three doses of raw shimmer");
                 ItemStack first = crucible.bottle();

@@ -9,9 +9,9 @@
     "hextale:brass_ingot"
   ],
   "essences": {
-    "order": 16,
-    "knowledge": 12,
-    "motion": 8
+    "crystal": 16,
+    "magic": 12,
+    "air": 8
   },
   "result": "hextale:sorting_matrix"
 }

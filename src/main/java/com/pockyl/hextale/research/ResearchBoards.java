@@ -15,7 +15,8 @@ import java.util.concurrent.Executors;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Builds and caches the research boards (hexagonal parchments, six essences of the topic's theme around them).
+ * Builds and caches the research boards (hexagonal parchments with the essences of the topic's theme around them: three
+ * inks on the first parchments, six on the deepest).
  * Generation is deterministic (the topic's id and the researcher's attempt seed it) and identical on client and
  * server, so boards never travel over the network. Every burnt parchment makes way for a new board: attempt 0 is the
  * topic's first board, attempt n its n-th replacement. Every board is checked to be solvable without a guess (see
@@ -126,13 +127,14 @@ public final class ResearchBoards {
         int fallbackMiss = Integer.MAX_VALUE;
         for (int round = 0; round < 300; round++) {
             Random32 random = new Random32(hash(key + "#thread#" + round));
+            List<Essence> inks = essences.stream().distinct().toList();
             List<Essence> elements = new ArrayList<>(List.of(nearest(essences, topic.action()), nearest(essences, topic.target())));
             if (elements.get(1) == elements.get(0)) {
-                elements.set(1, essences.get((essences.indexOf(elements.get(0)) + 3) % 6));
+                elements.set(1, inks.get((inks.indexOf(elements.get(0)) + 1) % inks.size()));
             }
             while (elements.size() < POINTS[tier]) {
-                Essence next = essences.get(random.pick(essences.size()));
-                if (!elements.contains(next) || elements.size() >= essences.size()) {
+                Essence next = inks.get(random.pick(inks.size()));
+                if (!elements.contains(next) || elements.size() >= inks.size()) {
                     elements.add(next);
                 }
             }
@@ -206,69 +208,64 @@ public final class ResearchBoards {
         return fallback;
     }
 
-    /** How many essences of each tier (primal, of two primals, deeper) a tier's parchment holds. */
-    private static final int[][] THEME_TIERS = {{}, {2, 4, 0}, {1, 3, 2}, {0, 2, 4}};
+    /** Primals any researcher meets everywhere (stone, water, coal, seeds): the third ink of the first parchments. */
+    private static final List<Essence> COMMON = List.of(Essence.EARTH, Essence.WATER, Essence.FIRE, Essence.LIFE);
 
     /**
-     * The six essences of a topic's parchment: all of its theme - essences made of the topic's two primals.
-     * Tier 1 keeps both primals and adds compounds of two primals; deeper tiers trade primals for deeper compounds,
-     * which take more distilling to gather. Picks favour the most fitting essences, alternating between the action's
-     * and the target's side, so both halves of the theme are always present; their order around the hexagon is shuffled.
+     * The essences around a topic's parchment, one per direction of the hexagon. The first two chapters ask for three
+     * inks only, each paying two opposite directions: the topic's two primals and a third - their compound where there
+     * is one (chapter II), otherwise a primal found everywhere - so a first parchment needs nothing but plain ink.
+     * Chapter III asks for six: the two primals, the compounds made of either and, short of those, common primals;
+     * their order around the hexagon is shuffled.
      */
     static List<Essence> theme(ResearchTopic topic, Random32 random) {
         Essence a = topic.action();
         Essence b = topic.target();
-        int[] plan = THEME_TIERS[topic.tier()];
-        List<Essence> picked = new ArrayList<>();
-        if (plan[0] >= 1) {
-            picked.add(a);
+        List<Essence> picked = new ArrayList<>(List.of(a, b));
+        List<Essence> common = new ArrayList<>(COMMON);
+        common.removeAll(picked);
+        // A seeded pick among the common primals, so related topics do not all ask for the same third ink.
+        java.util.Collections.rotate(common, random.pick(common.size()));
+        if (topic.tier() < 3) {
+            Essence pair = topic.tier() == 2 ? Essence.pair(a, b) : null;
+            picked.add(pair != null ? pair : common.getFirst());
+            shuffle(picked, random);
+            List<Essence> out = new ArrayList<>(picked);
+            out.addAll(picked);
+            return List.copyOf(out);
         }
-        if (plan[0] >= 2) {
-            picked.add(b);
+        Essence pair = Essence.pair(a, b);
+        if (pair != null) {
+            picked.add(pair);
         }
-        for (int tier = 1; tier <= 2; tier++) {
-            int want = plan[tier];
-            List<double[]> scored = new ArrayList<>();
-            for (Essence e : Essence.values()) {
-                boolean fits = tier == 2 ? e.tier() >= 2 : e.tier() == 1;
-                double fit = e.share(a) + e.share(b);
-                if (fits && !picked.contains(e) && fit > 0) {
-                    // Best fit first; a little randomness among equals so boards of related topics differ.
-                    scored.add(new double[]{e.ordinal(), fit + (e.share(a) > 0 && e.share(b) > 0 ? 0.5 : 0) + random.next() * 0.2});
-                }
-            }
-            scored.sort((x, y) -> Double.compare(y[1], x[1]));
-            boolean actionSide = true;
-            while (want > 0 && !scored.isEmpty()) {
-                Essence side = actionSide ? a : b;
-                int at = 0;
-                for (int i = 0; i < scored.size(); i++) {
-                    if (Essence.values()[(int) scored.get(i)[0]].share(side) > 0) {
-                        at = i;
-                        break;
-                    }
-                }
-                picked.add(Essence.values()[(int) scored.remove(at)[0]]);
-                actionSide = !actionSide;
-                want--;
-            }
-        }
-        // Top up from any essence of the theme if a tier ran short.
+        List<Essence> related = new ArrayList<>();
         for (Essence e : Essence.values()) {
-            if (picked.size() >= 6) {
-                break;
+            if (!e.isPrimal() && !picked.contains(e) && e.share(a) + e.share(b) > 0) {
+                related.add(e);
             }
-            if (!picked.contains(e) && e.share(a) + e.share(b) > 0) {
+        }
+        shuffle(related, random);
+        for (Essence e : related) {
+            if (picked.size() < 6) {
                 picked.add(e);
             }
         }
-        for (int i = picked.size() - 1; i > 0; i--) {
-            int j = random.pick(i + 1);
-            Essence t = picked.get(i);
-            picked.set(i, picked.get(j));
-            picked.set(j, t);
+        for (Essence e : common) {
+            if (picked.size() < 6) {
+                picked.add(e);
+            }
         }
+        shuffle(picked, random);
         return List.copyOf(picked.subList(0, 6));
+    }
+
+    private static void shuffle(List<Essence> list, Random32 random) {
+        for (int i = list.size() - 1; i > 0; i--) {
+            int j = random.pick(i + 1);
+            Essence t = list.get(i);
+            list.set(i, list.get(j));
+            list.set(j, t);
+        }
     }
 
     /** The essence of the theme with the most of this primal in it. */

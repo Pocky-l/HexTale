@@ -45,7 +45,7 @@ public final class WhirlReaperGameTests {
         if (wind > 0) {
             BlockPos jarPos = BASE.offset(-2, 0, -2);
             helper.setBlock(jarPos, ModBlocks.ESSENCE_TANK.get());
-            helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.WIND, wind));
+            helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.AIR, wind));
         }
         return helper.getBlockEntity(BASE, WhirlReaperBlockEntity.class);
     }

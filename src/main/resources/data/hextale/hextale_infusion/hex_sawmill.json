@@ -9,8 +9,8 @@
     "hextale:brass_ingot"
   ],
   "essences": {
-    "wind": 16,
-    "wood": 12,
+    "air": 16,
+    "plant": 12,
     "metal": 8
   },
   "result": "hextale:hex_sawmill"

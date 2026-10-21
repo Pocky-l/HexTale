@@ -27,7 +27,7 @@ Its dust turned out to be the key. A pinch of it **woke my crafting table, furna
 runs on crystal charge, the Hex Furnace melts brass and hexsteel, and at the **lapidary** I cut raw orbs into true
 crystals by feel, turning the stone until its hidden cleavage plane glows.
 
-Soon I understood that **everything is made of essences** - eighty of them, from Fire and Water to Time and Soul - and
+Soon I understood that **everything is made of essences** - twenty-two of them, from Fire and Water to Magic and Rift - and
 every item holds its own mix. The loupe on my desk reveals it, the **alembic** boils items down, the **separator** splits
 the brew, **jars and brass pipes** keep it and carry it wherever I need it.
 

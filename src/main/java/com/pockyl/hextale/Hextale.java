@@ -57,6 +57,7 @@ public final class Hextale {
         com.pockyl.hextale.runework.ToolEffects.register();
         com.pockyl.hextale.multiblock.Multiblocks.register();
         com.pockyl.hextale.loot.RuneScrollLoot.register(modBus);
+        com.pockyl.hextale.loot.ChestItemsLoot.register(modBus);
         com.pockyl.hextale.event.ResearchLocks.register(NeoForge.EVENT_BUS);
         GameTests.register(modBus);
         modBus.addListener(ModDataMaps::register);

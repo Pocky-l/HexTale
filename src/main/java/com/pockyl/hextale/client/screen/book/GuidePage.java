@@ -105,6 +105,9 @@ final class GuidePage {
     private ComplexRune optionRune;
     private int runeGridX = Integer.MIN_VALUE;
     private int runeGridY;
+    /** A device's plate opens on its description; its runes lie on a tab of their own. Where the tabs were drawn last. */
+    private boolean runesTab;
+    private int tabY = Integer.MIN_VALUE;
 
     GuidePage(StarBook book) {
         this.book = book;
@@ -867,6 +870,8 @@ final class GuidePage {
         scroll = 0;
         optionRune = null;
         runeGridX = Integer.MIN_VALUE;
+        runesTab = false;
+        tabY = Integer.MIN_VALUE;
         return true;
     }
 
@@ -943,13 +948,51 @@ final class GuidePage {
         return quest.topic() != null && book.host() != null;
     }
 
+    private static final int TAB_HEIGHT = 13;
+
+    private static boolean runesKind(QuestDisplay display) {
+        return display.kind() == QuestDisplay.Kind.PICKAXE_RUNES || display.kind() == QuestDisplay.Kind.PYLON_RUNES
+                || display.kind() == QuestDisplay.Kind.RUNES;
+    }
+
+    /** A step whose runes picture follows its other pictures (a device and the runes it takes) gets two tabs. */
+    private static boolean hasRunesTab(Quest quest) {
+        QuestDisplay first = quest.display();
+        if (first == null || runesKind(first)) {
+            return false;
+        }
+        for (QuestDisplay display = first.then(); display != null; display = display.then()) {
+            if (runesKind(display)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean onRunesTab(Quest quest) {
+        return runesTab && hasRunesTab(quest);
+    }
+
+    /** Whether a picture belongs on the open tab: the runes on theirs, everything else on the description. */
+    private boolean shown(Quest quest, QuestDisplay display) {
+        return !hasRunesTab(quest) || runesKind(display) == runesTab;
+    }
+
     private int contentHeight(Quest quest, RuneKnowledge knowledge) {
         int h = PAD + headerHeight(quest) + statusLines(quest, knowledge).size() * 10 + 6;
-        if (quest.scene() != null) {
+        if (hasRunesTab(quest)) {
+            h += TAB_HEIGHT + 6;
+        }
+        if (quest.scene() != null && !onRunesTab(quest)) {
             h += SCENE_HEIGHT + 8;
         }
         for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
-            h += displayHeight(display) + 8;
+            if (shown(quest, display)) {
+                h += displayHeight(display) + 8;
+            }
+        }
+        if (onRunesTab(quest)) {
+            return h + PAD + footerHeight(quest);
         }
         h += bodyLines(quest).size() * 10;
         if (quest.kind() == Quest.Kind.WIP) {
@@ -1035,8 +1078,13 @@ final class GuidePage {
         y += 2;
         PixelArt.fill(graphics, ix, y, ix + innerWidth(), y + 1, PixelArt.argb(StarBook.GOLD, 0.3F));
         y += 4;
+        if (hasRunesTab(quest)) {
+            tabY = y;
+            renderTabs(graphics, ix, y, mouseIn ? mouseX : -1, mouseY);
+            y += TAB_HEIGHT + 6;
+        }
 
-        if (quest.scene() != null) {
+        if (quest.scene() != null && !onRunesTab(quest)) {
             // The circle at work, in 3D: what this step is about stands in a ring of light.
             int sw = innerWidth();
             int frame = PixelArt.argb(StarBook.GOLD, 0.35F);
@@ -1050,6 +1098,9 @@ final class GuidePage {
             y += SCENE_HEIGHT + 8;
         }
         for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
+            if (!shown(quest, display)) {
+                continue;
+            }
             y += 2;
             List<FormattedCharSequence> hover = renderDisplay(graphics, quest, display, ix, y, mouseIn ? mouseX : -1, mouseY, now);
             if (hover != null) {
@@ -1058,11 +1109,12 @@ final class GuidePage {
             y += displayHeight(display) + 6;
         }
         PixelArt.flush(graphics);
-        for (FormattedCharSequence line : bodyLines(quest)) {
+        boolean about = !onRunesTab(quest);
+        for (FormattedCharSequence line : about ? bodyLines(quest) : List.<FormattedCharSequence>of()) {
             graphics.text(font, line, ix, y, TEXT, false);
             y += 10;
         }
-        List<FormattedCharSequence> extra = switch (quest.kind()) {
+        List<FormattedCharSequence> extra = !about ? List.of() : switch (quest.kind()) {
             case WIP -> needs(quest);
             case ITEM -> opens(quest, knowledge);
         };
@@ -1103,6 +1155,42 @@ final class GuidePage {
             PixelArt.fill(graphics, x + w - 3, by, x + w - 1, by + bar, PixelArt.argb(StarBook.GOLD, 0.6F));
         }
         return tooltip;
+    }
+
+    /** The two tabs of a device's plate: its description and the runes it takes; the open one is lit and underlined. */
+    private void renderTabs(GuiGraphicsExtractor graphics, int x, int y, int mouseX, int mouseY) {
+        int half = innerWidth() / 2;
+        for (int tab = 0; tab < 2; tab++) {
+            boolean open = (tab == 1) == runesTab;
+            int tx = x + tab * half;
+            int tw = tab == 0 ? half - 1 : innerWidth() - half;
+            boolean hovered = !open && mouseX >= tx && mouseX < tx + tw && mouseY >= y && mouseY < y + TAB_HEIGHT;
+            PixelArt.fill(graphics, tx, y, tx + tw, y + TAB_HEIGHT, PixelArt.argb(open ? 0x2E2440 : hovered ? 0x251D36 : 0x17121F, 1));
+            PixelArt.fill(graphics, tx, y + TAB_HEIGHT - 1, tx + tw, y + TAB_HEIGHT,
+                    PixelArt.argb(StarBook.GOLD, open ? 1 : hovered ? 0.5F : 0.2F));
+            PixelArt.flush(graphics);
+            Component label = Component.translatable(tab == 0 ? "book.hextale.guide.tab.about" : "book.hextale.guide.tab.runes");
+            graphics.centeredText(font, label, tx + tw / 2, y + 2, open ? 0xFFFFF6D6 : hovered ? TEXT : 0xFF8A80A0);
+        }
+    }
+
+    /** Opens the tab under the mouse; true when a tab was hit. */
+    private boolean pickTab(double mouseX, double mouseY) {
+        if (selected == null || !hasRunesTab(selected) || tabY == Integer.MIN_VALUE) {
+            return false;
+        }
+        int ix = plateLeft() + PAD;
+        if (mouseY < tabY || mouseY >= tabY + TAB_HEIGHT || mouseX < ix || mouseX >= ix + innerWidth()) {
+            return false;
+        }
+        boolean runes = mouseX >= ix + innerWidth() / 2;
+        if (runes != runesTab) {
+            runesTab = runes;
+            scroll = 0;
+            runeGridX = Integer.MIN_VALUE;
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.1F, 0.6F));
+        }
+        return true;
     }
 
     // ---- Pictures on item plates -------------------------------------------------------------------------------------
@@ -1741,7 +1829,7 @@ final class GuidePage {
             close();
             return;
         }
-        if (pickRune(mouseX, mouseY) || !studyButton(quest)) {
+        if (pickTab(mouseX, mouseY) || pickRune(mouseX, mouseY) || !studyButton(quest)) {
             return;
         }
         int ix = plateLeft() + PAD;

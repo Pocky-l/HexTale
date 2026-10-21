@@ -111,14 +111,17 @@ public final class ResearchGameTests {
             int tier = board.tier();
             ResearchBoard.Par par = board.par();
             helper.assertTrue(board.points().size() == points[tier], topic.id() + " has " + points[tier] + " points");
-            helper.assertTrue(board.essences().size() == 6 && new java.util.HashSet<>(board.essences()).size() == 6,
-                    topic.id() + ": six different essences around the hexagon");
-            for (Essence essence : board.essences()) {
-                helper.assertTrue(essence.share(topic.action()) + essence.share(topic.target()) > 0,
-                        topic.id() + ": " + essence.id() + " belongs to the topic's theme");
+            int inks = tier < 3 ? 3 : 6;
+            helper.assertTrue(board.essences().size() == 6 && board.inks().size() == inks,
+                    topic.id() + ": " + inks + " different inks around the hexagon, got " + board.essences());
+            for (int d = 0; d < 6 && tier < 3; d++) {
+                helper.assertTrue(board.essence(d) == board.essence((d + 3) % 6), topic.id() + ": opposite directions share an ink");
             }
-            helper.assertTrue(board.essences().stream().anyMatch(e -> e.share(topic.action()) > 0)
-                    && board.essences().stream().anyMatch(e -> e.share(topic.target()) > 0), topic.id() + ": both halves of the theme are there");
+            if (tier == 1) {
+                helper.assertTrue(board.inks().stream().allMatch(Essence::isPrimal), topic.id() + ": a first parchment asks for primal inks only");
+            }
+            helper.assertTrue(board.essences().contains(topic.action()) && board.essences().contains(topic.target()),
+                    topic.id() + ": both primals of the theme are there");
             for (ResearchBoard.Point point : board.points()) {
                 helper.assertTrue(board.essences().contains(point.element()), topic.id() + ": points carry essences of the parchment");
             }
@@ -277,8 +280,8 @@ public final class ResearchGameTests {
                 }
             }
         }
-        helper.assertTrue(fromCentre.size() == 6, "the six steps from the orb pay six different inks, got " + fromCentre);
-        helper.assertTrue(anywhere.equals(new java.util.HashSet<>(board.essences())), "the six inks are the parchment's six essences");
+        helper.assertTrue(fromCentre.equals(new java.util.HashSet<>(board.inks())), "the six steps from the orb pay every ink of the parchment, got " + fromCentre);
+        helper.assertTrue(anywhere.equals(new java.util.HashSet<>(board.inks())), "the inks are the parchment's essences");
         helper.assertTrue(Arrays.equals(ink, trace.ink()), "the ink needed is the sum of the steps, a point ten of its own essence");
         helper.succeed();
     }
@@ -301,7 +304,7 @@ public final class ResearchGameTests {
             }
             ItemEssences elements = all.get(item);
             helper.assertTrue(elements != null, BuiltInRegistries.ITEM.getKey(item) + " carries elements");
-            helper.assertTrue(!elements.essences().isEmpty() && elements.essences().size() <= 6, item + ": one to six essences");
+            helper.assertTrue(!elements.essences().isEmpty() && elements.essences().size() <= 3, item + ": one to three essences");
             elements.essences().values().forEach(points -> helper.assertTrue(points >= 1 && points <= 32, item + ": amount 1-32"));
         }
         // Every essence must be gatherable: carried, as the strongest essence, by some items.
@@ -325,7 +328,7 @@ public final class ResearchGameTests {
         }
         helper.assertTrue(rare.isEmpty(), "every essence is carried by at least three items, short: " + rare);
         helper.assertTrue(noReagent.isEmpty(), "every essence is the strongest of some item (its clearest source), missing: " + noReagent);
-        Hextale.LOGGER.info("Items by number of essences 1-6: {} {} {} {} {} {}", sizes[1], sizes[2], sizes[3], sizes[4], sizes[5], sizes[6]);
+        Hextale.LOGGER.info("Items by number of essences 1-3: {} {} {}", sizes[1], sizes[2], sizes[3]);
         for (Map.Entry<Item, ItemEssences> entry : ResearchItems.canonical().entrySet()) {
             helper.assertTrue(entry.getValue().equals(all.get(entry.getKey())), entry.getKey() + " keeps its base elements");
         }
@@ -611,11 +614,10 @@ public final class ResearchGameTests {
             separator.choose(Essence.AIR);
             separator.setItem(SeparatorBlockEntity.FUEL, new ItemStack(Items.BLAZE_POWDER));
             helper.runAfterDelay(100, () -> {
-                // Air is chosen; the mixture has none, so all of it passes on as the rest - bottled in the glass
-                // bottle the poured one left.
-                EssenceMix rest = EssenceFlaskItem.contents(separator.getItem(SeparatorBlockEntity.REST_OUT));
-                helper.assertTrue(separator.mix().isEmpty() && rest.total() == 16 && separator.extract().isEmpty(),
-                        "a mixture without the chosen essence passes through, got rest " + rest);
+                // Air is chosen; the mixture has none, so the separator does nothing with it.
+                helper.assertTrue(separator.mix().amount() == 16 && separator.rest().isEmpty() && separator.extract().isEmpty(),
+                        "a mixture without the chosen essence stays in the flask, got mix " + separator.mix().contents());
+                helper.assertTrue("missing".equals(separator.blocked()), "and the screen says the mixture holds none of it");
                 helper.assertTrue(separator.getItem(SeparatorBlockEntity.FUEL).getCount() == 1, "and burns no powder");
                 helper.succeed();
             });
@@ -978,7 +980,7 @@ public final class ResearchGameTests {
         table.select(player, TOPIC);
         table.thread(player, tree);
         helper.assertTrue(table.sheet().length() == 0, "no drawing without ink");
-        Map<Essence, EssenceTankBlockEntity> tanks = inkTanks(helper, EssenceTankBlockEntity.CAPACITY, board.essences());
+        Map<Essence, EssenceTankBlockEntity> tanks = inkTanks(helper, EssenceTankBlockEntity.CAPACITY, board.inks());
         int[] part = Arrays.copyOf(tree, 4);
         table.thread(player, part);
         helper.assertTrue(table.sheet().length() == 2 && !table.sheet().isDone(), "a part of the drawing is kept");
@@ -1000,7 +1002,7 @@ public final class ResearchGameTests {
         helper.assertFalse(knowledge.researched(TOPIC), "the topic is not known until its notes are read");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.HEXTECH).getCount() == 2, "the orb went into the research");
         helper.assertTrue(table.getItem(ResearchTableBlockEntity.PAPER).getCount() == 1, "finishing takes no more paper");
-        for (Essence element : board.essences()) {
+        for (Essence element : board.inks()) {
             helper.assertTrue(tanks.get(element).tank().amount()
                             == EssenceTankBlockEntity.CAPACITY - trace.ink()[element.ordinal()] * InkSupply.MB_PER_SECTION,
                     element.id() + " ink was spent from its tank by the drawing");
@@ -1035,7 +1037,7 @@ public final class ResearchGameTests {
         ResearchTableBlockEntity table = stockedTable(helper);
         table.setItem(ResearchTableBlockEntity.PAPER, new ItemStack(Items.PAPER, 2));
         ResearchBoard board = cursedBoard();
-        inkTanks(helper, EssenceTankBlockEntity.CAPACITY, board.essences());
+        inkTanks(helper, EssenceTankBlockEntity.CAPACITY, board.inks());
         openUpTo(Research.of(player), Guide.server().forTopic(board.topic()));
         int cursed = cursedCell(board);
         int[] tree = ResearchSheet.fromPath(pathTo(board, cursed));
@@ -1083,7 +1085,7 @@ public final class ResearchGameTests {
 
         ResearchBoard next = ResearchBoards.get(TOPIC, 1);
         int[] plain = ResearchBoards.plainTree(next);
-        inkTanks(helper, EssenceTankBlockEntity.CAPACITY, next.essences());
+        inkTanks(helper, EssenceTankBlockEntity.CAPACITY, next.inks());
         table.thread(player, Arrays.copyOf(plain, 2));
         helper.assertTrue(table.sheet().paid() && table.getItem(ResearchTableBlockEntity.PAPER).getCount() == papers - 2, "the new attempt takes its paper");
         table.burn(player);
@@ -1129,7 +1131,7 @@ public final class ResearchGameTests {
         player.getInventory().add(new ItemStack(Items.PAPER));
         helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.PAPER, "paper in the pocket does not count");
         table.select(player, TOPIC);
-        inkTanks(helper, EssenceTankBlockEntity.CAPACITY, ResearchBoards.get(TOPIC).essences());
+        inkTanks(helper, EssenceTankBlockEntity.CAPACITY, ResearchBoards.get(TOPIC).inks());
         table.thread(player, Arrays.copyOf(ResearchBoards.plainTree(ResearchBoards.get(TOPIC)), 4));
         helper.assertTrue(table.sheet().length() == 0, "no drawing without paper");
         player.discard();

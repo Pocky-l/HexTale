@@ -101,9 +101,8 @@ public final class QuestGameTests {
                 helper.assertTrue(quest.kind() == Quest.Kind.WIP || parent.kind() != Quest.Kind.WIP,
                         quest.id() + " never waits for a WIP device");
             }
-            helper.assertTrue(quest.parents().isEmpty() == (quest == step("unstable_hextech") || quest == step("sphalerite")
-                            || quest == step("researchers_diary")),
-                    quest.id() + ": only raw hextech, sphalerite and the diary start the guide");
+            helper.assertTrue(quest.parents().isEmpty() == (quest == step("sphalerite") || quest == step("researchers_diary")),
+                    quest.id() + ": only sphalerite and the diary start the guide");
             for (Quest other : Guide.server().all()) {
                 if (other.index() > quest.index()) {
                     double distance = Math.hypot(other.x() - quest.x(), other.y() - quest.y());
@@ -339,12 +338,19 @@ public final class QuestGameTests {
         helper.succeed();
     }
 
-    /** No single road: the first brass already opens the workshop, the essence works and the goggles at once. */
+    /**
+     * The diary points straight at unstable hextech; no single road after it: the first brass already opens the workshop,
+     * the essence works and the goggles at once.
+     */
     @HexTest
     public static void theGuideBranchesEarly(GameTestHelper helper) {
         RuneKnowledge knowledge = new RuneKnowledge();
-        helper.assertTrue(Guide.visible(step("unstable_hextech"), knowledge) && Guide.visible(step("sphalerite"), knowledge)
-                && Guide.visible(step("researchers_diary"), knowledge), "three ways to begin");
+        helper.assertTrue(Guide.visible(step("sphalerite"), knowledge) && Guide.visible(step("researchers_diary"), knowledge),
+                "two ways to begin");
+        helper.assertFalse(Guide.open(step("unstable_hextech"), knowledge), "unstable hextech waits for the diary");
+        knowledge.completeQuest(step("researchers_diary"));
+        helper.assertTrue(Guide.open(step("unstable_hextech"), knowledge), "the diary leads to unstable hextech");
+        helper.assertFalse(Guide.visible(step("rune_scroll"), knowledge), "runes are no first step");
         knowledge.completeQuest(step("unstable_hextech"));
         knowledge.completeQuest(step("hextech_dust"));
         helper.assertTrue(Guide.open(step("hex_workbench"), knowledge) && Guide.open(step("hex_furnace"), knowledge),
@@ -380,22 +386,21 @@ public final class QuestGameTests {
         helper.succeed();
     }
 
-    /** Runes are no steps of the guide; a found scroll alone opens the rune lore. */
+    /** Runes come after the altar: once it stands, a found scroll opens the rune lore, and the blank scroll with it. */
     @HexTest
     public static void aFoundScrollOpensTheRuneLore(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         RuneKnowledge knowledge = Research.of(player);
-        knowledge.completeQuest(step("brass"));
-        knowledge.completeQuest(step("unstable_hextech"));
-        knowledge.completeQuest(step("researchers_diary"));
-        Quests.check(player);
-        helper.assertFalse(knowledge.questDone(step("rune_scroll")), "no rune, no lore");
+        for (Quest quest : ancestors(step("hextech_altar"))) {
+            knowledge.completeQuest(quest);
+        }
         knowledge.learn(ResearchBook.FIRST, 2);
         Quests.check(player);
-        helper.assertTrue(knowledge.questDone(step("rune_scroll")), "the first studied scroll completes the step");
-        helper.assertFalse(Guide.visible(step("blank_scroll"), knowledge), "the blank scroll waits for the altar");
+        helper.assertFalse(knowledge.questDone(step("rune_scroll")), "the rune lore waits for the altar");
         knowledge.completeQuest(step("hextech_altar"));
-        helper.assertTrue(Guide.open(step("blank_scroll"), knowledge), "the altar opens the blank scroll");
+        Quests.check(player);
+        helper.assertTrue(knowledge.questDone(step("rune_scroll")), "with the altar standing, the studied scroll completes the step");
+        helper.assertTrue(Guide.open(step("blank_scroll"), knowledge), "the altar and the lore open the blank scroll");
         helper.succeed();
     }
 

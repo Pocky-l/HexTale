@@ -18,7 +18,8 @@ import com.pockyl.hextale.registry.ModBlocks;
 
 /**
  * Bloom caves: inside a {@link BloomRegions bloom region} the caves of a chunk light up with shimmerbloom - patches of
- * standing blooms on the floors with violet moss and moss carpet around them, blooms hanging from the ceilings above.
+ * standing blooms on the floors with violet moss and moss carpet around them, clusters hanging from the ceilings above
+ * and blooms sticking out of the walls around.
  * Outside the regions it places nothing, so a cave is either thick with blooms or has none. Runs once per chunk (the
  * placed feature has no placement modifiers: the origin is the chunk's lowest corner) and stays inside the chunk.
  */
@@ -31,6 +32,8 @@ public record BloomCaveFeature() implements Feature {
     private static final int TRIES = 160;
     private static final int FLOOR_SEARCH = 10;
     private static final int CEILING_SEARCH = 9;
+    /** How far from a patch a wall is looked for. */
+    private static final int WALL_SEARCH = 5;
     private static final int FLAGS = Block.UPDATE_CLIENTS;
 
     @Override
@@ -120,6 +123,7 @@ public record BloomCaveFeature() implements Feature {
                 level.setBlock(spot, ModBlocks.SHIMMERBLOOM.get().defaultBlockState(), FLAGS);
                 placed = true;
                 hang(level, random, spot, minX, minZ);
+                walls(level, random, spot, minX, minZ);
             } else if (random.nextInt(3) != 0) {
                 level.setBlock(spot, ModBlocks.SHIMMER_MOSS_CARPET.get().defaultBlockState(), FLAGS);
                 placed = true;
@@ -128,9 +132,9 @@ public record BloomCaveFeature() implements Feature {
         return placed;
     }
 
-    /** Looks up from a bloom for the cave ceiling and may hang a bloom (or two) from it. */
+    /** Looks up from a bloom for the cave ceiling and mostly hangs a small cluster of blooms from it. */
     private static void hang(WorldGenLevel level, RandomSource random, BlockPos from, int minX, int minZ) {
-        if (random.nextInt(5) < 2) {
+        if (random.nextInt(6) == 0) {
             return;
         }
         BlockPos.MutableBlockPos at = from.mutable();
@@ -138,11 +142,41 @@ public record BloomCaveFeature() implements Feature {
             at.move(Direction.UP);
             BlockState state = level.getBlockState(at);
             if (!state.isAir()) {
-                BlockPos spot = at.below().offset(random.nextInt(3) - 1, 0, random.nextInt(3) - 1);
-                if (i >= 2 && inside(spot, minX, minZ) && level.getBlockState(spot).isAir() && ShimmerbloomBlock.canGrow(level, spot, true)) {
-                    level.setBlock(spot, ModBlocks.SHIMMERBLOOM.get().defaultBlockState().setValue(ShimmerbloomBlock.HANGING, true), FLAGS);
+                if (i < 2) {
+                    return;
+                }
+                int cluster = 1 + random.nextInt(3);
+                for (int n = 0; n < cluster * 2; n++) {
+                    BlockPos spot = at.below().offset(random.nextInt(5) - 2, 0, random.nextInt(5) - 2);
+                    if (inside(spot, minX, minZ) && level.getBlockState(spot).isAir() && ShimmerbloomBlock.canGrow(level, spot, true)) {
+                        level.setBlock(spot, ModBlocks.SHIMMERBLOOM.get().defaultBlockState().setValue(ShimmerbloomBlock.HANGING, true), FLAGS);
+                        if (--cluster <= 0) {
+                            return;
+                        }
+                    }
                 }
                 return;
+            }
+        }
+    }
+
+    /** Looks sideways from a bloom for the cave walls and sets blooms on a few of them, a little above the floor. */
+    private static void walls(WorldGenLevel level, RandomSource random, BlockPos from, int minX, int minZ) {
+        for (int n = random.nextInt(3); n > 0; n--) {
+            Direction side = Direction.Plane.HORIZONTAL.getRandomDirection(random);
+            BlockPos.MutableBlockPos at = from.mutable().move(Direction.UP, random.nextInt(3));
+            for (int i = 0; i < WALL_SEARCH; i++) {
+                BlockPos next = at.relative(side);
+                if (!inside(next, minX, minZ)) {
+                    break;
+                }
+                if (!level.getBlockState(next).isAir()) {
+                    if (level.getBlockState(at).isAir() && ShimmerbloomBlock.canHold(level, at, side)) {
+                        level.setBlock(at, ModBlocks.SHIMMERBLOOM.get().onWall(side), FLAGS);
+                    }
+                    break;
+                }
+                at.move(side);
             }
         }
     }

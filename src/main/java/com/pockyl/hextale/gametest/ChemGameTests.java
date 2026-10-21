@@ -55,7 +55,7 @@ public final class ChemGameTests {
             ItemStack vial = crucible.bottle();
             helper.assertTrue(ChemVialItem.brew(vial) == Brew.FUEL && crucible.doses() == 3, "a bottle takes one dose");
             // Lava is too weak for the acid: the eye only dissolves.
-            crucible.pour(EssenceMix.pure(Essence.VENOM, 6).plus(EssenceMix.pure(Essence.DECAY, 6)));
+            crucible.pour(EssenceMix.pure(Essence.DECAY, 8).plus(EssenceMix.pure(Essence.WATER, 4)));
             crucible.take(new ItemStack(Items.FERMENTED_SPIDER_EYE), 1, true, player);
             helper.assertTrue(crucible.brew() == Brew.FUEL, "no acid over lava");
             done[0] = true;
@@ -80,7 +80,7 @@ public final class ChemGameTests {
             if (done[0]) {
                 return;
             }
-            crucible.pour(EssenceMix.pure(Essence.VENOM, 6).plus(EssenceMix.pure(Essence.DECAY, 6)));
+            crucible.pour(EssenceMix.pure(Essence.DECAY, 8).plus(EssenceMix.pure(Essence.WATER, 4)));
             helper.assertTrue(crucible.take(new ItemStack(Items.FERMENTED_SPIDER_EYE), 1, true, player) == 1, "the eye goes in");
             helper.assertTrue(crucible.brew() == Brew.ACID, "the water turns into acid");
             done[0] = true;

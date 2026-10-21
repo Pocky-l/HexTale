@@ -46,7 +46,7 @@ public final class RuneWorkGameTests {
     private static final BlockPos STELE = new BlockPos(1, 2, 1);
     private static final BlockPos TANK = new BlockPos(6, 2, 6);
     /** The Hextech Pickaxe recipe's essences. */
-    private static final EssenceMix PICKAXE_ESSENCE = EssenceMix.of(Map.of(Essence.FORGE, 16, Essence.ORE, 12, Essence.ENERGY, 8));
+    private static final EssenceMix PICKAXE_ESSENCE = EssenceMix.of(Map.of(Essence.METAL, 16, Essence.ORE, 12, Essence.MAGIC, 8));
 
     private RuneWorkGameTests() {
     }
@@ -244,13 +244,16 @@ public final class RuneWorkGameTests {
         helper.succeed();
     }
 
-    /** Every pickaxe rune is paid with its own essence, more for more stars and for deeper chapters. */
+    /** Every pickaxe rune is paid with its own essence (or its two primals), more for more stars and for deeper chapters. */
     @HexTest
     public static void everyPickaxeRuneHasItsEssence(GameTestHelper helper) {
         for (PickaxeRune rune : PickaxeRune.values()) {
             EssenceMix one = rune.cost(1);
             EssenceMix three = rune.cost(3);
-            helper.assertTrue(one.pureEssence() != null && one.pureEssence().tier() == 1, rune + " costs the compound of its primals");
+            com.pockyl.hextale.rune.Essence pair = com.pockyl.hextale.rune.Essence.pair(rune.rune().action(), rune.rune().target());
+            helper.assertTrue(pair != null ? one.pureEssence() == pair
+                    : one.get(rune.rune().action()) > 0 && one.get(rune.rune().target()) > 0 && one.asMap().size() == 2,
+                    rune + " costs the compound of its primals, or both primals");
             helper.assertTrue(three.total() == one.total() * 3, rune + " costs three times as much at three stars");
         }
         helper.succeed();
@@ -313,7 +316,7 @@ public final class RuneWorkGameTests {
             helper.assertTrue(altar.center().is(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), "the centre became a Hextech Pickaxe");
             helper.assertTrue(altar.center().isEnchanted(), "it kept its enchantment");
             EssenceMix left = helper.getBlockEntity(TANK, EssenceTankBlockEntity.class).tank().contents();
-            helper.assertTrue(left.get(Essence.ORE) == 10 && left.get(Essence.FORGE) == 0, "the essences were drawn, left " + left);
+            helper.assertTrue(left.get(Essence.ORE) == 10 && left.get(Essence.METAL) == 0, "the essences were drawn, left " + left);
         });
     }
 
@@ -371,7 +374,7 @@ public final class RuneWorkGameTests {
     @HexTest(maxTicks = 360)
     public static void aRitualShortOfEssenceStalls(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), pickaxeItems(),
-                EssenceMix.of(Map.of(Essence.FORGE, 16, Essence.ORE, 12)));
+                EssenceMix.of(Map.of(Essence.METAL, 16, Essence.ORE, 12)));
         // Started by redstone: a researcher standing by is enough.
         ServerPlayer smith = researcher(helper, ResearchTopics.HEXTECH_PICKAXE);
         altar.startOrAbort(null);

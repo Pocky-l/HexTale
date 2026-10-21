@@ -9,10 +9,10 @@
     "hextale:hexsteel_ingot"
   ],
   "essences": {
-    "forge": 32,
+    "metal": 32,
     "ore": 24,
     "crystal": 16,
-    "energy": 16
+    "magic": 16
   },
   "result": "hextale:refined_hextech_pickaxe",
   "keep_components": true

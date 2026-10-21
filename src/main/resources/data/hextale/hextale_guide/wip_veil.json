@@ -3,5 +3,5 @@
   "region": "runes",
   "icon": "minecraft:phantom_membrane",
   "parents": ["rune_scroll"],
-  "pos": [-179, -274]
+  "pos": [250, -400]
 }

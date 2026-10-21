@@ -75,7 +75,7 @@ public class WhirlReaperRenderer implements BlockEntityRenderer<WhirlReaperBlock
         BlockPos jar = reaper.drawing();
         if (jar != null) {
             float age = now - reaper.drewAt();
-            state.stream = new JarStreamFx.Stream(JarReach.mouth(jar).subtract(origin), state.crystalAt, Essence.WIND.color(),
+            state.stream = new JarStreamFx.Stream(JarReach.mouth(jar).subtract(origin), state.crystalAt, Essence.AIR.color(),
                     age / 12F, (age - (WhirlReaperBlockEntity.STREAM_TICKS - 14)) / 12F, seed);
         }
 

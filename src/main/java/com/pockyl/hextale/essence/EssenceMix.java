@@ -77,7 +77,7 @@ public final class EssenceMix {
             if (essence == null) {
                 return DataResult.error(() -> "Unknown essence: " + entry.getKey());
             }
-            out[essence.ordinal()] = entry.getValue();
+            out[essence.ordinal()] += entry.getValue();
         }
         return DataResult.success(new EssenceMix(out));
     }
@@ -95,6 +95,15 @@ public final class EssenceMix {
      * are padded with zeroes). */
     public static EssenceMix of(int[] amounts) {
         return new EssenceMix(amounts);
+    }
+
+    /**
+     * What a rune of two primals is paid with: {@code mb} of their compound, or - for the pairs that make none - of
+     * both primals, half and half.
+     */
+    public static EssenceMix ofRune(com.pockyl.hextale.rune.ComplexRune rune, int mb) {
+        Essence pair = Essence.pair(rune.action(), rune.target());
+        return pair != null ? pure(pair, mb) : pure(rune.action(), (mb + 1) / 2).plus(pure(rune.target(), mb / 2));
     }
 
     public static EssenceMix of(Map<Essence, Integer> amounts) {

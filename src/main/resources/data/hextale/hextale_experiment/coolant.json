@@ -1,6 +1,6 @@
 {
   "topic": "coolant",
-  "target": "ice",
+  "target": "cold",
   "amount": 8,
   "purity": 0.65,
   "sample": "minecraft:snowball"

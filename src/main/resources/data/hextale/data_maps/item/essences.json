@@ -2,556 +2,398 @@
   "values": {
     "minecraft:coal": {
       "essences": {
-        "fire": 4,
-        "depths": 2,
-        "ash": 2,
-        "earth": 1
+        "fire": 4
       },
       "tier": 1
     },
     "minecraft:charcoal": {
       "essences": {
-        "fire": 4,
-        "wood": 2,
-        "ash": 2
+        "fire": 3,
+        "ash": 1
       },
       "tier": 1
     },
     "minecraft:redstone": {
       "essences": {
-        "circuit": 4,
-        "energy": 3,
-        "dust": 1,
-        "spark": 1
+        "spark": 4
       },
       "tier": 1
     },
     "minecraft:glowstone_dust": {
       "essences": {
-        "sun": 3,
-        "light": 3,
-        "dust": 1,
-        "hell": 1
+        "light": 4
       },
       "tier": 1
     },
     "minecraft:stick": {
       "essences": {
-        "wood": 2
+        "plant": 1
       },
       "tier": 1
     },
     "minecraft:clay_ball": {
       "essences": {
-        "clay": 4,
-        "water": 1
+        "earth": 2,
+        "water": 2
       },
       "tier": 1
     },
     "minecraft:ink_sac": {
       "essences": {
-        "shadow": 3,
-        "ocean": 1,
-        "dye": 2,
-        "knowledge": 1
+        "shadow": 4
       },
       "tier": 1
     },
     "minecraft:glow_ink_sac": {
       "essences": {
         "light": 3,
-        "ocean": 1,
-        "dye": 2,
         "magic": 1
       },
       "tier": 2
     },
     "minecraft:bone": {
       "essences": {
-        "bone": 5,
-        "decay": 1
+        "decay": 4
       },
       "tier": 1
     },
     "minecraft:string": {
       "essences": {
-        "fiber": 4,
-        "beast": 1
+        "beast": 2,
+        "plant": 1
       },
       "tier": 1
     },
     "minecraft:gunpowder": {
       "essences": {
-        "blast": 5,
-        "dust": 2,
-        "chaos": 1
+        "fire": 3,
+        "ash": 2
       },
       "tier": 1
     },
     "minecraft:slime_ball": {
       "essences": {
-        "slime": 5,
-        "life": 1,
-        "sap": 1
+        "sap": 4
       },
       "tier": 1
     },
     "minecraft:feather": {
       "essences": {
-        "air": 3,
-        "wind": 2,
-        "beast": 1,
-        "sky": 1
+        "air": 3
       },
       "tier": 1
     },
     "minecraft:leather": {
       "essences": {
-        "beast": 4,
-        "protection": 2
+        "beast": 4
       },
       "tier": 1
     },
     "minecraft:flint": {
       "essences": {
         "earth": 2,
-        "fire": 2,
-        "tool": 2
+        "fire": 1
       },
       "tier": 1
     },
     "minecraft:iron_ingot": {
       "essences": {
-        "metal": 5,
-        "forge": 2,
-        "ore": 1
+        "metal": 5
       },
       "tier": 2
     },
     "minecraft:gold_ingot": {
       "essences": {
-        "gold": 5,
-        "gleam": 3,
-        "forge": 1
+        "metal": 4,
+        "light": 2
       },
       "tier": 2
     },
     "minecraft:copper_ingot": {
       "essences": {
         "metal": 3,
-        "circuit": 2,
-        "rust": 1,
-        "forge": 1
+        "spark": 2
       },
       "tier": 1
     },
     "minecraft:amethyst_shard": {
       "essences": {
         "crystal": 4,
-        "spark": 2,
-        "gleam": 2
+        "spark": 2
       },
       "tier": 2
     },
     "minecraft:quartz": {
       "essences": {
-        "crystal": 3,
-        "hell": 2,
-        "purity": 2
+        "crystal": 4,
+        "magma": 1
       },
       "tier": 2
     },
     "minecraft:lapis_lazuli": {
       "essences": {
-        "gem": 3,
         "magic": 3,
-        "water": 1
+        "crystal": 2
       },
       "tier": 2
     },
     "minecraft:emerald": {
       "essences": {
-        "gem": 5,
-        "life": 2,
-        "craft": 2
+        "crystal": 5,
+        "life": 2
       },
       "tier": 2
     },
     "minecraft:diamond": {
       "essences": {
-        "gem": 7,
-        "crystal": 4,
-        "gleam": 3,
-        "protection": 1
+        "crystal": 8,
+        "light": 2
       },
       "tier": 3
     },
     "minecraft:prismarine_crystals": {
       "essences": {
-        "ocean": 4,
+        "water": 3,
         "crystal": 3,
-        "light": 2
+        "light": 1
       },
       "tier": 2
     },
     "minecraft:prismarine_shard": {
       "essences": {
-        "ocean": 4,
-        "crystal": 2,
-        "earth": 1
+        "water": 4,
+        "crystal": 2
       },
       "tier": 2
     },
     "minecraft:blaze_rod": {
       "essences": {
         "fire": 6,
-        "hell": 3,
-        "fury": 3,
-        "energy": 2
+        "magma": 2,
+        "magic": 1
       },
       "tier": 3
     },
     "minecraft:blaze_powder": {
       "essences": {
         "fire": 5,
-        "hell": 2,
-        "fury": 2,
-        "vigor": 1
+        "magma": 1
       },
       "tier": 2
     },
     "minecraft:ender_pearl": {
       "essences": {
         "rift": 5,
-        "ender": 3,
-        "motion": 2
+        "air": 1
       },
       "tier": 2
     },
     "minecraft:ghast_tear": {
       "essences": {
-        "spirit": 5,
-        "purity": 3,
-        "soul": 3,
-        "hell": 1
+        "magic": 4,
+        "water": 2
       },
       "tier": 3
     },
     "minecraft:phantom_membrane": {
       "essences": {
-        "dream": 4,
-        "sky": 3,
-        "flesh": 1,
-        "air": 2
+        "air": 3,
+        "rift": 3
       },
       "tier": 2
     },
     "minecraft:echo_shard": {
       "essences": {
-        "echo": 7,
-        "depths": 3,
-        "silence": 3,
-        "soul": 2
+        "shadow": 6,
+        "magic": 2
       },
       "tier": 3
     },
     "minecraft:honey_bottle": {
       "essences": {
-        "sweet": 6,
-        "sap": 3,
-        "life": 1
+        "sap": 6
       },
       "tier": 2
     },
     "minecraft:heart_of_the_sea": {
       "essences": {
-        "ocean": 8,
-        "magic": 4,
-        "purity": 3,
-        "life": 3
+        "water": 8,
+        "magic": 4
       },
       "tier": 3
     },
     "minecraft:nautilus_shell": {
       "essences": {
-        "ocean": 4,
-        "bone": 3,
-        "protection": 1
+        "water": 4,
+        "decay": 2
       },
       "tier": 2
     },
     "minecraft:wind_charge": {
       "essences": {
-        "wind": 6,
-        "air": 3,
-        "blast": 2,
-        "motion": 2
+        "air": 6,
+        "fire": 1
       },
       "tier": 3
     },
     "minecraft:breeze_rod": {
       "essences": {
-        "wind": 7,
-        "storm": 3,
-        "energy": 2,
-        "motion": 2
+        "air": 6,
+        "spark": 3
       },
       "tier": 3
     },
     "minecraft:totem_of_undying": {
       "essences": {
-        "life": 7,
-        "spirit": 5,
-        "magic": 4,
-        "time": 3,
-        "gold": 2
+        "magic": 8,
+        "life": 6
       },
       "tier": 3
     },
     "minecraft:netherite_ingot": {
       "essences": {
-        "metal": 8,
-        "hell": 5,
-        "protection": 4,
-        "forge": 3
+        "metal": 10,
+        "magma": 4
       },
       "tier": 3
     },
     "minecraft:nether_star": {
       "essences": {
-        "star": 10,
-        "magic": 6,
-        "chaos": 4,
-        "soul": 3,
-        "energy": 3
+        "magic": 16,
+        "rift": 4
       },
       "tier": 3
     },
     "minecraft:dragon_breath": {
       "essences": {
-        "breath": 6,
-        "ender": 4,
-        "fury": 3,
-        "magic": 3
+        "rift": 4,
+        "magic": 3,
+        "fire": 2
       },
       "tier": 3
     },
     "minecraft:shulker_shell": {
       "essences": {
-        "ender": 5,
-        "protection": 4,
-        "order": 2
+        "rift": 4,
+        "metal": 3
       },
       "tier": 3
     },
     "minecraft:experience_bottle": {
       "essences": {
-        "magic": 4,
-        "energy": 3,
-        "spirit": 2,
-        "glass": 1
+        "magic": 6
       },
       "tier": 2
     },
+    "minecraft:snowball": {
+      "essences": {
+        "water": 2
+      },
+      "tier": 1
+    },
+    "minecraft:seagrass": {
+      "essences": {
+        "water": 3
+      },
+      "tier": 1
+    },
+    "minecraft:wheat_seeds": {
+      "essences": {
+        "life": 3
+      },
+      "tier": 1
+    },
     "minecraft:cauldron": {
       "essences": {
-        "steam": 5,
-        "metal": 4,
-        "water": 1
+        "steam": 4,
+        "metal": 4
       },
       "tier": 2
     },
     "minecraft:campfire": {
       "essences": {
-        "smoke": 5,
-        "fire": 4,
-        "wood": 2
+        "ash": 4,
+        "fire": 3
       },
       "tier": 1
     },
     "minecraft:tuff": {
       "essences": {
-        "ash": 4,
-        "earth": 3,
-        "dust": 1
+        "ash": 3,
+        "earth": 3
       },
       "tier": 1
     },
     "minecraft:trident": {
       "essences": {
-        "storm": 6,
-        "ocean": 4,
-        "weapon": 4,
-        "thunder": 2
+        "water": 5,
+        "spark": 4,
+        "metal": 2
       },
       "tier": 3
     },
     "minecraft:deepslate": {
       "essences": {
-        "depths": 5,
-        "earth": 4
+        "earth": 4,
+        "shadow": 2
       },
       "tier": 1
     },
     "minecraft:heavy_core": {
       "essences": {
-        "quake": 6,
         "metal": 5,
-        "order": 3
+        "earth": 3
       },
       "tier": 3
     },
     "minecraft:cobweb": {
       "essences": {
-        "silence": 4,
-        "fiber": 3,
-        "shadow": 1
+        "beast": 2,
+        "shadow": 2
       },
       "tier": 1
     },
     "minecraft:goat_horn": {
       "essences": {
-        "thunder": 5,
-        "echo": 4,
-        "beast": 2
+        "air": 4,
+        "beast": 3
       },
       "tier": 2
     },
     "minecraft:tinted_glass": {
       "essences": {
-        "illusion": 4,
-        "glass": 3,
+        "crystal": 3,
         "shadow": 2
       },
       "tier": 2
     },
     "minecraft:end_rod": {
       "essences": {
-        "energy": 5,
-        "light": 3,
-        "ender": 2
+        "light": 4,
+        "magic": 2
       },
       "tier": 2
     },
     "minecraft:glistering_melon_slice": {
       "essences": {
-        "vigor": 5,
-        "gold": 2,
-        "sweet": 1,
+        "life": 4,
         "magic": 1
       },
       "tier": 2
     },
     "minecraft:clock": {
       "essences": {
-        "time": 6,
-        "gold": 3,
-        "mechanism": 2
+        "metal": 3,
+        "magic": 3
       },
       "tier": 2
     },
     "minecraft:nether_wart": {
       "essences": {
-        "blood": 4,
-        "hell": 3,
-        "plant": 2,
-        "magic": 1
+        "magma": 2,
+        "plant": 2
       },
       "tier": 1
-    },
-    "hextale:magic_sapling": {
-      "essences": {
-        "seed": 3,
-        "magic": 3,
-        "plant": 2,
-        "sap": 1
-      },
-      "tier": 2
-    },
-    "hextale:magic_log": {
-      "essences": {
-        "wood": 4,
-        "magic": 1,
-        "sap": 1,
-        "plant": 1
-      },
-      "tier": 2
-    },
-    "hextale:magic_wood": {
-      "essences": {
-        "wood": 4,
-        "magic": 1,
-        "sap": 1,
-        "plant": 1
-      },
-      "tier": 2
-    },
-    "hextale:stripped_magic_log": {
-      "essences": {
-        "wood": 4,
-        "magic": 1,
-        "energy": 1
-      },
-      "tier": 2
-    },
-    "hextale:stripped_magic_wood": {
-      "essences": {
-        "wood": 4,
-        "magic": 1,
-        "energy": 1
-      },
-      "tier": 2
-    },
-    "hextale:magic_leaves": {
-      "essences": {
-        "plant": 4,
-        "magic": 1,
-        "light": 1,
-        "air": 1
-      },
-      "tier": 2
-    },
-    "hextale:shimmerbloom": {
-      "essences": {
-        "dream": 2,
-        "light": 2,
-        "plant": 2,
-        "magic": 1
-      },
-      "tier": 2
-    },
-    "hextale:shimmer_moss": {
-      "essences": {
-        "plant": 3,
-        "dream": 1,
-        "light": 1
-      },
-      "tier": 1
-    },
-    "hextale:shimmer_moss_carpet": {
-      "essences": {
-        "plant": 2,
-        "dream": 1
-      },
-      "tier": 1
-    },
-    "hextale:regenerative_slime": {
-      "essences": {
-        "slime": 3,
-        "vigor": 3,
-        "life": 2,
-        "flesh": 1
-      },
-      "tier": 2
-    },
-    "hextale:synthetic_crystal": {
-      "essences": {
-        "crystal": 4,
-        "dream": 2,
-        "magic": 2,
-        "energy": 1
-      },
-      "tier": 2
     }
   }
 }

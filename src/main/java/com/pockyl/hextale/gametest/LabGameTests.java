@@ -39,12 +39,12 @@ public final class LabGameTests {
 
     @HexTest
     public static void reactionsFollowTheEssences(GameTestHelper helper) {
-        helper.assertTrue(Reactions.product(Essence.EARTH, Essence.LIFE) == Essence.SOIL, "earth and life make soil");
-        helper.assertTrue(Reactions.product(Essence.LIFE, Essence.EARTH) == Essence.SOIL, "in either order");
+        helper.assertTrue(Reactions.product(Essence.EARTH, Essence.LIFE) == Essence.PLANT, "earth and life make plant");
+        helper.assertTrue(Reactions.product(Essence.LIFE, Essence.EARTH) == Essence.PLANT, "in either order");
         helper.assertTrue(Reactions.product(Essence.FIRE, Essence.FIRE) == null, "an essence does not react with itself");
         helper.assertTrue(Reactions.zone(Essence.STEAM) == 3, "steam forms hot");
         helper.assertTrue(Reactions.zone(Essence.COLD) == 0, "cold forms cold");
-        helper.assertTrue(Reactions.zone(Essence.BLAST) == 4, "a blast forms searing");
+        helper.assertTrue(Reactions.zone(Essence.MAGMA) == 3, "magma forms hot");
         Flask flask = new Flask();
         flask.drop(Essence.FIRE);
         flask.drop(Essence.WATER);

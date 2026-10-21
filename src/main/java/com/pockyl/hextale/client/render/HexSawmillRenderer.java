@@ -77,7 +77,7 @@ public class HexSawmillRenderer implements BlockEntityRenderer<HexSawmillBlockEn
         BlockPos jar = mill.drawing();
         if (jar != null) {
             float age = now - mill.drewAt();
-            state.stream = new JarStreamFx.Stream(JarReach.mouth(jar).subtract(origin), state.crystalAt, Essence.WIND.color(),
+            state.stream = new JarStreamFx.Stream(JarReach.mouth(jar).subtract(origin), state.crystalAt, Essence.AIR.color(),
                     age / 12F, (age - (HexSawmillBlockEntity.STREAM_TICKS - 14)) / 12F, seed);
         }
 

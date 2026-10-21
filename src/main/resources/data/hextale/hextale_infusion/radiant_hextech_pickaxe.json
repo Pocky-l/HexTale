@@ -9,10 +9,8 @@
     "minecraft:echo_shard"
   ],
   "essences": {
-    "magic": 32,
-    "gem": 24,
-    "energy": 24,
-    "star": 16
+    "magic": 72,
+    "crystal": 24
   },
   "result": "hextale:radiant_hextech_pickaxe",
   "keep_components": true

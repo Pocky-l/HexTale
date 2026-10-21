@@ -9,7 +9,7 @@
     "minecraft:copper_ingot"
   ],
   "essences": {
-    "storm": 12,
+    "spark": 12,
     "crystal": 8
   },
   "result": {

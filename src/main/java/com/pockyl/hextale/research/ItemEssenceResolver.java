@@ -43,12 +43,12 @@ import java.util.Set;
  *     among the items it makes and softened (a block of nine ingots is stronger than one, not nine times); cooking adds
  *     a little fire; the words of the result's own name add what it IS (a sword is also a weapon).</li>
  * </ol>
- * Whatever is still left (circular recipes) falls back to its name, and at last to its kind. An item keeps its six
- * strongest essences, each 1-32.
+ * Whatever is still left (circular recipes) falls back to its name, and at last to its kind. An item keeps its three
+ * strongest essences, each 1-32: few enough to tell apart at a glance.
  */
 public final class ItemEssenceResolver {
-    /** Up to six essences: one per side of the research hexagon. */
-    private static final int MAX_ELEMENTS = 6;
+    /** Up to three essences. */
+    private static final int MAX_ELEMENTS = 3;
     private static final int MAX_POINTS = 32;
     private static final int PASSES = 12;
     /** Totals up to this stay as they are; above it they grow more slowly. */
@@ -219,12 +219,12 @@ public final class ItemEssenceResolver {
     private static ItemEssences byKind(Item item) {
         ItemStack stack = new ItemStack(item);
         if (stack.has(DataComponents.FOOD)) {
-            return ItemEssences.of(rarityTier(item), Essence.FOOD, 2, Essence.LIFE, 1);
+            return ItemEssences.of(rarityTier(item), Essence.LIFE, 2, Essence.PLANT, 1);
         }
         if (item instanceof BlockItem) {
-            return ItemEssences.of(rarityTier(item), Essence.EARTH, 2, Essence.CRAFT, 1);
+            return ItemEssences.of(rarityTier(item), Essence.EARTH, 2);
         }
-        return ItemEssences.of(rarityTier(item), Essence.CRAFT, 2, Essence.METAL, 1);
+        return ItemEssences.of(rarityTier(item), Essence.METAL, 2);
     }
 
     @SuppressWarnings("deprecation")
@@ -233,7 +233,7 @@ public final class ItemEssenceResolver {
         return rarity == Rarity.EPIC || rarity == Rarity.RARE ? 3 : rarity == Rarity.UNCOMMON ? 2 : 1;
     }
 
-    /** The six strongest essences, strongest first (kind breaks ties). */
+    /** The strongest essences, strongest first (kind breaks ties). */
     private static ItemEssences strongest(Map<Essence, Integer> all, int tier) {
         List<Essence> order = new ArrayList<>(all.keySet());
         order.sort((a, b) -> all.get(b) - all.get(a) != 0 ? all.get(b) - all.get(a) : ring(a) - ring(b));

@@ -7,9 +7,9 @@
     "minecraft:amethyst_shard"
   ],
   "essences": {
-    "forge": 16,
+    "metal": 16,
     "ore": 12,
-    "energy": 8
+    "magic": 8
   },
   "result": "hextale:hextech_pickaxe",
   "keep_components": true

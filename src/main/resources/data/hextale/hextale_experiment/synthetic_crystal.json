@@ -1,6 +1,6 @@
 {
   "topic": "synthetic_crystal",
-  "target": "gem",
+  "target": "crystal",
   "amount": 8,
   "purity": 0.65
 }

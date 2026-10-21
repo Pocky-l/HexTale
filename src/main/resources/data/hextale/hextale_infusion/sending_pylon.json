@@ -8,8 +8,7 @@
     "hextale:magic_stone_pillar"
   ],
   "essences": {
-    "motion": 16,
-    "wind": 12,
+    "air": 28,
     "crystal": 8
   },
   "result": "hextale:sending_pylon"

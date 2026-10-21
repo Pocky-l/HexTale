@@ -72,7 +72,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
                             .withStyle(ChatFormatting.GRAY));
                 }
                 String blocked = separator.blocked();
-                if ("no_essence".equals(blocked) || "no_fuel".equals(blocked)) {
+                if ("no_essence".equals(blocked) || "no_fuel".equals(blocked) || "missing".equals(blocked)) {
                     tooltip.add(Component.translatable("gui.hextale.separator." + blocked).withStyle(ChatFormatting.RED));
                 }
             } else if (entity instanceof com.pockyl.hextale.block.CrucibleBlockEntity crucible) {

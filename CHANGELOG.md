@@ -111,10 +111,35 @@ The Lab Bench: chemtech is no longer worked out on the parchment - it is found o
 - JEI shows every way the mod makes something: Lab Bench experiments (what the flask must hold and the reactions that
   lead there), what the Chem Burner and the Pink Brazier burn and for how long, the Chem Still, the Axolotl Tank,
   stone soaked under a Drain Valve and a rune written onto a blank scroll at the altar.
+- Hextech dust, and now and then a lump of unstable hextech, lie in dungeon chests: mineshafts, desert and jungle
+  temples, outposts, ruined portals and shipwrecks; strongholds, mansions, ancient cities, the Nether, the End and
+  trial chamber vaults hold more.
+- Shimmerbloom grows on cave walls too, and hangs from bloom cave ceilings in clusters; a bloom can be set on a wall by
+  hand, and bone meal spreads blooms onto walls as well.
+- The Separator's essence picker lights up the essences the mixture in its flask holds and says how much of each;
+  the others stay dim.
+- A device's page in the diary has two tabs: its description and the runes it takes.
 
 ### Changed
 - JEI: crucible recipes list their essences in a column with the millibuckets beside each, the brews say how hot the
   crucible must be, and every simple step is laid out the same way. "Rune on a Pickaxe" is now "Burning a Rune In".
+- Essences are simpler: twenty-two instead of eighty - the nine primals and thirteen compounds of two primals (Steam,
+  Magma, Ash, Plant, Crystal, Ore, Cold, Sap, Beast, Decay, Magic, Rift, Circuit). An item carries one to three of them,
+  and the plain things of the world carry one: stone and gravel are earth, coal is fire, seeds are life, feathers are
+  air, ink sacs are shadow, glowstone dust is light, iron is metal, redstone is lightning, snowballs and seagrass are
+  water - boiled in the alembic they are ink at once, with no separator. Jars, stickers and essence items of older
+  worlds keep their liquid as the essence it was folded into. Every essence has a new icon.
+- The first research is gentle: the parchments of chapters I and II ask for three inks, each paying two opposite
+  directions of the hexagon - the topic's two primals and a primal found everywhere (or, in chapter II, their compound).
+  Only chapter III asks for six.
+- A rune of two primals that make no compound is paid with both primals, half and half.
+- The Whirl Reaper and the Hex Sawmill run on air essence (wind is gone).
+- Lab Bench topics ask for the new compounds, and Acid and Coolant brew from decay or cold with water.
+- The Separator does nothing with a mixture that holds none of the chosen essence (it used to pass it all on as the
+  rest); the screen and Jade say so.
+- The guide begins with the diary, and the diary points at unstable hextech; the rune lore now follows the altar.
+- Texts: the guide no longer says that devices keep their runes when broken, and the Separator's page no longer tells
+  how its sides are set (its screen shows that).
 
 ### Fixed
 - The altar named the right refusal when a rune did not fit a reaper or a sawmill, or when they were full.

@@ -1,10 +1,50 @@
 {
   "variants": {
-    "hanging=false": {
+    "hanging=false,wall=none": {
       "model": "hextale:block/shimmerbloom"
     },
-    "hanging=true": {
+    "hanging=false,wall=north": {
+      "model": "hextale:block/shimmerbloom",
+      "x": 90,
+      "y": 180
+    },
+    "hanging=false,wall=south": {
+      "model": "hextale:block/shimmerbloom",
+      "x": 90,
+      "y": 0
+    },
+    "hanging=false,wall=west": {
+      "model": "hextale:block/shimmerbloom",
+      "x": 90,
+      "y": 90
+    },
+    "hanging=false,wall=east": {
+      "model": "hextale:block/shimmerbloom",
+      "x": 90,
+      "y": 270
+    },
+    "hanging=true,wall=none": {
       "model": "hextale:block/shimmerbloom_hanging"
+    },
+    "hanging=true,wall=north": {
+      "model": "hextale:block/shimmerbloom",
+      "x": 90,
+      "y": 180
+    },
+    "hanging=true,wall=south": {
+      "model": "hextale:block/shimmerbloom",
+      "x": 90,
+      "y": 0
+    },
+    "hanging=true,wall=west": {
+      "model": "hextale:block/shimmerbloom",
+      "x": 90,
+      "y": 90
+    },
+    "hanging=true,wall=east": {
+      "model": "hextale:block/shimmerbloom",
+      "x": 90,
+      "y": 270
     }
   }
 }

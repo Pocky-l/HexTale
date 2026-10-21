@@ -546,7 +546,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             }
             if (burning != null && board.renderBurn(graphics, font, burning, current)) {
                 renderHeader(graphics, burning.board().topic());
-                renderVials(graphics, reserved, burning.board().essences(), mouseX, mouseY);
+                renderVials(graphics, reserved, burning.board().inks(), mouseX, mouseY);
                 renderGhosts(graphics);
                 return;
             }
@@ -563,7 +563,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 }
                 renderTopic(graphics, table, current, hovered, mouseX, mouseY);
                 lastBoard = current;
-                shown = current.essences();
+                shown = current.inks();
                 if (trace != null && !done(table)) {
                     reserved = trace.ink().clone();
                     for (int i = 0; i < reserved.length; i++) {

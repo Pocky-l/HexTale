@@ -1,0 +1,20 @@
+{
+  "type": "hextale:chest_items",
+  "tables": [
+    "minecraft:chests/stronghold_corridor",
+    "minecraft:chests/stronghold_crossing",
+    "minecraft:chests/stronghold_library",
+    "minecraft:chests/woodland_mansion",
+    "minecraft:chests/ancient_city",
+    "minecraft:chests/nether_bridge",
+    "minecraft:chests/bastion_other",
+    "minecraft:chests/bastion_treasure",
+    "minecraft:chests/end_city_treasure",
+    "minecraft:chests/trial_chambers/reward",
+    "minecraft:chests/trial_chambers/reward_ominous"
+  ],
+  "entries": [
+    {"item": "hextale:hextech_dust", "chance": 0.6, "min": 2, "max": 6},
+    {"item": "hextale:unstable_hextech", "chance": 0.3}
+  ]
+}

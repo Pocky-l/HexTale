@@ -8,9 +8,8 @@
     "hextale:hextech_crystal"
   ],
   "essences": {
-    "crystal": 24,
-    "order": 16,
-    "forge": 12
+    "crystal": 40,
+    "metal": 12
   },
   "result": "hextale:master_cutting_disc"
 }
