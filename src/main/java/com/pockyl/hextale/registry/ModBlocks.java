@@ -326,7 +326,7 @@ public final class ModBlocks {
     }
 
     private static BlockBehaviour.Properties magicStoneProperties() {
-        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLUE).instrument(NoteBlockInstrument.BASEDRUM)
+        return BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(2.0F, 6.0F);
     }
 
