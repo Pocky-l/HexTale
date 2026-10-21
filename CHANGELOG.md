@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Every particle and light effect of the mod is new: hand-made, high-resolution sprites with their own motion, each
 fitting what it shows.
 
-- Essence is alive now: drops of glowing liquid seep out from under the lid of every filled Essence Jar and float up
-  slowly, wobbling and changing shape as they evaporate - in the colours of the essences inside. Push a jar and it
-  spills a little cloud of them. A Big Essence Jar breathes along its whole lid.
+- Essence is alive now: once in a while a drop of glowing liquid seeps out from under the lid of a filled Essence Jar
+  and floats up slowly, wobbling and changing shape as it evaporates - in the colour of an essence inside. Push a jar
+  and it spills a few drops. A Big Essence Jar breathes along its whole lid.
 - Essence drawn from jars into machines (Research Table, Lab Bench, Whirl Reaper, Hex Sawmill) flows as a chain of those
   living drops along a soft channel of light, gathering over the jar's lid and sinking into the machine.
 - New particles everywhere instead of the vanilla ones: drops that fall and splash, bubbles that wobble and burst, soft

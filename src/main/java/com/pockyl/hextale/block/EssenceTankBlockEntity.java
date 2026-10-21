@@ -177,9 +177,12 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
     /** Seams under the lid, in sixteenths: the lid's square edge at y 13 runs from 3 to 13 on both axes. */
     private static final double SEAM_Y = 12.9 / 16;
     private static final double SEAM_HALF = 5.2 / 16;
+    /** About one drop per this many ticks from a full jar (owner: a rare sight); a big jar is wider, so more often. */
+    private static final int SEEP_TICKS = 300;
+    private static final int SEEP_TICKS_BIG = 100;
 
     /**
-     * Client: the essence in a jar is alive - drops of it seep out under the lid, now and then, and float up slowly
+     * Client: the essence in a jar is alive - now and then, rarely, a drop of it seeps out under the lid and floats up slowly
      * (more often the fuller the jar); a push spills a little cloud of them. A big jar seeps along its wider seam.
      */
     public static void clientTick(Level level, BlockPos pos, BlockState state, EssenceTankBlockEntity jar) {
@@ -191,13 +194,13 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
         boolean big = jar instanceof BigEssenceJarBlockEntity;
         boolean pushed = jar.pushedAt >= 0 && level.getGameTime() - jar.pushedAt < 1;
         float fill = Math.min(1, jar.tank.amount() / (float) jar.tank.capacity());
-        if (!pushed && random.nextFloat() * (big ? 5 : 16) > 0.35F + fill * 0.9F) {
+        if (!pushed && random.nextFloat() * (big ? SEEP_TICKS_BIG : SEEP_TICKS) > 0.3F + fill * 0.7F) {
             return;
         }
         double scale = big ? 4 : 1;
         double originX = pos.getX() + (big ? -1.5 : 0);
         double originZ = pos.getZ() + (big ? -1.5 : 0);
-        int count = pushed ? (big ? 8 : 4) + random.nextInt(3) : 1;
+        int count = pushed ? (big ? 4 : 2) + random.nextInt(2) : 1;
         for (int i = 0; i < count; i++) {
             // A point on the square seam and the way out of the jar there.
             int side = random.nextInt(4);
