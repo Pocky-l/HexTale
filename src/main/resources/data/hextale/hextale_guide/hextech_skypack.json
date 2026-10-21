@@ -1,0 +1,15 @@
+{
+  "region": "forge",
+  "icon": "hextale:hextech_skypack",
+  "parents": ["hextech_gemstone", "hexsteel", "hextech_altar", "brass_pipe"],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:hextech_skypack",
+    "then": {
+      "kind": "runes",
+      "result": "skypack"
+    }
+  },
+  "research": "hextech_skypack",
+  "pos": [505, 230]
+}

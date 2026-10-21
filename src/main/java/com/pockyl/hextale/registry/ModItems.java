@@ -181,6 +181,11 @@ public final class ModItems {
     public static final DeferredItem<Item> RESEARCHERS_GOGGLES = ITEMS.registerItem("researchers_goggles",
             properties -> new Item(properties.stacksTo(1).component(DataComponents.EQUIPPABLE,
                     Equippable.builder(EquipmentSlot.HEAD).setAsset(GOGGLES_ASSET).setEquipSound(SoundEvents.ARMOR_EQUIP_LEATHER).build())));
+    /** Worn on the back: with air essence in its tanks it lets me glide, and its jets push me like a rocket. */
+    public static final DeferredItem<com.pockyl.hextale.item.HextechSkypackItem> HEXTECH_SKYPACK = ITEMS.registerItem("hextech_skypack",
+            properties -> new com.pockyl.hextale.item.HextechSkypackItem(properties.stacksTo(1).rarity(Rarity.RARE).fireResistant()
+                    .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
+                            .setEquipSound(SoundEvents.ARMOR_EQUIP_ELYTRA).setDamageOnHurt(false).build())));
     public static final DeferredItem<ResearchersDiaryItem> RESEARCHERS_DIARY = ITEMS.registerItem("researchers_diary",
             properties -> new ResearchersDiaryItem(properties.stacksTo(1)));
 

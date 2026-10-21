@@ -26,6 +26,10 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_STILL_BOIL = register("chem_still.boil");
     public static final DeferredHolder<SoundEvent, SoundEvent> PINK_BRAZIER_IGNITE = register("pink_brazier.ignite");
     public static final DeferredHolder<SoundEvent, SoundEvent> PINK_BRAZIER_BREATH = register("pink_brazier.breath");
+    /** The Hextech Skypack: its jets catching, their steady roar (looped while they burn), a cough when the air is gone. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> SKYPACK_IGNITE = register("skypack.ignite");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SKYPACK_THRUST = register("skypack.thrust");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SKYPACK_SPUTTER = register("skypack.sputter");
     /** The orb recognises a simple rune; played at the element's pitch. */
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_RECOGNISED = register("rune.recognised");
     /** The orb does not know the drawing. */

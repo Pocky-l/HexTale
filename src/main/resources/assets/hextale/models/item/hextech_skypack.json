@@ -1,0 +1,1183 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:item/hextech_skypack",
+    "hextech_skypack": "hextale:item/hextech_skypack"
+  },
+  "elements": [
+    {
+      "name": "leather_plate",
+      "from": [
+        5,
+        3,
+        9
+      ],
+      "to": [
+        11,
+        13,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.5,
+            2.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            3.5,
+            0,
+            4,
+            2.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            1.75,
+            0,
+            3.25,
+            2.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            4.25,
+            0,
+            4.75,
+            2.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            5,
+            0,
+            6.5,
+            0.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "down": {
+          "uv": [
+            6.75,
+            0,
+            8.25,
+            0.5
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "brass_tank_a",
+      "from": [
+        4,
+        4,
+        6
+      ],
+      "to": [
+        7,
+        12,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8.5,
+            0,
+            9.25,
+            2
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            10.5,
+            0,
+            11.25,
+            2
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            9.5,
+            0,
+            10.25,
+            2
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            11.5,
+            0,
+            12.25,
+            2
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            12.5,
+            0,
+            13.25,
+            0.75
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "down": {
+          "uv": [
+            13.5,
+            0,
+            14.25,
+            0.75
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "brass_tank_b",
+      "from": [
+        9,
+        4,
+        6
+      ],
+      "to": [
+        12,
+        12,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            2.75,
+            0.75,
+            4.75
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            2,
+            2.75,
+            2.75,
+            4.75
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            1,
+            2.75,
+            1.75,
+            4.75
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            3,
+            2.75,
+            3.75,
+            4.75
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            4,
+            2.75,
+            4.75,
+            3.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "down": {
+          "uv": [
+            5,
+            2.75,
+            5.75,
+            3.5
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "brass_band_a_low",
+      "from": [
+        3.95,
+        4.95,
+        5.95
+      ],
+      "to": [
+        7.05,
+        6.05,
+        10.05
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            2.75,
+            6.75,
+            3
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            8,
+            2.75,
+            9,
+            3
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            7,
+            2.75,
+            7.75,
+            3
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            9.25,
+            2.75,
+            10.25,
+            3
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            10.5,
+            2.75,
+            11.25,
+            3.75
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "down": {
+          "uv": [
+            11.5,
+            2.75,
+            12.25,
+            3.75
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "brass_band_a_high",
+      "from": [
+        3.95,
+        9.95,
+        5.95
+      ],
+      "to": [
+        7.05,
+        11.05,
+        10.05
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            5,
+            0.75,
+            5.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            2,
+            5,
+            3,
+            5.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            1,
+            5,
+            1.75,
+            5.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            3.25,
+            5,
+            4.25,
+            5.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            4.5,
+            5,
+            5.25,
+            6
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "down": {
+          "uv": [
+            5.5,
+            5,
+            6.25,
+            6
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "brass_band_b_low",
+      "from": [
+        8.95,
+        4.95,
+        5.95
+      ],
+      "to": [
+        12.05,
+        6.05,
+        10.05
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6.5,
+            5,
+            7.25,
+            5.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            8.5,
+            5,
+            9.5,
+            5.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            7.5,
+            5,
+            8.25,
+            5.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            9.75,
+            5,
+            10.75,
+            5.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            11,
+            5,
+            11.75,
+            6
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "down": {
+          "uv": [
+            12,
+            5,
+            12.75,
+            6
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "brass_band_b_high",
+      "from": [
+        8.95,
+        9.95,
+        5.95
+      ],
+      "to": [
+        12.05,
+        11.05,
+        10.05
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6.25,
+            0.75,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            2,
+            6.25,
+            3,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            1,
+            6.25,
+            1.75,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            3.25,
+            6.25,
+            4.25,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            4.5,
+            6.25,
+            5.25,
+            7.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "down": {
+          "uv": [
+            5.5,
+            6.25,
+            6.25,
+            7.25
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "brass_knob_a",
+      "from": [
+        5,
+        12,
+        7
+      ],
+      "to": [
+        6,
+        13,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6.5,
+            6.25,
+            6.75,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            7.5,
+            6.25,
+            7.75,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            7,
+            6.25,
+            7.25,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            8,
+            6.25,
+            8.25,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            8.5,
+            6.25,
+            8.75,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "brass_knob_b",
+      "from": [
+        10,
+        12,
+        7
+      ],
+      "to": [
+        11,
+        13,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9.5,
+            6.25,
+            9.75,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            10.5,
+            6.25,
+            10.75,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            10,
+            6.25,
+            10.25,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            11,
+            6.25,
+            11.25,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            11.5,
+            6.25,
+            11.75,
+            6.5
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "brass_yoke",
+      "from": [
+        5.97,
+        10.97,
+        5.97
+      ],
+      "to": [
+        10.03,
+        12.03,
+        8.03
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            7.5,
+            1,
+            7.75
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            1.25,
+            7.5,
+            2.25,
+            7.75
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            4,
+            7.5,
+            5,
+            8
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "down": {
+          "uv": [
+            5.25,
+            7.5,
+            6.25,
+            8
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "steel_neck_a",
+      "from": [
+        5,
+        2,
+        7
+      ],
+      "to": [
+        6,
+        5,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6.5,
+            7.5,
+            6.75,
+            8.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            7.5,
+            7.5,
+            7.75,
+            8.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            7,
+            7.5,
+            7.25,
+            8.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            8,
+            7.5,
+            8.25,
+            8.25
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "steel_neck_b",
+      "from": [
+        10,
+        2,
+        7
+      ],
+      "to": [
+        11,
+        5,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9.5,
+            7.5,
+            9.75,
+            8.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            10.5,
+            7.5,
+            10.75,
+            8.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            10,
+            7.5,
+            10.25,
+            8.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            11,
+            7.5,
+            11.25,
+            8.25
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "steel_bell_a",
+      "from": [
+        4,
+        0,
+        6
+      ],
+      "to": [
+        7,
+        2,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            8.5,
+            0.75,
+            9
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            2,
+            8.5,
+            2.75,
+            9
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            1,
+            8.5,
+            1.75,
+            9
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            3,
+            8.5,
+            3.75,
+            9
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            4,
+            8.5,
+            4.75,
+            9.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "down": {
+          "uv": [
+            5,
+            8.5,
+            5.75,
+            9.25
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "steel_bell_b",
+      "from": [
+        9,
+        0,
+        6
+      ],
+      "to": [
+        12,
+        2,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            8.5,
+            6.75,
+            9
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            8,
+            8.5,
+            8.75,
+            9
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            7,
+            8.5,
+            7.75,
+            9
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            9,
+            8.5,
+            9.75,
+            9
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            10,
+            8.5,
+            10.75,
+            9.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "down": {
+          "uv": [
+            11,
+            8.5,
+            11.75,
+            9.25
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "brass_ring",
+      "from": [
+        6,
+        6,
+        7
+      ],
+      "to": [
+        10,
+        10,
+        7
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            8.5,
+            13,
+            9.5
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "crystal_heart",
+      "from": [
+        6.97,
+        6.97,
+        5.97
+      ],
+      "to": [
+        9.03,
+        9.03,
+        8.03
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [
+          8,
+          8,
+          7
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            9.75,
+            0.5,
+            10.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "east": {
+          "uv": [
+            1.5,
+            9.75,
+            2,
+            10.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            0.75,
+            9.75,
+            1.25,
+            10.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "west": {
+          "uv": [
+            2.25,
+            9.75,
+            2.75,
+            10.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "up": {
+          "uv": [
+            3,
+            9.75,
+            3.5,
+            10.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "down": {
+          "uv": [
+            3.75,
+            9.75,
+            4.25,
+            10.25
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "fin_a",
+      "from": [
+        0,
+        5,
+        9
+      ],
+      "to": [
+        4,
+        11,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4.5,
+            9.75,
+            5.5,
+            11.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            5.75,
+            9.75,
+            6.75,
+            11.25
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    },
+    {
+      "name": "fin_b",
+      "from": [
+        12,
+        5,
+        9
+      ],
+      "to": [
+        16,
+        11,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            9.75,
+            8,
+            11.25
+          ],
+          "texture": "#hextech_skypack"
+        },
+        "south": {
+          "uv": [
+            8.25,
+            9.75,
+            9.25,
+            11.25
+          ],
+          "texture": "#hextech_skypack"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        135,
+        0
+      ],
+      "translation": [
+        0,
+        1,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        135,
+        0
+      ],
+      "translation": [
+        0,
+        1,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.35,
+        0.35,
+        0.35
+      ]
+    },
+    "gui": {
+      "rotation": [
+        30,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        0.5,
+        0
+      ],
+      "scale": [
+        0.66,
+        0.66,
+        0.66
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        -180,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    }
+  }
+}

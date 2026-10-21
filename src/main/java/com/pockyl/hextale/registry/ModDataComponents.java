@@ -102,6 +102,13 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> BRAZIER_RUNES =
             COMPONENTS.registerComponentType("brazier_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SKYPACK_RUNES =
+            COMPONENTS.registerComponentType("skypack_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    /** mB of air essence in a Hextech Skypack's tanks. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SKYPACK_AIR =
+            COMPONENTS.registerComponentType("skypack_air", builder -> builder
+                    .persistent(Codec.intRange(0, 100000)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
     /** The essence in a flask or a tank item. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<EssenceMix>> ESSENCE =

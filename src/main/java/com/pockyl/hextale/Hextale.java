@@ -55,6 +55,7 @@ public final class Hextale {
         modBus.addListener(ModNetwork::register);
         PickaxeEffects.register();
         com.pockyl.hextale.runework.ToolEffects.register();
+        com.pockyl.hextale.event.SkypackEvents.register();
         com.pockyl.hextale.multiblock.Multiblocks.register();
         com.pockyl.hextale.loot.RuneScrollLoot.register(modBus);
         com.pockyl.hextale.loot.ChestItemsLoot.register(modBus);
@@ -154,6 +155,8 @@ public final class Hextale {
             output.accept(ModItems.HEXTECH_AXE);
             output.accept(ModItems.HEXTECH_SHOVEL);
             output.accept(ModItems.HEXTECH_SWORD);
+            output.accept(ModItems.HEXTECH_SKYPACK);
+            output.accept(com.pockyl.hextale.item.HextechSkypackItem.full());
             output.accept(ModItems.RESEARCHERS_DIARY);
             output.accept(ModItems.UNSTABLE_HEXTECH);
             output.accept(ModItems.HEXTECH_DUST);
@@ -219,6 +222,7 @@ public final class Hextale {
             ModItems.PICKAXES.values().forEach(event::accept);
             event.accept(ModItems.HEXTECH_AXE);
             event.accept(ModItems.HEXTECH_SHOVEL);
+            event.accept(ModItems.HEXTECH_SKYPACK);
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.HEXTECH_SWORD);
         }

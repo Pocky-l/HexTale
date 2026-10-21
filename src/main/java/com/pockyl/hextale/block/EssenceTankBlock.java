@@ -115,6 +115,14 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
+        if (com.pockyl.hextale.item.HextechSkypackItem.is(stack)) {
+            // A skypack drinks the air out of the jar (any jar, the creative one too).
+            if (!com.pockyl.hextale.item.HextechSkypackItem.fillFrom((ServerLevel) level, tank, stack, player.position().add(0, 1.1, 0),
+                    com.pockyl.hextale.item.HextechSkypackItem.CAPACITY)) {
+                player.sendOverlayMessage(Component.translatable("item.hextale.hextech_skypack.no_air"));
+            }
+            return InteractionResult.SUCCESS;
+        }
         if (tank.isCreative()) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }

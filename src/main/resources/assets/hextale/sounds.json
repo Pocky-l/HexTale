@@ -714,5 +714,40 @@
         "name": "hextale:lab_bench_burst"
       }
     ]
+  },
+  "skypack.ignite": {
+    "subtitle": "subtitles.hextale.skypack.ignite",
+    "sounds": [
+      {
+        "name": "hextale:skypack_ignite1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:skypack_ignite2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "skypack.thrust": {
+    "subtitle": "subtitles.hextale.skypack.thrust",
+    "sounds": [
+      {
+        "name": "hextale:skypack_thrust",
+        "volume": 0.5
+      }
+    ]
+  },
+  "skypack.sputter": {
+    "subtitle": "subtitles.hextale.skypack.sputter",
+    "sounds": [
+      {
+        "name": "hextale:skypack_sputter1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:skypack_sputter2",
+        "volume": 0.7
+      }
+    ]
   }
 }
