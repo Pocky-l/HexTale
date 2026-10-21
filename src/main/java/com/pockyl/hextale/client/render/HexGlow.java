@@ -8,9 +8,13 @@ import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 import com.pockyl.hextale.Hextale;
+
+import java.util.function.Function;
 
 /**
  * Additive light that writes no depth: rune glyphs and sigil rings. Vanilla's lightning type is additive but writes
@@ -27,10 +31,27 @@ public final class HexGlow {
     public static final RenderType TYPE = RenderType.create("hextale_glow",
             RenderSetup.builder(PIPELINE).setOitPipelines(RenderPipelines.OIT_LIGHTNING).createRenderSetup());
 
+    /** The same additive light drawn with a texture (entity vertex format): soft sprites like a jet's plume. */
+    public static final RenderPipeline TEXTURED_PIPELINE = RenderPipeline.builder(RenderPipelines.ENTITY_NO_LIGHTMAP_SNIPPET,
+                    RenderPipelines.EYES_SNIPPET)
+            .withLocation(Hextale.id("pipeline/hex_glow_textured"))
+            .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
+            .withCull(false)
+            .build();
+    private static final Function<Identifier, RenderType> TEXTURED = Util.memoize(
+            texture -> RenderType.create("hextale_glow_textured", RenderSetup.builder(TEXTURED_PIPELINE)
+                    .setOitPipelines(RenderPipelines.OIT_EYES).withTexture("Sampler0", texture).createRenderSetup()));
+
     private HexGlow() {
+    }
+
+    public static RenderType textured(Identifier texture) {
+        return TEXTURED.apply(texture);
     }
 
     public static void registerPipelines(RegisterRenderPipelinesEvent event) {
         event.registerPipeline(PIPELINE);
+        event.registerPipeline(TEXTURED_PIPELINE);
     }
 }

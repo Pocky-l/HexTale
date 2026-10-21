@@ -18,7 +18,6 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.item.HextechSkypackItem;
 import com.pockyl.hextale.item.SkypackFlight;
-import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.SkypackRune;
@@ -69,12 +68,11 @@ public final class SkypackEvents {
         }
         long now = level.getGameTime();
         if (SkypackFlight.tick(player, pack, now)) {
-            // A take-off: the jets catch with a thump and a rush of air, a ring of light behind the wearer.
+            // A take-off: the jets catch with a thump and a rush of air (their light is drawn on the wearer).
             HextechSkypackItem.launch(level, player, pack);
             Vec3 back = player.position().add(0, 0.4, 0).subtract(player.getLookAngle().scale(0.6));
             level.playSound(null, back.x, back.y, back.z, ModSounds.SKYPACK_IGNITE.get(), SoundSource.PLAYERS, 0.9F,
                     0.9F + level.getRandom().nextFloat() * 0.2F);
-            level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), back.x, back.y, back.z, 0, 1.2, 0, 0, 1);
         }
         if (player.isFallFlying()) {
             LAST_FLIGHT.put(player, now);

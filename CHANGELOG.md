@@ -11,8 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   glides until the next take-off from the ground. Every take-off costs a little air. Refill it from Essence Jars: right
   click a jar with the pack, or sneak beside jars while wearing it. Researched at the Research Table and made at the
   Hextech Altar (gemstone, phantom membranes, hexsteel, brass pipes, leather). It shows on the back; during the
-  take-off tongues of hextech flame, sparks and a trail of air burst from both nozzles with a roar, then die out in a
-  puff of air. The jets cough when the air runs low.
+  take-off long plumes of hextech flame burst from both nozzles with a ring of light and a roar, glints running down
+  them - drawn on the flyer, so they stay with you at any speed - then thin out and die. The jets cough when the air
+  runs low.
 - Six runes for the skypack (three at a time): Motor (faster), Bellows (a kick when the jets catch), Dam (take-offs
   that cost no air), Breath (softer walls and landings), Fireproofing (fire resistance in flight) and Lens.
 
