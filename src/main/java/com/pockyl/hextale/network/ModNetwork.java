@@ -27,6 +27,7 @@ public final class ModNetwork {
         registrar.playToClient(PylonFlightsPayload.TYPE, PylonFlightsPayload.STREAM_CODEC);
         registrar.playToClient(WhirlPayload.TYPE, WhirlPayload.STREAM_CODEC);
         registrar.playToClient(SawPayload.TYPE, SawPayload.STREAM_CODEC);
+        registrar.playToClient(HexcoreStrikePayload.TYPE, HexcoreStrikePayload.STREAM_CODEC);
         registrar.playToClient(PylonLinkPayload.TYPE, PylonLinkPayload.STREAM_CODEC);
         registrar.playToClient(OpenStickerPayload.TYPE, OpenStickerPayload.STREAM_CODEC);
         registrar.playToServer(ChooseStickerPayload.TYPE, ChooseStickerPayload.STREAM_CODEC, ChooseStickerPayload::handle);
