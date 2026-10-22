@@ -94,8 +94,13 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
         float[] open = new float[n];
         float[] crackGlow = new float[n];
         float[] z = new float[n];
-        // The opening is a body, not a sheet: front and back bulge apart like a lens, closed along the torn edge.
-        float depth = state.shape.halfWidth(state.size) * 0.75F;
+        // The opening is a hole, not a sheet: its inside sinks away from whoever looks (a funnel into the abyss, rims
+        // on the plane), and flattens into a thin slit when seen edge-on.
+        Vector3f eye = new Vector3f((float) (camera.pos.x - state.x), (float) (camera.pos.y - state.y), (float) (camera.pos.z - state.z));
+        new Quaternionf(state.orientation).conjugate().transform(eye);
+        float facing = eye.lengthSquared() < 1.0E-6F ? 1 : eye.z / eye.length();
+        // A fissure lies on the ground: a funnel would sink into the blocks and vanish behind them, so it stays flat.
+        float depth = state.shape.lying() ? 0 : -Math.signum(facing) * state.shape.halfWidth(state.size) * 1.6F * smooth((Math.abs(facing) - 0.08F) / 0.4F);
         float phase = (state.seed & 0xFFFF) / 65535F * Mth.TWO_PI;
         for (int v = 0; v < n; v++) {
             float when = mesh.delay[v];
@@ -119,11 +124,9 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
         int seedByte = state.seed & 0xFF;
         collector.submitCustomGeometry(poseStack, AbyssVoid.TYPE, (pose, consumer) -> {
             for (int q = 0; q < mesh.quadCount; q++) {
-                for (int side = -1; side <= 1; side += 2) {
-                    for (int k = 0; k < 4; k++) {
-                        int v = mesh.quads[q * 4 + k];
-                        voidVertex(consumer, pose, x[v], y[v], z[v] * side, mesh.edge[v], open[v], false, seedByte);
-                    }
+                for (int k = 0; k < 4; k++) {
+                    int v = mesh.quads[q * 4 + k];
+                    voidVertex(consumer, pose, x[v], y[v], z[v], mesh.edge[v], open[v], false, seedByte);
                 }
             }
             shards(consumer, pose, mesh, state, gather, shut, seedByte);
