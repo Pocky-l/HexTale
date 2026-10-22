@@ -93,6 +93,9 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
         float[] y = new float[n];
         float[] open = new float[n];
         float[] crackGlow = new float[n];
+        float[] z = new float[n];
+        // The opening is a body, not a sheet: front and back bulge apart like a lens, closed along the torn edge.
+        float depth = state.shape.halfWidth(state.size) * 0.75F;
         float phase = (state.seed & 0xFFFF) / 65535F * Mth.TWO_PI;
         for (int v = 0; v < n; v++) {
             float when = mesh.delay[v];
@@ -108,6 +111,7 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
             y[v] = mesh.cy[v] * gather + mesh.oy[v] * f;
             open[v] = part * (1 - shut);
             crackGlow[v] = crack * (1 - part);
+            z[v] = depth * mesh.swell[v] * Mth.sin(mesh.edge[v] * Mth.HALF_PI) * Math.min(1, f) * gather;
         }
 
         poseStack.pushPose();
@@ -115,9 +119,11 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
         int seedByte = state.seed & 0xFF;
         collector.submitCustomGeometry(poseStack, AbyssVoid.TYPE, (pose, consumer) -> {
             for (int q = 0; q < mesh.quadCount; q++) {
-                for (int k = 0; k < 4; k++) {
-                    int v = mesh.quads[q * 4 + k];
-                    voidVertex(consumer, pose, x[v], y[v], 0, mesh.edge[v], open[v], false, seedByte);
+                for (int side = -1; side <= 1; side += 2) {
+                    for (int k = 0; k < 4; k++) {
+                        int v = mesh.quads[q * 4 + k];
+                        voidVertex(consumer, pose, x[v], y[v], z[v] * side, mesh.edge[v], open[v], false, seedByte);
+                    }
                 }
             }
             shards(consumer, pose, mesh, state, gather, shut, seedByte);
