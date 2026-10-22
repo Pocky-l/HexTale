@@ -94,13 +94,22 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
         float[] open = new float[n];
         float[] crackGlow = new float[n];
         float[] z = new float[n];
-        // The opening is a hole, not a sheet: its inside sinks away from whoever looks (a funnel into the abyss, rims
-        // on the plane), and flattens into a thin slit when seen edge-on.
-        Vector3f eye = new Vector3f((float) (camera.pos.x - state.x), (float) (camera.pos.y - state.y), (float) (camera.pos.z - state.z));
-        new Quaternionf(state.orientation).conjugate().transform(eye);
-        float facing = eye.lengthSquared() < 1.0E-6F ? 1 : eye.z / eye.length();
-        // A fissure lies on the ground: a funnel would sink into the blocks and vanish behind them, so it stays flat.
-        float depth = state.shape.lying() ? 0 : -Math.signum(facing) * state.shape.halfWidth(state.size) * 1.6F * smooth((Math.abs(facing) - 0.08F) / 0.4F);
+        // A tear in space has no side view: a standing rift turns its opening to whoever looks (about its long axis; a
+        // shatter turns fully), so it is a hole into the abyss from every side. A fissure lies on the ground as it is.
+        float ex = (float) (camera.pos.x - state.x);
+        float ey = (float) (camera.pos.y - state.y);
+        float ez = (float) (camera.pos.z - state.z);
+        Quaternionf turn = new Quaternionf(state.orientation);
+        if (!state.shape.lying()) {
+            turn.rotationY((float) Mth.atan2(ex, ez));
+            if (state.shape == RiftShape.SHATTER) {
+                turn.rotateX((float) -Mth.atan2(ey, Mth.sqrt(ex * ex + ez * ez)));
+            }
+            turn.rotateZ(AbyssRift.tilt(state.shape, state.seed));
+        }
+        Vector3f eye = new Quaternionf(turn).conjugate().transform(new Vector3f(ex, ey, ez));
+        // Later pieces a hair behind earlier ones (away from the eye): a fork's edge hides behind the body it leaves.
+        float depth = eye.z >= 0 ? -0.012F : 0.012F;
         float phase = (state.seed & 0xFFFF) / 65535F * Mth.TWO_PI;
         for (int v = 0; v < n; v++) {
             float when = mesh.delay[v];
@@ -116,11 +125,11 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
             y[v] = mesh.cy[v] * gather + mesh.oy[v] * f;
             open[v] = part * (1 - shut);
             crackGlow[v] = crack * (1 - part);
-            z[v] = depth * mesh.swell[v] * Mth.sin(mesh.edge[v] * Mth.HALF_PI) * Math.min(1, f) * gather;
+            z[v] = depth * mesh.swell[v];
         }
 
         poseStack.pushPose();
-        poseStack.rotate(state.orientation);
+        poseStack.rotate(turn);
         int seedByte = state.seed & 0xFF;
         collector.submitCustomGeometry(poseStack, AbyssVoid.TYPE, (pose, consumer) -> {
             for (int q = 0; q < mesh.quadCount; q++) {

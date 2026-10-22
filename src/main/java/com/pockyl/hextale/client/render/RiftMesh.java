@@ -27,9 +27,9 @@ final class RiftMesh {
     float[] ny = new float[64];
     float[] edge = new float[64];
     float[] delay = new float[64];
-    /** How far this vertex's piece bulges out of the plane (each piece its own, so overlapping pieces never share a depth). */
+    /** Which piece (strip, ring) the vertex belongs to: later pieces sit a hair deeper, so overlaps never z-fight. */
     float[] swell = new float[64];
-    private float pieceSwell = 1;
+    private float pieceSwell = -1;
     int count;
     int[] quads = new int[256];
     int quadCount;
@@ -140,7 +140,7 @@ final class RiftMesh {
     private void strip(float[][] spine, float width, boolean bothEnds, boolean softRoot, float origin, float delayAtRoot, float half,
                        RandomSource random) {
         int n = spine.length;
-        pieceSwell = 0.8F + random.nextFloat() * 0.4F;
+        pieceSwell++;
         float[] along = new float[n];
         for (int i = 1; i < n; i++) {
             along[i] = along[i - 1] + Mth.sqrt(Mth.square(spine[i][0] - spine[i - 1][0]) + Mth.square(spine[i][1] - spine[i - 1][1]));
@@ -266,7 +266,7 @@ final class RiftMesh {
      */
     private void ring(float x, float y, float rx, float ry, float[] depths, int points, float tear, RandomSource random, float delayAtRoot,
                       float half, boolean eye) {
-        pieceSwell = 1.25F;
+        pieceSwell++;
         float[] jag = new float[points];
         for (int i = 0; i < points; i++) {
             jag[i] = 1 + (random.nextFloat() * 2 - 1) * tear * (i % 2 == 0 ? 1 : 0.5F);

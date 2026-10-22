@@ -132,8 +132,12 @@ public class AbyssRift extends Entity {
         if (shape.lying()) {
             q.rotateX(Mth.HALF_PI);
         }
-        float tilt = ((seed >>> 8 & 0xFF) / 255F - 0.5F) * (shape.lying() ? 0.6F : 0.7F);
-        return q.rotateZ(tilt);
+        return q.rotateZ(tilt(shape, seed));
+    }
+
+    /** The turn of the shape in its own plane, from the seed. */
+    public static float tilt(RiftShape shape, int seed) {
+        return ((seed >>> 8 & 0xFF) / 255F - 0.5F) * (shape.lying() ? 0.6F : 0.7F);
     }
 
     /** A rift-local point (blocks) in the world. */
