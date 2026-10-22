@@ -15,6 +15,7 @@ import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.block.ResearchTableBlockEntity;
 import com.pockyl.hextale.block.HexFurnaceBlockEntity;
 import com.pockyl.hextale.block.HextechAltarBlockEntity;
+import com.pockyl.hextale.block.HexcoreBlockEntity;
 import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
 
@@ -87,6 +88,8 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("hextech_altar", () -> new BlockEntityType<>(HextechAltarBlockEntity::new, ModBlocks.HEXTECH_ALTAR.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PedestalBlockEntity>> PEDESTAL =
             BLOCK_ENTITIES.register("pedestal", () -> new BlockEntityType<>(PedestalBlockEntity::new, ModBlocks.PEDESTAL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HexcoreBlockEntity>> HEXCORE =
+            BLOCK_ENTITIES.register("hexcore", () -> new BlockEntityType<>(HexcoreBlockEntity::new, ModBlocks.HEXCORE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneSteleBlockEntity>> RUNE_STELE =
             BLOCK_ENTITIES.register("rune_stele", () -> new BlockEntityType<>(RuneSteleBlockEntity::new, ModBlocks.RUNE_STELE.get()));
 

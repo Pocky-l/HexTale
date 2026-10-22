@@ -501,6 +501,7 @@
   "item.hextale.hextech_pickaxe": "Хекстек-кирка",
   "block.hextale.hextech_altar": "Хекстек-алтарь",
   "block.hextale.pedestal": "Пьедестал",
+  "block.hextale.hexcore": "Хекс-ядро",
   "block.hextale.rune_stele": "Рунная стела",
   "block.hextale.hextech_altar.empty": "Сначала положите предмет на алтарь",
   "block.hextale.hextech_altar.nothing": "Круг не знает, что с этим делать: проверьте пьедесталы, стелы и банки",

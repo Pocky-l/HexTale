@@ -147,6 +147,7 @@ public final class Hextale {
             output.accept(ModItems.RELAY_PYLON);
             output.accept(ModItems.SIPHON_PYLON);
             output.accept(ModItems.SORTING_MATRIX);
+            output.accept(ModItems.HEXCORE);
             output.accept(ModItems.WHIRL_REAPER);
             output.accept(ModItems.HEX_SAWMILL);
             output.accept(ModItems.PYLON_FILTER);

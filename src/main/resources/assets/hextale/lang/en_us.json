@@ -501,6 +501,7 @@
   "item.hextale.hextech_pickaxe": "Hextech Pickaxe",
   "block.hextale.hextech_altar": "Hextech Altar",
   "block.hextale.pedestal": "Pedestal",
+  "block.hextale.hexcore": "Hexcore",
   "block.hextale.rune_stele": "Rune Stele",
   "block.hextale.hextech_altar.empty": "Put an item on the altar first",
   "block.hextale.hextech_altar.nothing": "The circle does not know what to do with this: check the pedestals, steles and jars",

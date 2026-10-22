@@ -46,6 +46,7 @@ import com.pockyl.hextale.block.HextechLampBlock;
 import com.pockyl.hextale.block.HexWispBlock;
 import com.pockyl.hextale.block.MagicLeavesBlock;
 import com.pockyl.hextale.block.MagicSaplingBlock;
+import com.pockyl.hextale.block.HexcoreBlock;
 import com.pockyl.hextale.block.PedestalBlock;
 import com.pockyl.hextale.block.RuneSteleBlock;
 import com.pockyl.hextale.block.SeparatorBlock;
@@ -109,6 +110,10 @@ public final class ModBlocks {
     public static final DeferredBlock<PedestalBlock> PEDESTAL = BLOCKS.registerBlock("pedestal", PedestalBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 3));
+    /** The Hexcore: a rune matrix around a hextech crystal, floating over a brass cradle. */
+    public static final DeferredBlock<HexcoreBlock> HEXCORE = BLOCKS.registerBlock("hexcore", HexcoreBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(3.5F, 9.0F).sound(SoundType.POLISHED_DEEPSLATE)
+                    .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 11));
     public static final DeferredBlock<RuneSteleBlock> RUNE_STELE = BLOCKS.registerBlock("rune_stele", RuneSteleBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> state.getValue(RuneSteleBlock.LIT) ? 9 : 2));
