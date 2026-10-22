@@ -64,7 +64,7 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
         state.progress = core.progress(partialTick);
         state.stalled = core.stalled();
         state.finishing = core.finishing();
-        state.instability = core.instability();
+        state.anger = core.anger();
         state.sinceFinish = now - core.finishedAt() + partialTick;
         state.sinceBirth = core.bornAt() == Long.MIN_VALUE ? -1 : now - core.bornAt() + partialTick;
         state.rise = core.animateRise(time);
@@ -122,7 +122,7 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
                 open *= 0.4F;
             }
         }
-        float shake = state.stalled ? 0.025F * Mth.sin(time * 2.7F) : 0.01F * state.instability * activity * Mth.sin(time * 4.1F);
+        float shake = state.stalled ? 0.025F * Mth.sin(time * 2.7F) : 0.03F * state.anger * state.anger * activity * Mth.sin(time * 4.1F);
         float centreY = state.rise + Mth.sin(time * 0.045F) * 0.04F;
 
         poseStack.pushPose();
@@ -189,6 +189,14 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
         Vector3f eye = new Vector3f((float) state.eye.x, (float) state.eye.y, (float) state.eye.z);
         for (ArcState arc : state.arcs) {
             bolt(poseStack, collector, centre, arc, eye, time);
+            if (arc.strong && arc.age >= 0 && arc.age <= 1) {
+                // A flash where it lands, fading with the bolt.
+                poseStack.pushPose();
+                poseStack.translate(arc.to.x, arc.to.y, arc.to.z);
+                HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 2.4F * (1 - 0.6F * arc.age), 0xDFF6FF, 0.9F * (1 - arc.age));
+                HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.9F, 0xFFFFFF, 1 - arc.age);
+                poseStack.popPose();
+            }
         }
         HextechAltarRenderer.ghosts(state.ghosts, state.extras, time, poseStack, collector, camera);
     }
@@ -208,18 +216,31 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
         Vec3 from = centre.add(dir.normalize().scale(0.6));
         float fade = arc.strong ? 1 - arc.age * arc.age : 1 - arc.age;
         int flicker = (int) (time * 0.7F);
+        if (arc.strong) {
+            // Like real lightning it flashes, dims and flashes again on the same path.
+            float strobe = (int) (arc.age * 16) % 5 < 3 ? 1 : 0.35F;
+            fade *= strobe;
+            flicker = (int) (arc.age * 3);
+        }
         Vec3[] main = jagged(from, arc.to, arc.seed * 131 + flicker, arc.strong ? 0.22F : 0.14F);
         Vec3 forkFrom = main[main.length / 2];
         Vec3 forkTo = forkFrom.add(arc.to.subtract(from).scale(0.35)).add(noise(arc.seed + 7, flicker).scale(0.6));
         Vec3[] fork = jagged(forkFrom, forkTo, arc.seed * 17 + flicker, 0.1F);
-        float wide = arc.strong ? 0.26F : 0.12F;
-        float core = arc.strong ? 0.075F : 0.035F;
+        Vec3 fork2From = main[main.length * 3 / 4];
+        Vec3[] fork2 = arc.strong ? jagged(fork2From, fork2From.add(noise(arc.seed + 11, flicker).scale(0.8)), arc.seed * 23 + flicker, 0.12F) : null;
+        float wide = arc.strong ? 0.55F : 0.12F;
+        float core = arc.strong ? 0.16F : 0.035F;
         int glow = arc.strong ? RuneDrawing.mix(BOLT_COLOR, 0xFFFFFF, 0.2F) : BOLT_COLOR;
+        float shown = fade;
         collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
-            JarStreamFx.strip(consumer, pose, main, ends(main.length), eye, wide, glow, 0.35F * fade);
-            JarStreamFx.strip(consumer, pose, main, ends(main.length), eye, core, 0xF4FCFF, 0.95F * fade);
-            JarStreamFx.strip(consumer, pose, fork, ends(fork.length), eye, wide * 0.6F, glow, 0.25F * fade);
-            JarStreamFx.strip(consumer, pose, fork, ends(fork.length), eye, core * 0.6F, 0xF4FCFF, 0.7F * fade);
+            JarStreamFx.strip(consumer, pose, main, ends(main.length), eye, wide, glow, 0.35F * shown);
+            JarStreamFx.strip(consumer, pose, main, ends(main.length), eye, core, 0xF4FCFF, 0.95F * shown);
+            JarStreamFx.strip(consumer, pose, fork, ends(fork.length), eye, wide * 0.6F, glow, 0.25F * shown);
+            JarStreamFx.strip(consumer, pose, fork, ends(fork.length), eye, core * 0.6F, 0xF4FCFF, 0.7F * shown);
+            if (fork2 != null) {
+                JarStreamFx.strip(consumer, pose, fork2, ends(fork2.length), eye, wide * 0.5F, glow, 0.25F * shown);
+                JarStreamFx.strip(consumer, pose, fork2, ends(fork2.length), eye, core * 0.5F, 0xF4FCFF, 0.7F * shown);
+            }
         });
     }
 
@@ -282,7 +303,7 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
         boolean stalled;
         boolean finishing;
         float progress;
-        float instability;
+        float anger;
         float sinceFinish;
         float sinceBirth;
         float rise;

@@ -3,7 +3,6 @@ package com.pockyl.hextale.block;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -89,8 +88,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     private int drawTick;
     /** Game time the ritual started (server). */
     private long startedAt;
-    /** What the ritual waits for now, or null. */
-    private @Nullable Component waitingFor;
     private Ritual.@Nullable Circle circle;
     private int rescan;
 
@@ -321,7 +318,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         if (progressed) {
             altar.elapsed++;
             altar.stalled = 0;
-            altar.waitingFor = null;
         } else if (altar.kind != null && ++altar.stalled > Ritual.STALL_LIMIT) {
             altar.collapse(serverLevel);
         }
@@ -335,12 +331,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             serverLevel.playSound(null, pos, ModSounds.RITUAL_HUM.get(), SoundSource.BLOCKS, 0.6F, 0.9F + 0.2F * altar.elapsed / Math.max(1F, altar.duration));
         }
         if (altar.kind != null && altar.stalled > 10 && serverLevel.getGameTime() % 40 == 0) {
+            // It never says what it waits for: the researcher has to see for themselves what went missing.
             serverLevel.playSound(null, pos, ModSounds.RITUAL_STALL.get(), SoundSource.BLOCKS, 0.5F, 1.0F);
-            if (altar.waitingFor != null) {
-                for (ServerPlayer player : serverLevel.getEntitiesOfClass(ServerPlayer.class, new AABB(pos).inflate(Ritual.TANK_RADIUS))) {
-                    player.sendOverlayMessage(altar.waitingFor);
-                }
-            }
         }
     }
 
@@ -364,8 +356,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                 } else {
                     itemTimer = Ritual.TICKS_PER_ITEM;
                     waiting = true;
-                    waitingFor = Component.translatable("block.hextale.hextech_altar.wait.item",
-                            new ItemStack(BuiltInRegistries.ITEM.getValue(input.item())).getHoverName());
                 }
             } else if (itemTimer == 1) {
                 BlockPos next = inputs.getFirst().pos();
@@ -380,8 +370,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                 drawTick++;
             } else {
                 waiting = true;
-                waitingFor = Component.translatable("block.hextale.hextech_altar.wait.essence",
-                        EssenceMix.pure(essence, essenceLeft.get(essence)).describe());
             }
         }
         if (inputs.isEmpty() && essenceLeft.isEmpty()) {

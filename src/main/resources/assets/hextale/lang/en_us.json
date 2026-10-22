@@ -555,8 +555,6 @@
   "jei.hextale.info.hextech_altar": "The heart of the ritual circle. The item on top, the rest on pedestals around it, runes on steles, jars of essence close by. When it starts, the pedestals give up their items one by one, then the jars their essences. (Shift + right click with an empty hand, or a redstone pulse)",
   "jei.hextale.info.pedestal": "A stand for one thing a ritual needs, close to the altar. As many as I like. Hoppers can fill it too.",
   "jei.hextale.info.rune_stele": "A stone that holds one rune I know. Near the altar it guides the ritual.",
-  "block.hextale.hextech_altar.wait.item": "The ritual waits: put %s back on its pedestal",
-  "block.hextale.hextech_altar.wait.essence": "The ritual waits for essence: %s",
   "rune.hextale.element.steam": "Steam",
   "rune.hextale.element.magma": "Magma",
   "rune.hextale.element.ash": "Ash",

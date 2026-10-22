@@ -1,8 +1,10 @@
 package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -14,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightningRodBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -21,6 +24,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.network.HexcoreStrikePayload;
 import com.pockyl.hextale.network.ModNetwork;
@@ -37,26 +41,35 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Hexcore: a Hextech Altar whose heart woke up. It runs every ritual the altar runs, from the same circle (later it
- * will make things only it can make); but its matrix is alive and a heavy ritual makes it unstable. The more pedestal items,
- * essence and runes a ritual takes, the higher its {@link #instability()}, and while it runs the matrix throws arcs: a
- * light one only crackles, a hard one strikes - it hurts and sets alight whoever stands close, sets things on fire,
- * shatters fragile blocks, even burns an item off a pedestal before the ritual could draw it. Lightning rods in the
- * circle catch some of the strikes.
+ * will make things only it can make); but its matrix is alive. The more pedestal items, essence and runes a ritual
+ * takes, the higher its {@link #instability()}, and the longer a ritual runs (waiting included), the angrier the matrix
+ * gets ({@link #anger()}). It throws bolts: a calm one only cracks into the ground, an angry one strikes - it hurts and
+ * sets alight whoever stands close, scorches the ground, sets things on fire, shatters fragile blocks, cracks a jar so
+ * its essence boils off, even burns an item off a pedestal before the ritual could draw it. Nothing says what went
+ * missing. Lightning rods in the circle catch some of the bolts.
  */
 public class HexcoreBlockEntity extends HextechAltarBlockEntity {
     /** Height of the matrix centre over the block's floor: resting, and risen during a ritual (blocks). */
-    public static final double REST_Y = 1.5;
-    public static final double RISEN_Y = 2.35;
+    public static final double REST_Y = 2.0;
+    public static final double RISEN_Y = 2.85;
     /** Ticks the matrix takes to assemble when the altar becomes a Hexcore. */
     public static final int BIRTH_TICKS = 90;
-    /** Ticks at the start of a ritual before the first strike. */
+    /** Ticks at the start of a ritual before the first bolt. */
     private static final int CALM_TICKS = 30;
+    /** Ticks of a ritual that add full anger on their own. */
+    private static final int ANGER_TICKS = 900;
+    /** Anger from which bolts do harm, and from which they burn pedestal items. */
+    private static final float HARM_FROM = 0.2F;
+    private static final float ITEM_FROM = 0.5F;
     private static final int STRIKE_RADIUS = 6;
     private static final int ROD_RADIUS = 8;
     private static final double SEND_RADIUS = 48;
 
     /** 0..1: how hard the running ritual is on the matrix (synced). */
     private float instability;
+    /** 0..1: the ritual's weight plus the time it has run (synced). */
+    private float anger;
+    private int angerTicks;
     /** Game time this Hexcore was born from an altar (synced, for the assembly animation). */
     private long bornAt = Long.MIN_VALUE;
 
@@ -105,6 +118,11 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         return instability;
     }
 
+    /** 0..1: how angry the matrix is now - its ritual's weight, growing the longer the ritual runs. */
+    public float anger() {
+        return anger;
+    }
+
     public long bornAt() {
         return bornAt;
     }
@@ -114,13 +132,15 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         return active() ? RISEN_Y : REST_Y;
     }
 
-    // ---- Instability and strikes (server) ----------------------------------------------------------------------------
+    // ---- Anger and bolts (server) -----------------------------------------------------------------------------------
 
     @Override
     protected void ritualStarted(ServerLevel level) {
         Ritual.Circle circle = circle();
         long runes = circle == null ? 0 : circle.steles().stream().filter(stele -> stele.rune() != null).count();
         instability = instabilityOf(itemsTotal(), essenceTotal().total(), (int) runes);
+        angerTicks = 0;
+        anger = angerOf(instability, 0);
     }
 
     /** How hard a ritual is on the matrix: pedestal items, mB of essence and runes on steles, 0..1. */
@@ -128,20 +148,26 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         return Mth.clamp(items * 0.07F + essenceMb / 300F + runes * 0.08F - 0.15F, 0, 1);
     }
 
+    /** The matrix's anger {@code ticks} into a ritual of that instability: it only grows, waiting or not. */
+    public static float angerOf(float instability, int ticks) {
+        return Mth.clamp(0.6F * instability + ticks / (float) ANGER_TICKS, 0, 1);
+    }
+
     @Override
     protected void ritualTick(ServerLevel level) {
-        if (elapsed() < CALM_TICKS || stalled()) {
+        angerTicks++;
+        anger = angerOf(instability, angerTicks);
+        if (angerTicks < CALM_TICKS) {
             return;
         }
         RandomSource random = level.getRandom();
-        if (random.nextFloat() < 0.003F + 0.03F * instability * instability) {
+        if (random.nextFloat() < 0.004F + 0.06F * anger * anger) {
             strike(level, random);
         }
     }
 
-    /** One arc out of the matrix; with enough instability it does harm where it lands. */
+    /** One bolt out of the matrix. The angrier it is, the likelier the bolt goes for something that matters. */
     private void strike(ServerLevel level, RandomSource random) {
-        BlockPos pos = getBlockPos();
         List<BlockPos> rods = rods(level);
         if (!rods.isEmpty() && random.nextFloat() < Math.min(0.85F, rods.size() * 0.35F)) {
             // A lightning rod in the circle catches it.
@@ -153,25 +179,21 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
             land(level, Vec3.atCenterOf(rod).add(0, 0.4, 0), HexcoreStrikePayload.GROUNDED);
             return;
         }
-        float harm = instability;
-        float roll = random.nextFloat() * (2 - harm + harm * 4);
-        if (roll < 2 - harm || harm < 0.25F) {
-            land(level, Vec3.atBottomCenterOf(pos).add((random.nextDouble() - 0.5) * 6, 0.1, (random.nextDouble() - 0.5) * 6), HexcoreStrikePayload.CALM);
+        if (anger < HARM_FROM || random.nextFloat() > anger + 0.2F) {
+            // Only into the ground around it - still leaving a mark once it is angry enough.
+            scorch(level, random, anger >= HARM_FROM);
             return;
         }
-        roll -= 2 - harm;
-        boolean done = false;
-        if (roll < harm) {
-            done = strikePlayer(level, random);
-        } else if (roll < harm * 2) {
-            done = ignite(level, random);
-        } else if (roll < harm * 3) {
-            done = shatter(level, random);
-        } else if (harm >= 0.55F) {
-            done = burnPedestalItem(level, random);
-        }
+        boolean done = switch (random.nextInt(anger >= ITEM_FROM ? 6 : 5)) {
+            case 0 -> strikePlayer(level, random);
+            case 1 -> ignite(level, random);
+            case 2 -> shatter(level, random);
+            case 3 -> spill(level, random);
+            case 4 -> scorch(level, random, true);
+            default -> burnPedestalItem(level, random);
+        };
         if (!done) {
-            land(level, Vec3.atBottomCenterOf(pos).add((random.nextDouble() - 0.5) * 6, 0.1, (random.nextDouble() - 0.5) * 6), HexcoreStrikePayload.CALM);
+            scorch(level, random, true);
         }
     }
 
@@ -183,17 +205,17 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         }
         Player player = players.get(random.nextInt(players.size()));
         land(level, player.position().add(0, player.getBbHeight() * 0.6, 0), HexcoreStrikePayload.HARM);
-        player.hurtServer(level, level.damageSources().lightningBolt(), 2 + 5 * instability);
-        player.igniteForSeconds(2);
-        Vec3 away = player.position().subtract(Vec3.atCenterOf(getBlockPos())).multiply(1, 0, 1).normalize().scale(0.6);
-        player.push(away.x, 0.25, away.z);
+        player.hurtServer(level, level.damageSources().lightningBolt(), 2 + 6 * anger);
+        player.igniteForSeconds(2 + 2 * anger);
+        Vec3 away = player.position().subtract(Vec3.atCenterOf(getBlockPos())).multiply(1, 0, 1).normalize().scale(0.5 + 0.5 * anger);
+        player.push(away.x, 0.3, away.z);
         return true;
     }
 
     private boolean ignite(ServerLevel level, RandomSource random) {
         for (int attempt = 0; attempt < 16; attempt++) {
-            BlockPos at = around(random, 1);
-            if (level.isEmptyBlock(at) && BaseFireBlock.canBePlacedAt(level, at, net.minecraft.core.Direction.UP)) {
+            BlockPos at = around(random).above();
+            if (level.isEmptyBlock(at) && BaseFireBlock.canBePlacedAt(level, at, Direction.UP)) {
                 level.setBlockAndUpdate(at, BaseFireBlock.getState(level, at));
                 land(level, Vec3.atBottomCenterOf(at), HexcoreStrikePayload.HARM);
                 return true;
@@ -202,13 +224,16 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         return false;
     }
 
+    /** Smashes a block that cannot take it: glass, leaves, flowers, torches, lanterns... never one of the mod's own. */
     private boolean shatter(ServerLevel level, RandomSource random) {
-        for (int attempt = 0; attempt < 20; attempt++) {
-            BlockPos at = around(random, 0);
+        BlockPos pos = getBlockPos();
+        for (int attempt = 0; attempt < 40; attempt++) {
+            BlockPos at = pos.offset(random.nextInt(STRIKE_RADIUS * 2 + 1) - STRIKE_RADIUS, random.nextInt(6) - 1,
+                    random.nextInt(STRIKE_RADIUS * 2 + 1) - STRIKE_RADIUS);
             BlockState state = level.getBlockState(at);
             float hardness = state.getDestroySpeed(level, at);
             if (state.isAir() || state.hasBlockEntity() || !state.getFluidState().isEmpty() || hardness < 0 || hardness > 1.0F
-                    || "hextale".equals(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace())) {
+                    || at.equals(pos) || "hextale".equals(BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace())) {
                 continue;
             }
             land(level, Vec3.atCenterOf(at), HexcoreStrikePayload.HARM);
@@ -218,7 +243,31 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         return false;
     }
 
-    /** Burns an item the ritual has not drawn yet off its pedestal: the ritual waits until it is put back. */
+    /** Cracks a jar of the circle: part of its essence boils away, and the ritual may run short of it. */
+    private boolean spill(ServerLevel level, RandomSource random) {
+        Ritual.Circle circle = circle();
+        if (circle == null) {
+            return false;
+        }
+        List<EssenceTankBlockEntity> jars = circle.tanks().stream()
+                .filter(jar -> !jar.isRemoved() && !jar.isCreative() && !jar.tank().contents().isEmpty()).toList();
+        if (jars.isEmpty()) {
+            return false;
+        }
+        EssenceTankBlockEntity jar = jars.get(random.nextInt(jars.size()));
+        EssenceMix contents = jar.tank().contents();
+        int lost = Math.max(1, Math.round(contents.total() * (0.15F + 0.25F * anger)));
+        jar.tank().remove(contents.part(lost));
+        jar.setChanged();
+        Vec3 at = Vec3.atCenterOf(jar.getBlockPos()).add(0, 0.5, 0);
+        land(level, at, HexcoreStrikePayload.HARM);
+        level.sendParticles(ModParticles.wisp(contents.color()), at.x, at.y, at.z, 24, 0.3, 0.3, 0.3, 0.04);
+        level.sendParticles(ModParticles.vapour(contents.color()), at.x, at.y, at.z, 8, 0.25, 0.2, 0.25, 0.02);
+        level.playSound(null, jar.getBlockPos(), SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 0.7F, 1.4F);
+        return true;
+    }
+
+    /** Burns an item the ritual has not drawn yet off its pedestal; the ritual then waits, without saying for what. */
     private boolean burnPedestalItem(ServerLevel level, RandomSource random) {
         List<Ritual.Input> pending = pendingInputs();
         if (pending.size() < 2) {
@@ -238,16 +287,45 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         return true;
     }
 
-    /** A random block within {@link #STRIKE_RADIUS} of the core, {@code up} blocks over the first solid one from above. */
-    private BlockPos around(RandomSource random, int up) {
+    /** A bolt into the ground; a {@code marking} one scorches grass and moss to coarse dirt and may leave a flame. */
+    private boolean scorch(ServerLevel level, RandomSource random, boolean marking) {
+        BlockPos ground = around(random);
+        land(level, Vec3.atBottomCenterOf(ground.above()), marking ? HexcoreStrikePayload.HARM : HexcoreStrikePayload.CALM);
+        if (!marking) {
+            return true;
+        }
+        BlockState state = level.getBlockState(ground);
+        if (state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM) || state.is(Blocks.MOSS_BLOCK)
+                || state.is(Blocks.DIRT_PATH)) {
+            level.setBlockAndUpdate(ground, Blocks.COARSE_DIRT.defaultBlockState());
+        }
+        BlockPos above = ground.above();
+        BlockState top = level.getBlockState(above);
+        if (!top.isAir() && top.canBeReplaced() && top.getFluidState().isEmpty()) {
+            // Grass and flowers on the spot burn away.
+            level.destroyBlock(above, false);
+        }
+        if (random.nextFloat() < 0.3F && level.isEmptyBlock(above) && BaseFireBlock.canBePlacedAt(level, above, Direction.UP)) {
+            level.setBlockAndUpdate(above, BaseFireBlock.getState(level, above));
+        }
+        return true;
+    }
+
+    /** The top solid block of a random column within {@link #STRIKE_RADIUS} of the core (never the core's own). */
+    private BlockPos around(RandomSource random) {
         BlockPos pos = getBlockPos();
-        int x = pos.getX() + random.nextInt(STRIKE_RADIUS * 2 + 1) - STRIKE_RADIUS;
-        int z = pos.getZ() + random.nextInt(STRIKE_RADIUS * 2 + 1) - STRIKE_RADIUS;
-        BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos(x, pos.getY() + 3, z);
-        for (int dy = 0; dy < 7 && level != null && level.getBlockState(at).isAir(); dy++) {
+        int x = 0;
+        int z = 0;
+        while (x == 0 && z == 0) {
+            x = random.nextInt(STRIKE_RADIUS * 2 + 1) - STRIKE_RADIUS;
+            z = random.nextInt(STRIKE_RADIUS * 2 + 1) - STRIKE_RADIUS;
+        }
+        BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos(pos.getX() + x, pos.getY() + 4, pos.getZ() + z);
+        for (int dy = 0; dy < 9 && level != null && level.getBlockState(at).getCollisionShape(level, at).isEmpty()
+                && level.getBlockState(at).getFluidState().isEmpty(); dy++) {
             at.move(0, -1, 0);
         }
-        return at.immutable().above(up);
+        return at.immutable();
     }
 
     private List<BlockPos> rods(ServerLevel level) {
@@ -260,14 +338,18 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         return rods;
     }
 
-    /** The arc lands: the clients draw the bolt, everyone hears the crack and sees the sparks where it struck. */
+    /** The bolt lands: the clients draw it, everyone hears the crack and sees the burst where it struck. */
     private void land(ServerLevel level, Vec3 at, int kind) {
         send(level, at, kind);
-        level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, kind == HexcoreStrikePayload.CALM ? 6 : 16,
-                0.2, 0.2, 0.2, 0.2);
-        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.05);
+        boolean calm = kind == HexcoreStrikePayload.CALM;
+        level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, calm ? 10 : 30, 0.25, 0.25, 0.25, 0.35);
+        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, calm ? 4 : 10, 0.15, 0.15, 0.15, 0.08);
+        level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.x, at.y + 0.05, at.z, 0, calm ? 0.8 : 1.6, 1, 0, 1);
+        if (!calm) {
+            level.sendParticles(ModParticles.vapour(ModParticles.SOOT), at.x, at.y, at.z, 8, 0.2, 0.15, 0.2, 0.02);
+        }
         level.playSound(null, BlockPos.containing(at), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.BLOCKS,
-                kind == HexcoreStrikePayload.CALM ? 0.35F : 0.9F, 1.4F + level.getRandom().nextFloat() * 0.3F);
+                calm ? 0.45F : 1.0F, 1.3F + level.getRandom().nextFloat() * 0.3F);
     }
 
     private void send(ServerLevel level, Vec3 at, int kind) {
@@ -291,9 +373,9 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         return arcs;
     }
 
-    /** Client: a strike the server sent. */
+    /** Client: a bolt the server sent. */
     public void strike(HexcoreStrikePayload payload, long now) {
-        arcs.add(new Arc(payload.target(), now, payload.kind() == HexcoreStrikePayload.CALM ? 8 : 12, (int) (now * 31 + arcs.size()),
+        arcs.add(new Arc(payload.target(), now, payload.kind() == HexcoreStrikePayload.CALM ? 10 : 16, (int) (now * 31 + arcs.size()),
                 payload.kind() != HexcoreStrikePayload.CALM));
     }
 
@@ -312,17 +394,17 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         if (!active()) {
             return;
         }
-        // Small arcs crackle over the circle all through a ritual; the more unstable, the more of them.
+        // Small arcs crackle over the circle all through a ritual; the angrier, the more of them.
         RandomSource random = level.getRandom();
-        if (random.nextFloat() < 0.12F + 0.5F * instability) {
-            Vec3 to = crackleTarget(level, random);
+        if (random.nextFloat() < 0.12F + 0.5F * anger) {
+            Vec3 to = crackleTarget(random);
             if (to != null) {
                 arcs.add(new Arc(to, now, 3 + random.nextInt(4), random.nextInt(), false));
             }
         }
     }
 
-    private @Nullable Vec3 crackleTarget(Level level, RandomSource random) {
+    private @Nullable Vec3 crackleTarget(RandomSource random) {
         Ritual.Circle circle = circle();
         BlockPos pos = getBlockPos();
         int pick = random.nextInt(4);
@@ -346,6 +428,8 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         instability = input.getFloatOr("instability", 0);
+        anger = input.getFloatOr("anger", 0);
+        angerTicks = input.getIntOr("anger_ticks", 0);
         bornAt = input.getLongOr("born_at", Long.MIN_VALUE);
     }
 
@@ -354,6 +438,8 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         super.saveAdditional(output);
         if (active()) {
             output.putFloat("instability", instability);
+            output.putFloat("anger", anger);
+            output.putInt("anger_ticks", angerTicks);
         }
         if (bornAt != Long.MIN_VALUE) {
             output.putLong("born_at", bornAt);
