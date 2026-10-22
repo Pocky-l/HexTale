@@ -134,6 +134,47 @@ public final class RuneWorkGameTests {
         });
     }
 
+    /** A ritual with a gemstone in the centre ends with the altar itself turned into a Hexcore. */
+    @HexTest(maxTicks = 700)
+    public static void theAltarWakesIntoAHexcore(GameTestHelper helper) {
+        List<ItemStack> items = List.of(new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), new ItemStack(ModItems.HEXTECH_CRYSTAL.get()),
+                new ItemStack(ModItems.HEXSTEEL_INGOT.get()), new ItemStack(ModItems.HEXSTEEL_INGOT.get()));
+        EssenceMix essence = EssenceMix.of(Map.of(Essence.MAGIC, 32, Essence.CIRCUIT, 24, Essence.CRYSTAL, 16));
+        HextechAltarBlockEntity altar = circle(helper, new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), items, essence);
+        List<ItemStack> more = List.of(new ItemStack(ModItems.BRASS_BLOCK.get()), new ItemStack(ModItems.BRASS_BLOCK.get()),
+                new ItemStack(Items.LIGHTNING_ROD.weathering().unaffected()));
+        List<BlockPos> corners = List.of(new BlockPos(5, 2, 1), new BlockPos(5, 2, 5), new BlockPos(1, 2, 5));
+        for (int i = 0; i < corners.size(); i++) {
+            helper.setBlock(corners.get(i), ModBlocks.PEDESTAL.get());
+            helper.getBlockEntity(corners.get(i), PedestalBlockEntity.class).place(more.get(i));
+        }
+        researcher(helper, com.pockyl.hextale.research.ResearchTopics.HEXCORE);
+        altar.startOrAbort(null);
+        helper.assertTrue(altar.active(), "the awakening starts");
+        helper.succeedWhen(() -> {
+            helper.assertBlockPresent(ModBlocks.HEXCORE.get(), ALTAR);
+            HextechAltarBlockEntity core = helper.getBlockEntity(ALTAR, HextechAltarBlockEntity.class);
+            helper.assertTrue(core instanceof com.pockyl.hextale.block.HexcoreBlockEntity && core.center().isEmpty() && !core.active(),
+                    "a Hexcore stands where the altar was, with nothing left in it");
+        });
+    }
+
+    /** A Hexcore runs the altar's rituals for a quarter less essence; heavy rituals are more unstable than light ones. */
+    @HexTest(maxTicks = 400)
+    public static void aHexcoreDrawsLessEssence(GameTestHelper helper) {
+        helper.assertTrue(com.pockyl.hextale.block.HexcoreBlockEntity.instabilityOf(7, 72, 0)
+                > com.pockyl.hextale.block.HexcoreBlockEntity.instabilityOf(4, 36, 0)
+                && com.pockyl.hextale.block.HexcoreBlockEntity.instabilityOf(0, 24, 1) < 0.1F, "instability follows the ritual's weight");
+        HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), pickaxeItems(), PICKAXE_ESSENCE);
+        helper.setBlock(ALTAR, ModBlocks.HEXCORE.get());
+        HextechAltarBlockEntity core = helper.getBlockEntity(ALTAR, HextechAltarBlockEntity.class);
+        core.place(new ItemStack(Items.IRON_PICKAXE));
+        researcher(helper, com.pockyl.hextale.research.ResearchTopics.of(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()));
+        core.startOrAbort(null);
+        helper.assertTrue(core.active() && core.essenceLeft().total() == 27, "36 mB asked, 27 drawn");
+        helper.succeed();
+    }
+
     private static Ritual.Circle scan(GameTestHelper helper) {
         return Ritual.Circle.scan(helper.getLevel(), helper.absolutePos(ALTAR));
     }

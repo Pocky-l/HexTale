@@ -1,0 +1,87 @@
+{
+  "textures": {
+    "particle": "hextale:block/hexcore_matrix",
+    "matrix": "hextale:block/hexcore_matrix"
+  },
+  "elements": [
+    {
+      "name": "tile_ny",
+      "from": [
+        4.5,
+        4.5,
+        17
+      ],
+      "to": [
+        11.5,
+        11.5,
+        19
+      ],
+      "rotation": {
+        "x": 90,
+        "y": 0,
+        "z": 0,
+        "origin": [
+          8,
+          8,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            11.125,
+            0.4375,
+            12.4375,
+            1.75
+          ],
+          "texture": "#matrix"
+        },
+        "east": {
+          "uv": [
+            10.75,
+            0.4375,
+            11.125,
+            1.75
+          ],
+          "texture": "#matrix"
+        },
+        "south": {
+          "uv": [
+            12.8125,
+            0.4375,
+            14.125,
+            1.75
+          ],
+          "texture": "#matrix"
+        },
+        "west": {
+          "uv": [
+            12.4375,
+            0.4375,
+            12.8125,
+            1.75
+          ],
+          "texture": "#matrix"
+        },
+        "up": {
+          "uv": [
+            11.125,
+            0.0625,
+            12.4375,
+            0.4375
+          ],
+          "texture": "#matrix"
+        },
+        "down": {
+          "uv": [
+            12.4375,
+            0.0625,
+            13.75,
+            0.4375
+          ],
+          "texture": "#matrix"
+        }
+      }
+    }
+  ]
+}

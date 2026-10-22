@@ -139,6 +139,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.SIPHON_PYLON.get(), "siphon_pylon");
         info(registration, ModItems.HEXTECH_SKYPACK.get(), "hextech_skypack");
         info(registration, ModItems.SORTING_MATRIX.get(), "sorting_matrix");
+        info(registration, ModItems.HEXCORE.get(), "hexcore");
         info(registration, ModItems.WHIRL_REAPER.get(), "whirl_reaper");
         info(registration, ModItems.HEX_SAWMILL.get(), "hex_sawmill");
         info(registration, ModItems.HEXTECH_ALTAR.get(), "hextech_altar");
@@ -179,7 +180,7 @@ public class HextaleJeiPlugin implements IModPlugin {
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addCraftingStation(BoilingCategory.TYPE, ModItems.ALEMBIC.get());
         registration.addCraftingStation(SeparationCategory.TYPE, ModItems.SEPARATOR.get());
-        registration.addCraftingStation(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.PEDESTAL.get(), ModItems.RUNE_STELE.get());
+        registration.addCraftingStation(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.HEXCORE.get(), ModItems.PEDESTAL.get(), ModItems.RUNE_STELE.get());
         registration.addCraftingStation(RuneBurningCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
         registration.addCraftingStation(HexCraftingCategory.TYPE, ModItems.HEX_WORKBENCH.get());
         registration.addCraftingStation(AlloyingCategory.TYPE, ModItems.HEX_FURNACE.get());

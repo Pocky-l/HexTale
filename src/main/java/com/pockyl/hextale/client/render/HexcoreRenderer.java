@@ -7,24 +7,43 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.block.HexcoreBlockEntity;
+import com.pockyl.hextale.block.HexcoreMatrix;
+import com.pockyl.hextale.infusion.Ritual;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * The Hexcore's rune matrix floats a block and a half over its cradle, slowly turning and tumbling, with the crystal's
- * light showing between the tiles.
+ * The Hexcore: its rune matrix floats over the cradle and turns slowly; now and then a layer of tiles twists a quarter
+ * turn like a puzzle cube. With an item inside, the tiles part so it shows between them. During a ritual the matrix
+ * rises, its tiles twist faster and faster and stand off from the crystal, arcs crackle out of it over the circle and
+ * strikes the server sends land as heavy bolts. Born from an altar, the matrix assembles itself: the crystal swells out
+ * of a flash and the tiles come spiralling in from all sides.
  */
 public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, HexcoreRenderer.State> {
-    /** Height of the matrix centre over the block's floor, in blocks (model y 24). */
-    public static final float CENTRE = 1.5F;
+    private static final int TILES = HexcoreMatrix.TILES.length;
+    private static final float FLASH_TICKS = 30;
+    private static final int STALL_COLOR = 0xE0503C;
+    private static final int BOLT_COLOR = 0x8FD8FF;
+    private final ItemModelResolver itemModelResolver;
 
     public HexcoreRenderer(BlockEntityRendererProvider.Context context) {
+        this.itemModelResolver = context.itemModelResolver();
     }
 
     @Override
@@ -36,31 +55,239 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
     public void extractRenderState(HexcoreBlockEntity core, State state, float partialTick, Vec3 cameraPosition,
                                    ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(core, state, partialTick, cameraPosition, breakProgress);
-        state.time = HexFx.time(core.getLevel(), partialTick) + (int) (core.getBlockPos().asLong() & 255);
+        Level level = core.getLevel();
+        float time = HexFx.time(level, partialTick);
+        long now = level == null ? 0 : level.getGameTime();
+        int seed = (int) core.getBlockPos().asLong();
+        state.time = time;
+        state.active = core.active();
+        state.progress = core.progress(partialTick);
+        state.stalled = core.stalled();
+        state.finishing = core.finishing();
+        state.instability = core.instability();
+        state.sinceFinish = now - core.finishedAt() + partialTick;
+        state.sinceBirth = core.bornAt() == Long.MIN_VALUE ? -1 : now - core.bornAt() + partialTick;
+        state.rise = core.animateRise(time);
+        itemModelResolver.updateForTopItem(state.center, core.center(), ItemDisplayContext.GROUND, level, null, seed);
+        HextechAltarRenderer.extractGhosts(core, itemModelResolver, state.ghosts, state.extras, seed);
+
+        // Spin and tumble follow the ritual smoothly (the altar's ring phases, reused).
+        float target = state.active ? (state.stalled ? 1.5F : 2.5F + 9 * state.progress) : 0.7F;
+        float[] phases = core.animateRings(time, target);
+        state.spin = phases[0];
+        state.tumble = phases[1];
+        state.itemTurn = core.animateItem(time, state.active ? 3 + 9 * state.progress : 1.4F);
+
+        // The puzzle: rare slow twists at rest, quick ones in a ritual, frantic ones when it stalls; none while it assembles.
+        if (level != null && !(state.sinceBirth >= 0 && state.sinceBirth < HexcoreBlockEntity.BIRTH_TICKS)) {
+            float interval;
+            float duration;
+            if (!state.active) {
+                interval = 110;
+                duration = 16;
+            } else if (state.stalled) {
+                interval = 5;
+                duration = 5;
+            } else {
+                interval = Mth.lerp(state.progress, 16, 2);
+                duration = Mth.lerp(state.progress, 11, 5);
+            }
+            core.matrix().update(time, interval, duration, level.getRandom());
+        }
+        for (int i = 0; i < TILES; i++) {
+            state.tiles[i] = core.matrix().pose(i, time);
+        }
+
+        state.arcs.clear();
+        Vec3 origin = Vec3.atLowerCornerOf(core.getBlockPos());
+        for (HexcoreBlockEntity.Arc arc : core.arcs()) {
+            float age = now - arc.born() + partialTick;
+            state.arcs.add(new ArcState(arc.to().subtract(origin), age / arc.life(), arc.seed(), arc.strong()));
+        }
+        state.eye = cameraPosition.subtract(origin);
     }
 
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         float time = state.time;
-        float breath = 0.5F + 0.5F * Mth.sin(time * 0.06F);
+        float flash = state.sinceFinish >= 0 && state.sinceFinish < FLASH_TICKS ? 1 - state.sinceFinish / FLASH_TICKS : 0;
+        float birth = state.sinceBirth >= 0 && state.sinceBirth < HexcoreBlockEntity.BIRTH_TICKS ? state.sinceBirth : -1;
+        float activity = state.active ? 0.4F + 0.6F * state.progress : 0;
+        int color = state.stalled ? RuneDrawing.mix(HexFx.HEXTECH, STALL_COLOR, 0.5F + 0.5F * Mth.sin(time * 0.6F)) : HexFx.HEXTECH;
+        // Tiles stand off from the crystal: to show an item inside, and more as a ritual breathes; they close in the finale.
+        float open = state.center.isEmpty() ? 0 : 2.2F;
+        if (state.active) {
+            open = 1.6F + 1.2F * state.progress + 0.5F * Mth.sin(time * 0.35F);
+            if (state.finishing) {
+                open *= 0.4F;
+            }
+        }
+        float shake = state.stalled ? 0.025F * Mth.sin(time * 2.7F) : 0.01F * state.instability * activity * Mth.sin(time * 4.1F);
+        float centreY = state.rise + Mth.sin(time * 0.045F) * 0.04F;
+
         poseStack.pushPose();
-        poseStack.translate(0.5, CENTRE + Mth.sin(time * 0.045F) * 0.04F, 0.5);
-        HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.9F + 0.15F * breath, 0xBFEFFF, 0.9F);
-        HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 2.4F + 0.3F * breath, 0x5FA8F0, 0.18F + 0.08F * breath);
-        poseStack.rotate(Axis.YP.rotationDegrees(time * 0.5F));
-        poseStack.rotate(Axis.XP.rotationDegrees(14 + Mth.sin(time * 0.013F) * 10));
+        poseStack.translate(0.5 + shake, centreY, 0.5 - shake);
+        float swell = birth >= 0 ? Mth.clamp((birth - 60) / 20, 0, 1) * (1 - Mth.clamp((birth - 80) / 10, 0, 1)) : 0;
+        float breath = 0.5F + 0.5F * Mth.sin(time * 0.06F);
+        HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.9F + 0.15F * breath + 0.5F * activity + 1.2F * flash + 1.5F * swell,
+                RuneDrawing.mix(color, 0xFFFFFF, 0.3F + 0.5F * flash), 0.9F);
+        HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 2.4F + 0.3F * breath + 1.2F * activity + 2.5F * swell,
+                RuneDrawing.mix(0x5FA8F0, color, 0.5F), 0.16F + 0.08F * breath + 0.2F * activity + 0.4F * swell);
+
+        poseStack.pushPose();
+        poseStack.rotate(Axis.YP.rotationDegrees(state.spin));
+        poseStack.rotate(Axis.XP.rotationDegrees(14 + Mth.sin(state.tumble * Mth.DEG_TO_RAD) * (10 + 20 * activity)));
         poseStack.rotate(Axis.ZP.rotationDegrees(Mth.sin(time * 0.009F) * 12));
-        poseStack.translate(-0.5, -0.5, -0.5);
-        TableModels.submit(poseStack, collector, TableModels.HEXCORE_MATRIX, LightCoordsUtil.FULL_BRIGHT);
+        Vector3f offset = new Vector3f();
+        for (int i = 0; i < TILES; i++) {
+            float away = open;
+            float swirl = 0;
+            if (birth >= 0) {
+                // Tile i comes in from far off, spiralling, after its own delay.
+                float u = Mth.clamp((birth - 14 - (i % 13) * 3 - (i / 13) * 2) / 24, 0, 1);
+                if (u <= 0) {
+                    continue;
+                }
+                float eased = 1 - (1 - u) * (1 - u) * (1 - u);
+                away = open + (1 - eased) * 30;
+                swirl = (1 - eased) * 220;
+            }
+            poseStack.pushPose();
+            if (swirl != 0) {
+                poseStack.rotate(Axis.YP.rotationDegrees(swirl));
+            }
+            poseStack.rotate(state.tiles[i]);
+            HexcoreMatrix.NORMALS[i].mul(away / 16, offset);
+            poseStack.translate(offset.x, offset.y, offset.z);
+            poseStack.translate(-0.5, -0.5, -0.5);
+            TableModels.submit(poseStack, collector, TableModels.HEXCORE_TILES.get(i), LightCoordsUtil.FULL_BRIGHT);
+            poseStack.popPose();
+        }
+        if (state.center.isEmpty()) {
+            float grow = birth >= 0 ? Mth.clamp(birth / 18, 0, 1) : 1;
+            float pulse = grow * (1 + 0.06F * Mth.sin(time * 0.2F) + 0.12F * activity * Mth.sin(time * 0.5F));
+            poseStack.pushPose();
+            poseStack.scale(pulse, pulse, pulse);
+            poseStack.translate(-0.5, -0.5, -0.5);
+            TableModels.submit(poseStack, collector, TableModels.HEXCORE_CRYSTAL, LightCoordsUtil.FULL_BRIGHT);
+            poseStack.popPose();
+        }
         poseStack.popPose();
+
+        // The item held in the heart of the matrix.
+        if (!state.center.isEmpty()) {
+            poseStack.pushPose();
+            poseStack.rotate(Axis.YP.rotationDegrees(state.itemTurn));
+            poseStack.scale(0.6F, 0.6F, 0.6F);
+            poseStack.translate(0, -0.15, 0);
+            state.center.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
+        }
+        poseStack.popPose();
+
+        Vec3 centre = new Vec3(0.5, centreY, 0.5);
+        Vector3f eye = new Vector3f((float) state.eye.x, (float) state.eye.y, (float) state.eye.z);
+        for (ArcState arc : state.arcs) {
+            bolt(poseStack, collector, centre, arc, eye, time);
+        }
+        HextechAltarRenderer.ghosts(state.ghosts, state.extras, time, poseStack, collector, camera);
+    }
+
+    /**
+     * A jagged bolt from the matrix to the arc's target that re-forks a few times a second: a wide faint glow and a
+     * white-hot core, with one branch off its middle. Strong strikes are thicker and brighter.
+     */
+    private static void bolt(PoseStack poseStack, SubmitNodeCollector collector, Vec3 centre, ArcState arc, Vector3f eye, float time) {
+        if (arc.age < 0 || arc.age > 1) {
+            return;
+        }
+        Vec3 dir = arc.to.subtract(centre);
+        if (dir.lengthSqr() < 1.0E-4) {
+            return;
+        }
+        Vec3 from = centre.add(dir.normalize().scale(0.6));
+        float fade = arc.strong ? 1 - arc.age * arc.age : 1 - arc.age;
+        int flicker = (int) (time * 0.7F);
+        Vec3[] main = jagged(from, arc.to, arc.seed * 131 + flicker, arc.strong ? 0.22F : 0.14F);
+        Vec3 forkFrom = main[main.length / 2];
+        Vec3 forkTo = forkFrom.add(arc.to.subtract(from).scale(0.35)).add(noise(arc.seed + 7, flicker).scale(0.6));
+        Vec3[] fork = jagged(forkFrom, forkTo, arc.seed * 17 + flicker, 0.1F);
+        float wide = arc.strong ? 0.26F : 0.12F;
+        float core = arc.strong ? 0.075F : 0.035F;
+        int glow = arc.strong ? RuneDrawing.mix(BOLT_COLOR, 0xFFFFFF, 0.2F) : BOLT_COLOR;
+        collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
+            JarStreamFx.strip(consumer, pose, main, ends(main.length), eye, wide, glow, 0.35F * fade);
+            JarStreamFx.strip(consumer, pose, main, ends(main.length), eye, core, 0xF4FCFF, 0.95F * fade);
+            JarStreamFx.strip(consumer, pose, fork, ends(fork.length), eye, wide * 0.6F, glow, 0.25F * fade);
+            JarStreamFx.strip(consumer, pose, fork, ends(fork.length), eye, core * 0.6F, 0xF4FCFF, 0.7F * fade);
+        });
+    }
+
+    private static Vec3[] jagged(Vec3 from, Vec3 to, int seed, float amplitude) {
+        double length = to.subtract(from).length();
+        int segments = Math.max(5, (int) Math.round(length * 5));
+        Vec3[] points = new Vec3[segments + 1];
+        for (int k = 0; k <= segments; k++) {
+            float t = k / (float) segments;
+            Vec3 at = from.lerp(to, t);
+            if (k > 0 && k < segments) {
+                at = at.add(noise(seed, k).scale(amplitude * Math.sqrt(length) * Mth.sin(t * Mth.PI)));
+            }
+            points[k] = at;
+        }
+        return points;
+    }
+
+    /** A pseudo-random vector in the unit cube centred on 0, the same for the same seed and index. */
+    private static Vec3 noise(int seed, int index) {
+        int h = seed * 0x9E3779B1 + index * 0x85EBCA6B;
+        h ^= h >>> 15;
+        h *= 0x2C1B3C6D;
+        h ^= h >>> 12;
+        return new Vec3((h & 255) / 255.0 - 0.5, ((h >>> 8) & 255) / 255.0 - 0.5, ((h >>> 16) & 255) / 255.0 - 0.5).scale(2);
+    }
+
+    /** Full light along a bolt, dimmer at its two ends. */
+    private static float[] ends(int count) {
+        float[] light = new float[count];
+        for (int i = 0; i < count; i++) {
+            light[i] = i == 0 || i == count - 1 ? 0.5F : 1;
+        }
+        return light;
+    }
+
+    @Override
+    public boolean shouldRenderOffScreen() {
+        return true;
     }
 
     @Override
     public AABB getRenderBoundingBox(HexcoreBlockEntity core) {
-        return new AABB(core.getBlockPos()).inflate(0.3, 0, 0.3).expandTowards(0, 1.3, 0);
+        // Ghosts and arcs reach anywhere in the circle; the matrix rises over two blocks.
+        return new AABB(core.getBlockPos()).inflate(Ritual.PEDESTAL_RADIUS + 1, 3, Ritual.PEDESTAL_RADIUS + 1).expandTowards(0, 1, 0);
+    }
+
+    record ArcState(Vec3 to, float age, int seed, boolean strong) {
     }
 
     public static final class State extends BlockEntityRenderState {
+        final ItemStackRenderState center = new ItemStackRenderState();
+        final Quaternionf[] tiles = new Quaternionf[TILES];
+        final List<ArcState> arcs = new ArrayList<>();
+        final List<HextechAltarRenderer.GhostState> ghosts = new ArrayList<>();
+        final List<Vec3> extras = new ArrayList<>();
+        Vec3 eye = Vec3.ZERO;
         float time;
+        boolean active;
+        boolean stalled;
+        boolean finishing;
+        float progress;
+        float instability;
+        float sinceFinish;
+        float sinceBirth;
+        float rise;
+        float spin;
+        float tumble;
+        float itemTurn;
     }
 }

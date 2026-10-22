@@ -1,0 +1,87 @@
+{
+  "textures": {
+    "particle": "hextale:block/hexcore_matrix",
+    "matrix": "hextale:block/hexcore_matrix"
+  },
+  "elements": [
+    {
+      "name": "tile_pynz",
+      "from": [
+        4.5,
+        4.5,
+        17
+      ],
+      "to": [
+        11.5,
+        11.5,
+        19
+      ],
+      "rotation": {
+        "x": 135,
+        "y": 0,
+        "z": -180,
+        "origin": [
+          8,
+          8,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            11.125,
+            2.3125,
+            12.4375,
+            3.625
+          ],
+          "texture": "#matrix"
+        },
+        "east": {
+          "uv": [
+            10.75,
+            2.3125,
+            11.125,
+            3.625
+          ],
+          "texture": "#matrix"
+        },
+        "south": {
+          "uv": [
+            12.8125,
+            2.3125,
+            14.125,
+            3.625
+          ],
+          "texture": "#matrix"
+        },
+        "west": {
+          "uv": [
+            12.4375,
+            2.3125,
+            12.8125,
+            3.625
+          ],
+          "texture": "#matrix"
+        },
+        "up": {
+          "uv": [
+            11.125,
+            1.9375,
+            12.4375,
+            2.3125
+          ],
+          "texture": "#matrix"
+        },
+        "down": {
+          "uv": [
+            12.4375,
+            1.9375,
+            13.75,
+            2.3125
+          ],
+          "texture": "#matrix"
+        }
+      }
+    }
+  ]
+}

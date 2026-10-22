@@ -61,6 +61,12 @@ public final class ClientPayloads {
                 reaper.show(payload, level.getGameTime());
             }
         });
+        event.register(com.pockyl.hextale.network.HexcoreStrikePayload.TYPE, (payload, context) -> {
+            ClientLevel level = Minecraft.getInstance().level;
+            if (level != null && level.getBlockEntity(payload.core()) instanceof com.pockyl.hextale.block.HexcoreBlockEntity core) {
+                core.strike(payload, level.getGameTime());
+            }
+        });
         event.register(PylonLinkPayload.TYPE, (payload, context) -> PylonLinking.clientFrom = payload.from().orElse(null));
     }
 

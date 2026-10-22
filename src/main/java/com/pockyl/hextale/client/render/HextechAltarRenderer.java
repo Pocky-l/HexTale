@@ -55,17 +55,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         float time = HexFx.time(level, partialTick);
         int seed = (int) altar.getBlockPos().asLong();
         itemModelResolver.updateForTopItem(state.center, altar.center(), ItemDisplayContext.GROUND, level, null, seed);
-        state.ghosts.clear();
-        int index = 0;
-        for (HextechAltarBlockEntity.Ghost ghost : altar.ghosts()) {
-            ItemStackRenderState item = new ItemStackRenderState();
-            itemModelResolver.updateForTopItem(item, ghost.item(), ItemDisplayContext.GROUND, level, null, seed + 2 + index++);
-            state.ghosts.add(new GhostState(ghost.at(), item));
-        }
-        state.extras.clear();
-        for (BlockPos pos : altar.extras()) {
-            state.extras.add(Vec3.atLowerCornerOf(pos.subtract(altar.getBlockPos())).add(0.5, 1.12, 0.5));
-        }
+        extractGhosts(altar, itemModelResolver, state.ghosts, state.extras, seed);
         state.time = time;
         state.active = altar.active();
         state.progress = altar.progress(partialTick);
@@ -133,17 +123,34 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         }
         poseStack.popPose();
 
-        ghosts(state, poseStack, collector, camera);
+        ghosts(state.ghosts, state.extras, state.time, poseStack, collector, camera);
+    }
+
+    /** Fills the ghosts of the items the circle lacks and the pedestals holding something it does not take. */
+    static void extractGhosts(HextechAltarBlockEntity altar, ItemModelResolver resolver, java.util.List<GhostState> ghosts,
+                              java.util.List<Vec3> extras, int seed) {
+        Level level = altar.getLevel();
+        ghosts.clear();
+        int index = 0;
+        for (HextechAltarBlockEntity.Ghost ghost : altar.ghosts()) {
+            ItemStackRenderState item = new ItemStackRenderState();
+            resolver.updateForTopItem(item, ghost.item(), ItemDisplayContext.GROUND, level, null, seed + 2 + index++);
+            ghosts.add(new GhostState(ghost.at(), item));
+        }
+        extras.clear();
+        for (BlockPos pos : altar.extras()) {
+            extras.add(Vec3.atLowerCornerOf(pos.subtract(altar.getBlockPos())).add(0.5, 1.12, 0.5));
+        }
     }
 
     /**
      * The items the circle still lacks, as ghosts over the free pedestals: see-through, small, slowly turning, breathing
      * in and out inside a pale cyan haze; pedestals holding something the ritual does not take get a dull red haze.
      */
-    private static void ghosts(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
-        float time = state.time;
+    static void ghosts(java.util.List<GhostState> ghostStates, java.util.List<Vec3> extras, float time, PoseStack poseStack,
+                       SubmitNodeCollector collector, CameraRenderState camera) {
         int i = 0;
-        for (GhostState ghost : state.ghosts) {
+        for (GhostState ghost : ghostStates) {
             float phase = time * 0.12F + i * 1.7F;
             float pulse = 0.5F + 0.5F * Mth.sin(phase);
             poseStack.pushPose();
@@ -159,7 +166,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
             poseStack.popPose();
             i++;
         }
-        for (Vec3 extra : state.extras) {
+        for (Vec3 extra : extras) {
             poseStack.pushPose();
             poseStack.translate(extra.x, extra.y, extra.z);
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.6F, STALL_COLOR, 0.25F + 0.12F * Mth.sin(time * 0.2F));

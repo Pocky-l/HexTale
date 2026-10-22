@@ -47,8 +47,10 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> LAPIDARY_DISC = model("block/hex_lapidary_disc");
     public static final StandaloneModelKey<BlockStateModelPart> WHIRL_REAPER_VANES = model("block/whirl_reaper_vanes");
     public static final StandaloneModelKey<BlockStateModelPart> HEX_SAW_DISC = model("block/hex_sawmill_disc");
-    /** The Hexcore's rune matrix, centred on its own block and turned by the hexcore's renderer. */
-    public static final StandaloneModelKey<BlockStateModelPart> HEXCORE_MATRIX = model("block/hexcore_matrix");
+    /** The Hexcore's matrix piece by piece (tiles in {@link com.pockyl.hextale.block.HexcoreMatrix#TILES} order), centred on their own block. */
+    public static final List<StandaloneModelKey<BlockStateModelPart>> HEXCORE_TILES = java.util.Arrays.stream(com.pockyl.hextale.block.HexcoreMatrix.TILES)
+            .map(tile -> model("block/hexcore/" + tile)).toList();
+    public static final StandaloneModelKey<BlockStateModelPart> HEXCORE_CRYSTAL = model("block/hexcore/crystal");
 
     private TableModels() {
     }

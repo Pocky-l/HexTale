@@ -1,0 +1,17 @@
+{
+  "region": "circle",
+  "icon": "hextale:hexcore",
+  "parents": ["hextech_altar", "hextech_gemstone", "hexsteel"],
+  "goal": {
+    "type": "event",
+    "event": "hexcore_awakened"
+  },
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:hexcore"
+  },
+  "research": "hexcore",
+  "aura": "storm",
+  "station": true,
+  "pos": [371, -48]
+}

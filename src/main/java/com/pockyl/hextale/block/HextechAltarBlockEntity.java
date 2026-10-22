@@ -25,6 +25,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -35,6 +36,7 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.ResearchTopic;
@@ -104,7 +106,11 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     private float itemTime = Float.NaN;
 
     public HextechAltarBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.HEXTECH_ALTAR.get(), pos, state);
+        this(ModBlockEntities.HEXTECH_ALTAR.get(), pos, state);
+    }
+
+    protected HextechAltarBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     public ItemStack center() {
@@ -261,8 +267,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         kind = plan.kind();
         inputs = new ArrayList<>(plan.inputs());
         itemsTotal = inputs.size();
-        essenceLeft = plan.essences();
-        essenceTotal = plan.essences();
+        essenceLeft = cost(plan.essences());
+        essenceTotal = essenceLeft;
         result = plan.result();
         duration = Math.max(1, plan.duration());
         elapsed = 0;
@@ -272,6 +278,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         drawTick = 0;
         rescan = 0;
         startedAt = serverLevel.getGameTime();
+        ritualStarted(serverLevel);
         for (var stele : circle.steles()) {
             if (stele.rune() != null) {
                 serverLevel.blockEvent(stele.getBlockPos(), stele.getBlockState().getBlock(), RuneSteleBlockEntity.EVENT_ACTIVE, duration + 20);
@@ -317,6 +324,9 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             altar.waitingFor = null;
         } else if (altar.kind != null && ++altar.stalled > Ritual.STALL_LIMIT) {
             altar.collapse(serverLevel);
+        }
+        if (altar.kind != null) {
+            altar.ritualTick(serverLevel);
         }
         if (altar.kind != null && serverLevel.getGameTime() % SYNC_TICKS == 0) {
             altar.sync();
@@ -419,6 +429,13 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     }
 
     private void finish(ServerLevel level) {
+        if (result.is(ModItems.HEXCORE.get()) && !(this instanceof HexcoreBlockEntity)) {
+            // The circle's own heart was the work: the altar itself becomes the Hexcore.
+            clearRitual();
+            resetSteles(level);
+            HexcoreBlockEntity.awaken(level, worldPosition, getBlockState());
+            return;
+        }
         center = result.copy();
         if (kind == Ritual.Kind.WRITE) {
             // A rune copied onto a scroll: the researchers standing by have learned to pass runes on.
@@ -427,12 +444,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             }
         }
         clearRitual();
-        // The runes went into the work: every stele of the circle goes dark until a rune is chosen again.
-        for (RuneSteleBlockEntity stele : Ritual.Circle.scan(level, worldPosition).steles()) {
-            if (stele.rune() != null) {
-                stele.choose(null, 1);
-            }
-        }
+        resetSteles(level);
         Vec3 at = itemPosition();
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 40, 0.1, 0.1, 0.1, 0.18);
         level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 20, 0.3, 0.3, 0.3, 0.3);
@@ -442,6 +454,15 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         level.playSound(null, worldPosition, ModSounds.RITUAL_COMPLETE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         level.blockEvent(worldPosition, getBlockState().getBlock(), 1, 0);
         sync();
+    }
+
+    /** The runes went into the work: every stele of the circle goes dark until a rune is chosen again. */
+    private void resetSteles(ServerLevel level) {
+        for (RuneSteleBlockEntity stele : Ritual.Circle.scan(level, worldPosition).steles()) {
+            if (stele.rune() != null) {
+                stele.choose(null, 1);
+            }
+        }
     }
 
     /** A failed ritual: what was drawn is lost, the centre stays, the backlash strikes whoever is close. */
@@ -475,13 +496,60 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     }
 
     public Vec3 itemPosition() {
-        return new Vec3(worldPosition.getX() + 0.5, worldPosition.getY() + ITEM_Y, worldPosition.getZ() + 0.5);
+        return new Vec3(worldPosition.getX() + 0.5, worldPosition.getY() + itemY(), worldPosition.getZ() + 0.5);
+    }
+
+    /** Height of the centre item over the block's floor (blocks); the Hexcore holds it inside its floating matrix. */
+    protected double itemY() {
+        return ITEM_Y;
+    }
+
+    // ---- Hooks for the Hexcore --------------------------------------------------------------------------------------
+
+    /** What the ritual really draws of the essences its recipe asks for. */
+    protected EssenceMix cost(EssenceMix planned) {
+        return planned;
+    }
+
+    /** Server: a ritual has just started (its inputs, essences and circle are set). */
+    protected void ritualStarted(ServerLevel level) {
+    }
+
+    /** Server: one tick of a running ritual, after its progress. */
+    protected void ritualTick(ServerLevel level) {
+    }
+
+    /** Client: every tick, before the ritual's motes. */
+    protected void clientUpdate(Level level) {
+    }
+
+    /** Pedestals whose items the ritual still has to draw, the next one first. */
+    protected List<Ritual.Input> pendingInputs() {
+        return inputs;
+    }
+
+    protected int itemsTotal() {
+        return itemsTotal;
+    }
+
+    protected EssenceMix essenceTotal() {
+        return essenceTotal;
+    }
+
+    /** Ticks the running ritual has progressed (server). */
+    protected int elapsed() {
+        return elapsed;
+    }
+
+    protected Ritual.@Nullable Circle circle() {
+        return circle;
     }
 
     // ---- Client ---------------------------------------------------------------------------------------------------
 
     /** Client side: advances the smooth ritual time and throws the ritual's motes. */
     public static void clientTick(Level level, BlockPos pos, BlockState state, HextechAltarBlockEntity altar) {
+        altar.clientUpdate(level);
         if (altar.kind == null) {
             altar.clientElapsed = 0;
             if (level.getGameTime() % GHOST_TICKS == 0) {
