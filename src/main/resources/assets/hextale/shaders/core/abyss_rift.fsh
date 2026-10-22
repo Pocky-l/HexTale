@@ -132,10 +132,9 @@ void main() {
 
     // The torn edge crawls: noise eats into the opening, faster while it tears open.
     float crawl = plainFbm(planeUv * 2.6 + vec2(t * 0.35, -t * 0.27) + seed * 13.0);
-    float threshold = shard ? -1.0 : 0.05 + 0.17 * crawl;
-    if (edge < threshold) {
-        discard;
-    }
+    // The body stays closed (cutting the edge away would open a slit between its two skins); the crawl only moves the
+    // burning band along the seam.
+    float threshold = shard ? -1.0 : 0.12 * crawl - 0.02;
 
     vec3 col = vec3(0.010, 0.003, 0.026);
     const float DEPTHS[5] = float[](0.35, 1.0, 2.3, 4.8, 10.0);
@@ -157,9 +156,9 @@ void main() {
         col += vec3(0.78, 0.22, 0.95) * lit * lit * 1.3 * flicker;
         col += vec3(1.0, 0.9, 1.0) * smoothstep(0.08, 0.0, edge) * 0.8;
     } else {
-        float rim = 1.0 - smoothstep(threshold, threshold + 0.24, edge);
-        float hot = 1.0 - smoothstep(threshold, threshold + 0.045, edge);
-        float fringe = exp(-pow((edge - threshold - 0.13) / 0.035, 2.0));
+        float rim = 1.0 - smoothstep(threshold, threshold + 0.15, edge);
+        float hot = 1.0 - smoothstep(threshold, threshold + 0.03, edge);
+        float fringe = exp(-pow((edge - threshold - 0.09) / 0.03, 2.0));
         vec3 rimCol = mix(vec3(0.45, 0.07, 0.70), vec3(1.0, 0.45, 0.95), rim * rim);
         col = mix(col, col * 0.4, rim);
         col += rimCol * rim * rim * 1.5 * flicker * tearing;
