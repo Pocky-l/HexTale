@@ -6,9 +6,9 @@
 #include <minecraft:projection.glsl>
 
 // An abyss rift: the opening and the shards of torn space around it.
-// UV0 = position on the rift's own plane in blocks (centre = 0, 0). Color: r = depth into the opening
-// (0 on the torn edge, 1 deep inside), g = how far the rift is open, b = 0 for the opening, 1 for a shard,
-// a = the rift's own random phase.
+// The rift is a 3D body. UV0 = x, y of the point in the rift's own frame (blocks, centre = 0), Color.a = its z
+// (128 = 0, +-127 = +-Z_RANGE). Color: r = depth into the opening (0 on the torn edge, 1 deep inside), g = how far the
+// rift is open, b = random phase 0-127 (+128 on a shard).
 
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec2 UV0;
@@ -17,7 +17,7 @@ layout(location = 2) in vec4 Color;
 layout(location = 0) out float sphericalVertexDistance;
 layout(location = 1) out float cylindricalVertexDistance;
 layout(location = 2) out vec3 viewPos;
-layout(location = 3) out vec2 planeUv;
+layout(location = 3) out vec3 localPos;
 layout(location = 4) out vec4 riftData;
 
 void main() {
@@ -26,6 +26,6 @@ void main() {
     sphericalVertexDistance = fog_spherical_distance(Position);
     cylindricalVertexDistance = fog_cylindrical_distance(Position);
     viewPos = Position;
-    planeUv = UV0;
+    localPos = vec3(UV0, (Color.a * 255.0 - 128.0) / 127.0 * 2.0);
     riftData = Color;
 }

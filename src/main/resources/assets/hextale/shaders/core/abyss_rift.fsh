@@ -4,16 +4,17 @@
 #include <minecraft:fog.glsl>
 #include <minecraft:globals.glsl>
 
-// The abyss seen through a rift. The opening is a flat mesh, but the shader looks THROUGH it: layers of violet mist,
-// dust and far specks lie at growing depth behind the plane (parallax from the view direction in the plane's own
-// frame, built from screen derivatives), all of them pulled into the centre along a log-polar spiral, so the hole reads
-// as a deep funnel that never ends. The torn edge crawls (animated noise eats into the mesh), glows hot near the cut,
-// with a cold fringe just inside it. Shards (riftData.b = 1) show the same abyss with lit edges and are never eaten.
+// The abyss inside a rift. The rift is a closed 3D body; every fragment looks along its view ray INTO a 3D field of
+// violet mist and specks that lives in the rift's own frame (the ray is turned into that frame with the screen
+// derivatives of the world and local positions), so the depth is right from every side and overlapping pieces show the
+// very same field - no seams. The field spirals into the rift's axis for ever. The torn edge crawls (animated noise
+// eats into the body), glows hot near the cut with a cold fringe; grazing views light the skin. Shards show the same
+// abyss with lit edges and are never eaten.
 
 layout(location = 0) in float sphericalVertexDistance;
 layout(location = 1) in float cylindricalVertexDistance;
 layout(location = 2) in vec3 viewPos;
-layout(location = 3) in vec2 planeUv;
+layout(location = 3) in vec3 localPos;
 layout(location = 4) in vec4 riftData;
 
 layout(location = 0) out vec4 fragColor;
@@ -77,13 +78,14 @@ vec3 abyssRamp(float x) {
 }
 
 // One layer of the abyss at depth `depth` (blocks behind the plane), seen at plane point p.
-vec3 layer(vec2 p, float depth, float t, float seed, float k) {
+vec3 layer(vec3 point, float depth, float t, float seed, float k) {
+    vec2 p = point.xy;
     float r = length(p);
     float a = atan(p.y, p.x) / TAU;
     // Log-polar spiral: the mist turns and slides inward forever.
     float twist = 0.55 + 0.25 * k;
     vec2 q = vec2(a * SPOKES + log(r + 0.08) * twist + seed * 3.7,
-            log(r + 0.08) * 1.9 + t * (0.22 + 0.07 * k) + seed * 11.0 + k * 5.3);
+            log(r + 0.08) * 1.9 + point.z * 0.9 + t * (0.22 + 0.07 * k) + seed * 11.0 + k * 5.3);
     float mist = fbm(q, SPOKES);
     float wisps = smoothstep(0.42, 0.88, mist);
     float fade = exp(-depth * 0.16);
@@ -107,29 +109,26 @@ void main() {
     float edge = riftData.r;
     float open = riftData.g;
     bool shard = riftData.b > 0.5;
-    float seed = riftData.a * 255.0;
+    float seed = mod(riftData.b * 255.0, 128.0);
     float t = GameTime * 1200.0;
 
-    // The plane's frame from screen derivatives: tangent/bitangent along planeUv, normal out of the plane.
+    // Turn the view ray into the rift's frame: the rigid map local -> world is fixed by two screen derivatives and
+    // their cross product (a rotation keeps cross products).
     vec3 dp1 = dFdx(viewPos);
     vec3 dp2 = dFdy(viewPos);
-    vec2 duv1 = dFdx(planeUv);
-    vec2 duv2 = dFdy(planeUv);
-    vec3 n = cross(dp1, dp2);
-    float nLen = length(n);
-    n = nLen > 1e-12 ? n / nLen : vec3(0.0, 0.0, 1.0);
-    vec3 dp2perp = cross(dp2, n);
-    vec3 dp1perp = cross(n, dp1);
-    vec3 tangent = dp2perp * duv1.x + dp1perp * duv2.x;
-    vec3 bitangent = dp2perp * duv1.y + dp1perp * duv2.y;
-    float scale = inversesqrt(max(max(dot(tangent, tangent), dot(bitangent, bitangent)), 1e-12));
-    tangent *= scale;
-    bitangent *= scale;
-
+    vec3 dl1 = dFdx(localPos);
+    vec3 dl2 = dFdy(localPos);
+    mat3 world = mat3(dp1, dp2, cross(dp1, dp2));
+    mat3 local = mat3(dl1, dl2, cross(dl1, dl2));
     vec3 view = normalize(viewPos);
-    vec3 v = vec3(dot(view, tangent), dot(view, bitangent), dot(view, n));
-    // Looking along the plane would push layers to infinity; keep a floor so grazing views stay calm.
-    vec2 parallax = v.xy / max(abs(v.z), 0.22);
+    vec3 ray = vec3(0.0, 0.0, -1.0);
+    vec3 normal = vec3(0.0, 0.0, 1.0);
+    if (abs(determinant(world)) > 1e-30) {
+        ray = normalize(local * (inverse(world) * view));
+        normal = normalize(cross(dl1, dl2));
+    }
+    float grazing = 1.0 - abs(dot(normal, ray));
+    vec2 planeUv = localPos.xy;
 
     // The torn edge crawls: noise eats into the opening, faster while it tears open.
     float crawl = plainFbm(planeUv * 2.6 + vec2(t * 0.35, -t * 0.27) + seed * 13.0);
@@ -142,12 +141,12 @@ void main() {
     const float DEPTHS[5] = float[](0.35, 1.0, 2.3, 4.8, 10.0);
     for (int i = 0; i < 5; i++) {
         float depth = DEPTHS[i];
-        vec2 p = planeUv + parallax * depth;
+        vec3 p = localPos + ray * depth;
         col += layer(p, depth, t, seed, float(i)) * (i == 0 ? 0.45 : 1.0);
     }
-    // A faint glow at the bottom of the funnel, far behind everything.
-    vec2 far = planeUv + parallax * 18.0;
-    col += vec3(0.55, 0.12, 0.65) * exp(-dot(far, far) * 0.35) * (0.35 + 0.15 * sin(t * 0.9 + seed));
+    // A faint glow at the bottom of the abyss, far behind everything.
+    vec3 far = localPos + ray * 18.0;
+    col += vec3(0.55, 0.12, 0.65) * exp(-dot(far.xy, far.xy) * 0.35) * (0.35 + 0.15 * sin(t * 0.9 + seed));
     // Near the edge the opening is shallow and lit by the rim; deep inside it is darker.
     col *= mix(1.0, 0.72, smoothstep(0.35, 1.0, edge));
 
@@ -165,6 +164,8 @@ void main() {
         col = mix(col, col * 0.4, rim);
         col += rimCol * rim * rim * 1.5 * flicker * tearing;
         col += vec3(0.25, 0.85, 0.95) * fringe * 0.32 * flicker;
+        // The skin of the body catches light where it is seen at a glance.
+        col += vec3(0.62, 0.16, 0.85) * pow(grazing, 4.0) * 0.3 * flicker;
         col += vec3(1.0, 0.94, 1.0) * hot * (0.9 + 0.6 * (1.0 - open));
     }
 

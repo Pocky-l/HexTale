@@ -28,6 +28,8 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
     /** Width (blocks) of the hairline crack before the rift parts. */
     private static final float CRACK_WIDTH = 0.035F;
     private static final int MAX_MESHES = 48;
+    /** The z the vertex colour can carry to the shader (must match abyss_rift.vsh). */
+    private static final float Z_RANGE = 2.0F;
     private static final Map<Long, RiftMesh> MESHES = new LinkedHashMap<>(16, 0.75F, true) {
         @Override
         protected boolean removeEldestEntry(Map.Entry<Long, RiftMesh> eldest) {
@@ -94,22 +96,10 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
         float[] open = new float[n];
         float[] crackGlow = new float[n];
         float[] z = new float[n];
-        // A tear in space has no side view: a standing rift turns its opening to whoever looks (about its long axis; a
-        // shatter turns fully), so it is a hole into the abyss from every side. A fissure lies on the ground as it is.
-        float ex = (float) (camera.pos.x - state.x);
-        float ey = (float) (camera.pos.y - state.y);
-        float ez = (float) (camera.pos.z - state.z);
-        Quaternionf turn = new Quaternionf(state.orientation);
-        if (!state.shape.lying()) {
-            turn.rotationY((float) Mth.atan2(ex, ez));
-            if (state.shape == RiftShape.SHATTER) {
-                turn.rotateX((float) -Mth.atan2(ey, Mth.sqrt(ex * ex + ez * ez)));
-            }
-            turn.rotateZ(AbyssRift.tilt(state.shape, state.seed));
-        }
-        Vector3f eye = new Quaternionf(turn).conjugate().transform(new Vector3f(ex, ey, ez));
-        // Later pieces a hair behind earlier ones (away from the eye): a fork's edge hides behind the body it leaves.
-        float depth = eye.z >= 0 ? -0.012F : 0.012F;
+        // The rift is a body of abyss, not a sheet: every piece swells into a closed, faceted lens - front and back skins
+        // sewn together along the torn edge. The shader fills it with a 3D abyss, right from every side. A fissure is
+        // flatter (its lower skin sinks into the ground).
+        float depth = state.shape.halfWidth(state.size) * (state.shape.lying() ? 0.35F : 0.8F);
         float phase = (state.seed & 0xFFFF) / 65535F * Mth.TWO_PI;
         for (int v = 0; v < n; v++) {
             float when = mesh.delay[v];
@@ -125,17 +115,19 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
             y[v] = mesh.cy[v] * gather + mesh.oy[v] * f;
             open[v] = part * (1 - shut);
             crackGlow[v] = crack * (1 - part);
-            z[v] = depth * mesh.swell[v];
+            z[v] = depth * mesh.swell[v] * Mth.sin(mesh.edge[v] * Mth.HALF_PI) * Math.min(1, f) * gather;
         }
 
         poseStack.pushPose();
-        poseStack.rotate(turn);
-        int seedByte = state.seed & 0xFF;
+        poseStack.rotate(state.orientation);
+        int seedByte = state.seed & 0x7F;
         collector.submitCustomGeometry(poseStack, AbyssVoid.TYPE, (pose, consumer) -> {
             for (int q = 0; q < mesh.quadCount; q++) {
-                for (int k = 0; k < 4; k++) {
-                    int v = mesh.quads[q * 4 + k];
-                    voidVertex(consumer, pose, x[v], y[v], z[v], mesh.edge[v], open[v], false, seedByte);
+                for (int side = -1; side <= 1; side += 2) {
+                    for (int k = 0; k < 4; k++) {
+                        int v = mesh.quads[q * 4 + k];
+                        voidVertex(consumer, pose, x[v], y[v], z[v] * side, mesh.edge[v], open[v], false, seedByte);
+                    }
                 }
             }
             shards(consumer, pose, mesh, state, gather, shut, seedByte);
@@ -224,8 +216,9 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
 
     private static void voidVertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float edge, float open, boolean shard,
                                    int seedByte) {
+        // Colour: edge depth, openness, phase (+128 on a shard), and z in the rift's frame (128 = 0, 127 = Z_RANGE).
         consumer.addVertex(pose, x, y, z).setUv(x, y).setColor(Math.round(Mth.clamp(edge, 0, 1) * 255), Math.round(Mth.clamp(open, 0, 1) * 255),
-                shard ? 255 : 0, seedByte);
+                seedByte + (shard ? 128 : 0), 128 + Math.round(Mth.clamp(z / Z_RANGE, -1, 1) * 127));
     }
 
     private static float smooth(float t) {
