@@ -267,8 +267,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         kind = plan.kind();
         inputs = new ArrayList<>(plan.inputs());
         itemsTotal = inputs.size();
-        essenceLeft = cost(plan.essences());
-        essenceTotal = essenceLeft;
+        essenceLeft = plan.essences();
+        essenceTotal = plan.essences();
         result = plan.result();
         duration = Math.max(1, plan.duration());
         elapsed = 0;
@@ -505,11 +505,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     }
 
     // ---- Hooks for the Hexcore --------------------------------------------------------------------------------------
-
-    /** What the ritual really draws of the essences its recipe asks for. */
-    protected EssenceMix cost(EssenceMix planned) {
-        return planned;
-    }
 
     /** Server: a ritual has just started (its inputs, essences and circle are set). */
     protected void ritualStarted(ServerLevel level) {

@@ -159,19 +159,12 @@ public final class RuneWorkGameTests {
         });
     }
 
-    /** A Hexcore runs the altar's rituals for a quarter less essence; heavy rituals are more unstable than light ones. */
-    @HexTest(maxTicks = 400)
-    public static void aHexcoreDrawsLessEssence(GameTestHelper helper) {
+    /** Heavy rituals are more unstable on a Hexcore than light ones. */
+    @HexTest
+    public static void heavyRitualsAreUnstable(GameTestHelper helper) {
         helper.assertTrue(com.pockyl.hextale.block.HexcoreBlockEntity.instabilityOf(7, 72, 0)
                 > com.pockyl.hextale.block.HexcoreBlockEntity.instabilityOf(4, 36, 0)
                 && com.pockyl.hextale.block.HexcoreBlockEntity.instabilityOf(0, 24, 1) < 0.1F, "instability follows the ritual's weight");
-        HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), pickaxeItems(), PICKAXE_ESSENCE);
-        helper.setBlock(ALTAR, ModBlocks.HEXCORE.get());
-        HextechAltarBlockEntity core = helper.getBlockEntity(ALTAR, HextechAltarBlockEntity.class);
-        core.place(new ItemStack(Items.IRON_PICKAXE));
-        researcher(helper, com.pockyl.hextale.research.ResearchTopics.of(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()));
-        core.startOrAbort(null);
-        helper.assertTrue(core.active() && core.essenceLeft().total() == 27, "36 mB asked, 27 drawn");
         helper.succeed();
     }
 

@@ -21,7 +21,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.network.HexcoreStrikePayload;
 import com.pockyl.hextale.network.ModNetwork;
@@ -37,8 +36,8 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Hexcore: a Hextech Altar whose heart woke up. It runs every ritual the altar runs, from the same circle, and draws a
- * quarter less essence for it; but its matrix is alive and a heavy ritual makes it unstable. The more pedestal items,
+ * The Hexcore: a Hextech Altar whose heart woke up. It runs every ritual the altar runs, from the same circle (later it
+ * will make things only it can make); but its matrix is alive and a heavy ritual makes it unstable. The more pedestal items,
  * essence and runes a ritual takes, the higher its {@link #instability()}, and while it runs the matrix throws arcs: a
  * light one only crackles, a hard one strikes - it hurts and sets alight whoever stands close, sets things on fire,
  * shatters fragile blocks, even burns an item off a pedestal before the ritual could draw it. Lightning rods in the
@@ -50,8 +49,6 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
     public static final double RISEN_Y = 2.35;
     /** Ticks the matrix takes to assemble when the altar becomes a Hexcore. */
     public static final int BIRTH_TICKS = 90;
-    /** Share of a recipe's essences a Hexcore really draws. */
-    private static final float THRIFT = 0.75F;
     /** Ticks at the start of a ritual before the first strike. */
     private static final int CALM_TICKS = 30;
     private static final int STRIKE_RADIUS = 6;
@@ -115,11 +112,6 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
     @Override
     protected double itemY() {
         return active() ? RISEN_Y : REST_Y;
-    }
-
-    @Override
-    protected EssenceMix cost(EssenceMix planned) {
-        return planned.isEmpty() ? planned : planned.part(Math.max(1, Math.round(planned.total() * THRIFT)));
     }
 
     // ---- Instability and strikes (server) ----------------------------------------------------------------------------
