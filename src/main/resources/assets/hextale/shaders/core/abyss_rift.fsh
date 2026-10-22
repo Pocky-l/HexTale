@@ -4,18 +4,18 @@
 #include <minecraft:fog.glsl>
 #include <minecraft:globals.glsl>
 
-// The abyss inside a rift. The rift is a closed 3D body; every fragment looks along its view ray INTO a 3D field of
+// The abyss inside a rift. The rift is a 3D body of tubes; every fragment looks along its view ray INTO a 3D field of
 // violet mist and specks that lives in the rift's own frame (the ray is turned into that frame with the screen
 // derivatives of the world and local positions), so the depth is right from every side and overlapping pieces show the
-// very same field - no seams. The field spirals into the rift's axis for ever. The torn edge crawls (animated noise
-// eats into the body), glows hot near the cut with a cold fringe; grazing views light the skin. Shards show the same
-// abyss with lit edges and are never eaten.
+// very same field - no seams. The field spirals into the rift's axis for ever. The bright edge is the silhouette: the
+// smooth skin normal (rift frame) against the ray, wavering with animated noise; a cold fringe lies just inside it.
 
 layout(location = 0) in float sphericalVertexDistance;
 layout(location = 1) in float cylindricalVertexDistance;
 layout(location = 2) in vec3 viewPos;
 layout(location = 3) in vec3 localPos;
 layout(location = 4) in vec4 riftData;
+layout(location = 5) in vec3 localNormal;
 
 layout(location = 0) out vec4 fragColor;
 
@@ -106,7 +106,6 @@ vec3 layer(vec3 point, float depth, float t, float seed, float k) {
 }
 
 void main() {
-    float edge = riftData.r;
     float open = riftData.g;
     bool shard = riftData.b > 0.5;
     float seed = mod(riftData.b * 255.0, 128.0);
@@ -122,19 +121,14 @@ void main() {
     mat3 local = mat3(dl1, dl2, cross(dl1, dl2));
     vec3 view = normalize(viewPos);
     vec3 ray = vec3(0.0, 0.0, -1.0);
-    vec3 normal = vec3(0.0, 0.0, 1.0);
     if (abs(determinant(world)) > 1e-30) {
         ray = normalize(local * (inverse(world) * view));
-        normal = normalize(cross(dl1, dl2));
     }
-    float grazing = 1.0 - abs(dot(normal, ray));
-    vec2 planeUv = localPos.xy;
-
-    // The torn edge crawls: noise eats into the opening, faster while it tears open.
-    float crawl = plainFbm(planeUv * 2.6 + vec2(t * 0.35, -t * 0.27) + seed * 13.0);
-    // The body stays closed (cutting the edge away would open a slit between its two skins); the crawl only moves the
-    // burning band along the seam.
-    float threshold = shard ? -1.0 : 0.12 * crawl - 0.02;
+    // The bright edge is the silhouette: where the smooth skin turns away from the eye, from whatever side.
+    vec3 normal = normalize(localNormal);
+    float rim = 1.0 - abs(dot(normal, ray));
+    float crawl = plainFbm(localPos.xy * 2.6 + vec2(localPos.z * 1.7 + t * 0.35, -t * 0.27) + seed * 13.0);
+    float lit = clamp(rim + 0.22 * (crawl - 0.5), 0.0, 1.0);
 
     vec3 col = vec3(0.010, 0.003, 0.026);
     const float DEPTHS[5] = float[](0.35, 1.0, 2.3, 4.8, 10.0);
@@ -146,27 +140,17 @@ void main() {
     // A faint glow at the bottom of the abyss, far behind everything.
     vec3 far = localPos + ray * 18.0;
     col += vec3(0.55, 0.12, 0.65) * exp(-dot(far.xy, far.xy) * 0.35) * (0.35 + 0.15 * sin(t * 0.9 + seed));
-    // Near the edge the opening is shallow and lit by the rim; deep inside it is darker.
-    col *= mix(1.0, 0.72, smoothstep(0.35, 1.0, edge));
 
     float flicker = 0.85 + 0.15 * noise(vec2(t * 6.0, seed * 7.0), 0.0);
     float tearing = 1.0 + 2.2 * (1.0 - open);
-    if (shard) {
-        float lit = 1.0 - smoothstep(0.0, 0.32, edge);
-        col += vec3(0.78, 0.22, 0.95) * lit * lit * 1.3 * flicker;
-        col += vec3(1.0, 0.9, 1.0) * smoothstep(0.08, 0.0, edge) * 0.8;
-    } else {
-        float rim = 1.0 - smoothstep(threshold, threshold + 0.15, edge);
-        float hot = 1.0 - smoothstep(threshold, threshold + 0.03, edge);
-        float fringe = exp(-pow((edge - threshold - 0.09) / 0.03, 2.0));
-        vec3 rimCol = mix(vec3(0.45, 0.07, 0.70), vec3(1.0, 0.45, 0.95), rim * rim);
-        col = mix(col, col * 0.4, rim);
-        col += rimCol * rim * rim * 1.5 * flicker * tearing;
-        col += vec3(0.25, 0.85, 0.95) * fringe * 0.32 * flicker;
-        // The skin of the body catches light where it is seen at a glance.
-        col += vec3(0.62, 0.16, 0.85) * pow(grazing, 4.0) * 0.3 * flicker;
-        col += vec3(1.0, 0.94, 1.0) * hot * (0.9 + 0.6 * (1.0 - open));
-    }
+    float band = smoothstep(0.3, 0.95, lit);
+    float hot = smoothstep(0.8, 0.98, lit);
+    float fringe = exp(-pow((lit - 0.35) / 0.07, 2.0));
+    vec3 rimCol = mix(vec3(0.45, 0.07, 0.70), vec3(1.0, 0.45, 0.95), band);
+    col = mix(col, col * 0.4, band);
+    col += rimCol * band * band * (shard ? 1.1 : 1.5) * flicker * tearing;
+    col += vec3(0.25, 0.85, 0.95) * fringe * 0.3 * flicker;
+    col += vec3(1.0, 0.94, 1.0) * hot * (0.9 + 0.6 * (1.0 - open));
 
     fragColor = apply_fog(vec4(col, 1.0), sphericalVertexDistance, cylindricalVertexDistance, FogEnvironmentalStart,
             FogEnvironmentalEnd, FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);

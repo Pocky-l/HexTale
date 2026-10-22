@@ -19,14 +19,17 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Draws an abyss rift: the opening through the abyss shader ({@link AbyssVoid}), the splinters of torn space around
- * it with the same shader, and a soft additive glow hugging the torn edge ({@link HexGlow}). The mesh is built once per
- * rift ({@link RiftMesh}); every frame only moves its vertices: the crack runs out from where it started, the tear
- * parts with an overshoot, breathes in slow waves, and on closing presses shut and draws into a point.
+ * Draws an abyss rift as a body: every piece of it is a tube along its wandering spine, thick in the middle and drawn
+ * out to points, filled by the abyss shader ({@link AbyssVoid}) with a 3D field seen along the view ray and lit along
+ * its silhouette from whatever side. Splinters of torn space tumble around it. The outline is built once per rift
+ * ({@link RiftMesh}); every frame only the radii move: a hairline runs out from where the crack started, the body
+ * swells with an overshoot, breathes in slow waves, and on closing thins and draws into a point.
  */
 public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRenderer.State> {
-    /** Width (blocks) of the hairline crack before the rift parts. */
-    private static final float CRACK_WIDTH = 0.035F;
+    /** Radius (blocks) of the hairline before the rift swells. */
+    private static final float CRACK_RADIUS = 0.02F;
+    /** Vertices around a tube. */
+    private static final int SIDES = 14;
     private static final int MAX_MESHES = 48;
     /** The z the vertex colour can carry to the shader (must match abyss_rift.vsh). */
     private static final float Z_RANGE = 2.0F;
@@ -83,95 +86,93 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         RiftMesh mesh = mesh(state);
-        float age = state.age;
         float shut = smooth(state.close);
-        // At the very end the whole tear draws into its centre.
+        // At the very end the whole rift draws into its centre.
         float gather = 1 - smooth((state.close - 0.45F) / 0.55F);
         if (gather <= 0.001F) {
             return;
         }
-        int n = mesh.count;
-        float[] x = new float[n];
-        float[] y = new float[n];
-        float[] open = new float[n];
-        float[] crackGlow = new float[n];
-        float[] z = new float[n];
-        // The rift is a body of abyss, not a sheet: every piece swells into a closed, faceted lens - front and back skins
-        // sewn together along the torn edge. The shader fills it with a 3D abyss, right from every side. A fissure is
-        // flatter (its lower skin sinks into the ground).
-        float depth = state.shape.halfWidth(state.size) * (state.shape.lying() ? 0.35F : 0.8F);
+        int seedByte = state.seed & 0x7F;
         float phase = (state.seed & 0xFFFF) / 65535F * Mth.TWO_PI;
-        for (int v = 0; v < n; v++) {
-            float when = mesh.delay[v];
-            float crack = Mth.clamp((age - when * AbyssRift.CRACK_TICKS * 0.8F) / 3, 0, 1);
-            float part = Mth.clamp((age - AbyssRift.CRACK_TICKS - when * 7) / (AbyssRift.OPEN_TICKS - AbyssRift.CRACK_TICKS - 7), 0, 1);
-            float widen = backOut(part) * (1 - shut);
-            float offset = Mth.sqrt(mesh.ox[v] * mesh.ox[v] + mesh.oy[v] * mesh.oy[v]);
-            float thin = offset < 1.0E-4F ? 0 : Math.min(1, CRACK_WIDTH / offset) * crack * (1 - shut * 0.6F);
-            float breath = 1 + 0.05F * Mth.sin(state.time * 0.11F + mesh.cy[v] * 1.3F + phase)
-                    + 0.03F * Mth.sin(state.time * 0.37F + mesh.cx[v] * 2.1F);
-            float f = Math.max(widen, thin) * breath;
-            x[v] = mesh.cx[v] * gather + mesh.ox[v] * f;
-            y[v] = mesh.cy[v] * gather + mesh.oy[v] * f;
-            open[v] = part * (1 - shut);
-            crackGlow[v] = crack * (1 - part);
-            z[v] = depth * mesh.swell[v] * Mth.sin(mesh.edge[v] * Mth.HALF_PI) * Math.min(1, f) * gather;
-        }
-
         poseStack.pushPose();
         poseStack.rotate(state.orientation);
-        int seedByte = state.seed & 0x7F;
         collector.submitCustomGeometry(poseStack, AbyssVoid.TYPE, (pose, consumer) -> {
-            for (int q = 0; q < mesh.quadCount; q++) {
-                for (int side = -1; side <= 1; side += 2) {
-                    for (int k = 0; k < 4; k++) {
-                        int v = mesh.quads[q * 4 + k];
-                        voidVertex(consumer, pose, x[v], y[v], z[v] * side, mesh.edge[v], open[v], false, seedByte);
-                    }
-                }
+            for (RiftMesh.Tube tube : mesh.tubes) {
+                tube(consumer, pose, tube, state, shut, gather, phase, seedByte);
             }
             shards(consumer, pose, mesh, state, gather, shut, seedByte);
-        });
-
-        float glowWidth = 0.08F + state.size * 0.012F;
-        float pulse = 0.85F + 0.15F * Mth.sin(state.time * 0.23F + phase);
-        collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
-            for (int[] rim : mesh.rims) {
-                for (int i = 0; i + 1 < rim.length; i++) {
-                    int a = rim[i];
-                    int b = rim[i + 1];
-                    float strengthA = Math.max(open[a] * 0.32F, crackGlow[a] * 0.8F) * pulse;
-                    float strengthB = Math.max(open[b] * 0.32F, crackGlow[b] * 0.8F) * pulse;
-                    if (strengthA <= 0.01F && strengthB <= 0.01F) {
-                        continue;
-                    }
-                    // From a little inside the cut (the shader eats into the edge) out into the air.
-                    float ax = Mth.lerp(0.78F, mesh.cx[a] * gather, x[a]);
-                    float ay = Mth.lerp(0.78F, mesh.cy[a] * gather, y[a]);
-                    float bx = Mth.lerp(0.78F, mesh.cx[b] * gather, x[b]);
-                    float by = Mth.lerp(0.78F, mesh.cy[b] * gather, y[b]);
-                    band(consumer, pose, ax, ay, bx, by, mesh, a, b, glowWidth, AbyssRift.MAGENTA, strengthA, strengthB);
-                    band(consumer, pose, ax, ay, bx, by, mesh, a, b, glowWidth * 3, AbyssRift.VIOLET, strengthA * 0.18F,
-                            strengthB * 0.18F);
-                }
-            }
         });
         poseStack.popPose();
         super.submit(state, poseStack, collector, camera);
     }
 
-    /** One quad of glow from the edge segment a-b outwards, fading to nothing. */
-    private static void band(VertexConsumer consumer, PoseStack.Pose pose, float ax, float ay, float bx, float by, RiftMesh mesh, int a, int b,
-                             float width, int colour, float alphaA, float alphaB) {
-        consumer.addVertex(pose, ax, ay, 0).setColor(RuneDrawing.argb(colour, alphaA));
-        consumer.addVertex(pose, bx, by, 0).setColor(RuneDrawing.argb(colour, alphaB));
-        consumer.addVertex(pose, bx + mesh.nx[b] * width, by + mesh.ny[b] * width, 0).setColor(RuneDrawing.argb(colour, 0));
-        consumer.addVertex(pose, ax + mesh.nx[a] * width, ay + mesh.ny[a] * width, 0).setColor(RuneDrawing.argb(colour, 0));
+    /** One tube: a ring of vertices round every spine point, the ring's radius following the rift's timeline. */
+    private static void tube(VertexConsumer consumer, PoseStack.Pose pose, RiftMesh.Tube tube, State state, float shut, float gather, float phase,
+                             int seedByte) {
+        int n = tube.x().length;
+        float[][] ring = new float[n][];
+        float[] open = new float[n];
+        float squash = tube.depth();
+        for (int i = 0; i < n; i++) {
+            float when = tube.delay()[i];
+            float crack = Mth.clamp((state.age - when * AbyssRift.CRACK_TICKS * 0.8F) / 3, 0, 1);
+            float part = Mth.clamp((state.age - AbyssRift.CRACK_TICKS - when * 7) / (AbyssRift.OPEN_TICKS - AbyssRift.CRACK_TICKS - 7), 0, 1);
+            float full = tube.radius()[i];
+            float breath = 1 + 0.06F * Mth.sin(state.time * 0.11F + tube.y()[i] * 1.3F + phase)
+                    + 0.03F * Mth.sin(state.time * 0.37F + tube.x()[i] * 2.1F + tube.phase());
+            float radius = Math.max(full * backOut(part) * (1 - shut), Math.min(full, CRACK_RADIUS) * crack * (1 - shut * 0.6F)) * breath;
+            open[i] = part * (1 - shut);
+            float cx = tube.x()[i] * gather;
+            float cy = tube.y()[i] * gather;
+            float tx = tube.x()[Math.min(n - 1, i + 1)] - tube.x()[Math.max(0, i - 1)];
+            float ty = tube.y()[Math.min(n - 1, i + 1)] - tube.y()[Math.max(0, i - 1)];
+            float tl = Mth.sqrt(tx * tx + ty * ty);
+            float sx = tl < 1.0E-5F ? 1 : -ty / tl;
+            float sy = tl < 1.0E-5F ? 0 : tx / tl;
+            // Round in section but not perfectly: fuller or flatter across the plane, a few soft lumps that turn slowly
+            // along the tube, so no two pieces are alike.
+            float twist = tube.phase() + i * 0.35F;
+            float[] points = new float[SIDES * 6];
+            for (int k = 0; k < SIDES; k++) {
+                float angle = k * Mth.TWO_PI / SIDES;
+                float lump = 1 + 0.05F * Mth.sin(angle * 3 + twist);
+                float c = Mth.cos(angle) * lump;
+                float s = Mth.sin(angle) * lump;
+                points[k * 6] = cx + sx * c * radius;
+                points[k * 6 + 1] = cy + sy * c * radius;
+                points[k * 6 + 2] = s * radius * squash;
+                // The skin's normal of an elliptic section: the radii divided out.
+                float nx = sx * Mth.cos(angle);
+                float ny = sy * Mth.cos(angle);
+                float nz = Mth.sin(angle) / squash;
+                float nl = Mth.sqrt(nx * nx + ny * ny + nz * nz);
+                points[k * 6 + 3] = nx / nl;
+                points[k * 6 + 4] = ny / nl;
+                points[k * 6 + 5] = nz / nl;
+            }
+            ring[i] = points;
+        }
+        for (int i = 0; i + 1 < n; i++) {
+            float[] a = ring[i];
+            float[] b = ring[i + 1];
+            for (int k = 0; k < SIDES; k++) {
+                int m = (k + 1) % SIDES;
+                bodyVertex(consumer, pose, a, k, open[i], seedByte);
+                bodyVertex(consumer, pose, b, k, open[i + 1], seedByte);
+                bodyVertex(consumer, pose, b, m, open[i + 1], seedByte);
+                bodyVertex(consumer, pose, a, m, open[i], seedByte);
+            }
+        }
+    }
+
+    private static void bodyVertex(VertexConsumer consumer, PoseStack.Pose pose, float[] ring, int k, float open, int seedByte) {
+        int at = k * 6;
+        vertex(consumer, pose, ring[at], ring[at + 1], ring[at + 2], ring[at + 3], ring[at + 4], ring[at + 5], open, false, seedByte);
     }
 
     private static final int[][] FACES = {{0, 1, 2}, {0, 2, 3}, {0, 3, 1}, {1, 3, 2}};
 
-    /** The splinters: fly out of the tear as it parts, drift, tumble, and are sucked back in when it shuts. */
+    /** The splinters: fly out of the rift as it swells, drift, tumble, and are sucked back in when it shuts. */
     private static void shards(VertexConsumer consumer, PoseStack.Pose pose, RiftMesh mesh, State state, float gather, float shut, int seedByte) {
         float appear = smooth((state.age - AbyssRift.CRACK_TICKS - 4) / 20) * (1 - shut);
         if (appear <= 0.01F) {
@@ -179,6 +180,8 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
         }
         float orbit = state.time * 0.004F;
         Vector3f[] corner = {new Vector3f(), new Vector3f(), new Vector3f(), new Vector3f()};
+        Vector3f normal = new Vector3f();
+        Vector3f centre = new Vector3f();
         Quaternionf turn = new Quaternionf();
         for (RiftMesh.Shard shard : mesh.shards) {
             float out = (0.3F + 0.7F * appear) * gather;
@@ -190,35 +193,35 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
             float pz = shard.z() * out + Mth.cos(state.time * 0.04F + shard.phase()) * 0.06F;
             turn.rotationAxis(state.time * shard.spin() + shard.phase(), shard.axisX(), shard.axisY(), shard.axisZ());
             float[] c = shard.corners();
+            centre.set(0);
             for (int i = 0; i < 4; i++) {
                 turn.transform(corner[i].set(c[i * 3], c[i * 3 + 1], c[i * 3 + 2]).mul(appear)).add(px, py, pz);
+                centre.add(corner[i]);
             }
+            centre.mul(0.25F);
             for (int[] face : FACES) {
                 Vector3f a = corner[face[0]];
                 Vector3f b = corner[face[1]];
                 Vector3f d = corner[face[2]];
-                float mx = (a.x + b.x + d.x) / 3;
-                float my = (a.y + b.y + d.y) / 3;
-                float mz = (a.z + b.z + d.z) / 3;
-                // Each face is a fan from its middle, so its edges are lit and its middle shows the abyss.
-                Vector3f[] ring = {a, b, d};
-                for (int i = 0; i < 3; i++) {
-                    Vector3f p = ring[i];
-                    Vector3f q = ring[(i + 1) % 3];
-                    voidVertex(consumer, pose, mx, my, mz, 1, 1, true, seedByte);
-                    voidVertex(consumer, pose, p.x, p.y, p.z, 0, 1, true, seedByte);
-                    voidVertex(consumer, pose, q.x, q.y, q.z, 0, 1, true, seedByte);
-                    voidVertex(consumer, pose, q.x, q.y, q.z, 0, 1, true, seedByte);
+                new Vector3f(b).sub(a).cross(new Vector3f(d).sub(a), normal);
+                // The face's normal points out of the splinter.
+                if (normal.dot(new Vector3f(a).sub(centre)) < 0) {
+                    normal.negate();
+                }
+                normal.normalize();
+                for (Vector3f p : new Vector3f[]{a, b, d, d}) {
+                    vertex(consumer, pose, p.x, p.y, p.z, normal.x, normal.y, normal.z, 1, true, seedByte);
                 }
             }
         }
     }
 
-    private static void voidVertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float edge, float open, boolean shard,
-                                   int seedByte) {
-        // Colour: edge depth, openness, phase (+128 on a shard), and z in the rift's frame (128 = 0, 127 = Z_RANGE).
-        consumer.addVertex(pose, x, y, z).setUv(x, y).setColor(Math.round(Mth.clamp(edge, 0, 1) * 255), Math.round(Mth.clamp(open, 0, 1) * 255),
-                seedByte + (shard ? 128 : 0), 128 + Math.round(Mth.clamp(z / Z_RANGE, -1, 1) * 127));
+    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float nx, float ny, float nz, float open,
+                               boolean shard, int seedByte) {
+        // Colour: unused, openness, phase (+128 on a shard), z in the rift's frame (128 = 0, 127 = Z_RANGE). The normal
+        // stays in the rift's frame (no pose): the shader works there.
+        consumer.addVertex(pose, x, y, z).setUv(x, y).setColor(255, Math.round(Mth.clamp(open, 0, 1) * 255), seedByte + (shard ? 128 : 0),
+                128 + Math.round(Mth.clamp(z / Z_RANGE, -1, 1) * 127)).setNormal(nx, ny, nz);
     }
 
     private static float smooth(float t) {
@@ -226,7 +229,7 @@ public class AbyssRiftRenderer extends EntityRenderer<AbyssRift, AbyssRiftRender
         return t * t * (3 - 2 * t);
     }
 
-    /** 0 -> 1 overshooting a little before it settles: the tear springs open. */
+    /** 0 -> 1 overshooting a little before it settles: the body springs out. */
     private static float backOut(float t) {
         if (t <= 0) {
             return 0;

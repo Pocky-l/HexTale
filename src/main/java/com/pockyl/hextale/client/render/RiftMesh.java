@@ -37,6 +37,12 @@ final class RiftMesh {
     /** Runs of edge vertices along the torn edge, for the halo. */
     final List<int[]> rims = new ArrayList<>();
     final List<Shard> shards = new ArrayList<>();
+    /** The rift's body: one tube per piece, along its spine, tapering to points. */
+    final List<Tube> tubes = new ArrayList<>();
+
+    /** A tube: spine points, radius and crack delay at each, and how round it is (z radius / in-plane radius). */
+    record Tube(float[] x, float[] y, float[] radius, float[] delay, float depth, float phase) {
+    }
 
     /** A splinter of torn space floating near the edge: an irregular tetrahedron (12 floats) at a rest position. */
     record Shard(float x, float y, float z, float[] corners, float axisX, float axisY, float axisZ, float spin, float phase) {
@@ -152,6 +158,10 @@ final class RiftMesh {
         int[] left = new int[n];
         int[] middle = new int[n];
         int[] right = new int[n];
+        float[] tubeX = new float[n];
+        float[] tubeY = new float[n];
+        float[] tubeR = new float[n];
+        float[] tubeD = new float[n];
         for (int i = 0; i < n; i++) {
             float s = i / (float) (n - 1);
             float[] a = spine[Math.max(0, i - 2)];
@@ -172,6 +182,10 @@ final class RiftMesh {
             float d = delayAtRoot + Math.abs(along[i] - originAt) / half;
             // A soft root has no torn edge where it leaves its parent: the edge depth fades in over the first stretch.
             float rimEdge = softRoot && s < 0.3F ? 1 - s / 0.3F : 0;
+            tubeX[i] = spine[i][0];
+            tubeY[i] = spine[i][1];
+            tubeR[i] = (wl + wr) / 2;
+            tubeD[i] = d;
             middle[i] = vertex(spine[i][0], spine[i][1], 0, 0, normalX, normalY, 1, d);
             left[i] = vertex(spine[i][0], spine[i][1], normalX * wl, normalY * wl, normalX, normalY, rimEdge, d);
             right[i] = vertex(spine[i][0], spine[i][1], -normalX * wr, -normalY * wr, -normalX, -normalY, rimEdge, d);
@@ -180,6 +194,19 @@ final class RiftMesh {
             quad(left[i], left[i + 1], middle[i + 1], middle[i]);
             quad(middle[i], middle[i + 1], right[i + 1], right[i]);
         }
+        // The edge's teeth would make the body lumpy: the tube's radius is the widths smoothed along it.
+        float[] smoothR = new float[n];
+        for (int i = 0; i < n; i++) {
+            float sum = 0;
+            float weight = 0;
+            for (int k = Math.max(0, i - 3); k <= Math.min(n - 1, i + 3); k++) {
+                float w = 4 - Math.abs(k - i);
+                sum += tubeR[k] * w;
+                weight += w;
+            }
+            smoothR[i] = (i == 0 || i == n - 1) && bothEnds ? 0 : sum / weight;
+        }
+        tubes.add(new Tube(tubeX, tubeY, smoothR, tubeD, 0.7F + random.nextFloat() * 0.5F, random.nextFloat() * Mth.TWO_PI));
         int from = softRoot ? Math.min(n - 1, Math.max(2, n * 3 / 10)) : 0;
         rims.add(Arrays.copyOfRange(left, from, n));
         rims.add(Arrays.copyOfRange(right, from, n));
@@ -308,6 +335,20 @@ final class RiftMesh {
             outer = current;
         }
         rims.add(outer);
+        // The body: a fat tube along the long axis, round in the middle and drawn out to points at both ends.
+        int count = 18;
+        float[] tx = new float[count + 1];
+        float[] ty = new float[count + 1];
+        float[] tr = new float[count + 1];
+        float[] td = new float[count + 1];
+        for (int i = 0; i <= count; i++) {
+            float s = i / (float) count;
+            tx[i] = x + (random.nextFloat() - 0.5F) * rx * 0.15F * Mth.sin(s * Mth.PI);
+            ty[i] = y + ry * (2 * s - 1);
+            tr[i] = rx * (float) Math.pow(Mth.sin(s * Mth.PI), 0.8) * (0.85F + 0.3F * random.nextFloat());
+            td[i] = delayAtRoot + Math.abs(2 * s - 1) * ry / half;
+        }
+        tubes.add(new Tube(tx, ty, tr, td, 0.8F + random.nextFloat() * 0.4F, random.nextFloat() * Mth.TWO_PI));
     }
 
     /** Splinters of torn space hanging around the opening. */

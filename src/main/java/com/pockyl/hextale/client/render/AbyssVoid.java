@@ -14,16 +14,16 @@ import com.pockyl.hextale.Hextale;
 
 /**
  * The abyss seen through a rift: our own shader ({@code shaders/core/abyss_rift}). Opaque and depth-writing like the
- * end portal - the depth is painted by the shader (parallax layers behind the plane), and the torn edge is cut out of
- * the mesh with {@code discard}, so it needs no blending and no transparency sorting. Vertices: position, UV = place on
- * the rift's plane in blocks, colour = edge depth / openness / shard flag / random phase (see the vertex shader).
+ * end portal - the depth is painted by the shader (a 3D field along the view ray) and the body is closed, so it needs
+ * no blending and no transparency sorting. Vertices: position, UV = x, y
+ * in the rift's frame, colour = openness / phase + shard flag / z, normal = skin normal in the rift's frame.
  */
 public final class AbyssVoid {
     public static final RenderPipeline PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_FOG_SNIPPET)
             .withLocation(Hextale.id("pipeline/abyss_rift"))
             .withVertexShader(Hextale.id("core/abyss_rift"))
             .withFragmentShader(Hextale.id("core/abyss_rift"))
-            .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR)
+            .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL)
             .withPrimitiveTopology(PrimitiveTopology.QUADS)
             .withColorTargetState(ColorTargetState.DEFAULT)
             .withDepthStencilState(DepthStencilState.DEFAULT)
