@@ -148,6 +148,9 @@ public final class ModItems {
     public static final DeferredItem<KnowledgeScrollItem> SCROLL_OF_OMNISCIENCE = ITEMS.registerItem("scroll_of_omniscience",
             properties -> new KnowledgeScrollItem(true, properties.stacksTo(1).rarity(Rarity.EPIC)));
     /** Creative only: everything forgotten - runes, studied items, quests, parchments. */
+    /** Creative only for now: a sliver of the abyss that tears a rift open where it is pointed. */
+    public static final DeferredItem<com.pockyl.hextale.item.AbyssShardItem> ABYSS_SHARD = ITEMS.registerItem("abyss_shard",
+            properties -> new com.pockyl.hextale.item.AbyssShardItem(properties.stacksTo(1).rarity(Rarity.EPIC)));
     public static final DeferredItem<KnowledgeScrollItem> SCROLL_OF_OBLIVION = ITEMS.registerItem("scroll_of_oblivion",
             properties -> new KnowledgeScrollItem(false, properties.stacksTo(1).rarity(Rarity.EPIC)));
     public static final DeferredItem<BlockItem> PEDESTAL = ITEMS.registerSimpleBlockItem(ModBlocks.PEDESTAL);

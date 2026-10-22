@@ -749,5 +749,46 @@
         "volume": 0.7
       }
     ]
+  },
+  "abyss_rift.open": {
+    "subtitle": "subtitles.hextale.abyss_rift.open",
+    "sounds": [
+      {
+        "name": "hextale:abyss_rift_open1",
+        "volume": 0.9,
+        "attenuation_distance": 32
+      },
+      {
+        "name": "hextale:abyss_rift_open2",
+        "volume": 0.9,
+        "attenuation_distance": 32
+      }
+    ]
+  },
+  "abyss_rift.hum": {
+    "subtitle": "subtitles.hextale.abyss_rift.hum",
+    "sounds": [
+      {
+        "name": "hextale:abyss_rift_hum",
+        "volume": 0.6,
+        "attenuation_distance": 20,
+        "stream": true
+      }
+    ]
+  },
+  "abyss_rift.close": {
+    "subtitle": "subtitles.hextale.abyss_rift.close",
+    "sounds": [
+      {
+        "name": "hextale:abyss_rift_close1",
+        "volume": 0.8,
+        "attenuation_distance": 28
+      },
+      {
+        "name": "hextale:abyss_rift_close2",
+        "volume": 0.8,
+        "attenuation_distance": 28
+      }
+    ]
   }
 }

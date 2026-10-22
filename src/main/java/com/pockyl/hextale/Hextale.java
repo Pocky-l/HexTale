@@ -174,6 +174,7 @@ public final class Hextale {
             com.pockyl.hextale.research.ResearchTopics.all().forEach(topic -> output.accept(com.pockyl.hextale.item.ResearchNotesItem.of(topic)));
             output.accept(ModItems.SCROLL_OF_OMNISCIENCE);
             output.accept(ModItems.SCROLL_OF_OBLIVION);
+            output.accept(ModItems.ABYSS_SHARD);
         });
 
         container.registerConfig(ModConfig.Type.SYNCED, Config.SPEC);

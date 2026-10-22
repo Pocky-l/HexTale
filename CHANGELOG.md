@@ -4,6 +4,18 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Abyss rifts (a first look, no logic yet): tears in the world through which the abyss shows. Five shapes - a tear in
+  the air, a fissure in the ground, space shattered like glass, a gaping maw that opens like an eye and a forked cleft -
+  every one with its own jagged outline and size. Looking into one you see depth, not a flat picture: violet mist and
+  specks lie layer behind layer and are pulled into a spiral that never ends, the torn edge crawls and glows, splinters
+  of torn space tumble around it, motes of the world swirl in. A rift cracks open with a running hairline and springs
+  apart, breathes slowly, and when it closes it presses shut and is drawn into a point. Deep, layered sounds for the
+  tear, the breath of the abyss and the closing.
+- Abyss Shard (creative only for now): right click tears a rift open where you look; sneak + right click closes the
+  rift you look at, or picks the shape (any, tear, fissure, shatter, maw, cleft).
+
 ## [1.0.0-beta.4] - 2026-10-21
 ### Added
 - Hextech Skypack: two brass tanks of air essence around a hextech gemstone, worn on the back like elytra. Jump, then
