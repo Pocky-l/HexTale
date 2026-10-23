@@ -98,9 +98,12 @@ public final class HextaleClient {
         modBus.addListener(GogglesView::registerLayer);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::addLayers);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::registerModifier);
-        modBus.addListener(com.pockyl.hextale.client.render.ResearcherRobeClient::registerLayer);
-        modBus.addListener(com.pockyl.hextale.client.render.ResearcherRobeClient::bake);
-        modBus.addListener(com.pockyl.hextale.client.render.ResearcherRobeClient::registerExtensions);
+        modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerLayers);
+        modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::bake);
+        modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerExtensions);
+        modBus.addListener((net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent event) -> event.register(
+                com.pockyl.hextale.client.render.ResearcherClothesItemRenderer.ID,
+                com.pockyl.hextale.client.render.ResearcherClothesItemRenderer.Unbaked.MAP_CODEC));
         SkypackClient.register();
         modBus.addListener(com.pockyl.hextale.client.screen.book.AltarDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.screen.book.CircleDiorama::register);

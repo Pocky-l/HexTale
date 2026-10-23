@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "hextale:item/researcher_boots",
+    "model": {
+      "type": "hextale:researcher_clothes",
+      "piece": "boots"
+    }
+  }
+}

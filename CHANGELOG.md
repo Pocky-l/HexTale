@@ -19,11 +19,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hexsteel tools and armour: a sword, pickaxe, axe, shovel, hoe and a full set of armour as strong as diamond,
   forged on a crafting table from hexsteel ingots once hexsteel is researched.
 - Arcane Cloth: wool thrown into a crucible whose water holds magic and beast essence comes out as heavy, warm cloth.
-- Researcher's Robe: the first clothes of the mod, a real 3D robe instead of flat armour - a high collar that frames
-  the head, a short linen cape with shoulder drapes and a hextech clasp, a deep blue coat of arcane cloth with brass
-  hems, a belt with a buckle, a pouch, a rolled scroll and a vial of essence, and coat tails that swing with every step.
-  A little sturdier than leather, and it takes the edge off fire, lightning and blasts. Researched at the Research Table,
+- Researcher's clothes: the first clothes of the mod - a hood, a robe, trousers and boots, each a real 3D model instead
+  of flat armour, and the items in the inventory are the same models. The hood is deep and pointed, with a brass badge
+  and a hextech crystal over the brow. The robe has a high collar that frames the head, a short linen cape with
+  shoulder drapes and a hextech clasp, a deep blue coat of arcane cloth with brass hems, a belt with a buckle, a pouch,
+  a rolled scroll and a vial of essence, and coat tails that swing with every step. The trousers are thick wool with
+  linen wraps, a thigh pouch and a vial; the boots are leather with a brass buckle and a turned-down cuff. A little
+  sturdier than leather; the robe takes the edge off fire, lightning and blasts. Researched at the Research Table,
   sewn on the Hex Workbench.
+- Each piece takes one rune at the Hextech Altar, chosen from its own four. Hood: Banishing (night vision in the
+  dark), Radiance (more experience), Breath (longer breath under water), Purification (poison and weakness wash off).
+  Robe: Mending (all the clothes mend themselves), Healing (a blow may start regeneration), Fireproofing (fire on the
+  robe brings fire resistance), Mirror (a blow may glance back at the attacker). Trousers: Haste (faster), Windmill
+  (higher jumps), Gravity (less knockback), Shift (step up whole blocks). Boots: Lift (softer landings), Pump (easier
+  walking in water), Pollen (crops and saplings by your path shoot up), Quenching (hot floors burn less).
 ### Changed
 - The Hextech Altar needs Rune Chalk, and the Hexcore ritual takes a Crystal Battery and Regenerative Slime instead of
   two brass blocks.

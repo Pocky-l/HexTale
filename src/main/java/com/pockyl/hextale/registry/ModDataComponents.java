@@ -109,6 +109,10 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SKYPACK_RUNES =
             COMPONENTS.registerComponentType("skypack_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    /** The rune on a piece of the researcher's clothes. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> CLOTHES_RUNES =
+            COMPONENTS.registerComponentType("clothes_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> BATTERY_RUNES =
             COMPONENTS.registerComponentType("battery_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));

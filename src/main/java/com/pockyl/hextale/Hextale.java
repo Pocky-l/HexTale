@@ -171,7 +171,10 @@ public final class Hextale {
             output.accept(ModItems.HEXSTEEL_LEGGINGS);
             output.accept(ModItems.HEXSTEEL_BOOTS);
             output.accept(ModItems.ARCANE_CLOTH);
+            output.accept(ModItems.RESEARCHER_HOOD);
             output.accept(ModItems.RESEARCHER_ROBE);
+            output.accept(ModItems.RESEARCHER_TROUSERS);
+            output.accept(ModItems.RESEARCHER_BOOTS);
             output.accept(ModItems.HEXTECH_SKYPACK);
             output.accept(com.pockyl.hextale.item.HextechSkypackItem.full());
             output.accept(ModItems.RESEARCHERS_DIARY);
@@ -253,7 +256,10 @@ public final class Hextale {
             event.accept(ModItems.HEXSTEEL_CHESTPLATE);
             event.accept(ModItems.HEXSTEEL_LEGGINGS);
             event.accept(ModItems.HEXSTEEL_BOOTS);
+            event.accept(ModItems.RESEARCHER_HOOD);
             event.accept(ModItems.RESEARCHER_ROBE);
+            event.accept(ModItems.RESEARCHER_TROUSERS);
+            event.accept(ModItems.RESEARCHER_BOOTS);
         }
     }
 

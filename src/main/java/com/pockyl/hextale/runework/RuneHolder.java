@@ -50,7 +50,12 @@ public enum RuneHolder {
     /** The hextech axe, shovel and sword keep their runes where the pickaxe does. */
     AXE(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.AXE)),
     SHOVEL(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.SHOVEL)),
-    SWORD(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.SWORD));
+    SWORD(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.SWORD)),
+    /** The researcher's clothes: one rune on each piece. */
+    HOOD(() -> ModDataComponents.CLOTHES_RUNES.get(), ClothesRune.SLOTS, ClothesRune.on(ClothesRune.Piece.HOOD)),
+    ROBE(() -> ModDataComponents.CLOTHES_RUNES.get(), ClothesRune.SLOTS, ClothesRune.on(ClothesRune.Piece.ROBE)),
+    TROUSERS(() -> ModDataComponents.CLOTHES_RUNES.get(), ClothesRune.SLOTS, ClothesRune.on(ClothesRune.Piece.TROUSERS)),
+    BOOTS(() -> ModDataComponents.CLOTHES_RUNES.get(), ClothesRune.SLOTS, ClothesRune.on(ClothesRune.Piece.BOOTS));
 
     private final Supplier<DataComponentType<PickaxeRunes>> component;
     private final int slots;
@@ -110,6 +115,18 @@ public enum RuneHolder {
         }
         if (item == ModItems.HEXTECH_SWORD.get()) {
             return SWORD;
+        }
+        if (item == ModItems.RESEARCHER_HOOD.get()) {
+            return HOOD;
+        }
+        if (item == ModItems.RESEARCHER_ROBE.get()) {
+            return ROBE;
+        }
+        if (item == ModItems.RESEARCHER_TROUSERS.get()) {
+            return TROUSERS;
+        }
+        if (item == ModItems.RESEARCHER_BOOTS.get()) {
+            return BOOTS;
         }
         return ModItems.isPylon(stack) ? PYLON : null;
     }
@@ -215,6 +232,10 @@ public enum RuneHolder {
             case AXE -> List.of(new ItemStack(ModItems.HEXTECH_AXE.get()));
             case SHOVEL -> List.of(new ItemStack(ModItems.HEXTECH_SHOVEL.get()));
             case SWORD -> List.of(new ItemStack(ModItems.HEXTECH_SWORD.get()));
+            case HOOD -> List.of(new ItemStack(ModItems.RESEARCHER_HOOD.get()));
+            case ROBE -> List.of(new ItemStack(ModItems.RESEARCHER_ROBE.get()));
+            case TROUSERS -> List.of(new ItemStack(ModItems.RESEARCHER_TROUSERS.get()));
+            case BOOTS -> List.of(new ItemStack(ModItems.RESEARCHER_BOOTS.get()));
         };
     }
 

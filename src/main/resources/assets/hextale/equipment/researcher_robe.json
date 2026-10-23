@@ -4,6 +4,11 @@
       {
         "texture": "hextale:researcher_robe"
       }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "hextale:researcher_robe"
+      }
     ]
   }
 }

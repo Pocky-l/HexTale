@@ -79,6 +79,29 @@ public final class CraftingGameTests {
         helper.succeed();
     }
 
+    /** Every piece of the clothes takes one rune of its own four; the trousers' rune quickens the wearer. */
+    @HexTest
+    public static void theClothesTakeOneRuneEach(GameTestHelper helper) {
+        var pieces = java.util.List.of(ModItems.RESEARCHER_HOOD, ModItems.RESEARCHER_ROBE, ModItems.RESEARCHER_TROUSERS, ModItems.RESEARCHER_BOOTS);
+        for (var piece : pieces) {
+            var holder = com.pockyl.hextale.runework.RuneHolder.of(new ItemStack(piece.get()));
+            helper.assertTrue(holder != null && holder.slots() == 1 && holder.holderRunes().size() == 4, piece.getId() + " takes one of four runes");
+        }
+        ItemStack trousers = new ItemStack(ModItems.RESEARCHER_TROUSERS.get());
+        com.pockyl.hextale.runework.RuneHolder.TROUSERS.set(trousers, com.pockyl.hextale.runework.PickaxeRunes.EMPTY
+                .with(com.pockyl.hextale.runework.ClothesRune.TROUSERS_HASTE.rune(), 2));
+        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.ZOMBIE, AT);
+        double before = zombie.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        zombie.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, trousers);
+        helper.runAfterDelay(2, () -> {
+            helper.assertTrue(zombie.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED) > before,
+                    "Haste on the trousers quickens the wearer");
+            helper.assertTrue(com.pockyl.hextale.runework.ClothesEffects.strength(zombie, com.pockyl.hextale.runework.ClothesRune.TROUSERS_HASTE) == 2,
+                    "the rune's strength is read off the worn trousers");
+            helper.succeed();
+        });
+    }
+
     @HexTest
     public static void theWorkbenchCraftsOnItsCrystalsCharge(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.HEX_WORKBENCH.get());

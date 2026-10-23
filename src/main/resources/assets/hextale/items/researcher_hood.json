@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "hextale:item/researcher_hood",
+    "model": {
+      "type": "hextale:researcher_clothes",
+      "piece": "hood"
+    }
+  }
+}

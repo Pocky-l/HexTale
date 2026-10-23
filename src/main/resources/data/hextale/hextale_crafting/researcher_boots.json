@@ -1,0 +1,15 @@
+{
+  "pattern": [
+    "C C",
+    "LBL"
+  ],
+  "key": {
+    "C": "hextale:arcane_cloth",
+    "L": "minecraft:leather",
+    "B": "hextale:brass_ingot"
+  },
+  "result": {
+    "id": "hextale:researcher_boots"
+  },
+  "charge": 2
+}

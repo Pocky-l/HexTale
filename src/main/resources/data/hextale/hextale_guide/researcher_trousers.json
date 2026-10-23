@@ -1,0 +1,15 @@
+{
+  "region": "workshop",
+  "icon": "hextale:researcher_trousers",
+  "parents": [
+    "researcher_robe"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:researcher_trousers",
+    "then": {
+      "kind": "runes",
+      "result": "trousers"
+    }
+  }
+}

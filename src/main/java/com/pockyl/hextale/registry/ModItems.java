@@ -256,13 +256,19 @@ public final class ModItems {
 
     /** Wool soaked in the crucible: heavy and warm, and the essence never washes out of it. */
     public static final DeferredItem<Item> ARCANE_CLOTH = ITEMS.registerSimpleItem("arcane_cloth");
-    /** Researcher's clothes of arcane cloth: a 3D robe (client: ResearcherRobeClient) that keeps sparks and blasts off. */
+    /** Researcher's clothes of arcane cloth: 3D pieces (client: ResearcherRobeClient), the robe keeps sparks and blasts off. */
     public static final ResourceKey<EquipmentAsset> RESEARCHER_ROBE_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Hextale.id("researcher_robe"));
     private static final ArmorMaterial ARCANE_CLOTH_ARMOR = new ArmorMaterial(12,
             Map.of(ArmorType.BOOTS, 1, ArmorType.LEGGINGS, 3, ArmorType.CHESTPLATE, 4, ArmorType.HELMET, 1, ArmorType.BODY, 4),
             18, SoundEvents.ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, ModTags.REPAIRS_ARCANE_CLOTH, RESEARCHER_ROBE_ASSET);
+    public static final DeferredItem<Item> RESEARCHER_HOOD = ITEMS.registerItem("researcher_hood",
+            properties -> new com.pockyl.hextale.runework.ResearcherClothesItem(properties.humanoidArmor(ARCANE_CLOTH_ARMOR, ArmorType.HELMET)));
     public static final DeferredItem<Item> RESEARCHER_ROBE = ITEMS.registerItem("researcher_robe",
-            properties -> new Item(properties.humanoidArmor(ARCANE_CLOTH_ARMOR, ArmorType.CHESTPLATE)));
+            properties -> new com.pockyl.hextale.runework.ResearcherClothesItem(properties.humanoidArmor(ARCANE_CLOTH_ARMOR, ArmorType.CHESTPLATE)));
+    public static final DeferredItem<Item> RESEARCHER_TROUSERS = ITEMS.registerItem("researcher_trousers",
+            properties -> new com.pockyl.hextale.runework.ResearcherClothesItem(properties.humanoidArmor(ARCANE_CLOTH_ARMOR, ArmorType.LEGGINGS)));
+    public static final DeferredItem<Item> RESEARCHER_BOOTS = ITEMS.registerItem("researcher_boots",
+            properties -> new com.pockyl.hextale.runework.ResearcherClothesItem(properties.humanoidArmor(ARCANE_CLOTH_ARMOR, ArmorType.BOOTS)));
 
     /** Magic stone ground with dust: draws runes on the floor. */
     public static final DeferredItem<com.pockyl.hextale.item.RuneChalkItem> RUNE_CHALK = ITEMS.registerItem("rune_chalk",

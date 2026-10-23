@@ -1,11 +1,22 @@
 {
   "region": "workshop",
   "icon": "hextale:researcher_robe",
-  "parents": ["arcane_cloth", "hex_workbench", "ink"],
+  "parents": [
+    "arcane_cloth",
+    "hex_workbench",
+    "ink"
+  ],
   "display": {
     "kind": "hex_crafting",
-    "result": "hextale:researcher_robe"
+    "result": "hextale:researcher_robe",
+    "then": {
+      "kind": "runes",
+      "result": "robe"
+    }
   },
   "research": "researcher_robe",
-  "pos": [-489, -184]
+  "pos": [
+    -489,
+    -184
+  ]
 }

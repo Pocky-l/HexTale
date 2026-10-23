@@ -1,0 +1,14 @@
+{
+  "pattern": [
+    "CBC",
+    "C C"
+  ],
+  "key": {
+    "C": "hextale:arcane_cloth",
+    "B": "hextale:brass_ingot"
+  },
+  "result": {
+    "id": "hextale:researcher_hood"
+  },
+  "charge": 2
+}
