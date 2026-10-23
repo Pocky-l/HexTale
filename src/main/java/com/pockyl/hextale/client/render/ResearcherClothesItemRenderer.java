@@ -32,7 +32,7 @@ public final class ResearcherClothesItemRenderer implements NoDataSpecialModelRe
 
     private ResearcherClothesItemRenderer(ResearcherClothesClient.Piece piece, ModelPart root) {
         this.piece = piece;
-        this.model = new Model<>(root, RenderTypes::entityCutout) {
+        this.model = new Model<>(root, RenderTypes::armorCutoutNoCull) {
         };
     }
 
