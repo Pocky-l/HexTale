@@ -30,7 +30,7 @@ import org.jspecify.annotations.Nullable;
  * from the structure, passes clicks on to the controller and lets pipes join it on every side. Mined, it drops what it
  * was and the structure comes apart.
  */
-public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachine {
+public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachine, net.minecraft.world.WorldlyContainerHolder {
     public MultiblockPartBlock(Properties properties) {
         super(properties);
     }
@@ -88,6 +88,15 @@ public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachi
             return InteractionResult.PASS;
         }
         return level.getBlockState(controller).useWithoutItem(level, player, hitResult.withPosition(controller));
+    }
+
+    /**
+     * Hoppers reach a structure that shares its items ({@link Multiblock#sharesItems}) through any of its blocks: the
+     * controller's container, with the faces of the block they touch.
+     */
+    @Override
+    public net.minecraft.world.@Nullable WorldlyContainer getContainer(BlockState state, net.minecraft.world.level.LevelAccessor level, BlockPos pos) {
+        return level.getBlockEntity(pos) instanceof MultiblockPartBlockEntity part ? part.sharedContainer() : null;
     }
 
     @Nullable

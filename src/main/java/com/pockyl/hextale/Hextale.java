@@ -134,6 +134,13 @@ public final class Hextale {
             output.accept(ModItems.PINK_BRAZIER);
             output.accept(ModItems.SYNTHETIC_CRYSTAL);
             output.accept(ModItems.HEX_FURNACE);
+            output.accept(ModItems.HEX_FOUNDRY);
+            output.accept(ModItems.FIRECLAY_BALL);
+            output.accept(ModItems.FIRE_BRICK);
+            output.accept(ModItems.FIRE_BRICKS);
+            output.accept(ModItems.FIRE_BRICK_STAIRS);
+            output.accept(ModItems.FIRE_BRICK_SLAB);
+            output.accept(ModItems.FIRE_BRICK_WALL);
             output.accept(ModItems.HEX_LAPIDARY);
             output.accept(ModItems.CUTTING_DISC);
             output.accept(ModItems.MASTER_CUTTING_DISC);
@@ -223,6 +230,7 @@ public final class Hextale {
             event.accept(ModItems.HEX_WORKBENCH);
             event.accept(ModItems.CRUCIBLE);
             event.accept(ModItems.HEX_FURNACE);
+            event.accept(ModItems.HEX_FOUNDRY);
             event.accept(ModItems.HEX_LAPIDARY);
             event.accept(ModItems.RESEARCH_TABLE);
             event.accept(ModItems.HEXTECH_ALTAR);
@@ -237,12 +245,18 @@ public final class Hextale {
             event.accept(ModItems.MAGIC_BRICK_SLAB);
             event.accept(ModItems.MAGIC_BRICK_WALL);
             event.accept(ModItems.CHISELED_MAGIC_BRICKS);
+            event.accept(ModItems.FIRE_BRICKS);
+            event.accept(ModItems.FIRE_BRICK_STAIRS);
+            event.accept(ModItems.FIRE_BRICK_SLAB);
+            event.accept(ModItems.FIRE_BRICK_WALL);
         } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItems.BRASS_INGOT);
             event.accept(ModItems.BRASS_NUGGET);
             event.accept(ModItems.RAW_ZINC);
             event.accept(ModItems.ZINC_INGOT);
             event.accept(ModItems.ZINC_NUGGET);
+            event.accept(ModItems.FIRECLAY_BALL);
+            event.accept(ModItems.FIRE_BRICK);
             event.accept(ModItems.HEXSTEEL_INGOT);
             event.accept(ModItems.UNSTABLE_HEXTECH);
             event.accept(ModItems.HEXTECH_DUST);

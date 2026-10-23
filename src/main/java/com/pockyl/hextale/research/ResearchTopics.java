@@ -78,6 +78,7 @@ public final class ResearchTopics {
     public static final ResearchTopic HEXTECH_AXE = add("hextech_axe", 2, Essence.METAL, Essence.LIFE, ModItems.HEXTECH_AXE);
     public static final ResearchTopic HEXTECH_SHOVEL = add("hextech_shovel", 2, Essence.EARTH, Essence.METAL, ModItems.HEXTECH_SHOVEL);
     public static final ResearchTopic HEXTECH_SWORD = add("hextech_sword", 2, Essence.FIRE, Essence.METAL, ModItems.HEXTECH_SWORD);
+    public static final ResearchTopic HEX_FOUNDRY = add("hex_foundry", 2, Essence.FIRE, Essence.EARTH, ModItems.HEX_FOUNDRY);
     public static final ResearchTopic WHIRL_REAPER = add("whirl_reaper", 1, Essence.AIR, Essence.LIFE, ModItems.WHIRL_REAPER);
     public static final ResearchTopic HEX_SAWMILL = add("hex_sawmill", 1, Essence.METAL, Essence.LIFE, ModItems.HEX_SAWMILL);
     public static final ResearchTopic GREEDY_FUNNEL = add("greedy_funnel", 2, Essence.SHADOW, Essence.LIFE, ModItems.GREEDY_FUNNEL);

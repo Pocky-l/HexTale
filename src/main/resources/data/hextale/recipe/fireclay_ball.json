@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:clay_ball",
+    "minecraft:clay_ball",
+    "#c:sands",
+    "minecraft:gravel"
+  ],
+  "result": {
+    "id": "hextale:fireclay_ball",
+    "count": 4
+  }
+}

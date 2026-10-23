@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
@@ -19,8 +18,6 @@ import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.research.ResearchTopic;
 
 import com.pockyl.hextale.registry.ModBlocks;
-import com.pockyl.hextale.registry.ModSounds;
-import com.pockyl.hextale.registry.ModParticles;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -44,6 +41,7 @@ public final class Multiblocks {
     private static final Set<BlockPos> BREAKING = new HashSet<>();
 
     public static final BigEssenceJar BIG_ESSENCE_JAR = register(new BigEssenceJar());
+    public static final HexFoundry HEX_FOUNDRY = register(new HexFoundry());
 
     private Multiblocks() {
     }
@@ -128,7 +126,7 @@ public final class Multiblocks {
         }
         // The controller first, so parts find it when their shapes are asked for.
         BlockState original = level.getBlockState(controllerPos);
-        level.setBlock(controllerPos, multiblock.controller(), Block.UPDATE_ALL);
+        level.setBlock(controllerPos, multiblock.controller(placement), Block.UPDATE_ALL);
         if (level.getBlockEntity(controllerPos) instanceof MultiblockCore core) {
             core.setFormed(new MultiblockCore.Formed(multiblock.id(), placement, original));
         }
@@ -143,10 +141,7 @@ public final class Multiblocks {
                 entity.bind(controllerPos, originals.get(i));
             }
         }
-        for (BlockPos pos : cells) {
-            level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 2, 0.3, 0.3, 0.3, 0.01);
-        }
-        level.playSound(null, controllerPos, ModSounds.RUNE_FUSED.get(), SoundSource.BLOCKS, 0.7F, 1.0F);
+        multiblock.showForming(level, cells, controllerPos);
         if (player != null) {
             player.sendOverlayMessage(multiblock.formedMessage());
             multiblock.onFormed(player, controllerPos);
@@ -187,6 +182,6 @@ public final class Multiblocks {
         } finally {
             BREAKING.remove(controllerPos);
         }
-        level.playSound(null, controllerPos, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 0.6F, 0.8F);
+        level.playSound(null, controllerPos, multiblock.breakSound(), SoundSource.BLOCKS, 0.6F, 0.8F);
     }
 }

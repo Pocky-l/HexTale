@@ -1,0 +1,31 @@
+{
+  "region": "forge",
+  "stage": "mid",
+  "icon": "hextale:hex_foundry",
+  "parents": [
+    "hexsteel",
+    "fire_bricks"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "hex_foundry_lit"
+  },
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:hex_foundry",
+    "then": {
+      "kind": "multiblock",
+      "result": "hex_foundry",
+      "then": {
+        "kind": "runes",
+        "result": "foundry"
+      }
+    }
+  },
+  "research": "hex_foundry",
+  "station": true,
+  "pos": [
+    560,
+    40
+  ]
+}

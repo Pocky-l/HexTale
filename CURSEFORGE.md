@@ -34,6 +34,10 @@ The **runes** I did not invent - I found them, as scrolls in old dungeon chests,
 **Hextech Altar** the pedestals give up their items, the steles their runes, the jars their essence, and the ritual
 burns runes into my pickaxe like enchantments: smelting, vein mining, ore sight, tunnels through rock.
 
+When one furnace at a time grew too slow, I laid a whole kiln of pale **fire bricks** around an iron hatch and lit
+it: the **Hex Foundry** is slow to wake, but red-hot it melts nine stacks at once on coal or fire essence, and
+whatever I throw onto its grate falls straight in.
+
 Now my workshop runs on its own. **Pylons** catch items with tendrils of light and carry them between chests and
 furnaces, a **Sorting Matrix** sends every item home, the **Whirl Reaper** harvests my fields with whirlwinds and the
 **Hex Sawmill** fells whole trees and plants them again.

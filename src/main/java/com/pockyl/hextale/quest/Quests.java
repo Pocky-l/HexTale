@@ -14,6 +14,7 @@ import com.pockyl.hextale.registry.ModSounds;
 public final class Quests {
     /** Events the game reports to the guide ({@link #fire}); event goals in the data name them. */
     public static final String BIG_ESSENCE_JAR_FORMED = "big_essence_jar_formed";
+    public static final String HEX_FOUNDRY_LIT = "hex_foundry_lit";
     public static final String RUNE_SCROLL_WRITTEN = "rune_scroll_written";
     public static final String HEXCORE_AWAKENED = "hexcore_awakened";
 

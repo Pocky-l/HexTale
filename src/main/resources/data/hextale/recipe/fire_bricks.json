@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": "hextale:fire_brick"
+  },
+  "result": {
+    "id": "hextale:fire_bricks"
+  }
+}

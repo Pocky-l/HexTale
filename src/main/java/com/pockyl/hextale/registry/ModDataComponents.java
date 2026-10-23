@@ -75,6 +75,11 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("spire_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
 
+    /** The runes burned into a Foundry Hatch. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> FOUNDRY_RUNES =
+            COMPONENTS.registerComponentType("foundry_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+
     /** The runes burned into a Hex Furnace. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> FURNACE_RUNES =
             COMPONENTS.registerComponentType("furnace_runes", builder -> builder

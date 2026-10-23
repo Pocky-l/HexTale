@@ -151,6 +151,9 @@ public final class HextaleClient {
             if (stack.is(ModItems.ARC_SPIRE.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.arc_spire.hint").withStyle(ChatFormatting.GRAY));
             }
+            if (stack.is(ModItems.HEX_FOUNDRY.get())) {
+                event.getToolTip().add(Component.translatable("block.hextale.hex_foundry.hint").withStyle(ChatFormatting.GRAY));
+            }
             if (stack.is(ModItems.GREEDY_FUNNEL.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.greedy_funnel.hint").withStyle(ChatFormatting.GRAY));
             }
@@ -195,6 +198,7 @@ public final class HextaleClient {
         event.register(ModMenus.LAB_BENCH.get(), com.pockyl.hextale.client.screen.machine.LabBenchScreen::new);
         event.register(ModMenus.HEX_WORKBENCH.get(), com.pockyl.hextale.client.screen.machine.HexWorkbenchScreen::new);
         event.register(ModMenus.HEX_FURNACE.get(), com.pockyl.hextale.client.screen.machine.HexFurnaceScreen::new);
+        event.register(ModMenus.HEX_FOUNDRY.get(), com.pockyl.hextale.client.screen.machine.HexFoundryScreen::new);
         event.register(ModMenus.ITEM_FILTER.get(), com.pockyl.hextale.client.screen.ItemFilterScreen::new);
         event.register(ModMenus.SEPARATOR.get(), SeparatorScreen::new);
     }
@@ -215,6 +219,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.LAPIDARY.get(), com.pockyl.hextale.client.render.LapidaryRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.WHIRL_REAPER.get(), com.pockyl.hextale.client.render.WhirlReaperRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_SAWMILL.get(), com.pockyl.hextale.client.render.HexSawmillRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.HEX_FOUNDRY.get(), com.pockyl.hextale.client.render.HexFoundryRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.GREEDY_FUNNEL.get(), com.pockyl.hextale.client.render.GreedyFunnelRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ARC_SPIRE.get(), com.pockyl.hextale.client.render.ArcSpireRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RUNE_SHACKLES.get(), com.pockyl.hextale.client.render.RuneShacklesRenderer::new);

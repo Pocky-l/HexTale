@@ -1,0 +1,60 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/hex_foundry_melt",
+    "melt": "hextale:block/hex_foundry_melt",
+    "slots": "hextale:block/hex_foundry_hatch_glow"
+  },
+  "elements": [
+    {
+      "name": "melt_surface",
+      "from": [
+        0,
+        28,
+        0
+      ],
+      "to": [
+        16,
+        28,
+        16
+      ],
+      "light_emission": 15,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#melt"
+        }
+      }
+    },
+    {
+      "name": "hatch_slots_glow",
+      "from": [
+        1.97,
+        1.97,
+        -15.03
+      ],
+      "to": [
+        14.03,
+        14.03,
+        -14.97
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#slots"
+        }
+      }
+    }
+  ]
+}

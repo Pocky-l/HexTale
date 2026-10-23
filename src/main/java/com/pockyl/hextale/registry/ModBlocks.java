@@ -130,6 +130,20 @@ public final class ModBlocks {
     public static final DeferredBlock<HexFurnaceBlock> HEX_FURNACE = BLOCKS.registerBlock("hex_furnace", HexFurnaceBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLUE).strength(3.5F, 6.0F).sound(SoundType.TUFF_BRICKS)
                     .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> state.getValue(HexFurnaceBlock.LIT) ? 13 : 3));
+    /** The iron door of a Hex Foundry; built into the kiln and lit, it is the kiln's heart. Light while the kiln burns. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HexFoundryBlock> HEX_FOUNDRY = BLOCKS.registerBlock("hex_foundry",
+            com.pockyl.hextale.block.HexFoundryBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5F, 6.0F).sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops().noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.HexFoundryBlock.LIT) ? 13 : 0));
+    // Fire bricks: pale kiln bricks of fireclay that a Hex Foundry is built of, plus stairs, slab and wall.
+    public static final DeferredBlock<Block> FIRE_BRICKS = BLOCKS.registerBlock("fire_bricks", Block::new, ModBlocks::fireBrickProperties);
+    public static final DeferredBlock<StairBlock> FIRE_BRICK_STAIRS = BLOCKS.registerBlock("fire_brick_stairs",
+            properties -> new StairBlock(FIRE_BRICKS.get().defaultBlockState(), properties), ModBlocks::fireBrickProperties);
+    public static final DeferredBlock<SlabBlock> FIRE_BRICK_SLAB = BLOCKS.registerBlock("fire_brick_slab", SlabBlock::new,
+            ModBlocks::fireBrickProperties);
+    public static final DeferredBlock<WallBlock> FIRE_BRICK_WALL = BLOCKS.registerBlock("fire_brick_wall", WallBlock::new,
+            () -> fireBrickProperties().forceSolidOn());
     /** A crafting table woken with hextech dust: almost every device is made here, on a crystal's charge. */
     public static final DeferredBlock<HexWorkbenchBlock> HEX_WORKBENCH = BLOCKS.registerBlock("hex_workbench", HexWorkbenchBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD).noOcclusion()
@@ -397,6 +411,11 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties platingProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
                 .requiresCorrectToolForDrops().strength(4.0F, 6.0F).sound(SoundType.COPPER);
+    }
+
+    private static BlockBehaviour.Properties fireBrickProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.BASEDRUM)
+                .requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.MUD_BRICKS);
     }
 
     private static BlockBehaviour.Properties brickProperties() {

@@ -4,6 +4,17 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Hex Foundry: a 3x3x3 kiln of Fire Bricks (hollow inside, iron bars in the middle of the top) with the new Foundry
+  Hatch in the middle of its front, lit with flint and steel after it is researched. Slow to wake, but once hot it melts
+  all nine of its inputs at once, up to twice a furnace's speed in each - far less fuel per piece than furnaces. It burns
+  furnace fuel or draws fire and magma essence from jars nearby (pipes into any brick work too); things dropped on its
+  top fall in through the grate, and hoppers or pylons feed and empty it through any brick. The hatch takes four runes
+  (Forge, Radiance, Eternal Flame, Bellows, Tempering, Smelting - grains of metal in molten stone - and Lens) and keeps
+  them, with its contents, when the kiln is taken apart.
+- Fire Bricks: fireclay (clay, sand and gravel) baked into pale kiln bricks, with stairs, slab and wall.
+
 ## [1.0.0-beta.5] - 2026-10-23
 ### Added
 - Field Ward: a magic stone post with a hextech eye. Within 16 blocks monsters no longer spawn by themselves and no

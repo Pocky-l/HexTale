@@ -56,6 +56,14 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEXTECH_LAMP = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_LAMP);
     public static final DeferredItem<BlockItem> HEX_FURNACE = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_FURNACE,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> HEX_FOUNDRY = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_FOUNDRY,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> FIRECLAY_BALL = ITEMS.registerSimpleItem("fireclay_ball");
+    public static final DeferredItem<Item> FIRE_BRICK = ITEMS.registerSimpleItem("fire_brick");
+    public static final DeferredItem<BlockItem> FIRE_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.FIRE_BRICKS);
+    public static final DeferredItem<BlockItem> FIRE_BRICK_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.FIRE_BRICK_STAIRS);
+    public static final DeferredItem<BlockItem> FIRE_BRICK_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.FIRE_BRICK_SLAB);
+    public static final DeferredItem<BlockItem> FIRE_BRICK_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.FIRE_BRICK_WALL);
     public static final DeferredItem<BlockItem> HEX_WORKBENCH = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_WORKBENCH);
     public static final DeferredItem<BlockItem> HEX_LAPIDARY = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_LAPIDARY);
     public static final DeferredItem<BlockItem> CRUCIBLE = ITEMS.registerSimpleBlockItem(ModBlocks.CRUCIBLE);

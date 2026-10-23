@@ -52,6 +52,11 @@
     "hextale:nullstone",
     "hextale:polished_nullstone",
     "hextale:nullstone_bricks",
-    "hextale:crystal_battery"
+    "hextale:crystal_battery",
+    "hextale:hex_foundry",
+    "hextale:fire_bricks",
+    "hextale:fire_brick_stairs",
+    "hextale:fire_brick_slab",
+    "hextale:fire_brick_wall"
   ]
 }

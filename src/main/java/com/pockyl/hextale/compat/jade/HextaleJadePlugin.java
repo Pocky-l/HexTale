@@ -49,6 +49,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.WhirlReaperBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexSawmillBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.GreedyFunnelBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexFoundryBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ArcSpireBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.RuneShacklesBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.XpCondenserBlock.class);
@@ -109,6 +110,10 @@ public class HextaleJadePlugin implements IWailaPlugin {
             } else if (entity instanceof com.pockyl.hextale.block.HexFurnaceBlockEntity furnace) {
                 if (!furnace.blocked().isEmpty()) {
                     tooltip.add(Component.translatable("gui.hextale.hex_furnace." + furnace.blocked()).withStyle(ChatFormatting.RED));
+                }
+            } else if (entity instanceof com.pockyl.hextale.block.HexFoundryBlockEntity foundry) {
+                if (accessor.getBlockState().getValue(com.pockyl.hextale.block.HexFoundryBlock.FORMED)) {
+                    tooltip.add(com.pockyl.hextale.block.HexFoundryBlock.status(foundry).copy().withStyle(ChatFormatting.GRAY));
                 }
             } else if (entity instanceof com.pockyl.hextale.block.HexSawmillBlockEntity mill) {
                 tooltip.add(com.pockyl.hextale.block.HexSawmillBlock.status(mill).copy().withStyle(ChatFormatting.GRAY));

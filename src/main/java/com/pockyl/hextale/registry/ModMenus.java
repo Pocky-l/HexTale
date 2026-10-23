@@ -31,6 +31,8 @@ public final class ModMenus {
             MENUS.register("hex_lapidary", () -> IMenuTypeExtension.create(com.pockyl.hextale.menu.LapidaryMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<HexFurnaceMenu>> HEX_FURNACE =
             MENUS.register("hex_furnace", () -> IMenuTypeExtension.create(HexFurnaceMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<com.pockyl.hextale.menu.HexFoundryMenu>> HEX_FOUNDRY =
+            MENUS.register("hex_foundry", () -> IMenuTypeExtension.create(com.pockyl.hextale.menu.HexFoundryMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<SeparatorMenu>> SEPARATOR =
             MENUS.register("separator", () -> IMenuTypeExtension.create(SeparatorMenu::new));
 

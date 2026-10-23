@@ -22,6 +22,12 @@ public final class ModCapabilities {
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ALEMBIC.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.SEPARATOR.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.HEX_FURNACE.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.HEX_FOUNDRY.get(), WorldlyContainerWrapper::new);
+        // A structure that shares its items takes and gives them through every block, as its controller would.
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.MULTIBLOCK_PART.get(), (part, side) -> {
+            net.minecraft.world.WorldlyContainer container = part.sharedContainer();
+            return container == null ? null : new WorldlyContainerWrapper(container, side);
+        });
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.RESEARCH_TABLE.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PEDESTAL.get(), (pedestal, side) -> VanillaContainerWrapper.of(pedestal));
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CHEM_BURNER.get(), (burner, side) -> VanillaContainerWrapper.of(burner));

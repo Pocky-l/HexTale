@@ -114,6 +114,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEX_LAPIDARY.get(), "hex_lapidary");
         info(registration, ModItems.HEXTECH_DUST.get(), "hextech_dust");
         info(registration, ModItems.HEX_FURNACE.get(), "hex_furnace");
+        info(registration, ModItems.HEX_FOUNDRY.get(), "hex_foundry");
         registration.addRecipes(BrewingCategory.TYPE, com.pockyl.hextale.crafting.BrewRecipe.ALL.get(true).entrySet().stream()
                 .map(entry -> new BrewingCategory.Recipe(entry.getKey(), entry.getValue())).toList());
         registration.addRecipes(LabExperimentCategory.TYPE, LabExperimentCategory.all());
@@ -183,6 +184,9 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addRecipeClickArea(com.pockyl.hextale.client.screen.machine.HexFurnaceScreen.class,
                 com.pockyl.hextale.client.screen.machine.HexFurnaceScreen.ARROW_X, com.pockyl.hextale.client.screen.machine.HexFurnaceScreen.ARROW_Y,
                 30, 10, AlloyingCategory.TYPE);
+        registration.addRecipeClickArea(com.pockyl.hextale.client.screen.machine.HexFoundryScreen.class,
+                com.pockyl.hextale.client.screen.machine.HexFoundryScreen.ARROW_X, com.pockyl.hextale.client.screen.machine.HexFoundryScreen.ARROW_Y,
+                28, 10, mezz.jei.api.constants.RecipeTypes.SMELTING);
     }
 
     @Override
@@ -193,6 +197,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addCraftingStation(RuneBurningCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
         registration.addCraftingStation(HexCraftingCategory.TYPE, ModItems.HEX_WORKBENCH.get());
         registration.addCraftingStation(AlloyingCategory.TYPE, ModItems.HEX_FURNACE.get());
+        registration.addCraftingStation(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_FOUNDRY.get());
         registration.addCraftingStation(HextechWorkingCategory.TYPE, ModItems.HEX_LAPIDARY.get());
         registration.addCraftingStation(CrucibleCategory.TYPE, ModItems.CRUCIBLE.get());
         registration.addCraftingStation(BrewingCategory.TYPE, ModItems.CRUCIBLE.get(), ModItems.CHEM_BURNER.get());

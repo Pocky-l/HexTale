@@ -37,6 +37,8 @@ public enum RuneHolder {
     SPIRE(() -> ModDataComponents.SPIRE_RUNES.get(), SpireRune.SLOTS, SpireRune.values()),
     /** The Hex Furnace. */
     FURNACE(() -> ModDataComponents.FURNACE_RUNES.get(), FurnaceRune.SLOTS, FurnaceRune.values()),
+    /** The Hex Foundry, through its hatch. */
+    FOUNDRY(() -> ModDataComponents.FOUNDRY_RUNES.get(), FoundryRune.SLOTS, FoundryRune.values()),
     /** The Chem Burner. */
     BURNER(() -> ModDataComponents.BURNER_RUNES.get(), BurnerRune.SLOTS, BurnerRune.values()),
     /** The Axolotl Tank. */
@@ -95,6 +97,9 @@ public enum RuneHolder {
         }
         if (item == ModItems.HEX_FURNACE.get()) {
             return FURNACE;
+        }
+        if (item == ModItems.HEX_FOUNDRY.get()) {
+            return FOUNDRY;
         }
         if (item == ModItems.CHEM_BURNER.get()) {
             return BURNER;
@@ -234,6 +239,7 @@ public enum RuneHolder {
             case FUNNEL -> List.of(new ItemStack(ModItems.GREEDY_FUNNEL.get()));
             case SPIRE -> List.of(new ItemStack(ModItems.ARC_SPIRE.get()));
             case FURNACE -> List.of(new ItemStack(ModItems.HEX_FURNACE.get()));
+            case FOUNDRY -> List.of(new ItemStack(ModItems.HEX_FOUNDRY.get()));
             case BURNER -> List.of(new ItemStack(ModItems.CHEM_BURNER.get()));
             case TANK -> List.of(new ItemStack(ModItems.AXOLOTL_TANK.get()));
             case STILL -> List.of(new ItemStack(ModItems.CHEM_STILL.get()));

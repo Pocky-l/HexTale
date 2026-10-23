@@ -47,6 +47,9 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> LAPIDARY_DISC = model("block/hex_lapidary_disc");
     public static final StandaloneModelKey<BlockStateModelPart> WHIRL_REAPER_VANES = model("block/whirl_reaper_vanes");
     public static final StandaloneModelKey<BlockStateModelPart> HEX_SAW_DISC = model("block/hex_sawmill_disc");
+    /** The formed Hex Foundry round its heart, facing north, and its glowing parts (drawn at full light while hot). */
+    public static final StandaloneModelKey<BlockStateModelPart> HEX_FOUNDRY = model("block/hex_foundry/formed");
+    public static final StandaloneModelKey<BlockStateModelPart> HEX_FOUNDRY_GLOW = model("block/hex_foundry/glow");
     /** The Hexcore's matrix piece by piece (tiles in {@link com.pockyl.hextale.block.HexcoreMatrix#TILES} order), centred on their own block. */
     public static final List<StandaloneModelKey<BlockStateModelPart>> HEXCORE_TILES = java.util.Arrays.stream(com.pockyl.hextale.block.HexcoreMatrix.TILES)
             .map(tile -> model("block/hexcore/" + tile)).toList();

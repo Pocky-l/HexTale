@@ -1,0 +1,22 @@
+{
+  "region": "forge",
+  "icon": "hextale:fire_bricks",
+  "parents": [
+    "hex_furnace"
+  ],
+  "display": {
+    "kind": "shapeless",
+    "ingredients": [
+      "minecraft:clay_ball",
+      "minecraft:clay_ball",
+      "minecraft:sand",
+      "minecraft:gravel"
+    ],
+    "result": "hextale:fireclay_ball",
+    "count": 4
+  },
+  "pos": [
+    -300,
+    170
+  ]
+}

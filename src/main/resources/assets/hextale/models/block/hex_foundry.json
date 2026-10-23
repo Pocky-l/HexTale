@@ -1,0 +1,145 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/fire_bricks",
+    "bricks": "hextale:block/fire_bricks",
+    "hatch": "hextale:block/hex_foundry_hatch"
+  },
+  "elements": [
+    {
+      "name": "brick_body",
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#bricks",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#bricks",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#bricks",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#bricks",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#bricks",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#bricks",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "iron_door",
+      "from": [
+        2,
+        2,
+        -1
+      ],
+      "to": [
+        14,
+        14,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#hatch"
+        },
+        "east": {
+          "uv": [
+            13,
+            2,
+            14,
+            14
+          ],
+          "texture": "#hatch"
+        },
+        "west": {
+          "uv": [
+            2,
+            2,
+            3,
+            14
+          ],
+          "texture": "#hatch"
+        },
+        "up": {
+          "uv": [
+            2,
+            2,
+            14,
+            3
+          ],
+          "texture": "#hatch"
+        },
+        "down": {
+          "uv": [
+            2,
+            13,
+            14,
+            14
+          ],
+          "texture": "#hatch"
+        }
+      }
+    }
+  ]
+}

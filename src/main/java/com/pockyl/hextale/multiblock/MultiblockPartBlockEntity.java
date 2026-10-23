@@ -48,6 +48,15 @@ public class MultiblockPartBlockEntity extends BlockEntity implements EssenceNet
         return level == null ? null : level.getBlockEntity(controller);
     }
 
+    /** The controller's container when its structure shares items through its blocks, else null. */
+    public net.minecraft.world.@Nullable WorldlyContainer sharedContainer() {
+        if (core() instanceof MultiblockCore core && core instanceof net.minecraft.world.WorldlyContainer container && core.formed() != null) {
+            Multiblock multiblock = Multiblocks.byId(core.formed().multiblock());
+            return multiblock != null && multiblock.sharesItems() ? container : null;
+        }
+        return null;
+    }
+
     @Override
     public int receive(Direction side, EssenceMix offer, boolean simulate) {
         return core() instanceof EssenceNetwork.Receiver receiver ? receiver.receive(side, offer, simulate) : 0;

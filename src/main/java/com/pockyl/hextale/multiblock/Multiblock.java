@@ -63,6 +63,16 @@ public abstract class Multiblock {
     /** The block that takes the controller's cell once the structure is formed; its entity must be a {@link MultiblockCore}. */
     public abstract BlockState controller();
 
+    /** The controller's block for a structure found in this turn (a front that faces the way the structure does). */
+    public BlockState controller(MultiblockPattern.Placement placement) {
+        return controller();
+    }
+
+    /** A structure may take items through its blocks (hoppers, pipes of other mods): the controller's container. */
+    public boolean sharesItems() {
+        return false;
+    }
+
     /**
      * The solid part of the structure inside one of its blocks, by the block's offset from the controller (turned back
      * to the pattern's own orientation). A full block unless a structure says otherwise.
@@ -79,6 +89,20 @@ public abstract class Multiblock {
     /** What must be researched before the structure can be woken, or null. */
     public com.pockyl.hextale.research.@org.jspecify.annotations.Nullable ResearchTopic topic() {
         return null;
+    }
+
+    /** What the world shows when the structure comes alive: a glint in every block and a soft fused sound. */
+    public void showForming(net.minecraft.server.level.ServerLevel level, List<BlockPos> cells, BlockPos controller) {
+        for (BlockPos pos : cells) {
+            level.sendParticles(com.pockyl.hextale.registry.ModParticles.glint(com.pockyl.hextale.registry.ModParticles.HEX_LIGHT),
+                    pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 2, 0.3, 0.3, 0.3, 0.01);
+        }
+        level.playSound(null, controller, com.pockyl.hextale.registry.ModSounds.RUNE_FUSED.get(), net.minecraft.sounds.SoundSource.BLOCKS, 0.7F, 1.0F);
+    }
+
+    /** The sound of the structure falling apart. */
+    public net.minecraft.sounds.SoundEvent breakSound() {
+        return net.minecraft.sounds.SoundEvents.GLASS_BREAK;
     }
 
     /** Called once the structure is formed, on the server: quests, advancements. */

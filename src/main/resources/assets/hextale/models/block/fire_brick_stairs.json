@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "hextale:block/fire_bricks",
+    "top": "hextale:block/fire_bricks",
+    "side": "hextale:block/fire_bricks"
+  }
+}
