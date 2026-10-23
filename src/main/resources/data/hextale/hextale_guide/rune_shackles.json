@@ -1,0 +1,17 @@
+{
+  "region": "pylons",
+  "stage": "mid",
+  "icon": "hextale:rune_shackles",
+  "parents": [
+    "arc_spire"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:rune_shackles"
+  },
+  "research": "rune_shackles",
+  "pos": [
+    1020,
+    -90
+  ]
+}

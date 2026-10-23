@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Rune Shackles: a nullstone floor plate with a ring of runes. Up to four creatures standing on it hang still in its
+  glyph - no wandering, no pathfinding, no pushing - so a crowded mob farm hardly costs the server anything, and they
+  can still be struck. Feeds on shadow essence; four plates from one altar ritual.
 - Hex Arc Spire: a hexsteel spike wound with brass coils that strikes the hostile creatures around it with arcs of
   charge. The kills count as a player's, so they drop experience and rare loot; named creatures and bosses are spared.
   Next to a Greedy Funnel it holds back while the funnel is full. Feeds on spark essence and takes runes (Shift, Motor,

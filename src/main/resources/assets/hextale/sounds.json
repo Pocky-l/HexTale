@@ -582,6 +582,19 @@
       }
     ]
   },
+  "shackle.bind": {
+    "subtitle": "subtitles.hextale.shackle.bind",
+    "sounds": [
+      {
+        "name": "hextale:shackle_bind1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:shackle_bind2",
+        "volume": 0.6
+      }
+    ]
+  },
   "crucible.brew": {
     "subtitle": "subtitles.hextale.crucible.brew",
     "sounds": [

@@ -127,6 +127,8 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> FUNNEL_RELEASE = register("funnel.release");
     /** A Hex Arc Spire's arc strikes. */
     public static final DeferredHolder<SoundEvent, SoundEvent> ARC_STRIKE = register("arc.strike");
+    /** Rune Shackles take hold of a creature. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHACKLE_BIND = register("shackle.bind");
 
     private ModSounds() {
     }

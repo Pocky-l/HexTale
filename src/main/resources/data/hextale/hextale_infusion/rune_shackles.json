@@ -1,0 +1,19 @@
+{
+  "center": "hextale:nullstone",
+  "pedestals": [
+    "minecraft:iron_chain",
+    "minecraft:iron_chain",
+    "minecraft:amethyst_shard",
+    "minecraft:amethyst_shard",
+    "hextale:brass_ingot",
+    "hextale:brass_ingot"
+  ],
+  "essences": {
+    "shadow": 12,
+    "earth": 8
+  },
+  "result": {
+    "id": "hextale:rune_shackles",
+    "count": 4
+  }
+}

@@ -195,6 +195,11 @@ public final class ModBlocks {
             com.pockyl.hextale.block.ArcSpireBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.COPPER)
                     .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> 5));
+    /** A nullstone floor plate with a ring of runes: holds the creatures standing on it still in its glyph. */
+    public static final DeferredBlock<com.pockyl.hextale.block.RuneShacklesBlock> RUNE_SHACKLES = BLOCKS.registerBlock("rune_shackles",
+            com.pockyl.hextale.block.RuneShacklesBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
+                    .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> 2));
     /** A nullstone bowl on brass ribs under a hextech crystal: swallows the deaths around it into the container below. */
     public static final DeferredBlock<com.pockyl.hextale.block.GreedyFunnelBlock> GREEDY_FUNNEL = BLOCKS.registerBlock("greedy_funnel",
             com.pockyl.hextale.block.GreedyFunnelBlock::new,

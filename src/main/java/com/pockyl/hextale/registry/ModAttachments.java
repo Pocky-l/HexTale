@@ -18,6 +18,10 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<RuneKnowledge>> KNOWLEDGE = ATTACHMENT_TYPES.register("knowledge",
             () -> AttachmentType.builder(() -> new RuneKnowledge()).serialize(RuneKnowledge.MAP_CODEC).copyOnDeath().build());
 
+    /** A creature held by Rune Shackles (not saved: after a reload the plate simply takes hold again). */
+    public static final Supplier<AttachmentType<com.pockyl.hextale.farm.ShackleEvents.Shackle>> SHACKLE = ATTACHMENT_TYPES.register("shackle",
+            () -> AttachmentType.builder(() -> new com.pockyl.hextale.farm.ShackleEvents.Shackle(0, -1)).build());
+
     private ModAttachments() {
     }
 
