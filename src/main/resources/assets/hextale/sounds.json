@@ -537,6 +537,34 @@
       }
     ]
   },
+  "funnel.swallow": {
+    "subtitle": "subtitles.hextale.funnel.swallow",
+    "sounds": [
+      {
+        "name": "hextale:funnel_swallow1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:funnel_swallow2",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:funnel_swallow3",
+        "volume": 0.7
+      }
+    ]
+  },
+  "funnel.release": {
+    "subtitle": "subtitles.hextale.funnel.release",
+    "sounds": [
+      {
+        "name": "hextale:funnel_release1"
+      },
+      {
+        "name": "hextale:funnel_release2"
+      }
+    ]
+  },
   "crucible.brew": {
     "subtitle": "subtitles.hextale.crucible.brew",
     "sounds": [

@@ -190,6 +190,11 @@ public final class ModBlocks {
             com.pockyl.hextale.block.HexSawmillBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(2.5F, 6.0F).sound(SoundType.WOOD).noOcclusion()
                     .lightLevel(state -> 4));
+    /** A nullstone bowl on brass ribs under a hextech crystal: swallows the deaths around it into the container below. */
+    public static final DeferredBlock<com.pockyl.hextale.block.GreedyFunnelBlock> GREEDY_FUNNEL = BLOCKS.registerBlock("greedy_funnel",
+            com.pockyl.hextale.block.GreedyFunnelBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(3.0F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
+                    .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> 3));
     /** Polished magic stone with a whirl carved into it, the stone a reaper's field is laid out with. */
     public static final DeferredBlock<Block> WHORLED_MAGIC_STONE = BLOCKS.registerBlock("whorled_magic_stone", Block::new,
             () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF));

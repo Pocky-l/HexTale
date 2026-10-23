@@ -61,6 +61,12 @@ public final class ClientPayloads {
                 reaper.show(payload, level.getGameTime());
             }
         });
+        event.register(com.pockyl.hextale.network.FunnelPayload.TYPE, (payload, context) -> {
+            ClientLevel level = Minecraft.getInstance().level;
+            if (level != null && level.getBlockEntity(payload.funnel()) instanceof com.pockyl.hextale.block.GreedyFunnelBlockEntity funnel) {
+                funnel.show(payload, level.getGameTime());
+            }
+        });
         event.register(com.pockyl.hextale.network.HexcoreStrikePayload.TYPE, (payload, context) -> {
             ClientLevel level = Minecraft.getInstance().level;
             if (level != null && level.getBlockEntity(payload.core()) instanceof com.pockyl.hextale.block.HexcoreBlockEntity core) {

@@ -136,6 +136,9 @@ public final class HextaleClient {
             if (stack.is(ModItems.HEX_SAWMILL.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.hex_sawmill.hint").withStyle(ChatFormatting.GRAY));
             }
+            if (stack.is(ModItems.GREEDY_FUNNEL.get())) {
+                event.getToolTip().add(Component.translatable("block.hextale.greedy_funnel.hint").withStyle(ChatFormatting.GRAY));
+            }
             if (stack.is(ModItems.WHIRL_REAPER.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.whirl_reaper.hint").withStyle(ChatFormatting.GRAY));
             }
@@ -197,6 +200,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.LAPIDARY.get(), com.pockyl.hextale.client.render.LapidaryRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.WHIRL_REAPER.get(), com.pockyl.hextale.client.render.WhirlReaperRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_SAWMILL.get(), com.pockyl.hextale.client.render.HexSawmillRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.GREEDY_FUNNEL.get(), com.pockyl.hextale.client.render.GreedyFunnelRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_WORKBENCH.get(), com.pockyl.hextale.client.render.HexWorkbenchRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.AXOLOTL_TANK.get(), com.pockyl.hextale.client.render.AxolotlTankRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CHEM_STILL.get(), com.pockyl.hextale.client.render.ChemStillRenderer::new);

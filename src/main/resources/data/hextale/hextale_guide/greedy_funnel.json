@@ -1,0 +1,16 @@
+{
+  "region": "pylons",
+  "stage": "mid",
+  "icon": "hextale:greedy_funnel",
+  "parents": ["gathering_pylon", "nullstone"],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:greedy_funnel",
+    "then": {
+      "kind": "runes",
+      "result": "funnel"
+    }
+  },
+  "research": "greedy_funnel",
+  "pos": [960, -170]
+}

@@ -79,6 +79,7 @@ public final class ResearchTopics {
     public static final ResearchTopic HEXTECH_SWORD = add("hextech_sword", 2, Essence.FIRE, Essence.METAL, ModItems.HEXTECH_SWORD);
     public static final ResearchTopic WHIRL_REAPER = add("whirl_reaper", 1, Essence.AIR, Essence.LIFE, ModItems.WHIRL_REAPER);
     public static final ResearchTopic HEX_SAWMILL = add("hex_sawmill", 1, Essence.METAL, Essence.LIFE, ModItems.HEX_SAWMILL);
+    public static final ResearchTopic GREEDY_FUNNEL = add("greedy_funnel", 2, Essence.SHADOW, Essence.LIFE, ModItems.GREEDY_FUNNEL);
     public static final ResearchTopic GATHERING_PYLON = add("gathering_pylon", 2, Essence.AIR, Essence.SPARK, ModItems.GATHERING_PYLON);
     public static final ResearchTopic SENDING_PYLON = add("sending_pylon", 2, Essence.AIR, Essence.METAL, ModItems.SENDING_PYLON);
     public static final ResearchTopic RELAY_PYLON = add("relay_pylon", 2, Essence.SPARK, Essence.METAL, ModItems.RELAY_PYLON);

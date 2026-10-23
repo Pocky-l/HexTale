@@ -142,6 +142,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEXCORE.get(), "hexcore");
         info(registration, ModItems.WHIRL_REAPER.get(), "whirl_reaper");
         info(registration, ModItems.HEX_SAWMILL.get(), "hex_sawmill");
+        info(registration, ModItems.GREEDY_FUNNEL.get(), "greedy_funnel");
         info(registration, ModItems.HEXTECH_ALTAR.get(), "hextech_altar");
         info(registration, ModItems.PEDESTAL.get(), "pedestal");
         info(registration, ModItems.RUNE_STELE.get(), "rune_stele");

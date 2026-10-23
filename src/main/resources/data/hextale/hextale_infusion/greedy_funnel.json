@@ -1,0 +1,17 @@
+{
+  "center": "hextale:hextech_crystal",
+  "pedestals": [
+    "minecraft:hopper",
+    "minecraft:bone",
+    "minecraft:bone",
+    "hextale:nullstone",
+    "hextale:nullstone",
+    "hextale:brass_ingot"
+  ],
+  "essences": {
+    "decay": 16,
+    "shadow": 12,
+    "crystal": 8
+  },
+  "result": "hextale:greedy_funnel"
+}

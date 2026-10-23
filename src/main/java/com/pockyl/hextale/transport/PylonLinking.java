@@ -217,6 +217,7 @@ public final class PylonLinking {
     @SubscribeEvent
     public static void onServerStopped(net.neoforged.neoforge.event.server.ServerStoppedEvent event) {
         PylonIndex.clear();
+        com.pockyl.hextale.farm.FunnelIndex.clear();
         PENDING.clear();
     }
 

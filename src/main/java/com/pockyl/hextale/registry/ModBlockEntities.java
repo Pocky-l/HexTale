@@ -62,6 +62,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexSawmillBlockEntity>> HEX_SAWMILL =
             BLOCK_ENTITIES.register("hex_sawmill", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexSawmillBlockEntity::new,
                     ModBlocks.HEX_SAWMILL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.GreedyFunnelBlockEntity>> GREEDY_FUNNEL =
+            BLOCK_ENTITIES.register("greedy_funnel", () -> new BlockEntityType<>(com.pockyl.hextale.block.GreedyFunnelBlockEntity::new,
+                    ModBlocks.GREEDY_FUNNEL.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexPylonBlockEntity>> HEX_PYLON =
             BLOCK_ENTITIES.register("hex_pylon", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexPylonBlockEntity::new,
                     ModBlocks.GATHERING_PYLON.get(), ModBlocks.SENDING_PYLON.get(), ModBlocks.RELAY_PYLON.get(),

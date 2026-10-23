@@ -121,6 +121,10 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SAW_FELL = register("saw.fell");
     /** The tree hits the ground. */
     public static final DeferredHolder<SoundEvent, SoundEvent> SAW_LAND = register("saw.land");
+    /** A Greedy Funnel draws a death in. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> FUNNEL_SWALLOW = register("funnel.swallow");
+    /** A Greedy Funnel's crystal lets its experience go to a player. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> FUNNEL_RELEASE = register("funnel.release");
 
     private ModSounds() {
     }

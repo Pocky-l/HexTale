@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Greedy Funnel: a nullstone bowl set on a chest. Whatever dies around it never reaches the ground: the drops go
+  straight into the chest and the experience into its crystal, so mob farms stop piling up items and orbs. It feeds on
+  decay essence (bones are full of it) and takes runes (Shift, Radiance, Spoils, Engraving, Dam, Lens).
 - The Researcher's Guide is split into three parts of the game: the first steps in the workshop, the middle around the
   Hextech Altar and the end around the Hexcore. Done steps wear the metal of their part (brass, blued steel, white gold),
   and each part has its own heart on the map: the Research Table, the altar and the Hexcore with its twisting rune
