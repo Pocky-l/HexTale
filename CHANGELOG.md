@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Experience Condenser: a glass column in a brass frame. No experience orb appears around it - it drinks them all
+  and holds the experience as a glowing liquid, up to about level 50; a Greedy Funnel nearby pours in too. Take a level
+  with an empty hand (sneak for everything) or fill glass bottles with Bottles o' Enchanting; a comparator reads it.
 - Rune Shackles: a nullstone floor plate with a ring of runes. Up to four creatures standing on it hang still in its
   glyph - no wandering, no pathfinding, no pushing - so a crowded mob farm hardly costs the server anything, and they
   can still be struck. Feeds on shadow essence; four plates from one altar ritual.

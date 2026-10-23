@@ -1,0 +1,17 @@
+{
+  "region": "pylons",
+  "stage": "mid",
+  "icon": "hextale:xp_condenser",
+  "parents": [
+    "greedy_funnel"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:xp_condenser"
+  },
+  "research": "xp_condenser",
+  "pos": [
+    1010,
+    -180
+  ]
+}

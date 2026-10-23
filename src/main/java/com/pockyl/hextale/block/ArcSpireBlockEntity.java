@@ -28,7 +28,6 @@ import net.neoforged.neoforge.common.util.FakePlayerFactory;
 
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.JarReach;
-import com.pockyl.hextale.farm.FunnelIndex;
 import com.pockyl.hextale.network.ArcPayload;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -172,7 +171,7 @@ public class ArcSpireBlockEntity extends BlockEntity {
             return;
         }
         spire.idle = 0;
-        GreedyFunnelBlockEntity funnel = FunnelIndex.covering(server, targets.getFirst().position());
+        GreedyFunnelBlockEntity funnel = GreedyFunnelBlockEntity.INDEX.covering(server, targets.getFirst().position());
         if (funnel != null && funnel.full()) {
             spire.setState(false, true);
             spire.wait = 40;

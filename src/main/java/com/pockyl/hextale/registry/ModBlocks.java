@@ -200,6 +200,11 @@ public final class ModBlocks {
             com.pockyl.hextale.block.RuneShacklesBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> 2));
+    /** A glass column in a brass frame: drinks the experience orbs about to appear around it and holds them as a liquid. */
+    public static final DeferredBlock<com.pockyl.hextale.block.XpCondenserBlock> XP_CONDENSER = BLOCKS.registerBlock("xp_condenser",
+            com.pockyl.hextale.block.XpCondenserBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).strength(2.0F, 6.0F).sound(SoundType.GLASS)
+                    .noOcclusion().lightLevel(state -> 6));
     /** A nullstone bowl on brass ribs under a hextech crystal: swallows the deaths around it into the container below. */
     public static final DeferredBlock<com.pockyl.hextale.block.GreedyFunnelBlock> GREEDY_FUNNEL = BLOCKS.registerBlock("greedy_funnel",
             com.pockyl.hextale.block.GreedyFunnelBlock::new,

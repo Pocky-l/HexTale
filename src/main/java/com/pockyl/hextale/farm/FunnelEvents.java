@@ -12,9 +12,9 @@ import com.pockyl.hextale.block.GreedyFunnelBlockEntity;
 
 /**
  * Deaths reach the Greedy Funnels here. Both events come from one call at the moment of death, experience first: the
- * funnel covering the spot ({@link FunnelIndex}) takes the experience, then the drops, before anything is spawned.
- * Lowest priority, so the sword's runes and other mods have already changed the drops; players' deaths are never
- * swallowed.
+ * funnel covering the spot ({@link GreedyFunnelBlockEntity#INDEX}) takes the experience, then the drops, before
+ * anything is spawned. Lowest priority, so the sword's runes and other mods have already changed the drops; players'
+ * deaths are never swallowed.
  */
 public final class FunnelEvents {
     private FunnelEvents() {
@@ -30,7 +30,7 @@ public final class FunnelEvents {
         if (event.isCanceled() || dead instanceof Player || !(dead.level() instanceof ServerLevel level)) {
             return;
         }
-        GreedyFunnelBlockEntity funnel = FunnelIndex.covering(level, dead.position());
+        GreedyFunnelBlockEntity funnel = GreedyFunnelBlockEntity.INDEX.covering(level, dead.position());
         if (funnel != null) {
             event.setDroppedExperience(funnel.swallowExperience(level, dead, event.getDroppedExperience()));
         }
@@ -41,7 +41,7 @@ public final class FunnelEvents {
         if (event.isCanceled() || dead instanceof Player || !(dead.level() instanceof ServerLevel level)) {
             return;
         }
-        GreedyFunnelBlockEntity funnel = FunnelIndex.covering(level, dead.position());
+        GreedyFunnelBlockEntity funnel = GreedyFunnelBlockEntity.INDEX.covering(level, dead.position());
         if (funnel != null) {
             funnel.swallow(level, dead, event.getDrops());
         }

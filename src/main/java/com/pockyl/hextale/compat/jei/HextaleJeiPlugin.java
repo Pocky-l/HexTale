@@ -145,6 +145,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.GREEDY_FUNNEL.get(), "greedy_funnel");
         info(registration, ModItems.ARC_SPIRE.get(), "arc_spire");
         info(registration, ModItems.RUNE_SHACKLES.get(), "rune_shackles");
+        info(registration, ModItems.XP_CONDENSER.get(), "xp_condenser");
         info(registration, ModItems.HEXTECH_ALTAR.get(), "hextech_altar");
         info(registration, ModItems.PEDESTAL.get(), "pedestal");
         info(registration, ModItems.RUNE_STELE.get(), "rune_stele");

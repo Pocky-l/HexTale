@@ -29,6 +29,7 @@ public final class ModNetwork {
         registrar.playToClient(SawPayload.TYPE, SawPayload.STREAM_CODEC);
         registrar.playToClient(FunnelPayload.TYPE, FunnelPayload.STREAM_CODEC);
         registrar.playToClient(ArcPayload.TYPE, ArcPayload.STREAM_CODEC);
+        registrar.playToClient(CondensePayload.TYPE, CondensePayload.STREAM_CODEC);
         registrar.playToClient(HexcoreStrikePayload.TYPE, HexcoreStrikePayload.STREAM_CODEC);
         registrar.playToClient(PylonLinkPayload.TYPE, PylonLinkPayload.STREAM_CODEC);
         registrar.playToClient(OpenStickerPayload.TYPE, OpenStickerPayload.STREAM_CODEC);

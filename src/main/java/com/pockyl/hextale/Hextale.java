@@ -57,6 +57,7 @@ public final class Hextale {
         com.pockyl.hextale.runework.ToolEffects.register();
         com.pockyl.hextale.farm.FunnelEvents.register();
         com.pockyl.hextale.farm.ShackleEvents.register();
+        com.pockyl.hextale.farm.CondenserEvents.register();
         com.pockyl.hextale.event.SkypackEvents.register();
         com.pockyl.hextale.multiblock.Multiblocks.register();
         com.pockyl.hextale.loot.RuneScrollLoot.register(modBus);
@@ -159,6 +160,7 @@ public final class Hextale {
             output.accept(ModItems.GREEDY_FUNNEL);
             output.accept(ModItems.ARC_SPIRE);
             output.accept(ModItems.RUNE_SHACKLES);
+            output.accept(ModItems.XP_CONDENSER);
             output.accept(ModItems.PYLON_FILTER);
             output.accept(ModItems.ESSENCE_STICKER);
             ModItems.PICKAXES.values().forEach(output::accept);

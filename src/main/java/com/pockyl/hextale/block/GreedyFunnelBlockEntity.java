@@ -32,7 +32,7 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.JarReach;
-import com.pockyl.hextale.farm.FunnelIndex;
+import com.pockyl.hextale.farm.ReachIndex;
 import com.pockyl.hextale.network.FunnelPayload;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -54,7 +54,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * A Greedy Funnel's state and work. It never looks for anything: a creature dying within its reach asks the
- * {@link FunnelIndex} for the nearest funnel, and the funnel swallows the death on the spot ({@link #swallow},
+ * {@link #INDEX} for the nearest funnel, and the funnel swallows the death on the spot ({@link #swallow},
  * {@link #swallowExperience}) - the drops go straight into the container under it and the experience into its crystal,
  * so not one item or orb is ever spawned. What the container cannot take waits in the funnel ({@value #HELD_STACKS}
  * stacks); only when that is full too do drops fall as they always did.
@@ -64,6 +64,9 @@ import org.jspecify.annotations.Nullable;
  * block ticks only while it holds something to pass down.
  */
 public class GreedyFunnelBlockEntity extends BlockEntity {
+    /** The loaded funnels, asked by every death. */
+    public static final ReachIndex<GreedyFunnelBlockEntity> INDEX = new ReachIndex<>(GreedyFunnelBlockEntity.class,
+            FunnelRune.MAX_RADIUS, GreedyFunnelBlockEntity::covers);
     public static final int DEATHS_PER_MB = 4;
     /** mB of decay drawn at once. */
     public static final int DRAW_MB = 4;
@@ -212,11 +215,15 @@ public class GreedyFunnelBlockEntity extends BlockEntity {
         }
         int radiance = strength(FunnelRune.RADIANCE);
         int gained = radiance > 0 ? Math.round(points * HolderRune.at(FunnelRune.EXPERIENCE, radiance)) : points;
-        int taken = Math.min(gained, EXPERIENCE_CAP - experience);
+        // An Experience Condenser in reach gets it first; the crystal keeps what the condenser has no room for.
+        XpCondenserBlockEntity condenser = XpCondenserBlockEntity.INDEX.covering(level, crystal(worldPosition));
+        int poured = condenser == null ? 0 : condenser.fill(level, gained, crystal(worldPosition));
+        int taken = Math.min(gained - poured, EXPERIENCE_CAP - experience);
         experience += taken;
-        paidExperience += taken;
+        paidExperience += taken + poured;
         changed();
-        return taken >= gained ? 0 : Math.max(0, points - taken);
+        int rest = gained - poured - taken;
+        return rest <= 0 ? 0 : Math.min(points, rest);
     }
 
     /**
@@ -382,14 +389,14 @@ public class GreedyFunnelBlockEntity extends BlockEntity {
     public void onLoad() {
         super.onLoad();
         if (level != null && !level.isClientSide()) {
-            FunnelIndex.add(level, worldPosition);
+            INDEX.add(level, worldPosition);
         }
     }
 
     @Override
     public void setRemoved() {
         if (level != null && !level.isClientSide()) {
-            FunnelIndex.remove(level, worldPosition);
+            INDEX.remove(level, worldPosition);
         }
         super.setRemoved();
     }

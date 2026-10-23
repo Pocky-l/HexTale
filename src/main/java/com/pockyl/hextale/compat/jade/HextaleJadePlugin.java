@@ -51,6 +51,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.GreedyFunnelBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ArcSpireBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.RuneShacklesBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.XpCondenserBlock.class);
     }
 
     private enum Machines implements IBlockComponentProvider {
@@ -110,6 +111,9 @@ public class HextaleJadePlugin implements IWailaPlugin {
                 }
             } else if (entity instanceof com.pockyl.hextale.block.HexSawmillBlockEntity mill) {
                 tooltip.add(com.pockyl.hextale.block.HexSawmillBlock.status(mill).copy().withStyle(ChatFormatting.GRAY));
+            } else if (entity instanceof com.pockyl.hextale.block.XpCondenserBlockEntity condenser) {
+                tooltip.add(Component.translatable("block.hextale.xp_condenser.status", condenser.points(),
+                        com.pockyl.hextale.block.XpCondenserBlockEntity.CAPACITY).withStyle(ChatFormatting.GRAY));
             } else if (entity instanceof com.pockyl.hextale.block.RuneShacklesBlockEntity plate) {
                 tooltip.add(com.pockyl.hextale.block.RuneShacklesBlock.status(plate).copy().withStyle(ChatFormatting.GRAY));
             } else if (entity instanceof com.pockyl.hextale.block.ArcSpireBlockEntity spire) {
