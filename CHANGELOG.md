@@ -4,7 +4,7 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0-beta.5] - Unreleased
+## [1.0.0-beta.5] - 2026-10-23
 ### Added
 - Field Ward: a magic stone post with a hextech eye. Within 16 blocks monsters no longer spawn by themselves and no
   farmland is trampled - a quiet base leaves the mob cap to your farms. Spawners and animals are not affected.
