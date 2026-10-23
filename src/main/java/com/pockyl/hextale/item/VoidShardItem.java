@@ -22,29 +22,30 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
-import com.pockyl.hextale.abyss.AbyssRift;
-import com.pockyl.hextale.abyss.RiftShape;
+import com.pockyl.hextale.thevoid.TheVoid;
+import com.pockyl.hextale.thevoid.VoidLayout;
+import com.pockyl.hextale.thevoid.VoidShape;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModSounds;
 
 import java.util.function.Consumer;
 
 /**
- * A sliver of the abyss (creative only while rifts have no logic): use tears a rift open where the player looks, of
- * the chosen shape or any; sneak + use on a rift closes it, sneak + use elsewhere picks the next shape.
+ * A sliver of the Void (creative only while the Void has no logic): use breaks it open where the player looks, of
+ * the chosen shape or any; sneak + use on a breach closes it, sneak + use elsewhere picks the next shape.
  */
-public class AbyssShardItem extends Item {
-    /** How far a rift can be torn open. */
+public class VoidShardItem extends Item {
+    /** How far away the Void can be opened. */
     private static final double REACH = 32;
 
-    public AbyssShardItem(Properties properties) {
+    public VoidShardItem(Properties properties) {
         super(properties);
     }
 
     /** The chosen shape, or null for any. */
-    public static RiftShape chosen(ItemStack stack) {
-        int value = stack.getOrDefault(ModDataComponents.RIFT_SHAPE.get(), 0);
-        return value <= 0 ? null : RiftShape.byOrdinal(value - 1);
+    public static VoidShape chosen(ItemStack stack) {
+        int value = stack.getOrDefault(ModDataComponents.VOID_SHAPE.get(), 0);
+        return value <= 0 ? null : VoidShape.byOrdinal(value - 1);
     }
 
     @Override
@@ -54,46 +55,48 @@ public class AbyssShardItem extends Item {
             return InteractionResult.SUCCESS;
         }
         if (player.isShiftKeyDown()) {
-            AbyssRift aimed = AbyssRift.aimedAt(player, REACH * 2);
+            TheVoid aimed = TheVoid.aimedAt(player, REACH * 2);
             if (aimed != null) {
                 aimed.close();
                 return InteractionResult.SUCCESS;
             }
-            int next = (stack.getOrDefault(ModDataComponents.RIFT_SHAPE.get(), 0) + 1) % (RiftShape.values().length + 1);
-            stack.set(ModDataComponents.RIFT_SHAPE.get(), next);
-            serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.abyss_shard.shape", shapeName(chosen(stack)))
+            int next = (stack.getOrDefault(ModDataComponents.VOID_SHAPE.get(), 0) + 1) % (VoidShape.values().length + 1);
+            stack.set(ModDataComponents.VOID_SHAPE.get(), next);
+            serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.void_shard.shape", shapeName(chosen(stack)))
                     .withStyle(ChatFormatting.LIGHT_PURPLE));
             return InteractionResult.SUCCESS;
         }
         RandomSource random = level.getRandom();
-        RiftShape shape = chosen(stack);
+        VoidShape shape = chosen(stack);
         if (shape == null) {
-            shape = RiftShape.byOrdinal(random.nextInt(RiftShape.values().length));
+            shape = VoidShape.byOrdinal(random.nextInt(VoidShape.values().length));
         }
         float size = shape.randomSize(random);
-        Vec3 centre = place(server, player, shape, size);
-        float yaw = shape.lying() ? random.nextFloat() * 360 : player.getYRot() + (random.nextFloat() - 0.5F) * 30;
-        AbyssRift rift = AbyssRift.open(level, centre, yaw, shape, size, random.nextInt());
-        level.addFreshEntity(rift);
-        level.playSound(null, centre.x, centre.y, centre.z, ModSounds.ABYSS_RIFT_OPEN.get(), SoundSource.AMBIENT,
+        int seed = random.nextInt();
+        Vec3 centre = place(server, player, VoidLayout.of(shape, size, seed));
+        // Standing breaches face the player square on, as the Void tends to.
+        float yaw = shape.lying() ? random.nextFloat() * 360 : player.getYRot() + (random.nextFloat() - 0.5F) * 10;
+        level.addFreshEntity(TheVoid.open(level, centre, yaw, shape, size, seed));
+        level.playSound(null, centre.x, centre.y, centre.z, ModSounds.THE_VOID_OPEN.get(), SoundSource.AMBIENT,
                 0.8F + size * 0.12F, 1.1F - Math.min(size, 8) * 0.05F);
         player.getCooldowns().addCooldown(stack, 10);
         return InteractionResult.SUCCESS;
     }
 
-    /** Where the rift's centre goes: in the air before the player, clear of the ground; a fissure on the ground. */
-    private static Vec3 place(ServerLevel level, Player player, RiftShape shape, float size) {
+    /** Where the breach's centre goes: in the air before the player, clear of the ground; a lying one on the ground. */
+    private static Vec3 place(ServerLevel level, Player player, VoidLayout layout) {
+        float size = layout.size;
         Vec3 eye = player.getEyePosition();
         Vec3 look = player.getLookAngle();
         BlockHitResult hit = level.clip(new ClipContext(eye, eye.add(look.scale(REACH)), ClipContext.Block.COLLIDER,
                 ClipContext.Fluid.NONE, player));
         double distance = hit.getType() == HitResult.Type.MISS ? REACH : hit.getLocation().distanceTo(eye);
-        if (shape.lying()) {
+        if (layout.shape.lying()) {
             Vec3 at = hit.getType() == HitResult.Type.MISS ? eye.add(look.scale(6 + size)) : hit.getLocation();
             double ground = groundBelow(level, at, 12);
-            return new Vec3(at.x, (Double.isNaN(ground) ? at.y : ground) + 0.04, at.z);
+            return new Vec3(at.x, (Double.isNaN(ground) ? at.y : ground) + layout.halfThickness() + 0.03, at.z);
         }
-        double along = Mth.clamp(Math.min(distance - shape.halfWidth(size) - 0.6, 3 + size * 0.9), 2.0, REACH);
+        double along = Mth.clamp(Math.min(distance - 1.0, 3 + size * 0.9), 2.0, REACH);
         Vec3 at = eye.add(look.scale(along));
         double ground = groundBelow(level, at, size + 2);
         if (!Double.isNaN(ground)) {
@@ -114,16 +117,16 @@ public class AbyssShardItem extends Item {
         return Double.NaN;
     }
 
-    private static Component shapeName(RiftShape shape) {
-        return Component.translatable(shape == null ? "rift_shape.hextale.any" : shape.translationKey());
+    private static Component shapeName(VoidShape shape) {
+        return Component.translatable(shape == null ? "void_shape.hextale.any" : shape.translationKey());
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         tooltip.accept(Component.translatable(getDescriptionId() + ".desc").withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable("item.hextale.abyss_shard.shape", shapeName(chosen(stack)))
+        tooltip.accept(Component.translatable("item.hextale.void_shard.shape", shapeName(chosen(stack)))
                 .withStyle(ChatFormatting.DARK_PURPLE));
-        tooltip.accept(Component.translatable("item.hextale.abyss_shard.controls").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("item.hextale.void_shard.controls").withStyle(ChatFormatting.DARK_GRAY));
         tooltip.accept(Component.translatable("item.hextale.creative_only").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
     }
 }

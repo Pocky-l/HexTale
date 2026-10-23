@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "hextale:item/abyss_shard"
+    "layer0": "hextale:item/void_shard"
   }
 }

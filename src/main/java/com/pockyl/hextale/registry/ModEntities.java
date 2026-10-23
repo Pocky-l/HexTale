@@ -25,10 +25,10 @@ public final class ModEntities {
                             com.pockyl.hextale.entity.ThrownChemVial::new, MobCategory.MISC).noLootTable().sized(0.25F, 0.25F)
                     .clientTrackingRange(4).updateInterval(10).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
-    /** A rift of the abyss hanging in the world: a tear the depth shows through. Big and static, seen from afar. */
-    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.abyss.AbyssRift>> ABYSS_RIFT =
-            ENTITIES.register("abyss_rift", id -> EntityType.Builder.<com.pockyl.hextale.abyss.AbyssRift>of(
-                            com.pockyl.hextale.abyss.AbyssRift::new, MobCategory.MISC).noLootTable().sized(0.5F, 0.5F)
+    /** The Void hanging in the world: a breach the depth shows through. Big and static, seen from afar. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.TheVoid>> THE_VOID =
+            ENTITIES.register("the_void", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.TheVoid>of(
+                            com.pockyl.hextale.thevoid.TheVoid::new, MobCategory.MISC).noLootTable().sized(0.5F, 0.5F)
                     .clientTrackingRange(10).updateInterval(4).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
     private ModEntities() {

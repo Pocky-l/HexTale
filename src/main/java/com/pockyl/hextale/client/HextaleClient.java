@@ -82,7 +82,7 @@ public final class HextaleClient {
         modBus.addListener(TableModels::register);
         modBus.addListener((RegisterParticleProvidersEvent event) -> {
             event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new);
-            event.registerSpriteSet(ModParticles.ABYSS_MOTE.get(), com.pockyl.hextale.client.particle.AbyssMoteParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.VOID_MOTE.get(), com.pockyl.hextale.client.particle.VoidMoteParticle.Provider::new);
             event.registerSpriteSet(ModParticles.RUNE_SHARD.get(), RuneShardParticle.Provider::new);
             event.registerSpriteSet(ModParticles.ESSENCE_WISP.get(), EssenceWispParticle.Provider::new);
             event.registerSpriteSet(ModParticles.ESSENCE_DROP.get(), EssenceDropParticle.Provider::new);
@@ -102,8 +102,8 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.screen.book.AltarDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.screen.book.CircleDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.render.HexGlow::registerPipelines);
-        modBus.addListener(com.pockyl.hextale.client.render.AbyssVoid::registerPipelines);
-        AbyssRiftSounds.register();
+        modBus.addListener(com.pockyl.hextale.client.render.VoidPipelines::registerPipelines);
+        TheVoidSounds.register();
         NeoForge.EVENT_BUS.addListener(GogglesView::tick);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
                 event.register(EssencesTooltip.class, ClientEssencesTooltip::new));
@@ -179,8 +179,8 @@ public final class HextaleClient {
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THROWN_CHEM_VIAL.get(),
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
-        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.ABYSS_RIFT.get(),
-                com.pockyl.hextale.client.render.AbyssRiftRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THE_VOID.get(),
+                com.pockyl.hextale.client.render.TheVoidRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RESEARCH_TABLE.get(), ResearchTableRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ALEMBIC.get(), AlembicRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SEPARATOR.get(), SeparatorRenderer::new);

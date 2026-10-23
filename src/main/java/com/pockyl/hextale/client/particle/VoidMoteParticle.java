@@ -10,18 +10,18 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * A mote of the world falling into an abyss rift. Spawned AT the point it falls into with the offset to its start as
+ * A mote of the world falling into the Void. Spawned AT the point it falls into with the offset to its start as
  * velocity: it hangs and drifts a moment as if unsure, swirls round the way in, then is dragged in faster and faster,
  * flaring as it goes, and is gone at the opening.
  */
-public class AbyssMoteParticle extends HexParticle {
+public class VoidMoteParticle extends HexParticle {
     private final Vec3 from;
     private final Vec3 to;
     private final Vec3 side;
     private final Vec3 lift;
     private final float swirl;
 
-    protected AbyssMoteParticle(ClientLevel level, double x, double y, double z, double dx, double dy, double dz, ColorParticleOption option,
+    protected VoidMoteParticle(ClientLevel level, double x, double y, double z, double dx, double dy, double dz, ColorParticleOption option,
                                 SpriteSet sprites) {
         super(level, x + dx, y + dy, z + dz, 0, 0, 0, sprites, 0.03F + level.getRandom().nextFloat() * 0.045F);
         to = new Vec3(x, y, z);
@@ -76,7 +76,7 @@ public class AbyssMoteParticle extends HexParticle {
         @Override
         public Particle createParticle(ColorParticleOption option, ClientLevel level, double x, double y, double z, double xd, double yd, double zd,
                                        RandomSource random) {
-            return new AbyssMoteParticle(level, x, y, z, xd, yd, zd, option, sprites);
+            return new VoidMoteParticle(level, x, y, z, xd, yd, zd, option, sprites);
         }
     }
 }

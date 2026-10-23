@@ -750,42 +750,42 @@
       }
     ]
   },
-  "abyss_rift.open": {
-    "subtitle": "subtitles.hextale.abyss_rift.open",
+  "the_void.open": {
+    "subtitle": "subtitles.hextale.the_void.open",
     "sounds": [
       {
-        "name": "hextale:abyss_rift_open1",
+        "name": "hextale:the_void_open1",
         "volume": 0.9,
         "attenuation_distance": 32
       },
       {
-        "name": "hextale:abyss_rift_open2",
+        "name": "hextale:the_void_open2",
         "volume": 0.9,
         "attenuation_distance": 32
       }
     ]
   },
-  "abyss_rift.hum": {
-    "subtitle": "subtitles.hextale.abyss_rift.hum",
+  "the_void.hum": {
+    "subtitle": "subtitles.hextale.the_void.hum",
     "sounds": [
       {
-        "name": "hextale:abyss_rift_hum",
+        "name": "hextale:the_void_hum",
         "volume": 0.6,
         "attenuation_distance": 20,
         "stream": true
       }
     ]
   },
-  "abyss_rift.close": {
-    "subtitle": "subtitles.hextale.abyss_rift.close",
+  "the_void.close": {
+    "subtitle": "subtitles.hextale.the_void.close",
     "sounds": [
       {
-        "name": "hextale:abyss_rift_close1",
+        "name": "hextale:the_void_close1",
         "volume": 0.8,
         "attenuation_distance": 28
       },
       {
-        "name": "hextale:abyss_rift_close2",
+        "name": "hextale:the_void_close2",
         "volume": 0.8,
         "attenuation_distance": 28
       }

@@ -91,10 +91,10 @@ public final class ModParticles {
             () -> new SimpleParticleType(false));
 
     /**
-     * A mote pulled into an abyss rift: spawned AT the point it falls into with the offset to its start as speed, it
+     * A mote pulled into the Void: spawned AT the point it falls into with the offset to its start as speed, it
      * drifts at first, swirls, then is dragged in faster and faster and vanishes.
      */
-    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> ABYSS_MOTE = colored("abyss_mote");
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> VOID_MOTE = colored("void_mote");
 
     private static DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> colored(String name) {
         return PARTICLES.register(name, () -> new ParticleType<ColorParticleOption>(false) {
@@ -153,8 +153,8 @@ public final class ModParticles {
         return of(HEX_RING, rgb);
     }
 
-    public static ColorParticleOption abyssMote(int rgb) {
-        return of(ABYSS_MOTE, rgb);
+    public static ColorParticleOption voidMote(int rgb) {
+        return of(VOID_MOTE, rgb);
     }
 
     public static ColorParticleOption flame(int rgb) {

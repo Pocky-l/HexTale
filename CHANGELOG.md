@@ -6,15 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Abyss rifts (a first look, no logic yet): tears in the world through which the abyss shows. Five shapes - a tear in
-  the air, a fissure in the ground, space shattered like glass, a gaping maw that opens like an eye and a forked cleft -
-  every one with its own jagged outline and size. Looking into one you see depth, not a flat picture: violet mist and
-  specks lie layer behind layer and are pulled into a spiral that never ends, the torn edge crawls and glows, splinters
-  of torn space tumble around it, motes of the world swirl in. A rift cracks open with a running hairline and springs
-  apart, breathes slowly, and when it closes it presses shut and is drawn into a point. Deep, layered sounds for the
-  tear, the breath of the abyss and the closing.
-- Abyss Shard (creative only for now): right click tears a rift open where you look; sneak + right click closes the
-  rift you look at, or picks the shape (any, tear, fissure, shatter, maw, cleft).
+- The Void (a first look, no logic yet): breaches in the world through which the Void shows. A breach is made of
+  square cells with a burning magenta outline and a glow around it - teeth that come and go along the edge, loose
+  pieces hanging beside it, darker rectangles and dead cells inside, seams that flash now and then. Look into one and
+  you see a tunnel, not a flat picture: glassy violet ribbons spiral down towards a pink-white glow crossed by dark
+  veins, from whichever side you look. Five shapes - a gate, an eye with a blinding whirl, a narrow slit, a scattered
+  cluster and a breach in the ground. It glitches open cell by cell, flickers while it hangs, draws motes of the world
+  in, and falls apart cell by cell when it closes. Deep, layered sounds for the opening, the breath and the closing.
+- Void Shard (creative only for now): right click opens the Void where you look; sneak + right click closes the one
+  you look at, or picks the shape (any, gate, eye, slit, scatter, breach).
 
 ## [1.0.0-beta.4] - 2026-10-21
 ### Added

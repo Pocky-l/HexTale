@@ -33,9 +33,9 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("notes_drawing", builder -> builder
                     .persistent(com.pockyl.hextale.item.NotesDrawing.CODEC)
                     .networkSynchronized(com.pockyl.hextale.item.NotesDrawing.STREAM_CODEC));
-    /** The rift shape an Abyss Shard tears: 0 = any, else {@code RiftShape} ordinal + 1. */
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> RIFT_SHAPE =
-            COMPONENTS.registerComponentType("rift_shape", builder -> builder
+    /** The shape of the Void a Void Shard opens: 0 = any, else {@code VoidShape} ordinal + 1. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> VOID_SHAPE =
+            COMPONENTS.registerComponentType("void_shape", builder -> builder
                     .persistent(Codec.intRange(0, 32)).networkSynchronized(ByteBufCodecs.VAR_INT));
     /** Stars the rune on a scroll was studied with (1-3). */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> STARS =

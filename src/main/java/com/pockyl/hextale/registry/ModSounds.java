@@ -30,10 +30,10 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SKYPACK_IGNITE = register("skypack.ignite");
     public static final DeferredHolder<SoundEvent, SoundEvent> SKYPACK_THRUST = register("skypack.thrust");
     public static final DeferredHolder<SoundEvent, SoundEvent> SKYPACK_SPUTTER = register("skypack.sputter");
-    /** An abyss rift: the world tearing open, the depth breathing behind it (looped while it hangs), the tear shutting. */
-    public static final DeferredHolder<SoundEvent, SoundEvent> ABYSS_RIFT_OPEN = register("abyss_rift.open");
-    public static final DeferredHolder<SoundEvent, SoundEvent> ABYSS_RIFT_HUM = register("abyss_rift.hum");
-    public static final DeferredHolder<SoundEvent, SoundEvent> ABYSS_RIFT_CLOSE = register("abyss_rift.close");
+    /** The Void: the world breaking open, the depth breathing behind it (looped while it hangs), the breach shutting. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_OPEN = register("the_void.open");
+    public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_HUM = register("the_void.hum");
+    public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_CLOSE = register("the_void.close");
     /** The orb recognises a simple rune; played at the element's pitch. */
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_RECOGNISED = register("rune.recognised");
     /** The orb does not know the drawing. */
