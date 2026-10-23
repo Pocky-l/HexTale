@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:arc_spire",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:spire_runes"
+            ],
+            "source": "block_entity"
+          }
+        }
+      ],
+      "rolls": 1
+    }
+  ]
+}

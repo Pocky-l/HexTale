@@ -67,6 +67,12 @@ public final class ClientPayloads {
                 funnel.show(payload, level.getGameTime());
             }
         });
+        event.register(com.pockyl.hextale.network.ArcPayload.TYPE, (payload, context) -> {
+            ClientLevel level = Minecraft.getInstance().level;
+            if (level != null && level.getBlockEntity(payload.spire()) instanceof com.pockyl.hextale.block.ArcSpireBlockEntity spire) {
+                spire.show(payload, level.getGameTime());
+            }
+        });
         event.register(com.pockyl.hextale.network.HexcoreStrikePayload.TYPE, (payload, context) -> {
             ClientLevel level = Minecraft.getInstance().level;
             if (level != null && level.getBlockEntity(payload.core()) instanceof com.pockyl.hextale.block.HexcoreBlockEntity core) {

@@ -147,6 +147,8 @@ public final class ModItems {
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> GREEDY_FUNNEL = ITEMS.registerSimpleBlockItem(ModBlocks.GREEDY_FUNNEL,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> ARC_SPIRE = ITEMS.registerSimpleBlockItem(ModBlocks.ARC_SPIRE,
+            properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> WHORLED_MAGIC_STONE = ITEMS.registerSimpleBlockItem(ModBlocks.WHORLED_MAGIC_STONE);
     /** Creative only: everything known at once - every rune with three stars, every item studied, every quest done. */
     public static final DeferredItem<KnowledgeScrollItem> SCROLL_OF_OMNISCIENCE = ITEMS.registerItem("scroll_of_omniscience",

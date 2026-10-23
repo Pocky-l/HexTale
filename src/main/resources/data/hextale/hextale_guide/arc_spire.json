@@ -1,0 +1,22 @@
+{
+  "region": "pylons",
+  "stage": "mid",
+  "icon": "hextale:arc_spire",
+  "parents": [
+    "greedy_funnel",
+    "hexsteel"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:arc_spire",
+    "then": {
+      "kind": "runes",
+      "result": "spire"
+    }
+  },
+  "research": "arc_spire",
+  "pos": [
+    990,
+    -130
+  ]
+}

@@ -125,6 +125,8 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> FUNNEL_SWALLOW = register("funnel.swallow");
     /** A Greedy Funnel's crystal lets its experience go to a player. */
     public static final DeferredHolder<SoundEvent, SoundEvent> FUNNEL_RELEASE = register("funnel.release");
+    /** A Hex Arc Spire's arc strikes. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> ARC_STRIKE = register("arc.strike");
 
     private ModSounds() {
     }

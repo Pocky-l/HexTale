@@ -33,6 +33,8 @@ public enum RuneHolder {
     SAWMILL(() -> ModDataComponents.SAWMILL_RUNES.get(), SawmillRune.SLOTS, SawmillRune.values()),
     /** The Greedy Funnel. */
     FUNNEL(() -> ModDataComponents.FUNNEL_RUNES.get(), FunnelRune.SLOTS, FunnelRune.values()),
+    /** The Hex Arc Spire. */
+    SPIRE(() -> ModDataComponents.SPIRE_RUNES.get(), SpireRune.SLOTS, SpireRune.values()),
     /** The Hex Furnace. */
     FURNACE(() -> ModDataComponents.FURNACE_RUNES.get(), FurnaceRune.SLOTS, FurnaceRune.values()),
     /** The Chem Burner. */
@@ -87,6 +89,9 @@ public enum RuneHolder {
         }
         if (item == ModItems.GREEDY_FUNNEL.get()) {
             return FUNNEL;
+        }
+        if (item == ModItems.ARC_SPIRE.get()) {
+            return SPIRE;
         }
         if (item == ModItems.HEX_FURNACE.get()) {
             return FURNACE;
@@ -227,6 +232,7 @@ public enum RuneHolder {
             case REAPER -> List.of(new ItemStack(ModItems.WHIRL_REAPER.get()));
             case SAWMILL -> List.of(new ItemStack(ModItems.HEX_SAWMILL.get()));
             case FUNNEL -> List.of(new ItemStack(ModItems.GREEDY_FUNNEL.get()));
+            case SPIRE -> List.of(new ItemStack(ModItems.ARC_SPIRE.get()));
             case FURNACE -> List.of(new ItemStack(ModItems.HEX_FURNACE.get()));
             case BURNER -> List.of(new ItemStack(ModItems.CHEM_BURNER.get()));
             case TANK -> List.of(new ItemStack(ModItems.AXOLOTL_TANK.get()));

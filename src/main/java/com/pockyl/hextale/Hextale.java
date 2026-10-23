@@ -156,6 +156,7 @@ public final class Hextale {
             output.accept(ModItems.WHIRL_REAPER);
             output.accept(ModItems.HEX_SAWMILL);
             output.accept(ModItems.GREEDY_FUNNEL);
+            output.accept(ModItems.ARC_SPIRE);
             output.accept(ModItems.PYLON_FILTER);
             output.accept(ModItems.ESSENCE_STICKER);
             ModItems.PICKAXES.values().forEach(output::accept);

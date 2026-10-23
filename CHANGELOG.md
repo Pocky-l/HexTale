@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Hex Arc Spire: a hexsteel spike wound with brass coils that strikes the hostile creatures around it with arcs of
+  charge. The kills count as a player's, so they drop experience and rare loot; named creatures and bosses are spared.
+  Next to a Greedy Funnel it holds back while the funnel is full. Feeds on spark essence and takes runes (Shift, Motor,
+  Chain Lightning, Flash, Dam, Lens).
 - Greedy Funnel: a nullstone bowl set on a chest. Whatever dies around it never reaches the ground: the drops go
   straight into the chest and the experience into its crystal, so mob farms stop piling up items and orbs. It feeds on
   decay essence (bones are full of it) and takes runes (Shift, Radiance, Spoils, Engraving, Dam, Lens).

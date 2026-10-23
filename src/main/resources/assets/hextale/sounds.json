@@ -565,6 +565,23 @@
       }
     ]
   },
+  "arc.strike": {
+    "subtitle": "subtitles.hextale.arc.strike",
+    "sounds": [
+      {
+        "name": "hextale:arc_strike1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:arc_strike2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:arc_strike3",
+        "volume": 0.6
+      }
+    ]
+  },
   "crucible.brew": {
     "subtitle": "subtitles.hextale.crucible.brew",
     "sounds": [
