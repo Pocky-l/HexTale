@@ -60,6 +60,7 @@ public class RuneShacklesBlockEntity extends BlockEntity {
     private int wait;
     /** The creatures held now (entity ids; the clients draw the glyph under them). */
     private int[] held = new int[0];
+    private long lookedAt = -1;
 
     public RuneShacklesBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.RUNE_SHACKLES.get(), pos, state);
@@ -100,6 +101,7 @@ public class RuneShacklesBlockEntity extends BlockEntity {
 
     /** Holds (or keeps holding) the creatures over the plate, as many as it can pay for. */
     void hold(ServerLevel level) {
+        lookedAt = level.getGameTime();
         Vec3 centre = Vec3.atBottomCenterOf(worldPosition);
         List<Mob> over = level.getEntitiesOfClass(Mob.class, space(worldPosition), RuneShacklesBlockEntity::holdable);
         over.sort(Comparator.comparingDouble(mob -> mob.distanceToSqr(centre)));
@@ -136,6 +138,18 @@ public class RuneShacklesBlockEntity extends BlockEntity {
             changed();
         } else if (caught) {
             setChanged();
+        }
+    }
+
+    /**
+     * A creature has just stepped onto the plate: it is caught at once, not at the next look - a walking creature
+     * crosses a plate in a few ticks. Nothing happens while the plate is full or dark (the looks deal with those), and
+     * at most one look a tick however many step on.
+     */
+    public void steppedOn(ServerLevel level, Mob mob) {
+        if (!dark && held.length < CAPACITY && !mob.hasData(ModAttachments.SHACKLE) && holdable(mob)
+                && lookedAt != level.getGameTime()) {
+            hold(level);
         }
     }
 

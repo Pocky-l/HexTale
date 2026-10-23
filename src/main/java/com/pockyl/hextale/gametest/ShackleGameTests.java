@@ -3,7 +3,7 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.monster.zombie.Husk;
+import net.minecraft.world.entity.animal.cow.Cow;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
@@ -22,7 +22,7 @@ public final class ShackleGameTests {
     }
 
     /**
-     * A husk on a plate with a jar of shadow by it is taken hold of and does not move for seconds. Two blows a little
+     * A cow on a plate with a jar of shadow by it is taken hold of and does not move for seconds. Two blows a little
      * apart both hurt it (the blink after a hit still wears off while it is held). With the plate broken the hold runs
      * out and it is free again.
      */
@@ -41,26 +41,27 @@ public final class ShackleGameTests {
         helper.setBlock(jarPos, ModBlocks.ESSENCE_TANK.get());
         helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.SHADOW, 8));
         RuneShacklesBlockEntity plate = helper.getBlockEntity(BASE, RuneShacklesBlockEntity.class);
-        Husk husk = helper.spawn(EntityTypes.HUSK, new Vec3(1.5, 1.2, 1.5));
+        Cow cow = helper.spawn(EntityTypes.COW, new Vec3(1.5, 1.2, 1.5));
         Vec3[] at = new Vec3[1];
         float[] health = new float[1];
         helper.runAfterDelay(30, () -> {
-            helper.assertTrue(husk.hasData(ModAttachments.SHACKLE), "the plate took hold of the husk");
+            helper.assertTrue(cow.hasData(ModAttachments.SHACKLE), "the plate took hold of the cow");
             helper.assertValueEqual(plate.held().length, 1, "creatures held");
-            at[0] = husk.position();
-            health[0] = husk.getHealth();
-            husk.hurtServer(helper.getLevel(), helper.getLevel().damageSources().generic(), 2);
+            at[0] = cow.position();
+            health[0] = cow.getHealth();
+            cow.hurtServer(helper.getLevel(), helper.getLevel().damageSources().generic(), 2);
         });
         helper.runAfterDelay(60, () -> {
-            husk.hurtServer(helper.getLevel(), helper.getLevel().damageSources().generic(), 2);
-            helper.assertTrue(husk.getHealth() <= health[0] - 4 + 0.01F, "both blows hurt the held husk");
+            cow.hurtServer(helper.getLevel(), helper.getLevel().damageSources().generic(), 2);
+            helper.assertTrue(cow.getHealth() <= health[0] - 4 + 0.01F, "both blows hurt the held cow (" + health[0] + " -> " + cow.getHealth() + ", cooldown "
+                    + cow.damageCooldownTime + ", held " + cow.hasData(ModAttachments.SHACKLE) + ", at " + cow.position() + ")");
         });
         helper.runAfterDelay(90, () -> {
-            helper.assertTrue(husk.position().distanceTo(at[0]) < 0.01, "a held husk does not move");
+            helper.assertTrue(cow.position().distanceTo(at[0]) < 0.01, "a held cow does not move");
             helper.setBlock(BASE, Blocks.AIR);
         });
         helper.runAfterDelay(140, () -> {
-            helper.assertTrue(!husk.hasData(ModAttachments.SHACKLE), "with the plate gone the hold ran out");
+            helper.assertTrue(!cow.hasData(ModAttachments.SHACKLE), "with the plate gone the hold ran out");
             helper.succeed();
         });
     }

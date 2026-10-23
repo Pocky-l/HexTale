@@ -38,7 +38,7 @@ import org.jspecify.annotations.Nullable;
  */
 public class MiasmaVentBlockEntity extends BlockEntity {
     public static final int INTERVAL = 40;
-    public static final int MAX_SLEEP = 160;
+    public static final int MAX_SLEEP = 80;
     public static final float DAMAGE = 3;
     public static final int PUFFS_PER_MB = 4;
     public static final int DRAW_MB = 4;
@@ -105,11 +105,14 @@ public class MiasmaVentBlockEntity extends BlockEntity {
 
     private boolean drawUnknown(ServerLevel level) {
         for (EssenceTankBlockEntity jar : JarReach.around(level, worldPosition)) {
-            int taken = Math.min(DRAW_MB, jar.tank().contents().unknown());
+            // A Creative Essence Tank holds every essence but the unknown one; for the vent it is an endless murk too.
+            int taken = jar.isCreative() ? DRAW_MB : Math.min(DRAW_MB, jar.tank().contents().unknown());
             if (taken <= 0) {
                 continue;
             }
-            jar.tank().remove(EssenceMix.unknown(taken));
+            if (!jar.isCreative()) {
+                jar.tank().remove(EssenceMix.unknown(taken));
+            }
             jar.setChanged();
             charges += taken * PUFFS_PER_MB;
             Vec3 mouth = JarReach.mouth(jar.getBlockPos());

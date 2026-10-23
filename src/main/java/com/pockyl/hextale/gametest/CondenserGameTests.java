@@ -47,12 +47,15 @@ public final class CondenserGameTests {
         helper.setBlock(BASE.offset(3, 0, 0), Blocks.CHEST);
         helper.setBlock(BASE.offset(3, 1, 0), ModBlocks.GREEDY_FUNNEL.get());
         // Freshly placed devices join their index on the next tick.
-        helper.runAfterDelay(1, () -> drink(helper, condenser, area));
+        helper.runAfterDelay(1, () -> drink(helper, condenser));
     }
 
-    private static void drink(GameTestHelper helper, XpCondenserBlockEntity condenser, AABB area) {
-        ExperienceOrb.award(helper.getLevel(), Vec3.atCenterOf(helper.absolutePos(BASE.offset(2, 0, 0))), 12);
-        helper.assertTrue(helper.getLevel().getEntitiesOfClass(ExperienceOrb.class, area).isEmpty(), "no orb appeared");
+    private static void drink(GameTestHelper helper, XpCondenserBlockEntity condenser) {
+        Vec3 spot = Vec3.atCenterOf(helper.absolutePos(BASE.offset(2, 0, 0)));
+        ExperienceOrb.award(helper.getLevel(), spot, 12);
+        // Only right at the spot: neighbouring tests make orbs of their own.
+        helper.assertTrue(helper.getLevel().getEntitiesOfClass(ExperienceOrb.class, AABB.ofSize(spot, 1.5, 1.5, 1.5)).isEmpty(),
+                "no orb appeared");
         helper.assertValueEqual(condenser.points(), 12, "points in the condenser");
 
         BlockPos jarPos = BASE.offset(-2, 0, -2);
@@ -68,6 +71,8 @@ public final class CondenserGameTests {
         int before = condenser.points();
         helper.assertTrue(condenser.bottle(), "enough for a bottle");
         helper.assertValueEqual(condenser.points(), before - XpCondenserBlockEntity.BOTTLE_COST, "points after a bottle");
+        // Its reach would take the experience of neighbouring tests' deaths.
+        helper.setBlock(BASE, Blocks.AIR);
         helper.succeed();
     }
 }

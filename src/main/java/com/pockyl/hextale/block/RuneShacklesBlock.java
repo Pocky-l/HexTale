@@ -2,7 +2,10 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -48,6 +51,16 @@ public class RuneShacklesBlock extends BaseEntityBlock {
         }
         return Component.translatable("block.hextale.rune_shackles.status", plate.held().length, RuneShacklesBlockEntity.CAPACITY,
                 plate.budget() / 20);
+    }
+
+    /** A creature stepping on is caught at once. */
+    @Override
+    public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
+        super.stepOn(level, pos, state, entity);
+        if (level instanceof ServerLevel server && entity instanceof Mob mob
+                && level.getBlockEntity(pos) instanceof RuneShacklesBlockEntity plate) {
+            plate.steppedOn(server, mob);
+        }
     }
 
     @Override
