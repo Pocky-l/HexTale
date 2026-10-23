@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - The Void (a first look, no logic yet): breaches in the world through which the Void shows. A breach is made of
-  square cells with a burning magenta outline and a glow around it - teeth that come and go along the edge, loose
-  pieces hanging beside it, darker rectangles and dead cells inside, seams that flash now and then. Look into one and
-  you see a tunnel, not a flat picture: glassy violet ribbons spiral down towards a pink-white glow crossed by dark
-  veins, from whichever side you look. Five shapes - a gate, an eye with a blinding whirl, a narrow slit, a scattered
-  cluster and a breach in the ground. It glitches open cell by cell, flickers while it hangs, draws motes of the world
-  in, and falls apart cell by cell when it closes. Deep, layered sounds for the opening, the breath and the closing.
+  square cells with a burning magenta outline and a glow around it - teeth along the edge, loose pieces hanging beside
+  it, darker rectangles and black dead cells inside, smouldering seams between them. Look into one and you see a
+  throat, not a flat picture: dark coils wind down it, glassy lilac ribbons glow deeper in, and at the bottom a magenta
+  heart beats behind a net of black roots - from whichever side you look. Five shapes - a gate, an eye with a blinding
+  heart, a narrow slit, a scattered cluster and a breach in the ground. It spreads open from its heart and shrinks back
+  into it, breathes out dark smoke and draws motes of the world in. Near it the fog closes in and turns violet, and the
+  edges of your sight darken in the rhythm of its heartbeat. Deep, layered sounds for the opening, the breath and the
+  closing.
 - Void Shard (creative only for now): right click opens the Void where you look; sneak + right click closes the one
   you look at, or picks the shape (any, gate, eye, slit, scatter, breach).
 

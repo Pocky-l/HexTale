@@ -27,7 +27,8 @@ import com.pockyl.hextale.registry.ModSounds;
 
 /**
  * The Void breaking into the world: a blocky breach of glowing edges with a whirling depth behind it. Only the look for
- * now (no logic): it glitches open cell by cell, flickers, draws motes in, and closes when told to. Its outline is a
+ * now (no logic): it spreads open from its heart, breathes out dark smoke and draws the world's motes in, and closes when
+ * told to. Its outline is a
  * {@link VoidLayout} built from the seed (nothing but the numbers is synced). The entity stands at the centre of the
  * breach; {@link #orientation()} turns the breach's plane into the world.
  */
@@ -41,7 +42,9 @@ public class TheVoid extends Entity {
     public static final int MAGENTA = 0xF23CE6;
     public static final int PINK = 0xFFB4F4;
     public static final int DEEP = 0x34105A;
-    public static final int CYAN = 0x5FD8FF;
+    /** The smoke it breathes: nearly black, a little violet. */
+    public static final int SMOKE = 0x140A1C;
+    public static final int UMBER = 0x2A2014;
 
     private static final EntityDataAccessor<Integer> DATA_SEED = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_SHAPE = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.INT);
@@ -167,10 +170,11 @@ public class TheVoid extends Entity {
         Vector3f normal = orientation().transform(new Vector3f(0, 0, 1));
 
         if (age < OPEN_TICKS && !closing()) {
-            // Breaking through: bright bits spit from the cells as they appear.
-            for (int i = 0; i < 2; i++) {
+            // Breaking through: dark smoke bursts out of the cells as they appear.
+            for (int i = 0; i < 3; i++) {
                 Vec3 at = toWorld(layout.samplePoint(random, true).mul(Math.max(0.2F, reveal)));
-                level().addParticle(ModParticles.glint(random.nextBoolean() ? MAGENTA : PINK), at.x, at.y, at.z, 0, 0, 0);
+                float push = (random.nextBoolean() ? 1 : -1) * 0.04F;
+                level().addParticle(ModParticles.vapour(SMOKE), at.x, at.y, at.z, normal.x * push, normal.y * push, normal.z * push);
             }
             if ((int) age == 2) {
                 Vec3 centre = position();
@@ -178,7 +182,7 @@ public class TheVoid extends Entity {
             }
         }
 
-        // The world drifting in: glowing specks spiral into the breach from in front of it and behind it.
+        // The world drifting in: motes, mostly dark, spiral into the breach from in front of it and behind it.
         float pull = closing() ? 2.5F : 1;
         float chance = Math.min(3, (0.35F + size * 0.22F) * pull * reveal);
         for (; chance > 0; chance -= 1) {
@@ -189,21 +193,29 @@ public class TheVoid extends Entity {
             float reach = (0.9F + random.nextFloat() * 1.4F) * (0.6F + size * 0.18F);
             Vector3f out = new Vector3f(random.nextFloat() - 0.5F, random.nextFloat() - 0.5F, random.nextFloat() - 0.5F);
             out.add(new Vector3f(normal).mul((random.nextBoolean() ? 1 : -1) * 0.7F)).normalize().mul(reach);
-            int colour = switch (random.nextInt(6)) {
-                case 0 -> CYAN;
-                case 1 -> MAGENTA;
-                case 2 -> PINK;
-                case 3 -> DEEP;
-                default -> VIOLET;
+            int colour = switch (random.nextInt(7)) {
+                case 0 -> MAGENTA;
+                case 1 -> PINK;
+                case 2 -> VIOLET;
+                case 3 -> UMBER;
+                default -> DEEP;
             };
             level().addParticle(ModParticles.voidMote(colour), target.x, target.y, target.z, out.x, out.y, out.z);
         }
 
-        // Cold specks hanging around the breach, like dust caught in its light.
-        if (random.nextFloat() < (0.15F + size * 0.05F) * reveal) {
-            Vec3 at = toWorld(layout.samplePoint(random, true)).add(new Vec3(random.nextFloat() - 0.5, random.nextFloat() - 0.5,
-                    random.nextFloat() - 0.5).scale(size * 0.5));
-            level().addParticle(ModParticles.glint(random.nextInt(3) == 0 ? PINK : CYAN), at.x, at.y, at.z, 0, 0, 0);
+        // It breathes out: dark smoke seeps from the edge and drifts away from it, slow and heavy.
+        if (random.nextFloat() < (0.3F + size * 0.12F) * reveal) {
+            Vector3f edge = layout.samplePoint(random, true);
+            Vec3 at = toWorld(edge);
+            Vector3f out = orientation().transform(new Vector3f(edge.x, edge.y, 0).normalize(0.025F));
+            float side = (random.nextFloat() - 0.5F) * 0.03F;
+            level().addParticle(ModParticles.vapour(random.nextInt(4) == 0 ? DEEP : SMOKE), at.x, at.y, at.z,
+                    out.x + normal.x * side, out.y + normal.y * side, out.z + normal.z * side);
+        }
+        // Now and then a sickly spark of its light drifts off the edge.
+        if (random.nextFloat() < (0.05F + size * 0.02F) * reveal) {
+            Vec3 at = toWorld(layout.samplePoint(random, true));
+            level().addParticle(ModParticles.glint(random.nextBoolean() ? MAGENTA : PINK), at.x, at.y, at.z, 0, 0, 0);
         }
 
         if (closeProgress(0) > 0.8F && !burstShown) {

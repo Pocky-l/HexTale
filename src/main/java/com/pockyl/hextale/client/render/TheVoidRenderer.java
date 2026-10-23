@@ -17,9 +17,9 @@ import com.pockyl.hextale.thevoid.VoidShape;
 
 /**
  * Draws the Void as a thin slab of square cells: their faces look into a whirling tunnel (the shader), their outline
- * burns, and a glow spreads over the free cells around it. Every frame decides which cells show - the breach glitches
- * open cell by cell, teeth and loose cells flicker, now and then a region of it flashes - and what each cell knows of
- * its neighbours (which sides are open, where seams run), packed into the vertex data.
+ * burns, and a glow spreads over the free cells around it. Every frame decides which cells show - the breach spreads
+ * open from its heart and shrinks back into it - and what each cell knows of its neighbours (which sides are open,
+ * where seams run), packed into the vertex data.
  */
 public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.State> {
     // Neighbour bits in the masks the shaders read: four sides, then the four corners.
@@ -34,7 +34,6 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         VoidShape shape = VoidShape.GATE;
         float size;
         int seed;
-        float age;
         float reveal;
         final Quaternionf orientation = new Quaternionf();
     }
@@ -50,7 +49,6 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         state.shape = breach.shape();
         state.size = breach.size();
         state.seed = breach.seed();
-        state.age = breach.age(partialTick);
         state.reveal = breach.reveal(partialTick);
         state.orientation.set(breach.orientation());
     }
@@ -72,7 +70,7 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         int count = 0;
         for (int j = 0; j < h; j++) {
             for (int i = 0; i < w; i++) {
-                if (layout.shows(i, j, state.reveal, state.age)) {
+                if (layout.shows(i, j, state.reveal)) {
                     shows[i + j * w] = true;
                     count++;
                 }
@@ -100,7 +98,6 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         private final int core;
         private final int sizeCm;
         private final float reveal;
-        private final int glitch;
 
         Frame(VoidLayout layout, boolean[] shows, State state) {
             this.layout = layout;
@@ -111,20 +108,16 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
             core = Math.round(state.shape.core() * 1000);
             sizeCm = Math.round(state.size * 100);
             reveal = state.reveal;
-            glitch = (int) (state.age / 7);
         }
 
         private boolean at(int i, int j) {
             return layout.inside(i, j) && shows[i + j * layout.width];
         }
 
-        /** 1-15 per region (0 = a dead cell), with a rare flash when the region glitches. */
+        /** 1-12 per region (0 = a dead cell). */
         private int shade(byte region) {
             if (region == VoidLayout.DEAD) {
                 return 0;
-            }
-            if (VoidLayout.hash(region * 31 + layout.seed, glitch) > 0.965F) {
-                return 15;
             }
             return 2 + (int) (VoidLayout.hash(region, layout.seed) * 11);
         }

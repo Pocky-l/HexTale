@@ -9,8 +9,8 @@ import java.util.Arrays;
 /**
  * The Void's outline: a grid of square cells in the breach's plane, built from the seed alone (both sides build the
  * same one). The body is rectangles of nothing laid over each other - each keeps its own region, so their overlaps
- * show as seams - with bites taken out of the edge, dark dead cells inside, teeth that come and go along the edge and
- * loose cells hanging just off it. Cell (i, j) spans local x {@code (i + originX) * cell} .. one cell further, y likewise.
+ * show as seams - with bites taken out of the edge, dark dead cells inside, teeth standing out of the edge and loose
+ * cells hanging just off it. Cell (i, j) spans local x {@code (i + originX) * cell} .. one cell further, y likewise.
  */
 public final class VoidLayout {
     public static final byte EMPTY = -1;
@@ -39,10 +39,6 @@ public final class VoidLayout {
     private final byte[] kind;
     /** 0-1: when the cell appears as the Void opens (and the reverse as it closes). */
     private final float[] delay;
-    /** 0 = always there; else the share of time the cell is gone (teeth and loose cells flicker). */
-    private final float[] flicker;
-    /** Flicker clock offset: the cells of one tooth share it. */
-    private final float[] phase;
     private final int[] body;
     private final int[] rim;
 
@@ -60,8 +56,6 @@ public final class VoidLayout {
         region = new byte[width * height];
         kind = new byte[width * height];
         delay = new float[width * height];
-        flicker = new float[width * height];
-        phase = new float[width * height];
         Arrays.fill(region, EMPTY);
 
         RandomSource random = RandomSource.create(seed * 0x9E3779B97F4A7C15L + shape.ordinal());
@@ -266,7 +260,7 @@ public final class VoidLayout {
 
     private static final int[][] SIDES = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 
-    /** Teeth: one cell wide, up to three long, standing out of the edge; their outer cells come and go. */
+    /** Teeth: one cell wide, up to three long, standing out of the edge; they break through last. */
     private void teeth(RandomSource random, int count) {
         for (int k = 0; k < count * 8 && count > 0; k++) {
             int i = random.nextInt(width);
@@ -279,7 +273,6 @@ public final class VoidLayout {
                 continue;
             }
             int length = 1 + random.nextInt(3);
-            float when = random.nextFloat() * 100;
             byte from = region[i + j * width];
             for (int step = 1; step <= length; step++) {
                 int x = i + side[0] * step;
@@ -291,8 +284,6 @@ public final class VoidLayout {
                 region[at] = from == DEAD ? 0 : from;
                 kind[at] = TOOTH;
                 delay[at] = 0.8F + 0.05F * step;
-                flicker[at] = 0.1F + 0.25F * step;
-                phase[at] = when;
             }
             count--;
         }
@@ -313,7 +304,7 @@ public final class VoidLayout {
             if (x < 1 || y < 1 || x >= width - 1 || y >= height - 1 || on(x, y) || touches(x, y)) {
                 continue;
             }
-            float when = random.nextFloat() * 100;
+            float when = random.nextFloat();
             place(x, y, when);
             // Now and then a piece of two.
             int[] grow = SIDES[random.nextInt(4)];
@@ -331,9 +322,7 @@ public final class VoidLayout {
         int at = x + y * width;
         region[at] = LOOSE;
         kind[at] = FRAGMENT;
-        delay[at] = 0.85F + (when % 1) * 0.15F;
-        flicker[at] = 0.3F;
-        phase[at] = when;
+        delay[at] = 0.85F + when * 0.15F;
     }
 
     private boolean touches(int x, int y) {
@@ -392,32 +381,16 @@ public final class VoidLayout {
         return delay[i + j * width];
     }
 
-    /**
-     * Whether a cell shows: {@code reveal} 0-1 (how far the Void is open), {@code time} in ticks drives the flicker of
-     * teeth and loose cells; while opening or closing cells pop in and out a little out of order.
-     */
-    public boolean shows(int i, int j, float reveal, float time) {
+    /** Whether a cell shows while the Void is {@code reveal} (0-1) open: it spreads from the centre and shrinks back. */
+    public boolean shows(int i, int j, float reveal) {
         int at = i + j * width;
-        if (region[at] == EMPTY) {
-            return false;
-        }
-        float jitter = reveal < 1 ? (hash(at, (int) (time / 2)) - 0.5F) * 0.16F : 0;
-        if (delay[at] > reveal * 1.02F + jitter) {
-            return false;
-        }
-        float f = flicker[at];
-        if (f > 0) {
-            // A slow clock that steps: the tooth holds still for a while, then jumps.
-            int tick = (int) Math.floor(time / 9 + phase[at]);
-            return hash((int) (phase[at] * 977), tick) >= f;
-        }
-        return true;
+        return region[at] != EMPTY && delay[at] <= reveal * 1.02F;
     }
 
-    /** Ticks since the cell appeared while the Void opens (0-1 flash share), or 0. */
+    /** 1 for a cell that has only just broken through, fading to 0 as the opening runs on. */
     public float fresh(int i, int j, float reveal) {
         float since = reveal - delay[i + j * width];
-        return reveal >= 1 || since < 0 ? 0 : Mth.clamp(1 - since / 0.14F, 0, 1);
+        return reveal >= 1 || since < 0 ? 0 : Mth.clamp(1 - since / 0.2F, 0, 1);
     }
 
     /** Local x of the cell's left edge (blocks). */
