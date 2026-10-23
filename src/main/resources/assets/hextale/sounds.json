@@ -595,6 +595,19 @@
       }
     ]
   },
+  "miasma.hiss": {
+    "subtitle": "subtitles.hextale.miasma.hiss",
+    "sounds": [
+      {
+        "name": "hextale:miasma_hiss1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:miasma_hiss2",
+        "volume": 0.6
+      }
+    ]
+  },
   "crucible.brew": {
     "subtitle": "subtitles.hextale.crucible.brew",
     "sounds": [

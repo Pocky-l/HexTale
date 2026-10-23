@@ -136,6 +136,9 @@ public final class HextaleClient {
             if (stack.is(ModItems.HEX_SAWMILL.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.hex_sawmill.hint").withStyle(ChatFormatting.GRAY));
             }
+            if (stack.is(ModItems.MIASMA_VENT.get())) {
+                event.getToolTip().add(Component.translatable("block.hextale.miasma_vent.hint").withStyle(ChatFormatting.GRAY));
+            }
             if (stack.is(ModItems.XP_CONDENSER.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.xp_condenser.hint").withStyle(ChatFormatting.GRAY));
             }

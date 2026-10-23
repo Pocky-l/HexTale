@@ -1,0 +1,18 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:miasma_vent",
+  "parents": [
+    "rusted_plating",
+    "lab_bench"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:miasma_vent"
+  },
+  "research": "miasma_vent",
+  "pos": [
+    -1000,
+    -120
+  ]
+}

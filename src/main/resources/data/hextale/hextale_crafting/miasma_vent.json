@@ -1,0 +1,17 @@
+{
+  "pattern": [
+    "IBI",
+    "RCR",
+    "RRR"
+  ],
+  "key": {
+    "I": "minecraft:iron_bars",
+    "B": "minecraft:bone_meal",
+    "R": "hextale:rusted_plating",
+    "C": "hextale:chem_burner"
+  },
+  "result": {
+    "id": "hextale:miasma_vent"
+  },
+  "charge": 2
+}

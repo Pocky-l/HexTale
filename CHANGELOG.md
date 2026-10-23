@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Miasma Vent: a rusted chemtech grate that chokes the hostile creatures standing over it in sickly fumes. Cheap -
+  it burns the unknown essence the separator leaves behind - but slow, and no player struck them, so there is no
+  experience or rare loot. Researched at the Lab Bench, made at the Hex Workbench.
 - Experience Condenser: a glass column in a brass frame. No experience orb appears around it - it drinks them all
   and holds the experience as a glowing liquid, up to about level 50; a Greedy Funnel nearby pours in too. Take a level
   with an empty hand (sneak for everything) or fill glass bottles with Bottles o' Enchanting; a comparator reads it.

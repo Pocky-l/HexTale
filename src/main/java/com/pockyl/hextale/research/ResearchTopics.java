@@ -60,6 +60,7 @@ public final class ResearchTopics {
     public static final ResearchTopic HEXTECH_LAMP = add("hextech_lamp", 2, Essence.LIGHT, Essence.FIRE, ModItems.HEXTECH_LAMP);
     public static final ResearchTopic CRYSTAL_BATTERY = add("crystal_battery", 2, Essence.SPARK, Essence.METAL, ModItems.CRYSTAL_BATTERY);
     public static final ResearchTopic CHEM_BURNER = lab("chem_burner", 1, Essence.FIRE, Essence.AIR, ModItems.CHEM_BURNER);
+    public static final ResearchTopic MIASMA_VENT = lab("miasma_vent", 2, Essence.DECAY, Essence.AIR, ModItems.MIASMA_VENT);
     public static final ResearchTopic MAGIC_TREE = lab("magic_sapling", 2, Essence.LIFE, Essence.LIGHT, ModItems.MAGIC_SAPLING);
     public static final ResearchTopic AXOLOTL_TANK = lab("axolotl_tank", 1, Essence.WATER, Essence.LIFE, ModItems.AXOLOTL_TANK);
     public static final ResearchTopic CHEM_STILL = lab("chem_still", 2, Essence.FIRE, Essence.EARTH, ModItems.CHEM_STILL);

@@ -161,6 +161,7 @@ public final class Hextale {
             output.accept(ModItems.ARC_SPIRE);
             output.accept(ModItems.RUNE_SHACKLES);
             output.accept(ModItems.XP_CONDENSER);
+            output.accept(ModItems.MIASMA_VENT);
             output.accept(ModItems.PYLON_FILTER);
             output.accept(ModItems.ESSENCE_STICKER);
             ModItems.PICKAXES.values().forEach(output::accept);
