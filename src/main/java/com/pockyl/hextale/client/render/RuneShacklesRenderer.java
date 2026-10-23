@@ -28,8 +28,10 @@ import java.util.List;
  */
 public class RuneShacklesRenderer implements BlockEntityRenderer<RuneShacklesBlockEntity, RuneShacklesRenderer.State> {
     private static final int SHADOW = Essence.SHADOW.color();
-    /** The brass studs the threads leave from (block space). */
+    /** The brass studs on the top face the threads leave from (block space). */
     private static final double[][] STUDS = {{2 / 16.0, 2 / 16.0}, {14 / 16.0, 2 / 16.0}, {2 / 16.0, 14 / 16.0}, {14 / 16.0, 14 / 16.0}};
+    /** The top face, a hair over it so the glyph never sinks into the stone. */
+    private static final double TOP = 1.02;
 
     public RuneShacklesRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -68,7 +70,7 @@ public class RuneShacklesRenderer implements BlockEntityRenderer<RuneShacklesBlo
             float pulse = 0.75F + 0.25F * Mth.sin(time * 0.15F);
             // The glyph under its feet, two rings turning against each other.
             poseStack.pushPose();
-            poseStack.translate(held.at.x, 2.2 / 16, held.at.z);
+            poseStack.translate(held.at.x, TOP, held.at.z);
             poseStack.pushPose();
             poseStack.rotate(Axis.YP.rotationDegrees(time * 2));
             poseStack.rotate(Axis.XP.rotationDegrees(90));
@@ -83,7 +85,7 @@ public class RuneShacklesRenderer implements BlockEntityRenderer<RuneShacklesBlo
             // Threads from the studs to the middle of the creature.
             Vec3 middle = held.at.add(0, held.height * 0.45, 0);
             for (double[] stud : STUDS) {
-                Vec3 from = new Vec3(stud[0], 3 / 16.0, stud[1]);
+                Vec3 from = new Vec3(stud[0], TOP, stud[1]);
                 Vec3 to = middle.subtract(from);
                 poseStack.pushPose();
                 poseStack.translate(from.x, from.y, from.z);

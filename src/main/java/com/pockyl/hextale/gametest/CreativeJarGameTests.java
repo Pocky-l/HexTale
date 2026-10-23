@@ -52,7 +52,7 @@ public final class CreativeJarGameTests {
             helper.assertTrue(!funnel.hungry() && funnel.charges() > 0, "the funnel fed on the creative jar (hungry " + funnel.hungry() + ")");
             Spider spider = helper.spawnWithNoFreeWill(EntityTypes.SPIDER, BASE.offset(3, 0, -1));
             spider.setHealth(ArcSpireBlockEntity.DAMAGE - 2);
-            Cow held = helper.spawn(EntityTypes.COW, new Vec3(-1.5, 1.2, 4.5));
+            Cow held = helper.spawn(EntityTypes.COW, new Vec3(-1.5, 2.0, 4.5));
             Spider choked = helper.spawnWithNoFreeWill(EntityTypes.SPIDER, BASE.offset(-3, 1, -1));
             choked.setHealth(MiasmaVentBlockEntity.DAMAGE - 1);
             spire.wake();

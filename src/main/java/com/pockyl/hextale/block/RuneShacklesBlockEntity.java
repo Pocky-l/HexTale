@@ -51,7 +51,7 @@ public class RuneShacklesBlockEntity extends BlockEntity {
     /** Ticks between two looks; a hold lasts a little longer so it never lapses between them. */
     public static final int PERIOD = 20;
     private static final int HOLD = PERIOD + 10;
-    /** How far over the plate the held hang. */
+    /** How far over the block's top the held hang. */
     public static final double LIFT = 0.2;
 
     /** Creature-ticks of holding paid for. */
@@ -94,9 +94,9 @@ public class RuneShacklesBlockEntity extends BlockEntity {
         plate.hold((ServerLevel) level);
     }
 
-    /** The space over the plate where creatures are held: its own block and the one above. */
+    /** The space over the block where creatures are held: the two blocks above it. */
     public static AABB space(BlockPos pos) {
-        return new AABB(pos.getX(), pos.getY() + 0.05, pos.getZ(), pos.getX() + 1, pos.getY() + 2, pos.getZ() + 1);
+        return new AABB(pos.getX(), pos.getY() + 1, pos.getZ(), pos.getX() + 1, pos.getY() + 3, pos.getZ() + 1);
     }
 
     /** Holds (or keeps holding) the creatures over the plate, as many as it can pay for. */
@@ -121,7 +121,7 @@ public class RuneShacklesBlockEntity extends BlockEntity {
             if (fresh) {
                 // Lifted into the glyph and still (a held creature does not tick, so it does not fall either).
                 mob.setDeltaMovement(Vec3.ZERO);
-                mob.setPos(mob.getX(), worldPosition.getY() + 2.0 / 16 + LIFT, mob.getZ());
+                mob.setPos(mob.getX(), worldPosition.getY() + 1 + LIFT, mob.getZ());
                 caught = true;
             }
             now.add(mob.getId());

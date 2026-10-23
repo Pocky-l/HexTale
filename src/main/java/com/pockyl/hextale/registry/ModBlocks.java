@@ -194,22 +194,22 @@ public final class ModBlocks {
     public static final DeferredBlock<com.pockyl.hextale.block.ArcSpireBlock> ARC_SPIRE = BLOCKS.registerBlock("arc_spire",
             com.pockyl.hextale.block.ArcSpireBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.COPPER)
-                    .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> 5));
-    /** A nullstone floor plate with a ring of runes: holds the creatures standing on it still in its glyph. */
+                    .requiresCorrectToolForDrops().noOcclusion());
+    /** A nullstone block with a ring of runes on top: holds the creatures standing on it still in its glyph. */
     public static final DeferredBlock<com.pockyl.hextale.block.RuneShacklesBlock> RUNE_SHACKLES = BLOCKS.registerBlock("rune_shackles",
             com.pockyl.hextale.block.RuneShacklesBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
-                    .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> 2));
+                    .requiresCorrectToolForDrops());
     /** A glass column in a brass frame: drinks the experience orbs about to appear around it and holds them as a liquid. */
     public static final DeferredBlock<com.pockyl.hextale.block.XpCondenserBlock> XP_CONDENSER = BLOCKS.registerBlock("xp_condenser",
             com.pockyl.hextale.block.XpCondenserBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).strength(2.0F, 6.0F).sound(SoundType.GLASS)
-                    .noOcclusion().lightLevel(state -> 6));
+                    .noOcclusion());
     /** A rusted iron block with a grate: breathes choking fumes on the hostile creatures standing over it. */
     public static final DeferredBlock<com.pockyl.hextale.block.MiasmaVentBlock> MIASMA_VENT = BLOCKS.registerBlock("miasma_vent",
             com.pockyl.hextale.block.MiasmaVentBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(3.0F, 6.0F).sound(SoundType.COPPER)
-                    .requiresCorrectToolForDrops().lightLevel(state -> 3));
+                    .requiresCorrectToolForDrops());
     /** A magic stone post with a hextech eye: no monster spawns by itself around it and nothing tramples the farmland. */
     public static final DeferredBlock<com.pockyl.hextale.block.FieldWardBlock> FIELD_WARD = BLOCKS.registerBlock("field_ward",
             com.pockyl.hextale.block.FieldWardBlock::new,
@@ -218,7 +218,7 @@ public final class ModBlocks {
     public static final DeferredBlock<com.pockyl.hextale.block.GreedyFunnelBlock> GREEDY_FUNNEL = BLOCKS.registerBlock("greedy_funnel",
             com.pockyl.hextale.block.GreedyFunnelBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(3.0F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
-                    .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> 3));
+                    .requiresCorrectToolForDrops().noOcclusion());
     /** Polished magic stone with a whirl carved into it, the stone a reaper's field is laid out with. */
     public static final DeferredBlock<Block> WHORLED_MAGIC_STONE = BLOCKS.registerBlock("whorled_magic_stone", Block::new,
             () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF));

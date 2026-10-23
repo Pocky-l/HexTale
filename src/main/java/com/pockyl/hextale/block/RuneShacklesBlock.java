@@ -7,31 +7,25 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * Rune Shackles: a nullstone floor plate with a ring of runes cut into it and brass studs at its corners. Creatures
- * that step onto it hang still in its glyph ({@link RuneShacklesBlockEntity}); a right click with an empty hand tells
- * what it holds.
+ * Rune Shackles: a block of nullstone with a ring of runes cut into its top and brass studs at the corners. It is a
+ * full block, so creatures spawn on it like on any floor; those that stand on it hang still in its glyph
+ * ({@link RuneShacklesBlockEntity}). A right click with an empty hand tells what it holds.
  */
 public class RuneShacklesBlock extends BaseEntityBlock {
-    private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 2, 16);
-
     public RuneShacklesBlock(Properties properties) {
         super(properties);
     }
@@ -61,11 +55,6 @@ public class RuneShacklesBlock extends BaseEntityBlock {
                 && level.getBlockEntity(pos) instanceof RuneShacklesBlockEntity plate) {
             plate.steppedOn(server, mob);
         }
-    }
-
-    @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
     }
 
     @Override

@@ -1280,7 +1280,7 @@
   "quest.hextale.rune_shackles": "Rune Shackles",
   "quest.hextale.rune_shackles.goal": "make Rune Shackles at the altar",
   "quest.hextale.rune_shackles.desc": "A ring of runes cut into nullstone - and whatever steps into it stops. Not asleep, not dead: just still, hanging over the stone. A crowd of them costs the world nothing at all. How long would the shadow hold one?",
-  "jei.hextale.info.rune_shackles": "A floor plate: up to four creatures standing on it hang still in its glyph - no AI, no pathfinding, no pushing, so a crowd of them hardly costs the server anything. They can still be struck (a Hex Arc Spire works on them). Bosses and tamed animals are left alone. Feeds on shadow essence from jars nearby.",
+  "jei.hextale.info.rune_shackles": "A block for the farm floor - monsters spawn on it as on any block. Up to four creatures standing on it hang still in its glyph - no AI, no pathfinding, no pushing, so a crowd of them hardly costs the server anything. They can still be struck (a Hex Arc Spire works on them). Bosses and tamed animals are left alone. Feeds on shadow essence from jars nearby.",
   "subtitles.hextale.shackle.bind": "Shackles take hold",
   "block.hextale.miasma_vent": "Miasma Vent",
   "block.hextale.miasma_vent.hint": "Hostile creatures standing over it choke in its fumes. Cheap: it burns the unknown essence the separator leaves - but no player struck them, so there is no experience and no rare loot.",
