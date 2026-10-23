@@ -1,0 +1,11 @@
+{
+  "region": "chemtech",
+  "icon": "hextale:arcane_cloth",
+  "parents": ["crucible"],
+  "display": {
+    "kind": "scheme",
+    "ingredients": ["minecraft:white_wool", "minecraft:lapis_lazuli", "minecraft:leather", "hextale:crucible"],
+    "result": "hextale:arcane_cloth"
+  },
+  "pos": [-455, -146]
+}

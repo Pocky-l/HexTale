@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "workshop",
-  "icon": "minecraft:leather_chestplate",
-  "parents": ["wip_arcane_cloth", "brass"],
-  "pos": [-489, -184]
-}

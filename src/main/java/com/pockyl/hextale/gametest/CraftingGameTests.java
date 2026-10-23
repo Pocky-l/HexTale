@@ -61,6 +61,24 @@ public final class CraftingGameTests {
         helper.succeed();
     }
 
+    /** The robe is chest armour waiting for its research, and it takes the edge off sparks and blasts only. */
+    @HexTest
+    public static void theRobeKeepsSparksOff(GameTestHelper helper) {
+        ItemStack robe = new ItemStack(ModItems.RESEARCHER_ROBE.get());
+        helper.assertTrue(robe.get(net.minecraft.core.component.DataComponents.EQUIPPABLE).slot() == net.minecraft.world.entity.EquipmentSlot.CHEST,
+                "the robe is worn on the chest");
+        helper.assertTrue(com.pockyl.hextale.research.ResearchTopics.of(ModItems.RESEARCHER_ROBE.get()) == com.pockyl.hextale.research.ResearchTopics.RESEARCHER_ROBE,
+                "the robe waits for its research");
+        var sources = helper.getLevel().damageSources();
+        helper.assertTrue(com.pockyl.hextale.event.ResearcherRobeEvents.isSparks(sources.inFire())
+                && com.pockyl.hextale.event.ResearcherRobeEvents.isSparks(sources.explosion(null, null))
+                && !com.pockyl.hextale.event.ResearcherRobeEvents.isSparks(sources.generic()), "only sparks, flames and blasts are softened");
+        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.ZOMBIE, AT);
+        zombie.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, robe);
+        helper.assertTrue(com.pockyl.hextale.event.ResearcherRobeEvents.wearsRobe(zombie), "a robe on the chest counts");
+        helper.succeed();
+    }
+
     @HexTest
     public static void theWorkbenchCraftsOnItsCrystalsCharge(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.HEX_WORKBENCH.get());

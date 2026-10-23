@@ -1,0 +1,11 @@
+{
+  "region": "workshop",
+  "icon": "hextale:researcher_robe",
+  "parents": ["arcane_cloth", "hex_workbench", "ink"],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:researcher_robe"
+  },
+  "research": "researcher_robe",
+  "pos": [-489, -184]
+}

@@ -98,6 +98,9 @@ public final class HextaleClient {
         modBus.addListener(GogglesView::registerLayer);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::addLayers);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::registerModifier);
+        modBus.addListener(com.pockyl.hextale.client.render.ResearcherRobeClient::registerLayer);
+        modBus.addListener(com.pockyl.hextale.client.render.ResearcherRobeClient::bake);
+        modBus.addListener(com.pockyl.hextale.client.render.ResearcherRobeClient::registerExtensions);
         SkypackClient.register();
         modBus.addListener(com.pockyl.hextale.client.screen.book.AltarDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.screen.book.CircleDiorama::register);

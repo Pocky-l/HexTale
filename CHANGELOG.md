@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   runes (Cache, Chain Lightning, Dam, Lens).
 - Hexsteel tools and armour: a sword, pickaxe, axe, shovel, hoe and a full set of armour as strong as diamond,
   forged on a crafting table from hexsteel ingots once hexsteel is researched.
+- Arcane Cloth: wool thrown into a crucible whose water holds magic and beast essence comes out as heavy, warm cloth.
+- Researcher's Robe: the first clothes of the mod, a real 3D robe instead of flat armour - a high collar that frames
+  the head, a short linen cape with shoulder drapes and a hextech clasp, a deep blue coat of arcane cloth with brass
+  hems, a belt with a buckle, a pouch, a rolled scroll and a vial of essence, and coat tails that swing with every step.
+  A little sturdier than leather, and it takes the edge off fire, lightning and blasts. Researched at the Research Table,
+  sewn on the Hex Workbench.
 ### Changed
 - The Hextech Altar needs Rune Chalk, and the Hexcore ritual takes a Crystal Battery and Regenerative Slime instead of
   two brass blocks.
