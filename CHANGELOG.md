@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Crystal Battery: a dark cube in a brass cage that stores hextech charge from crystals and feeds the Hex Workbenches
   around it; its core glows when charged and a comparator reads it. Researched at the table, made at the altar. Takes
   runes (Cache, Chain Lightning, Dam, Lens).
+- Hexsteel tools and armour: a sword, pickaxe, axe, shovel, hoe and a full set of armour as strong as diamond,
+  forged on a crafting table from hexsteel ingots once hexsteel is researched.
 ### Changed
 - The Hextech Altar needs Rune Chalk, and the Hexcore ritual takes a Crystal Battery and Regenerative Slime instead of
   two brass blocks.

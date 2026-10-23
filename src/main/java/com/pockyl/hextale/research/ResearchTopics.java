@@ -51,7 +51,9 @@ public final class ResearchTopics {
     public static final ResearchTopic BIG_ESSENCE_JAR = add("big_essence_jar", 1, Essence.WATER, Essence.LIGHT, ModItems.ESSENCE_TANK);
     public static final ResearchTopic LAPIDARY = add("hex_lapidary", 1, Essence.EARTH, Essence.SPARK, ModItems.HEX_LAPIDARY,
             ModItems.CUTTING_DISC);
-    public static final ResearchTopic HEXSTEEL = add("hexsteel", 1, Essence.METAL, Essence.FIRE, ModItems.HEXSTEEL_INGOT);
+    public static final ResearchTopic HEXSTEEL = add("hexsteel", 1, Essence.METAL, Essence.FIRE, ModItems.HEXSTEEL_INGOT,
+            ModItems.HEXSTEEL_SWORD, ModItems.HEXSTEEL_PICKAXE, ModItems.HEXSTEEL_AXE, ModItems.HEXSTEEL_SHOVEL, ModItems.HEXSTEEL_HOE,
+            ModItems.HEXSTEEL_HELMET, ModItems.HEXSTEEL_CHESTPLATE, ModItems.HEXSTEEL_LEGGINGS, ModItems.HEXSTEEL_BOOTS);
     public static final ResearchTopic MASTER_DISC = add("master_cutting_disc", 2, Essence.SPARK, Essence.LIGHT, ModItems.MASTER_CUTTING_DISC);
     public static final ResearchTopic HEXTECH_LAMP = add("hextech_lamp", 2, Essence.LIGHT, Essence.FIRE, ModItems.HEXTECH_LAMP);
     public static final ResearchTopic CRYSTAL_BATTERY = add("crystal_battery", 2, Essence.SPARK, Essence.METAL, ModItems.CRYSTAL_BATTERY);

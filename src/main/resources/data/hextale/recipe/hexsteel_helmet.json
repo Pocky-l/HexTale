@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "XXX",
+    "X X"
+  ],
+  "key": {
+    "X": "hextale:hexsteel_ingot"
+  },
+  "result": {
+    "id": "hextale:hexsteel_helmet"
+  }
+}

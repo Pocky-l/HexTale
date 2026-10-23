@@ -1,0 +1,19 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "hextale:hexsteel"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "hextale:hexsteel"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "hextale:hexsteel"
+      }
+    ]
+  }
+}

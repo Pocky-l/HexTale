@@ -161,6 +161,15 @@ public final class Hextale {
             output.accept(ModItems.HEXTECH_AXE);
             output.accept(ModItems.HEXTECH_SHOVEL);
             output.accept(ModItems.HEXTECH_SWORD);
+            output.accept(ModItems.HEXSTEEL_SWORD);
+            output.accept(ModItems.HEXSTEEL_PICKAXE);
+            output.accept(ModItems.HEXSTEEL_AXE);
+            output.accept(ModItems.HEXSTEEL_SHOVEL);
+            output.accept(ModItems.HEXSTEEL_HOE);
+            output.accept(ModItems.HEXSTEEL_HELMET);
+            output.accept(ModItems.HEXSTEEL_CHESTPLATE);
+            output.accept(ModItems.HEXSTEEL_LEGGINGS);
+            output.accept(ModItems.HEXSTEEL_BOOTS);
             output.accept(ModItems.HEXTECH_SKYPACK);
             output.accept(com.pockyl.hextale.item.HextechSkypackItem.full());
             output.accept(ModItems.RESEARCHERS_DIARY);
@@ -229,9 +238,19 @@ public final class Hextale {
             ModItems.PICKAXES.values().forEach(event::accept);
             event.accept(ModItems.HEXTECH_AXE);
             event.accept(ModItems.HEXTECH_SHOVEL);
+            event.accept(ModItems.HEXSTEEL_SHOVEL);
+            event.accept(ModItems.HEXSTEEL_PICKAXE);
+            event.accept(ModItems.HEXSTEEL_AXE);
+            event.accept(ModItems.HEXSTEEL_HOE);
             event.accept(ModItems.HEXTECH_SKYPACK);
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.HEXTECH_SWORD);
+            event.accept(ModItems.HEXSTEEL_SWORD);
+            event.accept(ModItems.HEXSTEEL_AXE);
+            event.accept(ModItems.HEXSTEEL_HELMET);
+            event.accept(ModItems.HEXSTEEL_CHESTPLATE);
+            event.accept(ModItems.HEXSTEEL_LEGGINGS);
+            event.accept(ModItems.HEXSTEEL_BOOTS);
         }
     }
 

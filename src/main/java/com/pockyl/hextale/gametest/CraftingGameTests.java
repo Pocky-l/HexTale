@@ -47,6 +47,20 @@ public final class CraftingGameTests {
     }
 
     /** Three brass make pipes on the workbench; the craft spends one charge, and the first one breaks an orb into five. */
+    /** Hexsteel gear matches diamond gear and opens with the hexsteel research. */
+    @HexTest
+    public static void hexsteelGearIsAsGoodAsDiamond(GameTestHelper helper) {
+        helper.assertTrue(new ItemStack(ModItems.HEXSTEEL_PICKAXE.get()).getMaxDamage() == new ItemStack(Items.DIAMOND_PICKAXE).getMaxDamage(),
+                "the pickaxe wears like a diamond one");
+        helper.assertTrue(new ItemStack(ModItems.HEXSTEEL_CHESTPLATE.get()).getMaxDamage() == new ItemStack(Items.DIAMOND_CHESTPLATE).getMaxDamage(),
+                "the chestplate wears like a diamond one");
+        helper.assertTrue(new ItemStack(ModItems.HEXSTEEL_PICKAXE.get()).isCorrectToolForDrops(Blocks.OBSIDIAN.defaultBlockState()),
+                "the pickaxe mines obsidian");
+        helper.assertTrue(com.pockyl.hextale.research.ResearchTopics.of(ModItems.HEXSTEEL_BOOTS.get()) == com.pockyl.hextale.research.ResearchTopics.HEXSTEEL,
+                "the gear waits for the hexsteel research");
+        helper.succeed();
+    }
+
     @HexTest
     public static void theWorkbenchCraftsOnItsCrystalsCharge(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.HEX_WORKBENCH.get());

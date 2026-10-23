@@ -1,0 +1,24 @@
+{
+  "region": "forge",
+  "stage": "mid",
+  "icon": "hextale:hexsteel_chestplate",
+  "parents": ["hexsteel"],
+  "display": {
+    "kind": "shaped",
+    "ingredients": [
+      "hextale:hexsteel_ingot", "", "hextale:hexsteel_ingot",
+      "hextale:hexsteel_ingot", "hextale:hexsteel_ingot", "hextale:hexsteel_ingot",
+      "hextale:hexsteel_ingot", "hextale:hexsteel_ingot", "hextale:hexsteel_ingot"
+    ],
+    "result": "hextale:hexsteel_chestplate",
+    "then": {
+      "kind": "shaped",
+      "ingredients": [
+        "hextale:hexsteel_ingot", "hextale:hexsteel_ingot", "hextale:hexsteel_ingot",
+        "", "minecraft:stick", "",
+        "", "minecraft:stick", ""
+      ],
+      "result": "hextale:hexsteel_pickaxe"
+    }
+  }
+}

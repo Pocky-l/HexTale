@@ -14,6 +14,8 @@ public final class ModTags {
     public static final TagKey<Block> CARRIES_LIGHTNING = TagKey.create(Registries.BLOCK, Hextale.id("carries_lightning"));
     /** What repairs hextech tools. */
     public static final TagKey<Item> HEXTECH_TOOL_MATERIALS = TagKey.create(Registries.ITEM, Hextale.id("hextech_tool_materials"));
+    /** What repairs hexsteel tools and armour. */
+    public static final TagKey<Item> REPAIRS_HEXSTEEL = TagKey.create(Registries.ITEM, Hextale.id("repairs_hexsteel"));
     /** Stone that drinks spilled essence and becomes magic stone (block tag; the item tag of the same name feeds the
      *  crafting recipe). */
     public static final TagKey<Block> SOAKS_ESSENCE = TagKey.create(Registries.BLOCK, Hextale.id("soaks_essence"));
