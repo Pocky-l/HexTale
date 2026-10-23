@@ -1,11 +1,6 @@
 {
   "region": "chemtech",
   "icon": "hextale:shimmerbloom",
-  "parents": [
-    "crucible"
-  ],
-  "pos": [
-    -430,
-    40
-  ]
+  "parents": ["crucible"],
+  "pos": [-430, 40]
 }

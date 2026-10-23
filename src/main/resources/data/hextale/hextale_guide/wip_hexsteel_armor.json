@@ -1,0 +1,8 @@
+{
+  "kind": "wip",
+  "region": "forge",
+  "stage": "mid",
+  "icon": "minecraft:iron_chestplate",
+  "parents": ["hexsteel", "wip_researcher_coat"],
+  "pos": [666, -3]
+}

@@ -1,5 +1,6 @@
 {
   "region": "runes",
+  "stage": "mid",
   "icon": "hextale:rune_scroll",
   "parents": ["blank_scroll", "rune_stele"],
   "goal": {
@@ -8,8 +9,11 @@
   },
   "display": {
     "kind": "scheme",
-    "ingredients": ["hextale:blank_scroll", "hextale:rune_stele"],
+    "ingredients": [
+      "hextale:blank_scroll",
+      "hextale:rune_stele"
+    ],
     "result": "hextale:rune_scroll"
   },
-  "pos": [90, -350]
+  "pos": [800, -430]
 }

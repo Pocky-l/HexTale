@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "circle",
+  "stage": "mid",
   "icon": "minecraft:shield",
   "parents": ["pedestal"],
-  "pos": [507, -48]
+  "pos": [664, -89]
 }

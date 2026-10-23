@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "pylons",
-  "icon": "minecraft:conduit",
-  "parents": ["siphon_pylon"],
-  "pos": [849, 17]
-}

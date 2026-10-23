@@ -1,7 +1,8 @@
 {
   "region": "forge",
+  "stage": "mid",
   "icon": "hextale:hextech_skypack",
-  "parents": ["hextech_gemstone", "hexsteel", "hextech_altar", "brass_pipe"],
+  "parents": ["hexsteel", "hextech_gemstone", "hextech_altar", "brass_pipe", "wip_arcane_cloth"],
   "display": {
     "kind": "infusion",
     "result": "hextale:hextech_skypack",
@@ -11,5 +12,5 @@
     }
   },
   "research": "hextech_skypack",
-  "pos": [505, 230]
+  "pos": [580, 190]
 }

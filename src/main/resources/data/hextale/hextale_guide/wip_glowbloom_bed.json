@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "circle",
-  "icon": "minecraft:glow_berries",
-  "parents": ["hextech_lamp"],
-  "pos": [754, -155]
-}

@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "icon": "minecraft:white_dye",
+  "parents": ["ink", "magic_stone"],
+  "pos": [340, -150]
+}

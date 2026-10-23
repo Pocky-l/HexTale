@@ -1,11 +1,12 @@
 {
   "region": "pylons",
+  "stage": "mid",
   "icon": "hextale:essence_sticker",
   "parents": ["siphon_pylon"],
   "display": {
     "kind": "infusion",
     "result": "hextale:essence_sticker"
   },
-  "pos": [970, 0],
-  "research": "essence_sticker"
+  "research": "essence_sticker",
+  "pos": [1150, -170]
 }

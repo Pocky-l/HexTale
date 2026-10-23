@@ -1,9 +1,7 @@
 {
   "region": "chemtech",
   "icon": "hextale:chem_glass",
-  "parents": [
-    "crucible"
-  ],
+  "parents": ["crucible"],
   "display": {
     "kind": "scheme",
     "ingredients": [
@@ -13,8 +11,5 @@
     ],
     "result": "hextale:chem_glass"
   },
-  "pos": [
-    -470,
-    -40
-  ]
+  "pos": [-470, -40]
 }

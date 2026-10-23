@@ -1,11 +1,16 @@
 {
   "region": "runes",
+  "stage": "mid",
   "icon": "hextale:blank_scroll",
   "parents": ["rune_scroll", "hextech_altar"],
   "display": {
     "kind": "shapeless",
-    "ingredients": ["minecraft:paper", "minecraft:paper", "minecraft:paper"],
+    "ingredients": [
+      "minecraft:paper",
+      "minecraft:paper",
+      "minecraft:paper"
+    ],
     "result": "hextale:blank_scroll"
   },
-  "pos": [170, -370]
+  "pos": [700, -400]
 }

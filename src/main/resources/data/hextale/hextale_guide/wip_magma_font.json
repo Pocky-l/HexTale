@@ -3,5 +3,5 @@
   "region": "forge",
   "icon": "minecraft:lava_bucket",
   "parents": ["hex_furnace"],
-  "pos": [-186, 189]
+  "pos": [-216, 196]
 }

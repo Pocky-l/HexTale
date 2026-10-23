@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "chemtech",
+  "stage": "mid",
   "icon": "minecraft:rotten_flesh",
   "parents": ["wip_specimen_cage"],
-  "pos": [-600, 265]
+  "pos": [-900, 420]
 }

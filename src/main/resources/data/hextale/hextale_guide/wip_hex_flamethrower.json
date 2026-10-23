@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "forge",
+  "stage": "mid",
   "icon": "minecraft:fire_charge",
   "parents": ["hexsteel"],
-  "pos": [-370, 205]
+  "pos": [650, 95]
 }

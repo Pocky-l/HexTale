@@ -1,11 +1,12 @@
 {
   "region": "workshop",
   "icon": "hextale:research_table",
-  "parents": ["hex_workbench", "brass"],
+  "parents": ["wip_hand_loupe", "hex_workbench", "brass"],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:research_table"
   },
   "station": true,
-  "pos": [0, -130]
+  "landmark": true,
+  "pos": [40, -150]
 }

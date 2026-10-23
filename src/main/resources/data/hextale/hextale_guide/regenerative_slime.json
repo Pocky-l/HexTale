@@ -1,11 +1,16 @@
 {
   "region": "chemtech",
+  "stage": "mid",
   "icon": "hextale:regenerative_slime",
   "parents": ["axolotl_tank"],
   "display": {
     "kind": "scheme",
-    "ingredients": ["minecraft:axolotl_bucket", "minecraft:tropical_fish_bucket", "hextale:axolotl_tank"],
+    "ingredients": [
+      "minecraft:axolotl_bucket",
+      "minecraft:tropical_fish_bucket",
+      "hextale:axolotl_tank"
+    ],
     "result": "hextale:regenerative_slime"
   },
-  "pos": [-650, 190]
+  "pos": [-900, 210]
 }

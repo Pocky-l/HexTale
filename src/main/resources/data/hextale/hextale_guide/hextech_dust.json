@@ -4,7 +4,9 @@
   "parents": ["unstable_hextech"],
   "display": {
     "kind": "scheme",
-    "ingredients": ["hextale:unstable_hextech"],
+    "ingredients": [
+      "hextale:unstable_hextech"
+    ],
     "result": "hextale:hextech_dust"
   },
   "pos": [-228, 1]

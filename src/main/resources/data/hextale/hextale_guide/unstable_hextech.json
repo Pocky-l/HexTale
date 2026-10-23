@@ -1,10 +1,13 @@
 {
   "region": "workshop",
-  "parents": ["researchers_diary"],
   "icon": "hextale:unstable_hextech",
+  "parents": ["researchers_diary"],
   "display": {
     "kind": "scheme",
-    "ingredients": ["minecraft:lightning_rod", "minecraft:amethyst_block"],
+    "ingredients": [
+      "minecraft:lightning_rod",
+      "minecraft:amethyst_block"
+    ],
     "result": "hextale:unstable_hextech"
   },
   "aura": "storm",

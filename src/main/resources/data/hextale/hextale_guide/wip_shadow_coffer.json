@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "forge",
+  "stage": "mid",
   "icon": "minecraft:ender_chest",
-  "parents": ["pickaxe_rune"],
-  "pos": [596, 255]
+  "parents": ["sending_pylon"],
+  "pos": [1073, -218]
 }

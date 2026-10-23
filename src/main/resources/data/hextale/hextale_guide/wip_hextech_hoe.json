@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "forge",
+  "stage": "mid",
   "icon": "minecraft:iron_hoe",
   "parents": ["hextech_pickaxe"],
-  "pos": [662, 109]
+  "pos": [778, 199]
 }

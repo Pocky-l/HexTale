@@ -4,7 +4,10 @@
   "parents": ["sphalerite"],
   "display": {
     "kind": "scheme",
-    "ingredients": ["hextale:raw_zinc", "minecraft:furnace"],
+    "ingredients": [
+      "hextale:raw_zinc",
+      "minecraft:furnace"
+    ],
     "result": "hextale:zinc_ingot"
   },
   "pos": [-160, 260]

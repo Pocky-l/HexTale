@@ -1,0 +1,6 @@
+{
+  "region": "chemtech",
+  "icon": "hextale:magic_planks",
+  "parents": ["magic_sapling"],
+  "pos": [-430, 190]
+}

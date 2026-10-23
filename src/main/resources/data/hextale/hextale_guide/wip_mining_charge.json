@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "forge",
-  "icon": "minecraft:tnt",
-  "parents": ["hex_furnace"],
-  "pos": [-220, 198]
-}

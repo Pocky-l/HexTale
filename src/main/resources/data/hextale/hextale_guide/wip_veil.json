@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "runes",
+  "stage": "mid",
   "icon": "minecraft:phantom_membrane",
   "parents": ["rune_scroll"],
-  "pos": [250, -400]
+  "pos": [624, -402]
 }

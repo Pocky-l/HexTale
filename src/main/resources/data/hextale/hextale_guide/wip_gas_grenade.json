@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "chemtech",
+  "stage": "mid",
   "icon": "minecraft:lingering_potion",
   "parents": ["chem_vial"],
-  "pos": [-583, -225]
+  "pos": [-790, -150]
 }

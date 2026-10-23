@@ -26,18 +26,20 @@ import java.util.Optional;
  *   "pos": [0, -130]
  * }
  * }</pre>
+ * {@code stage} is the part of the game the step belongs to: {@code early} (default), {@code mid} or {@code late}.
  * {@code kind} is {@code item} (default: something to make or obtain) or {@code wip} (a device still being worked out,
  * never done). The first parent is the one the step's link comes from. Without a {@code goal} an item step is done once
  * the player holds its icon's item. {@code research} names a research topic the step's item needs first. Without
  * {@code pos} the step finds a place around its first parent by itself. Texts live in the language files:
  * {@code quest.<namespace>.<id>}, {@code .desc}, {@code .goal}.
  */
-public record QuestDefinition(Quest.Kind kind, Region region, ItemStackTemplate icon, List<String> parents, Optional<QuestGoal> goal,
+public record QuestDefinition(Quest.Kind kind, Region region, Quest.Stage stage, ItemStackTemplate icon, List<String> parents, Optional<QuestGoal> goal,
                               Optional<QuestDisplay> display, Optional<ResearchTopic> research, Quest.Aura aura, boolean station,
                               boolean landmark, Optional<Quest.Scene> scene, Optional<Pos> pos) {
     public static final Codec<QuestDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
             Quest.Kind.CODEC.optionalFieldOf("kind", Quest.Kind.ITEM).forGetter(QuestDefinition::kind),
             Region.CODEC.fieldOf("region").forGetter(QuestDefinition::region),
+            Quest.Stage.CODEC.optionalFieldOf("stage", Quest.Stage.EARLY).forGetter(QuestDefinition::stage),
             ItemStackTemplate.CODEC.fieldOf("icon").forGetter(QuestDefinition::icon),
             Codec.STRING.listOf().optionalFieldOf("parents", List.of()).forGetter(QuestDefinition::parents),
             QuestGoal.CODEC.optionalFieldOf("goal").forGetter(QuestDefinition::goal),
@@ -60,22 +62,22 @@ public record QuestDefinition(Quest.Kind kind, Region region, ItemStackTemplate 
     }
 
     public QuestDefinition withParents(List<String> next) {
-        return new QuestDefinition(kind, region, icon, List.copyOf(next), goal, display, research, aura, station, landmark, scene, pos);
+        return new QuestDefinition(kind, region, stage, icon, List.copyOf(next), goal, display, research, aura, station, landmark, scene, pos);
     }
 
     public QuestDefinition withIcon(ItemStackTemplate next) {
-        return new QuestDefinition(kind, region, next, parents, goal, display, research, aura, station, landmark, scene, pos);
+        return new QuestDefinition(kind, region, stage, next, parents, goal, display, research, aura, station, landmark, scene, pos);
     }
 
     public QuestDefinition withAura(Quest.Aura next) {
-        return new QuestDefinition(kind, region, icon, parents, goal, display, research, next, station, landmark, scene, pos);
+        return new QuestDefinition(kind, region, stage, icon, parents, goal, display, research, next, station, landmark, scene, pos);
     }
 
     public QuestDefinition withStation(boolean next) {
-        return new QuestDefinition(kind, region, icon, parents, goal, display, research, aura, next, landmark, scene, pos);
+        return new QuestDefinition(kind, region, stage, icon, parents, goal, display, research, aura, next, landmark, scene, pos);
     }
 
     public QuestDefinition withPos(Optional<Pos> next) {
-        return new QuestDefinition(kind, region, icon, parents, goal, display, research, aura, station, landmark, scene, next);
+        return new QuestDefinition(kind, region, stage, icon, parents, goal, display, research, aura, station, landmark, scene, next);
     }
 }

@@ -1,5 +1,6 @@
 {
   "region": "pylons",
+  "stage": "mid",
   "icon": "hextale:sorting_matrix",
   "parents": ["sending_pylon", "pylon_filter"],
   "display": {
@@ -7,5 +8,5 @@
     "result": "hextale:sorting_matrix"
   },
   "research": "sorting_matrix",
-  "pos": [885, -186]
+  "pos": [1070, -340]
 }

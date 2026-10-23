@@ -17,7 +17,10 @@
   },
   "display": {
     "kind": "scheme",
-    "ingredients": ["hextale:hextech_dust", "minecraft:crafting_table"],
+    "ingredients": [
+      "hextale:hextech_dust",
+      "minecraft:crafting_table"
+    ],
     "result": "hextale:hex_workbench"
   },
   "station": true,

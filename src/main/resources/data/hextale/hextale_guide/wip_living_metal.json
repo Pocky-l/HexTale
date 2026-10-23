@@ -1,0 +1,8 @@
+{
+  "kind": "wip",
+  "region": "forge",
+  "stage": "late",
+  "icon": "minecraft:netherite_scrap",
+  "parents": ["hexcore", "hexsteel", "regenerative_slime"],
+  "pos": [1330, -60]
+}

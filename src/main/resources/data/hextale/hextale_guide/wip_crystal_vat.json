@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "essences",
+  "stage": "late",
   "icon": "minecraft:budding_amethyst",
-  "parents": ["big_essence_jar", "hextech_gemstone"],
-  "pos": [277, 362]
+  "parents": ["hexcore", "big_essence_jar"],
+  "pos": [1387, -37]
 }

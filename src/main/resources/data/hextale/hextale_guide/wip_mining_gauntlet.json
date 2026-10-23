@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "forge",
-  "icon": "minecraft:mace",
-  "parents": ["hextech_gemstone"],
-  "pos": [551, 196]
+  "stage": "late",
+  "icon": "minecraft:heavy_core",
+  "parents": ["wip_living_metal", "hextech_gemstone"],
+  "pos": [1374, -86]
 }

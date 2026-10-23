@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "chemtech",
+  "stage": "late",
   "icon": "minecraft:totem_of_undying",
   "parents": ["refined_shimmer"],
-  "pos": [-895, 230]
+  "pos": [-1340, 250]
 }

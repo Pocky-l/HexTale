@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "workshop",
+  "stage": "mid",
   "icon": "minecraft:lightning_rod",
-  "parents": ["unstable_hextech"],
-  "pos": [-339, 1]
+  "parents": ["wip_rain_caller"],
+  "pos": [518, 0]
 }

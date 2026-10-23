@@ -1,9 +1,7 @@
 {
   "region": "forge",
   "icon": "hextale:hex_furnace",
-  "parents": [
-    "hextech_dust"
-  ],
+  "parents": ["hextech_dust"],
   "goal": {
     "type": "any_of",
     "goals": [
@@ -30,8 +28,5 @@
     }
   },
   "station": true,
-  "pos": [
-    -220,
-    130
-  ]
+  "pos": [-220, 130]
 }

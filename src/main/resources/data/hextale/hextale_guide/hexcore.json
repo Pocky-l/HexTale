@@ -1,7 +1,8 @@
 {
   "region": "circle",
+  "stage": "late",
   "icon": "hextale:hexcore",
-  "parents": ["hextech_altar", "hextech_gemstone", "hexsteel"],
+  "parents": ["wip_crystal_battery", "hextech_altar", "hextech_gemstone", "hexsteel", "regenerative_slime", "wip_nullstone"],
   "goal": {
     "type": "event",
     "event": "hexcore_awakened"
@@ -13,5 +14,6 @@
   "research": "hexcore",
   "aura": "storm",
   "station": true,
-  "pos": [371, -48]
+  "landmark": true,
+  "pos": [1330, 20]
 }

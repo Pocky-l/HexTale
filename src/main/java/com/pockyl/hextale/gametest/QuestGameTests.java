@@ -98,8 +98,10 @@ public final class QuestGameTests {
             helper.assertTrue(spots.add(((long) quest.x() << 32) | (quest.y() & 0xFFFFFFFFL)), quest.id() + " has its own spot");
             for (Quest parent : quest.parents()) {
                 helper.assertTrue(parent.index() < quest.index(), quest.id() + " follows " + parent.id());
-                helper.assertTrue(quest.kind() == Quest.Kind.WIP || parent.kind() != Quest.Kind.WIP,
-                        quest.id() + " never waits for a WIP device");
+                // A step may stand behind a device still being worked out (the plan between two benches); it only has to
+                // be seen, so it never blocks the way. The stages only go forward.
+                helper.assertTrue(parent.stage().ordinal() <= quest.stage().ordinal(),
+                        quest.id() + " (" + quest.stage() + ") never needs a later stage's " + parent.id());
             }
             helper.assertTrue(quest.parents().isEmpty() == (quest == step("sphalerite") || quest == step("researchers_diary")),
                     quest.id() + ": only sphalerite and the diary start the guide");
@@ -365,6 +367,8 @@ public final class QuestGameTests {
         for (Quest quest : List.of(step("research_table"), step("alembic"))) {
             helper.assertTrue(Guide.open(quest, knowledge), quest.id() + " opens with brass on the workbench");
         }
+        helper.assertTrue(step("hextech_altar").stage() == Quest.Stage.MID && step("hexcore").stage() == Quest.Stage.LATE,
+                "the altar opens the middle of the path, the Hexcore its end");
         helper.succeed();
     }
 

@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "forge",
-  "icon": "minecraft:sponge",
-  "parents": ["pickaxe_rune"],
-  "pos": [633, 219]
-}

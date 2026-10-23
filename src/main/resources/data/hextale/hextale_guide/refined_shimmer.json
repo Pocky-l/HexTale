@@ -1,5 +1,6 @@
 {
   "region": "chemtech",
+  "stage": "mid",
   "icon": {
     "id": "hextale:chem_vial",
     "components": {
@@ -13,8 +14,12 @@
   },
   "display": {
     "kind": "scheme",
-    "ingredients": ["hextale:chem_vial", "hextale:chem_still", "hextale:chem_burner"],
+    "ingredients": [
+      "hextale:chem_vial",
+      "hextale:chem_still",
+      "hextale:chem_burner"
+    ],
     "result": "hextale:chem_vial"
   },
-  "pos": [-830, 250]
+  "pos": [-1110, 260]
 }

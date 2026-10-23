@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "chemtech",
+  "stage": "mid",
   "icon": "minecraft:sticky_piston",
   "parents": ["wip_chem_boiler"],
-  "pos": [-805, 35]
+  "pos": [-1105, 65]
 }

@@ -62,8 +62,10 @@ import org.jspecify.annotations.Nullable;
  */
 final class GuidePage {
     private static final int ITEM_NODE = 24;
-    /** The landmark's medallion: the altar, the heart of the guide. */
+    /** A landmark's medallion: the heart of a stage (the Research Table, the altar). */
     private static final int LANDMARK_NODE = 44;
+    /** The Hexcore's medallion: the heart of the last stage, larger than the others. */
+    private static final int CORE_NODE = 52;
     /** A workstation's medallion, inside its cog ring. */
     private static final int STATION_NODE = 34;
     private static final int WIP_NODE = 20;
@@ -187,7 +189,7 @@ final class GuidePage {
     }
 
     private static int size(Quest quest) {
-        return quest.landmark() ? LANDMARK_NODE : quest.station() ? STATION_NODE : quest.kind() == Quest.Kind.WIP ? WIP_NODE
+        return quest.landmark() ? (quest.stage() == Quest.Stage.LATE ? CORE_NODE : LANDMARK_NODE) : quest.station() ? STATION_NODE : quest.kind() == Quest.Kind.WIP ? WIP_NODE
                 : ITEM_NODE + (quest.important() ? BIG : 0);
     }
 
@@ -198,6 +200,7 @@ final class GuidePage {
         List<Quest> shown = Guide.client().all().stream().filter(quest -> seen(quest, knowledge)).toList();
         List<Quest> ahead = Guide.client().all().stream().filter(quest -> !revealAll && Guide.ahead(quest, knowledge)).toList();
         focus = hovered;
+        renderStages(graphics, shown);
         renderHaze(graphics, shown);
         for (Quest quest : ahead) {
             renderAheadLink(graphics, quest, hovered);
@@ -441,15 +444,19 @@ final class GuidePage {
                 PixelArt.disc(graphics, x, y, size + 4 + ring * 4, halo, 0);
             }
         }
-        // Done steps keep a quieter brass, tinted by their branch; key steps stay bright gold.
-        int rim = done && quest.region() == Region.CHEMTECH ? Vines.BRONZE
-                : done ? (quest.important() || quest.landmark() || quest.station() ? StarBook.GOLD : PixelArt.mix(0xB08A40, quest.region().color(), 0.25F))
+        // Done steps keep the metal of their stage: brass early (tinted by the branch, key steps bright gold), blued steel in
+        // the middle, white gold at the end.
+        int rim = done ? stageRim(quest, quest.important() || quest.landmark() || quest.station())
                 : wip ? WIP : PixelArt.mix(0x2B8FB8, 0x7EF0FF, pulse);
         if (quest == selected || hovered) {
             rim = PixelArt.mix(StarBook.GOLD, 0xFFF6D6, pulse);
         }
         if (quest.landmark()) {
-            landmarkFrame(graphics, x, y, size, done, now);
+            switch (quest.stage()) {
+                case EARLY -> workshopFrame(graphics, x, y, size, done, now);
+                case MID -> landmarkFrame(graphics, x, y, size, done, now);
+                case LATE -> coreFrame(graphics, x, y, size, done, now);
+            }
         } else if (quest.station()) {
             cogRing(graphics, x, y, size, rim, 1);
         }
@@ -460,11 +467,11 @@ final class GuidePage {
                     // out at the table, brass once researched.
                     boolean researched = knowledge.researched(quest.topic());
                     int hexRim = done || quest == selected || hovered ? rim : researched ? 0xC8A050 : PixelArt.mix(0x7A4FD0, RESEARCH, pulse);
-                    int fill = done ? 0x2A2210 : researched ? 0x1E1A10 : 0x1A1030;
+                    int fill = done ? stageFill(quest) : researched ? 0x1E1A10 : 0x1A1030;
                     hexMedallion(graphics, x, y, size, hexRim, fill, PixelArt.mix(fill, researched || done ? StarBook.GOLD : RESEARCH, 0.16F), 1);
                 } else {
-                    int fill = done ? 0x2A2210 : 0x0C1A2A;
-                    medallion(graphics, x, y, size, rim, fill, done ? PixelArt.mix(fill, StarBook.GOLD, 0.18F) : PixelArt.mix(fill, OPEN, 0.12F), 1);
+                    int fill = done ? stageFill(quest) : 0x0C1A2A;
+                    medallion(graphics, x, y, size, rim, fill, done ? PixelArt.mix(fill, stageColor(quest.stage()), 0.18F) : PixelArt.mix(fill, OPEN, 0.12F), 1);
                 }
             }
             case WIP -> {
@@ -486,8 +493,176 @@ final class GuidePage {
         if (frame != Vines.Frame.NONE && quest.kind() != Quest.Kind.WIP && !quest.station()) {
             Vines.ring(graphics, x, y, size, frame == Vines.Frame.HALF, Vines.decay(quest), now, quest.index());
         }
+        if (quest.stage() == Quest.Stage.LATE && !wip && !quest.landmark()) {
+            // A thin violet seam around the late steps, like the gold seams on the Hexcore's tiles.
+            PixelArt.discRing(graphics, x, y, size + 4, PixelArt.argb(LATE_VIOLET, 0.3F + 0.25F * pulse));
+        }
         if (quest == selected) {
             PixelArt.discRing(graphics, x, y, size + 6, PixelArt.argb(StarBook.GOLD, 0.5F + 0.5F * pulse));
+        }
+    }
+
+    // ---- Stages -----------------------------------------------------------------------------------------------------
+
+    private static final int LATE_VIOLET = 0x9A6CF0;
+
+    /** The colour a stage is told by: brass, hextech blue, the Hexcore's violet. */
+    private static int stageColor(Quest.Stage stage) {
+        return switch (stage) {
+            case EARLY -> 0xE0B85A;
+            case MID -> 0x6FB4F0;
+            case LATE -> 0xB48CFF;
+        };
+    }
+
+    /** The rim of a done step: brass early, blued steel in the middle, white gold at the end. */
+    private static int stageRim(Quest quest, boolean key) {
+        return switch (quest.stage()) {
+            case EARLY -> quest.region() == Region.CHEMTECH ? Vines.BRONZE
+                    : key ? StarBook.GOLD : PixelArt.mix(0xB08A40, quest.region().color(), 0.25F);
+            case MID -> quest.region() == Region.CHEMTECH ? PixelArt.mix(Vines.BRONZE, 0x8FB0C8, 0.45F) : key ? 0xBFE2FF : 0x86AFD2;
+            case LATE -> key ? 0xFFF2CC : 0xEADBB0;
+        };
+    }
+
+    /** The face of a done step, in its stage's metal. */
+    private static int stageFill(Quest quest) {
+        return switch (quest.stage()) {
+            case EARLY -> 0x2A2210;
+            case MID -> 0x10202E;
+            case LATE -> 0x22143A;
+        };
+    }
+
+    /**
+     * The stages of the path as bands across the sky: the first steps in the middle, hextech growing east and chemtech
+     * west through the middle stage to the last one. Each band gets a faint tint of its stage, a dotted seam where it meets
+     * the next and its name above, once a step in it can be seen.
+     */
+    private void renderStages(GuiGraphicsExtractor graphics, List<Quest> shown) {
+        List<Quest> all = Guide.client().all();
+        if (all.isEmpty()) {
+            return;
+        }
+        // Each stage splits into runs along the map: steps closer than a wide gap belong to one band.
+        List<int[]> bands = new ArrayList<>();
+        for (Quest.Stage stage : Quest.Stage.values()) {
+            List<Integer> xs = all.stream().filter(quest -> quest.stage() == stage).map(Quest::x).sorted().toList();
+            int start = 0;
+            for (int i = 1; i <= xs.size(); i++) {
+                if (i == xs.size() || xs.get(i) - xs.get(i - 1) > 160) {
+                    bands.add(new int[]{stage.ordinal(), xs.get(start), xs.get(i - 1)});
+                    start = i;
+                }
+            }
+        }
+        bands.sort((a, b) -> Integer.compare(a[1], b[1]));
+        int top = Guide.client().top() - 70;
+        int bottom = Guide.client().bottom() + 50;
+        for (int i = 0; i < bands.size(); i++) {
+            int[] band = bands.get(i);
+            Quest.Stage stage = Quest.Stage.values()[band[0]];
+            int color = stageColor(stage);
+            int x0 = i == 0 ? band[1] - 60 : (bands.get(i - 1)[2] + band[1]) / 2;
+            int x1 = i == bands.size() - 1 ? band[2] + 60 : (band[2] + bands.get(i + 1)[1]) / 2;
+            PixelArt.fill(graphics, x0, top, x1, bottom, PixelArt.argb(color, 0.022F));
+            // A strip of the stage's colour along the top, fading downwards.
+            for (int row = 0; row < 6; row++) {
+                PixelArt.fill(graphics, x0, top + row * 4, x1, top + row * 4 + 4, PixelArt.argb(color, 0.05F - row * 0.008F));
+            }
+            if (i > 0) {
+                // The seam between two stages: a column of dots with a small diamond every so often.
+                int seam = PixelArt.mix(color, stageColor(Quest.Stage.values()[bands.get(i - 1)[0]]), 0.5F);
+                for (int y = top; y < bottom; y += 6) {
+                    boolean diamond = Math.floorMod(y - top, 60) == 0;
+                    int c = PixelArt.argb(seam, diamond ? 0.45F : 0.2F);
+                    PixelArt.fill(graphics, x0, y, x0 + 1, y + 1, c);
+                    if (diamond) {
+                        PixelArt.fill(graphics, x0 - 1, y, x0 + 2, y + 1, c);
+                        PixelArt.fill(graphics, x0, y - 1, x0 + 1, y + 2, c);
+                    }
+                }
+            }
+            boolean seen = revealAll || shown.stream().anyMatch(quest -> quest.stage() == stage && quest.x() >= band[1] && quest.x() <= band[2]);
+            if (seen) {
+                PixelArt.flush(graphics);
+                String name = Component.translatable("book.hextale.guide.stage." + stage.getSerializedName()).getString();
+                int cx = (x0 + x1) / 2;
+                int w = font.width(name);
+                graphics.pose().pushMatrix();
+                graphics.pose().translate(cx, top + 10);
+                graphics.pose().scale(2, 2);
+                graphics.text(font, name, -w / 2, 0, PixelArt.argb(color, 0.75F), false);
+                graphics.pose().popMatrix();
+                for (int side = -1; side <= 1; side += 2) {
+                    int dx = cx + side * (w + 14);
+                    PixelArt.fill(graphics, dx - 2, top + 18, dx + 3, top + 19, PixelArt.argb(color, 0.7F));
+                    PixelArt.fill(graphics, dx, top + 16, dx + 1, top + 21, PixelArt.argb(color, 0.7F));
+                    int far = dx + side * 40;
+                    PixelArt.fill(graphics, Math.min(dx + side * 6, far), top + 18, Math.max(dx + side * 6, far) + 1, top + 19, PixelArt.argb(color, 0.3F));
+                }
+            }
+        }
+        PixelArt.flush(graphics);
+    }
+
+    /**
+     * The first stage's heart (the Research Table): a great brass cog with a warm lamp glow behind it and a ring of rivets
+     * turning slowly - the workshop drawn in the sky.
+     */
+    private static void workshopFrame(GuiGraphicsExtractor graphics, int x, int y, int size, boolean done, long now) {
+        for (int ring = 0; ring < 4; ring++) {
+            PixelArt.disc(graphics, x, y, size + 24 + ring * 10, PixelArt.argb(0xE0B85A, 0.05F - ring * 0.01F), 0);
+        }
+        cogRing(graphics, x, y, size + 12, done ? StarBook.GOLD : 0xB08A40, 1);
+        PixelArt.disc(graphics, x, y, size + 12, PixelArt.argb(0x1A140C, 0.95F), 0);
+        float turn = now / 6000.0F;
+        float radius = size / 2.0F + 3;
+        for (int i = 0; i < 12; i++) {
+            double angle = turn + i * Math.PI / 6;
+            int px = x + (int) Math.round(Math.cos(angle) * radius);
+            int py = y + (int) Math.round(Math.sin(angle) * radius);
+            PixelArt.fill(graphics, px, py, px + 1, py + 1, PixelArt.argb(0xFFF0B8, i % 3 == 0 ? 0.9F : 0.45F));
+        }
+    }
+
+    /**
+     * The last stage's heart (the Hexcore): a violet glow beating like a heart, a gold seam, and two rings of rune tiles
+     * that twist an eighth of a turn now and then in opposite directions, like the matrix itself.
+     */
+    private static void coreFrame(GuiGraphicsExtractor graphics, int x, int y, int size, boolean done, long now) {
+        float phase = (now % 1700) / 1700.0F;
+        float beat = (float) (Math.exp(-Math.pow((phase - 0.08) / 0.05, 2)) + 0.6 * Math.exp(-Math.pow((phase - 0.24) / 0.05, 2)));
+        for (int ring = 0; ring < 5; ring++) {
+            PixelArt.disc(graphics, x, y, size + 22 + ring * 12,
+                    PixelArt.argb(ring % 2 == 0 ? 0x6C71C5 : 0x8A4CC8, (0.07F - ring * 0.012F) * (0.6F + 0.6F * beat)), 0);
+        }
+        PixelArt.disc(graphics, x, y, size + 28, PixelArt.argb(0x0C0818, 0.92F), PixelArt.argb(0x48286C, 1));
+        PixelArt.discRing(graphics, x, y, size + 4, PixelArt.argb(done ? 0xFFE6A0 : StarBook.GOLD, 0.55F + 0.35F * beat));
+        tileRing(graphics, x, y, size / 2.0F + 9, 8, 2, twist(now, 0), done);
+        tileRing(graphics, x, y, size / 2.0F + 3.5F, 12, 0, -twist(now, 900) + (float) Math.PI / 12, done);
+    }
+
+    /** A ring's angle: still most of the time, then an eased eighth of a turn, as the matrix twists. */
+    private static float twist(long now, long offset) {
+        long t = now + offset;
+        long period = 2300;
+        float within = (t % period) / 450.0F;
+        float ease = within >= 1 ? 1 : within * within * (3 - 2 * within);
+        return (float) ((t / period + ease) * Math.PI / 4);
+    }
+
+    /** Square rune tiles on a circle: a gold rim, a deep blue face and a glowing glyph dot. */
+    private static void tileRing(GuiGraphicsExtractor graphics, int x, int y, float radius, int count, int half, float angle, boolean done) {
+        for (int i = 0; i < count; i++) {
+            double a = angle + i * Math.PI * 2 / count;
+            int px = x + (int) Math.round(Math.cos(a) * radius);
+            int py = y + (int) Math.round(Math.sin(a) * radius);
+            PixelArt.fill(graphics, px - half - 1, py - half - 1, px + half + 2, py + half + 2, PixelArt.argb(StarBook.GOLD, 0.9F));
+            if (half > 0) {
+                PixelArt.fill(graphics, px - half, py - half, px + half + 1, py + half + 1, PixelArt.argb(0x1C366E, 1));
+            }
+            PixelArt.fill(graphics, px, py, px + 1, py + 1, PixelArt.argb(done ? 0xE8FCFF : 0x9FE6FF, 1));
         }
     }
 

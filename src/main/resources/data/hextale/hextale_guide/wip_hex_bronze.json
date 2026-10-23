@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "forge",
-  "icon": "minecraft:copper_ingot",
-  "parents": ["hex_furnace"],
-  "pos": [-254, 189]
-}

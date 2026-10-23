@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "workshop",
+  "stage": "mid",
   "icon": "minecraft:trident",
-  "parents": ["unstable_hextech"],
-  "pos": [-364, 52]
+  "parents": ["hextech_altar"],
+  "pos": [511, -51]
 }

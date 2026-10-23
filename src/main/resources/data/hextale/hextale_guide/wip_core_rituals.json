@@ -1,0 +1,8 @@
+{
+  "kind": "wip",
+  "region": "circle",
+  "stage": "late",
+  "icon": "minecraft:nether_star",
+  "parents": ["hexcore"],
+  "pos": [1413, 68]
+}

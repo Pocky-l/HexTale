@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "chemtech",
+  "stage": "mid",
   "icon": "minecraft:iron_trapdoor",
-  "parents": ["crucible"],
-  "pos": [-440, -240]
+  "parents": ["chem_burner"],
+  "pos": [-950, -200]
 }

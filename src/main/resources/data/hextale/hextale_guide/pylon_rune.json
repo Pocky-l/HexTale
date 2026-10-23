@@ -1,5 +1,6 @@
 {
   "region": "pylons",
+  "stage": "mid",
   "icon": "hextale:rune_stele",
   "parents": ["gathering_pylon", "rune_stele", "rune_scroll"],
   "goal": {
@@ -9,5 +10,5 @@
     "kind": "pylon_runes",
     "result": "hextale:sending_pylon"
   },
-  "pos": [800, 20]
+  "pos": [930, -70]
 }

@@ -3,5 +3,5 @@
   "region": "workshop",
   "icon": "minecraft:sculk_catalyst",
   "parents": ["item_study"],
-  "pos": [164, -175]
+  "pos": [199, -222]
 }

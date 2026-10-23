@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "pylons",
-  "icon": "minecraft:ender_pearl",
-  "parents": ["relay_pylon"],
-  "pos": [970, -222]
-}

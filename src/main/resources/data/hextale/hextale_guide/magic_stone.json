@@ -4,7 +4,12 @@
   "parents": ["crucible"],
   "display": {
     "kind": "scheme",
-    "ingredients": ["minecraft:lapis_lazuli", "minecraft:lapis_lazuli", "minecraft:stone", "hextale:crucible"],
+    "ingredients": [
+      "minecraft:lapis_lazuli",
+      "minecraft:lapis_lazuli",
+      "minecraft:stone",
+      "hextale:crucible"
+    ],
     "result": "hextale:magic_stone"
   },
   "pos": [-320, -170]

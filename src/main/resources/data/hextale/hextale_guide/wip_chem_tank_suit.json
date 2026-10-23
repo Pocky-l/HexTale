@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "chemtech",
-  "icon": "minecraft:iron_chestplate",
-  "parents": ["wip_chem_boiler"],
-  "pos": [-790, -20]
+  "stage": "late",
+  "icon": "minecraft:chainmail_leggings",
+  "parents": ["wip_chem_boiler", "wip_respirator"],
+  "pos": [-1340, 70]
 }

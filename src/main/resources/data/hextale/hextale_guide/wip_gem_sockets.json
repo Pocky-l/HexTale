@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "circle",
+  "stage": "mid",
   "icon": "minecraft:emerald",
   "parents": ["hex_lapidary"],
-  "pos": [547, 6]
+  "pos": [790, -72]
 }

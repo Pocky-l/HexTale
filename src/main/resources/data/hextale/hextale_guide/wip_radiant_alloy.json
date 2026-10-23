@@ -1,0 +1,8 @@
+{
+  "kind": "wip",
+  "region": "forge",
+  "stage": "late",
+  "icon": "minecraft:gold_ingot",
+  "parents": ["hexcore", "hextech_gemstone"],
+  "pos": [1309, 97]
+}

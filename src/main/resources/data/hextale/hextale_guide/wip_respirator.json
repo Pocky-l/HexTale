@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "workshop",
+  "stage": "mid",
   "icon": "minecraft:leather_helmet",
-  "parents": ["researchers_goggles", "concentrate"],
-  "pos": [-226, -117]
+  "parents": ["wip_the_gray", "researchers_goggles"],
+  "pos": [-1125, -216]
 }

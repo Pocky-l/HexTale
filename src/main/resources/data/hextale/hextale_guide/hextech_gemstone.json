@@ -1,12 +1,16 @@
 {
   "region": "forge",
+  "stage": "mid",
   "icon": "hextale:hextech_gemstone",
   "parents": ["master_cutting_disc", "hextech_crystal"],
   "display": {
     "kind": "scheme",
-    "ingredients": ["hextale:hextech_crystal", "hextale:master_cutting_disc"],
+    "ingredients": [
+      "hextale:hextech_crystal",
+      "hextale:master_cutting_disc"
+    ],
     "result": "hextale:hextech_gemstone"
   },
   "aura": "gold",
-  "pos": [570, 140]
+  "pos": [970, 30]
 }

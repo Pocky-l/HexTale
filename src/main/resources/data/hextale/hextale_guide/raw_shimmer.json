@@ -1,5 +1,6 @@
 {
   "region": "chemtech",
+  "stage": "mid",
   "icon": {
     "id": "hextale:chem_vial",
     "components": {
@@ -13,10 +14,15 @@
   },
   "display": {
     "kind": "scheme",
-    "ingredients": ["hextale:shimmerbloom", "hextale:regenerative_slime", "hextale:crucible", "minecraft:glass_bottle"],
+    "ingredients": [
+      "hextale:shimmerbloom",
+      "hextale:regenerative_slime",
+      "hextale:crucible",
+      "minecraft:glass_bottle"
+    ],
     "result": "hextale:chem_vial"
   },
+  "research": "raw_shimmer",
   "aura": "gold",
-  "pos": [-720, 230],
-  "research": "raw_shimmer"
+  "pos": [-980, 260]
 }

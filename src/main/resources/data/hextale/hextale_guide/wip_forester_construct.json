@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "pylons",
-  "icon": "minecraft:golden_axe",
-  "parents": ["gathering_pylon"],
-  "pos": [817, -49]
-}

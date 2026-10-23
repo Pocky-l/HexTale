@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "pylons",
-  "icon": "minecraft:breeze_rod",
-  "parents": ["pylon_rune"],
-  "pos": [760, -10]
-}

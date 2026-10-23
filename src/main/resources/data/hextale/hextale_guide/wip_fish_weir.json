@@ -3,5 +3,5 @@
   "region": "essences",
   "icon": "minecraft:fishing_rod",
   "parents": ["pump"],
-  "pos": [-70, 327]
+  "pos": [-28, 333]
 }

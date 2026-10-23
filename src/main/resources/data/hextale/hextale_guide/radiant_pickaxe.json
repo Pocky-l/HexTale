@@ -1,7 +1,8 @@
 {
   "region": "forge",
+  "stage": "late",
   "icon": "hextale:radiant_hextech_pickaxe",
-  "parents": ["refined_pickaxe"],
+  "parents": ["hexcore", "refined_pickaxe"],
   "goal": {
     "tier": 3,
     "type": "pickaxe"
@@ -12,5 +13,5 @@
   },
   "research": "radiant_hextech_pickaxe",
   "aura": "hextech",
-  "pos": [869, 86]
+  "pos": [1470, 150]
 }

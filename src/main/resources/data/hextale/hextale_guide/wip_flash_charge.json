@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "forge",
+  "stage": "late",
   "icon": "minecraft:firework_star",
   "parents": ["radiant_pickaxe"],
-  "pos": [935, 157]
+  "pos": [1510, 187]
 }

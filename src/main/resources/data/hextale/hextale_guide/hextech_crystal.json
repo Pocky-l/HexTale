@@ -1,12 +1,16 @@
 {
   "region": "circle",
+  "stage": "mid",
   "icon": "hextale:hextech_crystal",
   "parents": ["hex_lapidary"],
   "display": {
     "kind": "scheme",
-    "ingredients": ["hextale:unstable_hextech", "hextale:cutting_disc"],
+    "ingredients": [
+      "hextale:unstable_hextech",
+      "hextale:cutting_disc"
+    ],
     "result": "hextale:hextech_crystal"
   },
   "aura": "gold",
-  "pos": [670, -60]
+  "pos": [840, -100]
 }

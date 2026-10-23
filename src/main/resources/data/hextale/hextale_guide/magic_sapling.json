@@ -4,9 +4,15 @@
   "parents": ["lab_bench", "crucible"],
   "display": {
     "kind": "scheme",
-    "ingredients": ["#hextale:magic_tree_catalysts", "minecraft:lapis_lazuli", "#minecraft:leaves", "minecraft:honey_bottle", "hextale:crucible"],
+    "ingredients": [
+      "#hextale:magic_tree_catalysts",
+      "minecraft:lapis_lazuli",
+      "#minecraft:leaves",
+      "minecraft:honey_bottle",
+      "hextale:crucible"
+    ],
     "result": "hextale:magic_sapling"
   },
   "research": "magic_sapling",
-  "pos": [-465, 95]
+  "pos": [-465, 110]
 }

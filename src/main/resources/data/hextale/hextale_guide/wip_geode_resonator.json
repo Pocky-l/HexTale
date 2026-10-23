@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "circle",
+  "stage": "mid",
   "icon": "minecraft:small_amethyst_bud",
   "parents": ["hextech_altar", "essence_tank"],
-  "pos": [416, -83]
+  "pos": [574, -100]
 }

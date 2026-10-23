@@ -1,10 +1,11 @@
 {
   "region": "runes",
+  "stage": "mid",
   "icon": "hextale:rune_scroll",
   "parents": ["hextech_altar"],
   "goal": {
     "type": "runes_known"
   },
   "aura": "gold",
-  "pos": [250, -330]
+  "pos": [600, -350]
 }

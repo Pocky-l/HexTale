@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "circle",
-  "icon": "minecraft:spyglass",
+  "stage": "mid",
+  "icon": "minecraft:end_crystal",
   "parents": ["hextech_lamp"],
-  "pos": [646, -185]
+  "pos": [614, -238]
 }

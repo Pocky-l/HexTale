@@ -1,5 +1,6 @@
 {
   "region": "circle",
+  "stage": "mid",
   "icon": "hextale:hex_lapidary",
   "parents": ["pedestal", "essence_tank"],
   "display": {
@@ -12,5 +13,5 @@
   },
   "research": "hex_lapidary",
   "station": true,
-  "pos": [570, -60]
+  "pos": [730, -100]
 }

@@ -1,5 +1,6 @@
 {
   "region": "pylons",
+  "stage": "mid",
   "icon": "hextale:siphon_pylon",
   "parents": ["sending_pylon", "essence_tank", "brass_pipe"],
   "display": {
@@ -7,5 +8,5 @@
     "result": "hextale:siphon_pylon"
   },
   "research": "siphon_pylon",
-  "pos": [880, -30]
+  "pos": [1060, -140]
 }

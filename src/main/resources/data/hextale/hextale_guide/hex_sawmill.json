@@ -1,9 +1,8 @@
 {
   "region": "pylons",
+  "stage": "mid",
   "icon": "hextale:hex_sawmill",
-  "parents": [
-    "hextech_crystal"
-  ],
+  "parents": ["hextech_crystal"],
   "display": {
     "kind": "infusion",
     "result": "hextale:hex_sawmill",
@@ -13,8 +12,5 @@
     }
   },
   "research": "hex_sawmill",
-  "pos": [
-    645,
-    -131
-  ]
+  "pos": [840, -280]
 }

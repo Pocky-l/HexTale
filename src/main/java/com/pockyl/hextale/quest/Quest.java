@@ -34,6 +34,26 @@ public final class Quest {
         }
     }
 
+    /**
+     * The part of the game a step belongs to: the workshop of the first days, the ritual circle in the middle, the Hexcore
+     * at the end. The book lays the stages out as bands and dresses each in its own metal.
+     */
+    public enum Stage implements StringRepresentable {
+        /** Brass, wood and dust: from the diary to the Research Table and the ink. */
+        EARLY,
+        /** Crystal and hexsteel: from the Hextech Altar to the gemstone. */
+        MID,
+        /** The Hexcore and what only it can make. */
+        LATE;
+
+        public static final Codec<Stage> CODEC = StringRepresentable.fromEnum(Stage::values);
+
+        @Override
+        public String getSerializedName() {
+            return name().toLowerCase(Locale.ROOT);
+        }
+    }
+
     /** The part of the ritual circle a step's 3D scene puts in focus. */
     public enum Scene implements StringRepresentable {
         /** The whole circle at work: the altar draws the pedestals' items and the jars' essences. */
@@ -165,6 +185,11 @@ public final class Quest {
     /** The theme this step belongs to: the haze around it in the book. */
     public Region region() {
         return definition.region();
+    }
+
+    /** The part of the game the step belongs to. */
+    public Stage stage() {
+        return definition.stage();
     }
 
     /** Key steps are drawn larger. */

@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "essences",
-  "icon": "minecraft:cauldron",
-  "parents": ["pump"],
-  "pos": [7, 310]
-}

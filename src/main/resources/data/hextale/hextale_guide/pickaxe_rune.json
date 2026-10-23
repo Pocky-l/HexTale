@@ -1,5 +1,6 @@
 {
   "region": "forge",
+  "stage": "mid",
   "icon": "hextale:rune_scroll",
   "parents": ["hextech_pickaxe", "rune_stele", "rune_scroll"],
   "goal": {
@@ -9,5 +10,5 @@
     "kind": "pickaxe_runes",
     "result": "hextale:hextech_pickaxe"
   },
-  "pos": [624, 100]
+  "pos": [710, 120]
 }

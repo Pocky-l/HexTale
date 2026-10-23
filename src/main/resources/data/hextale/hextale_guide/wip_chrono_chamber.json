@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "forge",
+  "stage": "late",
   "icon": "minecraft:clock",
-  "parents": ["radiant_pickaxe"],
-  "pos": [893, 225]
+  "parents": ["hexcore"],
+  "pos": [1410, 20]
 }

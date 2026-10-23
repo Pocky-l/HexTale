@@ -1,8 +1,8 @@
 {
   "region": "chemtech",
+  "stage": "mid",
   "icon": "hextale:chem_still",
   "parents": ["raw_shimmer", "chem_burner", "lab_bench"],
-  "research": "chem_still",
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:chem_still",
@@ -11,6 +11,7 @@
       "result": "still"
     }
   },
+  "research": "chem_still",
   "station": true,
-  "pos": [-790, 180]
+  "pos": [-1060, 180]
 }

@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "circle",
+  "stage": "mid",
   "icon": "minecraft:trial_key",
   "parents": ["rune_stele"],
-  "pos": [350, -316]
+  "pos": [500, -334]
 }

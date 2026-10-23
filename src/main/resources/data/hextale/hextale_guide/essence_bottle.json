@@ -17,7 +17,10 @@
   },
   "display": {
     "kind": "scheme",
-    "ingredients": ["minecraft:glass_bottle", "hextale:alembic"],
+    "ingredients": [
+      "minecraft:glass_bottle",
+      "hextale:alembic"
+    ],
     "result": "hextale:essence_flask"
   },
   "pos": [100, 140]

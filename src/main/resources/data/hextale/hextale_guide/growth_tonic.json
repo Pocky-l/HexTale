@@ -7,11 +7,15 @@
     }
   },
   "parents": ["chem_vial", "lab_bench"],
-  "research": "growth_tonic",
   "display": {
     "kind": "scheme",
-    "ingredients": ["minecraft:bone_meal", "hextale:crucible", "minecraft:glass_bottle"],
+    "ingredients": [
+      "minecraft:bone_meal",
+      "hextale:crucible",
+      "minecraft:glass_bottle"
+    ],
     "result": "hextale:chem_vial"
   },
+  "research": "growth_tonic",
   "pos": [-650, -81]
 }

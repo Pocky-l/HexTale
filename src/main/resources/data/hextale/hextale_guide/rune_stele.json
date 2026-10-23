@@ -1,5 +1,6 @@
 {
   "region": "circle",
+  "stage": "mid",
   "icon": "hextale:rune_stele",
   "parents": ["hextech_altar"],
   "display": {
@@ -8,5 +9,5 @@
   },
   "research": "hextech_altar",
   "scene": "stele",
-  "pos": [350, -260]
+  "pos": [500, -280]
 }

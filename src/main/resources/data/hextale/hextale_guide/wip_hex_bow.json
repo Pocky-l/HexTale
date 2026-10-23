@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "circle",
+  "stage": "mid",
   "icon": "minecraft:crossbow",
   "parents": ["hextech_crystal"],
-  "pos": [727, -45]
+  "pos": [895, -115]
 }

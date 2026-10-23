@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "circle",
+  "stage": "mid",
   "icon": "minecraft:amethyst_cluster",
-  "parents": ["hextech_crystal"],
-  "pos": [717, -104]
+  "parents": ["hextech_gemstone"],
+  "pos": [1090, 20]
 }

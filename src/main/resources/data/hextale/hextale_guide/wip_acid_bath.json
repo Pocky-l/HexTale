@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "chemtech",
+  "stage": "mid",
   "icon": "minecraft:fermented_spider_eye",
   "parents": ["wip_the_gray", "drain_valve"],
-  "pos": [-555, -370]
+  "pos": [-1123, -267]
 }

@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "workshop",
+  "icon": "minecraft:lantern",
+  "parents": ["hextech_dust", "brass"],
+  "pos": [-223, -53]
+}

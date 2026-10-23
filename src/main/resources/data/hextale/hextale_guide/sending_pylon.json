@@ -1,5 +1,6 @@
 {
   "region": "pylons",
+  "stage": "mid",
   "icon": "hextale:sending_pylon",
   "parents": ["gathering_pylon"],
   "display": {
@@ -7,5 +8,5 @@
     "result": "hextale:sending_pylon"
   },
   "research": "sending_pylon",
-  "pos": [860, -130]
+  "pos": [1020, -230]
 }

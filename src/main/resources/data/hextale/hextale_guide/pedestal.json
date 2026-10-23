@@ -1,5 +1,6 @@
 {
   "region": "circle",
+  "stage": "mid",
   "icon": "hextale:pedestal",
   "parents": ["hextech_altar"],
   "display": {
@@ -8,5 +9,5 @@
   },
   "research": "hextech_altar",
   "scene": "pedestal",
-  "pos": [470, -90]
+  "pos": [620, -120]
 }

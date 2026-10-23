@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "chemtech",
+  "stage": "late",
   "icon": "minecraft:sculk_shrieker",
   "parents": ["refined_shimmer"],
-  "pos": [-890, 290]
+  "pos": [-1340, 350]
 }

@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "workshop",
-  "icon": "minecraft:map",
-  "parents": ["research_table"],
-  "pos": [46, -180]
-}

@@ -1,0 +1,7 @@
+{
+  "kind": "wip",
+  "region": "workshop",
+  "icon": "minecraft:tripwire_hook",
+  "parents": ["item_study"],
+  "pos": [155, -254]
+}

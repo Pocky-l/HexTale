@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "circle",
+  "stage": "late",
   "icon": "minecraft:armor_stand",
-  "parents": ["hextech_crystal"],
-  "pos": [655, -3]
+  "parents": ["wip_core_rituals"],
+  "pos": [1457, 94]
 }

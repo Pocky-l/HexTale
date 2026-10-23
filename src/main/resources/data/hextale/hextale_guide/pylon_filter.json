@@ -1,11 +1,12 @@
 {
   "region": "pylons",
+  "stage": "mid",
   "icon": "hextale:pylon_filter",
   "parents": ["gathering_pylon"],
   "display": {
     "kind": "infusion",
     "result": "hextale:pylon_filter"
   },
-  "pos": [800, -180],
-  "research": "pylon_filter"
+  "research": "pylon_filter",
+  "pos": [960, -310]
 }

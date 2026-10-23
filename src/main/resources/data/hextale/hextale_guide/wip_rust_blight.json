@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "chemtech",
+  "stage": "mid",
   "icon": "minecraft:iron_nugget",
   "parents": ["wip_the_gray"],
-  "pos": [-517, -383]
+  "pos": [-1078, -291]
 }

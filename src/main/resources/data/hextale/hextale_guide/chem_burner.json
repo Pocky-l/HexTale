@@ -1,8 +1,8 @@
 {
   "region": "chemtech",
+  "stage": "mid",
   "icon": "hextale:chem_burner",
   "parents": ["lab_bench", "chem_glass"],
-  "research": "chem_burner",
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:chem_burner",
@@ -11,6 +11,7 @@
       "result": "burner"
     }
   },
+  "research": "chem_burner",
   "station": true,
-  "pos": [-660, 0]
+  "pos": [-900, 0]
 }

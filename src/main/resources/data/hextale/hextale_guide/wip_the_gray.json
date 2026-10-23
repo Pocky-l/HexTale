@@ -1,7 +1,8 @@
 {
   "kind": "wip",
   "region": "chemtech",
+  "stage": "mid",
   "icon": "minecraft:gunpowder",
   "parents": ["wip_fume_hood", "drain_valve"],
-  "pos": [-520, -330]
+  "pos": [-1080, -240]
 }

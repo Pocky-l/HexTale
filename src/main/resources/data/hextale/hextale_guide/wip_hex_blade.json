@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "forge",
-  "icon": "minecraft:iron_sword",
-  "parents": ["refined_pickaxe"],
-  "pos": [855, 129]
-}

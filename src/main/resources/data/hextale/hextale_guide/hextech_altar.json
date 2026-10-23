@@ -1,7 +1,8 @@
 {
   "region": "circle",
+  "stage": "mid",
   "icon": "hextale:hextech_altar",
-  "parents": ["ink", "magic_stone", "unstable_hextech"],
+  "parents": ["wip_rune_chalk", "ink", "magic_stone", "unstable_hextech", "wip_magic_wand"],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:hextech_altar"
@@ -10,5 +11,5 @@
   "station": true,
   "landmark": true,
   "scene": "altar",
-  "pos": [350, -130]
+  "pos": [500, -130]
 }

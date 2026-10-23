@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "runes",
-  "icon": "minecraft:brush",
-  "parents": ["written_scroll"],
-  "pos": [36, -370]
-}
