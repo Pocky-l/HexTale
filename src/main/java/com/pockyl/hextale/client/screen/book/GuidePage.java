@@ -200,7 +200,6 @@ final class GuidePage {
         List<Quest> shown = Guide.client().all().stream().filter(quest -> seen(quest, knowledge)).toList();
         List<Quest> ahead = Guide.client().all().stream().filter(quest -> !revealAll && Guide.ahead(quest, knowledge)).toList();
         focus = hovered;
-        renderStages(graphics, shown);
         renderHaze(graphics, shown);
         for (Quest quest : ahead) {
             renderAheadLink(graphics, quest, hovered);
@@ -532,78 +531,6 @@ final class GuidePage {
             case MID -> 0x10202E;
             case LATE -> 0x22143A;
         };
-    }
-
-    /**
-     * The stages of the path as bands across the sky: the first steps in the middle, hextech growing east and chemtech
-     * west through the middle stage to the last one. Each band gets a faint tint of its stage, a dotted seam where it meets
-     * the next and its name above, once a step in it can be seen.
-     */
-    private void renderStages(GuiGraphicsExtractor graphics, List<Quest> shown) {
-        List<Quest> all = Guide.client().all();
-        if (all.isEmpty()) {
-            return;
-        }
-        // Each stage splits into runs along the map: steps closer than a wide gap belong to one band.
-        List<int[]> bands = new ArrayList<>();
-        for (Quest.Stage stage : Quest.Stage.values()) {
-            List<Integer> xs = all.stream().filter(quest -> quest.stage() == stage).map(Quest::x).sorted().toList();
-            int start = 0;
-            for (int i = 1; i <= xs.size(); i++) {
-                if (i == xs.size() || xs.get(i) - xs.get(i - 1) > 160) {
-                    bands.add(new int[]{stage.ordinal(), xs.get(start), xs.get(i - 1)});
-                    start = i;
-                }
-            }
-        }
-        bands.sort((a, b) -> Integer.compare(a[1], b[1]));
-        int top = Guide.client().top() - 70;
-        int bottom = Guide.client().bottom() + 50;
-        for (int i = 0; i < bands.size(); i++) {
-            int[] band = bands.get(i);
-            Quest.Stage stage = Quest.Stage.values()[band[0]];
-            int color = stageColor(stage);
-            int x0 = i == 0 ? band[1] - 60 : (bands.get(i - 1)[2] + band[1]) / 2;
-            int x1 = i == bands.size() - 1 ? band[2] + 60 : (band[2] + bands.get(i + 1)[1]) / 2;
-            PixelArt.fill(graphics, x0, top, x1, bottom, PixelArt.argb(color, 0.022F));
-            // A strip of the stage's colour along the top, fading downwards.
-            for (int row = 0; row < 6; row++) {
-                PixelArt.fill(graphics, x0, top + row * 4, x1, top + row * 4 + 4, PixelArt.argb(color, 0.05F - row * 0.008F));
-            }
-            if (i > 0) {
-                // The seam between two stages: a column of dots with a small diamond every so often.
-                int seam = PixelArt.mix(color, stageColor(Quest.Stage.values()[bands.get(i - 1)[0]]), 0.5F);
-                for (int y = top; y < bottom; y += 6) {
-                    boolean diamond = Math.floorMod(y - top, 60) == 0;
-                    int c = PixelArt.argb(seam, diamond ? 0.45F : 0.2F);
-                    PixelArt.fill(graphics, x0, y, x0 + 1, y + 1, c);
-                    if (diamond) {
-                        PixelArt.fill(graphics, x0 - 1, y, x0 + 2, y + 1, c);
-                        PixelArt.fill(graphics, x0, y - 1, x0 + 1, y + 2, c);
-                    }
-                }
-            }
-            boolean seen = revealAll || shown.stream().anyMatch(quest -> quest.stage() == stage && quest.x() >= band[1] && quest.x() <= band[2]);
-            if (seen) {
-                PixelArt.flush(graphics);
-                String name = Component.translatable("book.hextale.guide.stage." + stage.getSerializedName()).getString();
-                int cx = (x0 + x1) / 2;
-                int w = font.width(name);
-                graphics.pose().pushMatrix();
-                graphics.pose().translate(cx, top + 10);
-                graphics.pose().scale(2, 2);
-                graphics.text(font, name, -w / 2, 0, PixelArt.argb(color, 0.75F), false);
-                graphics.pose().popMatrix();
-                for (int side = -1; side <= 1; side += 2) {
-                    int dx = cx + side * (w + 14);
-                    PixelArt.fill(graphics, dx - 2, top + 18, dx + 3, top + 19, PixelArt.argb(color, 0.7F));
-                    PixelArt.fill(graphics, dx, top + 16, dx + 1, top + 21, PixelArt.argb(color, 0.7F));
-                    int far = dx + side * 40;
-                    PixelArt.fill(graphics, Math.min(dx + side * 6, far), top + 18, Math.max(dx + side * 6, far) + 1, top + 19, PixelArt.argb(color, 0.3F));
-                }
-            }
-        }
-        PixelArt.flush(graphics);
     }
 
     /**

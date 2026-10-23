@@ -5,9 +5,9 @@
     "hextale:hextech_crystal",
     "hextale:hexsteel_ingot",
     "hextale:hexsteel_ingot",
-    "hextale:brass_block",
-    "hextale:brass_block",
-    "minecraft:lightning_rod"
+    "minecraft:lightning_rod",
+    "hextale:crystal_battery",
+    "hextale:regenerative_slime"
   ],
   "essences": {
     "magic": 32,

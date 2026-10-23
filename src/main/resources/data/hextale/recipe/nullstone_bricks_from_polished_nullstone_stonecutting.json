@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "hextale:polished_nullstone",
+  "result": {
+    "id": "hextale:nullstone_bricks",
+    "count": 1
+  }
+}

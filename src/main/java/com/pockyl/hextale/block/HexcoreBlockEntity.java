@@ -70,6 +70,8 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
     /** 0..1: the ritual's weight plus the time it has run (synced). */
     private float anger;
     private int angerTicks;
+    /** Nullstone around that still drinks (server, refreshed while a ritual runs). */
+    private List<BlockPos> nullstones = List.of();
     /** Game time this Hexcore was born from an altar (synced, for the assembly animation). */
     private long bornAt = Long.MIN_VALUE;
 
@@ -140,7 +142,8 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         long runes = circle == null ? 0 : circle.steles().stream().filter(stele -> stele.rune() != null).count();
         instability = instabilityOf(itemsTotal(), essenceTotal().total(), (int) runes);
         angerTicks = 0;
-        anger = angerOf(instability, 0);
+        nullstones = NullstoneBlock.thirsty(level, getBlockPos());
+        anger = angerOf(instability, 0) * NullstoneBlock.calm(nullstones.size());
     }
 
     /** How hard a ritual is on the matrix: pedestal items, mB of essence and runes on steles, 0..1. */
@@ -156,7 +159,23 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
     @Override
     protected void ritualTick(ServerLevel level) {
         angerTicks++;
-        anger = angerOf(instability, angerTicks);
+        if (angerTicks % 40 == 0) {
+            nullstones = NullstoneBlock.thirsty(level, getBlockPos());
+        }
+        // Nullstone around the circle drinks part of the anger - and fills up with it.
+        anger = angerOf(instability, angerTicks) * NullstoneBlock.calm(nullstones.size());
+        if (!nullstones.isEmpty()) {
+            Vec3 core = itemPosition();
+            for (BlockPos stone : nullstones) {
+                if (angerTicks % 10 == 0) {
+                    Vec3 to = Vec3.atCenterOf(stone).add(0, 0.5, 0);
+                    level.sendParticles(ModParticles.flow(0x9A6CF0), to.x, to.y, to.z, 0, core.x - to.x, core.y - to.y, core.z - to.z, 1.0);
+                }
+                if (angerTicks % NullstoneBlock.FILL_TICKS == 0) {
+                    NullstoneBlock.fill(level, stone);
+                }
+            }
+        }
         if (angerTicks < CALM_TICKS) {
             return;
         }

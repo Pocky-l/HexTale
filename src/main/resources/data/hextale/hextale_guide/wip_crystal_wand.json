@@ -3,6 +3,6 @@
   "region": "circle",
   "stage": "mid",
   "icon": "minecraft:end_rod",
-  "parents": ["hextech_crystal", "wip_magic_wand"],
+  "parents": ["hextech_crystal", "magic_wand"],
   "pos": [880, -60]
 }

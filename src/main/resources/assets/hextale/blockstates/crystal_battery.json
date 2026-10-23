@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "level=0": {
+      "model": "hextale:block/crystal_battery"
+    },
+    "level=1": {
+      "model": "hextale:block/crystal_battery_lit"
+    },
+    "level=2": {
+      "model": "hextale:block/crystal_battery_lit"
+    },
+    "level=3": {
+      "model": "hextale:block/crystal_battery_lit"
+    },
+    "level=4": {
+      "model": "hextale:block/crystal_battery_lit"
+    }
+  }
+}

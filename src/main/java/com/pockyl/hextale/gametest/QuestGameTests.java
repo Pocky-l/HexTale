@@ -364,6 +364,9 @@ public final class QuestGameTests {
         helper.assertTrue(Guide.open(step("brass"), knowledge), "the furnace and zinc open brass");
         knowledge.completeQuest(step("brass"));
         knowledge.completeQuest(step("hex_workbench"));
+        helper.assertTrue(Guide.open(step("alembic"), knowledge) && Guide.open(step("hand_loupe"), knowledge), "brass opens the alembic and the loupe");
+        helper.assertFalse(Guide.open(step("research_table"), knowledge), "the table waits for the loupe");
+        knowledge.completeQuest(step("hand_loupe"));
         for (Quest quest : List.of(step("research_table"), step("alembic"))) {
             helper.assertTrue(Guide.open(quest, knowledge), quest.id() + " opens with brass on the workbench");
         }

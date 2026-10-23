@@ -96,6 +96,7 @@ public final class HextaleClient {
             event.registerSpriteSet(ModParticles.SHIMMER_MOTE.get(), ShimmerMoteParticle.Provider::new);
         });
         modBus.addListener(GogglesView::registerLayer);
+        modBus.addListener(HandLoupeView::registerLayer);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::addLayers);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::registerModifier);
         SkypackClient.register();

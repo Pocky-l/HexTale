@@ -1,0 +1,490 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/crystal_battery",
+    "crystal_battery": "hextale:block/crystal_battery"
+  },
+  "elements": [
+    {
+      "name": "brass_base",
+      "from": [
+        2,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        2,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6.75,
+            2.75,
+            9.75,
+            3.25
+          ],
+          "texture": "#crystal_battery"
+        },
+        "east": {
+          "uv": [
+            10,
+            2.75,
+            13,
+            3.25
+          ],
+          "texture": "#crystal_battery"
+        },
+        "south": {
+          "uv": [
+            0,
+            5,
+            3,
+            5.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "west": {
+          "uv": [
+            3.25,
+            5,
+            6.25,
+            5.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "up": {
+          "uv": [
+            6.5,
+            5,
+            9.5,
+            8
+          ],
+          "texture": "#crystal_battery"
+        },
+        "down": {
+          "uv": [
+            9.75,
+            5,
+            12.75,
+            8
+          ],
+          "texture": "#crystal_battery",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "body",
+      "from": [
+        3,
+        2,
+        3
+      ],
+      "to": [
+        13,
+        12,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            2.5,
+            2.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "east": {
+          "uv": [
+            2.75,
+            0,
+            5.25,
+            2.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "south": {
+          "uv": [
+            5.5,
+            0,
+            8,
+            2.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "west": {
+          "uv": [
+            8.25,
+            0,
+            10.75,
+            2.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "up": {
+          "uv": [
+            11,
+            0,
+            13.5,
+            2.5
+          ],
+          "texture": "#crystal_battery"
+        }
+      }
+    },
+    {
+      "name": "core",
+      "from": [
+        4,
+        3,
+        4
+      ],
+      "to": [
+        12,
+        11,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13.75,
+            0,
+            15.75,
+            2
+          ],
+          "texture": "#crystal_battery"
+        },
+        "east": {
+          "uv": [
+            0,
+            2.75,
+            2,
+            4.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "south": {
+          "uv": [
+            2.25,
+            2.75,
+            4.25,
+            4.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "west": {
+          "uv": [
+            4.5,
+            2.75,
+            6.5,
+            4.75
+          ],
+          "texture": "#crystal_battery"
+        }
+      }
+    },
+    {
+      "name": "brass_post_nw",
+      "from": [
+        1.97,
+        1.97,
+        1.97
+      ],
+      "to": [
+        4.03,
+        12.03,
+        4.03
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13,
+            5,
+            13.5,
+            7.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "east": {
+          "uv": [
+            13.75,
+            5,
+            14.25,
+            7.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "south": {
+          "uv": [
+            14.5,
+            5,
+            15,
+            7.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "west": {
+          "uv": [
+            15.25,
+            5,
+            15.75,
+            7.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "up": {
+          "uv": [
+            0,
+            8.25,
+            0.5,
+            8.75
+          ],
+          "texture": "#crystal_battery"
+        }
+      }
+    },
+    {
+      "name": "brass_post_ne",
+      "from": [
+        11.97,
+        1.97,
+        1.97
+      ],
+      "to": [
+        14.03,
+        12.03,
+        4.03
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0.75,
+            8.25,
+            1.25,
+            10.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "east": {
+          "uv": [
+            1.5,
+            8.25,
+            2,
+            10.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "south": {
+          "uv": [
+            2.25,
+            8.25,
+            2.75,
+            10.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "west": {
+          "uv": [
+            3,
+            8.25,
+            3.5,
+            10.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "up": {
+          "uv": [
+            3.75,
+            8.25,
+            4.25,
+            8.75
+          ],
+          "texture": "#crystal_battery"
+        }
+      }
+    },
+    {
+      "name": "brass_post_sw",
+      "from": [
+        1.97,
+        1.97,
+        11.97
+      ],
+      "to": [
+        4.03,
+        12.03,
+        14.03
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4.5,
+            8.25,
+            5,
+            10.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "east": {
+          "uv": [
+            5.25,
+            8.25,
+            5.75,
+            10.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "south": {
+          "uv": [
+            6,
+            8.25,
+            6.5,
+            10.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "west": {
+          "uv": [
+            6.75,
+            8.25,
+            7.25,
+            10.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "up": {
+          "uv": [
+            7.5,
+            8.25,
+            8,
+            8.75
+          ],
+          "texture": "#crystal_battery"
+        }
+      }
+    },
+    {
+      "name": "brass_post_se",
+      "from": [
+        11.97,
+        1.97,
+        11.97
+      ],
+      "to": [
+        14.03,
+        12.03,
+        14.03
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8.25,
+            8.25,
+            8.75,
+            10.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "east": {
+          "uv": [
+            9,
+            8.25,
+            9.5,
+            10.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "south": {
+          "uv": [
+            9.75,
+            8.25,
+            10.25,
+            10.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "west": {
+          "uv": [
+            10.5,
+            8.25,
+            11,
+            10.75
+          ],
+          "texture": "#crystal_battery"
+        },
+        "up": {
+          "uv": [
+            11.25,
+            8.25,
+            11.75,
+            8.75
+          ],
+          "texture": "#crystal_battery"
+        }
+      }
+    },
+    {
+      "name": "brass_cap",
+      "from": [
+        6,
+        12,
+        6
+      ],
+      "to": [
+        10,
+        13,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            8.25,
+            13,
+            8.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "east": {
+          "uv": [
+            13.25,
+            8.25,
+            14.25,
+            8.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "south": {
+          "uv": [
+            14.5,
+            8.25,
+            15.5,
+            8.5
+          ],
+          "texture": "#crystal_battery"
+        },
+        "west": {
+          "uv": [
+            0,
+            11,
+            1,
+            11.25
+          ],
+          "texture": "#crystal_battery"
+        },
+        "up": {
+          "uv": [
+            1.25,
+            11,
+            2.25,
+            12
+          ],
+          "texture": "#crystal_battery"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "region": "workshop",
+  "icon": "hextale:magic_wand",
+  "parents": ["magic_wood", "hextech_dust"],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:magic_wand",
+    "then": {
+      "kind": "runes",
+      "result": "wand"
+    }
+  },
+  "pos": [-408, 239]
+}

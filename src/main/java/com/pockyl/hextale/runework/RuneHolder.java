@@ -45,6 +45,12 @@ public enum RuneHolder {
     BRAZIER(() -> ModDataComponents.BRAZIER_RUNES.get(), BrazierRune.SLOTS, BrazierRune.values()),
     /** The Hextech Skypack. */
     SKYPACK(() -> ModDataComponents.SKYPACK_RUNES.get(), SkypackRune.SLOTS, SkypackRune.values()),
+    /** The Hand Loupe. */
+    LOUPE(() -> ModDataComponents.LOUPE_RUNES.get(), LoupeRune.SLOTS, LoupeRune.values()),
+    /** The Magic Wand. */
+    WAND(() -> ModDataComponents.WAND_RUNES.get(), WandRune.SLOTS, WandRune.values()),
+    /** The Crystal Battery. */
+    BATTERY(() -> ModDataComponents.BATTERY_RUNES.get(), BatteryRune.SLOTS, BatteryRune.values()),
     /** The hextech axe, shovel and sword keep their runes where the pickaxe does. */
     AXE(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.AXE)),
     SHOVEL(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.SHOVEL)),
@@ -96,6 +102,15 @@ public enum RuneHolder {
         }
         if (item == ModItems.HEXTECH_SKYPACK.get()) {
             return SKYPACK;
+        }
+        if (item == ModItems.HAND_LOUPE.get()) {
+            return LOUPE;
+        }
+        if (item == ModItems.MAGIC_WAND.get()) {
+            return WAND;
+        }
+        if (item == ModItems.CRYSTAL_BATTERY.get()) {
+            return BATTERY;
         }
         if (item == ModItems.HEXTECH_AXE.get()) {
             return AXE;
@@ -206,6 +221,9 @@ public enum RuneHolder {
             case BRAZIER -> List.of(new ItemStack(ModItems.PINK_BRAZIER.get()));
             case LAB -> List.of(new ItemStack(ModItems.LAB_BENCH.get()));
             case SKYPACK -> List.of(new ItemStack(ModItems.HEXTECH_SKYPACK.get()));
+            case LOUPE -> List.of(new ItemStack(ModItems.HAND_LOUPE.get()));
+            case WAND -> List.of(new ItemStack(ModItems.MAGIC_WAND.get()));
+            case BATTERY -> List.of(new ItemStack(ModItems.CRYSTAL_BATTERY.get()));
             case AXE -> List.of(new ItemStack(ModItems.HEXTECH_AXE.get()));
             case SHOVEL -> List.of(new ItemStack(ModItems.HEXTECH_SHOVEL.get()));
             case SWORD -> List.of(new ItemStack(ModItems.HEXTECH_SWORD.get()));

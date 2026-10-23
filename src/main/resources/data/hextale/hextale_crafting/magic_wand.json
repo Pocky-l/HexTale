@@ -1,0 +1,15 @@
+{
+  "pattern": [
+    "  D",
+    " P ",
+    "P  "
+  ],
+  "key": {
+    "D": "hextale:hextech_dust",
+    "P": "hextale:magic_planks"
+  },
+  "result": {
+    "id": "hextale:magic_wand"
+  },
+  "charge": 2
+}

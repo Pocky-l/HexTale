@@ -42,6 +42,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemStillBlockEntity>> CHEM_STILL =
             BLOCK_ENTITIES.register("chem_still", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemStillBlockEntity::new,
                     ModBlocks.CHEM_STILL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.CrystalBatteryBlockEntity>> CRYSTAL_BATTERY =
+            BLOCK_ENTITIES.register("crystal_battery", () -> new BlockEntityType<>(com.pockyl.hextale.block.CrystalBatteryBlockEntity::new,
+                    ModBlocks.CRYSTAL_BATTERY.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.PinkBrazierBlockEntity>> PINK_BRAZIER =
             BLOCK_ENTITIES.register("pink_brazier", () -> new BlockEntityType<>(com.pockyl.hextale.block.PinkBrazierBlockEntity::new,
                     ModBlocks.PINK_BRAZIER.get()));

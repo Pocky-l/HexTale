@@ -2,7 +2,7 @@
   "region": "circle",
   "stage": "mid",
   "icon": "hextale:hextech_altar",
-  "parents": ["wip_rune_chalk", "ink", "magic_stone", "unstable_hextech", "wip_magic_wand"],
+  "parents": ["rune_chalk", "ink", "magic_stone", "unstable_hextech", "magic_wand"],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:hextech_altar"

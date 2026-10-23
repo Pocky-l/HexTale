@@ -1,10 +1,11 @@
 {
   "pattern": [
-    " H ",
+    "KHK",
     "IAI",
     "CBC"
   ],
   "key": {
+    "K": "hextale:rune_chalk",
     "H": "hextale:unstable_hextech",
     "I": "hextale:brass_ingot",
     "A": "minecraft:amethyst_block",

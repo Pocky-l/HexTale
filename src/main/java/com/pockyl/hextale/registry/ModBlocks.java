@@ -321,6 +321,27 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops().noOcclusion()
                     .lightLevel(state -> state.getValue(com.pockyl.hextale.block.PinkBrazierBlock.LIT) ? 15 : 0));
 
+    /** A rune drawn in Rune Chalk on the floor: quickens the altar's rituals around it, glows while one runs. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChalkMarkBlock> CHALK_MARK = BLOCKS.registerBlock("chalk_mark",
+            com.pockyl.hextale.block.ChalkMarkBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).replaceable().noCollision().instabreak().noLootTable()
+                    .sound(SoundType.CALCITE).pushReaction(PushReaction.POPPED)
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChalkMarkBlock.LIT) ? 6 : 0));
+    /** Nullstone drinks stray magic: it calms a Hexcore at work and glows as it fills. Polished and bricks are decor. */
+    public static final DeferredBlock<com.pockyl.hextale.block.NullstoneBlock> NULLSTONE = BLOCKS.registerBlock("nullstone",
+            com.pockyl.hextale.block.NullstoneBlock::new,
+            () -> nullstoneProperties().lightLevel(state -> state.getValue(com.pockyl.hextale.block.NullstoneBlock.SATURATION) * 3));
+    public static final DeferredBlock<Block> POLISHED_NULLSTONE = BLOCKS.registerBlock("polished_nullstone", Block::new,
+            ModBlocks::nullstoneProperties);
+    public static final DeferredBlock<Block> NULLSTONE_BRICKS = BLOCKS.registerBlock("nullstone_bricks", Block::new,
+            () -> nullstoneProperties().sound(SoundType.DEEPSLATE_BRICKS));
+    /** A brass cage around a crystal core that keeps hextech charge and feeds the workbenches around it. */
+    public static final DeferredBlock<com.pockyl.hextale.block.CrystalBatteryBlock> CRYSTAL_BATTERY = BLOCKS.registerBlock("crystal_battery",
+            com.pockyl.hextale.block.CrystalBatteryBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(3.0F, 6.0F).sound(SoundType.COPPER)
+                    .requiresCorrectToolForDrops().noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.CrystalBatteryBlock.LEVEL) * 3));
+
     private ModBlocks() {
     }
 
@@ -333,6 +354,11 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties magicStoneProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(2.0F, 6.0F);
+    }
+
+    private static BlockBehaviour.Properties nullstoneProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_GRAY).instrument(NoteBlockInstrument.BASEDRUM)
+                .requiresCorrectToolForDrops().strength(3.0F, 9.0F).sound(SoundType.DEEPSLATE);
     }
 
     private static BlockBehaviour.Properties pylonProperties() {

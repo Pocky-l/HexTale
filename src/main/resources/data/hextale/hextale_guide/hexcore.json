@@ -2,7 +2,7 @@
   "region": "circle",
   "stage": "late",
   "icon": "hextale:hexcore",
-  "parents": ["wip_crystal_battery", "hextech_altar", "hextech_gemstone", "hexsteel", "regenerative_slime", "wip_nullstone"],
+  "parents": ["crystal_battery", "hextech_altar", "hextech_gemstone", "hexsteel", "regenerative_slime", "nullstone"],
   "goal": {
     "type": "event",
     "event": "hexcore_awakened"

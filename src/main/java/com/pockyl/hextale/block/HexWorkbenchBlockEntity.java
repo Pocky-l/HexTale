@@ -82,6 +82,16 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
         return charge;
     }
 
+    /** Takes charge from outside (a Crystal Battery) while there is room under {@value #MAX_CHARGE}; returns what it took. */
+    public int receive(int amount) {
+        int taken = Math.max(0, Math.min(amount, MAX_CHARGE - charge));
+        if (taken > 0) {
+            charge += taken;
+            setChanged();
+        }
+        return taken;
+    }
+
     public int revision() {
         return revision;
     }

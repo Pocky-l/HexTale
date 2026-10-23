@@ -1,0 +1,16 @@
+{
+  "pattern": [
+    " N ",
+    "NGN",
+    " S "
+  ],
+  "key": {
+    "N": "hextale:brass_nugget",
+    "G": "minecraft:glass_pane",
+    "S": "minecraft:stick"
+  },
+  "result": {
+    "id": "hextale:hand_loupe"
+  },
+  "charge": 1
+}

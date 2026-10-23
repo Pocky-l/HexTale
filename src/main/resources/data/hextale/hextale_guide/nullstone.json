@@ -1,0 +1,15 @@
+{
+  "region": "circle",
+  "stage": "mid",
+  "icon": "hextale:nullstone",
+  "parents": ["hextech_altar"],
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "minecraft:calcite",
+      "hextale:crucible"
+    ],
+    "result": "hextale:nullstone"
+  },
+  "pos": [574, -161]
+}

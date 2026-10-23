@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "workshop",
-  "icon": "minecraft:stick",
-  "parents": ["magic_wood", "hextech_dust"],
-  "pos": [-408, 239]
-}

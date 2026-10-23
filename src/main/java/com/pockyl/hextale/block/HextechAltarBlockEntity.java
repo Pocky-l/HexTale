@@ -31,6 +31,10 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import net.minecraft.world.entity.ExperienceOrb;
+import com.pockyl.hextale.runework.HolderRune;
+import com.pockyl.hextale.runework.ToolEffects;
+import com.pockyl.hextale.runework.WandRune;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.knowledge.Research;
@@ -88,6 +92,10 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     private int drawTick;
     /** Game time the ritual started (server). */
     private long startedAt;
+    /** Radiance on the wand that started the running ritual (0: none or redstone). */
+    private int wandRadiance;
+    /** Share of a second step per tick the chalk runes around give (rescanned with the circle). */
+    private float chalkSpeed;
     private Ritual.@Nullable Circle circle;
     private int rescan;
 
@@ -210,6 +218,16 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
      * @param player who started it (null: redstone)
      */
     public void startOrAbort(@Nullable ServerPlayer player) {
+        startOrAbort(player, 0);
+    }
+
+    /**
+     * Starts the ritual the circle allows, or aborts the running one.
+     *
+     * @param player   who started it (null: redstone)
+     * @param radiance strength of the Radiance rune on the wand that started it (experience when it ends well)
+     */
+    public void startOrAbort(@Nullable ServerPlayer player, int radiance) {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -275,6 +293,9 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         drawTick = 0;
         rescan = 0;
         startedAt = serverLevel.getGameTime();
+        wandRadiance = radiance;
+        chalkSpeed = ChalkMarkBlock.speed(serverLevel, worldPosition);
+        ChalkMarkBlock.light(serverLevel, worldPosition, true);
         ritualStarted(serverLevel);
         for (var stele : circle.steles()) {
             if (stele.rune() != null) {
@@ -313,11 +334,17 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         if (altar.circle == null || ++altar.rescan >= RESCAN_TICKS) {
             altar.rescan = 0;
             altar.circle = Ritual.Circle.scan(serverLevel, pos);
+            altar.chalkSpeed = ChalkMarkBlock.speed(serverLevel, pos);
         }
         boolean progressed = altar.tickInfusion(serverLevel);
         if (progressed) {
             altar.elapsed++;
             altar.stalled = 0;
+            // Chalk runes around the altar now and then let the ritual take a second step in the same tick.
+            if (altar.kind != null && altar.chalkSpeed > 0 && serverLevel.getRandom().nextFloat() < altar.chalkSpeed
+                    && altar.tickInfusion(serverLevel) && altar.kind != null) {
+                altar.elapsed++;
+            }
         } else if (altar.kind != null && ++altar.stalled > Ritual.STALL_LIMIT) {
             altar.collapse(serverLevel);
         }
@@ -417,6 +444,13 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     }
 
     private void finish(ServerLevel level) {
+        ChalkMarkBlock.light(level, worldPosition, false);
+        if (wandRadiance > 0) {
+            // Started with a wand that carries Radiance: the work done well leaves experience.
+            Vec3 orbs = itemPosition();
+            ExperienceOrb.award(level, orbs, HolderRune.at(WandRune.EXPERIENCE, wandRadiance));
+            ToolEffects.puff(level, orbs, WandRune.RADIANCE.rune(), 8, 0.4);
+        }
         if (result.is(ModItems.HEXCORE.get()) && !(this instanceof HexcoreBlockEntity)) {
             // The circle's own heart was the work: the altar itself becomes the Hexcore.
             clearRitual();
@@ -455,6 +489,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
 
     /** A failed ritual: what was drawn is lost, the centre stays, the backlash strikes whoever is close. */
     private void collapse(ServerLevel level) {
+        ChalkMarkBlock.light(level, worldPosition, false);
         clearRitual();
         Vec3 at = itemPosition();
         level.sendParticles(ModParticles.ring(0xFF5A4A), at.x, at.y, at.z, 0, 2.2, 0, 0, 1);
@@ -481,6 +516,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         stalled = 0;
         itemsTotal = 0;
         drawTick = 0;
+        wandRadiance = 0;
+        chalkSpeed = 0;
     }
 
     public Vec3 itemPosition() {

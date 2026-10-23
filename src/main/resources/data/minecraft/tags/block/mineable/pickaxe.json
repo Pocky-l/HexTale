@@ -42,6 +42,10 @@
     "hextale:riveted_rusted_plating",
     "hextale:axolotl_tank",
     "hextale:chem_still",
-    "hextale:pink_brazier"
+    "hextale:pink_brazier",
+    "hextale:nullstone",
+    "hextale:polished_nullstone",
+    "hextale:nullstone_bricks",
+    "hextale:crystal_battery"
   ]
 }

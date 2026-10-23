@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "saturation=0": {
+      "model": "hextale:block/nullstone_0"
+    },
+    "saturation=1": {
+      "model": "hextale:block/nullstone_1"
+    },
+    "saturation=2": {
+      "model": "hextale:block/nullstone_2"
+    },
+    "saturation=3": {
+      "model": "hextale:block/nullstone_3"
+    }
+  }
+}

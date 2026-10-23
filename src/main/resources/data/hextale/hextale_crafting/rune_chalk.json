@@ -1,0 +1,11 @@
+{
+  "ingredients": [
+    "hextale:magic_stone",
+    "hextale:hextech_dust",
+    "minecraft:bone_meal"
+  ],
+  "result": {
+    "id": "hextale:rune_chalk"
+  },
+  "charge": 1
+}

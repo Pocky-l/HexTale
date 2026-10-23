@@ -1,0 +1,16 @@
+{
+  "region": "circle",
+  "stage": "mid",
+  "icon": "hextale:crystal_battery",
+  "parents": ["hextech_gemstone"],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:crystal_battery",
+    "then": {
+      "kind": "runes",
+      "result": "battery"
+    }
+  },
+  "research": "crystal_battery",
+  "pos": [1090, 20]
+}

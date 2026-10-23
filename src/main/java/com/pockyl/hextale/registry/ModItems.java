@@ -224,6 +224,21 @@ public final class ModItems {
     public static final DeferredItem<HextechToolItem> HEXTECH_SWORD = ITEMS.registerItem("hextech_sword",
             properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[0], 3.0F, -2.4F).rarity(Rarity.UNCOMMON)));
 
+    /** A lens in a brass ring: held to the eye it studies what the other hand holds or the block in front. */
+    public static final DeferredItem<com.pockyl.hextale.item.HandLoupeItem> HAND_LOUPE = ITEMS.registerItem("hand_loupe",
+            properties -> new com.pockyl.hextale.item.HandLoupeItem(properties.stacksTo(1)));
+    /** A rod of magic wood with dust in its tip: wakes blocks without dust and starts the altar's rituals. */
+    public static final DeferredItem<com.pockyl.hextale.item.MagicWandItem> MAGIC_WAND = ITEMS.registerItem("magic_wand",
+            properties -> new com.pockyl.hextale.item.MagicWandItem(properties.durability(128).rarity(Rarity.UNCOMMON)));
+    /** Magic stone ground with dust: draws runes on the floor. */
+    public static final DeferredItem<com.pockyl.hextale.item.RuneChalkItem> RUNE_CHALK = ITEMS.registerItem("rune_chalk",
+            properties -> new com.pockyl.hextale.item.RuneChalkItem(properties.durability(32)));
+    public static final DeferredItem<BlockItem> NULLSTONE = ITEMS.registerSimpleBlockItem(ModBlocks.NULLSTONE);
+    public static final DeferredItem<BlockItem> POLISHED_NULLSTONE = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_NULLSTONE);
+    public static final DeferredItem<BlockItem> NULLSTONE_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.NULLSTONE_BRICKS);
+    public static final DeferredItem<BlockItem> CRYSTAL_BATTERY = ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_BATTERY,
+            properties -> properties.rarity(Rarity.UNCOMMON));
+
     private ModItems() {
     }
 

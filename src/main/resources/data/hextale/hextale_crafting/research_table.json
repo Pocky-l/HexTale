@@ -2,12 +2,13 @@
   "pattern": [
     "BBB",
     "PSP",
-    "P P"
+    "PLP"
   ],
   "key": {
     "B": "hextale:brass_ingot",
     "P": "#minecraft:planks",
-    "S": "minecraft:bookshelf"
+    "S": "minecraft:bookshelf",
+    "L": "hextale:hand_loupe"
   },
   "result": {
     "id": "hextale:research_table"

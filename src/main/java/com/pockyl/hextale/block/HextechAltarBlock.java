@@ -30,6 +30,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import com.pockyl.hextale.item.MagicWandItem;
+import com.pockyl.hextale.runework.WandRune;
 import com.pockyl.hextale.registry.ModBlockEntities;
 
 import org.jspecify.annotations.Nullable;
@@ -62,6 +64,19 @@ public class HextechAltarBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
+        if (MagicWandItem.is(stack) && level.getBlockEntity(pos) instanceof HextechAltarBlockEntity wanded) {
+            // Only the wand starts a ritual (or, sneaking, aborts the running one).
+            if (!level.isClientSide()) {
+                boolean idle = !wanded.active();
+                if (idle || player.isSecondaryUseActive()) {
+                    wanded.startOrAbort((ServerPlayer) player, MagicWandItem.strength(stack, WandRune.RADIANCE));
+                }
+                if (idle && wanded.active() && !player.getAbilities().instabuild) {
+                    MagicWandItem.wear(stack, 1, player, hand.asEquipmentSlot());
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
         if (!(level.getBlockEntity(pos) instanceof HextechAltarBlockEntity altar) || !altar.center().isEmpty() || altar.active()) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
@@ -84,7 +99,7 @@ public class HextechAltarBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
         if (player.isSecondaryUseActive()) {
-            altar.startOrAbort((ServerPlayer) player);
+            player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.needs_wand"));
         } else if (altar.active()) {
             player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.busy"));
         } else if (!altar.center().isEmpty()) {

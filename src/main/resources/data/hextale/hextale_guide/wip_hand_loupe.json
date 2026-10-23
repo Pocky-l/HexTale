@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "workshop",
-  "icon": "minecraft:spyglass",
-  "parents": ["hex_workbench", "brass"],
-  "pos": [-40, -80]
-}

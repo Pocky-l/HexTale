@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "circle",
-  "stage": "mid",
-  "icon": "minecraft:crying_obsidian",
-  "parents": ["hextech_altar"],
-  "pos": [574, -161]
-}

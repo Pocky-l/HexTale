@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:crystal_battery",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:battery_runes",
+              "hextale:battery_charge"
+            ],
+            "source": "block_entity"
+          }
+        }
+      ]
+    }
+  ],
+  "random_sequence": "hextale:blocks/crystal_battery"
+}

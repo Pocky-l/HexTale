@@ -109,6 +109,19 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SKYPACK_RUNES =
             COMPONENTS.registerComponentType("skypack_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> LOUPE_RUNES =
+            COMPONENTS.registerComponentType("loupe_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> WAND_RUNES =
+            COMPONENTS.registerComponentType("wand_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> BATTERY_RUNES =
+            COMPONENTS.registerComponentType("battery_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    /** Charge kept in a Crystal Battery taken off the ground. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BATTERY_CHARGE =
+            COMPONENTS.registerComponentType("battery_charge", builder -> builder
+                    .persistent(Codec.intRange(0, 100000)).networkSynchronized(ByteBufCodecs.VAR_INT));
     /** mB of air essence in a Hextech Skypack's tanks. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SKYPACK_AIR =
             COMPONENTS.registerComponentType("skypack_air", builder -> builder
