@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Field Ward: a magic stone post with a hextech eye. Within 16 blocks monsters no longer spawn by themselves and no
+  farmland is trampled - a quiet base leaves the mob cap to your farms. Spawners and animals are not affected.
 - Miasma Vent: a rusted chemtech grate that chokes the hostile creatures standing over it in sickly fumes. Cheap -
   it burns the unknown essence the separator leaves behind - but slow, and no player struck them, so there is no
   experience or rare loot. Researched at the Lab Bench, made at the Hex Workbench.

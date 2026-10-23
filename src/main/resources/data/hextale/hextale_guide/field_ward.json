@@ -1,0 +1,17 @@
+{
+  "region": "pylons",
+  "stage": "mid",
+  "icon": "hextale:field_ward",
+  "parents": [
+    "hextech_crystal"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:field_ward"
+  },
+  "research": "field_ward",
+  "pos": [
+    800,
+    -20
+  ]
+}

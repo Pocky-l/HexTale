@@ -84,6 +84,7 @@ public final class ResearchTopics {
     public static final ResearchTopic ARC_SPIRE = add("arc_spire", 2, Essence.SPARK, Essence.SHADOW, ModItems.ARC_SPIRE);
     public static final ResearchTopic RUNE_SHACKLES = add("rune_shackles", 2, Essence.SHADOW, Essence.EARTH, ModItems.RUNE_SHACKLES);
     public static final ResearchTopic XP_CONDENSER = add("xp_condenser", 2, Essence.LIGHT, Essence.LIFE, ModItems.XP_CONDENSER);
+    public static final ResearchTopic FIELD_WARD = add("field_ward", 1, Essence.LIGHT, Essence.EARTH, ModItems.FIELD_WARD);
     public static final ResearchTopic GATHERING_PYLON = add("gathering_pylon", 2, Essence.AIR, Essence.SPARK, ModItems.GATHERING_PYLON);
     public static final ResearchTopic SENDING_PYLON = add("sending_pylon", 2, Essence.AIR, Essence.METAL, ModItems.SENDING_PYLON);
     public static final ResearchTopic RELAY_PYLON = add("relay_pylon", 2, Essence.SPARK, Essence.METAL, ModItems.RELAY_PYLON);

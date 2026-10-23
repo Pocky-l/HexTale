@@ -210,6 +210,10 @@ public final class ModBlocks {
             com.pockyl.hextale.block.MiasmaVentBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(3.0F, 6.0F).sound(SoundType.COPPER)
                     .requiresCorrectToolForDrops().lightLevel(state -> 3));
+    /** A magic stone post with a hextech eye: no monster spawns by itself around it and nothing tramples the farmland. */
+    public static final DeferredBlock<com.pockyl.hextale.block.FieldWardBlock> FIELD_WARD = BLOCKS.registerBlock("field_ward",
+            com.pockyl.hextale.block.FieldWardBlock::new,
+            () -> magicStoneProperties().strength(2.5F, 6.0F).sound(SoundType.POLISHED_TUFF).noOcclusion().lightLevel(state -> 7));
     /** A nullstone bowl on brass ribs under a hextech crystal: swallows the deaths around it into the container below. */
     public static final DeferredBlock<com.pockyl.hextale.block.GreedyFunnelBlock> GREEDY_FUNNEL = BLOCKS.registerBlock("greedy_funnel",
             com.pockyl.hextale.block.GreedyFunnelBlock::new,

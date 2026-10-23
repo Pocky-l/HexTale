@@ -77,6 +77,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.MiasmaVentBlockEntity>> MIASMA_VENT =
             BLOCK_ENTITIES.register("miasma_vent", () -> new BlockEntityType<>(com.pockyl.hextale.block.MiasmaVentBlockEntity::new,
                     ModBlocks.MIASMA_VENT.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.FieldWardBlockEntity>> FIELD_WARD =
+            BLOCK_ENTITIES.register("field_ward", () -> new BlockEntityType<>(com.pockyl.hextale.block.FieldWardBlockEntity::new,
+                    ModBlocks.FIELD_WARD.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexPylonBlockEntity>> HEX_PYLON =
             BLOCK_ENTITIES.register("hex_pylon", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexPylonBlockEntity::new,
                     ModBlocks.GATHERING_PYLON.get(), ModBlocks.SENDING_PYLON.get(), ModBlocks.RELAY_PYLON.get(),
