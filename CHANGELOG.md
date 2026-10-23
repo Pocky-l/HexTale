@@ -4,7 +4,7 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0-beta.5] - Unreleased
 ### Added
 - Field Ward: a magic stone post with a hextech eye. Within 16 blocks monsters no longer spawn by themselves and no
   farmland is trampled - a quiet base leaves the mob cap to your farms. Spawners and animals are not affected.
@@ -14,9 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Experience Condenser: a glass column in a brass frame. No experience orb appears around it - it drinks them all
   and holds the experience as a glowing liquid, up to about level 50; a Greedy Funnel nearby pours in too. Take a level
   with an empty hand (sneak for everything) or fill glass bottles with Bottles o' Enchanting; a comparator reads it.
-- Rune Shackles: a nullstone block with a ring of runes on top - monsters spawn on it like on any floor. Up to four creatures standing on it hang still in its
-  glyph - no wandering, no pathfinding, no pushing - so a crowded mob farm hardly costs the server anything, and they
-  can still be struck. Feeds on shadow essence; four plates from one altar ritual.
+- Rune Shackles: a nullstone block with a ring of runes on top, laid into a mob farm floor - monsters spawn on it
+  like on any block. Up to four creatures standing on it hang still in its glyph - no wandering, no pathfinding, no
+  pushing - so a crowded mob farm hardly costs the server anything, and they can still be struck. Feeds on shadow
+  essence; four blocks from one altar ritual.
 - Hex Arc Spire: a hexsteel spike wound with brass coils that strikes the hostile creatures around it with arcs of
   charge. The kills count as a player's, so they drop experience and rare loot; named creatures and bosses are spared.
   Next to a Greedy Funnel it holds back while the funnel is full. Feeds on spark essence and takes runes (Shift, Motor,

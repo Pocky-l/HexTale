@@ -1,9 +1,7 @@
 {
   "region": "workshop",
   "icon": "hextale:researcher_trousers",
-  "parents": [
-    "researcher_robe"
-  ],
+  "parents": ["researcher_robe"],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:researcher_trousers",
@@ -11,5 +9,6 @@
       "kind": "runes",
       "result": "trousers"
     }
-  }
+  },
+  "pos": [-441, -234]
 }
