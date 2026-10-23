@@ -10,11 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Hextech Altar and the end around the Hexcore. Done steps wear the metal of their part (brass, blued steel, white gold),
   and each part has its own heart on the map: the Research Table, the altar and the Hexcore with its twisting rune
   tiles. Many devices still to come were added, moved to where they belong or dropped.
-- Hand Loupe: a lens in a brass ring. Hold it to your eye to study what the other hand holds or the block in front of
-  you - slower than the Research Table, but it goes everywhere. Takes runes (Haste, Radiance, Insight, Lens).
-- Magic Wand: magic wood with hextech dust in its tip. A touch wakes a crafting table, furnace or cauldron without
-  spending dust, and rituals at the Hextech Altar are now started with the wand. Takes runes (Mending, Dam, Haste,
-  Radiance, Lens).
 - Rune Chalk: draws runes on the floor. Runes around a Hextech Altar make its rituals quicker and glow while it works.
 - Nullstone (+ polished, bricks): made in the crucible from calcite. Near a working Hexcore it drinks its anger and
   fills up, its violet veins glowing brighter, then slowly lets it out again.
@@ -22,9 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   around it; its core glows when charged and a comparator reads it. Researched at the table, made at the altar. Takes
   runes (Cache, Chain Lightning, Dam, Lens).
 ### Changed
-- The Research Table needs a Hand Loupe, the Hextech Altar needs Rune Chalk, and the Hexcore ritual takes a Crystal
-  Battery and Regenerative Slime instead of two brass blocks.
-- An empty hand no longer starts an altar ritual: use the Magic Wand (redstone still works).
+- The Hextech Altar needs Rune Chalk, and the Hexcore ritual takes a Crystal Battery and Regenerative Slime instead of
+  two brass blocks.
 - The Void (a first look, no logic yet): breaches in the world through which the Void shows. A breach is made of
   square cells with a burning magenta outline and a glow around it - teeth along the edge, loose pieces hanging beside
   it, darker rectangles and black dead cells inside, smouldering seams between them. Look into one and you see a

@@ -1,7 +1,7 @@
 {
   "region": "workshop",
   "icon": "hextale:research_table",
-  "parents": ["hand_loupe", "hex_workbench", "brass"],
+  "parents": ["hex_workbench", "brass"],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:research_table"

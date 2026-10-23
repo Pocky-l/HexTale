@@ -146,8 +146,6 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.PEDESTAL.get(), "pedestal");
         info(registration, ModItems.RUNE_STELE.get(), "rune_stele");
         info(registration, ModItems.HEXTECH_LAMP.get(), "hextech_lamp");
-        info(registration, ModItems.HAND_LOUPE.get(), "hand_loupe");
-        info(registration, ModItems.MAGIC_WAND.get(), "magic_wand");
         info(registration, ModItems.RUNE_CHALK.get(), "rune_chalk");
         info(registration, ModItems.NULLSTONE.get(), "nullstone");
         info(registration, ModItems.CRYSTAL_BATTERY.get(), "crystal_battery");

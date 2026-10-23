@@ -420,7 +420,7 @@ public final class RuneWorkGameTests {
         });
     }
 
-    /** The player's way: a Creative Essence Jar, a Magic Wand on the altar, and wait for the result. */
+    /** The player's way: a Creative Essence Jar, sneak + empty hand on the altar, and wait for the result. */
     @HexTest(maxTicks = 320)
     public static void aPlayerStartsARitualWithCreativeTanks(GameTestHelper helper) {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), pickaxeItems(), EssenceMix.EMPTY);
@@ -436,11 +436,7 @@ public final class RuneWorkGameTests {
         net.minecraft.world.phys.BlockHitResult hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(abs),
                 net.minecraft.core.Direction.UP, abs, false);
         helper.getLevel().getBlockState(abs).useWithoutItem(helper.getLevel(), player, hit);
-        helper.assertFalse(altar.active(), "an empty hand no longer starts a ritual");
-        ItemStack wand = new ItemStack(ModItems.MAGIC_WAND.get());
-        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, wand);
-        helper.getLevel().getBlockState(abs).useItemOn(wand, helper.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
-        helper.assertTrue(altar.active(), "the Magic Wand starts the ritual");
+        helper.assertTrue(altar.active(), "sneak + empty hand starts the ritual");
         helper.succeedWhen(() -> helper.assertTrue(altar.center().is(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), "the ritual finishes"));
     }
 

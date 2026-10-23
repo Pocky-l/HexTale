@@ -28,9 +28,6 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.CrucibleBlockEntity;
 import com.pockyl.hextale.block.HexFurnaceBlockEntity;
-import com.pockyl.hextale.item.MagicWandItem;
-import com.pockyl.hextale.runework.HolderRune;
-import com.pockyl.hextale.runework.WandRune;
 import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
@@ -47,8 +44,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Hextech dust wakes ordinary blocks: sprinkled on a crafting table it makes a Hex Workbench, on a furnace a Hex Furnace,
- * on a cauldron a Crucible (keeping the cauldron's water). The Magic Wand does the same with a touch: no dust is spent,
- * the wand wears a little, and its Haste rune makes the change quicker.
+ * on a cauldron a Crucible (keeping the cauldron's water).
  * The change takes {@value #TICKS} ticks: the dust swirls into the block, sparks climb its sides, and the new block
  * appears in a flash. Breaking or changing the block meanwhile stops it and gives the dust back.
  */
@@ -68,7 +64,7 @@ public final class BlockAwakening {
             new Awakening(Blocks.WATER_CAULDRON, ModBlocks.CRUCIBLE));
 
     private record Pending(ResourceKey<Level> dimension, BlockPos pos, Awakening awakening, Direction facing, @Nullable UUID player,
-                           long start, boolean refund, int ticks) {
+                           long start, boolean refund) {
     }
 
     private static final List<Pending> PENDING = new ArrayList<>();
@@ -96,8 +92,7 @@ public final class BlockAwakening {
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         ItemStack stack = event.getItemStack();
-        boolean wand = MagicWandItem.is(stack);
-        if (!stack.is(ModItems.HEXTECH_DUST.get()) && !wand) {
+        if (!stack.is(ModItems.HEXTECH_DUST.get())) {
             return;
         }
         Level level = event.getLevel();
@@ -115,15 +110,6 @@ public final class BlockAwakening {
         BlockState state = level.getBlockState(pos);
         Direction facing = state.hasProperty(HorizontalDirectionalBlock.FACING) ? state.getValue(HorizontalDirectionalBlock.FACING)
                 : player.getDirection().getOpposite();
-        if (wand) {
-            int haste = MagicWandItem.strength(stack, WandRune.HASTE);
-            int ticks = Math.round(TICKS * (1 - (haste > 0 ? HolderRune.at(WandRune.QUICKER, haste) : 0)));
-            if (!player.getAbilities().instabuild) {
-                MagicWandItem.wear(stack, MagicWandItem.AWAKEN_WEAR, player, event.getHand().asEquipmentSlot());
-            }
-            start(server, pos, facing, player.getUUID(), false, ticks);
-            return;
-        }
         boolean refund = !player.getAbilities().instabuild;
         if (refund) {
             stack.shrink(1);
@@ -133,16 +119,11 @@ public final class BlockAwakening {
 
     /** Starts waking the block at {@code pos} (game tests call it directly). */
     public static void start(ServerLevel level, BlockPos pos, Direction facing, @Nullable UUID player, boolean refund) {
-        start(level, pos, facing, player, refund, TICKS);
-    }
-
-    /** Starts waking the block, taking {@code ticks} to finish. */
-    public static void start(ServerLevel level, BlockPos pos, Direction facing, @Nullable UUID player, boolean refund, int ticks) {
         Awakening awakening = of(level.getBlockState(pos));
         if (awakening == null || waking(level, pos)) {
             return;
         }
-        PENDING.add(new Pending(level.dimension(), pos.immutable(), awakening, facing, player, level.getGameTime(), refund, Math.max(1, ticks)));
+        PENDING.add(new Pending(level.dimension(), pos.immutable(), awakening, facing, player, level.getGameTime(), refund));
         Vec3 centre = Vec3.atCenterOf(pos);
         level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.0F, 0.6F);
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.BLOCK_AWAKEN.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
@@ -170,11 +151,11 @@ public final class BlockAwakening {
                 continue;
             }
             long age = now - pending.start();
-            if (age >= pending.ticks()) {
+            if (age >= TICKS) {
                 finish(level, pending);
                 it.remove();
             } else {
-                swirl(level, pending.pos(), age / (float) pending.ticks());
+                swirl(level, pending.pos(), age / (float) TICKS);
             }
         }
     }

@@ -1,11 +1,8 @@
 package com.pockyl.hextale.gametest;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
 import com.pockyl.hextale.block.ChalkMarkBlock;
@@ -13,31 +10,15 @@ import com.pockyl.hextale.block.CrystalBatteryBlock;
 import com.pockyl.hextale.block.CrystalBatteryBlockEntity;
 import com.pockyl.hextale.block.HexWorkbenchBlockEntity;
 import com.pockyl.hextale.block.NullstoneBlock;
-import com.pockyl.hextale.item.HandLoupeItem;
-import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
-import com.pockyl.hextale.runework.PickaxeRunes;
-import com.pockyl.hextale.runework.RuneHolder;
-import com.pockyl.hextale.runework.WandRune;
 
 /**
- * The steps between the benches: the Hand Loupe studies, chalk runes quicken the altar, the Crystal Battery feeds
+ * The steps between the benches: chalk runes quicken the altar, the Crystal Battery feeds
  * workbenches, nullstone drinks the Hexcore's anger.
  */
 public final class GateGameTests {
     private GateGameTests() {
-    }
-
-    @HexTest
-    public static void theHandLoupeStudiesWhatItLooksAt(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        ItemStack loupe = new ItemStack(ModItems.HAND_LOUPE.get());
-        helper.assertTrue(RuneHolder.of(loupe) == RuneHolder.LOUPE, "the loupe takes runes");
-        helper.assertTrue(HandLoupeItem.study(player, loupe, new ItemStack(Items.IRON_INGOT)), "a fresh look studies the item");
-        helper.assertTrue(Research.of(player).hasStudied(BuiltInRegistries.ITEM.getKey(Items.IRON_INGOT)), "the ingot is in the diary");
-        helper.assertFalse(HandLoupeItem.study(player, loupe, new ItemStack(Items.IRON_INGOT)), "a second look teaches nothing new");
-        helper.succeed();
     }
 
     @HexTest
@@ -84,13 +65,4 @@ public final class GateGameTests {
         helper.succeed();
     }
 
-    @HexTest
-    public static void theWandTakesItsRunes(GameTestHelper helper) {
-        ItemStack wand = new ItemStack(ModItems.MAGIC_WAND.get());
-        helper.assertTrue(RuneHolder.of(wand) == RuneHolder.WAND, "the wand takes runes");
-        RuneHolder.WAND.set(wand, PickaxeRunes.EMPTY.with(WandRune.RADIANCE.rune(), 2));
-        helper.assertTrue(com.pockyl.hextale.item.MagicWandItem.strength(wand, WandRune.RADIANCE) == 2, "the wand reads its runes");
-        helper.assertTrue(RuneHolder.of(new ItemStack(ModItems.CRYSTAL_BATTERY.get())) == RuneHolder.BATTERY, "so does the battery");
-        helper.succeed();
-    }
 }

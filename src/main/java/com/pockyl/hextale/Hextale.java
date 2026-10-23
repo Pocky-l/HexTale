@@ -157,8 +157,6 @@ public final class Hextale {
             output.accept(ModItems.PYLON_FILTER);
             output.accept(ModItems.ESSENCE_STICKER);
             ModItems.PICKAXES.values().forEach(output::accept);
-            output.accept(ModItems.HAND_LOUPE);
-            output.accept(ModItems.MAGIC_WAND);
             output.accept(ModItems.RUNE_CHALK);
             output.accept(ModItems.HEXTECH_AXE);
             output.accept(ModItems.HEXTECH_SHOVEL);
