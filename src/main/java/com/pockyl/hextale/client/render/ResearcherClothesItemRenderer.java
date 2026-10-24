@@ -3,21 +3,17 @@ package com.pockyl.hextale.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import com.pockyl.hextale.port.client.SubmitNodeCollector;
-import com.pockyl.hextale.port.client.RenderTypes;
-import net.minecraft.client.renderer.special.NoDataSpecialModelRenderer;
-import net.minecraft.client.renderer.special.SpecialModelRenderer;
+import net.minecraft.client.renderer.RenderType;
+import com.pockyl.hextale.port.client.NoDataSpecialModelRenderer;
+import com.pockyl.hextale.port.client.SpecialModelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.util.Unit;
-import org.joml.Vector3fc;
 
 import com.pockyl.hextale.Hextale;
 
 import java.util.Locale;
-import java.util.function.Consumer;
 
 /**
  * A piece of the researcher's clothes as an item: the very model it is worn as, standing in the slot and in the hand
@@ -28,12 +24,11 @@ public final class ResearcherClothesItemRenderer implements NoDataSpecialModelRe
     public static final ResourceLocation ID = Hextale.id("researcher_clothes");
 
     private final ResearcherClothesClient.Piece piece;
-    private final Model<Unit> model;
+    private final ModelPart root;
 
     private ResearcherClothesItemRenderer(ResearcherClothesClient.Piece piece, ModelPart root) {
         this.piece = piece;
-        this.model = new Model<>(root, RenderTypes::armorCutoutNoCull) {
-        };
+        this.root = root;
     }
 
     /** Centres the piece on the item's middle and turns the model (y down, facing -z) the way items stand. */
@@ -47,15 +42,8 @@ public final class ResearcherClothesItemRenderer implements NoDataSpecialModelRe
     public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, int overlay, boolean hasFoil, int outlineColor) {
         poseStack.pushPose();
         frame(poseStack);
-        collector.submitModel(model, Unit.INSTANCE, poseStack, ResearcherClothesClient.TEXTURE, light, overlay, outlineColor);
+        root.render(poseStack, collector.buffer(RenderType.armorCutoutNoCull(ResearcherClothesClient.TEXTURE)), light, overlay);
         poseStack.popPose();
-    }
-
-    @Override
-    public void getExtents(Consumer<Vector3fc> output) {
-        PoseStack poseStack = new PoseStack();
-        frame(poseStack);
-        model.root().getExtentsForGui(poseStack, output);
     }
 
     /** The JSON side. */

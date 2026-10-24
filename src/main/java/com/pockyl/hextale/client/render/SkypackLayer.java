@@ -4,25 +4,23 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.ClientAvatarEntity;
-import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import com.pockyl.hextale.port.client.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
-import net.minecraft.util.context.ContextKey;
-import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
-import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.item.HextechSkypackItem;
@@ -39,13 +37,15 @@ import org.joml.Quaternionf;
  * however fast they fly. Each nozzle: a long plume of hextech flame (an animated sprite on three crossed planes, a blue
  * body and a white core, additive), a hot glow at the mouth, glints running down the flame, and a ring of light that
  * bursts out when the jets catch. The jets thin out and shorten over the boost's last ticks. The skypack hides the cape.
+ *
+ * <p>1.21.1: a player render layer that reads the player directly (26.x extracts into the avatar render state); the
+ * cape cannot be hidden without changing vanilla's cape layer.
  */
-public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
+public class SkypackLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     /** What the layer needs, read off the player when its render state is extracted. */
     public record Worn(ItemStackRenderState item, int boostLeft, boolean low, float time, float speed) {
     }
 
-    public static final ContextKey<Worn> WORN = new ContextKey<>(Hextale.id("skypack"));
     private static final ResourceLocation JET = Hextale.id("textures/misc/skypack_jet.png");
     private static final int JET_FRAMES = 6;
     /** The pack's scale on the back (the model is 16 px wide with its little wings). */
@@ -62,53 +62,44 @@ public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
     private static final int CORE = 0xE4FAFF;
     private static final int GLINTS = 5;
 
-    public SkypackLayer(RenderLayerParent<AvatarRenderState, PlayerModel> renderer) {
+    public SkypackLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer) {
         super(renderer);
     }
 
     public static void addLayers(EntityRenderersEvent.AddLayers event) {
-        for (var skin : event.getSkins()) {
-            var renderer = event.getPlayerRenderer(skin);
+        for (PlayerSkin.Model skin : event.getSkins()) {
+            PlayerRenderer renderer = event.getSkin(skin);
             if (renderer != null) {
                 renderer.addLayer(new SkypackLayer(renderer));
             }
         }
     }
 
-    public static void registerModifier(RegisterRenderStateModifiersEvent event) {
-        event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
-            @Override
-            public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState state) {
-                extract(avatar, state);
-            }
-        });
-    }
-
-    private static void extract(LivingEntity entity, AvatarRenderState state) {
+    private static @org.jspecify.annotations.Nullable Worn extract(LivingEntity entity, float partialTick) {
         ItemStack pack = HextechSkypackItem.worn(entity);
         if (pack.isEmpty()) {
-            state.setRenderData(WORN, null);
-            return;
+            return null;
         }
         ItemStackRenderState item = new ItemStackRenderState();
         com.pockyl.hextale.port.client.ItemModelResolver.INSTANCE.updateForLiving(item, pack, ItemDisplayContext.NONE, entity);
-        state.showCape = false;
-        state.setRenderData(WORN, new Worn(item, SkypackFlight.boostLeft(entity, entity.level().getGameTime()),
-                HextechSkypackItem.air(pack) < HextechSkypackItem.LOW, HexFx.time(entity.level(), state.partialTick),
-                (float) entity.getDeltaMovement().length()));
+        return new Worn(item, SkypackFlight.boostLeft(entity, entity.level().getGameTime()),
+                HextechSkypackItem.air(pack) < HextechSkypackItem.LOW, HexFx.time(entity.level(), partialTick),
+                (float) entity.getDeltaMovement().length());
     }
 
     @Override
-    public void submit(PoseStack poseStack, SubmitNodeCollector collector, int lightCoords, AvatarRenderState state, float yRot, float xRot) {
-        Worn worn = state.getRenderData(WORN);
-        if (worn == null || state.isInvisible) {
+    public void render(PoseStack poseStack, MultiBufferSource buffers, int lightCoords, AbstractClientPlayer player, float limbSwing,
+                       float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+        Worn worn = extract(player, partialTick);
+        if (worn == null || player.isInvisible()) {
             return;
         }
+        SubmitNodeCollector collector = new SubmitNodeCollector(buffers);
         poseStack.pushPose();
         getParentModel().body.translateAndRotate(poseStack);
         poseStack.translate(0, Y, Z);
         poseStack.scale(SCALE, -SCALE, -SCALE);
-        worn.item().submit(poseStack, collector, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
+        worn.item().submit(poseStack, collector, lightCoords, OverlayTexture.NO_OVERLAY, 0);
         if (worn.boostLeft() > 0) {
             for (int i = 0; i < NOZZLES.length; i++) {
                 float[] n = NOZZLES[i];
@@ -191,7 +182,7 @@ public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
     /** The camera's rotation seen from inside the current pose: sprites turned by it face the camera. */
     private static Quaternionf facing(PoseStack poseStack) {
         Quaternionf local = poseStack.last().pose().getNormalizedRotation(new Quaternionf()).conjugate();
-        return local.mul(Minecraft.getInstance().gameRenderer.mainCamera().rotation());
+        return local.mul(Minecraft.getInstance().gameRenderer.getMainCamera().rotation());
     }
 
     private static float frac(float value) {

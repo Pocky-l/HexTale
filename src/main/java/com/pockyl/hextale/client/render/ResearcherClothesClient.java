@@ -1,11 +1,10 @@
 package com.pockyl.hextale.client.render;
 
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.Model;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.minecraft.client.resources.model.EquipmentClientInfo;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -55,7 +54,7 @@ public final class ResearcherClothesClient {
     }
 
     /** Worn models, baked again whenever the entity models are reloaded. */
-    private static final Map<Piece, HumanoidModel<HumanoidRenderState>> WORN = new EnumMap<>(Piece.class);
+    private static final Map<Piece, HumanoidModel<LivingEntity>> WORN = new EnumMap<>(Piece.class);
 
     private ResearcherClothesClient() {
     }
@@ -76,15 +75,9 @@ public final class ResearcherClothesClient {
         for (Piece piece : Piece.values()) {
             event.registerItem(new IClientItemExtensions() {
                 @Override
-                public Model getHumanoidArmorModel(ItemStack stack, EquipmentClientInfo.LayerType layerType, Model original) {
-                    @Nullable HumanoidModel<HumanoidRenderState> model = WORN.get(piece);
-                    return model != null && layerType != EquipmentClientInfo.LayerType.HUMANOID_BABY ? model : original;
-                }
-
-                @Override
-                public ResourceLocation getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer,
-                                                  ResourceLocation fallback) {
-                    return TEXTURE;
+                public HumanoidModel<?> getHumanoidArmorModel(LivingEntity entity, ItemStack stack, EquipmentSlot slot, HumanoidModel<?> original) {
+                    @Nullable HumanoidModel<LivingEntity> model = WORN.get(piece);
+                    return model != null && !entity.isBaby() ? model : original;
                 }
             }, piece.item.get());
         }
