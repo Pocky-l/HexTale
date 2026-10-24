@@ -6,16 +6,15 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
+import com.pockyl.hextale.port.client.PictureInPictureRenderer;
 import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import com.pockyl.hextale.port.client.ItemStackRenderState;
-import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
+import com.pockyl.hextale.port.client.PictureInPictureRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -39,8 +38,8 @@ public final class AltarDiorama {
     private AltarDiorama() {
     }
 
-    public static void register(RegisterPictureInPictureRenderersEvent event) {
-        event.register(State.class, Renderer::new);
+    public static void register() {
+        PictureInPictureRenderer.register(State.class, Renderer::new);
     }
 
     /** Submits the scene into a screen box; {@code scale} = GUI pixels per block. */
@@ -74,7 +73,7 @@ public final class AltarDiorama {
             resolver.updateForTopItem(altar, new ItemStack(ModItems.HEXTECH_ALTAR.get()), ItemDisplayContext.NONE, minecraft.level, null, 0);
             resolver.updateForTopItem(stele, new ItemStack(ModItems.RUNE_STELE.get()), ItemDisplayContext.NONE, minecraft.level, null, 1);
             resolver.updateForTopItem(pickaxe, state.pickaxe(), ItemDisplayContext.GROUND, minecraft.level, null, 2);
-            minecraft.gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_3D);
+            Lighting.setupFor3DItems();
 
             float time = state.time();
             float yaw = time * 0.9F;

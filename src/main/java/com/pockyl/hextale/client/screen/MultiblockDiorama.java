@@ -6,12 +6,12 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
+import com.pockyl.hextale.port.client.PictureInPictureRenderer;
 import com.pockyl.hextale.port.client.SubmitNodeCollector;
-import net.minecraft.client.renderer.block.BlockModelRenderState;
-import net.minecraft.client.renderer.block.model.BlockDisplayContext;
+import com.pockyl.hextale.port.client.BlockModelRenderState;
+import com.pockyl.hextale.port.client.BlockDisplayContext;
 import com.pockyl.hextale.port.client.ItemStackRenderState;
-import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
+import com.pockyl.hextale.port.client.PictureInPictureRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.client.renderer.LightTexture;
@@ -21,7 +21,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 
@@ -67,8 +66,8 @@ public final class MultiblockDiorama {
     private MultiblockDiorama() {
     }
 
-    public static void register(RegisterPictureInPictureRenderersEvent event) {
-        event.register(State.class, Renderer::new);
+    public static void register() {
+        PictureInPictureRenderer.register(State.class, Renderer::new);
     }
 
     /**
@@ -188,7 +187,7 @@ public final class MultiblockDiorama {
                 return;
             }
             Minecraft minecraft = Minecraft.getInstance();
-            minecraft.gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_3D);
+            Lighting.setupFor3DItems();
             MultiblockPattern pattern = multiblock.pattern();
             Plan plan = plan(multiblock);
             float time = state.time();
@@ -243,7 +242,7 @@ public final class MultiblockDiorama {
                     poseStack.translate(-0.5F, -0.5F, -0.5F);
                     BlockState blockState = stateOf(pattern, cell, time);
                     if (blockState != null) {
-                        minecraft.getBlockModelResolver().update(block, blockState, context);
+                        com.pockyl.hextale.port.client.BlockModelResolver.INSTANCE.update(block, blockState, context);
                         block.submitMultiLayer(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
                     } else {
                         if (itemIndex == items.size()) {

@@ -6,18 +6,17 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
+import com.pockyl.hextale.port.client.PictureInPictureRenderer;
 import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import com.pockyl.hextale.port.client.ItemModelResolver;
 import com.pockyl.hextale.port.client.ItemStackRenderState;
-import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
+import com.pockyl.hextale.port.client.PictureInPictureRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -59,8 +58,8 @@ public final class CircleDiorama {
     private CircleDiorama() {
     }
 
-    public static void register(RegisterPictureInPictureRenderersEvent event) {
-        event.register(State.class, Renderer::new);
+    public static void register() {
+        PictureInPictureRenderer.register(State.class, Renderer::new);
     }
 
     /** Submits the scene into a screen box; {@code scale} = GUI pixels per block, {@code time} in ticks. */
@@ -120,7 +119,7 @@ public final class CircleDiorama {
             }
             resolver.updateForTopItem(centre, new ItemStack(made ? ModItems.HEXTECH_GEMSTONE.get() : ModItems.UNSTABLE_HEXTECH.get()),
                     ItemDisplayContext.GROUND, minecraft.level, null, 20);
-            minecraft.gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_3D);
+            Lighting.setupFor3DItems();
 
             float yaw = time * 0.35F + 20;
             poseStack.scale(1, -1, -1);

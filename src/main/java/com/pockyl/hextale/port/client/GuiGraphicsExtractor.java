@@ -86,6 +86,11 @@ public final class GuiGraphicsExtractor {
         return null;
     }
 
+    /** Draws the 3D scene now (26.x renders it into a texture and blits it). */
+    public void submitPictureInPictureRenderState(PictureInPictureRenderState state) {
+        PictureInPictureRenderer.draw(graphics, state);
+    }
+
     public void horizontalLine(int x0, int x1, int y, int color) {
         graphics.hLine(x0, x1, y, color);
     }
