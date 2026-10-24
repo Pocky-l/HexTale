@@ -9,8 +9,7 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="${mod_authors}"
 displayURL="${mod_url}"
-# Square icon for the mod list (NeoForge 26.2+); a wide "bannerFile" could head the info panel.
-iconFile="logo.png"
+logoFile="logo.png"
 description='''${mod_description}'''
 
 [[dependencies.${mod_id}]]
@@ -30,14 +29,14 @@ description='''${mod_description}'''
 [[dependencies.${mod_id}]]
     modId="jei"
     type="optional"
-    versionRange="[31,)"
+    versionRange="[19,)"
     ordering="NONE"
     side="CLIENT"
 
 [[dependencies.${mod_id}]]
     modId="jade"
     type="optional"
-    versionRange="[26,)"
+    versionRange="[15,)"
     ordering="NONE"
     side="CLIENT"
 

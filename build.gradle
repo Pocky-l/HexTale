@@ -12,8 +12,7 @@ base {
     archivesName = "${mod_id}-neoforge-${minecraft_version}"
 }
 
-// Minecraft 26.x runs on Java 25.
-java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 sourceSets.main.resources {
     srcDir('src/generated/resources')
@@ -57,6 +56,11 @@ repositories {
 neoForge {
     version = project.neo_version
 
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
     runs {
         client {
             client()
@@ -87,7 +91,7 @@ neoForge {
         }
 
         data {
-            clientData()
+            data()
             programArguments.addAll '--mod', project.mod_id, '--all',
                     '--output', file('src/generated/resources/').absolutePath,
                     '--existing', file('src/main/resources/').absolutePath
@@ -113,7 +117,7 @@ configurations {
 }
 
 dependencies {
-    // Optional integrations, compiled against their APIs only; the playtest-26.3 client runs the mods themselves.
+    // Optional integrations, compiled against their APIs only; the playtest client runs the mods themselves.
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     compileOnly "maven.modrinth:jade:${jade_version}"
@@ -223,7 +227,7 @@ publishMods {
         projectId = curseforge_project_id
         accessToken = curseforgeToken
         minecraftVersions.add(minecraft_version)
-        javaVersions.add(JavaVersion.VERSION_25)
+        javaVersions.add(JavaVersion.VERSION_21)
         client = curseforge_client.toBoolean()
         server = curseforge_server.toBoolean()
         curseforge_requires.split(',')*.trim().findAll().each { requires(it) }
