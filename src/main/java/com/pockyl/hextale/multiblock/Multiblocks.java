@@ -110,8 +110,8 @@ public final class Multiblocks {
                 && !(level.isClientSide() ? com.pockyl.hextale.client.ClientKnowledge.get() : Research.of(event.getEntity())).researched(topic)) {
             // Not researched: the structure stays asleep and the click does what it would do anyway.
             if (event.getEntity() instanceof ServerPlayer player) {
-                player.sendOverlayMessage(Component.translatable("research.hextale.locked",
-                        Component.translatable(topic.translationKey()).withColor(topic.color())));
+                player.displayClientMessage(Component.translatable("research.hextale.locked",
+                        Component.translatable(topic.translationKey()).withColor(topic.color())), true);
             }
             return;
         }
@@ -159,7 +159,7 @@ public final class Multiblocks {
         int top = cells.stream().mapToInt(BlockPos::getY).max().orElse(controllerPos.getY());
         WAVES.add(new Wave(level, cells, bottom, top, level.getGameTime()));
         if (player != null) {
-            player.sendOverlayMessage(multiblock.formedMessage());
+            player.displayClientMessage(multiblock.formedMessage(), true);
             multiblock.onFormed(player, controllerPos);
         }
     }

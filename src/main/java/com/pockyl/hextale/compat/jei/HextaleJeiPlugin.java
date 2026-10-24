@@ -10,7 +10,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
@@ -34,10 +34,10 @@ import java.util.List;
  */
 @JeiPlugin
 public class HextaleJeiPlugin implements IModPlugin {
-    private static final Identifier UID = Hextale.id("jei");
+    private static final ResourceLocation UID = Hextale.id("jei");
 
     @Override
-    public Identifier getPluginUid() {
+    public ResourceLocation getPluginUid() {
         return UID;
     }
 

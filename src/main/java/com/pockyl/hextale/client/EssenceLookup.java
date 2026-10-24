@@ -3,7 +3,7 @@ package com.pockyl.hextale.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -55,7 +55,7 @@ public final class EssenceLookup {
             return items;
         }
         for (String id : ClientKnowledge.get().studied()) {
-            Identifier key = Identifier.tryParse(id);
+            ResourceLocation key = ResourceLocation.tryParse(id);
             Item item = key == null ? null : BuiltInRegistries.ITEM.getOptional(key).orElse(null);
             ItemEssences carried = item == null ? null : ResearchItems.of(item);
             if (carried != null && essences.stream().anyMatch(carried.essences()::containsKey)) {

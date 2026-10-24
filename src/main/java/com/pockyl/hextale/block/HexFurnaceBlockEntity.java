@@ -14,7 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -239,7 +239,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
     /** What the inputs melt into now: an alloy, else plain smelting of one to three of the same item at once. */
     @Nullable
     private Melt melt(ServerLevel level) {
-        Map.Entry<Identifier, AlloyRecipe> found = AlloyRecipe.find(inputs(), false);
+        Map.Entry<ResourceLocation, AlloyRecipe> found = AlloyRecipe.find(inputs(), false);
         if (found != null) {
             AlloyRecipe recipe = found.getValue();
             int[] slots = recipe.assign(inputs());
@@ -314,11 +314,11 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
 
     /** The ingot of a metal nugget (iron_nugget -> iron_ingot), or empty when the result is no nugget. */
     private static ItemStack ingotOf(ItemStack result) {
-        Identifier id = BuiltInRegistries.ITEM.getKey(result.getItem());
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(result.getItem());
         if (!id.getPath().endsWith("_nugget")) {
             return ItemStack.EMPTY;
         }
-        Identifier ingot = Identifier.fromNamespaceAndPath(id.getNamespace(), id.getPath().replace("_nugget", "_ingot"));
+        ResourceLocation ingot = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath().replace("_nugget", "_ingot"));
         return BuiltInRegistries.ITEM.getOptional(ingot).map(ItemStack::new).orElse(ItemStack.EMPTY);
     }
 

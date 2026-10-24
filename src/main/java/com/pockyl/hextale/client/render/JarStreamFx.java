@@ -3,7 +3,7 @@ package com.pockyl.hextale.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionfc;
@@ -23,7 +23,7 @@ import com.pockyl.hextale.essence.JarReach;
  */
 public final class JarStreamFx {
     /** Eight frames of a living drop side by side (from the Krita particle art). */
-    public static final Identifier BLOB = Hextale.id("textures/misc/essence_blob.png");
+    public static final ResourceLocation BLOB = Hextale.id("textures/misc/essence_blob.png");
     private static final int BLOB_FRAMES = 8;
     private static final int SEGMENTS = 32;
     /** Ticks a drop takes from the jar to the machine. */

@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.entity.state.AxolotlRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.level.Level;
@@ -40,11 +40,11 @@ public class AxolotlTankRenderer implements BlockEntityRenderer<AxolotlTankBlock
     private static final float SCALE = 0.42F;
     /** Ticks of one lap round the tank. */
     private static final float LAP = 360;
-    private static final Map<Axolotl.Variant, Identifier> TEXTURES = new EnumMap<>(Axolotl.Variant.class);
+    private static final Map<Axolotl.Variant, ResourceLocation> TEXTURES = new EnumMap<>(Axolotl.Variant.class);
 
     static {
         for (Axolotl.Variant variant : Axolotl.Variant.values()) {
-            TEXTURES.put(variant, Identifier.withDefaultNamespace(
+            TEXTURES.put(variant, ResourceLocation.withDefaultNamespace(
                     String.format(Locale.ROOT, "textures/entity/axolotl/axolotl_%s.png", variant.getName())));
         }
     }

@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -129,7 +129,7 @@ public final class CircleDiorama {
             Quaternionf camera = new Quaternionf().rotationY(-yaw * Mth.DEG_TO_RAD).rotateX(-TILT * Mth.DEG_TO_RAD);
             Vector3f toCamera = camera.transform(new Vector3f(0, 0, 1));
             poseStack.translate(0, -0.8F, 0);
-            int light = LightCoordsUtil.FULL_BRIGHT;
+            int light = LightTexture.FULL_BRIGHT;
             Quest.Scene focus = state.focus();
 
             // The focus: a ring of light on the ground under what the step is about.

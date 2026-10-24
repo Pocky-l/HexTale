@@ -11,7 +11,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.FormattedCharSequence;
@@ -1427,7 +1427,7 @@ final class GuidePage {
     private List<FormattedCharSequence> renderHexCrafting(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
                                                           int mouseY, long now) {
         com.pockyl.hextale.crafting.HexCraftingRecipe recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(true)
-                .get(Identifier.parse(display.result()));
+                .get(ResourceLocation.parse(display.result()));
         int centre = x + innerWidth() / 2;
         if (recipe == null) {
             PixelArt.flush(graphics);
@@ -1457,7 +1457,7 @@ final class GuidePage {
     private List<FormattedCharSequence> renderAlloy(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
                                                     int mouseY, long now) {
         com.pockyl.hextale.crafting.AlloyRecipe recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(true)
-                .get(Identifier.parse(display.result()));
+                .get(ResourceLocation.parse(display.result()));
         int centre = x + innerWidth() / 2;
         if (recipe == null) {
             PixelArt.flush(graphics);
@@ -1595,7 +1595,7 @@ final class GuidePage {
     }
 
     private static int infusionHeight(QuestDisplay display) {
-        InfusionRecipe recipe = InfusionRecipes.get(true).get(Identifier.parse(display.result()));
+        InfusionRecipe recipe = InfusionRecipes.get(true).get(ResourceLocation.parse(display.result()));
         if (recipe == null) {
             return INFUSION_RING * 2 + SLOT + 16;
         }
@@ -1612,7 +1612,7 @@ final class GuidePage {
     @Nullable
     private List<FormattedCharSequence> renderInfusion(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX, int mouseY,
                                                        long now) {
-        InfusionRecipe recipe = InfusionRecipes.get(true).get(Identifier.parse(display.result()));
+        InfusionRecipe recipe = InfusionRecipes.get(true).get(ResourceLocation.parse(display.result()));
         if (recipe == null) {
             PixelArt.flush(graphics);
             graphics.centeredText(font, Component.translatable("book.hextale.quest.infusion.missing"), x + innerWidth() / 2, y + 30, MUTED);
@@ -1944,12 +1944,12 @@ final class GuidePage {
             return ItemStack.EMPTY;
         }
         if (id.startsWith("#")) {
-            TagKey<Item> tag = TagKey.create(Registries.ITEM, Identifier.parse(id.substring(1)));
+            TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(id.substring(1)));
             List<Holder<Item>> items = new ArrayList<>();
             BuiltInRegistries.ITEM.getTagOrEmpty(tag).forEach(items::add);
             return items.isEmpty() ? ItemStack.EMPTY : new ItemStack(items.get((int) ((now / 1000 + phase) % items.size())));
         }
-        return new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse(id)));
+        return new ItemStack(BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(id)));
     }
 
     // ---- Input ----------------------------------------------------------------------------------------------------

@@ -62,8 +62,8 @@ public class VoidShardItem extends Item {
             }
             int next = (stack.getOrDefault(ModDataComponents.VOID_SHAPE.get(), 0) + 1) % (VoidShape.values().length + 1);
             stack.set(ModDataComponents.VOID_SHAPE.get(), next);
-            serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.void_shard.shape", shapeName(chosen(stack)))
-                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            serverPlayer.displayClientMessage(Component.translatable("item.hextale.void_shard.shape", shapeName(chosen(stack)))
+                    .withStyle(ChatFormatting.LIGHT_PURPLE), true);
             return InteractionResult.SUCCESS;
         }
         RandomSource random = level.getRandom();

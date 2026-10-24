@@ -7,7 +7,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -357,7 +357,7 @@ public final class ToolEffects {
 
     /** The sapling a log grows from: oak_log -> oak_sapling, crimson_stem -> crimson_fungus, mangrove -> propagule. */
     public static @Nullable Item saplingOf(BlockState log) {
-        Identifier id = BuiltInRegistries.BLOCK.getKey(log.getBlock());
+        ResourceLocation id = BuiltInRegistries.BLOCK.getKey(log.getBlock());
         String path = id.getPath().replace("stripped_", "");
         String base = path.endsWith("_log") || path.endsWith("_wood") ? path.substring(0, path.lastIndexOf('_'))
                 : path.endsWith("_stem") || path.endsWith("_hyphae") ? path.substring(0, path.lastIndexOf('_')) : null;
@@ -367,7 +367,7 @@ public final class ToolEffects {
         String[] tries = path.endsWith("_stem") || path.endsWith("_hyphae") ? new String[]{base + "_fungus"}
                 : new String[]{base + "_sapling", base + "_propagule"};
         for (String name : tries) {
-            Identifier sapling = Identifier.fromNamespaceAndPath(id.getNamespace(), name);
+            ResourceLocation sapling = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), name);
             if (BuiltInRegistries.ITEM.containsKey(sapling)) {
                 return BuiltInRegistries.ITEM.getValue(sapling);
             }

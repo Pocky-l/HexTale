@@ -7,7 +7,7 @@ import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 
@@ -156,7 +156,7 @@ final class GuideEditScreen extends Screen {
         QuestDefinition next = quest.definition();
         String iconId = icon.getValue().trim();
         if (!iconId.equals(initialIcon)) {
-            Identifier id = Identifier.tryParse(iconId);
+            ResourceLocation id = ResourceLocation.tryParse(iconId);
             if (id == null || BuiltInRegistries.ITEM.getOptional(id).isEmpty()) {
                 problem = "No item " + iconId;
                 return false;

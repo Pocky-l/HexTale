@@ -2,7 +2,7 @@ package com.pockyl.hextale.compat.jade;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -59,7 +59,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
     private enum Machines implements IBlockComponentProvider {
         INSTANCE;
 
-        private static final Identifier UID = Hextale.id("essence_works");
+        private static final ResourceLocation UID = Hextale.id("essence_works");
 
         @Override
         public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
@@ -155,7 +155,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
         }
 
         @Override
-        public Identifier getUid() {
+        public ResourceLocation getUid() {
             return UID;
         }
     }

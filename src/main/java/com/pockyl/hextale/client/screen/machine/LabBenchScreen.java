@@ -8,13 +8,13 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -122,17 +122,17 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     private static final long FALL_MS = 420;
     private static final long PRESS_MS = 160;
     private static final int[] ZONE_COLORS = {0x5AA8FF, 0x5CE0D8, 0xB8E05A, 0xFF9A3C, 0xFF4A3A};
-    private static final Identifier BUTTON = sprite("button");
-    private static final Identifier BUTTON_HOVER = sprite("button_hover");
-    private static final Identifier BUTTON_PRESSED = sprite("button_pressed");
-    private static final Identifier BUTTON_DISABLED = sprite("button_disabled");
-    private static final Identifier BUTTON_READY = sprite("button_ready");
-    private static final Identifier ICON_VENT = sprite("icon_vent");
-    private static final Identifier ICON_POUR = sprite("icon_pour");
-    private static final Identifier ICON_SEAL = sprite("icon_seal");
-    private static final Identifier FLAME = sprite("flame");
-    private static final Identifier DIAL_FACE = sprite("dial");
-    private static final Identifier NEEDLE = sprite("needle");
+    private static final ResourceLocation BUTTON = sprite("button");
+    private static final ResourceLocation BUTTON_HOVER = sprite("button_hover");
+    private static final ResourceLocation BUTTON_PRESSED = sprite("button_pressed");
+    private static final ResourceLocation BUTTON_DISABLED = sprite("button_disabled");
+    private static final ResourceLocation BUTTON_READY = sprite("button_ready");
+    private static final ResourceLocation ICON_VENT = sprite("icon_vent");
+    private static final ResourceLocation ICON_POUR = sprite("icon_pour");
+    private static final ResourceLocation ICON_SEAL = sprite("icon_seal");
+    private static final ResourceLocation FLAME = sprite("flame");
+    private static final ResourceLocation DIAL_FACE = sprite("dial");
+    private static final ResourceLocation NEEDLE = sprite("needle");
 
     private final List<Drop> drops = new ArrayList<>();
     private final List<Bubble> bubbles = new ArrayList<>();
@@ -182,7 +182,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
         inventoryLabelY = LabBenchMenu.INVENTORY_Y - 11;
     }
 
-    private static Identifier sprite(String name) {
+    private static ResourceLocation sprite(String name) {
         return Hextale.id("lab_bench/" + name);
     }
 
@@ -524,11 +524,11 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
      * A sprite button: frame by state (pressed for a moment after a click, glowing gold when {@code ready}), the icon
      * centred (left of centre when there is a label), sunk a pixel while pressed.
      */
-    private void button(GuiGraphicsExtractor graphics, int id, int bx, int by, int w, int h, boolean active, boolean ready, Identifier icon,
+    private void button(GuiGraphicsExtractor graphics, int id, int bx, int by, int w, int h, boolean active, boolean ready, ResourceLocation icon,
                         int iconSize, int mouseX, int mouseY) {
         boolean hovered = active && over(mouseX, mouseY, bx, by, w, h);
         boolean pressed = pressedButton == id && Util.getMillis() - pressedAt < PRESS_MS;
-        Identifier frame = !active ? BUTTON_DISABLED : pressed ? BUTTON_PRESSED : ready && !hovered ? BUTTON_READY : hovered ? BUTTON_HOVER : BUTTON;
+        ResourceLocation frame = !active ? BUTTON_DISABLED : pressed ? BUTTON_PRESSED : ready && !hovered ? BUTTON_READY : hovered ? BUTTON_HOVER : BUTTON;
         int x = leftPos + bx;
         int y = topPos + by;
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, frame, x, y, w, h);
@@ -935,7 +935,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
             int zone = Reactions.zoneAt(Flask.flameHeat(k));
             boolean set = k == flame;
             boolean lit = k <= flame;
-            Identifier frame = set ? BUTTON_PRESSED : k == hoverFlame ? BUTTON_HOVER : BUTTON;
+            ResourceLocation frame = set ? BUTTON_PRESSED : k == hoverFlame ? BUTTON_HOVER : BUTTON;
             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, frame, x, y, TILE_W, TILE_H);
             // The zone's colour along the tile's foot: bright up to the setting.
             PixelArt.fill(graphics, x + 3, y + TILE_H - 4, x + TILE_W - 3, y + TILE_H - 3, PixelArt.argb(ZONE_COLORS[zone], lit ? 1 : 0.3F));

@@ -165,7 +165,7 @@ public class CrucibleBlock extends BaseEntityBlock {
             if (player.isSecondaryUseActive()) {
                 crucible.boilAway();
             } else {
-                player.sendOverlayMessage(status(crucible));
+                player.displayClientMessage(status(crucible), true);
             }
         }
         return InteractionResult.SUCCESS;
@@ -189,7 +189,7 @@ public class CrucibleBlock extends BaseEntityBlock {
 
     private static InteractionResult say(Level level, Player player, String key) {
         if (!level.isClientSide()) {
-            player.sendOverlayMessage(Component.translatable("block.hextale.crucible.say." + key));
+            player.displayClientMessage(Component.translatable("block.hextale.crucible.say." + key), true);
         }
         return InteractionResult.FAIL;
     }

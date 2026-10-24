@@ -40,7 +40,7 @@ public class WhirlReaperBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof WhirlReaperBlockEntity reaper) {
-            player.sendOverlayMessage(status(reaper));
+            player.displayClientMessage(status(reaper), true);
         }
         return InteractionResult.SUCCESS;
     }

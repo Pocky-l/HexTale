@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -71,7 +71,7 @@ public class HexFoundryRenderer implements BlockEntityRenderer<HexFoundryBlockEn
         TableModels.rotateToFacing(poseStack, state.facing);
         TableModels.submit(poseStack, collector, TableModels.HEX_FOUNDRY, state.lightCoords);
         if (state.heat >= HexFoundryBlockEntity.MELT_HEAT / (float) HexFoundryBlockEntity.MAX_HEAT) {
-            TableModels.submit(poseStack, collector, TableModels.HEX_FOUNDRY_GLOW, LightCoordsUtil.FULL_BRIGHT);
+            TableModels.submit(poseStack, collector, TableModels.HEX_FOUNDRY_GLOW, LightTexture.FULL_BRIGHT);
         }
         poseStack.popPose();
 

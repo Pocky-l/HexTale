@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -141,7 +141,7 @@ public class HexSawmillRenderer implements BlockEntityRenderer<HexSawmillBlockEn
         poseStack.rotate(Axis.YP.rotationDegrees(time * 2));
         poseStack.scale(0.4F, 0.4F, 0.4F);
         poseStack.translate(0, -0.2, 0);
-        state.crystal.submit(poseStack, collector, state.becalmed ? state.lightCoords : LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+        state.crystal.submit(poseStack, collector, state.becalmed ? state.lightCoords : LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
         poseStack.popPose();
 
         if (state.stream != null) {
@@ -165,7 +165,7 @@ public class HexSawmillRenderer implements BlockEntityRenderer<HexSawmillBlockEn
             poseStack.rotate(Axis.XP.rotationDegrees(90));
             poseStack.scale(0.7F, 0.7F, 0.7F);
             poseStack.translate(-0.5, -0.5, -8.5 / 16);
-            TableModels.submit(poseStack, collector, TableModels.HEX_SAW_DISC, LightCoordsUtil.FULL_BRIGHT);
+            TableModels.submit(poseStack, collector, TableModels.HEX_SAW_DISC, LightTexture.FULL_BRIGHT);
             poseStack.popPose();
         }
         for (int i = 0; i < state.blockCount; i++) {

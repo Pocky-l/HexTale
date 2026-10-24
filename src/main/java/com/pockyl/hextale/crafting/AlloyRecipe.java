@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
@@ -80,8 +80,8 @@ public record AlloyRecipe(List<SizedIngredient> inputs, ItemStackTemplate result
     }
 
     /** The first alloy the slots hold, in id order. */
-    public static Map.@Nullable Entry<Identifier, AlloyRecipe> find(List<ItemStack> slots, boolean clientSide) {
-        for (Map.Entry<Identifier, AlloyRecipe> entry : ALL.get(clientSide).entrySet()) {
+    public static Map.@Nullable Entry<ResourceLocation, AlloyRecipe> find(List<ItemStack> slots, boolean clientSide) {
+        for (Map.Entry<ResourceLocation, AlloyRecipe> entry : ALL.get(clientSide).entrySet()) {
             if (entry.getValue().assign(slots) != null) {
                 return entry;
             }

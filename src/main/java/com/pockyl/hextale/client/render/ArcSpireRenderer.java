@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -108,7 +108,7 @@ public class ArcSpireRenderer implements BlockEntityRenderer<ArcSpireBlockEntity
         poseStack.rotate(Axis.YP.rotationDegrees(time * 1.5F));
         poseStack.scale(0.34F, 0.34F, 0.34F);
         poseStack.translate(0, -0.2, 0);
-        state.crystal.submit(poseStack, collector, state.uncharged ? state.lightCoords : LightCoordsUtil.FULL_BRIGHT,
+        state.crystal.submit(poseStack, collector, state.uncharged ? state.lightCoords : LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY, 0);
         poseStack.popPose();
 

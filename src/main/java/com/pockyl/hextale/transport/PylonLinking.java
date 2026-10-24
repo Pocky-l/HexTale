@@ -63,13 +63,13 @@ public final class PylonLinking {
         Pending going = PENDING.get(player.getUUID());
         if (going != null && going.pos().equals(pylon.getBlockPos()) && going.dimension() == player.level().dimension()) {
             stop(player);
-            player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"));
+            player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"), true);
             return;
         }
         PENDING.put(player.getUUID(), new Pending(player.level().dimension(), pylon.getBlockPos(), player.level().getGameTime()));
         ModNetwork.sendToPlayer(player, new PylonLinkPayload(Optional.of(pylon.getBlockPos())));
-        player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.start", pylon.range(), pylon.links().size(),
-                pylon.maxLinks()).withStyle(ChatFormatting.AQUA));
+        player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.start", pylon.range(), pylon.links().size(),
+                pylon.maxLinks()).withStyle(ChatFormatting.AQUA), true);
         player.level().playSound(null, pylon.getBlockPos(), ModSounds.PYLON_LINK.get(), SoundSource.BLOCKS, 0.4F, 1.3F);
     }
 
@@ -151,7 +151,7 @@ public final class PylonLinking {
             clientFrom = null;
         } else if (player instanceof ServerPlayer server && PENDING.containsKey(server.getUUID())) {
             stop(server);
-            server.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"));
+            server.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"), true);
         }
     }
 
@@ -191,8 +191,8 @@ public final class PylonLinking {
             }
         }
         if (count > 0) {
-            player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.untied", level.getBlockState(target).getBlock().getName(),
-                    count));
+            player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.untied", level.getBlockState(target).getBlock().getName(),
+                    count), true);
             level.playSound(null, target, ModSounds.PYLON_UNLINK.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
         }
     }
@@ -235,7 +235,7 @@ public final class PylonLinking {
         }
         if (target.equals(pending.pos())) {
             stop(player);
-            player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"));
+            player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"), true);
             return;
         }
         PylonLink link;
@@ -255,9 +255,9 @@ public final class PylonLinking {
         } else {
             if (!takes(level, pylon, target, face)) {
                 stop(player);
-                player.sendOverlayMessage(Component.translatable(pylon.kind().essence() ? "block.hextale.hex_pylon.link.no_essence"
+                player.displayClientMessage(Component.translatable(pylon.kind().essence() ? "block.hextale.hex_pylon.link.no_essence"
                         : pylon.kind() == PylonKind.RELAY ? "block.hextale.hex_pylon.link.no_load" : "block.hextale.hex_pylon.link.nothing")
-                        .withStyle(ChatFormatting.RED));
+                        .withStyle(ChatFormatting.RED), true);
                 return;
             }
             link = new PylonLink(target, face);
@@ -266,25 +266,25 @@ public final class PylonLinking {
         if (pylon.linked(link)) {
             pylon.toggleLink(link);
             stop(player);
-            player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.removed", name));
+            player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.removed", name), true);
             level.playSound(null, target, ModSounds.PYLON_UNLINK.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
             return;
         }
         if (!pylon.reaches(target)) {
             int distance = (int) Math.ceil(pylon.gem().distanceTo(Vec3.atCenterOf(target)));
-            player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.far", distance, pylon.range()).withStyle(ChatFormatting.RED));
+            player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.far", distance, pylon.range()).withStyle(ChatFormatting.RED), true);
             stop(player);
             return;
         }
         if (!pylon.toggleLink(link)) {
-            player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.full", pylon.maxLinks())
-                    .withStyle(ChatFormatting.RED));
+            player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.full", pylon.maxLinks())
+                    .withStyle(ChatFormatting.RED), true);
             stop(player);
             return;
         }
         stop(player);
-        player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.added", name, pylon.links().size(),
-                pylon.maxLinks()).withStyle(ChatFormatting.GOLD));
+        player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.added", name, pylon.links().size(),
+                pylon.maxLinks()).withStyle(ChatFormatting.GOLD), true);
         level.playSound(null, target, ModSounds.PYLON_LINK.get(), SoundSource.BLOCKS, 0.7F, 1.0F);
         Vec3 at = link.entry();
         level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 12, 0.15, 0.15, 0.15, 0.05);
@@ -297,7 +297,7 @@ public final class PylonLinking {
             Pending pending = PENDING.get(player.getUUID());
             if (pending != null && player.level().getGameTime() - pending.since() > TIMEOUT_TICKS) {
                 stop(player);
-                player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"));
+                player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.cancel"), true);
             }
         }
     }

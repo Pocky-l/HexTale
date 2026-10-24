@@ -22,9 +22,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.world.phys.AABB;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -50,7 +50,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
     private static final float MIN = CrucibleBlockEntity.INSIDE_MIN + 0.01F;
     private static final float MAX = CrucibleBlockEntity.INSIDE_MAX - 0.01F;
     private static final int WATER = 0x3F76E4;
-    private static final Identifier ICONS = Hextale.id("textures/gui/essence_icons.png");
+    private static final ResourceLocation ICONS = Hextale.id("textures/gui/essence_icons.png");
     /** Essence pictograms on the sheet: 18 texels each, one every 20, 16 a row, sheet 512 x 128. */
     private static final float ICON_U = 18F / 512;
     private static final float ICON_V = 18F / 128;
@@ -268,7 +268,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         float x = -font.width(text) / 2F;
         float a = Math.max(0.1F, alpha);
         collector.submitText(poseStack, x, 0, FormattedCharSequence.forward(text, Style.EMPTY), false, Font.DisplayMode.NORMAL,
-                LightCoordsUtil.FULL_BRIGHT, RuneDrawing.argb(RuneDrawing.lighten(color, 0.55F), a), 0, RuneDrawing.argb(0x0A0812, a));
+                LightTexture.FULL_BRIGHT, RuneDrawing.argb(RuneDrawing.lighten(color, 0.55F), a), 0, RuneDrawing.argb(0x0A0812, a));
         poseStack.popPose();
     }
 

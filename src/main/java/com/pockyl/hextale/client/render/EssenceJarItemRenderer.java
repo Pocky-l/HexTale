@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  * ({@code items/essence_tank.json}) puts this special renderer on top of it.
  */
 public final class EssenceJarItemRenderer implements SpecialModelRenderer<EssenceJarItemRenderer.Contents> {
-    public static final Identifier ID = Hextale.id("essence_jar");
+    public static final ResourceLocation ID = Hextale.id("essence_jar");
 
     /** What the item carries: how full (0-1), the liquid's colour and the sticker. */
     public record Contents(float fill, int color, @Nullable Essence sticker) {

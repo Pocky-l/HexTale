@@ -85,11 +85,11 @@ public class ResearchNotesItem extends Item {
         if (player instanceof ServerPlayer serverPlayer) {
             Component name = Component.translatable(topic.translationKey()).withColor(topic.color());
             if (!Research.research(serverPlayer, topic)) {
-                serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.research_notes.known", name));
+                serverPlayer.displayClientMessage(Component.translatable("item.hextale.research_notes.known", name), true);
                 return InteractionResult.FAIL;
             }
             stack.consume(1, player);
-            serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.research_notes.learned", name));
+            serverPlayer.displayClientMessage(Component.translatable("item.hextale.research_notes.learned", name), true);
             level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.9F);
             level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 1.2F);
         }

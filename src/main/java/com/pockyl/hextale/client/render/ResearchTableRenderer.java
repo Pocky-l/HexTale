@@ -15,8 +15,8 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.Level;
@@ -47,7 +47,7 @@ import java.util.List;
  * <p>The table is read into a {@link State} on extraction; {@link #submit} only turns that state into geometry.
  */
 public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableBlockEntity, ResearchTableRenderer.State> {
-    private static final Identifier BOOK_TEXTURE = Hextale.id("textures/entity/researchers_diary.png");
+    private static final ResourceLocation BOOK_TEXTURE = Hextale.id("textures/entity/researchers_diary.png");
     private static final int ORB_COLOR = 0x5CC8F2;
     private static final int CRACK_COLOR = 0x8A7F78;
     private static final int MOTES = 6;
@@ -319,7 +319,7 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         poseStack.rotate(Axis.YP.rotationDegrees(state.time * 6));
         poseStack.scale(scale, scale, scale);
         poseStack.translate(0, -0.15, 0);
-        state.flareItem.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+        state.flareItem.submit(poseStack, collector, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
         poseStack.popPose();
     }
 

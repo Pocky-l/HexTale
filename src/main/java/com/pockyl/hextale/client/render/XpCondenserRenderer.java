@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -98,7 +98,7 @@ public class XpCondenserRenderer implements BlockEntityRenderer<XpCondenserBlock
         poseStack.rotate(Axis.YP.rotationDegrees(time * 1.2F));
         poseStack.scale(0.32F, 0.32F, 0.32F);
         poseStack.translate(0, -0.2, 0);
-        state.crystal.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+        state.crystal.submit(poseStack, collector, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
         poseStack.popPose();
         for (Vec3 mote : state.motes) {
             poseStack.pushPose();

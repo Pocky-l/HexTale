@@ -39,8 +39,8 @@ public class KnowledgeScrollItem extends Item {
             } else {
                 Research.forgetEverything(server);
             }
-            server.sendOverlayMessage(Component.translatable(teaches ? "item.hextale.scroll_of_omniscience.used"
-                    : "item.hextale.scroll_of_oblivion.used").withStyle(teaches ? ChatFormatting.GOLD : ChatFormatting.DARK_PURPLE));
+            server.displayClientMessage(Component.translatable(teaches ? "item.hextale.scroll_of_omniscience.used"
+                    : "item.hextale.scroll_of_oblivion.used").withStyle(teaches ? ChatFormatting.GOLD : ChatFormatting.DARK_PURPLE), true);
             level.playSound(null, player.blockPosition(), ModSounds.SCROLL_KNOWLEDGE.get(), SoundSource.PLAYERS, 0.8F, teaches ? 1.1F : 0.7F);
         }
         player.getCooldowns().addCooldown(player.getItemInHand(hand), 20);

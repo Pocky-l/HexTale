@@ -3,7 +3,7 @@ package com.pockyl.hextale.menu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -142,7 +142,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
     /** Finds the recipe in the grid and shows its result if this researcher may make it and the bench can pay. */
     private void refresh(HexWorkbenchBlockEntity entity) {
         data.set(0, entity.charge());
-        Map.Entry<Identifier, HexCraftingRecipe> found = HexCraftingRecipe.find(entity.input().input(), false);
+        Map.Entry<ResourceLocation, HexCraftingRecipe> found = HexCraftingRecipe.find(entity.input().input(), false);
         ItemStack shown = ItemStack.EMPTY;
         Why why = Why.NONE;
         int cost = 0;
@@ -182,7 +182,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
         }
         CraftingInput.Positioned positioned = entity.input();
         CraftingInput input = positioned.input();
-        Map.Entry<Identifier, HexCraftingRecipe> found = HexCraftingRecipe.find(input, false);
+        Map.Entry<ResourceLocation, HexCraftingRecipe> found = HexCraftingRecipe.find(input, false);
         if (found == null) {
             RecipeHolder<CraftingRecipe> plain = plainRecipe(level, input);
             if (plain != null) {

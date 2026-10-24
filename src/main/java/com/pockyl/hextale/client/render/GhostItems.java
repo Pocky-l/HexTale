@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -35,13 +35,13 @@ public final class GhostItems {
             ItemStackRenderState.LayerRenderState layer = item.layers[i];
             int[] tints = layer.tintLayers().toIntArray();
             // One draw per texture atlas the quads sample.
-            Map<Identifier, List<BakedQuad>> byAtlas = new LinkedHashMap<>();
+            Map<ResourceLocation, List<BakedQuad>> byAtlas = new LinkedHashMap<>();
             for (BakedQuad quad : layer.quads.all()) {
                 byAtlas.computeIfAbsent(quad.materialInfo().sprite().atlasLocation(), key -> new ArrayList<>()).add(quad);
             }
             poseStack.pushPose();
             layer.applyTransform(poseStack.last());
-            for (Map.Entry<Identifier, List<BakedQuad>> entry : byAtlas.entrySet()) {
+            for (Map.Entry<ResourceLocation, List<BakedQuad>> entry : byAtlas.entrySet()) {
                 List<BakedQuad> quads = entry.getValue();
                 collector.submitCustomGeometry(poseStack, RenderTypes.itemTranslucent(entry.getKey()), (pose, buffer) -> {
                     QuadInstance instance = new QuadInstance();

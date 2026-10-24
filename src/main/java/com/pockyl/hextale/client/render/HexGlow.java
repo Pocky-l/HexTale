@@ -8,8 +8,8 @@ import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.Util;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 import com.pockyl.hextale.Hextale;
@@ -39,14 +39,14 @@ public final class HexGlow {
             .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
             .withCull(false)
             .build();
-    private static final Function<Identifier, RenderType> TEXTURED = Util.memoize(
+    private static final Function<ResourceLocation, RenderType> TEXTURED = Util.memoize(
             texture -> RenderType.create("hextale_glow_textured", RenderSetup.builder(TEXTURED_PIPELINE)
                     .setOitPipelines(RenderPipelines.OIT_EYES).withTexture("Sampler0", texture).createRenderSetup()));
 
     private HexGlow() {
     }
 
-    public static RenderType textured(Identifier texture) {
+    public static RenderType textured(ResourceLocation texture) {
         return TEXTURED.apply(texture);
     }
 

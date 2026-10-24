@@ -77,7 +77,7 @@ public class HexPylonBlock extends BaseEntityBlock {
         boolean filter = stack.is(com.pockyl.hextale.registry.ModItems.PYLON_FILTER.get());
         PylonKind kind = pylon.kind();
         if (filter ? kind == PylonKind.SIPHON : kind != PylonKind.SIPHON && kind != PylonKind.RELAY) {
-            player.sendOverlayMessage(Component.translatable(filter ? "item.hextale.pylon_filter.not_here" : "item.hextale.essence_sticker.not_here"));
+            player.displayClientMessage(Component.translatable(filter ? "item.hextale.pylon_filter.not_here" : "item.hextale.essence_sticker.not_here"), true);
             return;
         }
         if (filter) {
@@ -88,11 +88,11 @@ public class HexPylonBlock extends BaseEntityBlock {
             if (!old.isEmpty()) {
                 com.pockyl.hextale.item.PylonFilterItem.give(player, old);
             }
-            player.sendOverlayMessage(Component.translatable("item.hextale.pylon_filter.set"));
+            player.displayClientMessage(Component.translatable("item.hextale.pylon_filter.set"), true);
         } else {
             com.pockyl.hextale.rune.Essence essence = com.pockyl.hextale.item.EssenceStickerItem.essence(stack);
             if (essence == null) {
-                player.sendOverlayMessage(Component.translatable("item.hextale.essence_sticker.blank"));
+                player.displayClientMessage(Component.translatable("item.hextale.essence_sticker.blank"), true);
                 return;
             }
             com.pockyl.hextale.rune.Essence old = pylon.setSticker(essence);
@@ -103,7 +103,7 @@ public class HexPylonBlock extends BaseEntityBlock {
                 com.pockyl.hextale.item.PylonFilterItem.give(player,
                         com.pockyl.hextale.item.EssenceStickerItem.of(com.pockyl.hextale.registry.ModItems.ESSENCE_STICKER.get(), old));
             }
-            player.sendOverlayMessage(Component.translatable("item.hextale.essence_sticker.set", Component.translatable(essence.translationKey())));
+            player.displayClientMessage(Component.translatable("item.hextale.essence_sticker.set", Component.translatable(essence.translationKey())), true);
         }
         pylon.getLevel().playSound(null, pylon.getBlockPos(), net.minecraft.sounds.SoundEvents.ITEM_FRAME_ADD_ITEM,
                 net.minecraft.sounds.SoundSource.BLOCKS, 0.7F, 1.2F);
@@ -123,10 +123,10 @@ public class HexPylonBlock extends BaseEntityBlock {
         }
         if (player.isSecondaryUseActive()) {
             if (pylon.clearLinks()) {
-                player.sendOverlayMessage(Component.translatable("block.hextale.hex_pylon.link.cleared"));
+                player.displayClientMessage(Component.translatable("block.hextale.hex_pylon.link.cleared"), true);
                 level.playSound(null, pos, com.pockyl.hextale.registry.ModSounds.PYLON_UNLINK.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
             } else {
-                player.sendOverlayMessage(status(pylon));
+                player.displayClientMessage(status(pylon), true);
             }
             return InteractionResult.SUCCESS;
         }

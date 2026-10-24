@@ -62,7 +62,7 @@ public class CrystalBatteryBlock extends BaseEntityBlock {
         }
         if (!level.isClientSide()) {
             if (!battery.soak(stack.copyWithCount(1))) {
-                player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("block.hextale.crystal_battery.full"));
+                player.displayClientMessage(net.minecraft.network.chat.Component.translatable("block.hextale.crystal_battery.full"), true);
                 return InteractionResult.FAIL;
             }
             if (!player.getAbilities().instabuild) {
@@ -75,7 +75,7 @@ public class CrystalBatteryBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof CrystalBatteryBlockEntity battery) {
-            player.sendOverlayMessage(battery.status());
+            player.displayClientMessage(battery.status(), true);
         }
         return InteractionResult.SUCCESS;
     }

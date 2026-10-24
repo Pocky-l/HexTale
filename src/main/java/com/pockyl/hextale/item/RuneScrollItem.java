@@ -86,13 +86,13 @@ public class RuneScrollItem extends Item {
             int stars = stars(stack);
             int before = knowledge.stars(rune);
             if (before >= stars) {
-                serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.rune_scroll.known", name));
+                serverPlayer.displayClientMessage(Component.translatable("item.hextale.rune_scroll.known", name), true);
                 return InteractionResult.FAIL;
             }
             Research.learn(serverPlayer, rune, stars);
             stack.consume(1, player);
-            serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.rune_scroll.studied", name,
-                    "★".repeat(stars) + "☆".repeat(3 - stars)));
+            serverPlayer.displayClientMessage(Component.translatable("item.hextale.rune_scroll.studied", name,
+                    "★".repeat(stars) + "☆".repeat(3 - stars)), true);
             level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.9F);
             level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 1.2F);
         }

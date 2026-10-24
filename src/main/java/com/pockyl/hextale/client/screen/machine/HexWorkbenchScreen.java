@@ -4,9 +4,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -138,7 +138,7 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
         for (int i = 0; i < HexWorkbenchBlockEntity.GRID; i++) {
             grid.add(menu.slots.get(i).getItem());
         }
-        Map.Entry<Identifier, HexCraftingRecipe> found = HexCraftingRecipe.find(CraftingInput.of(3, 3, grid), true);
+        Map.Entry<ResourceLocation, HexCraftingRecipe> found = HexCraftingRecipe.find(CraftingInput.of(3, 3, grid), true);
         return found == null ? ItemStack.EMPTY : found.getValue().result().create();
     }
 }

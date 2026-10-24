@@ -75,7 +75,7 @@ public class ResearchersDiaryItem extends Item {
             }
             DiaryOwner owner = owner(stack);
             if (owner != null && !owner.is(player)) {
-                serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.researchers_diary.foreign", owner.name()));
+                serverPlayer.displayClientMessage(Component.translatable("item.hextale.researchers_diary.foreign", owner.name()), true);
                 return InteractionResult.FAIL;
             }
             ModNetwork.sendToPlayer(serverPlayer, new OpenDiaryPayload(owner == null ? player.getGameProfile().name() : owner.name()));

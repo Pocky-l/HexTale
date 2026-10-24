@@ -13,12 +13,12 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -63,9 +63,9 @@ import org.jspecify.annotations.Nullable;
  * slots, the loupe arm (drag it onto an item to study it) and the player's inventory.
  */
 public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMenu> implements StarBook.Host {
-    private static final Identifier BOOK_TEXTURE = Hextale.id("textures/gui/research_book.png");
-    private static final Identifier DESK_TEXTURE = Hextale.id("textures/gui/research_desk.png");
-    private static final Identifier WIDGETS = Hextale.id("textures/gui/research_table_widgets.png");
+    private static final ResourceLocation BOOK_TEXTURE = Hextale.id("textures/gui/research_book.png");
+    private static final ResourceLocation DESK_TEXTURE = Hextale.id("textures/gui/research_desk.png");
+    private static final ResourceLocation WIDGETS = Hextale.id("textures/gui/research_table_widgets.png");
     private static final int WIDGETS_SIZE_X = 256;
     private static final int WIDGETS_SIZE_Y = 128;
     private static final String KEY = "gui.hextale.research_table.";

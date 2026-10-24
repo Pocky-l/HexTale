@@ -3,7 +3,7 @@ package com.pockyl.hextale.client.render;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
@@ -20,7 +20,7 @@ public record PickaxeRuneTint() implements ItemTintSource {
 
     @Override
     public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner) {
-        return ARGB.opaque(blend(PickaxeRunes.of(stack)));
+        return FastColor.ARGB32.opaque(blend(PickaxeRunes.of(stack)));
     }
 
     /** The runes' colours mixed by their stars; hextech cyan for none (also the Hex Smelter's gem). */

@@ -40,7 +40,7 @@ public class HexSawmillBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof HexSawmillBlockEntity mill) {
-            player.sendOverlayMessage(status(mill));
+            player.displayClientMessage(status(mill), true);
         }
         return InteractionResult.SUCCESS;
     }

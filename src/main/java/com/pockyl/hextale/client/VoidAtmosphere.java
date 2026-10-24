@@ -4,8 +4,8 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
@@ -26,7 +26,7 @@ import com.pockyl.hextale.thevoid.TheVoid;
 public final class VoidAtmosphere {
     /** How far (blocks beyond its own reach, plus a share of its size) a breach is felt. */
     private static final float FELT = 10;
-    private static final Identifier VIGNETTE = Identifier.withDefaultNamespace("textures/misc/vignette.png");
+    private static final ResourceLocation VIGNETTE = ResourceLocation.withDefaultNamespace("textures/misc/vignette.png");
     private static float strength;
     private static float previous;
 
@@ -101,7 +101,7 @@ public final class VoidAtmosphere {
         float seconds = (minecraft.level.getGameTime() + delta.getGameTimeDeltaPartialTick(false)) / 20F;
         float k = Mth.clamp(s * (0.8F + 0.2F * heartbeat(seconds)), 0, 1);
         // The vignette pipeline darkens by its colour: green most, blue least, so the dark edges lean to violet.
-        int color = ARGB.colorFromFloat(1, k * 0.8F, k, k * 0.6F);
+        int color = FastColor.ARGB32.colorFromFloat(1, k * 0.8F, k, k * 0.6F);
         graphics.blit(RenderPipelines.VIGNETTE, VIGNETTE, 0, 0, 0, 0, graphics.guiWidth(), graphics.guiHeight(), graphics.guiWidth(),
                 graphics.guiHeight(), color);
     }

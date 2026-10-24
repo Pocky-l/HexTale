@@ -9,7 +9,7 @@ import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.chem.ChemVialItem;
@@ -27,7 +27,7 @@ import java.util.Map;
 public class BrewingCategory extends AbstractRecipeCategory<BrewingCategory.Recipe> {
     public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "brewing", Recipe.class);
 
-    public record Recipe(Identifier id, BrewRecipe recipe) {
+    public record Recipe(ResourceLocation id, BrewRecipe recipe) {
         List<Map.Entry<Essence, Integer>> essences() {
             return EssenceColumn.entries(recipe.essences().asMap());
         }
@@ -71,7 +71,7 @@ public class BrewingCategory extends AbstractRecipeCategory<BrewingCategory.Reci
     }
 
     @Override
-    public Identifier getIdentifier(Recipe recipe) {
+    public ResourceLocation getIdentifier(Recipe recipe) {
         return recipe.id();
     }
 }

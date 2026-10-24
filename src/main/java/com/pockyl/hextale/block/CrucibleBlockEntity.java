@@ -277,8 +277,8 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
         int dissolved = dissolve(stack, count);
         if (dissolved > 0 && locked != null && researcher instanceof ServerPlayer player) {
             // The brew was right, the researcher was not ready: the item only dissolved.
-            player.sendOverlayMessage(Component.translatable("research.hextale.locked",
-                    Component.translatable(locked.translationKey()).withColor(locked.color())));
+            player.displayClientMessage(Component.translatable("research.hextale.locked",
+                    Component.translatable(locked.translationKey()).withColor(locked.color())), true);
         }
         return dissolved;
     }
@@ -332,11 +332,11 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
     private void hintBrew(ItemStack stack, ServerPlayer player) {
         BrewRecipe hot = BrewRecipe.find(stack, essence, BrewRecipe.BURNER_HEAT, brew);
         if (hot != null && hot.heat() > heat()) {
-            player.sendOverlayMessage(Component.translatable("block.hextale.crucible.say.needs_heat",
-                    Component.translatable("block.hextale.crucible.heat." + hot.heat())));
+            player.displayClientMessage(Component.translatable("block.hextale.crucible.say.needs_heat",
+                    Component.translatable("block.hextale.crucible.heat." + hot.heat())), true);
         } else if (brew != null && BrewRecipe.find(stack, essence, BrewRecipe.BURNER_HEAT, null) != null) {
-            player.sendOverlayMessage(Component.translatable("block.hextale.crucible.say.other_brew",
-                    Component.translatable(brew.translationKey()).withColor(brew.color())));
+            player.displayClientMessage(Component.translatable("block.hextale.crucible.say.other_brew",
+                    Component.translatable(brew.translationKey()).withColor(brew.color())), true);
         }
     }
 

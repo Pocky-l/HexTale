@@ -11,7 +11,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -67,7 +67,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     private static final Codec<List<Ritual.Input>> INPUTS_CODEC = Codec.list(com.mojang.serialization.codecs.RecordCodecBuilder.create(
             instance -> instance.group(
                     BlockPos.CODEC.fieldOf("pos").forGetter(Ritual.Input::pos),
-                    Identifier.CODEC.fieldOf("item").forGetter(Ritual.Input::item)
+                    ResourceLocation.CODEC.fieldOf("item").forGetter(Ritual.Input::item)
             ).apply(instance, Ritual.Input::new)));
 
     private ItemStack center = ItemStack.EMPTY;
@@ -232,10 +232,10 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                     Ritual.Engraving engraving = Ritual.engraving(center, circle);
                     Object[] names = engraving.named().stream()
                             .map(rune -> (Object) Component.translatable(rune.translationKey()).withColor(rune.color())).toArray();
-                    player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.engrave." + engraving.refusal(), names));
+                    player.displayClientMessage(Component.translatable("block.hextale.hextech_altar.engrave." + engraving.refusal(), names), true);
                 } else if (Ritual.blankScroll(center)) {
                     // A scroll takes exactly one rune, from one stele, and nothing from the pedestals.
-                    player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.write.one_rune"));
+                    player.displayClientMessage(Component.translatable("block.hextale.hextech_altar.write.one_rune"), true);
                 } else if (!hint.runes().isEmpty()) {
                     // The recipe this circle is closest to wants runes no stele shows: name them.
                     MutableComponent names = Component.empty();
@@ -244,10 +244,10 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                         names.append(i == 0 ? Component.empty() : Component.literal(", "))
                                 .append(Component.translatable(rune.translationKey()).withColor(rune.color()));
                     }
-                    player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.nothing.runes_missing", names));
+                    player.displayClientMessage(Component.translatable("block.hextale.hextech_altar.nothing.runes_missing", names), true);
                 } else {
-                    player.sendOverlayMessage(Component.translatable(center.isEmpty() ? "block.hextale.hextech_altar.empty"
-                            : "block.hextale.hextech_altar.nothing"));
+                    player.displayClientMessage(Component.translatable(center.isEmpty() ? "block.hextale.hextech_altar.empty"
+                            : "block.hextale.hextech_altar.nothing"), true);
                 }
             }
             serverLevel.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 0.6F);
@@ -257,8 +257,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         if (topic != null && !researcherNear(serverLevel, player, topic)) {
             // Nobody here has worked this out at the table yet: the circle does not know how to make it.
             if (player != null) {
-                player.sendOverlayMessage(Component.translatable("research.hextale.locked",
-                        Component.translatable(topic.translationKey()).withColor(topic.color())));
+                player.displayClientMessage(Component.translatable("research.hextale.locked",
+                        Component.translatable(topic.translationKey()).withColor(topic.color())), true);
             }
             serverLevel.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 0.6F);
             return;

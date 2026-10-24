@@ -12,8 +12,8 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Avatar;
@@ -46,7 +46,7 @@ public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
     }
 
     public static final ContextKey<Worn> WORN = new ContextKey<>(Hextale.id("skypack"));
-    private static final Identifier JET = Hextale.id("textures/misc/skypack_jet.png");
+    private static final ResourceLocation JET = Hextale.id("textures/misc/skypack_jet.png");
     private static final int JET_FRAMES = 6;
     /** The pack's scale on the back (the model is 16 px wide with its little wings). */
     private static final float SCALE = 0.8F;
@@ -185,7 +185,7 @@ public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 
     private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float u, float v, int rgb, float alpha) {
         consumer.addVertex(pose, x, y, z).setColor((Math.round(Mth.clamp(alpha, 0, 1) * 255) << 24) | (rgb & 0xFFFFFF)).setUv(u, v)
-                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightCoordsUtil.FULL_BRIGHT).setNormal(pose, 0, 1, 0);
+                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(pose, 0, 1, 0);
     }
 
     /** The camera's rotation seen from inside the current pose: sprites turned by it face the camera. */

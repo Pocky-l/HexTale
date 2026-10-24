@@ -78,7 +78,7 @@ public class ChemStillBlock extends BaseEntityBlock {
         if (!level.isClientSide()) {
             int taken = still.feed(stack);
             if (taken <= 0) {
-                player.sendOverlayMessage(Component.translatable("block.hextale.chem_still.say.full"));
+                player.displayClientMessage(Component.translatable("block.hextale.chem_still.say.full"), true);
                 return InteractionResult.FAIL;
             }
             if (!player.getAbilities().instabuild) {
@@ -94,7 +94,7 @@ public class ChemStillBlock extends BaseEntityBlock {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ChemStillBlockEntity still) {
             ItemStack refined = still.takeOutput();
             if (refined.isEmpty()) {
-                player.sendOverlayMessage(still.status());
+                player.displayClientMessage(still.status(), true);
             } else {
                 if (!player.getInventory().add(refined)) {
                     player.drop(refined, false, net.minecraft.util.Prediction.SERVER_ONLY);

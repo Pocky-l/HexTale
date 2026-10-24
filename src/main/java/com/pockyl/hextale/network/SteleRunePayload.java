@@ -57,7 +57,7 @@ public record SteleRunePayload(BlockPos pos, int rune) implements CustomPacketPa
             net.minecraft.network.chat.Component refusal = com.pockyl.hextale.infusion.Ritual.steleRefusal(altar.center(),
                     com.pockyl.hextale.infusion.Ritual.onOtherSteles(player.level(), altar, payload.pos), rune);
             if (refusal != null) {
-                player.sendOverlayMessage(refusal);
+                player.displayClientMessage(refusal, true);
                 return;
             }
         }

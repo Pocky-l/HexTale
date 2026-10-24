@@ -7,7 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -88,11 +88,11 @@ public record HexCraftingRecipe(Either<ShapedRecipePattern, List<Ingredient>> sh
     }
 
     /** The first recipe the grid holds, in id order. */
-    public static Map.@Nullable Entry<Identifier, HexCraftingRecipe> find(CraftingInput input, boolean clientSide) {
+    public static Map.@Nullable Entry<ResourceLocation, HexCraftingRecipe> find(CraftingInput input, boolean clientSide) {
         if (input.isEmpty()) {
             return null;
         }
-        for (Map.Entry<Identifier, HexCraftingRecipe> entry : ALL.get(clientSide).entrySet()) {
+        for (Map.Entry<ResourceLocation, HexCraftingRecipe> entry : ALL.get(clientSide).entrySet()) {
             if (entry.getValue().matches(input)) {
                 return entry;
             }

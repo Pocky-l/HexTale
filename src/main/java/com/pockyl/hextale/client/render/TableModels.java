@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.standalone.SimpleUnbakedStandaloneModel;
 import net.neoforged.neoforge.client.model.standalone.StandaloneModelKey;
@@ -23,7 +23,7 @@ import java.util.Map;
  * desk, rings centred on their own block) and submitted by its renderer.
  */
 public final class TableModels {
-    private static final Map<StandaloneModelKey<BlockStateModelPart>, Identifier> MODELS = new LinkedHashMap<>();
+    private static final Map<StandaloneModelKey<BlockStateModelPart>, ResourceLocation> MODELS = new LinkedHashMap<>();
     private static final int[] NO_TINTS = new int[0];
 
     public static final StandaloneModelKey<BlockStateModelPart> PARCHMENT = prop("parchment");
@@ -63,7 +63,7 @@ public final class TableModels {
     }
 
     private static StandaloneModelKey<BlockStateModelPart> model(String path) {
-        Identifier id = Hextale.id(path);
+        ResourceLocation id = Hextale.id(path);
         StandaloneModelKey<BlockStateModelPart> key = new StandaloneModelKey<>(id::toString);
         MODELS.put(key, id);
         return key;

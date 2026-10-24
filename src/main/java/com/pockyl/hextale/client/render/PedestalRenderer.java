@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.Level;
@@ -62,7 +62,7 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
             float scale = 0.7F * (1 - 0.6F * draw * draw);
             poseStack.scale(scale, scale, scale);
             poseStack.translate(0, -0.15, 0);
-            state.item.submit(poseStack, collector, draw > 0 ? LightCoordsUtil.FULL_BRIGHT : state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+            state.item.submit(poseStack, collector, draw > 0 ? LightTexture.FULL_BRIGHT : state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
         }
         poseStack.popPose();
     }

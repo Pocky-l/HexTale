@@ -3,7 +3,7 @@ package com.pockyl.hextale.infusion;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -23,26 +23,26 @@ import java.util.TreeMap;
 public final class InfusionRecipes {
     public static final FileToIdConverter LISTER = FileToIdConverter.json("hextale_infusion");
 
-    private static volatile Map<Identifier, InfusionRecipe> server = Map.of();
-    private static volatile Map<Identifier, InfusionRecipe> client = Map.of();
+    private static volatile Map<ResourceLocation, InfusionRecipe> server = Map.of();
+    private static volatile Map<ResourceLocation, InfusionRecipe> client = Map.of();
 
     private InfusionRecipes() {
     }
 
-    public static Map<Identifier, InfusionRecipe> get(boolean clientSide) {
+    public static Map<ResourceLocation, InfusionRecipe> get(boolean clientSide) {
         return clientSide ? client : server;
     }
 
-    public static void setServer(Map<Identifier, InfusionRecipe> recipes) {
+    public static void setServer(Map<ResourceLocation, InfusionRecipe> recipes) {
         server = Collections.unmodifiableMap(new LinkedHashMap<>(recipes));
     }
 
-    public static void setClient(Map<Identifier, InfusionRecipe> recipes) {
+    public static void setClient(Map<ResourceLocation, InfusionRecipe> recipes) {
         client = Collections.unmodifiableMap(new LinkedHashMap<>(recipes));
     }
 
     /** Loads the recipes on every data reload; tags in ingredients resolve through the reload's registries. */
-    public static final class Loader extends SimplePreparableReloadListener<Map<Identifier, InfusionRecipe>> {
+    public static final class Loader extends SimplePreparableReloadListener<Map<ResourceLocation, InfusionRecipe>> {
         private final HolderLookup.Provider registries;
 
         public Loader(HolderLookup.Provider registries) {
@@ -50,15 +50,15 @@ public final class InfusionRecipes {
         }
 
         @Override
-        protected Map<Identifier, InfusionRecipe> prepare(ResourceManager manager, ProfilerFiller profiler) {
-            Map<Identifier, InfusionRecipe> found = new TreeMap<>();
+        protected Map<ResourceLocation, InfusionRecipe> prepare(ResourceManager manager, ProfilerFiller profiler) {
+            Map<ResourceLocation, InfusionRecipe> found = new TreeMap<>();
             SimpleJsonResourceReloadListener.scanDirectory(manager, LISTER, RegistryOps.create(JsonOps.INSTANCE, registries),
                     InfusionRecipe.CODEC, found);
             return found;
         }
 
         @Override
-        protected void apply(Map<Identifier, InfusionRecipe> recipes, ResourceManager manager, ProfilerFiller profiler) {
+        protected void apply(Map<ResourceLocation, InfusionRecipe> recipes, ResourceManager manager, ProfilerFiller profiler) {
             setServer(recipes);
         }
     }

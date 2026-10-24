@@ -51,7 +51,7 @@ public class XpCondenserBlock extends BaseEntityBlock {
         }
         if (!level.isClientSide()) {
             if (!condenser.bottle()) {
-                player.sendOverlayMessage(Component.translatable("block.hextale.xp_condenser.too_little", XpCondenserBlockEntity.BOTTLE_COST));
+                player.displayClientMessage(Component.translatable("block.hextale.xp_condenser.too_little", XpCondenserBlockEntity.BOTTLE_COST), true);
                 return InteractionResult.FAIL;
             }
             if (!player.getAbilities().instabuild) {
@@ -67,8 +67,8 @@ public class XpCondenserBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (player instanceof ServerPlayer server && level.getBlockEntity(pos) instanceof XpCondenserBlockEntity condenser) {
             int given = condenser.give(server, player.isShiftKeyDown());
-            player.sendOverlayMessage(given > 0 ? Component.translatable("block.hextale.xp_condenser.given", given, condenser.points())
-                    : Component.translatable("block.hextale.xp_condenser.status", condenser.points(), XpCondenserBlockEntity.CAPACITY));
+            player.displayClientMessage(given > 0 ? Component.translatable("block.hextale.xp_condenser.given", given, condenser.points())
+                    : Component.translatable("block.hextale.xp_condenser.status", condenser.points(), XpCondenserBlockEntity.CAPACITY), true);
         }
         return InteractionResult.SUCCESS;
     }

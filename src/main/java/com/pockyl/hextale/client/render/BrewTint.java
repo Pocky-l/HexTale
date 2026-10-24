@@ -3,7 +3,7 @@ package com.pockyl.hextale.client.render;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
@@ -17,7 +17,7 @@ public record BrewTint() implements ItemTintSource {
     @Override
     public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner) {
         Brew brew = ChemVialItem.brew(stack);
-        return ARGB.opaque(brew == null ? 0x9AA89A : brew.color());
+        return FastColor.ARGB32.opaque(brew == null ? 0x9AA89A : brew.color());
     }
 
     @Override

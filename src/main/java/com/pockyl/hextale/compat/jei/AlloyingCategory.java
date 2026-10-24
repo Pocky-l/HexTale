@@ -7,7 +7,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.Hextale;
@@ -21,7 +21,7 @@ import java.util.List;
 public class AlloyingCategory extends AbstractRecipeCategory<AlloyingCategory.Recipe> {
     public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "alloying", Recipe.class);
 
-    public record Recipe(Identifier id, AlloyRecipe recipe) {
+    public record Recipe(ResourceLocation id, AlloyRecipe recipe) {
     }
 
     public AlloyingCategory(IGuiHelper guiHelper) {
@@ -50,7 +50,7 @@ public class AlloyingCategory extends AbstractRecipeCategory<AlloyingCategory.Re
     }
 
     @Override
-    public Identifier getIdentifier(Recipe recipe) {
+    public ResourceLocation getIdentifier(Recipe recipe) {
         return recipe.id();
     }
 }

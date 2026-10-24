@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -39,7 +39,7 @@ import java.util.Optional;
 public final class RuneScrollLoot extends LootModifier {
     private static final Codec<List<Integer>> THREE_WEIGHTS = Codec.intRange(0, 10_000).listOf(3, 3);
     public static final MapCodec<RuneScrollLoot> CODEC = RecordCodecBuilder.mapCodec(instance -> codecStart(instance).and(instance.group(
-            Identifier.CODEC.listOf().fieldOf("tables").forGetter(loot -> loot.tables),
+            ResourceLocation.CODEC.listOf().fieldOf("tables").forGetter(loot -> loot.tables),
             Codec.floatRange(0, 1).fieldOf("chance").forGetter(loot -> loot.chance),
             THREE_WEIGHTS.fieldOf("chapters").forGetter(loot -> loot.chapters),
             THREE_WEIGHTS.optionalFieldOf("stars", List.of(60, 30, 10)).forGetter(loot -> loot.stars)
@@ -52,12 +52,12 @@ public final class RuneScrollLoot extends LootModifier {
         SERIALIZERS.register("rune_scrolls", () -> CODEC);
     }
 
-    private final List<Identifier> tables;
+    private final List<ResourceLocation> tables;
     private final float chance;
     private final List<Integer> chapters;
     private final List<Integer> stars;
 
-    public RuneScrollLoot(Optional<Holder<LootItemCondition>> condition, int priority, List<Identifier> tables, float chance,
+    public RuneScrollLoot(Optional<Holder<LootItemCondition>> condition, int priority, List<ResourceLocation> tables, float chance,
                           List<Integer> chapters, List<Integer> stars) {
         super(condition, priority);
         this.tables = List.copyOf(tables);

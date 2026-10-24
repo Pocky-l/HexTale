@@ -33,6 +33,7 @@ configurations {
 }
 
 repositories {
+    mavenCentral()
     maven {
         // JEI (optional integration).
         name = 'BlameJared'
@@ -117,6 +118,9 @@ configurations {
 }
 
 dependencies {
+    // Minecraft 26.x ships JSpecify; on 1.21.1 the annotations come from Maven Central (compile time only).
+    compileOnly 'org.jspecify:jspecify:1.0.0'
+
     // Optional integrations, compiled against their APIs only; the playtest client runs the mods themselves.
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"

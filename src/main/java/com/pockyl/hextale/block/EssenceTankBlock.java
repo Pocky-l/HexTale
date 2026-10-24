@@ -119,7 +119,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             // A skypack drinks the air out of the jar (any jar, the creative one too).
             if (!com.pockyl.hextale.item.HextechSkypackItem.fillFrom((ServerLevel) level, tank, stack, player.position().add(0, 1.1, 0),
                     com.pockyl.hextale.item.HextechSkypackItem.CAPACITY)) {
-                player.sendOverlayMessage(Component.translatable("item.hextale.hextech_skypack.no_air"));
+                player.displayClientMessage(Component.translatable("item.hextale.hextech_skypack.no_air"), true);
             }
             return InteractionResult.SUCCESS;
         }
@@ -130,7 +130,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             // A sticker goes on the jar (the one already there comes back); a blank one asks for its essence first.
             Essence essence = EssenceStickerItem.essence(stack);
             if (essence == null) {
-                player.sendOverlayMessage(Component.translatable("item.hextale.essence_sticker.blank"));
+                player.displayClientMessage(Component.translatable("item.hextale.essence_sticker.blank"), true);
                 return InteractionResult.SUCCESS;
             }
             Essence old = tank.sticker();
@@ -146,13 +146,13 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
                 Vec3 at = hitResult.getLocation();
                 serverLevel.sendParticles(ModParticles.glint(ModParticles.GOLD), at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
             }
-            player.sendOverlayMessage(Component.translatable("block.hextale.essence_tank.sticker", Component.translatable(essence.translationKey())));
+            player.displayClientMessage(Component.translatable("block.hextale.essence_tank.sticker", Component.translatable(essence.translationKey())), true);
             return InteractionResult.SUCCESS;
         }
         if (tank.sticker() != null && EssenceFlaskItem.isFlask(stack) && !EssenceFlaskItem.contents(stack).isEmpty()
                 && !tank.accepts(EssenceFlaskItem.contents(stack))) {
-            player.sendOverlayMessage(Component.translatable("block.hextale.essence_tank.refuses",
-                    Component.translatable(tank.sticker().translationKey())));
+            player.displayClientMessage(Component.translatable("block.hextale.essence_tank.refuses",
+                    Component.translatable(tank.sticker().translationKey())), true);
             return InteractionResult.SUCCESS;
         }
         if (Flasks.use(player, hand, stack, tank.tank())) {
@@ -182,7 +182,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             return InteractionResult.SUCCESS;
         }
         if (!level.isClientSide()) {
-            player.sendOverlayMessage(Flasks.describe(tank.tank()));
+            player.displayClientMessage(Flasks.describe(tank.tank()), true);
         }
         return InteractionResult.SUCCESS;
     }

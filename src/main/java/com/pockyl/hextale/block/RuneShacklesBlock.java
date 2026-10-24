@@ -33,7 +33,7 @@ public class RuneShacklesBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof RuneShacklesBlockEntity plate) {
-            player.sendOverlayMessage(status(plate));
+            player.displayClientMessage(status(plate), true);
         }
         return InteractionResult.SUCCESS;
     }

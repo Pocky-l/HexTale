@@ -3,7 +3,7 @@ package com.pockyl.hextale.quest;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -85,7 +85,7 @@ public final class Guide {
         return new SimplePreparableReloadListener<>() {
             @Override
             protected Map<String, QuestDefinition> prepare(ResourceManager manager, ProfilerFiller profiler) {
-                Map<Identifier, QuestDefinition> found = new TreeMap<>();
+                Map<ResourceLocation, QuestDefinition> found = new TreeMap<>();
                 SimpleJsonResourceReloadListener.scanDirectory(manager, FileToIdConverter.json(FOLDER),
                         RegistryOps.create(JsonOps.INSTANCE, registries), QuestDefinition.CODEC, found);
                 Map<String, QuestDefinition> steps = new LinkedHashMap<>();
@@ -101,7 +101,7 @@ public final class Guide {
     }
 
     /** A step's id from its file: the path in the mod's own namespace, {@code namespace:path} elsewhere. */
-    public static String id(Identifier file) {
+    public static String id(ResourceLocation file) {
         return file.getNamespace().equals(Hextale.MOD_ID) ? file.getPath() : file.toString();
     }
 

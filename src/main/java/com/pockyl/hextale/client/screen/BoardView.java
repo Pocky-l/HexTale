@@ -4,9 +4,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.Hextale;
@@ -49,7 +49,7 @@ final class BoardView {
     private static final int PAPER_Y = 28;
     private static final int PAPER_W = 236;
     private static final int PAPER_H = 226;
-    private static final Identifier DESK_TEXTURE = Hextale.id("textures/gui/research_desk.png");
+    private static final ResourceLocation DESK_TEXTURE = Hextale.id("textures/gui/research_desk.png");
     private static final double KX = COL_STEP / (HexGrid.HS * HexGrid.SQ3);
     private static final double KY = ROW_STEP / (HexGrid.HS * 1.5);
     private static final int WALL = 0x241A2E;

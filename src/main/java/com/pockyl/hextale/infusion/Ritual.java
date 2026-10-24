@@ -3,7 +3,7 @@ package com.pockyl.hextale.infusion;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -386,7 +386,7 @@ public final class Ritual {
      * @param essences what it draws from the tanks (the recipe's and its runes')
      * @param result   what the centre item becomes
      */
-    public record Plan(Kind kind, @Nullable Identifier recipe, List<Input> inputs, EssenceMix essences, ItemStack result) {
+    public record Plan(Kind kind, @Nullable ResourceLocation recipe, List<Input> inputs, EssenceMix essences, ItemStack result) {
         /** Warm-up, then the pedestal items one by one, then the essences one by one, then the finale. */
         public int duration() {
             return WARMUP_TICKS + inputs.size() * TICKS_PER_ITEM + drawTicks(essences.total()) + FINALE_TICKS;
@@ -394,16 +394,16 @@ public final class Ritual {
     }
 
     /** One pedestal the ritual draws from and the item it must still hold then. */
-    public record Input(BlockPos pos, Identifier item) {
+    public record Input(BlockPos pos, ResourceLocation item) {
         public boolean holds(ItemStack stack) {
             return !stack.isEmpty() && BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(item);
         }
     }
 
     /** The recipes, those that need the most runes first (a circle set up for a rich recipe never makes a poorer one). */
-    private static List<Map.Entry<Identifier, InfusionRecipe>> recipes(boolean clientSide) {
-        List<Map.Entry<Identifier, InfusionRecipe>> list = new ArrayList<>(InfusionRecipes.get(clientSide).entrySet());
-        list.sort(Comparator.comparingInt((Map.Entry<Identifier, InfusionRecipe> e) -> -e.getValue().runes().size()));
+    private static List<Map.Entry<ResourceLocation, InfusionRecipe>> recipes(boolean clientSide) {
+        List<Map.Entry<ResourceLocation, InfusionRecipe>> list = new ArrayList<>(InfusionRecipes.get(clientSide).entrySet());
+        list.sort(Comparator.comparingInt((Map.Entry<ResourceLocation, InfusionRecipe> e) -> -e.getValue().runes().size()));
         return list;
     }
 
@@ -438,7 +438,7 @@ public final class Ritual {
             holder.set(result, engraving.after());
             return new Plan(Kind.ENGRAVE, null, List.of(), engraving.cost(), result);
         }
-        for (Map.Entry<Identifier, InfusionRecipe> entry : recipes(clientSide)) {
+        for (Map.Entry<ResourceLocation, InfusionRecipe> entry : recipes(clientSide)) {
             InfusionRecipe recipe = entry.getValue();
             if (!recipe.center().test(center) || !recipe.runes().stream().allMatch(rune -> circle.stars(rune) > 0)) {
                 continue;
@@ -474,7 +474,7 @@ public final class Ritual {
         List<PedestalBlockEntity> filled = circle.filledPedestals();
         Hint best = Hint.NONE;
         int bestScore = Integer.MAX_VALUE;
-        for (Map.Entry<Identifier, InfusionRecipe> entry : recipes(clientSide)) {
+        for (Map.Entry<ResourceLocation, InfusionRecipe> entry : recipes(clientSide)) {
             InfusionRecipe recipe = entry.getValue();
             if (!recipe.center().test(center)) {
                 continue;

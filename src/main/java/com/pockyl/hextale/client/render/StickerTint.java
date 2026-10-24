@@ -3,7 +3,7 @@ package com.pockyl.hextale.client.render;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
@@ -19,7 +19,7 @@ public record StickerTint() implements ItemTintSource {
     @Override
     public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner) {
         Essence essence = EssenceStickerItem.essence(stack);
-        return ARGB.opaque(essence == null ? BLANK : essence.color());
+        return FastColor.ARGB32.opaque(essence == null ? BLANK : essence.color());
     }
 
     @Override

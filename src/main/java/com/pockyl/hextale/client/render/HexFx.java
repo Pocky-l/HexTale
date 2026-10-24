@@ -6,8 +6,8 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import org.joml.Quaternionfc;
@@ -25,15 +25,15 @@ import com.pockyl.hextale.rune.RuneGlyphs;
  * it looks right with shader packs too.
  */
 public final class HexFx {
-    public static final Identifier HALO = Hextale.id("textures/misc/orb_halo.png");
-    public static final Identifier CORE = Hextale.id("textures/misc/orb_core.png");
-    public static final Identifier MOTE = Hextale.id("textures/misc/mote.png");
-    public static final Identifier WHITE = Hextale.id("textures/misc/white.png");
+    public static final ResourceLocation HALO = Hextale.id("textures/misc/orb_halo.png");
+    public static final ResourceLocation CORE = Hextale.id("textures/misc/orb_core.png");
+    public static final ResourceLocation MOTE = Hextale.id("textures/misc/mote.png");
+    public static final ResourceLocation WHITE = Hextale.id("textures/misc/white.png");
     /** Four-pointed glints, 4 frames side by side (the glint particle's art). */
-    public static final Identifier GLINT = Hextale.id("textures/misc/glint.png");
+    public static final ResourceLocation GLINT = Hextale.id("textures/misc/glint.png");
     public static final int GLINT_FRAMES = 4;
     /** Soft puffs of vapour, 6 frames side by side (the vapour particle's art). */
-    public static final Identifier VAPOUR = Hextale.id("textures/misc/vapour.png");
+    public static final ResourceLocation VAPOUR = Hextale.id("textures/misc/vapour.png");
     public static final int VAPOUR_FRAMES = 6;
     public static final int HEXTECH = 0x5CC8F2;
 
@@ -62,7 +62,7 @@ public final class HexFx {
     }
 
     /** A camera-facing sprite at the current pose origin, drawn with both windings. */
-    public static void sprite(PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera, Identifier texture, float size, int color,
+    public static void sprite(PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera, ResourceLocation texture, float size, int color,
                               float alpha) {
         poseStack.pushPose();
         poseStack.rotate(camera);
@@ -84,7 +84,7 @@ public final class HexFx {
      * Camera-facing quads cut from a sheet of {@code frames} sprites side by side, in one batch. Each quad is
      * {x, y, z, half size, frame, roll, alpha, rgb} relative to the pose origin.
      */
-    public static void sheet(PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera, Identifier texture, int frames,
+    public static void sheet(PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera, ResourceLocation texture, int frames,
                              java.util.List<float[]> quads) {
         if (quads.isEmpty()) {
             return;
@@ -125,7 +125,7 @@ public final class HexFx {
             for (float[] f : CUBE_FACES) {
                 for (int v = 0; v < 4; v++) {
                     consumer.addVertex(pose, f[v * 3] * h, f[v * 3 + 1] * h, f[v * 3 + 2] * h).setColor(argb)
-                            .setUv(CUBE_UVS[v][0], CUBE_UVS[v][1]).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightCoordsUtil.FULL_BRIGHT)
+                            .setUv(CUBE_UVS[v][0], CUBE_UVS[v][1]).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT)
                             .setNormal(pose, f[12], f[13], f[14]);
                 }
             }
@@ -314,7 +314,7 @@ public final class HexFx {
             for (int k = 0; k < 4; k++) {
                 float[] c = corners[pass == 0 ? k : 3 - k];
                 consumer.addVertex(pose, side.x * c[0] + along.x * c[1], side.y * c[0] + along.y * c[1], side.z * c[0] + along.z * c[1])
-                        .setColor(argb).setUv(c[2], c[3]).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightCoordsUtil.FULL_BRIGHT)
+                        .setColor(argb).setUv(c[2], c[3]).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT)
                         .setNormal(pose, 0, 1, 0);
             }
         }
@@ -326,6 +326,6 @@ public final class HexFx {
 
     public static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float u, float v, int color, float alpha) {
         consumer.addVertex(pose, x, y, z).setColor(RuneDrawing.argb(color, alpha)).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightCoordsUtil.FULL_BRIGHT).setNormal(pose, 0, 0, 1);
+                .setLight(LightTexture.FULL_BRIGHT).setNormal(pose, 0, 0, 1);
     }
 }

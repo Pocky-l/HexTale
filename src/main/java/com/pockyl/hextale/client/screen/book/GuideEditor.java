@@ -186,7 +186,7 @@ final class GuideEditor {
         String text = what + (saved ? "  saved" : "  NOT saved") + (crossings > 0 ? "  -  " + crossings + " link crossing(s)!" : "");
         var player = Minecraft.getInstance().player;
         if (player != null) {
-            player.sendOverlayMessage(Component.literal(text).withColor(crossings > 0 || !saved ? 0xFF7060 : 0x8FE07A));
+            player.displayClientMessage(Component.literal(text).withColor(crossings > 0 || !saved ? 0xFF7060 : 0x8FE07A), true);
         }
     }
 

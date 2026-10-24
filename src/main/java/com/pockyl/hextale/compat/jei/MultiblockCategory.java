@@ -15,7 +15,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import com.pockyl.hextale.Hextale;
@@ -69,7 +69,7 @@ public class MultiblockCategory extends AbstractRecipeCategory<Multiblock> {
     }
 
     @Override
-    public Identifier getIdentifier(Multiblock multiblock) {
+    public ResourceLocation getIdentifier(Multiblock multiblock) {
         return Hextale.id("multiblock/" + multiblock.id());
     }
 

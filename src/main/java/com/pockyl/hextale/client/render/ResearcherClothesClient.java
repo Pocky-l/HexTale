@@ -6,7 +6,7 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -30,7 +30,7 @@ import org.jspecify.annotations.Nullable;
  */
 public final class ResearcherClothesClient {
     /** One texture for all four pieces, whichever armour layer asks for it. */
-    public static final Identifier TEXTURE = Hextale.id("textures/entity/equipment/humanoid/researcher_robe.png");
+    public static final ResourceLocation TEXTURE = Hextale.id("textures/entity/equipment/humanoid/researcher_robe.png");
 
     /** A piece: its model layer, the item, and how its icon is framed (centre height and scale in model pixels). */
     public enum Piece {
@@ -82,8 +82,8 @@ public final class ResearcherClothesClient {
                 }
 
                 @Override
-                public Identifier getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer,
-                                                  Identifier fallback) {
+                public ResourceLocation getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer,
+                                                  ResourceLocation fallback) {
                     return TEXTURE;
                 }
             }, piece.item.get());

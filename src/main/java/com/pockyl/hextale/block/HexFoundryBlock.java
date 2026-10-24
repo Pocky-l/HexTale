@@ -72,7 +72,7 @@ public class HexFoundryBlock extends BaseEntityBlock implements WorldlyContainer
             if (foundry.isFormed()) {
                 player.openMenu(foundry, buf -> buf.writeBlockPos(pos));
             } else {
-                player.sendOverlayMessage(Component.translatable("block.hextale.hex_foundry.alone"));
+                player.displayClientMessage(Component.translatable("block.hextale.hex_foundry.alone"), true);
             }
         }
         return InteractionResult.SUCCESS;

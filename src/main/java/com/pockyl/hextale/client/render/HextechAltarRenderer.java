@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -100,11 +100,11 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         poseStack.rotate(Axis.YP.rotationDegrees(state.outerPhase));
         poseStack.pushPose();
         poseStack.translate(-0.5, -0.5, -0.5);
-        TableModels.submit(poseStack, collector, TableModels.ALTAR_RING_OUTER, LightCoordsUtil.FULL_BRIGHT);
+        TableModels.submit(poseStack, collector, TableModels.ALTAR_RING_OUTER, LightTexture.FULL_BRIGHT);
         poseStack.popPose();
         poseStack.rotate(Axis.XP.rotationDegrees(state.innerPhase));
         poseStack.translate(-0.5, -0.5, -0.5);
-        TableModels.submit(poseStack, collector, TableModels.ALTAR_RING_INNER, LightCoordsUtil.FULL_BRIGHT);
+        TableModels.submit(poseStack, collector, TableModels.ALTAR_RING_INNER, LightTexture.FULL_BRIGHT);
         poseStack.popPose();
 
         // The centre item, turning; faster as the ritual goes on.
@@ -114,7 +114,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
             float pop = 1 + 0.25F * flash * Mth.sin(Math.min(1, state.sinceFinish / 8) * Mth.PI);
             poseStack.scale(0.9F * pop, 0.9F * pop, 0.9F * pop);
             poseStack.translate(0, -0.15, 0);
-            state.center.submit(poseStack, collector, state.active || flash > 0 ? LightCoordsUtil.FULL_BRIGHT : state.lightCoords,
+            state.center.submit(poseStack, collector, state.active || flash > 0 ? LightTexture.FULL_BRIGHT : state.lightCoords,
                     OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
         }
@@ -162,7 +162,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
             poseStack.scale(scale, scale, scale);
             poseStack.translate(0, -0.15, 0);
             // See-through and fully lit, breathing between faint and half visible.
-            GhostItems.submit(ghost.item, poseStack, collector, LightCoordsUtil.FULL_BRIGHT, 0.3F + 0.25F * pulse);
+            GhostItems.submit(ghost.item, poseStack, collector, LightTexture.FULL_BRIGHT, 0.3F + 0.25F * pulse);
             poseStack.popPose();
             i++;
         }

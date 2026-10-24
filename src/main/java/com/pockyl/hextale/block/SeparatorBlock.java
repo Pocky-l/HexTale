@@ -158,8 +158,8 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
             if (player.isShiftKeyDown() && side != null) {
                 // Sneak-using a side changes what its pipe does, right on the block.
                 separator.cycle(side);
-                player.sendOverlayMessage(Component.translatable("gui.hextale.separator.side." + side.name().toLowerCase(Locale.ROOT))
-                        .append(": ").append(Component.translatable("gui.hextale.port." + separator.mode(side).getSerializedName())));
+                player.displayClientMessage(Component.translatable("gui.hextale.separator.side." + side.name().toLowerCase(Locale.ROOT))
+                        .append(": ").append(Component.translatable("gui.hextale.port." + separator.mode(side).getSerializedName())), true);
                 level.playSound(null, pos, SoundEvents.COPPER_BULB_TURN_ON, SoundSource.BLOCKS, 0.6F, 1.2F);
             } else {
                 player.openMenu(separator, buf -> buf.writeBlockPos(pos));

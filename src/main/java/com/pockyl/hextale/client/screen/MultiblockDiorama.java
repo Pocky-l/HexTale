@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -206,7 +206,7 @@ public final class MultiblockDiorama {
             float cx = pattern.width() / 2F;
             float cz = pattern.depth() / 2F;
             poseStack.translate(-cx, -pattern.height() / 2F, -cz);
-            int light = LightCoordsUtil.FULL_BRIGHT;
+            int light = LightTexture.FULL_BRIGHT;
             float pulse = 0.5F + 0.5F * Mth.sin(time * 0.15F);
             int itemIndex = 0;
 

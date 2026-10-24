@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -87,7 +87,7 @@ public final class AltarDiorama {
             // The pair turns around its middle.
             poseStack.translate(-STELE_X / 2, -0.9F, 0);
 
-            int light = LightCoordsUtil.FULL_BRIGHT;
+            int light = LightTexture.FULL_BRIGHT;
             poseStack.pushPose();
             poseStack.translate(0, 0.5F, 0);
             altar.submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);

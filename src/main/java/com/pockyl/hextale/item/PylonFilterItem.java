@@ -57,10 +57,10 @@ public class PylonFilterItem extends Item {
             if (!context.getLevel().isClientSide()) {
                 ItemStack out = pylon.takeFilter();
                 if (out.isEmpty()) {
-                    player.sendOverlayMessage(Component.translatable("item.hextale.pylon_filter.none"));
+                    player.displayClientMessage(Component.translatable("item.hextale.pylon_filter.none"), true);
                 } else {
                     com.pockyl.hextale.item.PylonFilterItem.give(player, out);
-                    player.sendOverlayMessage(Component.translatable("item.hextale.pylon_filter.taken"));
+                    player.displayClientMessage(Component.translatable("item.hextale.pylon_filter.taken"), true);
                     context.getLevel().playSound(null, context.getClickedPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.7F, 1.2F);
                 }
             }

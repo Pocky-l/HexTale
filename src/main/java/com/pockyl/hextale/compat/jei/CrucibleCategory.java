@@ -9,7 +9,7 @@ import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.crafting.CrucibleRecipe;
@@ -26,7 +26,7 @@ import java.util.Map;
 public class CrucibleCategory extends AbstractRecipeCategory<CrucibleCategory.Recipe> {
     public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "crucible", Recipe.class);
 
-    public record Recipe(Identifier id, CrucibleRecipe recipe) {
+    public record Recipe(ResourceLocation id, CrucibleRecipe recipe) {
         List<Map.Entry<Essence, Integer>> essences() {
             return EssenceColumn.entries(recipe.essences().asMap());
         }
@@ -64,7 +64,7 @@ public class CrucibleCategory extends AbstractRecipeCategory<CrucibleCategory.Re
     }
 
     @Override
-    public Identifier getIdentifier(Recipe recipe) {
+    public ResourceLocation getIdentifier(Recipe recipe) {
         return recipe.id();
     }
 }

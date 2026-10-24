@@ -7,7 +7,7 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fc;
 import org.jspecify.annotations.Nullable;
@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class PixelArt {
     private static final Map<String, int[][]> MASKS = new ConcurrentHashMap<>();
-    private static final Identifier ESSENCE_ICONS = Hextale.id("textures/gui/essence_icons.png");
+    private static final ResourceLocation ESSENCE_ICONS = Hextale.id("textures/gui/essence_icons.png");
     /** Essence pictograms take 9 x 9 GUI pixels; the sheet holds them at 18 x 18, one every 20 pixels. */
     public static final int ICON = 9;
     private static final int ICON_TEXELS = 18;

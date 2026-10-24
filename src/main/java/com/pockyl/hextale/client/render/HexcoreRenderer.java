@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.Level;
@@ -160,7 +160,7 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
             HexcoreMatrix.NORMALS[i].mul(away / 16, offset);
             poseStack.translate(offset.x, offset.y, offset.z);
             poseStack.translate(-0.5, -0.5, -0.5);
-            TableModels.submit(poseStack, collector, TableModels.HEXCORE_TILES.get(i), LightCoordsUtil.FULL_BRIGHT);
+            TableModels.submit(poseStack, collector, TableModels.HEXCORE_TILES.get(i), LightTexture.FULL_BRIGHT);
             poseStack.popPose();
         }
         if (state.center.isEmpty()) {
@@ -169,7 +169,7 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
             poseStack.pushPose();
             poseStack.scale(pulse, pulse, pulse);
             poseStack.translate(-0.5, -0.5, -0.5);
-            TableModels.submit(poseStack, collector, TableModels.HEXCORE_CRYSTAL, LightCoordsUtil.FULL_BRIGHT);
+            TableModels.submit(poseStack, collector, TableModels.HEXCORE_CRYSTAL, LightTexture.FULL_BRIGHT);
             poseStack.popPose();
         }
         poseStack.popPose();
@@ -180,7 +180,7 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
             poseStack.rotate(Axis.YP.rotationDegrees(state.itemTurn));
             poseStack.scale(0.6F, 0.6F, 0.6F);
             poseStack.translate(0, -0.15, 0);
-            state.center.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+            state.center.submit(poseStack, collector, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
         }
         poseStack.popPose();

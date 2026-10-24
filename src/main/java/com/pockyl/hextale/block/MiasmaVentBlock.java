@@ -31,8 +31,8 @@ public class MiasmaVentBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof MiasmaVentBlockEntity vent) {
-            player.sendOverlayMessage(vent.dry() ? Component.translatable("block.hextale.miasma_vent.status.dry")
-                    : Component.translatable("block.hextale.miasma_vent.status", vent.charges()));
+            player.displayClientMessage(vent.dry() ? Component.translatable("block.hextale.miasma_vent.status.dry")
+                    : Component.translatable("block.hextale.miasma_vent.status", vent.charges()), true);
         }
         return InteractionResult.SUCCESS;
     }

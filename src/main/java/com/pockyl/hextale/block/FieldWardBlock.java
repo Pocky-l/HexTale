@@ -37,7 +37,7 @@ public class FieldWardBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             int size = FieldWardBlockEntity.RADIUS * 2 + 1;
-            player.sendOverlayMessage(Component.translatable("block.hextale.field_ward.status", size, size));
+            player.displayClientMessage(Component.translatable("block.hextale.field_ward.status", size, size), true);
         }
         return InteractionResult.SUCCESS;
     }

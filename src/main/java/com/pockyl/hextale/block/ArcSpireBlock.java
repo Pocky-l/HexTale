@@ -39,7 +39,7 @@ public class ArcSpireBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ArcSpireBlockEntity spire) {
-            player.sendOverlayMessage(status(spire));
+            player.displayClientMessage(status(spire), true);
         }
         return InteractionResult.SUCCESS;
     }

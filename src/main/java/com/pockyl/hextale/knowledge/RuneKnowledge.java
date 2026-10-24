@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import com.pockyl.hextale.quest.Quest;
 import com.pockyl.hextale.research.ResearchTopic;
@@ -223,12 +223,12 @@ public final class RuneKnowledge {
     // ---- Studied items and quests -------------------------------------------------------------------------------------
 
     /** Whether the item's essences are studied: its tooltip shows them. */
-    public boolean hasStudied(Identifier item) {
+    public boolean hasStudied(ResourceLocation item) {
         return studied.contains(item.toString());
     }
 
     /** @return whether the item was new */
-    public boolean study(Identifier item) {
+    public boolean study(ResourceLocation item) {
         return studied.add(item.toString());
     }
 

@@ -3,7 +3,7 @@ package com.pockyl.hextale.client.render;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
@@ -19,7 +19,7 @@ public record RuneTint() implements ItemTintSource {
     @Override
     public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner) {
         ComplexRune rune = RuneScrollItem.rune(stack);
-        return ARGB.opaque(rune == null ? BLANK : rune.color());
+        return FastColor.ARGB32.opaque(rune == null ? BLANK : rune.color());
     }
 
     @Override

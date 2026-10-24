@@ -12,7 +12,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.locale.Language;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -45,7 +45,7 @@ public class InfusionCategory extends AbstractRecipeCategory<InfusionCategory.Re
     private static final int ESSENCES_PER_ROW = 3;
     private static final int RUNES_PER_ROW = 2;
 
-    public record Recipe(Identifier id, InfusionRecipe recipe) {
+    public record Recipe(ResourceLocation id, InfusionRecipe recipe) {
     }
 
     public InfusionCategory(IGuiHelper guiHelper) {

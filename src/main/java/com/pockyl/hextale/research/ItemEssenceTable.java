@@ -1,7 +1,7 @@
 package com.pockyl.hextale.research;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
 import java.util.Collections;
@@ -35,13 +35,13 @@ public final class ItemEssenceTable {
     }
 
     /** By item id, for the network. */
-    public static Map<Identifier, ItemEssences> byId() {
-        Map<Identifier, ItemEssences> out = new LinkedHashMap<>();
+    public static Map<ResourceLocation, ItemEssences> byId() {
+        Map<ResourceLocation, ItemEssences> out = new LinkedHashMap<>();
         table.forEach((item, elements) -> out.put(BuiltInRegistries.ITEM.getKey(item), elements));
         return out;
     }
 
-    public static void setById(Map<Identifier, ItemEssences> byId) {
+    public static void setById(Map<ResourceLocation, ItemEssences> byId) {
         Map<Item, ItemEssences> resolved = new HashMap<>();
         byId.forEach((id, elements) -> BuiltInRegistries.ITEM.getOptional(id).ifPresent(item -> resolved.put(item, elements)));
         set(resolved);

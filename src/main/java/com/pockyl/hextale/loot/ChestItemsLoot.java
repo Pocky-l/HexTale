@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -42,7 +42,7 @@ public final class ChestItemsLoot extends LootModifier {
     }
 
     public static final MapCodec<ChestItemsLoot> CODEC = RecordCodecBuilder.mapCodec(instance -> codecStart(instance).and(instance.group(
-            Identifier.CODEC.listOf().fieldOf("tables").forGetter(loot -> loot.tables),
+            ResourceLocation.CODEC.listOf().fieldOf("tables").forGetter(loot -> loot.tables),
             Entry.CODEC.listOf().fieldOf("entries").forGetter(loot -> loot.entries)
     )).apply(instance, ChestItemsLoot::new));
 
@@ -53,10 +53,10 @@ public final class ChestItemsLoot extends LootModifier {
         SERIALIZERS.register("chest_items", () -> CODEC);
     }
 
-    private final List<Identifier> tables;
+    private final List<ResourceLocation> tables;
     private final List<Entry> entries;
 
-    public ChestItemsLoot(Optional<Holder<LootItemCondition>> condition, int priority, List<Identifier> tables, List<Entry> entries) {
+    public ChestItemsLoot(Optional<Holder<LootItemCondition>> condition, int priority, List<ResourceLocation> tables, List<Entry> entries) {
         super(condition, priority);
         this.tables = List.copyOf(tables);
         this.entries = List.copyOf(entries);

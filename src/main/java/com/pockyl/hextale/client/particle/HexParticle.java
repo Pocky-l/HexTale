@@ -6,7 +6,7 @@ import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.core.particles.ColorParticleOption;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 
 /**
@@ -80,7 +80,7 @@ public abstract class HexParticle extends SingleQuadParticle {
 
     @Override
     public int getLightCoords(float partialTick) {
-        return glows() ? LightCoordsUtil.FULL_BRIGHT : super.getLightCoords(partialTick);
+        return glows() ? LightTexture.FULL_BRIGHT : super.getLightCoords(partialTick);
     }
 
     /** 0 -> 1 with a soft start and end. */

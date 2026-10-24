@@ -6,7 +6,7 @@ import net.minecraft.gametest.framework.FunctionGameTestInstance;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
@@ -28,7 +28,7 @@ import java.util.function.Consumer;
  * and a test instance on the 1x1x1 {@code hextale:empty} structure, run headless by {@code gradlew runGameTestServer}.
  */
 public final class GameTests {
-    private static final Identifier STRUCTURE = Hextale.id("empty");
+    private static final ResourceLocation STRUCTURE = Hextale.id("empty");
     private static final List<Class<?>> HOLDERS = List.of(ModGameTests.class, ResearchGameTests.class, QuestGameTests.class,
             RuneWorkGameTests.class, HextechGameTests.class, CraftingGameTests.class, PylonGameTests.class,
             MultiblockGameTests.class, CrucibleGameTests.class, MagicTreeGameTests.class, WhirlReaperGameTests.class, SawmillGameTests.class,
@@ -54,7 +54,7 @@ public final class GameTests {
         FUNCTIONS.register(modBus);
         modBus.addListener((RegisterGameTestsEvent event) -> {
             for (Test test : tests) {
-                Identifier id = Hextale.id(test.name());
+                ResourceLocation id = Hextale.id(test.name());
                 Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(id,
                         new TestEnvironmentDefinition.AllOf(List.of()));
                 TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, STRUCTURE,

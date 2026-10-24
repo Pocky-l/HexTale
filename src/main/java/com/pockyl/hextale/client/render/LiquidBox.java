@@ -9,8 +9,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.data.AtlasIds;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import com.pockyl.hextale.Hextale;
 
@@ -21,7 +21,7 @@ import com.pockyl.hextale.Hextale;
  * so the liquid shows through the glass from any side.
  */
 public final class LiquidBox {
-    private static final Identifier LIQUID = Hextale.id("block/essence_liquid");
+    private static final ResourceLocation LIQUID = Hextale.id("block/essence_liquid");
     /** The surface catches light, the depths darken. */
     private static final float SURFACE_LIGHT = 0.28F;
     private static final float DEPTH_SHADE = 0.6F;
@@ -184,6 +184,6 @@ public final class LiquidBox {
     private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float u, float v, int argb,
                                float nx, float ny, float nz) {
         consumer.addVertex(pose, x, y, z).setColor(argb).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightCoordsUtil.FULL_BRIGHT).setNormal(pose, nx, ny, nz);
+                .setLight(LightTexture.FULL_BRIGHT).setNormal(pose, nx, ny, nz);
     }
 }

@@ -5,7 +5,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -56,7 +56,7 @@ public final class QuestGameTests {
             if (display == null || !display.isRecipe()) {
                 continue;
             }
-            Identifier id = Identifier.parse(display.result());
+            ResourceLocation id = ResourceLocation.parse(display.result());
             RecipeHolder<?> holder = server.getRecipeManager().byKey(ResourceKey.create(Registries.RECIPE, id)).orElse(null);
             helper.assertTrue(holder != null, quest.id() + ": recipe " + id + " exists");
             Recipe<?> recipe = holder.value();
@@ -75,10 +75,10 @@ public final class QuestGameTests {
 
     private static ItemStack sample(String id) {
         if (id.startsWith("#")) {
-            Iterator<Holder<Item>> items = BuiltInRegistries.ITEM.getTagOrEmpty(TagKey.create(Registries.ITEM, Identifier.parse(id.substring(1)))).iterator();
+            Iterator<Holder<Item>> items = BuiltInRegistries.ITEM.getTagOrEmpty(TagKey.create(Registries.ITEM, ResourceLocation.parse(id.substring(1)))).iterator();
             return items.hasNext() ? new ItemStack(items.next()) : ItemStack.EMPTY;
         }
-        return new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse(id)));
+        return new ItemStack(BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(id)));
     }
 
     /** The guide comes from its data files, and every step in them made it in (no missing parents, no circles). */
@@ -173,11 +173,11 @@ public final class QuestGameTests {
                     "hextale:magic_brick_stairs", "hextale:magic_brick_wall", "hextale:chiseled_magic_bricks", "hextale:magic_stone_pillar"));
 
     /** Item ids a step yields: its icon, its picture's result and what is crafted straight from it. */
-    private static Set<Identifier> yields(Quest quest) {
-        Set<Identifier> out = new HashSet<>();
+    private static Set<ResourceLocation> yields(Quest quest) {
+        Set<ResourceLocation> out = new HashSet<>();
         out.add(BuiltInRegistries.ITEM.getKey(quest.icon().getItem()));
         for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
-            Identifier id = display.result().contains(":") ? Identifier.parse(display.result()) : null;
+            ResourceLocation id = display.result().contains(":") ? ResourceLocation.parse(display.result()) : null;
             switch (display.kind()) {
                 case INFUSION -> {
                     InfusionRecipe recipe = InfusionRecipes.get(false).get(id);
@@ -204,7 +204,7 @@ public final class QuestGameTests {
                 }
             }
         }
-        ALSO.getOrDefault(quest.id(), List.of()).forEach(id -> out.add(Identifier.parse(id)));
+        ALSO.getOrDefault(quest.id(), List.of()).forEach(id -> out.add(ResourceLocation.parse(id)));
         return out;
     }
 
@@ -235,15 +235,15 @@ public final class QuestGameTests {
                 helper.assertTrue(ancestors(quest).contains(step("ink")), quest.id() + " is researched, so it comes after the ink");
             }
             Set<Quest> before = ancestors(quest);
-            Set<Identifier> available = new HashSet<>();
+            Set<ResourceLocation> available = new HashSet<>();
             before.forEach(step -> available.addAll(yields(step)));
-            List<Identifier> needed = new ArrayList<>();
+            List<ResourceLocation> needed = new ArrayList<>();
             for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
             switch (display.kind()) {
                 case SHAPED, SHAPELESS, SCHEME -> display.ingredients().stream().filter(id -> !id.isEmpty() && !id.startsWith("#"))
-                        .map(Identifier::parse).forEach(needed::add);
+                        .map(ResourceLocation::parse).forEach(needed::add);
                 case INFUSION -> {
-                    InfusionRecipe recipe = InfusionRecipes.get(false).get(Identifier.parse(display.result()));
+                    InfusionRecipe recipe = InfusionRecipes.get(false).get(ResourceLocation.parse(display.result()));
                     helper.assertTrue(recipe != null, quest.id() + ": ritual " + display.result() + " exists");
                     helper.assertTrue(before.contains(step("hextech_altar")), quest.id() + " comes after the altar");
                     helper.assertTrue(recipe.pedestals().isEmpty() || before.contains(step("pedestal")), quest.id() + " comes after the Pedestal");
@@ -256,7 +256,7 @@ public final class QuestGameTests {
                     }
                 }
                 case HEX_CRAFTING -> {
-                    var recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(false).get(Identifier.parse(display.result()));
+                    var recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(false).get(ResourceLocation.parse(display.result()));
                     helper.assertTrue(recipe != null, quest.id() + ": workbench recipe " + display.result() + " exists");
                     helper.assertTrue(before.contains(step("hex_workbench")), quest.id() + " comes after the Hex Workbench");
                     for (var cell : recipe.grid()) {
@@ -264,7 +264,7 @@ public final class QuestGameTests {
                     }
                 }
                 case ALLOY -> {
-                    var recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(false).get(Identifier.parse(display.result()));
+                    var recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(false).get(ResourceLocation.parse(display.result()));
                     helper.assertTrue(recipe != null, quest.id() + ": alloy " + display.result() + " exists");
                     helper.assertTrue(before.contains(step("hex_furnace")), quest.id() + " comes after the Hex Furnace");
                     for (var input : recipe.inputs()) {
@@ -275,7 +275,7 @@ public final class QuestGameTests {
                 }
             }
             }
-            for (Identifier id : needed) {
+            for (ResourceLocation id : needed) {
                 if (id.getNamespace().equals(Hextale.MOD_ID)) {
                     helper.assertTrue(available.contains(id), quest.id() + " needs " + id + ", which no step before it yields");
                 }
@@ -301,7 +301,7 @@ public final class QuestGameTests {
         helper.assertTrue(knowledge.questDone(step("brass")), "a brass ingot completes Brass");
         helper.assertFalse(knowledge.questDone(step("research_table")), "the table is still to make");
 
-        knowledge.study(Identifier.withDefaultNamespace("coal"));
+        knowledge.study(ResourceLocation.withDefaultNamespace("coal"));
         Quests.check(player);
         helper.assertFalse(knowledge.questDone(step("item_study")), "a studied item waits for the table and the diary");
         for (Quest quest : ancestors(step("item_study"))) {

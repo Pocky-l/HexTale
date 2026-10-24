@@ -5,7 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -355,7 +355,7 @@ public final class ResearchGameTests {
         int glass = ResearchTableBlockEntity.SLOTS + 27;
         int dirt = glass + 1;
         helper.assertTrue(player.containerMenu.slots.get(glass).getItem().is(Items.GLASS), "the hotbar's first slot holds the glass");
-        Identifier glassId = BuiltInRegistries.ITEM.getKey(Items.GLASS);
+        ResourceLocation glassId = BuiltInRegistries.ITEM.getKey(Items.GLASS);
 
         table.loupe(player, glass);
         helper.assertTrue(table.isLooking(), "the arm swings over the desk for everyone");
@@ -405,7 +405,7 @@ public final class ResearchGameTests {
         alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.OAK_PLANKS));
         ServerPlayer boiler = player(helper);
         boiler.setGameMode(GameType.SURVIVAL);
-        Research.of(boiler).study(Identifier.withDefaultNamespace("oak_planks"));
+        Research.of(boiler).study(ResourceLocation.withDefaultNamespace("oak_planks"));
         alembic.boiledBy(boiler);
         alembic.setItem(AlembicBlockEntity.FLASK_IN, new ItemStack(Items.GLASS_BOTTLE, 2));
         alembic.fillWater(1000, false);
@@ -1223,7 +1223,7 @@ public final class ResearchGameTests {
         Research.learn(before, ComplexRunes.byKey("water_life"), 3);
         Research.learn(before, ComplexRunes.byKey("life_metal"), 1);
         Research.research(before, TOPIC);
-        Research.of(before).study(Identifier.withDefaultNamespace("coal"));
+        Research.of(before).study(ResourceLocation.withDefaultNamespace("coal"));
         Research.of(before).see(TOPIC, new int[]{HexGrid.CENTRE, 5});
 
         ServerPlayer after = player(helper);
@@ -1232,7 +1232,7 @@ public final class ResearchGameTests {
         RuneKnowledge knowledge = Research.of(after);
         helper.assertTrue(knowledge.runeCount() == 2 && knowledge.stars(ComplexRunes.byKey("water_life")) == 3, "the runes and stars are kept");
         helper.assertTrue(knowledge.researched(TOPIC), "researched topics are kept");
-        helper.assertTrue(knowledge.hasStudied(Identifier.withDefaultNamespace("coal")), "studied items are kept");
+        helper.assertTrue(knowledge.hasStudied(ResourceLocation.withDefaultNamespace("coal")), "studied items are kept");
         helper.assertTrue(knowledge.seen(TOPIC).get(5), "explored parchment is kept");
         helper.assertTrue(knowledge != Research.of(before), "the new player has its own copy");
         RuneKnowledge decoded = RuneKnowledge.CODEC.parse(NbtOps.INSTANCE,

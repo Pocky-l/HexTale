@@ -108,7 +108,7 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
             if (!level.isClientSide()) {
                 int taken = burner.feed(stack);
                 if (taken <= 0) {
-                    player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("block.hextale.chem_burner.say.full"));
+                    player.displayClientMessage(net.minecraft.network.chat.Component.translatable("block.hextale.chem_burner.say.full"), true);
                     return InteractionResult.FAIL;
                 }
                 if (!creative) {
@@ -126,7 +126,7 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
             if (!level.isClientSide()) {
                 EssenceMix taken = burner.pour(held);
                 if (taken.isEmpty()) {
-                    player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("block.hextale.chem_burner.say.full"));
+                    player.displayClientMessage(net.minecraft.network.chat.Component.translatable("block.hextale.chem_burner.say.full"), true);
                     return InteractionResult.FAIL;
                 }
                 if (!creative) {
@@ -148,7 +148,7 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ChemBurnerBlockEntity burner) {
-            player.sendOverlayMessage(burner.status());
+            player.displayClientMessage(burner.status(), true);
         }
         return InteractionResult.SUCCESS;
     }

@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -38,7 +38,7 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
     private static final float BOTTOM = 1F / 16;
     private static final float TOP = 10.75F / 16;
 
-    private static final Identifier LABELS = Hextale.id("textures/block/essence_labels.png");
+    private static final ResourceLocation LABELS = Hextale.id("textures/block/essence_labels.png");
     /**
      * A sticker is a small paper label of 26 x 30 texels drawn at four texels per pixel (6.5 x 7.5 px), so its sign is
      * small and sharp; in the sheet one per 32 x 32 cell of a 512 x 256 texture.

@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -232,7 +232,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             poseStack.rotate(Axis.YP.rotationDegrees(time * (1.5F + 12 * state.flare)));
             poseStack.scale(scale, scale, scale);
             poseStack.translate(0, -0.2, 0);
-            state.gem.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+            state.gem.submit(poseStack, collector, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
         }
 
@@ -245,7 +245,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             poseStack.rotate(Axis.YP.rotationDegrees(-time * 2));
             poseStack.scale(0.18F, 0.18F, 0.18F);
             poseStack.translate(0, -0.15, 0);
-            state.filterIcons.get(i).submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+            state.filterIcons.get(i).submit(poseStack, collector, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
         }
 
@@ -480,7 +480,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         poseStack.rotate(Axis.YP.rotationDegrees(spin));
         poseStack.scale(size, size, size);
         poseStack.translate(0, -0.15, 0);
-        fs.item.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+        fs.item.submit(poseStack, collector, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
         poseStack.popPose();
     }
 

@@ -1,7 +1,7 @@
 package com.pockyl.hextale.client.screen.book;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -9,7 +9,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -37,8 +37,8 @@ import org.jspecify.annotations.Nullable;
  * found so far ({@link RunesPage}). Shown by {@link StarBookScreen} in hand and inside the table's screen.
  */
 public final class StarBook {
-    private static final Identifier COSMOS = Hextale.id("textures/gui/cosmos.png");
-    private static final Identifier FRAME = Hextale.id("textures/gui/star_book_frame.png");
+    private static final ResourceLocation COSMOS = Hextale.id("textures/gui/cosmos.png");
+    private static final ResourceLocation FRAME = Hextale.id("textures/gui/star_book_frame.png");
     private static final int COSMOS_SIZE = 256;
     private static final int FRAME_SIZE = 48;
     private static final int FRAME_CORNER = 16;
