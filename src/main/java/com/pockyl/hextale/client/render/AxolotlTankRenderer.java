@@ -4,13 +4,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.animal.axolotl.AdultAxolotlModel;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import com.pockyl.hextale.port.client.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.state.AxolotlRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -117,7 +117,7 @@ public class AxolotlTankRenderer implements BlockEntityRenderer<AxolotlTankBlock
 
         poseStack.pushPose();
         poseStack.translate(x, y, z);
-        poseStack.rotate(Axis.YP.rotationDegrees(180 - yaw));
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 - yaw));
         poseStack.scale(-SCALE, -SCALE, SCALE);
         poseStack.translate(0, -1.501F, 0);
         collector.submitModel(model, axolotl, poseStack, TEXTURES.get(state.variant), state.lightCoords, OverlayTexture.NO_OVERLAY, 0);

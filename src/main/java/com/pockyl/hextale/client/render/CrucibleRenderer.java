@@ -2,14 +2,14 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.BlockEntityRenderState;
+import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.ItemModelResolver;
+import com.pockyl.hextale.port.client.ItemStackRenderState;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -19,7 +19,7 @@ import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import com.pockyl.hextale.port.client.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -98,7 +98,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
     private final Font font;
 
     public CrucibleRenderer(BlockEntityRendererProvider.Context context) {
-        itemModelResolver = context.itemModelResolver();
+        itemModelResolver = ItemModelResolver.INSTANCE;
         font = context.font();
     }
 
@@ -229,7 +229,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
                 rising(state, poseStack, collector, camera, age, color, y, x, i);
             }
             poseStack.translate(0, y, 0);
-            poseStack.rotate(camera.orientation);
+            poseStack.mulPose(camera.orientation);
             poseStack.translate(x, 0, 0);
             float size = ICON_SIZE * (1 + 0.35F * pop);
             HexFx.sprite(poseStack, collector, facing, HexFx.HALO, size * (1.9F + pop), color, (0.45F + 0.4F * pop) * fade);
@@ -363,8 +363,8 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
             float y = fall < 1 ? Mth.lerp(fall * fall, Math.max(state.sinkFrom, top + 0.12F), top + 0.12F) : top + 0.12F - t * 0.4F;
             poseStack.pushPose();
             poseStack.translate(0.5F, y, 0.5F);
-            poseStack.rotate(Axis.YP.rotationDegrees(state.time * 9));
-            poseStack.rotate(Axis.XP.rotationDegrees(25 + t * 40));
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.time * 9));
+            poseStack.mulPose(Axis.XP.rotationDegrees(25 + t * 40));
             float scale = 0.32F * (1 - t * 0.7F);
             poseStack.scale(scale, scale, scale);
             state.sinking.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);

@@ -2,7 +2,7 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionfc;
@@ -76,8 +76,8 @@ public final class WhirlFx {
         // The sigil on the ground under the funnel.
         poseStack.pushPose();
         poseStack.translate(foot.x, foot.y + 0.01, foot.z);
-        poseStack.rotate(Axis.XP.rotationDegrees(90));
-        poseStack.rotate(Axis.ZP.rotation(time * 0.2F + phase));
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
+        poseStack.mulPose(Axis.ZP.rotation(time * 0.2F + phase));
         HexFx.sigilRing(poseStack, collector, 0.18F + 0.32F * size, 6, color, 0.6F * alpha);
         poseStack.popPose();
     }

@@ -2,15 +2,15 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.MovingBlockRenderState;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.BlockEntityRenderState;
+import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.ItemModelResolver;
+import com.pockyl.hextale.port.client.ItemStackRenderState;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.client.renderer.LightTexture;
@@ -49,7 +49,7 @@ public class HexSawmillRenderer implements BlockEntityRenderer<HexSawmillBlockEn
     private final ItemModelResolver itemModelResolver;
 
     public HexSawmillRenderer(BlockEntityRendererProvider.Context context) {
-        this.itemModelResolver = context.itemModelResolver();
+        this.itemModelResolver = ItemModelResolver.INSTANCE;
     }
 
     @Override
@@ -128,7 +128,7 @@ public class HexSawmillRenderer implements BlockEntityRenderer<HexSawmillBlockEn
         // The disc turns round its axle, which runs north-south through its hub.
         poseStack.pushPose();
         poseStack.translate(0.5, AXLE_Y, AXLE_Z);
-        poseStack.rotate(Axis.ZP.rotationDegrees(-state.disc));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(-state.disc));
         poseStack.translate(-0.5, -AXLE_Y, -AXLE_Z);
         TableModels.submit(poseStack, collector, TableModels.HEX_SAW_DISC, state.lightCoords);
         poseStack.popPose();
@@ -138,7 +138,7 @@ public class HexSawmillRenderer implements BlockEntityRenderer<HexSawmillBlockEn
         poseStack.pushPose();
         poseStack.translate(crystal.x, crystal.y + bob, crystal.z);
         HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.5F, state.color, state.becalmed ? 0.15F : 0.4F);
-        poseStack.rotate(Axis.YP.rotationDegrees(time * 2));
+        poseStack.mulPose(Axis.YP.rotationDegrees(time * 2));
         poseStack.scale(0.4F, 0.4F, 0.4F);
         poseStack.translate(0, -0.2, 0);
         state.crystal.submit(poseStack, collector, state.becalmed ? state.lightCoords : LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
@@ -157,12 +157,12 @@ public class HexSawmillRenderer implements BlockEntityRenderer<HexSawmillBlockEn
             poseStack.translate(ss.at.x, ss.at.y, ss.at.z);
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, ss.sawing ? 0.9F : 0.6F, GLOW, 0.45F * ss.alpha);
             poseStack.pushPose();
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
-            poseStack.rotate(Axis.ZP.rotationDegrees(ss.spin));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(ss.spin));
             HexFx.sigilRing(poseStack, collector, 0.36F, 12, GLOW, 0.8F * ss.alpha);
             poseStack.popPose();
-            poseStack.rotate(Axis.YP.rotationDegrees(ss.spin));
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.YP.rotationDegrees(ss.spin));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
             poseStack.scale(0.7F, 0.7F, 0.7F);
             poseStack.translate(-0.5, -0.5, -8.5 / 16);
             TableModels.submit(poseStack, collector, TableModels.HEX_SAW_DISC, LightTexture.FULL_BRIGHT);
@@ -172,7 +172,7 @@ public class HexSawmillRenderer implements BlockEntityRenderer<HexSawmillBlockEn
             BlockRender render = state.blocks.get(i);
             poseStack.pushPose();
             poseStack.translate(render.pivot.x, render.pivot.y, render.pivot.z);
-            poseStack.rotate(render.turn);
+            poseStack.mulPose(render.turn);
             poseStack.translate(render.offset.x, render.offset.y, render.offset.z);
             collector.submitMovingBlock(poseStack, render.block, 0);
             poseStack.popPose();

@@ -2,14 +2,14 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.BlockEntityRenderState;
+import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.ItemModelResolver;
+import com.pockyl.hextale.port.client.ItemStackRenderState;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.client.renderer.LightTexture;
@@ -41,7 +41,7 @@ public class GreedyFunnelRenderer implements BlockEntityRenderer<GreedyFunnelBlo
     private final ItemModelResolver itemModelResolver;
 
     public GreedyFunnelRenderer(BlockEntityRendererProvider.Context context) {
-        this.itemModelResolver = context.itemModelResolver();
+        this.itemModelResolver = ItemModelResolver.INSTANCE;
     }
 
     @Override
@@ -128,13 +128,13 @@ public class GreedyFunnelRenderer implements BlockEntityRenderer<GreedyFunnelBlo
         poseStack.pushPose();
         poseStack.translate(mouth.x, mouth.y + 0.02, mouth.z);
         poseStack.pushPose();
-        poseStack.rotate(Axis.YP.rotationDegrees(state.vortex));
-        poseStack.rotate(Axis.XP.rotationDegrees(90));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.vortex));
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
         HexFx.sigilRing(poseStack, collector, 0.36F, 12, FunnelTimeline.SHADOW, 0.55F * calm);
         poseStack.popPose();
         poseStack.pushPose();
-        poseStack.rotate(Axis.YP.rotationDegrees(-state.vortex * 1.6F));
-        poseStack.rotate(Axis.XP.rotationDegrees(90));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-state.vortex * 1.6F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
         HexFx.sigilRing(poseStack, collector, 0.2F, 6, FunnelTimeline.SHADOW, 0.45F * calm);
         poseStack.popPose();
         for (int i = 0; i < VORTEX_MOTES; i++) {
@@ -161,7 +161,7 @@ public class GreedyFunnelRenderer implements BlockEntityRenderer<GreedyFunnelBlo
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.35F + 0.35F * state.filled, FunnelTimeline.EXPERIENCE,
                     0.15F + 0.45F * state.filled);
         }
-        poseStack.rotate(Axis.YP.rotationDegrees(state.vortex * 0.4F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.vortex * 0.4F));
         poseStack.scale(0.36F, 0.36F, 0.36F);
         poseStack.translate(0, -0.2, 0);
         state.crystal.submit(poseStack, collector, state.hungry ? state.lightCoords : LightTexture.FULL_BRIGHT,
@@ -177,7 +177,7 @@ public class GreedyFunnelRenderer implements BlockEntityRenderer<GreedyFunnelBlo
             poseStack.pushPose();
             poseStack.translate(drop.at.x, drop.at.y, drop.at.z);
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.45F * drop.scale, FunnelTimeline.SHADOW, 0.35F);
-            poseStack.rotate(Axis.YP.rotationDegrees(drop.spin));
+            poseStack.mulPose(Axis.YP.rotationDegrees(drop.spin));
             poseStack.scale(drop.scale, drop.scale, drop.scale);
             poseStack.translate(0, -0.125, 0);
             drop.item.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);

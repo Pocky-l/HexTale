@@ -6,11 +6,11 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.model.player.PlayerModel;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
+import com.pockyl.hextale.port.client.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.client.renderer.LightTexture;
@@ -91,7 +91,7 @@ public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
             return;
         }
         ItemStackRenderState item = new ItemStackRenderState();
-        Minecraft.getInstance().getItemModelResolver().updateForLiving(item, pack, ItemDisplayContext.NONE, entity);
+        com.pockyl.hextale.port.client.ItemModelResolver.INSTANCE.updateForLiving(item, pack, ItemDisplayContext.NONE, entity);
         state.showCape = false;
         state.setRenderData(WORN, new Worn(item, SkypackFlight.boostLeft(entity, entity.level().getGameTime()),
                 HextechSkypackItem.air(pack) < HextechSkypackItem.LOW, HexFx.time(entity.level(), state.partialTick),
@@ -159,7 +159,7 @@ public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
             float u = (age + frac(worn.time())) / RING_TICKS;
             poseStack.pushPose();
             poseStack.translate(0, -0.06F - u * 0.25F, 0);
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
             HexFx.sigilRing(poseStack, collector, 0.08F + u * 0.32F, 6, FLAME, 1 - u);
             poseStack.popPose();
         }

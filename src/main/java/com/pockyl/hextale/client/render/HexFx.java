@@ -3,8 +3,8 @@ package com.pockyl.hextale.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.client.renderer.LightTexture;
@@ -65,7 +65,7 @@ public final class HexFx {
     public static void sprite(PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera, ResourceLocation texture, float size, int color,
                               float alpha) {
         poseStack.pushPose();
-        poseStack.rotate(camera);
+        poseStack.mulPose(camera);
         float h = size / 2;
         collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(texture), (pose, consumer) -> {
             vertex(consumer, pose, -h, -h, 0, 1, color, alpha);
@@ -136,14 +136,14 @@ public final class HexFx {
     public static void crystal(PoseStack poseStack, SubmitNodeCollector collector, float time, float speed, float size, int color,
                                float intensity) {
         poseStack.pushPose();
-        poseStack.rotate(Axis.YP.rotationDegrees(time * speed));
-        poseStack.rotate(Axis.XP.rotationDegrees(35 + Mth.sin(time * 0.05F) * 12));
-        poseStack.rotate(Axis.ZP.rotationDegrees(45));
+        poseStack.mulPose(Axis.YP.rotationDegrees(time * speed));
+        poseStack.mulPose(Axis.XP.rotationDegrees(35 + Mth.sin(time * 0.05F) * 12));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(45));
         cube(poseStack, collector, size, RuneDrawing.lighten(color, 0.25F * intensity), 1);
         poseStack.popPose();
         poseStack.pushPose();
-        poseStack.rotate(Axis.YP.rotationDegrees(-time * speed * 0.7F));
-        poseStack.rotate(Axis.ZP.rotationDegrees(30));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-time * speed * 0.7F));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(30));
         cube(poseStack, collector, size * 1.42F, color, 0.28F + 0.12F * intensity);
         poseStack.popPose();
     }

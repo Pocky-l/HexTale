@@ -3,13 +3,13 @@ package com.pockyl.hextale.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.BlockEntityRenderState;
+import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.RenderTypes;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -115,7 +115,7 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
             // Rock on the foot: the top leans towards the push.
             Direction towards = Direction.from2DDataValue(state.tiltDirection);
             poseStack.translate(0.5, 0, 0.5);
-            poseStack.rotate(Axis.of(new org.joml.Vector3f(towards.getStepZ(), 0, -towards.getStepX())).rotationDegrees(state.tilt));
+            poseStack.mulPose(Axis.of(new org.joml.Vector3f(towards.getStepZ(), 0, -towards.getStepX())).rotationDegrees(state.tilt));
             poseStack.translate(-0.5, 0, -0.5);
         }
         TableModels.submit(poseStack, collector, state.creative ? TableModels.CREATIVE_JAR : TableModels.ESSENCE_JAR, state.lightCoords);

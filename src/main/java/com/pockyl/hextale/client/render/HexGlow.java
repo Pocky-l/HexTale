@@ -7,7 +7,7 @@ import com.mojang.renderpearl.api.pipeline.DepthStencilState;
 import com.pockyl.hextale.port.client.RenderPipeline;
 import com.pockyl.hextale.port.client.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.Util;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;

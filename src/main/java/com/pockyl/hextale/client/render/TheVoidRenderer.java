@@ -2,11 +2,11 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import org.joml.Quaternionf;
@@ -81,7 +81,7 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         }
         Frame frame = new Frame(layout, shows, state);
         poseStack.pushPose();
-        poseStack.rotate(state.orientation);
+        poseStack.mulPose(state.orientation);
         collector.submitCustomGeometry(poseStack, VoidPipelines.BODY_TYPE, (pose, consumer) -> frame.body(consumer, pose));
         collector.submitCustomGeometry(poseStack, VoidPipelines.HALO_TYPE, (pose, consumer) -> frame.halo(consumer, pose));
         poseStack.popPose();

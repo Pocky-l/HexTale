@@ -7,10 +7,10 @@ import net.minecraft.client.Minecraft;
 import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.block.model.BlockDisplayContext;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
+import com.pockyl.hextale.port.client.ItemStackRenderState;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
@@ -200,8 +200,8 @@ public final class MultiblockDiorama {
 
             float yaw = time * 0.5F + 30 + state.yaw();
             poseStack.scale(1, -1, -1);
-            poseStack.rotate(Axis.XP.rotationDegrees(TILT));
-            poseStack.rotate(Axis.YP.rotationDegrees(yaw));
+            poseStack.mulPose(Axis.XP.rotationDegrees(TILT));
+            poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
             Quaternionf camera = new Quaternionf().rotationY(-yaw * Mth.DEG_TO_RAD).rotateX(-TILT * Mth.DEG_TO_RAD);
             float cx = pattern.width() / 2F;
             float cz = pattern.depth() / 2F;
@@ -250,7 +250,7 @@ public final class MultiblockDiorama {
                             items.add(new ItemStackRenderState());
                         }
                         ItemStackRenderState item = items.get(itemIndex++);
-                        minecraft.getItemModelResolver().updateForTopItem(item, shown(cell, time), ItemDisplayContext.NONE, minecraft.level, null, 0);
+                        com.pockyl.hextale.port.client.ItemModelResolver.INSTANCE.updateForTopItem(item, shown(cell, time), ItemDisplayContext.NONE, minecraft.level, null, 0);
                         poseStack.translate(0.5F, 0.5F, 0.5F);
                         item.submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
                     }
@@ -275,7 +275,7 @@ public final class MultiblockDiorama {
             poseStack.popPose();
             poseStack.pushPose();
             poseStack.translate(pattern.width() / 2F, y + 0.01F, pattern.depth() / 2F);
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
             HexFx.sigilRing(poseStack, collector, Math.max(pattern.width(), pattern.depth()) * 0.74F, 12, LIGHT, alpha * 1.4F);
             poseStack.popPose();
         }
@@ -285,8 +285,8 @@ public final class MultiblockDiorama {
             poseStack.pushPose();
             poseStack.translate(cell.x() + 0.5F, cell.y() + 0.5F, cell.z() + 0.5F);
             HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.7F, LIGHT, 0.35F * k);
-            poseStack.rotate(Axis.YP.rotationDegrees(time * 4));
-            poseStack.rotate(Axis.XP.rotationDegrees(35));
+            poseStack.mulPose(Axis.YP.rotationDegrees(time * 4));
+            poseStack.mulPose(Axis.XP.rotationDegrees(35));
             HexFx.cube(poseStack, collector, 0.18F * k, 0xCFF3FF, 0.7F * k);
             poseStack.popPose();
         }
@@ -323,8 +323,8 @@ public final class MultiblockDiorama {
                 poseStack.popPose();
                 poseStack.pushPose();
                 poseStack.translate(cx, y, cz);
-                poseStack.rotate(Axis.XP.rotationDegrees(90));
-                poseStack.rotate(Axis.ZP.rotationDegrees(time * 2));
+                poseStack.mulPose(Axis.XP.rotationDegrees(90));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(time * 2));
                 HexFx.sigilRing(poseStack, collector, Math.max(pattern.width(), pattern.depth()) * 0.8F, 12, 0xCFF3FF, 0.9F * Mth.sin(w * Mth.PI));
                 poseStack.popPose();
             }

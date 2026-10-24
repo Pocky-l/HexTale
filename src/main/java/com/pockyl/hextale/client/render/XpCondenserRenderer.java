@@ -2,14 +2,14 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.BlockEntityRenderState;
+import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.ItemModelResolver;
+import com.pockyl.hextale.port.client.ItemStackRenderState;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.client.renderer.LightTexture;
@@ -44,7 +44,7 @@ public class XpCondenserRenderer implements BlockEntityRenderer<XpCondenserBlock
     private final ItemModelResolver itemModelResolver;
 
     public XpCondenserRenderer(BlockEntityRendererProvider.Context context) {
-        this.itemModelResolver = context.itemModelResolver();
+        this.itemModelResolver = ItemModelResolver.INSTANCE;
     }
 
     @Override
@@ -95,7 +95,7 @@ public class XpCondenserRenderer implements BlockEntityRenderer<XpCondenserBlock
         poseStack.translate(crystal.x, crystal.y + Mth.sin(time * 0.07F) * 0.02F, crystal.z);
         HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.4F + 0.3F * state.fill, FunnelTimeline.EXPERIENCE,
                 0.2F + 0.45F * state.fill);
-        poseStack.rotate(Axis.YP.rotationDegrees(time * 1.2F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(time * 1.2F));
         poseStack.scale(0.32F, 0.32F, 0.32F);
         poseStack.translate(0, -0.2, 0);
         state.crystal.submit(poseStack, collector, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);

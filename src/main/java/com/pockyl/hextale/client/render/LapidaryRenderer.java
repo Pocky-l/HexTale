@@ -2,14 +2,14 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.BlockEntityRenderState;
+import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.ItemModelResolver;
+import com.pockyl.hextale.port.client.ItemStackRenderState;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -32,7 +32,7 @@ public class LapidaryRenderer implements BlockEntityRenderer<LapidaryBlockEntity
     private final ItemModelResolver itemModelResolver;
 
     public LapidaryRenderer(BlockEntityRendererProvider.Context context) {
-        this.itemModelResolver = context.itemModelResolver();
+        this.itemModelResolver = ItemModelResolver.INSTANCE;
     }
 
     @Override
@@ -60,14 +60,14 @@ public class LapidaryRenderer implements BlockEntityRenderer<LapidaryBlockEntity
         if (state.disc) {
             poseStack.pushPose();
             poseStack.translate(SPINDLE_X, 0, SPINDLE_Z);
-            poseStack.rotate(Axis.YP.rotationDegrees(state.working ? state.time * 18 : 0));
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.working ? state.time * 18 : 0));
             poseStack.translate(-SPINDLE_X, 0, -SPINDLE_Z);
             TableModels.submit(poseStack, collector, TableModels.LAPIDARY_DISC, state.lightCoords);
             poseStack.popPose();
         }
         if (!state.crystal.isEmpty()) {
             poseStack.translate(SPINDLE_X, CRYSTAL_Y, SPINDLE_Z);
-            poseStack.rotate(Axis.YP.rotationDegrees(state.time * 2));
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.time * 2));
             poseStack.scale(0.45F, 0.45F, 0.45F);
             state.crystal.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
         }

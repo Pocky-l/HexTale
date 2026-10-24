@@ -2,14 +2,14 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.BlockEntityRenderState;
+import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.ItemModelResolver;
+import com.pockyl.hextale.port.client.ItemStackRenderState;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
@@ -29,7 +29,7 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
     private final ItemModelResolver itemModelResolver;
 
     public PedestalRenderer(BlockEntityRendererProvider.Context context) {
-        this.itemModelResolver = context.itemModelResolver();
+        this.itemModelResolver = ItemModelResolver.INSTANCE;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.5F + 0.4F * draw, 0x9FE6FF, 0.6F * draw);
         }
         if (!state.item.isEmpty()) {
-            poseStack.rotate(Axis.YP.rotationDegrees(time * (1.8F + 20 * draw)));
+            poseStack.mulPose(Axis.YP.rotationDegrees(time * (1.8F + 20 * draw)));
             float scale = 0.7F * (1 - 0.6F * draw * draw);
             poseStack.scale(scale, scale, scale);
             poseStack.translate(0, -0.15, 0);

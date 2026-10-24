@@ -3,7 +3,7 @@ package com.pockyl.hextale.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
@@ -76,7 +76,7 @@ public final class TableModels {
     /** Turns the pose like a blockstate "y" rotation of a model built facing north. */
     public static void rotateToFacing(PoseStack poseStack, Direction facing) {
         poseStack.translate(0.5, 0, 0.5);
-        poseStack.rotate(Axis.YP.rotationDegrees(-((facing.toYRot() + 180) % 360)));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-((facing.toYRot() + 180) % 360)));
         poseStack.translate(-0.5, 0, -0.5);
     }
 

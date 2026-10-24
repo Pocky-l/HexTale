@@ -2,15 +2,15 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.MovingBlockRenderState;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.BlockEntityRenderState;
+import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.ItemModelResolver;
+import com.pockyl.hextale.port.client.ItemStackRenderState;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.client.renderer.LightTexture;
@@ -46,7 +46,7 @@ public class WhirlReaperRenderer implements BlockEntityRenderer<WhirlReaperBlock
     private final ItemModelResolver itemModelResolver;
 
     public WhirlReaperRenderer(BlockEntityRendererProvider.Context context) {
-        this.itemModelResolver = context.itemModelResolver();
+        this.itemModelResolver = ItemModelResolver.INSTANCE;
     }
 
     @Override
@@ -150,7 +150,7 @@ public class WhirlReaperRenderer implements BlockEntityRenderer<WhirlReaperBlock
 
         poseStack.pushPose();
         poseStack.translate(MAST, 0, MAST);
-        poseStack.rotate(Axis.YP.rotationDegrees(-state.vanes));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-state.vanes));
         poseStack.translate(-MAST, 0, -MAST);
         TableModels.submit(poseStack, collector, TableModels.WHIRL_REAPER_VANES, state.lightCoords);
         poseStack.popPose();
@@ -162,7 +162,7 @@ public class WhirlReaperRenderer implements BlockEntityRenderer<WhirlReaperBlock
         poseStack.pushPose();
         poseStack.translate(crystal.x, crystal.y + bob, crystal.z);
         HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.5F, state.color, 0.4F * calm);
-        poseStack.rotate(Axis.YP.rotationDegrees(state.vanes * 0.6F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.vanes * 0.6F));
         poseStack.scale(0.4F, 0.4F, 0.4F);
         poseStack.translate(0, -0.2, 0);
         state.crystal.submit(poseStack, collector, state.becalmed ? state.lightCoords : LightTexture.FULL_BRIGHT,
@@ -184,8 +184,8 @@ public class WhirlReaperRenderer implements BlockEntityRenderer<WhirlReaperBlock
             BlockRender render = state.blocks.get(i);
             poseStack.pushPose();
             poseStack.translate(render.at.x, render.at.y, render.at.z);
-            poseStack.rotate(Axis.YP.rotationDegrees(render.spin));
-            poseStack.rotate(Axis.XP.rotationDegrees(render.tilt));
+            poseStack.mulPose(Axis.YP.rotationDegrees(render.spin));
+            poseStack.mulPose(Axis.XP.rotationDegrees(render.tilt));
             poseStack.scale(render.scale, render.scale, render.scale);
             poseStack.translate(-0.5, 0, -0.5);
             collector.submitMovingBlock(poseStack, render.block, 0);

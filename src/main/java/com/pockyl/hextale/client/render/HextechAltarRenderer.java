@@ -3,14 +3,14 @@ package com.pockyl.hextale.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.BlockEntityRenderState;
+import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.ItemModelResolver;
+import com.pockyl.hextale.port.client.ItemStackRenderState;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
@@ -39,7 +39,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
     private final ItemModelResolver itemModelResolver;
 
     public HextechAltarRenderer(BlockEntityRendererProvider.Context context) {
-        this.itemModelResolver = context.itemModelResolver();
+        this.itemModelResolver = ItemModelResolver.INSTANCE;
     }
 
     @Override
@@ -97,12 +97,12 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
 
         // The gimbal around the item.
         poseStack.pushPose();
-        poseStack.rotate(Axis.YP.rotationDegrees(state.outerPhase));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.outerPhase));
         poseStack.pushPose();
         poseStack.translate(-0.5, -0.5, -0.5);
         TableModels.submit(poseStack, collector, TableModels.ALTAR_RING_OUTER, LightTexture.FULL_BRIGHT);
         poseStack.popPose();
-        poseStack.rotate(Axis.XP.rotationDegrees(state.innerPhase));
+        poseStack.mulPose(Axis.XP.rotationDegrees(state.innerPhase));
         poseStack.translate(-0.5, -0.5, -0.5);
         TableModels.submit(poseStack, collector, TableModels.ALTAR_RING_INNER, LightTexture.FULL_BRIGHT);
         poseStack.popPose();
@@ -110,7 +110,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         // The centre item, turning; faster as the ritual goes on.
         if (!state.center.isEmpty()) {
             poseStack.pushPose();
-            poseStack.rotate(Axis.YP.rotationDegrees(state.itemTurn));
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.itemTurn));
             float pop = 1 + 0.25F * flash * Mth.sin(Math.min(1, state.sinceFinish / 8) * Mth.PI);
             poseStack.scale(0.9F * pop, 0.9F * pop, 0.9F * pop);
             poseStack.translate(0, -0.15, 0);
@@ -157,7 +157,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
             poseStack.translate(ghost.at.x, ghost.at.y + Mth.sin(time * 0.09F + i) * 0.04F, ghost.at.z);
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.55F + 0.08F * pulse, 0x9FE6FF, 0.22F + 0.2F * pulse);
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.MOTE, 0.12F, 0xD8F6FF, 0.35F + 0.4F * pulse);
-            poseStack.rotate(Axis.YP.rotationDegrees(time * 1.5F + i * 40));
+            poseStack.mulPose(Axis.YP.rotationDegrees(time * 1.5F + i * 40));
             float scale = 0.48F + 0.04F * pulse;
             poseStack.scale(scale, scale, scale);
             poseStack.translate(0, -0.15, 0);

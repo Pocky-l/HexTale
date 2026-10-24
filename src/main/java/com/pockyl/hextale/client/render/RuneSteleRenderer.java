@@ -2,12 +2,12 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.BlockEntityRenderState;
+import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -73,15 +73,15 @@ public class RuneSteleRenderer implements BlockEntityRenderer<RuneSteleBlockEnti
             poseStack.popPose();
         }
         // Always readable: the glyph faces the viewer and sways a little, in front of the halo.
-        poseStack.rotate(camera.orientation);
+        poseStack.mulPose(camera.orientation);
         poseStack.translate(0, 0, 0.03F);
         float size = 0.46F * (state.active ? 1.08F : 1);
         float alpha = pulse * (state.active ? 1 : 0.85F);
         poseStack.pushPose();
-        poseStack.rotate(Axis.ZP.rotationDegrees(time * (state.active ? 1.2F : 0.35F)));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(time * (state.active ? 1.2F : 0.35F)));
         HexFx.sigilRing(poseStack, collector, 0.36F * (0.6F + 0.4F * entrance), 9, color, 0.35F * alpha * entrance);
         poseStack.popPose();
-        poseStack.rotate(Axis.ZP.rotationDegrees(Mth.sin(time * 0.05F) * 3));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.sin(time * 0.05F) * 3));
         HexFx.glyph(poseStack, collector, rune, size, color, alpha, entrance);
         poseStack.popPose();
     }

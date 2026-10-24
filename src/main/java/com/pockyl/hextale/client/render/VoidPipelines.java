@@ -9,7 +9,7 @@ import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.pockyl.hextale.port.client.RenderPipeline;
 import com.pockyl.hextale.port.client.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.RenderType;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 import com.pockyl.hextale.Hextale;

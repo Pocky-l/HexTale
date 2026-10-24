@@ -2,14 +2,14 @@ package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import com.pockyl.hextale.port.client.SubmitNodeCollector;
+import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.pockyl.hextale.port.client.BlockEntityRenderState;
+import com.pockyl.hextale.port.client.ModelFeatureRenderer;
+import com.pockyl.hextale.port.client.ItemModelResolver;
+import com.pockyl.hextale.port.client.ItemStackRenderState;
+import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -48,7 +48,7 @@ public class AlembicRenderer implements BlockEntityRenderer<AlembicBlockEntity, 
     }
 
     public AlembicRenderer(BlockEntityRendererProvider.Context context) {
-        itemModelResolver = context.itemModelResolver();
+        itemModelResolver = ItemModelResolver.INSTANCE;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class AlembicRenderer implements BlockEntityRenderer<AlembicBlockEntity, 
         if (!state.item.isEmpty()) {
             poseStack.pushPose();
             poseStack.translate(0.5F, BOTTOM + 1.6F / 16, 0.5F);
-            poseStack.rotate(Axis.YP.rotationDegrees(state.time * 0.6F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.time * 0.6F));
             poseStack.scale(0.28F, 0.28F, 0.28F);
             state.item.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
