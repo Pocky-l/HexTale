@@ -1,7 +1,7 @@
 package com.pockyl.hextale.client;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 
 import com.pockyl.hextale.client.render.PixelArt;

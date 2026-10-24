@@ -1,8 +1,8 @@
 package com.pockyl.hextale.client.screen;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;

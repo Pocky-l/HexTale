@@ -1,9 +1,9 @@
 package com.pockyl.hextale.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.MouseButtonEvent;
+import com.pockyl.hextale.port.client.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -24,6 +24,10 @@ import java.util.List;
  * kind or exact, the rule for the numbers) and a line saying what the filter does now, over the player's inventory.
  */
 public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
+    @Override
+    protected void renderBg(net.minecraft.client.gui.GuiGraphics portGraphics, float portPartialTick, int portMouseX, int portMouseY) {
+    }
+
     private static final int GRID_X = 12;
     private static final int GRID_Y = 20;
     private static final int CELL = 18;
@@ -43,8 +47,9 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+    public void renderBackground(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.renderBackground(graphics.vanilla(), mouseX, mouseY, partialTick);
         int x = leftPos;
         int y = topPos;
         HexPlate.plate(graphics, x, y, imageWidth, imageHeight);
@@ -87,14 +92,16 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
     }
 
     @Override
-    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    protected void renderLabels(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, imageWidth - titleLabelX * 2, HexPlate.TITLE, true);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.render(graphics.vanilla(), mouseX, mouseY, partialTick);
         int slot = ghostAt(mouseX, mouseY);
         if (slot >= 0) {
             ItemFilter filter = menu.filter();
@@ -169,7 +176,9 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    public boolean mouseClicked(double portX, double portY, int portButton) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
+        boolean doubleClick = false;
         int slot = ghostAt(event.x(), event.y());
         if (slot >= 0) {
             press(ItemFilterMenu.SET + slot);
@@ -182,7 +191,7 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
                 return true;
             }
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(event.x(), event.y(), event.button());
     }
 
     @Override

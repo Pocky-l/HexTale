@@ -3,7 +3,7 @@ package com.pockyl.hextale.compat.jei;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 import com.pockyl.hextale.item.EssenceItem;

@@ -3,7 +3,7 @@ package com.pockyl.hextale.client;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;

@@ -1,7 +1,7 @@
 package com.pockyl.hextale.client.screen.machine;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,6 +30,10 @@ import java.util.Map;
  * device names the research it waits for.
  */
 public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu> {
+    @Override
+    protected void renderBg(net.minecraft.client.gui.GuiGraphics portGraphics, float portPartialTick, int portMouseX, int portMouseY) {
+    }
+
     private static final int W = 176;
     private static final int GAUGE_X = 17;
     private static final int GAUGE_Y = 19;
@@ -48,8 +52,9 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+    public void renderBackground(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.renderBackground(graphics.vanilla(), mouseX, mouseY, partialTick);
         int x = leftPos;
         int y = topPos;
         HexPlate.plate(graphics, x, y, W, imageHeight);
@@ -90,7 +95,8 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
     }
 
     @Override
-    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    protected void renderLabels(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, W - titleLabelX * 2, HexPlate.TITLE, true);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
         if (menu.cost() > 0) {
@@ -105,8 +111,9 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.render(graphics.vanilla(), mouseX, mouseY, partialTick);
         int x = leftPos;
         int y = topPos;
         if (mouseX >= x + GAUGE_X - 1 && mouseX < x + GAUGE_X + GAUGE_W + 1 && mouseY >= y + GAUGE_Y - 1 && mouseY < y + GAUGE_Y + GAUGE_H + 1) {

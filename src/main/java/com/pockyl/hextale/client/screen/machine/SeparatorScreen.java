@@ -2,8 +2,8 @@ package com.pockyl.hextale.client.screen.machine;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.input.MouseButtonEvent;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -288,9 +288,10 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         // The open picker covers the screen: nothing under it is hovered (no slot or tank tooltips through it).
-        super.extractRenderState(graphics, picking ? -1 : mouseX, picking ? -1 : mouseY, partialTick);
+        super.render(graphics.vanilla(), picking ? -1 : mouseX, picking ? -1 : mouseY, partialTick);
         if (picking) {
             renderPicker(graphics, mouseX, mouseY);
         }
@@ -309,7 +310,9 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    public boolean mouseClicked(double portX, double portY, int portButton) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
+        boolean doubleClick = false;
         if (picking) {
             // While the picker is open every click belongs to it: an essence chooses, anything else closes it.
             Essence essence = pickedAt(event.x(), event.y());
@@ -342,7 +345,7 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
                 return true;
             }
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(event.x(), event.y(), event.button());
     }
 
     @Override

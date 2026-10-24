@@ -1,9 +1,9 @@
 package com.pockyl.hextale.client.screen;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.MouseButtonEvent;
+import com.pockyl.hextale.port.client.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -115,8 +115,9 @@ public class SteleScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.render(graphics.vanilla(), mouseX, mouseY, partialTick);
         long now = Util.getMillis();
         ItemStack altarItem = altarItem();
         List<Ritual.RuneUse> uses = usesFor(altarItem);
@@ -446,7 +447,9 @@ public class SteleScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    public boolean mouseClicked(double portX, double portY, int portButton) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
+        boolean doubleClick = false;
         double mx = event.x();
         double my = event.y();
         List<Ritual.RuneUse> uses = usesFor(altarItem());
@@ -470,7 +473,7 @@ public class SteleScreen extends Screen {
             }
             return true;
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(event.x(), event.y(), event.button());
     }
 
     private @Nullable ComplexRune gridRuneAt(int left, double mx, double my) {

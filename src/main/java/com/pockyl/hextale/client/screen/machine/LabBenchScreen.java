@@ -2,10 +2,10 @@ package com.pockyl.hextale.client.screen.machine;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
+import com.pockyl.hextale.port.client.MouseButtonEvent;
+import com.pockyl.hextale.port.client.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -56,6 +56,10 @@ import org.jspecify.annotations.Nullable;
  * and the empty-slot silhouettes are sprites drawn at twice the GUI resolution ({@code gui/sprites/lab_bench}).
  */
 public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
+    @Override
+    protected void renderBg(net.minecraft.client.gui.GuiGraphics portGraphics, float portPartialTick, int portMouseX, int portMouseY) {
+    }
+
     private static final String KEY = "gui.hextale.lab_bench.";
     private static final int PANEL_BOTTOM = 172;
     // The journal.
@@ -351,10 +355,12 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    public boolean mouseClicked(double portX, double portY, int portButton) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
+        boolean doubleClick = false;
         LabBenchBlockEntity bench = bench();
         if (bench == null || event.button() != InputConstants.MOUSE_BUTTON_LEFT) {
-            return super.mouseClicked(event, doubleClick);
+            return super.mouseClicked(event.x(), event.y(), event.button());
         }
         double mx = event.x();
         double my = event.y();
@@ -405,7 +411,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
             }
             return true;
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(event.x(), event.y(), event.button());
     }
 
     private void press(int button) {
@@ -415,23 +421,25 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     }
 
     @Override
-    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+    public boolean mouseDragged(double portX, double portY, int portButton, double dx, double dy) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
         LabBenchBlockEntity bench = bench();
         if (draggingValve && bench != null) {
             setFlame(bench, flameAt(event.x()));
             return true;
         }
-        return super.mouseDragged(event, dx, dy);
+        return super.mouseDragged(event.x(), event.y(), event.button(), dx, dy);
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
+    public boolean mouseReleased(double portX, double portY, int portButton) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
         if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && (held != null || draggingValve)) {
             held = null;
             draggingValve = false;
             return true;
         }
-        return super.mouseReleased(event);
+        return super.mouseReleased(event.x(), event.y(), event.button());
     }
 
     @Override
@@ -476,8 +484,9 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     // ---- Drawing --------------------------------------------------------------------------------------------------------
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+    public void renderBackground(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.renderBackground(graphics.vanilla(), mouseX, mouseY, partialTick);
         long nowMs = Util.getMillis();
         float dt = lastFrame < 0 ? 0 : Math.min(0.1F, (nowMs - lastFrame) / 1000.0F);
         lastFrame = nowMs;
@@ -1026,7 +1035,8 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     }
 
     @Override
-    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    protected void renderLabels(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, imageWidth - 16, HexPlate.TITLE, true);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
         int slotCaption = LabBenchMenu.INVENTORY_Y + 1;
@@ -1115,8 +1125,9 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.render(graphics.vanilla(), mouseX, mouseY, partialTick);
         LabBenchBlockEntity bench = bench();
         if (bench == null) {
             return;

@@ -1,6 +1,6 @@
 package com.pockyl.hextale.client.screen.book;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
 
 import com.pockyl.hextale.client.render.PixelArt;

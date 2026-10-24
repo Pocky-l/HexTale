@@ -3,11 +3,11 @@ package com.pockyl.hextale.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
+import com.pockyl.hextale.port.client.KeyEvent;
+import com.pockyl.hextale.port.client.MouseButtonEvent;
+import com.pockyl.hextale.port.client.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.locale.Language;
@@ -63,6 +63,10 @@ import org.jspecify.annotations.Nullable;
  * slots, the loupe arm (drag it onto an item to study it) and the player's inventory.
  */
 public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMenu> implements StarBook.Host {
+    @Override
+    protected void renderBg(net.minecraft.client.gui.GuiGraphics portGraphics, float portPartialTick, int portMouseX, int portMouseY) {
+    }
+
     private static final ResourceLocation BOOK_TEXTURE = Hextale.id("textures/gui/research_book.png");
     private static final ResourceLocation DESK_TEXTURE = Hextale.id("textures/gui/research_desk.png");
     private static final ResourceLocation WIDGETS = Hextale.id("textures/gui/research_table_widgets.png");
@@ -444,8 +448,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
 
     /** Everything above the background: slots, the book, then tooltips (shown after the frame). */
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.render(graphics.vanilla(), mouseX, mouseY, partialTick);
         if (tab == Tab.BOOK) {
             List<FormattedCharSequence> tooltip = book.render(graphics, mouseX, mouseY);
             if (tooltip != null) {
@@ -476,9 +481,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
 
     /** The tab's background, the parchment game and the side panel; runs before {@link #extractRenderState}. */
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderBackground(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         pendingTooltip = null;
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+        super.renderBackground(graphics.vanilla(), mouseX, mouseY, partialTick);
         PixelArt.flush(graphics);
         graphics.blit(RenderPipelines.GUI_TEXTURED, tab == Tab.BOOK ? BOOK_TEXTURE : DESK_TEXTURE, leftPos, topPos, 0, 0, imageWidth,
                 imageHeight, imageWidth, imageHeight);
@@ -490,7 +496,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     @Override
-    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    protected void renderLabels(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         PixelArt.flush(graphics);
         graphics.text(font, title, titleLabelX, titleLabelY, 0xFF000000 | TEXT, true);
         Component codex = Component.translatable(KEY + "codex", ClientKnowledge.get().runeCount(), ComplexRunes.COUNT);
@@ -890,7 +897,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     // ---- Input ----------------------------------------------------------------------------------------------------
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    public boolean mouseClicked(double portX, double portY, int portButton) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
+        boolean doubleClick = false;
         double mouseX = event.x();
         double mouseY = event.y();
         int button = event.button();
@@ -914,7 +923,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             boardPressed(mouseX, mouseY, button);
             return true;
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(event.x(), event.y(), event.button());
     }
 
     private void boardPressed(double mouseX, double mouseY, int button) {
@@ -992,7 +1001,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     @Override
-    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+    public boolean mouseDragged(double portX, double portY, int portButton, double dragX, double dragY) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
         if (tab == Tab.BOOK && book.mouseDragged(event.x(), event.y(), event.button())) {
             return true;
         }
@@ -1007,11 +1017,12 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             }
             return true;
         }
-        return super.mouseDragged(event, dragX, dragY);
+        return super.mouseDragged(event.x(), event.y(), event.button(), dragX, dragY);
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
+    public boolean mouseReleased(double portX, double portY, int portButton) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
         if (tab == Tab.BOOK && book.mouseReleased(event.x(), event.y(), event.button())) {
             return true;
         }
@@ -1023,15 +1034,16 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             release();
             return true;
         }
-        return super.mouseReleased(event);
+        return super.mouseReleased(event.x(), event.y(), event.button());
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
+    public boolean keyPressed(int portKey, int portScan, int portMods) {
+        KeyEvent event = new KeyEvent(portKey, portScan, portMods);
         if (tab == Tab.BOOK && book.keyPressed(event)) {
             return true;
         }
-        return super.keyPressed(event);
+        return super.keyPressed(event.key(), event.scancode(), event.modifiers());
     }
 
     @Override
@@ -1044,9 +1056,10 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
 
     /** The loupe hides the item tooltips it would cover while it is carried. */
     @Override
-    protected void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    protected void renderTooltip(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         if (!loupe.held()) {
-            super.extractTooltip(graphics, mouseX, mouseY);
+            super.renderTooltip(graphics.vanilla(), mouseX, mouseY);
         }
     }
 

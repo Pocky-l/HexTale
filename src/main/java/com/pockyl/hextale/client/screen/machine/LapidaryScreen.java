@@ -2,10 +2,10 @@ package com.pockyl.hextale.client.screen.machine;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import com.pockyl.hextale.port.client.KeyEvent;
+import com.pockyl.hextale.port.client.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -37,6 +37,10 @@ import org.jspecify.annotations.Nullable;
  * the button is let go.
  */
 public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
+    @Override
+    protected void renderBg(net.minecraft.client.gui.GuiGraphics portGraphics, float portPartialTick, int portMouseX, int portMouseY) {
+    }
+
     private static final int FIELD_X = 8;
     private static final int FIELD_Y = 18;
     private static final int FIELD_W = 186;
@@ -166,21 +170,24 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    public boolean mouseClicked(double portX, double portY, int portButton) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
+        boolean doubleClick = false;
         if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && overField(event.x(), event.y())) {
             startGrinding();
             return true;
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(event.x(), event.y(), event.button());
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
+    public boolean mouseReleased(double portX, double portY, int portButton) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
         if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && grinding) {
             release();
             return true;
         }
-        return super.mouseReleased(event);
+        return super.mouseReleased(event.x(), event.y(), event.button());
     }
 
     @Override
@@ -193,7 +200,8 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
+    public boolean keyPressed(int portKey, int portScan, int portMods) {
+        KeyEvent event = new KeyEvent(portKey, portScan, portMods);
         int key = event.key();
         if (key == InputConstants.KEY_A || key == InputConstants.KEY_LEFT) {
             keyLeft = true;
@@ -207,11 +215,12 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
             startGrinding();
             return true;
         }
-        return super.keyPressed(event);
+        return super.keyPressed(event.key(), event.scancode(), event.modifiers());
     }
 
     @Override
-    public boolean keyReleased(KeyEvent event) {
+    public boolean keyReleased(int portKey, int portScan, int portMods) {
+        KeyEvent event = new KeyEvent(portKey, portScan, portMods);
         int key = event.key();
         if (key == InputConstants.KEY_A || key == InputConstants.KEY_LEFT) {
             keyLeft = false;
@@ -225,7 +234,7 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
             release();
             return true;
         }
-        return super.keyReleased(event);
+        return super.keyReleased(event.key(), event.scancode(), event.modifiers());
     }
 
     @Override
@@ -255,8 +264,9 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
     // ---- Drawing --------------------------------------------------------------------------------------------------------
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+    public void renderBackground(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.renderBackground(graphics.vanilla(), mouseX, mouseY, partialTick);
         turn();
         int x = leftPos;
         int y = topPos;
@@ -497,7 +507,8 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
     }
 
     @Override
-    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    protected void renderLabels(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, imageWidth - 16, HexPlate.TITLE, true);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
         LapidaryBlockEntity lapidary = lapidary();
@@ -530,8 +541,9 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.render(graphics.vanilla(), mouseX, mouseY, partialTick);
         if (mouseX >= leftPos + GAUGE_X - 1 && mouseX < leftPos + GAUGE_X + 7 && mouseY >= topPos + GAUGE_Y && mouseY < topPos + GAUGE_Y + GAUGE_H) {
             graphics.setComponentTooltipForNextFrame(font, List.of(Component.translatable("gui.hextale.hex_lapidary.heat"),
                     Component.translatable("gui.hextale.hex_lapidary.heat.hint").withStyle(ChatFormatting.GRAY)), mouseX, mouseY);

@@ -1,7 +1,7 @@
 package com.pockyl.hextale.client.screen.machine;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -28,6 +28,10 @@ import org.jspecify.annotations.Nullable;
  * (synced by the server), the rest from the menu's data.
  */
 public abstract class MachineScreen<M extends MachineMenu> extends AbstractContainerScreen<M> {
+    @Override
+    protected void renderBg(net.minecraft.client.gui.GuiGraphics portGraphics, float portPartialTick, int portMouseX, int portMouseY) {
+    }
+
     protected static final int TANK_W = 16;
     protected static final int TANK_H = 54;
     /** The plate's width; a wider screen keeps the rest for a panel at its right. */
@@ -54,9 +58,10 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderBackground(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         pendingTooltip = null;
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+        super.renderBackground(graphics.vanilla(), mouseX, mouseY, partialTick);
         HexPlate.plate(graphics, leftPos, topPos, PLATE_W, imageHeight);
         HexPlate.divider(graphics, leftPos, topPos + MachineMenu.INVENTORY_Y - 15, PLATE_W);
         for (Slot slot : menu.slots) {
@@ -72,14 +77,16 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
     }
 
     @Override
-    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    protected void renderLabels(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, PLATE_W - titleLabelX * 2, HexPlate.TITLE, true);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.render(graphics.vanilla(), mouseX, mouseY, partialTick);
         if (pendingTooltip != null && hoveredSlot == null) {
             graphics.setComponentTooltipForNextFrame(font, pendingTooltip, mouseX, mouseY);
         }

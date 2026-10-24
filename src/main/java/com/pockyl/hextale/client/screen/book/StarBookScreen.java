@@ -1,9 +1,9 @@
 package com.pockyl.hextale.client.screen.book;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import com.pockyl.hextale.port.client.KeyEvent;
+import com.pockyl.hextale.port.client.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -34,8 +34,9 @@ public class StarBookScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float partialTick) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.render(graphics.vanilla(), mouseX, mouseY, partialTick);
         List<FormattedCharSequence> tooltip = book.render(graphics, mouseX, mouseY);
         if (tooltip != null) {
             graphics.setTooltipForNextFrame(font, tooltip, mouseX, mouseY);
@@ -43,23 +44,28 @@ public class StarBookScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        return book.mouseClicked(event.x(), event.y(), event.button()) || super.mouseClicked(event, doubleClick);
+    public boolean mouseClicked(double portX, double portY, int portButton) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
+        boolean doubleClick = false;
+        return book.mouseClicked(event.x(), event.y(), event.button()) || super.mouseClicked(event.x(), event.y(), event.button());
     }
 
     @Override
-    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
-        return book.mouseDragged(event.x(), event.y(), event.button()) || super.mouseDragged(event, dragX, dragY);
+    public boolean mouseDragged(double portX, double portY, int portButton, double dragX, double dragY) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
+        return book.mouseDragged(event.x(), event.y(), event.button()) || super.mouseDragged(event.x(), event.y(), event.button(), dragX, dragY);
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
-        return book.mouseReleased(event.x(), event.y(), event.button()) || super.mouseReleased(event);
+    public boolean mouseReleased(double portX, double portY, int portButton) {
+        MouseButtonEvent event = new MouseButtonEvent(portX, portY, portButton);
+        return book.mouseReleased(event.x(), event.y(), event.button()) || super.mouseReleased(event.x(), event.y(), event.button());
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
-        return book.keyPressed(event) || super.keyPressed(event);
+    public boolean keyPressed(int portKey, int portScan, int portMods) {
+        KeyEvent event = new KeyEvent(portKey, portScan, portMods);
+        return book.keyPressed(event) || super.keyPressed(event.key(), event.scancode(), event.modifiers());
     }
 
     @Override

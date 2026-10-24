@@ -2,8 +2,8 @@ package com.pockyl.hextale.client;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;

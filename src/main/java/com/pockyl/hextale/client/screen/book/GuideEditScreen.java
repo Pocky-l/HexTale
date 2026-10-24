@@ -1,6 +1,6 @@
 package com.pockyl.hextale.client.screen.book;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.MultiLineEditBox;
@@ -125,8 +125,9 @@ final class GuideEditScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        super.extractRenderState(graphics, mouseX, mouseY, a);
+    public void render(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY, float a) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        super.render(graphics.vanilla(), mouseX, mouseY, a);
         int left = (width - WIDTH) / 2;
         graphics.text(font, Component.literal(quest.id() + "  (" + quest.kind().name().toLowerCase(java.util.Locale.ROOT) + ", "
                 + quest.region().name().toLowerCase(java.util.Locale.ROOT) + ")  -  data/hextale/hextale_guide/" + quest.id() + ".json"),
