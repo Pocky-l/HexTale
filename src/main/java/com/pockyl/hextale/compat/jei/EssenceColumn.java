@@ -56,15 +56,15 @@ final class EssenceColumn {
         int top = top(essences.size(), rows);
         for (int i = 0; i < essences.size(); i++) {
             Map.Entry<Essence, Integer> entry = essences.get(i);
-            builder.addInputSlot(1, top + i * ROW).setStandardSlotBackground().add(EssenceItem.of(entry.getKey()))
+            builder.addInputSlot(1, top + i * ROW).setStandardSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(EssenceItem.of(entry.getKey())))
                     .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.crucible.essence", entry.getValue())));
         }
     }
 
     static void addArrows(IRecipeExtrasBuilder builder, int rows) {
         int y = middle(rows);
-        builder.addRecipePlusSignWidget().setPosition(CATALYST_X - 16, y + 2);
-        builder.addRecipeArrowWidget().setPosition(StepCategory.ARROW_X, y);
+        builder.addRecipePlusSign().setPosition(CATALYST_X - 16, y + 2);
+        builder.addRecipeArrow().setPosition(StepCategory.ARROW_X, y);
     }
 
     static void drawAmounts(GuiGraphicsExtractor graphics, List<Map.Entry<Essence, Integer>> essences, int rows) {

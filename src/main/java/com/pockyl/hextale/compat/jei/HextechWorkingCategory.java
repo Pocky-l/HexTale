@@ -1,7 +1,7 @@
 package com.pockyl.hextale.compat.jei;
 
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -15,7 +15,7 @@ import java.util.List;
  * a crafting table, a furnace and a cauldron, and the lapidary cuts orbs into crystals and crystals into gemstones.
  */
 public final class HextechWorkingCategory {
-    public static final IRecipeType<StepCategory.Step> TYPE = StepCategory.type("hextech_working");
+    public static final RecipeType<StepCategory.Step> TYPE = StepCategory.type("hextech_working");
 
     private HextechWorkingCategory() {
     }
@@ -26,7 +26,7 @@ public final class HextechWorkingCategory {
 
     public static List<StepCategory.Step> all() {
         return List.of(
-                step(List.of(new ItemStack(Items.LIGHTNING_ROD.asList().getFirst()), new ItemStack(Items.AMETHYST_BLOCK)),
+                step(List.of(new ItemStack(Items.LIGHTNING_ROD), new ItemStack(Items.AMETHYST_BLOCK)),
                         new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), "lightning"),
                 step(List.of(new ItemStack(ModItems.UNSTABLE_HEXTECH.get())), new ItemStack(ModItems.HEXTECH_DUST.get(), 2), "throw"),
                 step(List.of(new ItemStack(ModItems.HEXTECH_DUST.get()), new ItemStack(Items.CRAFTING_TABLE)),

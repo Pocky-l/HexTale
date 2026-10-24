@@ -5,7 +5,7 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +27,7 @@ import java.util.List;
  * the topic. Under them what the flask must hold to seal it and the reactions that lead there.
  */
 public class LabExperimentCategory extends AbstractRecipeCategory<ExperimentPlan> {
-    public static final IRecipeType<ExperimentPlan> TYPE = IRecipeType.create(Hextale.MOD_ID, "lab_experiment", ExperimentPlan.class);
+    public static final RecipeType<ExperimentPlan> TYPE = RecipeType.create(Hextale.MOD_ID, "lab_experiment", ExperimentPlan.class);
     private static final int GOAL_Y = StepCategory.NOTE_Y;
     private static final int CHAIN_Y = GOAL_Y + 21;
 
@@ -44,7 +44,7 @@ public class LabExperimentCategory extends AbstractRecipeCategory<ExperimentPlan
     public void setRecipe(IRecipeLayoutBuilder builder, ExperimentPlan plan, IFocusGroup focuses) {
         builder.addInputSlot(1, StepCategory.ROW_Y).setStandardSlotBackground().addItemStack(new ItemStack(Items.GLASS_BOTTLE))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.lab_experiment.flask")));
-        plan.sample().ifPresent(sample -> builder.addInputSlot(35, StepCategory.ROW_Y).setStandardSlotBackground().add(sample)
+        plan.sample().ifPresent(sample -> builder.addInputSlot(35, StepCategory.ROW_Y).setStandardSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(sample))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.lab_experiment.sample"))));
         ResearchTopic topic = plan.topic();
         builder.addOutputSlot(StepCategory.RESULT_X, StepCategory.ROW_Y).setOutputSlotBackground().addItemStack(ResearchNotesItem.of(topic))
@@ -55,9 +55,9 @@ public class LabExperimentCategory extends AbstractRecipeCategory<ExperimentPlan
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, ExperimentPlan plan, IFocusGroup focuses) {
         if (plan.needsSample()) {
-            builder.addRecipePlusSignWidget().setPosition(20, StepCategory.ROW_Y + 2);
+            builder.addRecipePlusSign().setPosition(20, StepCategory.ROW_Y + 2);
         }
-        builder.addRecipeArrowWidget().setPosition(StepCategory.ARROW_X, StepCategory.ROW_Y);
+        builder.addRecipeArrow().setPosition(StepCategory.ARROW_X, StepCategory.ROW_Y);
         Component goal = Component.translatable("gui.hextale.lab_bench.goal", plan.amount(), name(plan.target()),
                 Math.round(plan.purity() * 100));
         builder.addText(goal, StepCategory.WIDTH, 20).setPosition(0, GOAL_Y).setColor(StepCategory.NOTE_COLOR);

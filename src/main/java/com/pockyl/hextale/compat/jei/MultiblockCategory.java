@@ -10,7 +10,7 @@ import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.recipe.RecipeType;
 import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -32,7 +32,7 @@ import java.util.List;
  * model, pick a layer; dragging turns it), under it every block it takes with counts and the hextech dust that wakes it.
  */
 public class MultiblockCategory extends AbstractRecipeCategory<Multiblock> {
-    public static final IRecipeType<Multiblock> TYPE = IRecipeType.create(Hextale.MOD_ID, "multiblock", Multiblock.class);
+    public static final RecipeType<Multiblock> TYPE = RecipeType.create(Hextale.MOD_ID, "multiblock", Multiblock.class);
     private static final int WIDTH = 160;
     private static final int SCENE = 124;
     private static final int PITCH = 18;
@@ -69,7 +69,7 @@ public class MultiblockCategory extends AbstractRecipeCategory<Multiblock> {
     }
 
     @Override
-    public ResourceLocation getIdentifier(Multiblock multiblock) {
+    public ResourceLocation getRegistryName(Multiblock multiblock) {
         return Hextale.id("multiblock/" + multiblock.id());
     }
 
@@ -86,7 +86,8 @@ public class MultiblockCategory extends AbstractRecipeCategory<Multiblock> {
         }
 
         @Override
-        public void drawWidget(GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+        public void drawWidget(net.minecraft.client.gui.GuiGraphics portGraphics, double mouseX, double mouseY) {
+            GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
             preview.render(graphics, 0, 0, WIDTH, SCENE, (int) mouseX, (int) mouseY, System.currentTimeMillis() / 50F);
         }
 

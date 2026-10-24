@@ -5,7 +5,7 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -27,7 +27,7 @@ import java.util.List;
  * or poured into the burner's tank (per millibucket; unknown essence burns twice as long).
  */
 public class ChemFuelCategory extends AbstractRecipeCategory<ChemFuelCategory.Recipe> {
-    public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "chem_fuel", Recipe.class);
+    public static final RecipeType<Recipe> TYPE = RecipeType.create(Hextale.MOD_ID, "chem_fuel", Recipe.class);
     private static final int TEXT_X = 22;
 
     /** The fuel and its lines: which device burns it and for how long. */

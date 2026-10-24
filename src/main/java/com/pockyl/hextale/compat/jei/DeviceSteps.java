@@ -1,7 +1,7 @@
 package com.pockyl.hextale.compat.jei;
 
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -30,10 +30,10 @@ import java.util.List;
  * Tank sheds slime, an open Drain Valve soaks stone into magic stone, and the altar writes a rune onto a blank scroll.
  */
 public final class DeviceSteps {
-    public static final IRecipeType<StepCategory.Step> STILL = StepCategory.type("chem_still");
-    public static final IRecipeType<StepCategory.Step> TANK = StepCategory.type("axolotl_tank");
-    public static final IRecipeType<StepCategory.Step> SOAKING = StepCategory.type("soaking");
-    public static final IRecipeType<StepCategory.Step> WRITING = StepCategory.type("rune_writing");
+    public static final RecipeType<StepCategory.Step> STILL = StepCategory.type("chem_still");
+    public static final RecipeType<StepCategory.Step> TANK = StepCategory.type("axolotl_tank");
+    public static final RecipeType<StepCategory.Step> SOAKING = StepCategory.type("soaking");
+    public static final RecipeType<StepCategory.Step> WRITING = StepCategory.type("rune_writing");
     private static final TagKey<Item> SOAKS_ESSENCE = TagKey.create(Registries.ITEM, Hextale.id("soaks_essence"));
 
     private DeviceSteps() {

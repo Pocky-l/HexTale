@@ -6,7 +6,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -51,13 +51,13 @@ public class StepCategory extends AbstractRecipeCategory<StepCategory.Step> {
 
     private final int noteLines;
 
-    public StepCategory(IRecipeType<Step> type, Component title, IDrawable icon, int noteLines) {
+    public StepCategory(RecipeType<Step> type, Component title, IDrawable icon, int noteLines) {
         super(type, title, icon, WIDTH, NOTE_Y + noteLines * 10);
         this.noteLines = noteLines;
     }
 
-    static IRecipeType<Step> type(String path) {
-        return IRecipeType.create(Hextale.MOD_ID, path, Step.class);
+    static RecipeType<Step> type(String path) {
+        return RecipeType.create(Hextale.MOD_ID, path, Step.class);
     }
 
     @Override
@@ -78,9 +78,9 @@ public class StepCategory extends AbstractRecipeCategory<StepCategory.Step> {
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Step step, IFocusGroup focuses) {
         for (int i = 1; i < step.inputs().size(); i++) {
-            builder.addRecipePlusSignWidget().setPosition(1 + i * INPUT_PITCH - 15, ROW_Y + 2);
+            builder.addRecipePlusSign().setPosition(1 + i * INPUT_PITCH - 15, ROW_Y + 2);
         }
-        builder.addRecipeArrowWidget().setPosition(ARROW_X, ROW_Y);
+        builder.addRecipeArrow().setPosition(ARROW_X, ROW_Y);
         builder.addText(step.note(), WIDTH, noteLines * 10).setPosition(0, NOTE_Y).setColor(NOTE_COLOR);
     }
 }

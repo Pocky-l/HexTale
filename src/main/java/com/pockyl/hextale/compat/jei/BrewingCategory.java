@@ -6,7 +6,7 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.recipe.RecipeType;
 import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +25,7 @@ import java.util.Map;
  * dose, bottled with glass bottles), and under them the heat it needs.
  */
 public class BrewingCategory extends AbstractRecipeCategory<BrewingCategory.Recipe> {
-    public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "brewing", Recipe.class);
+    public static final RecipeType<Recipe> TYPE = RecipeType.create(Hextale.MOD_ID, "brewing", Recipe.class);
 
     public record Recipe(ResourceLocation id, BrewRecipe recipe) {
         List<Map.Entry<Essence, Integer>> essences() {
@@ -49,10 +49,10 @@ public class BrewingCategory extends AbstractRecipeCategory<BrewingCategory.Reci
     public void setRecipe(IRecipeLayoutBuilder builder, Recipe recipe, IFocusGroup focuses) {
         EssenceColumn.addEssences(builder, recipe.essences(), rows);
         int y = EssenceColumn.middle(rows);
-        builder.addInputSlot(EssenceColumn.CATALYST_X, y).setStandardSlotBackground().add(recipe.recipe().catalyst())
+        builder.addInputSlot(EssenceColumn.CATALYST_X, y).setStandardSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(recipe.recipe().catalyst()))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.crucible.catalyst")));
         builder.addOutputSlot(StepCategory.RESULT_X, y).setOutputSlotBackground()
-                .add(ChemVialItem.of(recipe.recipe().brew(), recipe.recipe().doses()))
+                .addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(ChemVialItem.of(recipe.recipe().brew(), recipe.recipe().doses())))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.brewing.bottled")));
     }
 
@@ -66,12 +66,13 @@ public class BrewingCategory extends AbstractRecipeCategory<BrewingCategory.Reci
     }
 
     @Override
-    public void draw(Recipe recipe, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+    public void draw(Recipe recipe, IRecipeSlotsView slots, net.minecraft.client.gui.GuiGraphics portGraphics, double mouseX, double mouseY) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         EssenceColumn.drawAmounts(graphics, recipe.essences(), rows);
     }
 
     @Override
-    public ResourceLocation getIdentifier(Recipe recipe) {
+    public ResourceLocation getRegistryName(Recipe recipe) {
         return recipe.id();
     }
 }

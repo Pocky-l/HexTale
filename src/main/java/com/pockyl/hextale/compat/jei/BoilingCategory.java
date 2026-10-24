@@ -5,7 +5,7 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -21,7 +21,7 @@ import java.util.List;
  * the item's essences, which only the research reveals.
  */
 public class BoilingCategory extends AbstractRecipeCategory<BoilingCategory.Recipe> {
-    public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "boiling", Recipe.class);
+    public static final RecipeType<Recipe> TYPE = RecipeType.create(Hextale.MOD_ID, "boiling", Recipe.class);
 
     /** The items that boil into essence (any of them, studied first). */
     public record Recipe(List<ItemStack> items) {
@@ -50,6 +50,6 @@ public class BoilingCategory extends AbstractRecipeCategory<BoilingCategory.Reci
 
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Recipe recipe, IFocusGroup focuses) {
-        builder.addAnimatedRecipeArrowWidget(AlembicBlockEntity.BOIL_TICKS).setPosition(58, 19);
+        builder.addAnimatedRecipeArrow(AlembicBlockEntity.BOIL_TICKS).setPosition(58, 19);
     }
 }

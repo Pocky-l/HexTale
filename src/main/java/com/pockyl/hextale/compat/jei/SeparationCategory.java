@@ -5,7 +5,7 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -24,7 +24,7 @@ import java.util.List;
  * product) and the rest of the mixture as an unknown essence (the by-product).
  */
 public class SeparationCategory extends AbstractRecipeCategory<SeparationCategory.Recipe> {
-    public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "separation", Recipe.class);
+    public static final RecipeType<Recipe> TYPE = RecipeType.create(Hextale.MOD_ID, "separation", Recipe.class);
 
     /** The fuel burned to draw {@code essence} out (blaze powder). */
     public record Recipe(Essence essence, List<ItemStack> reagents) {
@@ -52,6 +52,6 @@ public class SeparationCategory extends AbstractRecipeCategory<SeparationCategor
 
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Recipe recipe, IFocusGroup focuses) {
-        builder.addAnimatedRecipeArrowWidget(SeparatorBlockEntity.STEP_TICKS * 4).setPosition(48, 11);
+        builder.addAnimatedRecipeArrow(SeparatorBlockEntity.STEP_TICKS * 4).setPosition(48, 11);
     }
 }

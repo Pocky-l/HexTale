@@ -44,15 +44,9 @@ public class HextaleJeiPlugin implements IModPlugin {
     /** Bottles of different essences are different ingredients. */
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
-        registration.registerFromDataComponentTypes(ModItems.ESSENCE_FLASK.get(), ModDataComponents.ESSENCE.get());
-        registration.registerFromDataComponentTypes(ModItems.ESSENCE.get(), ModDataComponents.ESSENCE_KIND.get());
-        registration.registerFromDataComponentTypes(ModItems.CHEM_VIAL.get(), ModDataComponents.BREW.get());
-    }
-
-    /** Typing an essence's name also finds the studied items that carry it. */
-    @Override
-    public void registerAdvancedSearch(mezz.jei.api.registration.IAdvancedSearchRegistration registration) {
-        registration.replaceSearchStorage(EssenceSearch.wrap(registration.getDefaultSearchStorageBuilderFactory()));
+        com.pockyl.hextale.port.PortJei.registerFromDataComponentTypes(registration, ModItems.ESSENCE_FLASK.get(), ModDataComponents.ESSENCE.get());
+        com.pockyl.hextale.port.PortJei.registerFromDataComponentTypes(registration, ModItems.ESSENCE.get(), ModDataComponents.ESSENCE_KIND.get());
+        com.pockyl.hextale.port.PortJei.registerFromDataComponentTypes(registration, ModItems.CHEM_VIAL.get(), ModDataComponents.BREW.get());
     }
 
     /** A bottle of each concentrate and one of unknown essence, so they can be looked up. */
@@ -193,23 +187,23 @@ public class HextaleJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addCraftingStation(BoilingCategory.TYPE, ModItems.ALEMBIC.get());
-        registration.addCraftingStation(SeparationCategory.TYPE, ModItems.SEPARATOR.get());
-        registration.addCraftingStation(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.HEXCORE.get(), ModItems.PEDESTAL.get(), ModItems.RUNE_STELE.get());
-        registration.addCraftingStation(RuneBurningCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
-        registration.addCraftingStation(HexCraftingCategory.TYPE, ModItems.HEX_WORKBENCH.get());
-        registration.addCraftingStation(AlloyingCategory.TYPE, ModItems.HEX_FURNACE.get());
-        registration.addCraftingStation(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_FOUNDRY.get());
-        registration.addCraftingStation(HextechWorkingCategory.TYPE, ModItems.HEX_LAPIDARY.get());
-        registration.addCraftingStation(CrucibleCategory.TYPE, ModItems.CRUCIBLE.get());
-        registration.addCraftingStation(BrewingCategory.TYPE, ModItems.CRUCIBLE.get(), ModItems.CHEM_BURNER.get());
-        registration.addCraftingStation(LabExperimentCategory.TYPE, ModItems.LAB_BENCH.get());
-        registration.addCraftingStation(MultiblockCategory.TYPE, ModItems.HEXTECH_DUST.get());
-        registration.addCraftingStation(ChemFuelCategory.TYPE, ModItems.CHEM_BURNER.get(), ModItems.PINK_BRAZIER.get());
-        registration.addCraftingStation(DeviceSteps.STILL, ModItems.CHEM_STILL.get(), ModItems.CHEM_BURNER.get());
-        registration.addCraftingStation(DeviceSteps.TANK, ModItems.AXOLOTL_TANK.get());
-        registration.addCraftingStation(DeviceSteps.SOAKING, ModItems.DRAIN_VALVE.get());
-        registration.addCraftingStation(DeviceSteps.WRITING, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
+        registration.addRecipeCatalysts(BoilingCategory.TYPE, ModItems.ALEMBIC.get());
+        registration.addRecipeCatalysts(SeparationCategory.TYPE, ModItems.SEPARATOR.get());
+        registration.addRecipeCatalysts(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.HEXCORE.get(), ModItems.PEDESTAL.get(), ModItems.RUNE_STELE.get());
+        registration.addRecipeCatalysts(RuneBurningCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
+        registration.addRecipeCatalysts(HexCraftingCategory.TYPE, ModItems.HEX_WORKBENCH.get());
+        registration.addRecipeCatalysts(AlloyingCategory.TYPE, ModItems.HEX_FURNACE.get());
+        registration.addRecipeCatalysts(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_FOUNDRY.get());
+        registration.addRecipeCatalysts(HextechWorkingCategory.TYPE, ModItems.HEX_LAPIDARY.get());
+        registration.addRecipeCatalysts(CrucibleCategory.TYPE, ModItems.CRUCIBLE.get());
+        registration.addRecipeCatalysts(BrewingCategory.TYPE, ModItems.CRUCIBLE.get(), ModItems.CHEM_BURNER.get());
+        registration.addRecipeCatalysts(LabExperimentCategory.TYPE, ModItems.LAB_BENCH.get());
+        registration.addRecipeCatalysts(MultiblockCategory.TYPE, ModItems.HEXTECH_DUST.get());
+        registration.addRecipeCatalysts(ChemFuelCategory.TYPE, ModItems.CHEM_BURNER.get(), ModItems.PINK_BRAZIER.get());
+        registration.addRecipeCatalysts(DeviceSteps.STILL, ModItems.CHEM_STILL.get(), ModItems.CHEM_BURNER.get());
+        registration.addRecipeCatalysts(DeviceSteps.TANK, ModItems.AXOLOTL_TANK.get());
+        registration.addRecipeCatalysts(DeviceSteps.SOAKING, ModItems.DRAIN_VALVE.get());
+        registration.addRecipeCatalysts(DeviceSteps.WRITING, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
     }
 
     static ItemStack concentrate(Essence essence) {

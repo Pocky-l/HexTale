@@ -6,7 +6,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -20,7 +20,7 @@ import java.util.Optional;
 
 /** Hex Workbench recipes: the 3 x 3 grid, the result and the charge the crystal spends on it. */
 public class HexCraftingCategory extends AbstractRecipeCategory<HexCraftingCategory.Recipe> {
-    public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "hex_crafting", Recipe.class);
+    public static final RecipeType<Recipe> TYPE = RecipeType.create(Hextale.MOD_ID, "hex_crafting", Recipe.class);
 
     public record Recipe(ResourceLocation id, HexCraftingRecipe recipe) {
     }
@@ -34,21 +34,20 @@ public class HexCraftingCategory extends AbstractRecipeCategory<HexCraftingCateg
         List<Optional<Ingredient>> cells = recipe.recipe().grid();
         for (int i = 0; i < 9; i++) {
             var slot = builder.addSlot(RecipeIngredientRole.INPUT, 1 + i % 3 * 18, 1 + i / 3 * 18).setStandardSlotBackground();
-            cells.get(i).ifPresent(slot::add);
+            cells.get(i).ifPresent(ingredient -> slot.addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(ingredient)));
         }
-        builder.addOutputSlot(95, 19).setOutputSlotBackground().add(recipe.recipe().result());
+        builder.addOutputSlot(95, 19).setOutputSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(recipe.recipe().result()));
     }
 
     @Override
     public void createRecipeExtras(IRecipeExtrasBuilder builder, Recipe recipe, IFocusGroup focuses) {
-        builder.addRecipeArrowWidget().setPosition(61, 19);
+        builder.addRecipeArrow().setPosition(61, 19);
         builder.addText(Component.translatable("jei.hextale.hex_crafting.charge", recipe.recipe().charge()), 56, 10)
-                .setPosition(60, 42).setColor(0xFF2A7FB8)
-                .setTooltip(Component.translatable("jei.hextale.hex_crafting.charge.tooltip", recipe.recipe().charge()));
+                .setPosition(60, 42).setColor(0xFF2A7FB8);
     }
 
     @Override
-    public ResourceLocation getIdentifier(Recipe recipe) {
+    public ResourceLocation getRegistryName(Recipe recipe) {
         return recipe.id();
     }
 }

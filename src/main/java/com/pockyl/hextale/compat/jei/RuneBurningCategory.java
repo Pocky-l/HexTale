@@ -7,7 +7,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
@@ -35,7 +35,7 @@ import java.util.Map;
  * and the runes it is incompatible with.
  */
 public class RuneBurningCategory extends AbstractRecipeCategory<RuneBurningCategory.Recipe> {
-    public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "rune_burning", Recipe.class);
+    public static final RecipeType<Recipe> TYPE = RecipeType.create(Hextale.MOD_ID, "rune_burning", Recipe.class);
 
     /** One rune burned into a pickaxe, a Hex Smelter or a hex pylon. */
     public record Recipe(RuneHolder holder, ComplexRune rune) {
@@ -81,13 +81,14 @@ public class RuneBurningCategory extends AbstractRecipeCategory<RuneBurningCateg
             return out;
         }).toList();
         builder.addInputSlot(4, 4).setStandardSlotBackground().addItemStacks(before);
-        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 40, 4).add(new ItemStack(ModItems.RUNE_STELE.get()));
+        builder.addSlot(RecipeIngredientRole.CATALYST, 40, 4).addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(new ItemStack(ModItems.RUNE_STELE.get())));
         builder.addOutputSlot(98, 4).setOutputSlotBackground().addItemStacks(after);
-        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, WIDTH - 20, 4).add(new ItemStack(ModItems.HEXTECH_ALTAR.get()));
+        builder.addSlot(RecipeIngredientRole.CATALYST, WIDTH - 20, 4).addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(new ItemStack(ModItems.HEXTECH_ALTAR.get())));
     }
 
     @Override
-    public void draw(Recipe rune, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+    public void draw(Recipe rune, IRecipeSlotsView slots, net.minecraft.client.gui.GuiGraphics portGraphics, double mouseX, double mouseY) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         Font font = Minecraft.getInstance().font;
         ComplexRune complex = rune.rune();
         // pickaxe + (rune over its stele) -> pickaxe with the rune

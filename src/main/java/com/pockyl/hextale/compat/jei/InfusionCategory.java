@@ -6,7 +6,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
@@ -35,7 +35,7 @@ import java.util.Map;
  * decides a pickaxe's stars.
  */
 public class InfusionCategory extends AbstractRecipeCategory<InfusionCategory.Recipe> {
-    public static final IRecipeType<Recipe> TYPE = IRecipeType.create(Hextale.MOD_ID, "infusion", Recipe.class);
+    public static final RecipeType<Recipe> TYPE = RecipeType.create(Hextale.MOD_ID, "infusion", Recipe.class);
     private static final int WIDTH = 160;
     private static final int HEIGHT = 140;
     private static final int RING = 28;
@@ -60,17 +60,18 @@ public class InfusionCategory extends AbstractRecipeCategory<InfusionCategory.Re
             double angle = i * Math.PI * 2 / pedestals.size();
             int x = CX + (int) Math.round(Math.sin(angle) * RING) - 8;
             int y = CY - (int) Math.round(Math.cos(angle) * RING) - 8;
-            builder.addInputSlot(x, y).setStandardSlotBackground().add(pedestals.get(i));
+            builder.addInputSlot(x, y).setStandardSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(pedestals.get(i)));
         }
         Ingredient center = recipe.center();
-        builder.addInputSlot(CX - 8, CY - 8).setStandardSlotBackground().add(center);
+        builder.addInputSlot(CX - 8, CY - 8).setStandardSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(center));
         ItemStack shown = com.pockyl.hextale.port.PortIngredients.items(center).findFirst().map(ItemStack::new).orElse(ItemStack.EMPTY);
-        builder.addOutputSlot(130, CY - 8).setOutputSlotBackground().add(recipe.resultFor(shown));
-        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 130, 4).add(new ItemStack(ModItems.HEXTECH_ALTAR.get()));
+        builder.addOutputSlot(130, CY - 8).setOutputSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(recipe.resultFor(shown)));
+        builder.addSlot(RecipeIngredientRole.CATALYST, 130, 4).addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(new ItemStack(ModItems.HEXTECH_ALTAR.get())));
     }
 
     @Override
-    public void draw(Recipe entry, IRecipeSlotsView slots, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
+    public void draw(Recipe entry, IRecipeSlotsView slots, net.minecraft.client.gui.GuiGraphics portGraphics, double mouseX, double mouseY) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
         InfusionRecipe recipe = entry.recipe();
         Font font = Minecraft.getInstance().font;
         // The circle joining the pedestals and an arrow to the result.
