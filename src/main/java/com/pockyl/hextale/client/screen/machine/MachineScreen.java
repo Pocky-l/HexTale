@@ -45,7 +45,9 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
 
     /** A screen wider than its plate, for a panel at its right. */
     protected MachineScreen(M menu, Inventory inventory, Component title, int width) {
-        super(menu, inventory, title, width, MachineMenu.INVENTORY_Y + 82);
+        super(menu, inventory, title);
+        this.imageWidth = width;
+        this.imageHeight = MachineMenu.INVENTORY_Y + 82;
         titleLabelX = 8;
         titleLabelY = 7;
         inventoryLabelY = MachineMenu.INVENTORY_Y - 11;

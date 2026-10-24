@@ -3,7 +3,7 @@ package com.pockyl.hextale.client.particle;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.SingleQuadParticle;
+import com.pockyl.hextale.port.client.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
@@ -62,8 +62,8 @@ public class HexRingParticle extends HexParticle {
         }
 
         @Override
-        public Particle createParticle(ColorParticleOption option, ClientLevel level, double x, double y, double z, double xd, double yd, double zd,
-                                       RandomSource random) {
+        public Particle createParticle(ColorParticleOption option, ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
+            RandomSource random = level.getRandom();
             return new HexRingParticle(level, x, y, z, xd, yd, zd, option, sprites);
         }
     }

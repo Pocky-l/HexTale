@@ -79,7 +79,7 @@ final class GuideEditor {
     }
 
     static boolean enabled() {
-        return !FMLEnvironment.isProduction();
+        return !FMLEnvironment.production;
     }
 
     boolean press(double mouseX, double mouseY) {
@@ -116,7 +116,7 @@ final class GuideEditor {
         dragged = null;
         if (!moved) {
             Minecraft minecraft = Minecraft.getInstance();
-            minecraft.gui.setScreen(new GuideEditScreen(quest, minecraft.gui.screen()));
+            minecraft.setScreen(new GuideEditScreen(quest, minecraft.screen));
             return true;
         }
         var pos = new QuestDefinition.Pos(Math.round(book.mapX(mouseX) - grabX), Math.round(book.mapY(mouseY) - grabY));

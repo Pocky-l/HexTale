@@ -35,7 +35,7 @@ public final class VoidAtmosphere {
 
     public static void register(IEventBus modBus) {
         modBus.addListener((RegisterGuiLayersEvent event) ->
-                event.registerAbove(VanillaGuiLayers.CAMERA_OVERLAYS, Hextale.id("the_void_vignette"), VoidAtmosphere::vignette));
+                event.registerAbove(VanillaGuiLayers.CAMERA_OVERLAYS, Hextale.id("the_void_vignette"), (portGraphics, portDelta) -> VoidAtmosphere.vignette(com.pockyl.hextale.port.client.GuiGraphicsExtractor.of(portGraphics), portDelta)));
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> tick());
         NeoForge.EVENT_BUS.addListener(VoidAtmosphere::fogColour);
         NeoForge.EVENT_BUS.addListener(VoidAtmosphere::fog);

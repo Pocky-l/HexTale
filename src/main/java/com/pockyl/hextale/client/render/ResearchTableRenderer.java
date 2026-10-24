@@ -3,7 +3,7 @@ package com.pockyl.hextale.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.model.object.book.BookModel;
+import net.minecraft.client.model.BookModel;
 import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -233,8 +233,8 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         poseStack.translate(0, -0.125, 0);
         poseStack.scale(0.8F, 0.8F, 0.8F);
         float flip = state.sinceFlare >= 0 && state.sinceFlare < 24 ? Mth.clamp(state.sinceFlare / 16.0F, 0, 1) : 0;
-        BookModel.State pages = BookModel.State.forAnimation(state.time, 0.1F + flip * 0.8F, 0.9F, 1.2F);
-        collector.submitModel(book, pages, poseStack, BOOK_TEXTURE, light, OverlayTexture.NO_OVERLAY, 0);
+        book.setupAnim(state.time, 0.1F + flip * 0.8F, 0.9F, 1.2F);
+        book.renderToBuffer(poseStack, collector.buffer(book.renderType(BOOK_TEXTURE)), light, OverlayTexture.NO_OVERLAY, -1);
         poseStack.popPose();
     }
 

@@ -23,7 +23,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.InkSupply;
@@ -151,7 +151,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private int lastStepSound;
 
     public ResearchTableScreen(ResearchTableMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, ResearchTableMenu.IMAGE_WIDTH, ResearchTableMenu.IMAGE_HEIGHT);
+        super(menu, inventory, title);
+        this.imageWidth = ResearchTableMenu.IMAGE_WIDTH;
+        this.imageHeight = ResearchTableMenu.IMAGE_HEIGHT;
         inventoryLabelX = -1000;
         titleLabelX = 8;
         titleLabelY = 7;
@@ -198,7 +200,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
 
     private void send(ResearchActionPayload payload) {
-        ClientPacketDistributor.sendToServer(payload);
+        PacketDistributor.sendToServer(payload);
     }
 
     private static void sound(SoundEvent sound, float pitch, float volume) {

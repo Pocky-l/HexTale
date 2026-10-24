@@ -45,9 +45,9 @@ public final class ClientPayloads {
             com.pockyl.hextale.crafting.BrewRecipe.ALL.setClient(payload.brewing());
             com.pockyl.hextale.research.ExperimentPlan.ALL.setClient(payload.experiments());
         });
-        event.register(OpenStelePayload.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new SteleScreen(payload.pos())));
+        event.register(OpenStelePayload.TYPE, (payload, context) -> Minecraft.getInstance().setScreen(new SteleScreen(payload.pos())));
         event.register(com.pockyl.hextale.network.OpenStickerPayload.TYPE, (payload, context) ->
-                Minecraft.getInstance().gui.setScreen(new com.pockyl.hextale.client.screen.StickerScreen(payload.hand())));
+                Minecraft.getInstance().setScreen(new com.pockyl.hextale.client.screen.StickerScreen(payload.hand())));
         event.register(PylonFlightsPayload.TYPE, (payload, context) -> pylonFlights(payload));
         event.register(com.pockyl.hextale.network.SawPayload.TYPE, (payload, context) -> {
             ClientLevel level = Minecraft.getInstance().level;
@@ -111,16 +111,16 @@ public final class ClientPayloads {
     }
 
     public static void researchMessage(ResearchMessagePayload payload) {
-        if (Minecraft.getInstance().gui.screen() instanceof ResearchTableScreen screen) {
+        if (Minecraft.getInstance().screen instanceof ResearchTableScreen screen) {
             screen.onMessage(payload.text(), payload.tone());
-        } else if (Minecraft.getInstance().gui.screen() instanceof com.pockyl.hextale.client.screen.machine.LabBenchScreen screen) {
+        } else if (Minecraft.getInstance().screen instanceof com.pockyl.hextale.client.screen.machine.LabBenchScreen screen) {
             screen.onMessage(payload.text(), payload.tone());
         }
     }
 
     public static void openDiary(OpenDiaryPayload payload) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.gui.setScreen(new StarBookScreen(payload.owner()));
+        minecraft.setScreen(new StarBookScreen(payload.owner()));
         // The leather cover opens, then the pages riffle.
         minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.ARMOR_EQUIP_LEATHER.value(), 1.2F, 0.5F));
         minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 0.9F, 1.0F));

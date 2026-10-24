@@ -14,7 +14,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.Util;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import com.pockyl.hextale.block.LapidaryBlockEntity;
 import com.pockyl.hextale.client.render.PixelArt;
@@ -74,7 +74,9 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
     private boolean lastAligned;
 
     public LapidaryScreen(LapidaryMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, LapidaryMenu.WIDTH, LapidaryMenu.INVENTORY_Y + 82);
+        super(menu, inventory, title);
+        this.imageWidth = LapidaryMenu.WIDTH;
+        this.imageHeight = LapidaryMenu.INVENTORY_Y + 82;
         titleLabelX = 8;
         titleLabelY = 7;
         inventoryLabelX = LapidaryMenu.INVENTORY_X;
@@ -156,7 +158,7 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
         }
         grinding = false;
         if (heldTicks > 0) {
-            ClientPacketDistributor.sendToServer(new LapidaryStrokePayload(menu.pos(), strokeAngle, heldTicks));
+            PacketDistributor.sendToServer(new LapidaryStrokePayload(menu.pos(), strokeAngle, heldTicks));
         }
         heldTicks = 0;
         previewRevision = -1;

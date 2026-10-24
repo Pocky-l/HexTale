@@ -45,7 +45,9 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
     public static final int ARROW_Y = 40;
 
     public HexWorkbenchScreen(HexWorkbenchMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, W, MachineMenu.INVENTORY_Y + 82);
+        super(menu, inventory, title);
+        this.imageWidth = W;
+        this.imageHeight = MachineMenu.INVENTORY_Y + 82;
         titleLabelX = 8;
         titleLabelY = 7;
         inventoryLabelY = MachineMenu.INVENTORY_Y - 11;

@@ -75,8 +75,8 @@ public class MagicLeafParticle extends HexParticle {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType options, ClientLevel level, double x, double y, double z, double xd, double yd, double zd,
-                                       RandomSource random) {
+        public Particle createParticle(SimpleParticleType options, ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
+            RandomSource random = level.getRandom();
             return new MagicLeafParticle(level, x, y, z, sprites);
         }
     }

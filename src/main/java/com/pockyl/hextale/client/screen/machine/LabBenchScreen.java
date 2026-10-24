@@ -18,7 +18,7 @@ import net.minecraft.Util;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.InkSupply;
@@ -179,7 +179,9 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     }
 
     public LabBenchScreen(LabBenchMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, LabBenchMenu.WIDTH, LabBenchMenu.INVENTORY_Y + 82);
+        super(menu, inventory, title);
+        this.imageWidth = LabBenchMenu.WIDTH;
+        this.imageHeight = LabBenchMenu.INVENTORY_Y + 82;
         titleLabelX = 8;
         titleLabelY = 7;
         inventoryLabelX = LabBenchMenu.INVENTORY_X;
@@ -196,7 +198,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     }
 
     private void send(LabActionPayload.Action action, int value) {
-        ClientPacketDistributor.sendToServer(new LabActionPayload(menu.pos(), action, value));
+        PacketDistributor.sendToServer(new LabActionPayload(menu.pos(), action, value));
     }
 
     private void sound(SoundEvent sound, float pitch, float volume) {

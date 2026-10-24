@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
@@ -43,7 +43,7 @@ public final class ClientPylons {
         NeoForge.EVENT_BUS.addListener((PlayerInteractEvent.RightClickEmpty event) -> {
             if (PylonLinking.clientFrom != null) {
                 PylonLinking.clientFrom = null;
-                ClientPacketDistributor.sendToServer(PylonCancelPayload.INSTANCE);
+                PacketDistributor.sendToServer(PylonCancelPayload.INSTANCE);
             }
         });
     }

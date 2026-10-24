@@ -99,7 +99,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
 
     public CrucibleRenderer(BlockEntityRendererProvider.Context context) {
         itemModelResolver = ItemModelResolver.INSTANCE;
-        font = context.font();
+        font = context.getFont();
     }
 
     @Override

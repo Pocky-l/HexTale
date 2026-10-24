@@ -3,7 +3,7 @@ package com.pockyl.hextale.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.pockyl.hextale.port.client.SubmitNodeCollector;
-import net.minecraft.client.renderer.block.MovingBlockRenderState;
+import com.pockyl.hextale.port.client.MovingBlockRenderState;
 import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import com.pockyl.hextale.port.client.BlockEntityRenderState;

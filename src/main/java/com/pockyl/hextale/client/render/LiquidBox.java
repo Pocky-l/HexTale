@@ -30,7 +30,7 @@ public final class LiquidBox {
     }
 
     private static TextureAtlasSprite sprite() {
-        return Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS).getSprite(LIQUID);
+        return Minecraft.getInstance().getTextureAtlas(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS).apply(LIQUID);
     }
 
     public static void submit(PoseStack poseStack, SubmitNodeCollector collector, float minX, float minZ, float maxX, float maxZ,

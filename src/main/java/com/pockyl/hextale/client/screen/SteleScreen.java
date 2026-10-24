@@ -13,7 +13,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.Util;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import com.pockyl.hextale.block.HextechAltarBlockEntity;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
@@ -498,7 +498,7 @@ public class SteleScreen extends Screen {
     }
 
     private void send(int rune) {
-        ClientPacketDistributor.sendToServer(new SteleRunePayload(pos, rune));
+        PacketDistributor.sendToServer(new SteleRunePayload(pos, rune));
         if (minecraft != null) {
             minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.AMETHYST_BLOCK_CHIME, 1.2F));
         }

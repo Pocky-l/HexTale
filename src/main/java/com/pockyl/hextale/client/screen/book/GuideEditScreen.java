@@ -80,9 +80,9 @@ final class GuideEditScreen extends Screen {
             y += 32;
         }
         initialDescription = GuideEditor.text(quest.translationKey() + ".desc");
-        description = addRenderableWidget(MultiLineEditBox.builder().setX(left).setY(y).setShowDecorations(false).build(font, WIDTH, 64, Component.literal("Description")));
+        description = addRenderableWidget(new MultiLineEditBox(font, left, y, WIDTH, 64, Component.empty(), Component.literal("Description")));
         description.setCharacterLimit(2000);
-        description.setValue(initialDescription, true);
+        description.setValue(initialDescription);
         y += 78;
         initialIcon = BuiltInRegistries.ITEM.getKey(quest.icon().getItem()).toString();
         icon = addRenderableWidget(new EditBox(font, left, y, WIDTH / 2 - 4, 18, Component.literal("Icon")));
@@ -253,7 +253,7 @@ final class GuideEditScreen extends Screen {
         }
         saved &= GuideEditor.saveTexts(texts);
         GuideEditor.report(id + " added", saved);
-        minecraft.gui.setScreen(new GuideEditScreen(child, parent));
+        minecraft.setScreen(new GuideEditScreen(child, parent));
     }
 
     /** A place next to a step that keeps clear of every other step. */
@@ -291,7 +291,7 @@ final class GuideEditScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.gui.setScreen(parent);
+        minecraft.setScreen(parent);
     }
 
     @Override

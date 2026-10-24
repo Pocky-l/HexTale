@@ -189,7 +189,7 @@ public final class CircleDiorama {
                 poseStack.pushPose();
                 poseStack.translate(sx, 1.45F + Mth.sin(time * 0.06F + side) * 0.04F, 0);
                 HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.6F, rune.color(), 0.3F + (focus == Quest.Scene.STELE ? 0.25F * pulse : 0));
-                poseStack.mulPose(camera);
+                poseStack.mulPose(new org.joml.Quaternionf(camera));
                 poseStack.translate(0, 0, 0.03F);
                 HexFx.glyph(poseStack, collector, rune, 0.4F, rune.color(), 0.9F);
                 poseStack.popPose();

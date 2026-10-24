@@ -40,7 +40,9 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
     private static final int SUMMARY_LINES = 2;
 
     public ItemFilterScreen(ItemFilterMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, 176, ItemFilterMenu.INVENTORY_Y + 82);
+        super(menu, inventory, title);
+        this.imageWidth = 176;
+        this.imageHeight = ItemFilterMenu.INVENTORY_Y + 82;
         inventoryLabelY = ItemFilterMenu.INVENTORY_Y - 11;
         titleLabelX = 8;
         titleLabelY = 7;
@@ -198,7 +200,7 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         int slot = ghostAt(mouseX, mouseY);
         if (slot >= 0 && scrollY != 0 && menu.filter().at(slot) != null) {
-            boolean ten = minecraft != null && (InputConstants.isKeyDown(InputConstants.KEY_LSHIFT) || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT));
+            boolean ten = minecraft != null && (InputConstants.isKeyDown(net.minecraft.client.Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_LSHIFT) || InputConstants.isKeyDown(net.minecraft.client.Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_RSHIFT));
             int id = scrollY > 0 ? (ten ? ItemFilterMenu.PLUS_TEN : ItemFilterMenu.PLUS) : (ten ? ItemFilterMenu.MINUS_TEN : ItemFilterMenu.MINUS);
             if (minecraft != null && minecraft.gameMode != null) {
                 minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id + slot);

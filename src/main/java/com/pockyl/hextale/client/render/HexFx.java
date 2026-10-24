@@ -65,7 +65,7 @@ public final class HexFx {
     public static void sprite(PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera, ResourceLocation texture, float size, int color,
                               float alpha) {
         poseStack.pushPose();
-        poseStack.mulPose(camera);
+        poseStack.mulPose(new org.joml.Quaternionf(camera));
         float h = size / 2;
         collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(texture), (pose, consumer) -> {
             vertex(consumer, pose, -h, -h, 0, 1, color, alpha);

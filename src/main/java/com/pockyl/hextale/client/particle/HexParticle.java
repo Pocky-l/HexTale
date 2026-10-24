@@ -2,9 +2,9 @@ package com.pockyl.hextale.client.particle;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.SingleQuadParticle;
+import com.pockyl.hextale.port.client.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import com.pockyl.hextale.port.client.QuadParticleRenderState;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;

@@ -129,7 +129,7 @@ public final class AltarDiorama {
                 poseStack.pushPose();
                 poseStack.translate(STELE_X, glyphY, 0);
                 HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.7F, color, 0.35F);
-                poseStack.mulPose(camera);
+                poseStack.mulPose(new org.joml.Quaternionf(camera));
                 poseStack.translate(0, 0, 0.03F);
                 poseStack.pushPose();
                 poseStack.mulPose(Axis.ZP.rotationDegrees(time * 0.6F));

@@ -70,8 +70,8 @@ public class FlowParticle extends HexParticle {
         }
 
         @Override
-        public Particle createParticle(ColorParticleOption option, ClientLevel level, double x, double y, double z, double dx, double dy, double dz,
-                                       RandomSource random) {
+        public Particle createParticle(ColorParticleOption option, ClientLevel level, double x, double y, double z, double dx, double dy, double dz) {
+            RandomSource random = level.getRandom();
             return new FlowParticle(level, x, y, z, dx, dy, dz, option, sprites);
         }
     }

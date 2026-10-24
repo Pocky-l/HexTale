@@ -22,7 +22,7 @@ public final class ClientEssencesTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight(Font font) {
+    public int getHeight() {
         return SIGN + 3;
     }
 
@@ -36,7 +36,10 @@ public final class ClientEssencesTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public void extractImage(Font font, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
+    public void renderImage(Font font, int x, int y, net.minecraft.client.gui.GuiGraphics portGraphics) {
+        GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
+        int width = getWidth(font);
+        int height = getHeight();
         int cx = x;
         for (Map.Entry<Essence, Integer> entry : data.essences().essences().entrySet()) {
             Essence element = entry.getKey();

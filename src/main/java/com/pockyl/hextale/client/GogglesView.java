@@ -70,7 +70,7 @@ public final class GogglesView {
     }
 
     public static void registerLayer(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.CROSSHAIR, Hextale.id("researchers_goggles"), GogglesView::render);
+        event.registerAbove(VanillaGuiLayers.CROSSHAIR, Hextale.id("researchers_goggles"), (portGraphics, portDelta) -> GogglesView.render(com.pockyl.hextale.port.client.GuiGraphicsExtractor.of(portGraphics), portDelta));
     }
 
     /** A titled list of what the looked-at block holds. */

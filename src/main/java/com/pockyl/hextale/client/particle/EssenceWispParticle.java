@@ -74,8 +74,8 @@ public class EssenceWispParticle extends HexParticle {
         }
 
         @Override
-        public Particle createParticle(ColorParticleOption option, ClientLevel level, double x, double y, double z, double xd, double yd, double zd,
-                                       RandomSource random) {
+        public Particle createParticle(ColorParticleOption option, ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
+            RandomSource random = level.getRandom();
             return new EssenceWispParticle(level, x, y, z, xd, yd, zd, option, sprites);
         }
     }

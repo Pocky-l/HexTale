@@ -10,7 +10,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.item.EssenceStickerItem;
@@ -152,7 +152,7 @@ public class StickerScreen extends Screen {
         int[] b = blank();
         boolean blank = event.x() >= b[0] && event.x() < b[0] + b[2] && event.y() >= b[1] && event.y() < b[1] + b[3];
         if (essence != null || blank) {
-            ClientPacketDistributor.sendToServer(new ChooseStickerPayload(hand == InteractionHand.MAIN_HAND, essence == null ? -1 : essence.ordinal()));
+            PacketDistributor.sendToServer(new ChooseStickerPayload(hand == InteractionHand.MAIN_HAND, essence == null ? -1 : essence.ordinal()));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.0F));
             onClose();
             return true;

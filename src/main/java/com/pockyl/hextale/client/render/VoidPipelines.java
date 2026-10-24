@@ -41,7 +41,15 @@ public final class VoidPipelines extends RenderType {
         super(name, format, mode, bufferSize, crumbling, sort, setup, clear);
     }
 
-    public static void registerShaders(RegisterShadersEvent event) throws IOException {
+    public static void registerShaders(RegisterShadersEvent event) {
+        try {
+            register(event);
+        } catch (IOException e) {
+            throw new java.io.UncheckedIOException(e);
+        }
+    }
+
+    private static void register(RegisterShadersEvent event) throws IOException {
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Hextale.id("the_void"), DefaultVertexFormat.NEW_ENTITY),
                 shader -> bodyShader = shader);
         event.registerShader(new ShaderInstance(event.getResourceProvider(), Hextale.id("the_void_halo"), DefaultVertexFormat.NEW_ENTITY),

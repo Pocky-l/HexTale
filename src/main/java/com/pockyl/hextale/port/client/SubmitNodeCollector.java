@@ -43,6 +43,24 @@ public final class SubmitNodeCollector {
         }
     }
 
+    /** Like vanilla's falling block renderer: the block's model in its own render types, lit by the client level. */
+    public void submitMovingBlock(PoseStack poseStack, MovingBlockRenderState state, int outlineColor) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null || state.blockState.getRenderShape() != net.minecraft.world.level.block.RenderShape.MODEL) {
+            return;
+        }
+        var dispatcher = minecraft.getBlockRenderer();
+        var model = dispatcher.getBlockModel(state.blockState);
+        long seed = state.blockState.getSeed(state.randomSeedPos);
+        for (RenderType type : model.getRenderTypes(state.blockState, net.minecraft.util.RandomSource.create(seed),
+                net.neoforged.neoforge.client.model.data.ModelData.EMPTY)) {
+            dispatcher.getModelRenderer().tesselateBlock(minecraft.level, model, state.blockState, state.blockPos, poseStack,
+                    buffers.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(type)), false,
+                    net.minecraft.util.RandomSource.create(), seed, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY,
+                    net.neoforged.neoforge.client.model.data.ModelData.EMPTY, type);
+        }
+    }
+
     @FunctionalInterface
     public interface CustomGeometryRenderer {
         void render(PoseStack.Pose pose, VertexConsumer buffer);
