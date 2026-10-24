@@ -4,6 +4,21 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0+1.21.1] - 2026-10-24
+### Changed
+- Ported to Minecraft 1.21.1 ([NeoForge](https://neoforged.net/) 21.1). Everything of 1.0.0 for Minecraft 26.3 is
+  included. Where 1.21.1 lacks something, the closest thing takes its place:
+  - no copper nuggets: Hex Foundry slag gives iron nuggets instead, and a Corrode or scrap roll gives raw copper;
+  - the Rune Shackles take chains instead of iron chains, the Chem Still iron bars instead of copper bars;
+  - pale oak and poplar saplings do not exist, so they are not Magic Tree catalysts; the Whirl Reaper does not pick
+    cactus flowers;
+  - the cooldown after a vial of Refined Shimmer is kept per player instead of as an item cooldown;
+  - [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) has no advanced search for 1.21.1, so typing an essence's
+    name does not find the items that carry it, and the hex crafting charge has no tooltip;
+  - the cape still shows over a worn Hextech Skypack;
+  - glowing glass and Void effects are drawn without Minecraft's newer transparency sorting, so overlapping
+    translucent things may sort a little differently.
+
 ## [1.0.0] - 2026-10-24
 Hextale leaves beta.
 
