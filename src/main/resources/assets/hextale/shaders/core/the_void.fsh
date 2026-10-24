@@ -1,23 +1,25 @@
-#version 330
-#extension GL_ARB_separate_shader_objects : require
+#version 150
 
-#include <minecraft:fog.glsl>
-#include <minecraft:globals.glsl>
+#moj_import <fog.glsl>
+
+uniform float GameTime;
+uniform float FogStart;
+uniform float FogEnd;
+uniform vec4 FogColor;
 
 // The cells of the Void. Their faces look into a throat that sinks behind the breach from whichever side it is seen:
 // dark umber coils wind round and down it, glassy lilac ribbons glow deeper in, and at the bottom a magenta heart beats
 // behind a net of black roots. Every cell is shaded by its region (rectangles of the breach differ a little, a dead
 // cell is black), seams smoulder between regions, the outline burns. Side walls of the slab are pure burning edge.
 
-layout(location = 0) in float sphericalVertexDistance;
-layout(location = 1) in float cylindricalVertexDistance;
-layout(location = 2) in vec3 viewPos;
-layout(location = 3) in vec2 localUv;
-layout(location = 4) flat in ivec4 voidData;
-layout(location = 5) flat in ivec2 cellCore;
-layout(location = 6) flat in ivec2 freshSize;
+in float vertexDistance;
+in vec3 viewPos;
+in vec2 localUv;
+flat in ivec4 voidData;
+flat in ivec2 cellCore;
+flat in ivec2 freshSize;
 
-layout(location = 0) out vec4 fragColor;
+out vec4 fragColor;
 
 float hash12(vec2 p) {
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -191,6 +193,5 @@ void main() {
     // A cell that has only just broken through is still black.
     col *= 1.0 - fresh * 0.85;
 
-    fragColor = apply_fog(vec4(col, 1.0), sphericalVertexDistance, cylindricalVertexDistance, FogEnvironmentalStart,
-            FogEnvironmentalEnd, FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);
+    fragColor = linear_fog(vec4(col, 1.0), vertexDistance, FogStart, FogEnd, FogColor);
 }

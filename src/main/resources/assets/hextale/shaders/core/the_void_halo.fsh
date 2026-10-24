@@ -1,22 +1,24 @@
-#version 330
-#extension GL_ARB_separate_shader_objects : require
+#version 150
 
-#include <minecraft:fog.glsl>
-#include <minecraft:globals.glsl>
+#moj_import <fog.glsl>
+
+uniform float GameTime;
+uniform float FogStart;
+uniform float FogEnd;
+uniform vec4 FogColor;
 
 // The glow around the Void, on the free cells next to it (additive). Each cell knows which of its eight neighbours
 // burn; the distance to the nearest of them gives a crisp line on the edge and a soft glow that fades within a cell,
 // so the glow follows every step of the outline without seams between cells.
 
-layout(location = 0) in float sphericalVertexDistance;
-layout(location = 1) in float cylindricalVertexDistance;
-layout(location = 2) in vec3 viewPos;
-layout(location = 3) in vec2 localUv;
-layout(location = 4) flat in ivec4 voidData;
-layout(location = 5) flat in ivec2 cellCore;
-layout(location = 6) flat in ivec2 freshSize;
+in float vertexDistance;
+in vec3 viewPos;
+in vec2 localUv;
+flat in ivec4 voidData;
+flat in ivec2 cellCore;
+flat in ivec2 freshSize;
 
-layout(location = 0) out vec4 fragColor;
+out vec4 fragColor;
 
 // The same slow heartbeat as the breach (seconds).
 float heartbeat(float t) {
@@ -49,7 +51,5 @@ void main() {
     // A breach still breaking through burns brighter.
     col *= pulse * (1.0 + 1.2 * (1.0 - open));
 
-    float fog = total_fog_value(sphericalVertexDistance, cylindricalVertexDistance, FogEnvironmentalStart, FogEnvironmentalEnd,
-            FogRenderDistanceStart, FogRenderDistanceEnd);
-    fragColor = vec4(col * (1.0 - fog), 1.0);
+    fragColor = vec4(col * linear_fog_fade(vertexDistance, FogStart, FogEnd), 1.0);
 }

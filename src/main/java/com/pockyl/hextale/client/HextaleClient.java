@@ -69,16 +69,12 @@ public final class HextaleClient {
         modBus.addListener((net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent event) -> event.register(
                 com.pockyl.hextale.client.render.EssenceJarItemRenderer.ID, com.pockyl.hextale.client.render.EssenceJarItemRenderer.Unbaked.MAP_CODEC));
         ClientPayloads.register(new com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent());
-        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("essence"), EssenceTint.MAP_CODEC));
-        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("rune"), RuneTint.MAP_CODEC));
-        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
-                event.register(Hextale.id("essence_kind"), com.pockyl.hextale.client.render.EssenceKindTint.MAP_CODEC));
-        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
-                event.register(Hextale.id("sticker"), com.pockyl.hextale.client.render.StickerTint.MAP_CODEC));
-        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
-                event.register(Hextale.id("brew"), com.pockyl.hextale.client.render.BrewTint.MAP_CODEC));
-        modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
-                event.register(Hextale.id("pickaxe_runes"), com.pockyl.hextale.client.render.PickaxeRuneTint.MAP_CODEC));
+        com.pockyl.hextale.port.client.ItemTints.register(Hextale.id("essence"), EssenceTint.MAP_CODEC);
+        com.pockyl.hextale.port.client.ItemTints.register(Hextale.id("rune"), RuneTint.MAP_CODEC);
+        com.pockyl.hextale.port.client.ItemTints.register(Hextale.id("essence_kind"), com.pockyl.hextale.client.render.EssenceKindTint.MAP_CODEC);
+        com.pockyl.hextale.port.client.ItemTints.register(Hextale.id("sticker"), com.pockyl.hextale.client.render.StickerTint.MAP_CODEC);
+        com.pockyl.hextale.port.client.ItemTints.register(Hextale.id("brew"), com.pockyl.hextale.client.render.BrewTint.MAP_CODEC);
+        com.pockyl.hextale.port.client.ItemTints.register(Hextale.id("pickaxe_runes"), com.pockyl.hextale.client.render.PickaxeRuneTint.MAP_CODEC);
         modBus.addListener(TableModels::register);
         modBus.addListener((RegisterParticleProvidersEvent event) -> {
             event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new);
@@ -108,8 +104,8 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.screen.book.AltarDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.screen.book.CircleDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.screen.MultiblockDiorama::register);
-        modBus.addListener(com.pockyl.hextale.client.render.HexGlow::registerPipelines);
-        modBus.addListener(com.pockyl.hextale.client.render.VoidPipelines::registerPipelines);
+
+        modBus.addListener(com.pockyl.hextale.client.render.VoidPipelines::registerShaders);
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
         NeoForge.EVENT_BUS.addListener(GogglesView::tick);

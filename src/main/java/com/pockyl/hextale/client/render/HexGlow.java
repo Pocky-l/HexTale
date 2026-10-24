@@ -1,18 +1,10 @@
 package com.pockyl.hextale.client.render;
 
-import com.mojang.renderpearl.api.pipeline.BlendFunction;
-import com.mojang.renderpearl.api.pipeline.ColorTargetState;
-import com.mojang.renderpearl.api.pipeline.CompareOp;
-import com.mojang.renderpearl.api.pipeline.DepthStencilState;
-import com.pockyl.hextale.port.client.RenderPipeline;
-import com.pockyl.hextale.port.client.RenderPipelines;
-import net.minecraft.client.renderer.rendertype.RenderSetup;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.Util;
-import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
-
-import com.pockyl.hextale.Hextale;
 
 import java.util.function.Function;
 
@@ -20,38 +12,35 @@ import java.util.function.Function;
  * Additive light that writes no depth: rune glyphs and sigil rings. Vanilla's lightning type is additive but writes
  * depth, so stacked glow layers in one plane fought over the depth buffer and flickered; translucent types sort their
  * quads, so layers swapped order as the camera moved. Here layers just add up, in any order, with no depth fight.
+ *
+ * <p>1.21.1: render types over the vanilla lightning and eyes shaders (26.x builds its own pipelines).
  */
-public final class HexGlow {
-    public static final RenderPipeline PIPELINE = RenderPipeline.builder(RenderPipelines.LIGHTNING_SNIPPET)
-            .withLocation(Hextale.id("pipeline/hex_glow"))
-            .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
-            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
-            .withCull(false)
-            .build();
-    public static final RenderType TYPE = RenderType.create("hextale_glow",
-            RenderSetup.builder(PIPELINE).setOitPipelines(RenderPipelines.OIT_LIGHTNING).createRenderSetup());
+public final class HexGlow extends RenderType {
+    public static final RenderType TYPE = create("hextale_glow", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS,
+            1536, false, false, CompositeState.builder()
+                    .setShaderState(RENDERTYPE_LIGHTNING_SHADER)
+                    .setTransparencyState(LIGHTNING_TRANSPARENCY)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .setCullState(NO_CULL)
+                    .createCompositeState(false));
 
     /** The same additive light drawn with a texture (entity vertex format): soft sprites like a jet's plume. */
-    public static final RenderPipeline TEXTURED_PIPELINE = RenderPipeline.builder(RenderPipelines.ENTITY_NO_LIGHTMAP_SNIPPET,
-                    RenderPipelines.EYES_SNIPPET)
-            .withLocation(Hextale.id("pipeline/hex_glow_textured"))
-            .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
-            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
-            .withCull(false)
-            .build();
     private static final Function<ResourceLocation, RenderType> TEXTURED = Util.memoize(
-            texture -> RenderType.create("hextale_glow_textured", RenderSetup.builder(TEXTURED_PIPELINE)
-                    .setOitPipelines(RenderPipelines.OIT_EYES).withTexture("Sampler0", texture).createRenderSetup()));
+            texture -> create("hextale_glow_textured", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, false, false,
+                    CompositeState.builder()
+                            .setShaderState(RENDERTYPE_EYES_SHADER)
+                            .setTextureState(new TextureStateShard(texture, false, false))
+                            .setTransparencyState(LIGHTNING_TRANSPARENCY)
+                            .setWriteMaskState(COLOR_WRITE)
+                            .setCullState(NO_CULL)
+                            .createCompositeState(false)));
 
-    private HexGlow() {
+    private HexGlow(String name, VertexFormat format, VertexFormat.Mode mode, int bufferSize, boolean crumbling, boolean sort,
+                    Runnable setup, Runnable clear) {
+        super(name, format, mode, bufferSize, crumbling, sort, setup, clear);
     }
 
     public static RenderType textured(ResourceLocation texture) {
         return TEXTURED.apply(texture);
-    }
-
-    public static void registerPipelines(RegisterRenderPipelinesEvent event) {
-        event.registerPipeline(PIPELINE);
-        event.registerPipeline(TEXTURED_PIPELINE);
     }
 }

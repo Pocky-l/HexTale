@@ -1,7 +1,7 @@
 package com.pockyl.hextale.client.render;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.client.color.item.ItemTintSource;
+import com.pockyl.hextale.port.client.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;

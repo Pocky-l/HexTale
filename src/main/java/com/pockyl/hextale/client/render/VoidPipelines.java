@@ -1,54 +1,50 @@
 package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.renderpearl.api.pipeline.BlendFunction;
-import com.mojang.renderpearl.api.pipeline.ColorTargetState;
-import com.mojang.renderpearl.api.pipeline.CompareOp;
-import com.mojang.renderpearl.api.pipeline.DepthStencilState;
-import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.pockyl.hextale.port.client.RenderPipeline;
-import com.pockyl.hextale.port.client.RenderPipelines;
-import net.minecraft.client.renderer.rendertype.RenderSetup;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderType;
-import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
+import net.minecraft.client.renderer.ShaderInstance;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.Hextale;
+
+import java.io.IOException;
 
 /**
  * The Void's two passes, both with our shaders and the entity vertex format (see {@code shaders/core/the_void.vsh} for
  * what every attribute carries). BODY: the cells of the breach, opaque and depth-writing like the end portal - the
  * depth behind them is painted by the shader. HALO: the glow around the outline, additive and writing no depth, drawn
  * on the free cells next to the breach.
+ *
+ * <p>1.21.1: core shader programs registered in {@link RegisterShadersEvent} and render types over them.
  */
-public final class VoidPipelines {
-    public static final RenderPipeline BODY = RenderPipeline.builder(RenderPipelines.MATRICES_FOG_SNIPPET)
-            .withLocation(Hextale.id("pipeline/the_void"))
-            .withVertexShader(Hextale.id("core/the_void"))
-            .withFragmentShader(Hextale.id("core/the_void"))
-            .withVertexBinding(0, DefaultVertexFormat.ENTITY)
-            .withPrimitiveTopology(PrimitiveTopology.QUADS)
-            .withColorTargetState(ColorTargetState.DEFAULT)
-            .withDepthStencilState(DepthStencilState.DEFAULT)
-            .withCull(false)
-            .build();
-    public static final RenderPipeline HALO = RenderPipeline.builder(RenderPipelines.MATRICES_FOG_SNIPPET)
-            .withLocation(Hextale.id("pipeline/the_void_halo"))
-            .withVertexShader(Hextale.id("core/the_void"))
-            .withFragmentShader(Hextale.id("core/the_void_halo"))
-            .withVertexBinding(0, DefaultVertexFormat.ENTITY)
-            .withPrimitiveTopology(PrimitiveTopology.QUADS)
-            .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
-            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
-            .withCull(false)
-            .build();
-    public static final RenderType BODY_TYPE = RenderType.create("hextale_the_void", RenderSetup.builder(BODY).createRenderSetup());
-    public static final RenderType HALO_TYPE = RenderType.create("hextale_the_void_halo", RenderSetup.builder(HALO).createRenderSetup());
+public final class VoidPipelines extends RenderType {
+    private static @Nullable ShaderInstance bodyShader;
+    private static @Nullable ShaderInstance haloShader;
 
-    private VoidPipelines() {
+    public static final RenderType BODY_TYPE = create("hextale_the_void", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS,
+            1536, false, false, CompositeState.builder()
+                    .setShaderState(new ShaderStateShard(() -> bodyShader))
+                    .setCullState(NO_CULL)
+                    .createCompositeState(false));
+    public static final RenderType HALO_TYPE = create("hextale_the_void_halo", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS,
+            1536, false, false, CompositeState.builder()
+                    .setShaderState(new ShaderStateShard(() -> haloShader))
+                    .setTransparencyState(LIGHTNING_TRANSPARENCY)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .setCullState(NO_CULL)
+                    .createCompositeState(false));
+
+    private VoidPipelines(String name, VertexFormat format, VertexFormat.Mode mode, int bufferSize, boolean crumbling, boolean sort,
+                          Runnable setup, Runnable clear) {
+        super(name, format, mode, bufferSize, crumbling, sort, setup, clear);
     }
 
-    public static void registerPipelines(RegisterRenderPipelinesEvent event) {
-        event.registerPipeline(BODY);
-        event.registerPipeline(HALO);
+    public static void registerShaders(RegisterShadersEvent event) throws IOException {
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), Hextale.id("the_void"), DefaultVertexFormat.NEW_ENTITY),
+                shader -> bodyShader = shader);
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), Hextale.id("the_void_halo"), DefaultVertexFormat.NEW_ENTITY),
+                shader -> haloShader = shader);
     }
 }
