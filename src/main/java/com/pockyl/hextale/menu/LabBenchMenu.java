@@ -28,9 +28,10 @@ public class LabBenchMenu extends AbstractContainerMenu {
     public static final int SAMPLE_Y = INVENTORY_Y + 46;
     public static final int OUTPUT_X = WIDTH - 44;
     public static final int OUTPUT_Y = INVENTORY_Y + 12;
-    private static final ResourceLocation BOTTLE_ICON = Hextale.id("lab_bench/slot_bottle");
-    private static final ResourceLocation SAMPLE_ICON = Hextale.id("lab_bench/slot_sample");
-    private static final ResourceLocation NOTES_ICON = Hextale.id("lab_bench/slot_notes");
+    /** 1.21.1 draws slot icons from the block atlas: copies of the GUI sprites under textures/item/lab_bench. */
+    private static final ResourceLocation BOTTLE_ICON = Hextale.id("item/lab_bench/slot_bottle");
+    private static final ResourceLocation SAMPLE_ICON = Hextale.id("item/lab_bench/slot_sample");
+    private static final ResourceLocation NOTES_ICON = Hextale.id("item/lab_bench/slot_notes");
     private static final int SLOTS = LabBenchBlockEntity.SIZE;
 
     private final Container bench;
@@ -53,8 +54,8 @@ public class LabBenchMenu extends AbstractContainerMenu {
             }
 
             @Override
-            public ResourceLocation getNoItemIcon() {
-                return BOTTLE_ICON;
+            public com.mojang.datafixers.util.Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+                return com.mojang.datafixers.util.Pair.of(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS, BOTTLE_ICON);
             }
         });
         addSlot(new Slot(bench, LabBenchBlockEntity.SAMPLE, LEFT_SLOT_X, SAMPLE_Y) {
@@ -64,8 +65,8 @@ public class LabBenchMenu extends AbstractContainerMenu {
             }
 
             @Override
-            public ResourceLocation getNoItemIcon() {
-                return SAMPLE_ICON;
+            public com.mojang.datafixers.util.Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+                return com.mojang.datafixers.util.Pair.of(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS, SAMPLE_ICON);
             }
         });
         addSlot(new Slot(bench, LabBenchBlockEntity.OUTPUT, OUTPUT_X, OUTPUT_Y) {
@@ -75,8 +76,8 @@ public class LabBenchMenu extends AbstractContainerMenu {
             }
 
             @Override
-            public ResourceLocation getNoItemIcon() {
-                return NOTES_ICON;
+            public com.mojang.datafixers.util.Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+                return com.mojang.datafixers.util.Pair.of(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS, NOTES_ICON);
             }
         });
         for (int row = 0; row < 3; row++) {

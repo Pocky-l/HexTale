@@ -162,7 +162,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
             CraftingInput input = entity.input().input();
             RecipeHolder<CraftingRecipe> plain = plainRecipe(level, input);
             if (plain != null) {
-                ItemStack made = plain.value().assemble(input);
+                ItemStack made = plain.value().assemble(input, level.registryAccess());
                 if (!ResearchTopics.mayMake(player, made, Research.of(player))) {
                     why = Why.LOCKED;
                 } else {
@@ -203,7 +203,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
                 if (here.isEmpty()) {
                     continue;
                 }
-                ItemStackTemplate remainder = here.getCraftingRemainder();
+                ItemStackTemplate remainder = com.pockyl.hextale.port.ItemStackTemplate.remainderOf(here);
                 entity.removeItem(slot, 1);
                 if (remainder != null) {
                     ItemStack rest = remainder.create();

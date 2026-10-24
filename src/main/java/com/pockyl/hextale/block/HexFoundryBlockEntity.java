@@ -27,7 +27,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import com.pockyl.hextale.port.ItemStackTemplate;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -39,7 +38,6 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import com.pockyl.hextale.port.ValueInput;
 import com.pockyl.hextale.port.ValueOutput;
-import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
@@ -285,7 +283,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
                 total[slot] = 0;
                 continue;
             }
-            ItemStack result = recipe.value().assemble(new SingleRecipeInput(stack));
+            ItemStack result = recipe.value().assemble(new SingleRecipeInput(stack), level.registryAccess());
             if (result.isEmpty()) {
                 continue;
             }
@@ -348,7 +346,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
     /** One piece in a slot melted: its result into the outputs, with whatever the runes add. */
     private void melt(ServerLevel level, int slot, RecipeHolder<SmeltingRecipe> recipe) {
         ItemStack input = items.get(slot);
-        ItemStack result = recipe.value().assemble(new SingleRecipeInput(input));
+        ItemStack result = recipe.value().assemble(new SingleRecipeInput(input), level.registryAccess());
         boolean ore = input.is(Tags.Items.ORES) || input.is(Tags.Items.RAW_MATERIALS);
         boolean stony = input.is(Tags.Items.COBBLESTONES) || input.is(Tags.Items.STONES) || input.is(Tags.Items.SANDS)
                 || input.is(Tags.Items.NETHERRACKS);
@@ -382,7 +380,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
 
     /** The metal grains a stone melt leaves: mostly iron, then copper, rarely gold. */
     static Item slag(float roll) {
-        return roll < 0.5F ? Items.IRON_NUGGET : roll < 0.85F ? Items.COPPER_NUGGET : Items.GOLD_NUGGET;
+        return roll < 0.5F ? Items.IRON_NUGGET : roll < 0.85F ? Items.IRON_NUGGET : Items.GOLD_NUGGET;
     }
 
     /** Fuel from its slot, else fire or magma essence from the nearest jar that has some. */
@@ -391,7 +389,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
         int burn = fuel.isEmpty() ? 0
                 : fuel.getBurnTime(net.minecraft.world.item.crafting.RecipeType.SMELTING);
         if (burn > 0) {
-            ItemStackTemplate remainder = fuel.getCraftingRemainder();
+            ItemStackTemplate remainder = com.pockyl.hextale.port.ItemStackTemplate.remainderOf(fuel);
             fuel.shrink(1);
             if (fuel.isEmpty() && remainder != null) {
                 items.set(FUEL, remainder.create());
@@ -705,7 +703,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
         tag.putInt("heat", heat);
         tag.putString("blocked", blocked);
         if (drewFrom != null) {
-            tag.store("drew_from", BlockPos.CODEC, drewFrom);
+            com.pockyl.hextale.port.ValueOutput.of(tag, registries).store("drew_from", BlockPos.CODEC, drewFrom);
             tag.putLong("drew_at", drewAt);
         }
         return tag;

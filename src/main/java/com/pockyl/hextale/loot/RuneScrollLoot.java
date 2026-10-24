@@ -57,9 +57,9 @@ public final class RuneScrollLoot extends LootModifier {
     private final List<Integer> chapters;
     private final List<Integer> stars;
 
-    public RuneScrollLoot(Optional<Holder<LootItemCondition>> condition, int priority, List<ResourceLocation> tables, float chance,
+    public RuneScrollLoot(LootItemCondition[] condition, List<ResourceLocation> tables, float chance,
                           List<Integer> chapters, List<Integer> stars) {
-        super(condition, priority);
+        super(condition);
         this.tables = List.copyOf(tables);
         this.chance = chance;
         this.chapters = List.copyOf(chapters);

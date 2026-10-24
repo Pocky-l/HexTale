@@ -329,7 +329,7 @@ public final class PickaxeEffects {
             if (recipe.isEmpty()) {
                 continue;
             }
-            ItemStack result = recipe.get().value().assemble(input);
+            ItemStack result = recipe.get().value().assemble(input, level.registryAccess());
             if (result.isEmpty()) {
                 continue;
             }

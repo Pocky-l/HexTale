@@ -34,7 +34,7 @@ public final class CondenserEvents {
         if (taken >= orb.getValue()) {
             event.setCanceled(true);
         } else if (taken > 0) {
-            orb.setValue(orb.getValue() - taken);
+            orb.value = orb.getValue() - taken;
         }
     }
 }

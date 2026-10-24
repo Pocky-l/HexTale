@@ -59,7 +59,7 @@ public class EssenceStickerItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Player player = context.getPlayer();
-        return player == null ? InteractionResult.PASS : use(context.getLevel(), player, context.getHand());
+        return player == null ? InteractionResult.PASS : usePort(context.getLevel(), player, context.getHand());
     }
 
     @Override

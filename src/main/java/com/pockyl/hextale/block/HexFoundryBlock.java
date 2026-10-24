@@ -101,7 +101,7 @@ public class HexFoundryBlock extends BaseEntityBlock implements WorldlyContainer
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state) {
+    protected boolean propagatesSkylightDown(BlockState state, net.minecraft.world.level.BlockGetter portLevel, BlockPos portPos) {
         return state.getValue(FORMED);
     }
 

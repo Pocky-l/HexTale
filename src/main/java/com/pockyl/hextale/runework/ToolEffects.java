@@ -424,7 +424,7 @@ public final class ToolEffects {
             return new ItemStack(Items.CLAY_BALL, 2 + random.nextInt(3));
         }
         if ((roll -= 8) < 0) {
-            return new ItemStack(Items.COPPER_NUGGET, 3 + random.nextInt(5));
+            return new ItemStack(Items.RAW_COPPER, 1 + random.nextInt(2));
         }
         if ((roll -= 6) < 0) {
             return new ItemStack(Items.EMERALD);
@@ -507,7 +507,7 @@ public final class ToolEffects {
             }
             level.sendParticles(ParticleTypes.SCRAPE, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), 14, 0.3, 0.4, 0.3, 0.1);
             puff(level, target.position().add(0, target.getBbHeight() * 0.5, 0), ToolRune.CORROSION.rune(), 8, 0.3);
-            sound(level, target.position(), SoundEvents.AXE_SCRAPE.value(), 0.8F, 0.7F);
+            sound(level, target.position(), SoundEvents.AXE_SCRAPE, 0.8F, 0.7F);
         }
     }
 

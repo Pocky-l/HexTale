@@ -72,7 +72,7 @@ public record HexCraftingRecipe(Either<ShapedRecipePattern, List<Ingredient>> sh
         shape.ifLeft(pattern -> {
             for (int y = 0; y < pattern.height(); y++) {
                 for (int x = 0; x < pattern.width(); x++) {
-                    cells.set(y * 3 + x, pattern.ingredients().get(y * pattern.width() + x));
+                    cells.set(y * 3 + x, Optional.of(pattern.ingredients().get(y * pattern.width() + x)).filter(cell -> !cell.isEmpty()));
                 }
             }
         }).ifRight(ingredients -> {

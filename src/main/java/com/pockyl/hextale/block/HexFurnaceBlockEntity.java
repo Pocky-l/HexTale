@@ -28,7 +28,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import com.pockyl.hextale.port.ItemStackTemplate;
-import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -41,7 +40,6 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import com.pockyl.hextale.port.ValueInput;
 import com.pockyl.hextale.port.ValueOutput;
-import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 import net.minecraft.world.phys.Vec3;
 
 import com.mojang.serialization.Codec;
@@ -286,7 +284,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         if (recipe == null) {
             return null;
         }
-        ItemStack result = recipe.value().assemble(input);
+        ItemStack result = recipe.value().assemble(input, level.registryAccess());
         if (result.isEmpty()) {
             return null;
         }
@@ -418,7 +416,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         }
         litTime = burn;
         litDuration = burn;
-        ItemStackTemplate remainder = fuel.getCraftingRemainder();
+        ItemStackTemplate remainder = com.pockyl.hextale.port.ItemStackTemplate.remainderOf(fuel);
         fuel.shrink(1);
         if (fuel.isEmpty() && remainder != null) {
             items.set(FUEL, remainder.create());

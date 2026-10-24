@@ -92,7 +92,7 @@ public class UnstableHextechItem extends Item implements ProjectileItem {
             FALLS.remove(entity);
         } else if (!entity.onGround()) {
             if (entity.fallDistance > 0) {
-                FALLS.merge(entity, entity.fallDistance, Math::max);
+                FALLS.merge(entity, (double) entity.fallDistance, Math::max);
             }
         } else {
             Double fall = FALLS.remove(entity);

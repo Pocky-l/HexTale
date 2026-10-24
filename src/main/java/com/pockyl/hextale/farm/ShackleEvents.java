@@ -34,9 +34,6 @@ public final class ShackleEvents {
         if (mob.invulnerableTime > 0) {
             mob.invulnerableTime = mob.invulnerableTime - 1;
         }
-        if (mob.damageCooldownTime > 0) {
-            mob.damageCooldownTime--;
-        }
         if (mob.hurtTime > 0) {
             mob.hurtTime--;
         }

@@ -69,7 +69,7 @@ public class PylonFilterItem extends Item {
             }
             return InteractionResult.SUCCESS;
         }
-        return player == null ? InteractionResult.PASS : use(context.getLevel(), player, context.getHand());
+        return player == null ? InteractionResult.PASS : usePort(context.getLevel(), player, context.getHand());
     }
 
     @Override

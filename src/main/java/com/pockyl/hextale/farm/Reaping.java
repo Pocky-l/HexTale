@@ -10,7 +10,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.AttachedStemBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CactusFlowerBlock;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.SweetBerryBushBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -161,12 +160,6 @@ public final class Reaping {
             return taken;
         }
         int height = height(level, pos, state);
-        BlockPos top = pos.above(height);
-        BlockState flower = level.getBlockState(top);
-        if (flower.getBlock() instanceof CactusFlowerBlock) {
-            taken.add(flower);
-            level.setBlock(top, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-        }
         for (int dy = height - 1; dy >= 1; dy--) {
             BlockPos at = pos.above(dy);
             taken.add(level.getBlockState(at));

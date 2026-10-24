@@ -48,12 +48,12 @@ public class BigEssenceJarBlock extends EssenceTankBlock {
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state) {
+    protected boolean propagatesSkylightDown(BlockState state, net.minecraft.world.level.BlockGetter portLevel, BlockPos portPos) {
         return true;
     }
 
     @Override
-    public void playerDestroy(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity,
+    public void playerDestroy(Level level, net.minecraft.world.entity.player.Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity,
                               ItemStack destroyedWith) {
         player.awardStat(net.minecraft.stats.Stats.BLOCK_MINED.get(this));
         player.causeFoodExhaustion(0.005F);
@@ -63,7 +63,7 @@ public class BigEssenceJarBlock extends EssenceTankBlock {
     }
 
     @Override
-    protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
         return level.getBlockEntity(pos) instanceof BigEssenceJarBlockEntity jar && jar.formed() != null
                 ? new ItemStack(jar.formed().original().getBlock()) : ItemStack.EMPTY;
     }

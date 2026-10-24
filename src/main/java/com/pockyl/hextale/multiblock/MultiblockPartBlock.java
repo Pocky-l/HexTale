@@ -61,7 +61,7 @@ public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachi
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state) {
+    protected boolean propagatesSkylightDown(BlockState state, net.minecraft.world.level.BlockGetter portLevel, BlockPos portPos) {
         return true;
     }
 
@@ -106,7 +106,7 @@ public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachi
 
     /** Mined by a player: drops what the block was, as if that block had been mined. */
     @Override
-    public void playerDestroy(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity,
+    public void playerDestroy(Level level, net.minecraft.world.entity.player.Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity,
                               ItemStack destroyedWith) {
         player.awardStat(net.minecraft.stats.Stats.BLOCK_MINED.get(this));
         player.causeFoodExhaustion(0.005F);
@@ -116,7 +116,7 @@ public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachi
     }
 
     @Override
-    protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
         return level.getBlockEntity(pos) instanceof MultiblockPartBlockEntity part ? new ItemStack(part.original().getBlock()) : ItemStack.EMPTY;
     }
 

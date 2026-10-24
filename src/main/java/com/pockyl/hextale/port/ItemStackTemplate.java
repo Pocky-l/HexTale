@@ -91,6 +91,12 @@ public record ItemStackTemplate(Holder<Item> item, int count, DataComponentPatch
         return new ItemStackTemplate(stack.getItemHolder(), newCount, stack.getComponentsPatch());
     }
 
+    /** {@code stack.getCraftingRemainder()} of 26.x: what is left in the slot after the stack is used up, or null. */
+    public static @Nullable ItemStackTemplate remainderOf(ItemStack stack) {
+        ItemStack remainder = stack.getCraftingRemainingItem();
+        return remainder.isEmpty() ? null : fromStack(remainder);
+    }
+
     public ItemStackTemplate withCount(int count) {
         return this.count == count ? this : new ItemStackTemplate(item, count, components);
     }

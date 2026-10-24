@@ -52,7 +52,7 @@ public final class RuneKnowledge {
             ByteBufCodecs.map(LinkedHashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_INT);
     private static final StreamCodec<ByteBuf, Map<String, List<Long>>> BITS =
             ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_LONG.apply(ByteBufCodecs.list(64)));
-    public static final StreamCodec<ByteBuf, RuneKnowledge> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<ByteBuf, RuneKnowledge> STREAM_CODEC = com.pockyl.hextale.port.PortCodecs.composite(
             INTS, RuneKnowledge::starsByKey,
             STRINGS, k -> List.copyOf(k.researched),
             BITS, k -> bitsByKey(k.seen),

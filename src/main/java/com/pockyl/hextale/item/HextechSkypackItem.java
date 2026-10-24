@@ -41,7 +41,7 @@ import java.util.function.Consumer;
  * the air of a launch ({@link #launch}). The pack can glide only while it holds air ({@code SkypackEvents} gives it the
  * gliding attribute).
  */
-public class HextechSkypackItem extends Item {
+public class HextechSkypackItem extends Item implements net.minecraft.world.item.Equipable {
     /** mB of air the tanks hold. */
     public static final int CAPACITY = 160;
     /** mB of air a launch costs. */
@@ -92,8 +92,32 @@ public class HextechSkypackItem extends Item {
         return RuneHolder.SKYPACK.runes(stack).strength(rune.rune());
     }
 
-    /** Called by vanilla every second of a glide: Fireproofing keeps fire away. Gliding itself costs nothing. */
     @Override
+    public EquipmentSlot getEquipmentSlot() {
+        return EquipmentSlot.CHEST;
+    }
+
+    @Override
+    public net.minecraft.core.Holder<net.minecraft.sounds.SoundEvent> getEquipSound() {
+        return net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_ELYTRA;
+    }
+
+    /** It glides like elytra while there is air in its tanks (26.x: the gliding attribute). */
+    @Override
+    public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
+        return canGlide(stack);
+    }
+
+    /** Every second of a glide the 26.x glide hook runs; the pack itself never wears. */
+    @Override
+    public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
+        if (!entity.level().isClientSide() && (flightTicks + 1) % 20 == 0) {
+            onGlideDamage(stack, entity, EquipmentSlot.CHEST);
+        }
+        return true;
+    }
+
+    /** Called every second of a glide: Fireproofing keeps fire away. Gliding itself costs nothing. */
     public void onGlideDamage(ItemStack stack, LivingEntity wearer, EquipmentSlot slot) {
         int fire = strength(stack, SkypackRune.FIREPROOFING);
         if (fire > 0 && wearer.level() instanceof ServerLevel) {

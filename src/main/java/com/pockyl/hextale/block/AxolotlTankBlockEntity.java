@@ -160,7 +160,9 @@ public class AxolotlTankBlockEntity extends BlockEntity implements WorldlyContai
 
     /** Its colour, for the renderer. */
     public Axolotl.Variant variant() {
-        return axolotl.getOrDefault(DataComponents.AXOLOTL_VARIANT, Axolotl.Variant.DEFAULT);
+        // 1.21.1 keeps the bucket's axolotl in its entity data.
+        return Axolotl.Variant.byId(axolotl.getOrDefault(DataComponents.BUCKET_ENTITY_DATA, net.minecraft.world.item.component.CustomData.EMPTY)
+                .copyTag().getInt(Axolotl.VARIANT_TAG));
     }
 
     /** Lets the axolotl of a bucket in; false when the tank already has one or the stack is no axolotl bucket. */

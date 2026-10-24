@@ -56,8 +56,8 @@ public final class ChestItemsLoot extends LootModifier {
     private final List<ResourceLocation> tables;
     private final List<Entry> entries;
 
-    public ChestItemsLoot(Optional<Holder<LootItemCondition>> condition, int priority, List<ResourceLocation> tables, List<Entry> entries) {
-        super(condition, priority);
+    public ChestItemsLoot(LootItemCondition[] condition, List<ResourceLocation> tables, List<Entry> entries) {
+        super(condition);
         this.tables = List.copyOf(tables);
         this.entries = List.copyOf(entries);
     }

@@ -4,14 +4,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
@@ -32,7 +28,6 @@ import java.util.WeakHashMap;
  * it, and a Breath rune softens walls and landings for a moment after a flight.
  */
 public final class SkypackEvents {
-    private static final AttributeModifier FLIGHT = new AttributeModifier(Hextale.id("skypack_flight"), 1, AttributeModifier.Operation.ADD_VALUE);
     /** Ticks after a flight a landing still counts as part of it (Breath). */
     private static final int LANDING_TICKS = 40;
     /** The game tick each player was last seen gliding with a pack. */
@@ -42,19 +37,11 @@ public final class SkypackEvents {
     }
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener(SkypackEvents::onAttributes);
         NeoForge.EVENT_BUS.addListener(SkypackEvents::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(SkypackEvents::onIncomingDamage);
     }
 
     /** The crystal stays awake (and the pack glides) only while there is air in the tanks. */
-    private static void onAttributes(ItemAttributeModifierEvent event) {
-        ItemStack stack = event.getItemStack();
-        if (HextechSkypackItem.is(stack) && HextechSkypackItem.canGlide(stack)) {
-            event.addModifier(NeoForgeMod.GLIDING_FLIGHT, FLIGHT, EquipmentSlotGroup.CHEST);
-        }
-    }
-
     private static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         if (!(player.level() instanceof ServerLevel level)) {

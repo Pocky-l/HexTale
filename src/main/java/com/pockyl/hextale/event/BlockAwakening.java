@@ -212,7 +212,7 @@ public final class BlockAwakening {
             Quests.fire(player, Quests.awakened(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(next.getBlock()).getPath()));
         }
         Vec3 centre = Vec3.atCenterOf(pos);
-        level.sendParticles(ColorParticleOption.create(ParticleTypes.FLASH, 0xFF000000 | HEXTECH), centre.x, centre.y, centre.z, 1, 0, 0, 0, 0);
+        level.sendParticles(ParticleTypes.FLASH, centre.x, centre.y, centre.z, 1, 0, 0, 0, 0);
         level.sendParticles(ModParticles.ring(HEXTECH), centre.x, centre.y, centre.z, 0, 1.3, 0, 0, 1);
         level.sendParticles(ModParticles.ring(HEXTECH), centre.x, pos.getY() + 0.05, centre.z, 0, 1.8, 1, 0, 1);
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), centre.x, centre.y, centre.z, 16, 0.35, 0.35, 0.35, 0.08);
