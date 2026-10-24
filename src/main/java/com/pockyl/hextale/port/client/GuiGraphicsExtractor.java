@@ -66,11 +66,14 @@ public final class GuiGraphicsExtractor {
         graphics.flush();
     }
 
+    /** Flushes first: what was drawn before must not be clipped by the new scissor (1.21.1 clips at draw time). */
     public void enableScissor(int x0, int y0, int x1, int y1) {
+        graphics.flush();
         graphics.enableScissor(x0, y0, x1, y1);
     }
 
     public void disableScissor() {
+        graphics.flush();
         graphics.disableScissor();
     }
 

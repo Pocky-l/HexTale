@@ -1,22 +1,26 @@
 package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.QuadInstance;
 import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import com.pockyl.hextale.port.client.ItemStackRenderState;
-import com.pockyl.hextale.port.client.RenderTypes;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.ClientHooks;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 
 /**
  * Draws an item see-through: the quads of its model with a translucent item render type and the alpha folded into
  * every vertex colour (vanilla item rendering is always opaque). Items with a special renderer are drawn as usual.
+ *
+ * <p>1.21.1: the quads come from the item's baked model and its render passes (26.x reads the resolved layers).
  */
 public final class GhostItems {
     private GhostItems() {
@@ -24,38 +28,34 @@ public final class GhostItems {
 
     /** Submits the item at the current pose, {@code alpha} 0-1. */
     public static void submit(ItemStackRenderState item, PoseStack poseStack, SubmitNodeCollector collector, int lightCoords, float alpha) {
-        for (int i = 0; i < item.activeLayerCount; i++) {
-            if (item.layers[i].specialRenderer != null) {
-                item.submit(poseStack, collector, lightCoords, OverlayTexture.NO_OVERLAY, 0);
-                return;
+        ItemStack stack = item.stack();
+        if (stack.isEmpty()) {
+            return;
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        BakedModel model = minecraft.getItemRenderer().getModel(stack, minecraft.level, null, 0);
+        if (model.isCustomRenderer()) {
+            item.submit(poseStack, collector, lightCoords, OverlayTexture.NO_OVERLAY, 0);
+            return;
+        }
+        float a = Math.max(0, Math.min(1, alpha));
+        VertexConsumer buffer = collector.buffer(RenderType.itemEntityTranslucentCull(TextureAtlas.LOCATION_BLOCKS));
+        poseStack.pushPose();
+        model = ClientHooks.handleCameraTransforms(poseStack, model, item.displayContext(), false);
+        poseStack.translate(-0.5F, -0.5F, -0.5F);
+        RandomSource random = RandomSource.create();
+        for (BakedModel pass : model.getRenderPasses(stack, true)) {
+            for (Direction side : SIDES) {
+                random.setSeed(42L);
+                for (BakedQuad quad : pass.getQuads(null, side, random)) {
+                    int tint = quad.isTinted() ? minecraft.getItemColors().getColor(stack, quad.getTintIndex()) : -1;
+                    buffer.putBulkData(poseStack.last(), quad, (tint >> 16 & 0xFF) / 255F, (tint >> 8 & 0xFF) / 255F,
+                            (tint & 0xFF) / 255F, a, lightCoords, OverlayTexture.NO_OVERLAY, true);
+                }
             }
         }
-        int a = Math.round(Math.max(0, Math.min(1, alpha)) * 255) << 24;
-        for (int i = 0; i < item.activeLayerCount; i++) {
-            ItemStackRenderState.LayerRenderState layer = item.layers[i];
-            int[] tints = layer.tintLayers().toIntArray();
-            // One draw per texture atlas the quads sample.
-            Map<ResourceLocation, List<BakedQuad>> byAtlas = new LinkedHashMap<>();
-            for (BakedQuad quad : layer.quads.all()) {
-                byAtlas.computeIfAbsent(quad.materialInfo().sprite().atlasLocation(), key -> new ArrayList<>()).add(quad);
-            }
-            poseStack.pushPose();
-            layer.applyTransform(poseStack.last());
-            for (Map.Entry<ResourceLocation, List<BakedQuad>> entry : byAtlas.entrySet()) {
-                List<BakedQuad> quads = entry.getValue();
-                collector.submitCustomGeometry(poseStack, RenderTypes.itemTranslucent(entry.getKey()), (pose, buffer) -> {
-                    QuadInstance instance = new QuadInstance();
-                    instance.setLightCoords(lightCoords);
-                    instance.setOverlayCoords(OverlayTexture.NO_OVERLAY);
-                    for (BakedQuad quad : quads) {
-                        BakedQuad.MaterialInfo material = quad.materialInfo();
-                        int tint = material.isTinted() && material.tintIndex() < tints.length ? tints[material.tintIndex()] : -1;
-                        instance.setColor(a | (tint & 0xFFFFFF));
-                        buffer.putBakedQuad(pose, quad, instance);
-                    }
-                });
-            }
-            poseStack.popPose();
-        }
+        poseStack.popPose();
     }
+
+    private static final Direction[] SIDES = {Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, null};
 }

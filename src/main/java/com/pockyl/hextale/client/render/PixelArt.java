@@ -1,16 +1,11 @@
 package com.pockyl.hextale.client.render;
 
-import com.pockyl.hextale.port.client.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.render.TextureSetup;
 import com.pockyl.hextale.port.client.RenderPipelines;
-import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import org.joml.Matrix3x2f;
-import org.joml.Matrix3x2fc;
-import org.jspecify.annotations.Nullable;
+import org.joml.Matrix4f;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.rune.ComplexRune;
@@ -18,10 +13,8 @@ import com.pockyl.hextale.rune.RuneGlyphs;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -32,6 +25,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * the GUI renderer sorts into layers by overlap, so the runs are collected into one batch element instead. A batch is
  * submitted by {@link #flush}, which callers do before anything that must appear above it (text, items, sprites) and at
  * the end of a frame; a change of pose or scissor flushes it on its own.
+ *
+ * <p>1.21.1: the runs go straight into the GUI buffer of the frame (one draw until something else is drawn); the port's
+ * GuiGraphicsExtractor flushes before every scissor change.
  */
 public final class PixelArt {
     private static final Map<String, int[][]> MASKS = new ConcurrentHashMap<>();
@@ -372,93 +368,19 @@ public final class PixelArt {
         return mix(rgb, 0x1E140A, Math.max(0.15F, luma - 0.35F));
     }
 
-    /** The pixels collected for one GUI element: quads in screen space under one pose and scissor. */
+    /** Puts the runs into the frame's GUI buffer under the current pose. */
     private static final class Batch {
-        private @Nullable GuiGraphicsExtractor owner;
-        private final Matrix3x2f pose = new Matrix3x2f();
-        private @Nullable ScreenRectangle scissor;
-        private int[] quads = new int[5 * 256];
-        private int size;
-        private int minX;
-        private int minY;
-        private int maxX;
-        private int maxY;
-
         void add(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1, int argb) {
-            Matrix3x2fc current = graphics.pose();
-            ScreenRectangle currentScissor = graphics.peekScissorStack();
-            if (owner != graphics || !pose.equals(current, 0) || !Objects.equals(scissor, currentScissor)) {
-                if (owner == graphics) {
-                    submit(graphics);
-                } else {
-                    size = 0;
-                }
-                owner = graphics;
-                pose.set(current);
-                scissor = currentScissor;
-            }
-            if (size == 0) {
-                minX = x0;
-                minY = y0;
-                maxX = x1;
-                maxY = y1;
-            } else {
-                minX = Math.min(minX, x0);
-                minY = Math.min(minY, y0);
-                maxX = Math.max(maxX, x1);
-                maxY = Math.max(maxY, y1);
-            }
-            if (size + 5 > quads.length) {
-                quads = Arrays.copyOf(quads, quads.length * 2);
-            }
-            quads[size++] = x0;
-            quads[size++] = y0;
-            quads[size++] = x1;
-            quads[size++] = y1;
-            quads[size++] = argb;
+            Matrix4f pose = graphics.pose().matrix();
+            VertexConsumer consumer = graphics.vanilla().bufferSource().getBuffer(RenderType.gui());
+            consumer.addVertex(pose, x0, y0, 0).setColor(argb);
+            consumer.addVertex(pose, x0, y1, 0).setColor(argb);
+            consumer.addVertex(pose, x1, y1, 0).setColor(argb);
+            consumer.addVertex(pose, x1, y0, 0).setColor(argb);
         }
 
         void submit(GuiGraphicsExtractor graphics) {
-            if (owner != graphics || size == 0) {
-                size = 0;
-                return;
-            }
-            ScreenRectangle bounds = new ScreenRectangle(minX, minY, maxX - minX, maxY - minY).transformMaxBounds(pose);
-            if (scissor != null) {
-                bounds = scissor.intersection(bounds);
-            }
-            if (bounds != null) {
-                graphics.submitGuiElementRenderState(new Element(new Matrix3x2f(pose), Arrays.copyOf(quads, size), scissor, bounds));
-            }
-            size = 0;
-        }
-    }
-
-    private record Element(Matrix3x2fc pose, int[] quads, @Nullable ScreenRectangle scissorArea, ScreenRectangle bounds)
-            implements GuiElementRenderState {
-        @Override
-        public void buildVertices(VertexConsumer consumer) {
-            for (int i = 0; i < quads.length; i += 5) {
-                int x0 = quads[i];
-                int y0 = quads[i + 1];
-                int x1 = quads[i + 2];
-                int y1 = quads[i + 3];
-                int color = quads[i + 4];
-                consumer.addVertexWith2DPose(pose, x0, y0).setColor(color);
-                consumer.addVertexWith2DPose(pose, x0, y1).setColor(color);
-                consumer.addVertexWith2DPose(pose, x1, y1).setColor(color);
-                consumer.addVertexWith2DPose(pose, x1, y0).setColor(color);
-            }
-        }
-
-        @Override
-        public RenderPipeline pipeline() {
-            return RenderPipelines.GUI;
-        }
-
-        @Override
-        public TextureSetup textureSetup() {
-            return TextureSetup.noTexture();
+            graphics.vanilla().flush();
         }
     }
 }
