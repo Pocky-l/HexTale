@@ -1,4 +1,5 @@
 {
+  "loader": "hextale:free_rotation",
   "parent": "minecraft:block/block",
   "textures": {
     "particle": "minecraft:block/dark_oak_planks",
@@ -7,7 +8,7 @@
     "iron": "minecraft:block/iron_block",
     "guard": "minecraft:block/smooth_stone"
   },
-  "elements": [
+  "free_elements": [
     {
       "name": "plank_top",
       "from": [

@@ -1,10 +1,11 @@
 {
+  "loader": "hextale:free_rotation",
   "parent": "minecraft:block/block",
   "textures": {
     "particle": "hextale:block/hexcore_matrix",
     "matrix": "hextale:block/hexcore_matrix"
   },
-  "elements": [
+  "free_elements": [
     {
       "name": "tile_px",
       "from": [

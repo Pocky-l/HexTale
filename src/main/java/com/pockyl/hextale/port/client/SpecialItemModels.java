@@ -50,6 +50,8 @@ public final class SpecialItemModels {
     private static final Map<Item, Entry> ENTRIES = new HashMap<>();
     private static final Map<Item, SpecialModelRenderer<?>> BAKED = new HashMap<>();
     private static @Nullable BlockEntityWithoutLevelRenderer renderer;
+    /** Items whose own client extensions hand out {@link #customRenderer()} (one registration per item). */
+    private static final java.util.Set<Item> CLAIMED = new java.util.HashSet<>();
 
     private SpecialItemModels() {
     }
@@ -119,7 +121,18 @@ public final class SpecialItemModels {
         event.registerReloadListener((ResourceManagerReloadListener) manager -> BAKED.clear());
     }
 
-    @SubscribeEvent
+    /** For an item that registers its own client extensions: they return this renderer, this class stays out. */
+    public static BlockEntityWithoutLevelRenderer customRenderer(Item item) {
+        CLAIMED.add(item);
+        return renderer();
+    }
+
+    /** Claims the item for its own extensions; call while registering them (this class registers last). */
+    public static void claim(Item item) {
+        CLAIMED.add(item);
+    }
+
+    @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST)
     static void registerExtensions(RegisterClientExtensionsEvent event) {
         IClientItemExtensions extensions = new IClientItemExtensions() {
             @Override
@@ -128,7 +141,9 @@ public final class SpecialItemModels {
             }
         };
         for (Item item : entries().keySet()) {
-            event.registerItem(extensions, item);
+            if (!CLAIMED.contains(item)) {
+                event.registerItem(extensions, item);
+            }
         }
     }
 

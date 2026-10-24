@@ -1,336 +1,1689 @@
 {
-	"format_version": "26.3",
-	"credit": "Made with Blockbench",
-	"textures": {
-		"particle": "hextale:item/hextech_pickaxe",
-		"sheet": "hextale:item/hextech_pickaxe"
-	},
-	"elements": [
-		{
-			"name": "brass_ring_0",
-			"from": [5.5, 21, 6.5],
-			"to": [10.5, 22, 9.5],
-			"rotation": {"angle": 0, "axis": "y", "origin": [0, 4, 0]},
-			"faces": {
-				"north": {"uv": [0, 4, 5, 5], "texture": "#sheet"},
-				"east": {"uv": [0, 5, 3, 6], "texture": "#sheet"},
-				"south": {"uv": [0, 4, 5, 5], "texture": "#sheet"},
-				"west": {"uv": [0, 5, 3, 6], "texture": "#sheet"},
-				"up": {"uv": [0, 5, 5, 8], "texture": "#sheet"},
-				"down": {"uv": [0, 5, 5, 8], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "brass_ring_1",
-			"from": [8.7811, 19.683, 7],
-			"to": [12.7811, 20.683, 9],
-			"rotation": {"x": 0, "y": 0, "z": -60, "origin": [10.7811, 20.183, 8]},
-			"faces": {
-				"north": {"uv": [0, 4, 4, 5], "texture": "#sheet"},
-				"south": {"uv": [0, 4, 4, 5], "texture": "#sheet"},
-				"west": {"uv": [0, 5, 2, 6], "texture": "#sheet"},
-				"up": {"uv": [0, 5, 4, 7], "texture": "#sheet"},
-				"down": {"uv": [0, 5, 4, 7], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "brass_ring_2",
-			"from": [8.7811, 15.317, 7],
-			"to": [12.7811, 16.317, 9],
-			"rotation": {"x": 0, "y": 0, "z": 60, "origin": [10.7811, 15.817, 8]},
-			"faces": {
-				"north": {"uv": [0, 4, 4, 5], "texture": "#sheet"},
-				"south": {"uv": [0, 4, 4, 5], "texture": "#sheet"},
-				"west": {"uv": [0, 5, 2, 6], "texture": "#sheet"},
-				"up": {"uv": [0, 5, 4, 7], "texture": "#sheet"},
-				"down": {"uv": [0, 5, 4, 7], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "brass_ring_3",
-			"from": [5.5, 14, 6.5],
-			"to": [10.5, 15, 9.5],
-			"rotation": {"angle": 0, "axis": "y", "origin": [0, 4, 0]},
-			"faces": {
-				"north": {"uv": [0, 4, 5, 5], "texture": "#sheet"},
-				"east": {"uv": [0, 5, 3, 6], "texture": "#sheet"},
-				"south": {"uv": [0, 4, 5, 5], "texture": "#sheet"},
-				"west": {"uv": [0, 5, 3, 6], "texture": "#sheet"},
-				"up": {"uv": [0, 5, 5, 8], "texture": "#sheet"},
-				"down": {"uv": [0, 5, 5, 8], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "brass_ring_4",
-			"from": [3.2189, 19.683, 7],
-			"to": [7.2189, 20.683, 9],
-			"rotation": {"x": 0, "y": 0, "z": 60, "origin": [5.2189, 20.183, 8]},
-			"faces": {
-				"north": {"uv": [0, 4, 4, 5], "texture": "#sheet"},
-				"east": {"uv": [0, 5, 2, 6], "texture": "#sheet"},
-				"south": {"uv": [0, 4, 4, 5], "texture": "#sheet"},
-				"up": {"uv": [0, 5, 4, 7], "texture": "#sheet"},
-				"down": {"uv": [0, 5, 4, 7], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "brass_ring_5",
-			"from": [3.2189, 15.317, 7],
-			"to": [7.2189, 16.317, 9],
-			"rotation": {"x": 0, "y": 0, "z": -60, "origin": [5.2189, 15.817, 8]},
-			"faces": {
-				"north": {"uv": [0, 4, 4, 5], "texture": "#sheet"},
-				"east": {"uv": [0, 5, 2, 6], "texture": "#sheet"},
-				"south": {"uv": [0, 4, 4, 5], "texture": "#sheet"},
-				"up": {"uv": [0, 5, 4, 7], "texture": "#sheet"},
-				"down": {"uv": [0, 5, 4, 7], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "crystal_heart",
-			"from": [6, 16, 6.5],
-			"to": [10, 20, 9.5],
-			"light_emission": 15,
-			"rotation": {"angle": 45, "axis": "z", "origin": [8, 18, 8]},
-			"faces": {
-				"north": {"uv": [8, 0, 12, 4], "texture": "#sheet", "tintindex": 0},
-				"east": {"uv": [8, 0, 11, 4], "texture": "#sheet", "tintindex": 0},
-				"south": {"uv": [8, 0, 12, 4], "texture": "#sheet", "tintindex": 0},
-				"west": {"uv": [8, 0, 11, 4], "texture": "#sheet", "tintindex": 0},
-				"up": {"uv": [8, 0, 12, 3], "texture": "#sheet", "tintindex": 0},
-				"down": {"uv": [8, 0, 12, 3], "texture": "#sheet", "tintindex": 0}
-			}
-		},
-		{
-			"name": "brass_finial",
-			"from": [7, 22.1, 6],
-			"to": [9, 24.1, 10],
-			"rotation": {"angle": 45, "axis": "z", "origin": [8, 23.1, 8]},
-			"faces": {
-				"north": {"uv": [0, 0, 2, 2], "texture": "#sheet"},
-				"east": {"uv": [0, 0, 4, 2], "texture": "#sheet"},
-				"south": {"uv": [0, 0, 2, 2], "texture": "#sheet"},
-				"west": {"uv": [0, 0, 4, 2], "texture": "#sheet"},
-				"up": {"uv": [0, 0, 2, 4], "texture": "#sheet"},
-				"down": {"uv": [0, 0, 2, 4], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "steel_arm_east_0",
-			"from": [11.0415, 17, 6.5],
-			"to": [16.0415, 19, 9.5],
-			"rotation": {"angle": 10, "axis": "z", "origin": [11.0415, 18, 8]},
-			"faces": {
-				"north": {"uv": [0, 8, 5, 10], "texture": "#sheet"},
-				"east": {"uv": [0, 10, 3, 12], "texture": "#sheet"},
-				"south": {"uv": [0, 8, 5, 10], "texture": "#sheet"},
-				"west": {"uv": [0, 10, 3, 12], "texture": "#sheet"},
-				"up": {"uv": [0, 10, 5, 13], "texture": "#sheet"},
-				"down": {"uv": [0, 10, 5, 13], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "steel_arm_east_1",
-			"from": [15.4655, 17.8682, 7],
-			"to": [20.4655, 19.8682, 9],
-			"rotation": {"angle": -24, "axis": "z", "origin": [15.9655, 18.8682, 8]},
-			"faces": {
-				"north": {"uv": [0, 8, 5, 10], "texture": "#sheet"},
-				"east": {"uv": [0, 10, 2, 12], "texture": "#sheet"},
-				"south": {"uv": [0, 8, 5, 10], "texture": "#sheet"},
-				"west": {"uv": [0, 10, 2, 12], "texture": "#sheet"},
-				"up": {"uv": [0, 10, 5, 12], "texture": "#sheet"},
-				"down": {"uv": [0, 10, 5, 12], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "crystal_arm_east_2",
-			"from": [19.5764, 16.5379, 7.5],
-			"to": [23.5764, 17.5379, 8.5],
-			"light_emission": 15,
-			"rotation": {"x": 0, "y": 0, "z": -58, "origin": [20.0764, 17.0379, 8]},
-			"faces": {
-				"north": {"uv": [8, 0, 12, 1], "texture": "#sheet", "tintindex": 0},
-				"east": {"uv": [8, 0, 9, 1], "texture": "#sheet", "tintindex": 0},
-				"south": {"uv": [8, 0, 12, 1], "texture": "#sheet", "tintindex": 0},
-				"up": {"uv": [8, 0, 12, 1], "texture": "#sheet", "tintindex": 0},
-				"down": {"uv": [8, 0, 12, 1], "texture": "#sheet", "tintindex": 0}
-			}
-		},
-		{
-			"name": "steel_arm_west_0",
-			"from": [-0.0415, 17, 6.5],
-			"to": [4.9585, 19, 9.5],
-			"rotation": {"angle": -10, "axis": "z", "origin": [4.9585, 18, 8]},
-			"faces": {
-				"north": {"uv": [0, 8, 5, 10], "texture": "#sheet"},
-				"east": {"uv": [0, 10, 3, 12], "texture": "#sheet"},
-				"south": {"uv": [0, 8, 5, 10], "texture": "#sheet"},
-				"west": {"uv": [0, 10, 3, 12], "texture": "#sheet"},
-				"up": {"uv": [0, 10, 5, 13], "texture": "#sheet"},
-				"down": {"uv": [0, 10, 5, 13], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "steel_arm_west_1",
-			"from": [-4.4655, 17.8682, 7],
-			"to": [0.5345, 19.8682, 9],
-			"rotation": {"angle": 24, "axis": "z", "origin": [0.0345, 18.8682, 8]},
-			"faces": {
-				"north": {"uv": [0, 8, 5, 10], "texture": "#sheet"},
-				"east": {"uv": [0, 10, 2, 12], "texture": "#sheet"},
-				"south": {"uv": [0, 8, 5, 10], "texture": "#sheet"},
-				"west": {"uv": [0, 10, 2, 12], "texture": "#sheet"},
-				"up": {"uv": [0, 10, 5, 12], "texture": "#sheet"},
-				"down": {"uv": [0, 10, 5, 12], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "crystal_arm_west_2",
-			"from": [-7.5764, 16.5379, 7.5],
-			"to": [-3.5764, 17.5379, 8.5],
-			"light_emission": 15,
-			"rotation": {"x": 0, "y": 0, "z": 58, "origin": [-4.0764, 17.0379, 8]},
-			"faces": {
-				"north": {"uv": [8, 0, 12, 1], "texture": "#sheet", "tintindex": 0},
-				"south": {"uv": [8, 0, 12, 1], "texture": "#sheet", "tintindex": 0},
-				"west": {"uv": [8, 0, 9, 1], "texture": "#sheet", "tintindex": 0},
-				"up": {"uv": [8, 0, 12, 1], "texture": "#sheet", "tintindex": 0},
-				"down": {"uv": [8, 0, 12, 1], "texture": "#sheet", "tintindex": 0}
-			}
-		},
-		{
-			"name": "brass_socket",
-			"from": [6, 12, 6],
-			"to": [10, 14, 10],
-			"rotation": {"angle": 0, "axis": "y", "origin": [0, 4, 0]},
-			"faces": {
-				"north": {"uv": [0, 0, 4, 2], "texture": "#sheet"},
-				"east": {"uv": [0, 0, 4, 2], "texture": "#sheet"},
-				"south": {"uv": [0, 0, 4, 2], "texture": "#sheet"},
-				"west": {"uv": [0, 0, 4, 2], "texture": "#sheet"},
-				"up": {"uv": [0, 0, 4, 4], "texture": "#sheet"},
-				"down": {"uv": [0, 0, 4, 4], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "wood_shaft",
-			"from": [7, 4, 7],
-			"to": [9, 12, 9],
-			"faces": {
-				"north": {"uv": [12, 0, 14, 8], "texture": "#sheet"},
-				"east": {"uv": [12, 0, 14, 8], "texture": "#sheet"},
-				"south": {"uv": [12, 0, 14, 8], "texture": "#sheet"},
-				"west": {"uv": [12, 0, 14, 8], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "brass_band",
-			"from": [6, 3, 6],
-			"to": [10, 4, 10],
-			"faces": {
-				"north": {"uv": [0, 0, 4, 1], "texture": "#sheet"},
-				"east": {"uv": [0, 0, 4, 1], "texture": "#sheet"},
-				"south": {"uv": [0, 0, 4, 1], "texture": "#sheet"},
-				"west": {"uv": [0, 0, 4, 1], "texture": "#sheet"},
-				"up": {"uv": [0, 0, 4, 4], "texture": "#sheet"},
-				"down": {"uv": [0, 0, 4, 4], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "leather_grip",
-			"from": [7, -3, 7],
-			"to": [9, 3, 9],
-			"faces": {
-				"north": {"uv": [14, 0, 16, 6], "texture": "#sheet"},
-				"east": {"uv": [14, 0, 16, 6], "texture": "#sheet"},
-				"south": {"uv": [14, 0, 16, 6], "texture": "#sheet"},
-				"west": {"uv": [14, 0, 16, 6], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "brass_pommel_ring",
-			"from": [6, -4, 6],
-			"to": [10, -3, 10],
-			"faces": {
-				"north": {"uv": [0, 0, 4, 1], "texture": "#sheet"},
-				"east": {"uv": [0, 0, 4, 1], "texture": "#sheet"},
-				"south": {"uv": [0, 0, 4, 1], "texture": "#sheet"},
-				"west": {"uv": [0, 0, 4, 1], "texture": "#sheet"},
-				"up": {"uv": [0, 0, 4, 4], "texture": "#sheet"},
-				"down": {"uv": [0, 0, 4, 4], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "brass_pommel",
-			"from": [6.5, -7.1, 7],
-			"to": [9.5, -4.1, 9],
-			"rotation": {"angle": 45, "axis": "z", "origin": [8, -5.6, 8]},
-			"faces": {
-				"north": {"uv": [0, 0, 3, 3], "texture": "#sheet"},
-				"east": {"uv": [0, 0, 2, 3], "texture": "#sheet"},
-				"south": {"uv": [0, 0, 3, 3], "texture": "#sheet"},
-				"west": {"uv": [0, 0, 2, 3], "texture": "#sheet"},
-				"up": {"uv": [0, 0, 3, 2], "texture": "#sheet"},
-				"down": {"uv": [0, 0, 3, 2], "texture": "#sheet"}
-			}
-		},
-		{
-			"name": "crystal_pommel",
-			"from": [7, -6.6, 6.5],
-			"to": [9, -4.6, 9.5],
-			"light_emission": 15,
-			"rotation": {"angle": 45, "axis": "z", "origin": [8, -5.6, 8]},
-			"faces": {
-				"north": {"uv": [8, 0, 10, 2], "texture": "#sheet", "tintindex": 0},
-				"east": {"uv": [8, 0, 11, 2], "texture": "#sheet", "tintindex": 0},
-				"south": {"uv": [8, 0, 10, 2], "texture": "#sheet", "tintindex": 0},
-				"west": {"uv": [8, 0, 11, 2], "texture": "#sheet", "tintindex": 0},
-				"up": {"uv": [8, 0, 10, 3], "texture": "#sheet", "tintindex": 0},
-				"down": {"uv": [8, 0, 10, 3], "texture": "#sheet", "tintindex": 0}
-			}
-		}
-	],
-	"gui_light": "front",
-	"display": {
-		"thirdperson_righthand": {
-			"rotation": [-27, -90, -35],
-			"translation": [0, 4, 1.25],
-			"scale": [0.7, 0.7, 0.7]
-		},
-		"thirdperson_lefthand": {
-			"rotation": [-27, -90, -35],
-			"translation": [0, 4, 1.25],
-			"scale": [0.7, 0.7, 0.7]
-		},
-		"firstperson_righthand": {
-			"rotation": [0, -90, -20],
-			"translation": [1.63, 2.85, 0.63],
-			"scale": [0.45, 0.45, 0.45]
-		},
-		"firstperson_lefthand": {
-			"rotation": [0, -90, -20],
-			"translation": [1.63, 2.85, 0.63],
-			"scale": [0.45, 0.45, 0.45]
-		},
-		"ground": {
-			"rotation": [0, 0, -45],
-			"translation": [0, 2, 0],
-			"scale": [0.45, 0.45, 0.45]
-		},
-		"gui": {
-			"rotation": [0, 0, -45],
-			"translation": [-1.25, -1.25, 0],
-			"scale": [0.56, 0.56, 0.56]
-		},
-		"head": {
-			"rotation": [0, -180, -45],
-			"translation": [0, 13, 7]
-		},
-		"fixed": {
-			"rotation": [0, -180, -45],
-			"translation": [0.5, -0.5, 0],
-			"scale": [0.6, 0.6, 0.6]
-		}
-	}
+  "loader": "hextale:free_rotation",
+  "format_version": "26.3",
+  "credit": "Made with Blockbench",
+  "textures": {
+    "particle": "hextale:item/hextech_pickaxe",
+    "sheet": "hextale:item/hextech_pickaxe"
+  },
+  "free_elements": [
+    {
+      "name": "brass_ring_0",
+      "from": [
+        5.5,
+        21,
+        6.5
+      ],
+      "to": [
+        10.5,
+        22,
+        9.5
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          0,
+          4,
+          0
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            5,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            5,
+            3,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            4,
+            5,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            5,
+            3,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            5,
+            5,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            5,
+            5,
+            8
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_ring_1",
+      "from": [
+        8.7811,
+        19.683,
+        7
+      ],
+      "to": [
+        12.7811,
+        20.683,
+        9
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": -60,
+        "origin": [
+          10.7811,
+          20.183,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            4,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            4,
+            4,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            5,
+            2,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            5,
+            4,
+            7
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            5,
+            4,
+            7
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_ring_2",
+      "from": [
+        8.7811,
+        15.317,
+        7
+      ],
+      "to": [
+        12.7811,
+        16.317,
+        9
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 60,
+        "origin": [
+          10.7811,
+          15.817,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            4,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            4,
+            4,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            5,
+            2,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            5,
+            4,
+            7
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            5,
+            4,
+            7
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_ring_3",
+      "from": [
+        5.5,
+        14,
+        6.5
+      ],
+      "to": [
+        10.5,
+        15,
+        9.5
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          0,
+          4,
+          0
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            5,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            5,
+            3,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            4,
+            5,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            5,
+            3,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            5,
+            5,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            5,
+            5,
+            8
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_ring_4",
+      "from": [
+        3.2189,
+        19.683,
+        7
+      ],
+      "to": [
+        7.2189,
+        20.683,
+        9
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 60,
+        "origin": [
+          5.2189,
+          20.183,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            4,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            5,
+            2,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            4,
+            4,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            5,
+            4,
+            7
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            5,
+            4,
+            7
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_ring_5",
+      "from": [
+        3.2189,
+        15.317,
+        7
+      ],
+      "to": [
+        7.2189,
+        16.317,
+        9
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": -60,
+        "origin": [
+          5.2189,
+          15.817,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            4,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            5,
+            2,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            4,
+            4,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            5,
+            4,
+            7
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            5,
+            4,
+            7
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "crystal_heart",
+      "from": [
+        6,
+        16,
+        6.5
+      ],
+      "to": [
+        10,
+        20,
+        9.5
+      ],
+      "light_emission": 15,
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [
+          8,
+          18,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "east": {
+          "uv": [
+            8,
+            0,
+            11,
+            4
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "west": {
+          "uv": [
+            8,
+            0,
+            11,
+            4
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "up": {
+          "uv": [
+            8,
+            0,
+            12,
+            3
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "down": {
+          "uv": [
+            8,
+            0,
+            12,
+            3
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        }
+      }
+    },
+    {
+      "name": "brass_finial",
+      "from": [
+        7,
+        22.1,
+        6
+      ],
+      "to": [
+        9,
+        24.1,
+        10
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [
+          8,
+          23.1,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            2,
+            4
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "steel_arm_east_0",
+      "from": [
+        11.0415,
+        17,
+        6.5
+      ],
+      "to": [
+        16.0415,
+        19,
+        9.5
+      ],
+      "rotation": {
+        "angle": 10,
+        "axis": "z",
+        "origin": [
+          11.0415,
+          18,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            8,
+            5,
+            10
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            10,
+            3,
+            12
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            8,
+            5,
+            10
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            10,
+            3,
+            12
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            10,
+            5,
+            13
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            10,
+            5,
+            13
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "steel_arm_east_1",
+      "from": [
+        15.4655,
+        17.8682,
+        7
+      ],
+      "to": [
+        20.4655,
+        19.8682,
+        9
+      ],
+      "rotation": {
+        "angle": -24,
+        "axis": "z",
+        "origin": [
+          15.9655,
+          18.8682,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            8,
+            5,
+            10
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            10,
+            2,
+            12
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            8,
+            5,
+            10
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            10,
+            2,
+            12
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            10,
+            5,
+            12
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            10,
+            5,
+            12
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "crystal_arm_east_2",
+      "from": [
+        19.5764,
+        16.5379,
+        7.5
+      ],
+      "to": [
+        23.5764,
+        17.5379,
+        8.5
+      ],
+      "light_emission": 15,
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": -58,
+        "origin": [
+          20.0764,
+          17.0379,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            0,
+            12,
+            1
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "east": {
+          "uv": [
+            8,
+            0,
+            9,
+            1
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            12,
+            1
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "up": {
+          "uv": [
+            8,
+            0,
+            12,
+            1
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "down": {
+          "uv": [
+            8,
+            0,
+            12,
+            1
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        }
+      }
+    },
+    {
+      "name": "steel_arm_west_0",
+      "from": [
+        -0.0415,
+        17,
+        6.5
+      ],
+      "to": [
+        4.9585,
+        19,
+        9.5
+      ],
+      "rotation": {
+        "angle": -10,
+        "axis": "z",
+        "origin": [
+          4.9585,
+          18,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            8,
+            5,
+            10
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            10,
+            3,
+            12
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            8,
+            5,
+            10
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            10,
+            3,
+            12
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            10,
+            5,
+            13
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            10,
+            5,
+            13
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "steel_arm_west_1",
+      "from": [
+        -4.4655,
+        17.8682,
+        7
+      ],
+      "to": [
+        0.5345,
+        19.8682,
+        9
+      ],
+      "rotation": {
+        "angle": 24,
+        "axis": "z",
+        "origin": [
+          0.0345,
+          18.8682,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            8,
+            5,
+            10
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            10,
+            2,
+            12
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            8,
+            5,
+            10
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            10,
+            2,
+            12
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            10,
+            5,
+            12
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            10,
+            5,
+            12
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "crystal_arm_west_2",
+      "from": [
+        -7.5764,
+        16.5379,
+        7.5
+      ],
+      "to": [
+        -3.5764,
+        17.5379,
+        8.5
+      ],
+      "light_emission": 15,
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 58,
+        "origin": [
+          -4.0764,
+          17.0379,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            0,
+            12,
+            1
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            12,
+            1
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "west": {
+          "uv": [
+            8,
+            0,
+            9,
+            1
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "up": {
+          "uv": [
+            8,
+            0,
+            12,
+            1
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "down": {
+          "uv": [
+            8,
+            0,
+            12,
+            1
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        }
+      }
+    },
+    {
+      "name": "brass_socket",
+      "from": [
+        6,
+        12,
+        6
+      ],
+      "to": [
+        10,
+        14,
+        10
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          0,
+          4,
+          0
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "wood_shaft",
+      "from": [
+        7,
+        4,
+        7
+      ],
+      "to": [
+        9,
+        12,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            0,
+            14,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            12,
+            0,
+            14,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            12,
+            0,
+            14,
+            8
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            12,
+            0,
+            14,
+            8
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_band",
+      "from": [
+        6,
+        3,
+        6
+      ],
+      "to": [
+        10,
+        4,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "leather_grip",
+      "from": [
+        7,
+        -3,
+        7
+      ],
+      "to": [
+        9,
+        3,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            14,
+            0,
+            16,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            14,
+            0,
+            16,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            14,
+            0,
+            16,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            14,
+            0,
+            16,
+            6
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_pommel_ring",
+      "from": [
+        6,
+        -4,
+        6
+      ],
+      "to": [
+        10,
+        -3,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_pommel",
+      "from": [
+        6.5,
+        -7.1,
+        7
+      ],
+      "to": [
+        9.5,
+        -4.1,
+        9
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [
+          8,
+          -5.6,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            3,
+            3
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            2,
+            3
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            3,
+            3
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            2,
+            3
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            3,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            3,
+            2
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "crystal_pommel",
+      "from": [
+        7,
+        -6.6,
+        6.5
+      ],
+      "to": [
+        9,
+        -4.6,
+        9.5
+      ],
+      "light_emission": 15,
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [
+          8,
+          -5.6,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            0,
+            10,
+            2
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "east": {
+          "uv": [
+            8,
+            0,
+            11,
+            2
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            10,
+            2
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "west": {
+          "uv": [
+            8,
+            0,
+            11,
+            2
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "up": {
+          "uv": [
+            8,
+            0,
+            10,
+            3
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "down": {
+          "uv": [
+            8,
+            0,
+            10,
+            3
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        }
+      }
+    }
+  ],
+  "gui_light": "front",
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        -27,
+        -90,
+        -35
+      ],
+      "translation": [
+        0,
+        4,
+        1.25
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        -27,
+        -90,
+        -35
+      ],
+      "translation": [
+        0,
+        4,
+        1.25
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -90,
+        -20
+      ],
+      "translation": [
+        1.63,
+        2.85,
+        0.63
+      ],
+      "scale": [
+        0.45,
+        0.45,
+        0.45
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -90,
+        -20
+      ],
+      "translation": [
+        1.63,
+        2.85,
+        0.63
+      ],
+      "scale": [
+        0.45,
+        0.45,
+        0.45
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        -45
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.45,
+        0.45,
+        0.45
+      ]
+    },
+    "gui": {
+      "rotation": [
+        0,
+        0,
+        -45
+      ],
+      "translation": [
+        -1.25,
+        -1.25,
+        0
+      ],
+      "scale": [
+        0.56,
+        0.56,
+        0.56
+      ]
+    },
+    "head": {
+      "rotation": [
+        0,
+        -180,
+        -45
+      ],
+      "translation": [
+        0,
+        13,
+        7
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        -180,
+        -45
+      ],
+      "translation": [
+        0.5,
+        -0.5,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    }
+  }
 }

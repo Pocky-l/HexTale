@@ -67,13 +67,33 @@ public final class ResearcherClothesClient {
 
     public static void bake(EntityRenderersEvent.AddLayers event) {
         for (Piece piece : Piece.values()) {
-            WORN.put(piece, new HumanoidModel<>(event.getEntityModels().bakeLayer(piece.layer)));
+            WORN.put(piece, new HumanoidModel<>(withRootHat(event.getEntityModels().bakeLayer(piece.layer))));
         }
+    }
+
+    /** 1.21.1's humanoid model wants the hat beside the head (26.x keeps it under the head): an empty one is added. */
+    private static net.minecraft.client.model.geom.ModelPart withRootHat(net.minecraft.client.model.geom.ModelPart root) {
+        if (root.hasChild("hat")) {
+            return root;
+        }
+        java.util.Map<String, net.minecraft.client.model.geom.ModelPart> children = new java.util.HashMap<>();
+        for (String name : new String[]{"head", "body", "right_arm", "left_arm", "right_leg", "left_leg"}) {
+            children.put(name, root.getChild(name));
+        }
+        children.put("hat", new net.minecraft.client.model.geom.ModelPart(java.util.List.of(), java.util.Map.of()));
+        return new net.minecraft.client.model.geom.ModelPart(java.util.List.of(), children);
     }
 
     public static void registerExtensions(RegisterClientExtensionsEvent event) {
         for (Piece piece : Piece.values()) {
+            com.pockyl.hextale.port.client.SpecialItemModels.claim(piece.item.get());
             event.registerItem(new IClientItemExtensions() {
+                // 1.21.1: the icon's special model is drawn by the port's renderer, which needs this same registration.
+                @Override
+                public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                    return com.pockyl.hextale.port.client.SpecialItemModels.customRenderer(piece.item.get());
+                }
+
                 @Override
                 public HumanoidModel<?> getHumanoidArmorModel(LivingEntity entity, ItemStack stack, EquipmentSlot slot, HumanoidModel<?> original) {
                     @Nullable HumanoidModel<LivingEntity> model = WORN.get(piece);

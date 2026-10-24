@@ -1,11 +1,12 @@
 {
+  "loader": "hextale:free_rotation",
   "parent": "minecraft:block/block",
   "textures": {
     "particle": "hextale:block/brass",
     "brass": "hextale:block/brass",
     "sail": "hextale:block/whirl_reaper_sail"
   },
-  "elements": [
+  "free_elements": [
     {
       "name": "vane_hub_low",
       "from": [

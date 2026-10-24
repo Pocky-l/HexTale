@@ -1,4 +1,5 @@
 {
+  "loader": "hextale:free_rotation",
   "__lint_allow": [
     "density"
   ],
@@ -11,7 +12,7 @@
     "top": "hextale:block/hextech_altar_top",
     "matrix": "hextale:block/hexcore_matrix"
   },
-  "elements": [
+  "free_elements": [
     {
       "name": "stone_plinth_c",
       "from": [

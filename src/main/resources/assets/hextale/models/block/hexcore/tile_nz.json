@@ -1,9 +1,10 @@
 {
+  "loader": "hextale:free_rotation",
   "textures": {
     "particle": "hextale:block/hexcore_matrix",
     "matrix": "hextale:block/hexcore_matrix"
   },
-  "elements": [
+  "free_elements": [
     {
       "name": "tile_nz",
       "from": [
