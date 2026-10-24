@@ -6,7 +6,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -24,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -60,10 +58,10 @@ public class HextechAltarBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
         if (!(level.getBlockEntity(pos) instanceof HextechAltarBlockEntity altar) || !altar.center().isEmpty() || altar.active()) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide()) {
             altar.place(stack);
@@ -72,7 +70,7 @@ public class HextechAltarBlock extends BaseEntityBlock {
             }
             level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_PLACE, SoundSource.BLOCKS, 0.8F, 1.3F);
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     @Override
@@ -89,7 +87,7 @@ public class HextechAltarBlock extends BaseEntityBlock {
             player.displayClientMessage(Component.translatable("block.hextale.hextech_altar.busy"), true);
         } else if (!altar.center().isEmpty()) {
             ItemStack taken = altar.take();
-            player.getInventory().placeItemBackInInventory(taken, Prediction.SERVER_ONLY);
+            player.getInventory().placeItemBackInInventory(taken);
             level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 1.4F);
         } else {
             player.displayClientMessage(Component.translatable("block.hextale.hextech_altar.hint"), true);
@@ -99,7 +97,7 @@ public class HextechAltarBlock extends BaseEntityBlock {
 
     /** A rising redstone signal starts the ritual (it never aborts one). */
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbor, @Nullable Orientation orientation, boolean moved) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbor, BlockPos portNeighborPos, boolean moved) {
         boolean powered = level.hasNeighborSignal(pos);
         if (powered != state.getValue(POWERED)) {
             level.setBlock(pos, state.setValue(POWERED, powered), Block.UPDATE_CLIENTS);
@@ -135,5 +133,17 @@ public class HextechAltarBlock extends BaseEntityBlock {
         return level.isClientSide()
                 ? createTickerHelper(type, ModBlockEntities.HEXTECH_ALTAR.get(), HextechAltarBlockEntity::clientTick)
                 : createTickerHelper(type, ModBlockEntities.HEXTECH_ALTAR.get(), HextechAltarBlockEntity::serverTick);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<HextechAltarBlock> codec() {
+        return simpleCodec(HextechAltarBlock::new);
     }
 }

@@ -30,8 +30,7 @@ public class KnowledgeScrollItem extends Item {
         this.teaches = teaches;
     }
 
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult usePort(Level level, Player player, InteractionHand hand) {
         if (player instanceof ServerPlayer server) {
             if (teaches) {
                 Research.learnEverything(server);
@@ -44,6 +43,11 @@ public class KnowledgeScrollItem extends Item {
         }
         player.getCooldowns().addCooldown(player.getItemInHand(hand), 20);
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        return com.pockyl.hextale.port.Interactions.holder(usePort(level, player, hand), player.getItemInHand(hand));
     }
 
     @Override

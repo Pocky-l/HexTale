@@ -34,17 +34,21 @@ public class PylonFilterItem extends Item {
     /** Into the player's inventory, or at their feet when it is full. */
     public static void give(Player player, ItemStack stack) {
         if (!player.getInventory().add(stack)) {
-            player.drop(stack, false, net.minecraft.util.Prediction.SERVER_ONLY);
+            player.drop(stack, false);
         }
     }
 
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult usePort(Level level, Player player, InteractionHand hand) {
         if (player instanceof ServerPlayer server) {
             server.openMenu(new SimpleMenuProvider((id, inventory, who) -> new ItemFilterMenu(id, inventory, hand),
                     Component.translatable("item.hextale.pylon_filter")), buf -> buf.writeEnum(hand));
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        return com.pockyl.hextale.port.Interactions.holder(usePort(level, player, hand), player.getItemInHand(hand));
     }
 
     /** On a pylon: sneak takes its filter out (setting one in is the pylon's own use); anywhere else: the settings. */

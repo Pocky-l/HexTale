@@ -312,7 +312,7 @@ public final class ModBlocks {
     public static final DeferredBlock<TransparentBlock> CHEM_GLASS = BLOCKS.registerBlock("chem_glass", TransparentBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).strength(0.6F).sound(SoundType.GLASS).noOcclusion()
                     .isValidSpawn((state, level, pos, type) -> false).isRedstoneConductor((state, level, pos) -> false)
-                    .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos, box) -> false));
+                    .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos) -> false));
     public static final DeferredBlock<IronBarsBlock> CHEM_GLASS_PANE = BLOCKS.registerBlock("chem_glass_pane", IronBarsBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).strength(0.3F).sound(SoundType.GLASS).noOcclusion());
     /** Iron eaten by acid: chemtech's building metal, brown and pitted. */

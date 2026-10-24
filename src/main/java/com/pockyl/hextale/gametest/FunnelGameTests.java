@@ -79,7 +79,7 @@ public final class FunnelGameTests {
             helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.DECAY, 8));
             Player player = helper.makeMockPlayer(GameType.SURVIVAL);
             Sheep second = sheep(helper);
-            second.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(player), 1000);
+            second.hurt(helper.getLevel().damageSources().playerAttack(player), 1000);
             helper.assertTrue(second.isDeadOrDying(), "the sheep is dead");
             helper.assertTrue(!funnel.hungry(), "fed with decay");
             helper.assertTrue(loose(helper).isEmpty(), "nothing lies on the ground");

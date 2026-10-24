@@ -8,7 +8,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -38,7 +38,8 @@ public class ThrownHextech extends ThrowableItemProjectile {
     }
 
     public ThrownHextech(Level level, LivingEntity thrower, ItemStack stack) {
-        super(ModEntities.THROWN_HEXTECH.get(), thrower, level, stack);
+        super(ModEntities.THROWN_HEXTECH.get(), thrower, level);
+        setItem(stack);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class ThrownHextech extends ThrowableItemProjectile {
     protected void onHitEntity(EntityHitResult hit) {
         super.onHitEntity(hit);
         if (level() instanceof ServerLevel level) {
-            hit.getEntity().hurtServer(level, damageSources().indirectMagic(this, getOwner()), STING);
+            hit.getEntity().hurt(damageSources().indirectMagic(this, getOwner()), STING);
         }
     }
 
@@ -68,7 +69,7 @@ public class ThrownHextech extends ThrowableItemProjectile {
         if (level() instanceof ServerLevel level) {
             // Step back from a block face so the dust does not appear inside the block.
             Vec3 at = hit instanceof BlockHitResult block
-                    ? hit.getLocation().add(block.getDirection().getUnitVec3().scale(0.2)) : hit.getLocation();
+                    ? hit.getLocation().add(net.minecraft.world.phys.Vec3.atLowerCornerOf(block.getDirection().getNormal()).scale(0.2)) : hit.getLocation();
             shatter(level, at);
             discard();
         }

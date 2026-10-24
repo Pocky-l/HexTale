@@ -615,7 +615,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     }
 
     private static ItemStack sampleIcon(ExperimentPlan plan) {
-        return plan.sample().flatMap(ingredient -> ingredient.items().findFirst()).map(item -> new ItemStack(item.value())).orElse(ItemStack.EMPTY);
+        return plan.sample().flatMap(ingredient -> com.pockyl.hextale.port.PortIngredients.items(ingredient).findFirst()).map(item -> new ItemStack(item.value())).orElse(ItemStack.EMPTY);
     }
 
     private static void bar(GuiGraphicsExtractor graphics, int x, int y, int w, float share, int color) {

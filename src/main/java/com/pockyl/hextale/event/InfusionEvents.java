@@ -3,7 +3,7 @@ package com.pockyl.hextale.event;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 
 import com.pockyl.hextale.Hextale;
@@ -26,14 +26,14 @@ public final class InfusionEvents {
     }
 
     @SubscribeEvent
-    public static void onAddReloadListeners(AddServerReloadListenersEvent event) {
-        event.addListener(Hextale.id("infusion"), new InfusionRecipes.Loader(event.getServerResources().getRegistryLookup()));
-        event.addListener(Hextale.id("hex_crafting"), HexCraftingRecipe.ALL.loader(event.getServerResources().getRegistryLookup()));
-        event.addListener(Hextale.id("alloying"), AlloyRecipe.ALL.loader(event.getServerResources().getRegistryLookup()));
-        event.addListener(Hextale.id("crucible"), com.pockyl.hextale.crafting.CrucibleRecipe.ALL.loader(event.getServerResources().getRegistryLookup()));
-        event.addListener(Hextale.id("brewing"), com.pockyl.hextale.crafting.BrewRecipe.ALL.loader(event.getServerResources().getRegistryLookup()));
-        event.addListener(Hextale.id("experiments"), com.pockyl.hextale.research.ExperimentPlan.ALL.loader(event.getServerResources().getRegistryLookup()));
-        event.addListener(Hextale.id("guide"), Guide.loader(event.getServerResources().getRegistryLookup()));
+    public static void onAddReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(new InfusionRecipes.Loader(event.getRegistryAccess()));
+        event.addListener(HexCraftingRecipe.ALL.loader(event.getRegistryAccess()));
+        event.addListener(AlloyRecipe.ALL.loader(event.getRegistryAccess()));
+        event.addListener(com.pockyl.hextale.crafting.CrucibleRecipe.ALL.loader(event.getRegistryAccess()));
+        event.addListener(com.pockyl.hextale.crafting.BrewRecipe.ALL.loader(event.getRegistryAccess()));
+        event.addListener(com.pockyl.hextale.research.ExperimentPlan.ALL.loader(event.getRegistryAccess()));
+        event.addListener(Guide.loader(event.getRegistryAccess()));
     }
 
     @SubscribeEvent

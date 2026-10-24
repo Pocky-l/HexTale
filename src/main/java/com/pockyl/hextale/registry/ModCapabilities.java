@@ -3,8 +3,8 @@ package com.pockyl.hextale.registry;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
-import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
+import com.pockyl.hextale.port.VanillaContainerWrapper;
+import com.pockyl.hextale.port.WorldlyContainerWrapper;
 
 /**
  * The item handlers of the mod's machines, so hex pylons (and other mods' pipes) can feed and empty them like hoppers
@@ -19,21 +19,21 @@ public final class ModCapabilities {
     }
 
     private static void onRegister(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ALEMBIC.get(), WorldlyContainerWrapper::new);
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.SEPARATOR.get(), WorldlyContainerWrapper::new);
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.HEX_FURNACE.get(), WorldlyContainerWrapper::new);
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.HEX_FOUNDRY.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.ALEMBIC.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.SEPARATOR.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.HEX_FURNACE.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.HEX_FOUNDRY.get(), WorldlyContainerWrapper::new);
         // A structure that shares its items takes and gives them through every block, as its controller would.
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.MULTIBLOCK_PART.get(), (part, side) -> {
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.MULTIBLOCK_PART.get(), (part, side) -> {
             net.minecraft.world.WorldlyContainer container = part.sharedContainer();
             return container == null ? null : new WorldlyContainerWrapper(container, side);
         });
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.RESEARCH_TABLE.get(), WorldlyContainerWrapper::new);
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PEDESTAL.get(), (pedestal, side) -> VanillaContainerWrapper.of(pedestal));
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CHEM_BURNER.get(), (burner, side) -> VanillaContainerWrapper.of(burner));
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.AXOLOTL_TANK.get(), WorldlyContainerWrapper::new);
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CHEM_STILL.get(), WorldlyContainerWrapper::new);
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.LAB_BENCH.get(), WorldlyContainerWrapper::new);
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PINK_BRAZIER.get(), (brazier, side) -> VanillaContainerWrapper.of(brazier));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.RESEARCH_TABLE.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.PEDESTAL.get(), (pedestal, side) -> VanillaContainerWrapper.of(pedestal));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CHEM_BURNER.get(), (burner, side) -> VanillaContainerWrapper.of(burner));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.AXOLOTL_TANK.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CHEM_STILL.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.LAB_BENCH.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.PINK_BRAZIER.get(), (brazier, side) -> VanillaContainerWrapper.of(brazier));
     }
 }

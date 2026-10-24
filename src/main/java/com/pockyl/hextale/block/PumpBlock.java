@@ -7,7 +7,6 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
@@ -66,12 +65,11 @@ public class PumpBlock extends BaseEntityBlock implements EssenceMachine, Simple
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
-                                     BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         if (state.getValue(WATERLOGGED)) {
-            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
-        return super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbour, random);
+        return super.updateShape(state, direction, neighbour, level, pos, neighbourPos);
     }
 
     @Override
@@ -92,5 +90,17 @@ public class PumpBlock extends BaseEntityBlock implements EssenceMachine, Simple
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.PUMP.get(), PumpBlockEntity::serverTick);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<PumpBlock> codec() {
+        return simpleCodec(PumpBlock::new);
     }
 }

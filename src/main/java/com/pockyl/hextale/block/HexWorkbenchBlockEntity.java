@@ -204,7 +204,7 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
         ValueInput input = ValueInput.of(portTag, portRegistries);
         super.loadAdditional(input.tag(), input.registries());
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(input, items);
+        ContainerHelper.loadAllItems(input.tag(), items, input.registries());
         charge = input.getIntOr("charge", 0);
         revision++;
     }
@@ -213,7 +213,7 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
     protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
         ValueOutput output = ValueOutput.of(portTag, portRegistries);
         super.saveAdditional(output.tag(), output.registries());
-        ContainerHelper.saveAllItems(output, items);
+        ContainerHelper.saveAllItems(output.tag(), items, output.registries());
         output.putInt("charge", charge);
     }
 

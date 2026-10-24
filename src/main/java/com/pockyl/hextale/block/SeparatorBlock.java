@@ -15,7 +15,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -140,8 +139,7 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
-                                     BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         return withLook(state, direction, neighbour, level, pos);
     }
 
@@ -218,5 +216,17 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
     @Override
     public @Nullable WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
         return level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator ? separator : null;
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<SeparatorBlock> codec() {
+        return simpleCodec(SeparatorBlock::new);
     }
 }

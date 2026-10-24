@@ -15,7 +15,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.Containers;
@@ -344,7 +343,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     private void burst(ServerPlayer player, ResearchBoard board, int cell, ResearchSheet.Trace trace) {
         drawInk(trace.ink());
         items.get(HEXTECH).shrink(1);
-        player.hurtServer((ServerLevel) level, level.damageSources().magic(), BURST_DAMAGE);
+        player.hurt(level.damageSources().magic(), BURST_DAMAGE);
         message(player, Component.translatable("research.hextale.burst", name(board.topic())), ResearchMessagePayload.Tone.BAD);
         if (level instanceof ServerLevel serverLevel) {
             Vec3 orb = orbPosition();
@@ -489,7 +488,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         ItemStack older = items.get(OUTPUT);
         items.set(OUTPUT, notes);
         if (!older.isEmpty() && !player.getInventory().add(older)) {
-            player.drop(older, false, Prediction.SERVER_ONLY);
+            player.drop(older, false);
         }
     }
 
@@ -667,14 +666,14 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
         if (input.getIntOr("layout", 1) < LAYOUT) {
             NonNullList<ItemStack> old = NonNullList.withSize(OLD_SLOTS, ItemStack.EMPTY);
-            ContainerHelper.loadAllItems(input, old);
+            ContainerHelper.loadAllItems(input.tag(), old, input.registries());
             for (int i = 0; i < OUTPUT + 1; i++) {
                 items.set(i, old.get(i));
             }
             items.set(PAPER, old.get(4));
             orphan = old.get(3);
         } else {
-            ContainerHelper.loadAllItems(input, items);
+            ContainerHelper.loadAllItems(input.tag(), items, input.registries());
         }
         boolean wasLooking = looking;
         looking = input.getBooleanOr("looking", false);
@@ -693,7 +692,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
     protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
         ValueOutput output = ValueOutput.of(portTag, portRegistries);
         super.saveAdditional(output.tag(), output.registries());
-        ContainerHelper.saveAllItems(output, items);
+        ContainerHelper.saveAllItems(output.tag(), items, output.registries());
         output.putInt("layout", LAYOUT);
         sheet.save(output.child("sheet"));
     }

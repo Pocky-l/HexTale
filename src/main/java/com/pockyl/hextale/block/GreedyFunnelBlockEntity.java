@@ -27,7 +27,7 @@ import com.pockyl.hextale.port.ValueInput;
 import com.pockyl.hextale.port.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.item.ItemResource;
+import com.pockyl.hextale.port.ItemResource;
 
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.JarReach;
@@ -62,7 +62,7 @@ import org.jspecify.annotations.Nullable;
  * {@value #DEATHS_PER_MB} deaths. Without decay the funnel goes hungry and the deaths around it are left alone. The
  * block ticks only while it holds something to pass down.
  */
-public class GreedyFunnelBlockEntity extends BlockEntity {
+public class GreedyFunnelBlockEntity extends BlockEntity implements com.pockyl.hextale.port.Removal.SideEffects {
     /** The loaded funnels, asked by every death. */
     public static final ReachIndex<GreedyFunnelBlockEntity> INDEX = new ReachIndex<>(GreedyFunnelBlockEntity.class,
             FunnelRune.MAX_RADIUS, GreedyFunnelBlockEntity::covers);
@@ -257,7 +257,7 @@ public class GreedyFunnelBlockEntity extends BlockEntity {
         level.playSound(null, at.x, at.y, at.z, ModSounds.FUNNEL_SWALLOW.get(), SoundSource.BLOCKS, 0.45F,
                 0.9F + level.getRandom().nextFloat() * 0.2F);
         FunnelPayload payload = new FunnelPayload(worldPosition, from, icons, paidExperience);
-        for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(worldPosition), false)) {
+        for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(new ChunkPos(worldPosition), false)) {
             ModNetwork.sendToPlayer(player, payload);
         }
         paidFor = -1;
@@ -310,7 +310,7 @@ public class GreedyFunnelBlockEntity extends BlockEntity {
     /** Puts as much as the block below takes into it (a furnace sorts it like a pylon would); returns the rest. */
     private ItemStack passDown(ServerLevel level, ItemStack stack) {
         BlockPos below = worldPosition.below();
-        if (stack.isEmpty() || level.getCapability(Capabilities.Item.BLOCK, below, Direction.UP) == null) {
+        if (stack.isEmpty() || com.pockyl.hextale.port.ResourceHandler.ofBlock(level, below, Direction.UP) == null) {
             return stack;
         }
         int moved = PylonInsert.insert(level, below, Direction.UP, ItemResource.of(stack), stack.getCount(), null, null);
@@ -401,9 +401,8 @@ public class GreedyFunnelBlockEntity extends BlockEntity {
     }
 
     /** The funnel is broken: what it held falls out and the crystal lets its experience go. */
-    @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
+        com.pockyl.hextale.port.Removal.vanilla(this, pos, state);
         if (level instanceof ServerLevel server) {
             for (ItemStack stack : held) {
                 Containers.dropItemStack(server, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);

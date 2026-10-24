@@ -198,7 +198,7 @@ public class ArcSpireBlockEntity extends BlockEntity {
 
     /** Hostile, alive, not named and no boss. */
     public static boolean prey(Mob mob) {
-        return mob instanceof Enemy && mob.isAlive() && !mob.hasCustomName() && !mob.typeHolder().is(Tags.EntityTypes.BOSSES);
+        return mob instanceof Enemy && mob.isAlive() && !mob.hasCustomName() && !mob.getType().is(Tags.EntityTypes.BOSSES);
     }
 
     /** One arc: every target takes the blow of a player standing at the spire. */
@@ -219,13 +219,13 @@ public class ArcSpireBlockEntity extends BlockEntity {
             }
             Vec3 at = mob.position().add(0, mob.getBbHeight() * 0.6, 0);
             points.add(at);
-            mob.hurtServer(level, level.damageSources().playerAttack(striker), damage);
+            mob.hurt(level.damageSources().playerAttack(striker), damage);
             level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 10, 0.2, 0.3, 0.2, 0.1);
         }
         level.playSound(null, from.x, from.y, from.z, ModSounds.ARC_STRIKE.get(), SoundSource.BLOCKS, 0.6F,
                 0.9F + level.getRandom().nextFloat() * 0.2F);
         ArcPayload payload = new ArcPayload(worldPosition, points);
-        for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(worldPosition), false)) {
+        for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(new ChunkPos(worldPosition), false)) {
             ModNetwork.sendToPlayer(player, payload);
         }
         changed();

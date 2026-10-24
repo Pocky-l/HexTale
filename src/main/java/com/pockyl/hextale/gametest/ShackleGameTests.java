@@ -52,10 +52,10 @@ public final class ShackleGameTests {
             helper.assertValueEqual(plate.held().length, 1, "creatures held");
             at[0] = cow.position();
             health[0] = cow.getHealth();
-            cow.hurtServer(helper.getLevel(), helper.getLevel().damageSources().generic(), 2);
+            cow.hurt(helper.getLevel().damageSources().generic(), 2);
         });
         helper.runAfterDelay(60, () -> {
-            cow.hurtServer(helper.getLevel(), helper.getLevel().damageSources().generic(), 2);
+            cow.hurt(helper.getLevel().damageSources().generic(), 2);
             helper.assertTrue(cow.getHealth() <= health[0] - 4 + 0.01F, "both blows hurt the held cow (" + health[0] + " -> " + cow.getHealth() + ", cooldown "
                     + cow.damageCooldownTime + ", held " + cow.hasData(ModAttachments.SHACKLE) + ", at " + cow.position() + ")");
         });

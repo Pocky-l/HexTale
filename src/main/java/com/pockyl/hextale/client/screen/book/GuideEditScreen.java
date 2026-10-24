@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStackTemplate;
+import com.pockyl.hextale.port.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 
 import com.pockyl.hextale.quest.Guide;
@@ -161,7 +161,7 @@ final class GuideEditScreen extends Screen {
                 problem = "No item " + iconId;
                 return false;
             }
-            next = next.withIcon(new ItemStackTemplate(BuiltInRegistries.ITEM.getValue(id)));
+            next = next.withIcon(new ItemStackTemplate(BuiltInRegistries.ITEM.get(id)));
         }
         if (!parents.getValue().trim().equals(initialParents)) {
             List<String> ids = Arrays.stream(parents.getValue().split(",")).map(String::trim).filter(id -> !id.isEmpty()).toList();

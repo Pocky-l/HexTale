@@ -37,7 +37,7 @@ import org.jspecify.annotations.Nullable;
  * it exists, and a Greedy Funnel in reach pours its deaths' experience straight in. The experience waits in the glass as
  * a glowing liquid ({@value #CAPACITY} points) until a player takes it, a level at a time or all at once, or bottles it.
  */
-public class XpCondenserBlockEntity extends BlockEntity {
+public class XpCondenserBlockEntity extends BlockEntity implements com.pockyl.hextale.port.Removal.SideEffects {
     /** Blocks around it in which no orb appears. */
     public static final int RADIUS = 8;
     /** The loaded condensers, asked by every orb and every funnel. */
@@ -110,7 +110,7 @@ public class XpCondenserBlockEntity extends BlockEntity {
         if (sentAt != now) {
             sentAt = now;
             CondensePayload payload = new CondensePayload(worldPosition, from, taken);
-            for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(worldPosition), false)) {
+            for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(new ChunkPos(worldPosition), false)) {
                 ModNetwork.sendToPlayer(player, payload);
             }
         }
@@ -159,9 +159,8 @@ public class XpCondenserBlockEntity extends BlockEntity {
     }
 
     /** Broken: the liquid spills out as orbs. */
-    @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
+        com.pockyl.hextale.port.Removal.vanilla(this, pos, state);
         if (level instanceof ServerLevel server && points > 0) {
             // Removed from the index first, or the orbs would flow straight back in.
             INDEX.remove(server, pos);

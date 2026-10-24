@@ -260,13 +260,13 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
     }
 
     @Override
-    public void startOpen(net.minecraft.world.entity.ContainerUser player) {
+    public void startOpen(net.minecraft.world.entity.player.Player player) {
         super.startOpen(player);
         LapidaryBlock.setWorking(level, worldPosition, true);
     }
 
     @Override
-    public void stopOpen(net.minecraft.world.entity.ContainerUser player) {
+    public void stopOpen(net.minecraft.world.entity.player.Player player) {
         super.stopOpen(player);
         LapidaryBlock.setWorking(level, worldPosition, false);
     }
@@ -278,7 +278,7 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
         ValueInput input = ValueInput.of(portTag, portRegistries);
         super.loadAdditional(input.tag(), input.registries());
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(input, items);
+        ContainerHelper.loadAllItems(input.tag(), items, input.registries());
         seed = input.getLongOr("seed", 0);
         ground = input.read("ground", Codec.INT.listOf()).orElse(List.of()).stream().mapToInt(Integer::intValue).toArray();
         cracks = input.getIntOr("cracks", 0);
@@ -292,7 +292,7 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
     protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
         ValueOutput output = ValueOutput.of(portTag, portRegistries);
         super.saveAdditional(output.tag(), output.registries());
-        ContainerHelper.saveAllItems(output, items);
+        ContainerHelper.saveAllItems(output.tag(), items, output.registries());
         output.putLong("seed", seed);
         output.store("ground", Codec.INT.listOf(), Arrays.stream(ground).boxed().toList());
         output.putInt("cracks", cracks);

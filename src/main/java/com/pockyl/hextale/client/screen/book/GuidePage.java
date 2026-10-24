@@ -1869,7 +1869,7 @@ final class GuidePage {
 
     /** One of an ingredient's items, changing every second. */
     private static ItemStack cycle(Ingredient ingredient, long now, int salt) {
-        var items = ingredient.items().toList();
+        var items = com.pockyl.hextale.port.PortIngredients.items(ingredient).toList();
         if (items.isEmpty()) {
             return ItemStack.EMPTY;
         }
@@ -1949,7 +1949,7 @@ final class GuidePage {
             BuiltInRegistries.ITEM.getTagOrEmpty(tag).forEach(items::add);
             return items.isEmpty() ? ItemStack.EMPTY : new ItemStack(items.get((int) ((now / 1000 + phase) % items.size())));
         }
-        return new ItemStack(BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(id)));
+        return new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(id)));
     }
 
     // ---- Input ----------------------------------------------------------------------------------------------------

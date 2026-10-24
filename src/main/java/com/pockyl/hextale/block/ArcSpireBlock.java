@@ -77,4 +77,16 @@ public class ArcSpireBlock extends BaseEntityBlock {
         return createTickerHelper(type, ModBlockEntities.ARC_SPIRE.get(),
                 level.isClientSide() ? ArcSpireBlockEntity::clientTick : ArcSpireBlockEntity::serverTick);
     }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<ArcSpireBlock> codec() {
+        return simpleCodec(ArcSpireBlock::new);
+    }
 }

@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.item.ItemStackTemplate;
+import com.pockyl.hextale.port.ItemStackTemplate;
 
 import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.research.ResearchTopics;

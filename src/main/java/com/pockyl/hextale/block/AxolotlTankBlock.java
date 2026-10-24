@@ -41,7 +41,7 @@ import org.jspecify.annotations.Nullable;
  */
 public class AxolotlTankBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
-    private static final VoxelShape SHAPE = Block.column(14.0, 0.0, 15.0);
+    private static final VoxelShape SHAPE = com.pockyl.hextale.port.PortShapes.column(14.0, 0.0, 15.0);
 
     public AxolotlTankBlock(Properties properties) {
         super(properties);
@@ -64,55 +64,55 @@ public class AxolotlTankBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
         if (!(level.getBlockEntity(pos) instanceof AxolotlTankBlockEntity tank)) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (stack.is(Items.AXOLOTL_BUCKET)) {
             if (!level.isClientSide()) {
                 if (!tank.letIn(stack)) {
                     player.displayClientMessage(net.minecraft.network.chat.Component.translatable("block.hextale.axolotl_tank.say.taken"), true);
-                    return InteractionResult.FAIL;
+                    return net.minecraft.world.ItemInteractionResult.FAIL;
                 }
                 player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(Items.BUCKET)));
                 level.playSound(null, pos, SoundEvents.BUCKET_EMPTY_AXOLOTL, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
         if (stack.is(Items.BUCKET) && tank.hasAxolotl()) {
             if (!level.isClientSide()) {
                 player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, tank.takeOut()));
                 level.playSound(null, pos, SoundEvents.BUCKET_FILL_AXOLOTL, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
         if (stack.is(Items.TROPICAL_FISH_BUCKET)) {
             if (!level.isClientSide()) {
                 if (!tank.feedBucket()) {
                     player.displayClientMessage(net.minecraft.network.chat.Component.translatable("block.hextale.axolotl_tank.say.fed"), true);
-                    return InteractionResult.FAIL;
+                    return net.minecraft.world.ItemInteractionResult.FAIL;
                 }
                 player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(Items.WATER_BUCKET)));
                 level.playSound(null, pos, SoundEvents.BUCKET_EMPTY_FISH, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
         if (AxolotlTankBlockEntity.isFood(stack)) {
             if (!level.isClientSide()) {
                 int taken = tank.feed(stack);
                 if (taken <= 0) {
                     player.displayClientMessage(net.minecraft.network.chat.Component.translatable("block.hextale.axolotl_tank.say.fed"), true);
-                    return InteractionResult.FAIL;
+                    return net.minecraft.world.ItemInteractionResult.FAIL;
                 }
                 if (!player.getAbilities().instabuild) {
                     stack.shrink(taken);
                 }
                 level.playSound(null, pos, SoundEvents.AXOLOTL_SPLASH, SoundSource.BLOCKS, 0.5F, 1.2F);
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
-        return InteractionResult.TRY_WITH_EMPTY_HAND;
+        return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
@@ -123,7 +123,7 @@ public class AxolotlTankBlock extends BaseEntityBlock {
                 player.displayClientMessage(tank.status(), true);
             } else {
                 if (!player.getInventory().add(slime)) {
-                    player.drop(slime, false, net.minecraft.util.Prediction.SERVER_ONLY);
+                    player.drop(slime, false);
                 }
                 level.playSound(null, pos, SoundEvents.SLIME_BLOCK_HIT, SoundSource.BLOCKS, 0.6F, 1.3F);
             }
@@ -163,5 +163,17 @@ public class AxolotlTankBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.AXOLOTL_TANK.get(), AxolotlTankBlockEntity::serverTick);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<AxolotlTankBlock> codec() {
+        return simpleCodec(AxolotlTankBlock::new);
     }
 }

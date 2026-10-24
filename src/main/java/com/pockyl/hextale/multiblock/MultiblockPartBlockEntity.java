@@ -20,7 +20,7 @@ import org.jspecify.annotations.Nullable;
  * A block of a formed structure: it remembers the block it was and its controller. Essence that pipes bring to it goes
  * to the controller, if that takes essence; taking it away (breaking it) takes the whole structure apart.
  */
-public class MultiblockPartBlockEntity extends BlockEntity implements EssenceNetwork.Receiver {
+public class MultiblockPartBlockEntity extends BlockEntity implements EssenceNetwork.Receiver, com.pockyl.hextale.port.Removal.SideEffects {
     private BlockPos controller = BlockPos.ZERO;
     private BlockState original = Blocks.AIR.defaultBlockState();
 
@@ -63,9 +63,8 @@ public class MultiblockPartBlockEntity extends BlockEntity implements EssenceNet
     }
 
     /** Removed by anything but the structure itself coming apart: the rest of the structure comes apart too. */
-    @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
+        com.pockyl.hextale.port.Removal.vanilla(this, pos, state);
         Level level = this.level;
         if (level instanceof ServerLevel serverLevel) {
             Multiblocks.breakApart(serverLevel, controller, pos);

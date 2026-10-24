@@ -56,7 +56,7 @@ import org.jspecify.annotations.Nullable;
  * saplings from its own leaves planted back when it has fallen. Every tree costs {@value #MB_PER_TREE} mB of air
  * essence from a jar within {@link JarReach#RADIUS}; no air = becalmed. Idle, it looks more and more rarely.
  */
-public class HexSawmillBlockEntity extends BlockEntity {
+public class HexSawmillBlockEntity extends BlockEntity implements com.pockyl.hextale.port.Removal.SideEffects {
     public static final int SAW_TICKS = 30;
     public static final int FALL_TICKS = 26;
     /** Trees felled at once. */
@@ -379,7 +379,7 @@ public class HexSawmillBlockEntity extends BlockEntity {
         level.playSound(null, from.x, from.y, from.z, ModSounds.SAW_LAUNCH.get(), SoundSource.BLOCKS, 0.5F,
                 0.9F + level.getRandom().nextFloat() * 0.2F);
         SawPayload payload = new SawPayload(worldPosition, tree.foot(), travel);
-        for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(worldPosition), false)) {
+        for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(new ChunkPos(worldPosition), false)) {
             ModNetwork.sendToPlayer(player, payload);
         }
     }
@@ -398,9 +398,8 @@ public class HexSawmillBlockEntity extends BlockEntity {
         return Math.abs(dx) >= Math.abs(dz) ? (dx > 0 ? Direction.EAST : Direction.WEST) : (dz > 0 ? Direction.SOUTH : Direction.NORTH);
     }
 
-    @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
+        com.pockyl.hextale.port.Removal.vanilla(this, pos, state);
         if (level instanceof ServerLevel server) {
             for (Pending saw : pending) {
                 if (saw.felled()) {

@@ -15,7 +15,7 @@ import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
+import com.pockyl.hextale.port.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -210,7 +210,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
                     if (entity.getItem(slot).isEmpty()) {
                         entity.setItem(slot, rest);
                     } else if (!taker.getInventory().add(rest)) {
-                        taker.getInventory().placeItemBackInInventory(rest, net.minecraft.util.Prediction.SERVER_ONLY);
+                        taker.getInventory().placeItemBackInInventory(rest);
                     }
                 }
             }
@@ -223,7 +223,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
     /** The ordinary crafting recipe the grid holds (when no hextech recipe does), or null. */
     @Nullable
     private static RecipeHolder<CraftingRecipe> plainRecipe(ServerLevel level, CraftingInput input) {
-        return input.isEmpty() ? null : level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level).orElse(null);
+        return input.isEmpty() ? null : level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level).orElse(null);
     }
 
     /** An ordinary craft: one of everything in the grid is used, the recipe's remainders stay in place or go to the taker. */
@@ -243,7 +243,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
                 if (entity.getItem(slot).isEmpty()) {
                     entity.setItem(slot, rest);
                 } else if (!taker.getInventory().add(rest)) {
-                    taker.getInventory().placeItemBackInInventory(rest, net.minecraft.util.Prediction.SERVER_ONLY);
+                    taker.getInventory().placeItemBackInInventory(rest);
                 }
             }
         }

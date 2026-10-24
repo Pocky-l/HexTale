@@ -116,7 +116,7 @@ public final class LightningEvents {
             }
             for (Direction direction : Direction.values()) {
                 BlockPos next = pos.relative(direction);
-                if (!cameFrom.containsKey(next) && next.distChessboard(base) <= radius && level.getBlockState(next).is(ModTags.CARRIES_LIGHTNING)) {
+                if (!cameFrom.containsKey(next) && com.pockyl.hextale.port.PortMath.distChessboard(next, base) <= radius && level.getBlockState(next).is(ModTags.CARRIES_LIGHTNING)) {
                     cameFrom.put(next, pos);
                     ring.put(next, ring.get(pos) + 1);
                     queue.add(next);

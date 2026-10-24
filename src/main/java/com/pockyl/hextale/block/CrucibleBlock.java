@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -70,15 +69,15 @@ public class CrucibleBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
         if (stack.isEmpty() || !(level.getBlockEntity(pos) instanceof CrucibleBlockEntity crucible)) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         boolean creative = player.getAbilities().instabuild;
         if (stack.is(Items.WATER_BUCKET)) {
             if (crucible.fillWater(CrucibleBlockEntity.BUCKET, true) == 0) {
-                return say(level, player, "full");
+                return com.pockyl.hextale.port.Interactions.itemOn(say(level, player, "full"));
             }
             if (!level.isClientSide()) {
                 crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
@@ -86,20 +85,20 @@ public class CrucibleBlock extends BaseEntityBlock {
                     player.setItemInHand(hand, new ItemStack(Items.BUCKET));
                 }
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
         if (stack.is(Items.BUCKET)) {
             if (crucible.water() + crucible.essence().total() < CrucibleBlockEntity.BUCKET) {
-                return say(level, player, "not_a_bucket");
+                return com.pockyl.hextale.port.Interactions.itemOn(say(level, player, "not_a_bucket"));
             }
             if (!level.isClientSide() && crucible.takeBucket() && !creative) {
                 give(player, hand, stack, new ItemStack(Items.WATER_BUCKET));
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
         if (isWaterBottle(stack)) {
             if (crucible.fillWater(CrucibleBlockEntity.WATER_BOTTLE, true) == 0) {
-                return say(level, player, "full");
+                return com.pockyl.hextale.port.Interactions.itemOn(say(level, player, "full"));
             }
             if (!level.isClientSide()) {
                 crucible.fillWater(CrucibleBlockEntity.WATER_BOTTLE, false);
@@ -107,13 +106,13 @@ public class CrucibleBlock extends BaseEntityBlock {
                     give(player, hand, stack, new ItemStack(Items.GLASS_BOTTLE));
                 }
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
         boolean bottle = stack.is(ModItems.ESSENCE_FLASK.get());
         boolean jar = stack.is(ModItems.ESSENCE_TANK.get()) && !EssenceFlaskItem.contents(stack).isEmpty();
         if (bottle || jar) {
             if (!crucible.boiling()) {
-                return say(level, player, crucible.liquid() <= 0 ? "no_water" : "not_boiling");
+                return com.pockyl.hextale.port.Interactions.itemOn(say(level, player, crucible.liquid() <= 0 ? "no_water" : "not_boiling"));
             }
             if (!level.isClientSide()) {
                 EssenceMix held = EssenceFlaskItem.contents(stack);
@@ -129,7 +128,7 @@ public class CrucibleBlock extends BaseEntityBlock {
                     }
                 }
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
         if (stack.is(Items.GLASS_BOTTLE) && crucible.brew() != null) {
             if (!level.isClientSide()) {
@@ -138,21 +137,21 @@ public class CrucibleBlock extends BaseEntityBlock {
                     give(player, hand, stack, vial);
                 }
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
         if (crucible.liquid() <= 0) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide()) {
             if (crucible.take(stack, 1, true, player) == 0) {
                 // Neither a catalyst the water can pay for, nor anything boiling water could dissolve.
-                return say(level, player, crucible.boiling() ? "no_essences" : "not_boiling");
+                return com.pockyl.hextale.port.Interactions.itemOn(say(level, player, crucible.boiling() ? "no_essences" : "not_boiling"));
             }
             if (!creative) {
                 stack.shrink(1);
             }
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     /** Sneaking boils the water away; otherwise the crucible says how its water stands. */
@@ -199,7 +198,7 @@ public class CrucibleBlock extends BaseEntityBlock {
         if (held.isEmpty()) {
             player.setItemInHand(hand, result);
         } else if (!player.getInventory().add(result)) {
-            player.drop(result, false, Prediction.SERVER_ONLY);
+            player.drop(result, false);
         }
     }
 
@@ -243,5 +242,17 @@ public class CrucibleBlock extends BaseEntityBlock {
         return level.isClientSide()
                 ? createTickerHelper(type, ModBlockEntities.CRUCIBLE.get(), CrucibleBlockEntity::clientTick)
                 : createTickerHelper(type, ModBlockEntities.CRUCIBLE.get(), CrucibleBlockEntity::serverTick);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<CrucibleBlock> codec() {
+        return simpleCodec(CrucibleBlock::new);
     }
 }

@@ -492,7 +492,7 @@ public final class Ritual {
             List<ItemStack> missing = new ArrayList<>();
             for (int i = 0; i < needed.size(); i++) {
                 if (!met[i]) {
-                    missing.add(needed.get(i).items().findFirst().map(ItemStack::new).orElse(ItemStack.EMPTY));
+                    missing.add(com.pockyl.hextale.port.PortIngredients.items(needed.get(i)).findFirst().map(ItemStack::new).orElse(ItemStack.EMPTY));
                 }
             }
             List<BlockPos> extra = new ArrayList<>();

@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -37,7 +36,7 @@ import org.jspecify.annotations.Nullable;
  * does the work). Right click starts a link, then right click a container's face or a relay ({@link PylonLinking});
  * sneak + right click with an empty hand takes all its links away.
  */
-public class HexPylonBlock extends BaseEntityBlock {
+public class HexPylonBlock extends BaseEntityBlock implements com.pockyl.hextale.port.Removal.Neighbors {
     private static final VoxelShape GATHERING_SHAPE = Shapes.or(Block.box(5, 0, 5, 11, 2, 11), Block.box(2, 2, 2, 14, 6, 14));
     private static final VoxelShape SENDING_SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 2, 15), Block.box(4, 2, 4, 12, 7, 12));
     private static final VoxelShape RELAY_SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 1, 13), Block.box(5, 1, 5, 11, 15, 11));
@@ -58,15 +57,15 @@ public class HexPylonBlock extends BaseEntityBlock {
 
     /** With a block in hand, a right click places it as on any block; anything else falls through to {@link #useWithoutItem}. */
     @Override
-    protected InteractionResult useItemOn(net.minecraft.world.item.ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(net.minecraft.world.item.ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                           net.minecraft.world.InteractionHand hand, BlockHitResult hitResult) {
         if (stack.is(com.pockyl.hextale.registry.ModItems.PYLON_FILTER.get()) || stack.is(com.pockyl.hextale.registry.ModItems.ESSENCE_STICKER.get())) {
             if (!level.isClientSide() && level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon) {
                 fit(stack, pylon, player);
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
-        return stack.getItem() instanceof net.minecraft.world.item.BlockItem ? InteractionResult.PASS : InteractionResult.TRY_WITH_EMPTY_HAND;
+        return com.pockyl.hextale.port.Interactions.itemOn(stack.getItem() instanceof net.minecraft.world.item.BlockItem ? net.minecraft.world.ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION : net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
     }
 
     /**
@@ -153,8 +152,8 @@ public class HexPylonBlock extends BaseEntityBlock {
 
     /** A container placed or broken under it: look again at once. */
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
-        super.neighborChanged(state, level, pos, block, orientation, movedByPiston);
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos portNeighborPos, boolean movedByPiston) {
+        super.neighborChanged(state, level, pos, block, portNeighborPos, movedByPiston);
         if (level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon) {
             pylon.wake();
         }
@@ -198,9 +197,19 @@ public class HexPylonBlock extends BaseEntityBlock {
         return kind == PylonKind.RELAY ? null : createTickerHelper(type, ModBlockEntities.HEX_PYLON.get(), HexPylonBlockEntity::serverTick);
     }
 
-    @Override
-    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+    public void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
         PylonLinking.forget(level, pos);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<HexPylonBlock> codec() {
+        throw new UnsupportedOperationException("HexPylonBlock has no type codec");
     }
 }

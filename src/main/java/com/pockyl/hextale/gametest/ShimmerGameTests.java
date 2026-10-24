@@ -143,8 +143,8 @@ public final class ShimmerGameTests {
         helper.assertTrue(vial.has(DataComponents.CONSUMABLE) && vial.has(DataComponents.USE_COOLDOWN), "the vial is drunk and rests after");
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         vial.finishUsingItem(helper.getLevel(), player);
-        helper.assertTrue(player.hasEffect(MobEffects.STRENGTH) && player.hasEffect(MobEffects.REGENERATION)
-                && player.hasEffect(MobEffects.SPEED) && player.hasEffect(MobEffects.RESISTANCE), "it gives its buffs");
+        helper.assertTrue(player.hasEffect(MobEffects.DAMAGE_BOOST) && player.hasEffect(MobEffects.REGENERATION)
+                && player.hasEffect(MobEffects.MOVEMENT_SPEED) && player.hasEffect(MobEffects.DAMAGE_RESISTANCE), "it gives its buffs");
         helper.assertTrue(player.getActiveEffects().stream().allMatch(effect -> effect.getEffect().value().isBeneficial()), "and nothing bad");
         helper.assertTrue(vial.has(DataComponents.USE_REMAINDER), "the glass bottle is left");
         helper.assertFalse(ChemVialItem.of(Brew.RAW_SHIMMER).has(DataComponents.CONSUMABLE), "raw shimmer is not drunk");

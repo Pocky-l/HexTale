@@ -49,7 +49,7 @@ import org.jspecify.annotations.Nullable;
  * of shimmer. Nothing is done to the animal: it swims, eats and sheds, and a bucket takes it out again whole (breaking the
  * tank gives the bucket back too). Fish come by hand or hopper; slime leaves through the bottom.
  */
-public class AxolotlTankBlockEntity extends BlockEntity implements WorldlyContainer {
+public class AxolotlTankBlockEntity extends BlockEntity implements WorldlyContainer, com.pockyl.hextale.port.Removal.SideEffects {
     public static final int FOOD = 0;
     public static final int OUTPUT = 1;
     /** Ticks between two sheddings of a fed axolotl. */
@@ -275,9 +275,8 @@ public class AxolotlTankBlockEntity extends BlockEntity implements WorldlyContai
         }
     }
 
-    @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
+        com.pockyl.hextale.port.Removal.vanilla(this, pos, state);
         if (level != null && !axolotl.isEmpty()) {
             // The axolotl leaves unharmed, in its bucket.
             Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, axolotl);

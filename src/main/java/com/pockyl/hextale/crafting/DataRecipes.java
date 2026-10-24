@@ -50,7 +50,7 @@ public final class DataRecipes<T> {
             @Override
             protected Map<ResourceLocation, T> prepare(ResourceManager manager, ProfilerFiller profiler) {
                 Map<ResourceLocation, T> found = new TreeMap<>();
-                SimpleJsonResourceReloadListener.scanDirectory(manager, lister, RegistryOps.create(JsonOps.INSTANCE, registries), codec, found);
+                com.pockyl.hextale.port.PortReload.scanDirectory(manager, lister, RegistryOps.create(JsonOps.INSTANCE, registries), codec, found);
                 return found;
             }
 

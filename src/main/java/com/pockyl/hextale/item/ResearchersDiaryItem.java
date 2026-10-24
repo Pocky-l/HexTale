@@ -65,8 +65,7 @@ public class ResearchersDiaryItem extends Item {
         tooltip.accept(Component.translatable("item.hextale.researchers_diary.read").withStyle(ChatFormatting.DARK_GRAY));
     }
 
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult usePort(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player instanceof ServerPlayer serverPlayer) {
             if (sign(stack, serverPlayer)) {
@@ -77,8 +76,13 @@ public class ResearchersDiaryItem extends Item {
                 serverPlayer.displayClientMessage(Component.translatable("item.hextale.researchers_diary.foreign", owner.name()), true);
                 return InteractionResult.FAIL;
             }
-            ModNetwork.sendToPlayer(serverPlayer, new OpenDiaryPayload(owner == null ? player.getGameProfile().name() : owner.name()));
+            ModNetwork.sendToPlayer(serverPlayer, new OpenDiaryPayload(owner == null ? player.getGameProfile().getName() : owner.name()));
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        return com.pockyl.hextale.port.Interactions.holder(usePort(level, player, hand), player.getItemInHand(hand));
     }
 }

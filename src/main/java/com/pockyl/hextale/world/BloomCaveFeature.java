@@ -1,6 +1,5 @@
 package com.pockyl.hextale.world;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
@@ -12,6 +11,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 import com.pockyl.hextale.block.ShimmerbloomBlock;
 import com.pockyl.hextale.registry.ModBlocks;
@@ -23,8 +24,7 @@ import com.pockyl.hextale.registry.ModBlocks;
  * Outside the regions it places nothing, so a cave is either thick with blooms or has none. Runs once per chunk (the
  * placed feature has no placement modifiers: the origin is the chunk's lowest corner) and stays inside the chunk.
  */
-public record BloomCaveFeature() implements Feature {
-    public static final MapCodec<BloomCaveFeature> CODEC = MapCodec.unit(BloomCaveFeature::new);
+public final class BloomCaveFeature extends Feature<NoneFeatureConfiguration> {
     /** Blooms grow only below this height and well under the surface. */
     public static final int TOP = 40;
     private static final int UNDER_SURFACE = 8;
@@ -36,12 +36,15 @@ public record BloomCaveFeature() implements Feature {
     private static final int WALL_SEARCH = 5;
     private static final int FLAGS = Block.UPDATE_CLIENTS;
 
-    @Override
-    public MapCodec<BloomCaveFeature> codec() {
-        return CODEC;
+    public BloomCaveFeature() {
+        super(NoneFeatureConfiguration.CODEC);
     }
 
     @Override
+    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+        return place(context.level(), context.chunkGenerator(), context.random(), context.origin());
+    }
+
     public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
         long seed = level.getSeed();
         int minX = origin.getX();
@@ -52,8 +55,8 @@ public record BloomCaveFeature() implements Feature {
         if (strength <= 0) {
             return false;
         }
-        int bottom = level.getMinY() + 4;
-        int top = Math.min(TOP, level.getMaxY() - 1);
+        int bottom = level.getMinBuildHeight() + 4;
+        int top = Math.min(TOP, (level.getMaxBuildHeight() - 1) - 1);
         if (top <= bottom) {
             return false;
         }

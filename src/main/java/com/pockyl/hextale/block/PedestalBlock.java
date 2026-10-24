@@ -3,7 +3,6 @@ package com.pockyl.hextale.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -32,10 +31,10 @@ public class PedestalBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
         if (!(level.getBlockEntity(pos) instanceof PedestalBlockEntity pedestal) || !pedestal.item().isEmpty()) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide()) {
             pedestal.place(stack);
@@ -44,7 +43,7 @@ public class PedestalBlock extends BaseEntityBlock {
             }
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.7F, 1.2F);
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     @Override
@@ -54,7 +53,7 @@ public class PedestalBlock extends BaseEntityBlock {
         }
         if (!level.isClientSide()) {
             ItemStack taken = pedestal.take();
-            player.getInventory().placeItemBackInInventory(taken, Prediction.SERVER_ONLY);
+            player.getInventory().placeItemBackInInventory(taken);
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.7F, 1.2F);
         }
         return InteractionResult.SUCCESS;
@@ -79,5 +78,17 @@ public class PedestalBlock extends BaseEntityBlock {
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new PedestalBlockEntity(pos, state);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<PedestalBlock> codec() {
+        return simpleCodec(PedestalBlock::new);
     }
 }

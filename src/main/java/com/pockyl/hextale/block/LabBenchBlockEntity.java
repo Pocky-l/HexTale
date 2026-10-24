@@ -16,7 +16,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -387,7 +386,7 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
         ItemStack older = items.get(OUTPUT);
         items.set(OUTPUT, notes);
         if (!older.isEmpty() && !player.getInventory().add(older)) {
-            player.drop(older, false, Prediction.SERVER_ONLY);
+            player.drop(older, false);
         }
     }
 
@@ -485,7 +484,7 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
         ValueInput input = ValueInput.of(portTag, portRegistries);
         super.loadAdditional(input.tag(), input.registries());
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(input, items);
+        ContainerHelper.loadAllItems(input.tag(), items, input.registries());
         flask.load(input.childOrEmpty("flask"));
         topic = input.read("topic", ResearchTopics.CODEC).filter(ResearchTopic::lab).orElse(null);
         runes = input.read("runes", PickaxeRunes.CODEC).orElse(PickaxeRunes.EMPTY);
@@ -501,7 +500,7 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
     protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
         ValueOutput output = ValueOutput.of(portTag, portRegistries);
         super.saveAdditional(output.tag(), output.registries());
-        ContainerHelper.saveAllItems(output, items);
+        ContainerHelper.saveAllItems(output.tag(), items, output.registries());
         flask.save(output.child("flask"));
         if (topic != null) {
             output.store("topic", ResearchTopics.CODEC, topic);

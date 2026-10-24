@@ -21,7 +21,7 @@ public record HexcoreStrikePayload(BlockPos core, Vec3 target, int kind) impleme
     public static final Type<HexcoreStrikePayload> TYPE = new Type<>(Hextale.id("hexcore_strike"));
     public static final StreamCodec<RegistryFriendlyByteBuf, HexcoreStrikePayload> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, HexcoreStrikePayload::core,
-            Vec3.STREAM_CODEC, HexcoreStrikePayload::target,
+            com.pockyl.hextale.port.PortCodecs.VEC3, HexcoreStrikePayload::target,
             ByteBufCodecs.VAR_INT, HexcoreStrikePayload::kind,
             HexcoreStrikePayload::new);
 

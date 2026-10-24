@@ -46,7 +46,7 @@ import org.jspecify.annotations.Nullable;
 public class ChemStillBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
-    private static final VoxelShape SHAPE = Block.column(14.0, 0.0, 15.0);
+    private static final VoxelShape SHAPE = com.pockyl.hextale.port.PortShapes.column(14.0, 0.0, 15.0);
     private static final int DRIP = Brew.REFINED_SHIMMER.color();
 
     public ChemStillBlock(Properties properties) {
@@ -70,23 +70,23 @@ public class ChemStillBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
         if (!ChemStillBlockEntity.isRaw(stack) || !(level.getBlockEntity(pos) instanceof ChemStillBlockEntity still)) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide()) {
             int taken = still.feed(stack);
             if (taken <= 0) {
                 player.displayClientMessage(Component.translatable("block.hextale.chem_still.say.full"), true);
-                return InteractionResult.FAIL;
+                return net.minecraft.world.ItemInteractionResult.FAIL;
             }
             if (!player.getAbilities().instabuild) {
                 stack.shrink(taken);
             }
             level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 0.6F, 0.8F);
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     @Override
@@ -97,7 +97,7 @@ public class ChemStillBlock extends BaseEntityBlock {
                 player.displayClientMessage(still.status(), true);
             } else {
                 if (!player.getInventory().add(refined)) {
-                    player.drop(refined, false, net.minecraft.util.Prediction.SERVER_ONLY);
+                    player.drop(refined, false);
                 }
                 level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 0.6F, 1.2F);
             }
@@ -157,5 +157,17 @@ public class ChemStillBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.CHEM_STILL.get(), ChemStillBlockEntity::serverTick);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<ChemStillBlock> codec() {
+        return simpleCodec(ChemStillBlock::new);
     }
 }

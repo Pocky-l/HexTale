@@ -3,7 +3,7 @@ package com.pockyl.hextale.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvents;
-import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
+import com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent;
 
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
 import com.pockyl.hextale.client.screen.book.StarBookScreen;

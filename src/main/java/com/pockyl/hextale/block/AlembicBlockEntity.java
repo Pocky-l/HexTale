@@ -179,14 +179,14 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
      * owner of the pylon that brought it, else (a hopper, say) the alembic's own owner.
      */
     @Override
-    public void setItem(int slot, ItemStack stack, boolean insideTransaction) {
+    public void setItem(int slot, ItemStack stack) {
         // Item handlers (pylons, other mods' pipes) come in through this one; the plain setItem ends up here too.
         if (slot == INPUT && !stack.isEmpty() && !ItemStack.isSameItem(stack, items.get(INPUT))) {
             UUID sender = Deliverer.current();
             ServerPlayer player = online(sender != null ? sender : owner);
             inputKnown = player != null && studied(player, stack);
         }
-        super.setItem(slot, stack, insideTransaction);
+        super.setItem(slot, stack);
     }
 
     @Nullable
@@ -339,7 +339,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         ValueInput input = ValueInput.of(portTag, portRegistries);
         super.loadAdditional(input.tag(), input.registries());
         items = NonNullList.withSize(3, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(input, items);
+        ContainerHelper.loadAllItems(input.tag(), items, input.registries());
         tank.load(input, "essence");
         progress = input.getIntOr("progress", 0);
         water = input.getIntOr("water", 0);
@@ -352,7 +352,7 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
     protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
         ValueOutput output = ValueOutput.of(portTag, portRegistries);
         super.saveAdditional(output.tag(), output.registries());
-        ContainerHelper.saveAllItems(output, items);
+        ContainerHelper.saveAllItems(output.tag(), items, output.registries());
         tank.save(output, "essence");
         output.putInt("progress", progress);
         output.putInt("water", water);

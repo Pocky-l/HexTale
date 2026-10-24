@@ -3,7 +3,6 @@ package com.pockyl.hextale.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -13,7 +12,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -91,17 +89,16 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
-                                     BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         return EssenceMachine.connect(state, direction, neighbour);
     }
 
     /** A vial of combustible mix goes in; a bottle of essence pours into the tank. */
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
         if (!(level.getBlockEntity(pos) instanceof ChemBurnerBlockEntity burner)) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         boolean creative = player.getAbilities().instabuild;
         if (ChemBurnerBlockEntity.burnTicks(stack) > 0) {
@@ -109,25 +106,25 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
                 int taken = burner.feed(stack);
                 if (taken <= 0) {
                     player.displayClientMessage(net.minecraft.network.chat.Component.translatable("block.hextale.chem_burner.say.full"), true);
-                    return InteractionResult.FAIL;
+                    return net.minecraft.world.ItemInteractionResult.FAIL;
                 }
                 if (!creative) {
                     stack.shrink(taken);
                 }
                 level.playSound(null, pos, net.minecraft.sounds.SoundEvents.BOTTLE_FILL_DRAGONBREATH, SoundSource.BLOCKS, 0.4F, 1.3F);
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
         if (stack.is(ModItems.ESSENCE_FLASK.get())) {
             EssenceMix held = EssenceFlaskItem.contents(stack);
             if (held.isEmpty()) {
-                return InteractionResult.TRY_WITH_EMPTY_HAND;
+                return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
             if (!level.isClientSide()) {
                 EssenceMix taken = burner.pour(held);
                 if (taken.isEmpty()) {
                     player.displayClientMessage(net.minecraft.network.chat.Component.translatable("block.hextale.chem_burner.say.full"), true);
-                    return InteractionResult.FAIL;
+                    return net.minecraft.world.ItemInteractionResult.FAIL;
                 }
                 if (!creative) {
                     ItemStack left = EssenceFlaskItem.filled(held.minus(taken));
@@ -135,14 +132,14 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
                     if (stack.isEmpty()) {
                         player.setItemInHand(hand, left);
                     } else if (!player.getInventory().add(left)) {
-                        player.drop(left, false, Prediction.SERVER_ONLY);
+                        player.drop(left, false);
                     }
                 }
                 level.playSound(null, pos, net.minecraft.sounds.SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 0.6F, 0.9F);
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
-        return stack.is(Items.FLINT_AND_STEEL) ? InteractionResult.PASS : InteractionResult.TRY_WITH_EMPTY_HAND;
+        return com.pockyl.hextale.port.Interactions.itemOn(stack.is(Items.FLINT_AND_STEEL) ? net.minecraft.world.ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION : net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
     }
 
     @Override
@@ -206,5 +203,17 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.CHEM_BURNER.get(), ChemBurnerBlockEntity::serverTick);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<ChemBurnerBlock> codec() {
+        return simpleCodec(ChemBurnerBlock::new);
     }
 }

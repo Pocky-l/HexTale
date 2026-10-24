@@ -7,7 +7,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,7 +34,7 @@ public class ChalkMarkBlock extends HorizontalDirectionalBlock {
     public static final int RADIUS = 4;
     public static final int MAX_MARKS = 10;
     public static final float SPEED_PER_MARK = 0.04F;
-    private static final VoxelShape SHAPE = Block.column(16.0, 0.0, 0.5);
+    private static final VoxelShape SHAPE = com.pockyl.hextale.port.PortShapes.column(16.0, 0.0, 0.5);
     private static final int GOLD = 0xF2D27A;
 
     public ChalkMarkBlock(Properties properties) {
@@ -60,10 +59,9 @@ public class ChalkMarkBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
-                                     BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         return direction == Direction.DOWN && !canSurvive(state, level, pos) ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState()
-                : super.updateShape(state, level, ticks, pos, direction, neighborPos, neighborState, random);
+                : super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
     /** Lit marks breathe gold motes up off the floor. */
@@ -100,5 +98,10 @@ public class ChalkMarkBlock extends HorizontalDirectionalBlock {
                 level.setBlock(pos, state.setValue(LIT, lit), Block.UPDATE_CLIENTS);
             }
         }
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<ChalkMarkBlock> codec() {
+        return simpleCodec(ChalkMarkBlock::new);
     }
 }

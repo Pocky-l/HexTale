@@ -22,7 +22,7 @@ public record DiaryOwner(UUID id, String name) {
             DiaryOwner::new);
 
     public static DiaryOwner of(Player player) {
-        return new DiaryOwner(player.getUUID(), player.getGameProfile().name());
+        return new DiaryOwner(player.getUUID(), player.getGameProfile().getName());
     }
 
     public boolean is(Player player) {

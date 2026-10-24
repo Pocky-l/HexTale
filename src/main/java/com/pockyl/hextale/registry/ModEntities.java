@@ -16,20 +16,20 @@ public final class ModEntities {
 
     /** Unstable hextech thrown like a snowball: it shatters into hextech dust where it lands. */
     public static final DeferredHolder<EntityType<?>, EntityType<ThrownHextech>> THROWN_HEXTECH = ENTITIES.register("thrown_hextech",
-            id -> EntityType.Builder.<ThrownHextech>of(ThrownHextech::new, MobCategory.MISC).noLootTable().sized(0.25F, 0.25F)
-                    .clientTrackingRange(4).updateInterval(10).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+            id -> EntityType.Builder.<ThrownHextech>of(ThrownHextech::new, MobCategory.MISC).sized(0.25F, 0.25F)
+                    .clientTrackingRange(4).updateInterval(10).build(id.toString()));
 
     /** A Chem Vial thrown like a splash potion: it shatters and splashes its brew. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.ThrownChemVial>> THROWN_CHEM_VIAL =
             ENTITIES.register("thrown_chem_vial", id -> EntityType.Builder.<com.pockyl.hextale.entity.ThrownChemVial>of(
-                            com.pockyl.hextale.entity.ThrownChemVial::new, MobCategory.MISC).noLootTable().sized(0.25F, 0.25F)
-                    .clientTrackingRange(4).updateInterval(10).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+                            com.pockyl.hextale.entity.ThrownChemVial::new, MobCategory.MISC).sized(0.25F, 0.25F)
+                    .clientTrackingRange(4).updateInterval(10).build(id.toString()));
 
     /** The Void hanging in the world: a breach the depth shows through. Big and static, seen from afar. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.TheVoid>> THE_VOID =
             ENTITIES.register("the_void", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.TheVoid>of(
-                            com.pockyl.hextale.thevoid.TheVoid::new, MobCategory.MISC).noLootTable().sized(0.5F, 0.5F)
-                    .clientTrackingRange(10).updateInterval(4).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+                            com.pockyl.hextale.thevoid.TheVoid::new, MobCategory.MISC).sized(0.5F, 0.5F)
+                    .clientTrackingRange(10).updateInterval(4).build(id.toString()));
 
     private ModEntities() {
     }

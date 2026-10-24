@@ -36,7 +36,7 @@ import org.jspecify.annotations.Nullable;
  */
 public class CrystalBatteryBlock extends BaseEntityBlock {
     public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 4);
-    private static final VoxelShape SHAPE = Block.column(12.0, 0.0, 13.0);
+    private static final VoxelShape SHAPE = com.pockyl.hextale.port.PortShapes.column(12.0, 0.0, 13.0);
     private static final int HEXTECH = 0x7FD8FF;
 
     public CrystalBatteryBlock(Properties properties) {
@@ -55,21 +55,21 @@ public class CrystalBatteryBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
         if (HexWorkbenchBlockEntity.chargeOf(stack) <= 0 || !(level.getBlockEntity(pos) instanceof CrystalBatteryBlockEntity battery)) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide()) {
             if (!battery.soak(stack.copyWithCount(1))) {
                 player.displayClientMessage(net.minecraft.network.chat.Component.translatable("block.hextale.crystal_battery.full"), true);
-                return InteractionResult.FAIL;
+                return net.minecraft.world.ItemInteractionResult.FAIL;
             }
             if (!player.getAbilities().instabuild) {
                 stack.shrink(1);
             }
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     @Override
@@ -86,7 +86,7 @@ public class CrystalBatteryBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
         return level.getBlockEntity(pos) instanceof CrystalBatteryBlockEntity battery ? battery.signal() : 0;
     }
 
@@ -119,5 +119,17 @@ public class CrystalBatteryBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.CRYSTAL_BATTERY.get(), CrystalBatteryBlockEntity::serverTick);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<CrystalBatteryBlock> codec() {
+        return simpleCodec(CrystalBatteryBlock::new);
     }
 }

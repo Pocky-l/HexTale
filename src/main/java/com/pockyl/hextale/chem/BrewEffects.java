@@ -212,7 +212,7 @@ public final class BrewEffects {
         }
         for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, new AABB(BlockPos.containing(at)).inflate(ACID_RADIUS + 0.5))) {
             if (entity instanceof Enemy) {
-                entity.hurtServer(level, level.damageSources().indirectMagic(thrower, thrower), ACID_BURN);
+                entity.hurt(level.damageSources().indirectMagic(thrower, thrower), ACID_BURN);
             }
         }
         level.playSound(null, at.x, at.y, at.z, ModSounds.ACID_HISS.get(), SoundSource.BLOCKS, eaten > 0 ? 1.0F : 0.6F,

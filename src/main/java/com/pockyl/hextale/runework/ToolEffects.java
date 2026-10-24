@@ -139,7 +139,7 @@ public final class ToolEffects {
         if (strength <= 0 || level.getRandom().nextFloat() >= HolderRune.at(ToolRune.HASTE_CHANCE, strength)) {
             return;
         }
-        player.addEffect(new MobEffectInstance(MobEffects.HASTE, ToolRune.HASTE_TICKS, strength >= 3 ? 1 : 0, true, true));
+        player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, ToolRune.HASTE_TICKS, strength >= 3 ? 1 : 0, true, true));
         puff(level, player.position().add(0, 1, 0), rune, 10, 0.6);
         sound(level, player.position(), SoundEvents.AMETHYST_BLOCK_RESONATE, 0.5F, 1.4F);
     }
@@ -369,7 +369,7 @@ public final class ToolEffects {
         for (String name : tries) {
             ResourceLocation sapling = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), name);
             if (BuiltInRegistries.ITEM.containsKey(sapling)) {
-                return BuiltInRegistries.ITEM.getValue(sapling);
+                return BuiltInRegistries.ITEM.get(sapling);
             }
         }
         return null;
@@ -550,7 +550,7 @@ public final class ToolEffects {
                     break;
                 }
                 line(level, source.position().add(0, source.getBbHeight() * 0.5, 0), next.position().add(0, next.getBbHeight() * 0.5, 0));
-                next.hurtServer(level, level.damageSources().playerAttack(player), damage);
+                next.hurt(level.damageSources().playerAttack(player), damage);
                 struck.add(next);
                 from = next;
             }
@@ -588,7 +588,7 @@ public final class ToolEffects {
         }
         int bellows = strength(killer(event.getSource()), ToolRune.Tool.SWORD, ToolRune.BELLOWS);
         if (bellows > 0 && level.getRandom().nextFloat() < HolderRune.at(ToolRune.RAGE, bellows)) {
-            player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, HolderRune.at(ToolRune.RAGE_TICKS, bellows), 0, true, true));
+            player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, HolderRune.at(ToolRune.RAGE_TICKS, bellows), 0, true, true));
             level.sendParticles(ModParticles.flame(ModParticles.FIRE), player.getX(), player.getY() + 1, player.getZ(), 12, 0.4, 0.5, 0.4, 0.03);
             puff(level, player.position().add(0, 1, 0), ToolRune.BELLOWS.rune(), 10, 0.5);
             sound(level, player.position(), SoundEvents.BLAZE_SHOOT, 0.4F, 0.6F);

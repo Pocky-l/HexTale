@@ -101,4 +101,16 @@ public class LapidaryBlock extends BaseEntityBlock implements WorldlyContainerHo
     public @Nullable WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
         return level.getBlockEntity(pos) instanceof LapidaryBlockEntity lapidary ? lapidary : null;
     }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<LapidaryBlock> codec() {
+        return simpleCodec(LapidaryBlock::new);
+    }
 }

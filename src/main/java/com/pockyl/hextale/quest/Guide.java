@@ -86,7 +86,7 @@ public final class Guide {
             @Override
             protected Map<String, QuestDefinition> prepare(ResourceManager manager, ProfilerFiller profiler) {
                 Map<ResourceLocation, QuestDefinition> found = new TreeMap<>();
-                SimpleJsonResourceReloadListener.scanDirectory(manager, FileToIdConverter.json(FOLDER),
+                com.pockyl.hextale.port.PortReload.scanDirectory(manager, FileToIdConverter.json(FOLDER),
                         RegistryOps.create(JsonOps.INSTANCE, registries), QuestDefinition.CODEC, found);
                 Map<String, QuestDefinition> steps = new LinkedHashMap<>();
                 found.forEach((id, definition) -> steps.put(id(id), definition));

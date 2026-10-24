@@ -18,25 +18,19 @@ import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.Consumables;
-import net.minecraft.world.item.component.CookingFuel;
-import net.minecraft.world.item.component.UseCooldown;
-import net.minecraft.world.item.component.UseRemainder;
-import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders;
-import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
-import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.entity.ThrownChemVial;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModEntities;
 import com.pockyl.hextale.registry.ModItems;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
@@ -46,6 +40,7 @@ import org.jspecify.annotations.Nullable;
  * brew takes one dose. Splash brews are thrown (right click, or from a dispenser); a vial of combustible mix feeds a
  * Chem Burner and burns in any furnace as long as a blaze rod, leaving the glass bottle. Refined shimmer is drunk: a
  * rush of strength, speed, toughness and healing with no price to pay, and then a while before the next vial works.
+ * On 1.21.1 the drink, the fuel and the shimmer cooldown are this item's own code (26.x does them with item components).
  */
 public class ChemVialItem extends Item implements ProjectileItem {
     private static final int THROW_COOLDOWN = 8;
@@ -53,6 +48,10 @@ public class ChemVialItem extends Item implements ProjectileItem {
     public static final float SHIMMER_COOLDOWN = 120;
     /** What a vial of refined shimmer gives: all buffs, nothing taken. */
     public static final int SHIMMER_TICKS = 1200;
+    /** Burns as long as a blaze rod. */
+    private static final int FUEL_TICKS = 2400;
+    /** Game time until which the player's next vial of refined shimmer does not work (persistent player data). */
+    private static final String SHIMMER_UNTIL = "hextale_shimmer_until";
 
     public ChemVialItem(Properties properties) {
         super(properties);
@@ -65,25 +64,16 @@ public class ChemVialItem extends Item implements ProjectileItem {
     public static ItemStack of(Brew brew, int count) {
         ItemStack stack = new ItemStack(ModItems.CHEM_VIAL.get(), count);
         stack.set(ModDataComponents.BREW.get(), brew);
-        if (brew == Brew.FUEL) {
-            stack.set(DataComponents.COOKING_FUEL,
-                    new CookingFuel(ContextIntProviders.COOKING_TIME_BLAZE_ROD, ContextFloatProviders.COOKING_DEFAULT_SPEED_MULTIPLIER));
-        } else if (brew == Brew.REFINED_SHIMMER) {
-            stack.set(DataComponents.CONSUMABLE, Consumables.defaultDrink().sound(SoundEvents.HONEY_DRINK)
-                    .onConsume(new ApplyStatusEffectsConsumeEffect(shimmerEffects())).build());
-            stack.set(DataComponents.USE_REMAINDER, new UseRemainder(new ItemStackTemplate(Items.GLASS_BOTTLE)));
-            stack.set(DataComponents.USE_COOLDOWN, new UseCooldown(SHIMMER_COOLDOWN, Optional.of(Hextale.id("shimmer"))));
-        }
         return stack;
     }
 
     /** The rush of a vial of refined shimmer. */
     public static List<MobEffectInstance> shimmerEffects() {
-        return List.of(new MobEffectInstance(MobEffects.STRENGTH, SHIMMER_TICKS, 1),
-                new MobEffectInstance(MobEffects.SPEED, SHIMMER_TICKS, 0),
-                new MobEffectInstance(MobEffects.RESISTANCE, SHIMMER_TICKS, 0),
+        return List.of(new MobEffectInstance(MobEffects.DAMAGE_BOOST, SHIMMER_TICKS, 1),
+                new MobEffectInstance(MobEffects.MOVEMENT_SPEED, SHIMMER_TICKS, 0),
+                new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, SHIMMER_TICKS, 0),
                 new MobEffectInstance(MobEffects.REGENERATION, SHIMMER_TICKS / 3, 1),
-                new MobEffectInstance(MobEffects.HASTE, SHIMMER_TICKS, 0));
+                new MobEffectInstance(MobEffects.DIG_SPEED, SHIMMER_TICKS, 0));
     }
 
     /** The brew in a vial, or null for anything that is not a filled vial. */
@@ -112,21 +102,77 @@ public class ChemVialItem extends Item implements ProjectileItem {
         }
     }
 
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult usePort(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         Brew brew = brew(stack);
+        if (brew == Brew.REFINED_SHIMMER) {
+            if (player.getPersistentData().getLong(SHIMMER_UNTIL) > level.getGameTime()) {
+                return InteractionResult.FAIL;
+            }
+            player.startUsingItem(hand);
+            return InteractionResult.CONSUME;
+        }
         if (brew == null || !brew.thrown()) {
-            return super.use(level, player, hand);
+            return super.use(level, player, hand).getResult();
         }
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SPLASH_POTION_THROW, SoundSource.PLAYERS, 0.5F,
                 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
         if (level instanceof ServerLevel serverLevel) {
-            Projectile.spawnProjectileFromRotation(ThrownChemVial::new, serverLevel, stack, player, -20.0F, 0.6F, 1.0F);
+            ThrownChemVial vial = new ThrownChemVial(serverLevel, player, stack.copyWithCount(1));
+            vial.shootFromRotation(player, player.getXRot(), player.getYRot(), -20.0F, 0.6F, 1.0F);
+            serverLevel.addFreshEntity(vial);
         }
-        player.getCooldowns().addCooldown(stack, THROW_COOLDOWN);
+        player.getCooldowns().addCooldown(stack.getItem(), THROW_COOLDOWN);
         stack.consume(1, player);
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        return com.pockyl.hextale.port.Interactions.holder(usePort(level, player, hand), player.getItemInHand(hand));
+    }
+
+    @Override
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return brew(stack) == Brew.REFINED_SHIMMER ? UseAnim.DRINK : UseAnim.NONE;
+    }
+
+    @Override
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+        return brew(stack) == Brew.REFINED_SHIMMER ? 32 : 0;
+    }
+
+    @Override
+    public SoundEvent getDrinkingSound() {
+        return SoundEvents.HONEY_DRINK;
+    }
+
+    /** A vial of refined shimmer drunk: its rush, the wait before the next one, the empty glass bottle. */
+    @Override
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+        if (brew(stack) != Brew.REFINED_SHIMMER) {
+            return stack;
+        }
+        if (!level.isClientSide()) {
+            shimmerEffects().forEach(effect -> entity.addEffect(new MobEffectInstance(effect)));
+            entity.getPersistentData().putLong(SHIMMER_UNTIL, level.getGameTime() + (long) (SHIMMER_COOLDOWN * 20));
+        }
+        if (entity instanceof Player player && player.getAbilities().instabuild) {
+            return stack;
+        }
+        stack.shrink(1);
+        if (stack.isEmpty()) {
+            return new ItemStack(Items.GLASS_BOTTLE);
+        }
+        if (entity instanceof Player player && !player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE))) {
+            player.drop(new ItemStack(Items.GLASS_BOTTLE), false);
+        }
+        return stack;
+    }
+
+    @Override
+    public int getBurnTime(ItemStack stack, @Nullable RecipeType<?> recipeType) {
+        return brew(stack) == Brew.FUEL ? FUEL_TICKS : 0;
     }
 
     @Override

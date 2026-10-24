@@ -325,7 +325,7 @@ public final class PickaxeEffects {
         for (ItemEntity drop : event.getDrops()) {
             ItemStack stack = drop.getItem();
             SingleRecipeInput input = new SingleRecipeInput(stack);
-            Optional<RecipeHolder<SmeltingRecipe>> recipe = level.recipeAccess().getRecipeFor(RecipeType.SMELTING, input, level);
+            Optional<RecipeHolder<SmeltingRecipe>> recipe = level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, input, level);
             if (recipe.isEmpty()) {
                 continue;
             }
@@ -341,7 +341,7 @@ public final class PickaxeEffects {
             result.setCount(Math.min(result.getMaxStackSize(), out));
             drop.setItem(result);
             smelted += count;
-            experience += recipe.get().value().experience() * count;
+            experience += recipe.get().value().getExperience() * count;
         }
         if (smelted <= 0) {
             return;
@@ -485,7 +485,7 @@ public final class PickaxeEffects {
             }
         }
         if (done) {
-            player.getCooldowns().addCooldown(tool, cooldown);
+            player.getCooldowns().addCooldown(tool.getItem(), cooldown);
         }
         return done;
     }

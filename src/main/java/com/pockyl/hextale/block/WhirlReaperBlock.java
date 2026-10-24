@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -57,8 +56,8 @@ public class WhirlReaperBlock extends BaseEntityBlock {
 
     /** A plant set or broken next to it: look again soon. */
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
-        super.neighborChanged(state, level, pos, block, orientation, movedByPiston);
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos portNeighborPos, boolean movedByPiston) {
+        super.neighborChanged(state, level, pos, block, portNeighborPos, movedByPiston);
         if (level.getBlockEntity(pos) instanceof WhirlReaperBlockEntity reaper) {
             reaper.wake();
         }
@@ -83,5 +82,17 @@ public class WhirlReaperBlock extends BaseEntityBlock {
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return createTickerHelper(type, ModBlockEntities.WHIRL_REAPER.get(),
                 level.isClientSide() ? WhirlReaperBlockEntity::clientTick : WhirlReaperBlockEntity::serverTick);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<WhirlReaperBlock> codec() {
+        return simpleCodec(WhirlReaperBlock::new);
     }
 }

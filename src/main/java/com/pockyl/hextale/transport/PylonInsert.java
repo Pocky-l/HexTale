@@ -11,10 +11,10 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlastFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.SmokerBlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import com.pockyl.hextale.port.ResourceHandler;
+import com.pockyl.hextale.port.ResourceHandlerUtil;
+import com.pockyl.hextale.port.ItemResource;
+import com.pockyl.hextale.port.TransactionContext;
 
 import java.util.UUID;
 
@@ -35,9 +35,9 @@ public final class PylonInsert {
     public static ResourceHandler<ItemResource> handler(ServerLevel level, BlockPos pos, Direction face, ItemResource resource) {
         if (level.getBlockEntity(pos) instanceof AbstractFurnaceBlockEntity furnace) {
             Direction side = furnaceSide(level, furnace, resource.toStack(1));
-            return side == null ? null : level.getCapability(Capabilities.Item.BLOCK, pos, side);
+            return side == null ? null : com.pockyl.hextale.port.ResourceHandler.ofBlock(level, pos, side);
         }
-        return level.getCapability(Capabilities.Item.BLOCK, pos, face);
+        return com.pockyl.hextale.port.ResourceHandler.ofBlock(level, pos, face);
     }
 
     /**
@@ -68,9 +68,9 @@ public final class PylonInsert {
     static Direction furnaceSide(ServerLevel level, AbstractFurnaceBlockEntity furnace, ItemStack stack) {
         RecipeType<? extends net.minecraft.world.item.crafting.AbstractCookingRecipe> type = furnace instanceof BlastFurnaceBlockEntity
                 ? RecipeType.BLASTING : furnace instanceof SmokerBlockEntity ? RecipeType.SMOKING : RecipeType.SMELTING;
-        if (level.recipeAccess().getRecipeFor(type, new SingleRecipeInput(stack), level).isPresent()) {
+        if (level.getRecipeManager().getRecipeFor(type, new SingleRecipeInput(stack), level).isPresent()) {
             return Direction.UP;
         }
-        return stack.has(DataComponents.COOKING_FUEL) ? Direction.NORTH : null;
+        return (stack.getBurnTime(null) > 0) ? Direction.NORTH : null;
     }
 }

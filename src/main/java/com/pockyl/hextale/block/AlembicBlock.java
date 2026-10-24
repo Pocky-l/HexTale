@@ -19,7 +19,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -84,13 +83,13 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
 
     /** A water bucket fills the flask. */
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
         if (!stack.is(Items.WATER_BUCKET) || !(level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic)) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (alembic.fillWater(1000, true) < 1000) {
-            return InteractionResult.FAIL;
+            return net.minecraft.world.ItemInteractionResult.FAIL;
         }
         if (!level.isClientSide()) {
             alembic.fillWater(1000, false);
@@ -99,7 +98,7 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
             }
             level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     /** Whether the block below heats an alembic. */
@@ -126,8 +125,7 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
-                                     BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         if (direction == Direction.DOWN) {
             return state.setValue(LIT, isHeat(neighbour));
         }
@@ -188,5 +186,17 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
     @Override
     public @Nullable WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
         return level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic ? alembic : null;
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<AlembicBlock> codec() {
+        return simpleCodec(AlembicBlock::new);
     }
 }

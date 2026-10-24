@@ -47,8 +47,7 @@ public class VoidShardItem extends Item {
         return value <= 0 ? null : VoidShape.byOrdinal(value - 1);
     }
 
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult usePort(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!(level instanceof ServerLevel server) || !(player instanceof ServerPlayer serverPlayer)) {
             return InteractionResult.SUCCESS;
@@ -78,8 +77,13 @@ public class VoidShardItem extends Item {
         level.addFreshEntity(TheVoid.open(level, centre, yaw, shape, size, seed));
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.THE_VOID_OPEN.get(), SoundSource.AMBIENT,
                 0.8F + size * 0.12F, 1.1F - Math.min(size, 8) * 0.05F);
-        player.getCooldowns().addCooldown(stack, 10);
+        player.getCooldowns().addCooldown(stack.getItem(), 10);
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        return com.pockyl.hextale.port.Interactions.holder(usePort(level, player, hand), player.getItemInHand(hand));
     }
 
     /** Where the breach's centre goes: in the air before the player, clear of the ground; a lying one on the ground. */

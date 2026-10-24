@@ -72,13 +72,13 @@ public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachi
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
         BlockPos controller = controller(level, pos);
         if (controller == null) {
-            return InteractionResult.PASS;
+            return net.minecraft.world.ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
-        return level.getBlockState(controller).useItemOn(stack, level, player, hand, hitResult.withPosition(controller));
+        return com.pockyl.hextale.port.Interactions.itemOn(level.getBlockState(controller).useItemOn(stack, level, player, hand, hitResult.withPosition(controller)));
     }
 
     @Override
@@ -123,5 +123,17 @@ public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachi
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new MultiblockPartBlockEntity(pos, state);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<MultiblockPartBlock> codec() {
+        return simpleCodec(MultiblockPartBlock::new);
     }
 }

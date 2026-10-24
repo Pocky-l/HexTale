@@ -31,8 +31,8 @@ public final class ShackleEvents {
             return;
         }
         event.setCanceled(true);
-        if (mob.getInvulnerableTime() > 0) {
-            mob.setInvulnerableTime(mob.getInvulnerableTime() - 1);
+        if (mob.invulnerableTime > 0) {
+            mob.invulnerableTime = mob.invulnerableTime - 1;
         }
         if (mob.damageCooldownTime > 0) {
             mob.damageCooldownTime--;

@@ -58,20 +58,24 @@ public class HextechPickaxeItem extends PickaxeItem {
     }
 
     /** Right click: the pickaxe's right-click rune, if it carries one; then it rests a moment. */
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult usePort(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         PickaxeRune power = PickaxeEffects.power(stack);
         if (hand != InteractionHand.MAIN_HAND || power == null) {
-            return super.use(level, player, hand);
+            return super.use(level, player, hand).getResult();
         }
-        if (player.getCooldowns().isOnCooldown(stack)) {
+        if (player.getCooldowns().isOnCooldown(stack.getItem())) {
             return InteractionResult.FAIL;
         }
         if (level instanceof ServerLevel server) {
-            return PickaxeEffects.use(server, player, stack, power) ? InteractionResult.SUCCESS_SERVER : InteractionResult.FAIL;
+            return PickaxeEffects.use(server, player, stack, power) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        return com.pockyl.hextale.port.Interactions.holder(usePort(level, player, hand), player.getItemInHand(hand));
     }
 
     @Override

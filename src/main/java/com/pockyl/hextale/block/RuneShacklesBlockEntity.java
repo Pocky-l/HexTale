@@ -155,7 +155,7 @@ public class RuneShacklesBlockEntity extends BlockEntity {
 
     /** Any creature but a boss and a player's own tamed one. */
     public static boolean holdable(Mob mob) {
-        return mob.isAlive() && !mob.isDeadOrDying() && !mob.typeHolder().is(Tags.EntityTypes.BOSSES)
+        return mob.isAlive() && !mob.isDeadOrDying() && !mob.getType().is(Tags.EntityTypes.BOSSES)
                 && !(mob instanceof net.minecraft.world.entity.TamableAnimal tame && tame.isTame());
     }
 

@@ -25,7 +25,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
+import com.pockyl.hextale.port.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -71,7 +71,7 @@ import org.jspecify.annotations.Nullable;
  * dropped onto its top fall in through the grate; hoppers feed the inputs from above, fuel from the sides and take the
  * ingots from below, through any of its bricks.
  */
-public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, MultiblockCore, EssenceNetwork.Receiver {
+public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, MultiblockCore, EssenceNetwork.Receiver, com.pockyl.hextale.port.Removal.SideEffects {
     public static final int INPUTS = 9;
     public static final int OUTPUT_START = INPUTS;
     public static final int OUTPUTS = 9;
@@ -294,7 +294,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
                 continue;
             }
             recipes[slot] = recipe;
-            total[slot] = recipe.value().cookingTime();
+            total[slot] = recipe.value().getCookingTime();
             active++;
         }
         if (active == 0) {
@@ -373,7 +373,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
             }
         }
         int radiance = strength(FoundryRune.RADIANCE);
-        experience += recipe.value().experience() * (radiance > 0 ? HolderRune.at(FoundryRune.EXPERIENCE, radiance) : 1);
+        experience += recipe.value().getExperience() * (radiance > 0 ? HolderRune.at(FoundryRune.EXPERIENCE, radiance) : 1);
         if (level.getRandom().nextInt(3) == 0) {
             level.playSound(null, grate.x, grate.y, grate.z, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.5F, 0.7F + level.getRandom().nextFloat() * 0.3F);
             level.sendParticles(net.minecraft.core.particles.ParticleTypes.LAVA, grate.x, grate.y + 0.5, grate.z, 1, 0.2, 0, 0.2, 0);
@@ -389,7 +389,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
     private boolean kindle(ServerLevel level) {
         ItemStack fuel = items.get(FUEL);
         int burn = fuel.isEmpty() ? 0
-                : ResolvableInt.getFromItem(fuel, DataComponents.COOKING_FUEL, CookingFuel::burnTime, getLootContext(level, fuel), 0);
+                : fuel.getBurnTime(net.minecraft.world.item.crafting.RecipeType.SMELTING);
         if (burn > 0) {
             ItemStackTemplate remainder = fuel.getCraftingRemainder();
             fuel.shrink(1);
@@ -565,9 +565,8 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
     }
 
     /** Broken: its contents spill out (as from any container) and the kiln falls apart; the hatch keeps its runes. */
-    @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
+        com.pockyl.hextale.port.Removal.vanilla(this, pos, state);
         if (level instanceof ServerLevel serverLevel) {
             Multiblocks.breakApart(serverLevel, pos, pos, formed);
         }
@@ -609,7 +608,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
 
     /** What each slot takes: anything into the inputs, only fuel into the fuel slot, nothing into the outputs. */
     public static boolean accepts(int slot, ItemStack stack) {
-        return slot < INPUTS || slot == FUEL && stack.has(DataComponents.COOKING_FUEL);
+        return slot < INPUTS || slot == FUEL && (stack.getBurnTime(null) > 0);
     }
 
     @Override
@@ -639,7 +638,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
         ValueInput input = ValueInput.of(portTag, portRegistries);
         super.loadAdditional(input.tag(), input.registries());
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(input, items);
+        ContainerHelper.loadAllItems(input.tag(), items, input.registries());
         int[] saved = input.getIntArray("progress").orElse(new int[0]);
         for (int i = 0; i < INPUTS; i++) {
             progress[i] = i < saved.length ? saved[i] : 0;
@@ -680,7 +679,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
     protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
         ValueOutput output = ValueOutput.of(portTag, portRegistries);
         super.saveAdditional(output.tag(), output.registries());
-        ContainerHelper.saveAllItems(output, items);
+        ContainerHelper.saveAllItems(output.tag(), items, output.registries());
         output.putIntArray("progress", progress.clone());
         output.putInt("heat", heat);
         output.putInt("fire", fire);

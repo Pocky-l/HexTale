@@ -68,7 +68,7 @@ public final class HextaleClient {
         modBus.addListener(HextaleClient::registerRenderers);
         modBus.addListener((net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent event) -> event.register(
                 com.pockyl.hextale.client.render.EssenceJarItemRenderer.ID, com.pockyl.hextale.client.render.EssenceJarItemRenderer.Unbaked.MAP_CODEC));
-        modBus.addListener(ClientPayloads::register);
+        ClientPayloads.register(new com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent());
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("essence"), EssenceTint.MAP_CODEC));
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) -> event.register(Hextale.id("rune"), RuneTint.MAP_CODEC));
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->

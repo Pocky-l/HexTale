@@ -64,7 +64,7 @@ public final class CondenserGameTests {
         GreedyFunnelBlockEntity funnel = helper.getBlockEntity(BASE.offset(3, 1, 0), GreedyFunnelBlockEntity.class);
         Player player = helper.makeMockPlayer(GameType.SURVIVAL);
         Sheep sheep = helper.spawnWithNoFreeWill(EntityType.SHEEP, BASE.offset(3, 0, 2));
-        sheep.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(player), 1000);
+        sheep.hurt(helper.getLevel().damageSources().playerAttack(player), 1000);
         helper.assertTrue(condenser.points() > 12, "the funnel poured the sheep's experience into the condenser");
         helper.assertValueEqual(funnel.experience(), 0, "experience left in the funnel's crystal");
 

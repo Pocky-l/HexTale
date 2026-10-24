@@ -300,7 +300,7 @@ public class TheVoid extends Entity {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+    public boolean hurt(DamageSource source, float damage) {
         return false;
     }
 }

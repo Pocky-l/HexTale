@@ -420,7 +420,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     private void absorb(ServerLevel level, PedestalBlockEntity pedestal) {
         ItemStack item = pedestal.take();
         Vec3 at = Vec3.atCenterOf(pedestal.getBlockPos()).add(0, 0.6, 0);
-        level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, item.getItem()), at.x, at.y, at.z, 10, 0.12, 0.12, 0.12, 0.06);
+        level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, item), at.x, at.y, at.z, 10, 0.12, 0.12, 0.12, 0.06);
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
         level.playSound(null, pedestal.getBlockPos(), ModSounds.RITUAL_ABSORB.get(), SoundSource.BLOCKS, 0.9F,
                 0.85F + 0.3F * (itemsTotal - inputs.size()) / Math.max(1, itemsTotal));
@@ -474,7 +474,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         level.sendParticles(ModParticles.vapour(ModParticles.SOOT), at.x, at.y, at.z, 16, 0.5, 0.3, 0.5, 0.02);
         level.playSound(null, worldPosition, ModSounds.RITUAL_COLLAPSE.get(), SoundSource.BLOCKS, 1.2F, 1.0F);
         for (Player player : level.getEntitiesOfClass(Player.class, new AABB(worldPosition).inflate(4))) {
-            player.hurtServer(level, level.damageSources().magic(), 4.0F);
+            player.hurt(level.damageSources().magic(), 4.0F);
         }
         level.blockEvent(worldPosition, getBlockState().getBlock(), 2, 0);
         sync();

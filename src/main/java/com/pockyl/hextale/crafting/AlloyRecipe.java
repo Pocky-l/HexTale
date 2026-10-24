@@ -7,7 +7,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
+import com.pockyl.hextale.port.ItemStackTemplate;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import java.util.List;

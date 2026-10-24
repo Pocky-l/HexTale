@@ -17,7 +17,7 @@ import org.jspecify.annotations.Nullable;
  * sixteen times as large. Everything that works with jars - bottles, pipes, siphons, machines drawing from jars around
  * them - works with it as well.
  */
-public class BigEssenceJarBlockEntity extends EssenceTankBlockEntity implements MultiblockCore {
+public class BigEssenceJarBlockEntity extends EssenceTankBlockEntity implements MultiblockCore, com.pockyl.hextale.port.Removal.SideEffects {
     /** Millibuckets: sixteen jars. */
     public static final int CAPACITY = EssenceTankBlockEntity.CAPACITY * 16;
 
@@ -40,9 +40,8 @@ public class BigEssenceJarBlockEntity extends EssenceTankBlockEntity implements 
     }
 
     /** Broken: the essence is lost, the sticker comes off and the jar falls apart into its glass and slabs. */
-    @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
+        com.pockyl.hextale.port.Removal.vanilla(this, pos, state);
         if (sticker() != null && level != null && !level.isClientSide()) {
             net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
                     com.pockyl.hextale.item.EssenceStickerItem.of(com.pockyl.hextale.registry.ModItems.ESSENCE_STICKER.get(), sticker()));

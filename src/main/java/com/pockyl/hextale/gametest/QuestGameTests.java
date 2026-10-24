@@ -61,9 +61,9 @@ public final class QuestGameTests {
             helper.assertTrue(holder != null, quest.id() + ": recipe " + id + " exists");
             Recipe<?> recipe = holder.value();
             ItemStack result = recipe.display().getFirst().result().resolveForFirstStack(context);
-            helper.assertTrue(result.getItem() == BuiltInRegistries.ITEM.getValue(id) && result.getCount() == display.count(),
+            helper.assertTrue(result.getItem() == BuiltInRegistries.ITEM.get(id) && result.getCount() == display.count(),
                     quest.id() + ": the result is " + display.count() + " x " + id);
-            List<Ingredient> real = recipe.placementInfo().ingredients().stream().filter(i -> !i.isEmpty()).toList();
+            List<Ingredient> real = com.pockyl.hextale.port.PortIngredients.ingredients(recipe);
             List<String> shown = display.ingredients().stream().filter(i -> !i.isEmpty()).toList();
             helper.assertTrue(real.size() == shown.size(), quest.id() + ": " + shown.size() + " ingredients shown, recipe has " + real.size());
             for (int i = 0; i < real.size(); i++) {
@@ -78,7 +78,7 @@ public final class QuestGameTests {
             Iterator<Holder<Item>> items = BuiltInRegistries.ITEM.getTagOrEmpty(TagKey.create(Registries.ITEM, ResourceLocation.parse(id.substring(1)))).iterator();
             return items.hasNext() ? new ItemStack(items.next()) : ItemStack.EMPTY;
         }
-        return new ItemStack(BuiltInRegistries.ITEM.getValue(ResourceLocation.parse(id)));
+        return new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(id)));
     }
 
     /** The guide comes from its data files, and every step in them made it in (no missing parents, no circles). */
@@ -252,7 +252,7 @@ public final class QuestGameTests {
                     List<Ingredient> parts = new ArrayList<>(recipe.pedestals());
                     parts.add(recipe.center());
                     for (Ingredient part : parts) {
-                        part.items().findFirst().ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
+                        com.pockyl.hextale.port.PortIngredients.items(part).findFirst().ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
                     }
                 }
                 case HEX_CRAFTING -> {
@@ -260,7 +260,7 @@ public final class QuestGameTests {
                     helper.assertTrue(recipe != null, quest.id() + ": workbench recipe " + display.result() + " exists");
                     helper.assertTrue(before.contains(step("hex_workbench")), quest.id() + " comes after the Hex Workbench");
                     for (var cell : recipe.grid()) {
-                        cell.flatMap(part -> part.items().findFirst()).ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
+                        cell.flatMap(part -> com.pockyl.hextale.port.PortIngredients.items(part).findFirst()).ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
                     }
                 }
                 case ALLOY -> {
@@ -268,7 +268,7 @@ public final class QuestGameTests {
                     helper.assertTrue(recipe != null, quest.id() + ": alloy " + display.result() + " exists");
                     helper.assertTrue(before.contains(step("hex_furnace")), quest.id() + " comes after the Hex Furnace");
                     for (var input : recipe.inputs()) {
-                        input.ingredient().items().findFirst().ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
+                        com.pockyl.hextale.port.PortIngredients.items(input.ingredient()).findFirst().ifPresent(item -> needed.add(BuiltInRegistries.ITEM.getKey(item.value())));
                     }
                 }
                 default -> {

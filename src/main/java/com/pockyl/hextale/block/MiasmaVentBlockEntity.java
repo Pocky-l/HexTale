@@ -95,7 +95,7 @@ public class MiasmaVentBlockEntity extends BlockEntity {
         vent.setDry(false);
         vent.charges--;
         for (Mob mob : targets) {
-            mob.hurtServer(server, server.damageSources().magic(), DAMAGE);
+            mob.hurt(server.damageSources().magic(), DAMAGE);
         }
         server.blockEvent(pos, state.getBlock(), PUFF, 0);
         server.playSound(null, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, ModSounds.MIASMA_HISS.get(), SoundSource.BLOCKS, 0.6F,

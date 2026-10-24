@@ -27,7 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
+import com.pockyl.hextale.port.ItemStackTemplate;
 import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -308,7 +308,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
                 counts[n++] = 1;
             }
         }
-        return new Melt(result, recipe.value().cookingTime(), recipe.value().experience() * filled, slots, counts, ore ? filled : 0);
+        return new Melt(result, recipe.value().getCookingTime(), recipe.value().getExperience() * filled, slots, counts, ore ? filled : 0);
     }
 
     /** The ingot of a metal nugget (iron_nugget -> iron_ingot), or empty when the result is no nugget. */
@@ -412,7 +412,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         }
         ItemStack fuel = items.get(FUEL);
         int burn = fuel.isEmpty() ? 0
-                : ResolvableInt.getFromItem(fuel, DataComponents.COOKING_FUEL, CookingFuel::burnTime, getLootContext(level, fuel), 0);
+                : fuel.getBurnTime(net.minecraft.world.item.crafting.RecipeType.SMELTING);
         if (burn <= 0) {
             return false;
         }
@@ -494,7 +494,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
 
     /** What each slot takes: anything into the inputs, only fuel into the fuel slot, nothing into the output. */
     public static boolean accepts(int slot, ItemStack stack) {
-        return slot < INPUTS || slot == FUEL && stack.has(DataComponents.COOKING_FUEL);
+        return slot < INPUTS || slot == FUEL && (stack.getBurnTime(null) > 0);
     }
 
     @Override
@@ -537,7 +537,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         ValueInput input = ValueInput.of(portTag, portRegistries);
         super.loadAdditional(input.tag(), input.registries());
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(input, items);
+        ContainerHelper.loadAllItems(input.tag(), items, input.registries());
         litTime = input.getIntOr("lit_time", 0);
         litDuration = input.getIntOr("lit_duration", 0);
         progress = input.getIntOr("progress", 0);
@@ -575,7 +575,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
     protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
         ValueOutput output = ValueOutput.of(portTag, portRegistries);
         super.saveAdditional(output.tag(), output.registries());
-        ContainerHelper.saveAllItems(output, items);
+        ContainerHelper.saveAllItems(output.tag(), items, output.registries());
         output.putInt("lit_time", litTime);
         output.putInt("lit_duration", litDuration);
         output.putInt("progress", progress);

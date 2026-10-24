@@ -15,7 +15,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -93,7 +92,7 @@ public final class ClothesEffects {
         }
         int purification = strength(player, ClothesRune.HOOD_PURIFICATION);
         if (purification > 0 && random.nextFloat() < HolderRune.at(ClothesRune.PURIFY, purification)) {
-            for (var bad : java.util.List.of(MobEffects.POISON, MobEffects.HUNGER, MobEffects.WEAKNESS, MobEffects.NAUSEA, MobEffects.SLOWNESS)) {
+            for (var bad : java.util.List.of(MobEffects.POISON, MobEffects.HUNGER, MobEffects.WEAKNESS, MobEffects.CONFUSION, MobEffects.MOVEMENT_SLOWDOWN)) {
                 if (player.hasEffect(bad)) {
                     player.removeEffect(bad);
                     ToolEffects.puff(level, player.position().add(0, 1.6, 0), ClothesRune.HOOD_PURIFICATION.rune(), 10, 0.4);
@@ -136,8 +135,8 @@ public final class ClothesEffects {
                     random.nextInt(POLLEN_RADIUS * 2 + 1) - POLLEN_RADIUS);
             BlockState state = level.getBlockState(pos);
             if ((state.is(BlockTags.CROPS) || state.is(BlockTags.SAPLINGS)) && state.getBlock() instanceof BonemealableBlock plant
-                    && plant.isValidBonemealTarget(level, pos, state, BonemealSource.INTERACTION)) {
-                plant.performBonemeal(level, random, pos, state, BonemealSource.INTERACTION);
+                    && plant.isValidBonemealTarget(level, pos, state)) {
+                plant.performBonemeal(level, random, pos, state);
                 level.levelEvent(1505, pos, 15);
                 ToolEffects.puff(level, Vec3.atCenterOf(pos), ClothesRune.BOOTS_POLLEN.rune(), 8, 0.4);
                 ToolEffects.sound(level, Vec3.atCenterOf(pos), SoundEvents.BONE_MEAL_USE, 0.5F, 1.1F);
@@ -191,7 +190,7 @@ public final class ClothesEffects {
         int mirror = strength(entity, ClothesRune.ROBE_MIRROR);
         if (mirror > 0 && event.getSource().getEntity() instanceof LivingEntity attacker && attacker != entity
                 && level.getRandom().nextFloat() < HolderRune.at(ClothesRune.MIRROR_CHANCE, mirror)) {
-            attacker.hurtServer(level, level.damageSources().thorns(entity), HolderRune.at(ClothesRune.MIRROR_DAMAGE, mirror));
+            attacker.hurt(level.damageSources().thorns(entity), HolderRune.at(ClothesRune.MIRROR_DAMAGE, mirror));
             ToolEffects.puff(level, attacker.position().add(0, attacker.getBbHeight() / 2, 0), ClothesRune.ROBE_MIRROR.rune(), 10, 0.4);
             ToolEffects.sound(level, entity.position(), SoundEvents.AMETHYST_BLOCK_HIT, 0.6F, 1.4F);
         }

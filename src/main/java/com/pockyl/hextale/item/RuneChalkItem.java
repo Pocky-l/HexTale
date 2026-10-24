@@ -49,7 +49,7 @@ public class RuneChalkItem extends Item {
             level.playSound(null, pos, ModSounds.BRUSH_STROKE.get(), SoundSource.BLOCKS, 0.7F, 1.3F + level.getRandom().nextFloat() * 0.2F);
             Player player = context.getPlayer();
             if (player != null) {
-                context.getItemInHand().hurtAndBreak(1, player, context.getHand().asEquipmentSlot());
+                context.getItemInHand().hurtAndBreak(1, player, net.minecraft.world.entity.LivingEntity.getSlotForHand(context.getHand()));
             }
         }
         return InteractionResult.SUCCESS;

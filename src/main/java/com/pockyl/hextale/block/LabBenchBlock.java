@@ -15,7 +15,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -123,14 +122,13 @@ public class LabBenchBlock extends BaseEntityBlock implements WorldlyContainerHo
 
     /** A half whose partner is gone turns to air (the main half then drops the bench and its contents). */
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
-                                     BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         TablePart part = state.getValue(PART);
         if (direction == part.toOther(state.getValue(FACING))) {
             boolean partner = neighbour.is(this) && neighbour.getValue(PART) != part && neighbour.getValue(FACING) == state.getValue(FACING);
             return partner ? state : Blocks.AIR.defaultBlockState();
         }
-        return super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbour, random);
+        return super.updateShape(state, direction, neighbour, level, pos, neighbourPos);
     }
 
     /** In creative, breaking the side half must not let the main half drop the bench. */
@@ -221,5 +219,17 @@ public class LabBenchBlock extends BaseEntityBlock implements WorldlyContainerHo
     @Override
     public @Nullable WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
         return level.getBlockEntity(mainPos(state, pos)) instanceof LabBenchBlockEntity bench ? bench : null;
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<LabBenchBlock> codec() {
+        return simpleCodec(LabBenchBlock::new);
     }
 }

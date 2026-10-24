@@ -26,9 +26,9 @@ import com.pockyl.hextale.port.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
+import com.pockyl.hextale.port.ResourceHandler;
+import com.pockyl.hextale.port.ItemResource;
+import com.pockyl.hextale.port.Transaction;
 
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
@@ -74,7 +74,7 @@ import org.jspecify.annotations.Nullable;
  * on a link that already holds that item, or a link whose relay filter names it; what has no home goes to a linked
  * machine that takes it (a furnace what it cooks or burns), and what nobody wants stays in the container below.
  */
-public class HexPylonBlockEntity extends BlockEntity {
+public class HexPylonBlockEntity extends BlockEntity implements com.pockyl.hextale.port.Removal.SideEffects {
     public static final int MAX_LINKS = 4;
     /** A sorting matrix is a hub: it holds more links. */
     public static final int SORTING_LINKS = 8;
@@ -264,9 +264,8 @@ public class HexPylonBlockEntity extends BlockEntity {
     }
 
     /** Broken: the filter and the sticker drop with it. */
-    @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
+        com.pockyl.hextale.port.Removal.vanilla(this, pos, state);
         if (level != null && !level.isClientSide()) {
             if (!filterItem.isEmpty()) {
                 net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), filterItem.copy());
@@ -342,7 +341,7 @@ public class HexPylonBlockEntity extends BlockEntity {
             pylon.lastFlights = List.copyOf(flights);
             // Only to players whose client has the mod's channel (fake players have none).
             PylonFlightsPayload payload = new PylonFlightsPayload(pos, PylonFlight.limit(flights, SHOWN_FLIGHTS));
-            for (net.minecraft.server.level.ServerPlayer player : server.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(pos), false)) {
+            for (net.minecraft.server.level.ServerPlayer player : server.getChunkSource().chunkMap.getPlayers(new ChunkPos(pos), false)) {
                 com.pockyl.hextale.network.ModNetwork.sendToPlayer(player, payload);
             }
         }
@@ -351,7 +350,7 @@ public class HexPylonBlockEntity extends BlockEntity {
     /** Pulls the items lying around into the container below (or to the links); every item moved adds a flight. */
     void gather(ServerLevel level, List<PylonFlight> flights) {
         BlockPos belowPos = worldPosition.below();
-        boolean below = level.getCapability(Capabilities.Item.BLOCK, belowPos, Direction.UP) != null;
+        boolean below = com.pockyl.hextale.port.ResourceHandler.ofBlock(level, belowPos, Direction.UP) != null;
         List<Destination> routes = below ? List.of(new Destination(belowPos, Direction.UP,
                 List.of(Vec3.atBottomCenterOf(worldPosition).add(0, 0.05, 0)), List.of())) : destinations(level);
         if (routes.isEmpty()) {
@@ -419,7 +418,7 @@ public class HexPylonBlockEntity extends BlockEntity {
         if (links.isEmpty()) {
             return;
         }
-        ResourceHandler<ItemResource> from = level.getCapability(Capabilities.Item.BLOCK, worldPosition.below(), Direction.DOWN);
+        ResourceHandler<ItemResource> from = com.pockyl.hextale.port.ResourceHandler.ofBlock(level, worldPosition.below(), Direction.DOWN);
         if (from == null) {
             return;
         }
@@ -492,7 +491,7 @@ public class HexPylonBlockEntity extends BlockEntity {
      */
     void sort(ServerLevel level, List<PylonFlight> flights) {
         BlockPos belowPos = worldPosition.below();
-        ResourceHandler<ItemResource> from = level.getCapability(Capabilities.Item.BLOCK, belowPos, Direction.DOWN);
+        ResourceHandler<ItemResource> from = com.pockyl.hextale.port.ResourceHandler.ofBlock(level, belowPos, Direction.DOWN);
         if (from == null) {
             return;
         }
@@ -577,9 +576,9 @@ public class HexPylonBlockEntity extends BlockEntity {
 
     /** The kinds of item a block holds, looked at through any face (a furnace's every slot), else through the link's. */
     private static Set<Item> itemsIn(ServerLevel level, BlockPos pos, Direction face) {
-        ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, pos, null);
+        ResourceHandler<ItemResource> handler = com.pockyl.hextale.port.ResourceHandler.ofBlock(level, pos, null);
         if (handler == null) {
-            handler = level.getCapability(Capabilities.Item.BLOCK, pos, face);
+            handler = com.pockyl.hextale.port.ResourceHandler.ofBlock(level, pos, face);
         }
         Set<Item> items = new HashSet<>();
         if (handler != null) {
@@ -607,7 +606,7 @@ public class HexPylonBlockEntity extends BlockEntity {
             scannedAt = now;
         }
         for (BlockPos pos : storages) {
-            if (!linked.contains(pos) && level.getCapability(Capabilities.Item.BLOCK, pos, Direction.UP) != null) {
+            if (!linked.contains(pos) && com.pockyl.hextale.port.ResourceHandler.ofBlock(level, pos, Direction.UP) != null) {
                 PylonLink link = new PylonLink(pos, Direction.UP);
                 routes.add(new Destination(pos, Direction.UP, List.of(link.approach(), link.entry()), List.of()));
             }
@@ -778,7 +777,7 @@ public class HexPylonBlockEntity extends BlockEntity {
             if (level.isLoaded(c.target())) {
                 rest -= PylonInsert.insert(level, c.target(), c.face(), resource, rest, null, owner);
             }
-            if (rest > 0 && level.getCapability(Capabilities.Item.BLOCK, source, Direction.UP) != null) {
+            if (rest > 0 && com.pockyl.hextale.port.ResourceHandler.ofBlock(level, source, Direction.UP) != null) {
                 rest -= PylonInsert.insert(level, source, Direction.UP, resource, rest, null, owner);
             }
             if (rest > 0) {
@@ -969,7 +968,7 @@ public class HexPylonBlockEntity extends BlockEntity {
                 continue;
             }
             boolean takes = essence ? level.getBlockEntity(link.pos()) instanceof EssenceNetwork.Receiver
-                    : level.getCapability(Capabilities.Item.BLOCK, link.pos(), link.face()) != null;
+                    : com.pockyl.hextale.port.ResourceHandler.ofBlock(level, link.pos(), link.face()) != null;
             if (!takes) {
                 continue;
             }
@@ -1019,7 +1018,7 @@ public class HexPylonBlockEntity extends BlockEntity {
      */
     public void setOwner(Player player) {
         owner = player.getUUID();
-        ownerName = player.getGameProfile().name();
+        ownerName = player.getGameProfile().getName();
         setChanged();
     }
 

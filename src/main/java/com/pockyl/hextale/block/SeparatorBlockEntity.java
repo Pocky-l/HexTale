@@ -504,7 +504,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         ValueInput input = ValueInput.of(portTag, portRegistries);
         super.loadAdditional(input.tag(), input.registries());
         items = NonNullList.withSize(5, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(input, items);
+        ContainerHelper.loadAllItems(input.tag(), items, input.registries());
         mix.load(input, "mix");
         extract.load(input, "extract");
         rest.load(input, "rest");
@@ -523,7 +523,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
         ValueOutput output = ValueOutput.of(portTag, portRegistries);
         super.saveAdditional(output.tag(), output.registries());
-        ContainerHelper.saveAllItems(output, items);
+        ContainerHelper.saveAllItems(output.tag(), items, output.registries());
         mix.save(output, "mix");
         extract.save(output, "extract");
         rest.save(output, "rest");

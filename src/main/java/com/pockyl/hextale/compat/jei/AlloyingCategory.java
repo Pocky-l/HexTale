@@ -33,7 +33,7 @@ public class AlloyingCategory extends AbstractRecipeCategory<AlloyingCategory.Re
     public void setRecipe(IRecipeLayoutBuilder builder, Recipe recipe, IFocusGroup focuses) {
         for (int i = 0; i < recipe.recipe().inputs().size(); i++) {
             var input = recipe.recipe().inputs().get(i);
-            List<ItemStack> stacks = input.ingredient().items().map(item -> new ItemStack(item, input.count())).toList();
+            List<ItemStack> stacks = com.pockyl.hextale.port.PortIngredients.items(input.ingredient()).map(item -> new ItemStack(item, input.count())).toList();
             builder.addInputSlot(1 + i * 18, StepCategory.ROW_Y).setStandardSlotBackground().addItemStacks(stacks);
         }
         builder.addOutputSlot(StepCategory.RESULT_X, StepCategory.ROW_Y).setOutputSlotBackground().add(recipe.recipe().result());

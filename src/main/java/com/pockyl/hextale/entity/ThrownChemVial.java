@@ -3,7 +3,7 @@ package com.pockyl.hextale.entity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -25,7 +25,8 @@ public class ThrownChemVial extends ThrowableItemProjectile {
     }
 
     public ThrownChemVial(Level level, LivingEntity thrower, ItemStack stack) {
-        super(ModEntities.THROWN_CHEM_VIAL.get(), thrower, level, stack);
+        super(ModEntities.THROWN_CHEM_VIAL.get(), thrower, level);
+        setItem(stack);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class ThrownChemVial extends ThrowableItemProjectile {
         super.onHit(hit);
         if (level() instanceof ServerLevel level) {
             Vec3 at = hit instanceof BlockHitResult block
-                    ? hit.getLocation().add(block.getDirection().getUnitVec3().scale(0.25)) : hit.getLocation();
+                    ? hit.getLocation().add(net.minecraft.world.phys.Vec3.atLowerCornerOf(block.getDirection().getNormal()).scale(0.25)) : hit.getLocation();
             Brew brew = ChemVialItem.brew(getItem());
             if (brew != null) {
                 BrewEffects.splash(level, at, brew, getOwner());

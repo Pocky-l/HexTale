@@ -57,18 +57,22 @@ public class UnstableHextechItem extends Item implements ProjectileItem {
         super(properties);
     }
 
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult usePort(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F,
                 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.NEUTRAL, 0.6F, 1.4F);
         if (level instanceof ServerLevel serverLevel) {
-            Projectile.spawnProjectileFromRotation(ThrownHextech::new, serverLevel, stack, player, 0.0F, 1.2F, 1.0F);
+            com.pockyl.hextale.port.PortProjectiles.spawnProjectileFromRotation(ThrownHextech::new, serverLevel, stack, player, 0.0F, 1.2F, 1.0F);
         }
-        player.getCooldowns().addCooldown(stack, THROW_COOLDOWN);
+        player.getCooldowns().addCooldown(stack.getItem(), THROW_COOLDOWN);
         stack.consume(1, player);
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        return com.pockyl.hextale.port.Interactions.holder(usePort(level, player, hand), player.getItemInHand(hand));
     }
 
     @Override
@@ -92,7 +96,7 @@ public class UnstableHextechItem extends Item implements ProjectileItem {
             }
         } else {
             Double fall = FALLS.remove(entity);
-            boolean settling = entity.entityTags().contains(BORN_TAG) && entity.getAge() < SETTLING_TICKS;
+            boolean settling = entity.getTags().contains(BORN_TAG) && entity.getAge() < SETTLING_TICKS;
             if (fall != null && fall >= BURST_FALL && !settling) {
                 burst(level, entity);
                 return true;
@@ -112,7 +116,7 @@ public class UnstableHextechItem extends Item implements ProjectileItem {
             if (distance > BURST_RADIUS) {
                 continue;
             }
-            victim.hurtServer(level, level.damageSources().magic(), damage);
+            victim.hurt(level.damageSources().magic(), damage);
             Vec3 push = distance < 1.0E-3 ? new Vec3(0, 1, 0) : away.normalize();
             victim.push(push.x * 0.6, 0.35, push.z * 0.6);
         }

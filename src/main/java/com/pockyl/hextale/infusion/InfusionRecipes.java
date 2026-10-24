@@ -52,7 +52,7 @@ public final class InfusionRecipes {
         @Override
         protected Map<ResourceLocation, InfusionRecipe> prepare(ResourceManager manager, ProfilerFiller profiler) {
             Map<ResourceLocation, InfusionRecipe> found = new TreeMap<>();
-            SimpleJsonResourceReloadListener.scanDirectory(manager, LISTER, RegistryOps.create(JsonOps.INSTANCE, registries),
+            com.pockyl.hextale.port.PortReload.scanDirectory(manager, LISTER, RegistryOps.create(JsonOps.INSTANCE, registries),
                     InfusionRecipe.CODEC, found);
             return found;
         }

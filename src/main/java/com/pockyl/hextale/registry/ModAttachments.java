@@ -16,7 +16,7 @@ public final class ModAttachments {
 
     /** A researcher's runes and diary notes; survives death. */
     public static final Supplier<AttachmentType<RuneKnowledge>> KNOWLEDGE = ATTACHMENT_TYPES.register("knowledge",
-            () -> AttachmentType.builder(() -> new RuneKnowledge()).serialize(RuneKnowledge.MAP_CODEC).copyOnDeath().build());
+            () -> AttachmentType.builder(() -> new RuneKnowledge()).serialize(RuneKnowledge.MAP_CODEC.codec()).copyOnDeath().build());
 
     /** A creature held by Rune Shackles (not saved: after a reload the plate simply takes hold again). */
     public static final Supplier<AttachmentType<com.pockyl.hextale.farm.ShackleEvents.Shackle>> SHACKLE = ATTACHMENT_TYPES.register("shackle",

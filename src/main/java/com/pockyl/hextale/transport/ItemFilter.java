@@ -7,8 +7,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
+import com.pockyl.hextale.port.ResourceHandler;
+import com.pockyl.hextale.port.ItemResource;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -44,12 +44,16 @@ public class EssenceStickerItem extends Item {
         return stack;
     }
 
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult usePort(Level level, Player player, InteractionHand hand) {
         if (player instanceof ServerPlayer server) {
             ModNetwork.sendToPlayer(server, new OpenStickerPayload(hand));
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        return com.pockyl.hextale.port.Interactions.holder(usePort(level, player, hand), player.getItemInHand(hand));
     }
 
     @Override

@@ -11,19 +11,29 @@ import org.jspecify.annotations.Nullable;
  * studied) ask {@link #current()} while the item goes in.
  */
 public final class Deliverer {
-    private static final ScopedValue<UUID> WHO = ScopedValue.newInstance();
+    /** Java 21 has scoped values only as a preview, so 1.21.1 keeps the deliverer in a thread local. */
+    private static final ThreadLocal<UUID> WHO = new ThreadLocal<>();
 
     private Deliverer() {
     }
 
     /** Runs the insertion on behalf of {@code player} (nobody when null). */
     public static <T> T as(@Nullable UUID player, Supplier<T> insertion) {
-        return player == null ? insertion.get() : ScopedValue.where(WHO, player).call(insertion::get);
+        if (player == null) {
+            return insertion.get();
+        }
+        UUID before = WHO.get();
+        WHO.set(player);
+        try {
+            return insertion.get();
+        } finally {
+            WHO.set(before);
+        }
     }
 
     /** The player an item is being delivered for, or null. */
     @Nullable
     public static UUID current() {
-        return WHO.isBound() ? WHO.get() : null;
+        return WHO.get();
     }
 }

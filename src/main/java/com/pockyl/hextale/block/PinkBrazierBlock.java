@@ -37,7 +37,7 @@ import org.jspecify.annotations.Nullable;
  */
 public class PinkBrazierBlock extends BaseEntityBlock {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    private static final VoxelShape SHAPE = Block.column(14.0, 0.0, 11.0);
+    private static final VoxelShape SHAPE = com.pockyl.hextale.port.PortShapes.column(14.0, 0.0, 11.0);
     private static final int FLAME = 0xFF7AD9;
     private static final int FADE = 0xB04CF0;
 
@@ -57,23 +57,23 @@ public class PinkBrazierBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
         if (PinkBrazierBlockEntity.burnTicks(stack) <= 0 || !(level.getBlockEntity(pos) instanceof PinkBrazierBlockEntity brazier)) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide()) {
             int taken = brazier.feed(stack);
             if (taken <= 0) {
                 player.displayClientMessage(Component.translatable("block.hextale.pink_brazier.say.full"), true);
-                return InteractionResult.FAIL;
+                return net.minecraft.world.ItemInteractionResult.FAIL;
             }
             if (!player.getAbilities().instabuild) {
                 stack.shrink(taken);
             }
             level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 0.6F, 1.1F);
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     @Override
@@ -123,5 +123,17 @@ public class PinkBrazierBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.PINK_BRAZIER.get(), PinkBrazierBlockEntity::serverTick);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<PinkBrazierBlock> codec() {
+        return simpleCodec(PinkBrazierBlock::new);
     }
 }

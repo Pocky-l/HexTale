@@ -72,8 +72,7 @@ public class RuneScrollItem extends Item {
         tooltip.accept(Component.translatable("item.hextale.rune_scroll.study").withStyle(ChatFormatting.DARK_GRAY));
     }
 
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult usePort(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         ComplexRune rune = rune(stack);
         if (rune == null) {
@@ -96,5 +95,10 @@ public class RuneScrollItem extends Item {
             level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 1.2F);
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        return com.pockyl.hextale.port.Interactions.holder(usePort(level, player, hand), player.getItemInHand(hand));
     }
 }

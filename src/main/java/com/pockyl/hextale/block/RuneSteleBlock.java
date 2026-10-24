@@ -106,4 +106,16 @@ public class RuneSteleBlock extends BaseEntityBlock {
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new RuneSteleBlockEntity(pos, state);
     }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<RuneSteleBlock> codec() {
+        return simpleCodec(RuneSteleBlock::new);
+    }
 }

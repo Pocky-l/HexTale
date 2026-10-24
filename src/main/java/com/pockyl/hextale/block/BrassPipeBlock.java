@@ -13,7 +13,6 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -39,7 +38,7 @@ import java.util.Map;
  * shuts or opens the joint, towards a vessel it cycles both ways -> in only -> out only -> shut. An "out only" side
  * pumps a jar out into the pipes by itself.
  */
-public class BrassPipeBlock extends Block {
+public class BrassPipeBlock extends Block implements com.pockyl.hextale.port.Removal.Neighbors {
     public static final Map<Direction, EnumProperty<PipeSide>> SIDES = sides();
     /** Ticks between two pulls of a side that pumps a jar out, and the millibuckets of one pull. */
     public static final int PUMP_EVERY = EssenceTankBlockEntity.FLOW_EVERY;
@@ -111,11 +110,10 @@ public class BrassPipeBlock extends Block {
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
-                                     BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         PipeSide side = sideFor(state.getValue(SIDES.get(direction)), direction, neighbour);
         if (side == PipeSide.OUT) {
-            ticks.scheduleTick(pos, this, PUMP_EVERY);
+            level.scheduleTick(pos, this, PUMP_EVERY);
         }
         return state.setValue(SIDES.get(direction), side);
     }
@@ -137,9 +135,7 @@ public class BrassPipeBlock extends Block {
         }
     }
 
-    @Override
-    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+    public void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
         EssenceNetwork.invalidate();
     }
 
@@ -251,5 +247,12 @@ public class BrassPipeBlock extends Block {
                     direction.getStepZ() < 0 ? 6 : direction.getStepZ() > 0 ? 16 - edge : 10));
         }
         return shape;
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
     }
 }

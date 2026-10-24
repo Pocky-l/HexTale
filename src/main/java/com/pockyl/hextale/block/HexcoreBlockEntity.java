@@ -224,7 +224,7 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         }
         Player player = players.get(random.nextInt(players.size()));
         land(level, player.position().add(0, player.getBbHeight() * 0.6, 0), HexcoreStrikePayload.HARM);
-        player.hurtServer(level, level.damageSources().lightningBolt(), 2 + 6 * anger);
+        player.hurt(level.damageSources().lightningBolt(), 2 + 6 * anger);
         player.igniteForSeconds(2 + 2 * anger);
         Vec3 away = player.position().subtract(Vec3.atCenterOf(getBlockPos())).multiply(1, 0, 1).normalize().scale(0.5 + 0.5 * anger);
         player.push(away.x, 0.3, away.z);
@@ -300,7 +300,7 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         ItemStack burnt = pedestal.take();
         Vec3 at = Vec3.atCenterOf(input.pos()).add(0, 0.65, 0);
         land(level, at, HexcoreStrikePayload.HARM);
-        level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, burnt.getItem()), at.x, at.y, at.z, 14, 0.12, 0.12, 0.12, 0.08);
+        level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, burnt), at.x, at.y, at.z, 14, 0.12, 0.12, 0.12, 0.08);
         level.sendParticles(ParticleTypes.LARGE_SMOKE, at.x, at.y, at.z, 6, 0.1, 0.1, 0.1, 0.02);
         level.playSound(null, input.pos(), SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.8F, 0.8F);
         return true;

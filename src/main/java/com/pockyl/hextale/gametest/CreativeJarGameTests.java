@@ -48,7 +48,7 @@ public final class CreativeJarGameTests {
         helper.runAfterDelay(5, () -> {
             Player player = helper.makeMockPlayer(GameType.SURVIVAL);
             Sheep sheep = helper.spawnWithNoFreeWill(EntityType.SHEEP, BASE.offset(2, 0, 2));
-            sheep.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(player), 1000);
+            sheep.hurt(helper.getLevel().damageSources().playerAttack(player), 1000);
             helper.assertTrue(!funnel.hungry() && funnel.charges() > 0, "the funnel fed on the creative jar (hungry " + funnel.hungry() + ")");
             Spider spider = helper.spawnWithNoFreeWill(EntityType.SPIDER, BASE.offset(3, 0, -1));
             spider.setHealth(ArcSpireBlockEntity.DAMAGE - 2);

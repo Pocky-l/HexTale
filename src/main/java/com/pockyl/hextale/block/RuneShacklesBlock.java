@@ -71,4 +71,16 @@ public class RuneShacklesBlock extends BaseEntityBlock {
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.RUNE_SHACKLES.get(), RuneShacklesBlockEntity::serverTick);
     }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<RuneShacklesBlock> codec() {
+        return simpleCodec(RuneShacklesBlock::new);
+    }
 }

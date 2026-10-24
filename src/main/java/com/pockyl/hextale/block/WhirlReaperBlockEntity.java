@@ -27,9 +27,8 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.FarmlandBlock;
+import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.LevelEvent;
 
 import com.pockyl.hextale.essence.EssenceMix;
@@ -66,7 +65,7 @@ import org.jspecify.annotations.Nullable;
  * more and more rarely (up to {@value #MAX_SLEEP} ticks), so a sleeping field costs almost nothing; the field is only
  * read block by block, never searched for entities.
  */
-public class WhirlReaperBlockEntity extends BlockEntity {
+public class WhirlReaperBlockEntity extends BlockEntity implements com.pockyl.hextale.port.Removal.SideEffects {
     /** Whirls in the air at once. */
     public static final int MAX_WHIRLS = 4;
     public static final int WHIRLS_PER_MB = 4;
@@ -298,9 +297,9 @@ public class WhirlReaperBlockEntity extends BlockEntity {
         RandomSource random = level.getRandom();
         int fertility = strength(ReaperRune.FERTILITY);
         BlockState plant = level.getBlockState(pos);
-        if (fertility > 0 && plant.getBlock() instanceof BonemealableBlock meal && meal.isValidBonemealTarget(level, pos, plant, BonemealSource.MOB)
+        if (fertility > 0 && plant.getBlock() instanceof BonemealableBlock meal && meal.isValidBonemealTarget(level, pos, plant)
                 && random.nextFloat() < HolderRune.at(ReaperRune.BONEMEAL, fertility)) {
-            meal.performBonemeal(level, random, pos, plant, BonemealSource.MOB);
+            meal.performBonemeal(level, random, pos, plant);
             level.levelEvent(LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, pos, 15);
             ToolEffects.puff(level, Vec3.atCenterOf(pos), ReaperRune.FERTILITY.rune(), 6, 0.3);
         }
@@ -308,8 +307,8 @@ public class WhirlReaperBlockEntity extends BlockEntity {
         if (spring > 0) {
             for (BlockPos near : BlockPos.betweenClosed(pos.offset(-1, -1, -1), pos.offset(1, 0, 1))) {
                 BlockState state = level.getBlockState(near);
-                if (state.getBlock() instanceof FarmlandBlock && state.getValue(FarmlandBlock.MOISTURE) < FarmlandBlock.MAX_MOISTURE) {
-                    level.setBlock(near, state.setValue(FarmlandBlock.MOISTURE, FarmlandBlock.MAX_MOISTURE), Block.UPDATE_CLIENTS);
+                if (state.getBlock() instanceof FarmBlock && state.getValue(FarmBlock.MOISTURE) < FarmBlock.MAX_MOISTURE) {
+                    level.setBlock(near, state.setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE), Block.UPDATE_CLIENTS);
                 } else if (near.getY() == pos.getY() && !near.equals(pos) && state.isRandomlyTicking()
                         && random.nextFloat() < HolderRune.at(ReaperRune.QUICKEN, spring)) {
                     state.randomTick(level, near.immutable(), random);
@@ -403,7 +402,7 @@ public class WhirlReaperBlockEntity extends BlockEntity {
         level.playSound(null, from.x, from.y, from.z, ModSounds.WHIRL_LAUNCH.get(), SoundSource.BLOCKS, 0.4F,
                 0.9F + level.getRandom().nextFloat() * 0.2F);
         WhirlPayload payload = new WhirlPayload(worldPosition, target.immutable(), kind, travel);
-        for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(worldPosition), false)) {
+        for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(new ChunkPos(worldPosition), false)) {
             ModNetwork.sendToPlayer(player, payload);
         }
     }
@@ -423,9 +422,8 @@ public class WhirlReaperBlockEntity extends BlockEntity {
         pending.clear();
     }
 
-    @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        super.preRemoveSideEffects(pos, state);
+        com.pockyl.hextale.port.Removal.vanilla(this, pos, state);
         if (level instanceof ServerLevel server) {
             dropPending(server);
         }

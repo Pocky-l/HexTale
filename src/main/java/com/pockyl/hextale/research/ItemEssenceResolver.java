@@ -13,10 +13,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.display.RecipeDisplay;
-import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.util.context.ContextMap;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.registry.ModDataMaps;
@@ -71,25 +68,22 @@ public final class ItemEssenceResolver {
         }
 
         // What each item can be made from.
-        // Recipes only keep their result in their displays (what the recipe book shows).
-        ContextMap context = ContextMap.builder().set(SlotDisplayContext.REGISTRIES, registries).buildAndValidate(SlotDisplayContext.CONTEXT);
         Map<Item, List<Made>> makers = new HashMap<>();
         for (RecipeHolder<?> holder : recipes.getRecipes()) {
             Recipe<?> recipe = holder.value();
-            if (recipe.placementInfo().isImpossibleToPlace() || recipe.display().isEmpty()) {
+            if (recipe.isSpecial() || recipe.isIncomplete()) {
                 continue;
             }
             ItemStack result;
             try {
-                RecipeDisplay display = recipe.display().getFirst();
-                result = display.result().resolveForFirstStack(context);
+                result = com.pockyl.hextale.port.PortIngredients.result(recipe, registries);
             } catch (RuntimeException e) {
                 continue;
             }
             if (result.isEmpty()) {
                 continue;
             }
-            List<Ingredient> ingredients = recipe.placementInfo().ingredients().stream().filter(i -> !i.isEmpty()).toList();
+            List<Ingredient> ingredients = com.pockyl.hextale.port.PortIngredients.ingredients(recipe);
             if (!ingredients.isEmpty()) {
                 makers.computeIfAbsent(result.getItem(), k -> new ArrayList<>())
                         .add(new Made(ingredients, result.getCount(), recipe instanceof AbstractCookingRecipe));
@@ -150,7 +144,7 @@ public final class ItemEssenceResolver {
         int tier = 1;
         for (Ingredient ingredient : made.ingredients()) {
             ItemEssences cheapest = null;
-            for (Holder<Item> option : ingredient.items().toList()) {
+            for (Holder<Item> option : com.pockyl.hextale.port.PortIngredients.items(ingredient).toList()) {
                 ItemEssences elements = option.value() == result ? null : known.get(option.value());
                 if (elements != null && (cheapest == null || total(elements) < total(cheapest))) {
                     cheapest = elements;

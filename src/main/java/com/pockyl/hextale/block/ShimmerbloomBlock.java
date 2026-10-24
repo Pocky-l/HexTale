@@ -8,9 +8,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -35,8 +33,8 @@ public class ShimmerbloomBlock extends Block implements BonemealableBlock {
     public static final BooleanProperty HANGING = BooleanProperty.create("hanging");
     /** The wall a bloom holds to; {@link Wall#NONE} for a standing or hanging bloom. */
     public static final EnumProperty<Wall> WALL = EnumProperty.create("wall", Wall.class);
-    private static final VoxelShape FLOOR = Block.column(10.0, 0.0, 12.0);
-    private static final VoxelShape CEILING = Block.column(10.0, 4.0, 16.0);
+    private static final VoxelShape FLOOR = com.pockyl.hextale.port.PortShapes.column(10.0, 0.0, 12.0);
+    private static final VoxelShape CEILING = com.pockyl.hextale.port.PortShapes.column(10.0, 4.0, 16.0);
     private static final VoxelShape[] WALLS = {
             Block.box(3.0, 3.0, 0.0, 13.0, 13.0, 12.0),
             Block.box(3.0, 3.0, 4.0, 13.0, 13.0, 16.0),
@@ -137,11 +135,10 @@ public class ShimmerbloomBlock extends Block implements BonemealableBlock {
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
-                                     BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         return direction == support(state) && !canSurvive(state, level, pos)
                 ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState()
-                : super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbour, random);
+                : super.updateShape(state, direction, neighbour, level, pos, neighbourPos);
     }
 
     @Override
@@ -175,17 +172,17 @@ public class ShimmerbloomBlock extends Block implements BonemealableBlock {
     // ---- Bone meal: a new bloom close by --------------------------------------------------------------------------------
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state, BonemealSource source) {
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
         return true;
     }
 
     @Override
-    public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos pos, BlockState state, BonemealSource source) {
+    public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos pos, BlockState state) {
         return true;
     }
 
     @Override
-    public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state, BonemealSource source) {
+    public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
         spread(level, random, pos);
     }
 

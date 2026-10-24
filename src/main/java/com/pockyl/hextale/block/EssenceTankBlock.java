@@ -14,7 +14,6 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
@@ -84,8 +83,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
-                                     BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         return EssenceMachine.connect(state, direction, neighbour);
     }
 
@@ -95,10 +93,10 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
         push(level, pos, player);
-        return use(stack, level, pos, player, hand, hitResult);
+        return com.pockyl.hextale.port.Interactions.itemOn(use(stack, level, pos, player, hand, hitResult));
     }
 
     /** Every right click nudges the jar: it rocks on its foot for a moment (drawn by the renderer on every client). */
@@ -124,7 +122,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             return InteractionResult.SUCCESS;
         }
         if (tank.isCreative()) {
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
+            return InteractionResult.PASS;
         }
         if (stack.is(ModItems.ESSENCE_STICKER.get())) {
             // A sticker goes on the jar (the one already there comes back); a blank one asks for its essence first.
@@ -160,7 +158,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             level.playSound(null, pos, ModSounds.TANK_GLUG.get(), SoundSource.BLOCKS, 0.6F, 0.8F + level.getRandom().nextFloat() * 0.3F);
             return InteractionResult.SUCCESS;
         }
-        return InteractionResult.TRY_WITH_EMPTY_HAND;
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -201,5 +199,17 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return createTickerHelper(type, ModBlockEntities.ESSENCE_TANK.get(),
                 level.isClientSide() ? EssenceTankBlockEntity::clientTick : EssenceTankBlockEntity::serverTick);
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
+        super.onRemove(state, level, pos, newState, movedByPiston);
+        com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<EssenceTankBlock> codec() {
+        return simpleCodec(EssenceTankBlock::new);
     }
 }

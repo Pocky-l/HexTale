@@ -160,7 +160,7 @@ public final class PylonLinking {
         if (level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon) {
             return pylon.kind() == PylonKind.RELAY;
         }
-        return level.getBlockEntity(pos) instanceof EssenceNetwork.Receiver || level.getCapability(Capabilities.Item.BLOCK, pos, face) != null;
+        return level.getBlockEntity(pos) instanceof EssenceNetwork.Receiver || com.pockyl.hextale.port.ResourceHandler.ofBlock(level, pos, face) != null;
     }
 
     /** Whether this pylon may send to the block: a relay, or what it carries goes in there (a relay carries items and essence). */
@@ -169,7 +169,7 @@ public final class PylonLinking {
             return pylon.kind() == PylonKind.RELAY;
         }
         boolean essence = level.getBlockEntity(pos) instanceof EssenceNetwork.Receiver;
-        boolean items = level.getCapability(Capabilities.Item.BLOCK, pos, face) != null;
+        boolean items = com.pockyl.hextale.port.ResourceHandler.ofBlock(level, pos, face) != null;
         // A relay carries both: it may link to a chest as well as to a jar.
         return switch (from.kind()) {
             case SIPHON -> essence;
@@ -183,7 +183,7 @@ public final class PylonLinking {
 
     /** Unties the block from every pylon that sends to it. */
     public static void untie(ServerPlayer player, BlockPos target) {
-        ServerLevel level = player.level();
+        ServerLevel level = player.serverLevel();
         int count = 0;
         for (BlockPos pos : PylonIndex.linkingTo(level, target)) {
             if (level.getBlockEntity(pos) instanceof HexPylonBlockEntity pylon && pylon.unlink(target)) {
@@ -224,7 +224,7 @@ public final class PylonLinking {
     /** Ties (or unties) the player's pending link to the block at {@code target}, entering through {@code face}. */
     public static void link(ServerPlayer player, BlockPos target, Direction face) {
         Pending pending = PENDING.get(player.getUUID());
-        ServerLevel level = player.level();
+        ServerLevel level = player.serverLevel();
         if (pending == null) {
             return;
         }
@@ -240,7 +240,7 @@ public final class PylonLinking {
         }
         PylonLink link;
         if (level.getBlockEntity(target) instanceof HexPylonBlockEntity other && other.kind() == PylonKind.SORTING
-                && !pylon.kind().essence() && level.getCapability(Capabilities.Item.BLOCK, target.below(), Direction.UP) != null) {
+                && !pylon.kind().essence() && com.pockyl.hextale.port.ResourceHandler.ofBlock(level, target.below(), Direction.UP) != null) {
             // A sorting matrix: what is sent to it goes into the container it reads, to be sorted from there.
             target = target.below();
             face = Direction.UP;

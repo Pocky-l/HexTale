@@ -42,12 +42,12 @@ public final class ReachIndex<T extends BlockEntity> {
     }
 
     public void add(Level level, BlockPos device) {
-        of(level).computeIfAbsent(ChunkPos.pack(device), key -> new HashSet<>()).add(device.immutable());
+        of(level).computeIfAbsent(ChunkPos.asLong(device), key -> new HashSet<>()).add(device.immutable());
     }
 
     public void remove(Level level, BlockPos device) {
         Map<Long, Set<BlockPos>> map = of(level);
-        long key = ChunkPos.pack(device);
+        long key = ChunkPos.asLong(device);
         Set<BlockPos> devices = map.get(key);
         if (devices != null && devices.remove(device) && devices.isEmpty()) {
             map.remove(key);
@@ -67,7 +67,7 @@ public final class ReachIndex<T extends BlockEntity> {
         double bestDistance = Double.MAX_VALUE;
         for (int cx = (x - maxRadius) >> 4; cx <= (x + maxRadius) >> 4; cx++) {
             for (int cz = (z - maxRadius) >> 4; cz <= (z + maxRadius) >> 4; cz++) {
-                Set<BlockPos> devices = map.get(ChunkPos.pack(cx, cz));
+                Set<BlockPos> devices = map.get(ChunkPos.asLong(cx, cz));
                 if (devices == null) {
                     continue;
                 }
