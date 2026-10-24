@@ -2,22 +2,23 @@ package com.pockyl.hextale.runework;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.function.Consumer;
 
 /** A piece of the researcher's clothes: armour of arcane cloth that takes one rune at the Hextech Altar. */
-public class ResearcherClothesItem extends Item {
-    public ResearcherClothesItem(Properties properties) {
-        super(properties);
+public class ResearcherClothesItem extends ArmorItem {
+    public ResearcherClothesItem(Holder<ArmorMaterial> material, ArmorItem.Type type, Properties properties) {
+        super(material, type, properties);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
-                                TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
+        Consumer<Component> tooltip = tooltipLines::add;
         RuneHolder holder = RuneHolder.of(stack);
         if (holder == null) {
             return;

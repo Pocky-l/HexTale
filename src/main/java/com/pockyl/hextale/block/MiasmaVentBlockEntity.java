@@ -14,8 +14,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import com.pockyl.hextale.port.ValueInput;
+import com.pockyl.hextale.port.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -155,15 +155,17 @@ public class MiasmaVentBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueInput input = ValueInput.of(portTag, portRegistries);
+        super.loadAdditional(input.tag(), input.registries());
         charges = input.getIntOr("charges", 0);
         dry = input.getBooleanOr("dry", false);
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueOutput output = ValueOutput.of(portTag, portRegistries);
+        super.saveAdditional(output.tag(), output.registries());
         output.putInt("charges", charges);
         output.putBoolean("dry", dry);
     }

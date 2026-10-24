@@ -94,7 +94,7 @@ public final class RuneGiftGameTests {
         BlockPos abs = helper.absolutePos(pos);
         BlockState state = helper.getLevel().getBlockState(abs);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        player.snapTo(abs.getX() + 0.5, abs.getY() + 1, abs.getZ() + 0.5, 0, 90);
+        player.moveTo(abs.getX() + 0.5, abs.getY() + 1, abs.getZ() + 0.5, 0, 90);
         player.setItemInHand(InteractionHand.MAIN_HAND, tool);
         Block.dropResources(state, helper.getLevel(), abs, null, player, tool);
         helper.getLevel().removeBlock(abs, false);

@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -30,8 +29,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import com.pockyl.hextale.port.ValueInput;
+import com.pockyl.hextale.port.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.chem.Flask;
@@ -482,8 +481,9 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
     // ---- Saving -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueInput input = ValueInput.of(portTag, portRegistries);
+        super.loadAdditional(input.tag(), input.registries());
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
         flask.load(input.childOrEmpty("flask"));
@@ -498,8 +498,9 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueOutput output = ValueOutput.of(portTag, portRegistries);
+        super.saveAdditional(output.tag(), output.registries());
         ContainerHelper.saveAllItems(output, items);
         flask.save(output.child("flask"));
         if (topic != null) {
@@ -513,7 +514,7 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentGetter components) {
+    protected void applyImplicitComponents(DataComponentInput components) {
         super.applyImplicitComponents(components);
         runes = components.getOrDefault(ModDataComponents.LAB_RUNES.get(), PickaxeRunes.EMPTY);
     }
@@ -527,8 +528,9 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
     }
 
     @Override
-    public void removeComponentsFromTag(ValueOutput output) {
-        super.removeComponentsFromTag(output);
+    public void removeComponentsFromTag(net.minecraft.nbt.CompoundTag portTag) {
+        ValueOutput output = ValueOutput.of(portTag, net.minecraft.core.RegistryAccess.EMPTY);
+        super.removeComponentsFromTag(output.tag());
         output.discard("runes");
     }
 

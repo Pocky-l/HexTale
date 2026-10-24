@@ -2,7 +2,7 @@ package com.pockyl.hextale.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.level.block.Blocks;
 
@@ -31,7 +31,7 @@ public final class VentGameTests {
         }
         helper.setBlock(BASE, ModBlocks.MIASMA_VENT.get());
         MiasmaVentBlockEntity vent = helper.getBlockEntity(BASE, MiasmaVentBlockEntity.class);
-        Spider spider = helper.spawnWithNoFreeWill(EntityTypes.SPIDER, BASE.above());
+        Spider spider = helper.spawnWithNoFreeWill(EntityType.SPIDER, BASE.above());
         spider.setHealth(MiasmaVentBlockEntity.DAMAGE - 1);
         helper.runAfterDelay(20, () -> {
             helper.assertTrue(vent.dry(), "no unknown essence - the vent is dry");

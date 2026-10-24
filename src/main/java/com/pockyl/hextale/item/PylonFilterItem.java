@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
@@ -70,7 +69,8 @@ public class PylonFilterItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
+        Consumer<Component> tooltip = tooltipLines::add;
         ItemFilter filter = stack.get(ModDataComponents.ITEM_FILTER.get());
         if (filter != null && !filter.entries().isEmpty()) {
             tooltip.accept(Component.translatable(filter.whitelist() ? "gui.hextale.pylon_filter.whitelist" : "gui.hextale.pylon_filter.blacklist")

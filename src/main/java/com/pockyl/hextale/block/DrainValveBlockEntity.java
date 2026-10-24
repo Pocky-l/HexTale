@@ -12,8 +12,8 @@ import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import com.pockyl.hextale.port.ValueInput;
+import com.pockyl.hextale.port.ValueOutput;
 
 import org.jspecify.annotations.Nullable;
 
@@ -176,14 +176,16 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueInput input = ValueInput.of(portTag, portRegistries);
+        super.loadAdditional(input.tag(), input.registries());
         soaked = input.getIntOr("soaked", 0);
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueOutput output = ValueOutput.of(portTag, portRegistries);
+        super.saveAdditional(output.tag(), output.registries());
         output.putInt("soaked", soaked);
     }
 

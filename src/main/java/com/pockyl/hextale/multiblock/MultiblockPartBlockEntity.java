@@ -6,8 +6,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import com.pockyl.hextale.port.ValueInput;
+import com.pockyl.hextale.port.ValueOutput;
 import net.minecraft.server.level.ServerLevel;
 
 import com.pockyl.hextale.essence.EssenceMix;
@@ -73,15 +73,17 @@ public class MultiblockPartBlockEntity extends BlockEntity implements EssenceNet
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueInput input = ValueInput.of(portTag, portRegistries);
+        super.loadAdditional(input.tag(), input.registries());
         controller = input.read("controller", BlockPos.CODEC).orElse(BlockPos.ZERO);
         original = input.read("original", BlockState.CODEC).orElse(Blocks.AIR.defaultBlockState());
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueOutput output = ValueOutput.of(portTag, portRegistries);
+        super.saveAdditional(output.tag(), output.registries());
         output.store("controller", BlockPos.CODEC, controller);
         output.store("original", BlockState.CODEC, original);
     }

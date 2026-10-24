@@ -7,9 +7,9 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
 
@@ -21,11 +21,11 @@ import org.jspecify.annotations.Nullable;
  * A hextech pickaxe: a pickaxe of its tier carrying up to four runes, listed in the tooltip like enchantments - name and
  * stars, never what they do.
  */
-public class HextechPickaxeItem extends Item {
+public class HextechPickaxeItem extends PickaxeItem {
     private final HextechPickaxe kind;
 
-    public HextechPickaxeItem(HextechPickaxe kind, Properties properties) {
-        super(properties);
+    public HextechPickaxeItem(HextechPickaxe kind, net.minecraft.world.item.Tier material, Properties properties) {
+        super(material, properties);
         this.kind = kind;
     }
 
@@ -39,7 +39,7 @@ public class HextechPickaxeItem extends Item {
 
     /** Tempering: points of wear are often shrugged off; Mending shrugs off more and mends a point. */
     @Override
-    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<ItemStack> onBroken) {
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
         if (entity == null || entity.level().isClientSide()) {
             return amount;
         }
@@ -75,8 +75,8 @@ public class HextechPickaxeItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
-                                TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
+        Consumer<Component> tooltip = tooltipLines::add;
         HextechToolItem.listRunes(PickaxeRunes.of(stack), tooltip);
     }
 }

@@ -2,7 +2,7 @@ package com.pockyl.hextale.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.cow.Cow;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.spider.Spider;
@@ -55,10 +55,10 @@ public final class SpireGameTests {
         jar(helper, BASE.offset(-2, 0, 2), Essence.DECAY, 8);
         ArcSpireBlockEntity spire = helper.getBlockEntity(BASE, ArcSpireBlockEntity.class);
         GreedyFunnelBlockEntity funnel = helper.getBlockEntity(BASE.offset(3, 1, 0), GreedyFunnelBlockEntity.class);
-        Spider spider = helper.spawnWithNoFreeWill(EntityTypes.SPIDER, BASE.offset(2, 0, 2));
+        Spider spider = helper.spawnWithNoFreeWill(EntityType.SPIDER, BASE.offset(2, 0, 2));
         // One arc fells it, whatever else the arcs find around (neighbouring tests stand close by).
         spider.setHealth(ArcSpireBlockEntity.DAMAGE - 2);
-        Cow cow = helper.spawnWithNoFreeWill(EntityTypes.COW, BASE.offset(-2, 0, 0));
+        Cow cow = helper.spawnWithNoFreeWill(EntityType.COW, BASE.offset(-2, 0, 0));
         helper.runAfterDelay(30, () -> {
             helper.assertTrue(spire.uncharged(), "with no spark nearby the spire is uncharged");
             helper.assertTrue(spider.isAlive(), "no arcs without spark");

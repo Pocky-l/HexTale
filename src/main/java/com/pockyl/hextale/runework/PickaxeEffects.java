@@ -10,11 +10,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -29,7 +28,6 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -504,17 +502,17 @@ public final class PickaxeEffects {
             if (!state.is(Tags.Blocks.ORES) || at.distSqr(centre) > radius * radius) {
                 continue;
             }
-            Entity marker = EntityTypes.BLOCK_DISPLAY.create(level, EntitySpawnReason.TRIGGERED);
+            Entity marker = EntityType.BLOCK_DISPLAY.create(level);
             if (marker == null) {
                 break;
             }
             CompoundTag tag = new CompoundTag();
-            tag.store("block_state", BlockState.CODEC, state);
+            tag.put("block_state", net.minecraft.nbt.NbtUtils.writeBlockState(state));
             tag.putBoolean("Glowing", true);
             tag.putInt("glow_color_override", 0x7EF0FF);
-            marker.load(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), tag));
+            marker.load(tag);
             // A hair smaller than the block, so the outline hugs it.
-            marker.snapTo(at.getX() + 0.01, at.getY() + 0.01, at.getZ() + 0.01, 0, 0);
+            marker.moveTo(at.getX() + 0.01, at.getY() + 0.01, at.getZ() + 0.01, 0, 0);
             level.addFreshEntity(marker);
             EXPIRING.add(new Expiring(level, marker, level.getGameTime() + ticks));
             shown++;

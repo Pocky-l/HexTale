@@ -2,7 +2,7 @@ package com.pockyl.hextale.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -63,7 +63,7 @@ public final class CondenserGameTests {
         helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.DECAY, 8));
         GreedyFunnelBlockEntity funnel = helper.getBlockEntity(BASE.offset(3, 1, 0), GreedyFunnelBlockEntity.class);
         Player player = helper.makeMockPlayer(GameType.SURVIVAL);
-        Sheep sheep = helper.spawnWithNoFreeWill(EntityTypes.SHEEP, BASE.offset(3, 0, 2));
+        Sheep sheep = helper.spawnWithNoFreeWill(EntityType.SHEEP, BASE.offset(3, 0, 2));
         sheep.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(player), 1000);
         helper.assertTrue(condenser.points() > 12, "the funnel poured the sheep's experience into the condenser");
         helper.assertValueEqual(funnel.experience(), 0, "experience left in the funnel's crystal");

@@ -1,7 +1,7 @@
 package com.pockyl.hextale.research;
 
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import com.pockyl.hextale.port.ValueInput;
+import com.pockyl.hextale.port.ValueOutput;
 
 import com.pockyl.hextale.rune.Essence;
 

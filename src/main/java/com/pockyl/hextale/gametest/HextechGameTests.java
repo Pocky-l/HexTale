@@ -5,7 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -52,7 +52,7 @@ public final class HextechGameTests {
     @HexTest(maxTicks = 120)
     public static void unstableHextechBurstsAfterALongFall(GameTestHelper helper) {
         floor(helper);
-        ArmorStand stand = helper.spawn(EntityTypes.ARMOR_STAND, new Vec3(0.5, 1, 0.5));
+        ArmorStand stand = helper.spawn(EntityType.ARMOR_STAND, new Vec3(0.5, 1, 0.5));
         float health = stand.getHealth();
         ItemEntity orb = drop(helper, new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), UnstableHextechItem.BURST_FALL + 4);
         helper.succeedWhen(() -> {

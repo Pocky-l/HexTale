@@ -4,8 +4,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.ParticleUtils;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.FallingParticlesLeavesBlock;
-import net.minecraft.world.level.block.sounds.AmbientLeavesBlockSoundPlayer;
+import com.pockyl.hextale.port.FallingParticlesLeavesBlock;
+import com.pockyl.hextale.port.AmbientLeavesBlockSoundPlayer;
 import net.minecraft.world.level.block.state.BlockState;
 
 import com.pockyl.hextale.registry.ModParticles;

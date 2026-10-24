@@ -21,8 +21,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import com.pockyl.hextale.port.ValueInput;
+import com.pockyl.hextale.port.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.tags.BlockTags;
@@ -739,8 +739,9 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
     // ---- Saving -----------------------------------------------------------------------------------------------------
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueInput input = ValueInput.of(portTag, portRegistries);
+        super.loadAdditional(input.tag(), input.registries());
         water = Mth.clamp(input.getIntOr("water", 0), 0, CAPACITY);
         temperature = Mth.clamp(input.getFloatOr("temperature", 0), 0, BOILING);
         EssenceMix before = essence;
@@ -767,8 +768,9 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueOutput output = ValueOutput.of(portTag, portRegistries);
+        super.saveAdditional(output.tag(), output.registries());
         output.putInt("water", water);
         output.putFloat("temperature", temperature);
         if (!essence.isEmpty()) {

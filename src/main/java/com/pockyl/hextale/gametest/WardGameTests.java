@@ -2,8 +2,8 @@ package com.pockyl.hextale.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
@@ -19,7 +19,7 @@ public final class WardGameTests {
     private WardGameTests() {
     }
 
-    private static MobSpawnEvent.SpawnPlacementCheck.Result check(GameTestHelper helper, BlockPos at, EntitySpawnReason reason,
+    private static MobSpawnEvent.SpawnPlacementCheck.Result check(GameTestHelper helper, BlockPos at, MobSpawnType reason,
                                                                   net.minecraft.world.entity.EntityType<?> type) {
         var event = new MobSpawnEvent.SpawnPlacementCheck(type, helper.getLevel(), reason, helper.absolutePos(at),
                 helper.getLevel().getRandom(), true);
@@ -34,13 +34,13 @@ public final class WardGameTests {
         helper.runAfterDelay(1, () -> {
             var fail = MobSpawnEvent.SpawnPlacementCheck.Result.FAIL;
             var keep = MobSpawnEvent.SpawnPlacementCheck.Result.DEFAULT;
-            helper.assertValueEqual(check(helper, BASE.offset(10, 0, 5), EntitySpawnReason.NATURAL, EntityTypes.ZOMBIE), fail,
+            helper.assertValueEqual(check(helper, BASE.offset(10, 0, 5), MobSpawnType.NATURAL, EntityType.ZOMBIE), fail,
                     "a zombie spawning in the ward's watch");
-            helper.assertValueEqual(check(helper, BASE.offset(FieldWardBlockEntity.RADIUS + 3, 0, 0), EntitySpawnReason.NATURAL,
-                    EntityTypes.ZOMBIE), keep, "a zombie spawning outside the watch");
-            helper.assertValueEqual(check(helper, BASE.offset(3, 0, 0), EntitySpawnReason.SPAWNER, EntityTypes.ZOMBIE), keep,
+            helper.assertValueEqual(check(helper, BASE.offset(FieldWardBlockEntity.RADIUS + 3, 0, 0), MobSpawnType.NATURAL,
+                    EntityType.ZOMBIE), keep, "a zombie spawning outside the watch");
+            helper.assertValueEqual(check(helper, BASE.offset(3, 0, 0), MobSpawnType.SPAWNER, EntityType.ZOMBIE), keep,
                     "a spawner's zombie");
-            helper.assertValueEqual(check(helper, BASE.offset(3, 0, 0), EntitySpawnReason.NATURAL, EntityTypes.COW), keep,
+            helper.assertValueEqual(check(helper, BASE.offset(3, 0, 0), MobSpawnType.NATURAL, EntityType.COW), keep,
                     "a cow spawning in the watch");
             var trample = new BlockEvent.FarmlandTrampleEvent(helper.getLevel(), helper.absolutePos(BASE.offset(2, 0, 0)),
                     Blocks.FARMLAND.defaultBlockState(), 1.5, helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL));

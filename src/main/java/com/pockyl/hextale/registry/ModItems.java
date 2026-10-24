@@ -1,29 +1,31 @@
 package com.pockyl.hextale.registry;
 
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.DiggerItem;
+import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.item.SwordItem;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.item.equipment.ArmorMaterial;
-import net.minecraft.world.item.equipment.ArmorType;
-import net.minecraft.world.item.equipment.EquipmentAsset;
-import net.minecraft.world.item.equipment.EquipmentAssets;
-import net.minecraft.world.item.equipment.Equippable;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.EnumMap;
 import java.util.Map;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
+import com.pockyl.hextale.port.ArmorMaterial;
+import com.pockyl.hextale.port.ArmorType;
+import com.pockyl.hextale.port.PortRegisters;
+import com.pockyl.hextale.port.ToolMaterial;
 import com.pockyl.hextale.item.HextechGemstoneItem;
 import com.pockyl.hextale.item.KnowledgeScrollItem;
 import com.pockyl.hextale.item.ResearchersDiaryItem;
@@ -34,7 +36,7 @@ import com.pockyl.hextale.runework.HextechPickaxeItem;
 import com.pockyl.hextale.runework.HextechToolItem;
 
 public final class ModItems {
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Hextale.MOD_ID);
+    public static final PortRegisters.Items ITEMS = PortRegisters.createItems(Hextale.MOD_ID);
 
     public static final DeferredItem<BlockItem> RESEARCH_TABLE = ITEMS.registerSimpleBlockItem(ModBlocks.RESEARCH_TABLE);
     public static final DeferredItem<BlockItem> ALEMBIC = ITEMS.registerSimpleBlockItem(ModBlocks.ALEMBIC);
@@ -135,7 +137,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> MAGIC_FENCE = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_FENCE);
     public static final DeferredItem<BlockItem> MAGIC_FENCE_GATE = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_FENCE_GATE);
     public static final DeferredItem<net.minecraft.world.item.DoubleHighBlockItem> MAGIC_DOOR = ITEMS.registerItem("magic_door",
-            properties -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.MAGIC_DOOR.get(), properties.useBlockDescriptionPrefix()));
+            properties -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.MAGIC_DOOR.get(), properties));
     public static final DeferredItem<BlockItem> MAGIC_TRAPDOOR = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_TRAPDOOR);
     public static final DeferredItem<BlockItem> MAGIC_BUTTON = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_BUTTON);
     public static final DeferredItem<BlockItem> MAGIC_PRESSURE_PLATE = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_PRESSURE_PLATE);
@@ -201,15 +203,14 @@ public final class ModItems {
     public static final DeferredItem<com.pockyl.hextale.item.ResearchNotesItem> RESEARCH_NOTES = ITEMS.registerItem("research_notes",
             properties -> new com.pockyl.hextale.item.ResearchNotesItem(properties.stacksTo(16).rarity(Rarity.UNCOMMON)));
     /** Worn on the head: shows the essences inside the essence works and where a Research Table's ink comes from. */
-    public static final ResourceKey<EquipmentAsset> GOGGLES_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Hextale.id("researchers_goggles"));
+    public static final ResourceLocation GOGGLES_ASSET = Hextale.id("researchers_goggles");
+    private static final ArmorMaterial GOGGLES_ARMOR = new ArmorMaterial(0, Map.of(), 0, SoundEvents.ARMOR_EQUIP_LEATHER, 0.0F, 0.0F,
+            ModTags.REPAIRS_HEXSTEEL, GOGGLES_ASSET);
     public static final DeferredItem<Item> RESEARCHERS_GOGGLES = ITEMS.registerItem("researchers_goggles",
-            properties -> new Item(properties.stacksTo(1).component(DataComponents.EQUIPPABLE,
-                    Equippable.builder(EquipmentSlot.HEAD).setAsset(GOGGLES_ASSET).setEquipSound(SoundEvents.ARMOR_EQUIP_LEATHER).build())));
+            properties -> new ArmorItem(GOGGLES_ARMOR.holder(), ArmorItem.Type.HELMET, properties.stacksTo(1)));
     /** Worn on the back: with air essence in its tanks it lets me glide, and its jets push me like a rocket. */
     public static final DeferredItem<com.pockyl.hextale.item.HextechSkypackItem> HEXTECH_SKYPACK = ITEMS.registerItem("hextech_skypack",
-            properties -> new com.pockyl.hextale.item.HextechSkypackItem(properties.stacksTo(1).rarity(Rarity.RARE).fireResistant()
-                    .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
-                            .setEquipSound(SoundEvents.ARMOR_EQUIP_ELYTRA).setDamageOnHurt(false).build())));
+            properties -> new com.pockyl.hextale.item.HextechSkypackItem(properties.stacksTo(1).rarity(Rarity.RARE).fireResistant()));
     public static final DeferredItem<ResearchersDiaryItem> RESEARCHERS_DIARY = ITEMS.registerItem("researchers_diary",
             properties -> new ResearchersDiaryItem(properties.stacksTo(1)));
 
@@ -224,9 +225,10 @@ public final class ModItems {
     static {
         for (HextechPickaxe kind : HextechPickaxe.values()) {
             PICKAXES.put(kind, ITEMS.registerItem(kind.id(), properties -> {
-                Item.Properties p = properties.pickaxe(PICKAXE_MATERIALS[kind.tier() - 1], 1.0F, -2.8F)
+                ToolMaterial material = PICKAXE_MATERIALS[kind.tier() - 1];
+                Item.Properties p = properties.attributes(DiggerItem.createAttributes(material, 1.0F, -2.8F))
                         .rarity(kind == HextechPickaxe.RADIANT ? Rarity.EPIC : kind == HextechPickaxe.REFINED ? Rarity.RARE : Rarity.UNCOMMON);
-                return new HextechPickaxeItem(kind, kind == HextechPickaxe.RADIANT ? p.fireResistant() : p);
+                return new HextechPickaxeItem(kind, material, kind == HextechPickaxe.RADIANT ? p.fireResistant() : p);
             }));
         }
     }
@@ -236,56 +238,63 @@ public final class ModItems {
     }
 
     /** The hextech axe, shovel and sword: iron tools charged at the altar, as strong as the plain hextech pickaxe. */
-    public static final DeferredItem<HextechToolItem> HEXTECH_AXE = ITEMS.registerItem("hextech_axe",
-            properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[0], 6.0F, -3.1F).rarity(Rarity.UNCOMMON)));
-    public static final DeferredItem<HextechToolItem> HEXTECH_SHOVEL = ITEMS.registerItem("hextech_shovel",
-            properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[0], 1.5F, -3.0F).rarity(Rarity.UNCOMMON)));
-    public static final DeferredItem<HextechToolItem> HEXTECH_SWORD = ITEMS.registerItem("hextech_sword",
-            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[0], 3.0F, -2.4F).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<HextechToolItem.Axe> HEXTECH_AXE = ITEMS.registerItem("hextech_axe",
+            properties -> new HextechToolItem.Axe(PICKAXE_MATERIALS[0],
+                    properties.attributes(DiggerItem.createAttributes(PICKAXE_MATERIALS[0], 6.0F, -3.1F)).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<HextechToolItem.Shovel> HEXTECH_SHOVEL = ITEMS.registerItem("hextech_shovel",
+            properties -> new HextechToolItem.Shovel(PICKAXE_MATERIALS[0],
+                    properties.attributes(DiggerItem.createAttributes(PICKAXE_MATERIALS[0], 1.5F, -3.0F)).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<HextechToolItem.Sword> HEXTECH_SWORD = ITEMS.registerItem("hextech_sword",
+            properties -> new HextechToolItem.Sword(PICKAXE_MATERIALS[0],
+                    properties.attributes(SwordItem.createAttributes(PICKAXE_MATERIALS[0], 3.0F, -2.4F)).rarity(Rarity.UNCOMMON)));
 
     /** Hexsteel tools: as strong as diamond ones, repaired with hexsteel. */
     private static final ToolMaterial HEXSTEEL_TOOLS = new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1561, 8.0F, 3.0F, 10,
             ModTags.REPAIRS_HEXSTEEL);
     public static final DeferredItem<Item> HEXSTEEL_SWORD = ITEMS.registerItem("hexsteel_sword",
-            properties -> new Item(properties.sword(HEXSTEEL_TOOLS, 3.0F, -2.4F)));
+            properties -> new SwordItem(HEXSTEEL_TOOLS, properties.attributes(SwordItem.createAttributes(HEXSTEEL_TOOLS, 3.0F, -2.4F))));
     public static final DeferredItem<Item> HEXSTEEL_PICKAXE = ITEMS.registerItem("hexsteel_pickaxe",
-            properties -> new Item(properties.pickaxe(HEXSTEEL_TOOLS, 1.0F, -2.8F)));
+            properties -> new PickaxeItem(HEXSTEEL_TOOLS, properties.attributes(DiggerItem.createAttributes(HEXSTEEL_TOOLS, 1.0F, -2.8F))));
     public static final DeferredItem<Item> HEXSTEEL_AXE = ITEMS.registerItem("hexsteel_axe",
-            properties -> new Item(properties.axe(HEXSTEEL_TOOLS, 5.0F, -3.0F)));
+            properties -> new AxeItem(HEXSTEEL_TOOLS, properties.attributes(DiggerItem.createAttributes(HEXSTEEL_TOOLS, 5.0F, -3.0F))));
     public static final DeferredItem<Item> HEXSTEEL_SHOVEL = ITEMS.registerItem("hexsteel_shovel",
-            properties -> new Item(properties.shovel(HEXSTEEL_TOOLS, 1.5F, -3.0F)));
+            properties -> new ShovelItem(HEXSTEEL_TOOLS, properties.attributes(DiggerItem.createAttributes(HEXSTEEL_TOOLS, 1.5F, -3.0F))));
     public static final DeferredItem<Item> HEXSTEEL_HOE = ITEMS.registerItem("hexsteel_hoe",
-            properties -> new Item(properties.hoe(HEXSTEEL_TOOLS, -3.0F, 0.0F)));
+            properties -> new HoeItem(HEXSTEEL_TOOLS, properties.attributes(DiggerItem.createAttributes(HEXSTEEL_TOOLS, -3.0F, 0.0F))));
 
     /** Hexsteel armour: diamond protection, its own worn look. */
-    public static final ResourceKey<EquipmentAsset> HEXSTEEL_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Hextale.id("hexsteel"));
+    public static final ResourceLocation HEXSTEEL_ASSET = Hextale.id("hexsteel");
     private static final ArmorMaterial HEXSTEEL_ARMOR = new ArmorMaterial(33,
             Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
             10, SoundEvents.ARMOR_EQUIP_DIAMOND, 2.0F, 0.0F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET);
     public static final DeferredItem<Item> HEXSTEEL_HELMET = ITEMS.registerItem("hexsteel_helmet",
-            properties -> new Item(properties.humanoidArmor(HEXSTEEL_ARMOR, ArmorType.HELMET)));
+            properties -> new ArmorItem(HEXSTEEL_ARMOR.holder(), ArmorItem.Type.HELMET, HEXSTEEL_ARMOR.properties(properties, ArmorType.HELMET)));
     public static final DeferredItem<Item> HEXSTEEL_CHESTPLATE = ITEMS.registerItem("hexsteel_chestplate",
-            properties -> new Item(properties.humanoidArmor(HEXSTEEL_ARMOR, ArmorType.CHESTPLATE)));
+            properties -> new ArmorItem(HEXSTEEL_ARMOR.holder(), ArmorItem.Type.CHESTPLATE, HEXSTEEL_ARMOR.properties(properties, ArmorType.CHESTPLATE)));
     public static final DeferredItem<Item> HEXSTEEL_LEGGINGS = ITEMS.registerItem("hexsteel_leggings",
-            properties -> new Item(properties.humanoidArmor(HEXSTEEL_ARMOR, ArmorType.LEGGINGS)));
+            properties -> new ArmorItem(HEXSTEEL_ARMOR.holder(), ArmorItem.Type.LEGGINGS, HEXSTEEL_ARMOR.properties(properties, ArmorType.LEGGINGS)));
     public static final DeferredItem<Item> HEXSTEEL_BOOTS = ITEMS.registerItem("hexsteel_boots",
-            properties -> new Item(properties.humanoidArmor(HEXSTEEL_ARMOR, ArmorType.BOOTS)));
+            properties -> new ArmorItem(HEXSTEEL_ARMOR.holder(), ArmorItem.Type.BOOTS, HEXSTEEL_ARMOR.properties(properties, ArmorType.BOOTS)));
 
     /** Wool soaked in the crucible: heavy and warm, and the essence never washes out of it. */
     public static final DeferredItem<Item> ARCANE_CLOTH = ITEMS.registerSimpleItem("arcane_cloth");
     /** Researcher's clothes of arcane cloth: 3D pieces (client: ResearcherRobeClient), the robe keeps sparks and blasts off. */
-    public static final ResourceKey<EquipmentAsset> RESEARCHER_ROBE_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, Hextale.id("researcher_robe"));
+    public static final ResourceLocation RESEARCHER_ROBE_ASSET = Hextale.id("researcher_robe");
     private static final ArmorMaterial ARCANE_CLOTH_ARMOR = new ArmorMaterial(12,
             Map.of(ArmorType.BOOTS, 1, ArmorType.LEGGINGS, 3, ArmorType.CHESTPLATE, 4, ArmorType.HELMET, 1, ArmorType.BODY, 4),
             18, SoundEvents.ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, ModTags.REPAIRS_ARCANE_CLOTH, RESEARCHER_ROBE_ASSET);
     public static final DeferredItem<Item> RESEARCHER_HOOD = ITEMS.registerItem("researcher_hood",
-            properties -> new com.pockyl.hextale.runework.ResearcherClothesItem(properties.humanoidArmor(ARCANE_CLOTH_ARMOR, ArmorType.HELMET)));
+            properties -> new com.pockyl.hextale.runework.ResearcherClothesItem(ARCANE_CLOTH_ARMOR.holder(), ArmorItem.Type.HELMET,
+                    ARCANE_CLOTH_ARMOR.properties(properties, ArmorType.HELMET)));
     public static final DeferredItem<Item> RESEARCHER_ROBE = ITEMS.registerItem("researcher_robe",
-            properties -> new com.pockyl.hextale.runework.ResearcherClothesItem(properties.humanoidArmor(ARCANE_CLOTH_ARMOR, ArmorType.CHESTPLATE)));
+            properties -> new com.pockyl.hextale.runework.ResearcherClothesItem(ARCANE_CLOTH_ARMOR.holder(), ArmorItem.Type.CHESTPLATE,
+                    ARCANE_CLOTH_ARMOR.properties(properties, ArmorType.CHESTPLATE)));
     public static final DeferredItem<Item> RESEARCHER_TROUSERS = ITEMS.registerItem("researcher_trousers",
-            properties -> new com.pockyl.hextale.runework.ResearcherClothesItem(properties.humanoidArmor(ARCANE_CLOTH_ARMOR, ArmorType.LEGGINGS)));
+            properties -> new com.pockyl.hextale.runework.ResearcherClothesItem(ARCANE_CLOTH_ARMOR.holder(), ArmorItem.Type.LEGGINGS,
+                    ARCANE_CLOTH_ARMOR.properties(properties, ArmorType.LEGGINGS)));
     public static final DeferredItem<Item> RESEARCHER_BOOTS = ITEMS.registerItem("researcher_boots",
-            properties -> new com.pockyl.hextale.runework.ResearcherClothesItem(properties.humanoidArmor(ARCANE_CLOTH_ARMOR, ArmorType.BOOTS)));
+            properties -> new com.pockyl.hextale.runework.ResearcherClothesItem(ARCANE_CLOTH_ARMOR.holder(), ArmorItem.Type.BOOTS,
+                    ARCANE_CLOTH_ARMOR.properties(properties, ArmorType.BOOTS)));
 
     /** Magic stone ground with dust: draws runes on the floor. */
     public static final DeferredItem<com.pockyl.hextale.item.RuneChalkItem> RUNE_CHALK = ITEMS.registerItem("rune_chalk",
@@ -302,6 +311,7 @@ public final class ModItems {
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
+        ArmorMaterial.MATERIALS.register(modBus);
     }
 
     /** Any of the hex pylons. */

@@ -1,7 +1,7 @@
 package com.pockyl.hextale.essence;
 
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import com.pockyl.hextale.port.ValueInput;
+import com.pockyl.hextale.port.ValueOutput;
 
 /**
  * Amounts are millibuckets. A vessel inside a machine: holds up to {@code capacity} drops of essence; whatever is poured in mixes with what is

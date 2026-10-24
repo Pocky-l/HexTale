@@ -3,7 +3,6 @@ package com.pockyl.hextale.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -21,8 +20,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import com.pockyl.hextale.port.ValueInput;
+import com.pockyl.hextale.port.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.chem.Brew;
@@ -291,8 +290,9 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
     // ---- Saving -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueInput input = ValueInput.of(portTag, portRegistries);
+        super.loadAdditional(input.tag(), input.registries());
         this.input = input.read("input", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         output = input.read("output", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         progress = input.getIntOr("progress", 0);
@@ -300,8 +300,9 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueOutput output = ValueOutput.of(portTag, portRegistries);
+        super.saveAdditional(output.tag(), output.registries());
         if (!input.isEmpty()) {
             output.store("input", ItemStack.CODEC, input);
         }
@@ -315,7 +316,7 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentGetter components) {
+    protected void applyImplicitComponents(DataComponentInput components) {
         super.applyImplicitComponents(components);
         runes = components.getOrDefault(ModDataComponents.STILL_RUNES.get(), PickaxeRunes.EMPTY);
     }
@@ -329,8 +330,9 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
     }
 
     @Override
-    public void removeComponentsFromTag(ValueOutput output) {
-        super.removeComponentsFromTag(output);
+    public void removeComponentsFromTag(net.minecraft.nbt.CompoundTag portTag) {
+        ValueOutput output = ValueOutput.of(portTag, net.minecraft.core.RegistryAccess.EMPTY);
+        super.removeComponentsFromTag(output.tag());
         output.discard("runes");
     }
 

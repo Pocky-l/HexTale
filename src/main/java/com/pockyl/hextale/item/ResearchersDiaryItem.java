@@ -11,7 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
 import com.pockyl.hextale.knowledge.Research;
@@ -58,8 +57,8 @@ public class ResearchersDiaryItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
-                                TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
+        Consumer<Component> tooltip = tooltipLines::add;
         DiaryOwner owner = owner(stack);
         tooltip.accept((owner == null ? Component.translatable("item.hextale.researchers_diary.unsigned")
                 : Component.translatable("item.hextale.researchers_diary.signed", owner.name())).withStyle(ChatFormatting.GRAY));

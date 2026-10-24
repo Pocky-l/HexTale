@@ -13,7 +13,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
@@ -176,8 +175,8 @@ public class HextechSkypackItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
-                                TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltipLines, TooltipFlag flag) {
+        Consumer<Component> tooltip = tooltipLines::add;
         tooltip.accept(Component.translatable("item.hextale.hextech_skypack.air", air(stack), CAPACITY).withColor(AIR_COLOR));
         tooltip.accept(Component.translatable("item.hextale.hextech_pickaxe.slots", RuneHolder.SKYPACK.runes(stack).count(), SkypackRune.SLOTS)
                 .withStyle(ChatFormatting.DARK_GRAY));

@@ -21,7 +21,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -637,19 +637,19 @@ public final class ToolEffects {
 
     /** The head a creature leaves to Engraving, or null for creatures without one. */
     public static @Nullable Item headOf(EntityType<?> type) {
-        if (type == EntityTypes.ZOMBIE || type == EntityTypes.HUSK || type == EntityTypes.DROWNED || type == EntityTypes.ZOMBIE_VILLAGER) {
+        if (type == EntityType.ZOMBIE || type == EntityType.HUSK || type == EntityType.DROWNED || type == EntityType.ZOMBIE_VILLAGER) {
             return Items.ZOMBIE_HEAD;
         }
-        if (type == EntityTypes.SKELETON || type == EntityTypes.STRAY || type == EntityTypes.BOGGED) {
+        if (type == EntityType.SKELETON || type == EntityType.STRAY || type == EntityType.BOGGED) {
             return Items.SKELETON_SKULL;
         }
-        if (type == EntityTypes.WITHER_SKELETON) {
+        if (type == EntityType.WITHER_SKELETON) {
             return Items.WITHER_SKELETON_SKULL;
         }
-        if (type == EntityTypes.CREEPER) {
+        if (type == EntityType.CREEPER) {
             return Items.CREEPER_HEAD;
         }
-        if (type == EntityTypes.PIGLIN || type == EntityTypes.PIGLIN_BRUTE) {
+        if (type == EntityType.PIGLIN || type == EntityType.PIGLIN_BRUTE) {
             return Items.PIGLIN_HEAD;
         }
         return null;

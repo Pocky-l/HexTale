@@ -1,7 +1,7 @@
 package com.pockyl.hextale.farm;
 
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
@@ -25,7 +25,7 @@ public final class WardEvents {
     }
 
     private static void onPlacement(MobSpawnEvent.SpawnPlacementCheck event) {
-        if (event.getSpawnType() != EntitySpawnReason.NATURAL || event.getEntityType().getCategory() != MobCategory.MONSTER) {
+        if (event.getSpawnType() != MobSpawnType.NATURAL || event.getEntityType().getCategory() != MobCategory.MONSTER) {
             return;
         }
         ServerLevel level = event.getLevel().getLevel();

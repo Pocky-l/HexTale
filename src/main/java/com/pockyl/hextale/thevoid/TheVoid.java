@@ -13,8 +13,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import com.pockyl.hextale.port.ValueInput;
+import com.pockyl.hextale.port.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
@@ -259,7 +259,8 @@ public class TheVoid extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
+    protected void readAdditionalSaveData(net.minecraft.nbt.CompoundTag portTag) {
+        ValueInput input = ValueInput.of(portTag, registryAccess());
         // Summoned by a command without numbers: a random outline that breaks open from now on.
         entityData.set(DATA_SEED, input.getIntOr("seed", level().getRandom().nextInt()));
         entityData.set(DATA_SHAPE, VoidShape.byId(input.getStringOr("shape", VoidShape.GATE.id())).ordinal());
@@ -269,7 +270,8 @@ public class TheVoid extends Entity {
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(net.minecraft.nbt.CompoundTag portTag) {
+        ValueOutput output = ValueOutput.of(portTag, registryAccess());
         output.putInt("seed", seed());
         output.putString("shape", shape().id());
         output.putFloat("size", size());
@@ -289,7 +291,7 @@ public class TheVoid extends Entity {
 
     @Override
     public PushReaction getPistonPushReaction() {
-        return PushReaction.IGNORE_ENTITY;
+        return PushReaction.IGNORE;
     }
 
     @Override

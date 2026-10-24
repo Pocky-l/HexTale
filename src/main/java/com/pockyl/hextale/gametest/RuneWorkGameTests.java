@@ -72,7 +72,7 @@ public final class RuneWorkGameTests {
         BlockState state = helper.getLevel().getBlockState(abs);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         // Standing over the block, looking straight down at it: the pickaxe strikes its top face.
-        player.snapTo(abs.getX() + 0.5, abs.getY() + 1, abs.getZ() + 0.5, 0, 90);
+        player.moveTo(abs.getX() + 0.5, abs.getY() + 1, abs.getZ() + 0.5, 0, 90);
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, tool);
         Block.dropResources(state, helper.getLevel(), abs, null, player, tool);
         helper.getLevel().removeBlock(abs, false);
@@ -112,7 +112,7 @@ public final class RuneWorkGameTests {
     private static ServerPlayer researcher(GameTestHelper helper, com.pockyl.hextale.research.@org.jspecify.annotations.Nullable ResearchTopic topic) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         net.minecraft.world.phys.Vec3 at = helper.absoluteVec(new net.minecraft.world.phys.Vec3(ALTAR.getX() + 0.5, ALTAR.getY(), ALTAR.getZ() + 2.5));
-        player.snapTo(at.x, at.y, at.z, 0, 0);
+        player.moveTo(at.x, at.y, at.z, 0, 0);
         if (topic != null) {
             Research.research(player, topic);
         }

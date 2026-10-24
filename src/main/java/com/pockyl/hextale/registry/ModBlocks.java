@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.GlowLichenBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
-import net.minecraft.world.level.block.MultifaceBlock;
+import com.pockyl.hextale.port.MultifaceBlock;
 import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
@@ -28,7 +28,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.pockyl.hextale.port.PortRegisters;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.transport.PylonKind;
@@ -53,13 +53,13 @@ import com.pockyl.hextale.block.SeparatorBlock;
 import com.pockyl.hextale.block.ResearchTableBlock;
 
 public final class ModBlocks {
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Hextale.MOD_ID);
+    public static final PortRegisters.Blocks BLOCKS = PortRegisters.createBlocks(Hextale.MOD_ID);
 
     public static final DeferredBlock<ResearchTableBlock> RESEARCH_TABLE = BLOCKS.registerBlock("research_table",
             ResearchTableBlock::new, () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).instrument(NoteBlockInstrument.BASS)
                     .strength(2.5F).sound(SoundType.WOOD).noOcclusion().ignitedByLava()
                     .lightLevel(state -> state.getValue(ResearchTableBlock.LIT) ? ResearchTableBlock.LIGHT : 0)
-                    .pushReaction(PushReaction.IMMOVEABLE));
+                    .pushReaction(PushReaction.BLOCK));
 
     public static final DeferredBlock<AlembicBlock> ALEMBIC = BLOCKS.registerBlock("alembic", AlembicBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F).sound(SoundType.COPPER).noOcclusion()
@@ -119,12 +119,12 @@ public final class ModBlocks {
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> state.getValue(RuneSteleBlock.LIT) ? 9 : 2));
     /** A mote of hextech light a pickaxe with the Eternal Flame rune leaves in the dark: no body, no drops, goes out at a touch. */
     public static final DeferredBlock<HexWispBlock> HEX_WISP = BLOCKS.registerBlock("hex_wisp", HexWispBlock::new,
-            () -> BlockBehaviour.Properties.of().replaceable().noCollision().instabreak().noLootTable().lightLevel(state -> 13)
-                    .sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.POPPED));
+            () -> BlockBehaviour.Properties.of().replaceable().noCollission().instabreak().noLootTable().lightLevel(state -> 13)
+                    .sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.DESTROY));
     /** A refined gemstone in a brass cage: stands or hangs like a lantern, full light. */
     public static final DeferredBlock<HextechLampBlock> HEXTECH_LAMP = BLOCKS.registerBlock("hextech_lamp", HextechLampBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.LANTERN)
-                    .lightLevel(state -> 15).noOcclusion().pushReaction(PushReaction.POPPED).requiresCorrectToolForDrops());
+                    .lightLevel(state -> 15).noOcclusion().pushReaction(PushReaction.DESTROY).requiresCorrectToolForDrops());
 
     /** A furnace woken with hextech dust: it melts metals into alloys; light while it burns. */
     public static final DeferredBlock<HexFurnaceBlock> HEX_FURNACE = BLOCKS.registerBlock("hex_furnace", HexFurnaceBlock::new,
@@ -276,27 +276,27 @@ public final class ModBlocks {
             properties -> new FenceGateBlock(MAGIC_WOOD_TYPE, properties), () -> magicWoodProperties().strength(2.0F, 3.0F).forceSolidOn());
     public static final DeferredBlock<DoorBlock> MAGIC_DOOR = BLOCKS.registerBlock("magic_door",
             properties -> new DoorBlock(MAGIC_SET, properties),
-            () -> magicWoodProperties().strength(3.0F).noOcclusion().pushReaction(PushReaction.POPPED));
+            () -> magicWoodProperties().strength(3.0F).noOcclusion().pushReaction(PushReaction.DESTROY));
     public static final DeferredBlock<TrapDoorBlock> MAGIC_TRAPDOOR = BLOCKS.registerBlock("magic_trapdoor",
             properties -> new TrapDoorBlock(MAGIC_SET, properties),
             () -> magicWoodProperties().strength(3.0F).noOcclusion().isValidSpawn((state, level, pos, type) -> false));
     public static final DeferredBlock<ButtonBlock> MAGIC_BUTTON = BLOCKS.registerBlock("magic_button",
             properties -> new ButtonBlock(MAGIC_SET, 30, properties),
-            () -> BlockBehaviour.Properties.of().noCollision().strength(0.5F).pushReaction(PushReaction.POPPED));
+            () -> BlockBehaviour.Properties.of().noCollission().strength(0.5F).pushReaction(PushReaction.DESTROY));
     public static final DeferredBlock<PressurePlateBlock> MAGIC_PRESSURE_PLATE = BLOCKS.registerBlock("magic_pressure_plate",
             properties -> new PressurePlateBlock(MAGIC_SET, properties),
-            () -> magicWoodProperties().forceSolidOn().noCollision().strength(0.5F).pushReaction(PushReaction.POPPED));
+            () -> magicWoodProperties().forceSolidOn().noCollission().strength(0.5F).pushReaction(PushReaction.DESTROY));
     public static final DeferredBlock<MagicLeavesBlock> MAGIC_LEAVES = BLOCKS.registerBlock("magic_leaves", MagicLeavesBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(0.2F).randomTicks()
                     .sound(SoundType.CHERRY_LEAVES).noOcclusion().isValidSpawn((state, level, pos, type) -> false)
                     .isSuffocating((state, level, pos) -> false)
-                    .pushReaction(PushReaction.POPPED).isRedstoneConductor((state, level, pos) -> false));
+                    .pushReaction(PushReaction.DESTROY).isRedstoneConductor((state, level, pos) -> false));
     public static final DeferredBlock<MagicSaplingBlock> MAGIC_SAPLING = BLOCKS.registerBlock("magic_sapling", MagicSaplingBlock::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).noCollision().randomTicks().instabreak()
-                    .sound(SoundType.CHERRY_SAPLING).lightLevel(state -> 4).pushReaction(PushReaction.POPPED));
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).noCollission().randomTicks().instabreak()
+                    .sound(SoundType.CHERRY_SAPLING).lightLevel(state -> 4).pushReaction(PushReaction.DESTROY));
     public static final DeferredBlock<FlowerPotBlock> POTTED_MAGIC_SAPLING = BLOCKS.registerBlock("potted_magic_sapling",
             properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, MAGIC_SAPLING, properties),
-            () -> BlockBehaviour.Properties.of().instabreak().noOcclusion().lightLevel(state -> 4).pushReaction(PushReaction.POPPED));
+            () -> BlockBehaviour.Properties.of().instabreak().noOcclusion().lightLevel(state -> 4).pushReaction(PushReaction.DESTROY));
 
     /** Chemtech's cheap heat: a riveted iron stove burning a green flame. */
     public static final DeferredBlock<com.pockyl.hextale.block.ChemBurnerBlock> CHEM_BURNER = BLOCKS.registerBlock("chem_burner",
@@ -306,8 +306,8 @@ public final class ModBlocks {
                     .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChemBurnerBlock.LIT) ? 10 : 0));
     /** Patches of cold green light a splash of glow mix leaves on the blocks it hits. */
     public static final DeferredBlock<MultifaceBlock> CHEM_GLOW = BLOCKS.registerBlock("chem_glow", MultifaceBlock::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GLOW_LICHEN).replaceable().noCollision().instabreak().noLootTable()
-                    .sound(SoundType.SLIME_BLOCK).lightLevel(GlowLichenBlock.emission(12)).pushReaction(PushReaction.POPPED));
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.GLOW_LICHEN).replaceable().noCollission().instabreak().noLootTable()
+                    .sound(SoundType.SLIME_BLOCK).lightLevel(GlowLichenBlock.emission(12)).pushReaction(PushReaction.DESTROY));
     /** Green-tinted glass in a rusty frame: glass boiled with venom in a crucible. */
     public static final DeferredBlock<TransparentBlock> CHEM_GLASS = BLOCKS.registerBlock("chem_glass", TransparentBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).strength(0.6F).sound(SoundType.GLASS).noOcclusion()
@@ -327,18 +327,18 @@ public final class ModBlocks {
     /** Shimmerbloom: the glowing purple flower of deep caves, standing on the floor or hanging from the ceiling. */
     public static final DeferredBlock<com.pockyl.hextale.block.ShimmerbloomBlock> SHIMMERBLOOM = BLOCKS.registerBlock("shimmerbloom",
             com.pockyl.hextale.block.ShimmerbloomBlock::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().instabreak().sound(SoundType.SPORE_BLOSSOM)
-                    .lightLevel(state -> 10).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED));
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollission().instabreak().sound(SoundType.SPORE_BLOSSOM)
+                    .lightLevel(state -> 10).offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.DESTROY));
     public static final DeferredBlock<FlowerPotBlock> POTTED_SHIMMERBLOOM = BLOCKS.registerBlock("potted_shimmerbloom",
             properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, SHIMMERBLOOM, properties),
-            () -> BlockBehaviour.Properties.of().instabreak().noOcclusion().lightLevel(state -> 10).pushReaction(PushReaction.POPPED));
+            () -> BlockBehaviour.Properties.of().instabreak().noOcclusion().lightLevel(state -> 10).pushReaction(PushReaction.DESTROY));
     /** The violet moss that carpets bloom caves, faintly glowing. */
     public static final DeferredBlock<Block> SHIMMER_MOSS = BLOCKS.registerBlock("shimmer_moss", Block::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.1F).sound(SoundType.MOSS).lightLevel(state -> 4)
-                    .pushReaction(PushReaction.POPPED));
+                    .pushReaction(PushReaction.DESTROY));
     public static final DeferredBlock<CarpetBlock> SHIMMER_MOSS_CARPET = BLOCKS.registerBlock("shimmer_moss_carpet", CarpetBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.1F).sound(SoundType.MOSS_CARPET)
-                    .lightLevel(state -> 3).pushReaction(PushReaction.POPPED));
+                    .lightLevel(state -> 3).pushReaction(PushReaction.DESTROY));
     /** A rusted aquarium where an axolotl lives and sheds regenerative slime. */
     public static final DeferredBlock<com.pockyl.hextale.block.AxolotlTankBlock> AXOLOTL_TANK = BLOCKS.registerBlock("axolotl_tank",
             com.pockyl.hextale.block.AxolotlTankBlock::new,
@@ -350,7 +350,7 @@ public final class ModBlocks {
             com.pockyl.hextale.block.LabBenchBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(2.5F, 6.0F).sound(SoundType.WOOD)
                     .noOcclusion().lightLevel(state -> state.getValue(com.pockyl.hextale.block.LabBenchBlock.LIT) ? 6 : 0)
-                    .pushReaction(net.minecraft.world.level.material.PushReaction.IMMOVEABLE));
+                    .pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK));
     /** A copper pot still that refines raw shimmer over a Chem Burner. */
     public static final DeferredBlock<com.pockyl.hextale.block.ChemStillBlock> CHEM_STILL = BLOCKS.registerBlock("chem_still",
             com.pockyl.hextale.block.ChemStillBlock::new,
@@ -367,8 +367,8 @@ public final class ModBlocks {
     /** A rune drawn in Rune Chalk on the floor: quickens the altar's rituals around it, glows while one runs. */
     public static final DeferredBlock<com.pockyl.hextale.block.ChalkMarkBlock> CHALK_MARK = BLOCKS.registerBlock("chalk_mark",
             com.pockyl.hextale.block.ChalkMarkBlock::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).replaceable().noCollision().instabreak().noLootTable()
-                    .sound(SoundType.CALCITE).pushReaction(PushReaction.POPPED)
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).replaceable().noCollission().instabreak().noLootTable()
+                    .sound(SoundType.CALCITE).pushReaction(PushReaction.DESTROY)
                     .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChalkMarkBlock.LIT) ? 6 : 0));
     /** Nullstone drinks stray magic: it calms a Hexcore at work and glows as it fills. Polished and bricks are decor. */
     public static final DeferredBlock<com.pockyl.hextale.block.NullstoneBlock> NULLSTONE = BLOCKS.registerBlock("nullstone",

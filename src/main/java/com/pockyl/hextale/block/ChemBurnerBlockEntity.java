@@ -3,7 +3,6 @@ package com.pockyl.hextale.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -21,8 +20,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import com.pockyl.hextale.port.ValueInput;
+import com.pockyl.hextale.port.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -347,8 +346,9 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
     // ---- Saving -----------------------------------------------------------------------------------------------------
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueInput input = ValueInput.of(portTag, portRegistries);
+        super.loadAdditional(input.tag(), input.registries());
         fuel = input.read("fuel", ItemStack.CODEC).orElse(ItemStack.EMPTY);
         tank = input.read("tank", EssenceMix.CODEC).orElse(EssenceMix.EMPTY);
         burn = input.getIntOr("burn", 0);
@@ -358,8 +358,9 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueOutput output = ValueOutput.of(portTag, portRegistries);
+        super.saveAdditional(output.tag(), output.registries());
         if (!fuel.isEmpty()) {
             output.store("fuel", ItemStack.CODEC, fuel);
         }
@@ -375,7 +376,7 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentGetter components) {
+    protected void applyImplicitComponents(DataComponentInput components) {
         super.applyImplicitComponents(components);
         runes = components.getOrDefault(ModDataComponents.BURNER_RUNES.get(), PickaxeRunes.EMPTY);
     }
@@ -389,8 +390,9 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
     }
 
     @Override
-    public void removeComponentsFromTag(ValueOutput output) {
-        super.removeComponentsFromTag(output);
+    public void removeComponentsFromTag(net.minecraft.nbt.CompoundTag portTag) {
+        ValueOutput output = ValueOutput.of(portTag, net.minecraft.core.RegistryAccess.EMPTY);
+        super.removeComponentsFromTag(output.tag());
         output.discard("runes");
     }
 

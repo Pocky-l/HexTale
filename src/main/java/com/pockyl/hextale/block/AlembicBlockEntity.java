@@ -26,8 +26,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import com.pockyl.hextale.port.ValueInput;
+import com.pockyl.hextale.port.ValueOutput;
 
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.transport.Deliverer;
@@ -335,8 +335,9 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueInput input = ValueInput.of(portTag, portRegistries);
+        super.loadAdditional(input.tag(), input.registries());
         items = NonNullList.withSize(3, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, items);
         tank.load(input, "essence");
@@ -348,8 +349,9 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
+    protected void saveAdditional(net.minecraft.nbt.CompoundTag portTag, net.minecraft.core.HolderLookup.Provider portRegistries) {
+        ValueOutput output = ValueOutput.of(portTag, portRegistries);
+        super.saveAdditional(output.tag(), output.registries());
         ContainerHelper.saveAllItems(output, items);
         tank.save(output, "essence");
         output.putInt("progress", progress);

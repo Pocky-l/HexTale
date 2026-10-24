@@ -9,8 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeColor;
@@ -1180,9 +1180,9 @@ public final class ResearchGameTests {
         BlockPos rod = amethyst.above();
         helper.setBlock(amethyst, Blocks.AMETHYST_BLOCK);
         helper.setBlock(rod, Blocks.LIGHTNING_ROD.weathering().unaffected().defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
-        LightningBolt bolt = EntityTypes.LIGHTNING_BOLT.create(helper.getLevel(), EntitySpawnReason.TRIGGERED);
+        LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel());
         helper.assertTrue(bolt != null, "a bolt can be created");
-        bolt.snapTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above(boltAboveRod))));
+        bolt.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above(boltAboveRod))));
         helper.getLevel().addFreshEntity(bolt);
         // The test server may not tick entities in a freshly generated test chunk yet: strike by hand.
         bolt.tick();
@@ -1203,9 +1203,9 @@ public final class ResearchGameTests {
         helper.setBlock(base, Blocks.STONE);
         helper.setBlock(rod, Blocks.LIGHTNING_ROD.weathering().unaffected().defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
         orbs(helper, base).forEach(ItemEntity::discard);
-        LightningBolt bolt = EntityTypes.LIGHTNING_BOLT.create(helper.getLevel(), EntitySpawnReason.TRIGGERED);
+        LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel());
         helper.assertTrue(bolt != null, "a bolt can be created");
-        bolt.snapTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above())));
+        bolt.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above())));
         helper.getLevel().addFreshEntity(bolt);
         bolt.tick();
         helper.runAfterDelay(10, () -> {
@@ -1425,7 +1425,7 @@ public final class ResearchGameTests {
     private static ServerPlayer player(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Vec3 pos = helper.absoluteVec(new Vec3(0.5, 1, 2.5));
-        player.snapTo(pos.x, pos.y, pos.z, 0, 0);
+        player.moveTo(pos.x, pos.y, pos.z, 0, 0);
         // A researcher who got as far as ink at the table: the circle's research is open.
         openUpTo(Research.of(player), Guide.server().forTopic(TOPIC));
         return player;

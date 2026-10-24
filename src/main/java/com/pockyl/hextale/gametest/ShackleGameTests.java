@@ -2,7 +2,7 @@ package com.pockyl.hextale.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.cow.Cow;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -38,13 +38,13 @@ public final class ShackleGameTests {
         }
         helper.setBlock(BASE, ModBlocks.RUNE_SHACKLES.get());
         // A full block: monsters spawn on it like on any floor.
-        helper.assertTrue(helper.getBlockState(BASE).isValidSpawn(helper.getLevel(), helper.absolutePos(BASE), EntityTypes.ZOMBIE),
+        helper.assertTrue(helper.getBlockState(BASE).isValidSpawn(helper.getLevel(), helper.absolutePos(BASE), EntityType.ZOMBIE),
                 "a zombie may spawn on the shackles");
         BlockPos jarPos = BASE.offset(-2, 0, -2);
         helper.setBlock(jarPos, ModBlocks.ESSENCE_TANK.get());
         helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.SHADOW, 8));
         RuneShacklesBlockEntity plate = helper.getBlockEntity(BASE, RuneShacklesBlockEntity.class);
-        Cow cow = helper.spawn(EntityTypes.COW, new Vec3(1.5, 2.0, 1.5));
+        Cow cow = helper.spawn(EntityType.COW, new Vec3(1.5, 2.0, 1.5));
         Vec3[] at = new Vec3[1];
         float[] health = new float[1];
         helper.runAfterDelay(30, () -> {
