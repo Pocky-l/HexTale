@@ -5,9 +5,15 @@
     "P P"
   ],
   "key": {
-    "B": "hextale:brass_ingot",
-    "P": "#minecraft:planks",
-    "S": "minecraft:bookshelf"
+    "B": {
+      "item": "hextale:brass_ingot"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "S": {
+      "item": "minecraft:bookshelf"
+    }
   },
   "result": {
     "id": "hextale:research_table"

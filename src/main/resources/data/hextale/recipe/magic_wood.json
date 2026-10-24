@@ -3,7 +3,9 @@
   "category": "building",
   "group": "bark",
   "key": {
-    "#": "hextale:magic_log"
+    "#": {
+      "item": "hextale:magic_log"
+    }
   },
   "pattern": [
     "##",

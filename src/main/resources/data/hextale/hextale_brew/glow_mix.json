@@ -1,5 +1,7 @@
 {
-  "catalyst": "minecraft:glowstone_dust",
+  "catalyst": {
+    "item": "minecraft:glowstone_dust"
+  },
   "essences": {
     "light": 6,
     "sap": 4

@@ -6,7 +6,9 @@
     "X X"
   ],
   "key": {
-    "X": "hextale:hexsteel_ingot"
+    "X": {
+      "item": "hextale:hexsteel_ingot"
+    }
   },
   "result": {
     "id": "hextale:hexsteel_helmet"

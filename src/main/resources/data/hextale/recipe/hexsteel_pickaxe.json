@@ -7,8 +7,12 @@
     " # "
   ],
   "key": {
-    "X": "hextale:hexsteel_ingot",
-    "#": "minecraft:stick"
+    "X": {
+      "item": "hextale:hexsteel_ingot"
+    },
+    "#": {
+      "item": "minecraft:stick"
+    }
   },
   "result": {
     "id": "hextale:hexsteel_pickaxe"

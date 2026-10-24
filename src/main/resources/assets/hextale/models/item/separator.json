@@ -1,0 +1,12 @@
+{
+  "parent": "hextale:block/separator",
+  "loader": "neoforge:composite",
+  "children": {
+    "part0": {
+      "parent": "hextale:block/separator"
+    },
+    "part1": {
+      "parent": "hextale:block/separator_ashes"
+    }
+  }
+}

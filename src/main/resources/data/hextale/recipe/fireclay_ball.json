@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "minecraft:clay_ball",
-    "minecraft:clay_ball",
-    "#c:sands",
-    "minecraft:gravel"
+    {
+      "item": "minecraft:clay_ball"
+    },
+    {
+      "item": "minecraft:clay_ball"
+    },
+    {
+      "tag": "c:sands"
+    },
+    {
+      "item": "minecraft:gravel"
+    }
   ],
   "result": {
     "id": "hextale:fireclay_ball",

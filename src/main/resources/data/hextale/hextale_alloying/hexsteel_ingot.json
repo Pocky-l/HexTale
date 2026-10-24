@@ -1,15 +1,21 @@
 {
   "inputs": [
     {
-      "ingredient": "minecraft:iron_ingot",
+      "ingredient": {
+        "item": "minecraft:iron_ingot"
+      },
       "count": 1
     },
     {
-      "ingredient": "hextale:hextech_dust",
+      "ingredient": {
+        "item": "hextale:hextech_dust"
+      },
       "count": 2
     },
     {
-      "ingredient": "#minecraft:coals",
+      "ingredient": {
+        "tag": "minecraft:coals"
+      },
       "count": 1
     }
   ],

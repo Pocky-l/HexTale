@@ -1,12 +1,26 @@
 {
-  "center": "hextale:hextech_crystal",
+  "center": {
+    "item": "hextale:hextech_crystal"
+  },
   "pedestals": [
-    "hextale:magic_stone_pillar",
-    "hextale:magic_stone_pillar",
-    "minecraft:spider_eye",
-    "minecraft:carved_pumpkin",
-    "hextale:brass_ingot",
-    "hextale:brass_ingot"
+    {
+      "item": "hextale:magic_stone_pillar"
+    },
+    {
+      "item": "hextale:magic_stone_pillar"
+    },
+    {
+      "item": "minecraft:spider_eye"
+    },
+    {
+      "item": "minecraft:carved_pumpkin"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    }
   ],
   "essences": {
     "light": 12,

@@ -3,5 +3,7 @@
   "target": "ash",
   "amount": 6,
   "purity": 0.6,
-  "sample": "#hextale:fuel_catalysts"
+  "sample": {
+    "tag": "hextale:fuel_catalysts"
+  }
 }

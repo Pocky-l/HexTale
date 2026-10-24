@@ -3,5 +3,7 @@
   "target": "sap",
   "amount": 8,
   "purity": 0.65,
-  "sample": "minecraft:glowstone_dust"
+  "sample": {
+    "item": "minecraft:glowstone_dust"
+  }
 }

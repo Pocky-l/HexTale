@@ -1,7 +1,9 @@
 {
   "type": "minecraft:smelting",
   "category": "misc",
-  "ingredient": "hextale:fireclay_ball",
+  "ingredient": {
+    "item": "hextale:fireclay_ball"
+  },
   "result": {
     "id": "hextale:fire_brick"
   },

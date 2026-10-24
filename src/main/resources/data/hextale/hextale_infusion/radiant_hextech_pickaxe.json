@@ -1,12 +1,26 @@
 {
-  "center": "hextale:refined_hextech_pickaxe",
+  "center": {
+    "item": "hextale:refined_hextech_pickaxe"
+  },
   "pedestals": [
-    "hextale:hextech_gemstone",
-    "hextale:hextech_gemstone",
-    "minecraft:netherite_ingot",
-    "minecraft:amethyst_block",
-    "minecraft:echo_shard",
-    "minecraft:echo_shard"
+    {
+      "item": "hextale:hextech_gemstone"
+    },
+    {
+      "item": "hextale:hextech_gemstone"
+    },
+    {
+      "item": "minecraft:netherite_ingot"
+    },
+    {
+      "item": "minecraft:amethyst_block"
+    },
+    {
+      "item": "minecraft:echo_shard"
+    },
+    {
+      "item": "minecraft:echo_shard"
+    }
   ],
   "essences": {
     "magic": 72,

@@ -1,12 +1,26 @@
 {
-  "center": "hextale:hextech_crystal",
+  "center": {
+    "item": "hextale:hextech_crystal"
+  },
   "pedestals": [
-    "minecraft:hopper",
-    "minecraft:bone",
-    "minecraft:bone",
-    "hextale:nullstone",
-    "hextale:nullstone",
-    "hextale:brass_ingot"
+    {
+      "item": "minecraft:hopper"
+    },
+    {
+      "item": "minecraft:bone"
+    },
+    {
+      "item": "minecraft:bone"
+    },
+    {
+      "item": "hextale:nullstone"
+    },
+    {
+      "item": "hextale:nullstone"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    }
   ],
   "essences": {
     "decay": 16,

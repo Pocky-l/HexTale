@@ -1,8 +1,14 @@
 {
   "ingredients": [
-    "hextale:magic_stone",
-    "hextale:hextech_dust",
-    "minecraft:bone_meal"
+    {
+      "item": "hextale:magic_stone"
+    },
+    {
+      "item": "hextale:hextech_dust"
+    },
+    {
+      "item": "minecraft:bone_meal"
+    }
   ],
   "result": {
     "id": "hextale:rune_chalk"

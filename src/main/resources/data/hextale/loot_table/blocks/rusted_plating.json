@@ -3,15 +3,18 @@
   "pools": [
     {
       "rolls": 1,
-      "condition": {
-        "type": "minecraft:survives_explosion"
-      },
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "hextale:rusted_plating"
         }
-      ]
+      ],
+      "bonus_rolls": 0.0
     }
   ],
   "random_sequence": "hextale:blocks/rusted_plating"

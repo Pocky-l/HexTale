@@ -2,23 +2,28 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": {
-        "type": "minecraft:survives_explosion"
-      },
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "hextale:relay_pylon",
-          "modifier": {
-            "type": "minecraft:copy_components",
-            "include": [
-              "hextale:pylon_runes"
-            ],
-            "source": "block_entity"
-          }
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "hextale:pylon_runes"
+              ],
+              "source": "block_entity"
+            }
+          ]
         }
       ],
-      "rolls": 1
+      "rolls": 1,
+      "bonus_rolls": 0.0
     }
   ]
 }

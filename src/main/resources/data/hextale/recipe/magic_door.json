@@ -3,7 +3,9 @@
   "category": "redstone",
   "group": "wooden_door",
   "key": {
-    "#": "hextale:magic_planks"
+    "#": {
+      "item": "hextale:magic_planks"
+    }
   },
   "pattern": [
     "##",

@@ -8,7 +8,9 @@
     "###"
   ],
   "key": {
-    "#": "hextale:brass_nugget"
+    "#": {
+      "item": "hextale:brass_nugget"
+    }
   },
   "result": {
     "id": "hextale:brass_ingot"

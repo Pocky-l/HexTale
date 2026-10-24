@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "hextale:raw_zinc_block"
+    {
+      "item": "hextale:raw_zinc_block"
+    }
   ],
   "result": {
     "id": "hextale:raw_zinc",

@@ -1,12 +1,26 @@
 {
-  "center": "hextale:hextech_crystal",
+  "center": {
+    "item": "hextale:hextech_crystal"
+  },
   "pedestals": [
-    "minecraft:glass",
-    "minecraft:glass",
-    "hextale:brass_block",
-    "hextale:hexsteel_ingot",
-    "hextale:hexsteel_ingot",
-    "minecraft:lightning_rod"
+    {
+      "item": "minecraft:glass"
+    },
+    {
+      "item": "minecraft:glass"
+    },
+    {
+      "item": "hextale:brass_block"
+    },
+    {
+      "item": "hextale:hexsteel_ingot"
+    },
+    {
+      "item": "hextale:hexsteel_ingot"
+    },
+    {
+      "item": "minecraft:lightning_rod"
+    }
   ],
   "essences": {
     "crystal": 16,

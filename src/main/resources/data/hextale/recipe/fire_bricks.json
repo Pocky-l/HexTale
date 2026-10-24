@@ -6,7 +6,9 @@
     "##"
   ],
   "key": {
-    "#": "hextale:fire_brick"
+    "#": {
+      "item": "hextale:fire_brick"
+    }
   },
   "result": {
     "id": "hextale:fire_bricks"

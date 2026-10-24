@@ -5,10 +5,18 @@
     "PCP"
   ],
   "key": {
-    "C": "minecraft:copper_ingot",
-    "B": "minecraft:copper_bars",
-    "G": "hextale:chem_glass",
-    "P": "hextale:rusted_plating"
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "B": {
+      "item": "minecraft:iron_bars"
+    },
+    "G": {
+      "item": "hextale:chem_glass"
+    },
+    "P": {
+      "item": "hextale:rusted_plating"
+    }
   },
   "result": {
     "id": "hextale:chem_still"

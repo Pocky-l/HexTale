@@ -5,10 +5,18 @@
     "RRR"
   ],
   "key": {
-    "I": "minecraft:iron_bars",
-    "B": "minecraft:bone_meal",
-    "R": "hextale:rusted_plating",
-    "C": "hextale:chem_burner"
+    "I": {
+      "item": "minecraft:iron_bars"
+    },
+    "B": {
+      "item": "minecraft:bone_meal"
+    },
+    "R": {
+      "item": "hextale:rusted_plating"
+    },
+    "C": {
+      "item": "hextale:chem_burner"
+    }
   },
   "result": {
     "id": "hextale:miasma_vent"

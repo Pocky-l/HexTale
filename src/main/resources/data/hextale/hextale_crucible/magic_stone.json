@@ -1,5 +1,7 @@
 {
-  "catalyst": "#hextale:soaks_essence",
+  "catalyst": {
+    "tag": "hextale:soaks_essence"
+  },
   "essences": {
     "magic": 6
   },

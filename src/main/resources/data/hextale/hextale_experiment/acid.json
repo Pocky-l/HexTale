@@ -3,5 +3,7 @@
   "target": "decay",
   "amount": 8,
   "purity": 0.65,
-  "sample": "minecraft:fermented_spider_eye"
+  "sample": {
+    "item": "minecraft:fermented_spider_eye"
+  }
 }

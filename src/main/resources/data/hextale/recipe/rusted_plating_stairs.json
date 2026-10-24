@@ -7,7 +7,9 @@
     "###"
   ],
   "key": {
-    "#": "hextale:rusted_plating"
+    "#": {
+      "item": "hextale:rusted_plating"
+    }
   },
   "result": {
     "id": "hextale:rusted_plating_stairs",

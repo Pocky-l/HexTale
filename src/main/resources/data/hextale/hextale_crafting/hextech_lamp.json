@@ -5,10 +5,18 @@
     " S "
   ],
   "key": {
-    "N": "hextale:brass_nugget",
-    "B": "hextale:brass_ingot",
-    "G": "hextale:hextech_crystal",
-    "S": "hextale:magic_brick_slab"
+    "N": {
+      "item": "hextale:brass_nugget"
+    },
+    "B": {
+      "item": "hextale:brass_ingot"
+    },
+    "G": {
+      "item": "hextale:hextech_crystal"
+    },
+    "S": {
+      "item": "hextale:magic_brick_slab"
+    }
   },
   "result": {
     "id": "hextale:hextech_lamp",

@@ -7,9 +7,26 @@
         {
           "type": "minecraft:item",
           "name": "hextale:chem_glass",
-          "condition": "minecraft:tool/can_silk_touch"
+          "conditions": [
+            {
+              "condition": "minecraft:match_tool",
+              "predicate": {
+                "predicates": {
+                  "minecraft:enchantments": [
+                    {
+                      "enchantments": "minecraft:silk_touch",
+                      "levels": {
+                        "min": 1
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
         }
-      ]
+      ],
+      "bonus_rolls": 0.0
     }
   ],
   "random_sequence": "hextale:blocks/chem_glass"

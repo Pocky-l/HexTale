@@ -1,5 +1,7 @@
 {
-  "catalyst": "hextale:regenerative_slime",
+  "catalyst": {
+    "item": "hextale:regenerative_slime"
+  },
   "essences": {
     "rift": 6,
     "light": 4

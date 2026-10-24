@@ -1,13 +1,29 @@
 {
-  "center": "hextale:hextech_gemstone",
+  "center": {
+    "item": "hextale:hextech_gemstone"
+  },
   "pedestals": [
-    "hextale:hextech_crystal",
-    "hextale:hextech_crystal",
-    "hextale:hexsteel_ingot",
-    "hextale:hexsteel_ingot",
-    "minecraft:lightning_rod",
-    "hextale:crystal_battery",
-    "hextale:regenerative_slime"
+    {
+      "item": "hextale:hextech_crystal"
+    },
+    {
+      "item": "hextale:hextech_crystal"
+    },
+    {
+      "item": "hextale:hexsteel_ingot"
+    },
+    {
+      "item": "hextale:hexsteel_ingot"
+    },
+    {
+      "item": "minecraft:lightning_rod"
+    },
+    {
+      "item": "hextale:crystal_battery"
+    },
+    {
+      "item": "hextale:regenerative_slime"
+    }
   ],
   "essences": {
     "magic": 32,

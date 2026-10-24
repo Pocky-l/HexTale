@@ -2,16 +2,19 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": {
-        "type": "minecraft:survives_explosion"
-      },
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "rolls": 1,
       "entries": [
         {
           "type": "minecraft:item",
           "name": "hextale:shimmerbloom"
         }
-      ]
+      ],
+      "bonus_rolls": 0.0
     }
   ],
   "random_sequence": "hextale:blocks/shimmerbloom"

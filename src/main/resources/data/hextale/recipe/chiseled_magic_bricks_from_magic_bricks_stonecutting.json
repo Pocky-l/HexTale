@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "hextale:magic_bricks",
+  "ingredient": {
+    "item": "hextale:magic_bricks"
+  },
   "result": {
     "id": "hextale:chiseled_magic_bricks"
   }

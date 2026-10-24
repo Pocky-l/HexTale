@@ -5,10 +5,18 @@
     "PSP"
   ],
   "key": {
-    "P": "hextale:rusted_plating",
-    "C": "minecraft:copper_ingot",
-    "G": "hextale:chem_glass",
-    "S": "minecraft:sea_pickle"
+    "P": {
+      "item": "hextale:rusted_plating"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "G": {
+      "item": "hextale:chem_glass"
+    },
+    "S": {
+      "item": "minecraft:sea_pickle"
+    }
   },
   "result": {
     "id": "hextale:axolotl_tank"

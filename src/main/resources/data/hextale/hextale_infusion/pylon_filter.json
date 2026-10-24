@@ -1,10 +1,20 @@
 {
-  "center": "hextale:brass_ingot",
+  "center": {
+    "item": "hextale:brass_ingot"
+  },
   "pedestals": [
-    "minecraft:string",
-    "hextale:brass_nugget",
-    "hextale:brass_nugget",
-    "minecraft:amethyst_shard"
+    {
+      "item": "minecraft:string"
+    },
+    {
+      "item": "hextale:brass_nugget"
+    },
+    {
+      "item": "hextale:brass_nugget"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    }
   ],
   "essences": {
     "crystal": 8,

@@ -7,7 +7,9 @@
     "###"
   ],
   "key": {
-    "#": "hextale:zinc_ingot"
+    "#": {
+      "item": "hextale:zinc_ingot"
+    }
   },
   "result": {
     "id": "hextale:zinc_block"

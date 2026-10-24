@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "hextale:magic_stone",
+  "ingredient": {
+    "item": "hextale:magic_stone"
+  },
   "result": {
     "id": "hextale:whorled_magic_stone",
     "count": 1

@@ -6,7 +6,9 @@
     "##"
   ],
   "key": {
-    "#": "hextale:rusted_plating"
+    "#": {
+      "item": "hextale:rusted_plating"
+    }
   },
   "result": {
     "id": "hextale:riveted_rusted_plating",

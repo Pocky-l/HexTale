@@ -1,12 +1,26 @@
 {
-  "center": "minecraft:iron_ingot",
+  "center": {
+    "item": "minecraft:iron_ingot"
+  },
   "pedestals": [
-    "minecraft:flint",
-    "minecraft:flint",
-    "minecraft:flint",
-    "minecraft:flint",
-    "hextale:hextech_dust",
-    "hextale:hextech_dust"
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "hextale:hextech_dust"
+    },
+    {
+      "item": "hextale:hextech_dust"
+    }
   ],
   "essences": {
     "ore": 8,

@@ -6,7 +6,9 @@
     "###"
   ],
   "key": {
-    "#": "hextale:fire_bricks"
+    "#": {
+      "item": "hextale:fire_bricks"
+    }
   },
   "result": {
     "id": "hextale:fire_brick_wall",

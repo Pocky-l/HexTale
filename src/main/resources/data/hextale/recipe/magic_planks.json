@@ -3,7 +3,9 @@
   "category": "building",
   "group": "planks",
   "ingredients": [
-    "#hextale:magic_logs"
+    {
+      "tag": "hextale:magic_logs"
+    }
   ],
   "result": {
     "count": 4,

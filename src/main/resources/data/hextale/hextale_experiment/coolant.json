@@ -3,5 +3,7 @@
   "target": "cold",
   "amount": 8,
   "purity": 0.65,
-  "sample": "minecraft:snowball"
+  "sample": {
+    "item": "minecraft:snowball"
+  }
 }

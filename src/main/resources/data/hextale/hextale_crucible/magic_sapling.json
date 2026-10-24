@@ -1,5 +1,7 @@
 {
-  "catalyst": "#hextale:magic_tree_catalysts",
+  "catalyst": {
+    "tag": "hextale:magic_tree_catalysts"
+  },
   "essences": {
     "magic": 8,
     "plant": 6,

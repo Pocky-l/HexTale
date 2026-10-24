@@ -1,5 +1,7 @@
 {
-  "catalyst": "minecraft:calcite",
+  "catalyst": {
+    "item": "minecraft:calcite"
+  },
   "essences": {
     "ash": 6,
     "shadow": 4

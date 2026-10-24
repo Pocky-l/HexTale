@@ -14,7 +14,16 @@
     "minecraft:chests/trial_chambers/reward_ominous"
   ],
   "entries": [
-    {"item": "hextale:hextech_dust", "chance": 0.6, "min": 2, "max": 6},
-    {"item": "hextale:unstable_hextech", "chance": 0.3}
-  ]
+    {
+      "item": "hextale:hextech_dust",
+      "chance": 0.6,
+      "min": 2,
+      "max": 6
+    },
+    {
+      "item": "hextale:unstable_hextech",
+      "chance": 0.3
+    }
+  ],
+  "conditions": []
 }

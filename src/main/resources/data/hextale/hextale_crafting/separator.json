@@ -5,8 +5,12 @@
     "BBB"
   ],
   "key": {
-    "B": "hextale:brass_ingot",
-    "G": "minecraft:glass"
+    "B": {
+      "item": "hextale:brass_ingot"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    }
   },
   "result": {
     "id": "hextale:separator"

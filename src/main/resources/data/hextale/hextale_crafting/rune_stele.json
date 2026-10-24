@@ -5,9 +5,15 @@
     "BBB"
   ],
   "key": {
-    "A": "minecraft:amethyst_shard",
-    "C": "hextale:chiseled_magic_bricks",
-    "B": "hextale:magic_bricks"
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "C": {
+      "item": "hextale:chiseled_magic_bricks"
+    },
+    "B": {
+      "item": "hextale:magic_bricks"
+    }
   },
   "result": {
     "id": "hextale:rune_stele"

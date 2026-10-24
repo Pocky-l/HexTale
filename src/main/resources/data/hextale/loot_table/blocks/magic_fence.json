@@ -2,16 +2,19 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": {
-        "type": "minecraft:survives_explosion"
-      },
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "hextale:magic_fence"
         }
       ],
-      "rolls": 1
+      "rolls": 1,
+      "bonus_rolls": 0.0
     }
   ],
   "random_sequence": "hextale:blocks/magic_fence"

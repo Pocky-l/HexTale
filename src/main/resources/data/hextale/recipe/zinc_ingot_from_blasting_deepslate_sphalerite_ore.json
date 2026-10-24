@@ -2,7 +2,9 @@
   "type": "minecraft:blasting",
   "category": "misc",
   "group": "zinc_ingot",
-  "ingredient": "hextale:deepslate_sphalerite_ore",
+  "ingredient": {
+    "item": "hextale:deepslate_sphalerite_ore"
+  },
   "result": {
     "id": "hextale:zinc_ingot"
   },

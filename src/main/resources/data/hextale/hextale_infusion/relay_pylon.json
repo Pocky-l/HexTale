@@ -1,12 +1,26 @@
 {
-  "center": "minecraft:lightning_rod",
+  "center": {
+    "item": "minecraft:lightning_rod"
+  },
   "pedestals": [
-    "minecraft:amethyst_shard",
-    "minecraft:amethyst_shard",
-    "minecraft:calcite",
-    "minecraft:calcite",
-    "minecraft:copper_ingot",
-    "minecraft:copper_ingot"
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "minecraft:calcite"
+    },
+    {
+      "item": "minecraft:calcite"
+    },
+    {
+      "item": "minecraft:copper_ingot"
+    },
+    {
+      "item": "minecraft:copper_ingot"
+    }
   ],
   "essences": {
     "spark": 12,

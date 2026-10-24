@@ -1,12 +1,26 @@
 {
-  "center": "hextale:hextech_crystal",
+  "center": {
+    "item": "hextale:hextech_crystal"
+  },
   "pedestals": [
-    "minecraft:feather",
-    "minecraft:feather",
-    "minecraft:iron_hoe",
-    "hextale:brass_ingot",
-    "hextale:brass_ingot",
-    "hextale:polished_magic_stone"
+    {
+      "item": "minecraft:feather"
+    },
+    {
+      "item": "minecraft:feather"
+    },
+    {
+      "item": "minecraft:iron_hoe"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    },
+    {
+      "item": "hextale:polished_magic_stone"
+    }
   ],
   "essences": {
     "air": 16,

@@ -1,5 +1,7 @@
 {
-  "catalyst": "minecraft:bone_meal",
+  "catalyst": {
+    "item": "minecraft:bone_meal"
+  },
   "essences": {
     "plant": 8,
     "sap": 3

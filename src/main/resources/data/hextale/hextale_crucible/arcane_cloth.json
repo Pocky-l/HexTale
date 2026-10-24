@@ -1,5 +1,7 @@
 {
-  "catalyst": "#minecraft:wool",
+  "catalyst": {
+    "tag": "minecraft:wool"
+  },
   "essences": {
     "magic": 3,
     "beast": 2

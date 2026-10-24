@@ -3,7 +3,9 @@
     "BBB"
   ],
   "key": {
-    "B": "hextale:brass_ingot"
+    "B": {
+      "item": "hextale:brass_ingot"
+    }
   },
   "result": {
     "id": "hextale:brass_pipe",

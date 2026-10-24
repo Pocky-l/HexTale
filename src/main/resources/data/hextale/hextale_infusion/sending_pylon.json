@@ -1,11 +1,23 @@
 {
-  "center": "hextale:hextech_crystal",
+  "center": {
+    "item": "hextale:hextech_crystal"
+  },
   "pedestals": [
-    "minecraft:dropper",
-    "minecraft:feather",
-    "hextale:brass_ingot",
-    "hextale:brass_ingot",
-    "hextale:magic_stone_pillar"
+    {
+      "item": "minecraft:dropper"
+    },
+    {
+      "item": "minecraft:feather"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    },
+    {
+      "item": "hextale:magic_stone_pillar"
+    }
   ],
   "essences": {
     "air": 28,

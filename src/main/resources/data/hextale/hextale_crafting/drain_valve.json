@@ -4,9 +4,15 @@
     "BPB"
   ],
   "key": {
-    "I": "minecraft:iron_ingot",
-    "B": "hextale:brass_ingot",
-    "P": "hextale:brass_pipe"
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "hextale:brass_ingot"
+    },
+    "P": {
+      "item": "hextale:brass_pipe"
+    }
   },
   "result": {
     "id": "hextale:drain_valve",

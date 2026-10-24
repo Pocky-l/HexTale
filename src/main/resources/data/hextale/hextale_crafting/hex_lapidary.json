@@ -5,11 +5,21 @@
     "P P"
   ],
   "key": {
-    "S": "minecraft:smooth_stone_slab",
-    "C": "minecraft:iron_bars",
-    "I": "minecraft:iron_ingot",
-    "D": "minecraft:grindstone",
-    "P": "#minecraft:planks"
+    "S": {
+      "item": "minecraft:smooth_stone_slab"
+    },
+    "C": {
+      "item": "minecraft:iron_bars"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "D": {
+      "item": "minecraft:grindstone"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    }
   },
   "result": {
     "id": "hextale:hex_lapidary"

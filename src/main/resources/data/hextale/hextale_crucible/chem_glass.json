@@ -1,5 +1,7 @@
 {
-  "catalyst": "minecraft:glass",
+  "catalyst": {
+    "item": "minecraft:glass"
+  },
   "essences": {
     "decay": 3
   },

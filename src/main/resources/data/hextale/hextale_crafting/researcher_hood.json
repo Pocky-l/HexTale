@@ -4,8 +4,12 @@
     "C C"
   ],
   "key": {
-    "C": "hextale:arcane_cloth",
-    "B": "hextale:brass_ingot"
+    "C": {
+      "item": "hextale:arcane_cloth"
+    },
+    "B": {
+      "item": "hextale:brass_ingot"
+    }
   },
   "result": {
     "id": "hextale:researcher_hood"

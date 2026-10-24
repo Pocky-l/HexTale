@@ -1,5 +1,7 @@
 {
-  "catalyst": "minecraft:fermented_spider_eye",
+  "catalyst": {
+    "item": "minecraft:fermented_spider_eye"
+  },
   "essences": {
     "decay": 8,
     "water": 4

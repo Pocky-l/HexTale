@@ -5,10 +5,18 @@
     "III"
   ],
   "key": {
-    "I": "minecraft:iron_ingot",
-    "G": "hextale:chem_glass",
-    "C": "minecraft:copper_ingot",
-    "F": "minecraft:flint_and_steel"
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "G": {
+      "item": "hextale:chem_glass"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "F": {
+      "item": "minecraft:flint_and_steel"
+    }
   },
   "result": {
     "id": "hextale:chem_burner"

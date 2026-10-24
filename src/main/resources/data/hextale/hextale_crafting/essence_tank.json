@@ -5,8 +5,12 @@
     "GGG"
   ],
   "key": {
-    "S": "#minecraft:wooden_slabs",
-    "G": "minecraft:glass"
+    "S": {
+      "tag": "minecraft:wooden_slabs"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    }
   },
   "result": {
     "id": "hextale:essence_tank"

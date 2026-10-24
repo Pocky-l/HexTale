@@ -1,0 +1,12 @@
+{
+  "parent": "hextale:block/hex_lapidary",
+  "loader": "neoforge:composite",
+  "children": {
+    "part0": {
+      "parent": "hextale:block/hex_lapidary"
+    },
+    "part1": {
+      "parent": "hextale:block/hex_lapidary_disc"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "hextale:block/whirl_reaper",
+  "loader": "neoforge:composite",
+  "children": {
+    "part0": {
+      "parent": "hextale:block/whirl_reaper"
+    },
+    "part1": {
+      "parent": "hextale:block/whirl_reaper_vanes"
+    }
+  }
+}

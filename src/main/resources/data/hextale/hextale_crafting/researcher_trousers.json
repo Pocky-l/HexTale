@@ -5,8 +5,12 @@
     "C C"
   ],
   "key": {
-    "C": "hextale:arcane_cloth",
-    "L": "minecraft:leather"
+    "C": {
+      "item": "hextale:arcane_cloth"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    }
   },
   "result": {
     "id": "hextale:researcher_trousers"

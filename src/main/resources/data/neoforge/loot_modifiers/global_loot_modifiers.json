@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "entries": [
+    "hextale:hextech_finds_common",
+    "hextale:hextech_finds_deep",
+    "hextale:rune_scrolls_ancient",
+    "hextale:rune_scrolls_common",
+    "hextale:rune_scrolls_deep"
+  ]
+}

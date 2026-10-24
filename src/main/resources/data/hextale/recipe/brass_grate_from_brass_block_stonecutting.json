@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "hextale:brass_block",
+  "ingredient": {
+    "item": "hextale:brass_block"
+  },
   "result": {
     "id": "hextale:brass_grate",
     "count": 4

@@ -1,11 +1,23 @@
 {
-  "center": "hextale:hexsteel_ingot",
+  "center": {
+    "item": "hextale:hexsteel_ingot"
+  },
   "pedestals": [
-    "minecraft:diamond",
-    "minecraft:diamond",
-    "hextale:hextech_dust",
-    "hextale:hextech_dust",
-    "hextale:hextech_crystal"
+    {
+      "item": "minecraft:diamond"
+    },
+    {
+      "item": "minecraft:diamond"
+    },
+    {
+      "item": "hextale:hextech_dust"
+    },
+    {
+      "item": "hextale:hextech_dust"
+    },
+    {
+      "item": "hextale:hextech_crystal"
+    }
   ],
   "essences": {
     "crystal": 40,

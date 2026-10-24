@@ -1,10 +1,20 @@
 {
-  "center": "minecraft:paper",
+  "center": {
+    "item": "minecraft:paper"
+  },
   "pedestals": [
-    "minecraft:paper",
-    "minecraft:paper",
-    "minecraft:slime_ball",
-    "minecraft:amethyst_shard"
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:slime_ball"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    }
   ],
   "essences": {
     "magic": 6,

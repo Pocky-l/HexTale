@@ -5,9 +5,15 @@
     "BCB"
   ],
   "key": {
-    "I": "hextale:brass_ingot",
-    "B": "hextale:magic_bricks",
-    "C": "hextale:chiseled_magic_bricks"
+    "I": {
+      "item": "hextale:brass_ingot"
+    },
+    "B": {
+      "item": "hextale:magic_bricks"
+    },
+    "C": {
+      "item": "hextale:chiseled_magic_bricks"
+    }
   },
   "result": {
     "id": "hextale:pedestal",

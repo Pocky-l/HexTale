@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "group": "wooden_fence",
   "key": {
-    "#": "minecraft:stick",
-    "W": "hextale:magic_planks"
+    "#": {
+      "item": "minecraft:stick"
+    },
+    "W": {
+      "item": "hextale:magic_planks"
+    }
   },
   "pattern": [
     "W#W",

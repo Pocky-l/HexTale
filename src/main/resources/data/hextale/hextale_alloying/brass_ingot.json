@@ -1,11 +1,15 @@
 {
   "inputs": [
     {
-      "ingredient": "minecraft:copper_ingot",
+      "ingredient": {
+        "item": "minecraft:copper_ingot"
+      },
       "count": 3
     },
     {
-      "ingredient": "#c:ingots/zinc",
+      "ingredient": {
+        "tag": "c:ingots/zinc"
+      },
       "count": 1
     }
   ],

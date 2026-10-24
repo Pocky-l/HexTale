@@ -4,9 +4,15 @@
     "G G"
   ],
   "key": {
-    "L": "minecraft:leather",
-    "B": "hextale:brass_ingot",
-    "G": "minecraft:glass_pane"
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "B": {
+      "item": "hextale:brass_ingot"
+    },
+    "G": {
+      "item": "minecraft:glass_pane"
+    }
   },
   "result": {
     "id": "hextale:researchers_goggles"

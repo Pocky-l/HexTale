@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "hextale:polished_magic_stone",
+  "ingredient": {
+    "item": "hextale:polished_magic_stone"
+  },
   "result": {
     "id": "hextale:magic_stone_pillar",
     "count": 1

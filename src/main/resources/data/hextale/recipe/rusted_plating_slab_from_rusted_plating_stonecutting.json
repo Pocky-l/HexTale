@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "hextale:rusted_plating",
+  "ingredient": {
+    "item": "hextale:rusted_plating"
+  },
   "result": {
     "id": "hextale:rusted_plating_slab",
     "count": 2

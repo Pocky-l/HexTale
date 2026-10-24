@@ -3,5 +3,7 @@
   "target": "plant",
   "amount": 8,
   "purity": 0.65,
-  "sample": "minecraft:bone_meal"
+  "sample": {
+    "item": "minecraft:bone_meal"
+  }
 }

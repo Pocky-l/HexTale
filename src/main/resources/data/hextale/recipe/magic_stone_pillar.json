@@ -6,7 +6,9 @@
     "S"
   ],
   "key": {
-    "S": "hextale:polished_magic_stone"
+    "S": {
+      "item": "hextale:polished_magic_stone"
+    }
   },
   "result": {
     "id": "hextale:magic_stone_pillar",

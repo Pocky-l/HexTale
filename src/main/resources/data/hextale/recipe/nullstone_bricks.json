@@ -6,7 +6,9 @@
     "SS"
   ],
   "key": {
-    "S": "hextale:polished_nullstone"
+    "S": {
+      "item": "hextale:polished_nullstone"
+    }
   },
   "result": {
     "id": "hextale:nullstone_bricks",

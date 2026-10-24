@@ -1,12 +1,26 @@
 {
-  "center": "hextale:hextech_pickaxe",
+  "center": {
+    "item": "hextale:hextech_pickaxe"
+  },
   "pedestals": [
-    "hextale:hextech_gemstone",
-    "hextale:hextech_gemstone",
-    "minecraft:diamond",
-    "minecraft:diamond",
-    "hextale:hexsteel_ingot",
-    "hextale:hexsteel_ingot"
+    {
+      "item": "hextale:hextech_gemstone"
+    },
+    {
+      "item": "hextale:hextech_gemstone"
+    },
+    {
+      "item": "minecraft:diamond"
+    },
+    {
+      "item": "minecraft:diamond"
+    },
+    {
+      "item": "hextale:hexsteel_ingot"
+    },
+    {
+      "item": "hextale:hexsteel_ingot"
+    }
   ],
   "essences": {
     "metal": 32,

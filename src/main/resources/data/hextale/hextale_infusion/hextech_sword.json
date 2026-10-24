@@ -1,10 +1,20 @@
 {
-  "center": "minecraft:iron_sword",
+  "center": {
+    "item": "minecraft:iron_sword"
+  },
   "pedestals": [
-    "hextale:hextech_crystal",
-    "hextale:brass_ingot",
-    "hextale:brass_ingot",
-    "minecraft:amethyst_shard"
+    {
+      "item": "hextale:hextech_crystal"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    }
   ],
   "essences": {
     "metal": 28,

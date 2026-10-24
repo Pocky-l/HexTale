@@ -1,0 +1,137 @@
+{
+  "parent": "hextale:item/essence/magic",
+  "overrides": [
+    {
+      "predicate": {
+        "hextale:select": 0.01
+      },
+      "model": "hextale:item/essence/fire"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.02
+      },
+      "model": "hextale:item/essence/water"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.03
+      },
+      "model": "hextale:item/essence/earth"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.04
+      },
+      "model": "hextale:item/essence/air"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.05
+      },
+      "model": "hextale:item/essence/light"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.06
+      },
+      "model": "hextale:item/essence/shadow"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.07
+      },
+      "model": "hextale:item/essence/life"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.08
+      },
+      "model": "hextale:item/essence/metal"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.09
+      },
+      "model": "hextale:item/essence/spark"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.1
+      },
+      "model": "hextale:item/essence/steam"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.11
+      },
+      "model": "hextale:item/essence/magma"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.12
+      },
+      "model": "hextale:item/essence/ash"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.13
+      },
+      "model": "hextale:item/essence/plant"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.14
+      },
+      "model": "hextale:item/essence/crystal"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.15
+      },
+      "model": "hextale:item/essence/ore"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.16
+      },
+      "model": "hextale:item/essence/cold"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.17
+      },
+      "model": "hextale:item/essence/sap"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.18
+      },
+      "model": "hextale:item/essence/beast"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.19
+      },
+      "model": "hextale:item/essence/decay"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.2
+      },
+      "model": "hextale:item/essence/magic"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.21
+      },
+      "model": "hextale:item/essence/rift"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.22
+      },
+      "model": "hextale:item/essence/circuit"
+    }
+  ]
+}

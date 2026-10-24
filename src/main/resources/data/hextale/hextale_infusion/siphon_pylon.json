@@ -1,11 +1,23 @@
 {
-  "center": "hextale:essence_tank",
+  "center": {
+    "item": "hextale:essence_tank"
+  },
   "pedestals": [
-    "hextale:hextech_crystal",
-    "hextale:brass_pipe",
-    "hextale:brass_pipe",
-    "minecraft:glass_bottle",
-    "minecraft:glass_bottle"
+    {
+      "item": "hextale:hextech_crystal"
+    },
+    {
+      "item": "hextale:brass_pipe"
+    },
+    {
+      "item": "hextale:brass_pipe"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    }
   ],
   "essences": {
     "water": 16,

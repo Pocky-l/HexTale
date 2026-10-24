@@ -3,7 +3,9 @@
   "category": "building",
   "group": "wooden_stairs",
   "key": {
-    "#": "hextale:magic_planks"
+    "#": {
+      "item": "hextale:magic_planks"
+    }
   },
   "pattern": [
     "#  ",

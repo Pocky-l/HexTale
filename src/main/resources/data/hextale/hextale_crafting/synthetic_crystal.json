@@ -1,15 +1,21 @@
 {
   "ingredients": [
-    "minecraft:amethyst_shard",
-    "minecraft:amethyst_shard",
     {
-      "neoforge:ingredient_type": "neoforge:components",
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
       "items": "hextale:chem_vial",
       "components": {
         "hextale:brew": "refined_shimmer"
-      }
+      },
+      "type": "neoforge:components"
     },
-    "hextale:hextech_dust"
+    {
+      "item": "hextale:hextech_dust"
+    }
   ],
   "result": {
     "id": "hextale:synthetic_crystal"

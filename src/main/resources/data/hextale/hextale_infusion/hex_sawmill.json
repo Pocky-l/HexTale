@@ -1,12 +1,26 @@
 {
-  "center": "hextale:hextech_crystal",
+  "center": {
+    "item": "hextale:hextech_crystal"
+  },
   "pedestals": [
-    "minecraft:iron_axe",
-    "minecraft:dark_oak_log",
-    "minecraft:dark_oak_log",
-    "minecraft:oak_sapling",
-    "hextale:brass_ingot",
-    "hextale:brass_ingot"
+    {
+      "item": "minecraft:iron_axe"
+    },
+    {
+      "item": "minecraft:dark_oak_log"
+    },
+    {
+      "item": "minecraft:dark_oak_log"
+    },
+    {
+      "item": "minecraft:oak_sapling"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    }
   ],
   "essences": {
     "air": 16,

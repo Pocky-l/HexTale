@@ -1,5 +1,7 @@
 {
-  "catalyst": "#hextale:fuel_catalysts",
+  "catalyst": {
+    "tag": "hextale:fuel_catalysts"
+  },
   "essences": {
     "fire": 8,
     "ash": 4

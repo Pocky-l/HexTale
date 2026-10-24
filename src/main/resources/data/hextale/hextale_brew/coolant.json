@@ -1,5 +1,7 @@
 {
-  "catalyst": "minecraft:snowball",
+  "catalyst": {
+    "item": "minecraft:snowball"
+  },
   "essences": {
     "cold": 8,
     "water": 4

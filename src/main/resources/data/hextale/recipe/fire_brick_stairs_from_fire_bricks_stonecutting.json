@@ -1,6 +1,8 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": "hextale:fire_bricks",
+  "ingredient": {
+    "item": "hextale:fire_bricks"
+  },
   "result": {
     "id": "hextale:fire_brick_stairs"
   }

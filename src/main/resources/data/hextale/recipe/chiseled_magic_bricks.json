@@ -6,7 +6,9 @@
     "#"
   ],
   "key": {
-    "#": "hextale:magic_brick_slab"
+    "#": {
+      "item": "hextale:magic_brick_slab"
+    }
   },
   "result": {
     "id": "hextale:chiseled_magic_bricks"

@@ -157,9 +157,6 @@ public class ChemVialItem extends Item implements ProjectileItem {
             shimmerEffects().forEach(effect -> entity.addEffect(new MobEffectInstance(effect)));
             entity.getPersistentData().putLong(SHIMMER_UNTIL, level.getGameTime() + (long) (SHIMMER_COOLDOWN * 20));
         }
-        if (entity instanceof Player player && player.getAbilities().instabuild) {
-            return stack;
-        }
         stack.shrink(1);
         if (stack.isEmpty()) {
             return new ItemStack(Items.GLASS_BOTTLE);

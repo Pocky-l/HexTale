@@ -1,10 +1,20 @@
 {
-  "center": "minecraft:iron_shovel",
+  "center": {
+    "item": "minecraft:iron_shovel"
+  },
   "pedestals": [
-    "hextale:hextech_crystal",
-    "hextale:brass_ingot",
-    "hextale:brass_ingot",
-    "minecraft:flint"
+    {
+      "item": "hextale:hextech_crystal"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    },
+    {
+      "item": "minecraft:flint"
+    }
   ],
   "essences": {
     "plant": 16,

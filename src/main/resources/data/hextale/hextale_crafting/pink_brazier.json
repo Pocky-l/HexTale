@@ -5,15 +5,19 @@
     "I I"
   ],
   "key": {
-    "P": "hextale:rusted_plating",
+    "P": {
+      "item": "hextale:rusted_plating"
+    },
     "V": {
-      "neoforge:ingredient_type": "neoforge:components",
       "items": "hextale:chem_vial",
       "components": {
         "hextale:brew": "refined_shimmer"
-      }
+      },
+      "type": "neoforge:components"
     },
-    "I": "minecraft:iron_bars"
+    "I": {
+      "item": "minecraft:iron_bars"
+    }
   },
   "result": {
     "id": "hextale:pink_brazier"

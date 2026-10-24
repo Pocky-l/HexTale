@@ -3,5 +3,7 @@
   "target": "magic",
   "amount": 8,
   "purity": 0.65,
-  "sample": "#hextale:magic_tree_catalysts"
+  "sample": {
+    "tag": "hextale:magic_tree_catalysts"
+  }
 }

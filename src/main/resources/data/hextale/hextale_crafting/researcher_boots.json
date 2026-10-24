@@ -4,9 +4,15 @@
     "LBL"
   ],
   "key": {
-    "C": "hextale:arcane_cloth",
-    "L": "minecraft:leather",
-    "B": "hextale:brass_ingot"
+    "C": {
+      "item": "hextale:arcane_cloth"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "B": {
+      "item": "hextale:brass_ingot"
+    }
   },
   "result": {
     "id": "hextale:researcher_boots"

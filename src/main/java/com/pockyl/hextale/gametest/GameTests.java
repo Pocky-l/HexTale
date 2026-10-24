@@ -19,8 +19,9 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Registers the {@link HexTest} methods as game tests: each method becomes a test function on the 1x1x1
- * {@code hextale:empty} structure in its own batch, run headless by {@code gradlew runGameTestServer}. (26.x registers
+ * Registers the {@link HexTest} methods as game tests: each method becomes a test function on the 8x8x8
+ * {@code hextale:empty} structure in its own batch (1.21.1 walls the structure in with barriers, so it is as wide as
+ * the tests reach), run headless by {@code gradlew runGameTestServer}. (26.x registers
  * them in the test function registry; 1.21.1 takes them from a {@link GameTestGenerator}.)
  */
 public final class GameTests {
@@ -51,8 +52,9 @@ public final class GameTests {
         List<TestFunction> functions = new ArrayList<>();
         for (Test test : collect()) {
             String name = Hextale.MOD_ID + ":" + test.name();
-            functions.add(new TestFunction(name, name, STRUCTURE.toString(), test.settings().maxTicks(), test.settings().setupTicks(), true,
-                    helper -> run(test.method(), helper)));
+            // Sky access: no barrier ceiling, so trees grow and things fall from any height.
+            functions.add(new TestFunction(name, name, STRUCTURE.toString(), net.minecraft.world.level.block.Rotation.NONE,
+                    test.settings().maxTicks(), test.settings().setupTicks(), true, false, 1, 1, true, helper -> run(test.method(), helper)));
         }
         return functions;
     }
