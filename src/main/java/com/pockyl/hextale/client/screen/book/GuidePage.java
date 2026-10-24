@@ -96,8 +96,8 @@ final class GuidePage {
     private final Font font;
     /** The dev editor shows every step, fog or not. */
     boolean revealAll;
-    /** The dev editor's switch: devices still being worked out (WIP) leave the map. Kept until the game closes. */
-    static boolean hideWip;
+    /** Devices still being worked out (WIP) stay off the map; only the dev editor's switch shows them. Kept until the game closes. */
+    static boolean hideWip = true;
     @Nullable
     private Quest selected;
     /** The step under the mouse while the map is drawn. */
@@ -200,7 +200,7 @@ final class GuidePage {
     /** Draws the path in map coordinates (the caller has set up the camera's pose). */
     void renderMap(GuiGraphicsExtractor graphics, RuneKnowledge knowledge, long now, @Nullable Quest hovered) {
         List<Quest> shown = Guide.client().all().stream().filter(quest -> seen(quest, knowledge)).toList();
-        List<Quest> ahead = Guide.client().all().stream().filter(quest -> !revealAll && Guide.ahead(quest, knowledge)).toList();
+        List<Quest> ahead = Guide.client().all().stream().filter(quest -> !revealAll && ahead(quest, knowledge)).toList();
         focus = hovered;
         renderHaze(graphics, shown);
         for (Quest quest : ahead) {
@@ -886,7 +886,7 @@ final class GuidePage {
         Quest best = null;
         float bestDistance = Float.MAX_VALUE;
         for (Quest quest : Guide.client().all()) {
-            if (!seen(quest, knowledge) && !Guide.ahead(quest, knowledge)) {
+            if (!seen(quest, knowledge) && !ahead(quest, knowledge)) {
                 continue;
             }
             float reach = Math.max(size(quest) / 2.0F + 1, 8 / book.zoom());
@@ -937,6 +937,11 @@ final class GuidePage {
     /** Whether the map shows a step as done or open (the dev editor shows them all). */
     private boolean seen(Quest quest, RuneKnowledge knowledge) {
         return !hiddenWip(quest) && (revealAll || Guide.visible(quest, knowledge));
+    }
+
+    /** A step beyond the reachable ones, shown in the fog; a hidden WIP step is not on the map at all. */
+    private static boolean ahead(Quest quest, RuneKnowledge knowledge) {
+        return !hiddenWip(quest) && Guide.ahead(quest, knowledge);
     }
 
     private static boolean hiddenWip(Quest quest) {

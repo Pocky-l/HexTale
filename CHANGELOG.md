@@ -4,7 +4,9 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2026-10-24
+Hextale leaves beta.
+
 ### Added
 - Hex Foundry: a 3x3x3 kiln of Fire Bricks (hollow inside, iron bars in the middle of the top) with the new Foundry
   Hatch in the middle of its front, woken with hextech dust after it is researched. Slow to wake, but once hot it melts
@@ -22,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Every multiblock now wakes to a pinch of hextech dust (one is spent; free in creative), with a glittering puff and a
   wave of light climbing the structure. The Big Essence Jar no longer takes a hextech crystal.
+- Devices still being worked out are no longer shown on the research map.
 
 ## [1.0.0-beta.5] - 2026-10-23
 ### Added
