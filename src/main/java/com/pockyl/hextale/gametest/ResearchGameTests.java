@@ -334,7 +334,7 @@ public final class ResearchGameTests {
         }
         StringBuilder sample = new StringBuilder();
         for (Item item : List.of(Items.OAK_LOG, Items.OAK_PLANKS, Items.STICK, Items.CRAFTING_TABLE, Items.IRON_PICKAXE, Items.IRON_BLOCK,
-                Items.GLASS, Items.BREAD, Items.TNT, Items.PISTON, Items.ENDER_EYE, Items.WOOL.pick(DyeColor.WHITE), Items.DIAMOND_SWORD,
+                Items.GLASS, Items.BREAD, Items.TNT, Items.PISTON, Items.ENDER_EYE, Items.WHITE_WOOL, Items.DIAMOND_SWORD,
                 Items.COOKED_BEEF, Items.NETHERITE_SWORD, Items.SPONGE, Items.BOOKSHELF, Items.LANTERN, Items.SHULKER_BOX,
                 Items.ELYTRA, Items.DRAGON_EGG, Items.MUSIC_DISC_CAT, Items.ZOMBIE_SPAWN_EGG, Items.DIRT, Items.STONE_BRICKS)) {
             sample.append(BuiltInRegistries.ITEM.getKey(item).getPath()).append('=').append(all.get(item)).append("; ");
@@ -401,7 +401,7 @@ public final class ResearchGameTests {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at.below(), Blocks.MAGMA_BLOCK);
         helper.setBlock(at, ModBlocks.ALEMBIC.get().defaultBlockState().setValue(AlembicBlock.LIT, true));
-        AlembicBlockEntity alembic = helper.getBlockEntity(at, AlembicBlockEntity.class);
+        AlembicBlockEntity alembic = helper.<AlembicBlockEntity>getBlockEntity(at);
         alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.OAK_PLANKS));
         ServerPlayer boiler = player(helper);
         boiler.setGameMode(GameType.SURVIVAL);
@@ -424,7 +424,7 @@ public final class ResearchGameTests {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at.below(), Blocks.MAGMA_BLOCK);
         helper.setBlock(at, ModBlocks.ALEMBIC.get().defaultBlockState().setValue(AlembicBlock.LIT, true));
-        AlembicBlockEntity alembic = helper.getBlockEntity(at, AlembicBlockEntity.class);
+        AlembicBlockEntity alembic = helper.<AlembicBlockEntity>getBlockEntity(at);
         alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.OAK_PLANKS));
         ServerPlayer stranger = player(helper);
         stranger.setGameMode(GameType.SURVIVAL);
@@ -443,7 +443,7 @@ public final class ResearchGameTests {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at.below(), Blocks.MAGMA_BLOCK);
         helper.setBlock(at, ModBlocks.ALEMBIC.get().defaultBlockState().setValue(AlembicBlock.LIT, true));
-        AlembicBlockEntity alembic = helper.getBlockEntity(at, AlembicBlockEntity.class);
+        AlembicBlockEntity alembic = helper.<AlembicBlockEntity>getBlockEntity(at);
         alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.OAK_PLANKS));
         helper.runAfterDelay(120, () -> {
             helper.assertTrue(alembic.input().getCount() == 1 && alembic.tank().isEmpty(), "no water, no boiling");
@@ -459,7 +459,7 @@ public final class ResearchGameTests {
         helper.setBlock(pump, ModBlocks.PUMP.get().defaultBlockState().setValue(PumpBlock.WATERLOGGED, true));
         helper.setBlock(pump.above(), ModBlocks.BRASS_PIPE.get());
         helper.setBlock(alembicAt, ModBlocks.ALEMBIC.get().defaultBlockState().setValue(AlembicBlock.FACING, Direction.NORTH));
-        AlembicBlockEntity alembic = helper.getBlockEntity(alembicAt, AlembicBlockEntity.class);
+        AlembicBlockEntity alembic = helper.<AlembicBlockEntity>getBlockEntity(alembicAt);
         helper.assertTrue(helper.getBlockState(alembicAt).getValue(EssenceMachine.PORTS.get(Direction.SOUTH)), "the pipe joins the alembic's back");
         helper.succeedWhen(() -> helper.assertTrue(alembic.water() >= 500, "the pump fills the flask, got " + alembic.water() + " mB"));
     }
@@ -474,9 +474,9 @@ public final class ResearchGameTests {
         helper.setBlock(separatorAt, ModBlocks.SEPARATOR.get());
         helper.setBlock(jarAt, ModBlocks.ESSENCE_TANK.get());
         helper.setBlock(separatorAt.south(), ModBlocks.BRASS_PIPE.get());
-        EssenceTankBlockEntity jar = helper.getBlockEntity(jarAt, EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity jar = helper.<EssenceTankBlockEntity>getBlockEntity(jarAt);
         jar.tank().set(EssenceMix.pure(Essence.FIRE, 40));
-        com.pockyl.hextale.block.SeparatorBlockEntity separator = helper.getBlockEntity(separatorAt, com.pockyl.hextale.block.SeparatorBlockEntity.class);
+        com.pockyl.hextale.block.SeparatorBlockEntity separator = helper.<com.pockyl.hextale.block.SeparatorBlockEntity>getBlockEntity(separatorAt);
         helper.succeedWhen(() -> helper.assertTrue(separator.mix().amount() > 0 || jar.tank().amount() < 40,
                 "the separator draws from the jar through the pipe: jar " + jar.tank().amount() + ", separator " + separator.mix().amount()));
     }
@@ -500,13 +500,13 @@ public final class ResearchGameTests {
                 new ItemStack(ModItems.HEXTECH_DUST.get()));
         helper.assertTrue(found.isPresent(), "the big jar is found");
         com.pockyl.hextale.multiblock.Multiblocks.form(helper.getLevel(), found.get().getKey(), found.get().getValue(), null);
-        EssenceTankBlockEntity jar = helper.getBlockEntity(corner.offset(1, 0, 1), EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity jar = helper.<EssenceTankBlockEntity>getBlockEntity(corner.offset(1, 0, 1));
         jar.tank().set(EssenceMix.pure(Essence.FIRE, 40));
         // Separator north of the jar, its back (south) piped to the jar's north side.
         BlockPos separatorAt = corner.offset(1, 0, -2);
         helper.setBlock(separatorAt, ModBlocks.SEPARATOR.get());
         helper.setBlock(separatorAt.south(), ModBlocks.BRASS_PIPE.get());
-        com.pockyl.hextale.block.SeparatorBlockEntity separator = helper.getBlockEntity(separatorAt, com.pockyl.hextale.block.SeparatorBlockEntity.class);
+        com.pockyl.hextale.block.SeparatorBlockEntity separator = helper.<com.pockyl.hextale.block.SeparatorBlockEntity>getBlockEntity(separatorAt);
         helper.succeedWhen(() -> helper.assertTrue(separator.mix().amount() > 0,
                 "the separator draws from the big jar: jar " + jar.tank().amount() + ", separator " + separator.mix().amount()));
     }
@@ -518,7 +518,7 @@ public final class ResearchGameTests {
         helper.setBlock(tankAt, ModBlocks.ESSENCE_TANK.get());
         helper.setBlock(tankAt.below(), ModBlocks.BRASS_PIPE.get());
         helper.setBlock(valveAt, ModBlocks.DRAIN_VALVE.get());
-        EssenceTankBlockEntity tank = helper.getBlockEntity(tankAt, EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity tank = helper.<EssenceTankBlockEntity>getBlockEntity(tankAt);
         tank.tank().set(EssenceMix.pure(Essence.FIRE, 12));
         helper.runAfterDelay(30, () -> {
             helper.assertTrue(tank.tank().amount() == 12, "a shut valve lets nothing out");
@@ -532,7 +532,7 @@ public final class ResearchGameTests {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at.below(), Blocks.STONE);
         helper.setBlock(at, ModBlocks.ALEMBIC.get().defaultBlockState());
-        AlembicBlockEntity alembic = helper.getBlockEntity(at, AlembicBlockEntity.class);
+        AlembicBlockEntity alembic = helper.<AlembicBlockEntity>getBlockEntity(at);
         alembic.setItem(AlembicBlockEntity.INPUT, new ItemStack(Items.COAL, 2));
         helper.runAfterDelay(100, () -> {
             helper.assertTrue(alembic.input().getCount() == 2 && alembic.progress() == 0, "no heat, no boiling");
@@ -544,7 +544,7 @@ public final class ResearchGameTests {
     public static void theChosenEssenceIsSeparated(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState());
-        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        SeparatorBlockEntity separator = helper.<SeparatorBlockEntity>getBlockEntity(at);
         EssenceMix mixture = EssenceMix.of(java.util.Map.of(Essence.LIFE, 8, Essence.EARTH, 8));
         separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(mixture));
         separator.setItem(SeparatorBlockEntity.FUEL, new ItemStack(Items.BLAZE_POWDER, 3));
@@ -566,7 +566,7 @@ public final class ResearchGameTests {
     public static void theUnknownEssenceIsFilteredOut(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState());
-        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        SeparatorBlockEntity separator = helper.<SeparatorBlockEntity>getBlockEntity(at);
         separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(EssenceMix.pure(Essence.FIRE, 8).plus(EssenceMix.unknown(8))));
         separator.setItem(SeparatorBlockEntity.FUEL, new ItemStack(Items.BLAZE_POWDER, 2));
         separator.chooseUnknown();
@@ -583,7 +583,7 @@ public final class ResearchGameTests {
     public static void theSeparatorBurnsOnlyWhileItDrawsAnEssenceOut(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState());
-        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        SeparatorBlockEntity separator = helper.<SeparatorBlockEntity>getBlockEntity(at);
         separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(EssenceMix.of(java.util.Map.of(Essence.FIRE, 8, Essence.EARTH, 8))));
         separator.setItem(SeparatorBlockEntity.SUPPLY, new ItemStack(Items.GLASS_BOTTLE, 2));
         helper.runAfterDelay(10, () -> {
@@ -604,7 +604,7 @@ public final class ResearchGameTests {
     public static void withoutAChosenEssenceNothingIsSplit(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState());
-        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        SeparatorBlockEntity separator = helper.<SeparatorBlockEntity>getBlockEntity(at);
         separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(EssenceMix.of(java.util.Map.of(Essence.LIFE, 8, Essence.EARTH, 8))));
         helper.runAfterDelay(80, () -> {
             helper.assertTrue(separator.mix().amount() == 16 && separator.rest().isEmpty(), "the mixture waits for a chosen essence");
@@ -637,9 +637,9 @@ public final class ResearchGameTests {
         helper.setBlock(at.north(2), ModBlocks.ESSENCE_TANK.get());
         // As placed by a player: the separator shows its ports, so the pipes join them.
         helper.setBlock(at, SeparatorBlock.withLooks(helper.getBlockState(at), helper.getLevel(), helper.absolutePos(at)));
-        EssenceTankBlockEntity source = helper.getBlockEntity(at.south(2).above(), EssenceTankBlockEntity.class);
-        EssenceTankBlockEntity sink = helper.getBlockEntity(at.north(2), EssenceTankBlockEntity.class);
-        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        EssenceTankBlockEntity source = helper.<EssenceTankBlockEntity>getBlockEntity(at.south(2).above());
+        EssenceTankBlockEntity sink = helper.<EssenceTankBlockEntity>getBlockEntity(at.north(2));
+        SeparatorBlockEntity separator = helper.<SeparatorBlockEntity>getBlockEntity(at);
         source.tank().set(EssenceMix.of(java.util.Map.of(Essence.LIFE, 12, Essence.EARTH, 12)));
         separator.setItem(SeparatorBlockEntity.FUEL, new ItemStack(Items.BLAZE_POWDER, 1));
         separator.choose(Essence.EARTH);
@@ -664,8 +664,8 @@ public final class ResearchGameTests {
             helper.setBlock(pipe, ModBlocks.BRASS_PIPE.get());
         }
         helper.setBlock(at.north().east(2), ModBlocks.ESSENCE_TANK.get());
-        EssenceTankBlockEntity tank = helper.getBlockEntity(at.north().east(2), EssenceTankBlockEntity.class);
-        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        EssenceTankBlockEntity tank = helper.<EssenceTankBlockEntity>getBlockEntity(at.north().east(2));
+        SeparatorBlockEntity separator = helper.<SeparatorBlockEntity>getBlockEntity(at);
         separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(EssenceMix.of(java.util.Map.of(Essence.EARTH, 8, Essence.AIR, 8))));
         separator.setItem(SeparatorBlockEntity.FUEL, new ItemStack(Items.BLAZE_POWDER, 1));
         separator.choose(Essence.EARTH);
@@ -686,11 +686,11 @@ public final class ResearchGameTests {
         helper.setBlock(at.south(), ModBlocks.ESSENCE_TANK.get());
         helper.setBlock(at.east(), ModBlocks.BRASS_PIPE.get());
         helper.setBlock(at.east(2), ModBlocks.ESSENCE_TANK.get());
-        EssenceTankBlockEntity back = helper.getBlockEntity(at.south(), EssenceTankBlockEntity.class);
-        EssenceTankBlockEntity piped = helper.getBlockEntity(at.east(2), EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity back = helper.<EssenceTankBlockEntity>getBlockEntity(at.south());
+        EssenceTankBlockEntity piped = helper.<EssenceTankBlockEntity>getBlockEntity(at.east(2));
         back.tank().set(EssenceMix.pure(Essence.LIFE, 8));
         piped.tank().set(EssenceMix.pure(Essence.EARTH, 8));
-        SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        SeparatorBlockEntity separator = helper.<SeparatorBlockEntity>getBlockEntity(at);
         helper.succeedWhen(() -> {
             helper.assertTrue(back.tank().isEmpty() && piped.tank().isEmpty(), "both tanks were drawn empty");
             helper.assertTrue(separator.mix().amount() == 16, "into the separator's mixture, got " + separator.mix().contents());
@@ -701,7 +701,7 @@ public final class ResearchGameTests {
     public static void aCreativeTankNeverRunsDry(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.CREATIVE_ESSENCE_TANK.get());
-        EssenceTankBlockEntity tank = helper.getBlockEntity(at, EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity tank = helper.<EssenceTankBlockEntity>getBlockEntity(at);
         helper.runAfterDelay(1, () -> {
             helper.assertTrue(tank.isCreative() && tank.tank().contents().equals(EssenceTankBlockEntity.CREATIVE), "it holds every essence");
             tank.tank().remove(EssenceMix.pure(Essence.MAGMA, 100));
@@ -717,13 +717,13 @@ public final class ResearchGameTests {
     public static void aTankItemCarriesItsEssence(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.ESSENCE_TANK.get());
-        EssenceTankBlockEntity tank = helper.getBlockEntity(at, EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity tank = helper.<EssenceTankBlockEntity>getBlockEntity(at);
         tank.tank().set(EssenceMix.pure(Essence.LIGHT, 40));
         ItemStack item = new ItemStack(ModItems.ESSENCE_TANK.get());
         item.applyComponents(tank.collectComponents());
         helper.assertTrue(EssenceMix.pure(Essence.LIGHT, 40).equals(item.get(ModDataComponents.ESSENCE.get())), "the broken tank's item keeps its light");
         helper.setBlock(at.east(), ModBlocks.ESSENCE_TANK.get());
-        EssenceTankBlockEntity placed = helper.getBlockEntity(at.east(), EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity placed = helper.<EssenceTankBlockEntity>getBlockEntity(at.east());
         placed.applyComponentsFromItemStack(item);
         helper.assertTrue(placed.tank().contents().equals(EssenceMix.pure(Essence.LIGHT, 40)), "and a tank placed from it holds it again");
         helper.succeed();
@@ -736,8 +736,8 @@ public final class ResearchGameTests {
         helper.setBlock(valveAt.west(), ModBlocks.ESSENCE_TANK.get());
         helper.setBlock(valveAt.east(), ModBlocks.BRASS_PIPE.get());
         helper.setBlock(valveAt.east(2), ModBlocks.ESSENCE_TANK.get());
-        EssenceTankBlockEntity beside = helper.getBlockEntity(valveAt.west(), EssenceTankBlockEntity.class);
-        EssenceTankBlockEntity piped = helper.getBlockEntity(valveAt.east(2), EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity beside = helper.<EssenceTankBlockEntity>getBlockEntity(valveAt.west());
+        EssenceTankBlockEntity piped = helper.<EssenceTankBlockEntity>getBlockEntity(valveAt.east(2));
         beside.tank().set(EssenceMix.pure(Essence.FIRE, 40));
         piped.tank().set(EssenceMix.unknown(40));
         helper.assertTrue(helper.getBlockState(valveAt).getValue(EssenceMachine.PORTS.get(Direction.WEST)), "the valve shows its joint to the tank beside it");
@@ -749,7 +749,7 @@ public final class ResearchGameTests {
     public static void aStickeredJarTakesOnlyItsEssence(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at, ModBlocks.ESSENCE_TANK.get());
-        EssenceTankBlockEntity tank = helper.getBlockEntity(at, EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity tank = helper.<EssenceTankBlockEntity>getBlockEntity(at);
         helper.assertTrue(tank.receive(Direction.UP, EssenceMix.pure(Essence.WATER, 8), true) == 8, "a plain jar takes water");
         tank.setSticker(Essence.FIRE);
         helper.assertTrue(tank.receive(Direction.UP, EssenceMix.pure(Essence.WATER, 8), true) == 0, "a fire jar refuses water");
@@ -792,7 +792,7 @@ public final class ResearchGameTests {
         helper.assertFalse(helper.getBlockState(at.below()).getValue(BrassPipeBlock.SIDES.get(Direction.UP)).open(),
                 "the bottom is no port: the pipe below stays apart");
         // Facing north, the east face is the separator's left: make it a concentrate outlet.
-        SeparatorBlockEntity entity = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        SeparatorBlockEntity entity = helper.<SeparatorBlockEntity>getBlockEntity(at);
         entity.cycle(SeparatorBlock.Side.LEFT);
         helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.PRODUCT,
                 "the joint follows the face's new mode");
@@ -822,8 +822,8 @@ public final class ResearchGameTests {
         helper.setBlock(from, ModBlocks.ESSENCE_TANK.get());
         helper.setBlock(pipe, ModBlocks.BRASS_PIPE.get());
         helper.setBlock(to, ModBlocks.ESSENCE_TANK.get());
-        EssenceTankBlockEntity source = helper.getBlockEntity(from, EssenceTankBlockEntity.class);
-        EssenceTankBlockEntity target = helper.getBlockEntity(to, EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity source = helper.<EssenceTankBlockEntity>getBlockEntity(from);
+        EssenceTankBlockEntity target = helper.<EssenceTankBlockEntity>getBlockEntity(to);
         source.tank().set(EssenceMix.pure(Essence.WATER, 12));
         helper.succeedWhen(() -> {
             helper.assertTrue(target.tank().contents().equals(EssenceMix.pure(Essence.WATER, 12)),
@@ -845,8 +845,8 @@ public final class ResearchGameTests {
         helper.setBlock(to, ModBlocks.ESSENCE_TANK.get());
         helper.setBlock(pump, helper.getBlockState(pump).setValue(BrassPipeBlock.SIDES.get(Direction.WEST), PipeSide.OUT));
         helper.assertTrue(helper.getBlockState(to).getValue(EssenceMachine.PORTS.get(Direction.DOWN)), "the jar shows its foot fitting");
-        EssenceTankBlockEntity source = helper.getBlockEntity(from, EssenceTankBlockEntity.class);
-        EssenceTankBlockEntity target = helper.getBlockEntity(to, EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity source = helper.<EssenceTankBlockEntity>getBlockEntity(from);
+        EssenceTankBlockEntity target = helper.<EssenceTankBlockEntity>getBlockEntity(to);
         source.tank().set(EssenceMix.pure(Essence.FIRE, 12));
         helper.succeedWhen(() -> {
             helper.assertTrue(target.tank().contents().equals(EssenceMix.pure(Essence.FIRE, 12)),
@@ -864,8 +864,8 @@ public final class ResearchGameTests {
         helper.setBlock(b.below(), ModBlocks.BRASS_PIPE.get());
         helper.setBlock(a, ModBlocks.ESSENCE_TANK.get());
         helper.setBlock(b, ModBlocks.ESSENCE_TANK.get());
-        EssenceTankBlockEntity first = helper.getBlockEntity(a, EssenceTankBlockEntity.class);
-        EssenceTankBlockEntity second = helper.getBlockEntity(b, EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity first = helper.<EssenceTankBlockEntity>getBlockEntity(a);
+        EssenceTankBlockEntity second = helper.<EssenceTankBlockEntity>getBlockEntity(b);
         first.tank().set(EssenceMix.pure(Essence.WATER, 12));
         second.tank().set(EssenceMix.pure(Essence.EARTH, 12));
         helper.runAfterDelay(40, () -> {
@@ -909,8 +909,8 @@ public final class ResearchGameTests {
         helper.assertTrue(helper.getBlockState(jarAt).getValue(EssenceMachine.PORTS.get(Direction.DOWN)), "the jar shows the fitting");
         // In only: the jar pours nothing down into it, so the jar beside the pipe gets nothing.
         helper.setBlock(right.east(), ModBlocks.ESSENCE_TANK.get());
-        EssenceTankBlockEntity jar = helper.getBlockEntity(jarAt, EssenceTankBlockEntity.class);
-        EssenceTankBlockEntity beside = helper.getBlockEntity(right.east(), EssenceTankBlockEntity.class);
+        EssenceTankBlockEntity jar = helper.<EssenceTankBlockEntity>getBlockEntity(jarAt);
+        EssenceTankBlockEntity beside = helper.<EssenceTankBlockEntity>getBlockEntity(right.east());
         jar.tank().set(EssenceMix.pure(Essence.WATER, 12));
         helper.runAfterDelay(40, () -> {
             helper.assertTrue(beside.tank().isEmpty() && jar.tank().amount() == 12, "an in-only side lets nothing out of the jar");
@@ -953,10 +953,10 @@ public final class ResearchGameTests {
         for (BlockPos pos : new BlockPos[]{mixture, fire, farAway, above}) {
             helper.setBlock(pos, ModBlocks.ESSENCE_TANK.get());
         }
-        helper.getBlockEntity(mixture, EssenceTankBlockEntity.class).tank().set(EssenceMix.of(java.util.Map.of(Essence.LIFE, 8, Essence.EARTH, 8)));
-        helper.getBlockEntity(fire, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.FIRE, 16));
-        helper.getBlockEntity(farAway, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.WATER, 16));
-        helper.getBlockEntity(above, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.AIR, 16));
+        helper.<EssenceTankBlockEntity>getBlockEntity(mixture).tank().set(EssenceMix.of(java.util.Map.of(Essence.LIFE, 8, Essence.EARTH, 8)));
+        helper.<EssenceTankBlockEntity>getBlockEntity(fire).tank().set(EssenceMix.pure(Essence.FIRE, 16));
+        helper.<EssenceTankBlockEntity>getBlockEntity(farAway).tank().set(EssenceMix.pure(Essence.WATER, 16));
+        helper.<EssenceTankBlockEntity>getBlockEntity(above).tank().set(EssenceMix.pure(Essence.AIR, 16));
         InkSupply supply = table.inkSupply();
         helper.assertTrue(supply.available()[Essence.FIRE.ordinal()] == 16
                 && supply.capacity()[Essence.FIRE.ordinal()] == EssenceTankBlockEntity.CAPACITY, "a fire concentrate next to the desk is fire ink");
@@ -964,7 +964,7 @@ public final class ResearchGameTests {
         helper.assertTrue(supply.capacity()[Essence.WATER.ordinal()] == 0, "a tank too far away does not count");
         helper.assertTrue(supply.available()[Essence.AIR.ordinal()] == 16, "a jar a few blocks off and up is in reach");
         supply.spend(ink(Essence.FIRE, 5));
-        helper.assertTrue(helper.getBlockEntity(fire, EssenceTankBlockEntity.class).tank().amount() == 11, "spent ink leaves the tank");
+        helper.assertTrue(helper.<EssenceTankBlockEntity>getBlockEntity(fire).tank().amount() == 11, "spent ink leaves the tank");
         helper.succeed();
     }
 
@@ -996,7 +996,7 @@ public final class ResearchGameTests {
         // The client is told which jars the ink came from: its renderer streams them into the orb.
         helper.assertTrue(!table.inkDraws().isEmpty() && table.inkDraws().stream().allMatch(draw -> draw.essence() != null),
                 "the ink's jars are remembered for the stream");
-        helper.assertTrue(table.getUpdateTag(helper.getLevel().registryAccess()).getIntArray("ink_draws").map(data -> data.length > 0).orElse(false),
+        helper.assertTrue(table.getUpdateTag(helper.getLevel().registryAccess()).getIntArray("ink_draws").length > 0,
                 "the ink's jars travel to the client");
         RuneKnowledge knowledge = Research.of(player);
         helper.assertFalse(knowledge.researched(TOPIC), "the topic is not known until its notes are read");
@@ -1114,7 +1114,7 @@ public final class ResearchGameTests {
     public static void missingMaterialsAreNamed(GameTestHelper helper) {
         ServerPlayer player = survivalPlayer(helper);
         ResearchTableBlock.place(helper.getLevel(), helper.absolutePos(TABLE), ModBlocks.RESEARCH_TABLE.get().defaultBlockState());
-        ResearchTableBlockEntity table = helper.getBlockEntity(TABLE, ResearchTableBlockEntity.class);
+        ResearchTableBlockEntity table = helper.<ResearchTableBlockEntity>getBlockEntity(TABLE);
         helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.DIARY, "an empty table asks for the diary first");
 
         ItemStack foreign = new ItemStack(ModItems.RESEARCHERS_DIARY.get());
@@ -1179,7 +1179,7 @@ public final class ResearchGameTests {
         BlockPos amethyst = new BlockPos(1, 1, 1);
         BlockPos rod = amethyst.above();
         helper.setBlock(amethyst, Blocks.AMETHYST_BLOCK);
-        helper.setBlock(rod, Blocks.LIGHTNING_ROD.weathering().unaffected().defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
+        helper.setBlock(rod, Blocks.LIGHTNING_ROD.defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
         LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel());
         helper.assertTrue(bolt != null, "a bolt can be created");
         bolt.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above(boltAboveRod))));
@@ -1188,7 +1188,7 @@ public final class ResearchGameTests {
         bolt.tick();
         helper.succeedWhen(() -> {
             helper.assertBlockPresent(Blocks.AIR, amethyst);
-            helper.assertBlockPresent(Blocks.LIGHTNING_ROD.weathering().unaffected(), rod);
+            helper.assertBlockPresent(Blocks.LIGHTNING_ROD, rod);
             List<ItemEntity> found = orbs(helper, amethyst);
             int orbs = found.stream().mapToInt(item -> item.getItem().getCount()).sum();
             helper.assertTrue(orbs >= 1 && orbs <= 3, "the amethyst shattered into 1-3 orbs, got " + orbs);
@@ -1201,7 +1201,7 @@ public final class ResearchGameTests {
         BlockPos base = new BlockPos(1, 1, 1);
         BlockPos rod = base.above();
         helper.setBlock(base, Blocks.STONE);
-        helper.setBlock(rod, Blocks.LIGHTNING_ROD.weathering().unaffected().defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
+        helper.setBlock(rod, Blocks.LIGHTNING_ROD.defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
         orbs(helper, base).forEach(ItemEntity::discard);
         LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel());
         helper.assertTrue(bolt != null, "a bolt can be created");
@@ -1388,7 +1388,7 @@ public final class ResearchGameTests {
 
     private static ResearchTableBlockEntity stockedTable(GameTestHelper helper) {
         ResearchTableBlock.place(helper.getLevel(), helper.absolutePos(TABLE), ModBlocks.RESEARCH_TABLE.get().defaultBlockState());
-        ResearchTableBlockEntity table = helper.getBlockEntity(TABLE, ResearchTableBlockEntity.class);
+        ResearchTableBlockEntity table = helper.<ResearchTableBlockEntity>getBlockEntity(TABLE);
         table.setItem(ResearchTableBlockEntity.DIARY, new ItemStack(ModItems.RESEARCHERS_DIARY.get()));
         table.setItem(ResearchTableBlockEntity.HEXTECH, new ItemStack(ModItems.UNSTABLE_HEXTECH.get(), 3));
         return table;
@@ -1401,7 +1401,7 @@ public final class ResearchGameTests {
         for (int i = 0; i < elements.length; i++) {
             BlockPos pos = new BlockPos(-2 + i % 5, TABLE.getY() + i / 5, TABLE.getZ() + 2);
             helper.setBlock(pos, ModBlocks.ESSENCE_TANK.get());
-            EssenceTankBlockEntity tank = helper.getBlockEntity(pos, EssenceTankBlockEntity.class);
+            EssenceTankBlockEntity tank = helper.<EssenceTankBlockEntity>getBlockEntity(pos);
             tank.tank().set(EssenceMix.pure(elements[i], drops));
             tanks.put(elements[i], tank);
         }

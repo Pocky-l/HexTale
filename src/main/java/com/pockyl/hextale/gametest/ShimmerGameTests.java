@@ -84,7 +84,7 @@ public final class ShimmerGameTests {
     @HexTest(maxTicks = 800)
     public static void aFedAxolotlShedsSlime(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.AXOLOTL_TANK.get());
-        AxolotlTankBlockEntity tank = helper.getBlockEntity(AT, AxolotlTankBlockEntity.class);
+        AxolotlTankBlockEntity tank = helper.<AxolotlTankBlockEntity>getBlockEntity(AT);
         helper.assertTrue(tank.letIn(new ItemStack(Items.AXOLOTL_BUCKET)), "the axolotl goes in");
         helper.assertFalse(tank.letIn(new ItemStack(Items.AXOLOTL_BUCKET)), "only one per tank");
         tank.setRunes(PickaxeRunes.EMPTY.with(TankRune.HASTE.rune(), 3).with(TankRune.LENS.rune(), 1));
@@ -100,9 +100,9 @@ public final class ShimmerGameTests {
     public static void slimeTurnsTheWaterIntoRawShimmerAndTheStillRefinesIt(GameTestHelper helper) {
         helper.setBlock(AT.below(), ModBlocks.CHEM_BURNER.get());
         helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
-        ChemBurnerBlockEntity burner = helper.getBlockEntity(AT.below(), ChemBurnerBlockEntity.class);
+        ChemBurnerBlockEntity burner = helper.<ChemBurnerBlockEntity>getBlockEntity(AT.below());
         burner.feed(ChemVialItem.of(Brew.FUEL, 4));
-        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        CrucibleBlockEntity crucible = helper.<CrucibleBlockEntity>getBlockEntity(AT);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Research.research(player, ResearchTopics.RAW_SHIMMER);
@@ -110,8 +110,8 @@ public final class ShimmerGameTests {
         BlockPos still = new BlockPos(5, 2, 5);
         helper.setBlock(still.below(), ModBlocks.CHEM_BURNER.get());
         helper.setBlock(still, ModBlocks.CHEM_STILL.get());
-        ChemBurnerBlockEntity stillBurner = helper.getBlockEntity(still.below(), ChemBurnerBlockEntity.class);
-        ChemStillBlockEntity distiller = helper.getBlockEntity(still, ChemStillBlockEntity.class);
+        ChemBurnerBlockEntity stillBurner = helper.<ChemBurnerBlockEntity>getBlockEntity(still.below());
+        ChemStillBlockEntity distiller = helper.<ChemStillBlockEntity>getBlockEntity(still);
         boolean[] brewed = {false};
         boolean[] sawPink = {false};
         helper.succeedWhen(() -> {
@@ -140,14 +140,14 @@ public final class ShimmerGameTests {
     @HexTest
     public static void refinedShimmerIsDrunkForBuffsOnly(GameTestHelper helper) {
         ItemStack vial = ChemVialItem.of(Brew.REFINED_SHIMMER);
-        helper.assertTrue(vial.has(DataComponents.CONSUMABLE) && vial.has(DataComponents.USE_COOLDOWN), "the vial is drunk and rests after");
+        helper.assertTrue(vial.getUseAnimation() == net.minecraft.world.item.UseAnim.DRINK, "the vial is drunk");
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        vial.finishUsingItem(helper.getLevel(), player);
+        ItemStack left = vial.finishUsingItem(helper.getLevel(), player);
         helper.assertTrue(player.hasEffect(MobEffects.DAMAGE_BOOST) && player.hasEffect(MobEffects.REGENERATION)
                 && player.hasEffect(MobEffects.MOVEMENT_SPEED) && player.hasEffect(MobEffects.DAMAGE_RESISTANCE), "it gives its buffs");
         helper.assertTrue(player.getActiveEffects().stream().allMatch(effect -> effect.getEffect().value().isBeneficial()), "and nothing bad");
-        helper.assertTrue(vial.has(DataComponents.USE_REMAINDER), "the glass bottle is left");
-        helper.assertFalse(ChemVialItem.of(Brew.RAW_SHIMMER).has(DataComponents.CONSUMABLE), "raw shimmer is not drunk");
+        helper.assertTrue(left.is(net.minecraft.world.item.Items.GLASS_BOTTLE), "the glass bottle is left");
+        helper.assertFalse(ChemVialItem.of(Brew.RAW_SHIMMER).getUseAnimation() == net.minecraft.world.item.UseAnim.DRINK, "raw shimmer is not drunk");
         helper.succeed();
     }
 
@@ -167,7 +167,7 @@ public final class ShimmerGameTests {
         }
         helper.setBlock(brazier.below(), Blocks.STONE);
         helper.setBlock(brazier, ModBlocks.PINK_BRAZIER.get());
-        PinkBrazierBlockEntity fire = helper.getBlockEntity(brazier, PinkBrazierBlockEntity.class);
+        PinkBrazierBlockEntity fire = helper.<PinkBrazierBlockEntity>getBlockEntity(brazier);
         helper.assertTrue(fire.feed(ChemVialItem.of(Brew.REFINED_SHIMMER)) == 1, "it takes refined shimmer");
         helper.assertTrue(fire.feed(ChemVialItem.of(Brew.FUEL)) == 0, "but not combustible mix");
         helper.succeedWhen(() -> {

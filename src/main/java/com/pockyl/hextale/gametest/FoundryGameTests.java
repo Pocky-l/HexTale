@@ -44,7 +44,7 @@ public final class FoundryGameTests {
         helper.setBlock(CORNER.offset(1, 1, 1), Blocks.AIR);
         helper.setBlock(CORNER.offset(1, 2, 1), Blocks.IRON_BARS);
         helper.setBlock(HATCH, ModBlocks.HEX_FOUNDRY.get().defaultBlockState().setValue(HexFoundryBlock.FACING, Direction.SOUTH));
-        return helper.getBlockEntity(HATCH, HexFoundryBlockEntity.class);
+        return helper.<HexFoundryBlockEntity>getBlockEntity(HATCH);
     }
 
     private static void light(GameTestHelper helper) {
@@ -69,9 +69,9 @@ public final class FoundryGameTests {
         helper.assertTrue(helper.getBlockState(HATCH).getValue(HexFoundryBlock.FORMED), "the hatch is the kiln's heart");
         helper.assertBlockPresent(ModBlocks.MULTIBLOCK_PART.get(), CORNER);
         helper.assertBlockPresent(ModBlocks.MULTIBLOCK_PART.get(), CORNER.offset(1, 1, 1));
-        HexFoundryBlockEntity foundry = helper.getBlockEntity(HATCH, HexFoundryBlockEntity.class);
+        HexFoundryBlockEntity foundry = helper.<HexFoundryBlockEntity>getBlockEntity(HATCH);
         helper.assertTrue(foundry.isFormed(), "it stands as a kiln");
-        MultiblockPartBlockEntity brick = helper.getBlockEntity(CORNER.offset(0, 1, 1), MultiblockPartBlockEntity.class);
+        MultiblockPartBlockEntity brick = helper.<MultiblockPartBlockEntity>getBlockEntity(CORNER.offset(0, 1, 1));
         helper.assertTrue(brick.sharedContainer() == foundry, "its bricks share the hatch's contents with hoppers");
         helper.assertTrue(brick.receive(Direction.WEST, EssenceMix.pure(Essence.FIRE, 10), false) == 10, "a pipe of fire feeds it");
         helper.assertTrue(brick.receive(Direction.WEST, EssenceMix.pure(Essence.WATER, 10), false) == 0, "water does not");
@@ -81,7 +81,7 @@ public final class FoundryGameTests {
         helper.assertBlockPresent(Blocks.IRON_BARS, CORNER.offset(1, 2, 1));
         helper.assertBlockPresent(Blocks.AIR, CORNER.offset(1, 1, 1));
         helper.assertFalse(helper.getBlockState(HATCH).getValue(HexFoundryBlock.FORMED), "the hatch is a plain hatch again");
-        HexFoundryBlockEntity after = helper.getBlockEntity(HATCH, HexFoundryBlockEntity.class);
+        HexFoundryBlockEntity after = helper.<HexFoundryBlockEntity>getBlockEntity(HATCH);
         helper.assertTrue(!after.isFormed() && after.runes().equals(runes), "it keeps its runes");
         helper.assertTrue(after.getItem(0).is(Items.RAW_IRON) && after.getItem(0).getCount() == 5, "and what was in it");
         helper.succeed();
@@ -91,7 +91,7 @@ public final class FoundryGameTests {
     public static void theFoundryMeltsNineAtOnce(GameTestHelper helper) {
         build(helper);
         light(helper);
-        HexFoundryBlockEntity foundry = helper.getBlockEntity(HATCH, HexFoundryBlockEntity.class);
+        HexFoundryBlockEntity foundry = helper.<HexFoundryBlockEntity>getBlockEntity(HATCH);
         for (int slot = 0; slot < HexFoundryBlockEntity.INPUTS; slot++) {
             foundry.setItem(slot, new ItemStack(Items.RAW_IRON));
         }
@@ -113,16 +113,16 @@ public final class FoundryGameTests {
         build(helper);
         BlockPos jarPos = CORNER.offset(4, 0, 1);
         helper.setBlock(jarPos, ModBlocks.ESSENCE_TANK.get());
-        helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.FIRE, 100));
+        helper.<EssenceTankBlockEntity>getBlockEntity(jarPos).tank().set(EssenceMix.pure(Essence.FIRE, 100));
         light(helper);
-        HexFoundryBlockEntity foundry = helper.getBlockEntity(HATCH, HexFoundryBlockEntity.class);
+        HexFoundryBlockEntity foundry = helper.<HexFoundryBlockEntity>getBlockEntity(HATCH);
         foundry.setItem(0, new ItemStack(Items.COBBLESTONE, 4));
         helper.succeedWhen(() -> {
             helper.assertTrue(foundry.fire() > 0 && foundry.heat() > 0, "it burns and warms on the jar's fire");
             // Jars of neighbouring tests may be within reach too: the one it names gave the fire.
             BlockPos from = foundry.drawing();
             helper.assertTrue(from != null, "the stream shows where it came from");
-            helper.assertTrue(!from.equals(helper.absolutePos(jarPos)) || helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().amount() < 100,
+            helper.assertTrue(!from.equals(helper.absolutePos(jarPos)) || helper.<EssenceTankBlockEntity>getBlockEntity(jarPos).tank().amount() < 100,
                     "the jar gave fire");
         });
     }
@@ -131,7 +131,7 @@ public final class FoundryGameTests {
     public static void theFoundrySwallowsWhatFallsOnItsTop(GameTestHelper helper) {
         build(helper);
         light(helper);
-        HexFoundryBlockEntity foundry = helper.getBlockEntity(HATCH, HexFoundryBlockEntity.class);
+        HexFoundryBlockEntity foundry = helper.<HexFoundryBlockEntity>getBlockEntity(HATCH);
         Vec3 top = helper.absoluteVec(Vec3.atLowerCornerOf(CORNER).add(1.5, 3.1, 1.5));
         ItemEntity ore = new ItemEntity(helper.getLevel(), top.x, top.y, top.z, new ItemStack(Items.RAW_COPPER, 3));
         ItemEntity stick = new ItemEntity(helper.getLevel(), top.x + 0.8, top.y, top.z, new ItemStack(Items.STICK));

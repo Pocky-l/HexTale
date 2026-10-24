@@ -66,7 +66,7 @@ public final class RuneGiftGameTests {
     @HexTest(maxTicks = 400)
     public static void theFurnaceReforgesOldTools(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.HEX_FURNACE.get());
-        HexFurnaceBlockEntity furnace = helper.getBlockEntity(AT, HexFurnaceBlockEntity.class);
+        HexFurnaceBlockEntity furnace = helper.<HexFurnaceBlockEntity>getBlockEntity(AT);
         furnace.setRunes(PickaxeRunes.EMPTY.with(FurnaceRune.REFORGING.rune(), 2));
         ItemStack sword = new ItemStack(Items.IRON_SWORD);
         sword.setDamageValue(100);

@@ -45,7 +45,7 @@ public final class PylonGameTests {
 
     private static HexPylonBlockEntity place(GameTestHelper helper, net.minecraft.world.level.block.Block pylon, BlockPos pos) {
         helper.setBlock(pos, pylon);
-        return helper.getBlockEntity(pos, HexPylonBlockEntity.class);
+        return helper.<HexPylonBlockEntity>getBlockEntity(pos);
     }
 
     private static ItemEntity drop(GameTestHelper helper, Item item, int count, Vec3 at) {
@@ -77,7 +77,7 @@ public final class PylonGameTests {
         drop(helper, Items.COBBLESTONE, 5, new Vec3(6.5, 1.2, 1.5));
         drop(helper, Items.STICK, 3, new Vec3(1.5, 1.2, 5.5));
         ItemEntity far = drop(helper, Items.DIAMOND, 1, new Vec3(10.5, 1.2, 1.5));
-        Container chest = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container chest = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
         helper.succeedWhen(() -> {
             helper.assertTrue(count(chest, Items.COBBLESTONE) == 5 && count(chest, Items.STICK) == 3, "the items around are in the chest");
             helper.assertTrue(far.isAlive() && count(chest, Items.DIAMOND) == 0, "an item beyond the radius stays where it lies");
@@ -94,7 +94,7 @@ public final class PylonGameTests {
         place(helper, ModBlocks.GATHERING_PYLON.get(), BASE.above());
         drop(helper, Items.RAW_IRON, 4, new Vec3(2.5, 1.2, 2.5));
         drop(helper, Items.COAL, 3, new Vec3(1.5, 1.2, 3.5));
-        FurnaceBlockEntity furnace = helper.getBlockEntity(BASE, FurnaceBlockEntity.class);
+        FurnaceBlockEntity furnace = helper.<FurnaceBlockEntity>getBlockEntity(BASE);
         helper.succeedWhen(() -> {
             helper.assertTrue(furnace.getItem(0).is(Items.RAW_IRON), "the ore went into the input slot");
             helper.assertTrue(furnace.getItem(1).is(Items.COAL), "the coal went into the fuel slot");
@@ -108,12 +108,12 @@ public final class PylonGameTests {
         helper.setBlock(BASE, Blocks.CHEST);
         BlockPos furnacePos = BASE.offset(3, 0, 0);
         helper.setBlock(furnacePos, Blocks.FURNACE);
-        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container from = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
         from.setItem(0, new ItemStack(Items.COAL, 8));
         from.setItem(1, new ItemStack(Items.RAW_IRON, 8));
         HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
         pylon.toggleLink(link(helper, furnacePos, Direction.UP));
-        FurnaceBlockEntity furnace = helper.getBlockEntity(furnacePos, FurnaceBlockEntity.class);
+        FurnaceBlockEntity furnace = helper.<FurnaceBlockEntity>getBlockEntity(furnacePos);
         helper.succeedWhen(() -> {
             helper.assertTrue(count(from, Items.COAL) == 0 && count(from, Items.RAW_IRON) == 0, "coal and ore were sent");
             helper.assertTrue(furnace.getItem(1).is(Items.COAL), "coal went into the fuel slot");
@@ -131,7 +131,7 @@ public final class PylonGameTests {
         helper.setBlock(BASE, Blocks.CHEST);
         BlockPos alembicPos = BASE.offset(3, 0, 0);
         helper.setBlock(alembicPos, ModBlocks.ALEMBIC.get());
-        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container from = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
         from.setItem(0, new ItemStack(Items.COAL, 4));
         ServerPlayer owner = helper.makeMockServerPlayerInLevel();
         owner.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
@@ -139,7 +139,7 @@ public final class PylonGameTests {
         HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
         pylon.setOwner(owner);
         helper.assertTrue(pylon.toggleLink(link(helper, alembicPos, Direction.WEST)), "linked to the alembic's side");
-        com.pockyl.hextale.block.AlembicBlockEntity alembic = helper.getBlockEntity(alembicPos, com.pockyl.hextale.block.AlembicBlockEntity.class);
+        com.pockyl.hextale.block.AlembicBlockEntity alembic = helper.<com.pockyl.hextale.block.AlembicBlockEntity>getBlockEntity(alembicPos);
         for (Direction side : Direction.Plane.HORIZONTAL) {
             helper.assertTrue(alembic.receiveWater(side, 100, true) == 100, "the alembic takes water from the " + side);
         }
@@ -159,9 +159,9 @@ public final class PylonGameTests {
         helper.setBlock(BASE, Blocks.CHEST);
         BlockPos furnacePos = BASE.offset(3, 0, 0);
         helper.setBlock(furnacePos, Blocks.FURNACE);
-        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container from = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
         from.setItem(0, new ItemStack(Items.RAW_IRON, 32));
-        FurnaceBlockEntity furnace = helper.getBlockEntity(furnacePos, FurnaceBlockEntity.class);
+        FurnaceBlockEntity furnace = helper.<FurnaceBlockEntity>getBlockEntity(furnacePos);
         furnace.setItem(0, new ItemStack(Items.RAW_IRON, 62));
         HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
         int batch = pylon.amount();
@@ -187,9 +187,9 @@ public final class PylonGameTests {
         BlockPos south = BASE.offset(0, 0, 4);
         helper.setBlock(east, Blocks.CHEST);
         helper.setBlock(south, Blocks.CHEST);
-        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
-        Container a = (Container) helper.getBlockEntity(east, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
-        Container b = (Container) helper.getBlockEntity(south, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container from = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
+        Container a = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(east);
+        Container b = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(south);
         from.setItem(0, new ItemStack(Items.COBBLESTONE, 64));
         HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
         helper.assertTrue(pylon.toggleLink(link(helper, east, Direction.UP)) && pylon.toggleLink(link(helper, south, Direction.UP)), "linked");
@@ -208,8 +208,8 @@ public final class PylonGameTests {
         helper.setBlock(BASE, Blocks.CHEST);
         BlockPos target = BASE.offset(4, 0, 0);
         helper.setBlock(target, Blocks.CHEST);
-        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
-        Container to = (Container) helper.getBlockEntity(target, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container from = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
+        Container to = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(target);
         from.setItem(0, new ItemStack(Items.COBBLESTONE, 20));
         HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
         helper.assertTrue(pylon.toggleLink(link(helper, target, Direction.UP)), "linked");
@@ -226,10 +226,10 @@ public final class PylonGameTests {
         helper.setBlock(BASE, Blocks.FURNACE);
         BlockPos target = BASE.offset(3, 0, 0);
         helper.setBlock(target, Blocks.CHEST);
-        FurnaceBlockEntity furnace = helper.getBlockEntity(BASE, FurnaceBlockEntity.class);
+        FurnaceBlockEntity furnace = helper.<FurnaceBlockEntity>getBlockEntity(BASE);
         furnace.setItem(0, new ItemStack(Items.RAW_IRON, 8));
         furnace.setItem(2, new ItemStack(Items.IRON_INGOT, 5));
-        Container to = (Container) helper.getBlockEntity(target, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container to = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(target);
         HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
         pylon.toggleLink(link(helper, target, Direction.UP));
         helper.succeedWhen(() -> {
@@ -243,7 +243,7 @@ public final class PylonGameTests {
     public static void relaysPassItemsOn(GameTestHelper helper) {
         clear(helper, 6);
         helper.setBlock(BASE, Blocks.CHEST);
-        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container from = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
         from.setItem(0, new ItemStack(Items.IRON_INGOT, 6));
         from.setItem(1, new ItemStack(Items.COBBLESTONE, 6));
         BlockPos relayPos = BASE.offset(5, 0, 0);
@@ -253,7 +253,7 @@ public final class PylonGameTests {
         relay.toggleLink(link(helper, farChest, Direction.UP));
         HexPylonBlockEntity sender = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
         sender.toggleLink(link(helper, relayPos, Direction.UP));
-        Container far = (Container) helper.getBlockEntity(farChest, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container far = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(farChest);
         helper.succeedWhen(() -> {
             helper.assertTrue(count(far, Items.IRON_INGOT) == 6 && count(far, Items.COBBLESTONE) == 6, "everything went through the relay");
             helper.assertTrue(sender.lastFlights().getFirst().path().contains(relay.gem()), "the flight passes the relay's gem");
@@ -362,9 +362,9 @@ public final class PylonGameTests {
         BlockPos far = BASE.offset(0, 0, 8);
         helper.setBlock(near, ModBlocks.ESSENCE_TANK.get());
         helper.setBlock(far, ModBlocks.ESSENCE_TANK.get());
-        com.pockyl.hextale.block.EssenceTankBlockEntity source = helper.getBlockEntity(BASE, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
-        com.pockyl.hextale.block.EssenceTankBlockEntity first = helper.getBlockEntity(near, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
-        com.pockyl.hextale.block.EssenceTankBlockEntity last = helper.getBlockEntity(far, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        com.pockyl.hextale.block.EssenceTankBlockEntity source = helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(BASE);
+        com.pockyl.hextale.block.EssenceTankBlockEntity first = helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(near);
+        com.pockyl.hextale.block.EssenceTankBlockEntity last = helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(far);
         source.tank().set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.WATER, 200));
         first.tank().set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.WATER,
                 com.pockyl.hextale.block.EssenceTankBlockEntity.CAPACITY - 40));
@@ -397,7 +397,7 @@ public final class PylonGameTests {
         helper.assertFalse(PylonLinking.takes(level, siphon, helper.absolutePos(chest), Direction.UP), "essence does not go into a chest");
         helper.assertTrue(PylonLinking.takes(level, sender, helper.absolutePos(relayPos), Direction.UP)
                 && PylonLinking.takes(level, siphon, helper.absolutePos(relayPos), Direction.UP), "both go to a relay");
-        HexPylonBlockEntity relay = helper.getBlockEntity(relayPos, HexPylonBlockEntity.class);
+        HexPylonBlockEntity relay = helper.<HexPylonBlockEntity>getBlockEntity(relayPos);
         helper.assertTrue(PylonLinking.takes(level, relay, helper.absolutePos(jar), Direction.UP)
                 && PylonLinking.takes(level, relay, helper.absolutePos(chest), Direction.UP), "a relay links to a jar and to a chest");
         helper.succeed();
@@ -422,7 +422,7 @@ public final class PylonGameTests {
         pylon.setFilter(filter(only(Items.COBBLESTONE, 1)));
         drop(helper, Items.COBBLESTONE, 5, new Vec3(3.5, 1.2, 1.5));
         ItemEntity dirt = drop(helper, Items.DIRT, 5, new Vec3(1.5, 1.2, 3.5));
-        Container chest = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container chest = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
         helper.succeedWhen(() -> {
             helper.assertTrue(count(chest, Items.COBBLESTONE) == 5, "the cobblestone was gathered");
             helper.assertTrue(dirt.isAlive() && count(chest, Items.DIRT) == 0, "the dirt was left lying");
@@ -436,8 +436,8 @@ public final class PylonGameTests {
         helper.setBlock(BASE, Blocks.CHEST);
         BlockPos target = BASE.offset(3, 0, 0);
         helper.setBlock(target, Blocks.CHEST);
-        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
-        Container to = (Container) helper.getBlockEntity(target, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container from = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
+        Container to = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(target);
         from.setItem(0, new ItemStack(Items.COBBLESTONE, 20));
         from.setItem(1, new ItemStack(Items.DIRT, 10));
         HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
@@ -461,8 +461,8 @@ public final class PylonGameTests {
         helper.setBlock(BASE, Blocks.CHEST);
         BlockPos target = BASE.offset(3, 0, 0);
         helper.setBlock(target, Blocks.CHEST);
-        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
-        Container to = (Container) helper.getBlockEntity(target, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container from = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
+        Container to = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(target);
         from.setItem(0, new ItemStack(Items.RAW_IRON, 32));
         HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
         pylon.setFilter(filter(only(Items.RAW_IRON, 8).withRule(com.pockyl.hextale.transport.ItemFilter.Rule.LIMIT)));
@@ -478,7 +478,7 @@ public final class PylonGameTests {
     public static void filteredRelaysSort(GameTestHelper helper) {
         clear(helper, 6);
         helper.setBlock(BASE, Blocks.CHEST);
-        Container from = (Container) helper.getBlockEntity(BASE, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container from = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(BASE);
         from.setItem(0, new ItemStack(Items.IRON_INGOT, 6));
         from.setItem(1, new ItemStack(Items.COBBLESTONE, 6));
         BlockPos relayPos = BASE.offset(5, 0, 0);
@@ -492,8 +492,8 @@ public final class PylonGameTests {
         HexPylonBlockEntity sender = place(helper, ModBlocks.SENDING_PYLON.get(), BASE.above());
         sender.toggleLink(link(helper, relayPos, Direction.UP));
         sender.toggleLink(link(helper, restChest, Direction.UP));
-        Container iron = (Container) helper.getBlockEntity(ironChest, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
-        Container rest = (Container) helper.getBlockEntity(restChest, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        Container iron = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(ironChest);
+        Container rest = (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(restChest);
         helper.succeedWhen(() -> {
             helper.assertTrue(count(iron, Items.IRON_INGOT) == 6 && count(iron, Items.COBBLESTONE) == 0, "iron went through the relay");
             helper.assertTrue(count(rest, Items.COBBLESTONE) == 6 && count(rest, Items.IRON_INGOT) == 0, "the rest took the other link");
@@ -512,9 +512,9 @@ public final class PylonGameTests {
         BlockPos plainAt = BASE.offset(0, 0, 3);
         helper.setBlock(fireAt, ModBlocks.ESSENCE_TANK.get());
         helper.setBlock(plainAt, ModBlocks.ESSENCE_TANK.get());
-        var source = helper.getBlockEntity(BASE, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
-        var fire = helper.getBlockEntity(fireAt, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
-        var plain = helper.getBlockEntity(plainAt, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        var source = helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(BASE);
+        var fire = helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(fireAt);
+        var plain = helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(plainAt);
         source.tank().set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.FIRE, 40).plus(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.WATER, 40)));
         fire.setSticker(com.pockyl.hextale.rune.Essence.FIRE);
         HexPylonBlockEntity siphon = place(helper, ModBlocks.SIPHON_PYLON.get(), BASE.above());
@@ -540,7 +540,7 @@ public final class PylonGameTests {
         helper.setBlock(BASE, ModBlocks.CREATIVE_ESSENCE_TANK.get());
         BlockPos fireAt = BASE.offset(3, 0, 0);
         helper.setBlock(fireAt, ModBlocks.ESSENCE_TANK.get());
-        var fire = helper.getBlockEntity(fireAt, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        var fire = helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(fireAt);
         fire.setSticker(com.pockyl.hextale.rune.Essence.FIRE);
         HexPylonBlockEntity siphon = place(helper, ModBlocks.SIPHON_PYLON.get(), BASE.above());
         siphon.toggleLink(link(helper, fireAt, Direction.UP));
@@ -593,7 +593,7 @@ public final class PylonGameTests {
 
     private static Container chest(GameTestHelper helper, BlockPos pos) {
         helper.setBlock(pos, Blocks.CHEST);
-        return (Container) helper.getBlockEntity(pos, net.minecraft.world.level.block.entity.ChestBlockEntity.class);
+        return (Container) helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(pos);
     }
 
     /**
@@ -619,7 +619,7 @@ public final class PylonGameTests {
         place(helper, ModBlocks.SENDING_PYLON.get(), BASE.offset(-3, 1, 0));
         BlockPos furnacePos = BASE.offset(3, 0, 3);
         helper.setBlock(furnacePos, Blocks.FURNACE);
-        FurnaceBlockEntity furnace = helper.getBlockEntity(furnacePos, FurnaceBlockEntity.class);
+        FurnaceBlockEntity furnace = helper.<FurnaceBlockEntity>getBlockEntity(furnacePos);
         furnace.setItem(1, new ItemStack(Items.COAL, 1));
         HexPylonBlockEntity matrix = place(helper, ModBlocks.SORTING_MATRIX.get(), BASE.above());
         matrix.toggleLink(link(helper, furnacePos, Direction.UP));

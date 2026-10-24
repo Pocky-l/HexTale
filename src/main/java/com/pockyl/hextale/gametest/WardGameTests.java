@@ -43,7 +43,7 @@ public final class WardGameTests {
             helper.assertValueEqual(check(helper, BASE.offset(3, 0, 0), MobSpawnType.NATURAL, EntityType.COW), keep,
                     "a cow spawning in the watch");
             var trample = new BlockEvent.FarmlandTrampleEvent(helper.getLevel(), helper.absolutePos(BASE.offset(2, 0, 0)),
-                    Blocks.FARMLAND.defaultBlockState(), 1.5, helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL));
+                    Blocks.FARMLAND.defaultBlockState(), 1.5F, helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL));
             NeoForge.EVENT_BUS.post(trample);
             helper.assertTrue(trample.isCanceled(), "farmland in the watch is not trampled");
             helper.succeed();

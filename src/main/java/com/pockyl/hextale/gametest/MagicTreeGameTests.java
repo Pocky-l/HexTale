@@ -33,7 +33,7 @@ public final class MagicTreeGameTests {
     public static void aSaplingBecomesASproutOnlyForItsResearcher(GameTestHelper helper) {
         helper.setBlock(AT.below(), Blocks.LAVA);
         helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
-        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        CrucibleBlockEntity crucible = helper.<CrucibleBlockEntity>getBlockEntity(AT);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         boolean[] done = {false};

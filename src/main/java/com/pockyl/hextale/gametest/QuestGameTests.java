@@ -10,13 +10,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.knowledge.Research;
@@ -49,18 +47,16 @@ public final class QuestGameTests {
     @HexTest
     public static void questRecipesMatchTheRecipes(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();
-        ContextMap context = ContextMap.builder().set(SlotDisplayContext.REGISTRIES, server.registryAccess())
-                .buildAndValidate(SlotDisplayContext.CONTEXT);
         for (Quest quest : Guide.server().all()) {
             QuestDisplay display = quest.display();
             if (display == null || !display.isRecipe()) {
                 continue;
             }
             ResourceLocation id = ResourceLocation.parse(display.result());
-            RecipeHolder<?> holder = server.getRecipeManager().byKey(ResourceKey.create(Registries.RECIPE, id)).orElse(null);
+            RecipeHolder<?> holder = server.getRecipeManager().byKey(id).orElse(null);
             helper.assertTrue(holder != null, quest.id() + ": recipe " + id + " exists");
             Recipe<?> recipe = holder.value();
-            ItemStack result = recipe.display().getFirst().result().resolveForFirstStack(context);
+            ItemStack result = com.pockyl.hextale.port.PortIngredients.result(recipe, server.registryAccess());
             helper.assertTrue(result.getItem() == BuiltInRegistries.ITEM.get(id) && result.getCount() == display.count(),
                     quest.id() + ": the result is " + display.count() + " x " + id);
             List<Ingredient> real = com.pockyl.hextale.port.PortIngredients.ingredients(recipe);

@@ -89,22 +89,22 @@ public final class RuneWorkGameTests {
             }
         }
         helper.setBlock(ALTAR, ModBlocks.HEXTECH_ALTAR.get());
-        HextechAltarBlockEntity altar = helper.getBlockEntity(ALTAR, HextechAltarBlockEntity.class);
+        HextechAltarBlockEntity altar = helper.<HextechAltarBlockEntity>getBlockEntity(ALTAR);
         altar.place(center);
         for (int i = 0; i < PEDESTALS.size(); i++) {
             helper.setBlock(PEDESTALS.get(i), ModBlocks.PEDESTAL.get());
             if (i < items.size()) {
-                helper.getBlockEntity(PEDESTALS.get(i), PedestalBlockEntity.class).place(items.get(i));
+                helper.<PedestalBlockEntity>getBlockEntity(PEDESTALS.get(i)).place(items.get(i));
             }
         }
         helper.setBlock(TANK, ModBlocks.ESSENCE_TANK.get());
-        helper.getBlockEntity(TANK, EssenceTankBlockEntity.class).tank().set(essence);
+        helper.<EssenceTankBlockEntity>getBlockEntity(TANK).tank().set(essence);
         return altar;
     }
 
     private static void stele(GameTestHelper helper, PickaxeRune rune, int stars) {
         helper.setBlock(STELE, ModBlocks.RUNE_STELE.get());
-        helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(rune.rune(), stars);
+        helper.<RuneSteleBlockEntity>getBlockEntity(STELE).choose(rune.rune(), stars);
     }
 
     /** A player standing by the altar, who has researched the topic (or nothing, for null). */
@@ -130,7 +130,7 @@ public final class RuneWorkGameTests {
         helper.succeedWhen(() -> {
             helper.assertTrue(com.pockyl.hextale.item.RuneScrollItem.rune(altar.center()) == PickaxeRune.SMELTING.rune()
                     && com.pockyl.hextale.item.RuneScrollItem.stars(altar.center()) == 2, "a two-star scroll of Smelting");
-            helper.assertTrue(helper.getBlockEntity(TANK, EssenceTankBlockEntity.class).tank().isEmpty(), "the rune's essence was drawn twice");
+            helper.assertTrue(helper.<EssenceTankBlockEntity>getBlockEntity(TANK).tank().isEmpty(), "the rune's essence was drawn twice");
         });
     }
 
@@ -142,18 +142,18 @@ public final class RuneWorkGameTests {
         EssenceMix essence = EssenceMix.of(Map.of(Essence.MAGIC, 32, Essence.CIRCUIT, 24, Essence.CRYSTAL, 16));
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), items, essence);
         List<ItemStack> more = List.of(new ItemStack(ModItems.CRYSTAL_BATTERY.get()), new ItemStack(ModItems.REGENERATIVE_SLIME.get()),
-                new ItemStack(Items.LIGHTNING_ROD.weathering().unaffected()));
+                new ItemStack(Items.LIGHTNING_ROD));
         List<BlockPos> corners = List.of(new BlockPos(5, 2, 1), new BlockPos(5, 2, 5), new BlockPos(1, 2, 5));
         for (int i = 0; i < corners.size(); i++) {
             helper.setBlock(corners.get(i), ModBlocks.PEDESTAL.get());
-            helper.getBlockEntity(corners.get(i), PedestalBlockEntity.class).place(more.get(i));
+            helper.<PedestalBlockEntity>getBlockEntity(corners.get(i)).place(more.get(i));
         }
         researcher(helper, com.pockyl.hextale.research.ResearchTopics.HEXCORE);
         altar.startOrAbort(null);
         helper.assertTrue(altar.active(), "the awakening starts");
         helper.succeedWhen(() -> {
             helper.assertBlockPresent(ModBlocks.HEXCORE.get(), ALTAR);
-            HextechAltarBlockEntity core = helper.getBlockEntity(ALTAR, HextechAltarBlockEntity.class);
+            HextechAltarBlockEntity core = helper.<HextechAltarBlockEntity>getBlockEntity(ALTAR);
             helper.assertTrue(core instanceof com.pockyl.hextale.block.HexcoreBlockEntity && core.center().isEmpty() && !core.active(),
                     "a Hexcore stands where the altar was, with nothing left in it");
         });
@@ -326,7 +326,7 @@ public final class RuneWorkGameTests {
             helper.assertTrue(recipe.result().item().value() == tools.get(id).getItem(), id + " makes itself");
             helper.assertTrue(ResearchTopics.of(tools.get(id).getItem()) != null, id + " needs its research");
         }
-        helper.assertTrue(tools.get("hextech_axe").has(net.minecraft.core.component.DataComponents.BLOCK_TRANSFORMER), "the axe strips logs");
+        helper.assertTrue(tools.get("hextech_axe").getItem() instanceof net.minecraft.world.item.AxeItem, "the axe strips logs");
         helper.assertTrue(tools.get("hextech_shovel").getDestroySpeed(Blocks.DIRT.defaultBlockState()) > 6.0F, "the shovel digs dirt fast");
         helper.assertTrue(tools.get("hextech_sword").is(net.minecraft.tags.ItemTags.SWORDS), "the sword counts as a sword");
         helper.succeed();
@@ -349,7 +349,7 @@ public final class RuneWorkGameTests {
         helper.succeedWhen(() -> {
             helper.assertTrue(altar.center().is(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), "the centre became a Hextech Pickaxe");
             helper.assertTrue(altar.center().isEnchanted(), "it kept its enchantment");
-            EssenceMix left = helper.getBlockEntity(TANK, EssenceTankBlockEntity.class).tank().contents();
+            EssenceMix left = helper.<EssenceTankBlockEntity>getBlockEntity(TANK).tank().contents();
             helper.assertTrue(left.get(Essence.ORE) == 10 && left.get(Essence.METAL) == 0, "the essences were drawn, left " + left);
         });
     }
@@ -364,7 +364,7 @@ public final class RuneWorkGameTests {
         helper.assertTrue(altar.active() && altar.kind() == Ritual.Kind.ENGRAVE, "the rune burning starts");
         helper.succeedWhen(() -> {
             helper.assertTrue(PickaxeRunes.of(altar.center()).stars(PickaxeRune.SMELTING) == 2, "Smelting with two stars");
-            EssenceMix left = helper.getBlockEntity(TANK, EssenceTankBlockEntity.class).tank().contents();
+            EssenceMix left = helper.<EssenceTankBlockEntity>getBlockEntity(TANK).tank().contents();
             helper.assertTrue(left.get(cost.pureEssence()) == 0 && left.get(Essence.ORE) == 10, "only the rune's essence was drawn, left " + left);
         });
     }
@@ -386,7 +386,7 @@ public final class RuneWorkGameTests {
         helper.assertTrue(raise.cost().total() == PickaxeRune.SMELTING.cost(3).total(), "paid for the stars it gets");
         stele(helper, PickaxeRune.SMELTING, 1);
         helper.assertTrue("nothing_new".equals(Ritual.engraving(full, scan(helper)).refusal()), "fewer stars change nothing");
-        helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(ComplexRunes.byKey("fire_water"), 1);
+        helper.<RuneSteleBlockEntity>getBlockEntity(STELE).choose(ComplexRunes.byKey("fire_water"), 1);
         helper.assertTrue("not_pickaxe".equals(Ritual.engraving(pickaxe(), scan(helper)).refusal()), "steam does not take to a pickaxe");
         helper.succeed();
     }
@@ -426,7 +426,7 @@ public final class RuneWorkGameTests {
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(Items.IRON_PICKAXE), pickaxeItems(), EssenceMix.EMPTY);
         BlockPos creative = new BlockPos(6, 2, 0);
         helper.setBlock(creative, ModBlocks.CREATIVE_ESSENCE_TANK.get());
-        helper.getBlockEntity(creative, EssenceTankBlockEntity.class).tank().set(EssenceTankBlockEntity.CREATIVE);
+        helper.<EssenceTankBlockEntity>getBlockEntity(creative).tank().set(EssenceTankBlockEntity.CREATIVE);
         stele(helper, PickaxeRune.SMELTING, 1);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         // Creative mode knows nothing by itself: the maker must have researched the pickaxe.

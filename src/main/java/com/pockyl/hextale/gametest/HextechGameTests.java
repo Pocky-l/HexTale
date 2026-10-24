@@ -157,8 +157,8 @@ public final class HextechGameTests {
     /** Magic stone is no longer crafted: it is soaked in a crucible (see CrucibleGameTests) or under a drain valve. */
     @HexTest
     public static void magicStoneIsNotCrafted(GameTestHelper helper) {
-        helper.assertFalse(helper.getLevel().getServer().getRecipeManager().byKey(ResourceKey.create(Registries.RECIPE,
-                Hextale.id("magic_stone"))).isPresent(), "there is no magic stone crafting recipe");
+        helper.assertFalse(helper.getLevel().getServer().getRecipeManager().byKey(
+                Hextale.id("magic_stone")).isPresent(), "there is no magic stone crafting recipe");
         helper.succeed();
     }
 
@@ -172,7 +172,7 @@ public final class HextechGameTests {
         }
         BlockPos valve = new BlockPos(1, 4, 1);
         helper.setBlock(valve, ModBlocks.DRAIN_VALVE.get().defaultBlockState().setValue(DrainValveBlock.OPEN, true));
-        DrainValveBlockEntity drain = helper.getBlockEntity(valve, DrainValveBlockEntity.class);
+        DrainValveBlockEntity drain = helper.<DrainValveBlockEntity>getBlockEntity(valve);
         helper.onEachTick(() -> drain.receive(Direction.EAST, EssenceMix.pure(Essence.FIRE, DrainValveBlockEntity.DROPS_PER_TICK), false));
         helper.succeedWhen(() -> {
             helper.assertBlockPresent(ModBlocks.MAGIC_STONE.get(), new BlockPos(1, 1, 1));

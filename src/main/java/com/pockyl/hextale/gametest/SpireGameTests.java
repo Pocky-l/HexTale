@@ -3,9 +3,9 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.spider.Spider;
+import net.minecraft.world.entity.monster.Spider;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 
@@ -38,7 +38,7 @@ public final class SpireGameTests {
 
     private static void jar(GameTestHelper helper, BlockPos at, Essence essence, int amount) {
         helper.setBlock(at, ModBlocks.ESSENCE_TANK.get());
-        helper.getBlockEntity(at, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(essence, amount));
+        helper.<EssenceTankBlockEntity>getBlockEntity(at).tank().set(EssenceMix.pure(essence, amount));
     }
 
     /**
@@ -53,8 +53,8 @@ public final class SpireGameTests {
         helper.setBlock(BASE.offset(3, 0, 0), Blocks.CHEST);
         helper.setBlock(BASE.offset(3, 1, 0), ModBlocks.GREEDY_FUNNEL.get());
         jar(helper, BASE.offset(-2, 0, 2), Essence.DECAY, 8);
-        ArcSpireBlockEntity spire = helper.getBlockEntity(BASE, ArcSpireBlockEntity.class);
-        GreedyFunnelBlockEntity funnel = helper.getBlockEntity(BASE.offset(3, 1, 0), GreedyFunnelBlockEntity.class);
+        ArcSpireBlockEntity spire = helper.<ArcSpireBlockEntity>getBlockEntity(BASE);
+        GreedyFunnelBlockEntity funnel = helper.<GreedyFunnelBlockEntity>getBlockEntity(BASE.offset(3, 1, 0));
         Spider spider = helper.spawnWithNoFreeWill(EntityType.SPIDER, BASE.offset(2, 0, 2));
         // One arc fells it, whatever else the arcs find around (neighbouring tests stand close by).
         spider.setHealth(ArcSpireBlockEntity.DAMAGE - 2);

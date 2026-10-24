@@ -37,7 +37,7 @@ public final class ChemGameTests {
     public static void aCatalystTurnsTheWaterIntoABrew(GameTestHelper helper) {
         helper.setBlock(AT.below(), Blocks.LAVA);
         helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
-        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        CrucibleBlockEntity crucible = helper.<CrucibleBlockEntity>getBlockEntity(AT);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         boolean[] done = {false};
@@ -66,9 +66,9 @@ public final class ChemGameTests {
     public static void theBurnerHeatsTheCrucibleHotEnoughForAcid(GameTestHelper helper) {
         helper.setBlock(AT.below(), ModBlocks.CHEM_BURNER.get());
         helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
-        ChemBurnerBlockEntity burner = helper.getBlockEntity(AT.below(), ChemBurnerBlockEntity.class);
+        ChemBurnerBlockEntity burner = helper.<ChemBurnerBlockEntity>getBlockEntity(AT.below());
         burner.feed(ChemVialItem.of(Brew.FUEL, 2));
-        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        CrucibleBlockEntity crucible = helper.<CrucibleBlockEntity>getBlockEntity(AT);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Research.research(player, ResearchTopics.ACID);
@@ -90,7 +90,7 @@ public final class ChemGameTests {
     @HexTest(maxTicks = 60)
     public static void theBurnerBurnsOnlyUnderWork(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.CHEM_BURNER.get());
-        ChemBurnerBlockEntity burner = helper.getBlockEntity(AT, ChemBurnerBlockEntity.class);
+        ChemBurnerBlockEntity burner = helper.<ChemBurnerBlockEntity>getBlockEntity(AT);
         burner.pour(EssenceMix.unknown(10));
         helper.runAfterDelay(40, () -> {
             helper.assertFalse(ChemBurnerBlock.isLit(helper.getBlockState(AT)), "nothing above: it stays out");

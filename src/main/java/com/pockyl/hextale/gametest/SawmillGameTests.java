@@ -77,7 +77,7 @@ public final class SawmillGameTests {
         oak(helper, build, true);
         BlockPos jarPos = BASE.offset(0, 0, -3);
         helper.setBlock(jarPos, ModBlocks.ESSENCE_TANK.get());
-        helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.AIR, 4));
+        helper.<EssenceTankBlockEntity>getBlockEntity(jarPos).tank().set(EssenceMix.pure(Essence.AIR, 4));
         helper.setBlock(BASE, ModBlocks.HEX_SAWMILL.get());
         helper.succeedWhen(() -> {
             for (int dy = 0; dy < 4; dy++) {
@@ -87,8 +87,8 @@ public final class SawmillGameTests {
             helper.assertTrue(lying(helper, Items.OAK_LOG, tree) >= 4, "the logs lie at the foot");
             helper.assertBlockPresent(Blocks.OAK_LOG, build.above(3));
             helper.assertBlockPresent(Blocks.OAK_LEAVES, build.above(4));
-            helper.assertTrue(helper.getBlockEntity(BASE, HexSawmillBlockEntity.class).pending().isEmpty(), "the tree has landed");
-            helper.assertTrue(helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().amount() < 4, "the saw drank wind");
+            helper.assertTrue(helper.<HexSawmillBlockEntity>getBlockEntity(BASE).pending().isEmpty(), "the tree has landed");
+            helper.assertTrue(helper.<EssenceTankBlockEntity>getBlockEntity(jarPos).tank().amount() < 4, "the saw drank wind");
         });
     }
 

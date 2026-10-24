@@ -3,7 +3,7 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
@@ -42,8 +42,8 @@ public final class ShackleGameTests {
                 "a zombie may spawn on the shackles");
         BlockPos jarPos = BASE.offset(-2, 0, -2);
         helper.setBlock(jarPos, ModBlocks.ESSENCE_TANK.get());
-        helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.SHADOW, 8));
-        RuneShacklesBlockEntity plate = helper.getBlockEntity(BASE, RuneShacklesBlockEntity.class);
+        helper.<EssenceTankBlockEntity>getBlockEntity(jarPos).tank().set(EssenceMix.pure(Essence.SHADOW, 8));
+        RuneShacklesBlockEntity plate = helper.<RuneShacklesBlockEntity>getBlockEntity(BASE);
         Cow cow = helper.spawn(EntityType.COW, new Vec3(1.5, 2.0, 1.5));
         Vec3[] at = new Vec3[1];
         float[] health = new float[1];
@@ -56,8 +56,7 @@ public final class ShackleGameTests {
         });
         helper.runAfterDelay(60, () -> {
             cow.hurt(helper.getLevel().damageSources().generic(), 2);
-            helper.assertTrue(cow.getHealth() <= health[0] - 4 + 0.01F, "both blows hurt the held cow (" + health[0] + " -> " + cow.getHealth() + ", cooldown "
-                    + cow.damageCooldownTime + ", held " + cow.hasData(ModAttachments.SHACKLE) + ", at " + cow.position() + ")");
+            helper.assertTrue(cow.getHealth() <= health[0] - 4 + 0.01F, "both blows hurt the held cow (" + health[0] + " -> " + cow.getHealth() + ", held " + cow.hasData(ModAttachments.SHACKLE) + ", at " + cow.position() + ")");
         });
         helper.runAfterDelay(90, () -> {
             helper.assertTrue(cow.position().distanceTo(at[0]) < 0.01, "a held cow does not move");

@@ -65,7 +65,7 @@ public final class CraftingGameTests {
     @HexTest
     public static void theRobeKeepsSparksOff(GameTestHelper helper) {
         ItemStack robe = new ItemStack(ModItems.RESEARCHER_ROBE.get());
-        helper.assertTrue(robe.get(net.minecraft.core.component.DataComponents.EQUIPPABLE).slot() == net.minecraft.world.entity.EquipmentSlot.CHEST,
+        helper.assertTrue(((net.minecraft.world.item.ArmorItem) robe.getItem()).getEquipmentSlot() == net.minecraft.world.entity.EquipmentSlot.CHEST,
                 "the robe is worn on the chest");
         helper.assertTrue(com.pockyl.hextale.research.ResearchTopics.of(ModItems.RESEARCHER_ROBE.get()) == com.pockyl.hextale.research.ResearchTopics.RESEARCHER_ROBE,
                 "the robe waits for its research");
@@ -73,7 +73,7 @@ public final class CraftingGameTests {
         helper.assertTrue(com.pockyl.hextale.event.ResearcherRobeEvents.isSparks(sources.inFire())
                 && com.pockyl.hextale.event.ResearcherRobeEvents.isSparks(sources.explosion(null, null))
                 && !com.pockyl.hextale.event.ResearcherRobeEvents.isSparks(sources.generic()), "only sparks, flames and blasts are softened");
-        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.ZOMBIE, AT);
+        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE, AT);
         zombie.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, robe);
         helper.assertTrue(com.pockyl.hextale.event.ResearcherRobeEvents.wearsRobe(zombie), "a robe on the chest counts");
         helper.succeed();
@@ -90,7 +90,7 @@ public final class CraftingGameTests {
         ItemStack trousers = new ItemStack(ModItems.RESEARCHER_TROUSERS.get());
         com.pockyl.hextale.runework.RuneHolder.TROUSERS.set(trousers, com.pockyl.hextale.runework.PickaxeRunes.EMPTY
                 .with(com.pockyl.hextale.runework.ClothesRune.TROUSERS_HASTE.rune(), 2));
-        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.ZOMBIE, AT);
+        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE, AT);
         double before = zombie.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
         zombie.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, trousers);
         helper.runAfterDelay(2, () -> {
@@ -105,7 +105,7 @@ public final class CraftingGameTests {
     @HexTest
     public static void theWorkbenchCraftsOnItsCrystalsCharge(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.HEX_WORKBENCH.get());
-        HexWorkbenchBlockEntity bench = helper.getBlockEntity(AT, HexWorkbenchBlockEntity.class);
+        HexWorkbenchBlockEntity bench = helper.<HexWorkbenchBlockEntity>getBlockEntity(AT);
         for (int i = 0; i < 3; i++) {
             bench.setItem(3 + i, new ItemStack(ModItems.BRASS_INGOT.get()));
         }
@@ -127,7 +127,7 @@ public final class CraftingGameTests {
     @HexTest(maxTicks = 400)
     public static void theFurnaceMeltsBrass(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.HEX_FURNACE.get());
-        HexFurnaceBlockEntity furnace = helper.getBlockEntity(AT, HexFurnaceBlockEntity.class);
+        HexFurnaceBlockEntity furnace = helper.<HexFurnaceBlockEntity>getBlockEntity(AT);
         furnace.setItem(0, new ItemStack(ModItems.ZINC_INGOT.get()));
         furnace.setItem(2, new ItemStack(Items.COPPER_INGOT, 3));
         furnace.setItem(HexFurnaceBlockEntity.FUEL, new ItemStack(Items.COAL));
@@ -142,7 +142,7 @@ public final class CraftingGameTests {
     @HexTest(maxTicks = 80)
     public static void hexsteelWaitsForItsResearch(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.HEX_FURNACE.get());
-        HexFurnaceBlockEntity furnace = helper.getBlockEntity(AT, HexFurnaceBlockEntity.class);
+        HexFurnaceBlockEntity furnace = helper.<HexFurnaceBlockEntity>getBlockEntity(AT);
         ServerPlayer owner = helper.makeMockServerPlayerInLevel();
         owner.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         furnace.setOwner(owner);
@@ -185,7 +185,7 @@ public final class CraftingGameTests {
     @HexTest(maxTicks = 400)
     public static void theLapidaryCutsAnOrbIntoACrystal(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.HEX_LAPIDARY.get());
-        LapidaryBlockEntity lapidary = helper.getBlockEntity(AT, LapidaryBlockEntity.class);
+        LapidaryBlockEntity lapidary = helper.<LapidaryBlockEntity>getBlockEntity(AT);
         lapidary.setItem(LapidaryBlockEntity.DISC, new ItemStack(ModItems.CUTTING_DISC.get()));
         lapidary.setItem(LapidaryBlockEntity.INPUT, new ItemStack(ModItems.UNSTABLE_HEXTECH.get()));
         ServerPlayer worker = helper.makeMockServerPlayerInLevel();

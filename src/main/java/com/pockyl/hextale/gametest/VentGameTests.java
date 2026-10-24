@@ -3,7 +3,7 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.spider.Spider;
+import net.minecraft.world.entity.monster.Spider;
 import net.minecraft.world.level.block.Blocks;
 
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
@@ -30,7 +30,7 @@ public final class VentGameTests {
             }
         }
         helper.setBlock(BASE, ModBlocks.MIASMA_VENT.get());
-        MiasmaVentBlockEntity vent = helper.getBlockEntity(BASE, MiasmaVentBlockEntity.class);
+        MiasmaVentBlockEntity vent = helper.<MiasmaVentBlockEntity>getBlockEntity(BASE);
         Spider spider = helper.spawnWithNoFreeWill(EntityType.SPIDER, BASE.above());
         spider.setHealth(MiasmaVentBlockEntity.DAMAGE - 1);
         helper.runAfterDelay(20, () -> {
@@ -38,7 +38,7 @@ public final class VentGameTests {
             helper.assertTrue(spider.isAlive(), "no fumes while dry");
             BlockPos jarPos = BASE.offset(-2, 0, -2);
             helper.setBlock(jarPos, ModBlocks.ESSENCE_TANK.get());
-            helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.unknown(8));
+            helper.<EssenceTankBlockEntity>getBlockEntity(jarPos).tank().set(EssenceMix.unknown(8));
         });
         helper.runAfterDelay(120, () -> {
             helper.assertTrue(!spider.isAlive(), "the fumes killed the spider");

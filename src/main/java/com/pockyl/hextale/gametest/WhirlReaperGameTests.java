@@ -45,9 +45,9 @@ public final class WhirlReaperGameTests {
         if (wind > 0) {
             BlockPos jarPos = BASE.offset(-2, 0, -2);
             helper.setBlock(jarPos, ModBlocks.ESSENCE_TANK.get());
-            helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.AIR, wind));
+            helper.<EssenceTankBlockEntity>getBlockEntity(jarPos).tank().set(EssenceMix.pure(Essence.AIR, wind));
         }
-        return helper.getBlockEntity(BASE, WhirlReaperBlockEntity.class);
+        return helper.<WhirlReaperBlockEntity>getBlockEntity(BASE);
     }
 
     private static int lying(GameTestHelper helper, Item item, BlockPos around) {
@@ -103,7 +103,7 @@ public final class WhirlReaperGameTests {
                 helper.assertBlockPresent(Blocks.SUGAR_CANE, cane);
                 helper.assertBlockPresent(Blocks.AIR, cane.above());
                 helper.assertTrue(lying(helper, Items.SUGAR_CANE, cane) >= 2, "the cut cane lies beside its root");
-                EssenceTankBlockEntity jar = helper.getBlockEntity(BASE.offset(-2, 0, -2), EssenceTankBlockEntity.class);
+                EssenceTankBlockEntity jar = helper.<EssenceTankBlockEntity>getBlockEntity(BASE.offset(-2, 0, -2));
                 helper.assertTrue(jar.tank().amount() < 4, "the whirls drank wind from the jar");
             });
         });

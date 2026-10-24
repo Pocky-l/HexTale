@@ -1,17 +1,12 @@
 package com.pockyl.hextale.gametest;
 
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.FunctionGameTestInstance;
+import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.gametest.GameTestHooks;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
 
@@ -19,13 +14,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 /**
- * Registers the {@link HexTest} methods with the registry-based game test framework: each method becomes a test function
- * and a test instance on the 1x1x1 {@code hextale:empty} structure, run headless by {@code gradlew runGameTestServer}.
+ * Registers the {@link HexTest} methods as game tests: each method becomes a test function on the 1x1x1
+ * {@code hextale:empty} structure in its own batch, run headless by {@code gradlew runGameTestServer}. (26.x registers
+ * them in the test function registry; 1.21.1 takes them from a {@link GameTestGenerator}.)
  */
 public final class GameTests {
     private static final ResourceLocation STRUCTURE = Hextale.id("empty");
@@ -34,7 +30,6 @@ public final class GameTests {
             MultiblockGameTests.class, CrucibleGameTests.class, MagicTreeGameTests.class, WhirlReaperGameTests.class, SawmillGameTests.class,
             RuneGiftGameTests.class, ChemGameTests.class, ShimmerGameTests.class, LabGameTests.class,
             SkypackGameTests.class, VoidGameTests.class, GateGameTests.class, FunnelGameTests.class, SpireGameTests.class, ShackleGameTests.class, CondenserGameTests.class, FoundryGameTests.class, VentGameTests.class, WardGameTests.class, CreativeJarGameTests.class);
-    private static final DeferredRegister<Consumer<GameTestHelper>> FUNCTIONS = DeferredRegister.create(Registries.TEST_FUNCTION, Hextale.MOD_ID);
 
     private record Test(String name, Method method, HexTest settings) {
     }
@@ -47,21 +42,19 @@ public final class GameTests {
         if (!GameTestHooks.isGametestEnabled()) {
             return;
         }
-        List<Test> tests = collect();
-        for (Test test : tests) {
-            FUNCTIONS.register(test.name(), () -> helper -> run(test.method(), helper));
+        modBus.addListener((RegisterGameTestsEvent event) -> event.register(GameTests.class));
+    }
+
+    /** Every {@link HexTest} as a test function; the batch is the test itself, so tests never share a batch. */
+    @GameTestGenerator
+    public static Collection<TestFunction> generate() {
+        List<TestFunction> functions = new ArrayList<>();
+        for (Test test : collect()) {
+            String name = Hextale.MOD_ID + ":" + test.name();
+            functions.add(new TestFunction(name, name, STRUCTURE.toString(), test.settings().maxTicks(), test.settings().setupTicks(), true,
+                    helper -> run(test.method(), helper)));
         }
-        FUNCTIONS.register(modBus);
-        modBus.addListener((RegisterGameTestsEvent event) -> {
-            for (Test test : tests) {
-                ResourceLocation id = Hextale.id(test.name());
-                Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(id,
-                        new TestEnvironmentDefinition.AllOf(List.of()));
-                TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, STRUCTURE,
-                        test.settings().maxTicks(), test.settings().setupTicks(), true);
-                event.registerTest(id, new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, id), data));
-            }
-        });
+        return functions;
     }
 
     private static List<Test> collect() {

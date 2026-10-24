@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.animal.sheep.Sheep;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
@@ -43,7 +43,7 @@ public final class CondenserGameTests {
         AABB area = new AABB(helper.absolutePos(BASE)).inflate(5, 4, 5);
         helper.getLevel().getEntitiesOfClass(ItemEntity.class, area).forEach(ItemEntity::discard);
         helper.setBlock(BASE, ModBlocks.XP_CONDENSER.get());
-        XpCondenserBlockEntity condenser = helper.getBlockEntity(BASE, XpCondenserBlockEntity.class);
+        XpCondenserBlockEntity condenser = helper.<XpCondenserBlockEntity>getBlockEntity(BASE);
         helper.setBlock(BASE.offset(3, 0, 0), Blocks.CHEST);
         helper.setBlock(BASE.offset(3, 1, 0), ModBlocks.GREEDY_FUNNEL.get());
         // Freshly placed devices join their index on the next tick.
@@ -60,8 +60,8 @@ public final class CondenserGameTests {
 
         BlockPos jarPos = BASE.offset(-2, 0, -2);
         helper.setBlock(jarPos, ModBlocks.ESSENCE_TANK.get());
-        helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.DECAY, 8));
-        GreedyFunnelBlockEntity funnel = helper.getBlockEntity(BASE.offset(3, 1, 0), GreedyFunnelBlockEntity.class);
+        helper.<EssenceTankBlockEntity>getBlockEntity(jarPos).tank().set(EssenceMix.pure(Essence.DECAY, 8));
+        GreedyFunnelBlockEntity funnel = helper.<GreedyFunnelBlockEntity>getBlockEntity(BASE.offset(3, 1, 0));
         Player player = helper.makeMockPlayer(GameType.SURVIVAL);
         Sheep sheep = helper.spawnWithNoFreeWill(EntityType.SHEEP, BASE.offset(3, 0, 2));
         sheep.hurt(helper.getLevel().damageSources().playerAttack(player), 1000);

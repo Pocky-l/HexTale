@@ -134,7 +134,7 @@ public final class LabGameTests {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Research.learnEverything(player);
         LabBenchBlock.place(helper.getLevel(), helper.absolutePos(BENCH), ModBlocks.LAB_BENCH.get().defaultBlockState());
-        LabBenchBlockEntity bench = helper.getBlockEntity(BENCH, LabBenchBlockEntity.class);
+        LabBenchBlockEntity bench = helper.<LabBenchBlockEntity>getBlockEntity(BENCH);
         BlockState side = helper.getBlockState(BENCH.relative(TablePart.MAIN.toOther(bench.facing())));
         helper.assertTrue(side.is(ModBlocks.LAB_BENCH.get()) && side.getValue(LabBenchBlock.PART) == TablePart.SIDE, "the bench takes two blocks");
         bench.setItem(LabBenchBlockEntity.FLASK, new ItemStack(Items.GLASS_BOTTLE));
@@ -166,7 +166,7 @@ public final class LabGameTests {
     @HexTest(maxTicks = 1200)
     public static void tooMuchPressureBurstsTheFlask(GameTestHelper helper) {
         LabBenchBlock.place(helper.getLevel(), helper.absolutePos(BENCH), ModBlocks.LAB_BENCH.get().defaultBlockState());
-        LabBenchBlockEntity bench = helper.getBlockEntity(BENCH, LabBenchBlockEntity.class);
+        LabBenchBlockEntity bench = helper.<LabBenchBlockEntity>getBlockEntity(BENCH);
         bench.setItem(LabBenchBlockEntity.FLASK, new ItemStack(Items.GLASS_BOTTLE));
         for (int i = 0; i < 12; i++) {
             bench.flask().drop(Essence.FIRE);
@@ -186,7 +186,7 @@ public final class LabGameTests {
         Research.learnEverything(player);
         BlockPos table = new BlockPos(2, 1, 3);
         ResearchTableBlock.place(helper.getLevel(), helper.absolutePos(table), ModBlocks.RESEARCH_TABLE.get().defaultBlockState());
-        ResearchTableBlockEntity entity = helper.getBlockEntity(table, ResearchTableBlockEntity.class);
+        ResearchTableBlockEntity entity = helper.<ResearchTableBlockEntity>getBlockEntity(table);
         entity.setItem(ResearchTableBlockEntity.DIARY, new ItemStack(com.pockyl.hextale.registry.ModItems.RESEARCHERS_DIARY.get()));
         entity.select(player, ResearchTopics.CHEM_BURNER);
         helper.assertTrue(entity.sheet().topic() == null, "the Chem Burner is worked out at the Lab Bench");

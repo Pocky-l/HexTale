@@ -41,10 +41,10 @@ public final class GateGameTests {
         BlockPos benchAt = new BlockPos(3, 1, 1);
         helper.setBlock(batteryAt, ModBlocks.CRYSTAL_BATTERY.get());
         helper.setBlock(benchAt, ModBlocks.HEX_WORKBENCH.get());
-        CrystalBatteryBlockEntity battery = helper.getBlockEntity(batteryAt, CrystalBatteryBlockEntity.class);
+        CrystalBatteryBlockEntity battery = helper.<CrystalBatteryBlockEntity>getBlockEntity(batteryAt);
         helper.assertTrue(battery.soak(new ItemStack(ModItems.HEXTECH_CRYSTAL.get())), "a crystal soaks in");
         helper.assertTrue(battery.charge() > 0, "the battery holds charge");
-        HexWorkbenchBlockEntity bench = helper.getBlockEntity(benchAt, HexWorkbenchBlockEntity.class);
+        HexWorkbenchBlockEntity bench = helper.<HexWorkbenchBlockEntity>getBlockEntity(benchAt);
         helper.succeedWhen(() -> {
             helper.assertTrue(bench.charge() > 0, "the workbench got charge");
             helper.assertBlockProperty(batteryAt, CrystalBatteryBlock.LEVEL, helper.getBlockState(batteryAt).getValue(CrystalBatteryBlock.LEVEL));

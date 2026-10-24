@@ -59,10 +59,10 @@ public final class MultiblockGameTests {
         helper.assertBlockPresent(ModBlocks.BIG_ESSENCE_JAR.get(), controller);
         helper.assertBlockPresent(ModBlocks.MULTIBLOCK_PART.get(), CORNER.offset(1, 1, 1));
         helper.assertBlockPresent(ModBlocks.MULTIBLOCK_PART.get(), CORNER.offset(0, 3, 2));
-        BigEssenceJarBlockEntity jar = helper.getBlockEntity(controller, BigEssenceJarBlockEntity.class);
+        BigEssenceJarBlockEntity jar = helper.<BigEssenceJarBlockEntity>getBlockEntity(controller);
         helper.assertTrue(jar.tank().capacity() == BigEssenceJarBlockEntity.CAPACITY, "it holds sixteen jars");
 
-        MultiblockPartBlockEntity side = helper.getBlockEntity(CORNER.offset(0, 2, 1), MultiblockPartBlockEntity.class);
+        MultiblockPartBlockEntity side = helper.<MultiblockPartBlockEntity>getBlockEntity(CORNER.offset(0, 2, 1));
         int taken = side.receive(Direction.WEST, EssenceMix.pure(Essence.FIRE, 300), false);
         helper.assertTrue(taken == 300 && jar.tank().amount() == 300, "a pipe on its side fills it, got " + taken);
 

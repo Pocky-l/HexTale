@@ -34,7 +34,7 @@ public final class CrucibleGameTests {
         BlockAwakening.start(helper.getLevel(), helper.absolutePos(AT), Direction.SOUTH, null, false);
         helper.succeedWhen(() -> {
             helper.assertBlockPresent(ModBlocks.CRUCIBLE.get(), AT);
-            helper.assertTrue(helper.getBlockEntity(AT, CrucibleBlockEntity.class).water() == CrucibleBlockEntity.BUCKET,
+            helper.assertTrue(helper.<CrucibleBlockEntity>getBlockEntity(AT).water() == CrucibleBlockEntity.BUCKET,
                     "the cauldron's water stays in the crucible");
         });
     }
@@ -42,7 +42,7 @@ public final class CrucibleGameTests {
     @HexTest
     public static void coldWaterTakesNothingIn(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
-        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        CrucibleBlockEntity crucible = helper.<CrucibleBlockEntity>getBlockEntity(AT);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         helper.assertTrue(crucible.dissolve(new ItemStack(Items.STICK), 1) == 0, "cold water dissolves nothing");
         helper.assertTrue(crucible.pour(EssenceMix.pure(Essence.FIRE, 16)).isEmpty(), "cold water takes no essence");
@@ -56,7 +56,7 @@ public final class CrucibleGameTests {
     public static void itBrimsOver(GameTestHelper helper) {
         helper.setBlock(AT.below(), Blocks.LAVA);
         helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
-        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        CrucibleBlockEntity crucible = helper.<CrucibleBlockEntity>getBlockEntity(AT);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         boolean[] done = {false};
         helper.succeedWhen(() -> {
@@ -79,7 +79,7 @@ public final class CrucibleGameTests {
     @HexTest(maxTicks = 80)
     public static void theWaterBoilsAway(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
-        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        CrucibleBlockEntity crucible = helper.<CrucibleBlockEntity>getBlockEntity(AT);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         crucible.boilAway();
         helper.assertTrue(crucible.drying() && crucible.fillWater(CrucibleBlockEntity.WATER_BOTTLE, true) == 0, "it boils dry and takes no water meanwhile");
@@ -94,7 +94,7 @@ public final class CrucibleGameTests {
     public static void heatBoilsTheWaterAndItTakesThingsIn(GameTestHelper helper) {
         helper.setBlock(AT.below(), Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
         helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
-        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        CrucibleBlockEntity crucible = helper.<CrucibleBlockEntity>getBlockEntity(AT);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         helper.assertTrue(crucible.heat() == 3, "a soul campfire heats by three");
         boolean[] dropped = {false};
@@ -122,7 +122,7 @@ public final class CrucibleGameTests {
     public static void lapisAndStoneMakeMagicStone(GameTestHelper helper) {
         helper.setBlock(AT.below(), Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
         helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
-        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        CrucibleBlockEntity crucible = helper.<CrucibleBlockEntity>getBlockEntity(AT);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         int[] step = {2};
         helper.succeedWhen(() -> {
@@ -147,7 +147,7 @@ public final class CrucibleGameTests {
     public static void aCatalystTheWaterCannotPayForDissolves(GameTestHelper helper) {
         helper.setBlock(AT.below(), Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
         helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
-        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        CrucibleBlockEntity crucible = helper.<CrucibleBlockEntity>getBlockEntity(AT);
         crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
         boolean[] thrown = {false};
         EssenceMix stone = CrucibleBlockEntity.essencesOf(new ItemStack(Items.STONE));

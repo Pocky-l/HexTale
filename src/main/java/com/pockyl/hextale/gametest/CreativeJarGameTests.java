@@ -3,9 +3,9 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.sheep.Sheep;
-import net.minecraft.world.entity.monster.spider.Spider;
-import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.monster.Spider;
+import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
@@ -41,10 +41,10 @@ public final class CreativeJarGameTests {
         helper.setBlock(BASE.offset(3, 0, -3), ModBlocks.ARC_SPIRE.get());
         helper.setBlock(BASE.offset(-3, 0, 3), ModBlocks.RUNE_SHACKLES.get());
         helper.setBlock(BASE.offset(-3, 0, -1), ModBlocks.MIASMA_VENT.get());
-        MiasmaVentBlockEntity vent = helper.getBlockEntity(BASE.offset(-3, 0, -1), MiasmaVentBlockEntity.class);
-        GreedyFunnelBlockEntity funnel = helper.getBlockEntity(BASE.above(), GreedyFunnelBlockEntity.class);
-        ArcSpireBlockEntity spire = helper.getBlockEntity(BASE.offset(3, 0, -3), ArcSpireBlockEntity.class);
-        RuneShacklesBlockEntity plate = helper.getBlockEntity(BASE.offset(-3, 0, 3), RuneShacklesBlockEntity.class);
+        MiasmaVentBlockEntity vent = helper.<MiasmaVentBlockEntity>getBlockEntity(BASE.offset(-3, 0, -1));
+        GreedyFunnelBlockEntity funnel = helper.<GreedyFunnelBlockEntity>getBlockEntity(BASE.above());
+        ArcSpireBlockEntity spire = helper.<ArcSpireBlockEntity>getBlockEntity(BASE.offset(3, 0, -3));
+        RuneShacklesBlockEntity plate = helper.<RuneShacklesBlockEntity>getBlockEntity(BASE.offset(-3, 0, 3));
         helper.runAfterDelay(5, () -> {
             Player player = helper.makeMockPlayer(GameType.SURVIVAL);
             Sheep sheep = helper.spawnWithNoFreeWill(EntityType.SHEEP, BASE.offset(2, 0, 2));

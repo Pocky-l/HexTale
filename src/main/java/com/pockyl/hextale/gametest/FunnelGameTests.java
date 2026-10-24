@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.animal.sheep.Sheep;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
@@ -65,10 +65,10 @@ public final class FunnelGameTests {
         clear(helper);
         helper.setBlock(BASE, Blocks.CHEST);
         helper.setBlock(BASE.above(), ModBlocks.GREEDY_FUNNEL.get());
-        GreedyFunnelBlockEntity funnel = helper.getBlockEntity(BASE.above(), GreedyFunnelBlockEntity.class);
-        ChestBlockEntity chest = helper.getBlockEntity(BASE, ChestBlockEntity.class);
+        GreedyFunnelBlockEntity funnel = helper.<GreedyFunnelBlockEntity>getBlockEntity(BASE.above());
+        ChestBlockEntity chest = helper.<ChestBlockEntity>getBlockEntity(BASE);
         helper.runAfterDelay(2, () -> {
-            sheep(helper).kill(helper.getLevel());
+            sheep(helper).kill();
             helper.assertTrue(funnel.hungry(), "with no decay nearby the funnel is hungry");
             helper.assertTrue(!loose(helper).isEmpty(), "a hungry funnel lets the drops fall");
             helper.assertValueEqual(stored(chest), 0, "items in the chest");
@@ -76,7 +76,7 @@ public final class FunnelGameTests {
 
             BlockPos jarPos = BASE.offset(-2, 0, -2);
             helper.setBlock(jarPos, ModBlocks.ESSENCE_TANK.get());
-            helper.getBlockEntity(jarPos, EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.DECAY, 8));
+            helper.<EssenceTankBlockEntity>getBlockEntity(jarPos).tank().set(EssenceMix.pure(Essence.DECAY, 8));
             Player player = helper.makeMockPlayer(GameType.SURVIVAL);
             Sheep second = sheep(helper);
             second.hurt(helper.getLevel().damageSources().playerAttack(player), 1000);

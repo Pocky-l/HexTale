@@ -46,7 +46,7 @@ public final class ModGameTests {
     public static void dataFilesLoad(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();
         for (String recipe : RECIPES) {
-            helper.assertTrue(server.getRecipeManager().byKey(ResourceKey.create(Registries.RECIPE, Hextale.id(recipe))).isPresent(),
+            helper.assertTrue(server.getRecipeManager().byKey(Hextale.id(recipe)).isPresent(),
                     "recipe " + recipe + " is loaded");
             helper.assertTrue(server.getAdvancements().get(Hextale.id("recipes/misc/" + recipe)) != null,
                     "the advancement unlocking " + recipe + " is loaded");
