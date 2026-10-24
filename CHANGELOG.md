@@ -7,13 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Hex Foundry: a 3x3x3 kiln of Fire Bricks (hollow inside, iron bars in the middle of the top) with the new Foundry
-  Hatch in the middle of its front, lit with flint and steel after it is researched. Slow to wake, but once hot it melts
+  Hatch in the middle of its front, woken with hextech dust after it is researched. Slow to wake, but once hot it melts
   all nine of its inputs at once, up to twice a furnace's speed in each - far less fuel per piece than furnaces. It burns
   furnace fuel or draws fire and magma essence from jars nearby (pipes into any brick work too); things dropped on its
   top fall in through the grate, and hoppers or pylons feed and empty it through any brick. The hatch takes four runes
   (Forge, Radiance, Eternal Flame, Bellows, Tempering, Smelting - grains of metal in molten stone - and Lens) and keeps
   them, with its contents, when the kiln is taken apart.
 - Fire Bricks: fireclay (clay, sand and gravel) baked into pale kiln bricks, with stairs, slab and wall.
+- Multiblocks in the research book and in JEI are a turning 3D model that builds itself layer by layer - each block
+  drops onto its place, a frame of light marks the layer being laid, empty cells glint, then dust falls and a wave of
+  light wakes it. The arrows under the model pick one layer to study; below it the blocks that layer (or the whole
+  structure) takes, with counts. JEI has a new Multiblocks category (drag to turn, the wheel steps through layers).
+
+### Changed
+- Every multiblock now wakes to a pinch of hextech dust (one is spent; free in creative), with a glittering puff and a
+  wave of light climbing the structure. The Big Essence Jar no longer takes a hextech crystal.
 
 ## [1.0.0-beta.5] - 2026-10-23
 ### Added

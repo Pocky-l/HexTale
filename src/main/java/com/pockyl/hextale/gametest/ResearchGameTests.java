@@ -497,7 +497,7 @@ public final class ResearchGameTests {
             }
         }
         var found = com.pockyl.hextale.multiblock.Multiblocks.find(helper.getLevel(), helper.absolutePos(corner),
-                new ItemStack(ModItems.UNSTABLE_HEXTECH.get()));
+                new ItemStack(ModItems.HEXTECH_DUST.get()));
         helper.assertTrue(found.isPresent(), "the big jar is found");
         com.pockyl.hextale.multiblock.Multiblocks.form(helper.getLevel(), found.get().getKey(), found.get().getValue(), null);
         EssenceTankBlockEntity jar = helper.getBlockEntity(corner.offset(1, 0, 1), EssenceTankBlockEntity.class);
@@ -1126,7 +1126,7 @@ public final class ResearchGameTests {
 
         table.setItem(ResearchTableBlockEntity.DIARY, new ItemStack(ModItems.RESEARCHERS_DIARY.get()));
         helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.HEXTECH, "then the orb");
-        table.setItem(ResearchTableBlockEntity.HEXTECH, new ItemStack(ModItems.UNSTABLE_HEXTECH.get()));
+        table.setItem(ResearchTableBlockEntity.HEXTECH, new ItemStack(ModItems.HEXTECH_DUST.get()));
         helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.PAPER, "then paper on the table");
         player.getInventory().add(new ItemStack(Items.PAPER));
         helper.assertTrue(Requirement.firstMissing(table, player) == Requirement.PAPER, "paper in the pocket does not count");

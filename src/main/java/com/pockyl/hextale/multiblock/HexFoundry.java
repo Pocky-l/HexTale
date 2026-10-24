@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * The Hex Foundry: a 3 x 3 x 3 kiln of Fire Bricks with a hollow heart, an iron grate in the middle of its top and the
- * Foundry Hatch in the middle of its front, lit with flint and steel (or a fire charge). The hatch becomes the controller:
+ * Foundry Hatch in the middle of its front, set alight by a pinch of hextech dust. The hatch becomes the controller:
  * it keeps its runes and its contents whether the kiln stands or falls apart. In the pattern the front faces south.
  */
 public final class HexFoundry extends Multiblock {
@@ -40,7 +40,7 @@ public final class HexFoundry extends Multiblock {
                 .where('H', new MultiblockPattern.Key(state -> state.is(ModBlocks.HEX_FOUNDRY.get()) && !state.getValue(HexFoundryBlock.FORMED),
                         () -> List.of(new ItemStack(ModBlocks.HEX_FOUNDRY.get()))))
                 .controller('H')
-                .build(), () -> Items.FLINT_AND_STEEL, () -> Items.FIRE_CHARGE);
+                .build());
     }
 
     @Override

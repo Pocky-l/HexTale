@@ -18,6 +18,7 @@ import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.research.ResearchTopic;
 
 import com.pockyl.hextale.registry.ModBlocks;
+import com.pockyl.hextale.registry.ModParticles;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,7 +32,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Every multiblock of the mod, and how they come alive and fall apart. A right click on any block of a finished pattern
- * with the structure's item forms it: the controller's cell gets the controller block, every other cell (the hollow
+ * with hextech dust forms it (one pinch is spent): the controller's cell gets the controller block, every other cell (the hollow
  * inside too) a {@link MultiblockPartBlock} remembering what it was. Removing any of those blocks puts every other block
  * back as it was.
  */
@@ -39,6 +40,13 @@ public final class Multiblocks {
     private static final Map<String, Multiblock> ALL = new LinkedHashMap<>();
     /** Controllers whose structures are being taken apart right now (their own removals must not start it again). */
     private static final Set<BlockPos> BREAKING = new HashSet<>();
+    /** Ticks between two layers of the light that runs up a structure as it wakes. */
+    private static final int WAVE_STEP = 3;
+    /** Structures waking right now: the light climbs them layer by layer (server side, a few ticks each). */
+    private static final List<Wave> WAVES = new ArrayList<>();
+
+    private record Wave(ServerLevel level, List<BlockPos> cells, int bottom, int top, long start) {
+    }
 
     public static final BigEssenceJar BIG_ESSENCE_JAR = register(new BigEssenceJar());
     public static final HexFoundry HEX_FOUNDRY = register(new HexFoundry());
@@ -55,6 +63,7 @@ public final class Multiblocks {
 
     public static void register() {
         NeoForge.EVENT_BUS.addListener(Multiblocks::onRightClickBlock);
+        NeoForge.EVENT_BUS.addListener(Multiblocks::onLevelTick);
     }
 
     public static List<Multiblock> all() {
@@ -109,6 +118,10 @@ public final class Multiblocks {
         event.setCanceled(true);
         event.setCancellationResult(InteractionResult.SUCCESS);
         if (level instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer player) {
+            if (!player.getAbilities().instabuild) {
+                event.getItemStack().shrink(1);
+            }
+            sprinkle(serverLevel, event.getHitVec().getLocation());
             form(serverLevel, found.get().getKey(), found.get().getValue(), player);
         }
     }
@@ -142,10 +155,59 @@ public final class Multiblocks {
             }
         }
         multiblock.showForming(level, cells, controllerPos);
+        int bottom = cells.stream().mapToInt(BlockPos::getY).min().orElse(controllerPos.getY());
+        int top = cells.stream().mapToInt(BlockPos::getY).max().orElse(controllerPos.getY());
+        WAVES.add(new Wave(level, cells, bottom, top, level.getGameTime()));
         if (player != null) {
             player.sendOverlayMessage(multiblock.formedMessage());
             multiblock.onFormed(player, controllerPos);
         }
+    }
+
+    /** The pinch of dust leaving the fingers: a glittering puff where the structure was touched. */
+    private static void sprinkle(ServerLevel level, net.minecraft.world.phys.Vec3 at) {
+        level.sendParticles(ModParticles.glint(ModParticles.GOLD), at.x, at.y, at.z, 14, 0.25, 0.25, 0.25, 0.04);
+        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 10, 0.2, 0.2, 0.2, 0.02);
+        level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.x, at.y, at.z, 0, 0.9, 0, 0, 1);
+        level.playSound(null, at.x, at.y, at.z, net.minecraft.sounds.SoundEvents.SAND_PLACE, SoundSource.PLAYERS, 0.5F, 1.6F);
+    }
+
+    /** The waking light climbs every new structure one layer every few ticks: glints in each block and a ring per layer. */
+    private static void onLevelTick(net.neoforged.neoforge.event.tick.LevelTickEvent.Post event) {
+        if (WAVES.isEmpty() || !(event.getLevel() instanceof ServerLevel level)) {
+            return;
+        }
+        long now = level.getGameTime();
+        WAVES.removeIf(wave -> {
+            if (wave.level() != level) {
+                return false;
+            }
+            long age = now - wave.start();
+            if (age % WAVE_STEP != 0) {
+                return false;
+            }
+            int y = wave.bottom() + (int) (age / WAVE_STEP);
+            if (y > wave.top()) {
+                return true;
+            }
+            double minX = Double.MAX_VALUE, maxX = -Double.MAX_VALUE, minZ = Double.MAX_VALUE, maxZ = -Double.MAX_VALUE;
+            for (BlockPos pos : wave.cells()) {
+                if (pos.getY() != y) {
+                    continue;
+                }
+                minX = Math.min(minX, pos.getX());
+                maxX = Math.max(maxX, pos.getX() + 1);
+                minZ = Math.min(minZ, pos.getZ());
+                maxZ = Math.max(maxZ, pos.getZ() + 1);
+                level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        1, 0.35, 0.35, 0.35, 0.01);
+            }
+            if (minX < maxX) {
+                double radius = Math.max(maxX - minX, maxZ - minZ) * 0.75;
+                level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), (minX + maxX) / 2, y + 0.05, (minZ + maxZ) / 2, 0, radius, 1, 0, 1);
+            }
+            return false;
+        });
     }
 
     /**

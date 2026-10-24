@@ -78,7 +78,8 @@ public class HextaleJeiPlugin implements IModPlugin {
                 new CrucibleCategory(registration.getJeiHelpers().getGuiHelper()),
                 new BrewingCategory(registration.getJeiHelpers().getGuiHelper()),
                 new LabExperimentCategory(registration.getJeiHelpers().getGuiHelper()),
-                new ChemFuelCategory(registration.getJeiHelpers().getGuiHelper()));
+                new ChemFuelCategory(registration.getJeiHelpers().getGuiHelper()),
+                new MultiblockCategory(registration.getJeiHelpers().getGuiHelper()));
         for (StepCategory category : DeviceSteps.categories(registration.getJeiHelpers().getGuiHelper())) {
             registration.addRecipeCategories(category);
         }
@@ -119,6 +120,7 @@ public class HextaleJeiPlugin implements IModPlugin {
                 .map(entry -> new BrewingCategory.Recipe(entry.getKey(), entry.getValue())).toList());
         registration.addRecipes(LabExperimentCategory.TYPE, LabExperimentCategory.all());
         registration.addRecipes(ChemFuelCategory.TYPE, ChemFuelCategory.all());
+        registration.addRecipes(MultiblockCategory.TYPE, MultiblockCategory.all());
         registration.addRecipes(DeviceSteps.STILL, DeviceSteps.still());
         registration.addRecipes(DeviceSteps.TANK, DeviceSteps.tank());
         registration.addRecipes(DeviceSteps.SOAKING, DeviceSteps.soaking());
@@ -202,6 +204,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addCraftingStation(CrucibleCategory.TYPE, ModItems.CRUCIBLE.get());
         registration.addCraftingStation(BrewingCategory.TYPE, ModItems.CRUCIBLE.get(), ModItems.CHEM_BURNER.get());
         registration.addCraftingStation(LabExperimentCategory.TYPE, ModItems.LAB_BENCH.get());
+        registration.addCraftingStation(MultiblockCategory.TYPE, ModItems.HEXTECH_DUST.get());
         registration.addCraftingStation(ChemFuelCategory.TYPE, ModItems.CHEM_BURNER.get(), ModItems.PINK_BRAZIER.get());
         registration.addCraftingStation(DeviceSteps.STILL, ModItems.CHEM_STILL.get(), ModItems.CHEM_BURNER.get());
         registration.addCraftingStation(DeviceSteps.TANK, ModItems.AXOLOTL_TANK.get());

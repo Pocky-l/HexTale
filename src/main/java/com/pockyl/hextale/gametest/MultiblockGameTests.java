@@ -46,7 +46,7 @@ public final class MultiblockGameTests {
     @HexTest
     public static void theBigJarWakesUpAndFallsApart(GameTestHelper helper) {
         build(helper, false);
-        ItemStack crystal = new ItemStack(ModItems.HEXTECH_GEMSTONE.get());
+        ItemStack crystal = new ItemStack(ModItems.HEXTECH_DUST.get());
         helper.assertTrue(Multiblocks.find(helper.getLevel(), helper.absolutePos(CORNER), crystal).isEmpty(), "a jar with a full middle is no jar");
         build(helper, true);
         helper.assertTrue(Multiblocks.find(helper.getLevel(), helper.absolutePos(CORNER), new ItemStack(ModItems.BRASS_INGOT.get())).isEmpty(),

@@ -128,6 +128,42 @@ public final class MultiblockPattern {
         return true;
     }
 
+    /** What one kind of cell takes: its key and how many times it stands in a layer (or in the whole structure). */
+    public record Material(Key key, int count) {
+    }
+
+    /**
+     * The blocks a layer takes ({@code -1} = the whole structure), one entry per kind in the order they first appear,
+     * kinds that show the same item merged (a controller of glass among glass walls); the hollow cells are left out.
+     */
+    public List<Material> materials(int layer) {
+        Map<Object, Integer> counts = new java.util.LinkedHashMap<>();
+        Map<Object, Key> keys = new HashMap<>();
+        for (Cell cell : cells) {
+            if (cell.key() == Key.AIR || (layer >= 0 && cell.y() != layer)) {
+                continue;
+            }
+            List<ItemStack> shown = cell.key().shown().get();
+            Object kind = shown.isEmpty() ? cell.key() : shown.getFirst().getItem();
+            counts.merge(kind, 1, Integer::sum);
+            keys.putIfAbsent(kind, cell.key());
+        }
+        List<Material> materials = new ArrayList<>();
+        counts.forEach((kind, count) -> materials.add(new Material(keys.get(kind), count)));
+        return materials;
+    }
+
+    /** How many cells of a layer ({@code -1} = the whole structure) must stay empty. */
+    public int hollow(int layer) {
+        int hollow = 0;
+        for (Cell cell : cells) {
+            if (cell.key() == Key.AIR && (layer < 0 || cell.y() == layer)) {
+                hollow++;
+            }
+        }
+        return hollow;
+    }
+
     public BlockPos controllerPos(Placement placement) {
         return placement.at(controller.x(), controller.y(), controller.z());
     }

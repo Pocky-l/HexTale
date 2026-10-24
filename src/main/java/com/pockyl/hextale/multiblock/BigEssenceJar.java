@@ -13,13 +13,12 @@ import net.neoforged.neoforge.common.Tags;
 
 import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModBlocks;
-import com.pockyl.hextale.registry.ModItems;
 
 import java.util.List;
 
 /**
- * The Big Essence Jar: a 3 x 3 x 4 jar built of glass with a hollow middle and a lid of wooden slabs, woken with a hextech
- * crystal. It holds sixteen jars' worth of essence and works like a jar: bottles by hand, pipes in anywhere, out at the
+ * The Big Essence Jar: a 3 x 3 x 4 jar built of glass with a hollow middle and a lid of wooden slabs, woken with a pinch
+ * of hextech dust. It holds sixteen jars' worth of essence and works like a jar: bottles by hand, pipes in anywhere, out at the
  * bottom's centre. It looks like the Essence Jar, four times as large.
  */
 public final class BigEssenceJar extends Multiblock {
@@ -36,7 +35,7 @@ public final class BigEssenceJar extends Multiblock {
                 .where('C', glass())
                 .where('S', MultiblockPattern.Key.tag(BlockTags.WOODEN_SLABS, ItemTags.WOODEN_SLABS))
                 .controller('C')
-                .build(), ModItems.HEXTECH_GEMSTONE, ModItems.UNSTABLE_HEXTECH);
+                .build());
     }
 
     private static MultiblockPattern.Key glass() {

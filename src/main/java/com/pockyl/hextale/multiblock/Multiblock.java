@@ -9,38 +9,23 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import com.pockyl.hextale.registry.ModItems;
+
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
- * A structure built from plain blocks in the world that comes alive when the researcher touches it with the right item:
- * the blocks are kept (as {@link MultiblockPartBlock}s remembering what they were) and one of them becomes the
+ * A structure built from plain blocks in the world that comes alive when the researcher sprinkles it with a pinch of
+ * hextech dust: the blocks are kept (as {@link MultiblockPartBlock}s remembering what they were) and one of them becomes the
  * controller, a block of its own with a {@link MultiblockCore} entity that does the work and draws the whole thing.
  * Breaking any block of a formed structure takes it apart again. Register new structures in {@link Multiblocks}.
  */
 public abstract class Multiblock {
     private final String id;
     private final MultiblockPattern pattern;
-    private final Predicate<ItemStack> activator;
-    private final List<Supplier<ItemStack>> activators;
 
-    /**
-     * @param activators the items that wake the structure (the first one is shown in the book)
-     */
-    @SafeVarargs
-    protected Multiblock(String id, MultiblockPattern pattern, Supplier<? extends net.minecraft.world.level.ItemLike>... activators) {
+    protected Multiblock(String id, MultiblockPattern pattern) {
         this.id = id;
         this.pattern = pattern;
-        this.activators = java.util.Arrays.stream(activators).<Supplier<ItemStack>>map(item -> () -> new ItemStack(item.get())).toList();
-        this.activator = stack -> {
-            for (Supplier<? extends net.minecraft.world.level.ItemLike> item : activators) {
-                if (stack.is(item.get().asItem())) {
-                    return true;
-                }
-            }
-            return false;
-        };
     }
 
     public String id() {
@@ -51,13 +36,14 @@ public abstract class Multiblock {
         return pattern;
     }
 
+    /** Every structure wakes to a pinch of hextech dust (one is spent unless the researcher is in creative). */
     public boolean activatedBy(ItemStack stack) {
-        return activator.test(stack);
+        return stack.is(ModItems.HEXTECH_DUST.get());
     }
 
-    /** The items that wake the structure, for the book. */
+    /** The items that wake the structure, for the book and JEI. */
     public List<ItemStack> activators() {
-        return activators.stream().map(Supplier::get).toList();
+        return List.of(new ItemStack(ModItems.HEXTECH_DUST.get()));
     }
 
     /** The block that takes the controller's cell once the structure is formed; its entity must be a {@link MultiblockCore}. */

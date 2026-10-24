@@ -16,12 +16,13 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.multiblock.MultiblockPartBlockEntity;
 import com.pockyl.hextale.multiblock.Multiblocks;
 import com.pockyl.hextale.registry.ModBlocks;
+import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.PickaxeRunes;
 
 /**
- * The Hex Foundry: built of fire bricks round its hatch, lit with flint and steel, melts nine pieces at once, burns fire
+ * The Hex Foundry: built of fire bricks round its hatch, woken with hextech dust, melts nine pieces at once, burns fire
  * essence from a jar nearby, swallows what is dropped on its top and falls apart keeping the hatch's runes.
  */
 public final class FoundryGameTests {
@@ -47,8 +48,10 @@ public final class FoundryGameTests {
     }
 
     private static void light(GameTestHelper helper) {
-        var found = Multiblocks.find(helper.getLevel(), helper.absolutePos(CORNER), new ItemStack(Items.FLINT_AND_STEEL));
-        helper.assertTrue(found.isPresent() && found.get().getKey() == Multiblocks.HEX_FOUNDRY, "flint and steel on a brick finds the kiln");
+        helper.assertTrue(Multiblocks.find(helper.getLevel(), helper.absolutePos(CORNER), new ItemStack(Items.FLINT_AND_STEEL)).isEmpty(),
+                "flint and steel no longer wakes the kiln");
+        var found = Multiblocks.find(helper.getLevel(), helper.absolutePos(CORNER), new ItemStack(ModItems.HEXTECH_DUST.get()));
+        helper.assertTrue(found.isPresent() && found.get().getKey() == Multiblocks.HEX_FOUNDRY, "hextech dust on a brick finds the kiln");
         Multiblocks.form(helper.getLevel(), found.get().getKey(), found.get().getValue(), null);
     }
 
@@ -59,7 +62,7 @@ public final class FoundryGameTests {
         hatch.setRunes(runes);
         hatch.setItem(0, new ItemStack(Items.RAW_IRON, 5));
         helper.setBlock(CORNER.offset(1, 2, 1), Blocks.GLASS);
-        helper.assertTrue(Multiblocks.find(helper.getLevel(), helper.absolutePos(CORNER), new ItemStack(Items.FLINT_AND_STEEL)).isEmpty(),
+        helper.assertTrue(Multiblocks.find(helper.getLevel(), helper.absolutePos(CORNER), new ItemStack(ModItems.HEXTECH_DUST.get())).isEmpty(),
                 "no grate on top, no kiln");
         helper.setBlock(CORNER.offset(1, 2, 1), Blocks.IRON_BARS);
         light(helper);

@@ -26,6 +26,8 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.infusion.InfusionRecipe;
 import com.pockyl.hextale.infusion.InfusionRecipes;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
+import com.pockyl.hextale.client.screen.MultiblockDiorama;
+import com.pockyl.hextale.client.screen.MultiblockPreview;
 import com.pockyl.hextale.multiblock.Multiblock;
 import com.pockyl.hextale.multiblock.MultiblockPattern;
 import com.pockyl.hextale.multiblock.Multiblocks;
@@ -1478,87 +1480,113 @@ final class GuidePage {
         return tooltip;
     }
 
-    // ---- Multiblocks: the structure layer by layer --------------------------------------------------------------------
+    // ---- Multiblocks: a turning 3D model built layer by layer ----------------------------------------------------------
 
-    private static final int LAYER_GAP = 8;
-    private static final int LAYER_LABEL = 10;
+    private static final int MULTIBLOCK_SCENE = 140;
+    private static final int MATERIAL_PITCH = SLOT + 2;
 
-    private int layersPerRow(MultiblockPattern pattern) {
-        return Math.max(1, (innerWidth() + LAYER_GAP) / (pattern.width() * SLOT + LAYER_GAP));
-    }
-
-    private int multiblockHeight(QuestDisplay display) {
-        Multiblock multiblock = Multiblocks.byId(display.result());
-        if (multiblock == null) {
-            return SLOT;
-        }
-        MultiblockPattern pattern = multiblock.pattern();
-        int rows = (pattern.height() + layersPerRow(pattern) - 1) / layersPerRow(pattern);
-        return rows * (LAYER_LABEL + pattern.depth() * SLOT + 6) + 10 + SLOT;
-    }
-
-    /**
-     * A multiblock from the bottom layer up, each layer a small grid seen from above (north at the top), the hollow cells
-     * dark, and the items that wake it under them.
-     */
     @Nullable
-    private List<FormattedCharSequence> renderMultiblock(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
-                                                         int mouseY, long now) {
+    private MultiblockPreview multiblockPreview;
+
+    /** The model of a multiblock, kept while its step is open so the chosen layer stays chosen. */
+    private @Nullable MultiblockPreview preview(QuestDisplay display) {
         Multiblock multiblock = Multiblocks.byId(display.result());
         if (multiblock == null) {
             return null;
         }
-        MultiblockPattern pattern = multiblock.pattern();
-        java.util.Map<Long, MultiblockPattern.Cell> cells = new java.util.HashMap<>();
-        for (MultiblockPattern.Cell cell : pattern.cells()) {
-            cells.put(BlockPos.asLong(cell.x(), cell.y(), cell.z()), cell);
+        if (multiblockPreview == null || multiblockPreview.multiblock() != multiblock) {
+            multiblockPreview = new MultiblockPreview(multiblock);
         }
+        return multiblockPreview;
+    }
+
+    /** The blocks the chosen layer takes (the whole structure while it builds itself), plus one slot for the hollow. */
+    private int materialSlots(MultiblockPreview preview) {
+        MultiblockPattern pattern = preview.multiblock().pattern();
+        return pattern.materials(preview.layer()).size() + (pattern.hollow(preview.layer()) > 0 ? 1 : 0);
+    }
+
+    private int multiblockHeight(QuestDisplay display) {
+        var preview = preview(display);
+        if (preview == null) {
+            return SLOT;
+        }
+        int perRow = Math.max(1, innerWidth() / MATERIAL_PITCH);
+        int rows = (materialSlots(preview) + perRow - 1) / perRow;
+        return MULTIBLOCK_SCENE + 4 + 10 + rows * MATERIAL_PITCH + 4 + SLOT;
+    }
+
+    /**
+     * A multiblock as a turning 3D model that builds itself layer by layer (or shows the layer picked with the arrows),
+     * under it the blocks that layer - or the whole structure - takes, and the item that wakes it.
+     */
+    @Nullable
+    private List<FormattedCharSequence> renderMultiblock(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
+                                                         int mouseY, long now) {
+        var preview = preview(display);
+        if (preview == null) {
+            return null;
+        }
+        Multiblock multiblock = preview.multiblock();
+        MultiblockPattern pattern = multiblock.pattern();
+        PixelArt.flush(graphics);
         List<FormattedCharSequence> tooltip = null;
-        int perRow = layersPerRow(pattern);
-        int gridWidth = pattern.width() * SLOT;
-        int rowWidth = Math.min(pattern.height(), perRow) * (gridWidth + LAYER_GAP) - LAYER_GAP;
-        int left = x + (innerWidth() - rowWidth) / 2;
-        int rowHeight = LAYER_LABEL + pattern.depth() * SLOT + 6;
-        for (int layer = 0; layer < pattern.height(); layer++) {
-            int gx = left + layer % perRow * (gridWidth + LAYER_GAP);
-            int gy = y + layer / perRow * rowHeight;
+        List<Component> hover = preview.render(graphics, x, y, innerWidth(), MULTIBLOCK_SCENE, mouseX, mouseY, now / 50F);
+        if (hover != null) {
+            tooltip = hover.stream().map(Component::getVisualOrderText).toList();
+        }
+        y += MULTIBLOCK_SCENE + 4;
+
+        int layer = preview.layer();
+        Component heading = layer == MultiblockDiorama.BUILD
+                ? Component.translatable("book.hextale.quest.multiblock.all")
+                : Component.translatable("book.hextale.quest.multiblock.layer", layer + 1);
+        graphics.text(font, heading, x, y, MUTED, false);
+        y += 10;
+        int perRow = Math.max(1, innerWidth() / MATERIAL_PITCH);
+        List<MultiblockPattern.Material> materials = pattern.materials(layer);
+        int slots = materialSlots(preview);
+        int i = 0;
+        for (MultiblockPattern.Material material : materials) {
+            List<ItemStack> shown = material.key().shown().get();
+            ItemStack stack = shown.isEmpty() ? ItemStack.EMPTY : shown.get((int) (now / 1000 % shown.size())).copyWithCount(material.count());
+            int sx = x + i % perRow * MATERIAL_PITCH;
+            int sy = y + i / perRow * MATERIAL_PITCH;
+            tooltip = orTooltip(tooltip, slot(graphics, stack, sx, sy, mouseX, mouseY, null));
+            i++;
+        }
+        int hollow = pattern.hollow(layer);
+        if (hollow > 0) {
+            int sx = x + i % perRow * MATERIAL_PITCH;
+            int sy = y + i / perRow * MATERIAL_PITCH;
+            slot(graphics, ItemStack.EMPTY, sx, sy, -1, -1, null);
+            PixelArt.disc(graphics, sx + SLOT / 2, sy + SLOT / 2, 8, PixelArt.argb(0x5CC8F2, 0.25F), PixelArt.argb(0xCFF3FF, 0.8F));
             PixelArt.flush(graphics);
-            graphics.centeredText(font, Component.translatable("book.hextale.quest.multiblock.layer", layer + 1), gx + gridWidth / 2, gy, MUTED);
-            for (int z = 0; z < pattern.depth(); z++) {
-                for (int cx = 0; cx < pattern.width(); cx++) {
-                    MultiblockPattern.Cell cell = cells.get(BlockPos.asLong(cx, layer, z));
-                    int sx = gx + cx * SLOT;
-                    int sy = gy + LAYER_LABEL + z * SLOT;
-                    if (cell == null) {
-                        continue;
-                    }
-                    if (cell.key() == MultiblockPattern.Key.AIR) {
-                        PixelArt.fill(graphics, sx, sy, sx + SLOT, sy + SLOT, PixelArt.argb(0x05040A, 1));
-                        if (over(mouseX, mouseY, sx, sy, SLOT, SLOT)) {
-                            tooltip = List.of(Component.translatable("book.hextale.quest.multiblock.hollow").withColor(MUTED).getVisualOrderText());
-                        }
-                        continue;
-                    }
-                    List<ItemStack> shown = cell.key().shown().get();
-                    ItemStack stack = shown.isEmpty() ? ItemStack.EMPTY : shown.get((int) ((now / 1000 + cx + z) % shown.size()));
-                    tooltip = orTooltip(tooltip, slot(graphics, stack, sx, sy, mouseX, mouseY, null));
-                }
+            String count = String.valueOf(hollow);
+            graphics.text(font, count, sx + SLOT - font.width(count), sy + SLOT - 8, 0xFFFFFFFF, true);
+            if (over(mouseX, mouseY, sx, sy, SLOT, SLOT)) {
+                tooltip = List.of(Component.translatable("book.hextale.quest.multiblock.hollow", hollow).withColor(MUTED).getVisualOrderText());
             }
         }
-        int rows = (pattern.height() + perRow - 1) / perRow;
-        int wy = y + rows * rowHeight;
+        y += (slots + perRow - 1) / perRow * MATERIAL_PITCH + 4;
+
         PixelArt.flush(graphics);
         Component wake = Component.translatable("book.hextale.quest.multiblock.wake");
         List<ItemStack> activators = multiblock.activators();
         int width = font.width(wake) + 6 + activators.size() * (SLOT + 2);
         int wx = x + (innerWidth() - width) / 2;
-        graphics.text(font, wake, wx, wy + 5, MUTED, false);
+        graphics.text(font, wake, wx, y + 5, MUTED, false);
         int ax = wx + font.width(wake) + 6;
         for (ItemStack activator : activators) {
-            tooltip = orTooltip(tooltip, slot(graphics, activator, ax, wy, mouseX, mouseY, null));
+            tooltip = orTooltip(tooltip, slot(graphics, activator, ax, y, mouseX, mouseY, null));
             ax += SLOT + 2;
         }
         return tooltip;
+    }
+
+    /** A click on the multiblock model's arrows; true when it was used. */
+    private boolean pickLayer(double mouseX, double mouseY) {
+        return multiblockPreview != null && multiblockPreview.click(mouseX, mouseY);
     }
 
     private static int infusionHeight(QuestDisplay display) {
@@ -1931,7 +1959,7 @@ final class GuidePage {
             close();
             return;
         }
-        if (pickTab(mouseX, mouseY) || pickRune(mouseX, mouseY) || !studyButton(quest)) {
+        if (pickTab(mouseX, mouseY) || pickRune(mouseX, mouseY) || pickLayer(mouseX, mouseY) || !studyButton(quest)) {
             return;
         }
         int ix = plateLeft() + PAD;
