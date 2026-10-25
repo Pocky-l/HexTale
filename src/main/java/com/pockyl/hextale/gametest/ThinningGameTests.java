@@ -17,11 +17,13 @@ public final class ThinningGameTests {
 
     @HexTest
     public static void stagesFollowTheValue(GameTestHelper helper) {
+        float safe = Thinning.SAFE;
         helper.assertTrue(Thinning.Stage.of(0) == Thinning.Stage.CLEAN, "nothing is clean");
-        helper.assertTrue(Thinning.Stage.of(99) == Thinning.Stage.CLEAN, "just under the haze is clean");
-        helper.assertTrue(Thinning.Stage.of(100) == Thinning.Stage.HAZE, "100 is haze");
-        helper.assertTrue(Thinning.Stage.of(450) == Thinning.Stage.MIASMA, "450 is miasma");
-        helper.assertTrue(Thinning.Stage.of(700) == Thinning.Stage.BLIGHT, "700 is blight");
+        helper.assertTrue(Thinning.Stage.of(safe + 99) == Thinning.Stage.CLEAN, "the safe part and a little more are clean");
+        helper.assertTrue(Thinning.felt(safe - 1) == 0 && Thinning.felt(safe + 10) == 10, "only what lies past the safe part is felt");
+        helper.assertTrue(Thinning.Stage.of(safe + 100) == Thinning.Stage.HAZE, "100 past it is haze");
+        helper.assertTrue(Thinning.Stage.of(safe + 450) == Thinning.Stage.MIASMA, "450 past it is miasma");
+        helper.assertTrue(Thinning.Stage.of(safe + 700) == Thinning.Stage.BLIGHT, "700 past it is blight");
         helper.assertTrue(Thinning.Stage.of(Thinning.MAX) == Thinning.Stage.BREACH, "the most is a breach");
         helper.succeed();
     }

@@ -95,8 +95,8 @@ public final class ClientThinning {
 
     /** How far grass, leaves and water have faded towards ash (0-1): from the first haze to the middle of the miasma. */
     public static float tint(float value) {
-        float from = Thinning.Stage.HAZE.from * 0.6F;
-        float t = Mth.clamp((value - from) / (Thinning.Stage.MIASMA.from * 1.5F - from), 0, 1);
+        float from = Thinning.Stage.HAZE.felt * 0.6F;
+        float t = Mth.clamp((Thinning.felt(value) - from) / (Thinning.Stage.MIASMA.felt * 1.5F - from), 0, 1);
         return t * t * (3 - 2 * t);
     }
 

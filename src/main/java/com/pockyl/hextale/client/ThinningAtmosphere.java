@@ -59,7 +59,7 @@ public final class ThinningAtmosphere {
 
     /** 0 at the first haze, 1 at a breach. */
     private static float depth(float value) {
-        return Mth.clamp((value - Thinning.Stage.HAZE.from * 0.5F) / (Thinning.Stage.BREACH.from - Thinning.Stage.HAZE.from * 0.5F), 0, 1);
+        return Mth.clamp((Thinning.felt(value) - Thinning.Stage.HAZE.felt * 0.5F) / (Thinning.Stage.BREACH.felt - Thinning.Stage.HAZE.felt * 0.5F), 0, 1);
     }
 
     private static void tick() {
@@ -72,7 +72,7 @@ public final class ThinningAtmosphere {
             ClientThinning.clear();
             return;
         }
-        local += (ClientThinning.at(player.getX(), player.getZ()) - local) * 0.03F;
+        local += (Thinning.felt(ClientThinning.at(player.getX(), player.getZ())) - local) * 0.03F;
         if (minecraft.isPaused() || !ClientThinning.any()) {
             return;
         }
@@ -81,11 +81,11 @@ public final class ThinningAtmosphere {
         for (int i = 0; i < tries; i++) {
             double x = player.getX() + (random.nextDouble() * 2 - 1) * REACH;
             double z = player.getZ() + (random.nextDouble() * 2 - 1) * REACH;
-            float value = ClientThinning.at(x, z);
-            if (value < Thinning.Stage.HAZE.from * 0.4F) {
+            float value = Thinning.felt(ClientThinning.at(x, z));
+            if (value < Thinning.Stage.HAZE.felt * 0.4F) {
                 continue;
             }
-            float d = depth(value);
+            float d = depth(value + Thinning.SAFE);
             int ground = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mth.floor(x), Mth.floor(z));
             if (random.nextFloat() < 0.35F + d * 0.6F) {
                 double y = ground + 0.1 + random.nextDouble() * (0.5 + d * 1.6);
@@ -97,7 +97,7 @@ public final class ThinningAtmosphere {
                 level.addParticle(ModParticles.voidMote(MOTE), x, ground + 0.05, z,
                         (random.nextDouble() - 0.5) * 2.5, 1.5 + random.nextDouble() * 2, (random.nextDouble() - 0.5) * 2.5);
             }
-            if (value >= Thinning.Stage.MIASMA.from * 0.8F) {
+            if (value >= Thinning.Stage.MIASMA.felt * 0.8F) {
                 if (random.nextFloat() < d * 0.3F) {
                     // Dark vapour seeping up out of the ground.
                     level.addParticle(ModParticles.wisp(SEEP), x, ground + 0.05, z, 0, 0.015 + random.nextDouble() * 0.02, 0);
@@ -112,14 +112,14 @@ public final class ThinningAtmosphere {
 
     /** Where the land has gone to miasma, it murmurs now and then from somewhere around. */
     private static void murmur(ClientLevel level, Player player, RandomSource random) {
-        if (local < Thinning.Stage.MIASMA.from * 0.8F) {
+        if (local < Thinning.Stage.MIASMA.felt * 0.8F) {
             murmurIn = Math.max(murmurIn, 120);
             return;
         }
         if (--murmurIn > 0) {
             return;
         }
-        float k = Mth.clamp((local - Thinning.Stage.MIASMA.from) / (Thinning.Stage.BREACH.from - Thinning.Stage.MIASMA.from), 0, 1);
+        float k = Mth.clamp((local - Thinning.Stage.MIASMA.felt) / (Thinning.Stage.BREACH.felt - Thinning.Stage.MIASMA.felt), 0, 1);
         murmurIn = 300 + random.nextInt(400) - (int) (k * 200);
         double angle = random.nextDouble() * Math.PI * 2;
         double x = player.getX() + Math.cos(angle) * 10;
@@ -129,7 +129,7 @@ public final class ThinningAtmosphere {
     }
 
     private static float strength(float partialTick) {
-        return depth(Mth.lerp(partialTick, previous, local));
+        return depth(Mth.lerp(partialTick, previous, local) + Thinning.SAFE);
     }
 
     private static void fogColour(ViewportEvent.ComputeFogColor event) {
@@ -157,7 +157,7 @@ public final class ThinningAtmosphere {
     /** From the miasma on, the edges of sight darken towards violet. */
     private static void vignette(GuiGraphicsExtractor graphics, DeltaTracker delta) {
         float value = Mth.lerp(delta.getGameTimeDeltaPartialTick(false), previous, local);
-        float s = Mth.clamp((value - Thinning.Stage.MIASMA.from * 0.8F) / (Thinning.Stage.BREACH.from - Thinning.Stage.MIASMA.from * 0.8F), 0, 1);
+        float s = Mth.clamp((value - Thinning.Stage.MIASMA.felt * 0.8F) / (Thinning.Stage.BREACH.felt - Thinning.Stage.MIASMA.felt * 0.8F), 0, 1);
         if (s <= 0.003F) {
             return;
         }

@@ -1,0 +1,6 @@
+{
+  "parent": "hextale:block/thinning/tinted_cube_all",
+  "textures": {
+    "all": "minecraft:block/gravel"
+  }
+}

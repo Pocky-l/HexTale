@@ -13,8 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   essence poured away (far less where stone drinks it), raw crystals bursting, broken rituals, burst lab flasks, burnt
   parchments, Miasma Vent fumes. It lives in the chunk, never heals by itself, and the land around catches a share of
   it ring by ring, so a researcher's home and its surroundings sicken slowly as the research goes on.
-- Haze: a lilac veil low over the ground, dark motes sinking into the earth, grass, leaves, vines and water losing their
-  colour, the fog leaning to violet.
+- The world takes a good deal before anything shows; past that, haze: a lilac veil low over the ground, dark motes
+  sinking into the earth, grass, leaves, vines and water losing their colour, stone, sand, gravel and earth turning a
+  sick lilac grey, the fog leaning to violet.
 - Miasma: the veil thick and knee-high, dark vapours seeping up out of the ground, magenta glints, the fog closing in,
   the edges of sight darkening, and the land murmuring from somewhere around.
 - `/hextale void get|set|add|stage|clear` for operators; config options to turn the Thinning off or change its rate.

@@ -46,7 +46,9 @@ import java.util.UUID;
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class Thinning {
-    public static final float MAX = 1500;
+    /** The first part of the scale shows nothing: the world takes this much before the Void is felt at all. */
+    public static final float SAFE = 500;
+    public static final float MAX = SAFE + 1500;
     /** Ticks between two flows. */
     public static final int SPREAD_TICKS = 40;
     /** A neighbour catches the sickness up to this share of a chunk's value. */
@@ -87,14 +89,16 @@ public final class Thinning {
     public static final float LAB_BURST = 15;
     public static final float PARCHMENT_BURN = 5;
 
-    /** How far the land has gone. */
+    /** How far the land has gone; {@code felt} counts from the end of the {@link #SAFE} part. */
     public enum Stage {
-        CLEAN(0), HAZE(100), MIASMA(300), BLIGHT(600), BREACH(1000);
+        CLEAN(-SAFE), HAZE(100), MIASMA(300), BLIGHT(600), BREACH(1000);
 
         public final float from;
+        public final float felt;
 
-        Stage(float from) {
-            this.from = from;
+        Stage(float felt) {
+            this.felt = felt;
+            this.from = SAFE + felt;
         }
 
         public static Stage of(float value) {
@@ -128,6 +132,11 @@ public final class Thinning {
     public static float get(Level level, BlockPos pos) {
         LevelChunk chunk = level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
         return chunk == null ? 0 : get(chunk);
+    }
+
+    /** How much of {@code value} is felt: what lies past the {@link #SAFE} part (0 inside it). */
+    public static float felt(float value) {
+        return Math.max(0, value - SAFE);
     }
 
     public static Stage stage(Level level, BlockPos pos) {
