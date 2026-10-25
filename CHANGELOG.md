@@ -4,7 +4,8 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - Unreleased
+The Void seeps in: magic wears the world thin around a researcher's home.
 
 ### Added
 - The Thinning: work with magic wears the edge of the world thin, and the Void starts to seep in. Everyday work wears it
