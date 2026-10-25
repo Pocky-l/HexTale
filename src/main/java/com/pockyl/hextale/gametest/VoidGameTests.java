@@ -91,7 +91,8 @@ public final class VoidGameTests {
 
     @HexTest(maxTicks = 400)
     public static void aRootedBreachSendsOutAVoidling(GameTestHelper helper) {
-        helper.makeMockServerPlayerInLevel();
+        // A creative player: near enough to call the voidling out, but neither hunted nor bitten.
+        helper.makeMockServerPlayerInLevel().setGameMode(net.minecraft.world.level.GameType.CREATIVE);
         Vec3 centre = Vec3.atCenterOf(helper.absolutePos(new BlockPos(1, 4, 1)));
         TheVoid breach = TheVoid.rooted(helper.getLevel(), centre, 0, VoidShape.EYE, 3.5F, 777);
         helper.getLevel().addFreshEntity(breach);
@@ -99,7 +100,9 @@ public final class VoidGameTests {
         helper.succeedWhen(() -> {
             helper.assertTrue(breach.isAlive() && !breach.closing(), "a rooted breach stays open");
             helper.assertTrue(!helper.getLevel().getEntitiesOfClass(com.pockyl.hextale.thevoid.Voidling.class,
-                    breach.getBoundingBox().inflate(12)).isEmpty(), "a voidling pushes out of it");
+                    breach.getBoundingBox().inflate(12)).isEmpty(), "a voidling pushes out of it (age " + breach.age(0) + ", push "
+                    + breach.push(0) + ", voidlings anywhere " + helper.getLevel().getEntities(com.pockyl.hextale.registry.ModEntities.VOIDLING.get(),
+                    v -> true).size() + ", difficulty " + helper.getLevel().getDifficulty() + ", players " + helper.getLevel().players().size() + ")");
         });
     }
 }

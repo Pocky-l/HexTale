@@ -40,8 +40,8 @@ public final class ModEntities {
     /** A voidling: pushed out of a breach of the Void, runs at players, leaps and bites. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.Voidling>> VOIDLING =
             ENTITIES.register("voidling", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.Voidling>of(
-                            com.pockyl.hextale.thevoid.Voidling::new, MobCategory.MONSTER).noLootTable().sized(0.8F, 0.6F)
-                    .eyeHeight(0.4F).clientTrackingRange(8).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+                            com.pockyl.hextale.thevoid.Voidling::new, MobCategory.MONSTER).noLootTable().sized(0.9F, 1.0F)
+                    .eyeHeight(0.7F).clientTrackingRange(8).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
     /** The eye a player watches a breach open through (client only, never in a level's entity list). */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.BreachCamera>> BREACH_CAMERA =
