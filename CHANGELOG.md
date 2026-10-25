@@ -26,7 +26,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   healing, drunk, splashed or lingering, makes them all let go. You can see them on you.
 - Miasma: the veil thick and knee-high, dark vapours seeping up out of the ground, magenta glints, the fog closing in,
   the edges of sight darkening, and the land murmuring from somewhere around.
-- `/hextale void get|set|add|stage|clear` for operators; config options to turn the Thinning off or change its rate.
+- Breaches of the Void: where the land has gone all the way, the world finally tears - on open ground near a player,
+  never within a thousand blocks of another breach. First the omen: the ground shakes, a drone rises and the world's
+  motes are drawn to one point; then the breach slowly breaks open. It never closes, it keeps sickening the land around
+  it, and whatever touches it is hurt and thrown back.
+- Players near a breach as it tears open watch it happen: the camera flies out to it, holds while it opens and the
+  first voidling pushes out, and flies back (skip it with a key, or turn it off in the client config).
+- Voidlings: the Void's own spawn, bigger and far worse than mites. The cells of a breach bulge, and one drops out
+  curled up, unfolds and runs at you - it leaps and bites. A breach keeps a few of them around it.
+- `/hextale void get|set|add|stage|breach|clear` for operators; config options to turn the Thinning off or change its rate.
 
 ## [1.0.0] - 2026-10-24
 Hextale leaves beta.

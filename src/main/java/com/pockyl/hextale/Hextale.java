@@ -223,6 +223,7 @@ public final class Hextale {
         });
 
         container.registerConfig(ModConfig.Type.SYNCED, Config.SPEC);
+        container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
     }
 
     /** A scroll of "Smelting" shows players what scrolls look like; real ones come from the Research Table. */

@@ -31,7 +31,7 @@ import com.pockyl.hextale.thevoid.Thinning;
 import java.util.List;
 import java.util.stream.Stream;
 
-/** {@code /hextale runes list|learn <rune|all> [stars]|forget <rune|all>} {@code /hextale quests reset} and {@code /hextale void get|set|add|stage|clear}: test helpers for operators. */
+/** {@code /hextale runes list|learn <rune|all> [stars]|forget <rune|all>} {@code /hextale quests reset} and {@code /hextale void get|set|add|stage|breach|clear}: test helpers for operators. */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class HextaleCommand {
     private static final String ALL = "all";
@@ -86,6 +86,8 @@ public final class HextaleCommand {
                                                 .executes(context -> setThinning(context.getSource(),
                                                         Thinning.Stage.values()[IntegerArgumentType.getInteger(context, "stage")].from,
                                                         IntegerArgumentType.getInteger(context, "radius"))))))
+                        .then(Commands.literal("breach")
+                                .executes(context -> breach(context.getSource())))
                         .then(Commands.literal("clear")
                                 .executes(context -> setThinning(context.getSource(), 0, 0))
                                 .then(Commands.argument("radius", IntegerArgumentType.integer(0, 16))
@@ -143,6 +145,37 @@ public final class HextaleCommand {
         source.sendSuccess(() -> Component.translatable("commands.hextale.void.get", Math.round(value),
                 Component.translatable(stage.key()), stage.ordinal()), false);
         return Math.round(value);
+    }
+
+    /**
+     * Tears a breach open near the command's source at once, with its omen and the cinematic for the players near - on
+     * open ground nearby when there is some, else on the ground ahead. Ignores how sick the land is and other breaches.
+     */
+    private static int breach(CommandSourceStack source) {
+        net.minecraft.server.level.ServerLevel level = source.getLevel();
+        BlockPos at = BlockPos.containing(source.getPosition());
+        BlockPos ground = null;
+        for (int ring = 0; ring <= 2 && ground == null; ring++) {
+            for (int dx = -ring; dx <= ring && ground == null; dx++) {
+                for (int dz = -ring; dz <= ring && ground == null; dz++) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) == ring) {
+                        ground = com.pockyl.hextale.thevoid.Breaches.findGround(level,
+                                new net.minecraft.world.level.ChunkPos((at.getX() >> 4) + dx, (at.getZ() >> 4) + dz), level.getRandom());
+                    }
+                }
+            }
+        }
+        if (ground == null) {
+            net.minecraft.world.phys.Vec3 ahead = source.getPosition().add(
+                    net.minecraft.world.phys.Vec3.directionFromRotation(0, source.getRotation().y).scale(10));
+            int x = net.minecraft.util.Mth.floor(ahead.x);
+            int z = net.minecraft.util.Mth.floor(ahead.z);
+            ground = new BlockPos(x, level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
+        }
+        BlockPos spot = ground;
+        com.pockyl.hextale.thevoid.Breaches.open(level, spot, source.getPosition());
+        source.sendSuccess(() -> Component.translatable("commands.hextale.void.breach", spot.getX(), spot.getY() + 1, spot.getZ()), true);
+        return 1;
     }
 
     /** Sets the Thinning of the chunk the command runs in and of every loaded chunk within {@code radius} chunks. */

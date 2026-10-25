@@ -103,6 +103,8 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.VoidMiteLayer::registerModifier);
         modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
                 com.pockyl.hextale.client.render.VoidMiteModel.LAYER, com.pockyl.hextale.client.render.VoidMiteModel::createBodyLayer));
+        modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
+                com.pockyl.hextale.client.render.VoidlingModel.LAYER, com.pockyl.hextale.client.render.VoidlingModel::createBodyLayer));
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerLayers);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::bake);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerExtensions);
@@ -117,6 +119,7 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.VoidPipelines::registerPipelines);
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
+        BreachCinematic.register(modBus);
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
         modBus.addListener(ThinningTint::fadeWater);
@@ -222,6 +225,10 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.TheVoidRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.VOID_MITE.get(),
                 com.pockyl.hextale.client.render.VoidMiteRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.VOIDLING.get(),
+                com.pockyl.hextale.client.render.VoidlingRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.BREACH_CAMERA.get(),
+                net.minecraft.client.renderer.entity.NoopRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RESEARCH_TABLE.get(), ResearchTableRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ALEMBIC.get(), AlembicRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SEPARATOR.get(), SeparatorRenderer::new);

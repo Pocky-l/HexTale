@@ -37,6 +37,18 @@ public final class ModEntities {
                             com.pockyl.hextale.thevoid.VoidMite::new, MobCategory.MONSTER).noLootTable().sized(0.5F, 0.3F)
                     .eyeHeight(0.15F).clientTrackingRange(8).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
+    /** A voidling: pushed out of a breach of the Void, runs at players, leaps and bites. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.Voidling>> VOIDLING =
+            ENTITIES.register("voidling", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.Voidling>of(
+                            com.pockyl.hextale.thevoid.Voidling::new, MobCategory.MONSTER).noLootTable().sized(0.8F, 0.6F)
+                    .eyeHeight(0.4F).clientTrackingRange(8).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
+    /** The eye a player watches a breach open through (client only, never in a level's entity list). */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.BreachCamera>> BREACH_CAMERA =
+            ENTITIES.register("breach_camera", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.BreachCamera>of(
+                            com.pockyl.hextale.thevoid.BreachCamera::new, MobCategory.MISC).noLootTable().noSave().noSummon()
+                    .sized(0.1F, 0.1F).eyeHeight(1.62F).clientTrackingRange(0).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
     private ModEntities() {
     }
 
@@ -44,5 +56,7 @@ public final class ModEntities {
         ENTITIES.register(modBus);
         modBus.addListener((net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) ->
                 event.put(VOID_MITE.get(), com.pockyl.hextale.thevoid.VoidMite.createAttributes().build()));
+        modBus.addListener((net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) ->
+                event.put(VOIDLING.get(), com.pockyl.hextale.thevoid.Voidling.createAttributes().build()));
     }
 }

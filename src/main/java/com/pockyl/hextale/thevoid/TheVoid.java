@@ -1,5 +1,8 @@
 package com.pockyl.hextale.thevoid;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -9,9 +12,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -19,6 +27,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.registry.ModEntities;
@@ -26,17 +35,40 @@ import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 
 /**
- * The Void breaking into the world: a blocky breach of glowing edges with a whirling depth behind it. Only the look for
- * now (no logic): it spreads open from its heart, breathes out dark smoke and draws the world's motes in, and closes when
- * told to. Its outline is a
- * {@link VoidLayout} built from the seed (nothing but the numbers is synced). The entity stands at the centre of the
- * breach; {@link #orientation()} turns the breach's plane into the world.
+ * The Void breaking into the world: a blocky breach of glowing edges with a whirling depth behind it. It spreads open
+ * from its heart, breathes out dark smoke and draws the world's motes in, and throws back - hurt - whatever touches it.
+ * Its outline is a {@link VoidLayout} built from the seed (nothing but the numbers is synced). The entity stands at the
+ * centre of the breach; {@link #orientation()} turns the breach's plane into the world.
+ * <p>
+ * A breach the Thinning tore open ({@link #rooted}, see {@link Breaches}) is announced by an omen - the ground shakes,
+ * a drone rises, the world's motes are drawn to a point - opens slowly, never closes by itself, keeps feeding the
+ * sickness of the land around it and now and then pushes a {@link Voidling} out: the cells bulge and the thing drops out
+ * of them.
  */
 public class TheVoid extends Entity {
     /** Ticks from the first cell to the whole breach. */
     public static final int OPEN_TICKS = 30;
     /** Ticks from the order to close until it is gone. */
     public static final int CLOSE_TICKS = 24;
+    /** Ticks of the omen before a rooted breach tears open. */
+    public static final int OMEN_TICKS = 90;
+    /** Ticks a rooted breach takes to open: slower than a shard's, it is the moment to be seen. */
+    public static final int ROOTED_OPEN_TICKS = 80;
+    /** Ticks from the open breach to its first voidling bulging out. */
+    public static final int FIRST_PUSH_DELAY = 12;
+    /** Ticks the cells bulge before a voidling drops out. */
+    public static final int PUSH_TICKS = 34;
+    /** Voidlings around a breach before it sends no more. */
+    public static final int VOIDLING_LIMIT = 3;
+    /** Ticks between two voidlings at least (and up to twice this). */
+    public static final int PUSH_PAUSE = 900;
+    /** Ticks between two feedings of the land around. */
+    public static final int FEED_TICKS = 100;
+    /** Thinning a rooted breach adds to its chunk per feeding. */
+    public static final float FEED = 1.5F;
+    /** Magic damage of a touch. */
+    public static final float TOUCH_DAMAGE = 4;
+    private static final byte REPEL_EVENT = 60;
 
     public static final int VIOLET = 0x9A3CFF;
     public static final int MAGENTA = 0xF23CE6;
@@ -51,8 +83,15 @@ public class TheVoid extends Entity {
     private static final EntityDataAccessor<Float> DATA_SIZE = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Long> DATA_BORN = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.LONG);
     private static final EntityDataAccessor<Long> DATA_CLOSE_AT = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.LONG);
+    private static final EntityDataAccessor<Integer> DATA_OMEN = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_OPEN = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> DATA_ROOTED = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Long> DATA_PUSH_AT = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.LONG);
+    private static final EntityDataAccessor<Vector3fc> DATA_PUSH = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.VECTOR3);
 
     private boolean burstShown;
+    /** Server: when the next voidling may bulge out. */
+    private long nextPush = -1;
 
     public TheVoid(EntityType<? extends TheVoid> type, Level level) {
         super(type, level);
@@ -71,6 +110,20 @@ public class TheVoid extends Entity {
         return breach;
     }
 
+    /**
+     * A breach the Thinning tears open at {@code centre}: the omen first, then a slow opening, and it stays - feeding the
+     * land and sending voidlings out of its front (the side {@code yaw} looks to).
+     */
+    public static TheVoid rooted(Level level, Vec3 centre, float yaw, VoidShape shape, float size, int seed) {
+        TheVoid breach = open(level, centre, yaw, shape, size, seed);
+        breach.entityData.set(DATA_ROOTED, true);
+        breach.entityData.set(DATA_OMEN, OMEN_TICKS);
+        breach.entityData.set(DATA_OPEN, ROOTED_OPEN_TICKS);
+        breach.entityData.set(DATA_BORN, level.getGameTime() + OMEN_TICKS);
+        breach.nextPush = level.getGameTime() + OMEN_TICKS + ROOTED_OPEN_TICKS + FIRST_PUSH_DELAY;
+        return breach;
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(DATA_SEED, 0);
@@ -78,6 +131,11 @@ public class TheVoid extends Entity {
         builder.define(DATA_SIZE, 3.0F);
         builder.define(DATA_BORN, 0L);
         builder.define(DATA_CLOSE_AT, -1L);
+        builder.define(DATA_OMEN, 0);
+        builder.define(DATA_OPEN, OPEN_TICKS);
+        builder.define(DATA_ROOTED, false);
+        builder.define(DATA_PUSH_AT, -1L);
+        builder.define(DATA_PUSH, new Vector3f());
     }
 
     public int seed() {
@@ -96,9 +154,63 @@ public class TheVoid extends Entity {
         return VoidLayout.of(shape(), size(), seed());
     }
 
-    /** Ticks since it began to break open, with the partial tick. */
+    /** Torn open by the Thinning: it stays, feeds the land and sends voidlings. */
+    public boolean rooted() {
+        return entityData.get(DATA_ROOTED);
+    }
+
+    /** Ticks since it began to break open, with the partial tick (0 during the omen). */
     public float age(float partialTick) {
-        return Math.max(0, level().getGameTime() - entityData.get(DATA_BORN)) + partialTick;
+        return Math.max(0, level().getGameTime() - entityData.get(DATA_BORN) + partialTick);
+    }
+
+    /** The game time it begins to break open (after the omen). */
+    public long born() {
+        return entityData.get(DATA_BORN);
+    }
+
+    /** The game time the omen began (the same as {@link #born()} when there was none). */
+    public long omenStart() {
+        return born() - entityData.get(DATA_OMEN);
+    }
+
+    /** Ticks it takes to open. */
+    public int openTicks() {
+        return entityData.get(DATA_OPEN);
+    }
+
+    /** 0 -> 1 through the omen; 1 once it breaks open (and for a breach without an omen). */
+    public float omen(float partialTick) {
+        int omen = entityData.get(DATA_OMEN);
+        if (omen <= 0) {
+            return 1;
+        }
+        return Mth.clamp((level().getGameTime() - omenStart() + partialTick) / omen, 0, 1);
+    }
+
+    /** Still in the omen: nothing of it shows yet. */
+    public boolean foretold() {
+        return level().getGameTime() < born();
+    }
+
+    /** Where a voidling is pushing out (local, blocks), or null when none is. */
+    public @Nullable Vector3fc pushPoint() {
+        return entityData.get(DATA_PUSH_AT) < 0 ? null : entityData.get(DATA_PUSH);
+    }
+
+    /** 0 -> 1 while the cells bulge, falling back as they settle after the voidling is out; 0 when nothing pushes. */
+    public float push(float partialTick) {
+        long at = entityData.get(DATA_PUSH_AT);
+        if (at < 0) {
+            return 0;
+        }
+        float since = level().getGameTime() - at + partialTick;
+        if (since <= PUSH_TICKS) {
+            float k = Mth.clamp(since / PUSH_TICKS, 0, 1);
+            // It strains, gives a little, strains harder.
+            return k * k * (0.85F + 0.15F * Mth.sin(since * 0.9F));
+        }
+        return Mth.clamp(1 - (since - PUSH_TICKS) / 8, 0, 1) * 0.4F;
     }
 
     public boolean closing() {
@@ -116,7 +228,7 @@ public class TheVoid extends Entity {
 
     /** How much of the breach shows: 0 -> 1 while opening, back to 0 while closing. */
     public float reveal(float partialTick) {
-        return Math.min(Mth.clamp(age(partialTick) / OPEN_TICKS, 0, 1), 1 - closeProgress(partialTick));
+        return Math.min(Mth.clamp(age(partialTick) / openTicks(), 0, 1), 1 - closeProgress(partialTick));
     }
 
     /** Starts closing it; the entity goes when the breach has shut. */
@@ -151,13 +263,200 @@ public class TheVoid extends Entity {
         return position().add(turned.x, turned.y, turned.z);
     }
 
+    /** The breach's front: the side a rooted breach sends its voidlings out of. */
+    public Vector3f normal() {
+        return orientation().transform(new Vector3f(0, 0, 1));
+    }
+
     @Override
     public void tick() {
         // No physics, no fire, no fluids: the breach only hangs where it broke through.
         if (level().isClientSide()) {
-            clientEffects();
+            if (foretold()) {
+                omenEffects();
+            } else {
+                clientEffects();
+            }
         } else if (closing() && level().getGameTime() - entityData.get(DATA_CLOSE_AT) >= CLOSE_TICKS) {
             discard();
+        } else {
+            serverTick((ServerLevel) level());
+        }
+    }
+
+    private void serverTick(ServerLevel level) {
+        long now = level.getGameTime();
+        if (entityData.get(DATA_OMEN) > 0 && now == born()) {
+            level.playSound(null, getX(), getY(), getZ(), ModSounds.THE_VOID_OPEN.get(), SoundSource.AMBIENT,
+                    1.2F + size() * 0.12F, 0.9F - Math.min(size(), 8) * 0.04F);
+        }
+        if (closing() || reveal(0) < 0.4F) {
+            return;
+        }
+        touch(level);
+        if (!rooted() || age(0) < openTicks()) {
+            return;
+        }
+        if (now % FEED_TICKS == 0) {
+            Thinning.add(level, blockPosition(), FEED);
+        }
+        long pushAt = entityData.get(DATA_PUSH_AT);
+        if (pushAt >= 0) {
+            long since = now - pushAt;
+            if (since == PUSH_TICKS) {
+                emerge(level);
+            } else if (since > PUSH_TICKS + 10) {
+                entityData.set(DATA_PUSH_AT, -1L);
+            }
+        } else if (nextPush >= 0 && now >= nextPush) {
+            if (maySend(level)) {
+                startPush(level);
+            } else {
+                nextPush = now + 100;
+            }
+        }
+    }
+
+    /** Throws back, hurt, every creature that touches the breach (the Void's own spawn excepted). */
+    private void touch(ServerLevel level) {
+        VoidLayout layout = layout();
+        float reveal = reveal(0);
+        boolean lying = shape().lying();
+        Quaternionf inverse = orientation().conjugate(new Quaternionf());
+        AABB area = new AABB(position(), position()).inflate(layout.reach() + 1.5);
+        for (LivingEntity living : level.getEntitiesOfClass(LivingEntity.class, area, TheVoid::touchable)) {
+            if (living.getInvulnerableTime() > 10) {
+                continue;
+            }
+            Vec3 centre = living.getBoundingBox().getCenter();
+            Vector3f local = inverse.transform(new Vector3f((float) (centre.x - getX()), (float) (centre.y - getY()), (float) (centre.z - getZ())));
+            float halfW = living.getBbWidth() * 0.5F;
+            float halfH = living.getBbHeight() * 0.5F;
+            float depth = (lying ? halfH : halfW) + layout.halfThickness();
+            if (Math.abs(local.z) > depth || !layout.touches(local.x, local.y, halfW, lying ? halfW : halfH, reveal)) {
+                continue;
+            }
+            repel(level, living, local);
+        }
+    }
+
+    private static boolean touchable(LivingEntity living) {
+        return living.isAlive() && !(living instanceof Voidling) && !(living instanceof VoidMite) && !living.isSpectator()
+                && !(living instanceof Player player && player.isCreative());
+    }
+
+    private void repel(ServerLevel level, LivingEntity living, Vector3f local) {
+        Vector3f away = orientation().transform(new Vector3f(0, 0, local.z >= 0 ? 1 : -1));
+        living.hurtServer(level, level.damageSources().magic(), TOUCH_DAMAGE);
+        living.setDeltaMovement(away.x * 0.9, Math.max(0.35, away.y * 0.9), away.z * 0.9);
+        living.needsSync = true;
+        living.setInvulnerableTime(Math.max(living.getInvulnerableTime(), 20));
+        Vec3 at = toWorld(new Vector3f(local.x, local.y, 0));
+        level.broadcastEntityEvent(this, REPEL_EVENT);
+        level.sendParticles(ModParticles.ring(MAGENTA), at.x, at.y, at.z, 1, 0, 0, 0, 0);
+        level.sendParticles(ModParticles.glint(PINK), at.x, at.y, at.z, 12, 0.25, 0.25, 0.25, 0.02);
+        level.playSound(null, at.x, at.y, at.z, ModSounds.THE_VOID_REPEL.get(), SoundSource.HOSTILE, 1.0F, 0.85F + random.nextFloat() * 0.3F);
+    }
+
+    /** A voidling may come out: few of them around, a player near to meet it, a world that allows monsters. */
+    private boolean maySend(ServerLevel level) {
+        if (level.getDifficulty() == Difficulty.PEACEFUL) {
+            return false;
+        }
+        AABB around = getBoundingBox().inflate(40);
+        if (level.getEntitiesOfClass(Voidling.class, around).size() >= VOIDLING_LIMIT) {
+            return false;
+        }
+        return level.getNearestPlayer(getX(), getY(), getZ(), 48, player -> !player.isSpectator()) != null;
+    }
+
+    /** Something starts pushing out of the lower half of the breach. */
+    public void startPush(ServerLevel level) {
+        VoidLayout layout = layout();
+        Vector3f point = layout.samplePoint(random, false);
+        for (int i = 0; i < 12 && (point.y > 0 || Math.abs(point.x) > layout.reach() * 0.5F); i++) {
+            point = layout.samplePoint(random, false);
+        }
+        entityData.set(DATA_PUSH, point);
+        entityData.set(DATA_PUSH_AT, level.getGameTime());
+        Vec3 at = toWorld(point);
+        level.playSound(null, at.x, at.y, at.z, ModSounds.VOIDLING_EMERGE.get(), SoundSource.HOSTILE, 1.0F, 0.9F + random.nextFloat() * 0.2F);
+    }
+
+    /** The cells give way and the voidling drops out of the front. */
+    private void emerge(ServerLevel level) {
+        nextPush = level.getGameTime() + PUSH_PAUSE + random.nextInt(PUSH_PAUSE);
+        Voidling voidling = ModEntities.VOIDLING.get().create(level, EntitySpawnReason.MOB_SUMMONED);
+        if (voidling == null) {
+            return;
+        }
+        Vector3f normal = normal();
+        Vec3 at = toWorld(new Vector3f(entityData.get(DATA_PUSH)));
+        voidling.snapTo(at.x + normal.x * 0.45, at.y + normal.y * 0.45 - voidling.getBbHeight() * 0.5, at.z + normal.z * 0.45,
+                getYRot(), 0);
+        voidling.setYHeadRot(getYRot());
+        voidling.setYBodyRot(getYRot());
+        voidling.setDeltaMovement(normal.x * 0.32, 0.18 + normal.y * 0.32, normal.z * 0.32);
+        voidling.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(at)), EntitySpawnReason.MOB_SUMMONED, null);
+        voidling.emerged();
+        level.addFreshEntity(voidling);
+        level.sendParticles(ModParticles.vapour(SMOKE), at.x, at.y, at.z, 14, 0.3, 0.3, 0.3, 0.03);
+        level.sendParticles(ModParticles.glint(MAGENTA), at.x, at.y, at.z, 8, 0.3, 0.3, 0.3, 0.05);
+    }
+
+    @Override
+    public void handleEntityEvent(byte id) {
+        if (id != REPEL_EVENT) {
+            super.handleEntityEvent(id);
+            return;
+        }
+        // The whole rim flares as it throws back what touched it.
+        VoidLayout layout = layout();
+        for (int i = 0; i < 26; i++) {
+            Vec3 at = toWorld(layout.samplePoint(random, true));
+            level().addParticle(ModParticles.glint(i % 3 == 0 ? PINK : MAGENTA), at.x, at.y, at.z, 0, 0, 0);
+        }
+    }
+
+    /**
+     * The omen: the ground trembles (dust of the blocks around jumps up), the world's motes are drawn to the point the
+     * breach will tear from, faster and closer as it nears, and at the end a seed of its light burns there.
+     */
+    private void omenEffects() {
+        RandomSource random = level().getRandom();
+        float k = omen(0);
+        Vec3 centre = position();
+        float size = size();
+        for (float chance = 0.6F + k * 3.5F; chance > 0; chance -= 1) {
+            if (random.nextFloat() >= chance) {
+                break;
+            }
+            float reach = (2.5F + random.nextFloat() * 5) * (1.1F - k * 0.4F) * (0.7F + size * 0.1F);
+            Vector3f out = new Vector3f(random.nextFloat() - 0.5F, random.nextFloat() - 0.5F, random.nextFloat() - 0.5F).normalize(reach);
+            int colour = random.nextInt(9) == 0 ? MAGENTA : random.nextInt(3) == 0 ? UMBER : DEEP;
+            level().addParticle(ModParticles.voidMote(colour), centre.x, centre.y, centre.z, out.x, out.y, out.z);
+        }
+        if (random.nextFloat() < 0.25F + k * 0.9F) {
+            // The ground shakes: dust of what lies around jumps.
+            int x = Mth.floor(centre.x + (random.nextFloat() - 0.5F) * 14);
+            int z = Mth.floor(centre.z + (random.nextFloat() - 0.5F) * 14);
+            BlockPos ground = new BlockPos(x, level().getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
+            BlockState state = level().getBlockState(ground);
+            if (!state.isAir()) {
+                for (int i = 0; i < 3; i++) {
+                    level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), x + random.nextFloat(), ground.getY() + 1.05,
+                            z + random.nextFloat(), 0, 0.1 + k * 0.2, 0);
+                }
+            }
+        }
+        if (random.nextFloat() < k * 0.35F) {
+            Vector3f drift = new Vector3f(random.nextFloat() - 0.5F, random.nextFloat() - 0.5F, random.nextFloat() - 0.5F)
+                    .normalize(1.5F + random.nextFloat() * 2);
+            level().addParticle(ModParticles.vapour(SMOKE), centre.x + drift.x, centre.y + drift.y, centre.z + drift.z,
+                    -drift.x * 0.02, -drift.y * 0.02, -drift.z * 0.02);
+        }
+        if (k > 0.55F && random.nextFloat() < k * 0.5F) {
+            level().addParticle(ModParticles.glint(random.nextBoolean() ? MAGENTA : PINK), centre.x, centre.y, centre.z, 0, 0, 0);
         }
     }
 
@@ -167,9 +466,18 @@ public class TheVoid extends Entity {
         float size = size();
         float age = age(0);
         float reveal = reveal(0);
-        Vector3f normal = orientation().transform(new Vector3f(0, 0, 1));
+        Vector3f normal = normal();
 
-        if (age < OPEN_TICKS && !closing()) {
+        Vector3fc pushing = pushPoint();
+        float strain = push(0);
+        if (pushing != null && strain > 0.2F && random.nextFloat() < strain) {
+            // Something strains against the cells: dark smoke squeezes out round it.
+            Vec3 at = toWorld(new Vector3f(pushing).add((random.nextFloat() - 0.5F) * 0.8F, (random.nextFloat() - 0.5F) * 0.8F, 0));
+            level().addParticle(ModParticles.vapour(random.nextInt(3) == 0 ? DEEP : SMOKE), at.x, at.y, at.z,
+                    normal.x * 0.03, normal.y * 0.03 + 0.01, normal.z * 0.03);
+        }
+
+        if (age < openTicks() && !closing()) {
             // Breaking through: dark smoke bursts out of the cells as they appear.
             for (int i = 0; i < 3; i++) {
                 Vec3 at = toWorld(layout.samplePoint(random, true).mul(Math.max(0.2F, reveal)));
@@ -266,6 +574,10 @@ public class TheVoid extends Entity {
         entityData.set(DATA_SIZE, Mth.clamp(input.getFloatOr("size", 3), 0.5F, 16));
         entityData.set(DATA_BORN, input.getLongOr("born", level().getGameTime()));
         entityData.set(DATA_CLOSE_AT, input.getLongOr("close_at", -1));
+        entityData.set(DATA_ROOTED, input.getBooleanOr("rooted", false));
+        entityData.set(DATA_OMEN, input.getIntOr("omen", 0));
+        entityData.set(DATA_OPEN, Math.max(1, input.getIntOr("open", OPEN_TICKS)));
+        nextPush = input.getLongOr("next_push", rooted() ? level().getGameTime() + PUSH_PAUSE : -1);
     }
 
     @Override
@@ -275,6 +587,18 @@ public class TheVoid extends Entity {
         output.putFloat("size", size());
         output.putLong("born", entityData.get(DATA_BORN));
         output.putLong("close_at", entityData.get(DATA_CLOSE_AT));
+        output.putBoolean("rooted", rooted());
+        output.putInt("omen", entityData.get(DATA_OMEN));
+        output.putInt("open", openTicks());
+        output.putLong("next_push", nextPush);
+    }
+
+    @Override
+    public void remove(Entity.RemovalReason reason) {
+        if (reason.shouldDestroy() && level() instanceof ServerLevel level && rooted()) {
+            Breaches.forget(level, this);
+        }
+        super.remove(reason);
     }
 
     @Override

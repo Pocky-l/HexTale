@@ -427,6 +427,42 @@ public final class VoidLayout {
         return body.length;
     }
 
+    /** The column of cells a local x (blocks) falls in (may lie outside the grid). */
+    public int column(float x) {
+        return Mth.floor(x / cell) - originX;
+    }
+
+    /** The row of cells a local y (blocks) falls in (may lie outside the grid). */
+    public int row(float y) {
+        return Mth.floor(y / cell) - originY;
+    }
+
+    /** Whether any cell showing at {@code reveal} lies within the local box ({@code x} +- {@code halfX}, {@code y} +- {@code halfY}). */
+    public boolean touches(float x, float y, float halfX, float halfY, float reveal) {
+        int i1 = Math.min(width - 1, column(x + halfX));
+        int j1 = Math.min(height - 1, row(y + halfY));
+        for (int j = Math.max(0, row(y - halfY)); j <= j1; j++) {
+            for (int i = Math.max(0, column(x - halfX)); i <= i1; i++) {
+                if (shows(i, j, reveal)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Local y (blocks) of the lowest edge of the Void. */
+    public float bottom() {
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                if (on(i, j)) {
+                    return y(j);
+                }
+            }
+        }
+        return 0;
+    }
+
     /** A stable 0-1 hash of two ints. */
     public static float hash(int a, int b) {
         int h = a * 0x27D4EB2D ^ b * 0x165667B1;

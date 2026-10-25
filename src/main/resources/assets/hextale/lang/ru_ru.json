@@ -1959,5 +1959,16 @@
   "block.hextale.void_coral": "Коралл Пустоты",
   "block.hextale.void_roots": "Корни Пустоты",
   "block.hextale.void_bulb": "Пузырь Пустоты",
-  "entity.hextale.void_mite": "Пустотный клещ"
+  "entity.hextale.void_mite": "Пустотный клещ",
+  "entity.hextale.voidling": "Воидлинг",
+  "entity.hextale.breach_camera": "Камера разлома",
+  "subtitles.hextale.the_void.omen": "Земля стонет",
+  "subtitles.hextale.the_void.repel": "Пустота отбрасывает",
+  "subtitles.hextale.voidling.emerge": "Что-то лезет из Пустоты",
+  "key.category.hextale.hextale": "HexTale",
+  "key.hextale.skip_cinematic": "Пропустить сцену",
+  "gui.hextale.cinematic.skip": "%s - пропустить",
+  "hextale.configuration.breachCinematic": "Сцена открытия разлома",
+  "hextale.configuration.breachCinematic.tooltip": "Камера улетает к разлому Пустоты, который открывается рядом.",
+  "commands.hextale.void.breach": "Разлом открывается на %s %s %s"
 }

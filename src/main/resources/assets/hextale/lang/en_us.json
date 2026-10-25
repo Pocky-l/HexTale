@@ -1959,5 +1959,16 @@
   "block.hextale.void_coral": "Void Coral",
   "block.hextale.void_roots": "Void Roots",
   "block.hextale.void_bulb": "Void Bulb",
-  "entity.hextale.void_mite": "Void Mite"
+  "entity.hextale.void_mite": "Void Mite",
+  "entity.hextale.voidling": "Voidling",
+  "entity.hextale.breach_camera": "Breach Camera",
+  "subtitles.hextale.the_void.omen": "The ground groans",
+  "subtitles.hextale.the_void.repel": "The Void throws back",
+  "subtitles.hextale.voidling.emerge": "Something pushes out of the Void",
+  "key.category.hextale.hextale": "HexTale",
+  "key.hextale.skip_cinematic": "Skip cinematic",
+  "gui.hextale.cinematic.skip": "%s - skip",
+  "hextale.configuration.breachCinematic": "Breach cinematic",
+  "hextale.configuration.breachCinematic.tooltip": "Fly the camera to a breach of the Void that tears open nearby.",
+  "commands.hextale.void.breach": "A breach tears open at %s %s %s"
 }

@@ -869,5 +869,25 @@
         "attenuation_distance": 28
       }
     ]
+  },
+  "the_void.omen": {
+    "subtitle": "subtitles.hextale.the_void.omen",
+    "sounds": [
+      {"name": "hextale:the_void_omen", "volume": 1.0, "attenuation_distance": 72}
+    ]
+  },
+  "the_void.repel": {
+    "subtitle": "subtitles.hextale.the_void.repel",
+    "sounds": [
+      {"name": "hextale:the_void_repel1", "volume": 0.8, "attenuation_distance": 20},
+      {"name": "hextale:the_void_repel2", "volume": 0.8, "attenuation_distance": 20}
+    ]
+  },
+  "voidling.emerge": {
+    "subtitle": "subtitles.hextale.voidling.emerge",
+    "sounds": [
+      {"name": "hextale:voidling_emerge1", "volume": 0.9, "attenuation_distance": 40},
+      {"name": "hextale:voidling_emerge2", "volume": 0.9, "attenuation_distance": 40}
+    ]
   }
 }
