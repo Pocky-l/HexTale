@@ -123,4 +123,19 @@ public final class ThinningGameTests {
         helper.assertTrue(Math.abs(player.getMaxHealth() - full) < 0.01F, "with the mites gone the maximum comes back, got " + player.getMaxHealth());
         helper.succeed();
     }
+
+    @HexTest
+    public static void blightLeavesWaterAlone(GameTestHelper helper) {
+        BlockPos bed = new BlockPos(0, 1, 2);
+        helper.setBlock(bed, Blocks.SAND);
+        helper.setBlock(bed.above(), Blocks.WATER);
+        ServerLevel level = helper.getLevel();
+        BlockPos at = helper.absolutePos(bed);
+        for (int i = 0; i < 20; i++) {
+            Thinning.blightColumn(level, at.getX(), at.getZ(), level.getRandom());
+        }
+        helper.assertBlockPresent(Blocks.SAND, bed);
+        helper.assertBlockPresent(Blocks.WATER, bed.above());
+        helper.succeed();
+    }
 }

@@ -364,7 +364,8 @@ public final class Thinning {
             if (state.is(ModTags.BLIGHTS_TO_SOIL) || state.is(ModTags.BLIGHTS_TO_ROCK) || state.is(ModTags.VOID_GROUND)) {
                 return pos.immutable();
             }
-            if (!state.isAir() && !state.canBeReplaced()) {
+            // Water (and anything else liquid) keeps what lies under it: the blight takes only dry land.
+            if (!state.getFluidState().isEmpty() || (!state.isAir() && !state.canBeReplaced())) {
                 return null;
             }
             pos.move(0, -1, 0);
@@ -385,14 +386,14 @@ public final class Thinning {
         }
         BlockPos above = pos.above();
         BlockState plant = level.getBlockState(above);
-        if (plant.getBlock() instanceof VoidFloraBlock || !(plant.isAir() || plant.canBeReplaced())) {
+        if (plant.getBlock() instanceof VoidFloraBlock || !plant.getFluidState().isEmpty() || !(plant.isAir() || plant.canBeReplaced())) {
             return;
         }
         if (random.nextFloat() < FLORA_CHANCE) {
             float pick = random.nextFloat();
             Block flora = pick < 0.4F ? ModBlocks.VOID_ROOTS.get() : pick < 0.8F ? ModBlocks.VOID_CORAL.get() : ModBlocks.VOID_BULB.get();
             level.setBlockAndUpdate(above, flora.defaultBlockState());
-        } else if (!plant.isAir() && plant.getFluidState().isEmpty()) {
+        } else if (!plant.isAir()) {
             level.destroyBlock(above, false);
         }
     }

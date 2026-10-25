@@ -89,6 +89,49 @@ public final class ThinningTint {
         return ARGB.color(ARGB.alpha(color), Math.round(nr), Math.round(ng), Math.round(nb));
     }
 
+    /**
+     * Water is drawn by its fluid model, not by the block's tint: once the models are baked, the water model's tint is
+     * wrapped so the water darkens to murk where the world wears thin (NeoForge refuses a second water model).
+     */
+    public static void fadeWater(net.neoforged.neoforge.client.event.ModelEvent.BakingCompleted event) {
+        net.minecraft.client.renderer.block.FluidStateModelSet set = event.getModelManager().getFluidStateModelSet();
+        java.util.Map<net.minecraft.world.level.material.Fluid, net.minecraft.client.renderer.block.FluidModel> models =
+                new java.util.HashMap<>(set.modelByFluid);
+        for (net.minecraft.world.level.material.Fluid fluid : new net.minecraft.world.level.material.Fluid[] {
+                net.minecraft.world.level.material.Fluids.WATER, net.minecraft.world.level.material.Fluids.FLOWING_WATER}) {
+            net.minecraft.client.renderer.block.FluidModel model = models.get(fluid);
+            if (model != null && model.fluidTintSource() != null && !(model.fluidTintSource() instanceof FadedFluid)) {
+                models.put(fluid, new net.minecraft.client.renderer.block.FluidModel(model.layer(), model.stillMaterial(),
+                        model.flowingMaterial(), model.overlayMaterial(), new FadedFluid(model.fluidTintSource()), model.customRenderer()));
+            }
+        }
+        set.modelByFluid = java.util.Map.copyOf(models);
+    }
+
+    private record FadedFluid(net.neoforged.neoforge.client.fluid.FluidTintSource inner)
+            implements net.neoforged.neoforge.client.fluid.FluidTintSource {
+        @Override
+        public int color(net.minecraft.world.level.material.FluidState state) {
+            return inner.color(state);
+        }
+
+        @Override
+        public int color(BlockState state) {
+            return inner.color(state);
+        }
+
+        @Override
+        public int colorInWorld(net.minecraft.world.level.material.FluidState fluidState, BlockState blockState, BlockAndTintGetter level,
+                                BlockPos pos) {
+            return faded(inner.colorInWorld(fluidState, blockState, level, pos), pos, Kind.WATER);
+        }
+
+        @Override
+        public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
+            return faded(inner.colorInWorld(state, level, pos), pos, Kind.WATER);
+        }
+    }
+
     private static int faded(int color, BlockPos pos, Kind kind) {
         return fade(color, ClientThinning.tint(ClientThinning.at(pos.getX() + 0.5, pos.getZ() + 0.5)), kind);
     }
