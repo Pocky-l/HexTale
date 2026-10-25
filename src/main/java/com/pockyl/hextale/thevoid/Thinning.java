@@ -408,6 +408,11 @@ public final class Thinning {
     }
 
     @SubscribeEvent
+    public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        SENT.remove(event.getEntity().getUUID());
+    }
+
+    @SubscribeEvent
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         SENT.remove(event.getEntity().getUUID());
     }

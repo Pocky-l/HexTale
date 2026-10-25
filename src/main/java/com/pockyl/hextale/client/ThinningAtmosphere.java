@@ -13,6 +13,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
@@ -53,6 +54,7 @@ public final class ThinningAtmosphere {
         modBus.addListener((RegisterGuiLayersEvent event) ->
                 event.registerAbove(VanillaGuiLayers.CAMERA_OVERLAYS, Hextale.id("thinning_vignette"), ThinningAtmosphere::vignette));
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> tick());
+        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientThinning.clear());
         NeoForge.EVENT_BUS.addListener(ThinningAtmosphere::fogColour);
         NeoForge.EVENT_BUS.addListener(ThinningAtmosphere::fog);
     }
@@ -68,8 +70,8 @@ public final class ThinningAtmosphere {
         Player player = minecraft.player;
         ClientLevel level = minecraft.level;
         if (player == null || level == null) {
+            // Not here: the values may already have come in while the world loads, so they are kept (cleared on logout).
             local = 0;
-            ClientThinning.clear();
             return;
         }
         local += (Thinning.felt(ClientThinning.at(player.getX(), player.getZ())) - local) * 0.03F;

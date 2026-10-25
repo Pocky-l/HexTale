@@ -90,4 +90,16 @@ public final class ThinningGameTests {
         helper.assertTrue(above.isAir() || above.getBlock() instanceof VoidFloraBlock, "the world's grass dies back, got " + above);
         helper.succeed();
     }
+
+    @HexTest
+    public static void theThinningIsSavedWithTheChunk(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        LevelChunk chunk = level.getChunkAt(helper.absolutePos(AT));
+        Thinning.set(level, chunk, 777);
+        net.minecraft.nbt.CompoundTag saved = chunk.writeAttachmentsToNBT(level.registryAccess());
+        helper.assertTrue(saved != null && saved.toString().contains("hextale:thinning") && saved.toString().contains("777"),
+                "the chunk writes its Thinning, got " + saved);
+        Thinning.set(level, chunk, 0);
+        helper.succeed();
+    }
 }
