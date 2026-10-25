@@ -1,0 +1,27 @@
+{
+  "region": "void",
+  "icon": "hextale:hollowbloom",
+  "parents": ["hextech_dust"],
+  "goal": {
+    "type": "any_of",
+    "goals": [
+      {
+        "type": "has_item",
+        "item": "hextale:hollowbloom"
+      },
+      {
+        "type": "event",
+        "event": "awakened/hollowbloom"
+      }
+    ]
+  },
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "hextale:hextech_dust",
+      "minecraft:dead_bush"
+    ],
+    "result": "hextale:hollowbloom"
+  },
+  "pos": [-420, 300]
+}

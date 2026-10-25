@@ -34,6 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   first voidling pushes out, and flies back (skip it with a key, or turn it off in the client config).
 - Voidlings: the Void's own spawn, bigger and far worse than mites. The cells of a breach bulge, and one drops out
   curled up, unfolds and runs at you - it leaps and bites. A breach keeps a few of them around it.
+- Hollowbloom: sprinkle hextech dust on a dead bush and it wakes up hungry - the thinner the world around it, the more
+  alive it is. Dry twigs on clean land; it stirs long before the land shows anything, leafs out, blooms around a hollow
+  black heart as the haze comes, and glows in full bloom when the blight is near. Plant one at home and watch it; a
+  comparator beside it reads how thin the world is there. It has its own step in the researcher's guide.
+- Void Chitin: voidlings, and now and then a void mite, leave shards of their shell when a player kills them. Kept for
+  what will be made against the Void (a new Void branch of the guide shows where it leads).
 - `/hextale void get|set|add|stage|breach|clear` for operators; config options to turn the Thinning off or change its rate.
 
 ## [1.0.0] - 2026-10-24

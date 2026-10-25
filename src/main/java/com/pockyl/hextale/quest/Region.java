@@ -2,7 +2,7 @@ package com.pockyl.hextale.quest;
 
 /**
  * A theme of the researcher's guide: the workshop, the essence works, the rune lore, the hextech circle, the pylons, the
- * forge and chemtech. Its steps breathe a faint haze of its colour in the book.
+ * forge, chemtech and the Void. Its steps breathe a faint haze of its colour in the book.
  */
 public enum Region implements net.minecraft.util.StringRepresentable {
     WORKSHOP(0xE0B85A),
@@ -11,7 +11,8 @@ public enum Region implements net.minecraft.util.StringRepresentable {
     CIRCLE(0x4A9CFF),
     PYLONS(0xF07AC0),
     FORGE(0xFF8A3A),
-    CHEMTECH(0x7FD05A);
+    CHEMTECH(0x7FD05A),
+    VOID(0xC0418C);
 
     public static final com.mojang.serialization.Codec<Region> CODEC = net.minecraft.util.StringRepresentable.fromEnum(Region::values);
 

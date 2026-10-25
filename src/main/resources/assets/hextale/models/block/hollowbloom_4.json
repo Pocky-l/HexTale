@@ -1,0 +1,869 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/hollowbloom",
+    "hollowbloom": "hextale:block/hollowbloom"
+  },
+  "elements": [
+    {
+      "name": "knot",
+      "from": [
+        6,
+        0,
+        6
+      ],
+      "to": [
+        10,
+        2,
+        10
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            8.75,
+            1,
+            9.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "east": {
+          "uv": [
+            2,
+            8.75,
+            3,
+            9.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            1,
+            8.75,
+            2,
+            9.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            3,
+            8.75,
+            4,
+            9.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "up": {
+          "uv": [
+            0,
+            9.25,
+            1,
+            10.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "down": {
+          "uv": [
+            1,
+            9.25,
+            2,
+            10.25
+          ],
+          "texture": "#hollowbloom",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "root_a",
+      "from": [
+        2,
+        0,
+        8
+      ],
+      "to": [
+        14,
+        3,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            13.5,
+            4,
+            14.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            4,
+            13.5,
+            7,
+            14.25
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "root_b",
+      "from": [
+        8,
+        0,
+        2
+      ],
+      "to": [
+        8,
+        3,
+        14
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            10.25,
+            13.5,
+            7.25,
+            14.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            7.25,
+            13.5,
+            10.25,
+            14.25
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "stalk",
+      "from": [
+        7,
+        1,
+        7
+      ],
+      "to": [
+        9,
+        11,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            3.25,
+            0.5,
+            5.75
+          ],
+          "texture": "#hollowbloom"
+        },
+        "east": {
+          "uv": [
+            1,
+            3.25,
+            1.5,
+            5.75
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            0.5,
+            3.25,
+            1,
+            5.75
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            1.5,
+            3.25,
+            2,
+            5.75
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "leaf_n",
+      "from": [
+        6,
+        4,
+        1
+      ],
+      "to": [
+        10,
+        4,
+        8
+      ],
+      "rotation": {
+        "x": 18,
+        "y": 20,
+        "z": 0,
+        "origin": [
+          8,
+          4,
+          8
+        ]
+      },
+      "faces": {
+        "up": {
+          "uv": [
+            8.5,
+            6.5,
+            9.5,
+            8.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "down": {
+          "uv": [
+            8.5,
+            8.25,
+            9.5,
+            6.5
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "leaf_s",
+      "from": [
+        6,
+        4,
+        8
+      ],
+      "to": [
+        10,
+        4,
+        15
+      ],
+      "rotation": {
+        "x": -18,
+        "y": 20,
+        "z": 0,
+        "origin": [
+          8,
+          4,
+          8
+        ]
+      },
+      "faces": {
+        "up": {
+          "uv": [
+            9.75,
+            6.5,
+            10.75,
+            8.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "down": {
+          "uv": [
+            9.75,
+            8.25,
+            10.75,
+            6.5
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "leaf_w",
+      "from": [
+        1,
+        4,
+        6
+      ],
+      "to": [
+        8,
+        4,
+        10
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 20,
+        "z": -18,
+        "origin": [
+          8,
+          4,
+          8
+        ]
+      },
+      "faces": {
+        "up": {
+          "uv": [
+            11,
+            12,
+            12.75,
+            13
+          ],
+          "texture": "#hollowbloom"
+        },
+        "down": {
+          "uv": [
+            11,
+            13,
+            12.75,
+            12
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "leaf_e",
+      "from": [
+        8,
+        4,
+        6
+      ],
+      "to": [
+        15,
+        4,
+        10
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 20,
+        "z": 18,
+        "origin": [
+          8,
+          4,
+          8
+        ]
+      },
+      "faces": {
+        "up": {
+          "uv": [
+            9,
+            12,
+            10.75,
+            13
+          ],
+          "texture": "#hollowbloom"
+        },
+        "down": {
+          "uv": [
+            9,
+            13,
+            10.75,
+            12
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "cup2",
+      "from": [
+        6,
+        10,
+        6
+      ],
+      "to": [
+        10,
+        12,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11,
+            6.5,
+            12,
+            7
+          ],
+          "texture": "#hollowbloom"
+        },
+        "east": {
+          "uv": [
+            13,
+            6.5,
+            14,
+            7
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            12,
+            6.5,
+            13,
+            7
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            14,
+            6.5,
+            15,
+            7
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "rim_n",
+      "from": [
+        5,
+        12,
+        5
+      ],
+      "to": [
+        11,
+        13,
+        6
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10.5,
+            13.5,
+            12,
+            13.75
+          ],
+          "texture": "#hollowbloom"
+        },
+        "east": {
+          "uv": [
+            13.5,
+            13.5,
+            13.75,
+            13.75
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            12,
+            13.5,
+            13.5,
+            13.75
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            13.75,
+            13.5,
+            14,
+            13.75
+          ],
+          "texture": "#hollowbloom"
+        },
+        "up": {
+          "uv": [
+            10.5,
+            13.75,
+            12,
+            14
+          ],
+          "texture": "#hollowbloom"
+        },
+        "down": {
+          "uv": [
+            12,
+            13.75,
+            13.5,
+            14
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "rim_s",
+      "from": [
+        5,
+        12,
+        10
+      ],
+      "to": [
+        11,
+        13,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            14.75,
+            1.5,
+            15
+          ],
+          "texture": "#hollowbloom"
+        },
+        "east": {
+          "uv": [
+            3,
+            14.75,
+            3.25,
+            15
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            1.5,
+            14.75,
+            3,
+            15
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            3.25,
+            14.75,
+            3.5,
+            15
+          ],
+          "texture": "#hollowbloom"
+        },
+        "up": {
+          "uv": [
+            0,
+            15,
+            1.5,
+            15.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "down": {
+          "uv": [
+            1.5,
+            15,
+            3,
+            15.25
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "rim_w",
+      "from": [
+        5,
+        12,
+        6
+      ],
+      "to": [
+        6,
+        13,
+        10
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            7.5,
+            8.75,
+            8.5,
+            9
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            8.5,
+            8.75,
+            9.5,
+            9
+          ],
+          "texture": "#hollowbloom"
+        },
+        "up": {
+          "uv": [
+            7,
+            9,
+            7.25,
+            10
+          ],
+          "texture": "#hollowbloom"
+        },
+        "down": {
+          "uv": [
+            7.25,
+            9,
+            7.5,
+            10
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "rim_e",
+      "from": [
+        10,
+        12,
+        6
+      ],
+      "to": [
+        11,
+        13,
+        10
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            4.75,
+            8.75,
+            5.75,
+            9
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            5.75,
+            8.75,
+            6.75,
+            9
+          ],
+          "texture": "#hollowbloom"
+        },
+        "up": {
+          "uv": [
+            4.25,
+            9,
+            4.5,
+            10
+          ],
+          "texture": "#hollowbloom"
+        },
+        "down": {
+          "uv": [
+            4.5,
+            9,
+            4.75,
+            10
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "heart4",
+      "from": [
+        6,
+        12,
+        6
+      ],
+      "to": [
+        10,
+        12,
+        10
+      ],
+      "light_emission": 15,
+      "faces": {
+        "up": {
+          "uv": [
+            2.75,
+            13.5,
+            3.75,
+            14.5
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "petal4_n",
+      "from": [
+        5,
+        12,
+        5
+      ],
+      "to": [
+        11,
+        17,
+        5
+      ],
+      "rotation": {
+        "x": -60,
+        "y": 0,
+        "z": 0,
+        "origin": [
+          8,
+          12,
+          5
+        ]
+      },
+      "light_emission": 9,
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            10.5,
+            3.5,
+            11.75
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            3.5,
+            10.5,
+            5,
+            11.75
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "petal4_s",
+      "from": [
+        5,
+        12,
+        11
+      ],
+      "to": [
+        11,
+        17,
+        11
+      ],
+      "rotation": {
+        "x": 60,
+        "y": 0,
+        "z": 0,
+        "origin": [
+          8,
+          12,
+          11
+        ]
+      },
+      "light_emission": 9,
+      "faces": {
+        "north": {
+          "uv": [
+            6.75,
+            10.5,
+            5.25,
+            11.75
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            5.25,
+            10.5,
+            6.75,
+            11.75
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "petal4_w",
+      "from": [
+        5,
+        12,
+        5
+      ],
+      "to": [
+        5,
+        17,
+        11
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 60,
+        "origin": [
+          5,
+          12,
+          8
+        ]
+      },
+      "light_emission": 9,
+      "faces": {
+        "east": {
+          "uv": [
+            8.5,
+            10.5,
+            7,
+            11.75
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            7,
+            10.5,
+            8.5,
+            11.75
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "petal4_e",
+      "from": [
+        11,
+        12,
+        5
+      ],
+      "to": [
+        11,
+        17,
+        11
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": -60,
+        "origin": [
+          11,
+          12,
+          8
+        ]
+      },
+      "light_emission": 9,
+      "faces": {
+        "east": {
+          "uv": [
+            3.25,
+            10.5,
+            1.75,
+            11.75
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            1.75,
+            10.5,
+            3.25,
+            11.75
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    }
+  ]
+}

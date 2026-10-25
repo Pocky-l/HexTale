@@ -1,0 +1,452 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/hollowbloom",
+    "hollowbloom": "hextale:block/hollowbloom"
+  },
+  "elements": [
+    {
+      "name": "knot",
+      "from": [
+        6,
+        0,
+        6
+      ],
+      "to": [
+        10,
+        2,
+        10
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            8.75,
+            1,
+            9.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "east": {
+          "uv": [
+            2,
+            8.75,
+            3,
+            9.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            1,
+            8.75,
+            2,
+            9.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            3,
+            8.75,
+            4,
+            9.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "up": {
+          "uv": [
+            0,
+            9.25,
+            1,
+            10.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "down": {
+          "uv": [
+            1,
+            9.25,
+            2,
+            10.25
+          ],
+          "texture": "#hollowbloom",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "root_a",
+      "from": [
+        2,
+        0,
+        8
+      ],
+      "to": [
+        14,
+        3,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            13.5,
+            4,
+            14.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            4,
+            13.5,
+            7,
+            14.25
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "root_b",
+      "from": [
+        8,
+        0,
+        2
+      ],
+      "to": [
+        8,
+        3,
+        14
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            10.25,
+            13.5,
+            7.25,
+            14.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            7.25,
+            13.5,
+            10.25,
+            14.25
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "twig1_a",
+      "from": [
+        1,
+        0,
+        8
+      ],
+      "to": [
+        15,
+        12,
+        8
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            11,
+            0,
+            7.5,
+            3
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            7.5,
+            0,
+            11,
+            3
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "twig1_b",
+      "from": [
+        8,
+        0,
+        1
+      ],
+      "to": [
+        8,
+        12,
+        15
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "east": {
+          "uv": [
+            14.75,
+            0,
+            11.25,
+            3
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            11.25,
+            0,
+            14.75,
+            3
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "stalk1",
+      "from": [
+        7,
+        1,
+        7
+      ],
+      "to": [
+        9,
+        9,
+        9
+      ],
+      "rotation": {
+        "angle": 7,
+        "axis": "z",
+        "origin": [
+          8,
+          1,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            2.25,
+            3.25,
+            2.75,
+            5.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "east": {
+          "uv": [
+            3.25,
+            3.25,
+            3.75,
+            5.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            2.75,
+            3.25,
+            3.25,
+            5.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            3.75,
+            3.25,
+            4.25,
+            5.25
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "pod1",
+      "from": [
+        6,
+        8,
+        6
+      ],
+      "to": [
+        10,
+        12,
+        10
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 45,
+        "z": 7,
+        "origin": [
+          8,
+          1,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6.5,
+            1,
+            7.5
+          ],
+          "texture": "#hollowbloom"
+        },
+        "east": {
+          "uv": [
+            2,
+            6.5,
+            3,
+            7.5
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            1,
+            6.5,
+            2,
+            7.5
+          ],
+          "texture": "#hollowbloom"
+        },
+        "west": {
+          "uv": [
+            3,
+            6.5,
+            4,
+            7.5
+          ],
+          "texture": "#hollowbloom"
+        },
+        "up": {
+          "uv": [
+            0,
+            7.5,
+            1,
+            8.5
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "shoot_a",
+      "from": [
+        8,
+        1,
+        8
+      ],
+      "to": [
+        13,
+        6,
+        8
+      ],
+      "rotation": {
+        "angle": 30,
+        "axis": "y",
+        "origin": [
+          8,
+          1,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            1.25,
+            12,
+            0,
+            13.25
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            0,
+            12,
+            1.25,
+            13.25
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    },
+    {
+      "name": "shoot_b",
+      "from": [
+        3,
+        1,
+        8
+      ],
+      "to": [
+        8,
+        5,
+        8
+      ],
+      "rotation": {
+        "angle": -40,
+        "axis": "y",
+        "origin": [
+          8,
+          1,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            1.25,
+            13.5,
+            0,
+            14.5
+          ],
+          "texture": "#hollowbloom"
+        },
+        "south": {
+          "uv": [
+            0,
+            13.5,
+            1.25,
+            14.5
+          ],
+          "texture": "#hollowbloom"
+        }
+      }
+    }
+  ]
+}

@@ -34,13 +34,13 @@ public final class ModEntities {
     /** A Void Mite: crawls out of blighted land and latches onto players. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.VoidMite>> VOID_MITE =
             ENTITIES.register("void_mite", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.VoidMite>of(
-                            com.pockyl.hextale.thevoid.VoidMite::new, MobCategory.MONSTER).noLootTable().sized(0.5F, 0.3F)
+                            com.pockyl.hextale.thevoid.VoidMite::new, MobCategory.MONSTER).sized(0.5F, 0.3F)
                     .eyeHeight(0.15F).clientTrackingRange(8).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
     /** A voidling: pushed out of a breach of the Void, runs at players, leaps and bites. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.Voidling>> VOIDLING =
             ENTITIES.register("voidling", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.Voidling>of(
-                            com.pockyl.hextale.thevoid.Voidling::new, MobCategory.MONSTER).noLootTable().sized(0.9F, 1.0F)
+                            com.pockyl.hextale.thevoid.Voidling::new, MobCategory.MONSTER).sized(0.9F, 1.0F)
                     .eyeHeight(0.7F).clientTrackingRange(8).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
     /** The eye a player watches a breach open through (client only, never in a level's entity list). */

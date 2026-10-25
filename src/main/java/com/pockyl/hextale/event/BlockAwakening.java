@@ -44,7 +44,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Hextech dust wakes ordinary blocks: sprinkled on a crafting table it makes a Hex Workbench, on a furnace a Hex Furnace,
- * on a cauldron a Crucible (keeping the cauldron's water).
+ * on a cauldron a Crucible (keeping the cauldron's water), on a dead bush a Hollowbloom.
  * The change takes {@value #TICKS} ticks: the dust swirls into the block, sparks climb its sides, and the new block
  * appears in a flash. Breaking or changing the block meanwhile stops it and gives the dust back.
  */
@@ -61,7 +61,8 @@ public final class BlockAwakening {
             new Awakening(Blocks.CRAFTING_TABLE, ModBlocks.HEX_WORKBENCH),
             new Awakening(Blocks.FURNACE, ModBlocks.HEX_FURNACE),
             new Awakening(Blocks.CAULDRON, ModBlocks.CRUCIBLE),
-            new Awakening(Blocks.WATER_CAULDRON, ModBlocks.CRUCIBLE));
+            new Awakening(Blocks.WATER_CAULDRON, ModBlocks.CRUCIBLE),
+            new Awakening(Blocks.DEAD_BUSH, ModBlocks.HOLLOWBLOOM));
 
     private record Pending(ResourceKey<Level> dimension, BlockPos pos, Awakening awakening, Direction facing, @Nullable UUID player,
                            long start, boolean refund) {

@@ -420,6 +420,12 @@ public final class ModBlocks {
             properties -> new com.pockyl.hextale.thevoid.VoidFloraBlock(false, properties), () -> voidFloraProperties(0));
     public static final DeferredBlock<com.pockyl.hextale.thevoid.VoidFloraBlock> VOID_BULB = BLOCKS.registerBlock("void_bulb",
             properties -> new com.pockyl.hextale.thevoid.VoidFloraBlock(true, properties), () -> voidFloraProperties(7));
+    /** A dead bush woken with hextech dust: the more alive it is, the thinner the world around it. */
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.HollowbloomBlock> HOLLOWBLOOM = BLOCKS.registerBlock("hollowbloom",
+            com.pockyl.hextale.thevoid.HollowbloomBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().instabreak().sound(SoundType.ROOTS)
+                    .offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED)
+                    .lightLevel(state -> com.pockyl.hextale.thevoid.HollowbloomBlock.LIGHT[state.getValue(com.pockyl.hextale.thevoid.HollowbloomBlock.VIGOR)]));
 
     private static BlockBehaviour.Properties voidRockProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.BASEDRUM)
