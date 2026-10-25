@@ -4,6 +4,19 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- The Thinning: careless magic wears the edge of the world thin, and the Void starts to seep in. Essence poured away
+  (much less where stone drinks it, unknown essence counts double), raw crystals bursting, broken rituals, burst lab
+  flasks, burnt parchments and Miasma Vent fumes all add to it. It lives in the chunk and slowly spreads into the land
+  around, so a whole base and its surroundings sicken together; a light haze fades by itself, anything stronger stays.
+- Haze: a faint lilac veil low over the ground, dark motes sinking into the earth.
+- Miasma: the veil thickens, the fog closes in and turns ashen violet, grass, leaves, vines and water lose their colour,
+  rare magenta glints show through and the land murmurs from somewhere around.
+- Researcher's Goggles show the Thinning and its stage under the crosshair.
+- `/hextale void get|set|add|stage|clear` for operators; config options to turn the Thinning off or change its rate.
+
 ## [1.0.0] - 2026-10-24
 Hextale leaves beta.
 

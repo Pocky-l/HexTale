@@ -836,6 +836,14 @@
       }
     ]
   },
+  "thinning.murmur": {
+    "subtitle": "subtitles.hextale.thinning.murmur",
+    "sounds": [
+      {"name": "hextale:thinning_murmur1", "volume": 0.5},
+      {"name": "hextale:thinning_murmur2", "volume": 0.5},
+      {"name": "hextale:thinning_murmur3", "volume": 0.5}
+    ]
+  },
   "the_void.hum": {
     "subtitle": "subtitles.hextale.the_void.hum",
     "sounds": [

@@ -1,0 +1,302 @@
+package com.pockyl.hextale.thevoid;
+
+import it.unimi.dsi.fastutil.longs.Long2FloatMap;
+import it.unimi.dsi.fastutil.longs.Long2FloatOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+import com.pockyl.hextale.Config;
+import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.network.ModNetwork;
+import com.pockyl.hextale.network.ThinningPayload;
+import com.pockyl.hextale.registry.ModAttachments;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+/**
+ * The Thinning: how worn the edge of the world is in a chunk. Careless magic - essence poured away, raw crystals
+ * bursting, rituals breaking - wears it thin, and the Void, which hungers for magic, seeps in where it is thinnest:
+ * first as a haze, then as a sickness of the land, at last as a breach. A value per chunk (a chunk attachment), flowing
+ * slowly into lower neighbours so a whole base and the land around it sicken together; below {@link Stage#MIASMA} it
+ * fades by itself, above it stays. Players get the values of the chunks around them for the haze, fog and colours.
+ */
+@EventBusSubscriber(modid = Hextale.MOD_ID)
+public final class Thinning {
+    public static final float MAX = 1500;
+    /** Ticks between two flows. */
+    public static final int SPREAD_TICKS = 40;
+    /** Share of the difference that flows into each lower neighbour per flow. */
+    public static final float SPREAD_SHARE = 0.06F;
+    /** A difference smaller than this does not flow (so the edge stays an edge). */
+    public static final float SPREAD_MIN = 4;
+    /** What a chunk under {@link Stage#MIASMA} loses by itself per flow. */
+    public static final float FADE = 1;
+    public static final int SYNC_TICKS = 20;
+    /** Chunks every way around a player whose values the player gets. */
+    public static final int SYNC_RADIUS = 8;
+
+    /** Essence poured away and lost on the ground, per mB (unknown essence counts double). */
+    public static final float POURED_LOST = 0.25F;
+    /** Essence poured away that soaked into stone, per mB. */
+    public static final float POURED_SOAKED = 1 / 32F;
+    /** A breath of a Miasma Vent. */
+    public static final float MIASMA_PUFF = 0.5F;
+    /** An unstable hextech orb bursting, per orb. */
+    public static final float ORB_BURST = 12;
+    public static final float RITUAL_COLLAPSE = 60;
+    public static final float LAB_BURST = 15;
+    public static final float PARCHMENT_BURN = 5;
+
+    /** How far the land has gone. */
+    public enum Stage {
+        CLEAN(0), HAZE(100), MIASMA(300), BLIGHT(600), BREACH(1000);
+
+        public final float from;
+
+        Stage(float from) {
+            this.from = from;
+        }
+
+        public static Stage of(float value) {
+            Stage[] stages = values();
+            for (int i = stages.length - 1; i > 0; i--) {
+                if (value >= stages[i].from) {
+                    return stages[i];
+                }
+            }
+            return CLEAN;
+        }
+
+        public String key() {
+            return "thinning.hextale.stage." + name().toLowerCase(java.util.Locale.ROOT);
+        }
+    }
+
+    /** Chunks with a value above zero, per loaded level - the only ones the flow looks at. */
+    private static final Map<ResourceKey<Level>, LongSet> ACTIVE = new HashMap<>();
+    /** What each player was last sent. */
+    private static final Map<UUID, Long2FloatMap> SENT = new HashMap<>();
+
+    private Thinning() {
+    }
+
+    public static float get(LevelChunk chunk) {
+        return chunk.getData(ModAttachments.THINNING);
+    }
+
+    /** The value in the chunk holding {@code pos}, 0 when it is not loaded. */
+    public static float get(Level level, BlockPos pos) {
+        LevelChunk chunk = level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
+        return chunk == null ? 0 : get(chunk);
+    }
+
+    public static Stage stage(Level level, BlockPos pos) {
+        return Stage.of(get(level, pos));
+    }
+
+    /** Wears the edge thinner where {@code pos} is (scaled by the config; nothing when the Thinning is off). */
+    public static void add(ServerLevel level, BlockPos pos, float amount) {
+        if (!Config.THINNING.get() || amount <= 0) {
+            return;
+        }
+        LevelChunk chunk = level.getChunkAt(pos);
+        set(level, chunk, get(chunk) + amount * Config.THINNING_RATE.get().floatValue());
+    }
+
+    /** Essence poured away at {@code pos}: lost on the ground, or soaked into stone (much less). */
+    public static void poured(ServerLevel level, BlockPos pos, EssenceMix mix, int amount, boolean soaked) {
+        if (amount <= 0 || mix.isEmpty()) {
+            return;
+        }
+        float unknownShare = mix.unknown() / (float) mix.total();
+        add(level, pos, amount * (soaked ? POURED_SOAKED : POURED_LOST) * (1 + unknownShare));
+    }
+
+    public static void set(ServerLevel level, LevelChunk chunk, float value) {
+        float clamped = Mth.clamp(value, 0, MAX);
+        if (clamped < 0.01F) {
+            clamped = 0;
+        }
+        if (clamped == 0 && !chunk.hasData(ModAttachments.THINNING)) {
+            return;
+        }
+        chunk.setData(ModAttachments.THINNING, clamped);
+        chunk.markUnsaved();
+        LongSet active = ACTIVE.computeIfAbsent(level.dimension(), key -> new LongOpenHashSet());
+        if (clamped > 0) {
+            active.add(chunk.getPos().pack());
+        } else {
+            chunk.removeData(ModAttachments.THINNING);
+            active.remove(chunk.getPos().pack());
+        }
+    }
+
+    /** Sets every loaded chunk within {@code radius} chunks of {@code pos}; returns how many. */
+    public static int setAround(ServerLevel level, BlockPos pos, int radius, float value) {
+        int count = 0;
+        int cx = pos.getX() >> 4;
+        int cz = pos.getZ() >> 4;
+        for (int x = cx - radius; x <= cx + radius; x++) {
+            for (int z = cz - radius; z <= cz + radius; z++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
+                if (chunk != null) {
+                    set(level, chunk, value);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    @SubscribeEvent
+    public static void onChunkLoad(ChunkEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel level && event.getChunk() instanceof LevelChunk chunk && get(chunk) > 0) {
+            ACTIVE.computeIfAbsent(level.dimension(), key -> new LongOpenHashSet()).add(chunk.getPos().pack());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onChunkUnload(ChunkEvent.Unload event) {
+        if (event.getLevel() instanceof ServerLevel level) {
+            LongSet active = ACTIVE.get(level.dimension());
+            if (active != null) {
+                active.remove(event.getChunk().getPos().pack());
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLevelTick(LevelTickEvent.Post event) {
+        if (event.getLevel() instanceof ServerLevel level && level.getGameTime() % SPREAD_TICKS == 0) {
+            flow(level);
+        }
+    }
+
+    /** One flow: every chunk gives a share of the difference to each lower loaded neighbour; weak chunks fade. */
+    public static void flow(ServerLevel level) {
+        LongSet active = ACTIVE.get(level.dimension());
+        if (active == null || active.isEmpty()) {
+            return;
+        }
+        Long2FloatOpenHashMap delta = new Long2FloatOpenHashMap();
+        Map<Long, LevelChunk> chunks = new HashMap<>();
+        for (LongIterator it = active.iterator(); it.hasNext(); ) {
+            long key = it.nextLong();
+            LevelChunk chunk = level.getChunkSource().getChunkNow(ChunkPos.getX(key), ChunkPos.getZ(key));
+            if (chunk == null) {
+                it.remove();
+                continue;
+            }
+            chunks.put(key, chunk);
+            float value = get(chunk);
+            if (value < Stage.MIASMA.from) {
+                delta.addTo(key, -FADE);
+            }
+            int x = ChunkPos.getX(key);
+            int z = ChunkPos.getZ(key);
+            int[][] sides = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+            for (int[] side : sides) {
+                LevelChunk next = level.getChunkSource().getChunkNow(x + side[0], z + side[1]);
+                if (next == null) {
+                    continue;
+                }
+                float difference = value - get(next);
+                if (difference > SPREAD_MIN) {
+                    float flow = difference * SPREAD_SHARE;
+                    long nextKey = next.getPos().pack();
+                    delta.addTo(key, -flow);
+                    delta.addTo(nextKey, flow);
+                    chunks.putIfAbsent(nextKey, next);
+                }
+            }
+        }
+        for (Long2FloatMap.Entry entry : delta.long2FloatEntrySet()) {
+            LevelChunk chunk = chunks.get(entry.getLongKey());
+            if (chunk != null) {
+                set(level, chunk, get(chunk) + entry.getFloatValue());
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
+        if (event.getServer().getTickCount() % SYNC_TICKS != 0) {
+            return;
+        }
+        for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
+            sync(player);
+        }
+    }
+
+    /** Sends the player the values around them that changed since the last time (all of them after a reset). */
+    private static void sync(ServerPlayer player) {
+        boolean reset = !SENT.containsKey(player.getUUID());
+        Long2FloatMap sent = SENT.computeIfAbsent(player.getUUID(), id -> new Long2FloatOpenHashMap());
+        LongSet active = ACTIVE.get(player.level().dimension());
+        if (!reset && sent.isEmpty() && (active == null || active.isEmpty())) {
+            return;
+        }
+        ServerLevel level = player.level();
+        int cx = player.blockPosition().getX() >> 4;
+        int cz = player.blockPosition().getZ() >> 4;
+        List<ThinningPayload.Entry> changes = new ArrayList<>();
+        for (int x = cx - SYNC_RADIUS; x <= cx + SYNC_RADIUS; x++) {
+            for (int z = cz - SYNC_RADIUS; z <= cz + SYNC_RADIUS; z++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
+                if (chunk == null) {
+                    continue;
+                }
+                long key = ChunkPos.pack(x, z);
+                float value = get(chunk);
+                if (sent.containsKey(key) ? Math.abs(sent.get(key) - value) >= 0.5F || (value == 0 && sent.get(key) != 0)
+                        : value > 0) {
+                    changes.add(new ThinningPayload.Entry(key, value));
+                    sent.put(key, value);
+                }
+            }
+        }
+        // Forget what lies far behind: the client drops it too, and it is sent again on return.
+        sent.keySet().removeIf(key -> Math.abs(ChunkPos.getX(key) - cx) > SYNC_RADIUS + 2
+                || Math.abs(ChunkPos.getZ(key) - cz) > SYNC_RADIUS + 2);
+        if (reset || !changes.isEmpty()) {
+            ModNetwork.sendToPlayer(player, new ThinningPayload(reset, changes));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        SENT.remove(event.getEntity().getUUID());
+    }
+
+    @SubscribeEvent
+    public static void onChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        SENT.remove(event.getEntity().getUUID());
+    }
+
+    @SubscribeEvent
+    public static void onServerStopped(ServerStoppedEvent event) {
+        ACTIVE.clear();
+        SENT.clear();
+    }
+}

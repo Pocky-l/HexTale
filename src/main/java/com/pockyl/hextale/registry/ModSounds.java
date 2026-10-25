@@ -34,6 +34,8 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_OPEN = register("the_void.open");
     public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_HUM = register("the_void.hum");
     public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_CLOSE = register("the_void.close");
+    /** The Thinning: a distant murmur of the land where the world wore thin. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> THINNING_MURMUR = register("thinning.murmur");
     /** The orb recognises a simple rune; played at the element's pitch. */
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_RECOGNISED = register("rune.recognised");
     /** The orb does not know the drawing. */

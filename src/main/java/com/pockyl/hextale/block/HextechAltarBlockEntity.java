@@ -476,6 +476,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         for (Player player : level.getEntitiesOfClass(Player.class, new AABB(worldPosition).inflate(4))) {
             player.hurtServer(level, level.damageSources().magic(), 4.0F);
         }
+        com.pockyl.hextale.thevoid.Thinning.add(level, worldPosition, com.pockyl.hextale.thevoid.Thinning.RITUAL_COLLAPSE);
         level.blockEvent(worldPosition, getBlockState().getBlock(), 2, 0);
         sync();
     }

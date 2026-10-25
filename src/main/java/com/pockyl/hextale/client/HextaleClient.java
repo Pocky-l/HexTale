@@ -88,6 +88,7 @@ public final class HextaleClient {
             event.registerSpriteSet(ModParticles.ESSENCE_DROP.get(), EssenceDropParticle.Provider::new);
             event.registerSpriteSet(ModParticles.ESSENCE_BUBBLE.get(), EssenceBubbleParticle.Provider::new);
             event.registerSpriteSet(ModParticles.VAPOUR.get(), VapourParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.THINNING_HAZE.get(), com.pockyl.hextale.client.particle.ThinningHazeParticle.Provider::new);
             event.registerSpriteSet(ModParticles.HEX_SPARK.get(), HexSparkParticle.Provider::new);
             event.registerSpriteSet(ModParticles.GLINT.get(), GlintParticle.Provider::new);
             event.registerSpriteSet(ModParticles.HEX_RING.get(), HexRingParticle.Provider::new);
@@ -112,6 +113,8 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.VoidPipelines::registerPipelines);
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
+        ThinningAtmosphere.register();
+        modBus.addListener(ThinningTint::register);
         NeoForge.EVENT_BUS.addListener(GogglesView::tick);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
                 event.register(EssencesTooltip.class, ClientEssencesTooltip::new));

@@ -98,6 +98,7 @@ public class MiasmaVentBlockEntity extends BlockEntity {
             mob.hurtServer(server, server.damageSources().magic(), DAMAGE);
         }
         server.blockEvent(pos, state.getBlock(), PUFF, 0);
+        com.pockyl.hextale.thevoid.Thinning.add(server, pos, com.pockyl.hextale.thevoid.Thinning.MIASMA_PUFF);
         server.playSound(null, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, ModSounds.MIASMA_HISS.get(), SoundSource.BLOCKS, 0.6F,
                 0.9F + server.getRandom().nextFloat() * 0.2F);
         vent.setChanged();

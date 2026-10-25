@@ -67,6 +67,9 @@ public final class ModParticles {
     /** A soft puff of steam or smoke that rises, swells and thins out. */
     public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> VAPOUR = colored("vapour");
 
+    /** The haze of a thinning land: a wide faint veil that hugs the ground and drifts. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> THINNING_HAZE = colored("thinning_haze");
+
     /** A crackle of hextech lightning: a short-lived flickering spark. */
     public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> HEX_SPARK = colored("hex_spark");
 
@@ -139,6 +142,10 @@ public final class ModParticles {
 
     public static ColorParticleOption vapour(int rgb) {
         return of(VAPOUR, rgb);
+    }
+
+    public static ColorParticleOption haze(int rgb) {
+        return of(THINNING_HAZE, rgb);
     }
 
     public static ColorParticleOption spark(int rgb) {

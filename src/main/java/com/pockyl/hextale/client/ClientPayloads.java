@@ -45,6 +45,7 @@ public final class ClientPayloads {
             com.pockyl.hextale.crafting.BrewRecipe.ALL.setClient(payload.brewing());
             com.pockyl.hextale.research.ExperimentPlan.ALL.setClient(payload.experiments());
         });
+        event.register(com.pockyl.hextale.network.ThinningPayload.TYPE, (payload, context) -> ClientThinning.accept(payload));
         event.register(OpenStelePayload.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new SteleScreen(payload.pos())));
         event.register(com.pockyl.hextale.network.OpenStickerPayload.TYPE, (payload, context) ->
                 Minecraft.getInstance().gui.setScreen(new com.pockyl.hextale.client.screen.StickerScreen(payload.hand())));

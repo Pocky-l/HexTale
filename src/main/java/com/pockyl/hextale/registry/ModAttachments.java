@@ -22,6 +22,10 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<com.pockyl.hextale.farm.ShackleEvents.Shackle>> SHACKLE = ATTACHMENT_TYPES.register("shackle",
             () -> AttachmentType.builder(() -> new com.pockyl.hextale.farm.ShackleEvents.Shackle(0, -1)).build());
 
+    /** The Thinning of a chunk (see {@link com.pockyl.hextale.thevoid.Thinning}); saved only while above zero. */
+    public static final Supplier<AttachmentType<Float>> THINNING = ATTACHMENT_TYPES.register("thinning",
+            () -> AttachmentType.builder(() -> 0F).serialize(com.mojang.serialization.Codec.FLOAT.fieldOf("value"), value -> value > 0).build());
+
     private ModAttachments() {
     }
 

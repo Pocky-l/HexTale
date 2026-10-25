@@ -58,7 +58,7 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
             EssenceMix drawn = EssenceNetwork.draw(level, pos, side, EssenceTankBlockEntity.FLOW, valve);
             if (!drawn.isEmpty()) {
                 valve.splash(drawn);
-                valve.soak(drawn.total());
+                valve.soak(drawn, drawn.total());
             }
         }
     }
@@ -87,7 +87,7 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
         if (taken > 0 && !simulate) {
             dropsThisTick += taken;
             splash(offer);
-            soak(taken);
+            soak(offer, taken);
         }
         return Math.max(0, taken);
     }
@@ -106,11 +106,16 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
         return Math.max(0, taken);
     }
 
-    /** Poured essence soaks into the stone where the stream lands, one block per {@value #ESSENCE_PER_STONE} mB. */
-    private void soak(int amount) {
+    /**
+     * Poured essence soaks into the stone where the stream lands, one block per {@value #ESSENCE_PER_STONE} mB, and wears
+     * the edge of the world thin (much less where stone drinks it).
+     */
+    private void soak(EssenceMix mix, int amount) {
         if (!(level instanceof ServerLevel server)) {
             return;
         }
+        // Essence the stone drinks wears the world little; essence lost on the ground wears it thin.
+        com.pockyl.hextale.thevoid.Thinning.poured(server, worldPosition, mix, amount, soakTarget(server) != null);
         soaked += amount;
         while (soaked >= ESSENCE_PER_STONE) {
             BlockPos stone = soakTarget(server);

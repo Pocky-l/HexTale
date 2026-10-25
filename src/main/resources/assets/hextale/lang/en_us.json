@@ -1939,5 +1939,16 @@
   "quest.hextale.hex_foundry": "Hex Foundry",
   "quest.hextale.hex_foundry.goal": "build a Hex Foundry and light it",
   "quest.hextale.hex_foundry.desc": "One furnace at a time is too slow. A whole kiln of fire bricks, hollow inside, a grate on top and an iron hatch in front... Slow to warm, I expect - but once it glows, does it swallow everything at once?",
-  "jei.hextale.info.hex_foundry": "Built into the front of a 3x3x3 kiln of fire bricks (hollow inside, iron bars in the middle of the top) and woken with a pinch of hextech dust. Slow to heat; hot, it melts all nine inputs at once. Burns fuel or fire and magma essence from jars nearby. Things dropped on top fall in."
+  "jei.hextale.info.hex_foundry": "Built into the front of a 3x3x3 kiln of fire bricks (hollow inside, iron bars in the middle of the top) and woken with a pinch of hextech dust. Slow to heat; hot, it melts all nine inputs at once. Burns fuel or fire and magma essence from jars nearby. Things dropped on top fall in.",
+  "commands.hextale.void.get": "Thinning here: %s (%s, stage %s)",
+  "commands.hextale.void.set": "Set the Thinning of %s chunks to %s (%s)",
+  "thinning.hextale.stage.clean": "Clean",
+  "thinning.hextale.stage.haze": "Haze",
+  "thinning.hextale.stage.miasma": "Miasma",
+  "thinning.hextale.stage.blight": "Blight",
+  "thinning.hextale.stage.breach": "Breach",
+  "goggles.hextale.thinning": "Thinning %s - %s",
+  "subtitles.hextale.thinning.murmur": "The land murmurs",
+  "hextale.configuration.thinning": "Thinning of the world",
+  "hextale.configuration.thinningRate": "Thinning rate"
 }
