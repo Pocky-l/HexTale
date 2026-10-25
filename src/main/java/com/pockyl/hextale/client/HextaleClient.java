@@ -113,7 +113,7 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.VoidPipelines::registerPipelines);
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
-        ThinningAtmosphere.register();
+        ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
         NeoForge.EVENT_BUS.addListener(GogglesView::tick);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->

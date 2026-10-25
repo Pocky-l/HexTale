@@ -17,12 +17,13 @@ public class ThinningHazeParticle extends HexParticle {
 
     protected ThinningHazeParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd,
                                    ColorParticleOption option, SpriteSet sprites) {
-        super(level, x, y, z, xd, yd, zd, sprites, 0.9F + level.getRandom().nextFloat() * 0.9F);
+        super(level, x, y, z, xd, yd, zd, sprites, 1.3F + level.getRandom().nextFloat() * 1.3F);
         lifetime = 120 + random.nextInt(100);
         spin = (random.nextFloat() - 0.5F) * 0.006F;
         roll = random.nextFloat() * Mth.TWO_PI;
         oRoll = roll;
-        opacity = 0.1F + random.nextFloat() * 0.08F;
+        // The option's alpha says how thick the haze is where it rose.
+        opacity = 0.12F + random.nextFloat() * 0.06F + option.getAlpha() * 0.22F;
         tint(option, 0.04F);
     }
 

@@ -93,9 +93,10 @@ public final class ClientThinning {
         return Mth.lerp(tz, Mth.lerp(tx, a, b), Mth.lerp(tx, c, d));
     }
 
-    /** How far grass, leaves and water have faded towards ash (0-1): from late haze to full blight. */
+    /** How far grass, leaves and water have faded towards ash (0-1): from the first haze to the middle of the miasma. */
     public static float tint(float value) {
-        float t = Mth.clamp((value - Thinning.Stage.HAZE.from * 1.5F) / (Thinning.Stage.BLIGHT.from - Thinning.Stage.HAZE.from * 1.5F), 0, 1);
+        float from = Thinning.Stage.HAZE.from * 0.6F;
+        float t = Mth.clamp((value - from) / (Thinning.Stage.MIASMA.from * 1.5F - from), 0, 1);
         return t * t * (3 - 2 * t);
     }
 

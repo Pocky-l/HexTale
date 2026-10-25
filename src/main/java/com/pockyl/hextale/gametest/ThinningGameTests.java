@@ -8,7 +8,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.thevoid.Thinning;
 
-/** The Thinning: careless magic wears a chunk thin, the sickness flows into the land around, and weak haze fades. */
+/** The Thinning: magic wears a chunk thin, the land around catches a share of it, and nothing heals by itself. */
 public final class ThinningGameTests {
     private static final BlockPos AT = new BlockPos(1, 2, 1);
 
@@ -44,24 +44,25 @@ public final class ThinningGameTests {
     }
 
     @HexTest
-    public static void theSicknessFlowsAndWeakHazeFades(GameTestHelper helper) {
+    public static void theLandAroundCatchesItAndNothingHeals(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos pos = helper.absolutePos(AT);
         LevelChunk centre = level.getChunkAt(pos);
         LevelChunk east = level.getChunkAt(pos.east(16));
-        Thinning.setAround(level, pos, 1, 0);
+        Thinning.setAround(level, pos, 2, 0);
         Thinning.set(level, centre, 500);
-        Thinning.flow(level);
-        float left = Thinning.get(centre);
-        float given = Thinning.get(east);
-        helper.assertTrue(given > 0, "the land beside gets some of it");
-        helper.assertTrue(left < 500 && left > 300, "the source keeps most of it, got " + left);
-        helper.assertTrue(Math.abs(left + 4 * given - 500) < 0.5F, "nothing is lost while it flows above the haze, got " + left + " + 4 x " + given);
-        Thinning.setAround(level, pos, 1, 0);
+        for (int i = 0; i < 400; i++) {
+            Thinning.flow(level);
+        }
+        float near = Thinning.get(east);
+        helper.assertTrue(Thinning.get(centre) == 500, "the sick chunk keeps all of it, got " + Thinning.get(centre));
+        helper.assertTrue(near > 500 * Thinning.FALLOFF - 10 && near <= 500 * Thinning.FALLOFF, "the land beside settles at its share, got " + near);
+        float far = Thinning.get(level.getChunkAt(pos.east(32)));
+        helper.assertTrue(far > 0 && far < near, "and the ring after it at less, got " + far);
         Thinning.set(level, centre, 50);
         Thinning.flow(level);
-        helper.assertTrue(Thinning.get(centre) < 50 - Thinning.FADE * 0.5F, "weak haze fades by itself");
-        Thinning.setAround(level, pos, 1, 0);
+        helper.assertTrue(Thinning.get(centre) >= 50, "weak haze does not heal by itself");
+        Thinning.setAround(level, pos, 8, 0);
         helper.succeed();
     }
 }

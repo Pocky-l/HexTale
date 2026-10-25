@@ -428,6 +428,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
 
     private void finish(ServerLevel level) {
         ChalkMarkBlock.light(level, worldPosition, false);
+        com.pockyl.hextale.thevoid.Thinning.add(level, worldPosition, com.pockyl.hextale.thevoid.Thinning.RITUAL + essenceTotal.total() * com.pockyl.hextale.thevoid.Thinning.RITUAL_PER_MB);
         if (result.is(ModItems.HEXCORE.get()) && !(this instanceof HexcoreBlockEntity)) {
             // The circle's own heart was the work: the altar itself becomes the Hexcore.
             clearRitual();

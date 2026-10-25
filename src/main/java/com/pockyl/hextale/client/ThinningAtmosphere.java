@@ -1,33 +1,47 @@
 package com.pockyl.hextale.client;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 
+import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.thevoid.Thinning;
 
 /**
- * What a player feels where the edge of the world wears thin. Haze: a faint lilac veil low over the ground and now and
- * then a dark mote sinking into the earth. Miasma: the veil thickens, the fog closes in and turns ashen violet, rare
- * magenta glints show where the Void looks through, and the land murmurs far off. Every puff is placed by the value at
- * its own spot, so the haze thins out towards the edge of the sick land instead of following the player.
+ * What a player feels where the edge of the world wears thin. Every effect is placed by the value at its own spot, so
+ * it thins out towards the edge of the sick land instead of following the player.
+ * <ul>
+ * <li>Haze: a lilac veil low over the ground, dark motes sinking into the earth, the fog leaning to violet.</li>
+ * <li>Miasma: the veil thick and knee-high, dark vapours seeping up out of the ground, magenta glints where the Void
+ * looks through, the fog closing in, the edges of sight darkening, the land murmuring from somewhere around.</li>
+ * <li>Blight and worse: all of it heavier, until the fog is a wall at thirty blocks.</li>
+ * </ul>
  */
 public final class ThinningAtmosphere {
-    /** The haze over the ground and the motes the earth swallows. */
-    private static final int HAZE = 0x6A5A7E;
-    private static final int MOTE = 0x2A1C34;
+    private static final int HAZE = 0x5E4C74;
+    private static final int MOTE = 0x24162E;
+    private static final int SEEP = 0x4A2560;
     private static final int VOID_GLINT = 0xD0469E;
-    /** Blocks around the player where haze is placed. */
-    private static final int REACH = 22;
+    /** Blocks around the player where effects are placed. */
+    private static final int REACH = 24;
+    private static final Identifier VIGNETTE = Identifier.withDefaultNamespace("textures/misc/vignette.png");
     private static float local;
     private static float previous;
     private static int murmurIn = 200;
@@ -35,10 +49,17 @@ public final class ThinningAtmosphere {
     private ThinningAtmosphere() {
     }
 
-    public static void register() {
+    public static void register(IEventBus modBus) {
+        modBus.addListener((RegisterGuiLayersEvent event) ->
+                event.registerAbove(VanillaGuiLayers.CAMERA_OVERLAYS, Hextale.id("thinning_vignette"), ThinningAtmosphere::vignette));
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> tick());
         NeoForge.EVENT_BUS.addListener(ThinningAtmosphere::fogColour);
         NeoForge.EVENT_BUS.addListener(ThinningAtmosphere::fog);
+    }
+
+    /** 0 at the first haze, 1 at a breach. */
+    private static float depth(float value) {
+        return Mth.clamp((value - Thinning.Stage.HAZE.from * 0.5F) / (Thinning.Stage.BREACH.from - Thinning.Stage.HAZE.from * 0.5F), 0, 1);
     }
 
     private static void tick() {
@@ -56,25 +77,34 @@ public final class ThinningAtmosphere {
             return;
         }
         RandomSource random = level.getRandom();
-        for (int i = 0; i < 6; i++) {
+        int tries = 6 + Math.round(depth(local) * 18);
+        for (int i = 0; i < tries; i++) {
             double x = player.getX() + (random.nextDouble() * 2 - 1) * REACH;
             double z = player.getZ() + (random.nextDouble() * 2 - 1) * REACH;
             float value = ClientThinning.at(x, z);
-            float haze = Mth.clamp((value - 40) / (Thinning.Stage.MIASMA.from + 100), 0, 1);
-            if (haze <= 0 || random.nextFloat() > haze * 0.55F) {
+            if (value < Thinning.Stage.HAZE.from * 0.4F) {
                 continue;
             }
+            float d = depth(value);
             int ground = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mth.floor(x), Mth.floor(z));
-            double y = ground + 0.15 + random.nextDouble() * (0.6 + haze);
-            level.addParticle(ModParticles.haze(HAZE), x, y, z, (random.nextDouble() - 0.5) * 0.01, 0, (random.nextDouble() - 0.5) * 0.01);
-            float sink = Mth.clamp((value - Thinning.Stage.HAZE.from) / (Thinning.Stage.BLIGHT.from), 0, 1);
-            if (random.nextFloat() < 0.08F + sink * 0.3F) {
+            if (random.nextFloat() < 0.35F + d * 0.6F) {
+                double y = ground + 0.1 + random.nextDouble() * (0.5 + d * 1.6);
+                level.addParticle(ModParticles.haze(HAZE, d), x, y, z, (random.nextDouble() - 0.5) * 0.012, 0,
+                        (random.nextDouble() - 0.5) * 0.012);
+            }
+            if (random.nextFloat() < 0.1F + d * 0.35F) {
                 // A mote drawn into the earth: spawned where it falls in, its speed is the offset to its start.
                 level.addParticle(ModParticles.voidMote(MOTE), x, ground + 0.05, z,
-                        (random.nextDouble() - 0.5) * 2, 1.2 + random.nextDouble() * 1.5, (random.nextDouble() - 0.5) * 2);
+                        (random.nextDouble() - 0.5) * 2.5, 1.5 + random.nextDouble() * 2, (random.nextDouble() - 0.5) * 2.5);
             }
-            if (value >= Thinning.Stage.MIASMA.from && random.nextFloat() < 0.02F + sink * 0.04F) {
-                level.addParticle(ModParticles.glint(VOID_GLINT), x, ground + 0.2 + random.nextDouble() * 0.8, z, 0, 0.003, 0);
+            if (value >= Thinning.Stage.MIASMA.from * 0.8F) {
+                if (random.nextFloat() < d * 0.3F) {
+                    // Dark vapour seeping up out of the ground.
+                    level.addParticle(ModParticles.wisp(SEEP), x, ground + 0.05, z, 0, 0.015 + random.nextDouble() * 0.02, 0);
+                }
+                if (random.nextFloat() < 0.03F + d * 0.08F) {
+                    level.addParticle(ModParticles.glint(VOID_GLINT), x, ground + 0.2 + random.nextDouble() * 1.4, z, 0, 0.004, 0);
+                }
             }
         }
         murmur(level, player, random);
@@ -90,36 +120,51 @@ public final class ThinningAtmosphere {
             return;
         }
         float k = Mth.clamp((local - Thinning.Stage.MIASMA.from) / (Thinning.Stage.BREACH.from - Thinning.Stage.MIASMA.from), 0, 1);
-        murmurIn = 360 + random.nextInt(480) - (int) (k * 240);
+        murmurIn = 300 + random.nextInt(400) - (int) (k * 200);
         double angle = random.nextDouble() * Math.PI * 2;
         double x = player.getX() + Math.cos(angle) * 10;
         double z = player.getZ() + Math.sin(angle) * 10;
-        level.playLocalSound(x, player.getY() - 2, z, ModSounds.THINNING_MURMUR.get(), SoundSource.AMBIENT, 0.35F + 0.45F * k,
+        level.playLocalSound(x, player.getY() - 2, z, ModSounds.THINNING_MURMUR.get(), SoundSource.AMBIENT, 0.45F + 0.5F * k,
                 0.85F + random.nextFloat() * 0.15F, false);
     }
 
     private static float strength(float partialTick) {
-        return Mth.lerp(partialTick, previous, local);
+        return depth(Mth.lerp(partialTick, previous, local));
     }
 
     private static void fogColour(ViewportEvent.ComputeFogColor event) {
-        float value = strength((float) event.getPartialTick());
-        float s = Mth.clamp((value - Thinning.Stage.HAZE.from) / (Thinning.Stage.BREACH.from - Thinning.Stage.HAZE.from), 0, 1) * 0.5F;
+        float s = strength((float) event.getPartialTick());
         if (s <= 0.001F) {
             return;
         }
-        event.setRed(Mth.lerp(s, event.getRed(), 0.30F));
-        event.setGreen(Mth.lerp(s, event.getGreen(), 0.25F));
-        event.setBlue(Mth.lerp(s, event.getBlue(), 0.36F));
+        float k = (float) Math.sqrt(s) * 0.75F;
+        event.setRed(Mth.lerp(k, event.getRed(), 0.26F));
+        event.setGreen(Mth.lerp(k, event.getGreen(), 0.20F));
+        event.setBlue(Mth.lerp(k, event.getBlue(), 0.33F));
     }
 
     private static void fog(ViewportEvent.RenderFog event) {
-        float value = strength((float) event.getPartialTick());
-        float s = Mth.clamp((value - Thinning.Stage.MIASMA.from) / (Thinning.Stage.BREACH.from - Thinning.Stage.MIASMA.from), 0, 1) * 0.7F;
+        float s = strength((float) event.getPartialTick());
         if (s <= 0.001F) {
             return;
         }
-        event.setFarPlaneDistance(Mth.lerp(s, event.getFarPlaneDistance(), Math.min(event.getFarPlaneDistance(), 40)));
-        event.setNearPlaneDistance(Mth.lerp(s, event.getNearPlaneDistance(), Math.min(event.getNearPlaneDistance(), 4)));
+        float k = (float) Math.sqrt(s) * 0.9F;
+        float far = Mth.lerp(s, 96, 28);
+        event.setFarPlaneDistance(Mth.lerp(k, event.getFarPlaneDistance(), Math.min(event.getFarPlaneDistance(), far)));
+        event.setNearPlaneDistance(Mth.lerp(k, event.getNearPlaneDistance(), Math.min(event.getNearPlaneDistance(), far * 0.1F)));
+    }
+
+    /** From the miasma on, the edges of sight darken towards violet. */
+    private static void vignette(GuiGraphicsExtractor graphics, DeltaTracker delta) {
+        float value = Mth.lerp(delta.getGameTimeDeltaPartialTick(false), previous, local);
+        float s = Mth.clamp((value - Thinning.Stage.MIASMA.from * 0.8F) / (Thinning.Stage.BREACH.from - Thinning.Stage.MIASMA.from * 0.8F), 0, 1);
+        if (s <= 0.003F) {
+            return;
+        }
+        float k = s * 0.55F;
+        // The vignette pipeline darkens by its colour: green most, blue least, so the dark edges lean to violet.
+        int color = ARGB.colorFromFloat(1, k * 0.75F, k, k * 0.55F);
+        graphics.blit(RenderPipelines.VIGNETTE, VIGNETTE, 0, 0, 0, 0, graphics.guiWidth(), graphics.guiHeight(), graphics.guiWidth(),
+                graphics.guiHeight(), color);
     }
 }

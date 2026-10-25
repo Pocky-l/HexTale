@@ -225,6 +225,9 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         if (drawn.isEmpty()) {
             return;
         }
+        if (level instanceof ServerLevel server) {
+            com.pockyl.hextale.thevoid.Thinning.add(server, worldPosition, java.util.Arrays.stream(sections).sum() * com.pockyl.hextale.thevoid.Thinning.INK_SECTION);
+        }
         inkDraws = drawn.entrySet().stream().map(entry -> new JarReach.Draw(entry.getKey().getBlockPos(), entry.getValue())).toList();
         inkDrawnAt = level.getGameTime();
         level.playSound(null, worldPosition, ModSounds.ESSENCE_DRAW.get(), SoundSource.BLOCKS, 0.6F, 1.1F);

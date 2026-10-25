@@ -7,13 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- The Thinning: careless magic wears the edge of the world thin, and the Void starts to seep in. Essence poured away
-  (much less where stone drinks it, unknown essence counts double), raw crystals bursting, broken rituals, burst lab
-  flasks, burnt parchments and Miasma Vent fumes all add to it. It lives in the chunk and slowly spreads into the land
-  around, so a whole base and its surroundings sicken together; a light haze fades by itself, anything stronger stays.
-- Haze: a faint lilac veil low over the ground, dark motes sinking into the earth.
-- Miasma: the veil thickens, the fog closes in and turns ashen violet, grass, leaves, vines and water lose their colour,
-  rare magenta glints show through and the land murmurs from somewhere around.
+- The Thinning: work with magic wears the edge of the world thin, and the Void starts to seep in. Everyday work wears it
+  a little at a time - boiling essence in an alembic (unknown things double), separating it, drawing research ink,
+  finished rituals, charged crafts at the Hex Workbench, crystals woken by lightning - and carelessness much more:
+  essence poured away (far less where stone drinks it), raw crystals bursting, broken rituals, burst lab flasks, burnt
+  parchments, Miasma Vent fumes. It lives in the chunk, never heals by itself, and the land around catches a share of
+  it ring by ring, so a researcher's home and its surroundings sicken slowly as the research goes on.
+- Haze: a lilac veil low over the ground, dark motes sinking into the earth, grass, leaves, vines and water losing their
+  colour, the fog leaning to violet.
+- Miasma: the veil thick and knee-high, dark vapours seeping up out of the ground, magenta glints, the fog closing in,
+  the edges of sight darkening, and the land murmuring from somewhere around.
 - `/hextale void get|set|add|stage|clear` for operators; config options to turn the Thinning off or change its rate.
 
 ## [1.0.0] - 2026-10-24

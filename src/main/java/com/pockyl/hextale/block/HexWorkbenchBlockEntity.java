@@ -113,6 +113,9 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
             crystal.shrink(1);
         }
         charge -= cost;
+        if (level instanceof net.minecraft.server.level.ServerLevel server) {
+            com.pockyl.hextale.thevoid.Thinning.add(server, worldPosition, cost * com.pockyl.hextale.thevoid.Thinning.CHARGE);
+        }
         setChanged();
         return true;
     }

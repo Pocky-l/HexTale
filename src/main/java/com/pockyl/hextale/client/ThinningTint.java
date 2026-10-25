@@ -20,7 +20,7 @@ import java.util.Set;
  */
 public final class ThinningTint {
     /** The ash the land fades to. */
-    private static final int ASH = 0x7C7088;
+    private static final int ASH = 0x6E5F80;
     /** The murk water darkens to. */
     private static final int MURK = 0x3B2F4A;
     private static final Block[] PLANTS = {
@@ -60,8 +60,8 @@ public final class ThinningTint {
         int b = ARGB.blue(color);
         float grey = r * 0.3F + g * 0.59F + b * 0.11F;
         int target = water ? MURK : ASH;
-        float lose = amount * (water ? 0.4F : 0.75F);
-        float lean = amount * (water ? 0.55F : 0.5F);
+        float lose = amount * (water ? 0.6F : 0.9F);
+        float lean = amount * (water ? 0.75F : 0.62F);
         float nr = Mth.lerp(lean, Mth.lerp(lose, r, grey), ARGB.red(target));
         float ng = Mth.lerp(lean, Mth.lerp(lose, g, grey), ARGB.green(target));
         float nb = Mth.lerp(lean, Mth.lerp(lose, b, grey), ARGB.blue(target));

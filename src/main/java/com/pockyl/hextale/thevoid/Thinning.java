@@ -37,25 +37,44 @@ import java.util.UUID;
 /**
  * The Thinning: how worn the edge of the world is in a chunk. Careless magic - essence poured away, raw crystals
  * bursting, rituals breaking - wears it thin, and the Void, which hungers for magic, seeps in where it is thinnest:
- * first as a haze, then as a sickness of the land, at last as a breach. A value per chunk (a chunk attachment), flowing
- * slowly into lower neighbours so a whole base and the land around it sicken together; below {@link Stage#MIASMA} it
- * fades by itself, above it stays. Players get the values of the chunks around them for the haze, fog and colours.
+ * first as a haze, then as a sickness of the land, at last as a breach. Everyday work with magic wears it too, a little
+ * at a time - boiling essence, separating it, drawing ink, rituals, charged crafts, waking crystals - so a researcher's
+ * home sickens slowly as the research goes on: noticeable in the middle of it, at its worst near the end. A value per
+ * chunk (a chunk attachment) that never heals by itself; the land around catches it, each ring of chunks a share
+ * ({@link #FALLOFF}) of the one inside, so a base and its surroundings sicken together. Players get the values of the
+ * chunks around them for the haze, fog and colours.
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class Thinning {
     public static final float MAX = 1500;
     /** Ticks between two flows. */
     public static final int SPREAD_TICKS = 40;
-    /** Share of the difference that flows into each lower neighbour per flow. */
-    public static final float SPREAD_SHARE = 0.06F;
-    /** A difference smaller than this does not flow (so the edge stays an edge). */
-    public static final float SPREAD_MIN = 4;
-    /** What a chunk under {@link Stage#MIASMA} loses by itself per flow. */
-    public static final float FADE = 1;
+    /** A neighbour catches the sickness up to this share of a chunk's value. */
+    public static final float FALLOFF = 0.6F;
+    /** Share of the way to that level a neighbour goes per flow. */
+    public static final float SPREAD_RATE = 0.05F;
+    /** A neighbour less than this short of its level is left alone (so the edge settles). */
+    public static final float SPREAD_MIN = 2;
     public static final int SYNC_TICKS = 20;
     /** Chunks every way around a player whose values the player gets. */
     public static final int SYNC_RADIUS = 8;
 
+    // Everyday work, per unit: slow on purpose - the haze shows in the middle of the research, the worst near its end.
+    /** Essence boiled out of matter in an alembic, per mB (out of unknown things: double). */
+    public static final float BOILED = 0.04F;
+    /** Essence a separator splits, per mB of the portion. */
+    public static final float SEPARATED = 0.01F;
+    /** A section of ink drawn on a research parchment. */
+    public static final float INK_SECTION = 0.25F;
+    /** A finished ritual, plus per mB of essence it drew. */
+    public static final float RITUAL = 3;
+    public static final float RITUAL_PER_MB = 0.08F;
+    /** Charge a Hex Workbench spends on a craft, per point. */
+    public static final float CHARGE = 0.15F;
+    /** A crystal block lightning shatters into raw hextech. */
+    public static final float AWAKENED = 1;
+
+    // Carelessness and accidents.
     /** Essence poured away and lost on the ground, per mB (unknown essence counts double). */
     public static final float POURED_LOST = 0.25F;
     /** Essence poured away that soaked into stone, per mB. */
@@ -193,49 +212,44 @@ public final class Thinning {
         }
     }
 
-    /** One flow: every chunk gives a share of the difference to each lower loaded neighbour; weak chunks fade. */
+    /**
+     * One flow: every loaded neighbour of a sick chunk creeps towards {@link #FALLOFF} of its value (the highest of its
+     * sick neighbours counts). Nothing heals: the land only catches what lies beside it.
+     */
     public static void flow(ServerLevel level) {
         LongSet active = ACTIVE.get(level.dimension());
         if (active == null || active.isEmpty()) {
             return;
         }
-        Long2FloatOpenHashMap delta = new Long2FloatOpenHashMap();
+        Long2FloatOpenHashMap rise = new Long2FloatOpenHashMap();
         Map<Long, LevelChunk> chunks = new HashMap<>();
+        int[][] sides = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
         for (LongIterator it = active.iterator(); it.hasNext(); ) {
             long key = it.nextLong();
-            LevelChunk chunk = level.getChunkSource().getChunkNow(ChunkPos.getX(key), ChunkPos.getZ(key));
+            int x = ChunkPos.getX(key);
+            int z = ChunkPos.getZ(key);
+            LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
             if (chunk == null) {
                 it.remove();
                 continue;
             }
-            chunks.put(key, chunk);
-            float value = get(chunk);
-            if (value < Stage.MIASMA.from) {
-                delta.addTo(key, -FADE);
-            }
-            int x = ChunkPos.getX(key);
-            int z = ChunkPos.getZ(key);
-            int[][] sides = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+            float level0 = get(chunk) * FALLOFF;
             for (int[] side : sides) {
                 LevelChunk next = level.getChunkSource().getChunkNow(x + side[0], z + side[1]);
                 if (next == null) {
                     continue;
                 }
-                float difference = value - get(next);
-                if (difference > SPREAD_MIN) {
-                    float flow = difference * SPREAD_SHARE;
+                float gap = level0 - get(next);
+                if (gap > SPREAD_MIN) {
                     long nextKey = next.getPos().pack();
-                    delta.addTo(key, -flow);
-                    delta.addTo(nextKey, flow);
+                    rise.put(nextKey, Math.max(rise.get(nextKey), gap * SPREAD_RATE));
                     chunks.putIfAbsent(nextKey, next);
                 }
             }
         }
-        for (Long2FloatMap.Entry entry : delta.long2FloatEntrySet()) {
+        for (Long2FloatMap.Entry entry : rise.long2FloatEntrySet()) {
             LevelChunk chunk = chunks.get(entry.getLongKey());
-            if (chunk != null) {
-                set(level, chunk, get(chunk) + entry.getFloatValue());
-            }
+            set(level, chunk, get(chunk) + entry.getFloatValue());
         }
     }
 

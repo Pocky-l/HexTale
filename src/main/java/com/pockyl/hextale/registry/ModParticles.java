@@ -144,8 +144,10 @@ public final class ModParticles {
         return of(VAPOUR, rgb);
     }
 
-    public static ColorParticleOption haze(int rgb) {
-        return of(THINNING_HAZE, rgb);
+    /** Haze of colour {@code rgb}; {@code density} (0-1) makes the veil thicker. */
+    public static ColorParticleOption haze(int rgb, float density) {
+        int alpha = Math.round(net.minecraft.util.Mth.clamp(density, 0, 1) * 255);
+        return ColorParticleOption.create(THINNING_HAZE.get(), alpha << 24 | rgb);
     }
 
     public static ColorParticleOption spark(int rgb) {
