@@ -31,10 +31,18 @@ public final class ModEntities {
                             com.pockyl.hextale.thevoid.TheVoid::new, MobCategory.MISC).noLootTable().sized(0.5F, 0.5F)
                     .clientTrackingRange(10).updateInterval(4).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
+    /** A Void Mite: crawls out of blighted land and latches onto players. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.thevoid.VoidMite>> VOID_MITE =
+            ENTITIES.register("void_mite", id -> EntityType.Builder.<com.pockyl.hextale.thevoid.VoidMite>of(
+                            com.pockyl.hextale.thevoid.VoidMite::new, MobCategory.MONSTER).noLootTable().sized(0.5F, 0.3F)
+                    .eyeHeight(0.15F).clientTrackingRange(8).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
     private ModEntities() {
     }
 
     public static void register(IEventBus modBus) {
         ENTITIES.register(modBus);
+        modBus.addListener((net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) ->
+                event.put(VOID_MITE.get(), com.pockyl.hextale.thevoid.VoidMite.createAttributes().build()));
     }
 }

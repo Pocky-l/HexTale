@@ -66,8 +66,12 @@ public final class Thinning {
     public static final float SPREAD_RATE = 0.05F;
     /** A neighbour less than this short of its level is left alone (so the edge settles). */
     public static final float SPREAD_MIN = 2;
-    /** Chance per flow that a blighted chunk loses one more patch of its surface (x 0.3 at the start of the blight, x 1.3 at its end). */
-    public static final float BLIGHT_CHANCE = 0.15F;
+    /** Chance per flow that a blighted chunk's patches grow (x 0.3 at the start of the blight, x 1.3 at its end). */
+    public static final float BLIGHT_CHANCE = 0.25F;
+    /** Chance that a pick far from every patch starts a new focus instead of nothing. */
+    public static final float NEW_FOCUS_CHANCE = 0.06F;
+    /** How far from a pick a patch may lie and still grow towards it. */
+    public static final int GROW_REACH = 6;
     /** Chance that a blighted spot grows the Void's flora. */
     public static final float FLORA_CHANCE = 0.22F;
     public static final int SYNC_TICKS = 20;
@@ -283,8 +287,10 @@ public final class Thinning {
     }
 
     /**
-     * Blighted land sickens in patches: now and then a blot of the surface turns into Void Soil and Void Rock (more often
-     * the deeper the blight), the world's plants on it die back and the Void's own growth takes root in their place.
+     * Blighted land sickens in a few large foci rather than in specks: now and then a spot of the chunk is picked. On or
+     * next to land the Void already holds, the patch grows outwards there; far from any, a new focus is born only rarely
+     * ({@link #NEW_FOCUS_CHANCE}). Deeper blight picks spots more often and grows the patches in bigger bites. The world's
+     * plants on the blighted ground die back and the Void's own growth takes root in their place.
      */
     private static void blight(ServerLevel level, LevelChunk chunk, float value) {
         RandomSource random = level.getRandom();
@@ -294,18 +300,47 @@ public final class Thinning {
         }
         int x = chunk.getPos().getMinBlockX() + random.nextInt(16);
         int z = chunk.getPos().getMinBlockZ() + random.nextInt(16);
-        BlockPos centre = surface(level, x, z);
-        if (centre == null) {
-            return;
+        int[] edge = edgeNear(level, x, z, random);
+        if (edge != null) {
+            disc(level, edge[0], edge[1], 1 + (random.nextFloat() < 0.4F + k * 0.4F ? 1 : 0), random);
+        } else if (random.nextFloat() < NEW_FOCUS_CHANCE) {
+            disc(level, x, z, 2 + random.nextInt(2), random);
+            level.playSound(null, new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z),
+                    SoundEvents.SCULK_BLOCK_SPREAD, SoundSource.BLOCKS, 0.8F, 0.5F);
         }
-        blightAt(level, centre, random, true);
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                if ((dx != 0 || dz != 0) && random.nextFloat() < 0.3F + k * 0.4F) {
-                    BlockPos next = surface(level, x + dx, z + dz);
-                    if (next != null) {
-                        blightAt(level, next, random, false);
-                    }
+    }
+
+    /**
+     * Where a patch near ({@code x}, {@code z}) can grow: walking out from the spot in a random direction, the first
+     * column past the Void's ground (or the spot itself when a patch lies beside it). Null when no patch is within
+     * {@link #GROW_REACH}.
+     */
+    private static int[] edgeNear(ServerLevel level, int x, int z, RandomSource random) {
+        double angle = random.nextDouble() * Math.PI * 2;
+        double dx = Math.cos(angle);
+        double dz = Math.sin(angle);
+        boolean inside = false;
+        for (int step = -GROW_REACH; step <= GROW_REACH; step++) {
+            int cx = x + (int) Math.round(dx * step);
+            int cz = z + (int) Math.round(dz * step);
+            BlockPos ground = surface(level, cx, cz);
+            boolean held = ground != null && level.getBlockState(ground).is(ModTags.VOID_GROUND);
+            if (held) {
+                inside = true;
+            } else if (inside && ground != null) {
+                return new int[] {cx, cz};
+            }
+        }
+        return null;
+    }
+
+    /** Blights a ragged disc of columns around ({@code x}, {@code z}). */
+    private static void disc(ServerLevel level, int x, int z, int radius, RandomSource random) {
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                float d = dx * dx + dz * dz;
+                if (d <= radius * radius + random.nextFloat() * radius - radius * 0.5F) {
+                    blightColumn(level, x + dx, z + dz, random);
                 }
             }
         }

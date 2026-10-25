@@ -26,6 +26,11 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<Float>> THINNING = ATTACHMENT_TYPES.register("thinning",
             () -> AttachmentType.builder(() -> 0F).serialize(com.mojang.serialization.Codec.FLOAT.fieldOf("value"), value -> value > 0).build());
 
+    /** Void Mites latched onto a player (see {@link com.pockyl.hextale.thevoid.VoidMites}); not kept through death. */
+    public static final Supplier<AttachmentType<Integer>> VOID_MITES = ATTACHMENT_TYPES.register("void_mites",
+            () -> AttachmentType.builder(() -> 0).serialize(com.mojang.serialization.Codec.INT.fieldOf("count"), count -> count > 0)
+                    .sync(net.minecraft.network.codec.ByteBufCodecs.VAR_INT).build());
+
     private ModAttachments() {
     }
 

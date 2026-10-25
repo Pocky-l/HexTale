@@ -102,4 +102,25 @@ public final class ThinningGameTests {
         Thinning.set(level, chunk, 0);
         helper.succeed();
     }
+
+    @HexTest
+    public static void voidMitesDrinkMaxHealthUntilHealing(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        float full = player.getMaxHealth();
+        helper.assertTrue(com.pockyl.hextale.thevoid.VoidMites.latch(player) && com.pockyl.hextale.thevoid.VoidMites.latch(player),
+                "two mites latch on");
+        helper.assertTrue(Math.abs(player.getMaxHealth() - (full - 4)) < 0.01F, "each takes a heart of the maximum, got " + player.getMaxHealth());
+        helper.assertTrue(player.getHealth() <= player.getMaxHealth(), "health stays within the new maximum");
+        for (int i = 0; i < 20; i++) {
+            com.pockyl.hextale.thevoid.VoidMites.latch(player);
+        }
+        helper.assertTrue(player.getMaxHealth() >= 2, "the last heart is never taken, got " + player.getMaxHealth());
+        helper.assertTrue(com.pockyl.hextale.thevoid.VoidMites.heals(net.minecraft.world.item.alchemy.PotionContents.EMPTY
+                        .withPotion(net.minecraft.world.item.alchemy.Potions.HEALING)), "a potion of healing shakes them off");
+        helper.assertTrue(!com.pockyl.hextale.thevoid.VoidMites.heals(net.minecraft.world.item.alchemy.PotionContents.EMPTY
+                        .withPotion(net.minecraft.world.item.alchemy.Potions.REGENERATION)), "regeneration does not");
+        com.pockyl.hextale.thevoid.VoidMites.shakeOff(player);
+        helper.assertTrue(Math.abs(player.getMaxHealth() - full) < 0.01F, "with the mites gone the maximum comes back, got " + player.getMaxHealth());
+        helper.succeed();
+    }
 }

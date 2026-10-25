@@ -1958,5 +1958,6 @@
   "block.hextale.void_rock_brick_wall": "Void Rock Brick Wall",
   "block.hextale.void_coral": "Void Coral",
   "block.hextale.void_roots": "Void Roots",
-  "block.hextale.void_bulb": "Void Bulb"
+  "block.hextale.void_bulb": "Void Bulb",
+  "entity.hextale.void_mite": "Void Mite"
 }

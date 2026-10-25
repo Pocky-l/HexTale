@@ -1958,5 +1958,6 @@
   "block.hextale.void_rock_brick_wall": "Стена из кирпичей Пустоты",
   "block.hextale.void_coral": "Коралл Пустоты",
   "block.hextale.void_roots": "Корни Пустоты",
-  "block.hextale.void_bulb": "Пузырь Пустоты"
+  "block.hextale.void_bulb": "Пузырь Пустоты",
+  "entity.hextale.void_mite": "Пустотный клещ"
 }
