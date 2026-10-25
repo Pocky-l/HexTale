@@ -399,6 +399,39 @@ public final class ModBlocks {
                 .requiresCorrectToolForDrops().strength(2.0F, 6.0F);
     }
 
+    // The Void's blight: ground it has touched, its growth, and bricks cut from its rock.
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.VoidSoilBlock> VOID_SOIL = BLOCKS.registerBlock("void_soil",
+            com.pockyl.hextale.thevoid.VoidSoilBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(0.6F).sound(SoundType.SOUL_SOIL));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.VoidSoilBlock> VOID_ROCK = BLOCKS.registerBlock("void_rock",
+            com.pockyl.hextale.thevoid.VoidSoilBlock::new, ModBlocks::voidRockProperties);
+    public static final DeferredBlock<Block> VOID_ROCK_BRICKS = BLOCKS.registerBlock("void_rock_bricks", Block::new,
+            () -> voidRockProperties().sound(SoundType.DEEPSLATE_BRICKS));
+    public static final DeferredBlock<StairBlock> VOID_ROCK_BRICK_STAIRS = BLOCKS.registerBlock("void_rock_brick_stairs",
+            properties -> new StairBlock(VOID_ROCK_BRICKS.get().defaultBlockState(), properties),
+            () -> voidRockProperties().sound(SoundType.DEEPSLATE_BRICKS));
+    public static final DeferredBlock<SlabBlock> VOID_ROCK_BRICK_SLAB = BLOCKS.registerBlock("void_rock_brick_slab", SlabBlock::new,
+            () -> voidRockProperties().sound(SoundType.DEEPSLATE_BRICKS));
+    public static final DeferredBlock<WallBlock> VOID_ROCK_BRICK_WALL = BLOCKS.registerBlock("void_rock_brick_wall", WallBlock::new,
+            () -> voidRockProperties().sound(SoundType.DEEPSLATE_BRICKS).forceSolidOn());
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.VoidFloraBlock> VOID_CORAL = BLOCKS.registerBlock("void_coral",
+            properties -> new com.pockyl.hextale.thevoid.VoidFloraBlock(false, properties), () -> voidFloraProperties(0));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.VoidFloraBlock> VOID_ROOTS = BLOCKS.registerBlock("void_roots",
+            properties -> new com.pockyl.hextale.thevoid.VoidFloraBlock(false, properties), () -> voidFloraProperties(0));
+    public static final DeferredBlock<com.pockyl.hextale.thevoid.VoidFloraBlock> VOID_BULB = BLOCKS.registerBlock("void_bulb",
+            properties -> new com.pockyl.hextale.thevoid.VoidFloraBlock(true, properties), () -> voidFloraProperties(7));
+
+    private static BlockBehaviour.Properties voidRockProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.BASEDRUM)
+                .requiresCorrectToolForDrops().strength(1.5F, 6.0F).sound(SoundType.TUFF);
+    }
+
+    private static BlockBehaviour.Properties voidFloraProperties(int light) {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).replaceable().noCollision().instabreak()
+                .sound(SoundType.ROOTS).offsetType(BlockBehaviour.OffsetType.XZ).lightLevel(state -> light)
+                .pushReaction(PushReaction.POPPED);
+    }
+
     private static BlockBehaviour.Properties nullstoneProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_GRAY).instrument(NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(3.0F, 9.0F).sound(SoundType.DEEPSLATE);

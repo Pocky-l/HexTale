@@ -57,6 +57,11 @@
     "hextale:fire_bricks",
     "hextale:fire_brick_stairs",
     "hextale:fire_brick_slab",
-    "hextale:fire_brick_wall"
+    "hextale:fire_brick_wall",
+    "hextale:void_rock",
+    "hextale:void_rock_bricks",
+    "hextale:void_rock_brick_stairs",
+    "hextale:void_rock_brick_slab",
+    "hextale:void_rock_brick_wall"
   ]
 }

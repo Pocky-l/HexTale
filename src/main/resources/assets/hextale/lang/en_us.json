@@ -1949,5 +1949,14 @@
   "thinning.hextale.stage.breach": "Breach",
   "subtitles.hextale.thinning.murmur": "The land murmurs",
   "hextale.configuration.thinning": "Thinning of the world",
-  "hextale.configuration.thinningRate": "Thinning rate"
+  "hextale.configuration.thinningRate": "Thinning rate",
+  "block.hextale.void_soil": "Void Soil",
+  "block.hextale.void_rock": "Void Rock",
+  "block.hextale.void_rock_bricks": "Void Rock Bricks",
+  "block.hextale.void_rock_brick_stairs": "Void Rock Brick Stairs",
+  "block.hextale.void_rock_brick_slab": "Void Rock Brick Slab",
+  "block.hextale.void_rock_brick_wall": "Void Rock Brick Wall",
+  "block.hextale.void_coral": "Void Coral",
+  "block.hextale.void_roots": "Void Roots",
+  "block.hextale.void_bulb": "Void Bulb"
 }

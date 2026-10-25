@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "hextale:block/void_rock_brick_slab"
+    },
+    "type=double": {
+      "model": "hextale:block/void_rock_bricks"
+    },
+    "type=top": {
+      "model": "hextale:block/void_rock_brick_slab_top"
+    }
+  }
+}

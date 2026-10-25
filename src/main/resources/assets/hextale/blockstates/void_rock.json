@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "hextale:block/void_rock"
+      },
+      {
+        "model": "hextale:block/void_rock",
+        "y": 90
+      },
+      {
+        "model": "hextale:block/void_rock",
+        "y": 180
+      },
+      {
+        "model": "hextale:block/void_rock",
+        "y": 270
+      }
+    ]
+  }
+}

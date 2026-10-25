@@ -291,6 +291,15 @@ public final class ModItems {
     public static final DeferredItem<com.pockyl.hextale.item.RuneChalkItem> RUNE_CHALK = ITEMS.registerItem("rune_chalk",
             properties -> new com.pockyl.hextale.item.RuneChalkItem(properties.durability(32)));
     public static final DeferredItem<BlockItem> NULLSTONE = ITEMS.registerSimpleBlockItem(ModBlocks.NULLSTONE);
+    public static final DeferredItem<BlockItem> VOID_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_SOIL);
+    public static final DeferredItem<BlockItem> VOID_ROCK = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK);
+    public static final DeferredItem<BlockItem> VOID_ROCK_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICKS);
+    public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_STAIRS);
+    public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_SLAB);
+    public static final DeferredItem<BlockItem> VOID_ROCK_BRICK_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK_BRICK_WALL);
+    public static final DeferredItem<BlockItem> VOID_CORAL = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CORAL);
+    public static final DeferredItem<BlockItem> VOID_ROOTS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROOTS);
+    public static final DeferredItem<BlockItem> VOID_BULB = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_BULB);
     public static final DeferredItem<BlockItem> POLISHED_NULLSTONE = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_NULLSTONE);
     public static final DeferredItem<BlockItem> NULLSTONE_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.NULLSTONE_BRICKS);
     public static final DeferredItem<BlockItem> CRYSTAL_BATTERY = ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_BATTERY,

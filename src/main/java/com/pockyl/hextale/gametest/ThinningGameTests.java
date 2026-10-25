@@ -3,10 +3,14 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.thevoid.Thinning;
+import com.pockyl.hextale.thevoid.VoidFloraBlock;
 
 /** The Thinning: magic wears a chunk thin, the land around catches a share of it, and nothing heals by itself. */
 public final class ThinningGameTests {
@@ -65,6 +69,25 @@ public final class ThinningGameTests {
         Thinning.flow(level);
         helper.assertTrue(Thinning.get(centre) >= 50, "weak haze does not heal by itself");
         Thinning.setAround(level, pos, 8, 0);
+        helper.succeed();
+    }
+
+    @HexTest
+    public static void blightTurnsTheSurfaceToVoidGround(GameTestHelper helper) {
+        BlockPos grass = new BlockPos(0, 1, 0);
+        BlockPos stone = new BlockPos(2, 1, 0);
+        helper.setBlock(grass, Blocks.GRASS_BLOCK);
+        helper.setBlock(grass.above(), Blocks.SHORT_GRASS);
+        helper.setBlock(stone, Blocks.STONE);
+        ServerLevel level = helper.getLevel();
+        BlockPos at = helper.absolutePos(grass);
+        BlockPos rock = helper.absolutePos(stone);
+        helper.assertTrue(Thinning.blightColumn(level, at.getX(), at.getZ(), level.getRandom()), "grass is ground the blight takes");
+        helper.assertTrue(Thinning.blightColumn(level, rock.getX(), rock.getZ(), level.getRandom()), "stone is ground the blight takes");
+        helper.assertBlockPresent(ModBlocks.VOID_SOIL.get(), grass);
+        helper.assertBlockPresent(ModBlocks.VOID_ROCK.get(), stone);
+        BlockState above = helper.getBlockState(grass.above());
+        helper.assertTrue(above.isAir() || above.getBlock() instanceof VoidFloraBlock, "the world's grass dies back, got " + above);
         helper.succeed();
     }
 }

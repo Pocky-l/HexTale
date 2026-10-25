@@ -1949,5 +1949,14 @@
   "thinning.hextale.stage.breach": "Разлом",
   "subtitles.hextale.thinning.murmur": "Земля бормочет",
   "hextale.configuration.thinning": "Истончение мира",
-  "hextale.configuration.thinningRate": "Скорость истончения"
+  "hextale.configuration.thinningRate": "Скорость истончения",
+  "block.hextale.void_soil": "Почва Пустоты",
+  "block.hextale.void_rock": "Камень Пустоты",
+  "block.hextale.void_rock_bricks": "Кирпичи из камня Пустоты",
+  "block.hextale.void_rock_brick_stairs": "Ступени из кирпичей Пустоты",
+  "block.hextale.void_rock_brick_slab": "Плита из кирпичей Пустоты",
+  "block.hextale.void_rock_brick_wall": "Стена из кирпичей Пустоты",
+  "block.hextale.void_coral": "Коралл Пустоты",
+  "block.hextale.void_roots": "Корни Пустоты",
+  "block.hextale.void_bulb": "Пузырь Пустоты"
 }

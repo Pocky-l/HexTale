@@ -9,6 +9,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -27,6 +33,9 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.network.ThinningPayload;
 import com.pockyl.hextale.registry.ModAttachments;
+import com.pockyl.hextale.registry.ModBlocks;
+import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModTags;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +66,10 @@ public final class Thinning {
     public static final float SPREAD_RATE = 0.05F;
     /** A neighbour less than this short of its level is left alone (so the edge settles). */
     public static final float SPREAD_MIN = 2;
+    /** Chance per flow that a blighted chunk loses one more patch of its surface (x 0.3 at the start of the blight, x 1.3 at its end). */
+    public static final float BLIGHT_CHANCE = 0.15F;
+    /** Chance that a blighted spot grows the Void's flora. */
+    public static final float FLORA_CHANCE = 0.22F;
     public static final int SYNC_TICKS = 20;
     /** Chunks every way around a player whose values the player gets. */
     public static final int SYNC_RADIUS = 8;
@@ -259,6 +272,93 @@ public final class Thinning {
         for (Long2FloatMap.Entry entry : rise.long2FloatEntrySet()) {
             LevelChunk chunk = chunks.get(entry.getLongKey());
             set(level, chunk, get(chunk) + entry.getFloatValue());
+        }
+        for (LongIterator it = active.iterator(); it.hasNext(); ) {
+            long key = it.nextLong();
+            LevelChunk chunk = level.getChunkSource().getChunkNow(ChunkPos.getX(key), ChunkPos.getZ(key));
+            if (chunk != null && get(chunk) >= Stage.BLIGHT.from) {
+                blight(level, chunk, get(chunk));
+            }
+        }
+    }
+
+    /**
+     * Blighted land sickens in patches: now and then a blot of the surface turns into Void Soil and Void Rock (more often
+     * the deeper the blight), the world's plants on it die back and the Void's own growth takes root in their place.
+     */
+    private static void blight(ServerLevel level, LevelChunk chunk, float value) {
+        RandomSource random = level.getRandom();
+        float k = Mth.clamp((felt(value) - Stage.BLIGHT.felt) / (Stage.BREACH.felt - Stage.BLIGHT.felt), 0, 1);
+        if (random.nextFloat() >= BLIGHT_CHANCE * (0.3F + k)) {
+            return;
+        }
+        int x = chunk.getPos().getMinBlockX() + random.nextInt(16);
+        int z = chunk.getPos().getMinBlockZ() + random.nextInt(16);
+        BlockPos centre = surface(level, x, z);
+        if (centre == null) {
+            return;
+        }
+        blightAt(level, centre, random, true);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                if ((dx != 0 || dz != 0) && random.nextFloat() < 0.3F + k * 0.4F) {
+                    BlockPos next = surface(level, x + dx, z + dz);
+                    if (next != null) {
+                        blightAt(level, next, random, false);
+                    }
+                }
+            }
+        }
+    }
+
+    /** Blights the surface of one column (true if it found ground the blight takes). */
+    public static boolean blightColumn(ServerLevel level, int x, int z, RandomSource random) {
+        BlockPos pos = surface(level, x, z);
+        if (pos != null) {
+            blightAt(level, pos, random, false);
+        }
+        return pos != null;
+    }
+
+    /** The topmost ground block of a column that the blight takes (or already took), or null. */
+    private static BlockPos surface(ServerLevel level, int x, int z) {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x,
+                level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
+        for (int step = 0; step < 3; step++) {
+            BlockState state = level.getBlockState(pos);
+            if (state.is(ModTags.BLIGHTS_TO_SOIL) || state.is(ModTags.BLIGHTS_TO_ROCK) || state.is(ModTags.VOID_GROUND)) {
+                return pos.immutable();
+            }
+            if (!state.isAir() && !state.canBeReplaced()) {
+                return null;
+            }
+            pos.move(0, -1, 0);
+        }
+        return null;
+    }
+
+    private static void blightAt(ServerLevel level, BlockPos pos, RandomSource random, boolean loud) {
+        BlockState ground = level.getBlockState(pos);
+        BlockState blighted = ground.is(ModTags.BLIGHTS_TO_SOIL) ? ModBlocks.VOID_SOIL.get().defaultBlockState()
+                : ground.is(ModTags.BLIGHTS_TO_ROCK) ? ModBlocks.VOID_ROCK.get().defaultBlockState() : null;
+        if (blighted != null) {
+            level.setBlockAndUpdate(pos, blighted);
+            if (loud) {
+                level.playSound(null, pos, SoundEvents.SCULK_BLOCK_SPREAD, SoundSource.BLOCKS, 0.6F, 0.6F);
+            }
+            level.sendParticles(ModParticles.voidMote(0x24162E), pos.getX() + 0.5, pos.getY() + 1.05, pos.getZ() + 0.5, 4, 0.35, 0.05, 0.35, 0);
+        }
+        BlockPos above = pos.above();
+        BlockState plant = level.getBlockState(above);
+        if (plant.getBlock() instanceof VoidFloraBlock || !(plant.isAir() || plant.canBeReplaced())) {
+            return;
+        }
+        if (random.nextFloat() < FLORA_CHANCE) {
+            float pick = random.nextFloat();
+            Block flora = pick < 0.4F ? ModBlocks.VOID_ROOTS.get() : pick < 0.8F ? ModBlocks.VOID_CORAL.get() : ModBlocks.VOID_BULB.get();
+            level.setBlockAndUpdate(above, flora.defaultBlockState());
+        } else if (!plant.isAir() && plant.getFluidState().isEmpty()) {
+            level.destroyBlock(above, false);
         }
     }
 

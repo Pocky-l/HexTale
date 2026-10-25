@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The world takes a good deal before anything shows; past that, haze: a lilac veil low over the ground, dark motes
   sinking into the earth, grass, leaves, vines and water losing their colour, stone, sand, gravel and earth turning a
   sick lilac grey, the fog leaning to violet.
+- Blight: the land itself sickens in patches - grass, dirt and sand turn to Void Soil, stone to Void Rock, the world's
+  plants on them die back and the Void's own growth takes root: Void Coral, Void Roots and glowing Void Bulbs. Void Rock
+  cuts into Void Rock Bricks with stairs, slab and wall.
 - Miasma: the veil thick and knee-high, dark vapours seeping up out of the ground, magenta glints, the fog closing in,
   the edges of sight darkening, and the land murmuring from somewhere around.
 - `/hextale void get|set|add|stage|clear` for operators; config options to turn the Thinning off or change its rate.

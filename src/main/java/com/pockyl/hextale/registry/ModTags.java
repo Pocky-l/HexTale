@@ -30,6 +30,11 @@ public final class ModTags {
     public static final TagKey<Block> SORTING_STORAGE = TagKey.create(Registries.BLOCK, Hextale.id("sorting_storage"));
 
     /** Stone a splash of acid eats away (ores and everything else stay). */
+    /** Ground the Void has touched: its flora roots only here. */
+    public static final TagKey<Block> VOID_GROUND = TagKey.create(Registries.BLOCK, Hextale.id("void_ground"));
+    /** Natural ground that blighted land turns into Void Soil / Void Rock. */
+    public static final TagKey<Block> BLIGHTS_TO_SOIL = TagKey.create(Registries.BLOCK, Hextale.id("blights_to_soil"));
+    public static final TagKey<Block> BLIGHTS_TO_ROCK = TagKey.create(Registries.BLOCK, Hextale.id("blights_to_rock"));
     public static final TagKey<Block> ACID_DISSOLVES = TagKey.create(Registries.BLOCK, Hextale.id("acid_dissolves"));
     /** Catalysts of the combustible mix (coal and charcoal by default). */
     public static final TagKey<Item> FUEL_CATALYSTS = TagKey.create(Registries.ITEM, Hextale.id("fuel_catalysts"));
