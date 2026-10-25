@@ -47,9 +47,8 @@ public class VoidlingRenderer extends MobRenderer<Voidling, VoidlingRenderer.Sta
 
     @Override
     protected void scale(State state, PoseStack poseStack) {
-        // Half size, feet kept on the ground: the vanilla shift that follows is in these halved units.
+        // Half size; the vanilla shift that follows works in these halved units, so the feet stay on the ground.
         poseStack.scale(0.5F, 0.5F, 0.5F);
-        poseStack.translate(0.0F, -1.501F, 0.0F);
         // Squeezed out of the breach: narrow and drawn out at first, then it fills out.
         float k = state.emerge * state.emerge;
         if (k > 0) {
