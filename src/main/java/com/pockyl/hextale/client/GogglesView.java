@@ -21,7 +21,6 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 import com.pockyl.hextale.Hextale;
-import com.pockyl.hextale.thevoid.Thinning;
 import com.pockyl.hextale.block.AlembicBlockEntity;
 import com.pockyl.hextale.block.BrassPipeBlock;
 import com.pockyl.hextale.block.DrainValveBlockEntity;
@@ -102,7 +101,6 @@ public final class GogglesView {
         if (!wearing(minecraft.player) || minecraft.level == null) {
             return;
         }
-        thinning(graphics, minecraft);
         BlockPos pos = lookedAt(minecraft);
         Reading reading = pos == null ? null : read(minecraft.level, pos);
         if (reading == null) {
@@ -144,20 +142,6 @@ public final class GogglesView {
             ty += LINE;
         }
         PixelArt.flush(graphics);
-    }
-
-    /** Under the crosshair: how thin the world has worn where the player stands, when it has worn at all. */
-    private static void thinning(GuiGraphicsExtractor graphics, Minecraft minecraft) {
-        float value = ClientThinning.at(minecraft.player.getX(), minecraft.player.getZ());
-        if (value < 1) {
-            return;
-        }
-        Thinning.Stage stage = Thinning.Stage.of(value);
-        Component line = Component.translatable(KEY + "thinning", Math.round(value), Component.translatable(stage.key()));
-        int x = graphics.guiWidth() / 2 - minecraft.font.width(line) / 2;
-        int y = graphics.guiHeight() / 2 + 14;
-        int color = stage.ordinal() >= Thinning.Stage.MIASMA.ordinal() ? 0xFFD07AC0 : 0xFFB8A8D8;
-        graphics.text(minecraft.font, line, x, y, color, true);
     }
 
     /** What the goggles see in the block, or null when it is not part of the essence works. */

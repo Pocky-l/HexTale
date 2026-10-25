@@ -14,7 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Haze: a faint lilac veil low over the ground, dark motes sinking into the earth.
 - Miasma: the veil thickens, the fog closes in and turns ashen violet, grass, leaves, vines and water lose their colour,
   rare magenta glints show through and the land murmurs from somewhere around.
-- Researcher's Goggles show the Thinning and its stage under the crosshair.
 - `/hextale void get|set|add|stage|clear` for operators; config options to turn the Thinning off or change its rate.
 
 ## [1.0.0] - 2026-10-24

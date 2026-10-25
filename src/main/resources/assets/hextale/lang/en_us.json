@@ -1947,7 +1947,6 @@
   "thinning.hextale.stage.miasma": "Miasma",
   "thinning.hextale.stage.blight": "Blight",
   "thinning.hextale.stage.breach": "Breach",
-  "goggles.hextale.thinning": "Thinning %s - %s",
   "subtitles.hextale.thinning.murmur": "The land murmurs",
   "hextale.configuration.thinning": "Thinning of the world",
   "hextale.configuration.thinningRate": "Thinning rate"

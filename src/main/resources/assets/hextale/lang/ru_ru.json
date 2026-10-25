@@ -1947,7 +1947,6 @@
   "thinning.hextale.stage.miasma": "Марево",
   "thinning.hextale.stage.blight": "Осквернение",
   "thinning.hextale.stage.breach": "Разлом",
-  "goggles.hextale.thinning": "Истончение %s — %s",
   "subtitles.hextale.thinning.murmur": "Земля бормочет",
   "hextale.configuration.thinning": "Истончение мира",
   "hextale.configuration.thinningRate": "Скорость истончения"
