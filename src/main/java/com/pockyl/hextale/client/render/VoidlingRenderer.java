@@ -13,7 +13,7 @@ import net.minecraft.resources.Identifier;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.thevoid.Voidling;
 
-/** Draws a voidling: its shell, and its eyes, mouth and seams glowing in the dark. */
+/** Draws a voidling at half the size of its model, as the original did, its eyes and veins glowing in the dark. */
 public class VoidlingRenderer extends MobRenderer<Voidling, VoidlingRenderer.State, VoidlingModel> {
     public static final Identifier TEXTURE = Hextale.id("textures/entity/voidling.png");
     private static final RenderType GLOW = RenderTypes.eyes(Hextale.id("textures/entity/voidling_glow.png"));
@@ -23,10 +23,12 @@ public class VoidlingRenderer extends MobRenderer<Voidling, VoidlingRenderer.Sta
         public float bite;
         /** 1 just out of a breach, 0 once unfolded. */
         public float emerge;
+        /** Which of its idle breaths this voidling keeps. */
+        public int idleVariant;
     }
 
     public VoidlingRenderer(EntityRendererProvider.Context context) {
-        super(context, new VoidlingModel(context.bakeLayer(VoidlingModel.LAYER)), 0.45F);
+        super(context, new VoidlingModel(context.bakeLayer(VoidlingModel.LAYER)), 0.5F);
         addLayer(new Glow(this));
     }
 
@@ -40,10 +42,14 @@ public class VoidlingRenderer extends MobRenderer<Voidling, VoidlingRenderer.Sta
         super.extractRenderState(voidling, state, partialTick);
         state.bite = voidling.getSwingAnimation(partialTick);
         state.emerge = voidling.emerging(partialTick);
+        state.idleVariant = voidling.getId();
     }
 
     @Override
     protected void scale(State state, PoseStack poseStack) {
+        // Half size, feet kept on the ground: the vanilla shift that follows is in these halved units.
+        poseStack.scale(0.5F, 0.5F, 0.5F);
+        poseStack.translate(0.0F, -1.501F, 0.0F);
         // Squeezed out of the breach: narrow and drawn out at first, then it fills out.
         float k = state.emerge * state.emerge;
         if (k > 0) {
