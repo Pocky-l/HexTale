@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   essence poured away (far less where stone drinks it), raw crystals bursting, broken rituals, burst lab flasks, burnt
   parchments, Miasma Vent fumes. It lives in the chunk, never heals by itself, and the land around catches a share of
   it ring by ring, so a researcher's home and its surroundings sicken slowly as the research goes on.
+- Water in sick land darkens towards a violet murk; the blight never touches water.
 - The world takes a good deal before anything shows; past that, haze: a lilac veil low over the ground, dark motes
   sinking into the earth, grass, leaves, vines and water losing their colour, stone, sand, gravel and earth turning a
   sick lilac grey, the fog leaning to violet.
