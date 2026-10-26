@@ -231,9 +231,9 @@ public final class StarBook {
             aim(knowledge);
         }
         graphics.enableScissor(skyLeft(), skyTop(), skyLeft() + skyWidth(), skyTop() + skyHeight());
-        boolean lens = tab == Tab.QUESTS && guide.selected() == null && overSky(mouseX, mouseY) && !overTabs(mouseX, mouseY);
+        boolean trail = tab == Tab.QUESTS && guide.selected() == null && overSky(mouseX, mouseY) && !overTabs(mouseX, mouseY);
         Sky.render(graphics, skyLeft(), skyTop(), skyWidth(), skyHeight(), cameraX, cameraY, zoom(),
-                (GuidePage.minX() + GuidePage.maxX()) / 2.0F, (GuidePage.minY() + GuidePage.maxY()) / 2.0F, lens, mouseX, mouseY, now);
+                (GuidePage.minX() + GuidePage.maxX()) / 2.0F, (GuidePage.minY() + GuidePage.maxY()) / 2.0F, trail, mouseX, mouseY, now);
         if (tab == Tab.RUNES) {
             List<FormattedCharSequence> tooltip = runes.render(graphics, knowledge, mouseX, mouseY, now);
             PixelArt.flush(graphics);

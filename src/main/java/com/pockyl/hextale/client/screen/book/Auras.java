@@ -108,10 +108,13 @@ final class Auras {
      */
     private static void voidCorona(GuiGraphicsExtractor graphics, int x, int y, int size, long now, int seed) {
         float anger = Blight.anger(now, seed);
+        // A plum darkness, widest and faintest outside, its outer edge smouldering magenta so it reads on the night sky.
+        PixelArt.disc(graphics, x, y, size + 54, PixelArt.argb(Blight.GLOW, 0.04F + 0.06F * anger), 0);
         for (int ring = 0; ring < 5; ring++) {
-            PixelArt.disc(graphics, x, y, size + 14 + ring * 9, PixelArt.argb(0x050208, 0.3F - ring * 0.05F), 0);
+            PixelArt.disc(graphics, x, y, size + 50 - ring * 9, PixelArt.argb(ring < 3 ? 0x2C0A26 : 0x14040F, 0.3F + ring * 0.04F), 0);
         }
-        PixelArt.discRing(graphics, x, y, size + 12, PixelArt.argb(Blight.GLOW, 0.12F + 0.3F * anger));
+        PixelArt.discRing(graphics, x, y, size + 50, PixelArt.argb(Blight.GLOW, 0.1F + 0.2F * anger));
+        PixelArt.discRing(graphics, x, y, size + 12, PixelArt.argb(Blight.GLOW, 0.16F + 0.3F * anger));
         for (int i = 0; i < 9; i++) {
             // Drawn in: from far out to the rim, turning as they fall.
             float t = ((now / 2400.0F) + i / 9.0F + seed * 0.13F) % 1;

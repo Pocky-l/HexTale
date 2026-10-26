@@ -103,7 +103,8 @@ final class MarkArrows {
         int cy = Math.round(f.cy());
         if (region == Region.VOID) {
             // The Void swallows the light around its thorn and throbs red through the dark.
-            PixelArt.disc(graphics, cx, cy, 30, PixelArt.argb(0x0A040A, 0.6F), 0);
+            PixelArt.disc(graphics, cx, cy, 32, PixelArt.argb(Blight.GLOW, 0.08F + 0.08F * anger), 0);
+            PixelArt.disc(graphics, cx, cy, 30, PixelArt.argb(0x2C0A26, 0.7F), 0);
             PixelArt.disc(graphics, cx, cy, 24, PixelArt.argb(Blight.ANGRY, (lit ? 0.16F : 0.08F) + 0.16F * anger), 0);
             PixelArt.disc(graphics, cx, cy, 16, PixelArt.argb(Blight.ANGRY, 0.06F + 0.1F * anger), 0);
             return;

@@ -32,6 +32,9 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModParticles;
@@ -238,6 +241,53 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
             level.addParticle(ModParticles.vapour(ModParticles.SMOKE), x, pos.getY() + 1.02, z, (random.nextDouble() - 0.5) * 0.01, 0.03,
                     (random.nextDouble() - 0.5) * 0.01);
         }
+    }
+
+    /** The parts of the model that look the same whichever way it faces: base, dish, flask, ring, neck and vent. */
+    private static final VoxelShape BODY = Shapes.or(
+            Block.box(3, 0, 2, 13, 1, 14), Block.box(2, 0, 3, 14, 1, 13),
+            Block.box(5, 1, 5, 11, 2, 11),
+            Block.box(7, 2, 7, 9, 4, 9),
+            Block.box(5, 4, 5, 11, 5, 11),
+            Block.box(4, 5, 4, 12, 6, 12),
+            Block.box(4, 6, 3, 12, 11, 13), Block.box(3, 6, 4, 13, 11, 12),
+            Block.box(5, 11, 5, 11, 12, 11),
+            Block.box(6, 12, 6, 10, 14, 10),
+            Block.box(7, 14, 7, 9, 15, 9),
+            Block.box(6, 15, 6, 10, 16, 10));
+    private static final Map<BlockState, VoxelShape> SHAPES = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** The block's outline and collision: the flask on its stand and the joints of the open sides, not a full cube. */
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return SHAPES.computeIfAbsent(state, SeparatorBlock::shapeOf);
+    }
+
+    private static VoxelShape shapeOf(BlockState state) {
+        // The stand's rod sits at the back left of a separator facing north.
+        VoxelShape shape = Shapes.or(BODY, turned(3, 1, 12, 4, 11, 13, state.getValue(FACING)));
+        for (Map.Entry<Direction, EnumProperty<PortMode>> look : LOOKS.entrySet()) {
+            Direction face = look.getKey();
+            // Joint boxes as on the north face, like the joint models.
+            shape = switch (state.getValue(look.getValue())) {
+                case NONE -> shape;
+                case INLET -> Shapes.or(shape, turned(7, 7, 0, 9, 9, 3, face));
+                case PRODUCT -> Shapes.or(shape, turned(7, 7, 1, 9, 9, 3, face), turned(6, 6, 0, 10, 10, 1, face));
+                case WASTE -> Shapes.or(shape, turned(7, 7, 1, 9, 9, 3, face), turned(6, 6, 0, 10, 10, 1, face),
+                        turned(7, 10, 0, 9, 11, 1, face));
+            };
+        }
+        return shape;
+    }
+
+    /** A box given as it lies for the north face (pixels), turned about the block's middle to {@code face}. */
+    private static VoxelShape turned(double x0, double y0, double z0, double x1, double y1, double z1, Direction face) {
+        return switch (face) {
+            case EAST -> Block.box(16 - z1, y0, x0, 16 - z0, y1, x1);
+            case SOUTH -> Block.box(16 - x1, y0, 16 - z1, 16 - x0, y1, 16 - z0);
+            case WEST -> Block.box(z0, y0, 16 - x1, z1, y1, 16 - x0);
+            default -> Block.box(x0, y0, z0, x1, y1, z1);
+        };
     }
 
     @Override

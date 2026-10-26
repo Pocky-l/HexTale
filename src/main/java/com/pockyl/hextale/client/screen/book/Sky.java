@@ -16,17 +16,22 @@ import com.pockyl.hextale.rune.Essence;
  * in faint gold ink - great circles with ticks turning slowly, meridians, a compass rose at the guide's heart and the
  * nine primal signs on the middle circle like a zodiac; small constellations joined by dotted lines; three layers of
  * twinkling stars, the brightest with crossed glints; a falling star now and then; warm motes of dust drifting up as in
- * lamplight; and a darker rim. Under the mouse a hextech lens wakes: a hexagon lattice lit around the cursor, fading
- * away from it, the stars close to it brighter.
+ * lamplight; and a darker rim. The mouse leaves a short trail of star dust as it moves, gone a moment later, and the
+ * stars close to it shine a little brighter.
  */
 final class Sky {
     private static final Identifier COSMOS = Hextale.id("textures/gui/cosmos.png");
     private static final int COSMOS_SIZE = 256;
     private static final int INK = 0xE0B85A;
-    /** How far from the mouse the hextech lens reaches. */
-    private static final int LENS = 64;
-    /** The lattice's hexagon size (centre to corner) in map units. */
-    private static final float HEX = 13;
+    /** How far from the mouse the stars shine brighter. */
+    private static final int NEAR = 40;
+    /** How long a speck of the mouse's star dust lives, milliseconds. */
+    private static final int DUST_LIFE = 650;
+    /** The mouse's star dust: x, y, birth time and a seed per speck, oldest overwritten first. */
+    private static final float[] DUST = new float[48 * 4];
+    private static int dustNext;
+    private static float lastMouseX = Float.NaN;
+    private static float lastMouseY = Float.NaN;
 
     private final int x0;
     private final int y0;
@@ -50,23 +55,21 @@ final class Sky {
 
     /**
      * Draws the sky into the rectangle (the caller clips to it). {@code chartX/Y} is the map point the chart is centred
-     * on; the lens follows the mouse when {@code lens} is set.
+     * on; the mouse leaves its star dust when {@code trail} is set.
      */
     static void render(GuiGraphicsExtractor graphics, int x0, int y0, int w, int h, float cameraX, float cameraY, float zoom,
-                       float chartX, float chartY, boolean lens, int mouseX, int mouseY, long now) {
+                       float chartX, float chartY, boolean trail, int mouseX, int mouseY, long now) {
         Sky sky = new Sky(x0, y0, w, h, cameraX, cameraY, zoom, now);
         sky.night(graphics);
         sky.nebula(graphics);
         sky.milkyWay(graphics);
         sky.chart(graphics, chartX, chartY);
         sky.constellations(graphics);
-        sky.stars(graphics, lens, mouseX, mouseY);
-        if (lens) {
-            sky.lens(graphics, mouseX, mouseY);
-        }
+        sky.stars(graphics, trail, mouseX, mouseY);
         sky.fallingStar(graphics);
         sky.motes(graphics);
         sky.rim(graphics);
+        sky.dust(graphics, trail, mouseX, mouseY);
     }
 
     /** A deep night: blue at the top, a warm plum towards the bottom. */
@@ -253,8 +256,8 @@ final class Sky {
         }
     }
 
-    /** Three layers of small stars at their own depths, twinkling; near the lens they shine brighter. */
-    private void stars(GuiGraphicsExtractor graphics, boolean lens, int mouseX, int mouseY) {
+    /** Three layers of small stars at their own depths, twinkling; near the mouse they shine a little brighter. */
+    private void stars(GuiGraphicsExtractor graphics, boolean near, int mouseX, int mouseY) {
         float[] speeds = {0.12F, 0.3F, 0.55F};
         int[] counts = {90, 60, 34};
         for (int layer = 0; layer < speeds.length; layer++) {
@@ -273,9 +276,9 @@ final class Sky {
                 long kind = hash(seed + 5) % 7;
                 int tint = layer == 2 ? 0xFFF6E0 : kind == 0 ? 0xB8C8FF : kind == 1 ? 0xFFD8B0 : 0xE0D8F0;
                 float alpha = (0.25F + 0.25F * layer) * twinkle;
-                if (lens) {
+                if (near) {
                     float d = Mth.length(x0 + sx - mouseX, y0 + sy - mouseY);
-                    alpha = Math.min(1, alpha * (1 + 1.4F * Math.max(0, 1 - d / LENS)));
+                    alpha = Math.min(1, alpha * (1 + 0.8F * Math.max(0, 1 - d / NEAR)));
                 }
                 boolean great = layer == 2 && hash(seed + 11) % 4 == 0;
                 star(graphics, x0 + sx, y0 + sy, tint, alpha, great);
@@ -307,57 +310,52 @@ final class Sky {
     }
 
     /**
-     * The hextech lens: a faint cyan glow under the mouse and the lattice of hexagons that the guide is laid on, lit
-     * around the cursor and fading away from it. The lattice moves with the map.
+     * Star dust off the mouse: while it moves, small specks are left along its way, twinkle and drift down a little as they
+     * fade, gone in well under a second. A mouse at rest leaves nothing.
      */
-    private void lens(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        float breath = 0.5F + 0.5F * Mth.sin(now / 900.0F);
-        for (int ring = 0; ring < 4; ring++) {
-            PixelArt.disc(graphics, mouseX, mouseY, LENS * 2 - ring * 26, PixelArt.argb(0x5CC8F2, 0.018F + 0.006F * breath), 0);
+    private void dust(GuiGraphicsExtractor graphics, boolean trail, int mouseX, int mouseY) {
+        if (!trail) {
+            lastMouseX = Float.NaN;
+        } else {
+            if (!Float.isNaN(lastMouseX)) {
+                float dx = mouseX - lastMouseX;
+                float dy = mouseY - lastMouseY;
+                int specks = Math.min(6, (int) (Mth.length(dx, dy) / 5));
+                for (int i = 1; i <= specks; i++) {
+                    float k = (float) i / specks;
+                    int at = dustNext * 4;
+                    DUST[at] = lastMouseX + dx * k;
+                    DUST[at + 1] = lastMouseY + dy * k;
+                    DUST[at + 2] = now % 1_000_000;
+                    DUST[at + 3] = hash(now + i * 7919L) % 1000;
+                    dustNext = (dustNext + 1) % (DUST.length / 4);
+                }
+                if (specks > 0 || Float.isNaN(lastMouseX)) {
+                    lastMouseX = mouseX;
+                    lastMouseY = mouseY;
+                }
+            } else {
+                lastMouseX = mouseX;
+                lastMouseY = mouseY;
+            }
         }
-        float size = HEX * zoom;
-        float mx = (mouseX - x0 - w / 2.0F) / zoom + cameraX;
-        float my = (mouseY - y0 - h / 2.0F) / zoom + cameraY;
-        // Pointy-top hexagons: columns sqrt(3) * size apart, rows 1.5 * size apart, every other row shifted half a column.
-        float colStep = Mth.sqrt(3) * HEX;
-        float rowStep = 1.5F * HEX;
-        int reachRows = (int) Math.ceil(LENS / zoom / rowStep) + 1;
-        int reachCols = (int) Math.ceil(LENS / zoom / colStep) + 1;
-        int centreRow = Math.round(my / rowStep);
-        int centreCol = Math.round(mx / colStep);
-        float wave = now / 700.0F;
-        for (int row = centreRow - reachRows; row <= centreRow + reachRows; row++) {
-            for (int col = centreCol - reachCols; col <= centreCol + reachCols; col++) {
-                float hx = (col + (Math.floorMod(row, 2) == 1 ? 0.5F : 0)) * colStep;
-                float hy = row * rowStep;
-                float sx = x0 + w / 2.0F + (hx - cameraX) * zoom;
-                float sy = y0 + h / 2.0F + (hy - cameraY) * zoom;
-                if (Mth.length(sx - mouseX, sy - mouseY) > LENS + size) {
-                    continue;
-                }
-                // Each hexagon draws its three upper edges, so shared edges are drawn once.
-                for (int e = 3; e < 6; e++) {
-                    float a0 = Mth.PI / 3 * e - Mth.HALF_PI;
-                    float a1 = a0 + Mth.PI / 3;
-                    float ax = sx + Mth.cos(a0) * size;
-                    float ay = sy + Mth.sin(a0) * size;
-                    float bx = sx + Mth.cos(a1) * size;
-                    float by = sy + Mth.sin(a1) * size;
-                    int steps = Math.max(1, Math.round(size));
-                    for (int s = 0; s < steps; s++) {
-                        float k = (float) s / steps;
-                        float px = ax + (bx - ax) * k;
-                        float py = ay + (by - ay) * k;
-                        float d = Mth.length(px - mouseX, py - mouseY) / LENS;
-                        if (d >= 1) {
-                            continue;
-                        }
-                        // A ripple runs out from the cursor along the lattice.
-                        float ripple = 0.5F + 0.5F * Mth.sin(d * 9 - wave * 3);
-                        float alpha = (1 - d) * (1 - d) * (0.16F + 0.12F * ripple);
-                        dot(graphics, px, py, PixelArt.argb(d < 0.3F ? 0xBFF0FF : 0x5CC8F2, alpha));
-                    }
-                }
+        for (int i = 0; i < DUST.length; i += 4) {
+            float age = (now % 1_000_000 - DUST[i + 2]) / DUST_LIFE;
+            if (age < 0 || age >= 1) {
+                continue;
+            }
+            float seed = DUST[i + 3];
+            float fade = (1 - age) * (1 - age);
+            float x = DUST[i] + Mth.sin(seed + age * 3) * 2 * age;
+            float y = DUST[i + 1] + age * 5;
+            int tint = seed % 4 < 1 ? 0xBFE6FF : 0xFFE4A8;
+            float twinkle = 0.7F + 0.3F * Mth.sin(age * 20 + seed);
+            int px = Mth.floor(x);
+            int py = Mth.floor(y);
+            if (age < 0.35F && seed % 3 < 1) {
+                star(graphics, px, py, tint, 0.75F * fade * twinkle, true);
+            } else {
+                dot(graphics, x, y, PixelArt.argb(tint, 0.7F * fade * twinkle));
             }
         }
     }

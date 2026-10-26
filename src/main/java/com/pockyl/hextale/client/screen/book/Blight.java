@@ -26,6 +26,10 @@ final class Blight {
     private static final int THORN = 0x2A1024;
     private static final int THORN_LIGHT = 0x5A2048;
     private static final int SMOKE = 0x0A040A;
+    /** The dark aura round the branch's steps: a deep plum that still reads against the night sky. */
+    private static final int AURA = 0x2C0A26;
+    private static final int AURA_DEEP = 0x14040F;
+    private static final int SMOKE_PLUM = 0x3A1232;
     private static final int VEIN = 0x3A1630;
     private static final int VEIN_LIGHT = 0x7A2A5C;
 
@@ -50,13 +54,26 @@ final class Blight {
     }
 
     /**
-     * Behind the medallion: the sky around it goes black, an angry red glow throbs around the rim (flaring when the Void
-     * does) and thick dark smoke seeps off it, rising and thinning.
+     * Behind the medallion: a dark plum aura swallows the sky around it, its edge smouldering magenta, an angry red glow
+     * throbs around the rim (flaring when the Void does) and thick dark smoke seeps off it, rising and thinning.
      */
     static void behind(GuiGraphicsExtractor graphics, int x, int y, int size, boolean done, long now, int seed) {
         float anger = anger(now, seed);
-        for (int ring = 0; ring < 4; ring++) {
-            PixelArt.disc(graphics, x, y, size + 12 + ring * 9, PixelArt.argb(SMOKE, 0.5F - ring * 0.1F), 0);
+        // The aura's edge first, so the darkness inside it has a lit rim against the sky.
+        PixelArt.disc(graphics, x, y, size + 44, PixelArt.argb(GLOW, 0.05F + 0.06F * anger), 0);
+        PixelArt.disc(graphics, x, y, size + 40, PixelArt.argb(AURA, 0.5F), 0);
+        for (int ring = 0; ring < 3; ring++) {
+            PixelArt.disc(graphics, x, y, size + 30 - ring * 9, PixelArt.argb(ring == 2 ? AURA_DEEP : AURA, 0.3F + ring * 0.1F), 0);
+        }
+        // The edge wavers: a ragged ring of darker and brighter pixels turning slowly.
+        PixelArt.Circle edge = PixelArt.Circle.of(size + 40);
+        float turn = now / 3000.0F + seed;
+        for (int i = 0; i < edge.pixels.length; i++) {
+            float wave = Mth.sin(edge.angles[i] * 5 + turn) * Mth.sin(edge.angles[i] * 3 - turn * 1.3F);
+            if (wave > 0.25F) {
+                int[] p = edge.pixels[i];
+                PixelArt.fill(graphics, x + p[0], y + p[1], x + p[0] + 1, y + p[1] + 1, PixelArt.argb(GLOW, (0.18F + 0.25F * anger) * wave));
+            }
         }
         float glow = (done ? 0.12F : 0.2F) + (done ? 0.3F : 0.5F) * anger;
         for (int ring = 0; ring < 3; ring++) {
@@ -76,7 +93,7 @@ final class Blight {
             float t = ((now / 2800.0F) + k / 6.0F + seed * 0.17F) % 1;
             int px = x + Math.round(Mth.sin(t * 4 + k * 1.9F + seed) * size * 0.4F);
             int py = y - Math.round(size * 0.25F + t * size * 1.1F);
-            PixelArt.disc(graphics, px, py, 6 + Math.round(t * 9), PixelArt.argb(SMOKE, 0.75F * (1 - t)), 0);
+            PixelArt.disc(graphics, px, py, 6 + Math.round(t * 9), PixelArt.argb(SMOKE_PLUM, 0.75F * (1 - t)), 0);
             if (k % 2 == 0) {
                 // A spark of the Void caught in the smoke.
                 PixelArt.fill(graphics, px, py, px + 1, py + 1, PixelArt.argb(GLOW, 0.8F * (1 - t) * (1 - t)));
@@ -173,13 +190,13 @@ final class Blight {
         }
     }
 
-    /** The sky around the branch's steps darkens, with only a breath of magenta in it, instead of a coloured haze. */
+    /** The sky around the branch's steps darkens into plum, with a breath of magenta in it, instead of a coloured haze. */
     static void haze(GuiGraphicsExtractor graphics, Quest quest) {
         for (int ring = 0; ring < 6; ring++) {
             int width = 210 - ring * 28;
-            PixelArt.disc(graphics, quest.x(), quest.y(), width, PixelArt.argb(SMOKE, 0.09F), 0);
+            PixelArt.disc(graphics, quest.x(), quest.y(), width, PixelArt.argb(ring < 2 ? AURA : SMOKE, 0.08F), 0);
         }
-        PixelArt.disc(graphics, quest.x(), quest.y(), 120, PixelArt.argb(GLOW, 0.012F), 0);
+        PixelArt.disc(graphics, quest.x(), quest.y(), 130, PixelArt.argb(GLOW, 0.022F), 0);
     }
 
     private static long hash(long value) {

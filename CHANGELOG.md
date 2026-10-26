@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (in the plans still being written) hold a breach in place and heal the land around it. What happens on the way is
   written down as it happens - a mite latching on, a breach tearing open - each with the researcher's thoughts.
 - The Void's steps look sick: dark cracked medallions with an angry magenta glow that flares out of rhythm, writhing
-  thorns, dark smoke and a black sky around them, veins with a throb instead of lines; the breach and the first sign of
+  thorns, dark smoke and a deep plum darkness around them with a smouldering magenta edge, veins with a throb instead of lines; the breach and the first sign of
   the haze wear a corona that swallows the light. Their names in the diary and in chat are in the Void's own ink, and a
   step of the Void done sounds of its own: a slow pen stroke over a dark breath.
 - The diary points at what is new: an arrow on the edge of the page, or over the step when it is in view, for every
@@ -30,11 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The diary's sky is a researcher's star chart now: a deep night from blue to warm plum, two veils of nebula at their
   own depths, a band of milky light, great circles in faint gold ink with ticks turning slowly, meridians, a compass
   rose and the nine primal signs round the chart, small constellations, stars with crossed glints, a falling star now
-  and then, warm motes of dust drifting up and a darker rim. Under the mouse a hextech lens wakes: a lattice of
-  hexagons lights up around the cursor with a ripple, and the stars near it shine brighter.
+  and then, warm motes of dust drifting up and a darker rim. The mouse leaves a short trail of star dust as it moves,
+  and the stars near it shine a little brighter.
 - A new Separator has no pipe fittings sticking out any more. A side opens by itself when something is set right
   beside it: a pipe or an alembic opens an inlet, a jar with essence in it an inlet too, an empty jar the concentrate
   outlet (a second empty jar the rest outlet). Take it away and the side shuts again; a side shut by hand stays shut.
+- The Separator's outline and collision follow its flask, stand and fittings instead of a full block.
 - Essences are redrawn as proper pixel art: crisp edges and a few clean shades, like Minecraft's own icons, for the
   essence items and for the essence signs in screens, over the crucible and on jar stickers.
 - The Pocky Mods creative tab lists hextale's items in groups: research, the workshop, the altar, essence works,
