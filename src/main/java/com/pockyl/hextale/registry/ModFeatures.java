@@ -18,6 +18,8 @@ public final class ModFeatures {
             FEATURE_TYPES.register("magic_tree", () -> MagicTreeFeature.CODEC);
     public static final DeferredHolder<MapCodec<? extends Feature>, MapCodec<com.pockyl.hextale.world.BloomCaveFeature>> BLOOM_CAVES =
             FEATURE_TYPES.register("bloom_caves", () -> com.pockyl.hextale.world.BloomCaveFeature.CODEC);
+    public static final DeferredHolder<MapCodec<? extends Feature>, MapCodec<com.pockyl.hextale.world.StruckGeodeFeature>> STRUCK_GEODE =
+            FEATURE_TYPES.register("struck_geode", () -> com.pockyl.hextale.world.StruckGeodeFeature.CODEC);
 
     private ModFeatures() {
     }

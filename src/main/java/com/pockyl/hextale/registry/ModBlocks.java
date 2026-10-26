@@ -104,6 +104,40 @@ public final class ModBlocks {
     public static final DeferredBlock<Block> CHISELED_MAGIC_BRICKS = BLOCKS.registerBlock("chiseled_magic_bricks", Block::new,
             ModBlocks::brickProperties);
 
+    // Struck geodes: an amethyst geode lightning hit long ago. Its amethyst partly turned into dormant hextech, its calcite
+    // shell scorched, and the bolt fused the ground on its way down into fulgurite.
+    public static final DeferredBlock<com.pockyl.hextale.block.DormantHextechBlock> DORMANT_HEXTECH = BLOCKS.registerBlock("dormant_hextech",
+            com.pockyl.hextale.block.DormantHextechBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).strength(1.5F).sound(SoundType.AMETHYST)
+                    .requiresCorrectToolForDrops().lightLevel(state -> 3));
+    /** Sand and earth fused into rough glass where a bolt went into the ground. */
+    public static final DeferredBlock<Block> FULGURITE = BLOCKS.registerBlock("fulgurite", Block::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).instrument(NoteBlockInstrument.BASEDRUM)
+                    .requiresCorrectToolForDrops().strength(1.2F, 3.0F).sound(SoundType.TUFF));
+    /** Fulgurite melted again: smoky amber glass with the bolt's thread still inside. */
+    public static final DeferredBlock<TransparentBlock> FULGURITE_GLASS = BLOCKS.registerBlock("fulgurite_glass", TransparentBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(0.6F).sound(SoundType.GLASS).noOcclusion()
+                    .isValidSpawn((state, level, pos, type) -> false).isRedstoneConductor((state, level, pos) -> false)
+                    .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos, box) -> false));
+    public static final DeferredBlock<IronBarsBlock> FULGURITE_GLASS_PANE = BLOCKS.registerBlock("fulgurite_glass_pane", IronBarsBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(0.3F).sound(SoundType.GLASS).noOcclusion());
+    // Scorched calcite: the geode's shell after the strike; a set like the magic stone (polished, bricks, chiseled).
+    public static final DeferredBlock<Block> SCORCHED_CALCITE = BLOCKS.registerBlock("scorched_calcite", Block::new,
+            () -> scorchedCalciteProperties().sound(SoundType.CALCITE));
+    public static final DeferredBlock<Block> POLISHED_SCORCHED_CALCITE = BLOCKS.registerBlock("polished_scorched_calcite", Block::new,
+            () -> scorchedCalciteProperties().sound(SoundType.POLISHED_TUFF));
+    public static final DeferredBlock<Block> SCORCHED_CALCITE_BRICKS = BLOCKS.registerBlock("scorched_calcite_bricks", Block::new,
+            ModBlocks::scorchedBrickProperties);
+    public static final DeferredBlock<StairBlock> SCORCHED_CALCITE_BRICK_STAIRS = BLOCKS.registerBlock("scorched_calcite_brick_stairs",
+            properties -> new StairBlock(SCORCHED_CALCITE_BRICKS.get().defaultBlockState(), properties), ModBlocks::scorchedBrickProperties);
+    public static final DeferredBlock<SlabBlock> SCORCHED_CALCITE_BRICK_SLAB = BLOCKS.registerBlock("scorched_calcite_brick_slab",
+            SlabBlock::new, ModBlocks::scorchedBrickProperties);
+    public static final DeferredBlock<WallBlock> SCORCHED_CALCITE_BRICK_WALL = BLOCKS.registerBlock("scorched_calcite_brick_wall",
+            WallBlock::new, () -> scorchedBrickProperties().forceSolidOn());
+    /** Polished scorched calcite with a bolt carved into it. */
+    public static final DeferredBlock<Block> CHISELED_SCORCHED_CALCITE = BLOCKS.registerBlock("chiseled_scorched_calcite", Block::new,
+            ModBlocks::scorchedBrickProperties);
+
     public static final DeferredBlock<HextechAltarBlock> HEXTECH_ALTAR = BLOCKS.registerBlock("hextech_altar", HextechAltarBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(3.5F, 9.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 6));
@@ -466,6 +500,15 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties fireBrickProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.MUD_BRICKS);
+    }
+
+    private static BlockBehaviour.Properties scorchedCalciteProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_WHITE).instrument(NoteBlockInstrument.BASEDRUM)
+                .requiresCorrectToolForDrops().strength(1.0F, 4.0F);
+    }
+
+    private static BlockBehaviour.Properties scorchedBrickProperties() {
+        return scorchedCalciteProperties().strength(1.5F, 6.0F).sound(SoundType.TUFF_BRICKS);
     }
 
     private static BlockBehaviour.Properties brickProperties() {

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "SS",
+    "SS"
+  ],
+  "key": {
+    "S": "hextale:polished_scorched_calcite"
+  },
+  "result": {
+    "id": "hextale:scorched_calcite_bricks",
+    "count": 4
+  }
+}

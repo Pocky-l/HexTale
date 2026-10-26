@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "hextale:polished_scorched_calcite",
+  "result": {
+    "id": "hextale:scorched_calcite_brick_stairs",
+    "count": 1
+  }
+}

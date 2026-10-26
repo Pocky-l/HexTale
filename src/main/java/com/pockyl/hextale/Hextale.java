@@ -192,6 +192,7 @@ public final class Hextale {
         // Ores and storage blocks.
         output.accept(ModItems.SPHALERITE_ORE);
         output.accept(ModItems.DEEPSLATE_SPHALERITE_ORE);
+        output.accept(ModItems.DORMANT_HEXTECH);
         output.accept(ModItems.RAW_ZINC_BLOCK);
         output.accept(ModItems.ZINC_BLOCK);
         output.accept(ModItems.BRASS_BLOCK);
@@ -207,6 +208,16 @@ public final class Hextale {
         output.accept(ModItems.MAGIC_BRICK_SLAB);
         output.accept(ModItems.MAGIC_BRICK_WALL);
         output.accept(ModItems.CHISELED_MAGIC_BRICKS);
+        output.accept(ModItems.SCORCHED_CALCITE);
+        output.accept(ModItems.POLISHED_SCORCHED_CALCITE);
+        output.accept(ModItems.SCORCHED_CALCITE_BRICKS);
+        output.accept(ModItems.SCORCHED_CALCITE_BRICK_STAIRS);
+        output.accept(ModItems.SCORCHED_CALCITE_BRICK_SLAB);
+        output.accept(ModItems.SCORCHED_CALCITE_BRICK_WALL);
+        output.accept(ModItems.CHISELED_SCORCHED_CALCITE);
+        output.accept(ModItems.FULGURITE);
+        output.accept(ModItems.FULGURITE_GLASS);
+        output.accept(ModItems.FULGURITE_GLASS_PANE);
         output.accept(ModItems.MAGIC_LOG);
         output.accept(ModItems.MAGIC_WOOD);
         output.accept(ModItems.STRIPPED_MAGIC_LOG);
@@ -289,6 +300,8 @@ public final class Hextale {
             event.accept(ModItems.HOLLOWBLOOM);
             event.accept(ModItems.SPHALERITE_ORE);
             event.accept(ModItems.DEEPSLATE_SPHALERITE_ORE);
+            event.accept(ModItems.DORMANT_HEXTECH);
+            event.accept(ModItems.FULGURITE);
             event.accept(ModItems.RAW_ZINC_BLOCK);
         } else if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(ModItems.HEX_WORKBENCH);
@@ -309,6 +322,13 @@ public final class Hextale {
             event.accept(ModItems.MAGIC_BRICK_SLAB);
             event.accept(ModItems.MAGIC_BRICK_WALL);
             event.accept(ModItems.CHISELED_MAGIC_BRICKS);
+            event.accept(ModItems.SCORCHED_CALCITE);
+            event.accept(ModItems.POLISHED_SCORCHED_CALCITE);
+            event.accept(ModItems.SCORCHED_CALCITE_BRICKS);
+            event.accept(ModItems.SCORCHED_CALCITE_BRICK_STAIRS);
+            event.accept(ModItems.SCORCHED_CALCITE_BRICK_SLAB);
+            event.accept(ModItems.SCORCHED_CALCITE_BRICK_WALL);
+            event.accept(ModItems.CHISELED_SCORCHED_CALCITE);
             event.accept(ModItems.FIRE_BRICKS);
             event.accept(ModItems.FIRE_BRICK_STAIRS);
             event.accept(ModItems.FIRE_BRICK_SLAB);

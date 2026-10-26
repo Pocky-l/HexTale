@@ -21,7 +21,9 @@
 I always thought amethyst was good for nothing but spyglasses. Then, one stormy night, I set a lightning rod on an
 amethyst block - and the strike shattered it into humming orbs of **raw hextech**, the spark running on through every
 crystal around. I learned the hard way that raw hextech is volatile: one orb slipped from my hands on a cliff and burst
-at my feet.
+at my feet. Later I found that some storm had done it long before me: under **glassy scars of fulgurite** that
+branch out of the ground like frozen lightning lie **struck geodes**, their amethyst gone cold and blue with dormant
+hextech.
 
 Its dust turned out to be the key. A pinch of it **woke my crafting table, furnace and cauldron**: the Hex Workbench now
 runs on crystal charge, the Hex Furnace melts brass and hexsteel, and at the **lapidary** I cut raw orbs into true
@@ -72,7 +74,7 @@ still blank: plans for chemtech, shimmer, the hexcore and the Void are waiting t
 ## Crafting
 
 Start with the **Researcher's Diary** (a book, an amethyst shard and a feather on a crafting table) and a lightning rod
-on an amethyst block. The diary shows every next step and its recipe. In creative mode all items are in the
+on an amethyst block - or a pickaxe and a glassy scar in the ground. The diary shows every next step and its recipe. In creative mode all items are in the
 **Pocky Mods** tab.
 
 ## Configuration

@@ -4,6 +4,31 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+Glassy scars: the way into hextech no longer waits for a storm.
+
+### Added
+- Struck geodes: here and there an amethyst geode lies a few blocks under the ground where lightning hit it long ago.
+  On the surface it gives itself away with a scar of fulgurite - branches of glassy, fused earth running out of a
+  small pit like frozen lightning. Under the pit a fulgurite channel goes down into the hollow, and around the point
+  where the bolt broke in the amethyst has turned into Dormant Hextech.
+- Dormant Hextech: cold blue amethyst that keeps a faint charge - sparks crawl over it now and then with a quiet
+  crystal hum. A pickaxe breaks it into unstable hextech orbs (Fortune gives more, Silk Touch keeps the block), and a
+  lightning rod's strike wakes it like amethyst.
+- Fulgurite: earth and sand fused into rough glass. Lightning that goes into sand fuses a short column of it, so it
+  can be found after any storm too. Smelted, it clears into Fulgurite Glass (smoky amber glass with the bolt's thread
+  inside) and its panes.
+- Scorched Calcite, the struck geode's shell, with a building set: polished, bricks with stairs, slab and wall, and a
+  chiseled block with a carved bolt. Calcite smelted in a furnace scorches too.
+- A diary step "Glassy Scars" next to the lightning rod's: a second road to the first hextech.
+- A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
+
+### Changed
+- The first research needs no separator any more: a jar of anything that holds a single essence - coal for fire,
+  stone for earth - boiled on its own in the alembic is ink for the desk. The Separator now comes after the first
+  research, as the answer to essences no single thing gives (light never comes alone) and to jars spoiled by one
+  wrong thing. The diary's texts along the way tell that story.
+
 ## [1.2.0] - 2026-10-26
 Two roads of the Void: heal the land, or hold the breach and make it your own.
 

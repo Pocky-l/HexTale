@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#",
+    "#"
+  ],
+  "key": {
+    "#": "hextale:scorched_calcite_brick_slab"
+  },
+  "result": {
+    "id": "hextale:chiseled_scorched_calcite"
+  }
+}
