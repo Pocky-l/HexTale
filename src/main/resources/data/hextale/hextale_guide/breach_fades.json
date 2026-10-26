@@ -1,0 +1,26 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": {
+        "strings": [
+          "breach_fades"
+        ]
+      }
+    }
+  },
+  "parents": [
+    "healed_land",
+    "void_breach"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "breach_faded"
+  },
+  "pos": [
+    -200,
+    820
+  ]
+}

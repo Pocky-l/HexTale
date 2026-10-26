@@ -25,8 +25,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   yourself are never marked.
 - A diary step can stand for a set of things: its icon switches between them, and its page shows a row of them to pick
   from.
+- The land can be healed - if you want to. Nullstone drinks the Thinning out of sick land around it, the dark of the
+  ground rising into the stone as it fills; a few stones where you work keep the haze away. The Hextech Purifier (a
+  low hexagonal well of nullstone under three hexsteel arches, a hextech crystal hanging point down into it) draws the
+  sickest land around it into its crystal, burning light essence from the jars nearby, and the crystal clouds over as
+  it fills. It takes runes: farther reach, a faster draw, a crystal that holds more, and land that bursts into grass
+  and flowers as it heals. Hoppers and pylons feed it crystals from above and take the clouded ones from below; a
+  comparator reads how clouded it is.
+- Clouded Crystal: a hextech crystal full of the Void it drew out of the land.
+- Where the Thinning is drawn back out, the Void's ground heals the way it came, patch by patch: void soil turns back
+  into the earth, sand or gravel under it, void rock into the rock beneath, and the Void's growth withers.
+- A breach on land healed below 1500 starves: it shrinks, its edge gutters, and after a minute it closes for good.
+- Hextech lamps on sick land choke now and then: their light drops for a moment, and on blighted land again and again.
+- The diary's Void branch has its healing road: "Can It Be Healed?", the Hextech Purifier, the Clouded Crystal, "The
+  Land Heals" and "The Breach Fades", each with its own picture.
 
 ### Changed
+- Every solid block of the mod now stands in the world's heightmaps (26.x decides that by a block tag): the blight
+  grows its patches out of the Void's ground again instead of only starting new ones.
 - The diary's sky is a researcher's star chart now: a deep night from blue to warm plum, two veils of nebula at their
   own depths, a band of milky light, great circles in faint gold ink with ticks turning slowly, meridians, a compass
   rose and the nine primal signs round the chart, small constellations, stars with crossed glints, a falling star now

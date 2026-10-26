@@ -40,6 +40,16 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_REPEL = register("the_void.repel");
     /** A voidling pushing out of a breach and dropping into the world. */
     public static final DeferredHolder<SoundEvent, SoundEvent> VOIDLING_EMERGE = register("voidling.emerge");
+    /** Void ground healing back into earth. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> LAND_HEAL = register("land.heal");
+    /** A nullstone drinking the Thinning out of the ground. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> NULLSTONE_DRINK = register("nullstone.drink");
+    /** A Purifier drawing the Thinning out of the land into its crystal. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PURIFIER_DRAW = register("purifier.draw");
+    /** A Purifier's crystal clouding over completely. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PURIFIER_CLOUDED = register("purifier.clouded");
+    /** A hextech lamp's gem choking on sick land. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> LAMP_FLICKER = register("hextech_lamp.flicker");
     /** The Thinning: a distant murmur of the land where the world wore thin. */
     public static final DeferredHolder<SoundEvent, SoundEvent> THINNING_MURMUR = register("thinning.murmur");
     /** The orb recognises a simple rune; played at the element's pitch. */

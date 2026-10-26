@@ -1,0 +1,17 @@
+{
+  "center": "hextale:hextech_gemstone",
+  "pedestals": [
+    "hextale:nullstone",
+    "hextale:nullstone",
+    "hextale:nullstone",
+    "hextale:hexsteel_ingot",
+    "hextale:hexsteel_ingot",
+    "hextale:brass_ingot"
+  ],
+  "essences": {
+    "light": 16,
+    "crystal": 12,
+    "shadow": 8
+  },
+  "result": "hextale:hextech_purifier"
+}

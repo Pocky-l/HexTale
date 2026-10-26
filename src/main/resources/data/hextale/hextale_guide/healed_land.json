@@ -1,0 +1,25 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": {
+        "strings": [
+          "healed_land"
+        ]
+      }
+    }
+  },
+  "parents": [
+    "cleanse_land"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "land_healed"
+  },
+  "pos": [
+    -160,
+    700
+  ]
+}

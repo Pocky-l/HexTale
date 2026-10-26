@@ -26,6 +26,10 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<Float>> THINNING = ATTACHMENT_TYPES.register("thinning",
             () -> AttachmentType.builder(() -> 0F).serialize(com.mojang.serialization.Codec.FLOAT.fieldOf("value"), value -> value > 0).build());
 
+    /** A chunk whose ground the blight took somewhere (see {@link com.pockyl.hextale.thevoid.Healing}); saved while set. */
+    public static final Supplier<AttachmentType<Boolean>> SCARRED = ATTACHMENT_TYPES.register("scarred",
+            () -> AttachmentType.builder(() -> false).serialize(com.mojang.serialization.Codec.BOOL.fieldOf("value"), value -> value).build());
+
     /** Void Mites latched onto a player (see {@link com.pockyl.hextale.thevoid.VoidMites}); not kept through death. */
     public static final Supplier<AttachmentType<Integer>> VOID_MITES = ATTACHMENT_TYPES.register("void_mites",
             () -> AttachmentType.builder(() -> 0).serialize(com.mojang.serialization.Codec.INT.fieldOf("count"), count -> count > 0)

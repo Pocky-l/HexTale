@@ -21,6 +21,22 @@ public final class Quests {
     public static final String VOID_MITE_LATCHED = "void_mite_latched";
     /** A breach tore open near the player (within the distance it is watched from). */
     public static final String BREACH_OPENED = "breach_opened";
+    /** A nullstone near the player drank the Thinning out of sick land. */
+    public static final String NULL_WARD_DRANK = "null_ward_drank";
+    /** Void ground near the player healed back into earth or rock. */
+    public static final String LAND_HEALED = "land_healed";
+    /** A breach near the player starved and closed. */
+    public static final String BREACH_FADED = "breach_faded";
+    /** The anchors near the player closed their ring round a breach. */
+    public static final String BREACH_SUBDUED = "breach_subdued";
+    /** A subdued breach near the player ate essence or things thrown into it. */
+    public static final String VOID_ATE = "void_ate";
+    /** A fed breach near the player pushed out a voidling. */
+    public static final String VOID_BIRTH = "void_birth";
+    /** A subdued breach near the player stands on land healed below the point where it would starve. */
+    public static final String BREACH_KEPT = "breach_kept";
+    /** A voidling near the player grew. */
+    public static final String VOIDLING_GREW = "voidling_grew";
 
     /** The event of a block woken with hextech dust (its id path), for the one who woke it. */
     public static String awakened(String block) {
@@ -101,6 +117,15 @@ public final class Quests {
         }
         if (last != null) {
             done(player, last);
+        }
+    }
+
+    /** Reports an event to every player within {@code radius} blocks of {@code pos}. */
+    public static void fireNear(net.minecraft.server.level.ServerLevel level, net.minecraft.world.phys.Vec3 pos, double radius, String event) {
+        for (ServerPlayer player : level.players()) {
+            if (!player.isSpectator() && player.position().distanceToSqr(pos) <= radius * radius) {
+                fire(player, event);
+            }
         }
     }
 

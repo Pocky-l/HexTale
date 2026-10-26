@@ -848,9 +848,18 @@
   "thinning.murmur": {
     "subtitle": "subtitles.hextale.thinning.murmur",
     "sounds": [
-      {"name": "hextale:thinning_murmur1", "volume": 0.5},
-      {"name": "hextale:thinning_murmur2", "volume": 0.5},
-      {"name": "hextale:thinning_murmur3", "volume": 0.5}
+      {
+        "name": "hextale:thinning_murmur1",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:thinning_murmur2",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:thinning_murmur3",
+        "volume": 0.5
+      }
     ]
   },
   "the_void.hum": {
@@ -882,21 +891,121 @@
   "the_void.omen": {
     "subtitle": "subtitles.hextale.the_void.omen",
     "sounds": [
-      {"name": "hextale:the_void_omen", "volume": 1.0, "attenuation_distance": 72}
+      {
+        "name": "hextale:the_void_omen",
+        "volume": 1.0,
+        "attenuation_distance": 72
+      }
     ]
   },
   "the_void.repel": {
     "subtitle": "subtitles.hextale.the_void.repel",
     "sounds": [
-      {"name": "hextale:the_void_repel1", "volume": 0.8, "attenuation_distance": 20},
-      {"name": "hextale:the_void_repel2", "volume": 0.8, "attenuation_distance": 20}
+      {
+        "name": "hextale:the_void_repel1",
+        "volume": 0.8,
+        "attenuation_distance": 20
+      },
+      {
+        "name": "hextale:the_void_repel2",
+        "volume": 0.8,
+        "attenuation_distance": 20
+      }
     ]
   },
   "voidling.emerge": {
     "subtitle": "subtitles.hextale.voidling.emerge",
     "sounds": [
-      {"name": "hextale:voidling_emerge1", "volume": 0.9, "attenuation_distance": 40},
-      {"name": "hextale:voidling_emerge2", "volume": 0.9, "attenuation_distance": 40}
+      {
+        "name": "hextale:voidling_emerge1",
+        "volume": 0.9,
+        "attenuation_distance": 40
+      },
+      {
+        "name": "hextale:voidling_emerge2",
+        "volume": 0.9,
+        "attenuation_distance": 40
+      }
+    ]
+  },
+  "land.heal": {
+    "subtitle": "subtitles.hextale.land.heal",
+    "sounds": [
+      {
+        "name": "hextale:land_heal1",
+        "volume": 0.6,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "hextale:land_heal2",
+        "volume": 0.6,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "hextale:land_heal3",
+        "volume": 0.6,
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "nullstone.drink": {
+    "subtitle": "subtitles.hextale.nullstone.drink",
+    "sounds": [
+      {
+        "name": "hextale:nullstone_drink1",
+        "volume": 0.5,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "hextale:nullstone_drink2",
+        "volume": 0.5,
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "purifier.draw": {
+    "subtitle": "subtitles.hextale.purifier.draw",
+    "sounds": [
+      {
+        "name": "hextale:purifier_draw1",
+        "volume": 0.5,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "hextale:purifier_draw2",
+        "volume": 0.5,
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "purifier.clouded": {
+    "subtitle": "subtitles.hextale.purifier.clouded",
+    "sounds": [
+      {
+        "name": "hextale:purifier_clouded",
+        "volume": 0.8,
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "hextech_lamp.flicker": {
+    "subtitle": "subtitles.hextale.hextech_lamp.flicker",
+    "sounds": [
+      {
+        "name": "hextale:lamp_flicker1",
+        "volume": 0.45,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "hextale:lamp_flicker2",
+        "volume": 0.45,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "hextale:lamp_flicker3",
+        "volume": 0.45,
+        "attenuation_distance": 16
+      }
     ]
   }
 }

@@ -158,6 +158,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ARC_SPIRE = ITEMS.registerSimpleBlockItem(ModBlocks.ARC_SPIRE,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> RUNE_SHACKLES = ITEMS.registerSimpleBlockItem(ModBlocks.RUNE_SHACKLES);
+    public static final DeferredItem<BlockItem> HEXTECH_PURIFIER = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_PURIFIER,
+            properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> XP_CONDENSER = ITEMS.registerSimpleBlockItem(ModBlocks.XP_CONDENSER,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> MIASMA_VENT = ITEMS.registerSimpleBlockItem(ModBlocks.MIASMA_VENT);
@@ -310,6 +312,9 @@ public final class ModItems {
     /** Dropped by the creatures of the Void: the material of what will be made against it. */
     public static final DeferredItem<com.pockyl.hextale.item.NotedItem> VOID_CHITIN = ITEMS.registerItem("void_chitin",
             com.pockyl.hextale.item.NotedItem::new);
+    /** A hextech crystal clouded through with the Void it drew out of the land (or held a breach with). */
+    public static final DeferredItem<com.pockyl.hextale.item.NotedItem> CLOUDED_CRYSTAL = ITEMS.registerItem("clouded_crystal",
+            properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<BlockItem> POLISHED_NULLSTONE = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_NULLSTONE);
     public static final DeferredItem<BlockItem> NULLSTONE_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.NULLSTONE_BRICKS);
     public static final DeferredItem<BlockItem> CRYSTAL_BATTERY = ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_BATTERY,

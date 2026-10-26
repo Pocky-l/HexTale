@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:hextech_purifier",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:purifier_runes"
+            ],
+            "source": "block_entity"
+          }
+        }
+      ],
+      "rolls": 1
+    }
+  ]
+}

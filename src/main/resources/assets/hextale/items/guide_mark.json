@@ -38,6 +38,20 @@
           "type": "minecraft:model",
           "model": "hextale:item/guide/void_mites"
         }
+      },
+      {
+        "when": "healed_land",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/healed_land"
+        }
+      },
+      {
+        "when": "breach_fades",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/breach_fades"
+        }
       }
     ],
     "fallback": {

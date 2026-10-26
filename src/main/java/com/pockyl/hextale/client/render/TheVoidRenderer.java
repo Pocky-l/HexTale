@@ -54,6 +54,12 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         state.size = breach.size();
         state.seed = breach.seed();
         state.reveal = breach.reveal(partialTick);
+        float starving = breach.starving();
+        if (starving > 0) {
+            // A starving breach shrinks towards its heart and its edge gutters like a flame without air.
+            float gutter = Mth.sin(state.ageInTicks * 0.9F) * Mth.sin(state.ageInTicks * 0.37F + 1.3F);
+            state.reveal *= 1 - starving * (0.3F + 0.18F * Math.max(0, gutter));
+        }
         state.orientation.set(breach.orientation());
         org.joml.Vector3fc push = breach.pushPoint();
         state.push = push == null ? 0 : breach.push(partialTick);

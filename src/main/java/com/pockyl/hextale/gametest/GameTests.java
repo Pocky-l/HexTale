@@ -33,7 +33,7 @@ public final class GameTests {
             RuneWorkGameTests.class, HextechGameTests.class, CraftingGameTests.class, PylonGameTests.class,
             MultiblockGameTests.class, CrucibleGameTests.class, MagicTreeGameTests.class, WhirlReaperGameTests.class, SawmillGameTests.class,
             RuneGiftGameTests.class, ChemGameTests.class, ShimmerGameTests.class, LabGameTests.class,
-            SkypackGameTests.class, VoidGameTests.class, GateGameTests.class, FunnelGameTests.class, SpireGameTests.class, ShackleGameTests.class, CondenserGameTests.class, FoundryGameTests.class, VentGameTests.class, WardGameTests.class, CreativeJarGameTests.class, ThinningGameTests.class, HollowbloomGameTests.class);
+            SkypackGameTests.class, VoidGameTests.class, GateGameTests.class, FunnelGameTests.class, SpireGameTests.class, ShackleGameTests.class, CondenserGameTests.class, FoundryGameTests.class, VentGameTests.class, WardGameTests.class, CreativeJarGameTests.class, ThinningGameTests.class, HollowbloomGameTests.class, HealingGameTests.class);
     private static final DeferredRegister<Consumer<GameTestHelper>> FUNCTIONS = DeferredRegister.create(Registries.TEST_FUNCTION, Hextale.MOD_ID);
 
     private record Test(String name, Method method, HexTest settings) {

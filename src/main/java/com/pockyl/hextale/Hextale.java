@@ -137,6 +137,7 @@ public final class Hextale {
         output.accept(ModItems.XP_CONDENSER);
         output.accept(ModItems.RUNE_SHACKLES);
         output.accept(ModItems.ARC_SPIRE);
+        output.accept(ModItems.HEXTECH_PURIFIER);
         output.accept(ModItems.MIASMA_VENT);
         output.accept(ModItems.FIELD_WARD);
 
@@ -180,6 +181,7 @@ public final class Hextale {
         output.accept(ModItems.ARCANE_CLOTH);
         output.accept(ModItems.REGENERATIVE_SLIME);
         output.accept(ModItems.VOID_CHITIN);
+        output.accept(ModItems.CLOUDED_CRYSTAL);
 
         // Ores and storage blocks.
         output.accept(ModItems.SPHALERITE_ORE);

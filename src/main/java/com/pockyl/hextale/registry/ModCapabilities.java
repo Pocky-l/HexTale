@@ -35,5 +35,6 @@ public final class ModCapabilities {
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CHEM_STILL.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.LAB_BENCH.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PINK_BRAZIER.get(), (brazier, side) -> VanillaContainerWrapper.of(brazier));
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.HEXTECH_PURIFIER.get(), WorldlyContainerWrapper::new);
     }
 }

@@ -1,0 +1,29 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": [
+    "hextale:nullstone",
+    {
+      "id": "hextale:guide_mark",
+      "components": {
+        "minecraft:custom_model_data": {
+          "strings": [
+            "healed_land"
+          ]
+        }
+      }
+    }
+  ],
+  "parents": [
+    "the_thinning",
+    "nullstone"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "null_ward_drank"
+  },
+  "pos": [
+    -130,
+    560
+  ]
+}
