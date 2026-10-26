@@ -1,12 +1,18 @@
 package com.pockyl.hextale.essence;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.level.Level;
 
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
@@ -52,6 +58,61 @@ public class EssenceFlaskItem extends Item {
         return stack;
     }
 
+    /**
+     * A sip of essence: every primal it holds gives its own short gift (fire - no burns, water - breath, earth - a full
+     * belly, air - a soft fall, light - sight in the dark, shadow - unseen, life - healing, metal - quick hands, spark -
+     * light feet), longer the more of it there is. The unknown essence turns the stomach.
+     */
+    @Override
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+        if (!level.isClientSide()) {
+            drink(contents(stack), entity);
+        }
+        return super.finishUsingItem(stack, level, entity);
+    }
+
+    /** Millibuckets of a primal a gift needs. */
+    public static final int GIFT_MIN = 2;
+
+    /** Gives {@code drinker} what a sip of {@code essence} gives; returns how many gifts it gave. */
+    public static int drink(EssenceMix essence, LivingEntity drinker) {
+        double[] primal = new double[Essence.PRIMALS.size()];
+        essence.asMap().forEach((kind, amount) -> {
+            double[] share = kind.composition();
+            for (int i = 0; i < primal.length; i++) {
+                primal[i] += amount * share[i];
+            }
+        });
+        int gifts = 0;
+        for (int i = 0; i < primal.length; i++) {
+            if (primal[i] < GIFT_MIN) {
+                continue;
+            }
+            int ticks = (int) Math.round((15 + primal[i] * 3) * 20);
+            Holder<MobEffect> effect = GIFTS.get(i);
+            if (effect == MobEffects.SATURATION) {
+                drinker.addEffect(new MobEffectInstance(effect, 1 + (int) (primal[i] / 4)));
+            } else {
+                drinker.addEffect(new MobEffectInstance(effect, ticks));
+            }
+            gifts++;
+        }
+        if (essence.unknown() > 0) {
+            drinker.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200 + essence.unknown() * 10));
+            drinker.addEffect(new MobEffectInstance(MobEffects.POISON, 40 + essence.unknown() * 5));
+        }
+        if (drinker.level() instanceof net.minecraft.server.level.ServerLevel server) {
+            server.sendParticles(com.pockyl.hextale.registry.ModParticles.wisp(essence.color()), drinker.getX(), drinker.getY() + 1.2, drinker.getZ(),
+                    10, 0.3, 0.4, 0.3, 0.02);
+        }
+        return gifts;
+    }
+
+    /** The gift of each primal, in {@link Essence#PRIMALS} order. */
+    private static final java.util.List<Holder<MobEffect>> GIFTS = java.util.List.of(MobEffects.FIRE_RESISTANCE, MobEffects.WATER_BREATHING,
+            MobEffects.SATURATION, MobEffects.SLOW_FALLING, MobEffects.NIGHT_VISION, MobEffects.INVISIBILITY, MobEffects.REGENERATION,
+            MobEffects.HASTE, MobEffects.JUMP_BOOST);
+
     @Override
     public Component getName(ItemStack stack) {
         EssenceMix essence = contents(stack);
@@ -74,6 +135,7 @@ public class EssenceFlaskItem extends Item {
         }
         tooltip.accept(essence.describe());
         tooltip.accept(Component.translatable("item.hextale.essence_flask.drops", essence.total(), CAPACITY).withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("item.hextale.essence_flask.drink").withStyle(ChatFormatting.DARK_AQUA));
         if (essence.isUnknown()) {
             tooltip.accept(Component.translatable("item.hextale.essence_flask.unknown.hint").withStyle(ChatFormatting.DARK_GRAY));
         } else if (essence.pureEssence() == null) {

@@ -86,6 +86,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed
+- Bottles of essence can be drunk: every primal in the bottle gives its own short gift - fire: fire resistance,
+  water: water breathing, earth: a full belly, air: slow falling, light: night vision, shadow: invisibility, life:
+  regeneration, metal: haste, spark: jump boost - longer the more of it there is. Unknown essence turns the stomach.
 - The first research needs no separator any more: a jar of anything that holds a single essence - coal for fire,
   stone for earth - boiled on its own in the alembic is ink for the desk. The Separator now comes after the first
   research, as the answer to essences no single thing gives (light never comes alone) and to jars spoiled by one

@@ -264,4 +264,14 @@ public final class GadgetGameTests {
         helper.assertTrue(!com.pockyl.hextale.item.GrappleGauntletItem.pulling(player), "and the pull is over");
         helper.succeed();
     }
+
+    @HexTest
+    public static void aSipOfEssenceGivesItsGift(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        int gifts = com.pockyl.hextale.essence.EssenceFlaskItem.drink(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.FIRE, 16), player);
+        helper.assertTrue(gifts == 1 && player.hasEffect(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE), "fire gives fire resistance");
+        com.pockyl.hextale.essence.EssenceFlaskItem.drink(com.pockyl.hextale.essence.EssenceMix.unknown(8), player);
+        helper.assertTrue(player.hasEffect(net.minecraft.world.effect.MobEffects.NAUSEA), "the unknown essence turns the stomach");
+        helper.succeed();
+    }
 }

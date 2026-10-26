@@ -201,7 +201,9 @@ public final class ModItems {
             properties -> properties.rarity(Rarity.EPIC));
     /** A crafting recipe that uses a bottle of essence (soaking magic stone) gives the glass bottle back. */
     public static final DeferredItem<EssenceFlaskItem> ESSENCE_FLASK = ITEMS.registerItem("essence_flask",
-            properties -> new EssenceFlaskItem(properties.stacksTo(1).craftRemainder(Items.GLASS_BOTTLE)));
+            properties -> new EssenceFlaskItem(properties.stacksTo(1).craftRemainder(Items.GLASS_BOTTLE)
+                    .component(net.minecraft.core.component.DataComponents.CONSUMABLE, net.minecraft.world.item.component.Consumables.DEFAULT_DRINK)
+                    .usingConvertsTo(Items.GLASS_BOTTLE)));
     public static final DeferredItem<Item> BRASS_INGOT = ITEMS.registerSimpleItem("brass_ingot");
     public static final DeferredItem<Item> BRASS_NUGGET = ITEMS.registerSimpleItem("brass_nugget");
     /** Lightning-born: neither fire nor further lightning harms it. */

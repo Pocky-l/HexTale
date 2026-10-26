@@ -646,6 +646,7 @@
   "item.hextale.essence_flask.mixture": "Bottle of Essence",
   "item.hextale.essence_flask.concentrate": "Concentrate: %s",
   "item.hextale.essence_flask.drops": "%s/%s mB",
+  "item.hextale.essence_flask.drink": "Tastes of what it is made of. Fire, light, air - each leaves something behind for a minute.",
   "item.hextale.essence_flask.mixture.hint": "Everything at once, all mixed up. It needs pulling apart.",
   "block.hextale.essence.empty": "Empty",
   "gui.hextale.alembic.heat": "Heat below: boiling",

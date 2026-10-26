@@ -646,6 +646,7 @@
   "item.hextale.essence_flask.mixture": "Пузырёк эссенции",
   "item.hextale.essence_flask.concentrate": "Концентрат: %s",
   "item.hextale.essence_flask.drops": "%s/%s mB",
+  "item.hextale.essence_flask.drink": "На вкус - то, из чего сделано. Огонь, свет, воздух - каждый оставляет что-то на минуту.",
   "item.hextale.essence_flask.mixture.hint": "Всё сразу, всё вперемешку. Надо бы разделить.",
   "block.hextale.essence.empty": "Пусто",
   "gui.hextale.alembic.heat": "Снизу огонь: варится",
