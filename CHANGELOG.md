@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   thorns, dark smoke and a black sky around them, veins with a throb instead of lines; the breach and the first sign of
   the haze wear a corona that swallows the light. Their names in the diary and in chat are in the Void's own ink, and a
   step of the Void done sounds of its own: a slow pen stroke over a dark breath.
+- The diary points at what is new: an arrow on the edge of the page, or over the step when it is in view, for every
+  step that just opened (blue) or was written down by itself because something happened (gold). Arrows that point the
+  same way join into one with a count; a click on one flies the page to its step, and the arrow goes once the mouse has
+  been over the step. Steps you finish yourself are never marked.
 - A diary step can stand for a set of things: its icon switches between them, and its page shows a row of them to pick
   from.
 

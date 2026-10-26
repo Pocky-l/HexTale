@@ -40,10 +40,13 @@ public final class Quests {
     public static void check(ServerPlayer player) {
         RuneKnowledge knowledge = Research.of(player);
         Guide guide = Guide.server();
+        if (!knowledge.noticing()) {
+            startNoticing(player, knowledge, guide);
+        }
         Quest last = null;
         for (Quest quest : guide.all()) {
             if (quest.kind() == Quest.Kind.ITEM && !knowledge.questDone(quest) && Guide.open(quest, knowledge) && quest.isMet(player, guide)) {
-                knowledge.completeQuest(quest);
+                complete(knowledge, quest);
                 announce(player, quest);
                 last = quest;
             }
@@ -53,13 +56,45 @@ public final class Quests {
         }
     }
 
+    /**
+     * Knowledge saved before the book marked new steps: whatever the reader can already see counts as taken in, so an old
+     * path does not light up all at once. A researcher who has done nothing yet keeps the first steps new.
+     */
+    private static void startNoticing(ServerPlayer player, RuneKnowledge knowledge, Guide guide) {
+        java.util.List<String> seen = new java.util.ArrayList<>();
+        if (knowledge.anyQuestDone()) {
+            for (Quest quest : guide.all()) {
+                if (Guide.visible(quest, knowledge)) {
+                    seen.add(quest.id());
+                }
+            }
+        }
+        knowledge.startNoticing(seen);
+        Research.sync(player);
+    }
+
+    /** A step done on purpose is taken in as it is done; a secret one happened by itself and waits to be looked at. */
+    private static void complete(RuneKnowledge knowledge, Quest quest) {
+        knowledge.completeQuest(quest);
+        if (!quest.secret()) {
+            knowledge.notice(quest.id());
+        }
+    }
+
+    /** The reader looked at a step in the book (sent by the client): it is no longer shown as new. */
+    public static void noticed(ServerPlayer player, String step) {
+        if (Guide.server().byId(step) != null) {
+            Research.of(player).notice(step);
+        }
+    }
+
     /** Reports an event (one of the names above): every open step whose goal waits for it is done for this player. */
     public static void fire(ServerPlayer player, String event) {
         RuneKnowledge knowledge = Research.of(player);
         Quest last = null;
         for (Quest quest : Guide.server().all()) {
             if (!knowledge.questDone(quest) && Guide.open(quest, knowledge) && quest.answers(event)) {
-                knowledge.completeQuest(quest);
+                complete(knowledge, quest);
                 announce(player, quest);
                 last = quest;
             }

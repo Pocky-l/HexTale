@@ -479,6 +479,39 @@ public final class QuestGameTests {
         helper.succeed();
     }
 
+    /**
+     * The book points at what is new: a step that opened, or one written down by itself, until the reader looks at it; a
+     * step done on purpose is taken in as it is done. Knowledge saved before this takes in what it already shows.
+     */
+    @HexTest
+    public static void newStepsWaitToBeLookedAt(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        RuneKnowledge knowledge = Research.of(player);
+        knowledge.forgetQuests();
+        helper.assertTrue(Guide.fresh(step("researchers_diary"), knowledge) == Guide.Fresh.OPENED, "a new reader's first steps are new");
+        helper.assertTrue(Guide.fresh(step("unstable_hextech"), knowledge) == Guide.Fresh.NONE, "what is still in the fog is not");
+        player.getInventory().add(new ItemStack(ModItems.RESEARCHERS_DIARY.get()));
+        Quests.check(player);
+        helper.assertTrue(Guide.fresh(step("researchers_diary"), knowledge) == Guide.Fresh.NONE, "a step done on purpose is taken in");
+        helper.assertTrue(Guide.fresh(step("unstable_hextech"), knowledge) == Guide.Fresh.OPENED, "the step it opened is new");
+        Quests.noticed(player, "unstable_hextech");
+        helper.assertTrue(Guide.fresh(step("unstable_hextech"), knowledge) == Guide.Fresh.NONE, "looked at, it is not new any more");
+
+        for (Quest quest : ancestors(step("void_mites"))) {
+            knowledge.completeQuest(quest);
+            knowledge.notice(quest.id());
+        }
+        Quests.fire(player, Quests.VOID_MITE_LATCHED);
+        helper.assertTrue(Guide.fresh(step("void_mites"), knowledge) == Guide.Fresh.HAPPENED, "something that happened waits to be read");
+
+        RuneKnowledge decoded = RuneKnowledge.CODEC.parse(NbtOps.INSTANCE,
+                RuneKnowledge.CODEC.encodeStart(NbtOps.INSTANCE, knowledge).getOrThrow()).getOrThrow();
+        helper.assertTrue(decoded.noticing() && decoded.noticed("unstable_hextech") && !decoded.noticed("void_mites"), "taken-in steps save and load");
+        RuneKnowledge old = RuneKnowledge.CODEC.parse(NbtOps.INSTANCE, new net.minecraft.nbt.CompoundTag()).getOrThrow();
+        helper.assertFalse(old.noticing(), "knowledge saved before has nothing taken in yet");
+        helper.succeed();
+    }
+
     /** A step of the guide the server loaded, by id. */
     private static Quest step(String id) {
         Quest quest = Guide.server().byId(id);

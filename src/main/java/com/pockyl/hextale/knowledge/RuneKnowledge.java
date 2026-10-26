@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -43,7 +44,8 @@ public final class RuneKnowledge {
             Codec.STRING.listOf().optionalFieldOf("studied", List.of()).forGetter(k -> List.copyOf(k.studied)),
             Codec.STRING.listOf().optionalFieldOf("quests", List.of()).forGetter(k -> List.copyOf(k.quests)),
             INT_MAP.optionalFieldOf("attempts", Map.of()).forGetter(k -> Map.copyOf(k.attempts)),
-            Codec.STRING.listOf().optionalFieldOf("observed", List.of()).forGetter(k -> List.copyOf(k.observed))
+            Codec.STRING.listOf().optionalFieldOf("observed", List.of()).forGetter(k -> List.copyOf(k.observed)),
+            Codec.STRING.listOf().optionalFieldOf("noticed").forGetter(RuneKnowledge::noticedList)
     ).apply(instance, RuneKnowledge::new));
     public static final Codec<RuneKnowledge> CODEC = MAP_CODEC.codec();
 
@@ -60,6 +62,7 @@ public final class RuneKnowledge {
             STRINGS, k -> List.copyOf(k.quests),
             INTS, k -> new LinkedHashMap<>(k.attempts),
             STRINGS, k -> List.copyOf(k.observed),
+            ByteBufCodecs.optional(STRINGS), RuneKnowledge::noticedList,
             RuneKnowledge::new);
 
     /** Learned runes in the order of discovery, with their stars (1-3). */
@@ -76,12 +79,19 @@ public final class RuneKnowledge {
     private final Map<String, Integer> attempts = new HashMap<>();
     /** Ids of compounds the researcher has seen form in a Lab Bench flask: the journal shows the zone they form in. */
     private final Set<String> observed = new LinkedHashSet<>();
+    /**
+     * Ids of the guide's steps the researcher has taken in: looked at in the book, or done on purpose. A step that opened,
+     * or happened by itself, and is not in here is shown as new.
+     */
+    private final Set<String> noticed = new LinkedHashSet<>();
+    /** False for knowledge saved before steps were noticed: the server takes in what it can already see, once. */
+    private boolean noticing = true;
 
     public RuneKnowledge() {
     }
 
     private RuneKnowledge(Map<String, Integer> stars, List<String> researched, Map<String, List<Long>> seen, List<String> studied,
-                          List<String> quests, Map<String, Integer> attempts, List<String> observed) {
+                          List<String> quests, Map<String, Integer> attempts, List<String> observed, Optional<List<String>> noticed) {
         stars.forEach((key, value) -> {
             ComplexRune rune = ComplexRunes.byKey(key);
             if (rune != null && value > 0) {
@@ -98,6 +108,12 @@ public final class RuneKnowledge {
             }
         });
         this.observed.addAll(observed);
+        this.noticing = noticed.isPresent();
+        noticed.ifPresent(this.noticed::addAll);
+    }
+
+    private Optional<List<String>> noticedList() {
+        return noticing ? Optional.of(List.copyOf(noticed)) : Optional.empty();
     }
 
     private Map<String, Integer> starsByKey() {
@@ -250,10 +266,37 @@ public final class RuneKnowledge {
 
     public void forgetQuests() {
         quests.clear();
+        noticed.clear();
+    }
+
+    public boolean anyQuestDone() {
+        return !quests.isEmpty();
+    }
+
+    // ---- Noticed steps ------------------------------------------------------------------------------------------------
+
+    /** Whether the steps the researcher has taken in are tracked (false only for knowledge saved before they were). */
+    public boolean noticing() {
+        return noticing;
+    }
+
+    public boolean noticed(String step) {
+        return noticed.contains(step);
+    }
+
+    /** The researcher has taken in this step; true if it was new. */
+    public boolean notice(String step) {
+        return noticed.add(step);
+    }
+
+    /** Starts tracking with these steps already taken in. */
+    public void startNoticing(java.util.Collection<String> steps) {
+        noticing = true;
+        noticed.addAll(steps);
     }
 
     public RuneKnowledge copy() {
         return new RuneKnowledge(starsByKey(), List.copyOf(researched), bitsByKey(seen), List.copyOf(studied), List.copyOf(quests),
-                Map.copyOf(attempts), List.copyOf(observed));
+                Map.copyOf(attempts), List.copyOf(observed), noticedList());
     }
 }

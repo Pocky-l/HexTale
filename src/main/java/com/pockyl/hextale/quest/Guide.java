@@ -268,6 +268,29 @@ public final class Guide {
         return done(quest, knowledge) || open(quest, knowledge) && !quest.secret();
     }
 
+    /** What is new about a step for the reader: nothing, it just opened, or it happened by itself. */
+    public enum Fresh {
+        NONE,
+        /** Open now and not looked at yet. */
+        OPENED,
+        /** Done without the reader doing it on purpose (a secret step: something that happened), not looked at yet. */
+        HAPPENED
+    }
+
+    /**
+     * Whether the book shows this step as new: an item step that opened, or was written down by itself, and that the
+     * reader has not looked at since. Steps done on purpose are taken in as they are done ({@link Quests}).
+     */
+    public static Fresh fresh(Quest quest, RuneKnowledge knowledge) {
+        if (quest.kind() != Quest.Kind.ITEM || !knowledge.noticing() || knowledge.noticed(quest.id())) {
+            return Fresh.NONE;
+        }
+        if (done(quest, knowledge)) {
+            return Fresh.HAPPENED;
+        }
+        return visible(quest, knowledge) ? Fresh.OPENED : Fresh.NONE;
+    }
+
     /**
      * One step beyond what the reader can do now: an item step that is not open yet, but every step it waits for can be
      * seen. The book shows it greyed out, as "not reachable yet"; everything further stays in the fog.

@@ -963,6 +963,11 @@ final class GuidePage {
         return seen(quest, knowledge);
     }
 
+    /** Whether the map shows this step to the reader (not only to the dev editor's eye): only those can be taken in. */
+    boolean seenOnMap(Quest quest, RuneKnowledge knowledge) {
+        return !hiddenWip(quest) && Guide.visible(quest, knowledge);
+    }
+
     /** Whether the map shows a step as done or open (the dev editor shows them all). */
     private boolean seen(Quest quest, RuneKnowledge knowledge) {
         return !hiddenWip(quest) && (revealAll || Guide.visible(quest, knowledge));

@@ -86,6 +86,10 @@ public final class StarBook {
     private final GuidePage guide;
     private final RunesPage runes;
     private final GuideEditor editor;
+    private final FreshMarks marks = new FreshMarks(this);
+    /** Where the sky is flying to after a click on an arrow (map coordinates), or null. */
+    private float @Nullable [] glide;
+    private long glideFrame;
     private boolean dragging;
     private boolean pressed;
     private double pressX;
@@ -175,6 +179,36 @@ public final class StarBook {
         return skyTop() + skyHeight() / 2.0F;
     }
 
+    /** The screen point of a map point. */
+    float screenX(float mapX) {
+        return (mapX - cameraX) * zoom() + centreX();
+    }
+
+    float screenY(float mapY) {
+        return (mapY - cameraY) * zoom() + centreY();
+    }
+
+    /** Flies the sky smoothly until this map point is in the middle. */
+    void glideTo(float x, float y) {
+        glide = new float[]{x, y};
+        glideFrame = Util.getMillis();
+    }
+
+    private void stepGlide(long now) {
+        if (glide == null) {
+            return;
+        }
+        // Eased by time, not by frame: the same flight at any frame rate.
+        float k = 1 - (float) Math.exp(-(now - glideFrame) / 110.0);
+        glideFrame = now;
+        cameraX += (glide[0] - cameraX) * k;
+        cameraY += (glide[1] - cameraY) * k;
+        clampCamera();
+        if (Math.abs(glide[0] - cameraX) < 0.5F && Math.abs(glide[1] - cameraY) < 0.5F) {
+            glide = null;
+        }
+    }
+
     /** Map coordinates under a screen point. */
     float mapX(double screenX) {
         return (float) ((screenX - centreX()) / zoom() + cameraX);
@@ -211,16 +245,23 @@ public final class StarBook {
             return tabTip != null ? tabTip : tooltip;
         }
 
+        stepGlide(now);
+        marks.layout(knowledge);
         graphics.pose().pushMatrix();
         graphics.pose().translate(centreX(), centreY());
         graphics.pose().scale(zoom(), zoom());
         graphics.pose().translate(-cameraX, -cameraY);
-        // While a plate is open the map waits behind it.
-        boolean free = !dragging && overSky(mouseX, mouseY) && guide.selected() == null;
+        // While a plate is open the map waits behind it; an arrow covers the map under it.
+        boolean free = !dragging && overSky(mouseX, mouseY) && guide.selected() == null && !overTabs(mouseX, mouseY)
+                && marks.at(mouseX, mouseY) == null;
         Quest hovered = free ? guide.questAt(mouseX, mouseY, knowledge) : null;
+        if (hovered != null && guide.seenOnMap(hovered, knowledge)) {
+            FreshMarks.notice(hovered, knowledge);
+        }
         guide.renderMap(graphics, knowledge, now, hovered);
         PixelArt.flush(graphics);
         graphics.pose().popMatrix();
+        List<FormattedCharSequence> markTip = guide.selected() == null ? marks.render(graphics, mouseX, mouseY, now) : null;
         editor.renderHint(graphics, skyLeft() + skyWidth() - 4, skyTop() + skyHeight() - 4, mouseX, mouseY);
 
         List<FormattedCharSequence> tabTip = guide.selected() == null ? renderTabs(graphics, mouseX, mouseY) : null;
@@ -232,6 +273,9 @@ public final class StarBook {
         PixelArt.flush(graphics);
         if (tabTip != null) {
             return tabTip;
+        }
+        if (markTip != null) {
+            return markTip;
         }
         if (hovered != null && tooltip == null && !overTabs(mouseX, mouseY)) {
             tooltip = guide.tooltip(hovered, knowledge);
@@ -249,6 +293,19 @@ public final class StarBook {
 
     private boolean overTab(double x, double y, int index) {
         return x >= tabX(index) && x < tabX(index) + TAB_WIDTH && y >= tabY() && y < tabY() + TAB_HEIGHT;
+    }
+
+    /** The tab bar's right and bottom edges (the arrows of new steps keep out of it). */
+    int tabBarRight() {
+        return tabX(1) + TAB_WIDTH + 5;
+    }
+
+    int tabBarBottom() {
+        return tabY() + TAB_HEIGHT + 4;
+    }
+
+    boolean overTabBar(double x, double y) {
+        return x >= skyLeft() - 8 && x < tabBarRight() + 8 && y >= skyTop() - 8 && y < tabBarBottom() + 8;
     }
 
     /** The tab bar: a small plate in the sky's corner holding both chips; the map never shows through it. */
@@ -443,6 +500,13 @@ public final class StarBook {
             }
             return true;
         }
+        FreshMarks.Mark mark = marks.at(mouseX, mouseY);
+        if (mark != null) {
+            // An arrow flies the sky to the new step it points at.
+            glideTo(mark.target().x(), mark.target().y());
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.3F, 0.5F));
+            return true;
+        }
         pressed = true;
         dragging = false;
         pressX = mouseX;
@@ -461,6 +525,7 @@ public final class StarBook {
         }
         if (!dragging && Math.abs(mouseX - pressX) + Math.abs(mouseY - pressY) >= DRAG_THRESHOLD) {
             dragging = true;
+            glide = null;
         }
         if (dragging) {
             cameraX = pressCameraX - (float) ((mouseX - pressX) / zoom());

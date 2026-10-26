@@ -108,6 +108,7 @@ public final class Research {
         for (Quest quest : Guide.server().all()) {
             if (quest.kind() == Quest.Kind.ITEM) {
                 knowledge.completeQuest(quest);
+                knowledge.notice(quest.id());
             }
         }
         sync(player);
