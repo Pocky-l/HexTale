@@ -90,6 +90,8 @@ public class TheVoid extends Entity {
     public static final int BIRTH_MB = 500;
     /** mB of essence a thrown item is worth per essence point it carries. */
     public static final int ITEM_MEAL = 4;
+    /** Ticks a held breach takes to fold into its heart. */
+    public static final int FOLD_TICKS = 100;
     /** Magic damage of a touch. */
     public static final float TOUCH_DAMAGE = 4;
     private static final byte REPEL_EVENT = 60;
@@ -122,8 +124,11 @@ public class TheVoid extends Entity {
     private static final EntityDataAccessor<Float> DATA_CALM = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.FLOAT);
     /** The game time it last ate. */
     private static final EntityDataAccessor<Long> DATA_ATE = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.LONG);
+    /** The game time it began to fold into its heart, -1 while it does not. */
+    private static final EntityDataAccessor<Long> DATA_FOLD_AT = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.LONG);
 
     private boolean burstShown;
+    private boolean foldShown;
     /** Server: when the next voidling may bulge out. */
     private long nextPush = -1;
     /** Server: what it has eaten since its last birth (mB). */
@@ -167,6 +172,16 @@ public class TheVoid extends Entity {
         return breach;
     }
 
+    /**
+     * The breach folded into {@code heart} opening again at {@code centre}: the omen, the slow opening, and it is the same
+     * breach - its outline, and what it had eaten towards its next birth - only wild until a ring holds it anew.
+     */
+    public static TheVoid unfold(Level level, Vec3 centre, float yaw, BreachHeart heart) {
+        TheVoid breach = rooted(level, centre, yaw, heart.shape(), heart.size(), heart.seed());
+        breach.fed = Math.max(0, heart.fed());
+        return breach;
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(DATA_SEED, 0);
@@ -183,6 +198,7 @@ public class TheVoid extends Entity {
         builder.define(DATA_HELD, 0);
         builder.define(DATA_CALM, 0F);
         builder.define(DATA_ATE, -1000L);
+        builder.define(DATA_FOLD_AT, -1L);
     }
 
     public int seed() {
@@ -278,6 +294,49 @@ public class TheVoid extends Entity {
     /** The game time it last ate. */
     public long ateAt() {
         return entityData.get(DATA_ATE);
+    }
+
+    public boolean folding() {
+        return entityData.get(DATA_FOLD_AT) >= 0;
+    }
+
+    /** 0 while it does not fold, rising to 1 as it folds into its heart. */
+    public float fold(float partialTick) {
+        long at = entityData.get(DATA_FOLD_AT);
+        if (at < 0) {
+            return 0;
+        }
+        return Mth.clamp((level().getGameTime() - at + partialTick) / FOLD_TICKS, 0, 1);
+    }
+
+    /**
+     * A held breach starts folding into its heart (a clouded crystal pressed to one of its anchors): it winds in on itself
+     * for {@link #FOLD_TICKS} and drops a Breach Heart where it hung. Returns false when it is not held or already busy.
+     */
+    public boolean startFold(ServerLevel level) {
+        if (!subdued() || closing() || folding() || !rooted() || age(0) < openTicks()) {
+            return false;
+        }
+        entityData.set(DATA_FOLD_AT, level.getGameTime());
+        entityData.set(DATA_PUSH_AT, -1L);
+        level.playSound(null, getX(), getY(), getZ(), ModSounds.THE_VOID_FOLD.get(), SoundSource.AMBIENT, 1.4F, 1.0F);
+        return true;
+    }
+
+    /** The fold is done: the heart drops out of the point the breach shrank to, and the breach is gone. */
+    private void finishFold(ServerLevel level) {
+        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.BREACH_HEART.get());
+        stack.set(com.pockyl.hextale.registry.ModDataComponents.BREACH_HEART.get(), BreachHeart.of(this, fed));
+        net.minecraft.world.entity.item.ItemEntity heart = new net.minecraft.world.entity.item.ItemEntity(level, getX(), getY() - 0.125, getZ(), stack);
+        heart.setDeltaMovement(0, 0.12, 0);
+        heart.setPickUpDelay(20);
+        level.addFreshEntity(heart);
+        level.sendParticles(ModParticles.ring(COLD), getX(), getY(), getZ(), 0, size() * 0.9, 0, 0, 1);
+        level.sendParticles(ModParticles.ring(VIOLET), getX(), getY(), getZ(), 0, size() * 0.45, 0, 0, 1);
+        level.sendParticles(ModParticles.glint(COLD), getX(), getY(), getZ(), 24, 0.15, 0.15, 0.15, 0.25);
+        level.sendParticles(ModParticles.vapour(DEEP), getX(), getY(), getZ(), 16, 0.2, 0.2, 0.2, 0.06);
+        Quests.fireNear(level, position(), Breaches.WATCH_RADIUS, Quests.BREACH_FOLDED);
+        discard();
     }
 
     /** Sets how long it has starved already (tests). */
@@ -376,6 +435,13 @@ public class TheVoid extends Entity {
         }
         if (now % ANCHOR_TICKS == 0) {
             countAnchors(level);
+        }
+        if (folding()) {
+            // Folding, it neither eats nor feeds nor sends anything out: it only winds in on itself.
+            if (now - entityData.get(DATA_FOLD_AT) >= FOLD_TICKS) {
+                finishFold(level);
+            }
+            return;
         }
         float calm = calm();
         float wanted = subdued() ? 1 : 0;
@@ -738,6 +804,11 @@ public class TheVoid extends Entity {
             }
         }
 
+        float fold = fold(0);
+        if (fold > 0) {
+            foldEffects(layout, fold);
+        }
+
         // The world drifting in: motes, mostly dark, spiral into the breach from in front of it and behind it. A held
         // breach draws them slow and cold; one that has just eaten, hungrily.
         float calm = calm();
@@ -789,6 +860,37 @@ public class TheVoid extends Entity {
         }
     }
 
+    /**
+     * Folding: cold motes are dragged into its middle from all round, faster as it winds in, its smoke is sucked back,
+     * and as it shrinks to a point a tight ring and a flash of cold sparks mark where the heart drops.
+     */
+    private void foldEffects(VoidLayout layout, float fold) {
+        RandomSource random = level().getRandom();
+        Vec3 centre = position();
+        float size = size();
+        for (float chance = 1 + fold * 4; chance > 0; chance -= 1) {
+            if (random.nextFloat() >= chance) {
+                break;
+            }
+            float reach = (1.5F + random.nextFloat() * 2.5F) * (0.6F + size * 0.2F) * (1.2F - fold * 0.5F);
+            Vector3f out = new Vector3f(random.nextFloat() - 0.5F, random.nextFloat() - 0.5F, random.nextFloat() - 0.5F).normalize(reach);
+            level().addParticle(ModParticles.voidMote(random.nextInt(3) == 0 ? VIOLET : COLD), centre.x, centre.y, centre.z, out.x, out.y, out.z);
+        }
+        if (random.nextFloat() < 0.4F + fold) {
+            Vec3 at = toWorld(layout.samplePoint(random, true).mul(1 - fold * 0.8F));
+            level().addParticle(ModParticles.vapour(random.nextBoolean() ? DEEP : SMOKE), at.x, at.y, at.z,
+                    (centre.x - at.x) * 0.06, (centre.y - at.y) * 0.06, (centre.z - at.z) * 0.06);
+        }
+        if (fold > 0.92F && !foldShown) {
+            foldShown = true;
+            level().addParticle(ModParticles.ring(COLD), centre.x, centre.y, centre.z, size * 0.7, 0, 0);
+            for (int i = 0; i < 14; i++) {
+                level().addParticle(ModParticles.glint(i % 2 == 0 ? COLD : PINK), centre.x, centre.y, centre.z,
+                        (random.nextFloat() - 0.5F) * 0.3, (random.nextFloat() - 0.5F) * 0.3, (random.nextFloat() - 0.5F) * 0.3);
+            }
+        }
+    }
+
     /** The breach the player looks at within {@code reach} blocks, nearest first. */
     public static @Nullable TheVoid aimedAt(Player player, double reach) {
         Vec3 eye = player.getEyePosition();
@@ -833,6 +935,7 @@ public class TheVoid extends Entity {
         entityData.set(DATA_HELD, input.getIntOr("held", 0));
         entityData.set(DATA_CALM, input.getFloatOr("calm", 0));
         fed = input.getFloatOr("fed", 0);
+        entityData.set(DATA_FOLD_AT, input.getLongOr("fold_at", -1));
     }
 
     @Override
@@ -850,6 +953,7 @@ public class TheVoid extends Entity {
         output.putInt("held", heldSides());
         output.putFloat("calm", calm());
         output.putFloat("fed", fed);
+        output.putLong("fold_at", entityData.get(DATA_FOLD_AT));
     }
 
     @Override

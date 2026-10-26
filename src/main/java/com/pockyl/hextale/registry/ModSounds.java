@@ -49,6 +49,11 @@ public final class ModSounds {
     /** A Void Anchor's thread tied to a breach, and snapping when its crystal clouds through. */
     public static final DeferredHolder<SoundEvent, SoundEvent> ANCHOR_TIE = register("void_anchor.tie");
     public static final DeferredHolder<SoundEvent, SoundEvent> ANCHOR_SNAP = register("void_anchor.snap");
+    /** A held breach folding into its heart. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_FOLD = register("the_void.fold");
+    /** A Breach Heart beating, and letting go as it unfolds. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> HEART_BEAT = register("breach_heart.beat");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HEART_UNFOLD = register("breach_heart.unfold");
     /** Void ground healing back into earth. */
     public static final DeferredHolder<SoundEvent, SoundEvent> LAND_HEAL = register("land.heal");
     /** A nullstone drinking the Thinning out of the ground. */

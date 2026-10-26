@@ -1077,5 +1077,40 @@
         "attenuation_distance": 24
       }
     ]
+  },
+  "the_void.fold": {
+    "subtitle": "subtitles.hextale.the_void.fold",
+    "sounds": [
+      {
+        "name": "hextale:the_void_fold",
+        "volume": 1.0,
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "breach_heart.beat": {
+    "subtitle": "subtitles.hextale.breach_heart.beat",
+    "sounds": [
+      {
+        "name": "hextale:breach_heart_beat1",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:breach_heart_beat2",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "breach_heart.unfold": {
+    "subtitle": "subtitles.hextale.breach_heart.unfold",
+    "sounds": [
+      {
+        "name": "hextale:breach_heart_unfold",
+        "volume": 1.0,
+        "attenuation_distance": 32
+      }
+    ]
   }
 }

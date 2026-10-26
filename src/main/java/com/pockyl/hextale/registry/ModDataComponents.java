@@ -150,6 +150,12 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("skypack_air", builder -> builder
                     .persistent(Codec.intRange(0, 100000)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** The breach folded into a Breach Heart. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.pockyl.hextale.thevoid.BreachHeart>> BREACH_HEART =
+            COMPONENTS.registerComponentType("breach_heart", builder -> builder
+                    .persistent(com.pockyl.hextale.thevoid.BreachHeart.CODEC)
+                    .networkSynchronized(com.pockyl.hextale.thevoid.BreachHeart.STREAM_CODEC));
+
     /** The essence in a flask or a tank item. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<EssenceMix>> ESSENCE =
             COMPONENTS.registerComponentType("essence", builder -> builder

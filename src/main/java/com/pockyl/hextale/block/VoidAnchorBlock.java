@@ -2,6 +2,7 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Prediction;
@@ -25,6 +26,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.thevoid.TheVoid;
 
 import java.util.Locale;
 
@@ -46,6 +49,10 @@ public class VoidAnchorBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
+        if (stack.is(ModItems.CLOUDED_CRYSTAL.get()) && player.isShiftKeyDown()
+                && level.getBlockEntity(pos) instanceof VoidAnchorBlockEntity holder) {
+            return fold(stack, level, holder, player);
+        }
         if (!stack.is(ModItems.HEXTECH_CRYSTAL.get()) || !(level.getBlockEntity(pos) instanceof VoidAnchorBlockEntity anchor)
                 || !anchor.crystal().isEmpty()) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
@@ -56,6 +63,35 @@ public class VoidAnchorBlock extends BaseEntityBlock {
                 stack.shrink(1);
             }
             level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_PLACE, SoundSource.BLOCKS, 0.8F, 0.9F);
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    /**
+     * A clouded crystal pressed to an anchor of a held breach, sneaking: the crystal goes into the breach and it folds into
+     * its heart.
+     */
+    private static InteractionResult fold(ItemStack stack, Level level, VoidAnchorBlockEntity anchor, Player player) {
+        if (!(level instanceof ServerLevel server)) {
+            return InteractionResult.SUCCESS;
+        }
+        TheVoid breach = anchor.heldBreach(server);
+        if (breach == null || !breach.subdued()) {
+            player.sendOverlayMessage(Component.translatable("block.hextale.void_anchor.fold.not_held"));
+            return InteractionResult.FAIL;
+        }
+        if (!breach.startFold(server)) {
+            player.sendOverlayMessage(Component.translatable("block.hextale.void_anchor.fold.busy"));
+            return InteractionResult.FAIL;
+        }
+        if (!player.getAbilities().instabuild) {
+            stack.shrink(1);
+        }
+        net.minecraft.world.phys.Vec3 from = VoidAnchorBlockEntity.crystalAt(anchor.getBlockPos());
+        net.minecraft.world.phys.Vec3 to = breach.position();
+        for (int i = 1; i < 10; i++) {
+            net.minecraft.world.phys.Vec3 at = from.lerp(to, i / 10.0);
+            server.sendParticles(ModParticles.glint(TheVoid.COLD), at.x, at.y, at.z, 1, 0.05, 0.05, 0.05, 0);
         }
         return InteractionResult.SUCCESS;
     }

@@ -92,7 +92,7 @@ public final class VoidGameTests {
     @HexTest(maxTicks = 400)
     public static void aRootedBreachSendsOutAVoidling(GameTestHelper helper) {
         // A creative player: near enough to call the voidling out, but neither hunted nor bitten.
-        helper.makeMockServerPlayerInLevel().setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        GameTests.watcher(helper, helper.absolutePos(new BlockPos(1, 4, 1)));
         Vec3 centre = Vec3.atCenterOf(helper.absolutePos(new BlockPos(1, 4, 1)));
         TheVoid breach = TheVoid.rooted(helper.getLevel(), centre, 0, VoidShape.EYE, 3.5F, 777);
         helper.getLevel().addFreshEntity(breach);

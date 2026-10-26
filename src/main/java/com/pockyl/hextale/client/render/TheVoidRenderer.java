@@ -42,6 +42,8 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         float push;
         /** 0 wild .. 1 cooled by its anchors. */
         float calm;
+        /** 0 .. 1 while it folds into its heart. */
+        float fold;
     }
 
     @Override
@@ -64,6 +66,7 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         }
         state.orientation.set(breach.orientation());
         state.calm = breach.calm();
+        state.fold = breach.fold(partialTick);
         org.joml.Vector3fc push = breach.pushPoint();
         state.push = push == null ? 0 : breach.push(partialTick);
         if (push != null) {
@@ -101,10 +104,37 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         Frame frame = new Frame(layout, shows, state);
         poseStack.pushPose();
         poseStack.rotate(state.orientation);
+        if (state.fold > 0 && !fold(state, poseStack)) {
+            poseStack.popPose();
+            return;
+        }
         collector.submitCustomGeometry(poseStack, VoidPipelines.BODY_TYPE, (pose, consumer) -> frame.body(consumer, pose));
         collector.submitCustomGeometry(poseStack, VoidPipelines.HALO_TYPE, (pose, consumer) -> frame.halo(consumer, pose));
         poseStack.popPose();
         super.submit(state, poseStack, collector, camera);
+    }
+
+    /**
+     * Folding into its heart: it trembles, winds round its own middle faster and faster, is squeezed into a narrow seam
+     * and at the end falls into a point. Returns false once nothing of it is left to draw.
+     */
+    private static boolean fold(State state, PoseStack poseStack) {
+        float f = state.fold;
+        float collapse = f < 0.85F ? 1 : 1 - (f - 0.85F) / 0.15F;
+        if (collapse <= 0.01F) {
+            return false;
+        }
+        float tremble = Mth.sin(state.ageInTicks * 3.1F) * 0.05F * Math.min(1, f * 4) * collapse;
+        float squeeze = smooth(f / 0.85F);
+        float shorten = smooth((f - 0.3F) / 0.55F);
+        poseStack.rotate(new org.joml.Quaternionf().rotationZ(f * f * Mth.TWO_PI * 1.25F));
+        poseStack.scale((1 - 0.82F * squeeze) * collapse + tremble, (1 - 0.45F * shorten) * collapse - tremble, collapse);
+        return true;
+    }
+
+    private static float smooth(float x) {
+        float k = Mth.clamp(x, 0, 1);
+        return k * k * (3 - 2 * k);
     }
 
     /** One frame of one breach: which cells show and the numbers every vertex carries. */

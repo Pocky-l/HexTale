@@ -1,0 +1,20 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": [
+    "hextale:breach_heart",
+    "hextale:void_anchor"
+  ],
+  "parents": [
+    "breach_heart"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "breach_unfolded"
+  },
+  "aura": "void",
+  "pos": [
+    -70,
+    1190
+  ]
+}

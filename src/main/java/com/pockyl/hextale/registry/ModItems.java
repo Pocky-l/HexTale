@@ -317,6 +317,9 @@ public final class ModItems {
     /** A hextech crystal clouded through with the Void it drew out of the land (or held a breach with). */
     public static final DeferredItem<com.pockyl.hextale.item.NotedItem> CLOUDED_CRYSTAL = ITEMS.registerItem("clouded_crystal",
             properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.UNCOMMON)));
+    /** A held breach folded into a beating heart: carried somewhere else and unfolded there. */
+    public static final DeferredItem<com.pockyl.hextale.item.BreachHeartItem> BREACH_HEART = ITEMS.registerItem("breach_heart",
+            properties -> new com.pockyl.hextale.item.BreachHeartItem(properties.stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
     public static final DeferredItem<BlockItem> POLISHED_NULLSTONE = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_NULLSTONE);
     public static final DeferredItem<BlockItem> NULLSTONE_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.NULLSTONE_BRICKS);
     public static final DeferredItem<BlockItem> CRYSTAL_BATTERY = ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_BATTERY,

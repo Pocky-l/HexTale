@@ -4,23 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.block.VoidAnchorBlockEntity;
 import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.item.BreachHeartItem;
+import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModEntities;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.thevoid.BreachHeart;
 import com.pockyl.hextale.thevoid.TheVoid;
 import com.pockyl.hextale.thevoid.Thinning;
 import com.pockyl.hextale.thevoid.VoidShape;
@@ -44,7 +51,15 @@ public final class VoidRoadGameTests {
         return anchors;
     }
 
-    @HexTest(maxTicks = 500)
+    /** Takes the ring (and the jar beside it) away again: test spots lie close, and a ring left standing holds the next. */
+    private static void clearRing(GameTestHelper helper) {
+        for (int[] offset : RING) {
+            helper.setBlock(new BlockPos(1 + offset[0], 1, 1 + offset[1]), net.minecraft.world.level.block.Blocks.AIR);
+        }
+        helper.setBlock(new BlockPos(1 + RING[0][0], 1, 2 + RING[0][1]), net.minecraft.world.level.block.Blocks.AIR);
+    }
+
+    @HexTest(maxTicks = 500, padding = 8)
     public static void sixAnchorsRoundSubdueABreachAndFiveDoNot(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos centre = helper.absolutePos(new BlockPos(1, 4, 1));
@@ -71,10 +86,11 @@ public final class VoidRoadGameTests {
             }
             breach.discard();
             Thinning.setAround(level, centre, 1, 0);
+            clearRing(helper);
         });
     }
 
-    @HexTest(maxTicks = 500)
+    @HexTest(maxTicks = 500, padding = 8)
     public static void aHeldBreachEatsTheSicknessOfTheLand(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos centre = helper.absolutePos(new BlockPos(1, 4, 1));
@@ -114,15 +130,16 @@ public final class VoidRoadGameTests {
             helper.assertTrue(Thinning.get(chunk) < before[0], "and what it eats heals the land, " + Thinning.get(chunk));
             breach.discard();
             Thinning.setAround(level, centre, 1, 0);
+            clearRing(helper);
         });
     }
 
-    @HexTest(maxTicks = 600)
+    @HexTest(maxTicks = 600, padding = 8)
     public static void aBigMealIsBornAGrownVoidling(GameTestHelper helper) {
         // A creative player: near enough to call the voidling out, but neither hunted nor bitten.
-        helper.makeMockServerPlayerInLevel().setGameMode(GameType.CREATIVE);
         ServerLevel level = helper.getLevel();
         BlockPos centre = helper.absolutePos(new BlockPos(1, 4, 1));
+        GameTests.watcher(helper, centre);
         Thinning.setAround(level, centre, 1, TheVoid.FADES_BELOW + 200);
         ring(helper).forEach(anchor -> anchor.insert(new ItemStack(ModItems.HEXTECH_CRYSTAL.get())));
         TheVoid breach = TheVoid.rooted(level, Vec3.atCenterOf(centre), 0, VoidShape.EYE, 3.5F, 882);
@@ -131,6 +148,8 @@ public final class VoidRoadGameTests {
         helper.succeedWhen(() -> {
             helper.assertTrue(breach.subdued(), "the ring holds it");
             if (!fed[0]) {
+                // Voidlings other tests sent out may wander near: too many around and it holds the birth back.
+                level.getEntitiesOfClass(Voidling.class, breach.getBoundingBox().inflate(48)).forEach(Voidling::discard);
                 fed[0] = breach.eat(level, TheVoid.BIRTH_MB, 0);
             }
             List<Voidling> born = level.getEntitiesOfClass(Voidling.class, breach.getBoundingBox().inflate(12));
@@ -139,7 +158,66 @@ public final class VoidRoadGameTests {
             born.forEach(Voidling::discard);
             breach.discard();
             Thinning.setAround(level, centre, 1, 0);
+            clearRing(helper);
         });
+    }
+
+    @HexTest(maxTicks = 600, padding = 8)
+    public static void aCloudedCrystalFoldsAHeldBreachIntoItsHeart(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos centre = helper.absolutePos(new BlockPos(1, 4, 1));
+        Thinning.setAround(level, centre, 1, TheVoid.FADES_BELOW + 200);
+        List<VoidAnchorBlockEntity> anchors = ring(helper);
+        anchors.forEach(anchor -> anchor.insert(new ItemStack(ModItems.HEXTECH_CRYSTAL.get())));
+        TheVoid breach = TheVoid.rooted(level, Vec3.atCenterOf(centre), 0, VoidShape.EYE, 3.5F, 883);
+        level.addFreshEntity(breach);
+        helper.assertTrue(!breach.startFold(level), "a breach that is not held cannot be folded");
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setShiftKeyDown(true);
+        BlockPos anchorAt = helper.absolutePos(new BlockPos(1 + RING[0][0], 1, 1 + RING[0][1]));
+        boolean[] pressed = {false};
+        helper.succeedWhen(() -> {
+            helper.assertTrue(breach.subdued() || pressed[0], "the ring holds it");
+            if (!pressed[0]) {
+                ItemStack crystal = new ItemStack(ModItems.CLOUDED_CRYSTAL.get());
+                player.setItemInHand(InteractionHand.MAIN_HAND, crystal);
+                level.getBlockState(anchorAt).useItemOn(crystal, level, player, InteractionHand.MAIN_HAND,
+                        new BlockHitResult(Vec3.atCenterOf(anchorAt), Direction.UP, anchorAt, false));
+                pressed[0] = true;
+                helper.assertTrue(crystal.isEmpty(), "the clouded crystal goes into it");
+                helper.assertTrue(breach.folding(), "and it starts to fold");
+            }
+            helper.assertTrue(breach.isRemoved(), "folded, the breach is gone (fold " + breach.fold(0) + ")");
+            List<ItemEntity> hearts = level.getEntitiesOfClass(ItemEntity.class, breach.getBoundingBox().inflate(4),
+                    item -> item.getItem().is(ModItems.BREACH_HEART.get()));
+            helper.assertTrue(hearts.size() == 1, "one heart drops where it hung, got " + hearts.size());
+            BreachHeart heart = BreachHeartItem.heart(hearts.get(0).getItem());
+            helper.assertTrue(heart != null && heart.seed() == 883 && heart.shape() == VoidShape.EYE && Math.abs(heart.size() - 3.5F) < 0.01F,
+                    "and it keeps the breach's outline, got " + heart);
+            hearts.forEach(ItemEntity::discard);
+            Thinning.setAround(level, centre, 1, 0);
+            clearRing(helper);
+        });
+    }
+
+    @HexTest
+    public static void aLooseHeartUnfoldsIntoTheSameBreach(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ItemStack stack = new ItemStack(ModItems.BREACH_HEART.get());
+        BreachHeart heart = new BreachHeart(VoidShape.GATE, 3.8F, 884, 120);
+        stack.set(ModDataComponents.BREACH_HEART.get(), heart);
+        Vec3 at = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(1, 2, 1)));
+        ItemEntity loose = new ItemEntity(level, at.x, at.y, at.z, stack);
+        level.addFreshEntity(loose);
+        TheVoid breach = BreachHeartItem.unfoldLoose(level, loose, heart);
+        helper.assertTrue(loose.isRemoved(), "the heart is spent");
+        helper.assertTrue(breach.isAlive() && breach.rooted() && breach.foretold(), "a rooted breach opens with its omen");
+        helper.assertTrue(breach.seed() == 884 && breach.shape() == VoidShape.GATE && Math.abs(breach.size() - 3.8F) < 0.01F,
+                "the same breach as was folded");
+        helper.assertTrue(com.pockyl.hextale.thevoid.Breaches.sites(level).near(breach.blockPosition()) != null,
+                "and its place is remembered");
+        breach.discard();
+        helper.succeed();
     }
 
     @HexTest

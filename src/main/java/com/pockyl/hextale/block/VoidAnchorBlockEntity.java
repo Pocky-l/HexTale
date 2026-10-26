@@ -132,6 +132,11 @@ public class VoidAnchorBlockEntity extends BlockEntity implements WorldlyContain
         return subdued;
     }
 
+    /** The breach it is tied to, if it is still there. */
+    public @Nullable TheVoid heldBreach(ServerLevel level) {
+        return tied && breach != null && level.getEntity(breach) instanceof TheVoid target && target.isAlive() ? target : null;
+    }
+
     public Vec3 breachAt() {
         return breachAt;
     }

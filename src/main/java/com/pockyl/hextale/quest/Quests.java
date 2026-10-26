@@ -37,6 +37,10 @@ public final class Quests {
     public static final String BREACH_KEPT = "breach_kept";
     /** A voidling near the player grew. */
     public static final String VOIDLING_GREW = "voidling_grew";
+    /** A held breach near the player folded into its heart. */
+    public static final String BREACH_FOLDED = "breach_folded";
+    /** The player let a Breach Heart unfold into a breach again. */
+    public static final String BREACH_UNFOLDED = "breach_unfolded";
 
     /** The event of a block woken with hextech dust (its id path), for the one who woke it. */
     public static String awakened(String block) {

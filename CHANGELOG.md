@@ -50,6 +50,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   sick land around, and now and then what it ate is born as a voidling - a big meal is born grown.
 - Voidlings grow. Near a breach, and with every kill, a young voidling molts into a grown one and at last into an elder:
   bigger, tougher, harder-hitting, with more chitin on it.
+- A held breach can be moved. Sneak and press a Clouded Crystal to one of its anchors: the crystal runs along the thread
+  into it, and over five seconds the breach trembles, winds round its own middle faster and faster, is squeezed into a
+  seam and falls into a point, dragging cold motes in after it. What drops out is the Breach Heart: a dark seed of
+  folded plates bound by a band, a glowing slit down its middle and two cells of the Void drifting beside it. It beats.
+  Whoever carries it is slowed by its weight. Used on firm ground with room above, it unfolds into the same breach -
+  the same outline, the same hunger towards its next birth - wild again until six anchors hold it anew. Dropped or
+  lost, it beats faster and faster and after half a minute unfolds where it lies. It does not burn.
+- The diary's Void branch has two more steps: "The Breach Heart" and "A Breach Moved".
 - The diary's Void branch follows the Void road too: the Void Anchor, "The Held Breach", "The Maw", "The Incubator",
   "The Kept Breach" (a held breach on healed land) and "They Grow", with their own pictures.
 

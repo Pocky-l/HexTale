@@ -140,6 +140,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HOLLOWBLOOM.get(), "hollowbloom");
         info(registration, ModItems.VOID_CHITIN.get(), "void_chitin");
         info(registration, ModItems.CLOUDED_CRYSTAL.get(), "clouded_crystal");
+        info(registration, ModItems.BREACH_HEART.get(), "breach_heart");
         info(registration, ModItems.HEXTECH_PURIFIER.get(), "hextech_purifier");
         info(registration, ModItems.VOID_ANCHOR.get(), "void_anchor");
         info(registration, ModItems.AXOLOTL_TANK.get(), "axolotl_tank");

@@ -57,8 +57,9 @@ public final class GameTests {
                 Identifier id = Hextale.id(test.name());
                 Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(id,
                         new TestEnvironmentDefinition.AllOf(List.of()));
-                TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, STRUCTURE,
-                        test.settings().maxTicks(), test.settings().setupTicks(), true);
+                TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment,
+                        net.minecraft.world.level.Level.OVERWORLD, STRUCTURE, test.settings().maxTicks(), test.settings().setupTicks(),
+                        true, net.minecraft.world.level.block.Rotation.NONE, false, 1, 1, false, test.settings().padding());
                 event.registerTest(id, new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, id), data));
             }
         });
@@ -83,6 +84,14 @@ public final class GameTests {
     }
 
     private static void run(Method method, GameTestHelper helper) {
+        // Only the spot's own chunk is kept ticking by the framework: a breach hung beside a 1x1x1 spot may fall into
+        // the next chunk, where entities stand still. Keep every chunk round the spot fully ticking.
+        net.minecraft.core.BlockPos spot = helper.absolutePos(net.minecraft.core.BlockPos.ZERO);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                helper.getLevel().setChunkForced((spot.getX() >> 4) + dx, (spot.getZ() >> 4) + dz, true);
+            }
+        }
         try {
             method.invoke(null, helper);
         } catch (InvocationTargetException e) {
@@ -96,6 +105,17 @@ public final class GameTests {
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    /**
+     * A creative mock player standing a few blocks from {@code near}: one is needed for a breach to send anything out.
+     * The framework places mock players at the world spawn, often far from the test spot.
+     */
+    public static net.minecraft.server.level.ServerPlayer watcher(GameTestHelper helper, net.minecraft.core.BlockPos near) {
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        player.snapTo(near.getX() + 0.5, near.getY(), near.getZ() - 6.5, 0, 0);
+        return player;
     }
 
     private static String snakeCase(String name) {
