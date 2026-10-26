@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "void",
-  "stage": "mid",
-  "icon": "hextale:void_chitin",
-  "parents": ["void_breach"],
-  "pos": [250, 880]
-}

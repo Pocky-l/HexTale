@@ -138,6 +138,7 @@ public final class Hextale {
         output.accept(ModItems.RUNE_SHACKLES);
         output.accept(ModItems.ARC_SPIRE);
         output.accept(ModItems.HEXTECH_PURIFIER);
+        output.accept(ModItems.VOID_ANCHOR);
         output.accept(ModItems.MIASMA_VENT);
         output.accept(ModItems.FIELD_WARD);
 

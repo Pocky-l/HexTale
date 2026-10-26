@@ -51,5 +51,8 @@ void main() {
 
     float fog = total_fog_value(sphericalVertexDistance, cylindricalVertexDistance, FogEnvironmentalStart, FogEnvironmentalEnd,
             FogRenderDistanceStart, FogRenderDistanceEnd);
+    float calm = float(freshSize.y >> 11) / 15.0;
+    float l = dot(col, vec3(0.38, 0.27, 0.35));
+    col = mix(col, vec3(l * 0.62, l * 0.58, l * 1.45), calm);
     fragColor = vec4(col * (1.0 - fog), 1.0);
 }

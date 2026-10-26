@@ -55,6 +55,12 @@ float heartbeat(float t) {
     return exp(-pow((phase - 0.08) / 0.045, 2.0)) + 0.65 * exp(-pow((phase - 0.27) / 0.06, 2.0));
 }
 
+// A held breach's colour: the same light, cooled to a cold violet.
+vec3 cooled(vec3 c) {
+    float l = dot(c, vec3(0.38, 0.27, 0.35));
+    return vec3(l * 0.62, l * 0.58, l * 1.45);
+}
+
 // The throat seen at plane point uv along the ray (in the breach's frame). R = half the breach's size.
 vec3 throat(vec2 uv, vec3 ray, float t, float seed, float core, float R) {
     float slope = 1.0 / max(abs(ray.z), 0.22);
@@ -123,7 +129,9 @@ void main() {
     float cell = float(cellCore.x) / 1000.0;
     float core = float(cellCore.y) / 1000.0;
     float fresh = float(freshSize.x) / 1000.0;
-    float R = float(freshSize.y) / 200.0;
+    // The size's low 11 bits; above them how far a held breach has calmed (0-15).
+    float R = float(freshSize.y & 2047) / 200.0;
+    float calm = float(freshSize.y >> 11) / 15.0;
     float t = GameTime * 1200.0;
     float beat = heartbeat(t + seed * 0.13);
     float pulse = 0.88 + 0.12 * beat;
@@ -190,6 +198,8 @@ void main() {
 
     // A cell that has only just broken through is still black.
     col *= 1.0 - fresh * 0.85;
+    // Held by its anchors, the breach cools from magenta to a cold violet.
+    col = mix(col, cooled(col), calm);
 
     fragColor = apply_fog(vec4(col, 1.0), sphericalVertexDistance, cylindricalVertexDistance, FogEnvironmentalStart,
             FogEnvironmentalEnd, FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);

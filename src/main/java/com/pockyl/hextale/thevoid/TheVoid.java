@@ -71,6 +71,25 @@ public class TheVoid extends Entity {
     public static final float FADES_BELOW = 1500;
     /** Ticks a starving breach lasts before it closes. */
     public static final int STARVE_TICKS = 1200;
+    /** Ticks between two counts of the anchors around. */
+    public static final int ANCHOR_TICKS = 20;
+    /** How far an anchor may stand from a breach (blocks, every way) and how near at least (across the ground). */
+    public static final int ANCHOR_REACH = 12;
+    public static final double ANCHOR_NEAREST = 3;
+    /** Sides a breach must be held from: one anchor in every sixth of the circle. */
+    public static final int SIDES = 6;
+    /** A breach fighting a ring that is not closed yet pushes its spawn out this many times as often. */
+    public static final int FIGHT_FACTOR = 3;
+    /** Thinning a held breach draws out of the land per mB it eats (unknown essence twice as much). */
+    public static final float EAT_DRAIN = 0.5F;
+    /** Chunks every way it draws the land from as it eats. */
+    public static final int EAT_RADIUS = 2;
+    /** How much each anchor's crystal clouds per mB eaten. */
+    public static final float EAT_STRAIN = 2;
+    /** Eaten essence that brings out a voidling; a big meal (twice that at once) brings out a grown one. */
+    public static final int BIRTH_MB = 500;
+    /** mB of essence a thrown item is worth per essence point it carries. */
+    public static final int ITEM_MEAL = 4;
     /** Magic damage of a touch. */
     public static final float TOUCH_DAMAGE = 4;
     private static final byte REPEL_EVENT = 60;
@@ -79,6 +98,8 @@ public class TheVoid extends Entity {
     public static final int MAGENTA = 0xF23CE6;
     public static final int PINK = 0xFFB4F4;
     public static final int DEEP = 0x34105A;
+    /** The cold violet of a held breach. */
+    public static final int COLD = 0x8A7CFF;
     /** The smoke it breathes: nearly black, a little violet. */
     public static final int SMOKE = 0x140A1C;
     public static final int UMBER = 0x2A2014;
@@ -95,10 +116,25 @@ public class TheVoid extends Entity {
     private static final EntityDataAccessor<Vector3fc> DATA_PUSH = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.VECTOR3);
     /** Ticks it has starved for (0 while the land feeds it). */
     private static final EntityDataAccessor<Integer> DATA_STARVED = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.INT);
+    /** Sides it is held from by anchors (0-6); six = held. */
+    private static final EntityDataAccessor<Integer> DATA_HELD = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.INT);
+    /** 0 wild, rising to 1 as a held breach cools (and back as it wakes). */
+    private static final EntityDataAccessor<Float> DATA_CALM = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.FLOAT);
+    /** The game time it last ate. */
+    private static final EntityDataAccessor<Long> DATA_ATE = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.LONG);
 
     private boolean burstShown;
     /** Server: when the next voidling may bulge out. */
     private long nextPush = -1;
+    /** Server: what it has eaten since its last birth (mB). */
+    private float fed;
+    /** Server: the next birth is a grown voidling (a big meal). */
+    private boolean bigMeal;
+    /** Server: the push under way is a birth from being fed. */
+    private boolean feeding;
+    /** Server: the anchors that held it at the last count. */
+    private final java.util.List<BlockPos> anchors = new java.util.ArrayList<>();
+    private long lastAteNote = -1000;
 
     public TheVoid(EntityType<? extends TheVoid> type, Level level) {
         super(type, level);
@@ -144,6 +180,9 @@ public class TheVoid extends Entity {
         builder.define(DATA_PUSH_AT, -1L);
         builder.define(DATA_PUSH, new Vector3f());
         builder.define(DATA_STARVED, 0);
+        builder.define(DATA_HELD, 0);
+        builder.define(DATA_CALM, 0F);
+        builder.define(DATA_ATE, -1000L);
     }
 
     public int seed() {
@@ -219,6 +258,26 @@ public class TheVoid extends Entity {
             return k * k * (0.85F + 0.15F * Mth.sin(since * 0.9F));
         }
         return Mth.clamp(1 - (since - PUSH_TICKS) / 8, 0, 1) * 0.4F;
+    }
+
+    /** Sides it is held from by anchors (0-6). */
+    public int heldSides() {
+        return entityData.get(DATA_HELD);
+    }
+
+    /** Held from every side by anchors: it cools, keeps still and eats what it is given. */
+    public boolean subdued() {
+        return heldSides() >= SIDES;
+    }
+
+    /** 0 wild .. 1 cooled. */
+    public float calm() {
+        return entityData.get(DATA_CALM);
+    }
+
+    /** The game time it last ate. */
+    public long ateAt() {
+        return entityData.get(DATA_ATE);
     }
 
     /** Sets how long it has starved already (tests). */
@@ -315,11 +374,30 @@ public class TheVoid extends Entity {
         if (!rooted() || age(0) < openTicks()) {
             return;
         }
+        if (now % ANCHOR_TICKS == 0) {
+            countAnchors(level);
+        }
+        float calm = calm();
+        float wanted = subdued() ? 1 : 0;
+        if (calm != wanted) {
+            entityData.set(DATA_CALM, wanted > calm ? Math.min(wanted, calm + 1 / 60F) : Math.max(wanted, calm - 1 / 30F));
+        }
+        if (subdued() && now % 10 == 5) {
+            eatThrown(level);
+        }
         if (now % FEED_TICKS == 0) {
-            if (starve(level)) {
-                return;
+            if (subdued()) {
+                // Held, it neither starves nor feeds on the land.
+                entityData.set(DATA_STARVED, 0);
+                if (Thinning.get(level, blockPosition()) < FADES_BELOW) {
+                    Quests.fireNear(level, position(), Breaches.WATCH_RADIUS, Quests.BREACH_KEPT);
+                }
+            } else {
+                if (starve(level)) {
+                    return;
+                }
+                Thinning.add(level, blockPosition(), FEED);
             }
-            Thinning.add(level, blockPosition(), FEED);
         }
         long pushAt = entityData.get(DATA_PUSH_AT);
         if (pushAt >= 0) {
@@ -329,12 +407,127 @@ public class TheVoid extends Entity {
             } else if (since > PUSH_TICKS + 10) {
                 entityData.set(DATA_PUSH_AT, -1L);
             }
+        } else if (subdued()) {
+            // Held, it sends nothing out by itself - only what it was fed into being.
+            if (fed >= BIRTH_MB && now % 20 == 0 && maySend(level)) {
+                fed -= BIRTH_MB;
+                feeding = true;
+                startPush(level);
+            }
         } else if (nextPush >= 0 && now >= nextPush) {
             if (maySend(level)) {
                 startPush(level);
             } else {
                 nextPush = now + 100;
             }
+        }
+    }
+
+    /**
+     * Counts the anchors around that hold a fresh crystal, by the sixth of the circle they stand in, and ties a thread to
+     * every one. All six sides held: the breach is subdued. Holding wears the anchors' crystals - twice as fast while the
+     * breach still fights a ring that is not closed.
+     */
+    private void countAnchors(ServerLevel level) {
+        boolean[] sides = new boolean[SIDES];
+        java.util.List<com.pockyl.hextale.block.VoidAnchorBlockEntity> holding = new java.util.ArrayList<>();
+        for (com.pockyl.hextale.block.VoidAnchorBlockEntity anchor
+                : com.pockyl.hextale.block.VoidAnchorBlockEntity.around(level, blockPosition(), ANCHOR_REACH)) {
+            if (!anchor.holds()) {
+                continue;
+            }
+            Vec3 at = Vec3.atCenterOf(anchor.getBlockPos());
+            double dx = at.x - getX();
+            double dz = at.z - getZ();
+            if (dx * dx + dz * dz < ANCHOR_NEAREST * ANCHOR_NEAREST) {
+                continue;
+            }
+            double angle = Math.toDegrees(Math.atan2(dz, dx)) + 360 + 180.0 / SIDES;
+            sides[(int) (angle / (360.0 / SIDES)) % SIDES] = true;
+            holding.add(anchor);
+        }
+        int held = 0;
+        for (boolean side : sides) {
+            held += side ? 1 : 0;
+        }
+        boolean was = subdued();
+        int before = heldSides();
+        entityData.set(DATA_HELD, held);
+        anchors.clear();
+        boolean nowHeld = held >= SIDES;
+        for (com.pockyl.hextale.block.VoidAnchorBlockEntity anchor : holding) {
+            anchor.tie(level, this, nowHeld, ANCHOR_TICKS * (nowHeld ? 1 : 2));
+            anchors.add(anchor.getBlockPos());
+        }
+        if (nowHeld && !was) {
+            level.playSound(null, getX(), getY(), getZ(), ModSounds.THE_VOID_SUBDUE.get(), SoundSource.AMBIENT, 1.2F, 1.0F);
+            level.sendParticles(ModParticles.ring(com.pockyl.hextale.block.VoidAnchorBlockEntity.COLD), getX(), getY(), getZ(), 0,
+                    size() * 0.7, 0, 0, 1);
+            entityData.set(DATA_PUSH_AT, -1L);
+            Quests.fireNear(level, position(), Breaches.WATCH_RADIUS, Quests.BREACH_SUBDUED);
+        } else if (was && !nowHeld) {
+            // It wakes: the ring broke.
+            level.playSound(null, getX(), getY(), getZ(), ModSounds.THE_VOID_REPEL.get(), SoundSource.AMBIENT, 1.2F, 0.6F);
+            nextPush = level.getGameTime() + PUSH_PAUSE / FIGHT_FACTOR;
+        } else if (held > 0 && held < SIDES && before == 0) {
+            // A ring begins to close: it fights back, sooner than it would have.
+            nextPush = Math.min(nextPush < 0 ? Long.MAX_VALUE : nextPush, level.getGameTime() + PUSH_PAUSE / FIGHT_FACTOR / 2);
+        }
+    }
+
+    /**
+     * A held breach eats {@code mb} of essence: it draws the Thinning out of the land around (twice as much for unknown
+     * essence), wears its anchors' crystals, and what it ate adds up to a birth. Returns false when it is not held.
+     */
+    public boolean eat(ServerLevel level, float mb, float unknownShare) {
+        if (!subdued() || mb <= 0) {
+            return false;
+        }
+        net.minecraft.world.level.chunk.LevelChunk land = Thinning.sickestAround(level, blockPosition(), EAT_RADIUS);
+        if (land != null) {
+            Thinning.drain(level, land, mb * EAT_DRAIN * (1 + unknownShare));
+        }
+        for (BlockPos pos : anchors) {
+            if (level.getBlockEntity(pos) instanceof com.pockyl.hextale.block.VoidAnchorBlockEntity anchor) {
+                anchor.strain(level, mb * EAT_STRAIN);
+            }
+        }
+        bigMeal |= mb >= BIRTH_MB;
+        fed += mb;
+        long now = level.getGameTime();
+        entityData.set(DATA_ATE, now);
+        if (now - lastAteNote > 100) {
+            lastAteNote = now;
+            level.playSound(null, getX(), getY(), getZ(), ModSounds.THE_VOID_EAT.get(), SoundSource.AMBIENT, 0.8F, 0.9F + random.nextFloat() * 0.2F);
+            Quests.fireNear(level, position(), Breaches.WATCH_RADIUS, Quests.VOID_ATE);
+        }
+        return true;
+    }
+
+    /** What is thrown into a held breach is swallowed, worth the essence it carries. */
+    private void eatThrown(ServerLevel level) {
+        VoidLayout layout = layout();
+        float reveal = reveal(0);
+        boolean lying = shape().lying();
+        Quaternionf inverse = orientation().conjugate(new Quaternionf());
+        AABB area = new AABB(position(), position()).inflate(layout.reach() + 1);
+        for (net.minecraft.world.entity.item.ItemEntity item : level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, area,
+                net.minecraft.world.entity.Entity::isAlive)) {
+            Vec3 centre = item.position().add(0, 0.125, 0);
+            Vector3f local = inverse.transform(new Vector3f((float) (centre.x - getX()), (float) (centre.y - getY()), (float) (centre.z - getZ())));
+            if (Math.abs(local.z) > 0.4F + layout.halfThickness() || !layout.touches(local.x, local.y, 0.25F, 0.25F, reveal)) {
+                continue;
+            }
+            net.minecraft.world.item.ItemStack stack = item.getItem();
+            int points = 0;
+            for (int amount : com.pockyl.hextale.research.ItemEssenceTable.get(stack.getItem()).essences().values()) {
+                points += amount;
+            }
+            float meal = Math.max(1, points) * ITEM_MEAL * stack.getCount();
+            item.discard();
+            level.sendParticles(ModParticles.vapour(SMOKE), centre.x, centre.y, centre.z, 6, 0.2, 0.2, 0.2, 0.02);
+            level.sendParticles(ModParticles.glint(PINK), centre.x, centre.y, centre.z, 4, 0.2, 0.2, 0.2, 0.02);
+            eat(level, meal, 0);
         }
     }
 
@@ -442,6 +635,18 @@ public class TheVoid extends Entity {
         voidling.setDeltaMovement(normal.x * 0.32, 0.18 + normal.y * 0.32, normal.z * 0.32);
         voidling.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(at)), EntitySpawnReason.MOB_SUMMONED, null);
         voidling.emerged();
+        if (feeding) {
+            if (bigMeal) {
+                voidling.setStage(Voidling.GROWN);
+            }
+            Quests.fireNear(level, position(), Breaches.WATCH_RADIUS, Quests.VOID_BIRTH);
+        }
+        if (feeding || heldSides() > 0) {
+            // A ring closing round it makes it fight: the next one comes sooner.
+            nextPush = level.getGameTime() + (PUSH_PAUSE + random.nextInt(PUSH_PAUSE)) / FIGHT_FACTOR;
+        }
+        feeding = false;
+        bigMeal = false;
         level.addFreshEntity(voidling);
         level.sendParticles(ModParticles.vapour(SMOKE), at.x, at.y, at.z, 14, 0.3, 0.3, 0.3, 0.03);
         level.sendParticles(ModParticles.glint(MAGENTA), at.x, at.y, at.z, 8, 0.3, 0.3, 0.3, 0.05);
@@ -533,8 +738,11 @@ public class TheVoid extends Entity {
             }
         }
 
-        // The world drifting in: motes, mostly dark, spiral into the breach from in front of it and behind it.
-        float pull = closing() ? 2.5F : 1;
+        // The world drifting in: motes, mostly dark, spiral into the breach from in front of it and behind it. A held
+        // breach draws them slow and cold; one that has just eaten, hungrily.
+        float calm = calm();
+        boolean eating = level().getGameTime() - ateAt() < 30;
+        float pull = (closing() ? 2.5F : 1) * (1 - 0.6F * calm) * (eating ? 3 : 1);
         float chance = Math.min(3, (0.35F + size * 0.22F) * pull * reveal);
         for (; chance > 0; chance -= 1) {
             if (random.nextFloat() >= chance) {
@@ -545,8 +753,8 @@ public class TheVoid extends Entity {
             Vector3f out = new Vector3f(random.nextFloat() - 0.5F, random.nextFloat() - 0.5F, random.nextFloat() - 0.5F);
             out.add(new Vector3f(normal).mul((random.nextBoolean() ? 1 : -1) * 0.7F)).normalize().mul(reach);
             int colour = switch (random.nextInt(7)) {
-                case 0 -> MAGENTA;
-                case 1 -> PINK;
+                case 0 -> random.nextFloat() < calm ? COLD : MAGENTA;
+                case 1 -> random.nextFloat() < calm ? COLD : PINK;
                 case 2 -> VIOLET;
                 case 3 -> UMBER;
                 default -> DEEP;
@@ -563,8 +771,8 @@ public class TheVoid extends Entity {
             level().addParticle(ModParticles.vapour(random.nextInt(4) == 0 ? DEEP : SMOKE), at.x, at.y, at.z,
                     out.x + normal.x * side, out.y + normal.y * side, out.z + normal.z * side);
         }
-        // Now and then a sickly spark of its light drifts off the edge.
-        if (random.nextFloat() < (0.05F + size * 0.02F) * reveal) {
+        // Now and then a sickly spark of its light drifts off the edge (rarely from a held one).
+        if (random.nextFloat() < (0.05F + size * 0.02F) * reveal * (1 - 0.8F * calm)) {
             Vec3 at = toWorld(layout.samplePoint(random, true));
             level().addParticle(ModParticles.glint(random.nextBoolean() ? MAGENTA : PINK), at.x, at.y, at.z, 0, 0, 0);
         }
@@ -622,6 +830,9 @@ public class TheVoid extends Entity {
         entityData.set(DATA_OPEN, Math.max(1, input.getIntOr("open", OPEN_TICKS)));
         nextPush = input.getLongOr("next_push", rooted() ? level().getGameTime() + PUSH_PAUSE : -1);
         entityData.set(DATA_STARVED, input.getIntOr("starved", 0));
+        entityData.set(DATA_HELD, input.getIntOr("held", 0));
+        entityData.set(DATA_CALM, input.getFloatOr("calm", 0));
+        fed = input.getFloatOr("fed", 0);
     }
 
     @Override
@@ -636,6 +847,9 @@ public class TheVoid extends Entity {
         output.putInt("open", openTicks());
         output.putLong("next_push", nextPush);
         output.putInt("starved", entityData.get(DATA_STARVED));
+        output.putInt("held", heldSides());
+        output.putFloat("calm", calm());
+        output.putFloat("fed", fed);
     }
 
     @Override

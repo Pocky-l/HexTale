@@ -70,6 +70,11 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("funnel_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
 
+    /** The runes burned into a Void Anchor. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> ANCHOR_RUNES =
+            COMPONENTS.registerComponentType("anchor_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+
     /** The runes burned into a Hextech Purifier. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> PURIFIER_RUNES =
             COMPONENTS.registerComponentType("purifier_runes", builder -> builder

@@ -52,6 +52,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexFoundryBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.ArcSpireBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HextechPurifierBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.VoidAnchorBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.RuneShacklesBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.XpCondenserBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.MiasmaVentBlock.class);
@@ -126,6 +127,8 @@ public class HextaleJadePlugin implements IWailaPlugin {
                         com.pockyl.hextale.block.XpCondenserBlockEntity.CAPACITY).withStyle(ChatFormatting.GRAY));
             } else if (entity instanceof com.pockyl.hextale.block.RuneShacklesBlockEntity plate) {
                 tooltip.add(com.pockyl.hextale.block.RuneShacklesBlock.status(plate).copy().withStyle(ChatFormatting.GRAY));
+            } else if (entity instanceof com.pockyl.hextale.block.VoidAnchorBlockEntity anchor) {
+                tooltip.add(com.pockyl.hextale.block.VoidAnchorBlock.status(anchor).copy().withStyle(ChatFormatting.GRAY));
             } else if (entity instanceof com.pockyl.hextale.block.HextechPurifierBlockEntity purifier) {
                 tooltip.add(com.pockyl.hextale.block.HextechPurifierBlock.status(purifier).copy().withStyle(ChatFormatting.GRAY));
             } else if (entity instanceof com.pockyl.hextale.block.ArcSpireBlockEntity spire) {

@@ -25,6 +25,8 @@ public class VoidlingRenderer extends MobRenderer<Voidling, VoidlingRenderer.Sta
         public float emerge;
         /** Which of its idle breaths this voidling keeps. */
         public int idleVariant;
+        /** 0..1..0 while it molts. */
+        public float molt;
     }
 
     public VoidlingRenderer(EntityRendererProvider.Context context) {
@@ -43,6 +45,7 @@ public class VoidlingRenderer extends MobRenderer<Voidling, VoidlingRenderer.Sta
         state.bite = voidling.getSwingAnimation(partialTick);
         state.emerge = voidling.emerging(partialTick);
         state.idleVariant = voidling.getId();
+        state.molt = voidling.molting(partialTick);
     }
 
     @Override
@@ -53,6 +56,11 @@ public class VoidlingRenderer extends MobRenderer<Voidling, VoidlingRenderer.Sta
         float k = state.emerge * state.emerge;
         if (k > 0) {
             poseStack.scale(1 - 0.35F * k, 1 + 0.15F * k, 1 + 0.25F * k);
+        }
+        // Molting: it curls in and shudders, then swells out of the old shell.
+        if (state.molt > 0) {
+            float shudder = (float) Math.sin(state.ageInTicks * 2.7F) * 0.06F * state.molt;
+            poseStack.scale(1 - 0.18F * state.molt + shudder, 1 - 0.25F * state.molt - shudder, 1 - 0.18F * state.molt + shudder);
         }
     }
 

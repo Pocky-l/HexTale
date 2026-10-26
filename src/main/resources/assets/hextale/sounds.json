@@ -1007,5 +1007,75 @@
         "attenuation_distance": 16
       }
     ]
+  },
+  "voidling.grow": {
+    "subtitle": "subtitles.hextale.voidling.grow",
+    "sounds": [
+      {
+        "name": "hextale:voidling_grow1",
+        "volume": 0.9,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "hextale:voidling_grow2",
+        "volume": 0.9,
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "the_void.subdue": {
+    "subtitle": "subtitles.hextale.the_void.subdue",
+    "sounds": [
+      {
+        "name": "hextale:the_void_subdue",
+        "volume": 1.0,
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "the_void.eat": {
+    "subtitle": "subtitles.hextale.the_void.eat",
+    "sounds": [
+      {
+        "name": "hextale:the_void_eat1",
+        "volume": 0.7,
+        "attenuation_distance": 24
+      },
+      {
+        "name": "hextale:the_void_eat2",
+        "volume": 0.7,
+        "attenuation_distance": 24
+      },
+      {
+        "name": "hextale:the_void_eat3",
+        "volume": 0.7,
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "void_anchor.tie": {
+    "subtitle": "subtitles.hextale.void_anchor.tie",
+    "sounds": [
+      {
+        "name": "hextale:void_anchor_tie1",
+        "volume": 0.6,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "hextale:void_anchor_tie2",
+        "volume": 0.6,
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "void_anchor.snap": {
+    "subtitle": "subtitles.hextale.void_anchor.snap",
+    "sounds": [
+      {
+        "name": "hextale:void_anchor_snap",
+        "volume": 0.9,
+        "attenuation_distance": 24
+      }
+    ]
   }
 }

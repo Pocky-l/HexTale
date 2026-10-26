@@ -52,6 +52,27 @@
           "type": "minecraft:model",
           "model": "hextale:item/guide/breach_fades"
         }
+      },
+      {
+        "when": "subdued_breach",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/subdued_breach"
+        }
+      },
+      {
+        "when": "void_maw",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/void_maw"
+        }
+      },
+      {
+        "when": "voidling_growth",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/voidling_growth"
+        }
       }
     ],
     "fallback": {

@@ -39,6 +39,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hextech lamps on sick land choke now and then: their light drops for a moment, and on blighted land again and again.
 - The diary's Void branch has its healing road: "Can It Be Healed?", the Hextech Purifier, the Clouded Crystal, "The
   Land Heals" and "The Breach Fades", each with its own picture.
+- Or the breach can be kept. The Void Anchor is a gate of nullstone under a brass collar with a hextech crystal hanging
+  in its window. Anchors near a breach tie a thread to it; while the ring is open the breach fights back and sends out
+  voidlings sooner, but with an anchor in each of the six sides around it, it is subdued: its magenta cools to a still
+  violet, it stops feeding on the land, never starves and sends nothing out by itself. Holding wears the anchors'
+  crystals until they cloud over and the thread snaps - swap them in time. Anchors take runes: a crystal that clouds
+  slower, arcs that strike the Void's creatures near it, or a light that holds them slow and shining.
+- A subdued breach is a maw: anchors take the unknown essence out of the jars around (or what pipes bring them) and
+  pass it along their threads into it, and whatever is thrown into it is swallowed. What it eats it draws out of the
+  sick land around, and now and then what it ate is born as a voidling - a big meal is born grown.
+- Voidlings grow. Near a breach, and with every kill, a young voidling molts into a grown one and at last into an elder:
+  bigger, tougher, harder-hitting, with more chitin on it.
+- The diary's Void branch follows the Void road too: the Void Anchor, "The Held Breach", "The Maw", "The Incubator",
+  "The Kept Breach" (a held breach on healed land) and "They Grow", with their own pictures.
 
 ### Changed
 - Every solid block of the mod now stands in the world's heightmaps (26.x decides that by a block tag): the blight

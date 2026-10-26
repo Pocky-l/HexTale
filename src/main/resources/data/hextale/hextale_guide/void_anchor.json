@@ -1,0 +1,23 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": "hextale:void_anchor",
+  "parents": [
+    "void_breach",
+    "nullstone",
+    "hextech_crystal"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:void_anchor",
+    "then": {
+      "kind": "runes",
+      "result": "anchor"
+    }
+  },
+  "research": "void_anchor",
+  "pos": [
+    100,
+    850
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": {
+        "strings": [
+          "void_maw"
+        ]
+      }
+    }
+  },
+  "parents": [
+    "subdued_breach"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "void_ate"
+  },
+  "pos": [
+    90,
+    1000
+  ]
+}

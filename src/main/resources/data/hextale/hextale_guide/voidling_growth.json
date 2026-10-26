@@ -1,0 +1,26 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": {
+        "strings": [
+          "voidling_growth"
+        ]
+      }
+    }
+  },
+  "parents": [
+    "void_breach"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "voidling_grew"
+  },
+  "secret": true,
+  "pos": [
+    260,
+    880
+  ]
+}

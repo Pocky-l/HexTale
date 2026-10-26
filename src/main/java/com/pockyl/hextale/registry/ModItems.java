@@ -160,6 +160,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RUNE_SHACKLES = ITEMS.registerSimpleBlockItem(ModBlocks.RUNE_SHACKLES);
     public static final DeferredItem<BlockItem> HEXTECH_PURIFIER = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_PURIFIER,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> VOID_ANCHOR = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ANCHOR,
+            properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> XP_CONDENSER = ITEMS.registerSimpleBlockItem(ModBlocks.XP_CONDENSER,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> MIASMA_VENT = ITEMS.registerSimpleBlockItem(ModBlocks.MIASMA_VENT);
