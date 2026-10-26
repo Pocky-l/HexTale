@@ -140,6 +140,9 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SOUL_RUNES =
             COMPONENTS.registerComponentType("soul_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> WORLD_ANCHOR_RUNES =
+            COMPONENTS.registerComponentType("world_anchor_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
     /** The seal of a Shadow Coffer: coffers with the same one share a pocket. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.UUID>> COFFER_PAIR =
             COMPONENTS.registerComponentType("coffer_pair", builder -> builder

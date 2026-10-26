@@ -1,0 +1,17 @@
+{
+  "center": "hextale:hextech_gemstone",
+  "pedestals": [
+    "hextale:nullstone",
+    "hextale:nullstone",
+    "hextale:nullstone",
+    "hextale:nullstone",
+    "hextale:brass_block",
+    "minecraft:ender_eye"
+  ],
+  "essences": {
+    "earth": 32,
+    "rift": 24,
+    "magic": 16
+  },
+  "result": "hextale:world_anchor"
+}

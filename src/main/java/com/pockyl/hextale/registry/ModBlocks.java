@@ -104,6 +104,9 @@ public final class ModBlocks {
     public static final DeferredBlock<Block> CHISELED_MAGIC_BRICKS = BLOCKS.registerBlock("chiseled_magic_bricks", Block::new,
             ModBlocks::brickProperties);
 
+    /** Nullstone banded with brass round a gemstone: it holds its chunks loaded while it stands. */
+    public static final DeferredBlock<com.pockyl.hextale.block.WorldAnchorBlock> WORLD_ANCHOR = BLOCKS.registerBlock("world_anchor",
+            com.pockyl.hextale.block.WorldAnchorBlock::new, () -> nullstoneProperties().lightLevel(state -> 6));
     /** A coffer sealed with a shadow rune: coffers with the same seal share one pocket. */
     public static final DeferredBlock<com.pockyl.hextale.block.ShadowCofferBlock> SHADOW_COFFER = BLOCKS.registerBlock("shadow_coffer",
             com.pockyl.hextale.block.ShadowCofferBlock::new,

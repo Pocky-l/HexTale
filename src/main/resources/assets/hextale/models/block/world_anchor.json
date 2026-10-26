@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "hextale:block/world_anchor_top",
+    "side": "hextale:block/world_anchor_side"
+  }
+}

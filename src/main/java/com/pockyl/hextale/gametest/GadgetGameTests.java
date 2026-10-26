@@ -190,4 +190,16 @@ public final class GadgetGameTests {
             helper.succeed();
         });
     }
+
+    @HexTest
+    public static void aWorldAnchorHoldsItsChunk(GameTestHelper helper) {
+        BlockPos anchor = new BlockPos(1, 1, 1);
+        helper.setBlock(anchor, ModBlocks.WORLD_ANCHOR.get());
+        helper.runAfterDelay(2, () -> {
+            helper.assertTrue(net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.hasForcedChunks(helper.getLevel()),
+                    "the anchor holds its chunk");
+            helper.setBlock(anchor, Blocks.AIR);
+            helper.succeed();
+        });
+    }
 }

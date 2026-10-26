@@ -1,0 +1,21 @@
+{
+  "region": "circle",
+  "stage": "late",
+  "icon": "hextale:world_anchor",
+  "parents": [
+    "hexcore",
+    "hextech_gemstone"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:world_anchor",
+    "then": {
+      "kind": "runes",
+      "result": "world_anchor"
+    }
+  },
+  "pos": [
+    1370,
+    89
+  ]
+}

@@ -67,6 +67,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
   one 27-slot pocket in the shadow, wherever they stand, even in another dimension. Placing the first seals the second
   in your hand; Shift + right click a placed coffer with coffers in hand to give them its seal. Hoppers and pylons
   reach the pocket too.
+- World Anchor (at the Hextech Altar): keeps its chunk loaded and ticking while it stands, even with nobody near.
+  Runes: Shift (3x3, then 5x5 chunks), Haste (time runs faster there), Fertility (plants there grow now and then)
+  and Lens.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

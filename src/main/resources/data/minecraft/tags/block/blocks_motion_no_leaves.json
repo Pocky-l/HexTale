@@ -90,6 +90,7 @@
     "hextale:null_lantern",
     "hextale:impulse_plate",
     "hextale:hex_lift",
-    "hextale:shadow_coffer"
+    "hextale:shadow_coffer",
+    "hextale:world_anchor"
   ]
 }
