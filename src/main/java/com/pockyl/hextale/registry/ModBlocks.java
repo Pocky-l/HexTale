@@ -104,6 +104,9 @@ public final class ModBlocks {
     public static final DeferredBlock<Block> CHISELED_MAGIC_BRICKS = BLOCKS.registerBlock("chiseled_magic_bricks", Block::new,
             ModBlocks::brickProperties);
 
+    /** Smooth stone with a rune of lifting underneath: it can be set into thin air. */
+    public static final DeferredBlock<Block> FLOATING_STONE = BLOCKS.registerBlock("floating_stone", Block::new,
+            () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF).lightLevel(state -> 4));
     /** Glass woven with a rune of barrier: Ward Glass stops players and lets creatures through, Veil Glass the other way. */
     public static final DeferredBlock<com.pockyl.hextale.block.SieveGlassBlock> WARD_GLASS = BLOCKS.registerBlock("ward_glass",
             properties -> new com.pockyl.hextale.block.SieveGlassBlock(true, properties), ModBlocks::sieveGlassProperties);

@@ -235,6 +235,8 @@ public final class ModItems {
                     Equippable.builder(EquipmentSlot.HEAD).setAsset(GOGGLES_ASSET).setEquipSound(SoundEvents.ARMOR_EQUIP_LEATHER).build())));
     /** Worn on the back: with air essence in its tanks it lets me glide, and its jets push me like a rocket. */
     public static final DeferredItem<BlockItem> LEVITATION_PLATE = ITEMS.registerSimpleBlockItem(ModBlocks.LEVITATION_PLATE);
+    public static final DeferredItem<com.pockyl.hextale.item.FloatingStoneItem> FLOATING_STONE = ITEMS.registerItem("floating_stone",
+            properties -> new com.pockyl.hextale.item.FloatingStoneItem(ModBlocks.FLOATING_STONE.get(), properties.useBlockDescriptionPrefix()));
     public static final DeferredItem<BlockItem> WARD_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.WARD_GLASS);
     public static final DeferredItem<BlockItem> VEIL_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.VEIL_GLASS);
     /** Hextech dust packed tight: thrown, it sticks and cracks the rock around it. */

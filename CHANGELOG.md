@@ -44,6 +44,8 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - Ward Glass and Veil Glass (four at the Hex Workbench): glass with a rune of barrier that chooses who passes. Ward
   Glass stops players but lets creatures and dropped items through; Veil Glass lets players walk through and stops
   creatures. Creatures plan their way through Ward Glass and around Veil Glass.
+- Floating Stone (two at the Hex Workbench from smooth stone, dust and a feather): set against a block like any stone,
+  or into thin air - with nothing aimed at, it settles three blocks ahead and stays there.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

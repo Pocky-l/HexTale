@@ -226,6 +226,7 @@ public final class Hextale {
         output.accept(ModItems.FULGURITE_SPIKE);
         output.accept(ModItems.FULGURITE_GLASS);
         output.accept(ModItems.FULGURITE_GLASS_PANE);
+        output.accept(ModItems.FLOATING_STONE);
         output.accept(ModItems.WARD_GLASS);
         output.accept(ModItems.VEIL_GLASS);
         output.accept(ModItems.MAGIC_LOG);
@@ -330,6 +331,7 @@ public final class Hextale {
             event.accept(ModItems.RUNE_STELE);
             event.accept(ModItems.HEXTECH_LAMP);
             event.accept(ModItems.LEVITATION_PLATE);
+            event.accept(ModItems.FLOATING_STONE);
             event.accept(ModItems.WARD_GLASS);
             event.accept(ModItems.VEIL_GLASS);
         } else if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
