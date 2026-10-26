@@ -1,7 +1,0 @@
-{
-  "kind": "wip",
-  "region": "workshop",
-  "icon": "minecraft:glowstone_dust",
-  "parents": ["hextech_dust"],
-  "pos": [-186, -33]
-}

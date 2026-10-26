@@ -1,0 +1,15 @@
+{
+  "region": "workshop",
+  "icon": "hextale:dust_charge",
+  "parents": [
+    "hex_workbench"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:dust_charge"
+  },
+  "pos": [
+    -186,
+    -33
+  ]
+}

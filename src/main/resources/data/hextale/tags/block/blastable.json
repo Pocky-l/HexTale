@@ -1,0 +1,20 @@
+{
+  "values": [
+    "#minecraft:base_stone_overworld",
+    "#c:ores",
+    "minecraft:gravel",
+    "minecraft:calcite",
+    "minecraft:smooth_basalt",
+    "minecraft:dripstone_block",
+    "minecraft:clay",
+    "minecraft:dirt",
+    "minecraft:coarse_dirt",
+    "minecraft:netherrack",
+    "minecraft:blackstone",
+    "minecraft:basalt",
+    "minecraft:end_stone",
+    "hextale:fulgurite",
+    "hextale:scorched_calcite",
+    "hextale:void_rock"
+  ]
+}
