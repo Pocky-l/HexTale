@@ -106,6 +106,22 @@ public final class GadgetGameTests {
     }
 
     @HexTest
+    public static void theRecallCharmRemembersWhereIStood(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        Vec3 first = player.position();
+        com.pockyl.hextale.item.RecallCharmItem.mark(player);
+        player.teleportTo(first.x + 5, first.y, first.z);
+        for (int i = 0; i < 3; i++) {
+            com.pockyl.hextale.item.RecallCharmItem.mark(player);
+        }
+        com.pockyl.hextale.item.RecallCharmItem.Mark back = com.pockyl.hextale.item.RecallCharmItem.back(player, 5);
+        helper.assertTrue(back != null && back.pos().distanceTo(first) < 0.01, "five seconds back it is where I first stood: " + back);
+        back = com.pockyl.hextale.item.RecallCharmItem.back(player, 1);
+        helper.assertTrue(back != null && back.pos().distanceTo(first) > 4, "one second back I had already moved: " + back);
+        helper.succeed();
+    }
+
+    @HexTest
     public static void aNullLanternKeepsItsQuiet(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at.below(), net.minecraft.world.level.block.Blocks.STONE);

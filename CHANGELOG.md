@@ -55,6 +55,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - Hex Lift (replaces the "Hex Lift" idea in the diary): standing on one, jump to ride to the next lift straight above
   within 16 blocks, crouch to ride down; the lift you arrive on needs two blocks of room. Runes: Shift (up to 64
   blocks), Blink (creatures standing on the lift come along), Haste (Speed for a few seconds after a ride) and Lens.
+- Recall Charm (a clock at the Hextech Altar; replaces the "Recall Device" idea): used, it puts you back where you
+  stood five seconds ago in the same world, then rests for half a minute. Runes: Shift (up to 24 seconds back), Haste
+  (a shorter rest), Mending (heals on the way back) and Lens.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

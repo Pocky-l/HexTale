@@ -130,6 +130,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.NULL_LANTERN.get(), "null_lantern");
         info(registration, ModItems.IMPULSE_PLATE.get(), "impulse_plate");
         info(registration, ModItems.HEX_LIFT.get(), "hex_lift");
+        info(registration, ModItems.RECALL_CHARM.get(), "recall_charm");
         info(registration, ModItems.WARD_GLASS.get(), "ward_glass");
         info(registration, ModItems.VEIL_GLASS.get(), "veil_glass");
         info(registration, ModItems.HEX_FURNACE.get(), "hex_furnace");

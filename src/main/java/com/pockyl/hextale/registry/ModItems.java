@@ -242,6 +242,9 @@ public final class ModItems {
             properties -> new com.pockyl.hextale.item.FloatingStoneItem(ModBlocks.FLOATING_STONE.get(), properties.useBlockDescriptionPrefix()));
     public static final DeferredItem<BlockItem> WARD_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.WARD_GLASS);
     public static final DeferredItem<BlockItem> VEIL_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.VEIL_GLASS);
+    /** A pocket watch with a hextech face: it puts its holder back where they stood a few seconds ago. */
+    public static final DeferredItem<com.pockyl.hextale.item.RecallCharmItem> RECALL_CHARM = ITEMS.registerItem("recall_charm",
+            properties -> new com.pockyl.hextale.item.RecallCharmItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
     /** Hextech dust packed tight: thrown, it sticks and cracks the rock around it. */
     public static final DeferredItem<com.pockyl.hextale.item.DustChargeItem> DUST_CHARGE = ITEMS.registerItem("dust_charge",
             properties -> new com.pockyl.hextale.item.DustChargeItem(properties.stacksTo(16)));
