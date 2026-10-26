@@ -315,8 +315,8 @@ public final class ModItems {
     public static final DeferredItem<com.pockyl.hextale.item.NotedItem> VOID_CHITIN = ITEMS.registerItem("void_chitin",
             com.pockyl.hextale.item.NotedItem::new);
     /** A hextech crystal clouded through with the Void it drew out of the land (or held a breach with). */
-    public static final DeferredItem<com.pockyl.hextale.item.NotedItem> CLOUDED_CRYSTAL = ITEMS.registerItem("clouded_crystal",
-            properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<com.pockyl.hextale.item.CloudedCrystalItem> CLOUDED_CRYSTAL = ITEMS.registerItem("clouded_crystal",
+            properties -> new com.pockyl.hextale.item.CloudedCrystalItem(properties.rarity(Rarity.UNCOMMON)));
     /** A held breach folded into a beating heart: carried somewhere else and unfolded there. */
     public static final DeferredItem<com.pockyl.hextale.item.BreachHeartItem> BREACH_HEART = ITEMS.registerItem("breach_heart",
             properties -> new com.pockyl.hextale.item.BreachHeartItem(properties.stacksTo(1).rarity(Rarity.EPIC).fireResistant()));

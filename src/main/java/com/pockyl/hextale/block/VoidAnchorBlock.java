@@ -49,10 +49,6 @@ public class VoidAnchorBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
-        if (stack.is(ModItems.CLOUDED_CRYSTAL.get()) && player.isShiftKeyDown()
-                && level.getBlockEntity(pos) instanceof VoidAnchorBlockEntity holder) {
-            return fold(stack, level, holder, player);
-        }
         if (!stack.is(ModItems.HEXTECH_CRYSTAL.get()) || !(level.getBlockEntity(pos) instanceof VoidAnchorBlockEntity anchor)
                 || !anchor.crystal().isEmpty()) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
@@ -69,9 +65,10 @@ public class VoidAnchorBlock extends BaseEntityBlock {
 
     /**
      * A clouded crystal pressed to an anchor of a held breach, sneaking: the crystal goes into the breach and it folds into
-     * its heart.
+     * its heart. Called by the crystal ({@code CloudedCrystalItem}): a sneaking player with an item in hand never reaches
+     * the block's own use.
      */
-    private static InteractionResult fold(ItemStack stack, Level level, VoidAnchorBlockEntity anchor, Player player) {
+    public static InteractionResult fold(ItemStack stack, Level level, VoidAnchorBlockEntity anchor, Player player) {
         if (!(level instanceof ServerLevel server)) {
             return InteractionResult.SUCCESS;
         }

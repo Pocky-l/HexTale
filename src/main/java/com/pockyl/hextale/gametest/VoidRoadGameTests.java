@@ -11,10 +11,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -172,20 +170,23 @@ public final class VoidRoadGameTests {
         TheVoid breach = TheVoid.rooted(level, Vec3.atCenterOf(centre), 0, VoidShape.EYE, 3.5F, 883);
         level.addFreshEntity(breach);
         helper.assertTrue(!breach.startFold(level), "a breach that is not held cannot be folded");
-        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
-        player.setShiftKeyDown(true);
         BlockPos anchorAt = helper.absolutePos(new BlockPos(1 + RING[0][0], 1, 1 + RING[0][1]));
+        // The way a real click goes: a sneaking player with something in hand never reaches the block's own use, and a
+        // torch in the other hand must not get in the way.
+        net.minecraft.server.level.ServerPlayer player = GameTests.watcher(helper, anchorAt);
+        player.setShiftKeyDown(true);
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(net.minecraft.world.item.Items.TORCH));
         boolean[] pressed = {false};
         helper.succeedWhen(() -> {
             helper.assertTrue(breach.subdued() || pressed[0], "the ring holds it");
             if (!pressed[0]) {
                 ItemStack crystal = new ItemStack(ModItems.CLOUDED_CRYSTAL.get());
                 player.setItemInHand(InteractionHand.MAIN_HAND, crystal);
-                level.getBlockState(anchorAt).useItemOn(crystal, level, player, InteractionHand.MAIN_HAND,
+                player.gameMode.useItemOn(player, level, crystal, InteractionHand.MAIN_HAND,
                         new BlockHitResult(Vec3.atCenterOf(anchorAt), Direction.UP, anchorAt, false));
                 pressed[0] = true;
-                helper.assertTrue(crystal.isEmpty(), "the clouded crystal goes into it");
-                helper.assertTrue(breach.folding(), "and it starts to fold");
+                helper.assertTrue(breach.folding(), "a clouded crystal pressed to an anchor, sneaking, starts the fold");
+                helper.assertTrue(player.getAbilities().instabuild || crystal.isEmpty(), "the clouded crystal goes into it");
             }
             helper.assertTrue(breach.isRemoved(), "folded, the breach is gone (fold " + breach.fold(0) + ")");
             List<ItemEntity> hearts = level.getEntitiesOfClass(ItemEntity.class, breach.getBoundingBox().inflate(4),
