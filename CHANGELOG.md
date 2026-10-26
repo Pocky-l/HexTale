@@ -29,6 +29,10 @@ Glassy scars: the way into hextech no longer waits for a storm.
   research, as the answer to essences no single thing gives (light never comes alone) and to jars spoiled by one
   wrong thing. The diary's texts along the way tell that story.
 
+### Fixed
+- Shovel runes (treasures, seeds) and the felling of trees ignored grass blocks, podzol and mycelium: they count as
+  soil again.
+
 ## [1.2.0] - 2026-10-26
 Two roads of the Void: heal the land, or hold the breach and make it your own.
 

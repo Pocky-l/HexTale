@@ -168,7 +168,7 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
 
     /** What its light makes grow: anything green that grows by itself (crops, saplings, stems, cane, vines...). */
     public static boolean grows(BlockState state) {
-        if (!state.isRandomlyTicking() || state.is(BlockTags.DIRT)) {
+        if (!state.isRandomlyTicking() || state.is(BlockTags.SUBSTRATE_OVERWORLD)) {
             return false;
         }
         return state.getBlock() instanceof BonemealableBlock || state.is(BlockTags.SAPLINGS) || state.is(BlockTags.CROPS)

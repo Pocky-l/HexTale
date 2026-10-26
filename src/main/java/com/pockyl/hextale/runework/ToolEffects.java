@@ -255,7 +255,7 @@ public final class ToolEffects {
 
     /** Whether a log here stands on soil: a tree's foot. */
     private static boolean isFoot(ServerLevel level, BlockPos pos) {
-        return level.getBlockState(pos.below()).is(BlockTags.DIRT);
+        return level.getBlockState(pos.below()).is(BlockTags.SUBSTRATE_OVERWORLD);
     }
 
     /**
@@ -393,7 +393,7 @@ public final class ToolEffects {
             sound(level, Vec3.atCenterOf(pos), SoundEvents.BRUSH_GRAVEL_COMPLETED, 0.8F, 0.9F);
         }
         int fertility = runes.strength(ToolRune.FERTILITY.rune());
-        if (fertility > 0 && state.is(BlockTags.DIRT) && random.nextFloat() < HolderRune.at(ToolRune.SEEDS, fertility)) {
+        if (fertility > 0 && state.is(BlockTags.SUBSTRATE_OVERWORLD) && random.nextFloat() < HolderRune.at(ToolRune.SEEDS, fertility)) {
             event.getDrops().add(drop(level, pos, seed(random)));
             puff(level, Vec3.atCenterOf(pos), ToolRune.FERTILITY.rune(), 8, 0.3);
         }
@@ -401,7 +401,7 @@ public final class ToolEffects {
 
     /** Ground a shovel may find a treasure in. */
     private static boolean soil(BlockState state) {
-        return state.is(BlockTags.DIRT) || state.is(BlockTags.SAND) || state.is(Blocks.GRAVEL) || state.is(Blocks.CLAY)
+        return state.is(BlockTags.SUBSTRATE_OVERWORLD) || state.is(BlockTags.SAND) || state.is(Blocks.GRAVEL) || state.is(Blocks.CLAY)
                 || state.is(Blocks.SOUL_SAND) || state.is(Blocks.SOUL_SOIL) || state.is(Blocks.MUD);
     }
 

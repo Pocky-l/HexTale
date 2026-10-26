@@ -72,7 +72,7 @@ public final class Felling {
 
     /** Whether the block may be a tree's foot: a log on dirt, open to the air beside it (buried roots are not). */
     public static boolean isFoot(BlockGetter level, BlockPos pos, BlockState state) {
-        if (!state.is(BlockTags.LOGS) || !level.getBlockState(pos.below()).is(BlockTags.DIRT)) {
+        if (!state.is(BlockTags.LOGS) || !level.getBlockState(pos.below()).is(BlockTags.SUBSTRATE_OVERWORLD)) {
             return false;
         }
         for (Direction side : Direction.Plane.HORIZONTAL) {
@@ -137,7 +137,7 @@ public final class Felling {
         }
         List<BlockPos> feet = new ArrayList<>();
         for (BlockPos log : logs) {
-            if (log.getY() == foot.getY() && level.getBlockState(log.below()).is(BlockTags.DIRT)
+            if (log.getY() == foot.getY() && level.getBlockState(log.below()).is(BlockTags.SUBSTRATE_OVERWORLD)
                     && Math.abs(log.getX() - foot.getX()) <= 1 && Math.abs(log.getZ() - foot.getZ()) <= 1) {
                 feet.add(log);
             }
