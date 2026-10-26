@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from.
 
 ### Changed
+- Essences are redrawn as proper pixel art: crisp edges and a few clean shades, like Minecraft's own icons, for the
+  essence items and for the essence signs in screens, over the crucible and on jar stickers.
 - The Pocky Mods creative tab lists hextale's items in groups: research, the workshop, the altar, essence works,
   chemtech, pylons, automation, tools and armour, materials, ores, building blocks, nature, then essences, brews and
   research notes, with the creative-only items at the very end.
