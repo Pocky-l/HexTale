@@ -1,0 +1,20 @@
+{
+  "region": "circle",
+  "stage": "mid",
+  "icon": "hextale:soul_flask",
+  "parents": [
+    "recall_charm"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:soul_flask",
+    "then": {
+      "kind": "runes",
+      "result": "soul"
+    }
+  },
+  "pos": [
+    410,
+    -50
+  ]
+}

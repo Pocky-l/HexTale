@@ -1,0 +1,172 @@
+package com.pockyl.hextale.item;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.EntityProcessor;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.Tags;
+
+import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.runework.RuneHolder;
+import com.pockyl.hextale.runework.SoulRune;
+
+import java.util.function.Consumer;
+
+import org.jspecify.annotations.Nullable;
+
+/**
+ * The Soul Flask: right click a creature with an empty flask and it folds into the glass, whole (everything it is and
+ * carries is kept); right click a block with a full flask and it steps out there. No players, no bosses. Takes runes
+ * (Healing, Growth, Slumber, Lens) that act when the creature comes out.
+ */
+public class SoulFlaskItem extends Item {
+    public SoulFlaskItem(Properties properties) {
+        super(properties);
+    }
+
+    /** Whether this creature may go into a flask. */
+    public static boolean takes(LivingEntity entity) {
+        return entity instanceof Mob && entity.isAlive() && !(entity instanceof Player) && !entity.typeHolder().is(Tags.EntityTypes.BOSSES)
+                && !entity.isPassenger() && !entity.isVehicle();
+    }
+
+    @Override
+    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
+        if (stack.has(ModDataComponents.SOUL.get()) || !takes(target)) {
+            return InteractionResult.PASS;
+        }
+        if (target.level() instanceof ServerLevel level) {
+            ItemStack full = stack.copyWithCount(1);
+            full.set(ModDataComponents.SOUL.get(), capture(level, target));
+            Vec3 at = target.position();
+            level.sendParticles(ModParticles.wisp(ModParticles.HEX_LIGHT), at.x, at.y + target.getBbHeight() / 2, at.z, 16,
+                    target.getBbWidth() / 2, target.getBbHeight() / 2, target.getBbWidth() / 2, 0.02);
+            level.playSound(null, at.x, at.y, at.z, ModSounds.ESSENCE_DRAW.get(), SoundSource.PLAYERS, 0.8F, 1.2F);
+            target.discard();
+            stack.shrink(1);
+            if (stack.isEmpty()) {
+                player.setItemInHand(hand, full);
+            } else if (!player.getInventory().add(full)) {
+                player.drop(full, false, net.minecraft.util.Prediction.SERVER_ONLY);
+            }
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    /** Everything the creature is, as a tag (its type under "id"; no UUID, so a copy never clashes). */
+    public static CompoundTag capture(ServerLevel level, Entity entity) {
+        TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, level.registryAccess());
+        entity.saveWithoutId(output);
+        CompoundTag tag = output.buildResult();
+        tag.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
+        tag.remove("UUID");
+        return tag;
+    }
+
+    /** The creature a tag holds, standing at {@code at}; null when it cannot be made. */
+    @Nullable
+    public static Entity release(ServerLevel level, CompoundTag tag, Vec3 at) {
+        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.parse(tag.getStringOr("id", ""))).orElse(null);
+        if (type == null) {
+            return null;
+        }
+        Entity entity = EntityType.loadEntityRecursive(type, tag.copy(), level, EntitySpawnReason.SPAWN_ITEM_USE, EntityProcessor.NOP);
+        if (entity == null) {
+            return null;
+        }
+        entity.snapTo(at.x, at.y, at.z, entity.getYRot(), entity.getXRot());
+        level.addFreshEntity(entity);
+        return entity;
+    }
+
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+        ItemStack stack = context.getItemInHand();
+        CompoundTag soul = stack.get(ModDataComponents.SOUL.get());
+        if (soul == null) {
+            return InteractionResult.PASS;
+        }
+        if (context.getLevel() instanceof ServerLevel level) {
+            BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
+            Entity entity = release(level, soul, Vec3.atBottomCenterOf(pos));
+            if (entity == null) {
+                return InteractionResult.FAIL;
+            }
+            if (entity instanceof LivingEntity living) {
+                bless(stack, living);
+            }
+            level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), entity.getX(), entity.getY() + 0.1, entity.getZ(), 0, 1.0, 1, 0, 1);
+            level.sendParticles(ModParticles.wisp(ModParticles.HEX_LIGHT), entity.getX(), entity.getY() + 0.5, entity.getZ(), 12, 0.3, 0.4, 0.3, 0.02);
+            level.playSound(null, pos, ModSounds.PYLON_ARRIVE.get(), SoundSource.PLAYERS, 0.8F, 1.1F);
+            stack.remove(ModDataComponents.SOUL.get());
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    /** What the flask's runes do to the creature stepping out. */
+    private static void bless(ItemStack flask, LivingEntity creature) {
+        var runes = RuneHolder.SOUL.runes(flask);
+        if (runes.strength(SoulRune.HEALING.rune()) > 0) {
+            creature.setHealth(creature.getMaxHealth());
+        }
+        if (runes.strength(SoulRune.GROWTH.rune()) > 0 && creature instanceof AgeableMob ageable && ageable.isBaby()) {
+            ageable.setAge(0);
+        }
+        int slumber = runes.strength(SoulRune.SLUMBER.rune());
+        if (slumber > 0 && creature instanceof Enemy) {
+            int ticks = SoulRune.SLUMBER_TICKS[Math.min(slumber, 4) - 1];
+            creature.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, ticks, 4));
+            creature.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, ticks, 1));
+            if (creature instanceof Mob mob) {
+                mob.setTarget(null);
+            }
+        }
+    }
+
+    @Override
+    public Component getName(ItemStack stack) {
+        CompoundTag soul = stack.get(ModDataComponents.SOUL.get());
+        if (soul != null) {
+            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.parse(soul.getStringOr("id", ""))).orElse(null);
+            if (type != null) {
+                return Component.translatable("item.hextale.soul_flask.full", type.getDescription());
+            }
+        }
+        return super.getName(stack);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        tooltip.accept(Component.translatable("item.hextale.hextech_pickaxe.slots", RuneHolder.SOUL.runes(stack).count(), SoulRune.SLOTS)
+                .withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("item.hextale.soul_flask.hint").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("item.hextale.soul_flask.controls").withStyle(ChatFormatting.DARK_AQUA));
+    }
+}

@@ -121,6 +121,21 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
+    @HexTest(padding = 2)
+    public static void aSoulFlaskKeepsACreatureWhole(GameTestHelper helper) {
+        net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, new BlockPos(1, 2, 1));
+        pig.setCustomName(net.minecraft.network.chat.Component.literal("Wilbur"));
+        helper.assertTrue(com.pockyl.hextale.item.SoulFlaskItem.takes(pig), "a pig fits in a flask");
+        net.minecraft.nbt.CompoundTag soul = com.pockyl.hextale.item.SoulFlaskItem.capture(helper.getLevel(), pig);
+        pig.discard();
+        net.minecraft.world.entity.Entity out = com.pockyl.hextale.item.SoulFlaskItem.release(helper.getLevel(), soul,
+                Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(2, 2, 2))));
+        helper.assertTrue(out instanceof net.minecraft.world.entity.animal.pig.Pig && out.getCustomName() != null
+                && out.getCustomName().getString().equals("Wilbur"), "the same pig comes out, name and all: " + out);
+        out.discard();
+        helper.succeed();
+    }
+
     @HexTest
     public static void aNullLanternKeepsItsQuiet(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);

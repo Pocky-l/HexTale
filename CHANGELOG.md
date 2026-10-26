@@ -58,6 +58,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - Recall Charm (a clock at the Hextech Altar; replaces the "Recall Device" idea): used, it puts you back where you
   stood five seconds ago in the same world, then rests for half a minute. Runes: Shift (up to 24 seconds back), Haste
   (a shorter rest), Mending (heals on the way back) and Lens.
+- Soul Flask (at the Hextech Altar): right click a creature to fold it into the glass, whole - name, saddle, everything;
+  right click a block to let it out there. No players and no bosses. Runes: Healing (it comes out healed), Growth (a
+  young one comes out grown), Slumber (a hostile one comes out dazed) and Lens.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed
