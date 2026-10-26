@@ -1,6 +1,16 @@
 {
   "region": "void",
-  "icon": ["minecraft:dead_bush", "hextale:void_soil"],
+  "icon": [
+    {
+      "id": "hextale:guide_mark",
+      "components": {
+        "minecraft:custom_model_data": {
+          "strings": ["let_it_spread"]
+        }
+      }
+    },
+    "hextale:void_soil"
+  ],
   "parents": ["the_thinning"],
   "goal": {
     "type": "thinning",

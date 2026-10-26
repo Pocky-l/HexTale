@@ -2,10 +2,10 @@
   "region": "void",
   "stage": "mid",
   "icon": {
-    "id": "minecraft:potion",
+    "id": "hextale:guide_mark",
     "components": {
-      "minecraft:potion_contents": {
-        "potion": "minecraft:healing"
+      "minecraft:custom_model_data": {
+        "strings": ["void_mites"]
       }
     }
   },

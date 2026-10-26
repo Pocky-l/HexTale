@@ -1,6 +1,13 @@
 {
   "region": "workshop",
-  "icon": "minecraft:paper",
+  "icon": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": {
+        "strings": ["item_study"]
+      }
+    }
+  },
   "parents": ["research_table", "researchers_diary"],
   "goal": {
     "type": "studied"

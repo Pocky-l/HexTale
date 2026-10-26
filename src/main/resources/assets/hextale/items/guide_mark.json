@@ -1,0 +1,48 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "cases": [
+      {
+        "when": "ink",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/ink"
+        }
+      },
+      {
+        "when": "item_study",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/item_study"
+        }
+      },
+      {
+        "when": "the_thinning",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/the_thinning"
+        }
+      },
+      {
+        "when": "let_it_spread",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/let_it_spread"
+        }
+      },
+      {
+        "when": "void_mites",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/void_mites"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "hextale:item/guide/ink"
+    }
+  }
+}

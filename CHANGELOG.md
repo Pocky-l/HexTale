@@ -36,6 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   beside it: a pipe or an alembic opens an inlet, a jar with essence in it an inlet too, an empty jar the concentrate
   outlet (a second empty jar the rest outlet). Take it away and the side shuts again; a side shut by hand stays shut.
 - The Separator's outline and collision follow its flask, stand and fittings instead of a full block.
+- Diary steps that borrowed a plain Minecraft item as their picture have their own now: a loupe for studying items, an
+  inkwell with a quill for the ink, grass wilting in a lilac haze for the first sign of the Void, a clod of earth taken
+  over by dark veins for letting it spread, and a heart with a mite clinging to it.
 - Essences are redrawn as proper pixel art: crisp edges and a few clean shades, like Minecraft's own icons, for the
   essence items and for the essence signs in screens, over the crucible and on jar stickers.
 - The Pocky Mods creative tab lists hextale's items in groups: research, the workshop, the altar, essence works,

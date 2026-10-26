@@ -979,6 +979,7 @@
   "quest.hextale.essence_sticker.desc": "Маленькая наклейка одной эссенции, написанная хекс-чернилами. На банке она, может, не пустит всё остальное. Но смесь останется смесью - наклейка её не разделит.",
   "block.hextale.hex_pylon.link.no_load": "Здесь нечему принять ни предметы, ни эссенцию",
   "item.hextale.blank_scroll": "Чистый свиток",
+  "item.hextale.guide_mark": "Знак дневника",
   "item.hextale.research_notes": "Записи исследования",
   "item.hextale.research_notes.named": "Записи исследования: %s",
   "item.hextale.research_notes.read": "Используйте, чтобы прочитать: потом это можно будет сделать",

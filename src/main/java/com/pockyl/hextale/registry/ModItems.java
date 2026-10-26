@@ -197,6 +197,11 @@ public final class ModItems {
             properties -> new RuneScrollItem(properties.stacksTo(16).rarity(Rarity.UNCOMMON)));
     /** Rolled paper waiting for a rune: written at the altar with a rune chosen on a stele. */
     public static final DeferredItem<Item> BLANK_SCROLL = ITEMS.registerSimpleItem("blank_scroll");
+    /**
+     * Never in a player's hands: the picture of a diary step that has no item of its own (a thought, something that
+     * happened). The picture is chosen by the stack's custom model data string; hidden from the creative tab and JEI.
+     */
+    public static final DeferredItem<Item> GUIDE_MARK = ITEMS.registerSimpleItem("guide_mark");
     /** A finished research written out: whoever reads it may make the topic's items. */
     public static final DeferredItem<com.pockyl.hextale.item.ResearchNotesItem> RESEARCH_NOTES = ITEMS.registerItem("research_notes",
             properties -> new com.pockyl.hextale.item.ResearchNotesItem(properties.stacksTo(16).rarity(Rarity.UNCOMMON)));

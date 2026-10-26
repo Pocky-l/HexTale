@@ -1,6 +1,13 @@
 {
   "region": "workshop",
-  "icon": "minecraft:ink_sac",
+  "icon": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": {
+        "strings": ["ink"]
+      }
+    }
+  },
   "parents": ["item_study", "essence_tank", "concentrate"],
   "goal": {
     "type": "ink_at_table"

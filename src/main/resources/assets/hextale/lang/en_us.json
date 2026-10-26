@@ -979,6 +979,7 @@
   "quest.hextale.essence_sticker.desc": "A little hex-inked label of one essence. On a jar it might keep out everything else. A mixture, though, stays a mixture - no label will split it.",
   "block.hextale.hex_pylon.link.no_load": "Nothing here takes items or essence",
   "item.hextale.blank_scroll": "Blank Scroll",
+  "item.hextale.guide_mark": "Diary Mark",
   "item.hextale.research_notes": "Research Notes",
   "item.hextale.research_notes.named": "Research Notes: %s",
   "item.hextale.research_notes.read": "Use to read: then you can make it",

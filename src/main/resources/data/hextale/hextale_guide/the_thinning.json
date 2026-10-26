@@ -1,6 +1,13 @@
 {
   "region": "void",
-  "icon": ["minecraft:short_grass", "minecraft:dead_bush"],
+  "icon": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": {
+        "strings": ["the_thinning"]
+      }
+    }
+  },
   "goal": {
     "type": "thinning",
     "stage": "haze"
