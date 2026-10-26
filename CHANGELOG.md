@@ -74,6 +74,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
   into unknown essence and pours it into the jar or pipe below - fuel for the Chem Burner. The unmaking thins the land
   around. Runes: Motor (faster), Dam (more essence), Radiance (experience now and then), Hush (less leaks into the
   land) and Lens.
+- Silence Ward (at the Hex Workbench, from nullstone wrapped in wool): sounds around it go soft - machines, mobs,
+  footsteps - while the rest of the world sounds as usual. Runes: Shift (wider), Hush (quieter, down to nothing),
+  Insulator (no vibration inside reaches sculk sensors, shriekers or wardens) and Lens.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

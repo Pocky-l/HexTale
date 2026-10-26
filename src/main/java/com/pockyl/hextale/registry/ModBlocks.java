@@ -243,6 +243,10 @@ public final class ModBlocks {
             com.pockyl.hextale.block.DisintegratorBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(3.0F).sound(SoundType.POLISHED_DEEPSLATE).noOcclusion()
                     .requiresCorrectToolForDrops());
+    /** A wool cocoon bound in brass round nullstone: it swallows sound around it. */
+    public static final DeferredBlock<com.pockyl.hextale.block.SilenceWardBlock> SILENCE_WARD = BLOCKS.registerBlock("silence_ward",
+            com.pockyl.hextale.block.SilenceWardBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(0.8F).sound(SoundType.WOOL).noOcclusion());
     public static final DeferredBlock<com.pockyl.hextale.block.CrucibleBlock> CRUCIBLE = BLOCKS.registerBlock("crucible",
             com.pockyl.hextale.block.CrucibleBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.5F).sound(SoundType.METAL).noOcclusion()

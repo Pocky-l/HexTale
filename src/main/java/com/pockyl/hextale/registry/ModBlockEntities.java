@@ -68,6 +68,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.DisintegratorBlock.Bowl>> DISINTEGRATOR =
             BLOCK_ENTITIES.register("disintegrator", () -> new BlockEntityType<>(com.pockyl.hextale.block.DisintegratorBlock.Bowl::new,
                     ModBlocks.DISINTEGRATOR.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.SilenceWardBlock.Ward>> SILENCE_WARD =
+            BLOCK_ENTITIES.register("silence_ward", () -> new BlockEntityType<>(com.pockyl.hextale.block.SilenceWardBlock.Ward::new,
+                    ModBlocks.SILENCE_WARD.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.WorldAnchorBlock.Anchor>> WORLD_ANCHOR =
             BLOCK_ENTITIES.register("world_anchor", () -> new BlockEntityType<>(com.pockyl.hextale.block.WorldAnchorBlock.Anchor::new,
                     ModBlocks.WORLD_ANCHOR.get()));

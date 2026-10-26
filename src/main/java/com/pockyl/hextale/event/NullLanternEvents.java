@@ -14,7 +14,8 @@ import com.pockyl.hextale.runework.NullRune;
 
 /**
  * Null Lanterns keep hostile creatures from forming by themselves within their quiet (natural and chunk spawns only:
- * spawners, eggs and commands still work), and with Hush keep phantoms off players inside it.
+ * spawners, eggs and commands still work), and with Hush keep phantoms off players inside it. Silence Wards with
+ * Insulator swallow vibrations here too.
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class NullLanternEvents {
@@ -36,6 +37,15 @@ public final class NullLanternEvents {
         if (event.getEntity().level() instanceof ServerLevel level
                 && NullLanternBlockEntity.covering(level, event.getEntity().position(), NullRune.HUSH) != null) {
             event.setResult(PlayerSpawnPhantomsEvent.Result.DENY);
+        }
+    }
+
+    /** A Silence Ward with Insulator keeps vibrations inside it from reaching sculk. */
+    @SubscribeEvent
+    public static void onVibration(net.neoforged.neoforge.event.VanillaGameEvent event) {
+        if (event.getLevel() instanceof ServerLevel level && com.pockyl.hextale.block.SilenceWardBlock.Ward.covering(level, event.getEventPosition(),
+                com.pockyl.hextale.runework.SilenceRune.INSULATOR) != null) {
+            event.setCanceled(true);
         }
     }
 }

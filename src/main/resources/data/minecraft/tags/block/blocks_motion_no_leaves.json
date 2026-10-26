@@ -92,6 +92,7 @@
     "hextale:hex_lift",
     "hextale:shadow_coffer",
     "hextale:world_anchor",
-    "hextale:disintegrator"
+    "hextale:disintegrator",
+    "hextale:silence_ward"
   ]
 }

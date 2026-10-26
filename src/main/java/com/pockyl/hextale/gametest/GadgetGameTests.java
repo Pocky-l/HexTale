@@ -217,4 +217,20 @@ public final class GadgetGameTests {
             helper.assertTrue(tank.tank().contents().unknown() >= 3, "the jar holds unknown essence: " + tank.tank().contents());
         });
     }
+
+    @HexTest
+    public static void aSilenceWardHushesItsSurroundings(GameTestHelper helper) {
+        BlockPos ward = new BlockPos(1, 1, 1);
+        helper.setBlock(ward, ModBlocks.SILENCE_WARD.get());
+        Vec3 centre = Vec3.atCenterOf(helper.absolutePos(ward));
+        helper.runAfterDelay(1, () -> {
+            helper.assertTrue(com.pockyl.hextale.block.SilenceWardBlock.Ward.covering(helper.getLevel(), centre.add(5, 0, 0), null) != null,
+                    "a sound five blocks away is hushed");
+            helper.assertTrue(com.pockyl.hextale.block.SilenceWardBlock.Ward.covering(helper.getLevel(), centre.add(12, 0, 0), null) == null,
+                    "twelve blocks away it is not");
+            helper.assertTrue(com.pockyl.hextale.block.SilenceWardBlock.Ward.covering(helper.getLevel(), centre,
+                    com.pockyl.hextale.runework.SilenceRune.INSULATOR) == null, "without Insulator vibrations pass");
+            helper.succeed();
+        });
+    }
 }

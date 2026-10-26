@@ -240,6 +240,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEX_LIFT = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_LIFT);
     public static final DeferredItem<BlockItem> SHADOW_COFFER = ITEMS.registerSimpleBlockItem(ModBlocks.SHADOW_COFFER);
     public static final DeferredItem<BlockItem> DISINTEGRATOR = ITEMS.registerSimpleBlockItem(ModBlocks.DISINTEGRATOR);
+    public static final DeferredItem<BlockItem> SILENCE_WARD = ITEMS.registerSimpleBlockItem(ModBlocks.SILENCE_WARD);
     public static final DeferredItem<BlockItem> WORLD_ANCHOR = ITEMS.registerSimpleBlockItem(ModBlocks.WORLD_ANCHOR,
             properties -> properties.rarity(Rarity.RARE));
     public static final DeferredItem<com.pockyl.hextale.item.FloatingStoneItem> FLOATING_STONE = ITEMS.registerItem("floating_stone",

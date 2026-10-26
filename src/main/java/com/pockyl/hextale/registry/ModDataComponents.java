@@ -143,6 +143,9 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> DISINTEGRATOR_RUNES =
             COMPONENTS.registerComponentType("disintegrator_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SILENCE_WARD_RUNES =
+            COMPONENTS.registerComponentType("silence_ward_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> WORLD_ANCHOR_RUNES =
             COMPONENTS.registerComponentType("world_anchor_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));

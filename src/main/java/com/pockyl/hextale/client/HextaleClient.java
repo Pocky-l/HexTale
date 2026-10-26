@@ -122,6 +122,7 @@ public final class HextaleClient {
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
         BreachCinematic.register(modBus);
+        SilenceHush.register();
         ClientLift.register();
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
@@ -188,7 +189,8 @@ public final class HextaleClient {
             }
             if (stack.is(ModItems.LEVITATION_PLATE.get()) || stack.is(ModItems.NULL_LANTERN.get()) || stack.is(ModItems.IMPULSE_PLATE.get())
                     || stack.is(ModItems.HEX_LIFT.get()) || stack.is(ModItems.SHADOW_COFFER.get())
-                    || stack.is(ModItems.WORLD_ANCHOR.get()) || stack.is(ModItems.DISINTEGRATOR.get())) {
+                    || stack.is(ModItems.WORLD_ANCHOR.get()) || stack.is(ModItems.DISINTEGRATOR.get())
+                    || stack.is(ModItems.SILENCE_WARD.get())) {
                 event.getToolTip().add(Component.translatable(stack.getItem().getDescriptionId() + ".hint").withStyle(ChatFormatting.GRAY));
             }
             // How a pipe's sides are set.
