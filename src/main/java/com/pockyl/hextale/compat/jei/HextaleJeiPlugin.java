@@ -130,6 +130,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.NULL_LANTERN.get(), "null_lantern");
         info(registration, ModItems.IMPULSE_PLATE.get(), "impulse_plate");
         info(registration, ModItems.HEX_LIFT.get(), "hex_lift");
+        info(registration, ModItems.SHADOW_COFFER.get(), "shadow_coffer");
         info(registration, ModItems.RECALL_CHARM.get(), "recall_charm");
         info(registration, ModItems.SOUL_FLASK.get(), "soul_flask");
         info(registration, ModItems.SPAWNER_CAGE.get(), "spawner_cage");

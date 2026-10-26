@@ -156,6 +156,21 @@ public final class GadgetGameTests {
     }
 
     @HexTest
+    public static void shadowCoffersShareOnePocket(GameTestHelper helper) {
+        com.pockyl.hextale.block.ShadowPockets pockets = com.pockyl.hextale.block.ShadowPockets.of(helper.getLevel().getServer());
+        java.util.UUID pair = java.util.UUID.randomUUID();
+        pockets.pocket(pair).setItem(3, new net.minecraft.world.item.ItemStack(Items.DIAMOND, 5));
+        helper.assertTrue(pockets.pocket(pair).getItem(3).is(Items.DIAMOND), "the same seal opens the same pocket");
+        helper.assertTrue(pockets.pocket(java.util.UUID.randomUUID()).isEmpty(), "another seal opens another pocket");
+        var ops = helper.getLevel().registryAccess().createSerializationContext(com.mojang.serialization.JavaOps.INSTANCE);
+        Object saved = com.pockyl.hextale.block.ShadowPockets.CODEC.encodeStart(ops, pockets).getOrThrow();
+        com.pockyl.hextale.block.ShadowPockets loaded = com.pockyl.hextale.block.ShadowPockets.CODEC.parse(ops, saved).getOrThrow();
+        helper.assertTrue(loaded.pocket(pair).getItem(3).getCount() == 5, "the pocket is kept with the world");
+        pockets.pocket(pair).clearContent();
+        helper.succeed();
+    }
+
+    @HexTest
     public static void aNullLanternKeepsItsQuiet(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at.below(), net.minecraft.world.level.block.Blocks.STONE);

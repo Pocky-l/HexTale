@@ -104,6 +104,11 @@ public final class ModBlocks {
     public static final DeferredBlock<Block> CHISELED_MAGIC_BRICKS = BLOCKS.registerBlock("chiseled_magic_bricks", Block::new,
             ModBlocks::brickProperties);
 
+    /** A coffer sealed with a shadow rune: coffers with the same seal share one pocket. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ShadowCofferBlock> SHADOW_COFFER = BLOCKS.registerBlock("shadow_coffer",
+            com.pockyl.hextale.block.ShadowCofferBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.BASS).strength(2.5F)
+                    .sound(SoundType.WOOD).lightLevel(state -> 3));
     /** Polished magic stone with a lifting glyph: a jump carries you to the next lift above, a sneak to the one below. */
     public static final DeferredBlock<com.pockyl.hextale.block.HexLiftBlock> HEX_LIFT = BLOCKS.registerBlock("hex_lift",
             com.pockyl.hextale.block.HexLiftBlock::new, () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF).lightLevel(state -> 4));

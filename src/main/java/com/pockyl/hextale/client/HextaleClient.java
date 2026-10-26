@@ -187,7 +187,7 @@ public final class HextaleClient {
                 event.getToolTip().add(Component.translatable("block.hextale." + id + ".hint").withStyle(ChatFormatting.GRAY));
             }
             if (stack.is(ModItems.LEVITATION_PLATE.get()) || stack.is(ModItems.NULL_LANTERN.get()) || stack.is(ModItems.IMPULSE_PLATE.get())
-                    || stack.is(ModItems.HEX_LIFT.get())) {
+                    || stack.is(ModItems.HEX_LIFT.get()) || stack.is(ModItems.SHADOW_COFFER.get())) {
                 event.getToolTip().add(Component.translatable(stack.getItem().getDescriptionId() + ".hint").withStyle(ChatFormatting.GRAY));
             }
             // How a pipe's sides are set.

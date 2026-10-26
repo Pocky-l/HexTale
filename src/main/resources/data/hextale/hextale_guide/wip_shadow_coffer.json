@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "forge",
-  "stage": "mid",
-  "icon": "minecraft:ender_chest",
-  "parents": ["sending_pylon"],
-  "pos": [1073, -218]
-}

@@ -63,6 +63,10 @@ Glassy scars: the way into hextech no longer waits for a storm.
   young one comes out grown), Slumber (a hostile one comes out dazed) and Lens.
 - Spawner Cage (at the Hextech Altar): pressed to a monster spawner it folds the spawner in, whole - what it spawns
   and how; pressed to a block it sets the spawner there, and the cage burns out doing it.
+- Shadow Coffers (a pair from the Hextech Altar; replaces the "Shadow Coffer" idea): coffers sealed with one rune share
+  one 27-slot pocket in the shadow, wherever they stand, even in another dimension. Placing the first seals the second
+  in your hand; Shift + right click a placed coffer with coffers in hand to give them its seal. Hoppers and pylons
+  reach the pocket too.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

@@ -140,6 +140,10 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SOUL_RUNES =
             COMPONENTS.registerComponentType("soul_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    /** The seal of a Shadow Coffer: coffers with the same one share a pocket. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.UUID>> COFFER_PAIR =
+            COMPONENTS.registerComponentType("coffer_pair", builder -> builder
+                    .persistent(net.minecraft.core.UUIDUtil.STRING_CODEC).networkSynchronized(net.minecraft.core.UUIDUtil.STREAM_CODEC));
     /** The monster spawner folded into a Spawner Cage: its block entity data. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.minecraft.nbt.CompoundTag>> CAGED_SPAWNER =
             COMPONENTS.registerComponentType("caged_spawner", builder -> builder
