@@ -378,19 +378,15 @@ public class TheVoid extends Entity {
     }
 
     /**
-     * How the breach's plane lies in the world: upright and turned to the yaw, or laid flat on the ground. Local x =
-     * across the breach, y = along it, z = the plane's normal.
+     * How the breach's plane stands in the world: upright and turned to the yaw. Local x = across the breach, y = along
+     * it, z = the plane's normal.
      */
     public Quaternionf orientation() {
         return orientation(getYRot(), shape());
     }
 
     public static Quaternionf orientation(float yaw, VoidShape shape) {
-        Quaternionf q = new Quaternionf().rotationY(-yaw * Mth.DEG_TO_RAD);
-        if (shape.lying()) {
-            q.rotateX(Mth.HALF_PI);
-        }
-        return q;
+        return new Quaternionf().rotationY(-yaw * Mth.DEG_TO_RAD);
     }
 
     /** A local point (blocks) in the world. */
@@ -574,7 +570,6 @@ public class TheVoid extends Entity {
     private void eatThrown(ServerLevel level) {
         VoidLayout layout = layout();
         float reveal = reveal(0);
-        boolean lying = shape().lying();
         Quaternionf inverse = orientation().conjugate(new Quaternionf());
         AABB area = new AABB(position(), position()).inflate(layout.reach() + 1);
         for (net.minecraft.world.entity.item.ItemEntity item : level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, area,
@@ -623,7 +618,6 @@ public class TheVoid extends Entity {
     private void touch(ServerLevel level) {
         VoidLayout layout = layout();
         float reveal = reveal(0);
-        boolean lying = shape().lying();
         Quaternionf inverse = orientation().conjugate(new Quaternionf());
         AABB area = new AABB(position(), position()).inflate(layout.reach() + 1.5);
         for (LivingEntity living : level.getEntitiesOfClass(LivingEntity.class, area, TheVoid::touchable)) {
@@ -634,8 +628,8 @@ public class TheVoid extends Entity {
             Vector3f local = inverse.transform(new Vector3f((float) (centre.x - getX()), (float) (centre.y - getY()), (float) (centre.z - getZ())));
             float halfW = living.getBbWidth() * 0.5F;
             float halfH = living.getBbHeight() * 0.5F;
-            float depth = (lying ? halfH : halfW) + layout.halfThickness();
-            if (Math.abs(local.z) > depth || !layout.touches(local.x, local.y, halfW, lying ? halfW : halfH, reveal)) {
+            float depth = halfW + layout.halfThickness();
+            if (Math.abs(local.z) > depth || !layout.touches(local.x, local.y, halfW, halfH, reveal)) {
                 continue;
             }
             repel(level, living, local);

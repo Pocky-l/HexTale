@@ -10,28 +10,24 @@ import net.minecraft.util.RandomSource;
  */
 public enum VoidShape {
     /** A tall ragged doorway: rectangles of nothing laid over each other, teeth and loose cells around. */
-    GATE("gate", 2.6F, 5.0F, false, 0.8F, 0.3F),
+    GATE("gate", 2.6F, 5.0F, 0.8F, 0.3F),
     /** A rounder breach with a blinding whirl in its heart. */
-    EYE("eye", 2.2F, 4.6F, false, 0.95F, 1.0F),
+    EYE("eye", 2.2F, 4.6F, 0.95F, 1.0F),
     /** A narrow crack standing upright, stepping left and right as it climbs. */
-    SLIT("slit", 2.0F, 4.2F, false, 0.32F, 0.5F),
+    SLIT("slit", 2.0F, 4.2F, 0.32F, 0.5F),
     /** Space falling apart into several breaches clustered together. */
-    SCATTER("scatter", 2.4F, 4.6F, false, 1.0F, 0.4F),
-    /** The ground itself gives way into the Void. */
-    BREACH("breach", 2.6F, 6.0F, true, 0.75F, 0.6F);
+    SCATTER("scatter", 2.4F, 4.6F, 1.0F, 0.4F);
 
     private final String id;
     private final float minSize;
     private final float maxSize;
-    private final boolean lying;
     private final float aspect;
     private final float core;
 
-    VoidShape(String id, float minSize, float maxSize, boolean lying, float aspect, float core) {
+    VoidShape(String id, float minSize, float maxSize, float aspect, float core) {
         this.id = id;
         this.minSize = minSize;
         this.maxSize = maxSize;
-        this.lying = lying;
         this.aspect = aspect;
         this.core = core;
     }
@@ -42,11 +38,6 @@ public enum VoidShape {
 
     public String translationKey() {
         return "void_shape.hextale." + id;
-    }
-
-    /** Lies flat on the ground instead of standing in the air. */
-    public boolean lying() {
-        return lying;
     }
 
     /** Width over length. */
@@ -65,6 +56,7 @@ public enum VoidShape {
         return Mth.lerp(t * t, minSize, maxSize);
     }
 
+    /** The shape of that id; an unknown one (such as the lying breach of old saves) stands as a gate. */
     public static VoidShape byId(String id) {
         for (VoidShape shape : values()) {
             if (shape.id.equals(id)) {

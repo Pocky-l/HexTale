@@ -95,11 +95,7 @@ public class BreachHeartItem extends Item {
 
     /** Where the breach's centre goes over {@code ground}: as a breach the Thinning tears open stands. */
     public static Vec3 centreOver(BlockPos ground, BreachHeart heart) {
-        VoidLayout layout = heart.layout();
-        if (heart.shape().lying()) {
-            return new Vec3(ground.getX() + 0.5, ground.getY() + 1 + layout.halfThickness() + 0.03, ground.getZ() + 0.5);
-        }
-        return new Vec3(ground.getX() + 0.5, ground.getY() + 1 - layout.bottom() + 0.6, ground.getZ() + 0.5);
+        return new Vec3(ground.getX() + 0.5, ground.getY() + 1 - heart.layout().bottom() + 0.6, ground.getZ() + 0.5);
     }
 
     /** Nothing but air and plants above the ground where the breach will hang. */

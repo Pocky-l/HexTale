@@ -32,13 +32,14 @@ public final class VoidGameTests {
     }
 
     @HexTest
-    public static void breachesLieFlat(GameTestHelper helper) {
-        for (int yaw = 0; yaw < 360; yaw += 23) {
-            Vector3f lying = TheVoid.orientation(yaw, VoidShape.BREACH).transform(new Vector3f(0, 0, 1));
-            helper.assertTrue(Math.abs(lying.y) > 0.99F, "a breach faces up or down, got " + lying);
-            Vector3f standing = TheVoid.orientation(yaw, VoidShape.GATE).transform(new Vector3f(0, 0, 1));
-            helper.assertTrue(Math.abs(standing.y) < 0.01F, "a gate stands upright, got " + standing);
+    public static void everyBreachStandsUpright(GameTestHelper helper) {
+        for (VoidShape shape : VoidShape.values()) {
+            for (int yaw = 0; yaw < 360; yaw += 23) {
+                Vector3f normal = TheVoid.orientation(yaw, shape).transform(new Vector3f(0, 0, 1));
+                helper.assertTrue(Math.abs(normal.y) < 0.01F, "a " + shape.id() + " stands upright, got " + normal);
+            }
         }
+        helper.assertTrue(VoidShape.byId("breach") == VoidShape.GATE, "a lying breach of an old save stands up as a gate");
         helper.succeed();
     }
 

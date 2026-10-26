@@ -74,8 +74,8 @@ public class VoidShardItem extends Item {
         float size = shape.randomSize(random);
         int seed = random.nextInt();
         Vec3 centre = place(server, player, VoidLayout.of(shape, size, seed));
-        // Standing breaches face the player square on, as the Void tends to.
-        float yaw = shape.lying() ? random.nextFloat() * 360 : player.getYRot() + (random.nextFloat() - 0.5F) * 10;
+        // A breach faces the player square on, as the Void tends to.
+        float yaw = player.getYRot() + (random.nextFloat() - 0.5F) * 10;
         level.addFreshEntity(TheVoid.open(level, centre, yaw, shape, size, seed));
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.THE_VOID_OPEN.get(), SoundSource.AMBIENT,
                 0.8F + size * 0.12F, 1.1F - Math.min(size, 8) * 0.05F);
@@ -83,7 +83,7 @@ public class VoidShardItem extends Item {
         return InteractionResult.SUCCESS;
     }
 
-    /** Where the breach's centre goes: in the air before the player, clear of the ground; a lying one on the ground. */
+    /** Where the breach's centre goes: in the air before the player, clear of the ground. */
     private static Vec3 place(ServerLevel level, Player player, VoidLayout layout) {
         float size = layout.size;
         Vec3 eye = player.getEyePosition();
@@ -91,11 +91,6 @@ public class VoidShardItem extends Item {
         BlockHitResult hit = level.clip(new ClipContext(eye, eye.add(look.scale(REACH)), ClipContext.Block.COLLIDER,
                 ClipContext.Fluid.NONE, player));
         double distance = hit.getType() == HitResult.Type.MISS ? REACH : hit.getLocation().distanceTo(eye);
-        if (layout.shape.lying()) {
-            Vec3 at = hit.getType() == HitResult.Type.MISS ? eye.add(look.scale(6 + size)) : hit.getLocation();
-            double ground = groundBelow(level, at, 12);
-            return new Vec3(at.x, (Double.isNaN(ground) ? at.y : ground) + layout.halfThickness() + 0.03, at.z);
-        }
         double along = Mth.clamp(Math.min(distance - 1.0, 3 + size * 0.9), 2.0, REACH);
         Vec3 at = eye.add(look.scale(along));
         double ground = groundBelow(level, at, size + 2);

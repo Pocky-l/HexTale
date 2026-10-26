@@ -95,6 +95,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tinted by the liquid instead of little cubes; on a boiling crucible they swell and pop like vanilla bubbles.
 - The Lab Bench is bigger and centred in inventory slots.
 
+### Removed
+- Breaches lying flat in the ground are gone: every breach stands upright now. One saved in a world stands up as a
+  gate.
+
 ## [1.1.0] - 2026-10-25
 The Void seeps in: magic wears the world thin around a researcher's home.
 
