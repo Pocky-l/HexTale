@@ -37,9 +37,7 @@ import org.jspecify.annotations.Nullable;
  * found so far ({@link RunesPage}). Shown by {@link StarBookScreen} in hand and inside the table's screen.
  */
 public final class StarBook {
-    private static final Identifier COSMOS = Hextale.id("textures/gui/cosmos.png");
     private static final Identifier FRAME = Hextale.id("textures/gui/star_book_frame.png");
-    private static final int COSMOS_SIZE = 256;
     private static final int FRAME_SIZE = 48;
     private static final int FRAME_CORNER = 16;
     /** The frame's leather band; the sky starts inside it. */
@@ -233,7 +231,9 @@ public final class StarBook {
             aim(knowledge);
         }
         graphics.enableScissor(skyLeft(), skyTop(), skyLeft() + skyWidth(), skyTop() + skyHeight());
-        renderSpace(graphics, now);
+        boolean lens = tab == Tab.QUESTS && guide.selected() == null && overSky(mouseX, mouseY) && !overTabs(mouseX, mouseY);
+        Sky.render(graphics, skyLeft(), skyTop(), skyWidth(), skyHeight(), cameraX, cameraY, zoom(),
+                (GuidePage.minX() + GuidePage.maxX()) / 2.0F, (GuidePage.minY() + GuidePage.maxY()) / 2.0F, lens, mouseX, mouseY, now);
         if (tab == Tab.RUNES) {
             List<FormattedCharSequence> tooltip = runes.render(graphics, knowledge, mouseX, mouseY, now);
             PixelArt.flush(graphics);
@@ -350,58 +350,6 @@ public final class StarBook {
             }
         }
         return tooltip;
-    }
-
-    /** The nebula drifts slower than the stars of the map; three layers of small stars drift at their own speeds. */
-    private void renderSpace(GuiGraphicsExtractor graphics, long now) {
-        int x0 = skyLeft();
-        int y0 = skyTop();
-        int w = skyWidth();
-        int h = skyHeight();
-        PixelArt.fill(graphics, x0, y0, x0 + w, y0 + h, 0xFF06050D);
-        int offsetX = Math.floorMod((int) (cameraX * 0.25F), COSMOS_SIZE);
-        int offsetY = Math.floorMod((int) (cameraY * 0.25F), COSMOS_SIZE);
-        for (int ty = -offsetY; ty < h; ty += COSMOS_SIZE) {
-            for (int tx = -offsetX; tx < w; tx += COSMOS_SIZE) {
-                PixelArt.flush(graphics);
-                graphics.blit(RenderPipelines.GUI_TEXTURED, COSMOS, x0 + tx, y0 + ty, 0, 0, COSMOS_SIZE, COSMOS_SIZE, COSMOS_SIZE, COSMOS_SIZE);
-            }
-        }
-        float[] speeds = {0.12F, 0.3F, 0.55F};
-        int[] counts = {90, 60, 34};
-        for (int layer = 0; layer < speeds.length; layer++) {
-            float shiftX = cameraX * speeds[layer] * zoom();
-            float shiftY = cameraY * speeds[layer] * zoom();
-            int cell = 512;
-            int count = counts[layer] * Math.max(1, w * h / (300 * 180));
-            for (int i = 0; i < count; i++) {
-                long seed = i * 2654435761L + layer * 40503L;
-                int sx = (int) Math.floorMod((long) (hash(seed) % cell) - (long) shiftX, cell);
-                int sy = (int) Math.floorMod((long) (hash(seed + 7) % cell) - (long) shiftY, cell);
-                if (sx >= w || sy >= h) {
-                    continue;
-                }
-                float twinkle = 0.55F + 0.45F * Mth.sin(now / (700.0F + hash(seed + 3) % 900) + i);
-                int tint = layer == 2 ? 0xFFF6E0 : hash(seed + 5) % 3 == 0 ? 0xB8C8FF : 0xE0D8F0;
-                int argb = PixelArt.argb(tint, (0.25F + 0.25F * layer) * twinkle);
-                PixelArt.fill(graphics, x0 + sx, y0 + sy, x0 + sx + 1, y0 + sy + 1, argb);
-                if (layer == 2 && hash(seed + 11) % 4 == 0) {
-                    int dim = PixelArt.argb(tint, 0.25F * twinkle);
-                    PixelArt.fill(graphics, x0 + sx - 1, y0 + sy, x0 + sx, y0 + sy + 1, dim);
-                    PixelArt.fill(graphics, x0 + sx + 1, y0 + sy, x0 + sx + 2, y0 + sy + 1, dim);
-                    PixelArt.fill(graphics, x0 + sx, y0 + sy - 1, x0 + sx + 1, y0 + sy, dim);
-                    PixelArt.fill(graphics, x0 + sx, y0 + sy + 1, x0 + sx + 1, y0 + sy + 2, dim);
-                }
-            }
-        }
-    }
-
-    private static long hash(long value) {
-        long x = value * 0x9E3779B97F4A7C15L;
-        x ^= x >>> 31;
-        x *= 0xBF58476D1CE4E5B9L;
-        x ^= x >>> 27;
-        return Math.abs(x);
     }
 
     /** Dark glass in a gold rim with cyan corner studs: the plates of both pages. */

@@ -12,6 +12,7 @@ import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.network.QuestNoticedPayload;
 import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.quest.Quest;
+import com.pockyl.hextale.quest.Region;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,19 +21,22 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Arrows that point the reader at what is new in the guide: a step that just opened (cyan, like an open step's breath)
- * or one written down by itself because something happened (gold, like a done step). A new step out of view gets an
- * arrow on the edge of the sky pointing at it; one in view, a small arrow over it pointing down. Arrows that would sit
- * on top of each other on the edge become one with a count. A click on an arrow flies the sky to its step; the mouse
+ * Arrows that point the reader at what is new in the guide: a step that just opened, or one written down by itself
+ * because something happened (that one wears a gold ring). Each arrow is drawn in the look of its step's branch
+ * ({@link MarkArrows}). A new step out of view gets an arrow on the edge of the sky pointing at it; one in view, an arrow
+ * over it pointing down. Arrows of one branch and kind that would sit on top of each other on the edge become one with
+ * a count. A click on an arrow flies the sky to its step; the mouse
  * going over the step itself takes it in, and its arrow is gone (on the server too).
  */
 final class FreshMarks {
     /** How far in from the sky's rim the edge arrows sit. */
-    private static final int EDGE = 9;
+    private static final int EDGE = 13;
     /** Edge arrows closer than this along the rim become one. */
-    private static final int MERGE = 14;
+    private static final int MERGE = 22;
     /** How far from its centre an arrow takes a click or the mouse. */
-    private static final int REACH = 7;
+    private static final int REACH = 10;
+    /** How far above a step's medallion its arrow hangs. */
+    private static final int OVER = 13;
     private static final int OPENED = 0x5CC8F2;
     private static final int HAPPENED = StarBook.GOLD;
 
@@ -68,8 +72,9 @@ final class FreshMarks {
             float sx = book.screenX(quest.x());
             float sy = book.screenY(quest.y());
             float radius = 12 * book.zoom();
-            if (sx >= left + EDGE && sx <= right - EDGE && sy - radius - 8 >= top + EDGE && sy <= bottom - EDGE && !book.overTabBar(sx, sy - radius - 8)) {
-                over.add(new Mark(Math.round(sx), Math.round(sy - radius - 8), Mth.HALF_PI, true, kind, List.of(quest)));
+            if (sx >= left + EDGE && sx <= right - EDGE && sy - radius - OVER >= top + EDGE && sy <= bottom - EDGE
+                    && !book.overTabBar(sx, sy - radius - OVER)) {
+                over.add(new Mark(Math.round(sx), Math.round(sy - radius - OVER), Mth.HALF_PI, true, kind, List.of(quest)));
                 continue;
             }
             // Out of view: where the line from the middle of the sky towards the step leaves the inset rim.
@@ -95,30 +100,33 @@ final class FreshMarks {
         marks = out;
     }
 
-    /** Joins edge arrows of the same kind that would overlap, then moves apart any that still do. */
+    /** Joins edge arrows of the same branch and kind that would overlap, then moves apart any that still do. */
     private static List<Mark> merge(List<Mark> edge, int left, int top, int right, int bottom) {
         Comparator<Mark> alongRim = Comparator.comparingDouble(mark -> rim(mark, left, top, right, bottom));
         List<Mark> out = new ArrayList<>();
         for (Guide.Fresh kind : List.of(Guide.Fresh.HAPPENED, Guide.Fresh.OPENED)) {
-            List<Mark> ofKind = edge.stream().filter(mark -> mark.kind() == kind).sorted(alongRim).toList();
-            Mark open = null;
-            for (Mark mark : ofKind) {
-                if (open != null && Math.hypot(mark.x() - open.x(), mark.y() - open.y()) < MERGE) {
-                    List<Quest> steps = new ArrayList<>(open.steps());
-                    steps.addAll(mark.steps());
-                    open = new Mark(open.x(), open.y(), open.angle(), false, kind, steps);
-                } else {
-                    if (open != null) {
-                        out.add(open);
+            for (Region region : Region.values()) {
+                List<Mark> ofKind = edge.stream().filter(mark -> mark.kind() == kind && mark.target().region() == region)
+                        .sorted(alongRim).toList();
+                Mark open = null;
+                for (Mark mark : ofKind) {
+                    if (open != null && Math.hypot(mark.x() - open.x(), mark.y() - open.y()) < MERGE) {
+                        List<Quest> steps = new ArrayList<>(open.steps());
+                        steps.addAll(mark.steps());
+                        open = new Mark(open.x(), open.y(), open.angle(), false, kind, steps);
+                    } else {
+                        if (open != null) {
+                            out.add(open);
+                        }
+                        open = mark;
                     }
-                    open = mark;
+                }
+                if (open != null) {
+                    out.add(open);
                 }
             }
-            if (open != null) {
-                out.add(open);
-            }
         }
-        // Arrows of the two kinds may still meet: the later one steps aside along the rim.
+        // Arrows of other branches or kinds may still meet: the later one steps aside along the rim.
         List<Mark> placed = new ArrayList<>();
         for (Mark mark : out) {
             Mark moved = mark;
@@ -180,8 +188,8 @@ final class FreshMarks {
     List<FormattedCharSequence> render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, long now) {
         Mark hovered = at(mouseX, mouseY);
         for (Mark mark : marks) {
-            int color = mark.kind() == Guide.Fresh.HAPPENED ? HAPPENED : OPENED;
-            arrow(graphics, mark.x(), mark.y(), mark.angle(), color, mark == hovered, now, mark.target().index());
+            MarkArrows.draw(graphics, mark.target().region(), mark.kind() == Guide.Fresh.HAPPENED, mark.x(), mark.y(), mark.angle(),
+                    mark == hovered, now, mark.target().index());
         }
         PixelArt.flush(graphics);
         var font = Minecraft.getInstance().font;
@@ -189,9 +197,9 @@ final class FreshMarks {
             if (mark.steps().size() > 1) {
                 // How many new steps lie that way: a small number behind the arrow, on the side towards the sky's middle.
                 String count = String.valueOf(mark.steps().size());
-                int nx = Math.round(mark.x() - Mth.cos(mark.angle()) * 9) - font.width(count) / 2;
-                int ny = Math.round(mark.y() - Mth.sin(mark.angle()) * 9) - 4;
-                graphics.text(font, count, nx, ny, 0xFF000000 | (mark.kind() == Guide.Fresh.HAPPENED ? HAPPENED : OPENED), true);
+                int nx = Math.round(mark.x() - Mth.cos(mark.angle()) * 17) - font.width(count) / 2;
+                int ny = Math.round(mark.y() - Mth.sin(mark.angle()) * 17) - 4;
+                graphics.text(font, count, nx, ny, 0xFF000000 | PixelArt.mix(MarkArrows.glow(mark.target().region()), 0xFFFFFF, 0.3F), true);
             }
         }
         return hovered == null ? null : tooltip(hovered);
@@ -210,52 +218,5 @@ final class FreshMarks {
             lines.add(Component.translatable("book.hextale.guide.fresh.look").withColor(0x8A8898).getVisualOrderText());
         }
         return lines;
-    }
-
-    /**
-     * One arrow: a triangle pointing along {@code angle}, nodding towards its step, over a soft glow of its colour; lit when
-     * the mouse is on it. Drawn in pixels for now - the place where the book's arrow sprite will be drawn instead.
-     */
-    private static void arrow(GuiGraphicsExtractor graphics, int x, int y, float angle, int color, boolean lit, long now, int seed) {
-        float nod = Mth.sin(now / 260.0F + seed) * 1.5F;
-        float ux = Mth.cos(angle);
-        float uy = Mth.sin(angle);
-        float cx = x + ux * nod;
-        float cy = y + uy * nod;
-        float pulse = 0.5F + 0.5F * Mth.sin(now / 420.0F + seed);
-        PixelArt.disc(graphics, Math.round(cx), Math.round(cy), 15, PixelArt.argb(color, (lit ? 0.3F : 0.14F) + 0.1F * pulse), 0);
-        // The triangle: its tip ahead, its base behind, filled with the colour and rimmed in dark ink.
-        float tipX = cx + ux * 5;
-        float tipY = cy + uy * 5;
-        float baseX = cx - ux * 4;
-        float baseY = cy - uy * 4;
-        float ax = baseX - uy * 5;
-        float ay = baseY + ux * 5;
-        float bx = baseX + uy * 5;
-        float by = baseY - ux * 5;
-        int fill = PixelArt.argb(lit ? PixelArt.mix(color, 0xFFFFFF, 0.35F) : color, 1);
-        int light = PixelArt.argb(PixelArt.mix(color, 0xFFFFFF, 0.6F), 1);
-        int ink = PixelArt.argb(0x05040A, 0.9F);
-        for (int py = Math.round(cy) - 7; py <= Math.round(cy) + 7; py++) {
-            for (int px = Math.round(cx) - 7; px <= Math.round(cx) + 7; px++) {
-                if (!inside(px + 0.5F, py + 0.5F, tipX, tipY, ax, ay, bx, by)) {
-                    continue;
-                }
-                boolean rim = !inside(px + 1.5F, py + 0.5F, tipX, tipY, ax, ay, bx, by) || !inside(px - 0.5F, py + 0.5F, tipX, tipY, ax, ay, bx, by)
-                        || !inside(px + 0.5F, py + 1.5F, tipX, tipY, ax, ay, bx, by) || !inside(px + 0.5F, py - 0.5F, tipX, tipY, ax, ay, bx, by);
-                // Lit from the top left, like the medallions.
-                boolean edgeLit = rim && (px + 0.5F - cx) * -0.7F + (py + 0.5F - cy) * -0.7F > 0;
-                PixelArt.fill(graphics, px, py, px + 1, py + 1, rim ? (edgeLit ? light : ink) : fill);
-            }
-        }
-    }
-
-    private static boolean inside(float px, float py, float x0, float y0, float x1, float y1, float x2, float y2) {
-        float d0 = (px - x1) * (y0 - y1) - (x0 - x1) * (py - y1);
-        float d1 = (px - x2) * (y1 - y2) - (x1 - x2) * (py - y2);
-        float d2 = (px - x0) * (y2 - y0) - (x2 - x0) * (py - y0);
-        boolean negative = d0 < 0 || d1 < 0 || d2 < 0;
-        boolean positive = d0 > 0 || d1 > 0 || d2 > 0;
-        return !(negative && positive);
     }
 }
