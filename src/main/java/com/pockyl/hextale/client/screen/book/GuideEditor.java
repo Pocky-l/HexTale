@@ -79,7 +79,8 @@ final class GuideEditor {
     }
 
     static boolean enabled() {
-        return !FMLEnvironment.isProduction();
+        // The screenshot driver (run guiShots) wants the book as players see it.
+        return !FMLEnvironment.isProduction() && System.getProperty("hextale.guishots") == null;
     }
 
     boolean press(double mouseX, double mouseY) {
@@ -149,21 +150,21 @@ final class GuideEditor {
         int w = font.width(text);
         PixelArt.fill(graphics, right - w - 6, bottom - 13, right, bottom, PixelArt.argb(0x120C08, 0.82F));
 
-        Component label = Component.literal(GuidePage.hideWip ? "WIP steps: hidden" : "WIP steps: shown");
+        Component label = Component.literal(GuidePage.hideWip() ? "WIP steps: hidden" : "WIP steps: shown");
         wipRight = right;
         wipBottom = bottom - 16;
         wipLeft = wipRight - font.width(label) - 10;
         wipTop = wipBottom - 14;
         boolean hovered = overWipSwitch(mouseX, mouseY);
-        int rim = PixelArt.argb(GuidePage.hideWip ? 0xF0C860 : hovered ? 0xB8A880 : 0x6A5A38, 1);
-        PixelArt.fill(graphics, wipLeft, wipTop, wipRight, wipBottom, PixelArt.argb(GuidePage.hideWip ? 0x3A2C10 : hovered ? 0x2A2214 : 0x120C08, 0.9F));
+        int rim = PixelArt.argb(GuidePage.hideWip() ? 0xF0C860 : hovered ? 0xB8A880 : 0x6A5A38, 1);
+        PixelArt.fill(graphics, wipLeft, wipTop, wipRight, wipBottom, PixelArt.argb(GuidePage.hideWip() ? 0x3A2C10 : hovered ? 0x2A2214 : 0x120C08, 0.9F));
         PixelArt.fill(graphics, wipLeft, wipTop, wipRight, wipTop + 1, rim);
         PixelArt.fill(graphics, wipLeft, wipBottom - 1, wipRight, wipBottom, rim);
         PixelArt.fill(graphics, wipLeft, wipTop, wipLeft + 1, wipBottom, rim);
         PixelArt.fill(graphics, wipRight - 1, wipTop, wipRight, wipBottom, rim);
         PixelArt.flush(graphics);
         graphics.text(font, text, right - w - 3, bottom - 11, HINT, false);
-        graphics.text(font, label, wipLeft + 5, wipTop + 3, GuidePage.hideWip ? 0xFFF0D890 : HINT, false);
+        graphics.text(font, label, wipLeft + 5, wipTop + 3, GuidePage.hideWip() ? 0xFFF0D890 : HINT, false);
     }
 
     private boolean overWipSwitch(double mouseX, double mouseY) {
@@ -175,7 +176,7 @@ final class GuideEditor {
         if (!overWipSwitch(mouseX, mouseY)) {
             return false;
         }
-        GuidePage.hideWip = !GuidePage.hideWip;
+        GuidePage.wipOverride = !GuidePage.hideWip();
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         return true;
     }

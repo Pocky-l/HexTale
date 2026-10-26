@@ -11,6 +11,11 @@ public final class ClientConfig {
             .translation("hextale.configuration.breachCinematic")
             .define("breachCinematic", true);
 
+    public static final ModConfigSpec.BooleanValue SHOW_WIP_STEPS = BUILDER
+            .comment("Whether the researcher's diary shows the devices still being worked out (WIP steps).")
+            .translation("hextale.configuration.showWipSteps")
+            .define("showWipSteps", false);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private ClientConfig() {
