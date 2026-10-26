@@ -91,6 +91,8 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - New look for the three grades of hextech, all animated. Unstable hextech is a cluster of icy shards growing out of a
   lump of amethyst, a crack in it flaring and sparks jumping off the tips. The cut crystal is pointed at both ends,
   with a glint running along it. The gemstone is a cut sphere with a glowing core that slowly breathes.
+- New look for the Researcher's Diary: a caramel leather book held shut by a strap with a brass clasp, a brass
+  emblem on the cover whose hextech crystal flares now and then, and a blue ribbon.
 
 ### Fixed
 - The hextech tools no longer have see-through gaps: the shafts of the refined and radiant pickaxes were half
