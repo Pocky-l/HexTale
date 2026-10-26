@@ -4,12 +4,13 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.0] - Unreleased
+Two roads of the Void: heal the land, or hold the breach and make it your own.
 
 ### Added
 - The Void has a branch of its own in the researcher's diary, apart from hextech and chemtech. It appears the first time
-  the land around you shows the haze and follows what you do about it: let the land go and see what it turns into, and
-  (in the plans still being written) hold a breach in place and heal the land around it. What happens on the way is
+  the land around you shows the haze and follows what you do about it: let the land go and see what it turns into, heal
+  it, or hold a breach in place and keep it. What happens on the way is
   written down as it happens - a mite latching on, a breach tearing open - each with the researcher's thoughts.
 - The Void's steps look sick: dark cracked medallions with an angry magenta glow that flares out of rhythm, writhing
   thorns, dark smoke and a deep plum darkness around them with a smouldering magenta edge, veins with a throb instead of lines; the breach and the first sign of
