@@ -145,6 +145,7 @@ public final class Hextale {
         // Tools and weapons: the hextech line by tier, then the hexsteel set.
         output.accept(ModItems.TUNING_FORK);
         output.accept(ModItems.DUST_CHARGE);
+        output.accept(ModItems.LEVITATION_PLATE);
         ModItems.PICKAXES.values().forEach(output::accept);
         output.accept(ModItems.HEXTECH_AXE);
         output.accept(ModItems.HEXTECH_SHOVEL);
@@ -326,6 +327,7 @@ public final class Hextale {
             event.accept(ModItems.PEDESTAL);
             event.accept(ModItems.RUNE_STELE);
             event.accept(ModItems.HEXTECH_LAMP);
+            event.accept(ModItems.LEVITATION_PLATE);
         } else if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(ModItems.MAGIC_STONE);
             event.accept(ModItems.POLISHED_MAGIC_STONE);

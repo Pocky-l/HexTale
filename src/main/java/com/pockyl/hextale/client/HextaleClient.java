@@ -181,6 +181,9 @@ public final class HextaleClient {
             if (stack.is(ModItems.WHIRL_REAPER.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.whirl_reaper.hint").withStyle(ChatFormatting.GRAY));
             }
+            if (stack.is(ModItems.LEVITATION_PLATE.get())) {
+                event.getToolTip().add(Component.translatable("block.hextale.levitation_plate.hint").withStyle(ChatFormatting.GRAY));
+            }
             // How a pipe's sides are set.
             if (stack.is(ModItems.BRASS_PIPE.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.brass_pipe.hint").withStyle(ChatFormatting.DARK_AQUA));

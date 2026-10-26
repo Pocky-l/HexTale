@@ -9,7 +9,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.entity.DustCharge;
+import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModEntities;
+import com.pockyl.hextale.runework.PlateRune;
 
 import java.util.List;
 
@@ -41,5 +43,20 @@ public final class GadgetGameTests {
         helper.getLevel().setBlockAndUpdate(planks, Blocks.AIR.defaultBlockState());
         helper.getLevel().setBlockAndUpdate(obsidian, Blocks.AIR.defaultBlockState());
         helper.succeed();
+    }
+
+    @HexTest(maxTicks = 200, setupTicks = 40, padding = 2)
+    public static void aLevitationPlateLiftsWhatStandsOnIt(GameTestHelper helper) {
+        BlockPos plate = new BlockPos(1, 1, 1);
+        helper.setBlock(plate, ModBlocks.LEVITATION_PLATE.get());
+        ItemEntity stone = helper.spawnItem(Items.COBBLESTONE, new Vec3(1.5, 1.3, 1.5));
+        stone.setPickUpDelay(400);
+        double floor = helper.absolutePos(plate).getY();
+        helper.succeedWhen(() -> {
+            double height = stone.getY() - floor;
+            helper.assertTrue(height > 4.0, "the stone rises in the column (" + height + ")");
+            helper.assertTrue(height < PlateRune.HEIGHT + 1.5, "and hangs at its top, not beyond (" + height + ")");
+            stone.discard();
+        });
     }
 }

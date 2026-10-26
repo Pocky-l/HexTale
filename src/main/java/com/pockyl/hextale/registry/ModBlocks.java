@@ -104,6 +104,12 @@ public final class ModBlocks {
     public static final DeferredBlock<Block> CHISELED_MAGIC_BRICKS = BLOCKS.registerBlock("chiseled_magic_bricks", Block::new,
             ModBlocks::brickProperties);
 
+    /** A stone plate with a hextech crystal in a brass ring: the air above it lifts whatever stands there. */
+    public static final DeferredBlock<com.pockyl.hextale.block.LevitationPlateBlock> LEVITATION_PLATE = BLOCKS.registerBlock("levitation_plate",
+            com.pockyl.hextale.block.LevitationPlateBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops()
+                    .strength(2.0F, 6.0F).sound(SoundType.POLISHED_TUFF).lightLevel(state -> 6));
+
     // Struck geodes: an amethyst geode lightning hit long ago. Its amethyst partly turned into dormant hextech, its calcite
     // shell scorched, and the bolt fused the ground on its way down into fulgurite.
     public static final DeferredBlock<com.pockyl.hextale.block.DormantHextechBlock> DORMANT_HEXTECH = BLOCKS.registerBlock("dormant_hextech",

@@ -137,6 +137,9 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> FORK_RUNES =
             COMPONENTS.registerComponentType("fork_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> PLATE_RUNES =
+            COMPONENTS.registerComponentType("plate_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
     /** The block a Tuning Fork was struck against: what it listens for. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.minecraft.world.level.block.Block>> TUNED_BLOCK =
             COMPONENTS.registerComponentType("tuned_block", builder -> builder

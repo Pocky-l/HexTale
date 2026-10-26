@@ -36,6 +36,11 @@ Glassy scars: the way into hextech no longer waits for a storm.
   from a dispenser, it sticks where it lands, hisses for a second and a half and bursts in a cold flash: rock, ores,
   gravel and dirt around it crack apart and drop as if mined with an iron pickaxe, while builds, wood and obsidian stay
   whole. Creatures close by take a small sting and a push.
+- Levitation Plate: a raw orb set in a brass ring on a stone plate (Hex Workbench). The air above it lifts whatever
+  stands there - players, animals, dropped items - up to six blocks or the first block above, and holds it there,
+  gently bobbing; sneaking sinks you back down, and nobody in the column is hurt by falling. Motes of light rise
+  through the column so it can be seen. Runes: Shift (a taller column), Motor (a faster lift), Breath (whoever steps
+  out floats down slowly for a while) and Lens.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

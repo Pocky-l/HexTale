@@ -53,6 +53,8 @@ public enum RuneHolder {
     SKYPACK(() -> ModDataComponents.SKYPACK_RUNES.get(), SkypackRune.SLOTS, SkypackRune.values()),
     /** The Hextech Tuning Fork. */
     FORK(() -> ModDataComponents.FORK_RUNES.get(), ForkRune.SLOTS, ForkRune.values()),
+    /** The Levitation Plate. */
+    PLATE(() -> ModDataComponents.PLATE_RUNES.get(), PlateRune.SLOTS, PlateRune.values()),
     /** The Crystal Battery. */
     BATTERY(() -> ModDataComponents.BATTERY_RUNES.get(), BatteryRune.SLOTS, BatteryRune.values()),
     /** The Hextech Purifier. */
@@ -127,6 +129,9 @@ public enum RuneHolder {
         }
         if (item == ModItems.TUNING_FORK.get()) {
             return FORK;
+        }
+        if (item == ModItems.LEVITATION_PLATE.get()) {
+            return PLATE;
         }
         if (item == ModItems.CRYSTAL_BATTERY.get()) {
             return BATTERY;
@@ -262,6 +267,7 @@ public enum RuneHolder {
             case LAB -> List.of(new ItemStack(ModItems.LAB_BENCH.get()));
             case SKYPACK -> List.of(new ItemStack(ModItems.HEXTECH_SKYPACK.get()));
             case FORK -> List.of(new ItemStack(ModItems.TUNING_FORK.get()));
+            case PLATE -> List.of(new ItemStack(ModItems.LEVITATION_PLATE.get()));
             case BATTERY -> List.of(new ItemStack(ModItems.CRYSTAL_BATTERY.get()));
             case PURIFIER -> List.of(new ItemStack(ModItems.HEXTECH_PURIFIER.get()));
             case ANCHOR -> List.of(new ItemStack(ModItems.VOID_ANCHOR.get()));
