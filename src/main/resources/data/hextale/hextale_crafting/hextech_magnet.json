@@ -1,0 +1,16 @@
+{
+  "pattern": [
+    "C C",
+    "B B",
+    "BBB"
+  ],
+  "key": {
+    "C": "hextale:hextech_crystal",
+    "B": "hextale:brass_ingot"
+  },
+  "result": {
+    "id": "hextale:hextech_magnet",
+    "count": 1
+  },
+  "charge": 4
+}

@@ -147,6 +147,7 @@ public final class Hextale {
         // Tools and weapons: the hextech line by tier, then the hexsteel set.
         output.accept(ModItems.TUNING_FORK);
         output.accept(ModItems.RECALL_CHARM);
+        output.accept(ModItems.HEXTECH_MAGNET);
         output.accept(ModItems.SOUL_FLASK);
         output.accept(ModItems.SPAWNER_CAGE);
         output.accept(ModItems.DUST_CHARGE);
@@ -400,6 +401,7 @@ public final class Hextale {
             event.accept(ModItems.HEXSTEEL_HOE);
             event.accept(ModItems.TUNING_FORK);
             event.accept(ModItems.RECALL_CHARM);
+            event.accept(ModItems.HEXTECH_MAGNET);
             event.accept(ModItems.SOUL_FLASK);
             event.accept(ModItems.SPAWNER_CAGE);
             event.accept(ModItems.DUST_CHARGE);

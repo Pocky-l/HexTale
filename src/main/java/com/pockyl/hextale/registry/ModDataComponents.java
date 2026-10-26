@@ -161,6 +161,9 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.minecraft.nbt.CompoundTag>> SOUL =
             COMPONENTS.registerComponentType("soul", builder -> builder
                     .persistent(net.minecraft.nbt.CompoundTag.CODEC).networkSynchronized(ByteBufCodecs.COMPOUND_TAG));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> MAGNET_RUNES =
+            COMPONENTS.registerComponentType("magnet_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> RECALL_RUNES =
             COMPONENTS.registerComponentType("recall_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));

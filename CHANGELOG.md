@@ -77,6 +77,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - Silence Ward (at the Hex Workbench, from nullstone wrapped in wool): sounds around it go soft - machines, mobs,
   footsteps - while the rest of the world sounds as usual. Runes: Shift (wider), Hush (quieter, down to nothing),
   Insulator (no vibration inside reaches sculk sensors, shriekers or wardens) and Lens.
+- Hextech Magnet (at the Hex Workbench): switched on and carried anywhere in the inventory, it draws loose items
+  and experience to you (sneak to let them lie; what you just dropped stays). Runes: Shift (farther), Radiance
+  (experience worth more), Cache (straight into the pocket) and Lens.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

@@ -233,4 +233,19 @@ public final class GadgetGameTests {
             helper.succeed();
         });
     }
+
+    @HexTest(padding = 4)
+    public static void aMagnetDrawsLooseThingsIn(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ItemEntity near = helper.spawnItem(Items.COBBLESTONE, player.position().add(4, 0.5, 0).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));
+        ItemEntity far = helper.spawnItem(Items.COBBLESTONE, player.position().add(0, 0.5, 9).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));
+        near.setNoPickUpDelay();
+        far.setNoPickUpDelay();
+        int moved = com.pockyl.hextale.item.HextechMagnetItem.pull(helper.getLevel(), player, com.pockyl.hextale.runework.PickaxeRunes.EMPTY);
+        helper.assertTrue(moved == 1, "only the cobblestone within reach is drawn (" + moved + ")");
+        helper.assertTrue(near.getDeltaMovement().x < -0.1, "it flies towards me: " + near.getDeltaMovement());
+        near.discard();
+        far.discard();
+        helper.succeed();
+    }
 }

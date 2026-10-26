@@ -253,6 +253,9 @@ public final class ModItems {
     /** A crystal flask that folds one creature into its glass and lets it out elsewhere. */
     public static final DeferredItem<com.pockyl.hextale.item.SoulFlaskItem> SOUL_FLASK = ITEMS.registerItem("soul_flask",
             properties -> new com.pockyl.hextale.item.SoulFlaskItem(properties.stacksTo(16)));
+    /** A brass horseshoe with hextech poles: switched on, it draws loose items and experience to its holder. */
+    public static final DeferredItem<com.pockyl.hextale.item.HextechMagnetItem> HEXTECH_MAGNET = ITEMS.registerItem("hextech_magnet",
+            properties -> new com.pockyl.hextale.item.HextechMagnetItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
     /** A pocket watch with a hextech face: it puts its holder back where they stood a few seconds ago. */
     public static final DeferredItem<com.pockyl.hextale.item.RecallCharmItem> RECALL_CHARM = ITEMS.registerItem("recall_charm",
             properties -> new com.pockyl.hextale.item.RecallCharmItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
