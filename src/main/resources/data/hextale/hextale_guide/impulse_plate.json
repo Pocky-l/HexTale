@@ -1,0 +1,20 @@
+{
+  "region": "workshop",
+  "icon": "hextale:impulse_plate",
+  "parents": [
+    "hex_workbench",
+    "brass"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:impulse_plate",
+    "then": {
+      "kind": "runes",
+      "result": "impulse"
+    }
+  },
+  "pos": [
+    -60,
+    0
+  ]
+}

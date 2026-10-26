@@ -1,0 +1,17 @@
+{
+  "pattern": [
+    "BSB",
+    "PUP"
+  ],
+  "key": {
+    "B": "hextale:brass_ingot",
+    "S": "minecraft:slime_ball",
+    "P": "minecraft:smooth_stone_slab",
+    "U": "hextale:unstable_hextech"
+  },
+  "result": {
+    "id": "hextale:impulse_plate",
+    "count": 2
+  },
+  "charge": 2
+}

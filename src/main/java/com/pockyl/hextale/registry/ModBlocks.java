@@ -104,6 +104,11 @@ public final class ModBlocks {
     public static final DeferredBlock<Block> CHISELED_MAGIC_BRICKS = BLOCKS.registerBlock("chiseled_magic_bricks", Block::new,
             ModBlocks::brickProperties);
 
+    /** A plate with a brass arrow: whatever steps on it is thrown up and along the arrow. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ImpulsePlateBlock> IMPULSE_PLATE = BLOCKS.registerBlock("impulse_plate",
+            com.pockyl.hextale.block.ImpulsePlateBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops()
+                    .strength(1.5F, 6.0F).sound(SoundType.POLISHED_TUFF).lightLevel(state -> 3));
     /** A lantern of nullstone: no hostile creature forms by itself within its quiet. */
     public static final DeferredBlock<com.pockyl.hextale.block.NullLanternBlock> NULL_LANTERN = BLOCKS.registerBlock("null_lantern",
             com.pockyl.hextale.block.NullLanternBlock::new,

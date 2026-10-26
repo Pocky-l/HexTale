@@ -147,6 +147,7 @@ public final class Hextale {
         output.accept(ModItems.DUST_CHARGE);
         output.accept(ModItems.LEVITATION_PLATE);
         output.accept(ModItems.NULL_LANTERN);
+        output.accept(ModItems.IMPULSE_PLATE);
         ModItems.PICKAXES.values().forEach(output::accept);
         output.accept(ModItems.HEXTECH_AXE);
         output.accept(ModItems.HEXTECH_SHOVEL);
@@ -333,6 +334,7 @@ public final class Hextale {
             event.accept(ModItems.HEXTECH_LAMP);
             event.accept(ModItems.LEVITATION_PLATE);
             event.accept(ModItems.NULL_LANTERN);
+            event.accept(ModItems.IMPULSE_PLATE);
             event.accept(ModItems.FLOATING_STONE);
             event.accept(ModItems.WARD_GLASS);
             event.accept(ModItems.VEIL_GLASS);

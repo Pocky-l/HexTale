@@ -73,6 +73,20 @@ public final class GadgetGameTests {
     }
 
     @HexTest
+    public static void anImpulsePlateThrowsAlongItsArrow(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 1, 1);
+        helper.setBlock(at, ModBlocks.IMPULSE_PLATE.get().defaultBlockState()
+                .setValue(com.pockyl.hextale.block.ImpulsePlateBlock.FACING, net.minecraft.core.Direction.EAST));
+        net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, at.above());
+        BlockPos plate = helper.absolutePos(at);
+        ModBlocks.IMPULSE_PLATE.get().stepOn(helper.getLevel(), plate, helper.getLevel().getBlockState(plate), pig);
+        Vec3 throwVec = pig.getDeltaMovement();
+        pig.discard();
+        helper.assertTrue(throwVec.y >= 1.0 && throwVec.x > 0.3 && Math.abs(throwVec.z) < 0.01, "thrown up and east: " + throwVec);
+        helper.succeed();
+    }
+
+    @HexTest
     public static void aNullLanternKeepsItsQuiet(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
         helper.setBlock(at.below(), net.minecraft.world.level.block.Blocks.STONE);
