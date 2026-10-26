@@ -1,0 +1,57 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "hextale:block/lightning_scar_dot",
+    "scorch": "hextale:block/lightning_scar_dot",
+    "core": "hextale:block/lightning_scar_dot_core"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0.25,
+        0
+      ],
+      "to": [
+        16,
+        0.25,
+        16
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#scorch"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0.5,
+        0
+      ],
+      "to": [
+        16,
+        0.5,
+        16
+      ],
+      "light_emission": 12,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#core"
+        }
+      }
+    }
+  ]
+}

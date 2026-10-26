@@ -193,6 +193,7 @@ public final class Hextale {
         output.accept(ModItems.SPHALERITE_ORE);
         output.accept(ModItems.DEEPSLATE_SPHALERITE_ORE);
         output.accept(ModItems.DORMANT_HEXTECH);
+        output.accept(ModItems.HEXTECH_CLUSTER);
         output.accept(ModItems.RAW_ZINC_BLOCK);
         output.accept(ModItems.ZINC_BLOCK);
         output.accept(ModItems.BRASS_BLOCK);
@@ -216,6 +217,7 @@ public final class Hextale {
         output.accept(ModItems.SCORCHED_CALCITE_BRICK_WALL);
         output.accept(ModItems.CHISELED_SCORCHED_CALCITE);
         output.accept(ModItems.FULGURITE);
+        output.accept(ModItems.FULGURITE_SPIKE);
         output.accept(ModItems.FULGURITE_GLASS);
         output.accept(ModItems.FULGURITE_GLASS_PANE);
         output.accept(ModItems.MAGIC_LOG);
@@ -301,6 +303,8 @@ public final class Hextale {
             event.accept(ModItems.SPHALERITE_ORE);
             event.accept(ModItems.DEEPSLATE_SPHALERITE_ORE);
             event.accept(ModItems.DORMANT_HEXTECH);
+            event.accept(ModItems.HEXTECH_CLUSTER);
+            event.accept(ModItems.FULGURITE_SPIKE);
             event.accept(ModItems.FULGURITE);
             event.accept(ModItems.RAW_ZINC_BLOCK);
         } else if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {

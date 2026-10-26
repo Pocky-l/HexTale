@@ -3,6 +3,7 @@
     "minecraft:amethyst_block",
     "minecraft:amethyst_cluster",
     "minecraft:large_amethyst_bud",
-    "hextale:dormant_hextech"
+    "hextale:dormant_hextech",
+    "hextale:hextech_cluster"
   ]
 }

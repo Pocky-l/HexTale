@@ -77,6 +77,8 @@
     "hextale:scorched_calcite_brick_stairs",
     "hextale:scorched_calcite_brick_slab",
     "hextale:scorched_calcite_brick_wall",
-    "hextale:chiseled_scorched_calcite"
+    "hextale:chiseled_scorched_calcite",
+    "hextale:fulgurite_spike",
+    "hextale:hextech_cluster"
   ]
 }

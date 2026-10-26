@@ -55,6 +55,9 @@ public final class ModItems {
             properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.DORMANT_HEXTECH.get(), properties.useBlockDescriptionPrefix()));
     public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> FULGURITE = ITEMS.registerItem("fulgurite",
             properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.FULGURITE.get(), properties.useBlockDescriptionPrefix()));
+    public static final DeferredItem<BlockItem> FULGURITE_SPIKE = ITEMS.registerSimpleBlockItem(ModBlocks.FULGURITE_SPIKE);
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> HEXTECH_CLUSTER = ITEMS.registerItem("hextech_cluster",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.HEXTECH_CLUSTER.get(), properties.useBlockDescriptionPrefix()));
     public static final DeferredItem<BlockItem> FULGURITE_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.FULGURITE_GLASS);
     public static final DeferredItem<BlockItem> FULGURITE_GLASS_PANE = ITEMS.registerSimpleBlockItem(ModBlocks.FULGURITE_GLASS_PANE);
     public static final DeferredItem<BlockItem> SCORCHED_CALCITE = ITEMS.registerSimpleBlockItem(ModBlocks.SCORCHED_CALCITE);

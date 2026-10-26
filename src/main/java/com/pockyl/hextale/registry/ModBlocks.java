@@ -114,6 +114,22 @@ public final class ModBlocks {
     public static final DeferredBlock<Block> FULGURITE = BLOCKS.registerBlock("fulgurite", Block::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).instrument(NoteBlockInstrument.BASEDRUM)
                     .requiresCorrectToolForDrops().strength(1.2F, 3.0F).sound(SoundType.TUFF));
+    /** A glassy spike of fused earth standing up where a bolt went in: base, middles, a tip. */
+    public static final DeferredBlock<com.pockyl.hextale.block.FulguriteSpikeBlock> FULGURITE_SPIKE = BLOCKS.registerBlock("fulgurite_spike",
+            com.pockyl.hextale.block.FulguriteSpikeBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).instrument(NoteBlockInstrument.BASEDRUM)
+                    .requiresCorrectToolForDrops().strength(1.0F, 3.0F).sound(SoundType.POINTED_DRIPSTONE).noOcclusion()
+                    .dynamicShape().offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED));
+    /** A thin burnt line on the ground with a thread of charge in it; runs of them draw a struck geode's scar. */
+    public static final DeferredBlock<com.pockyl.hextale.block.LightningScarBlock> LIGHTNING_SCAR = BLOCKS.registerBlock("lightning_scar",
+            com.pockyl.hextale.block.LightningScarBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).noCollision().instabreak().noLootTable()
+                    .sound(SoundType.GRAVEL).lightLevel(state -> 2).pushReaction(PushReaction.POPPED));
+    /** A druse the strike woke all the way: glowing blue hextech growing out of a struck geode's walls. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HextechClusterBlock> HEXTECH_CLUSTER = BLOCKS.registerBlock("hextech_cluster",
+            com.pockyl.hextale.block.HextechClusterBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).forceSolidOn().noOcclusion().strength(1.5F)
+                    .sound(SoundType.AMETHYST_CLUSTER).lightLevel(state -> 7).pushReaction(PushReaction.POPPED));
     /** Fulgurite melted again: smoky amber glass with the bolt's thread still inside. */
     public static final DeferredBlock<TransparentBlock> FULGURITE_GLASS = BLOCKS.registerBlock("fulgurite_glass", TransparentBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(0.6F).sound(SoundType.GLASS).noOcclusion()
