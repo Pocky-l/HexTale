@@ -198,7 +198,7 @@ public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth, int scar
             ground = top.below();
             state = level.getBlockState(ground);
         }
-        if (state.is(BlockTags.DIRT) || state.is(BlockTags.SAND) || state.is(Blocks.GRAVEL) || state.is(BlockTags.BASE_STONE_OVERWORLD)
+        if (state.is(BlockTags.SUBSTRATE_OVERWORLD) || state.is(BlockTags.SAND) || state.is(Blocks.GRAVEL) || state.is(BlockTags.BASE_STONE_OVERWORLD)
                 || state.is(Blocks.SNOW_BLOCK) || state.is(BlockTags.TERRACOTTA)) {
             level.setBlock(ground, ModBlocks.FULGURITE.get().defaultBlockState(), FLAGS);
         }
