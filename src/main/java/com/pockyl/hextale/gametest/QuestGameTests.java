@@ -52,8 +52,8 @@ public final class QuestGameTests {
         ContextMap context = ContextMap.builder().set(SlotDisplayContext.REGISTRIES, server.registryAccess())
                 .buildAndValidate(SlotDisplayContext.CONTEXT);
         for (Quest quest : Guide.server().all()) {
-            QuestDisplay display = quest.display();
-            if (display == null || !display.isRecipe()) {
+            for (QuestDisplay display : quest.displays()) {
+            if (!display.isRecipe()) {
                 continue;
             }
             Identifier id = Identifier.parse(display.result());
@@ -68,6 +68,7 @@ public final class QuestGameTests {
             helper.assertTrue(real.size() == shown.size(), quest.id() + ": " + shown.size() + " ingredients shown, recipe has " + real.size());
             for (int i = 0; i < real.size(); i++) {
                 helper.assertTrue(real.get(i).test(sample(shown.get(i))), quest.id() + ": ingredient " + i + " is " + shown.get(i));
+            }
             }
         }
         helper.succeed();
@@ -103,8 +104,9 @@ public final class QuestGameTests {
                 helper.assertTrue(parent.stage().ordinal() <= quest.stage().ordinal(),
                         quest.id() + " (" + quest.stage() + ") never needs a later stage's " + parent.id());
             }
-            helper.assertTrue(quest.parents().isEmpty() == (quest == step("sphalerite") || quest == step("researchers_diary")),
-                    quest.id() + ": only sphalerite and the diary start the guide");
+            helper.assertTrue(quest.parents().isEmpty() == (quest == step("sphalerite") || quest == step("researchers_diary")
+                            || quest == step("the_thinning")),
+                    quest.id() + ": only sphalerite, the diary and the Thinning (the Void's own branch) start the guide");
             for (Quest other : Guide.server().all()) {
                 if (other.index() > quest.index()) {
                     double distance = Math.hypot(other.x() - quest.x(), other.y() - quest.y());
@@ -172,11 +174,22 @@ public final class QuestGameTests {
             "magic_stone", List.of("hextale:polished_magic_stone", "hextale:magic_bricks", "hextale:magic_brick_slab",
                     "hextale:magic_brick_stairs", "hextale:magic_brick_wall", "hextale:chiseled_magic_bricks", "hextale:magic_stone_pillar"));
 
-    /** Item ids a step yields: its icon, its picture's result and what is crafted straight from it. */
+    /** Every picture of a step, the ones under the others included. */
+    private static List<QuestDisplay> pictures(Quest quest) {
+        List<QuestDisplay> out = new ArrayList<>();
+        for (QuestDisplay first : quest.displays()) {
+            for (QuestDisplay display = first; display != null; display = display.then()) {
+                out.add(display);
+            }
+        }
+        return out;
+    }
+
+    /** Item ids a step yields: its icons, its pictures' results and what is crafted straight from it. */
     private static Set<Identifier> yields(Quest quest) {
         Set<Identifier> out = new HashSet<>();
-        out.add(BuiltInRegistries.ITEM.getKey(quest.icon().getItem()));
-        for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
+        quest.icons().forEach(icon -> out.add(BuiltInRegistries.ITEM.getKey(icon.getItem())));
+        for (QuestDisplay display : pictures(quest)) {
             Identifier id = display.result().contains(":") ? Identifier.parse(display.result()) : null;
             switch (display.kind()) {
                 case INFUSION -> {
@@ -237,8 +250,10 @@ public final class QuestGameTests {
             Set<Quest> before = ancestors(quest);
             Set<Identifier> available = new HashSet<>();
             before.forEach(step -> available.addAll(yields(step)));
+            // A step about finding things (sick land: its soil and rock) may show what they are made into.
+            quest.icons().forEach(icon -> available.add(BuiltInRegistries.ITEM.getKey(icon.getItem())));
             List<Identifier> needed = new ArrayList<>();
-            for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
+            for (QuestDisplay display : pictures(quest)) {
             switch (display.kind()) {
                 case SHAPED, SHAPELESS, SCHEME -> display.ingredients().stream().filter(id -> !id.isEmpty() && !id.startsWith("#"))
                         .map(Identifier::parse).forEach(needed::add);
@@ -407,6 +422,50 @@ public final class QuestGameTests {
         Quests.check(player);
         helper.assertTrue(knowledge.questDone(step("rune_scroll")), "with the altar standing, the studied scroll completes the step");
         helper.assertTrue(Guide.open(step("blank_scroll"), knowledge), "the altar and the lore open the blank scroll");
+        helper.succeed();
+    }
+
+    /**
+     * The Void's branch stands on its own: it appears only once the land shows the haze, its happenings (a mite, a breach)
+     * stay in the fog until they happen and are written down when the game reports them.
+     */
+    @HexTest
+    public static void theVoidBranchOpensWithTheHaze(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        RuneKnowledge knowledge = Research.of(player);
+        var level = helper.getLevel();
+        var chunk = level.getChunkAt(player.blockPosition());
+        com.pockyl.hextale.thevoid.Thinning.set(level, chunk, 0);
+        helper.assertFalse(Guide.visible(step("the_thinning"), knowledge) || Guide.ahead(step("the_thinning"), knowledge),
+                "nothing tells of the Void before the land shows it");
+        Quests.check(player);
+        helper.assertFalse(knowledge.questDone(step("the_thinning")), "clean land writes nothing");
+        com.pockyl.hextale.thevoid.Thinning.set(level, chunk, com.pockyl.hextale.thevoid.Thinning.Stage.HAZE.from);
+        Quests.check(player);
+        com.pockyl.hextale.thevoid.Thinning.set(level, chunk, 0);
+        helper.assertTrue(knowledge.questDone(step("the_thinning")), "the haze opens the Void's branch");
+        helper.assertTrue(Guide.visible(step("let_it_spread"), knowledge), "and with it the way to let it be");
+        helper.assertFalse(Guide.visible(step("hollowbloom"), knowledge), "the bush to watch it by still waits for the dust");
+        for (Quest quest : ancestors(step("hollowbloom"))) {
+            knowledge.completeQuest(quest);
+        }
+        helper.assertTrue(Guide.visible(step("hollowbloom"), knowledge), "with the dust, the bush to watch it by");
+
+        Quests.fire(player, Quests.BREACH_OPENED);
+        helper.assertFalse(knowledge.questDone(step("void_breach")), "a breach is written down only after the sick land");
+        for (Quest quest : ancestors(step("void_breach"))) {
+            knowledge.completeQuest(quest);
+        }
+        helper.assertFalse(Guide.visible(step("void_breach"), knowledge) || Guide.ahead(step("void_breach"), knowledge),
+                "the breach stays in the fog until it happens");
+        Quests.fire(player, Quests.BREACH_OPENED);
+        helper.assertTrue(knowledge.questDone(step("void_breach")) && Guide.visible(step("void_chitin"), knowledge),
+                "a breach seen tearing open is written down and opens what came out of it");
+        Quests.fire(player, Quests.VOID_MITE_LATCHED);
+        helper.assertTrue(knowledge.questDone(step("void_mites")), "a mite that latched on is written down");
+
+        Quest clothes = step("researcher_robe");
+        helper.assertTrue(clothes.icons().size() == 4 && clothes.displays().size() == 4, "the researcher's clothes are one step for four pieces");
         helper.succeed();
     }
 

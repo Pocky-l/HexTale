@@ -17,6 +17,10 @@ public final class Quests {
     public static final String HEX_FOUNDRY_LIT = "hex_foundry_lit";
     public static final String RUNE_SCROLL_WRITTEN = "rune_scroll_written";
     public static final String HEXCORE_AWAKENED = "hexcore_awakened";
+    /** A Void Mite latched onto the player. */
+    public static final String VOID_MITE_LATCHED = "void_mite_latched";
+    /** A breach tore open near the player (within the distance it is watched from). */
+    public static final String BREACH_OPENED = "breach_opened";
 
     /** The event of a block woken with hextech dust (its id path), for the one who woke it. */
     public static String awakened(String block) {
@@ -36,43 +40,48 @@ public final class Quests {
     public static void check(ServerPlayer player) {
         RuneKnowledge knowledge = Research.of(player);
         Guide guide = Guide.server();
-        boolean changed = false;
+        Quest last = null;
         for (Quest quest : guide.all()) {
             if (quest.kind() == Quest.Kind.ITEM && !knowledge.questDone(quest) && Guide.open(quest, knowledge) && quest.isMet(player, guide)) {
                 knowledge.completeQuest(quest);
                 announce(player, quest);
-                changed = true;
+                last = quest;
             }
         }
-        if (changed) {
-            done(player);
+        if (last != null) {
+            done(player, last);
         }
     }
 
     /** Reports an event (one of the names above): every open step whose goal waits for it is done for this player. */
     public static void fire(ServerPlayer player, String event) {
         RuneKnowledge knowledge = Research.of(player);
-        boolean changed = false;
+        Quest last = null;
         for (Quest quest : Guide.server().all()) {
             if (!knowledge.questDone(quest) && Guide.open(quest, knowledge) && quest.answers(event)) {
                 knowledge.completeQuest(quest);
                 announce(player, quest);
-                changed = true;
+                last = quest;
             }
         }
-        if (changed) {
-            done(player);
+        if (last != null) {
+            done(player, last);
         }
     }
 
+    /** The Void's steps are written in a darker ink. */
+    private static final int VOID_INK = 0xB0407E;
+
     private static void announce(ServerPlayer player, Quest quest) {
-        player.sendSystemMessage(Component.translatable("book.hextale.quest.completed",
-                Component.translatable(quest.translationKey()).withStyle(ChatFormatting.GOLD)));
+        Component name = quest.region() == Region.VOID ? Component.translatable(quest.translationKey()).withColor(VOID_INK)
+                : Component.translatable(quest.translationKey()).withStyle(ChatFormatting.GOLD);
+        player.sendSystemMessage(Component.translatable("book.hextale.quest.completed", name));
     }
 
-    /** Only the researcher hears their path; the client learns what is done. */
-    private static void done(ServerPlayer player) {
-        player.connection.send(new ClientboundSoundPacket(ModSounds.QUEST_COMPLETE, SoundSource.PLAYERS, player.getX(), player.getY(),
+    /** Only the researcher hears their path (the Void's steps in a sound of their own); the client learns what is done. */
+    private static void done(ServerPlayer player, Quest last) {
+        var sound = last.region() == Region.VOID ? ModSounds.QUEST_VOID : ModSounds.QUEST_COMPLETE;
+        player.connection.send(new ClientboundSoundPacket(sound, SoundSource.PLAYERS, player.getX(), player.getY(),
                 player.getZ(), 0.6F, 1.0F, player.getRandom().nextLong()));
         Research.sync(player);
     }

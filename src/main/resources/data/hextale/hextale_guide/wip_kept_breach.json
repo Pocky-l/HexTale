@@ -1,0 +1,8 @@
+{
+  "kind": "wip",
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:void_bulb",
+  "parents": ["wip_subdued_breach", "wip_purifier"],
+  "pos": [-130, 900]
+}

@@ -1,0 +1,30 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": ["hextale:void_soil", "hextale:void_rock", "hextale:void_rock_bricks"],
+  "parents": ["let_it_spread"],
+  "goal": {
+    "type": "any_of",
+    "goals": [
+      {
+        "type": "thinning",
+        "stage": "blight"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:void_soil"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:void_rock"
+      }
+    ]
+  },
+  "display": {
+    "kind": "shaped",
+    "ingredients": ["hextale:void_rock", "hextale:void_rock", "", "hextale:void_rock", "hextale:void_rock", "", "", "", ""],
+    "result": "hextale:void_rock_bricks",
+    "count": 4
+  },
+  "pos": [230, 620]
+}

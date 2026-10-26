@@ -1,0 +1,11 @@
+{
+  "region": "void",
+  "icon": ["minecraft:short_grass", "minecraft:dead_bush"],
+  "goal": {
+    "type": "thinning",
+    "stage": "haze"
+  },
+  "aura": "void",
+  "secret": true,
+  "pos": [0, 500]
+}

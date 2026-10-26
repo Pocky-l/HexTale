@@ -1,0 +1,8 @@
+{
+  "kind": "wip",
+  "region": "void",
+  "stage": "mid",
+  "icon": "minecraft:grass_block",
+  "parents": ["wip_purifier"],
+  "pos": [-345, 700]
+}

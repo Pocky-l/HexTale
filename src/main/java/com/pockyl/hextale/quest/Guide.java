@@ -263,9 +263,9 @@ public final class Guide {
         return true;
     }
 
-    /** What the book shows: done steps and open ones. The rest stays in the fog. */
+    /** What the book shows: done steps and open ones (a secret one only once done). The rest stays in the fog. */
     public static boolean visible(Quest quest, RuneKnowledge knowledge) {
-        return done(quest, knowledge) || open(quest, knowledge);
+        return done(quest, knowledge) || open(quest, knowledge) && !quest.secret();
     }
 
     /**
@@ -273,7 +273,7 @@ public final class Guide {
      * seen. The book shows it greyed out, as "not reachable yet"; everything further stays in the fog.
      */
     public static boolean ahead(Quest quest, RuneKnowledge knowledge) {
-        if (quest.kind() != Quest.Kind.ITEM || visible(quest, knowledge)) {
+        if (quest.kind() != Quest.Kind.ITEM || quest.secret() || visible(quest, knowledge)) {
             return false;
         }
         for (Quest parent : quest.parents()) {

@@ -1,7 +1,7 @@
 {
   "region": "void",
   "icon": "hextale:hollowbloom",
-  "parents": ["hextech_dust"],
+  "parents": ["the_thinning", "hextech_dust"],
   "goal": {
     "type": "any_of",
     "goals": [
@@ -17,11 +17,8 @@
   },
   "display": {
     "kind": "scheme",
-    "ingredients": [
-      "hextale:hextech_dust",
-      "minecraft:dead_bush"
-    ],
+    "ingredients": ["hextale:hextech_dust", "minecraft:dead_bush"],
     "result": "hextale:hollowbloom"
   },
-  "pos": [-420, 300]
+  "pos": [0, 610]
 }

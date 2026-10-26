@@ -1,0 +1,10 @@
+{
+  "region": "void",
+  "icon": ["minecraft:dead_bush", "hextale:void_soil"],
+  "parents": ["the_thinning"],
+  "goal": {
+    "type": "thinning",
+    "stage": "miasma"
+  },
+  "pos": [120, 560]
+}

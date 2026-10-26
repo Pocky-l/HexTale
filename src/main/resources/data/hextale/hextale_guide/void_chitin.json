@@ -2,6 +2,6 @@
   "region": "void",
   "stage": "mid",
   "icon": "hextale:void_chitin",
-  "parents": ["hollowbloom"],
-  "pos": [-560, 370]
+  "parents": ["void_breach"],
+  "pos": [340, 820]
 }

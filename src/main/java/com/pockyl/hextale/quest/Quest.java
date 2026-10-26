@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 import com.pockyl.hextale.research.ResearchTopic;
 
@@ -82,7 +83,9 @@ public final class Quest {
         /** Lightning and raw hextech: electric arcs jumping around the frame. */
         STORM,
         /** Refined hextech: blue sparks orbiting the frame. */
-        HEXTECH;
+        HEXTECH,
+        /** The Void: a dark corona that swallows the light around the frame, motes drawn into it, angry flares. */
+        VOID;
 
         public static final Codec<Aura> CODEC = StringRepresentable.fromEnum(Aura::values);
 
@@ -96,7 +99,7 @@ public final class Quest {
     private final QuestDefinition definition;
     /** Made on first use: item components are not bound yet while data packs load. */
     @Nullable
-    private ItemStack icon;
+    private List<ItemStack> icons;
     final List<Quest> parents = new ArrayList<>();
     final List<Quest> children = new ArrayList<>();
     int index;
@@ -138,11 +141,26 @@ public final class Quest {
         return Collections.unmodifiableList(children);
     }
 
+    /** The step's sign: its first icon. */
     public ItemStack icon() {
-        if (icon == null) {
-            icon = definition.icon().create();
+        return icons().getFirst();
+    }
+
+    /** Every icon of the step; most have one, a step for a set of things one per thing. */
+    public List<ItemStack> icons() {
+        if (icons == null) {
+            icons = definition.icons().stream().map(ItemStackTemplate::create).toList();
         }
-        return icon;
+        return icons;
+    }
+
+    /** How long each of several icons stays before the next one, in milliseconds. */
+    public static final long ICON_TICK = 1400;
+
+    /** The icon shown at this moment of the wall clock: several icons take turns. */
+    public ItemStack icon(long now) {
+        List<ItemStack> all = icons();
+        return all.get((int) ((now / ICON_TICK + index) % all.size()));
     }
 
     /**
@@ -167,9 +185,15 @@ public final class Quest {
         return kind() == Kind.ITEM && definition.goal().map(goal -> goal.answers(event)).orElse(false);
     }
 
+    /** The step's (first) picture, or null. */
     @Nullable
     public QuestDisplay display() {
-        return definition.display().orElse(null);
+        return definition.displays().isEmpty() ? null : definition.displays().getFirst();
+    }
+
+    /** Every picture of the step: one per icon when the step stands for a set of things. */
+    public List<QuestDisplay> displays() {
+        return definition.displays();
     }
 
     /** What must be researched before this step's item can be made, else null. */
@@ -192,14 +216,19 @@ public final class Quest {
         return definition.stage();
     }
 
-    /** Key steps are drawn larger. */
+    /** Key steps (a golden halo, or the Void's turning points) are drawn larger. */
     public boolean important() {
-        return aura() == Aura.GOLD;
+        return aura() == Aura.GOLD || aura() == Aura.VOID;
     }
 
     /** The step the whole guide turns around: much larger, special, alone in its patch of sky. */
     public boolean landmark() {
         return definition.landmark();
+    }
+
+    /** Stays in the fog until done: something that happens to the researcher, written down once it has. */
+    public boolean secret() {
+        return definition.secret();
     }
 
     /** A workstation (bench, furnace, table, altar...): drawn large, its steps gather around it. */

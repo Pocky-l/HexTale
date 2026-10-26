@@ -64,6 +64,8 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> INK_STEP = register("ink.step");
     /** A quest of the researcher's path is done. */
     public static final DeferredHolder<SoundEvent, SoundEvent> QUEST_COMPLETE = register("quest.complete");
+    /** A step of the Void's branch is done: a slow pen stroke over a dark breath. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> QUEST_VOID = register("quest.void");
     /** Essence poured into or out of a tank. */
     public static final DeferredHolder<SoundEvent, SoundEvent> TANK_GLUG = register("tank.glug");
     /** The ritual circle of a Hextech Altar wakes. */

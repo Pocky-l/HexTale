@@ -1,0 +1,13 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": "hextale:void_shard",
+  "parents": ["void_blight"],
+  "goal": {
+    "type": "event",
+    "event": "breach_opened"
+  },
+  "aura": "void",
+  "secret": true,
+  "pos": [220, 760]
+}

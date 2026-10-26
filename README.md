@@ -54,8 +54,9 @@ Now my workshop runs on its own. **Pylons** catch items with tendrils of light a
 furnaces, a **Sorting Matrix** sends every item home, the **Whirl Reaper** harvests my fields with whirlwinds and the
 **Hex Sawmill** fells whole trees and plants them again.
 
-All of it is in my diary - the path I walked, the steps I can take now and one more into the fog. Many of its pages are
-still blank: plans for chemtech, shimmer and the hexcore are waiting to be written.
+All of it is in my diary - the path I walked, the steps I can take now and one more into the fog. Since the land around
+my home began to wear thin, a darker branch grows there too, written only as things happen to me. Many of its pages are
+still blank: plans for chemtech, shimmer, the hexcore and the Void are waiting to be written.
 
 ![The Researcher's Diary: the path through the mod](docs/screenshots/researchers-path.jpg)
 

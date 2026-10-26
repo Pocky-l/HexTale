@@ -4,6 +4,25 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- The Void has a branch of its own in the researcher's diary, apart from hextech and chemtech. It appears the first time
+  the land around you shows the haze and follows what you do about it: let the land go and see what it turns into, and
+  (in the plans still being written) hold a breach in place and heal the land around it. What happens on the way is
+  written down as it happens - a mite latching on, a breach tearing open - each with the researcher's thoughts.
+- The Void's steps look sick: dark cracked medallions with an angry magenta glow that flares out of rhythm, writhing
+  thorns, dark smoke and a black sky around them, veins with a throb instead of lines; the breach and the first sign of
+  the haze wear a corona that swallows the light. Their names in the diary and in chat are in the Void's own ink, and a
+  step of the Void done sounds of its own: a slow pen stroke over a dark breath.
+- A diary step can stand for a set of things: its icon switches between them, and its page shows a row of them to pick
+  from.
+
+### Changed
+- The researcher's clothes are one step: pick the hood, robe, trousers or boots on its page for the recipe and runes.
+- Hexsteel Gear shows the recipe of every piece of the set.
+- The Hollowbloom moved into the Void's branch.
+
 ## [1.1.0] - 2026-10-25
 The Void seeps in: magic wears the world thin around a researcher's home.
 

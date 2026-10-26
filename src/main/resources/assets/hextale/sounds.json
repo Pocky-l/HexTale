@@ -149,6 +149,15 @@
       }
     ]
   },
+  "quest.void": {
+    "subtitle": "subtitles.hextale.quest.void",
+    "sounds": [
+      {
+        "name": "hextale:quest_void",
+        "volume": 0.45
+      }
+    ]
+  },
   "tank.glug": {
     "subtitle": "subtitles.hextale.tank.glug",
     "sounds": [

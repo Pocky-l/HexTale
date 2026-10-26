@@ -8,7 +8,8 @@ import com.pockyl.hextale.quest.Quest;
 
 /**
  * The effects around the few steps of the guide that matter most, drawn in pixels behind the frames: a golden halo for
- * key steps, arcs of lightning jumping off raw hextech, blue sparks circling refined hextech. Everything runs on the wall
+ * key steps, arcs of lightning jumping off raw hextech, blue sparks circling refined hextech, a dark corona around the
+ * turning points of the Void. Everything runs on the wall
  * clock and each step's index, so neighbours never move in step.
  */
 final class Auras {
@@ -30,6 +31,7 @@ final class Auras {
             case GOLD -> gold(graphics, round, x, y, size, now, seed);
             case STORM -> storm(graphics, round, x, y, size, now, seed);
             case HEXTECH -> hextech(graphics, round, x, y, size, now, seed);
+            case VOID -> voidCorona(graphics, x, y, size, now, quest.index());
         }
     }
 
@@ -98,6 +100,46 @@ final class Auras {
             }
         }
         shape(graphics, round, x, y, size + 4, PixelArt.argb(HEXTECH, 0.08F), 0);
+    }
+
+    /**
+     * The Void: a corona that darkens the sky instead of lighting it, motes spiralling into the frame as the Void pulls
+     * them in, and when it flares, jagged magenta tears licking out of the rim.
+     */
+    private static void voidCorona(GuiGraphicsExtractor graphics, int x, int y, int size, long now, int seed) {
+        float anger = Blight.anger(now, seed);
+        for (int ring = 0; ring < 5; ring++) {
+            PixelArt.disc(graphics, x, y, size + 14 + ring * 9, PixelArt.argb(0x050208, 0.3F - ring * 0.05F), 0);
+        }
+        PixelArt.discRing(graphics, x, y, size + 12, PixelArt.argb(Blight.GLOW, 0.12F + 0.3F * anger));
+        for (int i = 0; i < 9; i++) {
+            // Drawn in: from far out to the rim, turning as they fall.
+            float t = ((now / 2400.0F) + i / 9.0F + seed * 0.13F) % 1;
+            float radius = size * (1.3F - 0.75F * t);
+            float angle = i * Mth.TWO_PI / 9 + t * 1.6F + seed;
+            int px = x + Math.round(Mth.cos(angle) * radius);
+            int py = y + Math.round(Mth.sin(angle) * radius);
+            PixelArt.fill(graphics, px, py, px + 1, py + 1, PixelArt.argb(i % 3 == 0 ? Blight.GLOW : 0x8A6CB0, 0.25F + 0.6F * t));
+        }
+        if (anger > 0.45F) {
+            long bucket = now / 110;
+            for (int k = 0; k < 2; k++) {
+                long h = hash(bucket * 37 + k * 1013 + seed * 7919L);
+                float angle = (h % 3600) / 3600.0F * Mth.TWO_PI;
+                float px = x + Mth.cos(angle) * size / 2.0F;
+                float py = y + Mth.sin(angle) * size / 2.0F;
+                for (int s = 0; s < 3; s++) {
+                    float out = 3 + (h >> (10 + s) & 3);
+                    float jitter = ((h >> (14 + s * 2) & 7) - 3.5F) * 0.9F;
+                    float nx = px + Mth.cos(angle) * out - Mth.sin(angle) * jitter;
+                    float ny = py + Mth.sin(angle) * out + Mth.cos(angle) * jitter;
+                    PixelArt.line(graphics, Math.round(px), Math.round(py), Math.round(nx), Math.round(ny),
+                            PixelArt.argb(PixelArt.mix(Blight.GLOW, 0xFF8AB8, anger), (anger - 0.3F) * (1 - s * 0.25F)));
+                    px = nx;
+                    py = ny;
+                }
+            }
+        }
     }
 
     /** A filled hexagon around a rune, a disc around the round item and device medallions. */
