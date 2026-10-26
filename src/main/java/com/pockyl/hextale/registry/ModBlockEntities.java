@@ -65,6 +65,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexSawmillBlockEntity>> HEX_SAWMILL =
             BLOCK_ENTITIES.register("hex_sawmill", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexSawmillBlockEntity::new,
                     ModBlocks.HEX_SAWMILL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexLiftBlock.Lift>> HEX_LIFT =
+            BLOCK_ENTITIES.register("hex_lift", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexLiftBlock.Lift::new,
+                    ModBlocks.HEX_LIFT.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ImpulsePlateBlock.Plate>> IMPULSE_PLATE =
             BLOCK_ENTITIES.register("impulse_plate", () -> new BlockEntityType<>(com.pockyl.hextale.block.ImpulsePlateBlock.Plate::new,
                     ModBlocks.IMPULSE_PLATE.get()));

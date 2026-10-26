@@ -122,6 +122,7 @@ public final class HextaleClient {
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
         BreachCinematic.register(modBus);
+        ClientLift.register();
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
         modBus.addListener(ThinningTint::fadeWater);
@@ -185,7 +186,8 @@ public final class HextaleClient {
                 String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
                 event.getToolTip().add(Component.translatable("block.hextale." + id + ".hint").withStyle(ChatFormatting.GRAY));
             }
-            if (stack.is(ModItems.LEVITATION_PLATE.get()) || stack.is(ModItems.NULL_LANTERN.get()) || stack.is(ModItems.IMPULSE_PLATE.get())) {
+            if (stack.is(ModItems.LEVITATION_PLATE.get()) || stack.is(ModItems.NULL_LANTERN.get()) || stack.is(ModItems.IMPULSE_PLATE.get())
+                    || stack.is(ModItems.HEX_LIFT.get())) {
                 event.getToolTip().add(Component.translatable(stack.getItem().getDescriptionId() + ".hint").withStyle(ChatFormatting.GRAY));
             }
             // How a pipe's sides are set.

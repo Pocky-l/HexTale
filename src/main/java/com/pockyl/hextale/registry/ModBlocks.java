@@ -104,6 +104,9 @@ public final class ModBlocks {
     public static final DeferredBlock<Block> CHISELED_MAGIC_BRICKS = BLOCKS.registerBlock("chiseled_magic_bricks", Block::new,
             ModBlocks::brickProperties);
 
+    /** Polished magic stone with a lifting glyph: a jump carries you to the next lift above, a sneak to the one below. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HexLiftBlock> HEX_LIFT = BLOCKS.registerBlock("hex_lift",
+            com.pockyl.hextale.block.HexLiftBlock::new, () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF).lightLevel(state -> 4));
     /** A plate with a brass arrow: whatever steps on it is thrown up and along the arrow. */
     public static final DeferredBlock<com.pockyl.hextale.block.ImpulsePlateBlock> IMPULSE_PLATE = BLOCKS.registerBlock("impulse_plate",
             com.pockyl.hextale.block.ImpulsePlateBlock::new,

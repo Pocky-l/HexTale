@@ -59,6 +59,8 @@ public enum RuneHolder {
     NULL_LANTERN(() -> ModDataComponents.NULL_RUNES.get(), NullRune.SLOTS, NullRune.values()),
     /** The Impulse Plate. */
     IMPULSE(() -> ModDataComponents.IMPULSE_RUNES.get(), ImpulseRune.SLOTS, ImpulseRune.values()),
+    /** The Hex Lift. */
+    LIFT(() -> ModDataComponents.LIFT_RUNES.get(), LiftRune.SLOTS, LiftRune.values()),
     /** The Crystal Battery. */
     BATTERY(() -> ModDataComponents.BATTERY_RUNES.get(), BatteryRune.SLOTS, BatteryRune.values()),
     /** The Hextech Purifier. */
@@ -142,6 +144,9 @@ public enum RuneHolder {
         }
         if (item == ModItems.IMPULSE_PLATE.get()) {
             return IMPULSE;
+        }
+        if (item == ModItems.HEX_LIFT.get()) {
+            return LIFT;
         }
         if (item == ModItems.CRYSTAL_BATTERY.get()) {
             return BATTERY;
@@ -280,6 +285,7 @@ public enum RuneHolder {
             case PLATE -> List.of(new ItemStack(ModItems.LEVITATION_PLATE.get()));
             case NULL_LANTERN -> List.of(new ItemStack(ModItems.NULL_LANTERN.get()));
             case IMPULSE -> List.of(new ItemStack(ModItems.IMPULSE_PLATE.get()));
+            case LIFT -> List.of(new ItemStack(ModItems.HEX_LIFT.get()));
             case BATTERY -> List.of(new ItemStack(ModItems.CRYSTAL_BATTERY.get()));
             case PURIFIER -> List.of(new ItemStack(ModItems.HEXTECH_PURIFIER.get()));
             case ANCHOR -> List.of(new ItemStack(ModItems.VOID_ANCHOR.get()));

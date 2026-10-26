@@ -52,6 +52,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
   in it), Banishing (hostile creatures inside take a small bite now and then) and Lens.
 - Impulse Plate (two at the Hex Workbench): whatever steps on it is thrown up and along its brass arrow, placed facing
   the way you look. Runes: Shift (higher), Motor (farther), Breath (a soft landing) and Lens.
+- Hex Lift (replaces the "Hex Lift" idea in the diary): standing on one, jump to ride to the next lift straight above
+  within 16 blocks, crouch to ride down; the lift you arrive on needs two blocks of room. Runes: Shift (up to 64
+  blocks), Blink (creatures standing on the lift come along), Haste (Speed for a few seconds after a ride) and Lens.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

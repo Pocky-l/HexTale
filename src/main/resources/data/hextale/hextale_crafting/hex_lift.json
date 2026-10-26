@@ -1,0 +1,16 @@
+{
+  "pattern": [
+    "MEM",
+    "MCM"
+  ],
+  "key": {
+    "M": "hextale:polished_magic_stone",
+    "E": "minecraft:ender_pearl",
+    "C": "hextale:hextech_crystal"
+  },
+  "result": {
+    "id": "hextale:hex_lift",
+    "count": 2
+  },
+  "charge": 2
+}

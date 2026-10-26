@@ -86,6 +86,25 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
+    @HexTest(padding = 2)
+    public static void hexLiftsFindTheNextLiftWithRoom(GameTestHelper helper) {
+        BlockPos low = new BlockPos(1, 1, 1);
+        BlockPos high = low.above(6);
+        helper.setBlock(low, ModBlocks.HEX_LIFT.get());
+        helper.setBlock(high, ModBlocks.HEX_LIFT.get());
+        BlockPos from = helper.absolutePos(low);
+        BlockPos to = helper.absolutePos(high);
+        helper.assertTrue(to.equals(com.pockyl.hextale.block.HexLiftBlock.next(helper.getLevel(), from, true, 16)), "up finds the lift above");
+        helper.assertTrue(from.equals(com.pockyl.hextale.block.HexLiftBlock.next(helper.getLevel(), to, false, 16)), "down finds the lift below");
+        helper.assertTrue(com.pockyl.hextale.block.HexLiftBlock.next(helper.getLevel(), from, true, 4) == null, "beyond its reach there is none");
+        helper.setBlock(high.above(2), net.minecraft.world.level.block.Blocks.STONE);
+        helper.assertTrue(com.pockyl.hextale.block.HexLiftBlock.next(helper.getLevel(), from, true, 16) == null, "a lift without room above is skipped");
+        for (BlockPos pos : new BlockPos[] {low, high, high.above(2)}) {
+            helper.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR);
+        }
+        helper.succeed();
+    }
+
     @HexTest
     public static void aNullLanternKeepsItsQuiet(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);
