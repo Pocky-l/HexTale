@@ -1,0 +1,20 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": "hextale:null_lantern",
+  "parents": [
+    "hextech_purifier"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:null_lantern",
+    "then": {
+      "kind": "runes",
+      "result": "null_lantern"
+    }
+  },
+  "pos": [
+    -335,
+    595
+  ]
+}

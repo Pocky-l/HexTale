@@ -104,6 +104,11 @@ public final class ModBlocks {
     public static final DeferredBlock<Block> CHISELED_MAGIC_BRICKS = BLOCKS.registerBlock("chiseled_magic_bricks", Block::new,
             ModBlocks::brickProperties);
 
+    /** A lantern of nullstone: no hostile creature forms by itself within its quiet. */
+    public static final DeferredBlock<com.pockyl.hextale.block.NullLanternBlock> NULL_LANTERN = BLOCKS.registerBlock("null_lantern",
+            com.pockyl.hextale.block.NullLanternBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).forceSolidOn().strength(3.5F).sound(SoundType.LANTERN)
+                    .lightLevel(state -> 12).noOcclusion().pushReaction(PushReaction.POPPED));
     /** Smooth stone with a rune of lifting underneath: it can be set into thin air. */
     public static final DeferredBlock<Block> FLOATING_STONE = BLOCKS.registerBlock("floating_stone", Block::new,
             () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF).lightLevel(state -> 4));

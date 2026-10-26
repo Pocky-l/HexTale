@@ -71,4 +71,25 @@ public final class GadgetGameTests {
         pig.discard();
         helper.succeed();
     }
+
+    @HexTest
+    public static void aNullLanternKeepsItsQuiet(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at.below(), net.minecraft.world.level.block.Blocks.STONE);
+        helper.setBlock(at, ModBlocks.NULL_LANTERN.get());
+        Vec3 lantern = Vec3.atCenterOf(helper.absolutePos(at));
+        // A block entity joins the lanterns' index when it loads, a tick after it is set.
+        helper.runAfterDelay(2, () -> {
+            helper.assertTrue(com.pockyl.hextale.block.NullLanternBlockEntity.covering(helper.getLevel(), lantern.add(10, 0, 10), null) != null,
+                    "a spot within 24 blocks is quiet");
+            helper.assertTrue(com.pockyl.hextale.block.NullLanternBlockEntity.covering(helper.getLevel(), lantern.add(30, 0, 0), null) == null,
+                    "a spot 30 blocks away is not");
+            helper.assertTrue(com.pockyl.hextale.block.NullLanternBlockEntity.covering(helper.getLevel(), lantern.add(5, 0, 0),
+                    com.pockyl.hextale.runework.NullRune.HUSH) == null, "without Hush it does not keep phantoms off");
+            helper.setBlock(at, net.minecraft.world.level.block.Blocks.AIR);
+            helper.assertTrue(com.pockyl.hextale.block.NullLanternBlockEntity.covering(helper.getLevel(), lantern, null) == null,
+                    "a broken lantern keeps nothing quiet");
+            helper.succeed();
+        });
+    }
 }

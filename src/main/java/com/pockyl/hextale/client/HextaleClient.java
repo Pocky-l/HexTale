@@ -185,8 +185,8 @@ public final class HextaleClient {
                 String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
                 event.getToolTip().add(Component.translatable("block.hextale." + id + ".hint").withStyle(ChatFormatting.GRAY));
             }
-            if (stack.is(ModItems.LEVITATION_PLATE.get())) {
-                event.getToolTip().add(Component.translatable("block.hextale.levitation_plate.hint").withStyle(ChatFormatting.GRAY));
+            if (stack.is(ModItems.LEVITATION_PLATE.get()) || stack.is(ModItems.NULL_LANTERN.get())) {
+                event.getToolTip().add(Component.translatable(stack.getItem().getDescriptionId() + ".hint").withStyle(ChatFormatting.GRAY));
             }
             // How a pipe's sides are set.
             if (stack.is(ModItems.BRASS_PIPE.get())) {

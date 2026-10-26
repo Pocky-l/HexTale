@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "hanging=false,waterlogged=false": {
+      "model": "hextale:block/null_lantern"
+    },
+    "hanging=false,waterlogged=true": {
+      "model": "hextale:block/null_lantern"
+    },
+    "hanging=true,waterlogged=false": {
+      "model": "hextale:block/null_lantern_hanging"
+    },
+    "hanging=true,waterlogged=true": {
+      "model": "hextale:block/null_lantern_hanging"
+    }
+  }
+}

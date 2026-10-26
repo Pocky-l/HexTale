@@ -1,0 +1,17 @@
+{
+  "pattern": [
+    " B ",
+    "NUN",
+    " N "
+  ],
+  "key": {
+    "B": "hextale:brass_nugget",
+    "N": "hextale:nullstone",
+    "U": "hextale:unstable_hextech"
+  },
+  "result": {
+    "id": "hextale:null_lantern",
+    "count": 1
+  },
+  "charge": 2
+}

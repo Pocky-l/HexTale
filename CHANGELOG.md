@@ -46,6 +46,10 @@ Glassy scars: the way into hextech no longer waits for a storm.
   creatures. Creatures plan their way through Ward Glass and around Veil Glass.
 - Floating Stone (two at the Hex Workbench from smooth stone, dust and a feather): set against a block like any stone,
   or into thin air - with nothing aimed at, it settles three blocks ahead and stays there.
+- Null Lantern (nullstone round a raw orb, after the Hextech Purifier): its cold violet light drinks the magic that lets
+  hostile creatures form - none spawn by themselves within 24 blocks (spawners, eggs and those who walk in still come).
+  It stands or hangs like a lantern. Runes: Shift (a wider quiet, up to 64), Hush (no phantoms over sleepless players
+  in it), Banishing (hostile creatures inside take a small bite now and then) and Lens.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed
