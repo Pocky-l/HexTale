@@ -29,6 +29,8 @@ public final class ThinningGameTests {
         helper.assertTrue(Thinning.Stage.of(safe + 450) == Thinning.Stage.MIASMA, "450 past it is miasma");
         helper.assertTrue(Thinning.Stage.of(safe + 700) == Thinning.Stage.BLIGHT, "700 past it is blight");
         helper.assertTrue(Thinning.Stage.of(Thinning.MAX) == Thinning.Stage.BREACH, "the most is a breach");
+        helper.assertTrue(Thinning.Stage.BREACH.from == Thinning.MAX && Thinning.Stage.of(Thinning.MAX - 1) == Thinning.Stage.BLIGHT,
+                "a breach waits until the land has gone all the way (owner: it appears at 2000)");
         helper.succeed();
     }
 

@@ -61,7 +61,7 @@ public final class ThinningAtmosphere {
 
     /** 0 at the first haze, 1 at a breach. */
     private static float depth(float value) {
-        return Mth.clamp((Thinning.felt(value) - Thinning.Stage.HAZE.felt * 0.5F) / (Thinning.Stage.BREACH.felt - Thinning.Stage.HAZE.felt * 0.5F), 0, 1);
+        return Mth.clamp((Thinning.felt(value) - Thinning.Stage.HAZE.felt * 0.5F) / (Thinning.WORST - Thinning.Stage.HAZE.felt * 0.5F), 0, 1);
     }
 
     private static void tick() {
@@ -121,7 +121,7 @@ public final class ThinningAtmosphere {
         if (--murmurIn > 0) {
             return;
         }
-        float k = Mth.clamp((local - Thinning.Stage.MIASMA.felt) / (Thinning.Stage.BREACH.felt - Thinning.Stage.MIASMA.felt), 0, 1);
+        float k = Mth.clamp((local - Thinning.Stage.MIASMA.felt) / (Thinning.WORST - Thinning.Stage.MIASMA.felt), 0, 1);
         murmurIn = 300 + random.nextInt(400) - (int) (k * 200);
         double angle = random.nextDouble() * Math.PI * 2;
         double x = player.getX() + Math.cos(angle) * 10;
@@ -159,7 +159,7 @@ public final class ThinningAtmosphere {
     /** From the miasma on, the edges of sight darken towards violet. */
     private static void vignette(GuiGraphicsExtractor graphics, DeltaTracker delta) {
         float value = Mth.lerp(delta.getGameTimeDeltaPartialTick(false), previous, local);
-        float s = Mth.clamp((value - Thinning.Stage.MIASMA.felt * 0.8F) / (Thinning.Stage.BREACH.felt - Thinning.Stage.MIASMA.felt * 0.8F), 0, 1);
+        float s = Mth.clamp((value - Thinning.Stage.MIASMA.felt * 0.8F) / (Thinning.WORST - Thinning.Stage.MIASMA.felt * 0.8F), 0, 1);
         if (s <= 0.003F) {
             return;
         }

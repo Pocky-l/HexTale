@@ -461,6 +461,16 @@ public final class QuestGameTests {
         Quests.fire(player, Quests.BREACH_OPENED);
         helper.assertTrue(knowledge.questDone(step("void_breach")) && Guide.visible(step("void_chitin"), knowledge),
                 "a breach seen tearing open is written down and opens what came out of it");
+        ServerPlayer other = helper.makeMockServerPlayerInLevel();
+        RuneKnowledge late = Research.of(other);
+        for (Quest quest : ancestors(step("void_breach"))) {
+            late.completeQuest(quest);
+        }
+        com.pockyl.hextale.thevoid.Thinning.set(level, level.getChunkAt(other.blockPosition()), com.pockyl.hextale.thevoid.Thinning.MAX);
+        Quests.check(other);
+        com.pockyl.hextale.thevoid.Thinning.set(level, level.getChunkAt(other.blockPosition()), 0);
+        helper.assertTrue(late.questDone(step("void_breach")) && Guide.visible(step("void_chitin"), late),
+                "land gone all the way (where the breach appears) writes it down too, and opens the chitin");
         Quests.fire(player, Quests.VOID_MITE_LATCHED);
         helper.assertTrue(knowledge.questDone(step("void_mites")), "a mite that latched on is written down");
 

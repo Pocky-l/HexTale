@@ -106,9 +106,15 @@ public final class Thinning {
     public static final float LAB_BURST = 15;
     public static final float PARCHMENT_BURN = 5;
 
+    /**
+     * How far past the {@link #SAFE} part the land looks and sickens its worst (the haze, the fog, the blight's pace).
+     * The breach waits longer, until the land has gone all the way ({@link Stage#BREACH} = {@link #MAX}).
+     */
+    public static final float WORST = 1000;
+
     /** How far the land has gone; {@code felt} counts from the end of the {@link #SAFE} part. */
     public enum Stage {
-        CLEAN(-SAFE), HAZE(100), MIASMA(300), BLIGHT(600), BREACH(1000);
+        CLEAN(-SAFE), HAZE(100), MIASMA(300), BLIGHT(600), BREACH(1500);
 
         public final float from;
         public final float felt;
@@ -294,7 +300,7 @@ public final class Thinning {
      */
     private static void blight(ServerLevel level, LevelChunk chunk, float value) {
         RandomSource random = level.getRandom();
-        float k = Mth.clamp((felt(value) - Stage.BLIGHT.felt) / (Stage.BREACH.felt - Stage.BLIGHT.felt), 0, 1);
+        float k = Mth.clamp((felt(value) - Stage.BLIGHT.felt) / (WORST - Stage.BLIGHT.felt), 0, 1);
         if (random.nextFloat() >= BLIGHT_CHANCE * (0.3F + k)) {
             return;
         }

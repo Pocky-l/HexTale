@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Where the Thinning tears the world open. When a chunk near a player has gone all the way ({@link Thinning.Stage#BREACH}),
+ * Where the Thinning tears the world open. When a chunk near a player has gone all the way ({@link Thinning.Stage#BREACH}, the most it can wear: 2000),
  * a breach of the Void opens in it - on open ground under the sky, away from anything built - but never within
  * {@link #SPACING} blocks of another one: one sick land, one breach. The places are remembered per level (even while
  * their chunks sleep). Players near a breach that opens are shown it ({@link BreachCinematicPayload}) and come to no

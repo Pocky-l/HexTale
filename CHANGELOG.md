@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The researcher's clothes are one step: pick the hood, robe, trousers or boots on its page for the recipe and runes.
 - Hexsteel Gear shows the recipe of every piece of the set.
 - The Hollowbloom moved into the Void's branch.
+- A breach waits longer: the world tears only where the land has worn thin all the way. The haze, the miasma and the
+  blight look and spread as before.
 
 ## [1.1.0] - 2026-10-25
 The Void seeps in: magic wears the world thin around a researcher's home.

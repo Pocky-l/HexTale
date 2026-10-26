@@ -4,8 +4,17 @@
   "icon": "hextale:void_shard",
   "parents": ["void_blight"],
   "goal": {
-    "type": "event",
-    "event": "breach_opened"
+    "type": "any_of",
+    "goals": [
+      {
+        "type": "event",
+        "event": "breach_opened"
+      },
+      {
+        "type": "thinning",
+        "stage": "breach"
+      }
+    ]
   },
   "aura": "void",
   "secret": true,
