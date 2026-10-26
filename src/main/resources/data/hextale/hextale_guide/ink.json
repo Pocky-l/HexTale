@@ -8,7 +8,7 @@
       }
     }
   },
-  "parents": ["item_study", "essence_tank", "concentrate"],
+  "parents": ["item_study", "essence_tank", "alembic"],
   "goal": {
     "type": "ink_at_table"
   },

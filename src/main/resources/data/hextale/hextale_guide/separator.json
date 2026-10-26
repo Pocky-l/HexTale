@@ -1,7 +1,7 @@
 {
   "region": "essences",
   "icon": "hextale:separator",
-  "parents": ["essence_bottle"],
+  "parents": ["ink"],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:separator"
