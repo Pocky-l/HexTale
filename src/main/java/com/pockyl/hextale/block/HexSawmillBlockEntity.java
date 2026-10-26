@@ -165,9 +165,9 @@ public class HexSawmillBlockEntity extends BlockEntity {
         return Vec3.atLowerCornerOf(pos).add(0.5, 8 / 16.0, 8.5 / 16);
     }
 
-    /** Where the crystal floats, over the disc's guard. */
-    public static Vec3 crystal(BlockPos pos) {
-        return Vec3.atLowerCornerOf(pos).add(0.5, 17.5 / 16, 8.5 / 16);
+    /** Where the wind drawn from a jar goes in: the top of the disc's guard. */
+    public static Vec3 intake(BlockPos pos) {
+        return Vec3.atLowerCornerOf(pos).add(0.5, 16.0 / 16, 8.5 / 16);
     }
 
     public void wake() {

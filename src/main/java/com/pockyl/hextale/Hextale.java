@@ -68,7 +68,7 @@ public final class Hextale {
         GameTests.register(modBus);
         modBus.addListener(ModDataMaps::register);
         modBus.addListener(Hextale::addToVanillaTabs);
-        PockyModsTab.register(modBus, () -> new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), Hextale::fillCreativeTab);
+        PockyModsTab.register(modBus, () -> new ItemStack(ModItems.HEXCORE.get()), Hextale::fillCreativeTab);
 
         container.registerConfig(ModConfig.Type.SYNCED, Config.SPEC);
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);

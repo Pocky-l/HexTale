@@ -33,6 +33,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Hollowbloom moved into the Void's branch.
 - A breach waits longer: the world tears only where the land has worn thin all the way. The haze, the miasma and the
   blight look and spread as before.
+- The Hexcore as an item shows only its rune matrix, full size and sharp instead of a squeezed copy of the whole block,
+  and its layers twist like a puzzle cube right in the slot. It is now the icon of the Pocky Mods creative tab.
+- The Greedy Funnel, the Experience Condenser and the Hex Sawmill no longer have a hextech crystal floating over them:
+  experience and essence flow straight into the funnel's mouth, the condenser's crown and the sawmill's guard.
+- The crystals of the Arc Spire and the Whirl Reaper float a little higher, clear of the model, with all their effects.
+- Bubbles in the mod's liquids (axolotl tank, crucible, alembic, jars, lab flask...) are Minecraft's own round bubbles
+  tinted by the liquid instead of little cubes; on a boiling crucible they swell and pop like vanilla bubbles.
+- The Lab Bench is bigger and centred in inventory slots.
 
 ## [1.1.0] - 2026-10-25
 The Void seeps in: magic wears the world thin around a researcher's home.

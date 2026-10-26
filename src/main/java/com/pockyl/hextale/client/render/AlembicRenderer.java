@@ -23,6 +23,9 @@ import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.research.ItemEssences;
 import com.pockyl.hextale.research.ResearchItems;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Inside the Alembic's flask: the water, tinted by the essence boiled into it (or by the item boiling); bubbles rising
  * through it while an item boils; and the item itself, turning slowly in the water.
@@ -94,14 +97,16 @@ public class AlembicRenderer implements BlockEntityRenderer<AlembicBlockEntity, 
                 0, 0, 0);
         if (state.working) {
             // Bubbles rise from the bottom and burst at the surface, each on its own track.
-            float size = 0.45F / 16;
+            float half = 0.9F / 16;
+            List<float[]> bubbles = new ArrayList<>(BUBBLES);
             for (int i = 0; i < BUBBLES; i++) {
                 float t = ((state.time * 0.025F + i * 0.37F) % 1 + 1) % 1;
-                float y = BOTTOM + 0.2F / 16 + (top - BOTTOM - 0.6F / 16) * t;
-                float x = 5.4F / 16 + ((i * 0.618F) % 1) * (5.2F / 16) + Mth.sin(state.time * 0.2F + i) * 0.2F / 16;
-                float z = 5.4F / 16 + ((i * 0.381F + 0.5F) % 1) * (5.2F / 16);
-                LiquidBox.submit(poseStack, collector, x, z, x + size, z + size, y, y + size, RuneDrawing.argb(0xFFFFFF, 0.75F * (1 - t * 0.5F)));
+                float y = BOTTOM + 0.9F / 16 + (top - BOTTOM - 1.6F / 16) * t;
+                float x = 5.9F / 16 + ((i * 0.618F) % 1) * (4.2F / 16) + Mth.sin(state.time * 0.2F + i) * 0.2F / 16;
+                float z = 5.9F / 16 + ((i * 0.381F + 0.5F) % 1) * (4.2F / 16);
+                bubbles.add(HexFx.quad(x, y, z, half, 0, 0, 0.8F * (1 - t * 0.5F), RuneDrawing.mix(state.color, 0xFFFFFF, 0.55F)));
             }
+            LiquidBox.bubbles(poseStack, collector, bubbles);
         }
     }
 }

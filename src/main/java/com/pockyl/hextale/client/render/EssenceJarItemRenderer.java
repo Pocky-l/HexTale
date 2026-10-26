@@ -53,7 +53,7 @@ public final class EssenceJarItemRenderer implements SpecialModelRenderer<Essenc
         for (Direction face : Direction.Plane.HORIZONTAL) {
             labels[face.get3DDataValue()] = contents.sticker();
         }
-        EssenceTankRenderer.submitContents(poseStack, collector, contents.fill(), contents.color(), 0, 0, labels, light);
+        EssenceTankRenderer.submitContents(poseStack, collector, contents.fill(), contents.color(), 0, 0, 0, labels, light);
     }
 
     @Override

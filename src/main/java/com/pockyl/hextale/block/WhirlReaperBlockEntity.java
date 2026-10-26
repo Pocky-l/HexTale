@@ -165,7 +165,7 @@ public class WhirlReaperBlockEntity extends BlockEntity {
 
     /** Where whirls leave from and the crystal floats: over the vanes. */
     public static Vec3 crystal(BlockPos pos) {
-        return Vec3.atLowerCornerOf(pos).add(0.5, 14.5 / 16, 0.5);
+        return Vec3.atLowerCornerOf(pos).add(0.5, 18.0 / 16, 0.5);
     }
 
     /** Look again at once (a rune changed, a plant was placed by hand...). */

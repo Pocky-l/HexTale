@@ -79,9 +79,9 @@ public class XpCondenserBlockEntity extends BlockEntity {
         return points <= 0 ? 0 : 1 + Mth.floor(fill() * 14);
     }
 
-    /** Where the experience goes in and the crystal hangs: over the condensing cap. */
-    public static Vec3 crystal(BlockPos pos) {
-        return Vec3.atLowerCornerOf(pos).add(0.5, 1 + 2.0 / 16, 0.5);
+    /** Where the experience goes in: the stone crown on the condensing cap. */
+    public static Vec3 intake(BlockPos pos) {
+        return Vec3.atLowerCornerOf(pos).add(0.5, 15.0 / 16, 0.5);
     }
 
     public boolean covers(Vec3 at) {
@@ -125,7 +125,7 @@ public class XpCondenserBlockEntity extends BlockEntity {
         if (given > 0) {
             points -= given;
             player.giveExperiencePoints(given);
-            Vec3 at = crystal(worldPosition);
+            Vec3 at = intake(worldPosition);
             player.level().playSound(null, at.x, at.y, at.z, ModSounds.FUNNEL_RELEASE.get(), SoundSource.BLOCKS, 0.5F, all ? 0.85F : 1.1F);
             changed();
         }
