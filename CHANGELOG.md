@@ -32,6 +32,10 @@ Glassy scars: the way into hextech no longer waits for a storm.
   block (Shift + right click) it listens for that block instead. It takes runes at the altar: Shift (hears farther),
   Insight (what it hears glows through the stone), Signal (hears several at once), Gemstone (untuned, hears ores too)
   and Lens.
+- Dust Charge: three pinches of hextech dust twisted into paper and tied (three at the Hex Workbench). Thrown or shot
+  from a dispenser, it sticks where it lands, hisses for a second and a half and bursts in a cold flash: rock, ores,
+  gravel and dirt around it crack apart and drop as if mined with an iron pickaxe, while builds, wood and obsidian stay
+  whole. Creatures close by take a small sting and a push.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed
