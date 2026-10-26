@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Glassy scars: the way into hextech no longer waits for a storm.
 
 ### Added
-- Struck geodes: rare places where lightning hit an amethyst geode long ago, a few blocks under the ground. From afar
+- Struck geodes: rare places where lightning hit an amethyst geode long ago, a few blocks under the ground - about
+  one in every 300 blocks, never two close together. From afar
   they give themselves away: a shallow crater fused into fulgurite, glassy fulgurite spikes standing on its rim and
   woken hextech crystals glowing cold blue on its floor, throwing sparks and crackling. A pit in the middle of the
   crater drops down a fulgurite channel into the hollow, where the amethyst around the point where the bolt broke in
@@ -26,6 +27,11 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - Scorched Calcite, the struck geode's shell, with a building set: polished, bricks with stairs, slab and wall, and a
   chiseled block with a carved bolt. Calcite smelted in a furnace scorches too.
 - A diary step "Glassy Scars" next to the lightning rod's: a second road to the first hextech.
+- Hextech Tuning Fork: two brass prongs over a raw orb, made at the Hex Workbench. Held up (hold right click), it
+  hums higher and louder the nearer the hextech in the ground, and a thread of light points the way; struck against a
+  block (Shift + right click) it listens for that block instead. It takes runes at the altar: Shift (hears farther),
+  Insight (what it hears glows through the stone), Signal (hears several at once), Gemstone (untuned, hears ores too)
+  and Lens.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

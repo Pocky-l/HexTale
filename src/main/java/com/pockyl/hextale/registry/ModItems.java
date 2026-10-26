@@ -234,6 +234,9 @@ public final class ModItems {
             properties -> new Item(properties.stacksTo(1).component(DataComponents.EQUIPPABLE,
                     Equippable.builder(EquipmentSlot.HEAD).setAsset(GOGGLES_ASSET).setEquipSound(SoundEvents.ARMOR_EQUIP_LEATHER).build())));
     /** Worn on the back: with air essence in its tanks it lets me glide, and its jets push me like a rocket. */
+    /** Held up and listened to, it hums nearer what it listens for: hextech, or the block it was struck against. */
+    public static final DeferredItem<com.pockyl.hextale.item.TuningForkItem> TUNING_FORK = ITEMS.registerItem("tuning_fork",
+            properties -> new com.pockyl.hextale.item.TuningForkItem(properties.stacksTo(1)));
     public static final DeferredItem<com.pockyl.hextale.item.HextechSkypackItem> HEXTECH_SKYPACK = ITEMS.registerItem("hextech_skypack",
             properties -> new com.pockyl.hextale.item.HextechSkypackItem(properties.stacksTo(1).rarity(Rarity.RARE).fireResistant()
                     .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)

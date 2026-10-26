@@ -504,23 +504,31 @@ public final class PickaxeEffects {
             if (!state.is(Tags.Blocks.ORES) || at.distSqr(centre) > radius * radius) {
                 continue;
             }
-            Entity marker = EntityTypes.BLOCK_DISPLAY.create(level, EntitySpawnReason.TRIGGERED);
-            if (marker == null) {
+            if (!glow(level, at, state, ticks)) {
                 break;
             }
-            CompoundTag tag = new CompoundTag();
-            tag.store("block_state", BlockState.CODEC, state);
-            tag.putBoolean("Glowing", true);
-            tag.putInt("glow_color_override", 0x7EF0FF);
-            marker.load(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), tag));
-            // A hair smaller than the block, so the outline hugs it.
-            marker.snapTo(at.getX() + 0.01, at.getY() + 0.01, at.getZ() + 0.01, 0, 0);
-            level.addFreshEntity(marker);
-            EXPIRING.add(new Expiring(level, marker, level.getGameTime() + ticks));
             shown++;
         }
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), player.getX(), player.getY() + 1, player.getZ(), 24, 1.5, 1, 1.5, 0.05);
         level.playSound(null, centre, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 0.6F);
+        return true;
+    }
+
+    /** A block glows through everything for a while (a glowing block marker over it); false when no marker could be made. */
+    public static boolean glow(ServerLevel level, BlockPos at, BlockState state, int ticks) {
+        Entity marker = EntityTypes.BLOCK_DISPLAY.create(level, EntitySpawnReason.TRIGGERED);
+        if (marker == null) {
+            return false;
+        }
+        CompoundTag tag = new CompoundTag();
+        tag.store("block_state", BlockState.CODEC, state);
+        tag.putBoolean("Glowing", true);
+        tag.putInt("glow_color_override", 0x7EF0FF);
+        marker.load(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), tag));
+        // A hair smaller than the block, so the outline hugs it.
+        marker.snapTo(at.getX() + 0.01, at.getY() + 0.01, at.getZ() + 0.01, 0, 0);
+        level.addFreshEntity(marker);
+        EXPIRING.add(new Expiring(level, marker, level.getGameTime() + ticks));
         return true;
     }
 

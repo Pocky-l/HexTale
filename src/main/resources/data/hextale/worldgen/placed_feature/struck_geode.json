@@ -2,10 +2,6 @@
   "feature": "hextale:struck_geode",
   "placement": [
     {
-      "type": "minecraft:rarity_filter",
-      "chance": 80
-    },
-    {
       "type": "minecraft:in_square"
     },
     {

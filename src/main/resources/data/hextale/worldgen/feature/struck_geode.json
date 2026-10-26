@@ -44,5 +44,7 @@
     "use_alternate_layer0_chance": 0.12,
     "placements_require_layer0_alternate": false,
     "use_potential_placements_chance": 0.1
-  }
+  },
+  "spacing": 18,
+  "separation": 7
 }

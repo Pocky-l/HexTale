@@ -3,6 +3,7 @@ package com.pockyl.hextale.world;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -18,6 +19,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.LegacyRandomSource;
+import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.GeodeFeature;
 
@@ -36,12 +39,15 @@ import org.jspecify.annotations.Nullable;
  * ordinary {@link GeodeFeature} (its data names dormant hextech and scorched calcite); on top of it the bolt's way is
  * drawn: a fulgurite channel from the ground down into the hollow, dormant hextech and glowing druses around the point
  * where it broke in, and on the surface the tell a player sees from afar: a shallow crater fused into fulgurite with a pit
- * in the middle, glassy spikes standing on its rim and woken hextech crystals glowing on its floor. Never under water. Stays within the 3x3 chunks around its chunk.
+ * in the middle, glassy spikes standing on its rim and woken hextech crystals glowing on its floor. Never under water; one per cell of {@code spacing} chunks (see {@link #chosen}). Stays within the 3x3 chunks around its
+ * chunk.
  */
-public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth) implements Feature {
+public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth, int spacing, int separation) implements Feature {
     public static final MapCodec<StruckGeodeFeature> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                     GeodeFeature.CODEC.fieldOf("geode").forGetter(StruckGeodeFeature::geode),
-                    IntProviders.codec(1, 24).fieldOf("depth").forGetter(StruckGeodeFeature::depth))
+                    IntProviders.codec(1, 24).fieldOf("depth").forGetter(StruckGeodeFeature::depth),
+                    com.mojang.serialization.Codec.intRange(2, 128).fieldOf("spacing").forGetter(StruckGeodeFeature::spacing),
+                    com.mojang.serialization.Codec.intRange(0, 127).fieldOf("separation").forGetter(StruckGeodeFeature::separation))
             .apply(i, StruckGeodeFeature::new));
     public static final ResourceKey<Feature> KEY = ResourceKey.create(Registries.FEATURE, Hextale.id("struck_geode"));
     /** From a geode's origin to its middle: its distribution points lie 4-6 blocks out on every axis. */
@@ -51,6 +57,8 @@ public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth) implemen
     /** Dormant hextech grows this far around the point where the channel broke into the hollow. */
     private static final int STRIKE_RADIUS = 3;
     private static final int FLAGS = Block.UPDATE_CLIENTS;
+    /** Salt of the cell pick, so struck geodes do not follow any vanilla structure's grid. */
+    private static final int SALT = 51873409;
     /** The smallest crater radius (up to 1.2 more); its floor sinks up to {@link #DEPTH} blocks, its fused rim reaches RIM x radius. */
     private static final float CRATER = 3.4F;
     private static final float DEPTH = 2.4F;
@@ -63,6 +71,10 @@ public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth) implemen
 
     @Override
     public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
+        // Placed by hand (/place feature, tests) it goes where it is asked; the world itself keeps them apart.
+        if (!(level instanceof ServerLevel) && !chosen(level.getSeed(), SectionPos.blockToSectionCoord(origin.getX()), SectionPos.blockToSectionCoord(origin.getZ()))) {
+            return false;
+        }
         int x = origin.getX();
         int z = origin.getZ();
         int surface = surface(level, x, z);
@@ -170,6 +182,20 @@ public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth) implemen
                 }
             }
         }
+    }
+
+    /**
+     * Whether this chunk is the one of its cell where a struck geode may lie: the world is cut into cells of
+     * {@code spacing} chunks and each picks one chunk at least {@code separation} chunks from the next cell's pick (like
+     * a structure's random spread), so two geodes never stand close together.
+     */
+    public boolean chosen(long seed, int chunkX, int chunkZ) {
+        int cellX = Math.floorDiv(chunkX, spacing);
+        int cellZ = Math.floorDiv(chunkZ, spacing);
+        WorldgenRandom random = new WorldgenRandom(new LegacyRandomSource(0L));
+        random.setLargeFeatureWithSalt(seed, cellX, cellZ, SALT);
+        int spread = Math.max(1, spacing - separation);
+        return chunkX == cellX * spacing + random.nextInt(spread) && chunkZ == cellZ * spacing + random.nextInt(spread);
     }
 
     /** The crater with the spikes and crystals in it. */
