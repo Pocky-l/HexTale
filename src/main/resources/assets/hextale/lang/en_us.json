@@ -375,7 +375,7 @@
   "gui.hextale.slot.separator.rest": "The bottled rest of the mixture comes out here",
   "gui.hextale.research_table.ink.no_storage": "No storage: place an Essence Jar of %s concentrate within 5 blocks of the table",
   "gui.hextale.separator.ports": "Pipes",
-  "gui.hextale.separator.ports.hint": "The separator seen from above, its front towards you. Click a side to choose what its pipe does - or sneak-use that side of the block.",
+  "gui.hextale.separator.ports.hint": "The separator seen from above, its front towards you. A side opens by itself when a pipe, a jar or an alembic is set beside it. Click a side to change what it does - or sneak-use that side of the block.",
   "gui.hextale.separator.side.front": "Front",
   "gui.hextale.separator.side.back": "Back",
   "gui.hextale.separator.side.left": "Left",

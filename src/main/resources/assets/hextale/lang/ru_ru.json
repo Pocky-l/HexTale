@@ -375,7 +375,7 @@
   "gui.hextale.slot.separator.rest": "Сюда выходит пузырёк с остатком смеси",
   "gui.hextale.research_table.ink.no_storage": "Нет хранилища: поставьте в 5 блоках от стола банку для эссенции с концентратом: %s",
   "gui.hextale.separator.ports": "Трубы",
-  "gui.hextale.separator.ports.hint": "Сепаратор сверху, лицом к вам. Нажмите на сторону, чтобы выбрать, что делает её труба, или нажмите по этой стороне блока с Shift.",
+  "gui.hextale.separator.ports.hint": "Сепаратор сверху, лицом к вам. Сторона открывается сама, когда рядом ставят трубу, банку или перегонный куб. Нажмите на сторону, чтобы изменить, что она делает, или нажмите по этой стороне блока с Shift.",
   "gui.hextale.separator.side.front": "Перед",
   "gui.hextale.separator.side.back": "Зад",
   "gui.hextale.separator.side.left": "Слева",

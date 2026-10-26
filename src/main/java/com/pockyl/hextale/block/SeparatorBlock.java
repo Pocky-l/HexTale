@@ -3,6 +3,7 @@ package com.pockyl.hextale.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -43,9 +44,10 @@ import java.util.Map;
 
 /**
  * The Separator: a separating flask over a dish of blaze powder that draws the essence chosen on its screen out of a
- * mixture, burning the powder. What each side does is set per side (see {@link Side}); the top is the gas vent. While
- * it works ({@link #LIT}) the powder glows, small flames lick the flask and the gas of separation smokes out of the
- * vent.
+ * mixture, burning the powder. What each side does is set per side (see {@link Side}); the top is the gas vent. A new
+ * separator is shut all round: a side opens by itself when something it works with is set right beside it (see
+ * {@link #opensAs}) and shuts again when that is taken away. While it works ({@link #LIT}) the powder glows, small
+ * flames lick the flask and the gas of separation smokes out of the vent.
  */
 public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerHolder, EssenceMachine {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
@@ -82,16 +84,6 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
     public enum Side {
         FRONT, BACK, LEFT, RIGHT;
 
-        /** The modes of a new separator: the mixture in at the back and the left, the concentrate out at the right, the
-         * rest out at the front. */
-        public PortMode defaultMode() {
-            return switch (this) {
-                case FRONT -> PortMode.WASTE;
-                case RIGHT -> PortMode.PRODUCT;
-                default -> PortMode.INLET;
-            };
-        }
-
         public Direction face(Direction facing) {
             return switch (this) {
                 case FRONT -> facing;
@@ -127,7 +119,7 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
             return state;
         }
         Side side = Side.of(face, state.getValue(FACING));
-        PortMode mode = level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator ? separator.mode(side) : side.defaultMode();
+        PortMode mode = level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator ? separator.mode(side) : PortMode.NONE;
         return state.setValue(look, mode);
     }
 
@@ -139,10 +131,58 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
         return state;
     }
 
+    /**
+     * What a shut side opens as when this is set right beside it: a jar with essence in it, or an alembic, feeds the
+     * separator (inlet); an empty jar takes what it lets out (the concentrate first, then the rest); a pipe brings the
+     * mixture in - its way can be changed on the block, the screen or the pipe. Null for anything the separator does
+     * not work with: a side beside it shuts.
+     */
+    @Nullable
+    static PortMode opensAs(SeparatorBlockEntity separator, BlockState neighbour, BlockGetter level, BlockPos at) {
+        if (neighbour.getBlock() instanceof BrassPipeBlock || neighbour.getBlock() instanceof AlembicBlock) {
+            return PortMode.INLET;
+        }
+        EssenceTankBlockEntity jar = EssenceTankBlockEntity.at(level, at);
+        if (jar != null) {
+            return jar.tank().isEmpty() ? separator.freeOutlet() : PortMode.INLET;
+        }
+        return neighbour.getBlock() instanceof EssenceTankBlock ? separator.freeOutlet() : null;
+    }
+
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction direction,
                                      BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+        if (!level.isClientSide() && LOOKS.containsKey(direction) && level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator) {
+            // Decided a tick later, once a placed jar has its contents.
+            separator.notice(direction);
+            ticks.scheduleTick(pos, this, 1);
+        }
         return withLook(state, direction, neighbour, level, pos);
+    }
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState old, boolean movedByPiston) {
+        super.onPlace(state, level, pos, old, movedByPiston);
+        if (!old.is(this) && !level.isClientSide()) {
+            // Whatever already stands around a new separator opens its sides as if it were set beside it now.
+            level.scheduleTick(pos, this, 1);
+        }
+    }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (!(level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator)) {
+            return;
+        }
+        for (Direction face : separator.takeNoticed()) {
+            Side side = Side.of(face, state.getValue(FACING));
+            BlockPos at = pos.relative(face);
+            separator.meet(side, opensAs(separator, level.getBlockState(at), level, at));
+        }
+        BlockState looks = withLooks(state, level, pos);
+        if (looks != state) {
+            level.setBlock(pos, looks, Block.UPDATE_ALL);
+        }
     }
 
     @Override

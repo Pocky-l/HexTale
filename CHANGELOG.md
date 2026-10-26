@@ -16,13 +16,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the haze wear a corona that swallows the light. Their names in the diary and in chat are in the Void's own ink, and a
   step of the Void done sounds of its own: a slow pen stroke over a dark breath.
 - The diary points at what is new: an arrow on the edge of the page, or over the step when it is in view, for every
-  step that just opened (blue) or was written down by itself because something happened (gold). Arrows that point the
-  same way join into one with a count; a click on one flies the page to its step, and the arrow goes once the mouse has
-  been over the step. Steps you finish yourself are never marked.
+  step that just opened or was written down by itself because something happened (that one wears a turning gold ring).
+  Each arrow tells where it leads by its look: a brass compass needle for the workshop, a falling drop for the
+  essences, chevrons of rune ink for the runes, a hextech crystal with sparks for the altar circle, a pylon's claw on a
+  tendril for the pylons, a red-hot spearhead trailing flame for the forge, a leaf on a vine for chemtech and a black
+  thorn with an angry crack for the Void. Arrows of one branch that point the same way join into one with a count; a
+  click on one flies the page to its step, and the arrow goes once the mouse has been over the step. Steps you finish
+  yourself are never marked.
 - A diary step can stand for a set of things: its icon switches between them, and its page shows a row of them to pick
   from.
 
 ### Changed
+- The diary's sky is a researcher's star chart now: a deep night from blue to warm plum, two veils of nebula at their
+  own depths, a band of milky light, great circles in faint gold ink with ticks turning slowly, meridians, a compass
+  rose and the nine primal signs round the chart, small constellations, stars with crossed glints, a falling star now
+  and then, warm motes of dust drifting up and a darker rim. Under the mouse a hextech lens wakes: a lattice of
+  hexagons lights up around the cursor with a ripple, and the stars near it shine brighter.
+- A new Separator has no pipe fittings sticking out any more. A side opens by itself when something is set right
+  beside it: a pipe or an alembic opens an inlet, a jar with essence in it an inlet too, an empty jar the concentrate
+  outlet (a second empty jar the rest outlet). Take it away and the side shuts again; a side shut by hand stays shut.
 - Essences are redrawn as proper pixel art: crisp edges and a few clean shades, like Minecraft's own icons, for the
   essence items and for the essence signs in screens, over the crucible and on jar stickers.
 - The Pocky Mods creative tab lists hextale's items in groups: research, the workshop, the altar, essence works,

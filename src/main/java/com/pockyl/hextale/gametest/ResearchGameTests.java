@@ -635,8 +635,8 @@ public final class ResearchGameTests {
         helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState().setValue(SeparatorBlock.FACING, Direction.NORTH));
         helper.setBlock(at.north(), ModBlocks.BRASS_PIPE.get());
         helper.setBlock(at.north(2), ModBlocks.ESSENCE_TANK.get());
-        // As placed by a player: the separator shows its ports, so the pipes join them.
-        helper.setBlock(at, SeparatorBlock.withLooks(helper.getBlockState(at), helper.getLevel(), helper.absolutePos(at)));
+        // The pipe at the back opens an inlet by itself; the one in front is set to take the rest away.
+        helper.getBlockEntity(at, SeparatorBlockEntity.class).setMode(SeparatorBlock.Side.FRONT, PortMode.WASTE);
         EssenceTankBlockEntity source = helper.getBlockEntity(at.south(2).above(), EssenceTankBlockEntity.class);
         EssenceTankBlockEntity sink = helper.getBlockEntity(at.north(2), EssenceTankBlockEntity.class);
         SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
@@ -666,6 +666,8 @@ public final class ResearchGameTests {
         helper.setBlock(at.north().east(2), ModBlocks.ESSENCE_TANK.get());
         EssenceTankBlockEntity tank = helper.getBlockEntity(at.north().east(2), EssenceTankBlockEntity.class);
         SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+        // The east pipe opens an inlet by itself; the front one lets the rest out.
+        separator.setMode(SeparatorBlock.Side.FRONT, PortMode.WASTE);
         separator.setItem(SeparatorBlockEntity.POUR, EssenceFlaskItem.filled(EssenceMix.of(java.util.Map.of(Essence.EARTH, 8, Essence.AIR, 8))));
         separator.setItem(SeparatorBlockEntity.FUEL, new ItemStack(Items.BLAZE_POWDER, 1));
         separator.choose(Essence.EARTH);
@@ -784,34 +786,82 @@ public final class ResearchGameTests {
     public static void pipesJoinMachinesOnlyAtPorts(GameTestHelper helper) {
         BlockPos at = new BlockPos(2, 2, 2);
         helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState().setValue(SeparatorBlock.FACING, Direction.NORTH));
-        helper.setBlock(at.east(), ModBlocks.BRASS_PIPE.get());
-        helper.setBlock(at.below(), ModBlocks.BRASS_PIPE.get());
-        BlockState separator = helper.getBlockState(at);
-        helper.assertTrue(separator.getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.INLET, "the separator shows an inlet on its east side");
-        helper.assertTrue(helper.getBlockState(at.east()).getValue(BrassPipeBlock.SIDES.get(Direction.WEST)).open(), "and the pipe joins it");
-        helper.assertFalse(helper.getBlockState(at.below()).getValue(BrassPipeBlock.SIDES.get(Direction.UP)).open(),
-                "the bottom is no port: the pipe below stays apart");
-        // Facing north, the east face is the separator's left: make it a concentrate outlet.
-        SeparatorBlockEntity entity = helper.getBlockEntity(at, SeparatorBlockEntity.class);
-        entity.cycle(SeparatorBlock.Side.LEFT);
-        helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.PRODUCT,
-                "the joint follows the face's new mode");
-        helper.assertTrue(entity.receive(Direction.EAST, EssenceMix.pure(Essence.FIRE, 4), true) == 0, "an outlet takes nothing in");
-        // Rest out, then closed: the pipe lets go of it.
-        entity.cycle(SeparatorBlock.Side.LEFT);
-        entity.cycle(SeparatorBlock.Side.LEFT);
-        helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.NONE,
-                "a closed side shows no joint");
-        helper.assertFalse(helper.getBlockState(at.east()).getValue(BrassPipeBlock.SIDES.get(Direction.WEST)).open(),
-                "and no pipe joins it");
-        entity.cycle(SeparatorBlock.Side.LEFT);
-        entity.cycle(SeparatorBlock.Side.LEFT);
-        helper.setBlock(at.east(), Blocks.AIR);
-        helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.PRODUCT,
-                "the joint keeps showing the mode without a pipe");
-        helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.WEST)) == PortMode.PRODUCT,
-                "the right side (west) is a concentrate outlet by default, pipe or not");
-        helper.succeed();
+        helper.runAfterDelay(2, () -> {
+            for (Direction face : Direction.Plane.HORIZONTAL) {
+                helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(face)) == PortMode.NONE,
+                        "a new separator with nothing around shows no joint " + face);
+            }
+            helper.setBlock(at.east(), ModBlocks.BRASS_PIPE.get());
+            helper.setBlock(at.below(), ModBlocks.BRASS_PIPE.get());
+        });
+        helper.runAfterDelay(4, () -> {
+            helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.INLET,
+                    "a pipe set beside a side opens it as an inlet");
+            helper.assertTrue(helper.getBlockState(at.east()).getValue(BrassPipeBlock.SIDES.get(Direction.WEST)).open(), "and the pipe joins it");
+            helper.assertFalse(helper.getBlockState(at.below()).getValue(BrassPipeBlock.SIDES.get(Direction.UP)).open(),
+                    "the bottom is no port: the pipe below stays apart");
+            // Facing north, the east face is the separator's left: make it a concentrate outlet.
+            SeparatorBlockEntity entity = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+            entity.cycle(SeparatorBlock.Side.LEFT);
+            helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.PRODUCT,
+                    "the joint follows the face's new mode");
+            helper.assertTrue(entity.receive(Direction.EAST, EssenceMix.pure(Essence.FIRE, 4), true) == 0, "an outlet takes nothing in");
+            // Rest out, then closed: the pipe lets go of it.
+            entity.cycle(SeparatorBlock.Side.LEFT);
+            entity.cycle(SeparatorBlock.Side.LEFT);
+            helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.NONE,
+                    "a closed side shows no joint");
+            helper.assertFalse(helper.getBlockState(at.east()).getValue(BrassPipeBlock.SIDES.get(Direction.WEST)).open(),
+                    "and no pipe joins it");
+            // The pipe changes (another pipe joins it): a side shut by hand stays shut.
+            helper.setBlock(at.east(2), ModBlocks.BRASS_PIPE.get());
+        });
+        helper.runAfterDelay(6, () -> {
+            helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.NONE,
+                    "a side shut by hand stays shut beside a pipe");
+            // Taken away and set again: the side opens again.
+            helper.setBlock(at.east(), Blocks.AIR);
+        });
+        helper.runAfterDelay(8, () -> helper.setBlock(at.east(), ModBlocks.BRASS_PIPE.get()));
+        helper.runAfterDelay(10, () -> {
+            helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.INLET,
+                    "a pipe set again opens the side again");
+            helper.setBlock(at.east(), Blocks.AIR);
+        });
+        helper.runAfterDelay(12, () -> {
+            helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.EAST)) == PortMode.NONE,
+                    "with the pipe gone the side shuts and shows no joint");
+            helper.succeed();
+        });
+    }
+
+    @HexTest
+    public static void jarsAndAlembicsOpenTheSeparatorsSides(GameTestHelper helper) {
+        // Facing north: the back is south, the left east, the right west.
+        BlockPos at = new BlockPos(2, 2, 2);
+        helper.setBlock(at, ModBlocks.SEPARATOR.get().defaultBlockState().setValue(SeparatorBlock.FACING, Direction.NORTH));
+        helper.runAfterDelay(2, () -> {
+            helper.setBlock(at.south(), ModBlocks.ALEMBIC.get());
+            helper.setBlock(at.east(), ModBlocks.ESSENCE_TANK.get());
+            helper.setBlock(at.west(), ModBlocks.ESSENCE_TANK.get());
+            helper.setBlock(at.north(), ModBlocks.ESSENCE_TANK.get());
+            // The jar on the west holds a mixture: it feeds the separator.
+            helper.getBlockEntity(at.west(), EssenceTankBlockEntity.class).tank().set(EssenceMix.pure(Essence.FIRE, 20));
+        });
+        helper.runAfterDelay(4, () -> {
+            SeparatorBlockEntity separator = helper.getBlockEntity(at, SeparatorBlockEntity.class);
+            helper.assertTrue(separator.mode(SeparatorBlock.Side.BACK) == PortMode.INLET, "an alembic beside opens an inlet");
+            helper.assertTrue(separator.mode(SeparatorBlock.Side.RIGHT) == PortMode.INLET, "a jar with essence opens an inlet");
+            java.util.Set<PortMode> outlets = java.util.EnumSet.of(separator.mode(SeparatorBlock.Side.LEFT), separator.mode(SeparatorBlock.Side.FRONT));
+            helper.assertTrue(outlets.equals(java.util.EnumSet.of(PortMode.PRODUCT, PortMode.WASTE)),
+                    "two empty jars take the concentrate and the rest, got " + outlets);
+            helper.setBlock(at.north(), Blocks.AIR);
+        });
+        helper.runAfterDelay(6, () -> {
+            helper.assertTrue(helper.getBlockState(at).getValue(SeparatorBlock.LOOKS.get(Direction.NORTH)) == PortMode.NONE,
+                    "the side shuts when its jar is taken away");
+            helper.succeed();
+        });
     }
 
     @HexTest(maxTicks = 200)

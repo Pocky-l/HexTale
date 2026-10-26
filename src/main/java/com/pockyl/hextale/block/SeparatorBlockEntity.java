@@ -84,8 +84,12 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     private int chosen = -1;
     private int step;
     private long lastReceived = Long.MIN_VALUE / 2;
-    /** The mode of each face, in {@link SeparatorBlock.Side} order. */
+    /** The mode of each face, in {@link SeparatorBlock.Side} order: all shut on a new separator. */
     private final PortMode[] modes = defaultModes();
+    /** Sides shut by hand: they stay shut beside a pipe or a jar until that is taken away. */
+    private final boolean[] shut = new boolean[SeparatorBlock.Side.values().length];
+    /** Faces whose neighbour changed since the block last looked (all of them right after it was placed). */
+    private int noticed = (1 << 6) - 1;
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -135,9 +139,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
 
     private static PortMode[] defaultModes() {
         PortMode[] modes = new PortMode[SeparatorBlock.Side.values().length];
-        for (SeparatorBlock.Side side : SeparatorBlock.Side.values()) {
-            modes[side.ordinal()] = side.defaultMode();
-        }
+        java.util.Arrays.fill(modes, PortMode.NONE);
         return modes;
     }
 
@@ -154,7 +156,13 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     /** The next mode for a side: inlet, concentrate out, rest out, closed. The joint on the block and the pipes
      * follow. */
     public void cycle(SeparatorBlock.Side side) {
-        modes[side.ordinal()] = modes[side.ordinal()].next();
+        setMode(side, modes[side.ordinal()].next());
+    }
+
+    /** Sets what a side does; a side shut this way stays shut beside a pipe or a jar. */
+    public void setMode(SeparatorBlock.Side side, PortMode mode) {
+        modes[side.ordinal()] = mode;
+        shut[side.ordinal()] = mode == PortMode.NONE;
         if (level != null) {
             BlockState now = getBlockState();
             BlockState looks = SeparatorBlock.withLooks(now, level, worldPosition);
@@ -163,6 +171,47 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             }
         }
         setChanged();
+    }
+
+    /** The neighbour on this face changed: the block looks at it on its next tick. */
+    void notice(Direction face) {
+        noticed |= 1 << face.ordinal();
+    }
+
+    /** The horizontal faces noticed since the last call. */
+    java.util.List<Direction> takeNoticed() {
+        java.util.List<Direction> faces = new java.util.ArrayList<>();
+        for (Direction face : Direction.Plane.HORIZONTAL) {
+            if ((noticed & 1 << face.ordinal()) != 0) {
+                faces.add(face);
+            }
+        }
+        noticed = 0;
+        return faces;
+    }
+
+    /**
+     * Something new stands beside a side: a shut side opens as {@code opens} unless it was shut by hand; with nothing
+     * the separator works with there ({@code opens} null) the side shuts and forgets it was shut by hand.
+     */
+    void meet(SeparatorBlock.Side side, @Nullable PortMode opens) {
+        int i = side.ordinal();
+        PortMode before = modes[i];
+        if (opens == null) {
+            modes[i] = PortMode.NONE;
+            shut[i] = false;
+        } else if (modes[i] == PortMode.NONE && !shut[i]) {
+            modes[i] = opens;
+        }
+        if (modes[i] != before) {
+            setChanged();
+        }
+    }
+
+    /** The outlet an empty jar set beside the separator becomes: the concentrate outlet while it has none, then the rest one. */
+    PortMode freeOutlet() {
+        java.util.List<PortMode> used = java.util.Arrays.asList(modes);
+        return !used.contains(PortMode.PRODUCT) ? PortMode.PRODUCT : !used.contains(PortMode.WASTE) ? PortMode.WASTE : PortMode.PRODUCT;
     }
 
     private Direction facing() {
@@ -515,6 +564,12 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         for (int i = 0; i < modes.length; i++) {
             modes[i] = i < saved.length && saved[i] >= 0 && saved[i] < PortMode.values().length ? PortMode.values()[saved[i]] : defaults[i];
         }
+        int[] shutSaved = input.getIntArray("shut").orElse(new int[0]);
+        for (int i = 0; i < shut.length; i++) {
+            shut[i] = i < shutSaved.length && shutSaved[i] != 0;
+        }
+        // A separator out of the world is not new: only what changes beside it from now on opens or shuts its sides.
+        noticed = 0;
         charge = input.getIntOr("charge", 0);
         String choice = input.getStringOr("chosen", "");
         Essence essence = Essence.byId(choice);
@@ -533,6 +588,11 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             ports[i] = modes[i].ordinal();
         }
         output.putIntArray("ports", ports);
+        int[] shutSides = new int[shut.length];
+        for (int i = 0; i < shut.length; i++) {
+            shutSides[i] = shut[i] ? 1 : 0;
+        }
+        output.putIntArray("shut", shutSides);
         output.putInt("charge", charge);
         Essence essence = separating();
         if (essence != null) {
