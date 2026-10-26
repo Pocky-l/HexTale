@@ -202,4 +202,19 @@ public final class GadgetGameTests {
             helper.succeed();
         });
     }
+
+    @HexTest
+    public static void aDisintegratorUnmakesThingsIntoTheJarBelow(GameTestHelper helper) {
+        BlockPos jar = new BlockPos(1, 1, 1);
+        helper.setBlock(jar, ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(jar.above(), ModBlocks.DISINTEGRATOR.get());
+        com.pockyl.hextale.block.DisintegratorBlock.Bowl bowl = helper.getBlockEntity(jar.above(), com.pockyl.hextale.block.DisintegratorBlock.Bowl.class);
+        bowl.add(new net.minecraft.world.item.ItemStack(Items.COBBLESTONE, 2));
+        helper.succeedWhen(() -> {
+            com.pockyl.hextale.block.EssenceTankBlockEntity tank = helper.getBlockEntity(jar, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+            helper.assertTrue(bowl.item().isEmpty(), "every cobblestone is unmade");
+            helper.assertTrue(bowl.tank().isEmpty(), "and all of it ran down");
+            helper.assertTrue(tank.tank().contents().unknown() >= 3, "the jar holds unknown essence: " + tank.tank().contents());
+        });
+    }
 }

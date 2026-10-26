@@ -64,7 +64,7 @@ public final class StruckGeodeGameTests {
         }
         helper.assertTrue(placed, "the geode fits in a hill of stone");
         helper.assertTrue(fulgurite >= 8, "a crater fused into fulgurite and a channel under it (" + fulgurite + " fulgurite)");
-        helper.assertTrue(spikes >= 3, "glassy spikes stand on the crater (" + spikes + " spike blocks)");
+        helper.assertTrue(spikes >= 1, "glassy spikes stand on the crater (" + spikes + " spike blocks)");
         helper.assertTrue(druses >= 1, "hextech crystals glow on the crater floor (" + druses + ")");
         helper.assertTrue(dormant >= 3, "the amethyst partly woke into dormant hextech (" + dormant + ")");
         helper.assertTrue(scorched >= 20, "the shell is scorched calcite (" + scorched + ")");

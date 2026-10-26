@@ -70,6 +70,10 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - World Anchor (at the Hextech Altar): keeps its chunk loaded and ticking while it stands, even with nobody near.
   Runes: Shift (3x3, then 5x5 chunks), Haste (time runs faster there), Fertility (plants there grow now and then)
   and Lens.
+- Disintegrator (at the Hex Workbench): a deepslate bowl that unmakes whatever is dropped, thrown or piped into it
+  into unknown essence and pours it into the jar or pipe below - fuel for the Chem Burner. The unmaking thins the land
+  around. Runes: Motor (faster), Dam (more essence), Radiance (experience now and then), Hush (less leaks into the
+  land) and Lens.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

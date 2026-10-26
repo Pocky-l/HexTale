@@ -238,6 +238,11 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD).noOcclusion()
                     .lightLevel(state -> 4));
     /** A cauldron woken with hextech dust: boils water over heat and dissolves essences and items in it. */
+    /** A deepslate bowl that unmakes what falls into it into unknown essence. */
+    public static final DeferredBlock<com.pockyl.hextale.block.DisintegratorBlock> DISINTEGRATOR = BLOCKS.registerBlock("disintegrator",
+            com.pockyl.hextale.block.DisintegratorBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(3.0F).sound(SoundType.POLISHED_DEEPSLATE).noOcclusion()
+                    .requiresCorrectToolForDrops());
     public static final DeferredBlock<com.pockyl.hextale.block.CrucibleBlock> CRUCIBLE = BLOCKS.registerBlock("crucible",
             com.pockyl.hextale.block.CrucibleBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.5F).sound(SoundType.METAL).noOcclusion()

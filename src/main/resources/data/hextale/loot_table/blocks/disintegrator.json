@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:disintegrator",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:disintegrator_runes"
+            ],
+            "source": "block_entity"
+          }
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "hextale:blocks/disintegrator"
+}

@@ -1,0 +1,21 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:disintegrator",
+  "parents": [
+    "chem_burner"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:disintegrator",
+    "then": {
+      "kind": "runes",
+      "result": "disintegrator"
+    }
+  },
+  "station": true,
+  "pos": [
+    -880,
+    40
+  ]
+}

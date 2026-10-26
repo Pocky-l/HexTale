@@ -188,7 +188,7 @@ public final class HextaleClient {
             }
             if (stack.is(ModItems.LEVITATION_PLATE.get()) || stack.is(ModItems.NULL_LANTERN.get()) || stack.is(ModItems.IMPULSE_PLATE.get())
                     || stack.is(ModItems.HEX_LIFT.get()) || stack.is(ModItems.SHADOW_COFFER.get())
-                    || stack.is(ModItems.WORLD_ANCHOR.get())) {
+                    || stack.is(ModItems.WORLD_ANCHOR.get()) || stack.is(ModItems.DISINTEGRATOR.get())) {
                 event.getToolTip().add(Component.translatable(stack.getItem().getDescriptionId() + ".hint").withStyle(ChatFormatting.GRAY));
             }
             // How a pipe's sides are set.
@@ -272,6 +272,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.CRUCIBLE.get(), com.pockyl.hextale.client.render.CrucibleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_PYLON.get(), com.pockyl.hextale.client.render.HexPylonRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL.get(), PedestalRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.DISINTEGRATOR.get(), com.pockyl.hextale.client.render.DisintegratorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEXCORE.get(), com.pockyl.hextale.client.render.HexcoreRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RUNE_STELE.get(), RuneSteleRenderer::new);
     }

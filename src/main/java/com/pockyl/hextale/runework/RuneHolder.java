@@ -67,6 +67,8 @@ public enum RuneHolder {
     SOUL(() -> ModDataComponents.SOUL_RUNES.get(), SoulRune.SLOTS, SoulRune.values()),
     /** The World Anchor. */
     WORLD_ANCHOR(() -> ModDataComponents.WORLD_ANCHOR_RUNES.get(), AnchorWorldRune.SLOTS, AnchorWorldRune.values()),
+    /** The Disintegrator. */
+    DISINTEGRATOR(() -> ModDataComponents.DISINTEGRATOR_RUNES.get(), DisintegratorRune.SLOTS, DisintegratorRune.values()),
     /** The Crystal Battery. */
     BATTERY(() -> ModDataComponents.BATTERY_RUNES.get(), BatteryRune.SLOTS, BatteryRune.values()),
     /** The Hextech Purifier. */
@@ -162,6 +164,9 @@ public enum RuneHolder {
         }
         if (item == ModItems.WORLD_ANCHOR.get()) {
             return WORLD_ANCHOR;
+        }
+        if (item == ModItems.DISINTEGRATOR.get()) {
+            return DISINTEGRATOR;
         }
         if (item == ModItems.CRYSTAL_BATTERY.get()) {
             return BATTERY;
@@ -304,6 +309,7 @@ public enum RuneHolder {
             case RECALL -> List.of(new ItemStack(ModItems.RECALL_CHARM.get()));
             case SOUL -> List.of(new ItemStack(ModItems.SOUL_FLASK.get()));
             case WORLD_ANCHOR -> List.of(new ItemStack(ModItems.WORLD_ANCHOR.get()));
+            case DISINTEGRATOR -> List.of(new ItemStack(ModItems.DISINTEGRATOR.get()));
             case BATTERY -> List.of(new ItemStack(ModItems.CRYSTAL_BATTERY.get()));
             case PURIFIER -> List.of(new ItemStack(ModItems.HEXTECH_PURIFIER.get()));
             case ANCHOR -> List.of(new ItemStack(ModItems.VOID_ANCHOR.get()));

@@ -91,6 +91,7 @@
     "hextale:impulse_plate",
     "hextale:hex_lift",
     "hextale:shadow_coffer",
-    "hextale:world_anchor"
+    "hextale:world_anchor",
+    "hextale:disintegrator"
   ]
 }
