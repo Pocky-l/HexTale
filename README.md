@@ -5,69 +5,60 @@
 <h1 align="center">HexTale</h1>
 
 <p align="center">
-  <b>Pages from a researcher's diary: hextech magic you study, distil and bind with runes.</b>
+  <b>Study raw hextech, distil the essences of everything, burn found runes into your tools - and decide what to do when your magic tears the world open.</b>
 </p>
 
 <p align="center">
   <a href="https://www.curseforge.com/projects/1751402"><img alt="CurseForge" src="https://cf.way2muchnoise.eu/1751402.svg"></a>
   <img alt="Minecraft 26.3" src="https://img.shields.io/badge/Minecraft-26.3-62B47A">
   <a href="https://neoforged.net"><img alt="NeoForge" src="https://img.shields.io/badge/Loader-NeoForge-F16436"></a>
-  <img alt="Beta" src="https://img.shields.io/badge/Status-Beta-orange">
   <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/License-MIT-blue"></a>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/altar-ritual.jpg" alt="A ritual at the Hextech Altar" width="800">
 </p>
 
 ## Features
 
-I always thought amethyst was good for nothing but spyglasses. Then, one stormy night, I set a lightning rod on an
-amethyst block - and the strike shattered it into humming orbs of **raw hextech**, the spark running on through every
-crystal around. I learned the hard way that raw hextech is volatile: one orb slipped from my hands on a cliff and burst
-at my feet.
+⚡ **Born of a storm** - a lightning rod on amethyst shatters it into volatile orbs of raw hextech. Their dust wakes
+your crafting table, furnace and cauldron into hextech machines.
 
-Its dust turned out to be the key. A pinch of it **woke my crafting table, furnace and cauldron**: the Hex Workbench now
-runs on crystal charge, the Hex Furnace melts brass and hexsteel, and at the **lapidary** I cut raw orbs into true
-crystals by feel, turning the stone until its hidden cleavage plane glows.
+🧪 **Everything is made of essences** - 22 of them, in every item. Boil items down in the alembic, split the brew in
+the separator, keep it in labelled jars, carry it through brass pipes - and brew chemtech tonics at the Lab Bench.
 
-Soon I understood that **everything is made of essences** - twenty-two of them, from Fire and Water to Magic and Rift - and
-every item holds its own mix. The loupe on my desk reveals it, the **alembic** boils items down, the **separator** splits
-the brew, **jars and brass pipes** keep it and carry it wherever I need it.
+📜 **Research, not recipes** - draw every device on a parchment at the Research Table: lead the ink to each goal and
+read the numbers to steer around the curses hidden in the dark fields.
 
-![The Research Table: drawing a device on the parchment](docs/screenshots/research-table.jpg)
+🔮 **The Hextech Altar** - pedestals give up their items, steles their runes, jars their essence: rituals forge hextech
+tools and devices, and at last wake the altar into the Hexcore.
 
-Nothing here is built before it is understood. At the **Research Table** I draw every device on a worn parchment,
-leading ink from the hextech orb to each goal. Dark fields hide curses, and only the numbers along my ink tell me where
-it is safe - one careless step and the sheet goes up in flames. Every finished drawing becomes notes I can read myself
-or hand to a friend.
+📜 **Runes you find** - rune scrolls lie in dungeon chests. Burn them into pickaxes, tools, clothes and machines:
+smelting, vein mining, ore sight, tunnels through rock and many more.
 
-The **crucible** taught me transmutation: boiling water swallows whatever I throw in, and a catalyst rises out changed.
-An ordinary sapling, fed with magic, plant and sap, became the sprout of a **magic tree** - violet wood with glowing
-veins that never burns.
+🌀 **The Void** - careless magic wears the land thin: haze, blighted soil, mites that drink your hearts and at last a
+breach full of voidlings. Heal the land with nullstone and the Purifier - or ring the breach with anchors, feed it,
+and fold it into a heart you can carry anywhere.
 
-The **runes** I did not invent - I found them, as scrolls in old dungeon chests, their stars a matter of luck. At the
-**Hextech Altar** the pedestals give up their items, the steles their runes, the jars their essence, and the ritual
-burns runes into my pickaxe like enchantments: smelting, vein mining, ore sight, tunnels through rock.
+🤖 **Automation in theme** - pylons that grab items with tendrils of light, a sorting matrix, the Whirl Reaper, the Hex
+Sawmill, a smelting foundry and low-lag helpers for mob farms.
 
-When one furnace at a time grew too slow, I laid a whole kiln of pale **fire bricks** around an iron hatch and lit
-it: the **Hex Foundry** is slow to wake, but red-hot it melts nine stacks at once on coal or fire essence, and
-whatever I throw onto its grate falls straight in.
+🧥 **Gear with a story** - three hextech pickaxes, a hextech sword, axe and shovel, hexsteel armour, the researcher's 3D
+clothes and a hextech skypack that glides like an elytra.
 
-Now my workshop runs on its own. **Pylons** catch items with tendrils of light and carry them between chests and
-furnaces, a **Sorting Matrix** sends every item home, the **Whirl Reaper** harvests my fields with whirlwinds and the
-**Hex Sawmill** fells whole trees and plants them again.
-
-All of it is in my diary - the path I walked, the steps I can take now and one more into the fog. Since the land around
-my home began to wear thin, a darker branch grows there too, written only as things happen to me. Many of its pages are
-still blank: plans for chemtech, shimmer, the hexcore and the Void are waiting to be written.
-
-![The Researcher's Diary: the path through the mod](docs/screenshots/researchers-path.jpg)
+📖 **A researcher's diary** - a star chart of the whole mod: the path you walked, the steps you can take now and the
+rest hidden in fog, all written as a curious researcher's notes.
 
 ## Controls
 
 | Action | Default |
 |---|---|
 | Open the Researcher's Diary | *Use* with the diary in hand |
-| Turn the crystal at the lapidary | Mouse wheel or `A` / `D` |
+| Start or stop an altar ritual | *Sneak* + *Use* the altar with an empty hand (or a redstone signal) |
 | Link a pylon | *Use* the pylon, then *Use* the target |
 | Set a pipe side | *Sneak* + *Use* the pipe with an empty hand |
+| Fly with the skypack | *Jump*, then *Jump* again in the air |
+| Skip the breach cinematic | `Backspace` |
 
 ## Crafting
 
@@ -77,7 +68,8 @@ on an amethyst block. The diary shows every next step and its recipe. In creativ
 
 ## Configuration
 
-`hextale-synced.toml`: how many hextech orbs a strike gives and how far lightning runs through amethyst.
+`hextale-synced.toml`: how many orbs a strike gives, how far lightning runs through amethyst, and whether careless magic
+wears the land thin at all (the Void can be turned off for a modpack).
 
 ## Compatibility
 
@@ -85,12 +77,24 @@ on an amethyst block. The diary shows every next step and its recipe. In creativ
 
 [![Jade](docs/compat/jade.png)](https://www.curseforge.com/minecraft/mc-mods/jade) ✅ **[Jade](https://www.curseforge.com/minecraft/mc-mods/jade)** (optional) - what jars, machines and mechanisms hold and do.
 
+## Screenshots
+
+![A breach of the Void on blighted land, voidlings at its feet](docs/screenshots/the-void.jpg)
+
+![A researcher's workshop: jars of essence, the Research Table, alembic and separator](docs/screenshots/workshop.jpg)
+
+![The Hexcore and the researcher's clothes](docs/screenshots/hexcore.jpg)
+
+![The Researcher's Diary: a star chart of the whole mod](docs/screenshots/researchers-diary.jpg)
+
+![The Research Table: drawing a device on the parchment](docs/screenshots/research-table.jpg)
+
 ## Installation
 
 1. Install [NeoForge](https://neoforged.net) for Minecraft 26.3 (Java 25).
 2. Put this mod into the `mods` folder (client and server).
 
-HexTale is in beta: back up your worlds. You are free to use it in any modpack.
+You are free to use HexTale in any modpack.
 
 ## Building
 
