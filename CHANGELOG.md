@@ -58,6 +58,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the same outline, the same hunger towards its next birth - wild again until six anchors hold it anew. Dropped or
   lost, it beats faster and faster and after half a minute unfolds where it lies. It does not burn.
 - The diary's Void branch has two more steps: "The Breach Heart" and "A Breach Moved".
+- The land rests after a breach is gone: once one starves, is folded into its heart or closes, no new breach tears
+  open within 1000 blocks of it for 20 minutes (setting "Breach cooldown", 0 turns the rest off). A heart unfolded
+  by hand is not held back.
 - The diary's Void branch follows the Void road too: the Void Anchor, "The Held Breach", "The Maw", "The Incubator",
   "The Kept Breach" (a held breach on healed land) and "They Grow", with their own pictures.
 

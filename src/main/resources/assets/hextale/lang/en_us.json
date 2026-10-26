@@ -2106,5 +2106,6 @@
   "quest.hextale.breach_moved.desc": "It opened again as if it had always been here - the same outline, the same hunger, and wild once more. The old place is quiet now. So a breach can be put where it is wanted. Who else has thought of that?",
   "subtitles.hextale.the_void.fold": "Breach folds in on itself",
   "subtitles.hextale.breach_heart.beat": "Breach Heart beats",
-  "subtitles.hextale.breach_heart.unfold": "Breach Heart unfolds"
+  "subtitles.hextale.breach_heart.unfold": "Breach Heart unfolds",
+  "hextale.configuration.breachCooldown": "Breach cooldown (minutes)"
 }

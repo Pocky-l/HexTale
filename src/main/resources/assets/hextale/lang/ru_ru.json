@@ -2106,5 +2106,6 @@
   "quest.hextale.breach_moved.desc": "Он раскрылся снова, будто всегда здесь и был: те же очертания, тот же голод - и снова дикий. На старом месте теперь тихо. Значит, разлом можно поставить туда, где он нужен. Кто ещё до этого додумался?",
   "subtitles.hextale.the_void.fold": "Разлом сворачивается",
   "subtitles.hextale.breach_heart.beat": "Сердце разлома бьётся",
-  "subtitles.hextale.breach_heart.unfold": "Сердце разлома разворачивается"
+  "subtitles.hextale.breach_heart.unfold": "Сердце разлома разворачивается",
+  "hextale.configuration.breachCooldown": "Перерыв между разломами (минуты)"
 }

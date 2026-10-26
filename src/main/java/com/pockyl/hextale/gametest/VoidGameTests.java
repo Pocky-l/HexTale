@@ -75,6 +75,30 @@ public final class VoidGameTests {
     }
 
     @HexTest
+    public static void theLandRestsAfterABreachIsGone(GameTestHelper helper) {
+        com.pockyl.hextale.thevoid.Breaches.Sites sites = new com.pockyl.hextale.thevoid.Breaches.Sites();
+        BlockPos gone = new BlockPos(100, 64, 100);
+        sites.rest(gone, 1000);
+        helper.assertTrue(sites.resting(new BlockPos(100 + 990, 70, 100), 500), "no new breach near a lately gone one");
+        helper.assertTrue(!sites.resting(new BlockPos(100 + 1010, 64, 100), 500), "far off the land does not rest");
+        helper.assertTrue(!sites.resting(gone, 1000), "the rest ends");
+
+        // A rooted breach that is gone (starved, folded, closed) leaves its land resting.
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        BlockPos at = helper.absolutePos(new BlockPos(1, 4, 1));
+        TheVoid breach = TheVoid.rooted(level, Vec3.atCenterOf(at), 0, VoidShape.GATE, 3.5F, 885);
+        level.addFreshEntity(breach);
+        com.pockyl.hextale.thevoid.Breaches.sites(level).add(breach.blockPosition());
+        breach.discard();
+        com.pockyl.hextale.thevoid.Breaches.Sites real = com.pockyl.hextale.thevoid.Breaches.sites(level);
+        helper.assertTrue(real.near(at) == null || real.near(at).distSqr(at) > 16 * 16, "its site is forgotten");
+        helper.assertTrue(real.resting(at, level.getGameTime()), "but the land around it rests");
+        helper.assertTrue(!real.resting(at, level.getGameTime() + com.pockyl.hextale.Config.BREACH_COOLDOWN.get() * 1200L + 1),
+                "for the configured minutes");
+        helper.succeed();
+    }
+
+    @HexTest
     public static void touchingTheVoidHurtsAndThrowsBack(GameTestHelper helper) {
         Vec3 centre = Vec3.atCenterOf(helper.absolutePos(new BlockPos(1, 3, 1)));
         TheVoid breach = TheVoid.open(helper.getLevel(), centre, 0, VoidShape.GATE, 3.0F, 4242);
