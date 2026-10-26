@@ -9,13 +9,13 @@ Glassy scars: the way into hextech no longer waits for a storm.
 
 ### Added
 - Struck geodes: rare places where lightning hit an amethyst geode long ago, a few blocks under the ground. From afar
-  they give themselves away: a shallow crater fused into fulgurite, glassy fulgurite spikes standing on its rim,
-  druses of woken hextech glowing cold blue on its floor, and a lightning scar - thin burnt lines with a faint blue
-  thread of charge in them - forking out over the grass for a dozen blocks like a frozen bolt. Sparks crawl along the
-  lines and the druses crackle. A pit in the middle of the crater drops down a fulgurite channel into the hollow,
-  where the amethyst around the point where the bolt broke in has turned into Dormant Hextech and Hextech Clusters.
-- Hextech Cluster: a druse the strike woke all the way. It glows, throws sparks and breaks into an unstable orb
-  (Fortune gives more, Silk Touch keeps it).
+  they give themselves away: a shallow crater fused into fulgurite, glassy fulgurite spikes standing on its rim and
+  woken hextech crystals glowing cold blue on its floor, throwing sparks and crackling. A pit in the middle of the
+  crater drops down a fulgurite channel into the hollow, where the amethyst around the point where the bolt broke in
+  has turned into Dormant Hextech and hextech crystals.
+- Hextech crystals in the four amethyst sizes (small, medium and large buds and the cluster): amethyst the strike
+  woke all the way. They glow and spark; the cluster breaks into an unstable orb (Fortune gives more), buds need Silk
+  Touch.
 - Fulgurite Spike: a knobbly, branching glassy tube of fused earth; spikes stack into taller ones (base, middle, tip).
 - Dormant Hextech: cold blue amethyst that keeps a faint charge - sparks crawl over it now and then with a quiet
   crystal hum. A pickaxe breaks it into unstable hextech orbs (Fortune gives more, Silk Touch keeps the block), and a

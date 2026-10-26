@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:small_hextech_bud",
+          "condition": "minecraft:tool/can_silk_touch"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "hextale:blocks/small_hextech_bud"
+}

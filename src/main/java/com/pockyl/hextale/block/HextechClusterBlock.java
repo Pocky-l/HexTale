@@ -12,12 +12,13 @@ import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 
 /**
- * A hextech cluster: a druse of amethyst the strike woke all the way, growing out of the walls of a struck geode's crater
- * and hollow. It glows cold blue, throws sparks off its tips and now and then crackles; it breaks into an unstable orb.
+ * Hextech crystals: amethyst buds and clusters the strike woke all the way, growing out of a struck geode's crater and
+ * hollow in the four amethyst sizes (vanilla models, recoloured). They glow cold blue, throw sparks off their tips and
+ * now and then crackle; the full cluster breaks into an unstable orb.
  */
 public class HextechClusterBlock extends AmethystClusterBlock {
-    public HextechClusterBlock(Properties properties) {
-        super(7.0F, 3.0F, properties);
+    public HextechClusterBlock(float height, float width, Properties properties) {
+        super(height, width, properties);
     }
 
     @Override

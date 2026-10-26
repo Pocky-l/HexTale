@@ -120,16 +120,19 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).instrument(NoteBlockInstrument.BASEDRUM)
                     .requiresCorrectToolForDrops().strength(1.0F, 3.0F).sound(SoundType.POINTED_DRIPSTONE).noOcclusion()
                     .dynamicShape().offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED));
-    /** A thin burnt line on the ground with a thread of charge in it; runs of them draw a struck geode's scar. */
-    public static final DeferredBlock<com.pockyl.hextale.block.LightningScarBlock> LIGHTNING_SCAR = BLOCKS.registerBlock("lightning_scar",
-            com.pockyl.hextale.block.LightningScarBlock::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).noCollision().instabreak().noLootTable()
-                    .sound(SoundType.GRAVEL).lightLevel(state -> 2).pushReaction(PushReaction.POPPED));
-    /** A druse the strike woke all the way: glowing blue hextech growing out of a struck geode's walls. */
+    // Hextech crystals: amethyst the strike woke all the way, in the four amethyst sizes (sizes and sounds as vanilla).
     public static final DeferredBlock<com.pockyl.hextale.block.HextechClusterBlock> HEXTECH_CLUSTER = BLOCKS.registerBlock("hextech_cluster",
-            com.pockyl.hextale.block.HextechClusterBlock::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).forceSolidOn().noOcclusion().strength(1.5F)
-                    .sound(SoundType.AMETHYST_CLUSTER).lightLevel(state -> 7).pushReaction(PushReaction.POPPED));
+            properties -> new com.pockyl.hextale.block.HextechClusterBlock(7.0F, 3.0F, properties),
+            () -> hextechCrystalProperties(7).sound(SoundType.AMETHYST_CLUSTER));
+    public static final DeferredBlock<com.pockyl.hextale.block.HextechClusterBlock> LARGE_HEXTECH_BUD = BLOCKS.registerBlock("large_hextech_bud",
+            properties -> new com.pockyl.hextale.block.HextechClusterBlock(5.0F, 3.0F, properties),
+            () -> hextechCrystalProperties(5).sound(SoundType.LARGE_AMETHYST_BUD));
+    public static final DeferredBlock<com.pockyl.hextale.block.HextechClusterBlock> MEDIUM_HEXTECH_BUD = BLOCKS.registerBlock("medium_hextech_bud",
+            properties -> new com.pockyl.hextale.block.HextechClusterBlock(4.0F, 3.0F, properties),
+            () -> hextechCrystalProperties(3).sound(SoundType.MEDIUM_AMETHYST_BUD));
+    public static final DeferredBlock<com.pockyl.hextale.block.HextechClusterBlock> SMALL_HEXTECH_BUD = BLOCKS.registerBlock("small_hextech_bud",
+            properties -> new com.pockyl.hextale.block.HextechClusterBlock(3.0F, 4.0F, properties),
+            () -> hextechCrystalProperties(2).sound(SoundType.SMALL_AMETHYST_BUD));
     /** Fulgurite melted again: smoky amber glass with the bolt's thread still inside. */
     public static final DeferredBlock<TransparentBlock> FULGURITE_GLASS = BLOCKS.registerBlock("fulgurite_glass", TransparentBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(0.6F).sound(SoundType.GLASS).noOcclusion()
@@ -516,6 +519,11 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties fireBrickProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.MUD_BRICKS);
+    }
+
+    private static BlockBehaviour.Properties hextechCrystalProperties(int light) {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).forceSolidOn().noOcclusion().strength(1.5F)
+                .lightLevel(state -> light).pushReaction(PushReaction.POPPED);
     }
 
     private static BlockBehaviour.Properties scorchedCalciteProperties() {

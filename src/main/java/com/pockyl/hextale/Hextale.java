@@ -193,6 +193,9 @@ public final class Hextale {
         output.accept(ModItems.SPHALERITE_ORE);
         output.accept(ModItems.DEEPSLATE_SPHALERITE_ORE);
         output.accept(ModItems.DORMANT_HEXTECH);
+        output.accept(ModItems.SMALL_HEXTECH_BUD);
+        output.accept(ModItems.MEDIUM_HEXTECH_BUD);
+        output.accept(ModItems.LARGE_HEXTECH_BUD);
         output.accept(ModItems.HEXTECH_CLUSTER);
         output.accept(ModItems.RAW_ZINC_BLOCK);
         output.accept(ModItems.ZINC_BLOCK);
@@ -303,6 +306,9 @@ public final class Hextale {
             event.accept(ModItems.SPHALERITE_ORE);
             event.accept(ModItems.DEEPSLATE_SPHALERITE_ORE);
             event.accept(ModItems.DORMANT_HEXTECH);
+            event.accept(ModItems.SMALL_HEXTECH_BUD);
+            event.accept(ModItems.MEDIUM_HEXTECH_BUD);
+            event.accept(ModItems.LARGE_HEXTECH_BUD);
             event.accept(ModItems.HEXTECH_CLUSTER);
             event.accept(ModItems.FULGURITE_SPIKE);
             event.accept(ModItems.FULGURITE);

@@ -17,7 +17,7 @@ import com.pockyl.hextale.world.StruckGeodeFeature;
 
 import java.util.List;
 
-/** Struck geodes: the feature's geode, channel, crater and scar, and what dormant hextech breaks into. */
+/** Struck geodes: the feature's geode, channel and crater, and what dormant hextech breaks into. */
 public final class StruckGeodeGameTests {
     private static final int HALF = 12;
     private static final int HEIGHT = 26;
@@ -26,7 +26,7 @@ public final class StruckGeodeGameTests {
     }
 
     @HexTest(maxTicks = 20, padding = 14)
-    public static void aStruckGeodeLiesUnderACraterAndAScar(GameTestHelper helper) {
+    public static void aStruckGeodeLiesUnderACrater(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos base = helper.absolutePos(new BlockPos(1, 1, 1));
         BlockPos min = base.offset(-HALF, 0, -HALF);
@@ -43,7 +43,6 @@ public final class StruckGeodeGameTests {
         int fulgurite = 0;
         int dormant = 0;
         int scorched = 0;
-        int lines = 0;
         int spikes = 0;
         int druses = 0;
         for (BlockPos pos : BlockPos.betweenClosed(min, max.above(6))) {
@@ -54,11 +53,9 @@ public final class StruckGeodeGameTests {
                 dormant++;
             } else if (state.is(ModBlocks.SCORCHED_CALCITE.get())) {
                 scorched++;
-            } else if (state.is(ModBlocks.LIGHTNING_SCAR.get())) {
-                lines++;
             } else if (state.is(ModBlocks.FULGURITE_SPIKE.get())) {
                 spikes++;
-            } else if (state.is(ModBlocks.HEXTECH_CLUSTER.get()) && pos.getY() >= max.getY() - 3) {
+            } else if (state.getBlock() instanceof com.pockyl.hextale.block.HextechClusterBlock && pos.getY() >= max.getY() - 3) {
                 druses++;
             }
         }
@@ -67,9 +64,8 @@ public final class StruckGeodeGameTests {
         }
         helper.assertTrue(placed, "the geode fits in a hill of stone");
         helper.assertTrue(fulgurite >= 20, "a crater fused into fulgurite and a channel under it (" + fulgurite + " fulgurite)");
-        helper.assertTrue(lines >= 15, "a scar of thin lines forks out over the ground (" + lines + ")");
         helper.assertTrue(spikes >= 3, "glassy spikes stand on the crater (" + spikes + " spike blocks)");
-        helper.assertTrue(druses >= 1, "druses glow on the crater floor (" + druses + ")");
+        helper.assertTrue(druses >= 1, "hextech crystals glow on the crater floor (" + druses + ")");
         helper.assertTrue(dormant >= 3, "the amethyst partly woke into dormant hextech (" + dormant + ")");
         helper.assertTrue(scorched >= 20, "the shell is scorched calcite (" + scorched + ")");
         helper.succeed();

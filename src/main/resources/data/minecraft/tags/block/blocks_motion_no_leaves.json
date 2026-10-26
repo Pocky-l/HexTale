@@ -79,6 +79,9 @@
     "hextale:scorched_calcite_brick_wall",
     "hextale:chiseled_scorched_calcite",
     "hextale:fulgurite_spike",
-    "hextale:hextech_cluster"
+    "hextale:hextech_cluster",
+    "hextale:large_hextech_bud",
+    "hextale:medium_hextech_bud",
+    "hextale:small_hextech_bud"
   ]
 }

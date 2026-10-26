@@ -1,6 +1,5 @@
 package com.pockyl.hextale.world;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
@@ -25,7 +24,6 @@ import net.minecraft.world.level.levelgen.feature.GeodeFeature;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.FulguriteSpikeBlock;
 import com.pockyl.hextale.block.HextechClusterBlock;
-import com.pockyl.hextale.block.LightningScarBlock;
 import com.pockyl.hextale.registry.ModBlocks;
 
 import java.util.ArrayList;
@@ -38,14 +36,12 @@ import org.jspecify.annotations.Nullable;
  * ordinary {@link GeodeFeature} (its data names dormant hextech and scorched calcite); on top of it the bolt's way is
  * drawn: a fulgurite channel from the ground down into the hollow, dormant hextech and glowing druses around the point
  * where it broke in, and on the surface the tell a player sees from afar: a shallow crater fused into fulgurite with a pit
- * in the middle, glassy spikes standing on its rim, druses of woken hextech glowing on its floor, and thin burnt lines
- * of a lightning scar forking out from it over the ground (a Lichtenberg figure). Never under water. Stays within the 3x3 chunks around its chunk.
+ * in the middle, glassy spikes standing on its rim and woken hextech crystals glowing on its floor. Never under water. Stays within the 3x3 chunks around its chunk.
  */
-public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth, int scarReach) implements Feature {
+public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth) implements Feature {
     public static final MapCodec<StruckGeodeFeature> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                     GeodeFeature.CODEC.fieldOf("geode").forGetter(StruckGeodeFeature::geode),
-                    IntProviders.codec(1, 24).fieldOf("depth").forGetter(StruckGeodeFeature::depth),
-                    Codec.intRange(2, 16).fieldOf("scar_reach").forGetter(StruckGeodeFeature::scarReach))
+                    IntProviders.codec(1, 24).fieldOf("depth").forGetter(StruckGeodeFeature::depth))
             .apply(i, StruckGeodeFeature::new));
     public static final ResourceKey<Feature> KEY = ResourceKey.create(Registries.FEATURE, Hextale.id("struck_geode"));
     /** From a geode's origin to its middle: its distribution points lie 4-6 blocks out on every axis. */
@@ -165,21 +161,23 @@ public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth, int scar
             BlockState state = level.getBlockState(pos);
             if (state.is(Blocks.AMETHYST_BLOCK) || state.is(Blocks.BUDDING_AMETHYST)) {
                 level.setBlock(pos, ModBlocks.DORMANT_HEXTECH.get().defaultBlockState(), FLAGS);
-            } else if (state.is(Blocks.AMETHYST_CLUSTER) || state.is(Blocks.LARGE_AMETHYST_BUD) || state.is(Blocks.MEDIUM_AMETHYST_BUD)) {
-                level.setBlock(pos, ModBlocks.HEXTECH_CLUSTER.get().defaultBlockState()
-                        .setValue(HextechClusterBlock.FACING, state.getValue(HextechClusterBlock.FACING))
-                        .setValue(HextechClusterBlock.WATERLOGGED, state.getValue(HextechClusterBlock.WATERLOGGED)), FLAGS);
+            } else {
+                Block crystal = woken(state);
+                if (crystal != null) {
+                    level.setBlock(pos, crystal.defaultBlockState()
+                            .setValue(HextechClusterBlock.FACING, state.getValue(HextechClusterBlock.FACING))
+                            .setValue(HextechClusterBlock.WATERLOGGED, state.getValue(HextechClusterBlock.WATERLOGGED)), FLAGS);
+                }
             }
         }
     }
 
-    /** The crater, the spikes and druses in it and the scar running out from its rim. */
+    /** The crater with the spikes and crystals in it. */
     private void surfaceMarks(WorldGenLevel level, RandomSource random, BlockPos ground) {
         float radius = CRATER + random.nextFloat() * 1.2F;
         List<BlockPos> floor = crater(level, random, ground, radius);
         spikes(level, random, ground, radius);
         druses(level, random, floor);
-        scar(level, random, ground, radius);
     }
 
     /**
@@ -255,74 +253,35 @@ public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth, int scar
         }
     }
 
-    /** Druses of woken hextech on the crater's floor: the glow that gives a struck geode away at night. */
+    /** The hextech crystal an amethyst bud or cluster wakes into, of its own size; null for anything else. */
+    @Nullable
+    private static Block woken(BlockState state) {
+        if (state.is(Blocks.AMETHYST_CLUSTER)) {
+            return ModBlocks.HEXTECH_CLUSTER.get();
+        } else if (state.is(Blocks.LARGE_AMETHYST_BUD)) {
+            return ModBlocks.LARGE_HEXTECH_BUD.get();
+        } else if (state.is(Blocks.MEDIUM_AMETHYST_BUD)) {
+            return ModBlocks.MEDIUM_HEXTECH_BUD.get();
+        } else if (state.is(Blocks.SMALL_AMETHYST_BUD)) {
+            return ModBlocks.SMALL_HEXTECH_BUD.get();
+        }
+        return null;
+    }
+
+    /** Woken hextech crystals of every size on the crater's floor: the glow that gives a struck geode away at night. */
     private static void druses(WorldGenLevel level, RandomSource random, List<BlockPos> floor) {
-        BlockState druse = ModBlocks.HEXTECH_CLUSTER.get().defaultBlockState().setValue(HextechClusterBlock.FACING, Direction.UP);
-        int count = 3 + random.nextInt(4);
+        int count = 4 + random.nextInt(4);
         for (int i = 0; i < count && !floor.isEmpty(); i++) {
             BlockPos at = floor.remove(random.nextInt(floor.size()));
             if (level.getBlockState(at.above()).isAir() && level.getBlockState(at).isFaceSturdy(level, at, Direction.UP)) {
-                level.setBlock(at.above(), druse, FLAGS);
+                Block crystal = switch (random.nextInt(4)) {
+                    case 0 -> ModBlocks.SMALL_HEXTECH_BUD.get();
+                    case 1 -> ModBlocks.MEDIUM_HEXTECH_BUD.get();
+                    case 2 -> ModBlocks.LARGE_HEXTECH_BUD.get();
+                    default -> ModBlocks.HEXTECH_CLUSTER.get();
+                };
+                level.setBlock(at.above(), crystal.defaultBlockState().setValue(HextechClusterBlock.FACING, Direction.UP), FLAGS);
             }
-        }
-    }
-
-    /** The scar: thin burnt lines with a thread of charge, forking out from the crater's rim like a Lichtenberg figure. */
-    private void scar(WorldGenLevel level, RandomSource random, BlockPos centre, float radius) {
-        List<BlockPos> lines = new ArrayList<>();
-        int branches = 7 + random.nextInt(4);
-        float turn = random.nextFloat() * Mth.TWO_PI;
-        for (int i = 0; i < branches; i++) {
-            float angle = turn + i * Mth.TWO_PI / branches + (random.nextFloat() - 0.5F) * 0.5F;
-            float x = centre.getX() + 0.5F + Mth.cos(angle) * radius;
-            float z = centre.getZ() + 0.5F + Mth.sin(angle) * radius;
-            branch(level, random, lines, x, z, angle, scarReach * (0.7F + 0.4F * random.nextFloat()), 0);
-        }
-        LightningScarBlock scar = ModBlocks.LIGHTNING_SCAR.get();
-        for (BlockPos pos : lines) {
-            BlockState state = level.getBlockState(pos);
-            if (state.is(scar)) {
-                level.setBlock(pos, scar.joined(state, level, pos), FLAGS);
-            }
-        }
-    }
-
-    private void branch(WorldGenLevel level, RandomSource random, List<BlockPos> lines, float x, float z, float angle, float length, int depth) {
-        int lastX = Mth.floor(x);
-        int lastZ = Mth.floor(z);
-        for (int step = 0; step < length; step++) {
-            angle += (random.nextFloat() - 0.5F) * 0.8F;
-            x += Mth.cos(angle) * 0.9F;
-            z += Mth.sin(angle) * 0.9F;
-            int cellX = Mth.floor(x);
-            int cellZ = Mth.floor(z);
-            if (cellX == lastX && cellZ == lastZ) {
-                continue;
-            }
-            if (cellX != lastX && cellZ != lastZ) {
-                // Lines join only side by side: a diagonal step goes round a corner.
-                line(level, lines, random.nextBoolean() ? cellX : lastX, random.nextBoolean() ? lastZ : cellZ);
-            }
-            line(level, lines, cellX, cellZ);
-            lastX = cellX;
-            lastZ = cellZ;
-            if (depth < 3 && random.nextFloat() < 0.3F) {
-                float side = random.nextBoolean() ? 0.7F : -0.7F;
-                branch(level, random, lines, x, z, angle + side, (length - step) * 0.55F, depth + 1);
-            }
-        }
-    }
-
-    /** One cell of a scar line, lying on the ground of its column; plants there burn away. */
-    private static void line(WorldGenLevel level, List<BlockPos> lines, int x, int z) {
-        BlockPos top = clearedTop(level, x, z);
-        if (top == null || !level.getBlockState(top).isFaceSturdy(level, top, Direction.UP)) {
-            return;
-        }
-        BlockPos at = top.above();
-        if (level.getBlockState(at).isAir()) {
-            level.setBlock(at, ModBlocks.LIGHTNING_SCAR.get().defaultBlockState(), FLAGS);
-            lines.add(at);
         }
     }
 
