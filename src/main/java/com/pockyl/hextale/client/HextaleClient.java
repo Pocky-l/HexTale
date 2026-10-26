@@ -181,6 +181,10 @@ public final class HextaleClient {
             if (stack.is(ModItems.WHIRL_REAPER.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.whirl_reaper.hint").withStyle(ChatFormatting.GRAY));
             }
+            if (stack.is(ModItems.WARD_GLASS.get()) || stack.is(ModItems.VEIL_GLASS.get())) {
+                String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+                event.getToolTip().add(Component.translatable("block.hextale." + id + ".hint").withStyle(ChatFormatting.GRAY));
+            }
             if (stack.is(ModItems.LEVITATION_PLATE.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.levitation_plate.hint").withStyle(ChatFormatting.GRAY));
             }

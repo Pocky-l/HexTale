@@ -126,6 +126,8 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.TUNING_FORK.get(), "tuning_fork");
         info(registration, ModItems.DUST_CHARGE.get(), "dust_charge");
         info(registration, ModItems.LEVITATION_PLATE.get(), "levitation_plate");
+        info(registration, ModItems.WARD_GLASS.get(), "ward_glass");
+        info(registration, ModItems.VEIL_GLASS.get(), "veil_glass");
         info(registration, ModItems.HEX_FURNACE.get(), "hex_furnace");
         info(registration, ModItems.HEX_FOUNDRY.get(), "hex_foundry");
         registration.addRecipes(BrewingCategory.TYPE, com.pockyl.hextale.crafting.BrewRecipe.ALL.get(true).entrySet().stream()

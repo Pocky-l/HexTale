@@ -41,6 +41,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
   gently bobbing; sneaking sinks you back down, and nobody in the column is hurt by falling. Motes of light rise
   through the column so it can be seen. Runes: Shift (a taller column), Motor (a faster lift), Breath (whoever steps
   out floats down slowly for a while) and Lens.
+- Ward Glass and Veil Glass (four at the Hex Workbench): glass with a rune of barrier that chooses who passes. Ward
+  Glass stops players but lets creatures and dropped items through; Veil Glass lets players walk through and stops
+  creatures. Creatures plan their way through Ward Glass and around Veil Glass.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

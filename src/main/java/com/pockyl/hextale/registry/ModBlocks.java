@@ -104,6 +104,11 @@ public final class ModBlocks {
     public static final DeferredBlock<Block> CHISELED_MAGIC_BRICKS = BLOCKS.registerBlock("chiseled_magic_bricks", Block::new,
             ModBlocks::brickProperties);
 
+    /** Glass woven with a rune of barrier: Ward Glass stops players and lets creatures through, Veil Glass the other way. */
+    public static final DeferredBlock<com.pockyl.hextale.block.SieveGlassBlock> WARD_GLASS = BLOCKS.registerBlock("ward_glass",
+            properties -> new com.pockyl.hextale.block.SieveGlassBlock(true, properties), ModBlocks::sieveGlassProperties);
+    public static final DeferredBlock<com.pockyl.hextale.block.SieveGlassBlock> VEIL_GLASS = BLOCKS.registerBlock("veil_glass",
+            properties -> new com.pockyl.hextale.block.SieveGlassBlock(false, properties), ModBlocks::sieveGlassProperties);
     /** A stone plate with a hextech crystal in a brass ring: the air above it lifts whatever stands there. */
     public static final DeferredBlock<com.pockyl.hextale.block.LevitationPlateBlock> LEVITATION_PLATE = BLOCKS.registerBlock("levitation_plate",
             com.pockyl.hextale.block.LevitationPlateBlock::new,
@@ -525,6 +530,12 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties fireBrickProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.MUD_BRICKS);
+    }
+
+    private static BlockBehaviour.Properties sieveGlassProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(0.6F).sound(SoundType.GLASS).noOcclusion().dynamicShape()
+                .isValidSpawn((state, level, pos, type) -> false).isRedstoneConductor((state, level, pos) -> false)
+                .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos, box) -> false);
     }
 
     private static BlockBehaviour.Properties hextechCrystalProperties(int light) {

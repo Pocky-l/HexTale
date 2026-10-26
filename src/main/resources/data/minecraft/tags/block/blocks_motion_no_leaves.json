@@ -83,6 +83,8 @@
     "hextale:large_hextech_bud",
     "hextale:medium_hextech_bud",
     "hextale:small_hextech_bud",
-    "hextale:levitation_plate"
+    "hextale:levitation_plate",
+    "hextale:ward_glass",
+    "hextale:veil_glass"
   ]
 }

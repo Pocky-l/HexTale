@@ -1,0 +1,35 @@
+{
+  "region": "workshop",
+  "icon": [
+    "hextale:ward_glass",
+    "hextale:veil_glass"
+  ],
+  "parents": [
+    "hex_workbench"
+  ],
+  "goal": {
+    "type": "any_of",
+    "goals": [
+      {
+        "type": "has_item",
+        "item": "hextale:ward_glass"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:veil_glass"
+      }
+    ]
+  },
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:ward_glass",
+    "then": {
+      "kind": "hex_crafting",
+      "result": "hextale:veil_glass"
+    }
+  },
+  "pos": [
+    -20,
+    -30
+  ]
+}
