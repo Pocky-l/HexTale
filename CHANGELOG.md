@@ -85,6 +85,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
   with a glowing rune, blued steel with glowing rune channels, a walnut shaft, a leather grip and a hex nut pommel.
   Sword: a long blade with a glowing fuller and a guard with upswept hooks. Axe: a compact crescent blade on a steel
   neck, balanced by a back spike. Shovel: a scooped spade with raised rims and foot treads.
+- New look for the three grades of hextech, all animated. Unstable hextech is a cluster of icy shards growing out of a
+  lump of amethyst, a crack in it flaring and sparks jumping off the tips. The cut crystal is pointed at both ends,
+  with a glint running along it. The gemstone is a cut sphere with a glowing core that slowly breathes.
 
 ### Fixed
 - The hextech tools no longer have see-through gaps: the shafts of the refined and radiant pickaxes were half
