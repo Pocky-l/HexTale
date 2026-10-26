@@ -39,6 +39,10 @@ Glassy scars: the way into hextech no longer waits for a storm.
   stone for earth - boiled on its own in the alembic is ink for the desk. The Separator now comes after the first
   research, as the answer to essences no single thing gives (light never comes alone) and to jars spoiled by one
   wrong thing. The diary's texts along the way tell that story.
+- New models for the hextech sword, axe and shovel, made as one set with the hextech pickaxe: a brass hexagon hub
+  with a glowing rune, blued steel with glowing rune channels, a walnut shaft, a leather grip and a hex nut pommel.
+  Sword: a long blade with a glowing fuller and a guard with upswept hooks. Axe: a crescent blade on a steel neck and
+  a back spike. Shovel: a scooped spade with raised rims and foot treads.
 
 ### Fixed
 - Shovel runes (treasures, seeds) and the felling of trees ignored grass blocks, podzol and mycelium: they count as
