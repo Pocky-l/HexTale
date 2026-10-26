@@ -242,6 +242,9 @@ public final class ModItems {
             properties -> new com.pockyl.hextale.item.FloatingStoneItem(ModBlocks.FLOATING_STONE.get(), properties.useBlockDescriptionPrefix()));
     public static final DeferredItem<BlockItem> WARD_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.WARD_GLASS);
     public static final DeferredItem<BlockItem> VEIL_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.VEIL_GLASS);
+    /** A hextech cage that folds a monster spawner into itself and unfolds it once elsewhere. */
+    public static final DeferredItem<com.pockyl.hextale.item.SpawnerCageItem> SPAWNER_CAGE = ITEMS.registerItem("spawner_cage",
+            properties -> new com.pockyl.hextale.item.SpawnerCageItem(properties.stacksTo(1).rarity(Rarity.RARE)));
     /** A crystal flask that folds one creature into its glass and lets it out elsewhere. */
     public static final DeferredItem<com.pockyl.hextale.item.SoulFlaskItem> SOUL_FLASK = ITEMS.registerItem("soul_flask",
             properties -> new com.pockyl.hextale.item.SoulFlaskItem(properties.stacksTo(16)));

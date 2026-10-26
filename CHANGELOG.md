@@ -61,6 +61,8 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - Soul Flask (at the Hextech Altar): right click a creature to fold it into the glass, whole - name, saddle, everything;
   right click a block to let it out there. No players and no bosses. Runes: Healing (it comes out healed), Growth (a
   young one comes out grown), Slumber (a hostile one comes out dazed) and Lens.
+- Spawner Cage (at the Hextech Altar): pressed to a monster spawner it folds the spawner in, whole - what it spawns
+  and how; pressed to a block it sets the spawner there, and the cage burns out doing it.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

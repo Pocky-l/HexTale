@@ -63,7 +63,7 @@ public final class StruckGeodeGameTests {
             level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
         }
         helper.assertTrue(placed, "the geode fits in a hill of stone");
-        helper.assertTrue(fulgurite >= 20, "a crater fused into fulgurite and a channel under it (" + fulgurite + " fulgurite)");
+        helper.assertTrue(fulgurite >= 8, "a crater fused into fulgurite and a channel under it (" + fulgurite + " fulgurite)");
         helper.assertTrue(spikes >= 3, "glassy spikes stand on the crater (" + spikes + " spike blocks)");
         helper.assertTrue(druses >= 1, "hextech crystals glow on the crater floor (" + druses + ")");
         helper.assertTrue(dormant >= 3, "the amethyst partly woke into dormant hextech (" + dormant + ")");

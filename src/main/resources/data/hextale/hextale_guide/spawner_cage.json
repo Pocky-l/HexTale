@@ -1,0 +1,16 @@
+{
+  "region": "circle",
+  "stage": "mid",
+  "icon": "hextale:spawner_cage",
+  "parents": [
+    "soul_flask"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:spawner_cage"
+  },
+  "pos": [
+    370,
+    -70
+  ]
+}

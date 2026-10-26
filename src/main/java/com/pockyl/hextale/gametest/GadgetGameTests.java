@@ -136,6 +136,25 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
+    @HexTest(padding = 2)
+    public static void aSpawnerCageMovesASpawnerWhole(GameTestHelper helper) {
+        BlockPos from = helper.absolutePos(new BlockPos(1, 2, 1));
+        BlockPos to = helper.absolutePos(new BlockPos(3, 2, 3));
+        helper.getLevel().setBlockAndUpdate(from, net.minecraft.world.level.block.Blocks.SPAWNER.defaultBlockState());
+        if (helper.getLevel().getBlockEntity(from) instanceof net.minecraft.world.level.block.entity.SpawnerBlockEntity spawner) {
+            spawner.setEntityId(net.minecraft.world.entity.EntityTypes.ZOMBIE, helper.getLevel().getRandom());
+        }
+        net.minecraft.nbt.CompoundTag caged = com.pockyl.hextale.item.SpawnerCageItem.fold(helper.getLevel(), from);
+        helper.assertTrue(helper.getLevel().getBlockState(from).isAir(), "the spawner leaves its place");
+        com.pockyl.hextale.item.SpawnerCageItem.unfold(helper.getLevel(), to, caged);
+        helper.assertTrue(helper.getLevel().getBlockEntity(to) instanceof net.minecraft.world.level.block.entity.SpawnerBlockEntity,
+                "a spawner stands at the new place");
+        net.minecraft.nbt.CompoundTag again = helper.getLevel().getBlockEntity(to).saveWithoutMetadata(helper.getLevel().registryAccess());
+        helper.assertTrue(again.toString().contains("minecraft:zombie"), "and it still spawns zombies: " + again);
+        helper.getLevel().setBlockAndUpdate(to, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        helper.succeed();
+    }
+
     @HexTest
     public static void aNullLanternKeepsItsQuiet(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 2, 1);

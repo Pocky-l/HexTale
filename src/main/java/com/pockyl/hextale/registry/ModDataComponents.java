@@ -140,6 +140,10 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SOUL_RUNES =
             COMPONENTS.registerComponentType("soul_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    /** The monster spawner folded into a Spawner Cage: its block entity data. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.minecraft.nbt.CompoundTag>> CAGED_SPAWNER =
+            COMPONENTS.registerComponentType("caged_spawner", builder -> builder
+                    .persistent(net.minecraft.nbt.CompoundTag.CODEC).networkSynchronized(ByteBufCodecs.COMPOUND_TAG));
     /** The creature folded into a Soul Flask: everything it is, its type under "id". */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.minecraft.nbt.CompoundTag>> SOUL =
             COMPONENTS.registerComponentType("soul", builder -> builder
