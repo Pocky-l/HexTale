@@ -80,6 +80,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - Hextech Magnet (at the Hex Workbench): switched on and carried anywhere in the inventory, it draws loose items
   and experience to you (sneak to let them lie; what you just dropped stays). Runes: Shift (farther), Radiance
   (experience worth more), Cache (straight into the pocket) and Lens.
+- Grapple Gauntlet (at the Hex Workbench): throws a tendril of light at the block you look at and draws you there;
+  sneak to let go mid-flight. Runes: Shift (reach), Motor (faster pull), Breath (no fall damage for a while after) and
+  Lens.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

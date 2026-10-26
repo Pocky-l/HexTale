@@ -1,0 +1,20 @@
+{
+  "region": "pylons",
+  "stage": "mid",
+  "icon": "hextale:grapple_gauntlet",
+  "parents": [
+    "hex_lift"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:grapple_gauntlet",
+    "then": {
+      "kind": "runes",
+      "result": "grapple"
+    }
+  },
+  "pos": [
+    980,
+    -20
+  ]
+}

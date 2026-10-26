@@ -256,6 +256,9 @@ public final class ModItems {
     /** A brass horseshoe with hextech poles: switched on, it draws loose items and experience to its holder. */
     public static final DeferredItem<com.pockyl.hextale.item.HextechMagnetItem> HEXTECH_MAGNET = ITEMS.registerItem("hextech_magnet",
             properties -> new com.pockyl.hextale.item.HextechMagnetItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
+    /** A leather glove with a hextech barrel: it throws a tendril at a block and draws its wearer there. */
+    public static final DeferredItem<com.pockyl.hextale.item.GrappleGauntletItem> GRAPPLE_GAUNTLET = ITEMS.registerItem("grapple_gauntlet",
+            properties -> new com.pockyl.hextale.item.GrappleGauntletItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
     /** A pocket watch with a hextech face: it puts its holder back where they stood a few seconds ago. */
     public static final DeferredItem<com.pockyl.hextale.item.RecallCharmItem> RECALL_CHARM = ITEMS.registerItem("recall_charm",
             properties -> new com.pockyl.hextale.item.RecallCharmItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));

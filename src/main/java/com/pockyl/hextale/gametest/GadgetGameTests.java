@@ -237,6 +237,8 @@ public final class GadgetGameTests {
     @HexTest(padding = 4)
     public static void aMagnetDrawsLooseThingsIn(GameTestHelper helper) {
         net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        Vec3 spot = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(1, 1, 1)));
+        player.teleportTo(spot.x, spot.y, spot.z);
         ItemEntity near = helper.spawnItem(Items.COBBLESTONE, player.position().add(4, 0.5, 0).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));
         ItemEntity far = helper.spawnItem(Items.COBBLESTONE, player.position().add(0, 0.5, 9).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));
         near.setNoPickUpDelay();
@@ -246,6 +248,20 @@ public final class GadgetGameTests {
         helper.assertTrue(near.getDeltaMovement().x < -0.1, "it flies towards me: " + near.getDeltaMovement());
         near.discard();
         far.discard();
+        helper.succeed();
+    }
+
+    @HexTest(padding = 6)
+    public static void aGrappleDrawsItsWearerToTheHook(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        Vec3 spot = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(1, 1, 1)));
+        player.teleportTo(spot.x, spot.y, spot.z);
+        Vec3 hook = spot.add(5, 3, 0);
+        com.pockyl.hextale.item.GrappleGauntletItem.start(player, hook, com.pockyl.hextale.runework.PickaxeRunes.EMPTY);
+        helper.assertTrue(com.pockyl.hextale.item.GrappleGauntletItem.step(player), "far from the hook the pull goes on");
+        player.teleportTo(hook.x, hook.y - 0.9, hook.z);
+        helper.assertTrue(!com.pockyl.hextale.item.GrappleGauntletItem.step(player), "at the hook it lets go");
+        helper.assertTrue(!com.pockyl.hextale.item.GrappleGauntletItem.pulling(player), "and the pull is over");
         helper.succeed();
     }
 }

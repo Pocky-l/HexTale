@@ -135,6 +135,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.SILENCE_WARD.get(), "silence_ward");
         info(registration, ModItems.DISINTEGRATOR.get(), "disintegrator");
         info(registration, ModItems.RECALL_CHARM.get(), "recall_charm");
+        info(registration, ModItems.GRAPPLE_GAUNTLET.get(), "grapple_gauntlet");
         info(registration, ModItems.HEXTECH_MAGNET.get(), "hextech_magnet");
         info(registration, ModItems.SOUL_FLASK.get(), "soul_flask");
         info(registration, ModItems.SPAWNER_CAGE.get(), "spawner_cage");

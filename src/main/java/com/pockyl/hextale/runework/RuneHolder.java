@@ -63,6 +63,8 @@ public enum RuneHolder {
     LIFT(() -> ModDataComponents.LIFT_RUNES.get(), LiftRune.SLOTS, LiftRune.values()),
     /** The Recall Charm. */
     RECALL(() -> ModDataComponents.RECALL_RUNES.get(), RecallRune.SLOTS, RecallRune.values()),
+    /** The Grapple Gauntlet. */
+    GRAPPLE(() -> ModDataComponents.GRAPPLE_RUNES.get(), GrappleRune.SLOTS, GrappleRune.values()),
     /** The Hextech Magnet. */
     MAGNET(() -> ModDataComponents.MAGNET_RUNES.get(), MagnetRune.SLOTS, MagnetRune.values()),
     /** The Soul Flask. */
@@ -162,6 +164,9 @@ public enum RuneHolder {
         }
         if (item == ModItems.RECALL_CHARM.get()) {
             return RECALL;
+        }
+        if (item == ModItems.GRAPPLE_GAUNTLET.get()) {
+            return GRAPPLE;
         }
         if (item == ModItems.HEXTECH_MAGNET.get()) {
             return MAGNET;
@@ -317,6 +322,7 @@ public enum RuneHolder {
             case IMPULSE -> List.of(new ItemStack(ModItems.IMPULSE_PLATE.get()));
             case LIFT -> List.of(new ItemStack(ModItems.HEX_LIFT.get()));
             case RECALL -> List.of(new ItemStack(ModItems.RECALL_CHARM.get()));
+            case GRAPPLE -> List.of(new ItemStack(ModItems.GRAPPLE_GAUNTLET.get()));
             case MAGNET -> List.of(new ItemStack(ModItems.HEXTECH_MAGNET.get()));
             case SOUL -> List.of(new ItemStack(ModItems.SOUL_FLASK.get()));
             case WORLD_ANCHOR -> List.of(new ItemStack(ModItems.WORLD_ANCHOR.get()));
