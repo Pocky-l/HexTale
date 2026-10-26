@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from.
 
 ### Changed
+- The Pocky Mods creative tab lists hextale's items in groups: research, the workshop, the altar, essence works,
+  chemtech, pylons, automation, tools and armour, materials, ores, building blocks, nature, then essences, brews and
+  research notes, with the creative-only items at the very end.
 - The researcher's clothes are one step: pick the hood, robe, trousers or boots on its page for the recipe and runes.
 - Hexsteel Gear shows the recipe of every piece of the set.
 - The Hollowbloom moved into the Void's branch.
