@@ -48,8 +48,19 @@ public class WorldAnchorBlock extends BaseEntityBlock {
     /** Ticks between two Fertility pinches. */
     private static final int GROWTH_TICKS = 100;
 
+    /** A deepslate socket with the anchor's crown, shank and stock standing in it. */
+    private static final net.minecraft.world.phys.shapes.VoxelShape SHAPE = net.minecraft.world.phys.shapes.Shapes.or(
+            net.minecraft.world.level.block.Block.box(0, 0, 0, 16, 4, 16), net.minecraft.world.level.block.Block.box(3, 4, 3, 13, 12, 13),
+            net.minecraft.world.level.block.Block.box(6, 12, 6, 10, 16, 10));
+
     public WorldAnchorBlock(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    protected net.minecraft.world.phys.shapes.VoxelShape getShape(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos,
+                                                                 net.minecraft.world.phys.shapes.CollisionContext context) {
+        return SHAPE;
     }
 
     @Override

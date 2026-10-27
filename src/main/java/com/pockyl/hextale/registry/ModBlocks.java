@@ -106,7 +106,7 @@ public final class ModBlocks {
 
     /** Nullstone banded with brass round a gemstone: it holds its chunks loaded while it stands. */
     public static final DeferredBlock<com.pockyl.hextale.block.WorldAnchorBlock> WORLD_ANCHOR = BLOCKS.registerBlock("world_anchor",
-            com.pockyl.hextale.block.WorldAnchorBlock::new, () -> nullstoneProperties().lightLevel(state -> 6));
+            com.pockyl.hextale.block.WorldAnchorBlock::new, () -> nullstoneProperties().lightLevel(state -> 6).noOcclusion());
     /** A Lesser Rift Gate: tied to a partner gate, it sends whatever passes into its ring out of the partner. */
     public static final DeferredBlock<com.pockyl.hextale.block.RiftGateBlock> RIFT_GATE = BLOCKS.registerBlock("rift_gate",
             com.pockyl.hextale.block.RiftGateBlock::new,

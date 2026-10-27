@@ -60,6 +60,8 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> IMPULSE_PANEL = model("block/impulse_plate_panel");
     /** The Levitation Plate's floating ring, centred on (8, 6, 8) px. */
     public static final StandaloneModelKey<BlockStateModelPart> LEVITATION_RING = model("block/levitation_plate_ring");
+    /** A Dust Charge stuck on a wall: base on its -Z face at (8, 8, 0) px. */
+    public static final StandaloneModelKey<BlockStateModelPart> DUST_CHARGE_STUCK = model("item/dust_charge_stuck");
 
     private TableModels() {
     }

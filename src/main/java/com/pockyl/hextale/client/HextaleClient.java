@@ -239,7 +239,7 @@ public final class HextaleClient {
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THROWN_HEXTECH.get(),
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.DUST_CHARGE.get(),
-                net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
+                com.pockyl.hextale.client.render.DustChargeRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THROWN_CHEM_VIAL.get(),
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THE_VOID.get(),
