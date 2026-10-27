@@ -70,6 +70,11 @@ public class NullLanternBlockEntity extends BlockEntity {
         return null;
     }
 
+    /** Forgets every lantern when the server stops: the next world must not see the old ones. */
+    public static void forgetAll() {
+        LOADED.clear();
+    }
+
     @Override
     public void onLoad() {
         super.onLoad();

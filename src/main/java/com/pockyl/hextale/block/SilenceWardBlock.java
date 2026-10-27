@@ -93,6 +93,11 @@ public class SilenceWardBlock extends BaseEntityBlock {
             return at.distanceToSqr(Vec3.atCenterOf(worldPosition)) <= (double) radius * radius;
         }
 
+        /** Forgets the wards of one side ({@code client} or server) when its world closes. */
+        public static void forget(boolean client) {
+            LOADED.keySet().removeIf(key -> key.startsWith(client ? "c:" : "s:"));
+        }
+
         private static String key(Level level) {
             return (level.isClientSide() ? "c:" : "s:") + level.dimension().identifier();
         }

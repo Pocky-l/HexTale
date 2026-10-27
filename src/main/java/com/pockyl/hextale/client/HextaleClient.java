@@ -203,6 +203,7 @@ public final class HextaleClient {
             }
         });
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());
+        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> com.pockyl.hextale.block.SilenceWardBlock.Ward.forget(true));
         ClientPylons.register();
         EssenceLookup.register();
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> ResearchBoards.warmUp());

@@ -40,6 +40,12 @@ public final class NullLanternEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void onServerStopped(net.neoforged.neoforge.event.server.ServerStoppedEvent event) {
+        NullLanternBlockEntity.forgetAll();
+        com.pockyl.hextale.block.SilenceWardBlock.Ward.forget(false);
+    }
+
     /** A Silence Ward with Insulator keeps vibrations inside it from reaching sculk. */
     @SubscribeEvent
     public static void onVibration(net.neoforged.neoforge.event.VanillaGameEvent event) {
