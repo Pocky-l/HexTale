@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "hextale:item/hextech_crystal"
+    "layer0": "hextale:item/rift_link_crystal"
   }
 }
