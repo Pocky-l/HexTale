@@ -1504,6 +1504,8 @@
   "funnel_rune.hextale.engraving.value": "%s",
   "funnel_rune.hextale.dam.desc": "Sometimes a death costs no decay at all.",
   "funnel_rune.hextale.dam.value": "%s",
+  "funnel_rune.hextale.sponge.desc": "Sometimes a death leaves more than its drops: what they are made of seeps into a jar beside the funnel.",
+  "funnel_rune.hextale.sponge.value": "%s",
   "book.hextale.quest.funnel_rune.note": "Room for %s runes in the funnel.",
   "jei.hextale.rune_burning.note_funnel": "Put the Greedy Funnel alone on the altar; up to %s runes.",
   "quest.hextale.greedy_funnel": "Greedy Funnel",

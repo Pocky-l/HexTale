@@ -12,7 +12,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * The runes a Greedy Funnel takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more
  * with a Lens (1-4); index 0 of the radius table is the funnel without the rune. Besides the reach, runes make every
- * death it swallows give more: experience, spoils, now and then a head, decay saved.
+ * death it swallows give more: experience, spoils, now and then a head, decay saved, the creature's essence.
  */
 public enum FunnelRune implements HolderRune {
     /** It reaches deaths farther away. */
@@ -26,7 +26,9 @@ public enum FunnelRune implements HolderRune {
     /** Now and then the creature's head. */
     ENGRAVING("light_metal"),
     /** A death may cost no decay. */
-    DAM("earth_water");
+    DAM("earth_water"),
+    /** A death may leave its essence: what its drops are made of soaks into a jar beside the funnel. */
+    SPONGE("shadow_water");
 
     public static final int SLOTS = 2;
     /** Blocks around the funnel it swallows deaths in, by strength. */
@@ -38,6 +40,8 @@ public enum FunnelRune implements HolderRune {
     public static final float[] MORE = {0.1F, 0.2F, 0.3F, 0.4F};
     public static final float[] HEAD = {0.01F, 0.02F, 0.03F, 0.04F};
     public static final float[] THRIFT = {0.2F, 0.35F, 0.5F, 0.6F};
+    /** Chance a death soaks its essence into a jar. */
+    public static final float[] SOAK = {0.25F, 0.4F, 0.55F, 0.7F};
 
     private final ComplexRune rune;
 
@@ -74,6 +78,7 @@ public enum FunnelRune implements HolderRune {
             case SPOILS -> HolderRune.percent(HolderRune.at(MORE, i));
             case ENGRAVING -> HolderRune.percent(HolderRune.at(HEAD, i));
             case DAM -> HolderRune.percent(HolderRune.at(THRIFT, i));
+            case SPONGE -> HolderRune.percent(HolderRune.at(SOAK, i));
         };
     }
 }

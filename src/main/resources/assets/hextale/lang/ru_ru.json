@@ -1504,6 +1504,8 @@
   "funnel_rune.hextale.engraving.value": "%s",
   "funnel_rune.hextale.dam.desc": "Иногда смерть не стоит ни капли тлена.",
   "funnel_rune.hextale.dam.value": "%s",
+  "funnel_rune.hextale.sponge.desc": "Иногда смерть оставляет больше, чем добычу: то, из чего она сделана, стекает в банку возле воронки.",
+  "funnel_rune.hextale.sponge.value": "%s",
   "book.hextale.quest.funnel_rune.note": "В воронке место для рун: %s.",
   "jei.hextale.rune_burning.note_funnel": "Положите Жадную воронку на алтарь одну; до %s рун.",
   "quest.hextale.greedy_funnel": "Жадная воронка",

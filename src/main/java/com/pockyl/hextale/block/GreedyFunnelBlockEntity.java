@@ -239,6 +239,10 @@ public class GreedyFunnelBlockEntity extends BlockEntity {
             stacks.add(drop.getItem().copy());
         }
         enrich(level, dead, stacks);
+        int sponge = strength(FunnelRune.SPONGE);
+        if (sponge > 0 && level.getRandom().nextFloat() < HolderRune.at(FunnelRune.SOAK, sponge)) {
+            soak(level, stacks);
+        }
         List<ItemStack> icons = new ArrayList<>();
         for (ItemStack stack : stacks) {
             if (icons.size() < ICONS && !stack.isEmpty()) {
@@ -265,6 +269,34 @@ public class GreedyFunnelBlockEntity extends BlockEntity {
         paidExperience = 0;
         changed();
         return true;
+    }
+
+    /**
+     * Sponge: what the drops are made of (their essences, as an alembic would boil them) soaks into the first jar beside
+     * the funnel with room; the drops themselves stay. Returns the millibuckets soaked.
+     */
+    public int soak(ServerLevel level, List<ItemStack> stacks) {
+        EssenceMix mix = EssenceMix.EMPTY;
+        for (ItemStack stack : stacks) {
+            com.pockyl.hextale.research.ItemEssences essences = com.pockyl.hextale.research.ResearchItems.of(stack);
+            if (essences != null) {
+                mix = mix.plus(EssenceMix.boiled(essences, 1).times(stack.getCount()));
+            }
+        }
+        if (mix.isEmpty()) {
+            return 0;
+        }
+        for (com.pockyl.hextale.block.EssenceTankBlockEntity jar : JarReach.around(level, worldPosition)) {
+            int soaked = jar.tank().fill(mix, false);
+            if (soaked > 0) {
+                jar.setChanged();
+                Vec3 at = mouth(worldPosition);
+                ToolEffects.puff(level, at, FunnelRune.SPONGE.rune(), 8, 0.3);
+                ToolEffects.sound(level, at, ModSounds.ESSENCE_DRAW.get(), 0.4F, 0.8F);
+                return soaked;
+            }
+        }
+        return 0;
     }
 
     /** Spoils: one more of a stackable drop now and then; Engraving: now and then the creature's head. */

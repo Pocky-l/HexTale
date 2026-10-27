@@ -92,4 +92,21 @@ public final class FunnelGameTests {
             helper.succeed();
         });
     }
+
+    /** Sponge: what a swallowed death's drops are made of soaks into a jar beside the funnel; the drops stay whole. */
+    @HexTest
+    public static void aSpongeSoaksTheDeadsEssence(GameTestHelper helper) {
+        clear(helper);
+        helper.setBlock(BASE, Blocks.CHEST);
+        helper.setBlock(BASE.above(), ModBlocks.GREEDY_FUNNEL.get());
+        helper.setBlock(BASE.east(2), ModBlocks.ESSENCE_TANK.get());
+        GreedyFunnelBlockEntity funnel = helper.getBlockEntity(BASE.above(), GreedyFunnelBlockEntity.class);
+        var jar = helper.getBlockEntity(BASE.east(2), com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        java.util.List<net.minecraft.world.item.ItemStack> drops = new java.util.ArrayList<>(java.util.List.of(
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ROTTEN_FLESH, 2)));
+        int soaked = funnel.soak(helper.getLevel(), drops);
+        helper.assertTrue(soaked > 0 && jar.tank().contents().total() == soaked, "the flesh's essence is in the jar (" + soaked + " mB)");
+        helper.assertTrue(drops.getFirst().getCount() == 2, "the drops themselves stay");
+        helper.succeed();
+    }
 }
