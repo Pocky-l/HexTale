@@ -39,7 +39,7 @@ import java.util.List;
 public class ArcSpireRenderer implements BlockEntityRenderer<ArcSpireBlockEntity, ArcSpireRenderer.State> {
     private static final int BOLT_COLOR = 0x8FD8FF;
     /** Heights of the coils (in blocks over the base) that glow after a strike, up both halves. */
-    private static final float[] COILS = {5.5F / 16, 11.5F / 16, 1 + 3.5F / 16, 1 + 8.5F / 16};
+    private static final float[] COILS = {8F / 16, 12F / 16, 15F / 16, 1 + 3F / 16, 1 + 8F / 16};
     private final ItemModelResolver itemModelResolver;
 
     public ArcSpireRenderer(BlockEntityRendererProvider.Context context) {

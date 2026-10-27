@@ -112,14 +112,23 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - The Miasma Vent needs no fuel any more: built once, it breathes for ever. Its fumes now reach four blocks every way
   (one down, three up) and lie there as a low green-grey haze; hostile creatures in them are poisoned and slowly lose
   health - the undead too, whom poison alone cannot touch. Players, animals and pets only cough. A redstone signal
-  shuts it. It is a little dearer at the Hex Workbench (a fermented spider eye instead of bone meal).
-- The Hex Arc Spire stands two blocks tall: a stone plinth with the lower coils, and over it the hexsteel post with
-  brass coils up to the steel tip, the crystal riding above. It needs a free block over it to be placed; breaking
+  shuts it. It is a little dearer at the Hex Workbench (a fermented spider eye instead of bone meal). It looks the
+  part now: a rusted stack under a raised cowl on a glowing grated base, green fumes in the gap and copper feed pipes;
+  it goes dark while redstone holds it shut.
+- The Hex Arc Spire stands two blocks tall: a stone plinth, a hexsteel mast wound with brass coils that narrow upward
+  to a needle and a pronged crown, the crystal riding above. It needs a free block over it to be placed; breaking
   either half brings the whole spire down as one item, runes kept. Spires already standing grow their top by
   themselves where there is room, and keep working as they are where there is not.
-- The Pink Brazier warms the soil instead of lighting it: the shimmer burns in an iron fire cage whose stakes go into
-  the ground. With every breath you can see the warmth creep out over the soil to the plants it hurries and rise
+- The Pink Brazier warms the soil instead of lighting it: the shimmer burns inside a hexsteel grate cage on four legs,
+  and brass heat rods run out from its foot into the soil, glowing pink while it burns. With every breath you can see the warmth creep out over the soil to the plants it hurries and rise
   from the ground under them in a pink shimmer; now and then a warm mote lifts off the soil in its reach.
+- The Hextech Purifier looks like what it does: a white calcite font of clear glowing water under a brass canopy, the
+  crystal hanging from its hub over the water.
+- The Hollowbloom is a flat plant now: a withered stalk that darkens, leafs, opens a hollow black-hearted bloom and at
+  last glows.
+- The Breach Heart beats: its cracks flare twice every three seconds, in time with the beat you hear.
+- New look for nullstone (a soft porous stone whose pores fill with violet as it drinks the Thinning), raw zinc and
+  its block, the clouded crystal, the hexsteel block, and void rock with its bricks.
 - Bottles of essence can be drunk: every primal in the bottle gives its own short gift - fire: fire resistance,
   water: water breathing, earth: a full belly, air: slow falling, light: night vision, shadow: invisibility, life:
   regeneration, metal: haste, spark: jump boost - longer the more of it there is. Unknown essence turns the stomach.

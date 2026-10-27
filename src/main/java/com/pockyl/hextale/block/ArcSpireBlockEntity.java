@@ -64,8 +64,8 @@ public class ArcSpireBlockEntity extends BlockEntity {
     /** Reach below and above the spire's base block. */
     public static final int DOWN = 4;
     public static final int UP = 3;
-    /** Height of the crystal over the base block: just above the steel tip of the upper half. */
-    public static final double CRYSTAL_Y = 2 + 3.0 / 16;
+    /** Height of the crystal over the base block: over the needle (30 px) and the crown's prongs (31 px). */
+    public static final double CRYSTAL_Y = 2 + 2.0 / 16;
     public static final int MAX_SLEEP = 100;
     public static final int STREAM_TICKS = 50;
     /** Ticks an arc is drawn for. */

@@ -37,16 +37,19 @@ import java.util.Locale;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Hex Arc Spire: two blocks tall - a magic stone plinth with the lower coils, and above it the hexsteel post wound
- * with brass coils up to a steel tip, a hextech crystal held over it. It strikes the hostile creatures around it with
+ * The Hex Arc Spire: two blocks tall - a stone plinth, a hexsteel mast wound with brass coils that narrow upward, a
+ * needle and a pronged crown, a hextech crystal held over it. It strikes the hostile creatures around it with
  * arcs of charge ({@link ArcSpireBlockEntity}, on the {@link DoubleBlockHalf#LOWER} half only; the upper half passes a
  * click down). Breaking either half breaks both and drops one spire. A spire whose upper half cannot stand (an old
  * one-block spire under a ceiling) keeps working on its own and grows its upper half once there is room.
  */
 public class ArcSpireBlock extends BaseEntityBlock {
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
-    private static final VoxelShape LOWER = Shapes.or(Block.box(2, 0, 2, 14, 3, 14), Block.box(5, 3, 5, 11, 16, 11));
-    private static final VoxelShape UPPER = Block.box(5, 0, 5, 11, 14, 11);
+    /** Plinth, its step and the foot of the mast with the lower coils. */
+    private static final VoxelShape LOWER = Shapes.or(Block.box(1, 0, 1, 15, 2, 15), Block.box(3, 2, 3, 13, 5, 13),
+            Block.box(4, 5, 4, 12, 16, 12));
+    /** The mast with the upper coils, then the needle and the crown. */
+    private static final VoxelShape UPPER = Shapes.or(Block.box(5, 0, 5, 11, 12, 11), Block.box(6, 12, 6, 10, 15, 10));
 
     public ArcSpireBlock(Properties properties) {
         super(properties);
