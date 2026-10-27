@@ -168,8 +168,8 @@ Glassy scars: the way into hextech no longer waits for a storm.
   opened in the same game.
 - Rift Gates far apart no longer load the other gate's land over and over while essence or fluid flows between them.
 - With a shader pack ([Iris](https://www.curseforge.com/minecraft/mc-mods/irisshaders)) a Void breach in sight broke the
-  whole picture. Now the shaders know the mod's glowing runes, sigils and trails, and a breach shows as a starry dark
-  with a glowing violet rim while a shader pack is on.
+  whole picture. Now the shaders know the mod's glowing runes, sigils and trails, and a breach looks the same as without
+  a shader pack (it casts no shadow there and is not touched by the pack's fog and light).
 - Less work for the server and the game: pylons linked through many relays find their way much faster, the Hex
   Sawmill and the Whirl Reaper look only where logs or crops can be, sick land with no room for a breach is not
   searched again every few seconds, and brass pipes no longer rebuild their shape every time they are looked at.

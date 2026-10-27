@@ -120,6 +120,7 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.HexGlow::registerPipelines);
         modBus.addListener(com.pockyl.hextale.client.render.VoidPipelines::registerPipelines);
         modBus.addListener((net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) -> event.enqueueWork(IrisCompat::init));
+        NeoForge.EVENT_BUS.addListener(com.pockyl.hextale.client.render.VoidOverlay::onAfterLevel);
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
         BreachCinematic.register(modBus);

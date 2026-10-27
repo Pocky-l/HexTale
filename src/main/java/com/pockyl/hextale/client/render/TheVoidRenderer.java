@@ -116,9 +116,16 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
             return;
         }
         if (com.pockyl.hextale.client.IrisCompat.shadersOn()) {
-            // A shader pack cannot run our shaders: the plain look, a starry dark with a glowing rim, in its programs.
-            collector.submitCustomGeometry(poseStack, RenderTypes.entitySolid(STARS), (pose, consumer) -> frame.plainBody(consumer, pose));
-            collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> frame.plainHalo(consumer, pose));
+            if (com.pockyl.hextale.client.IrisCompat.shadowPass()) {
+                // The Void casts no shadow.
+            } else if (VoidOverlay.works()) {
+                // A shader pack cannot run our shaders: they are drawn once the pack has finished the picture.
+                VoidOverlay.queue(poseStack.last(), frame::body, frame::halo);
+            } else {
+                // The plain look, a starry dark with a glowing rim, in the pack's own programs.
+                collector.submitCustomGeometry(poseStack, RenderTypes.entitySolid(STARS), (pose, consumer) -> frame.plainBody(consumer, pose));
+                collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> frame.plainHalo(consumer, pose));
+            }
         } else {
             collector.submitCustomGeometry(poseStack, VoidPipelines.BODY_TYPE, (pose, consumer) -> frame.body(consumer, pose));
             collector.submitCustomGeometry(poseStack, VoidPipelines.HALO_TYPE, (pose, consumer) -> frame.halo(consumer, pose));

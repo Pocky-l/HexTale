@@ -15,12 +15,13 @@ import org.jspecify.annotations.Nullable;
  * Iris (optional, reached by reflection - no compile dependency). With a shader pack on, Iris draws every render
  * pipeline with a program of the pack and needs to be told which one fits our own pipelines; an unknown pipeline is
  * drawn with our shader straight into the pack's buffers, the shadow map included, which wrecks the picture. The
- * Void's own shaders read data, not colours, from their vertices, so with a pack on the breach is drawn another way
- * ({@link com.pockyl.hextale.client.render.TheVoidRenderer}).
+ * Void's own shaders read data, not colours, from their vertices, so with a pack on the breach is drawn after the pack
+ * has finished the picture ({@link com.pockyl.hextale.client.render.VoidOverlay}).
  */
 public final class IrisCompat {
     private static @Nullable Object api;
     private static @Nullable Method packInUse;
+    private static @Nullable Method shadowPass;
 
     private IrisCompat() {
     }
@@ -43,6 +44,7 @@ public final class IrisCompat {
             assign(assign, assignShadow, instance, program, shadowProgram, VoidPipelines.BODY, "ENTITIES", "SHADOW_ENTITIES");
             assign(assign, assignShadow, instance, program, shadowProgram, VoidPipelines.HALO, "ENTITIES_TRANSLUCENT", "SHADOW_ENTITIES");
             packInUse = apiClass.getMethod("isShaderPackInUse");
+            shadowPass = apiClass.getMethod("isRenderingShadowPass");
             api = instance;
         } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
             Hextale.LOGGER.warn("Could not reach the Iris API; shader packs may draw hextale effects oddly", e);
@@ -54,6 +56,18 @@ public final class IrisCompat {
                                RenderPipeline pipeline, String main, String shadow) throws ReflectiveOperationException {
         assign.invoke(api, pipeline, Enum.valueOf((Class<Enum>) program, main));
         assignShadow.invoke(api, pipeline, Enum.valueOf((Class<Enum>) shadowProgram, shadow));
+    }
+
+    /** Whether the pack is drawing its shadow map right now (entities are submitted again for it). */
+    public static boolean shadowPass() {
+        if (api == null || shadowPass == null) {
+            return false;
+        }
+        try {
+            return (boolean) shadowPass.invoke(api);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return false;
+        }
     }
 
     /** Whether a shader pack draws the world right now. */
