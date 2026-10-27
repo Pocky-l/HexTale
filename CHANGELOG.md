@@ -113,6 +113,14 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed
+- The Thinning now grows from working essence: boiling it out of things in the alembic, splitting it in the separator,
+  brewing and transmuting in the crucible (the crucible counts the most per mB, and more with unknown essence in the
+  water), refining shimmer, and essence spent on rituals and on the running costs of devices. The Disintegrator wears
+  the land fastest - fed without pause, it can open a breach within the hour. Research ink, the Hex Workbench's charge,
+  finished rituals as such and crystals woken by lightning no longer wear it; a crucible emptied or boiled dry pours
+  its essence away. As a guide: a busy base in one chunk shows the first haze after about two hours of steady work and
+  can open a breach after about seven; spread over a couple of chunks it takes about half as long again.
+  `/hextale void sources [radius]` lists what wore the land around you thin.
 - The Lens rune is gone from every device and tool: a rune's strength is its stars. Its place goes to runes that change
   what a device gives (see the new runes of the plates, the Grapple Gauntlet, the Recall Charm and the World Anchor
   above). A Lens already burned into something simply disappears. New runes elsewhere: hex pylons may smelt
