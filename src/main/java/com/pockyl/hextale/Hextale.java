@@ -61,7 +61,6 @@ public final class Hextale {
         com.pockyl.hextale.farm.FunnelEvents.register();
         com.pockyl.hextale.farm.ShackleEvents.register();
         com.pockyl.hextale.farm.CondenserEvents.register();
-        com.pockyl.hextale.farm.WardEvents.register();
         com.pockyl.hextale.event.SkypackEvents.register();
         com.pockyl.hextale.multiblock.Multiblocks.register();
         com.pockyl.hextale.loot.RuneScrollLoot.register(modBus);
@@ -142,7 +141,6 @@ public final class Hextale {
         output.accept(ModItems.HEXTECH_PURIFIER);
         output.accept(ModItems.VOID_ANCHOR);
         output.accept(ModItems.MIASMA_VENT);
-        output.accept(ModItems.FIELD_WARD);
 
         // Tools and weapons: the hextech line by tier, then the hexsteel set.
         output.accept(ModItems.TUNING_FORK);

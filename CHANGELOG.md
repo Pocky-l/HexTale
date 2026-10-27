@@ -126,6 +126,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - New look for the Researcher's Diary: a caramel leather book held shut by a strap with a brass clasp, a brass
   emblem on the cover whose hextech crystal flares now and then, and a blue ribbon.
 
+### Removed
+- Field Ward removed - the Null Lantern does the same job. Wards already placed disappear from the world.
+
 ### Fixed
 - The hextech tools no longer have see-through gaps: the shafts of the refined and radiant pickaxes were half
   transparent, and small slits showed at the hub, the blade tops, the guard and the pommel nut.
