@@ -47,6 +47,9 @@ public class SpawnerCageItem extends Item {
             if (!level.getBlockState(pos).is(Blocks.SPAWNER) || level.getBlockEntity(pos) == null) {
                 return InteractionResult.PASS;
             }
+            if (!mayChange(level, player, pos, context)) {
+                return InteractionResult.FAIL;
+            }
             ItemStack full = stack.copyWithCount(1);
             full.set(ModDataComponents.CAGED_SPAWNER.get(), fold(level, pos));
             stack.shrink(1);
@@ -60,12 +63,18 @@ public class SpawnerCageItem extends Item {
             return InteractionResult.SUCCESS;
         }
         BlockPos at = context.getClickedPos().relative(context.getClickedFace());
-        if (!level.getBlockState(at).canBeReplaced() || player != null && !level.mayInteract(player, at)) {
+        if (!level.getBlockState(at).canBeReplaced() || !mayChange(level, player, at, context)) {
             return InteractionResult.FAIL;
         }
         unfold(level, at, caged);
         stack.shrink(1);
         return InteractionResult.SUCCESS;
+    }
+
+    /** Whether {@code player} may change the block at {@code pos}: not in adventure mode, not in a protected spot. */
+    private static boolean mayChange(ServerLevel level, @org.jspecify.annotations.Nullable Player player, BlockPos pos, UseOnContext context) {
+        return player == null || player.mayBuild() && level.mayInteract(player, pos)
+                && player.mayUseItemAt(pos, context.getClickedFace(), context.getItemInHand());
     }
 
     /** Takes the spawner at {@code pos} out of the world, returning everything it is. */

@@ -172,6 +172,36 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
+    /** Someone else's dog stays out of a flask; its owner may fold it. */
+    @HexTest(padding = 2)
+    public static void aSoulFlaskLeavesOthersPets(GameTestHelper helper) {
+        net.minecraft.world.entity.player.Player owner = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.world.entity.player.Player stranger = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.world.entity.animal.wolf.Wolf wolf = helper.spawn(net.minecraft.world.entity.EntityTypes.WOLF, new BlockPos(1, 2, 1));
+        wolf.tame(owner);
+        helper.assertFalse(com.pockyl.hextale.item.SoulFlaskItem.takes(stranger, wolf), "a stranger cannot bottle the dog");
+        helper.assertTrue(com.pockyl.hextale.item.SoulFlaskItem.takes(owner, wolf), "its owner can");
+        wolf.discard();
+        helper.succeed();
+    }
+
+    /** In adventure mode the cage cannot lift a spawner out of the world. */
+    @HexTest(padding = 2)
+    public static void aSpawnerCageAsksForBuildRights(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at, net.minecraft.world.level.block.Blocks.SPAWNER);
+        net.minecraft.world.entity.player.Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.ADVENTURE);
+        // A mock player keeps its abilities; a real one in adventure mode has mayBuild off.
+        player.getAbilities().mayBuild = false;
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.SPAWNER_CAGE.get()));
+        var hit = new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(helper.absolutePos(at)), net.minecraft.core.Direction.UP,
+                helper.absolutePos(at), false);
+        player.getMainHandItem().useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND, hit));
+        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.SPAWNER, at);
+        helper.setBlock(at, Blocks.AIR);
+        helper.succeed();
+    }
+
     @HexTest(padding = 2)
     public static void aSpawnerCageMovesASpawnerWhole(GameTestHelper helper) {
         BlockPos from = helper.absolutePos(new BlockPos(1, 2, 1));
