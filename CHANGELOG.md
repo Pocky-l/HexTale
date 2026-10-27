@@ -62,8 +62,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
   wear the researcher's goggles. Runes: Shift (higher, and farther targets: 24 blocks, up to 64), Motor (farther,
   and a quicker flight), Breath (a soft landing for unaimed throws too) and Lens.
 - Recall Charm (a clock at the Hextech Altar; replaces the "Recall Device" idea): used, it puts you back where you
-  stood five seconds ago in the same world, then rests for half a minute. Runes: Shift (up to 24 seconds back), Haste
-  (a shorter rest), Mending (heals on the way back) and Lens.
+  stood five seconds ago in the same world, then rests for half a minute. Each return spends one of its six windings;
+  right click a jar of rift essence with it to wind it again (4 mB a winding). Runes: Shift (up to 24 seconds back),
+  Haste (a shorter rest), Mending (heals on the way back) and Lens.
 - Soul Flask (at the Hextech Altar): right click a creature to fold it into the glass, whole - name, saddle, everything;
   right click a block to let it out there. No players and no bosses. Runes: Healing (it comes out healed), Growth (a
   young one comes out grown), Slumber (a hostile one comes out dazed) and Lens.
@@ -77,10 +78,15 @@ Glassy scars: the way into hextech no longer waits for a storm.
   too: essence piped or poured into one gate flows out into the pipes and jars around the other, and fluids from
   other mods' pipes and tanks come out into the tanks beside the far gate. A linked ring glows
   with rift light; break one gate and the other's empty ring crackles, alone, until it is linked anew. Right click a
-  gate with an empty hand to ask where it leads.
+  gate with an empty hand to ask where it leads. Every crossing is paid in rift essence from the jars within five
+  blocks of the gate it leaves through: 1 mB for a player or a creature, 1 mB for every eight items, a little for
+  essence and fluids. A gate whose jars are dry lets nothing through: its ring only smokes and spits thrown things
+  back out.
 - World Anchor (at the Hextech Altar): keeps its chunk loaded and ticking while it stands, even with nobody near.
-  Runes: Shift (3x3, then 5x5 chunks), Haste (time runs faster there), Fertility (plants there grow now and then)
-  and Lens.
+  It eats earth essence from the jars around it every minute - half a mB for every chunk it holds, at least 1 - and
+  when they run dry it falls asleep and lets its chunks go until it is fed again. Right click it with an empty hand
+  to see what it holds and eats. Runes: Shift (3x3, then 5x5 chunks), Haste (time runs faster there), Fertility
+  (plants there grow now and then) and Lens.
 - Disintegrator (at the Hex Workbench): a deepslate bowl that unmakes whatever is dropped, thrown or piped into it
   into unknown essence and pours it into the jar or pipe below - fuel for the Chem Burner. The unmaking thins the land
   around. Runes: Motor (faster), Dam (more essence), Radiance (experience now and then), Hush (less leaks into the
@@ -95,9 +101,18 @@ Glassy scars: the way into hextech no longer waits for a storm.
   swings. Jump reels the rope in, sneak lets it out. The cord sags when slack and pulls tight and bright under your
   weight, and everyone around sees and hears the claw fly, bite, reel and spring back. Runes: Shift (a longer rope),
   Motor (reels in faster), Breath (no fall damage for a while after letting go) and Lens.
+- The gadgets are worked out at the Research Table before they can be made: the Levitation and Impulse Plates, Ward
+  and Veil Glass and Floating Stone right after the first researches; the Recall Charm, Soul Flask, Spawner Cage,
+  Grapple Gauntlet, Null Lantern and Rift Gates deeper; the World Anchor deepest. The Disintegrator is worked out at
+  the Lab Bench. The Tuning Fork and the Dust Charge stay free - they are what leads to the first hextech.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed
+- The hextech tools come much sooner and all together: one research at the Research Table, Hextech Tools, opens the
+  pickaxe, axe, shovel and sword right after the first researches. They are made at the Hex Workbench from the iron
+  tool, a raw orb, two brass ingots and an amethyst shard (a dark oak log for the axe, flint for the shovel) - no
+  hextech crystal and no altar any more. The refined and radiant pickaxes and burning runes into the tools stay at
+  the altar: the tools are the first reason to build it.
 - Rune Shackles are replaced by Binding Chalk (at the Hextech Altar, from Stabilizing Chalk steeped in shadow; the
   same research). It draws lines on the floor that join like redstone dust; a line closed round a patch of floor wakes
   with a faint violet glow and holds what stands inside: up to six creatures hang still and cost the server nothing,
