@@ -52,7 +52,10 @@ public final class RuneGiftGameTests {
                 }
                 helper.assertFalse(rune.cost(1).isEmpty(), rune + " costs essence");
             }
-            helper.assertTrue(holder.holderRunes().size() >= 4, holder + " takes several runes");
+            // Numbers only (reach, pace, load) are the base layer; at least three runes change what the holder gives.
+            long behaviour = holder.holderRunes().stream().filter(rune -> !java.util.Set.of("SHIFT", "MOTOR", "LIFT").contains(rune.name())).count();
+            helper.assertTrue(behaviour >= 3, holder + " has " + behaviour + " runes that change what it gives");
+            helper.assertFalse(holder.takes(com.pockyl.hextale.rune.ComplexRunes.byKey("water_light")), holder + " takes no Lens");
         }
         helper.assertTrue(ToolEffects.saplingOf(Blocks.OAK_LOG.defaultBlockState()) == Items.OAK_SAPLING, "oak logs grow from oak saplings");
         helper.assertTrue(ToolEffects.saplingOf(Blocks.CRIMSON_STEM.defaultBlockState()) == Items.CRIMSON_FUNGUS, "stems from fungi");

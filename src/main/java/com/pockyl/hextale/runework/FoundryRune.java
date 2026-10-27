@@ -11,7 +11,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The runes a Hex Foundry takes - burned into its Foundry Hatch at the Hextech Altar (the hatch alone on it), up to
- * {@link #SLOTS}; the hatch keeps them whether the kiln stands or not. Strength = stars, one more with a Lens (1-4). They
+ * {@link #SLOTS}; the hatch keeps them whether the kiln stands or not. Strength = stars (1-3). They
  * make the kiln hotter and quicker to heat, its melts richer (ore, experience), its fire thriftier, and leave grains of
  * metal in the slag of molten stone.
  */
@@ -27,9 +27,7 @@ public enum FoundryRune implements HolderRune {
     /** Burns hotter than the bricks allow: everything melts faster. */
     TEMPERING("earth_fire"),
     /** Stone, sand and gravel may leave a nugget of metal in the slag. */
-    SMELTING("fire_earth"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    SMELTING("fire_earth");
 
     public static final int SLOTS = 4;
     /** Chance of each ore to give one ingot more. */
@@ -75,7 +73,6 @@ public enum FoundryRune implements HolderRune {
             case BELLOWS -> HolderRune.factor(HolderRune.at(HEATING, i));
             case TEMPERING -> HolderRune.factor(HolderRune.at(TOP_SPEED, i));
             case SMELTING -> HolderRune.percent(HolderRune.at(NUGGET, i));
-            case LENS -> "";
         };
     }
 }

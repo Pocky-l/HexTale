@@ -11,18 +11,16 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Hex Sawmill takes - burned in at the Hextech Altar like a reaper's, up to {@link #SLOTS}. Strength = stars,
- * one more with a Lens (1-4); index 0 of the radius and interval tables is the sawmill without the rune. Besides the
- * grove and the pace, runes make every tree give more: a sapling that shoots up, richer leaves, more logs, a rare golden
- * apple, bee nests taken whole, or wind saved.
+ * The runes a Hex Sawmill takes - burned in at the Hextech Altar like a reaper's, up to {@link #SLOTS}. Strength =
+ * stars (1-3); index 0 of the radius and interval tables is the sawmill without the rune. Besides the grove and the
+ * pace, runes make every tree give more: a sapling that shoots up, richer leaves, more logs, a rare golden apple, bee
+ * nests taken whole, or wind saved.
  */
 public enum SawmillRune implements HolderRune {
     /** A wider grove. */
     SHIFT("air_earth"),
     /** Saws fly out more often. */
     MOTOR("metal_spark"),
-    /** The other runes work one star stronger. */
-    LENS("water_light"),
     /** A planted sapling may grow a stage at once. */
     GROWTH("life_earth"),
     /** Leaves drop as with Fortune: more saplings, sticks and apples. */
@@ -83,7 +81,7 @@ public enum SawmillRune implements HolderRune {
         return switch (this) {
             case SHIFT -> Integer.toString(radius(i));
             case MOTOR -> String.format(Locale.ROOT, "%.2f", interval(i) / 20.0F);
-            case LENS, HUSH -> "";
+            case HUSH -> "";
             case GROWTH -> HolderRune.percent(HolderRune.at(GROW, i));
             case POLLEN -> HolderRune.roman(HolderRune.at(LEAF_FORTUNE, i));
             case BLADES -> HolderRune.percent(HolderRune.at(MORE_LOGS, i));

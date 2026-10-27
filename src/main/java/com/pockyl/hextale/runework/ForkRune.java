@@ -10,8 +10,8 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Hextech Tuning Fork takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one
- * more with a Lens (1-4). They make it hear farther and more, and show what it heard.
+ * The runes a Hextech Tuning Fork takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3).
+ * They make it hear farther and more, and show what it heard.
  */
 public enum ForkRune implements HolderRune {
     /** It hears farther. */
@@ -21,9 +21,7 @@ public enum ForkRune implements HolderRune {
     /** It hears several things at once, each with its own thread. */
     SIGNAL("light_air"),
     /** Untuned, it hears ores as well as hextech, within part of its reach. */
-    GEMSTONE("earth_light"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    GEMSTONE("earth_light");
 
     public static final int SLOTS = 3;
     /** Blocks it hears without Shift. */
@@ -71,7 +69,6 @@ public enum ForkRune implements HolderRune {
             case INSIGHT -> HolderRune.seconds(HolderRune.at(GLOW_TICKS, i));
             case SIGNAL -> Integer.toString(HolderRune.at(VOICES, i));
             case GEMSTONE -> HolderRune.percent(HolderRune.at(ORE_SHARE, i));
-            case LENS -> "";
         };
     }
 }

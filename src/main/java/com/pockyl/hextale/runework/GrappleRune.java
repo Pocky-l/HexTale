@@ -10,8 +10,8 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Grapple Gauntlet takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more
- * with a Lens (1-4). They throw the claw farther, reel in faster and soften the landing.
+ * The runes a Grapple Gauntlet takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3).
+ * They throw the claw farther, reel in faster and soften the landing, and let the claw yank and cut creatures.
  */
 public enum GrappleRune implements HolderRune {
     /** The tendril reaches farther. */
@@ -20,10 +20,16 @@ public enum GrappleRune implements HolderRune {
     MOTOR("metal_spark"),
     /** No fall damage for a while after a pull. */
     BREATH("air_life"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    /** The claw bites into a creature too and yanks it to the glove. */
+    GRAVITY("earth_air"),
+    /** The claw cuts the creature it bites. */
+    BLADES("metal_air");
 
     public static final int SLOTS = 3;
+    /** Speed a hooked creature is yanked towards the wearer with (Gravity), by strength. */
+    public static final float[] PULL = {0.8F, 1.1F, 1.4F, 1.7F};
+    /** Damage the claw deals to the creature it bites (Blades), by strength. */
+    public static final float[] CUT = {3, 5, 7, 9};
     /** Blocks the tendril reaches without Shift. */
     public static final int REACH = 32;
     public static final int[] REACHES = {40, 48, 56, 64};
@@ -66,7 +72,9 @@ public enum GrappleRune implements HolderRune {
         return switch (this) {
             case SHIFT -> Integer.toString(reach(i));
             case MOTOR -> HolderRune.factor(reel(i) * 20);
-            case BREATH, LENS -> "";
+            case BREATH -> "";
+            case GRAVITY -> HolderRune.factor(HolderRune.at(PULL, i) / PULL[0]);
+            case BLADES -> HolderRune.factor(HolderRune.at(CUT, i) / 2);
         };
     }
 }

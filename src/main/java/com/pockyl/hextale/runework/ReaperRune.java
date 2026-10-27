@@ -11,18 +11,16 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Whirl Reaper takes - burned in at the Hextech Altar like a pylon's, up to {@link #SLOTS}. Strength = stars,
- * one more with a Lens (1-4); index 0 of the radius and interval tables is the reaper without the rune. Besides the
- * field and the pace, runes make every harvest give more: a bonemeal after it, more produce, a rare golden fruit, water
- * and growth for the plants around, experience, or wind saved.
+ * The runes a Whirl Reaper takes - burned in at the Hextech Altar like a pylon's, up to {@link #SLOTS}. Strength =
+ * stars (1-3); index 0 of the radius and interval tables is the reaper without the rune. Besides the field and the
+ * pace, runes make every harvest give more: a bonemeal after it, more produce, a rare golden fruit, water and growth
+ * for the plants around, experience, or wind saved.
  */
 public enum ReaperRune implements HolderRune {
     /** A wider field. */
     SHIFT("air_earth"),
     /** Whirls leave more often. */
     MOTOR("metal_spark"),
-    /** The other runes work one star stronger. */
-    LENS("water_light"),
     /** A reaped crop may be bonemealed at once. */
     FERTILITY("earth_life"),
     /** A harvest may give one or two more of its produce. */
@@ -85,7 +83,6 @@ public enum ReaperRune implements HolderRune {
         return switch (this) {
             case SHIFT -> Integer.toString(radius(i));
             case MOTOR -> String.format(Locale.ROOT, "%.2f", interval(i) / 20.0F);
-            case LENS -> "";
             case FERTILITY -> HolderRune.percent(HolderRune.at(BONEMEAL, i));
             case POLLEN -> HolderRune.percent(HolderRune.at(MORE, i));
             case PHOTOSYNTHESIS -> HolderRune.percent(HolderRune.at(GOLDEN, i));

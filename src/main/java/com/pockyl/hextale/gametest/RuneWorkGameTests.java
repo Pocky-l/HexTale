@@ -208,7 +208,7 @@ public final class RuneWorkGameTests {
         var tempering = com.pockyl.hextale.runework.PylonRune.SHIFT.rune();
         var bellows = com.pockyl.hextale.runework.PylonRune.MOTOR.rune();
         var forge = com.pockyl.hextale.runework.PylonRune.LIFT.rune();
-        var lens = com.pockyl.hextale.runework.PylonRune.LENS.rune();
+        var lens = com.pockyl.hextale.runework.PylonRune.SMELTING.rune();
         helper.assertTrue(Ritual.steleRefusal(pylon, List.of(), tempering) == null, "the first rune goes");
         helper.assertTrue(Ritual.steleRefusal(pylon, List.of(tempering), tempering) != null, "the same rune twice does not");
         helper.assertTrue(Ritual.steleRefusal(pylon, List.of(tempering, bellows), forge) == null, "the third fills the last slot");
@@ -268,15 +268,19 @@ public final class RuneWorkGameTests {
         helper.succeed();
     }
 
-    /** A rune works with its stars; a Lens on the same pickaxe adds one, up to four. */
+    /** A rune works with its stars; the retired Lens left on an old pickaxe is dropped when the runes are read. */
     @HexTest
-    public static void aLensStrengthensTheOtherRunes(GameTestHelper helper) {
+    public static void aRuneWorksWithItsStars(GameTestHelper helper) {
         PickaxeRunes runes = PickaxeRunes.EMPTY.with(PickaxeRune.DRILL, 3);
         helper.assertTrue(runes.strength(PickaxeRune.DRILL) == 3, "drill at three stars");
-        runes = runes.with(PickaxeRune.LENS, 1);
-        helper.assertTrue(runes.strength(PickaxeRune.DRILL) == 4, "a lens makes it four");
-        helper.assertTrue(runes.strength(PickaxeRune.LENS) == 1, "the lens does not focus itself");
         helper.assertTrue(runes.strength(PickaxeRune.MAGNET) == 0, "a rune the pickaxe lacks has no strength");
+        PickaxeRunes old = runes.with(ComplexRunes.byKey("water_light"), 1);
+        var saved = PickaxeRunes.CODEC.encodeStart(com.mojang.serialization.JsonOps.INSTANCE, old).getOrThrow();
+        PickaxeRunes read = PickaxeRunes.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, saved).getOrThrow();
+        helper.assertTrue(read.count() == 1 && read.strength(PickaxeRune.DRILL) == 3, "the lens is gone and drill stays at three, got " + read);
+        for (RuneHolder holder : RuneHolder.values()) {
+            helper.assertFalse(holder.takes(ComplexRunes.byKey("water_light")), holder + " no longer takes a Lens");
+        }
         helper.succeed();
     }
 

@@ -50,9 +50,10 @@ import java.util.Set;
 import com.pockyl.hextale.registry.ModParticles;
 
 /**
- * What the pickaxe runes do. Every value is chosen by a rune's strength - its stars, one more with a Lens (1-4, index
- * 0-3). Extra blocks a pickaxe takes (area, vein, tunnel) wear it like mined blocks and their drops go through its other
- * runes (smelting, the pocket) too. {@link #amount} tells the book and JEI the number behind each strength.
+ * What the pickaxe runes do. Every value is chosen by a rune's strength - its stars (1-3, index
+ * 0-2; the fourth entry of every table is kept for a stronger source). Extra blocks a pickaxe takes (area, vein,
+ * tunnel) wear it like mined blocks and their drops go through its other runes (smelting, the pocket) too. {@link
+ * #amount} tells the book and JEI the number behind each strength.
  */
 public final class PickaxeEffects {
     private static final float[] SMELT_BONUS = {0F, 0.2F, 0.4F, 0.6F};
@@ -121,7 +122,7 @@ public final class PickaxeEffects {
             case TEMPERING -> percent(TEMPER[i]);
             case EROSION -> Integer.toString(VEIN[i]);
             case INSIGHT -> Integer.toString(REVEAL_RADIUS[i]);
-            case LENS, CACHE -> "";
+            case CACHE -> "";
             case HASTE -> percent(ToolRune.HASTE_CHANCE[i]);
             case FERTILITY -> HolderRune.roman(i + 1);
             case RADIANCE -> "+" + percent(RADIANCE_ORE[i]);

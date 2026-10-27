@@ -10,15 +10,13 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Greedy Funnel takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more
- * with a Lens (1-4); index 0 of the radius table is the funnel without the rune. Besides the reach, runes make every
- * death it swallows give more: experience, spoils, now and then a head, decay saved, the creature's essence.
+ * The runes a Greedy Funnel takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3); index
+ * 0 of the radius table is the funnel without the rune. Besides the reach, runes make every death it swallows give
+ * more: experience, spoils, now and then a head, decay saved, the creature's essence.
  */
 public enum FunnelRune implements HolderRune {
     /** It reaches deaths farther away. */
     SHIFT("air_earth"),
-    /** The other runes work one star stronger. */
-    LENS("water_light"),
     /** More experience from every death. */
     RADIANCE("life_light"),
     /** One more of a stackable drop now and then. */
@@ -73,7 +71,6 @@ public enum FunnelRune implements HolderRune {
         int i = Mth.clamp(strength, 1, 4);
         return switch (this) {
             case SHIFT -> Integer.toString(radius(i));
-            case LENS -> "";
             case RADIANCE -> HolderRune.factor(HolderRune.at(EXPERIENCE, i));
             case SPOILS -> HolderRune.percent(HolderRune.at(MORE, i));
             case ENGRAVING -> HolderRune.percent(HolderRune.at(HEAD, i));

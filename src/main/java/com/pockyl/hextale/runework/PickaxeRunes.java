@@ -25,12 +25,17 @@ public record PickaxeRunes(List<Entry> entries) {
     public static final int SLOTS = 4;
     public static final PickaxeRunes EMPTY = new PickaxeRunes(List.of());
 
-    public static final Codec<PickaxeRunes> CODEC = Entry.CODEC.listOf().xmap(PickaxeRunes::new, PickaxeRunes::entries);
+    public static final Codec<PickaxeRunes> CODEC = Entry.CODEC.listOf().xmap(PickaxeRunes::read, PickaxeRunes::entries);
     public static final StreamCodec<ByteBuf, PickaxeRunes> STREAM_CODEC =
-            Entry.STREAM_CODEC.apply(ByteBufCodecs.list()).map(PickaxeRunes::new, PickaxeRunes::entries);
+            Entry.STREAM_CODEC.apply(ByteBufCodecs.list()).map(PickaxeRunes::read, PickaxeRunes::entries);
 
     public PickaxeRunes {
         entries = List.copyOf(entries);
+    }
+
+    /** Runes read from an item or a block: a retired rune no holder takes any more (the Lens) is dropped silently. */
+    private static PickaxeRunes read(List<Entry> entries) {
+        return new PickaxeRunes(entries.stream().filter(entry -> RuneHolder.anyTakes(entry.rune())).toList());
     }
 
     public static PickaxeRunes of(ItemStack stack) {
@@ -69,16 +74,9 @@ public record PickaxeRunes(List<Entry> entries) {
         return entry == null ? 0 : entry.stars();
     }
 
-    /**
-     * The strength a rune works with: its stars, one more when the pickaxe also carries a Lens (up to four); 0 when
-     * the pickaxe lacks the rune.
-     */
+    /** The strength a rune works with: its stars; 0 when the pickaxe lacks the rune. */
     public int strength(PickaxeRune rune) {
-        int stars = stars(rune);
-        if (stars == 0) {
-            return 0;
-        }
-        return Math.min(4, stars + (rune != PickaxeRune.LENS && stars(PickaxeRune.LENS) > 0 ? 1 : 0));
+        return stars(rune);
     }
 
     /** With this rune at these stars: added at the end, or its stars replaced where it already is. */
@@ -108,13 +106,9 @@ public record PickaxeRunes(List<Entry> entries) {
         return 0;
     }
 
-    /** The strength any rune works with: its stars, one more with a Lens in the set (up to four); 0 when missing. */
+    /** The strength any rune works with: its stars; 0 when missing. */
     public int strength(ComplexRune rune) {
-        int stars = stars(rune);
-        if (stars == 0) {
-            return 0;
-        }
-        return Math.min(4, stars + (rune != PickaxeRune.LENS.rune() && stars(PickaxeRune.LENS.rune()) > 0 ? 1 : 0));
+        return stars(rune);
     }
 
     /** The runes of the set, in burning order. */

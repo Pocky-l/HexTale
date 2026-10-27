@@ -45,10 +45,10 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Recall Charm: a pocket watch with a hextech face. Used, it puts its holder back where they stood a few seconds
  * ago (same dimension), then rests. The server keeps every player's trail - one mark every {@link #MARK_TICKS} ticks,
- * the last {@link #KEPT} marks. Takes runes (Shift, Haste, Mending, Lens).
+ * the last {@link #KEPT} marks. Takes runes (Shift, Haste, Mending).
  *
- * <p>Each return spends one of its {@value #WINDINGS} windings; pressed to a jar it drinks {@value #MB_PER_WINDING} mB of
- * rift essence per winding back ({@link #wind}). A new charm comes fully wound.
+ * <p>Each return spends one of its {@value #WINDINGS} windings; pressed to a jar it drinks {@value #MB_PER_WINDING} mB
+ * of rift essence per winding back ({@link #wind}). A new charm comes fully wound.
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public class RecallCharmItem extends Item {
@@ -87,8 +87,8 @@ public class RecallCharmItem extends Item {
 
     /**
      * Winds the charm from a jar: {@value #MB_PER_WINDING} mB of rift essence per spent winding, as many as the jar can
-     * give (a creative jar gives freely). Motes of rift essence flow from the lid to {@code to}. Returns the windings put
-     * back (0: already wound, or no rift essence in the jar).
+     * give (a creative jar gives freely). Motes of rift essence flow from the lid to {@code to}. Returns the windings
+     * put back (0: already wound, or no rift essence in the jar).
      */
     public static int wind(ServerLevel level, EssenceTankBlockEntity jar, ItemStack charm, Vec3 to) {
         int wound = Math.min(WINDINGS - windings(charm), jar.tank().contents().get(Essence.RIFT) / MB_PER_WINDING);
@@ -177,13 +177,26 @@ public class RecallCharmItem extends Item {
         if (mending > 0) {
             player.heal(RecallRune.MEND[Math.min(mending, 4) - 1]);
         }
+        int fireproofing = runes.strength(RecallRune.FIREPROOFING.rune());
+        if (fireproofing > 0) {
+            player.clearFire();
+            player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE,
+                    com.pockyl.hextale.runework.HolderRune.at(RecallRune.FIRE_TICKS, fireproofing), 0, true, false, true));
+            com.pockyl.hextale.runework.ToolEffects.puff(server, mark.pos().add(0, 1, 0), RecallRune.FIREPROOFING.rune(), 8, 0.4);
+        }
         for (Vec3 at : new Vec3[] {from, mark.pos()}) {
             server.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.x, at.y + 0.1, at.z, 0, 1.2, 1, 0, 1);
             server.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y + 1, at.z, 14, 0.3, 0.6, 0.3, 0.03);
         }
         server.playSound(null, mark.pos().x, mark.pos().y, mark.pos().z, ModSounds.SKYPACK_IGNITE.get(), SoundSource.PLAYERS, 0.7F, 0.7F);
         player.getCooldowns().addCooldown(stack, RecallRune.rest(runes.strength(RecallRune.HASTE.rune())));
-        if (!player.hasInfiniteMaterials()) {
+        int dam = runes.strength(RecallRune.DAM.rune());
+        if (dam > 0 && server.getRandom().nextFloat() < com.pockyl.hextale.runework.HolderRune.at(RecallRune.FREE, dam)) {
+            // Dam: this turn back cost nothing.
+            com.pockyl.hextale.runework.ToolEffects.puff(server, mark.pos().add(0, 1.2, 0), RecallRune.DAM.rune(), 6, 0.3);
+            server.playSound(null, mark.pos().x, mark.pos().y, mark.pos().z, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_RESONATE,
+                    SoundSource.PLAYERS, 0.5F, 1.4F);
+        } else if (!player.hasInfiniteMaterials()) {
             setWindings(stack, windings(stack) - 1);
         }
         return InteractionResult.SUCCESS;

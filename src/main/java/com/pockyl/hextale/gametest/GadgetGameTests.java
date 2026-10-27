@@ -138,6 +138,63 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
+    /** Cache: an item lifted to the top of the column goes into the chest that caps it. */
+    @HexTest(maxTicks = 200, setupTicks = 40, padding = 2)
+    public static void aLevitationPlatePutsAwayWhatItLifts(GameTestHelper helper) {
+        BlockPos plate = new BlockPos(1, 1, 1);
+        BlockPos chest = plate.above(4);
+        helper.setBlock(plate, ModBlocks.LEVITATION_PLATE.get());
+        helper.setBlock(chest, Blocks.CHEST);
+        net.minecraft.world.item.ItemStack runed = new net.minecraft.world.item.ItemStack(ModBlocks.LEVITATION_PLATE.get());
+        runed.set(com.pockyl.hextale.registry.ModDataComponents.PLATE_RUNES.get(),
+                com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(PlateRune.CACHE.rune(), 3));
+        helper.getBlockEntity(plate, com.pockyl.hextale.block.LevitationPlateBlockEntity.class).applyComponentsFromItemStack(runed);
+        ItemEntity stone = helper.spawnItem(Items.COBBLESTONE, new Vec3(1.5, 1.3, 1.5));
+        stone.setPickUpDelay(400);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(helper.getBlockEntity(chest, net.minecraft.world.level.block.entity.ChestBlockEntity.class)
+                    .countItem(Items.COBBLESTONE) == 1, "the stone went into the chest over the column");
+            helper.assertFalse(stone.isAlive(), "and is no longer floating");
+        });
+    }
+
+    /** Banishing: a zombie stepping on the plate is flung back against the arrow and high. */
+    @HexTest(setupTicks = 40, maxTicks = 200, padding = 2)
+    public static void aBanishingPlateFlingsHostiles(GameTestHelper helper) {
+        BlockPos at = new BlockPos(2, 1, 1);
+        helper.setBlock(at, ModBlocks.IMPULSE_PLATE.get().defaultBlockState()
+                .setValue(com.pockyl.hextale.block.ImpulsePlateBlock.FACING, net.minecraft.core.Direction.EAST));
+        net.minecraft.world.item.ItemStack runed = new net.minecraft.world.item.ItemStack(ModBlocks.IMPULSE_PLATE.get());
+        runed.set(com.pockyl.hextale.registry.ModDataComponents.IMPULSE_RUNES.get(),
+                com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.ImpulseRune.BANISHING.rune(), 2));
+        helper.getBlockEntity(at, com.pockyl.hextale.block.ImpulsePlateBlock.Plate.class).applyComponentsFromItemStack(runed);
+        net.minecraft.world.entity.monster.zombie.Zombie zombie = helper.spawn(net.minecraft.world.entity.EntityTypes.ZOMBIE, new Vec3(2.5, 1.07, 1.5));
+        double floor = helper.absolutePos(at).getY();
+        double startX = zombie.getX();
+        helper.succeedWhen(() -> {
+            helper.assertTrue(zombie.getY() > floor + 4 && zombie.getX() < startX - 0.3, "flung up and west: " + zombie.position());
+            zombie.discard();
+        });
+    }
+
+    /** Fireproofing: the way back puts the fire out and keeps it off. */
+    @HexTest
+    public static void aFireproofRecallPutsTheFireOut(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.world.item.ItemStack charm = new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.RECALL_CHARM.get());
+        com.pockyl.hextale.runework.RuneHolder.RECALL.set(charm,
+                com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.RecallRune.FIREPROOFING.rune(), 1));
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, charm);
+        com.pockyl.hextale.item.RecallCharmItem.mark(player);
+        player.igniteForSeconds(5);
+        charm.use(helper.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        helper.assertFalse(player.isOnFire(), "the fire is out");
+        helper.assertTrue(player.hasEffect(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE), "and fire keeps off for a while");
+        player.discard();
+        helper.succeed();
+    }
+
     /** A charm comes wound; each return spends a winding, none left = no return; a jar of rift essence winds it again. */
     @HexTest
     public static void theRecallCharmWindsAtARiftJar(GameTestHelper helper) {

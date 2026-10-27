@@ -10,9 +10,9 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Null Lantern takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more with
- * a Lens (1-4). They widen its quiet, keep phantoms off the sleepless, make it bite what came in from outside, and
- * swallow the sounds inside it (deep enough, the vibrations too).
+ * The runes a Null Lantern takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3). They
+ * widen its quiet, keep phantoms off the sleepless, make it bite what came in from outside, and swallow the sounds
+ * inside it (deep enough, the vibrations too).
  */
 public enum NullRune implements HolderRune {
     /** The quiet reaches farther. */
@@ -22,9 +22,7 @@ public enum NullRune implements HolderRune {
     /** Hostile creatures inside its quiet take a slow burn. */
     BANISHING("light_shadow"),
     /** Sounds inside its quiet fade; from {@link #INSULATING} stars no vibration inside reaches sculk. */
-    SILENCE("shadow_spark"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    SILENCE("shadow_spark");
 
     public static final int SLOTS = 3;
     /** Blocks of quiet without Shift. */
@@ -67,7 +65,7 @@ public enum NullRune implements HolderRune {
         int i = Mth.clamp(strength, 1, 4);
         return switch (this) {
             case SHIFT -> Integer.toString(radius(i));
-            case HUSH, LENS -> "";
+            case HUSH -> "";
             case BANISHING -> HolderRune.seconds(HolderRune.at(BURN_TICKS, i));
             case SILENCE -> HolderRune.percent(1 - HolderRune.at(HUSHED, i));
         };

@@ -10,8 +10,8 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Crystal Battery takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more
- * with a Lens (1-4). It holds more, reaches further, and now and then gets more out of a crystal than the crystal had.
+ * The runes a Crystal Battery takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3). It
+ * holds more, reaches further, and now and then gets more out of a crystal than the crystal had.
  */
 public enum BatteryRune implements HolderRune {
     /** It holds more charge. */
@@ -19,9 +19,7 @@ public enum BatteryRune implements HolderRune {
     /** It feeds the workbenches further away. */
     CHAIN_LIGHTNING("spark_air"),
     /** A crystal soaked in may give half as much again. */
-    DAM("earth_water"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    DAM("earth_water");
 
     public static final int SLOTS = 3;
     /** Share of capacity added, by strength. */
@@ -58,7 +56,6 @@ public enum BatteryRune implements HolderRune {
             case CACHE -> HolderRune.percent(HolderRune.at(ROOM, i));
             case CHAIN_LIGHTNING -> Integer.toString(HolderRune.at(REACH, i));
             case DAM -> HolderRune.percent(HolderRune.at(BONUS, i));
-            case LENS -> "";
         };
     }
 }

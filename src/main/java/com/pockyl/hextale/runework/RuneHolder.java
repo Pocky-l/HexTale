@@ -235,6 +235,17 @@ public enum RuneHolder {
         return runes.stream().map(HolderRune::rune).toList();
     }
 
+    /** Whether any holder takes the rune. */
+    public static boolean anyTakes(ComplexRune rune) {
+        return Taken.ALL.contains(rune);
+    }
+
+    /** Every rune some holder takes, worked out once. */
+    private static final class Taken {
+        static final java.util.Set<ComplexRune> ALL = java.util.Arrays.stream(values()).flatMap(holder -> holder.takes().stream())
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
+    }
+
     @Nullable
     public HolderRune find(ComplexRune rune) {
         for (HolderRune value : runes) {

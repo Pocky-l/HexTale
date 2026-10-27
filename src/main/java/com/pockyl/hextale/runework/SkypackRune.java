@@ -10,9 +10,9 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Hextech Skypack takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more
- * with a Lens (1-4); index 0 of the thrust table is the pack without the rune. They make flying faster, longer and
- * safer: stronger jets, a harder kick at the start, air saved, soft landings, no fear of fire.
+ * The runes a Hextech Skypack takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3);
+ * index 0 of the thrust table is the pack without the rune. They make flying faster, longer and safer: stronger jets, a
+ * harder kick at the start, air saved, soft landings, no fear of fire.
  */
 public enum SkypackRune implements HolderRune {
     /** The jets push harder: a higher top speed. */
@@ -24,9 +24,7 @@ public enum SkypackRune implements HolderRune {
     /** Walls and the ground hit softer while I fly and right after. */
     BREATH("air_life"),
     /** Fire Resistance while the jets burn. */
-    FIREPROOFING("life_fire"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    FIREPROOFING("life_fire");
 
     public static final int SLOTS = 3;
     /** Speed (blocks a tick) the jets drive towards, by strength; a firework rocket drives towards 1.5. */
@@ -77,7 +75,6 @@ public enum SkypackRune implements HolderRune {
             case DAM -> HolderRune.percent(HolderRune.at(THRIFT, i));
             case BREATH -> HolderRune.percent(HolderRune.at(CUSHION, i));
             case FIREPROOFING -> HolderRune.seconds(HolderRune.at(FIRE_TICKS, i));
-            case LENS -> "";
         };
     }
 }

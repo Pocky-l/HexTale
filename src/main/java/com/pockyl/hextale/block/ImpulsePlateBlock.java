@@ -50,12 +50,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Impulse Plate: whatever steps on it is thrown. Unaimed it throws up and along its arrow; aimed (right click it with
- * an empty hand, then right click the block it should throw to - see {@link ImpulseAim}) it is a faith plate: it solves
- * the throw for the very thing on it ({@link ImpulseArc}) so it lands on the target, where the landing is soft. The
- * throw is applied where the entity's movement is simulated (a player's own client), like vanilla's slime and bubble
- * columns; the server plays the launch, flips the panel for everyone and remembers who is in the air. Takes runes
- * (Shift, Motor, Breath, Lens).
+ * The Impulse Plate: whatever steps on it is thrown. Unaimed it throws up and along its arrow; aimed (right click it
+ * with an empty hand, then right click the block it should throw to - see {@link ImpulseAim}) it is a faith plate: it
+ * solves the throw for the very thing on it ({@link ImpulseArc}) so it lands on the target, where the landing is soft.
+ * The throw is applied where the entity's movement is simulated (a player's own client), like vanilla's slime and
+ * bubble columns; the server plays the launch, flips the panel for everyone and remembers who is in the air. Takes
+ * runes (Shift, Motor, Breath).
  */
 public class ImpulsePlateBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -138,6 +138,11 @@ public class ImpulsePlateBlock extends BaseEntityBlock {
         }
         Plate plate = level.getBlockEntity(pos) instanceof Plate found ? found : null;
         PickaxeRunes runes = plate != null ? plate.runes : PickaxeRunes.EMPTY;
+        int banishing = runes.strength(ImpulseRune.BANISHING.rune());
+        if (banishing > 0 && entity instanceof net.minecraft.world.entity.monster.Enemy) {
+            banish(level, pos, state, entity, banishing);
+            return;
+        }
         BlockPos target = plate != null ? plate.target : null;
         Vec3 landing = target != null ? ImpulseArc.landing(level, target) : null;
         int ticks = 0;
@@ -161,6 +166,13 @@ public class ImpulsePlateBlock extends BaseEntityBlock {
             if (landing != null || runes.strength(ImpulseRune.BREATH.rune()) > 0) {
                 SOFT.put(entity.getUUID(), now + (landing != null ? ticks + 60 : SOFT_TICKS));
             }
+            int haste = runes.strength(ImpulseRune.HASTE.rune());
+            if (haste > 0 && entity instanceof net.minecraft.world.entity.LivingEntity living) {
+                living.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SPEED,
+                        com.pockyl.hextale.runework.HolderRune.at(ImpulseRune.HASTE_TICKS, haste), haste >= 3 ? 1 : 0, true, false, true));
+                server.sendParticles(ModParticles.glint(ImpulseRune.HASTE.rune().color()), entity.getX(), entity.getY() + 0.5, entity.getZ(), 6,
+                        0.25, 0.4, 0.25, 0.05);
+            }
             server.blockEvent(pos, this, LAUNCH_EVENT, 0);
             server.playSound(null, pos, ModSounds.IMPULSE_LAUNCH.get(), SoundSource.BLOCKS, 0.8F, 0.9F + server.getRandom().nextFloat() * 0.2F);
             server.sendParticles(ModParticles.ring(ModParticles.HEXTECH), pos.getX() + 0.5, pos.getY() + 0.15, pos.getZ() + 0.5, 0, 0.9, 1, 0, 1);
@@ -173,6 +185,24 @@ public class ImpulsePlateBlock extends BaseEntityBlock {
                     server.sendParticles(ModParticles.glint(ModParticles.HEXTECH), at.x, at.y + 0.3, at.z, 1, 0.02, 0.02, 0.02, 0);
                 }
             }
+        }
+    }
+
+    /**
+     * Banishing: a hostile creature is flung back against the arrow and high into the air - no target, no soft landing -
+     * with a flash of the rune's light.
+     */
+    private void banish(Level level, BlockPos pos, BlockState state, Entity entity, int strength) {
+        Direction back = state.getValue(FACING).getOpposite();
+        if (entity.canSimulateMovement()) {
+            entity.setDeltaMovement(new Vec3(back.getStepX() * ImpulseRune.BANISH_BACK, ImpulseRune.BANISH_UP[Math.min(strength, 4) - 1],
+                    back.getStepZ() * ImpulseRune.BANISH_BACK));
+            entity.needsSync = true;
+        }
+        if (level instanceof ServerLevel server) {
+            server.blockEvent(pos, this, LAUNCH_EVENT, 0);
+            server.playSound(null, pos, ModSounds.IMPULSE_LAUNCH.get(), SoundSource.BLOCKS, 0.9F, 0.7F + server.getRandom().nextFloat() * 0.1F);
+            com.pockyl.hextale.runework.ToolEffects.puff(server, Vec3.atCenterOf(pos).add(0, -0.3, 0), ImpulseRune.BANISHING.rune(), 10, 0.4);
         }
     }
 

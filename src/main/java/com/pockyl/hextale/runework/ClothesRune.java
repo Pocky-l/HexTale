@@ -8,9 +8,9 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes the researcher's clothes take - one on each piece, burned in at the Hextech Altar. Each piece has its own runes
- * to choose from (the same codex rune may mean something else on another piece). Strength = stars (1-3; there is no Lens with a
- * single place). Effects live in {@link ClothesEffects}.
+ * The runes the researcher's clothes take - one on each piece, burned in at the Hextech Altar. Each piece has its own
+ * runes to choose from (the same codex rune may mean something else on another piece). Strength = stars (1-3). Effects
+ * live in {@link ClothesEffects}.
  */
 public enum ClothesRune implements HolderRune {
     /** Hood: in the dark the eyes get used to it at once. */

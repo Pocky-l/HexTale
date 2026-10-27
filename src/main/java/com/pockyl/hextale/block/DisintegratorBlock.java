@@ -58,7 +58,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Disintegrator: a stone bowl that unmakes whatever is put into it - by hand, hopper, pylon or thrown in - into
  * unknown essence, poured into the jar or pipe under it. One essence point of the thing = 1 mB. The unmaking leaks into
- * the land (the Thinning) twice as much as boiling. Takes runes (Motor, Dam, Radiance, Hush, Lens).
+ * the land (the Thinning) twice as much as boiling. Takes runes (Motor, Dam, Radiance, Hush).
  */
 public class DisintegratorBlock extends BaseEntityBlock implements EssenceMachine {
     private static final VoxelShape INSIDE = Block.box(4, 5, 4, 12, 16, 12);

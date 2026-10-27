@@ -10,8 +10,8 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Disintegrator takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more with
- * a Lens (1-4). They unmake things faster, wring more out of them, leave experience behind and keep the leak small.
+ * The runes a Disintegrator takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3). They
+ * unmake things faster, wring more out of them, leave experience behind and keep the leak small.
  */
 public enum DisintegratorRune implements HolderRune {
     /** It unmakes things faster. */
@@ -21,9 +21,7 @@ public enum DisintegratorRune implements HolderRune {
     /** A chance that an unmade thing leaves experience behind. */
     RADIANCE("life_light"),
     /** Less of the unmaking leaks into the land. */
-    HUSH("air_shadow"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    HUSH("air_shadow");
 
     public static final int SLOTS = 3;
     /** Ticks to unmake one thing without Motor. */
@@ -70,7 +68,6 @@ public enum DisintegratorRune implements HolderRune {
             case DAM -> "+" + HolderRune.percent(HolderRune.at(YIELD, i));
             case RADIANCE -> HolderRune.percent(HolderRune.at(EXPERIENCE, i));
             case HUSH -> "-" + HolderRune.percent(HolderRune.at(QUIET, i));
-            case LENS -> "";
         };
     }
 }

@@ -43,10 +43,10 @@ import org.jspecify.annotations.Nullable;
 /**
  * The World Anchor: it holds its chunk (with Shift the chunks around it too) loaded and ticking while it stands. The
  * chunks are held by a NeoForge ticket owned by the anchor's position, kept with the world; on world load tickets whose
- * anchor is gone are dropped. Takes runes (Shift, Haste, Fertility, Lens).
+ * anchor is gone are dropped. Takes runes (Shift, Haste, Fertility).
  *
- * <p>Holding costs earth essence from the jars around it: every minute half a mB per chunk held (at least one). When the
- * jars run dry the anchor falls asleep - it lets its chunks go and only looks into the jars again now and then.
+ * <p>Holding costs earth essence from the jars around it: every minute half a mB per chunk held (at least one). When
+ * the jars run dry the anchor falls asleep - it lets its chunks go and only looks into the jars again now and then.
  */
 public class WorldAnchorBlock extends BaseEntityBlock {
     public static final TicketController TICKETS = new TicketController(Hextale.id("world_anchor"), (level, helper) ->
@@ -181,7 +181,13 @@ public class WorldAnchorBlock extends BaseEntityBlock {
                 return;
             }
             int radius = AnchorWorldRune.radius(strength(AnchorWorldRune.SHIFT));
-            boolean fed = JarReach.pay(level, worldPosition, Vec3.atCenterOf(worldPosition), Essence.EARTH, cost(radius));
+            int dam = strength(AnchorWorldRune.DAM);
+            boolean free = !asleep && dam > 0 && level.getRandom().nextFloat() < com.pockyl.hextale.runework.HolderRune.at(AnchorWorldRune.FREE, dam);
+            if (free) {
+                // Dam: this minute is held for nothing.
+                com.pockyl.hextale.runework.ToolEffects.puff(level, Vec3.atCenterOf(worldPosition).add(0, 0.6, 0), AnchorWorldRune.DAM.rune(), 6, 0.3);
+            }
+            boolean fed = free || JarReach.pay(level, worldPosition, Vec3.atCenterOf(worldPosition), Essence.EARTH, cost(radius));
             if (fed) {
                 paid = PAID_TICKS;
             } else {

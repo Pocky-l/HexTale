@@ -65,6 +65,9 @@ public class GrappleHook extends Projectile {
     /** Blocks a tick the rope shortens while reeling in (the Motor rune). */
     private double reel = 0.35;
     private boolean breath;
+    /** Strength of the Gravity rune (yank a bitten creature to the wearer) and of Blades (cut it); 0 = the claw passes creatures. */
+    private int gravity;
+    private int blades;
     /** The rope's length on this side, or -1 until the side that moves the wearer has measured it. */
     private double length = -1;
     private Vec3 launch = Vec3.ZERO;
@@ -79,7 +82,8 @@ public class GrappleHook extends Projectile {
     }
 
     /** A hook thrown by {@code owner} from {@code from} along {@code direction}. */
-    public GrappleHook(Level level, Player owner, Vec3 from, Vec3 direction, double reach, double reel, boolean breath) {
+    public GrappleHook(Level level, Player owner, Vec3 from, Vec3 direction, double reach, double reel, boolean breath, int gravity,
+                       int blades) {
         this(ModEntities.GRAPPLE_HOOK.get(), level);
         setOwner(owner);
         setPos(from);
@@ -87,6 +91,8 @@ public class GrappleHook extends Projectile {
         this.reach = reach;
         this.reel = reel;
         this.breath = breath;
+        this.gravity = gravity;
+        this.blades = blades;
         setDeltaMovement(direction.normalize().scale(SPEED));
         updateRotation();
     }
@@ -166,9 +172,11 @@ public class GrappleHook extends Projectile {
         return getOwner() instanceof Player player ? player : null;
     }
 
+    /** With Gravity or Blades the claw bites creatures too (never players, bosses or its own wearer). */
     @Override
     protected boolean canHitEntity(Entity entity) {
-        return false;
+        return (gravity > 0 || blades > 0) && entity instanceof net.minecraft.world.entity.LivingEntity living && living.isAlive()
+                && !(entity instanceof Player) && entity != getOwner() && !entity.typeHolder().is(net.neoforged.neoforge.common.Tags.EntityTypes.BOSSES);
     }
 
     @Override
@@ -199,6 +207,12 @@ public class GrappleHook extends Projectile {
     private void fly(@Nullable Player owner) {
         Vec3 motion = getDeltaMovement();
         HitResult hit = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity, ClipContext.Block.COLLIDER);
+        if (hit.getType() == HitResult.Type.ENTITY && hit instanceof net.minecraft.world.phys.EntityHitResult entityHit) {
+            if (level() instanceof ServerLevel server) {
+                seize(server, entityHit.getEntity(), owner);
+            }
+            return;
+        }
         if (hit.getType() == HitResult.Type.BLOCK && hit instanceof BlockHitResult blockHit) {
             if (!level().isClientSide()) {
                 bite(blockHit);
@@ -239,6 +253,30 @@ public class GrappleHook extends Projectile {
             server.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.x, at.y, at.z, 0, 0.5, 0, 0, 1);
             server.playSound(null, at.x, at.y, at.z, ModSounds.GRAPPLE_ATTACH.get(), SoundSource.PLAYERS, 0.8F, 0.9F + random.nextFloat() * 0.2F);
         }
+    }
+
+    /**
+     * The claw bites a creature: Blades cut it, Gravity yanks it towards the wearer; then the claw springs back. Both
+     * flash the rune's light where it bit.
+     */
+    private void seize(ServerLevel level, Entity target, @Nullable Player owner) {
+        Vec3 at = target.position().add(0, target.getBbHeight() * 0.6, 0);
+        setPos(at);
+        if (blades > 0) {
+            target.hurtServer(level, owner != null ? damageSources().playerAttack(owner) : damageSources().magic(),
+                    com.pockyl.hextale.runework.HolderRune.at(com.pockyl.hextale.runework.GrappleRune.CUT, blades));
+            com.pockyl.hextale.runework.ToolEffects.puff(level, at, com.pockyl.hextale.runework.GrappleRune.BLADES.rune(), 6, 0.25);
+        }
+        if (gravity > 0 && owner != null && target.isAlive()) {
+            Vec3 way = owner.position().subtract(target.position());
+            double pull = com.pockyl.hextale.runework.HolderRune.at(com.pockyl.hextale.runework.GrappleRune.PULL, gravity);
+            Vec3 yank = way.multiply(1, 0, 1).normalize().scale(pull).add(0, 0.35 + Math.max(0, way.y) * 0.08, 0);
+            target.setDeltaMovement(yank);
+            target.needsSync = true;
+            com.pockyl.hextale.runework.ToolEffects.puff(level, at, com.pockyl.hextale.runework.GrappleRune.GRAVITY.rune(), 6, 0.25);
+        }
+        level.playSound(null, at.x, at.y, at.z, ModSounds.GRAPPLE_ATTACH.get(), SoundSource.PLAYERS, 0.8F, 1.3F + random.nextFloat() * 0.1F);
+        retract();
     }
 
     private void hold(@Nullable Player owner) {

@@ -10,8 +10,8 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Soul Flask takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more with a
- * Lens (1-4). They act on the creature stepping out of the flask.
+ * The runes a Soul Flask takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3). They act
+ * on the creature stepping out of the flask.
  */
 public enum SoulRune implements HolderRune {
     /** It steps out healed whole. */
@@ -19,9 +19,7 @@ public enum SoulRune implements HolderRune {
     /** A young one steps out grown. */
     GROWTH("life_earth"),
     /** A hostile one steps out dazed for a while. */
-    SLUMBER("life_shadow"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    SLUMBER("life_shadow");
 
     public static final int SLOTS = 3;
     /** Ticks a hostile creature stays dazed, by Slumber's strength. */

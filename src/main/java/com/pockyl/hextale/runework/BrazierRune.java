@@ -11,7 +11,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The runes a Pink Brazier takes - burned in at the Hextech Altar (the brazier alone on it), up to {@link #SLOTS}; a
- * broken brazier keeps them. Strength = stars, one more with a Lens (1-4). Its pink light reaches further, the plants it
+ * broken brazier keeps them. Strength = stars (1-3). Its pink light reaches further, the plants it
  * touches may burst into growth, people around it heal, and a vial may burn far longer.
  */
 public enum BrazierRune implements HolderRune {
@@ -22,9 +22,7 @@ public enum BrazierRune implements HolderRune {
     /** Players in the light keep Regeneration. */
     HEALING("water_life"),
     /** A vial may burn twice as long. */
-    ETERNAL_FLAME("fire_light"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    ETERNAL_FLAME("fire_light");
 
     public static final int SLOTS = 3;
     /** Radius of the light, index 0 = without Shift. */
@@ -63,7 +61,6 @@ public enum BrazierRune implements HolderRune {
             case POLLEN -> HolderRune.percent(HolderRune.at(BLOOM, i));
             case HEALING -> HolderRune.seconds(HolderRune.at(HEALING_TICKS, i));
             case ETERNAL_FLAME -> HolderRune.percent(HolderRune.at(LONGER_BURN, i));
-            case LENS -> "";
         };
     }
 }

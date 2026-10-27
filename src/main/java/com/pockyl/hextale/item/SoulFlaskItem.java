@@ -49,7 +49,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Soul Flask: right click a creature with an empty flask and it folds into the glass, whole (everything it is and
  * carries is kept); right click a block with a full flask and it steps out there. No players, no bosses. Takes runes
- * (Healing, Growth, Slumber, Lens) that act when the creature comes out.
+ * (Healing, Growth, Slumber) that act when the creature comes out.
  */
 @EventBusSubscriber(modid = com.pockyl.hextale.Hextale.MOD_ID)
 public class SoulFlaskItem extends Item {

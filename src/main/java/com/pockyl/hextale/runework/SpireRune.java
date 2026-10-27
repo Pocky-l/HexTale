@@ -11,17 +11,15 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Hex Arc Spire takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more with
- * a Lens (1-4); index 0 of the radius and interval tables is the spire without the rune. Besides the reach and the pace,
- * runes make the arcs fork to more creatures, hit the unhurt harder, or cost no charge.
+ * The runes a Hex Arc Spire takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3); index
+ * 0 of the radius and interval tables is the spire without the rune. Besides the reach and the pace, runes make the
+ * arcs fork to more creatures, hit the unhurt harder, or cost no charge.
  */
 public enum SpireRune implements HolderRune {
     /** It reaches creatures farther away. */
     SHIFT("air_earth"),
     /** Arcs leave more often. */
     MOTOR("metal_spark"),
-    /** The other runes work one star stronger. */
-    LENS("water_light"),
     /** Every arc forks to more creatures. */
     CHAIN_LIGHTNING("spark_air"),
     /** An arc hits an unhurt creature harder. */
@@ -74,7 +72,6 @@ public enum SpireRune implements HolderRune {
         return switch (this) {
             case SHIFT -> Integer.toString(radius(i));
             case MOTOR -> String.format(Locale.ROOT, "%.2f", interval(i) / 20.0F);
-            case LENS -> "";
             case CHAIN_LIGHTNING -> "+" + HolderRune.at(FORKS, i);
             case FLASH -> "+" + HolderRune.percent(HolderRune.at(BRIGHT, i));
             case DAM -> HolderRune.percent(HolderRune.at(THRIFT, i));
