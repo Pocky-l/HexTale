@@ -119,6 +119,7 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.screen.MultiblockDiorama::register);
         modBus.addListener(com.pockyl.hextale.client.render.HexGlow::registerPipelines);
         modBus.addListener(com.pockyl.hextale.client.render.VoidPipelines::registerPipelines);
+        modBus.addListener((net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) -> event.enqueueWork(IrisCompat::init));
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
         BreachCinematic.register(modBus);
