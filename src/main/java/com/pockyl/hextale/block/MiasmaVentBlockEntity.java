@@ -42,6 +42,8 @@ public class MiasmaVentBlockEntity extends BlockEntity {
     /** Fumes, sickly green, and the soot they leave. */
     public static final int FUMES = 0x7E9A4E;
     public static final int SOOT = 0x3A4A34;
+    /** Where the fumes leave the stack: the gap under its cowl, sideways between the struts. */
+    private static final double MOUTH_Y = 13 / 16.0;
     /** Players farther than this see no haze: nobody would notice it, and it costs particles. */
     private static final double HAZE_SIGHT = 40;
 
@@ -93,7 +95,7 @@ public class MiasmaVentBlockEntity extends BlockEntity {
 
     /**
      * Client: while the vent breathes, a low green-grey haze lies over its whole cloud - a veil of slow, wide wisps hugging
-     * the ground, so the player sees where the fumes reach - and a thread of fumes curls out of its stack.
+     * the ground, so the player sees where the fumes reach - and fumes curl out sideways from under its cowl.
      */
     public static void clientTick(Level level, BlockPos pos, BlockState state, MiasmaVentBlockEntity vent) {
         if (shut(state)) {
@@ -109,13 +111,14 @@ public class MiasmaVentBlockEntity extends BlockEntity {
             level.addParticle(ModParticles.haze(random.nextInt(5) == 0 ? SOOT : FUMES, 0.7F), x, y + random.nextDouble() * 0.4, z,
                     (random.nextDouble() - 0.5) * 0.004, 0, (random.nextDouble() - 0.5) * 0.004);
         }
-        if (random.nextInt(6) == 0) {
-            level.addParticle(ModParticles.vapour(FUMES), pos.getX() + 0.35 + random.nextDouble() * 0.3, pos.getY() + 0.95,
-                    pos.getZ() + 0.35 + random.nextDouble() * 0.3, 0, 0.02, 0);
+        if (random.nextInt(5) == 0) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            level.addParticle(ModParticles.vapour(FUMES), pos.getX() + 0.5 + Math.cos(angle) * 0.2, pos.getY() + MOUTH_Y,
+                    pos.getZ() + 0.5 + Math.sin(angle) * 0.2, Math.cos(angle) * 0.025, 0.006, Math.sin(angle) * 0.025);
         }
     }
 
-    /** Client: a breath rolls out of the stack and spreads low through the cloud, settling as soot. */
+    /** Client: a breath rolls out from under the cowl and spreads low through the cloud, settling as soot. */
     @Override
     public boolean triggerEvent(int id, int param) {
         if (id != PUFF) {
@@ -124,14 +127,13 @@ public class MiasmaVentBlockEntity extends BlockEntity {
         if (level != null && level.isClientSide()) {
             RandomSource random = level.getRandom();
             double x = worldPosition.getX() + 0.5;
-            double y = worldPosition.getY() + 0.95;
+            double y = worldPosition.getY() + MOUTH_Y;
             double z = worldPosition.getZ() + 0.5;
             for (int i = 0; i < 40; i++) {
                 double angle = random.nextDouble() * Math.PI * 2;
                 double speed = 0.06 + random.nextDouble() * 0.12;
-                level.addParticle(ModParticles.vapour(i % 4 == 0 ? SOOT : FUMES), x + (random.nextDouble() - 0.5) * 0.4, y,
-                        z + (random.nextDouble() - 0.5) * 0.4, Math.cos(angle) * speed, 0.01 + random.nextDouble() * 0.03,
-                        Math.sin(angle) * speed);
+                level.addParticle(ModParticles.vapour(i % 4 == 0 ? SOOT : FUMES), x + Math.cos(angle) * 0.2, y,
+                        z + Math.sin(angle) * 0.2, Math.cos(angle) * speed, random.nextDouble() * 0.02 - 0.005, Math.sin(angle) * speed);
             }
         }
         return true;

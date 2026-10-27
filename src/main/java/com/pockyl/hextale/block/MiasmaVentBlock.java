@@ -34,7 +34,9 @@ import org.jspecify.annotations.Nullable;
  */
 public class MiasmaVentBlock extends BaseEntityBlock {
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
-    private static final VoxelShape SHAPE = Shapes.block();
+    /** Grated base, the stack with its collars, the cowl and its peak, the two copper feed pipes. */
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 4, 15), Block.box(5, 4, 5, 11, 14, 11),
+            Block.box(4, 14, 4, 12, 15, 12), Block.box(6, 15, 6, 10, 16, 10), Block.box(2, 4, 7, 4, 9, 9), Block.box(12, 4, 9, 14, 7, 11));
 
     public MiasmaVentBlock(Properties properties) {
         super(properties);
