@@ -142,8 +142,7 @@
             15,
             13
           ],
-          "texture": "#calcite",
-          "cullface": "down"
+          "texture": "#calcite"
         }
       }
     },
