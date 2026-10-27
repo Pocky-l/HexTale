@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -32,12 +33,15 @@ import com.pockyl.hextale.registry.ModSounds;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Pink Brazier: a riveted iron bowl on three legs with shimmer burning in it. A vial of shimmer feeds it by hand; an
- * empty hand reads how long it burns and how far its light reaches. Its flame is cold: it never burns anyone.
+ * The Pink Brazier: a hexsteel fire cage on four legs with shimmer burning in it, brass heat rods running out from its
+ * foot into the soil. A vial of shimmer feeds it by hand; an empty hand reads how long it burns and how far its warmth
+ * reaches. Its flame itself never burns anyone.
  */
 public class PinkBrazierBlock extends BaseEntityBlock {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    private static final VoxelShape SHAPE = Block.column(14.0, 0.0, 11.0);
+    /** Legs and pan, the grate cage with its brass band, and the heat rods lying on the ground to the four sides. */
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 4, 14), Block.box(3, 4, 3, 13, 13, 13),
+            Block.box(2, 10, 2, 14, 11, 14), Block.box(0, 0, 7, 16, 1, 9), Block.box(7, 0, 0, 9, 1, 16));
     private static final int FLAME = 0xFF7AD9;
     private static final int FADE = 0xB04CF0;
 

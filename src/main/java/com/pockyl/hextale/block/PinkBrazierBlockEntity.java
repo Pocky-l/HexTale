@@ -187,18 +187,18 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
     }
 
     /**
-     * Client: the warmth of each breath creeps out of the cage's foot over the soil to the plant it reached - a low run of
-     * warm glints - and rises from the soil under it as a shimmer of heat with a few pink motes. Now and then, while it
+     * Client: the warmth of each breath creeps out of the tip of the heat rod nearest the plant it reached, over the soil
+     * to it - a low run of warm glints - and rises from the soil under it as a shimmer of heat with a few pink motes. Now and then, while it
      * burns, a lone warm mote lifts off the soil somewhere in its reach.
      */
     public static void clientTick(Level level, BlockPos pos, BlockState state, PinkBrazierBlockEntity brazier) {
         long now = level.getGameTime();
         RandomSource random = level.getRandom();
-        Vec3 foot = Vec3.atBottomCenterOf(pos).add(0, 0.08, 0);
         brazier.warmths.removeIf(warmth -> now - warmth.start() > CREEP_TICKS + RISE_TICKS);
         for (Warmth warmth : brazier.warmths) {
             long age = now - warmth.start();
             Vec3 soil = Vec3.atBottomCenterOf(warmth.plant()).add(0, 0.05, 0);
+            Vec3 foot = rodTip(pos, soil);
             if (age < CREEP_TICKS) {
                 Vec3 at = foot.lerp(soil, (age + random.nextFloat()) / CREEP_TICKS);
                 level.addParticle(ModParticles.glint(WARM), at.x + (random.nextDouble() - 0.5) * 0.2, at.y + random.nextDouble() * 0.15,
@@ -226,6 +226,15 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
                 }
             }
         }
+    }
+
+    /** The tip of the brass heat rod (one runs out on the ground to each side) that points the most towards {@code to}. */
+    private static Vec3 rodTip(BlockPos pos, Vec3 to) {
+        Vec3 centre = Vec3.atBottomCenterOf(pos);
+        double dx = to.x - centre.x;
+        double dz = to.z - centre.z;
+        Vec3 out = Math.abs(dx) > Math.abs(dz) ? new Vec3(Math.signum(dx) * 7.5 / 16, 0, 0) : new Vec3(0, 0, Math.signum(dz) * 7.5 / 16);
+        return centre.add(out).add(0, 0.06, 0);
     }
 
     /** One step of growth: a plant with an age grows one stage at once; anything else gets a random tick. */
