@@ -49,10 +49,12 @@ public class HexLiftBlock extends BaseEntityBlock {
     private static final Map<UUID, Long> LAST_RIDE = new ConcurrentHashMap<>();
     /** Where one stands on the lift: the top of its brass pad. */
     public static final double PAD = 6 / 16.0;
-    /** A low plinth with a pad in the middle and four leaning guide horns at the corners. */
+    /**
+     * The low plinth and the pad in its middle. The model's four guide horns at the corners are left out on purpose
+     * (owner): they caught the player and the crosshair, the plate alone is easier to step on and aim at.
+     */
     private static final net.minecraft.world.phys.shapes.VoxelShape SHAPE = net.minecraft.world.phys.shapes.Shapes.or(
-            Block.box(0, 0, 0, 16, 5, 16), Block.box(3, 5, 3, 13, 6, 13), Block.box(1, 5, 1, 4, 13, 4), Block.box(12, 5, 1, 15, 13, 4),
-            Block.box(1, 5, 12, 4, 13, 15), Block.box(12, 5, 12, 15, 13, 15));
+            Block.box(0, 0, 0, 16, 5, 16), Block.box(3, 5, 3, 13, 6, 13));
 
     public HexLiftBlock(Properties properties) {
         super(properties);
