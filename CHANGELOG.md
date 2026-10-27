@@ -109,6 +109,10 @@ Glassy scars: the way into hextech no longer waits for a storm.
   alone. The holding drinks shadow essence from jars nearby; without it the chalk wears and a line gives way. Shackle
   blocks already placed break into Binding Chalk.
 - Rune Chalk is now called Stabilizing Chalk.
+- The Miasma Vent needs no fuel any more: built once, it breathes for ever. Its fumes now reach four blocks every way
+  (one down, three up) and lie there as a low green-grey haze; hostile creatures in them are poisoned and slowly lose
+  health - the undead too, whom poison alone cannot touch. Players, animals and pets only cough. A redstone signal
+  shuts it. It is a little dearer at the Hex Workbench (a fermented spider eye instead of bone meal).
 - Bottles of essence can be drunk: every primal in the bottle gives its own short gift - fire: fire resistance,
   water: water breathing, earth: a full belly, air: slow falling, light: night vision, shadow: invisibility, life:
   regeneration, metal: haste, spark: jump boost - longer the more of it there is. Unknown essence turns the stomach.

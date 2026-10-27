@@ -327,11 +327,11 @@ public final class ModBlocks {
             com.pockyl.hextale.block.XpCondenserBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).strength(2.0F, 6.0F).sound(SoundType.GLASS)
                     .noOcclusion());
-    /** A rusted iron block with a grate: breathes choking fumes on the hostile creatures standing over it. */
+    /** A rusted chemtech stack: breathes choking fumes over the hostile creatures around it, for nothing, for ever. */
     public static final DeferredBlock<com.pockyl.hextale.block.MiasmaVentBlock> MIASMA_VENT = BLOCKS.registerBlock("miasma_vent",
             com.pockyl.hextale.block.MiasmaVentBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(3.0F, 6.0F).sound(SoundType.COPPER)
-                    .requiresCorrectToolForDrops());
+                    .requiresCorrectToolForDrops().noOcclusion());
     /** A nullstone bowl on brass ribs under a hextech crystal: swallows the deaths around it into the container below. */
     public static final DeferredBlock<com.pockyl.hextale.block.GreedyFunnelBlock> GREEDY_FUNNEL = BLOCKS.registerBlock("greedy_funnel",
             com.pockyl.hextale.block.GreedyFunnelBlock::new,

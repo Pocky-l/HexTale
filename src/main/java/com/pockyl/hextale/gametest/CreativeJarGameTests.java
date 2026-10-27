@@ -13,7 +13,6 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.block.ArcSpireBlockEntity;
 import com.pockyl.hextale.block.GreedyFunnelBlockEntity;
-import com.pockyl.hextale.block.MiasmaVentBlockEntity;
 import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModBlocks;
 
@@ -41,8 +40,6 @@ public final class CreativeJarGameTests {
         for (BlockPos cell : ShackleGameTests.ring(BASE.offset(-3, 0, 3))) {
             helper.setBlock(cell, ModBlocks.CHALK_SIGIL.get());
         }
-        helper.setBlock(BASE.offset(-3, 0, -1), ModBlocks.MIASMA_VENT.get());
-        MiasmaVentBlockEntity vent = helper.getBlockEntity(BASE.offset(-3, 0, -1), MiasmaVentBlockEntity.class);
         GreedyFunnelBlockEntity funnel = helper.getBlockEntity(BASE.above(), GreedyFunnelBlockEntity.class);
         ArcSpireBlockEntity spire = helper.getBlockEntity(BASE.offset(3, 0, -3), ArcSpireBlockEntity.class);
         helper.runAfterDelay(5, () -> {
@@ -53,13 +50,10 @@ public final class CreativeJarGameTests {
             Spider spider = helper.spawnWithNoFreeWill(EntityTypes.SPIDER, BASE.offset(3, 0, -1));
             spider.setHealth(ArcSpireBlockEntity.DAMAGE - 2);
             Cow held = helper.spawn(EntityTypes.COW, new Vec3(-1.5, 1.0, 4.5));
-            Spider choked = helper.spawnWithNoFreeWill(EntityTypes.SPIDER, BASE.offset(-3, 1, -1));
-            choked.setHealth(MiasmaVentBlockEntity.DAMAGE - 1);
             spire.wake();
             helper.runAfterDelay(110, () -> {
                 helper.assertTrue(!spider.isAlive(), "the spire struck with spark from the creative jar (uncharged " + spire.uncharged() + ")");
                 helper.assertTrue(held.hasData(ModAttachments.SHACKLE), "a binding figure holds with shadow from the creative jar");
-                helper.assertTrue(!choked.isAlive() && !vent.dry(), "the vent breathes the creative jar's murk");
                 helper.succeed();
             });
         });
