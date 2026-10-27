@@ -113,6 +113,13 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed
+- The Researcher's Guide reads better and leads more honestly: the goggles and the big jar wait for the separator
+  (their research needs light ink), rusted plating waits for acid, hexsteel no longer waits for the coolant, the Null
+  Lantern follows nullstone instead of sick land, and the pickaxe's step is where the hextech tools are researched -
+  the axe, shovel and sword follow it. Clearer texts where the old ones misled (the workbench is fed by a raw orb, the
+  separator can burn over something cleaner than blaze powder, what the Miasma Vent does, the running costs of the
+  gate and the anchor), fewer repeated phrases, a missing goal for Magic Wood, right captions under the chemtech
+  schemes, consistent Russian goals and names. Ideas that duplicated built things are gone from the hidden WIP steps.
 - The Thinning now grows from working essence: boiling it out of things in the alembic, splitting it in the separator,
   brewing and transmuting in the crucible (the crucible counts the most per mB, and more with unknown essence in the
   water), refining shimmer, and essence spent on rituals and on the running costs of devices. The Disintegrator wears
