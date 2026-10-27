@@ -54,6 +54,8 @@ public final class TableModels {
     public static final List<StandaloneModelKey<BlockStateModelPart>> HEXCORE_TILES = java.util.Arrays.stream(com.pockyl.hextale.block.HexcoreMatrix.TILES)
             .map(tile -> model("block/hexcore/" + tile)).toList();
     public static final StandaloneModelKey<BlockStateModelPart> HEXCORE_CRYSTAL = model("block/hexcore/crystal");
+    /** The Grapple Gauntlet's claw, pointing along -Z with the rope's eye at (8, 8, 12) px. */
+    public static final StandaloneModelKey<BlockStateModelPart> GRAPPLE_HOOK = model("item/grapple_hook");
 
     private TableModels() {
     }

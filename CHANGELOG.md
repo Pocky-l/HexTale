@@ -80,9 +80,12 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - Hextech Magnet (at the Hex Workbench): switched on and carried anywhere in the inventory, it draws loose items
   and experience to you (sneak to let them lie; what you just dropped stays). Runes: Shift (farther), Radiance
   (experience worth more), Cache (straight into the pocket) and Lens.
-- Grapple Gauntlet (at the Hex Workbench): throws a tendril of light at the block you look at and draws you there;
-  sneak to let go mid-flight. Runes: Shift (reach), Motor (faster pull), Breath (no fall damage for a while after) and
-  Lens.
+- Grapple Gauntlet (at the Hex Workbench): hold right click to throw its hextech claw - it bites into the block you
+  look at and holds you on a real rope. The rope only pulls when stretched, so you drop, swing through the bottom and
+  up the other side; release to let go with all your speed and fling yourself on, then throw again mid-air to chain
+  swings. Jump reels the rope in, sneak lets it out. The cord sags when slack and pulls tight and bright under your
+  weight, and everyone around sees and hears the claw fly, bite, reel and spring back. Runes: Shift (a longer rope),
+  Motor (reels in faster), Breath (no fall damage for a while after letting go) and Lens.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed

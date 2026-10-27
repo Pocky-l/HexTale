@@ -252,18 +252,69 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
-    @HexTest(padding = 6)
-    public static void aGrappleDrawsItsWearerToTheHook(GameTestHelper helper) {
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        Vec3 spot = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(1, 1, 1)));
-        player.teleportTo(spot.x, spot.y, spot.z);
-        Vec3 hook = spot.add(5, 3, 0);
-        com.pockyl.hextale.item.GrappleGauntletItem.start(player, hook, com.pockyl.hextale.runework.PickaxeRunes.EMPTY);
-        helper.assertTrue(com.pockyl.hextale.item.GrappleGauntletItem.step(player), "far from the hook the pull goes on");
-        player.teleportTo(hook.x, hook.y - 0.9, hook.z);
-        helper.assertTrue(!com.pockyl.hextale.item.GrappleGauntletItem.step(player), "at the hook it lets go");
-        helper.assertTrue(!com.pockyl.hextale.item.GrappleGauntletItem.pulling(player), "and the pull is over");
-        helper.succeed();
+    /**
+     * A player hanging on the gauntlet's rope swings like a pendulum: thrown at a block above and ahead, the claw bites,
+     * the wearer falls, the rope catches and carries them through the bottom of the arc and up the other side - never
+     * farther from the claw than the rope is long. The player is moved by its own ticks, as a client moves itself.
+     */
+    @HexTest(padding = 8, maxTicks = 120)
+    public static void aGrappleRopeSwingsItsWearer(GameTestHelper helper) {
+        BlockPos anchor = new BlockPos(1, 12, 1);
+        helper.setBlock(anchor, Blocks.STONE);
+        net.minecraft.server.level.ServerPlayer player = selfMovingPlayer(helper);
+        Vec3 start = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(-4, 8, 1)));
+        Vec3 bite = Vec3.atCenterOf(helper.absolutePos(anchor)).add(0, -0.5, 0);
+        Vec3 look = bite.subtract(start.add(0, player.getEyeHeight() - 0.25, 0));
+        float yaw = (float) (net.minecraft.util.Mth.atan2(look.z, look.x) * net.minecraft.util.Mth.RAD_TO_DEG) - 90;
+        float pitch = (float) -(net.minecraft.util.Mth.atan2(look.y, look.horizontalDistance()) * net.minecraft.util.Mth.RAD_TO_DEG);
+        player.snapTo(start.x, start.y, start.z, yaw, pitch);
+        net.minecraft.world.item.ItemStack gauntlet = new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.GRAPPLE_GAUNTLET.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, gauntlet);
+        player.gameMode.useItem(player, helper.getLevel(), gauntlet, net.minecraft.world.InteractionHand.MAIN_HAND);
+        double[] farthest = {start.x};
+        double[] stretch = {0};
+        helper.onEachTick(() -> {
+            if (player.isRemoved()) {
+                return;
+            }
+            player.doTick();
+            farthest[0] = Math.max(farthest[0], player.getX());
+            com.pockyl.hextale.entity.GrappleHook hook = com.pockyl.hextale.entity.GrappleHook.of(player);
+            if (hook != null && hook.attached() && hook.length() > 0) {
+                stretch[0] = Math.max(stretch[0], com.pockyl.hextale.item.GrappleGauntletItem.grip(player).distanceTo(hook.position()) - hook.length());
+            }
+        });
+        helper.succeedWhen(() -> {
+            com.pockyl.hextale.entity.GrappleHook hook = com.pockyl.hextale.entity.GrappleHook.of(player);
+            helper.assertTrue(hook != null && hook.attached(), "the claw holds the stone");
+            Vec3 pivot = hook.position();
+            helper.assertTrue(farthest[0] > pivot.x + 2, "the swing carried me past the claw and up the other side (x " + farthest[0]
+                    + ", claw " + pivot.x + ")");
+            helper.assertTrue(stretch[0] < 0.4, "the rope never stretched (" + stretch[0] + ")");
+            player.stopUsingItem();
+            hook.discard();
+            player.discard();
+        });
+    }
+
+    /**
+     * A player that moves itself on the server (as a client moves its own player): its ticks are run by the test,
+     * through a connection of its own that goes nowhere.
+     */
+    static net.minecraft.server.level.ServerPlayer selfMovingPlayer(GameTestHelper helper) {
+        net.minecraft.server.network.CommonListenerCookie cookie = net.minecraft.server.network.CommonListenerCookie.createInitial(
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "test-swinger"), false);
+        net.minecraft.server.level.ServerPlayer player = new net.minecraft.server.level.ServerPlayer(helper.getLevel().getServer(), helper.getLevel(),
+                cookie.gameProfile(), cookie.clientInformation()) {
+            @Override
+            public boolean isClientAuthoritative() {
+                return false;
+            }
+        };
+        net.minecraft.network.Connection connection = new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND);
+        new io.netty.channel.embedded.EmbeddedChannel(connection);
+        new net.minecraft.server.network.ServerGamePacketListenerImpl(helper.getLevel().getServer(), connection, player, cookie);
+        return player;
     }
 
     @HexTest

@@ -260,7 +260,9 @@ public final class ModItems {
             properties -> new com.pockyl.hextale.item.HextechMagnetItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
     /** A leather glove with a hextech barrel: it throws a tendril at a block and draws its wearer there. */
     public static final DeferredItem<com.pockyl.hextale.item.GrappleGauntletItem> GRAPPLE_GAUNTLET = ITEMS.registerItem("grapple_gauntlet",
-            properties -> new com.pockyl.hextale.item.GrappleGauntletItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
+            properties -> new com.pockyl.hextale.item.GrappleGauntletItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)
+                    .component(net.minecraft.core.component.DataComponents.USE_EFFECTS,
+                            new net.minecraft.world.item.component.UseEffects(true, false, 1.0F))));
     /** A pocket watch with a hextech face: it puts its holder back where they stood a few seconds ago. */
     public static final DeferredItem<com.pockyl.hextale.item.RecallCharmItem> RECALL_CHARM = ITEMS.registerItem("recall_charm",
             properties -> new com.pockyl.hextale.item.RecallCharmItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));

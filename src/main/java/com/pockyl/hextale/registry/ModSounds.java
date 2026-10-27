@@ -163,6 +163,11 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> ARC_STRIKE = register("arc.strike");
     /** Rune Shackles take hold of a creature. */
     public static final DeferredHolder<SoundEvent, SoundEvent> SHACKLE_BIND = register("shackle.bind");
+    /** The Grapple Gauntlet: the claw thrown, biting into a block, the rope reeling, the claw springing back. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_FIRE = register("grapple.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_ATTACH = register("grapple.attach");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_REEL = register("grapple.reel");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_RELEASE = register("grapple.release");
     /** A Miasma Vent breathes out its fumes. */
     public static final DeferredHolder<SoundEvent, SoundEvent> MIASMA_HISS = register("miasma.hiss");
 

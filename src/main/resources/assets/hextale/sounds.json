@@ -1112,5 +1112,61 @@
         "attenuation_distance": 32
       }
     ]
+  },
+  "grapple.fire": {
+    "subtitle": "subtitles.hextale.grapple.fire",
+    "sounds": [
+      {
+        "name": "hextale:grapple_fire1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:grapple_fire2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "grapple.attach": {
+    "subtitle": "subtitles.hextale.grapple.attach",
+    "sounds": [
+      {
+        "name": "hextale:grapple_attach1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:grapple_attach2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "grapple.reel": {
+    "subtitle": "subtitles.hextale.grapple.reel",
+    "sounds": [
+      {
+        "name": "hextale:grapple_reel1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:grapple_reel2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:grapple_reel3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "grapple.release": {
+    "subtitle": "subtitles.hextale.grapple.release",
+    "sounds": [
+      {
+        "name": "hextale:grapple_release1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:grapple_release2",
+        "volume": 0.7
+      }
+    ]
   }
 }

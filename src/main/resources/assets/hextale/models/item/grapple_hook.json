@@ -1,0 +1,33 @@
+{
+  "textures": {
+    "particle": "hextale:block/brass",
+    "brass": "hextale:block/brass",
+    "glow": "hextale:block/hextech_glow"
+  },
+  "elements": [
+    {
+      "from": [6.5, 6.5, 9],
+      "to": [9.5, 9.5, 13],
+      "faces": {
+        "north": {"uv": [0, 0, 3, 3], "texture": "#brass"},
+        "east": {"uv": [0, 0, 4, 3], "texture": "#brass"},
+        "south": {"uv": [0, 0, 3, 3], "texture": "#brass"},
+        "west": {"uv": [0, 0, 4, 3], "texture": "#brass"},
+        "up": {"uv": [0, 0, 3, 4], "texture": "#brass"},
+        "down": {"uv": [0, 0, 3, 4], "texture": "#brass"}
+      }
+    },
+    {
+      "from": [7, 7, 4],
+      "to": [9, 9, 9],
+      "faces": {
+        "north": {"uv": [0, 0, 2, 2], "texture": "#glow"},
+        "east": {"uv": [0, 0, 5, 2], "texture": "#glow"},
+        "south": {"uv": [0, 0, 2, 2], "texture": "#glow"},
+        "west": {"uv": [0, 0, 5, 2], "texture": "#glow"},
+        "up": {"uv": [0, 0, 2, 5], "texture": "#glow"},
+        "down": {"uv": [0, 0, 2, 5], "texture": "#glow"}
+      }
+    }
+  ]
+}

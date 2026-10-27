@@ -25,6 +25,12 @@ public final class ModEntities {
                     .noLootTable().sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(5)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
+    /** The Grapple Gauntlet's claw on its rope of light. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.GrappleHook>> GRAPPLE_HOOK = ENTITIES.register("grapple_hook",
+            id -> EntityType.Builder.<com.pockyl.hextale.entity.GrappleHook>of(com.pockyl.hextale.entity.GrappleHook::new, MobCategory.MISC)
+                    .noLootTable().noSave().sized(0.25F, 0.25F).clientTrackingRange(8).updateInterval(1)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
     /** A Chem Vial thrown like a splash potion: it shatters and splashes its brew. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.ThrownChemVial>> THROWN_CHEM_VIAL =
             ENTITIES.register("thrown_chem_vial", id -> EntityType.Builder.<com.pockyl.hextale.entity.ThrownChemVial>of(

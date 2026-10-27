@@ -124,6 +124,7 @@ public final class HextaleClient {
         BreachCinematic.register(modBus);
         SilenceHush.register();
         ClientLift.register();
+        ClientGrapple.register();
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
         modBus.addListener(ThinningTint::fadeWater);
@@ -249,6 +250,8 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.VoidMiteRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.VOIDLING.get(),
                 com.pockyl.hextale.client.render.VoidlingRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.GRAPPLE_HOOK.get(),
+                com.pockyl.hextale.client.render.GrappleHookRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.BREACH_CAMERA.get(),
                 net.minecraft.client.renderer.entity.NoopRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RESEARCH_TABLE.get(), ResearchTableRenderer::new);

@@ -11,12 +11,12 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The runes a Grapple Gauntlet takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more
- * with a Lens (1-4). They throw the tendril farther, pull harder and soften the landing.
+ * with a Lens (1-4). They throw the claw farther, reel in faster and soften the landing.
  */
 public enum GrappleRune implements HolderRune {
     /** The tendril reaches farther. */
     SHIFT("air_earth"),
-    /** It pulls faster. */
+    /** It reels in faster. */
     MOTOR("metal_spark"),
     /** No fall damage for a while after a pull. */
     BREATH("air_life"),
@@ -27,9 +27,9 @@ public enum GrappleRune implements HolderRune {
     /** Blocks the tendril reaches without Shift. */
     public static final int REACH = 32;
     public static final int[] REACHES = {40, 48, 56, 64};
-    /** Blocks per tick of the pull without Motor. */
-    public static final float SPEED = 0.9F;
-    public static final float[] SPEEDS = {1.1F, 1.3F, 1.5F, 1.8F};
+    /** Blocks a tick the rope reels in without Motor. */
+    public static final float REEL = 0.35F;
+    public static final float[] REELS = {0.45F, 0.55F, 0.65F, 0.8F};
 
     private final ComplexRune rune;
 
@@ -56,8 +56,8 @@ public enum GrappleRune implements HolderRune {
         return strength <= 0 ? REACH : HolderRune.at(REACHES, strength);
     }
 
-    public static float speed(int strength) {
-        return strength <= 0 ? SPEED : HolderRune.at(SPEEDS, strength);
+    public static float reel(int strength) {
+        return strength <= 0 ? REEL : HolderRune.at(REELS, strength);
     }
 
     @Override
@@ -65,7 +65,7 @@ public enum GrappleRune implements HolderRune {
         int i = Mth.clamp(strength, 1, 4);
         return switch (this) {
             case SHIFT -> Integer.toString(reach(i));
-            case MOTOR -> HolderRune.factor(speed(i) * 20);
+            case MOTOR -> HolderRune.factor(reel(i) * 20);
             case BREATH, LENS -> "";
         };
     }
