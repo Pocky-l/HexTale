@@ -44,9 +44,20 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.DelegatingResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import com.pockyl.hextale.entity.GrappleHook;
+import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.essence.EssenceNetwork;
+import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.item.RiftLinkCrystalItem;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModItems;
@@ -67,7 +78,7 @@ import org.jspecify.annotations.Nullable;
  * - comes out of the other gate's front, in any dimension. Items that arrive drop into a container under the gate if
  * there is one. Breaking a gate leaves its partner alone ("partner missing": sparks crackle in its empty ring).
  */
-public class RiftGateBlock extends BaseEntityBlock {
+public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LINKED = BooleanProperty.create("linked");
     /** Rift violet. */
@@ -118,6 +129,12 @@ public class RiftGateBlock extends BaseEntityBlock {
     @Override
     protected VoxelShape getEntityInsideCollisionShape(BlockState state, BlockGetter level, BlockPos pos, Entity entity) {
         return opening(state.getValue(FACING));
+    }
+
+    /** Pipes join the gate under it, over it and at its posts - not across the open ring. */
+    @Override
+    public boolean isPort(BlockState state, Direction face) {
+        return face.getAxis() != state.getValue(FACING).getAxis();
     }
 
     @Override
@@ -263,8 +280,32 @@ public class RiftGateBlock extends BaseEntityBlock {
     }
 
     /** A gate's link and its mouth for hoppers and pylons. */
-    public static class Gate extends BlockEntity implements WorldlyContainer {
+    public static class Gate extends BlockEntity implements WorldlyContainer, EssenceNetwork.Receiver {
         private static final int[] SLOTS = {0};
+        /** Essence and fluids waiting to go through (they leave every FLOW_EVERY ticks). */
+        public static final int ESSENCE_BUFFER = 1000;
+        public static final int FLUID_BUFFER = 4000;
+        private static final int FLOW_EVERY = 5;
+        private final EssenceTank essence = new EssenceTank(ESSENCE_BUFFER);
+        private final FluidStacksResourceHandler fluid = new FluidStacksResourceHandler(1, FLUID_BUFFER) {
+            @Override
+            protected void onContentsChanged(int index, FluidStack previousContents) {
+                setChanged();
+            }
+        };
+        /** What the pipes and tanks of other mods see: fluid goes in while linked, nothing comes out. */
+        private final ResourceHandler<FluidResource> fluidMouth = new DelegatingResourceHandler<>(fluid) {
+            @Override
+            public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
+                return getBlockState().getValue(LINKED) ? super.insert(index, resource, amount, transaction) : 0;
+            }
+
+            @Override
+            public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
+                return 0;
+            }
+        };
+        private long flaredAt;
         @Nullable
         private UUID link;
         private ItemStack mouth = ItemStack.EMPTY;
@@ -349,6 +390,18 @@ public class RiftGateBlock extends BaseEntityBlock {
                     partner.receive(stack);
                 }
             }
+            if (level.getGameTime() % FLOW_EVERY == 0 && (!gate.essence.isEmpty() || !gate.fluid.getResource(0).isEmpty())
+                    && state.getValue(LINKED)) {
+                Gate partner = gate.partnerGate(server);
+                if (partner != null && partner.pour(gate)) {
+                    long now = level.getGameTime();
+                    if (now - gate.flaredAt > 30) {
+                        gate.flaredAt = now;
+                        gate.flare();
+                        partner.arrived();
+                    }
+                }
+            }
             if (++gate.wait >= 20) {
                 gate.wait = 0;
                 if (gate.link != null) {
@@ -379,6 +432,63 @@ public class RiftGateBlock extends BaseEntityBlock {
 
         private Direction front() {
             return getBlockState().getValue(FACING);
+        }
+
+        /** The fluid handler the pipes and tanks of other mods use. */
+        public ResourceHandler<FluidResource> fluidMouth() {
+            return fluidMouth;
+        }
+
+        public EssenceTank essence() {
+            return essence;
+        }
+
+        /** Essence comes in through the pipes and jars joined to the gate, while it is linked. */
+        @Override
+        public int receive(Direction side, EssenceMix offer, boolean simulate) {
+            return getBlockState().getValue(LINKED) ? essence.fill(offer, simulate) : 0;
+        }
+
+        /**
+         * Essence and fluids waiting in the other gate come out here: essence into the pipes and jars joined to this gate
+         * (below first), fluids into the tanks of other mods beside it (below first). Returns whether any moved.
+         */
+        boolean pour(Gate from) {
+            if (!(level instanceof ServerLevel server)) {
+                return false;
+            }
+            boolean moved = false;
+            Direction facing = getBlockState().getValue(FACING);
+            Direction[] faces = {Direction.DOWN, Direction.UP, facing.getClockWise(), facing.getCounterClockWise()};
+            for (Direction face : faces) {
+                if (from.essence.isEmpty()) {
+                    break;
+                }
+                int sent = EssenceNetwork.push(server, worldPosition, face, from.essence.contents());
+                if (sent > 0) {
+                    from.essence.drain(sent, false);
+                    from.setChanged();
+                    moved = true;
+                }
+            }
+            for (Direction face : faces) {
+                if (from.fluid.getResource(0).isEmpty()) {
+                    break;
+                }
+                BlockPos next = worldPosition.relative(face);
+                ResourceHandler<FluidResource> target = server.getCapability(net.neoforged.neoforge.capabilities.Capabilities.Fluid.BLOCK,
+                        next, face.getOpposite());
+                if (target != null && !(server.getBlockEntity(next) instanceof Gate)) {
+                    try (Transaction transaction = Transaction.openRoot()) {
+                        int sent = ResourceHandlerUtil.move(from.fluid, target, resource -> true, FLUID_BUFFER, transaction);
+                        if (sent > 0) {
+                            transaction.commit();
+                            moved = true;
+                        }
+                    }
+                }
+            }
+            return moved;
         }
 
         /** Items from the other gate: into the container under this one, the rest out of its front. */
@@ -442,6 +552,8 @@ public class RiftGateBlock extends BaseEntityBlock {
             super.loadAdditional(input);
             link = input.read("link", UUIDUtil.STRING_CODEC).orElse(null);
             mouth = input.read("mouth", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+            essence.load(input, "essence");
+            input.child("fluid").ifPresent(fluid::deserialize);
         }
 
         @Override
@@ -453,6 +565,8 @@ public class RiftGateBlock extends BaseEntityBlock {
             if (!mouth.isEmpty()) {
                 output.store("mouth", ItemStack.OPTIONAL_CODEC, mouth);
             }
+            essence.save(output, "essence");
+            fluid.serialize(output.child("fluid"));
         }
 
         /** The clients only need to know whether it was ever linked (to tell "partner missing" from "never linked"). */

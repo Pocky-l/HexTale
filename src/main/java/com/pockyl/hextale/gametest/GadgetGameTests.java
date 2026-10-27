@@ -247,6 +247,54 @@ public final class GadgetGameTests {
         });
     }
 
+    /**
+     * Linked gates carry liquids too: a jar of fire essence over one gate pours into it and the essence comes out into the
+     * jar under its partner; water put into a gate (as another mod's pipe would) fills the cauldron under its partner.
+     */
+    @HexTest(setupTicks = 20, maxTicks = 200, padding = 8)
+    public static void riftGatesCarryEssenceAndWater(GameTestHelper helper) {
+        BlockPos a = new BlockPos(1, 2, 1);
+        BlockPos b = new BlockPos(7, 2, 5);
+        BlockPos c = new BlockPos(1, 2, 5);
+        BlockPos d = new BlockPos(7, 2, 1);
+        helper.setBlock(a.below(), Blocks.STONE);
+        helper.setBlock(c.below(), Blocks.STONE);
+        helper.setBlock(b.below(), ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(d.below(), Blocks.CAULDRON);
+        for (BlockPos gate : new BlockPos[] {a, b, c, d}) {
+            helper.setBlock(gate, ModBlocks.RIFT_GATE.get());
+        }
+        helper.setBlock(a.above(), ModBlocks.ESSENCE_TANK.get());
+        helper.getBlockEntity(a.above(), com.pockyl.hextale.block.EssenceTankBlockEntity.class).tank()
+                .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.FIRE, 300));
+        net.minecraft.server.level.ServerPlayer player = GameTests.watcher(helper, helper.absolutePos(a));
+        net.minecraft.world.InteractionHand hand = net.minecraft.world.InteractionHand.MAIN_HAND;
+        for (BlockPos[] pair : new BlockPos[][] {{a, b}, {c, d}}) {
+            player.setItemInHand(hand, new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.HEXTECH_CRYSTAL.get()));
+            click(helper, player, pair[0]);
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                if (player.getInventory().getItem(i).is(com.pockyl.hextale.registry.ModItems.RIFT_LINK_CRYSTAL.get())) {
+                    player.setItemInHand(hand, player.getInventory().getItem(i).copy());
+                    player.getInventory().setItem(i, net.minecraft.world.item.ItemStack.EMPTY);
+                }
+            }
+            click(helper, player, pair[1]);
+        }
+        com.pockyl.hextale.block.RiftGateBlock.Gate gateC = helper.getBlockEntity(c, com.pockyl.hextale.block.RiftGateBlock.Gate.class);
+        try (net.neoforged.neoforge.transfer.transaction.Transaction transaction = net.neoforged.neoforge.transfer.transaction.Transaction.openRoot()) {
+            int put = gateC.fluidMouth().insert(0, net.neoforged.neoforge.transfer.fluid.FluidResource.of(net.minecraft.world.level.material.Fluids.WATER),
+                    1000, transaction);
+            transaction.commit();
+            helper.assertTrue(put == 1000, "the gate takes water in (" + put + ")");
+        }
+        helper.succeedWhen(() -> {
+            helper.assertBlockPresent(Blocks.WATER_CAULDRON, d.below());
+            int fire = helper.getBlockEntity(b.below(), com.pockyl.hextale.block.EssenceTankBlockEntity.class).tank().contents()
+                    .get(com.pockyl.hextale.rune.Essence.FIRE);
+            helper.assertTrue(fire > 0, "fire essence came out under the other gate (" + fire + ")");
+        });
+    }
+
     private static void click(GameTestHelper helper, net.minecraft.server.level.ServerPlayer player, BlockPos pos) {
         BlockPos at = helper.absolutePos(pos);
         player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), net.minecraft.world.InteractionHand.MAIN_HAND,

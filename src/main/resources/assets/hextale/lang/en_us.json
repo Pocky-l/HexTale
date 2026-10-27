@@ -174,7 +174,7 @@
   "item.hextale.rift_link_crystal": "Rift Link Crystal",
   "item.hextale.rift_link_crystal.gate": "Remembers a gate at %s %s %s",
   "item.hextale.rift_link_crystal.hint": "It hums towards one gate only. Pressed to another, would the two open onto each other?",
-  "jei.hextale.info.rift_gate": "Two rings of nullstone and brass that open onto each other wherever they stand - even in another world. A cut hextech crystal pressed to one remembers it; pressed to the second, it ties them and is spent. Whatever passes into one ring - me, a sheep, a thrown stone, a hopper's load - steps out of the other's front, and things drop into a chest under it if there is one. Break one, and the other's empty ring only crackles. (Right click a gate with a hextech crystal, then press the crystal to the other gate)",
+  "jei.hextale.info.rift_gate": "Two rings of nullstone and brass that open onto each other wherever they stand - even in another world. A cut hextech crystal pressed to one remembers it; pressed to the second, it ties them and is spent. Whatever passes into one ring - me, a sheep, a thrown stone, a hopper's load - steps out of the other's front, and things drop into a chest under it if there is one. Liquids go too: essence piped into one ring flows out into the pipes and jars around the other, and so does water from tanks. Break one, and the other's empty ring only crackles. (Right click a gate with a hextech crystal, then press the crystal to the other gate)",
   "jei.hextale.info.rift_link_crystal": "A crystal that remembers one rift gate. Pressed to another gate, it ties the two and is spent.",
   "quest.hextale.rift_gate": "Lesser Rift Gate",
   "quest.hextale.rift_gate.goal": "make Lesser Rift Gates",

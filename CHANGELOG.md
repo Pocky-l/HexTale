@@ -75,7 +75,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
   brass. Press a hextech crystal to one gate and it becomes a Rift Link Crystal that remembers it; press that to a
   second gate and the two are tied by a link of their own, wherever they stand - even in another dimension. Whatever
   then passes into one ring comes out of the other's front: players, creatures, thrown items, and whatever hoppers or
-  pylons feed into it (items drop into a chest or hopper under the far gate if there is one). A linked ring glows
+  pylons feed into it (items drop into a chest or hopper under the far gate if there is one). Liquids go through
+  too: essence piped or poured into one gate flows out into the pipes and jars around the other, and fluids from
+  other mods' pipes and tanks come out into the tanks beside the far gate. A linked ring glows
   with rift light; break one gate and the other's empty ring crackles, alone, until it is linked anew. Right click a
   gate with an empty hand to ask where it leads.
 - World Anchor (at the Hextech Altar): keeps its chunk loaded and ticking while it stands, even with nobody near.

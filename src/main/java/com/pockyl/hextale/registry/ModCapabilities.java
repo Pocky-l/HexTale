@@ -32,6 +32,7 @@ public final class ModCapabilities {
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.PEDESTAL.get(), (pedestal, side) -> VanillaContainerWrapper.of(pedestal));
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.DISINTEGRATOR.get(), (bowl, side) -> VanillaContainerWrapper.of(bowl));
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.RIFT_GATE.get(), WorldlyContainerWrapper::new);
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.RIFT_GATE.get(), (gate, side) -> gate.fluidMouth());
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CHEM_BURNER.get(), (burner, side) -> VanillaContainerWrapper.of(burner));
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.AXOLOTL_TANK.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CHEM_STILL.get(), WorldlyContainerWrapper::new);
