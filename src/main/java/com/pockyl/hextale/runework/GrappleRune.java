@@ -25,8 +25,8 @@ public enum GrappleRune implements HolderRune {
 
     public static final int SLOTS = 3;
     /** Blocks the tendril reaches without Shift. */
-    public static final int REACH = 16;
-    public static final int[] REACHES = {24, 32, 40, 48};
+    public static final int REACH = 32;
+    public static final int[] REACHES = {40, 48, 56, 64};
     /** Blocks per tick of the pull without Motor. */
     public static final float SPEED = 0.9F;
     public static final float[] SPEEDS = {1.1F, 1.3F, 1.5F, 1.8F};

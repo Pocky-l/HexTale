@@ -43,7 +43,7 @@ import java.util.function.Consumer;
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public class GrappleGauntletItem extends Item {
     /** Longest pull. */
-    public static final int MAX_TICKS = 60;
+    public static final int MAX_TICKS = 100;
     /** Rest after a throw. */
     public static final int REST = 20;
     /** Close enough to the hook to let go. */

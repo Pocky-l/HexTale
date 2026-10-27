@@ -86,8 +86,20 @@ public class HexLiftBlock extends BaseEntityBlock {
 
     /** A ride asked for by a player: checked here, then the player (and with Blink their company) is moved. */
     public static boolean ride(ServerPlayer player, boolean up) {
+        return ride(player, under(player), up);
+    }
+
+    /**
+     * A ride from the lift at {@code from}, named by the client: the player must stand on it or hang just above it (a
+     * jump lifts them off before the key is seen).
+     */
+    public static boolean ride(ServerPlayer player, @Nullable BlockPos from, boolean up) {
         ServerLevel level = player.level();
-        BlockPos from = under(player);
+        if (from != null && (!level.getBlockState(from).is(ModBlocks.HEX_LIFT.get())
+                || Math.abs(player.getX() - (from.getX() + 0.5)) > 1.2 || Math.abs(player.getZ() - (from.getZ() + 0.5)) > 1.2
+                || player.getY() < from.getY() + 0.5 || player.getY() > from.getY() + 3)) {
+            from = null;
+        }
         long now = level.getGameTime();
         Long last = LAST_RIDE.get(player.getUUID());
         if (from == null || last != null && now - last < REST) {

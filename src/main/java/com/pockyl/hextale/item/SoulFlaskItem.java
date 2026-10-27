@@ -29,7 +29,10 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModParticles;
@@ -46,6 +49,7 @@ import org.jspecify.annotations.Nullable;
  * carries is kept); right click a block with a full flask and it steps out there. No players, no bosses. Takes runes
  * (Healing, Growth, Slumber, Lens) that act when the creature comes out.
  */
+@EventBusSubscriber(modid = com.pockyl.hextale.Hextale.MOD_ID)
 public class SoulFlaskItem extends Item {
     public SoulFlaskItem(Properties properties) {
         super(properties);
@@ -59,6 +63,25 @@ public class SoulFlaskItem extends Item {
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
+        return fold(stack, player, target, hand);
+    }
+
+    /**
+     * Creatures with their own right click (a horse is mounted, a villager trades) would never reach
+     * {@link #interactLivingEntity}: an empty flask in hand takes the click first.
+     */
+    @SubscribeEvent
+    public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
+        ItemStack stack = event.getItemStack();
+        if (stack.getItem() instanceof SoulFlaskItem && !stack.has(ModDataComponents.SOUL.get())
+                && event.getTarget() instanceof LivingEntity target && takes(target)) {
+            event.setCancellationResult(fold(stack, event.getEntity(), target, event.getHand()));
+            event.setCanceled(true);
+        }
+    }
+
+    /** Folds {@code target} into the empty flask {@code stack}. */
+    public static InteractionResult fold(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
         if (stack.has(ModDataComponents.SOUL.get()) || !takes(target)) {
             return InteractionResult.PASS;
         }
@@ -66,8 +89,7 @@ public class SoulFlaskItem extends Item {
             ItemStack full = stack.copyWithCount(1);
             full.set(ModDataComponents.SOUL.get(), capture(level, target));
             Vec3 at = target.position();
-            level.sendParticles(ModParticles.wisp(ModParticles.HEX_LIGHT), at.x, at.y + target.getBbHeight() / 2, at.z, 16,
-                    target.getBbWidth() / 2, target.getBbHeight() / 2, target.getBbWidth() / 2, 0.02);
+            runes(level, at.add(0, target.getBbHeight() / 2, 0), target.getBbWidth(), target.getBbHeight());
             level.playSound(null, at.x, at.y, at.z, ModSounds.ESSENCE_DRAW.get(), SoundSource.PLAYERS, 0.8F, 1.2F);
             target.discard();
             stack.shrink(1);
@@ -123,11 +145,17 @@ public class SoulFlaskItem extends Item {
                 bless(stack, living);
             }
             level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), entity.getX(), entity.getY() + 0.1, entity.getZ(), 0, 1.0, 1, 0, 1);
-            level.sendParticles(ModParticles.wisp(ModParticles.HEX_LIGHT), entity.getX(), entity.getY() + 0.5, entity.getZ(), 12, 0.3, 0.4, 0.3, 0.02);
+            runes(level, entity.position().add(0, entity.getBbHeight() / 2, 0), entity.getBbWidth(), entity.getBbHeight());
             level.playSound(null, pos, ModSounds.PYLON_ARRIVE.get(), SoundSource.PLAYERS, 0.8F, 1.1F);
             stack.remove(ModDataComponents.SOUL.get());
         }
         return InteractionResult.SUCCESS;
+    }
+
+    /** Rune glyphs swirling around a creature going into the glass or coming out. */
+    private static void runes(ServerLevel level, Vec3 centre, float width, float height) {
+        level.sendParticles(ModParticles.runeShard(ModParticles.HEXTECH), centre.x, centre.y, centre.z, 14, width / 2 + 0.2, height / 2, width / 2 + 0.2, 0.04);
+        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), centre.x, centre.y, centre.z, 6, width / 2, height / 2, width / 2, 0.02);
     }
 
     /** What the flask's runes do to the creature stepping out. */

@@ -14,6 +14,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -51,6 +52,7 @@ import org.jspecify.annotations.Nullable;
 public class ImpulsePlateBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape SHAPE = Block.column(16.0, 0.0, 1.0);
+    private static final VoxelShape TRIGGER = Block.column(16.0, 0.0, 4.0);
     /** Ticks before the same entity can be thrown again (it is still on the plate for a tick or two). */
     private static final int REST = 10;
     /** Ticks a Breath landing stays soft after the throw. */
@@ -89,8 +91,23 @@ public class ImpulsePlateBlock extends BaseEntityBlock {
         return new Plate(pos, state);
     }
 
+    /** Only feet right on the plate set it off. */
     @Override
-    public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
+    protected VoxelShape getEntityInsideCollisionShape(BlockState state, BlockGetter level, BlockPos pos, Entity entity) {
+        return TRIGGER;
+    }
+
+    /**
+     * The plate is a single pixel thin, so vanilla's {@code stepOn} goes to the block under it; whatever stands on it
+     * is inside its cell instead.
+     */
+    @Override
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+        launch(level, pos, state, entity);
+    }
+
+    /** Throws {@code entity} up and along the plate's arrow (once per {@link #REST} ticks). */
+    public void launch(Level level, BlockPos pos, BlockState state, Entity entity) {
         long now = level.getGameTime();
         synchronized (THROWN) {
             Long last = THROWN.get(entity);
@@ -116,7 +133,6 @@ public class ImpulsePlateBlock extends BaseEntityBlock {
             server.sendParticles(ModParticles.ring(ModParticles.HEXTECH), pos.getX() + 0.5, pos.getY() + 0.1, pos.getZ() + 0.5, 0, 0.9, 1, 0, 1);
             server.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), pos.getX() + 0.5, pos.getY() + 0.2, pos.getZ() + 0.5, 8, 0.3, 0.1, 0.3, 0.1);
         }
-        super.stepOn(level, pos, state, entity);
     }
 
     /** The plate's runes. */

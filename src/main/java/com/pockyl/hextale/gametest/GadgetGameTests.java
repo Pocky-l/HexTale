@@ -72,18 +72,19 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
-    @HexTest
+    @HexTest(setupTicks = 40, maxTicks = 200)
     public static void anImpulsePlateThrowsAlongItsArrow(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 1, 1);
         helper.setBlock(at, ModBlocks.IMPULSE_PLATE.get().defaultBlockState()
                 .setValue(com.pockyl.hextale.block.ImpulsePlateBlock.FACING, net.minecraft.core.Direction.EAST));
-        net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, at.above());
-        BlockPos plate = helper.absolutePos(at);
-        ModBlocks.IMPULSE_PLATE.get().stepOn(helper.getLevel(), plate, helper.getLevel().getBlockState(plate), pig);
-        Vec3 throwVec = pig.getDeltaMovement();
-        pig.discard();
-        helper.assertTrue(throwVec.y >= 1.0 && throwVec.x > 0.3 && Math.abs(throwVec.z) < 0.01, "thrown up and east: " + throwVec);
-        helper.succeed();
+        // A pig standing on the plate - no direct call: the plate must notice it by itself.
+        net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, new Vec3(1.5, 1.07, 1.5));
+        double floor = helper.absolutePos(at).getY();
+        double startX = pig.getX();
+        helper.succeedWhen(() -> {
+            helper.assertTrue(pig.getY() > floor + 2 && pig.getX() > startX + 0.3, "thrown up and east: " + pig.position());
+            pig.discard();
+        });
     }
 
     @HexTest(padding = 2)
@@ -272,6 +273,20 @@ public final class GadgetGameTests {
         helper.assertTrue(gifts == 1 && player.hasEffect(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE), "fire gives fire resistance");
         com.pockyl.hextale.essence.EssenceFlaskItem.drink(com.pockyl.hextale.essence.EssenceMix.unknown(8), player);
         helper.assertTrue(player.hasEffect(net.minecraft.world.effect.MobEffects.NAUSEA), "the unknown essence turns the stomach");
+        helper.succeed();
+    }
+
+    @HexTest(padding = 2)
+    public static void aJumpOffALiftStillRidesUp(GameTestHelper helper) {
+        BlockPos low = new BlockPos(1, 1, 1);
+        helper.setBlock(low, ModBlocks.HEX_LIFT.get());
+        helper.setBlock(low.above(6), ModBlocks.HEX_LIFT.get());
+        BlockPos from = helper.absolutePos(low);
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        // Already half a block up in the jump when the client sees the key.
+        player.teleportTo(from.getX() + 0.5, from.getY() + 1.5, from.getZ() + 0.5);
+        helper.assertTrue(com.pockyl.hextale.block.HexLiftBlock.ride(player, from, true), "the jump counts");
+        helper.assertTrue(Math.abs(player.getY() - (from.getY() + 7)) < 0.01, "and lands on the upper lift: " + player.getY());
         helper.succeed();
     }
 }

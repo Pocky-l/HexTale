@@ -2,6 +2,7 @@ package com.pockyl.hextale.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
@@ -13,6 +14,11 @@ import com.pockyl.hextale.network.HexLiftPayload;
 public final class ClientLift {
     private static boolean jumpWasDown;
     private static boolean sneakWasDown;
+    /** The lift the player last stood on, and the tick they did: a jump is seen only once they have left it. */
+    private static BlockPos lastLift;
+    private static int lastLiftTick;
+    /** Ticks after leaving a lift that a jump still counts as made on it. */
+    private static final int GRACE = 6;
 
     private ClientLift() {
     }
@@ -31,11 +37,19 @@ public final class ClientLift {
         }
         boolean jump = minecraft.options.keyJump.isDown();
         boolean sneak = minecraft.options.keyShift.isDown();
-        if (HexLiftBlock.under(player) != null) {
+        BlockPos under = HexLiftBlock.under(player);
+        if (under != null) {
+            lastLift = under;
+            lastLiftTick = player.tickCount;
+        }
+        BlockPos from = lastLift != null && player.tickCount - lastLiftTick <= GRACE ? lastLift : null;
+        if (from != null) {
             if (jump && !jumpWasDown) {
-                ClientPacketDistributor.sendToServer(new HexLiftPayload(true));
-            } else if (sneak && !sneakWasDown) {
-                ClientPacketDistributor.sendToServer(new HexLiftPayload(false));
+                ClientPacketDistributor.sendToServer(new HexLiftPayload(from, true));
+                lastLift = null;
+            } else if (sneak && !sneakWasDown && under != null) {
+                ClientPacketDistributor.sendToServer(new HexLiftPayload(under, false));
+                lastLift = null;
             }
         }
         jumpWasDown = jump;
