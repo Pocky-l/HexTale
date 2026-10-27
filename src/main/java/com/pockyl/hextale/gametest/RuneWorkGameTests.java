@@ -156,6 +156,9 @@ public final class RuneWorkGameTests {
             HextechAltarBlockEntity core = helper.getBlockEntity(ALTAR, HextechAltarBlockEntity.class);
             helper.assertTrue(core instanceof com.pockyl.hextale.block.HexcoreBlockEntity && core.center().isEmpty() && !core.active(),
                     "a Hexcore stands where the altar was, with nothing left in it");
+            helper.assertTrue(helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                    new net.minecraft.world.phys.AABB(helper.absolutePos(ALTAR)).inflate(3),
+                    item -> item.getItem().is(ModItems.HEXTECH_GEMSTONE.get())).isEmpty(), "the gemstone went into the core, none dropped");
         });
     }
 

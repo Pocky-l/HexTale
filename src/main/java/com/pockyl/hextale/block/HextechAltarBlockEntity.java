@@ -433,6 +433,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             // The circle's own heart was the work: the altar itself becomes the Hexcore.
             clearRitual();
             resetSteles(level);
+            // The gemstone went into the core: the old altar must not drop it when the block is replaced.
+            center = ItemStack.EMPTY;
             HexcoreBlockEntity.awaken(level, worldPosition, getBlockState());
             return;
         }
