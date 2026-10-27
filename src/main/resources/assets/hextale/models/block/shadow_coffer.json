@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/orientable",
-  "textures": {
-    "front": "hextale:block/shadow_coffer_front",
-    "side": "hextale:block/shadow_coffer_side",
-    "top": "hextale:block/shadow_coffer_top"
-  }
-}
