@@ -1,84 +1,939 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "#side",
-    "side": "hextale:block/riveted_rusted_plating",
-    "top": "hextale:block/miasma_vent_top",
-    "bottom": "hextale:block/rusted_plating"
+    "particle": "hextale:block/rusted_plating",
+    "rust": "hextale:block/rusted_plating",
+    "riveted": "hextale:block/riveted_rusted_plating",
+    "grate": "hextale:block/miasma_vent_top",
+    "mouth": "hextale:block/miasma_vent_mouth",
+    "copper": "minecraft:block/oxidized_copper"
   },
   "elements": [
     {
-      "name": "rust_body",
+      "name": "riveted_base",
       "from": [
+        1,
         0,
-        0,
-        0
+        1
       ],
       "to": [
-        16,
-        16,
-        16
+        15,
+        3,
+        15
       ],
       "faces": {
         "north": {
           "uv": [
-            0,
-            0,
-            16,
+            1,
+            13,
+            15,
             16
           ],
-          "texture": "#side",
-          "cullface": "north"
+          "texture": "#riveted"
         },
         "east": {
           "uv": [
-            0,
-            0,
-            16,
+            1,
+            13,
+            15,
             16
           ],
-          "texture": "#side",
-          "cullface": "east"
+          "texture": "#riveted"
         },
         "south": {
           "uv": [
-            0,
-            0,
-            16,
+            1,
+            13,
+            15,
             16
           ],
-          "texture": "#side",
-          "cullface": "south"
+          "texture": "#riveted"
         },
         "west": {
           "uv": [
-            0,
-            0,
-            16,
+            1,
+            13,
+            15,
             16
           ],
-          "texture": "#side",
-          "cullface": "west"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#top",
-          "cullface": "up"
+          "texture": "#riveted"
         },
         "down": {
           "uv": [
-            0,
-            0,
-            16,
-            16
+            1,
+            1,
+            15,
+            15
           ],
-          "texture": "#bottom",
+          "texture": "#riveted",
           "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "grate_slab",
+      "from": [
+        1,
+        3,
+        1
+      ],
+      "to": [
+        15,
+        4,
+        15
+      ],
+      "light_emission": 6,
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            12,
+            15,
+            13
+          ],
+          "texture": "#riveted"
+        },
+        "east": {
+          "uv": [
+            1,
+            12,
+            15,
+            13
+          ],
+          "texture": "#riveted"
+        },
+        "south": {
+          "uv": [
+            1,
+            12,
+            15,
+            13
+          ],
+          "texture": "#riveted"
+        },
+        "west": {
+          "uv": [
+            1,
+            12,
+            15,
+            13
+          ],
+          "texture": "#riveted"
+        },
+        "up": {
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ],
+          "texture": "#grate"
+        }
+      }
+    },
+    {
+      "name": "rust_stack",
+      "from": [
+        6,
+        4,
+        6
+      ],
+      "to": [
+        10,
+        12,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            4,
+            10,
+            12
+          ],
+          "texture": "#rust"
+        },
+        "east": {
+          "uv": [
+            6,
+            4,
+            10,
+            12
+          ],
+          "texture": "#rust"
+        },
+        "south": {
+          "uv": [
+            6,
+            4,
+            10,
+            12
+          ],
+          "texture": "#rust"
+        },
+        "west": {
+          "uv": [
+            6,
+            4,
+            10,
+            12
+          ],
+          "texture": "#rust"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#mouth"
+        }
+      }
+    },
+    {
+      "name": "riveted_collar_low",
+      "from": [
+        5,
+        4,
+        5
+      ],
+      "to": [
+        11,
+        5,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            11,
+            11,
+            12
+          ],
+          "texture": "#riveted"
+        },
+        "east": {
+          "uv": [
+            5,
+            11,
+            11,
+            12
+          ],
+          "texture": "#riveted"
+        },
+        "south": {
+          "uv": [
+            5,
+            11,
+            11,
+            12
+          ],
+          "texture": "#riveted"
+        },
+        "west": {
+          "uv": [
+            5,
+            11,
+            11,
+            12
+          ],
+          "texture": "#riveted"
+        },
+        "up": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#riveted"
+        }
+      }
+    },
+    {
+      "name": "riveted_collar_high",
+      "from": [
+        5,
+        10,
+        5
+      ],
+      "to": [
+        11,
+        11,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            5,
+            11,
+            6
+          ],
+          "texture": "#riveted"
+        },
+        "east": {
+          "uv": [
+            5,
+            5,
+            11,
+            6
+          ],
+          "texture": "#riveted"
+        },
+        "south": {
+          "uv": [
+            5,
+            5,
+            11,
+            6
+          ],
+          "texture": "#riveted"
+        },
+        "west": {
+          "uv": [
+            5,
+            5,
+            11,
+            6
+          ],
+          "texture": "#riveted"
+        },
+        "up": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#riveted"
+        },
+        "down": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#riveted"
+        }
+      }
+    },
+    {
+      "name": "glow_fume",
+      "from": [
+        7,
+        12,
+        7
+      ],
+      "to": [
+        9,
+        14,
+        9
+      ],
+      "light_emission": 12,
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ],
+          "texture": "#mouth"
+        },
+        "east": {
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ],
+          "texture": "#mouth"
+        },
+        "south": {
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ],
+          "texture": "#mouth"
+        },
+        "west": {
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ],
+          "texture": "#mouth"
+        }
+      }
+    },
+    {
+      "name": "rust_strut_nw",
+      "from": [
+        6,
+        12,
+        6
+      ],
+      "to": [
+        7,
+        14,
+        7
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9,
+            2,
+            10,
+            4
+          ],
+          "texture": "#rust"
+        },
+        "east": {
+          "uv": [
+            9,
+            2,
+            10,
+            4
+          ],
+          "texture": "#rust"
+        },
+        "south": {
+          "uv": [
+            6,
+            2,
+            7,
+            4
+          ],
+          "texture": "#rust"
+        },
+        "west": {
+          "uv": [
+            6,
+            2,
+            7,
+            4
+          ],
+          "texture": "#rust"
+        }
+      }
+    },
+    {
+      "name": "rust_strut_ne",
+      "from": [
+        9,
+        12,
+        6
+      ],
+      "to": [
+        10,
+        14,
+        7
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            2,
+            7,
+            4
+          ],
+          "texture": "#rust"
+        },
+        "east": {
+          "uv": [
+            9,
+            2,
+            10,
+            4
+          ],
+          "texture": "#rust"
+        },
+        "south": {
+          "uv": [
+            9,
+            2,
+            10,
+            4
+          ],
+          "texture": "#rust"
+        },
+        "west": {
+          "uv": [
+            6,
+            2,
+            7,
+            4
+          ],
+          "texture": "#rust"
+        }
+      }
+    },
+    {
+      "name": "rust_strut_sw",
+      "from": [
+        6,
+        12,
+        9
+      ],
+      "to": [
+        7,
+        14,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9,
+            2,
+            10,
+            4
+          ],
+          "texture": "#rust"
+        },
+        "east": {
+          "uv": [
+            6,
+            2,
+            7,
+            4
+          ],
+          "texture": "#rust"
+        },
+        "south": {
+          "uv": [
+            6,
+            2,
+            7,
+            4
+          ],
+          "texture": "#rust"
+        },
+        "west": {
+          "uv": [
+            9,
+            2,
+            10,
+            4
+          ],
+          "texture": "#rust"
+        }
+      }
+    },
+    {
+      "name": "rust_strut_se",
+      "from": [
+        9,
+        12,
+        9
+      ],
+      "to": [
+        10,
+        14,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            2,
+            7,
+            4
+          ],
+          "texture": "#rust"
+        },
+        "east": {
+          "uv": [
+            6,
+            2,
+            7,
+            4
+          ],
+          "texture": "#rust"
+        },
+        "south": {
+          "uv": [
+            9,
+            2,
+            10,
+            4
+          ],
+          "texture": "#rust"
+        },
+        "west": {
+          "uv": [
+            9,
+            2,
+            10,
+            4
+          ],
+          "texture": "#rust"
+        }
+      }
+    },
+    {
+      "name": "rust_cap",
+      "from": [
+        4,
+        14,
+        4
+      ],
+      "to": [
+        12,
+        15,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            1,
+            12,
+            2
+          ],
+          "texture": "#rust"
+        },
+        "east": {
+          "uv": [
+            4,
+            1,
+            12,
+            2
+          ],
+          "texture": "#rust"
+        },
+        "south": {
+          "uv": [
+            4,
+            1,
+            12,
+            2
+          ],
+          "texture": "#rust"
+        },
+        "west": {
+          "uv": [
+            4,
+            1,
+            12,
+            2
+          ],
+          "texture": "#rust"
+        },
+        "up": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#rust"
+        },
+        "down": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#rust"
+        }
+      }
+    },
+    {
+      "name": "rust_cap_peak",
+      "from": [
+        6,
+        15,
+        6
+      ],
+      "to": [
+        10,
+        16,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            0,
+            10,
+            1
+          ],
+          "texture": "#rust"
+        },
+        "east": {
+          "uv": [
+            6,
+            0,
+            10,
+            1
+          ],
+          "texture": "#rust"
+        },
+        "south": {
+          "uv": [
+            6,
+            0,
+            10,
+            1
+          ],
+          "texture": "#rust"
+        },
+        "west": {
+          "uv": [
+            6,
+            0,
+            10,
+            1
+          ],
+          "texture": "#rust"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#rust",
+          "cullface": "up"
+        }
+      }
+    },
+    {
+      "name": "copper_pipe_w",
+      "from": [
+        2,
+        4,
+        7
+      ],
+      "to": [
+        4,
+        9,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            7,
+            14,
+            12
+          ],
+          "texture": "#copper"
+        },
+        "east": {
+          "uv": [
+            7,
+            7,
+            9,
+            12
+          ],
+          "texture": "#copper"
+        },
+        "south": {
+          "uv": [
+            2,
+            7,
+            4,
+            12
+          ],
+          "texture": "#copper"
+        },
+        "west": {
+          "uv": [
+            7,
+            7,
+            9,
+            12
+          ],
+          "texture": "#copper"
+        },
+        "up": {
+          "uv": [
+            2,
+            7,
+            4,
+            9
+          ],
+          "texture": "#copper"
+        }
+      }
+    },
+    {
+      "name": "copper_pipe_w_in",
+      "from": [
+        4,
+        7,
+        7
+      ],
+      "to": [
+        6,
+        9,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10,
+            7,
+            12,
+            9
+          ],
+          "texture": "#copper"
+        },
+        "south": {
+          "uv": [
+            4,
+            7,
+            6,
+            9
+          ],
+          "texture": "#copper"
+        },
+        "up": {
+          "uv": [
+            4,
+            7,
+            6,
+            9
+          ],
+          "texture": "#copper"
+        },
+        "down": {
+          "uv": [
+            4,
+            7,
+            6,
+            9
+          ],
+          "texture": "#copper"
+        }
+      }
+    },
+    {
+      "name": "copper_pipe_e",
+      "from": [
+        12,
+        4,
+        9
+      ],
+      "to": [
+        14,
+        7,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            9,
+            4,
+            12
+          ],
+          "texture": "#copper"
+        },
+        "east": {
+          "uv": [
+            5,
+            9,
+            7,
+            12
+          ],
+          "texture": "#copper"
+        },
+        "south": {
+          "uv": [
+            12,
+            9,
+            14,
+            12
+          ],
+          "texture": "#copper"
+        },
+        "west": {
+          "uv": [
+            9,
+            9,
+            11,
+            12
+          ],
+          "texture": "#copper"
+        },
+        "up": {
+          "uv": [
+            12,
+            9,
+            14,
+            11
+          ],
+          "texture": "#copper"
+        }
+      }
+    },
+    {
+      "name": "copper_pipe_e_in",
+      "from": [
+        10,
+        5,
+        9
+      ],
+      "to": [
+        12,
+        7,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            9,
+            6,
+            11
+          ],
+          "texture": "#copper"
+        },
+        "south": {
+          "uv": [
+            10,
+            9,
+            12,
+            11
+          ],
+          "texture": "#copper"
+        },
+        "west": {
+          "uv": [
+            9,
+            9,
+            11,
+            11
+          ],
+          "texture": "#copper"
+        },
+        "up": {
+          "uv": [
+            10,
+            9,
+            12,
+            11
+          ],
+          "texture": "#copper"
+        },
+        "down": {
+          "uv": [
+            10,
+            5,
+            12,
+            7
+          ],
+          "texture": "#copper"
         }
       }
     }

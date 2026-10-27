@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
+    "powered=false": {
       "model": "hextale:block/miasma_vent"
+    },
+    "powered=true": {
+      "model": "hextale:block/miasma_vent_off"
     }
   }
 }
