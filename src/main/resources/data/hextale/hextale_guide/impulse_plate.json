@@ -3,7 +3,8 @@
   "icon": "hextale:impulse_plate",
   "parents": [
     "hex_workbench",
-    "brass"
+    "brass",
+    "ink"
   ],
   "display": {
     "kind": "hex_crafting",
@@ -13,6 +14,7 @@
       "result": "impulse"
     }
   },
+  "research": "impulse_plate",
   "pos": [
     -60,
     0

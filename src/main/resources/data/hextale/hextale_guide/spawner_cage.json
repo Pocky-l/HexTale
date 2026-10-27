@@ -9,6 +9,7 @@
     "kind": "infusion",
     "result": "hextale:spawner_cage"
   },
+  "research": "spawner_cage",
   "pos": [
     370,
     -70

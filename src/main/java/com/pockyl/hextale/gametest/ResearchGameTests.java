@@ -1364,6 +1364,38 @@ public final class ResearchGameTests {
         helper.succeed();
     }
 
+    /**
+     * The Tuning Fork and the Dust Charge stay free (they lead to the struck geodes before any research); every other
+     * gadget waits for its research: the plates, the glass and the floating stone first, the anchor last.
+     */
+    @HexTest
+    public static void gadgetsWaitForTheirResearch(GameTestHelper helper) {
+        ServerPlayer player = survivalPlayer(helper);
+        RuneKnowledge knowledge = Research.of(player);
+        for (Item free : List.of(ModItems.TUNING_FORK.get(), ModItems.DUST_CHARGE.get())) {
+            helper.assertTrue(ResearchTopics.mayMake(player, new ItemStack(free), knowledge), free + " needs no research");
+        }
+        java.util.Map<com.pockyl.hextale.research.ResearchTopic, Integer> tiers = java.util.Map.ofEntries(
+                java.util.Map.entry(ResearchTopics.LEVITATION_PLATE, 1), java.util.Map.entry(ResearchTopics.IMPULSE_PLATE, 1),
+                java.util.Map.entry(ResearchTopics.SIEVE_GLASS, 1), java.util.Map.entry(ResearchTopics.FLOATING_STONE, 1),
+                java.util.Map.entry(ResearchTopics.RECALL_CHARM, 2), java.util.Map.entry(ResearchTopics.SOUL_FLASK, 2),
+                java.util.Map.entry(ResearchTopics.SPAWNER_CAGE, 2), java.util.Map.entry(ResearchTopics.GRAPPLE_GAUNTLET, 2),
+                java.util.Map.entry(ResearchTopics.NULL_LANTERN, 2), java.util.Map.entry(ResearchTopics.RIFT_GATE, 2),
+                java.util.Map.entry(ResearchTopics.DISINTEGRATOR, 2), java.util.Map.entry(ResearchTopics.WORLD_ANCHOR, 3));
+        tiers.forEach((topic, tier) -> {
+            helper.assertTrue(topic.tier() == tier, topic.id() + " is a tier " + tier + " research");
+            for (var item : topic.items()) {
+                helper.assertFalse(ResearchTopics.mayMake(player, new ItemStack(item.get()), knowledge), topic.id() + " waits for its research");
+            }
+        });
+        helper.assertTrue(ResearchTopics.DISINTEGRATOR.lab(), "the Disintegrator is worked out at the Lab Bench");
+        Research.research(player, ResearchTopics.SIEVE_GLASS);
+        helper.assertTrue(ResearchTopics.mayMake(player, new ItemStack(ModItems.WARD_GLASS.get()), knowledge)
+                && ResearchTopics.mayMake(player, new ItemStack(ModItems.VEIL_GLASS.get()), knowledge), "one research opens both glasses");
+        player.discard();
+        helper.succeed();
+    }
+
     @HexTest
     public static void scrollsTeachOtherResearchers(GameTestHelper helper) {
         ServerPlayer reader = survivalPlayer(helper);

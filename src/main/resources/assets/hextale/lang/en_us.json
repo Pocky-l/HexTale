@@ -25,7 +25,7 @@
   "block.hextale.hextech_altar.engrave.full_grapple": "No room for %s: the gauntlet holds three runes",
   "quest.hextale.grapple_gauntlet": "Grapple Gauntlet",
   "quest.hextale.grapple_gauntlet.goal": "make a Grapple Gauntlet",
-  "quest.hextale.grapple_gauntlet.desc": "The lift carries me only where another lift waits. What if the tendril the pylons use could be thrown from my own hand?",
+  "quest.hextale.grapple_gauntlet.desc": "The levitation plate only lifts what stands over it. What if the tendril the pylons use could be thrown from my own hand?",
   "block.hextale.disintegrator": "Disintegrator",
   "block.hextale.disintegrator.hint": "Whatever falls in comes apart into something dark and nameless.",
   "block.hextale.disintegrator.status": "%s - unknown essence %s / %s mB",

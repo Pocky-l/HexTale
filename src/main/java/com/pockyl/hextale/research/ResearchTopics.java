@@ -60,6 +60,7 @@ public final class ResearchTopics {
     public static final ResearchTopic HEXTECH_LAMP = add("hextech_lamp", 2, Essence.LIGHT, Essence.FIRE, ModItems.HEXTECH_LAMP);
     public static final ResearchTopic CRYSTAL_BATTERY = add("crystal_battery", 2, Essence.SPARK, Essence.METAL, ModItems.CRYSTAL_BATTERY);
     public static final ResearchTopic CHEM_BURNER = lab("chem_burner", 1, Essence.FIRE, Essence.AIR, ModItems.CHEM_BURNER);
+    public static final ResearchTopic DISINTEGRATOR = lab("disintegrator", 2, Essence.FIRE, Essence.SHADOW, ModItems.DISINTEGRATOR);
     public static final ResearchTopic MIASMA_VENT = lab("miasma_vent", 2, Essence.DECAY, Essence.AIR, ModItems.MIASMA_VENT);
     public static final ResearchTopic MAGIC_TREE = lab("magic_sapling", 2, Essence.LIFE, Essence.LIGHT, ModItems.MAGIC_SAPLING);
     public static final ResearchTopic AXOLOTL_TANK = lab("axolotl_tank", 1, Essence.WATER, Essence.LIFE, ModItems.AXOLOTL_TANK);
@@ -77,6 +78,19 @@ public final class ResearchTopics {
     public static final ResearchTopic HEXTECH_TOOLS = register(new ResearchTopic("hextech_tools",
             List.<Supplier<? extends ItemLike>>of(ModItems.pickaxe(HextechPickaxe.HEXTECH), ModItems.HEXTECH_AXE, ModItems.HEXTECH_SHOVEL, ModItems.HEXTECH_SWORD),
             Essence.METAL, Essence.EARTH, 1, ResearchTopic.Bench.TABLE, null, "research.hextale.topic.hextech_tools"));
+    // Gadgets: the first ones (tier 1) right after the first researches, the strong ones deeper.
+    public static final ResearchTopic LEVITATION_PLATE = add("levitation_plate", 1, Essence.AIR, Essence.EARTH, ModItems.LEVITATION_PLATE);
+    public static final ResearchTopic IMPULSE_PLATE = add("impulse_plate", 1, Essence.SPARK, Essence.AIR, ModItems.IMPULSE_PLATE);
+    public static final ResearchTopic SIEVE_GLASS = register(new ResearchTopic("sieve_glass", List.of(ModItems.WARD_GLASS, ModItems.VEIL_GLASS),
+            Essence.SHADOW, Essence.LIFE, 1, ResearchTopic.Bench.TABLE, null, "quest.hextale.sieve_glass"));
+    public static final ResearchTopic FLOATING_STONE = add("floating_stone", 1, Essence.EARTH, Essence.AIR, ModItems.FLOATING_STONE);
+    public static final ResearchTopic RECALL_CHARM = add("recall_charm", 2, Essence.SHADOW, Essence.SPARK, ModItems.RECALL_CHARM);
+    public static final ResearchTopic SOUL_FLASK = add("soul_flask", 2, Essence.LIFE, Essence.SHADOW, ModItems.SOUL_FLASK);
+    public static final ResearchTopic SPAWNER_CAGE = add("spawner_cage", 2, Essence.EARTH, Essence.LIFE, ModItems.SPAWNER_CAGE);
+    public static final ResearchTopic GRAPPLE_GAUNTLET = add("grapple_gauntlet", 2, Essence.METAL, Essence.AIR, ModItems.GRAPPLE_GAUNTLET);
+    public static final ResearchTopic NULL_LANTERN = add("null_lantern", 2, Essence.SHADOW, Essence.LIGHT, ModItems.NULL_LANTERN);
+    public static final ResearchTopic RIFT_GATE = add("rift_gate", 2, Essence.SHADOW, Essence.AIR, ModItems.RIFT_GATE);
+    public static final ResearchTopic WORLD_ANCHOR = add("world_anchor", 3, Essence.EARTH, Essence.LIGHT, ModItems.WORLD_ANCHOR);
     public static final ResearchTopic HEX_FOUNDRY = add("hex_foundry", 2, Essence.FIRE, Essence.EARTH, ModItems.HEX_FOUNDRY);
     public static final ResearchTopic WHIRL_REAPER = add("whirl_reaper", 1, Essence.AIR, Essence.LIFE, ModItems.WHIRL_REAPER);
     public static final ResearchTopic HEX_SAWMILL = add("hex_sawmill", 1, Essence.METAL, Essence.LIFE, ModItems.HEX_SAWMILL);

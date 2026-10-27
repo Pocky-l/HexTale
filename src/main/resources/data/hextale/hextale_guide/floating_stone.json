@@ -8,6 +8,7 @@
     "kind": "hex_crafting",
     "result": "hextale:floating_stone"
   },
+  "research": "floating_stone",
   "pos": [
     -120,
     100
