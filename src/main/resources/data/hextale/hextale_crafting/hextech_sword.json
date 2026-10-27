@@ -1,0 +1,18 @@
+{
+  "pattern": [
+    "BUB",
+    " T ",
+    " X "
+  ],
+  "key": {
+    "B": "hextale:brass_ingot",
+    "U": "hextale:unstable_hextech",
+    "T": "minecraft:iron_sword",
+    "X": "minecraft:amethyst_shard"
+  },
+  "result": {
+    "id": "hextale:hextech_sword",
+    "count": 1
+  },
+  "charge": 2
+}

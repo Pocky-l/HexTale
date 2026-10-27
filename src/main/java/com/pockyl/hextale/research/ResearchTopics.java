@@ -73,11 +73,10 @@ public final class ResearchTopics {
     public static final ResearchTopic GLOW_MIX = brew("glow_mix", 2, Brew.GLOW, Essence.WATER, Essence.LIFE);
     public static final ResearchTopic ACID = brew("acid", 2, Brew.ACID, Essence.SHADOW, Essence.WATER);
     public static final ResearchTopic RAW_SHIMMER = brew("raw_shimmer", 3, Brew.RAW_SHIMMER, Essence.LIGHT, Essence.LIFE);
-    public static final ResearchTopic HEXTECH_PICKAXE = add("hextech_pickaxe", 2, Essence.METAL, Essence.EARTH,
-            ModItems.pickaxe(HextechPickaxe.HEXTECH));
-    public static final ResearchTopic HEXTECH_AXE = add("hextech_axe", 2, Essence.METAL, Essence.LIFE, ModItems.HEXTECH_AXE);
-    public static final ResearchTopic HEXTECH_SHOVEL = add("hextech_shovel", 2, Essence.EARTH, Essence.METAL, ModItems.HEXTECH_SHOVEL);
-    public static final ResearchTopic HEXTECH_SWORD = add("hextech_sword", 2, Essence.FIRE, Essence.METAL, ModItems.HEXTECH_SWORD);
+    /** The four basic hextech tools are worked out together, right after the first researches at the table. */
+    public static final ResearchTopic HEXTECH_TOOLS = register(new ResearchTopic("hextech_tools",
+            List.<Supplier<? extends ItemLike>>of(ModItems.pickaxe(HextechPickaxe.HEXTECH), ModItems.HEXTECH_AXE, ModItems.HEXTECH_SHOVEL, ModItems.HEXTECH_SWORD),
+            Essence.METAL, Essence.EARTH, 1, ResearchTopic.Bench.TABLE, null, "research.hextale.topic.hextech_tools"));
     public static final ResearchTopic HEX_FOUNDRY = add("hex_foundry", 2, Essence.FIRE, Essence.EARTH, ModItems.HEX_FOUNDRY);
     public static final ResearchTopic WHIRL_REAPER = add("whirl_reaper", 1, Essence.AIR, Essence.LIFE, ModItems.WHIRL_REAPER);
     public static final ResearchTopic HEX_SAWMILL = add("hex_sawmill", 1, Essence.METAL, Essence.LIFE, ModItems.HEX_SAWMILL);
@@ -104,18 +103,18 @@ public final class ResearchTopics {
 
     @SafeVarargs
     private static ResearchTopic add(String id, int tier, Essence action, Essence target, Supplier<? extends ItemLike>... items) {
-        return register(new ResearchTopic(id, List.of(items), action, target, tier, ResearchTopic.Bench.TABLE, null));
+        return register(new ResearchTopic(id, List.of(items), action, target, tier, ResearchTopic.Bench.TABLE, null, null));
     }
 
     /** A chemtech device, worked out at the Lab Bench. */
     @SafeVarargs
     private static ResearchTopic lab(String id, int tier, Essence action, Essence target, Supplier<? extends ItemLike>... items) {
-        return register(new ResearchTopic(id, List.of(items), action, target, tier, ResearchTopic.Bench.LAB, null));
+        return register(new ResearchTopic(id, List.of(items), action, target, tier, ResearchTopic.Bench.LAB, null, null));
     }
 
     /** A chemtech reaction: brewing it in the Crucible, worked out at the Lab Bench. */
     private static ResearchTopic brew(String id, int tier, Brew brew, Essence action, Essence target) {
-        return register(new ResearchTopic(id, List.of(), action, target, tier, ResearchTopic.Bench.LAB, brew));
+        return register(new ResearchTopic(id, List.of(), action, target, tier, ResearchTopic.Bench.LAB, brew, null));
     }
 
     private static ResearchTopic register(ResearchTopic topic) {

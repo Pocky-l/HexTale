@@ -1,16 +1,21 @@
 {
-  "region": "forge",
-  "stage": "mid",
+  "region": "workshop",
   "icon": "hextale:hextech_shovel",
-  "parents": ["hextech_pickaxe"],
+  "parents": [
+    "ink",
+    "brass"
+  ],
   "display": {
-    "kind": "infusion",
+    "kind": "hex_crafting",
     "result": "hextale:hextech_shovel",
     "then": {
       "kind": "runes",
       "result": "shovel"
     }
   },
-  "research": "hextech_shovel",
-  "pos": [800, 270]
+  "research": "hextech_tools",
+  "pos": [
+    230,
+    -360
+  ]
 }

@@ -1356,7 +1356,7 @@ public final class ResearchGameTests {
                 "the jar itself needs none (only the big jar does)");
         Research.research(player, ResearchTopics.CIRCLE);
         helper.assertTrue(ResearchTopics.mayMake(player, new ItemStack(ModItems.PEDESTAL.get()), knowledge), "one research opens the whole circle");
-        ItemStack notes = ResearchNotesItem.of(ResearchTopics.HEXTECH_PICKAXE);
+        ItemStack notes = ResearchNotesItem.of(ResearchTopics.HEXTECH_TOOLS);
         player.setItemInHand(InteractionHand.MAIN_HAND, notes);
         notes.use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
         helper.assertTrue(ResearchTopics.mayMake(player, pickaxe, knowledge) && player.getMainHandItem().isEmpty(), "read notes teach the pickaxe");
