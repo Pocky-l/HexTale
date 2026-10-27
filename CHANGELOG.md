@@ -51,7 +51,8 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - Null Lantern (nullstone round a raw orb, after the Hextech Purifier): its cold violet light drinks the magic that lets
   hostile creatures form - none spawn by themselves within 24 blocks (spawners, eggs and those who walk in still come).
   It stands or hangs like a lantern. Runes: Shift (a wider quiet, up to 64), Hush (no phantoms over sleepless players
-  in it), Banishing (hostile creatures inside take a small bite now and then) and Lens.
+  in it), Banishing (hostile creatures inside take a small bite now and then), Silence (sounds inside go soft, down
+  to nothing; strong enough, no vibration inside reaches sculk sensors, shriekers or wardens) and Lens.
 - Impulse Plate (two at the Hex Workbench): whatever steps on it is thrown up and along its brass arrow, placed facing
   the way you look - or, aimed like a faith plate, onto a spot of your choosing: right click it with an empty hand,
   then right click the block it should throw to (the arc to the block under your crosshair shows while you choose,
@@ -60,9 +61,6 @@ Glassy scars: the way into hextech no longer waits for a storm.
   whoosh, the arc flashes along the way, and the target is marked by a ring of light whenever you hold a plate or
   wear the researcher's goggles. Runes: Shift (higher, and farther targets: 24 blocks, up to 64), Motor (farther,
   and a quicker flight), Breath (a soft landing for unaimed throws too) and Lens.
-- Hex Lift (replaces the "Hex Lift" idea in the diary; a low platform with a glowing pad and four brass guide horns): standing on one, jump to ride to the next lift straight above
-  within 16 blocks, crouch to ride down; the lift you arrive on needs two blocks of room. Runes: Shift (up to 64
-  blocks), Blink (creatures standing on the lift come along), Haste (Speed for a few seconds after a ride) and Lens.
 - Recall Charm (a clock at the Hextech Altar; replaces the "Recall Device" idea): used, it puts you back where you
   stood five seconds ago in the same world, then rests for half a minute. Runes: Shift (up to 24 seconds back), Haste
   (a shorter rest), Mending (heals on the way back) and Lens.
@@ -87,12 +85,10 @@ Glassy scars: the way into hextech no longer waits for a storm.
   into unknown essence and pours it into the jar or pipe below - fuel for the Chem Burner. The unmaking thins the land
   around. Runes: Motor (faster), Dam (more essence), Radiance (experience now and then), Hush (less leaks into the
   land) and Lens.
-- Silence Ward (at the Hex Workbench, from nullstone wrapped in wool): sounds around it go soft - machines, mobs,
-  footsteps - while the rest of the world sounds as usual. Runes: Shift (wider), Hush (quieter, down to nothing),
-  Insulator (no vibration inside reaches sculk sensors, shriekers or wardens) and Lens.
-- Hextech Magnet (at the Hex Workbench): switched on and carried anywhere in the inventory, it draws loose items
-  and experience to you (sneak to let them lie; what you just dropped stays). Runes: Shift (farther), Radiance
-  (experience worth more), Cache (straight into the pocket) and Lens.
+- Magnet, a new rune for the Researcher's Trousers: loose items and experience around you drift to you (4 to 10
+  blocks by its stars; crouch to let them lie, what you just dropped stays).
+- Sponge, a new rune for the Greedy Funnel: now and then a swallowed death leaves its essence too - what its drops
+  are made of soaks into a jar beside the funnel, the drops themselves still go to the chest.
 - Grapple Gauntlet (at the Hex Workbench): hold right click to throw its hextech claw - it bites into the block you
   look at and holds you on a real rope. The rope only pulls when stretched, so you drop, swing through the bottom and
   up the other side; release to let go with all your speed and fling yourself on, then throw again mid-air to chain
@@ -164,8 +160,7 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - Breaking a Crucible while a transmuted item was still soaking lost the item.
 - A Soul Flask could take someone else's pet or a creature on someone else's lead.
 - The Spawner Cage could lift spawners in adventure mode and in protected places.
-- Null Lanterns and Silence Wards of a closed world could still keep monsters away or hush sounds in the next world
-  opened in the same game.
+- Null Lanterns of a closed world could still keep monsters away in the next world opened in the same game.
 - Rift Gates far apart no longer load the other gate's land over and over while essence or fluid flows between them.
 - With a shader pack ([Iris](https://www.curseforge.com/minecraft/mc-mods/irisshaders)) a Void breach in sight broke the
   whole picture. Now the shaders know the mod's glowing runes, sigils and trails, and a breach looks the same as without
