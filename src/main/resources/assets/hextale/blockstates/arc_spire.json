@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
-      "model": "hextale:block/arc_spire"
+    "half=lower": {
+      "model": "hextale:block/arc_spire_lower"
+    },
+    "half=upper": {
+      "model": "hextale:block/arc_spire_upper"
     }
   }
 }

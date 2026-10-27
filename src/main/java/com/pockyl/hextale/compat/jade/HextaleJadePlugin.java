@@ -65,6 +65,10 @@ public class HextaleJadePlugin implements IWailaPlugin {
         @Override
         public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
             BlockEntity entity = accessor.getBlockEntity();
+            if (entity == null && accessor.getBlock() instanceof com.pockyl.hextale.block.ArcSpireBlock) {
+                // The upper half of a spire has no block entity of its own: tell about the base under it.
+                entity = com.pockyl.hextale.block.ArcSpireBlock.spireAt(accessor.getLevel(), accessor.getPosition(), accessor.getBlockState());
+            }
             if (entity instanceof EssenceTankBlockEntity tank) {
                 tooltip.add(contents(tank.tank()));
             } else if (entity instanceof SeparatorBlockEntity separator) {

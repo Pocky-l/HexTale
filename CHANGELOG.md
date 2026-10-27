@@ -113,6 +113,10 @@ Glassy scars: the way into hextech no longer waits for a storm.
   (one down, three up) and lie there as a low green-grey haze; hostile creatures in them are poisoned and slowly lose
   health - the undead too, whom poison alone cannot touch. Players, animals and pets only cough. A redstone signal
   shuts it. It is a little dearer at the Hex Workbench (a fermented spider eye instead of bone meal).
+- The Hex Arc Spire stands two blocks tall: a stone plinth with the lower coils, and over it the hexsteel post with
+  brass coils up to the steel tip, the crystal riding above. It needs a free block over it to be placed; breaking
+  either half brings the whole spire down as one item, runes kept. Spires already standing grow their top by
+  themselves where there is room, and keep working as they are where there is not.
 - Bottles of essence can be drunk: every primal in the bottle gives its own short gift - fire: fire resistance,
   water: water breathing, earth: a full belly, air: slow falling, light: night vision, shadow: invisibility, life:
   regeneration, metal: haste, spark: jump boost - longer the more of it there is. Unknown essence turns the stomach.

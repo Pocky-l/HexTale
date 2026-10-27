@@ -303,11 +303,11 @@ public final class ModBlocks {
             com.pockyl.hextale.block.HexSawmillBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(2.5F, 6.0F).sound(SoundType.WOOD).noOcclusion()
                     .lightLevel(state -> 4));
-    /** A hexsteel spike wound with brass coils under a hextech crystal: strikes the hostile creatures around it with arcs. */
+    /** A two-block hexsteel spike wound with brass coils under a hextech crystal: strikes the hostile creatures around it with arcs. */
     public static final DeferredBlock<com.pockyl.hextale.block.ArcSpireBlock> ARC_SPIRE = BLOCKS.registerBlock("arc_spire",
             com.pockyl.hextale.block.ArcSpireBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.COPPER)
-                    .requiresCorrectToolForDrops().noOcclusion());
+                    .requiresCorrectToolForDrops().noOcclusion().pushReaction(PushReaction.IMMOVEABLE));
     /** A standing stone of nullstone with a crystal in its window: six round a breach hold it. */
     public static final DeferredBlock<com.pockyl.hextale.block.VoidAnchorBlock> VOID_ANCHOR = BLOCKS.registerBlock("void_anchor",
             com.pockyl.hextale.block.VoidAnchorBlock::new,

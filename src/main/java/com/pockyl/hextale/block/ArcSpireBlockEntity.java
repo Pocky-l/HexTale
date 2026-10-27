@@ -61,9 +61,11 @@ public class ArcSpireBlockEntity extends BlockEntity {
     public static final int DRAW_MB = 4;
     /** Damage of one arc (two arcs fell a zombie or a skeleton). */
     public static final float DAMAGE = 12;
-    /** Reach below and above the spire. */
+    /** Reach below and above the spire's base block. */
     public static final int DOWN = 4;
-    public static final int UP = 2;
+    public static final int UP = 3;
+    /** Height of the crystal over the base block: just above the steel tip of the upper half. */
+    public static final double CRYSTAL_Y = 2 + 3.0 / 16;
     public static final int MAX_SLEEP = 100;
     public static final int STREAM_TICKS = 50;
     /** Ticks an arc is drawn for. */
@@ -138,9 +140,18 @@ public class ArcSpireBlockEntity extends BlockEntity {
         return drewAt;
     }
 
-    /** Where the arcs leave from: the crystal held over the spire's tip. */
-    public static Vec3 crystal(BlockPos pos) {
-        return Vec3.atLowerCornerOf(pos).add(0.5, 1 + 3.0 / 16, 0.5);
+    /** Where the arcs leave from: the crystal held over the spire's tip (one block lower while it stands without its top). */
+    public Vec3 crystal() {
+        return Vec3.atLowerCornerOf(worldPosition).add(0.5, tall() ? CRYSTAL_Y : CRYSTAL_Y - 1, 0.5);
+    }
+
+    /** Whether the upper half stands on it. */
+    public boolean tall() {
+        if (level == null) {
+            return true;
+        }
+        BlockState above = level.getBlockState(worldPosition.above());
+        return above.getBlock() instanceof ArcSpireBlock && ArcSpireBlock.upper(above);
     }
 
     public void wake() {
@@ -162,6 +173,7 @@ public class ArcSpireBlockEntity extends BlockEntity {
             return;
         }
         ServerLevel server = (ServerLevel) level;
+        spire.growTop(server, state);
         int interval = spire.interval();
         List<Mob> targets = spire.findTargets(server);
         if (targets.isEmpty()) {
@@ -187,11 +199,22 @@ public class ArcSpireBlockEntity extends BlockEntity {
         spire.wait = interval;
     }
 
+    /**
+     * A spire without its upper half (one built before spires stood two blocks tall, or one whose top was blown off)
+     * grows it again as soon as the space above is free.
+     */
+    private void growTop(ServerLevel level, BlockState state) {
+        if (!tall() && ArcSpireBlock.roomAbove(level, worldPosition)) {
+            level.setBlock(worldPosition.above(), state.setValue(ArcSpireBlock.HALF,
+                    net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER), Block.UPDATE_ALL);
+        }
+    }
+
     /** The hostile creatures in reach, nearest first, as many as one arc strikes. */
     List<Mob> findTargets(ServerLevel level) {
         int radius = radius();
         AABB box = new AABB(worldPosition).inflate(radius, 0, radius).expandTowards(0, -DOWN, 0).expandTowards(0, UP, 0);
-        Vec3 from = crystal(worldPosition);
+        Vec3 from = crystal();
         List<Mob> found = level.getEntitiesOfClass(Mob.class, box, ArcSpireBlockEntity::prey);
         found.sort(Comparator.comparingDouble(mob -> mob.distanceToSqr(from)));
         return found.size() > targets() ? found.subList(0, targets()) : found;
@@ -208,7 +231,7 @@ public class ArcSpireBlockEntity extends BlockEntity {
         if (dam == 0 || level.getRandom().nextFloat() >= HolderRune.at(SpireRune.THRIFT, dam)) {
             charges--;
         }
-        Vec3 from = crystal(worldPosition);
+        Vec3 from = crystal();
         FakePlayer striker = FakePlayerFactory.getMinecraft(level);
         striker.setPos(from.x, from.y - 1, from.z);
         int flash = strength(SpireRune.FLASH);
@@ -273,7 +296,7 @@ public class ArcSpireBlockEntity extends BlockEntity {
         spire.shown.removeIf(arc -> now - arc.start() > ARC_TICKS);
         if (!spire.uncharged && level.getRandom().nextInt(spire.waiting ? 40 : 14) == 0) {
             // Now and then a spark creeps up the coils.
-            Vec3 at = crystal(pos);
+            Vec3 at = spire.crystal();
             level.addParticle(ModParticles.spark(ModParticles.HEXTECH), at.x + (level.getRandom().nextDouble() - 0.5) * 0.3,
                     at.y - 0.5 - level.getRandom().nextDouble() * 0.4, at.z + (level.getRandom().nextDouble() - 0.5) * 0.3, 0, 0.02, 0);
         }

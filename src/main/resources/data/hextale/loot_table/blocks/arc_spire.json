@@ -8,6 +8,13 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "hextale:arc_spire",
+            "state": {
+              "half": "lower"
+            }
+          },
           "name": "hextale:arc_spire",
           "modifier": {
             "type": "minecraft:copy_components",
