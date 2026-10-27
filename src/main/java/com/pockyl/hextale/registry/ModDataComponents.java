@@ -190,6 +190,10 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BATTERY_CHARGE =
             COMPONENTS.registerComponentType("battery_charge", builder -> builder
                     .persistent(Codec.intRange(0, 100000)).networkSynchronized(ByteBufCodecs.VAR_INT));
+    /** Windings of a Recall Charm already spent (none: fully wound). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> RECALL_SPENT =
+            COMPONENTS.registerComponentType("recall_spent", builder -> builder
+                    .persistent(Codec.intRange(0, 64)).networkSynchronized(ByteBufCodecs.VAR_INT));
     /** mB of air essence in a Hextech Skypack's tanks. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SKYPACK_AIR =
             COMPONENTS.registerComponentType("skypack_air", builder -> builder

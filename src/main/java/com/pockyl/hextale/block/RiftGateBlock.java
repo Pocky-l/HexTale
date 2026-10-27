@@ -59,11 +59,13 @@ import com.pockyl.hextale.entity.GrappleHook;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.essence.EssenceTank;
+import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.item.RiftLinkCrystalItem;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.transport.PylonInsert;
 
 import java.util.Map;
@@ -78,6 +80,10 @@ import org.jspecify.annotations.Nullable;
  * ties the two. Whatever then passes into the ring - a creature, a player, a thrown item, items from a hopper or a pylon
  * - comes out of the other gate's front, in any dimension. Items that arrive drop into a container under the gate if
  * there is one. Breaking a gate leaves its partner alone ("partner missing": sparks crackle in its empty ring).
+ *
+ * <p>Every crossing is paid in rift essence drawn from the jars around the gate it leaves through ({@link Gate#afford}):
+ * a creature or a player 1 mB, an item an eighth, essence and fluids an eighth per {@value Gate#ESSENCE_PER_TOLL} /
+ * {@value Gate#FLUID_PER_TOLL} mB. A gate whose jars are dry lets nothing through and shows it.
  */
 public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -184,7 +190,9 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof Gate gate) {
             GlobalPos partner = gate.partner();
             Component status;
-            if (partner != null) {
+            if (partner != null && gate.dry) {
+                status = Component.translatable("block.hextale.rift_gate.dry");
+            } else if (partner != null) {
                 status = Component.translatable("block.hextale.rift_gate.status.linked", partner.pos().getX(), partner.pos().getY(),
                         partner.pos().getZ(), partner.dimension().identifier().getPath());
             } else if (gate.link != null) {
@@ -205,7 +213,7 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         COOLING.put(entity.getUUID(), until);
     }
 
-    /** What passes into the ring goes through (server). */
+    /** What passes into the ring goes through (server), paid in rift essence. */
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         if (!(level instanceof ServerLevel server) || !state.getValue(LINKED) || !(level.getBlockEntity(pos) instanceof Gate gate)) {
@@ -225,6 +233,21 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         if (partner == null) {
             return;
         }
+        int toll = entity instanceof ItemEntity item ? item.getItem().getCount() : Gate.TOLL_PER_MB;
+        if (!gate.afford(server, toll)) {
+            // A dry ring: a thing is spat back out of its front, whatever stands in it is asked again in a second, a
+            // player is told why.
+            cool(entity, now + COOLDOWN, now);
+            if (entity instanceof ItemEntity) {
+                Direction front = state.getValue(FACING);
+                entity.setDeltaMovement(front.getStepX() * 0.2, 0.18, front.getStepZ() * 0.2);
+            }
+            if (entity instanceof Player player) {
+                player.sendOverlayMessage(Component.translatable("block.hextale.rift_gate.dry"));
+            }
+            return;
+        }
+        gate.spend(toll);
         if (entity instanceof ItemEntity item) {
             ItemStack stack = item.getItem().copy();
             item.discard();
@@ -262,7 +285,7 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         return super.triggerEvent(state, level, pos, id, param);
     }
 
-    /** Linked: rift light drifts into the ring now and then. Partner missing: the empty ring crackles. */
+    /** Linked: rift light drifts into the ring now and then (a dry ring only smokes). Partner missing: the empty ring crackles. */
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if (!(level.getBlockEntity(pos) instanceof Gate gate)) {
@@ -273,7 +296,11 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         double across = (random.nextDouble() - 0.5) * 0.6;
         double up = (random.nextDouble() - 0.5) * 0.7;
         Vec3 at = centre.add(alongX ? across : 0, up, alongX ? 0 : across);
-        if (state.getValue(LINKED)) {
+        if (state.getValue(LINKED) && gate.dry) {
+            if (random.nextInt(6) == 0) {
+                level.addParticle(ModParticles.vapour(0x4A4058), at.x, at.y, at.z, 0, 0.01, 0);
+            }
+        } else if (state.getValue(LINKED)) {
             if (random.nextInt(3) == 0) {
                 level.addParticle(ModParticles.glint(RIFT), at.x, at.y, at.z, (centre.x - at.x) * 0.05, (centre.y - at.y) * 0.05,
                         (centre.z - at.z) * 0.05);
@@ -295,6 +322,13 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         public static final int ESSENCE_BUFFER = 1000;
         public static final int FLUID_BUFFER = 4000;
         private static final int FLOW_EVERY = 5;
+        /** The toll is counted in eighths of a mB of rift essence: a creature or a player pays a whole one, an item one eighth. */
+        public static final int TOLL_PER_MB = 8;
+        /** Essence and fluids flowing through pay one eighth per this many mB. */
+        public static final int ESSENCE_PER_TOLL = 16;
+        public static final int FLUID_PER_TOLL = 125;
+        /** Ticks a dry gate waits before it looks into its jars again. */
+        private static final int DRY_RETRY = 20;
         private final EssenceTank essence = new EssenceTank(ESSENCE_BUFFER);
         private final FluidStacksResourceHandler fluid = new FluidStacksResourceHandler(1, FLUID_BUFFER) {
             @Override
@@ -319,6 +353,11 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         private UUID link;
         private ItemStack mouth = ItemStack.EMPTY;
         private int wait;
+        /** Rift essence already drawn and not yet spent, in eighths of a mB (below zero: owed by the last flow). */
+        private int credit;
+        /** Its jars had no rift essence the last time it looked (synced: the ring smokes). */
+        private boolean dry;
+        private long retryAt;
 
         public Gate(BlockPos pos, BlockState state) {
             super(ModBlockEntities.RIFT_GATE.get(), pos, state);
@@ -404,11 +443,54 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             level.sendBlockUpdated(worldPosition, state, getBlockState(), Block.UPDATE_CLIENTS);
         }
 
+        public boolean dry() {
+            return dry;
+        }
+
+        /**
+         * Whether the gate can pay a passage of {@code toll} eighths: it draws whole mB of rift essence from the jars
+         * around it when its credit is short. A dry gate looks again only every {@value #DRY_RETRY} ticks.
+         */
+        public boolean afford(ServerLevel level, int toll) {
+            if (credit >= toll) {
+                return true;
+            }
+            long now = level.getGameTime();
+            if (dry && now < retryAt) {
+                return false;
+            }
+            int mb = Math.ceilDiv(toll - credit, TOLL_PER_MB);
+            boolean paid = JarReach.pay(level, worldPosition, Vec3.atLowerCornerOf(worldPosition).add(0.5, 9 / 16.0, 0.5), Essence.RIFT, mb);
+            if (paid) {
+                credit += mb * TOLL_PER_MB;
+                setChanged();
+            } else {
+                retryAt = now + DRY_RETRY;
+            }
+            setDry(!paid);
+            return paid;
+        }
+
+        /** Takes a paid passage off the credit (a flow may leave it owing: the next draw pays that back). */
+        public void spend(int toll) {
+            credit -= toll;
+            setChanged();
+        }
+
+        private void setDry(boolean value) {
+            if (dry != value) {
+                dry = value;
+                setChanged();
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+            }
+        }
+
         public static void serverTick(Level level, BlockPos pos, BlockState state, Gate gate) {
             ServerLevel server = (ServerLevel) level;
             if (!gate.mouth.isEmpty() && state.getValue(LINKED)) {
                 Gate partner = gate.partnerGate(server);
-                if (partner != null) {
+                if (partner != null && gate.afford(server, gate.mouth.getCount())) {
+                    gate.spend(gate.mouth.getCount());
                     ItemStack stack = gate.mouth;
                     gate.mouth = ItemStack.EMPTY;
                     gate.setChanged();
@@ -419,7 +501,9 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             if (level.getGameTime() % FLOW_EVERY == 0 && (!gate.essence.isEmpty() || !gate.fluid.getResource(0).isEmpty())
                     && state.getValue(LINKED)) {
                 Gate partner = gate.partnerGate(server, false);
-                if (partner != null && partner.pour(gate)) {
+                int toll = partner != null && gate.afford(server, 1) ? partner.pour(gate) : 0;
+                if (toll > 0) {
+                    gate.spend(toll);
                     long now = level.getGameTime();
                     if (now - gate.flaredAt > 30) {
                         gate.flaredAt = now;
@@ -477,13 +561,15 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
 
         /**
          * Essence and fluids waiting in the other gate come out here: essence into the pipes and jars joined to this gate
-         * (below first), fluids into the tanks of other mods beside it (below first). Returns whether any moved.
+         * (below first), fluids into the tanks of other mods beside it (below first). Returns the toll of what moved, in
+         * eighths of a mB of rift essence (0: nothing moved).
          */
-        boolean pour(Gate from) {
+        int pour(Gate from) {
             if (!(level instanceof ServerLevel server)) {
-                return false;
+                return 0;
             }
-            boolean moved = false;
+            int essenceMoved = 0;
+            int fluidMoved = 0;
             Direction facing = getBlockState().getValue(FACING);
             Direction[] faces = {Direction.DOWN, Direction.UP, facing.getClockWise(), facing.getCounterClockWise()};
             for (Direction face : faces) {
@@ -494,7 +580,7 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
                 if (sent > 0) {
                     from.essence.drain(sent, false);
                     from.setChanged();
-                    moved = true;
+                    essenceMoved += sent;
                 }
             }
             for (Direction face : faces) {
@@ -509,12 +595,12 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
                         int sent = ResourceHandlerUtil.move(from.fluid, target, resource -> true, FLUID_BUFFER, transaction);
                         if (sent > 0) {
                             transaction.commit();
-                            moved = true;
+                            fluidMoved += sent;
                         }
                     }
                 }
             }
-            return moved;
+            return Math.ceilDiv(essenceMoved, ESSENCE_PER_TOLL) + Math.ceilDiv(fluidMoved, FLUID_PER_TOLL);
         }
 
         /** Items from the other gate: into the container under this one, the rest out of its front. */
@@ -578,6 +664,8 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             super.loadAdditional(input);
             link = input.read("link", UUIDUtil.STRING_CODEC).orElse(null);
             mouth = input.read("mouth", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+            credit = input.getIntOr("credit", 0);
+            dry = input.getBooleanOr("dry", false);
             essence.load(input, "essence");
             input.child("fluid").ifPresent(fluid::deserialize);
         }
@@ -591,17 +679,20 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             if (!mouth.isEmpty()) {
                 output.store("mouth", ItemStack.OPTIONAL_CODEC, mouth);
             }
+            output.putInt("credit", credit);
+            output.putBoolean("dry", dry);
             essence.save(output, "essence");
             fluid.serialize(output.child("fluid"));
         }
 
-        /** The clients only need to know whether it was ever linked (to tell "partner missing" from "never linked"). */
+        /** The clients only need to know whether it was ever linked (to tell "partner missing" from "never linked") and is dry. */
         @Override
         public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
             CompoundTag tag = new CompoundTag();
             if (link != null) {
                 tag.putString("link", link.toString());
             }
+            tag.putBoolean("dry", dry);
             return tag;
         }
 

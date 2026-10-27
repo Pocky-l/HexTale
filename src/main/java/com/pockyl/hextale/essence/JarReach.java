@@ -2,12 +2,15 @@ package com.pockyl.hextale.essence;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
@@ -68,6 +71,49 @@ public final class JarReach {
         jars.sort(Comparator.<EssenceTankBlockEntity>comparingDouble(jar -> jar.getBlockPos().distToLowCornerSqr(middle.x, middle.y, middle.z))
                 .thenComparingLong(jar -> jar.getBlockPos().asLong()));
         return jars;
+    }
+
+    /**
+     * A device's running cost: {@code amount} mB of one essence out of the jars around {@code center} (nearest first, from
+     * several jars if one holds too little) - all of it or nothing. Motes of the essence fly from each jar it drew from to
+     * {@code to} and the first jar gulps. Returns whether it was paid.
+     */
+    public static boolean pay(ServerLevel level, BlockPos center, Vec3 to, Essence essence, int amount) {
+        List<EssenceTankBlockEntity> jars = around(level, center);
+        int held = 0;
+        for (EssenceTankBlockEntity jar : jars) {
+            held += jar.tank().contents().get(essence);
+            if (held >= amount) {
+                break;
+            }
+        }
+        if (held < amount) {
+            return false;
+        }
+        int left = amount;
+        for (EssenceTankBlockEntity jar : jars) {
+            int taken = Math.min(left, jar.tank().contents().get(essence));
+            if (taken <= 0) {
+                continue;
+            }
+            if (!jar.isCreative()) {
+                jar.tank().remove(EssenceMix.pure(essence, taken));
+                jar.setChanged();
+            }
+            Vec3 mouth = mouth(jar.getBlockPos());
+            Vec3 offset = mouth.subtract(to);
+            for (int i = 0; i < Math.min(8, 2 + taken); i++) {
+                level.sendParticles(ModParticles.flow(essence.color()), to.x, to.y, to.z, 0, offset.x, offset.y, offset.z, 1);
+            }
+            if (left == amount) {
+                level.playSound(null, mouth.x, mouth.y, mouth.z, ModSounds.ESSENCE_DRAW.get(), SoundSource.BLOCKS, 0.3F, 1.2F);
+            }
+            left -= taken;
+            if (left <= 0) {
+                break;
+            }
+        }
+        return true;
     }
 
     /** Where a stream leaves a jar: just above its lid. */

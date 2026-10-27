@@ -123,6 +123,15 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             }
             return InteractionResult.SUCCESS;
         }
+        if (com.pockyl.hextale.item.RecallCharmItem.is(stack)) {
+            // A recall charm drinks rift essence to wind itself again.
+            int wound = com.pockyl.hextale.item.RecallCharmItem.wind((ServerLevel) level, tank, stack, player.position().add(0, 1.1, 0));
+            player.sendOverlayMessage(wound > 0 ? Component.translatable("item.hextale.recall_charm.wound",
+                    com.pockyl.hextale.item.RecallCharmItem.windings(stack), com.pockyl.hextale.item.RecallCharmItem.WINDINGS)
+                    : Component.translatable(com.pockyl.hextale.item.RecallCharmItem.windings(stack) < com.pockyl.hextale.item.RecallCharmItem.WINDINGS
+                    ? "item.hextale.recall_charm.no_rift" : "item.hextale.recall_charm.full"));
+            return InteractionResult.SUCCESS;
+        }
         if (tank.isCreative()) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }

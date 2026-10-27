@@ -138,6 +138,36 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
+    /** A charm comes wound; each return spends a winding, none left = no return; a jar of rift essence winds it again. */
+    @HexTest
+    public static void theRecallCharmWindsAtARiftJar(GameTestHelper helper) {
+        net.minecraft.world.item.ItemStack charm = new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.RECALL_CHARM.get());
+        int full = com.pockyl.hextale.item.RecallCharmItem.WINDINGS;
+        helper.assertTrue(com.pockyl.hextale.item.RecallCharmItem.windings(charm) == full, "a new charm comes fully wound");
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, charm);
+        com.pockyl.hextale.item.RecallCharmItem.mark(player);
+        com.pockyl.hextale.item.RecallCharmItem.setWindings(charm, 0);
+        helper.assertTrue(charm.use(helper.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND)
+                == net.minecraft.world.InteractionResult.FAIL, "a run-down charm takes nobody back");
+        com.pockyl.hextale.item.RecallCharmItem.setWindings(charm, 2);
+        charm.use(helper.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        helper.assertTrue(com.pockyl.hextale.item.RecallCharmItem.windings(charm) == 1, "a return spends one winding");
+        BlockPos at = new BlockPos(1, 1, 1);
+        helper.setBlock(at, ModBlocks.ESSENCE_TANK.get());
+        com.pockyl.hextale.block.EssenceTankBlockEntity jar = helper.getBlockEntity(at, com.pockyl.hextale.block.EssenceTankBlockEntity.class);
+        int mb = com.pockyl.hextale.item.RecallCharmItem.MB_PER_WINDING;
+        jar.tank().set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.RIFT, mb * 2 + 1));
+        int wound = com.pockyl.hextale.item.RecallCharmItem.wind(helper.getLevel(), jar, charm, Vec3.atCenterOf(helper.absolutePos(at)));
+        helper.assertTrue(wound == 2 && com.pockyl.hextale.item.RecallCharmItem.windings(charm) == 3
+                && jar.tank().contents().get(com.pockyl.hextale.rune.Essence.RIFT) == 1, "two windings drank their rift essence, wound " + wound);
+        helper.assertTrue(com.pockyl.hextale.item.RecallCharmItem.wind(helper.getLevel(), jar, charm, Vec3.ZERO) == 0,
+                "what is left is too little for a winding");
+        player.discard();
+        helper.succeed();
+    }
+
     @HexTest(padding = 2)
     public static void aSoulFlaskKeepsACreatureWhole(GameTestHelper helper) {
         net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, new BlockPos(1, 2, 1));
@@ -204,8 +234,9 @@ public final class GadgetGameTests {
 
     /**
      * Two Lesser Rift Gates tied by hand (a hextech crystal pressed to one, the link crystal it becomes pressed to the
-     * other, both through the real click path): a pig standing in one ring comes out of the other's front, a stone
-     * dropped into the ring lands in the chest under the other gate, and breaking a gate leaves its partner alone.
+     * other, both through the real click path). With no rift essence beside it the gate is dry and keeps a dropped stone;
+     * once a jar of rift essence stands by, a pig standing in one ring comes out of the other's front, the stone lands in
+     * the chest under the other gate, the crossings drink their toll, and breaking a gate leaves its partner alone.
      */
     @HexTest(setupTicks = 20, maxTicks = 200, padding = 8)
     public static void riftGatesSendWhatEntersThem(GameTestHelper helper) {
@@ -239,21 +270,37 @@ public final class GadgetGameTests {
         click(helper, player, b);
         helper.assertTrue(helper.getBlockState(a).getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED)
                 && helper.getBlockState(b).getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED), "both gates are linked");
-        net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, new Vec3(1.5, 1.2, 1.5));
         ItemEntity stone = helper.spawnItem(Items.COBBLESTONE, new Vec3(1.5, 1.5, 1.5));
         stone.setDeltaMovement(Vec3.ZERO);
         Vec3 out = Vec3.atBottomCenterOf(helper.absolutePos(b));
-        helper.runAfterDelay(40, () -> {
+        BlockPos jar = a.offset(2, 0, 0);
+        net.minecraft.world.entity.animal.pig.Pig[] pigs = new net.minecraft.world.entity.animal.pig.Pig[1];
+        helper.runAfterDelay(30, () -> {
+            helper.assertTrue(helper.getBlockEntity(a, com.pockyl.hextale.block.RiftGateBlock.Gate.class).dry(), "with no rift essence the gate is dry");
+            helper.assertTrue(helper.getBlockEntity(b.below(), net.minecraft.world.level.block.entity.ChestBlockEntity.class)
+                    .countItem(Items.COBBLESTONE) == 0, "and the stone stays out");
+            helper.setBlock(jar, ModBlocks.ESSENCE_TANK.get());
+            helper.getBlockEntity(jar, com.pockyl.hextale.block.EssenceTankBlockEntity.class).tank()
+                    .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.RIFT, 10));
+            pigs[0] = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, new Vec3(1.5, 1.2, 1.5));
+            // The dry ring spat the first stone out; another one goes in now.
+            helper.spawnItem(Items.COBBLESTONE, new Vec3(1.5, 1.5, 1.5)).setDeltaMovement(Vec3.ZERO);
+        });
+        helper.runAfterDelay(70, () -> {
+            net.minecraft.world.entity.animal.pig.Pig pig = pigs[0];
             helper.assertTrue(pig.isAlive() && pig.position().distanceTo(out) < 2.0, "the pig came out of the other gate: " + pig.position()
                     + " vs " + out);
             net.minecraft.world.level.block.entity.ChestBlockEntity chest = helper.getBlockEntity(b.below(),
                     net.minecraft.world.level.block.entity.ChestBlockEntity.class);
             helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 1, "the stone dropped into the chest under the other gate");
+            int left = helper.getBlockEntity(jar, com.pockyl.hextale.block.EssenceTankBlockEntity.class).tank().contents()
+                    .get(com.pockyl.hextale.rune.Essence.RIFT);
+            helper.assertTrue(left == 8, "the pig and the stone cost 2 mB of rift essence, " + left + " left");
             helper.setBlock(b, Blocks.AIR);
         });
-        helper.runAfterDelay(70, () -> {
+        helper.runAfterDelay(100, () -> {
             helper.assertTrue(!helper.getBlockState(a).getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED), "the gate left alone knows it");
-            pig.discard();
+            pigs[0].discard();
             helper.succeed();
         });
     }
@@ -278,6 +325,11 @@ public final class GadgetGameTests {
         helper.setBlock(a.above(), ModBlocks.ESSENCE_TANK.get());
         helper.getBlockEntity(a.above(), com.pockyl.hextale.block.EssenceTankBlockEntity.class).tank()
                 .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.FIRE, 300));
+        // The toll: rift essence beside both sending gates.
+        BlockPos toll = new BlockPos(1, 2, 3);
+        helper.setBlock(toll, ModBlocks.ESSENCE_TANK.get());
+        helper.getBlockEntity(toll, com.pockyl.hextale.block.EssenceTankBlockEntity.class).tank()
+                .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.RIFT, 100));
         net.minecraft.server.level.ServerPlayer player = GameTests.watcher(helper, helper.absolutePos(a));
         net.minecraft.world.InteractionHand hand = net.minecraft.world.InteractionHand.MAIN_HAND;
         for (BlockPos[] pair : new BlockPos[][] {{a, b}, {c, d}}) {
@@ -333,14 +385,29 @@ public final class GadgetGameTests {
         });
     }
 
-    @HexTest
-    public static void aWorldAnchorHoldsItsChunk(GameTestHelper helper) {
+    /** An anchor fed earth essence holds its chunk and pays for the first minute; one with no jar beside it falls asleep. */
+    @HexTest(padding = 8)
+    public static void aWorldAnchorHoldsItsChunkWhileFed(GameTestHelper helper) {
         BlockPos anchor = new BlockPos(1, 1, 1);
+        BlockPos jar = new BlockPos(2, 1, 1);
+        BlockPos hungry = new BlockPos(9, 1, 1);
+        helper.setBlock(jar, ModBlocks.ESSENCE_TANK.get());
+        helper.getBlockEntity(jar, com.pockyl.hextale.block.EssenceTankBlockEntity.class).tank()
+                .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.EARTH, 3));
         helper.setBlock(anchor, ModBlocks.WORLD_ANCHOR.get());
+        helper.setBlock(hungry, ModBlocks.WORLD_ANCHOR.get());
         helper.runAfterDelay(2, () -> {
+            helper.assertFalse(helper.getBlockEntity(anchor, com.pockyl.hextale.block.WorldAnchorBlock.Anchor.class).asleep(), "the fed anchor is awake");
             helper.assertTrue(net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.hasForcedChunks(helper.getLevel()),
                     "the anchor holds its chunk");
+            int left = helper.getBlockEntity(jar, com.pockyl.hextale.block.EssenceTankBlockEntity.class).tank().contents()
+                    .get(com.pockyl.hextale.rune.Essence.EARTH);
+            helper.assertTrue(left == 3 - com.pockyl.hextale.block.WorldAnchorBlock.cost(0), "one chunk's minute was paid, " + left + " left");
+            helper.assertTrue(helper.getBlockEntity(hungry, com.pockyl.hextale.block.WorldAnchorBlock.Anchor.class).asleep(),
+                    "the anchor with no earth essence around falls asleep");
+            helper.assertTrue(com.pockyl.hextale.block.WorldAnchorBlock.cost(2) == 13, "25 chunks eat 13 mB a minute");
             helper.setBlock(anchor, Blocks.AIR);
+            helper.setBlock(hungry, Blocks.AIR);
             helper.succeed();
         });
     }

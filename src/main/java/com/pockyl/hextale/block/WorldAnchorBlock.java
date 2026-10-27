@@ -24,13 +24,17 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.world.chunk.TicketController;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.AnchorWorldRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 
@@ -40,6 +44,9 @@ import org.jspecify.annotations.Nullable;
  * The World Anchor: it holds its chunk (with Shift the chunks around it too) loaded and ticking while it stands. The
  * chunks are held by a NeoForge ticket owned by the anchor's position, kept with the world; on world load tickets whose
  * anchor is gone are dropped. Takes runes (Shift, Haste, Fertility, Lens).
+ *
+ * <p>Holding costs earth essence from the jars around it: every minute half a mB per chunk held (at least one). When the
+ * jars run dry the anchor falls asleep - it lets its chunks go and only looks into the jars again now and then.
  */
 public class WorldAnchorBlock extends BaseEntityBlock {
     public static final TicketController TICKETS = new TicketController(Hextale.id("world_anchor"), (level, helper) ->
@@ -47,6 +54,10 @@ public class WorldAnchorBlock extends BaseEntityBlock {
                     .forEach(helper::removeAllTickets));
     /** Ticks between two Fertility pinches. */
     private static final int GROWTH_TICKS = 100;
+    /** A paid stretch of holding. */
+    public static final int PAID_TICKS = 1200;
+    /** Ticks a sleeping anchor waits before it looks into the jars again. */
+    private static final int ASLEEP_RETRY = 100;
 
     /** A deepslate socket with the anchor's crown, flukes and shank standing in it, the ring on top. */
     private static final net.minecraft.world.phys.shapes.VoxelShape SHAPE = net.minecraft.world.phys.shapes.Shapes.or(
@@ -97,17 +108,47 @@ public class WorldAnchorBlock extends BaseEntityBlock {
         }
     }
 
+    /** Earth essence a minute of holding {@code radius} chunks around costs: half a mB per chunk, at least one. */
+    public static int cost(int radius) {
+        int chunks = (2 * radius + 1) * (2 * radius + 1);
+        return Math.max(1, (chunks + 1) / 2);
+    }
+
+    /** An empty hand asks the anchor what it holds and what it eats, or why it sleeps. */
+    @Override
+    protected net.minecraft.world.InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.player.Player player,
+                                                                  net.minecraft.world.phys.BlockHitResult hit) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof Anchor anchor) {
+            int radius = AnchorWorldRune.radius(anchor.strength(AnchorWorldRune.SHIFT));
+            player.sendOverlayMessage(anchor.asleep() ? net.minecraft.network.chat.Component.translatable("block.hextale.world_anchor.asleep")
+                    : net.minecraft.network.chat.Component.translatable("block.hextale.world_anchor.status", (2 * radius + 1) * (2 * radius + 1), cost(radius)));
+        }
+        return net.minecraft.world.InteractionResult.SUCCESS;
+    }
+
+    /** Awake: hextech light rises off it. Asleep: grey dust settles on it. */
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (level.getBlockEntity(pos) instanceof Anchor anchor && anchor.asleep()) {
+            if (random.nextInt(5) == 0) {
+                level.addParticle(ModParticles.vapour(0x6E6A66), pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.8, pos.getY() + 1.05,
+                        pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.8, 0, -0.005, 0);
+            }
+            return;
+        }
         if (random.nextInt(4) == 0) {
             level.addParticle(ModParticles.glint(ModParticles.HEX_LIGHT), pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 1.2, pos.getY() + 1.1,
                     pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 1.2, 0, 0.02, 0);
         }
     }
 
-    /** The anchor's runes; it (re)takes its hold whenever it loads. */
+    /** The anchor's runes; it (re)takes its hold whenever it loads, unless it is asleep. */
     public static class Anchor extends BlockEntity {
         private PickaxeRunes runes = PickaxeRunes.EMPTY;
+        /** Ticks of holding already paid for. */
+        private int paid;
+        private boolean asleep;
+        private long retryAt;
 
         public Anchor(BlockPos pos, BlockState state) {
             super(ModBlockEntities.WORLD_ANCHOR.get(), pos, state);
@@ -117,16 +158,51 @@ public class WorldAnchorBlock extends BaseEntityBlock {
             return runes.strength(rune.rune());
         }
 
+        public boolean asleep() {
+            return asleep;
+        }
+
         @Override
         public void onLoad() {
             super.onLoad();
-            if (level instanceof ServerLevel server) {
+            if (level instanceof ServerLevel server && !asleep) {
                 hold(server, worldPosition, AnchorWorldRune.radius(strength(AnchorWorldRune.SHIFT)), true);
             }
         }
 
+        /** Pays the next minute of holding when the last one is spent; falls asleep (and lets go) when it cannot. */
+        private void feed(ServerLevel level) {
+            if (paid > 0) {
+                paid--;
+                return;
+            }
+            long now = level.getGameTime();
+            if (asleep && now < retryAt) {
+                return;
+            }
+            int radius = AnchorWorldRune.radius(strength(AnchorWorldRune.SHIFT));
+            boolean fed = JarReach.pay(level, worldPosition, Vec3.atCenterOf(worldPosition), Essence.EARTH, cost(radius));
+            if (fed) {
+                paid = PAID_TICKS;
+            } else {
+                retryAt = now + ASLEEP_RETRY;
+            }
+            if (asleep == fed) {
+                asleep = !fed;
+                hold(level, worldPosition, radius, fed);
+                level.playSound(null, worldPosition, fed ? ModSounds.BLOCK_AWAKEN.get() : ModSounds.RIFT_BREAK.get(),
+                        net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, fed ? 1.2F : 0.6F);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+            }
+            setChanged();
+        }
+
         static void serverTick(Level level, BlockPos pos, BlockState state, Anchor anchor) {
             if (!(level instanceof ServerLevel server)) {
+                return;
+            }
+            anchor.feed(server);
+            if (anchor.asleep) {
                 return;
             }
             int haste = anchor.strength(AnchorWorldRune.HASTE);
@@ -218,6 +294,8 @@ public class WorldAnchorBlock extends BaseEntityBlock {
         protected void loadAdditional(ValueInput input) {
             super.loadAdditional(input);
             runes = input.read("runes", PickaxeRunes.CODEC).orElse(PickaxeRunes.EMPTY);
+            paid = input.getIntOr("paid", 0);
+            asleep = input.getBooleanOr("asleep", false);
         }
 
         @Override
@@ -226,6 +304,8 @@ public class WorldAnchorBlock extends BaseEntityBlock {
             if (!runes.isEmpty()) {
                 output.store("runes", PickaxeRunes.CODEC, runes);
             }
+            output.putInt("paid", paid);
+            output.putBoolean("asleep", asleep);
         }
 
         @Override
