@@ -290,6 +290,8 @@ public class GreedyFunnelBlockEntity extends BlockEntity {
             int soaked = jar.tank().fill(mix, false);
             if (soaked > 0) {
                 jar.setChanged();
+                com.pockyl.hextale.thevoid.Thinning.add(level, worldPosition, soaked * com.pockyl.hextale.thevoid.Thinning.BOILED,
+                        com.pockyl.hextale.thevoid.Thinning.Source.BOILED);
                 Vec3 at = mouth(worldPosition);
                 ToolEffects.puff(level, at, FunnelRune.SPONGE.rune(), 8, 0.3);
                 ToolEffects.sound(level, at, ModSounds.ESSENCE_DRAW.get(), 0.4F, 0.8F);

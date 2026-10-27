@@ -113,6 +113,7 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
         }
         int room = output.isEmpty() ? 16 : output.getMaxStackSize() - output.getCount();
         made = Math.min(made, room);
+        com.pockyl.hextale.thevoid.Thinning.add(level, worldPosition, made * com.pockyl.hextale.thevoid.Thinning.STILLED, com.pockyl.hextale.thevoid.Thinning.Source.STILLED);
         if (output.isEmpty()) {
             output = ChemVialItem.of(Brew.REFINED_SHIMMER, made);
         } else {

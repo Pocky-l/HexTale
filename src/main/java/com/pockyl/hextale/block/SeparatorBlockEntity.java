@@ -373,7 +373,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         }
         mix.remove(portion);
         if (drawn > 0 && level instanceof net.minecraft.server.level.ServerLevel server) {
-            com.pockyl.hextale.thevoid.Thinning.add(server, worldPosition, portion.total() * com.pockyl.hextale.thevoid.Thinning.SEPARATED);
+            com.pockyl.hextale.thevoid.Thinning.add(server, worldPosition, portion.total() * com.pockyl.hextale.thevoid.Thinning.SEPARATED, com.pockyl.hextale.thevoid.Thinning.Source.SEPARATED);
         }
         EssenceMix out = separatingUnknown() ? EssenceMix.unknown(drawn) : EssenceMix.pure(separating(), drawn);
         if (drawn > 0) {

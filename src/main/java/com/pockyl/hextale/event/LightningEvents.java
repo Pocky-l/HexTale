@@ -209,7 +209,6 @@ public final class LightningEvents {
     public static void awaken(ServerLevel level, BlockPos pos, int ring) {
         BlockState crystal = level.getBlockState(pos);
         level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-        com.pockyl.hextale.thevoid.Thinning.add(level, pos, com.pockyl.hextale.thevoid.Thinning.AWAKENED);
         RandomSource random = level.getRandom();
         int min = Config.MIN_ORBS.get();
         int max = Math.max(min, Config.MAX_ORBS.get());

@@ -69,6 +69,10 @@ public final class HextaleCommand {
                 .then(Commands.literal("void")
                         .then(Commands.literal("get")
                                 .executes(context -> getThinning(context.getSource())))
+                        .then(Commands.literal("sources")
+                                .executes(context -> thinningSources(context.getSource(), 4))
+                                .then(Commands.argument("radius", IntegerArgumentType.integer(0, 16))
+                                        .executes(context -> thinningSources(context.getSource(), IntegerArgumentType.getInteger(context, "radius")))))
                         .then(Commands.literal("set")
                                 .then(Commands.argument("value", FloatArgumentType.floatArg(0, Thinning.MAX))
                                         .executes(context -> setThinning(context.getSource(), FloatArgumentType.getFloat(context, "value"), 0))
@@ -145,6 +149,26 @@ public final class HextaleCommand {
         source.sendSuccess(() -> Component.translatable("commands.hextale.void.get", Math.round(value),
                 Component.translatable(stage.key()), stage.ordinal()), false);
         return Math.round(value);
+    }
+
+    /** What wore the land thin within {@code radius} chunks, by source, the most first. */
+    private static int thinningSources(CommandSourceStack source, int radius) {
+        var counted = Thinning.sources(source.getLevel(), BlockPos.containing(source.getPosition()), radius);
+        float total = 0;
+        for (var entry : counted) {
+            total += entry.getValue();
+        }
+        if (counted.isEmpty()) {
+            source.sendSuccess(() -> Component.translatable("commands.hextale.void.sources.none", radius), false);
+            return 0;
+        }
+        float all = total;
+        source.sendSuccess(() -> Component.translatable("commands.hextale.void.sources", radius, Math.round(all)), false);
+        for (var entry : counted) {
+            source.sendSuccess(() -> Component.translatable("commands.hextale.void.sources.line", Component.translatable(entry.getKey().key()),
+                    String.format(java.util.Locale.ROOT, "%.1f", entry.getValue()), Math.round(100 * entry.getValue() / all)), false);
+        }
+        return Math.round(total);
     }
 
     /**

@@ -254,8 +254,8 @@ public class DisintegratorBlock extends BaseEntityBlock implements EssenceMachin
             tank.fill(EssenceMix.unknown(made), false);
             item.shrink(1);
             int hush = strength(DisintegratorRune.HUSH);
-            float leak = made * Thinning.BOILED * 2 * (hush <= 0 ? 1 : 1 - HolderRune.at(DisintegratorRune.QUIET, hush));
-            Thinning.add(level, worldPosition, leak);
+            float leak = made * Thinning.DISINTEGRATED * (hush <= 0 ? 1 : 1 - HolderRune.at(DisintegratorRune.QUIET, hush));
+            Thinning.add(level, worldPosition, leak, Thinning.Source.DISINTEGRATED);
             Vec3 centre = Vec3.atCenterOf(worldPosition).add(0, 0.25, 0);
             RandomSource random = level.getRandom();
             int radiance = strength(DisintegratorRune.RADIANCE);

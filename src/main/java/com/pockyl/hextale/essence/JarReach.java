@@ -12,6 +12,7 @@ import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.thevoid.Thinning;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -76,7 +77,8 @@ public final class JarReach {
     /**
      * A device's running cost: {@code amount} mB of one essence out of the jars around {@code center} (nearest first, from
      * several jars if one holds too little) - all of it or nothing. Motes of the essence fly from each jar it drew from to
-     * {@code to} and the first jar gulps. Returns whether it was paid.
+     * {@code to} and the first jar gulps; the spent essence wears the land a little ({@link Thinning#SPENT}). Returns
+     * whether it was paid.
      */
     public static boolean pay(ServerLevel level, BlockPos center, Vec3 to, Essence essence, int amount) {
         List<EssenceTankBlockEntity> jars = around(level, center);
@@ -113,6 +115,7 @@ public final class JarReach {
                 break;
             }
         }
+        Thinning.add(level, center, amount * Thinning.SPENT, Thinning.Source.SPENT);
         return true;
     }
 

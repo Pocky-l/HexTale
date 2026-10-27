@@ -142,6 +142,41 @@ public final class CrucibleGameTests {
         });
     }
 
+    /**
+     * Brewing wears the land: a stone taking six magic in a transmutation adds six mB of brewing and one catalyst to the
+     * chunk's Thinning, counted as brewing; a Hex Workbench spending its charge adds nothing.
+     */
+    @HexTest(maxTicks = 700)
+    public static void brewingWearsTheLandThin(GameTestHelper helper) {
+        helper.setBlock(AT.below(), Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
+        helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
+        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
+        BlockPos workbench = AT.offset(2, 0, 0);
+        helper.setBlock(workbench, ModBlocks.HEX_WORKBENCH.get());
+        var bench = helper.getBlockEntity(workbench, com.pockyl.hextale.block.HexWorkbenchBlockEntity.class);
+        net.minecraft.world.level.chunk.LevelChunk chunk = helper.getLevel().getChunkAt(helper.absolutePos(AT));
+        com.pockyl.hextale.thevoid.Thinning.set(helper.getLevel(), chunk, 0);
+        bench.setItem(com.pockyl.hextale.block.HexWorkbenchBlockEntity.CRYSTAL, new ItemStack(com.pockyl.hextale.registry.ModItems.UNSTABLE_HEXTECH.get(), 2));
+        helper.assertTrue(bench.spend(8) && com.pockyl.hextale.thevoid.Thinning.get(chunk) == 0, "the workbench's charge wears nothing");
+        float expected = (6 * com.pockyl.hextale.thevoid.Thinning.BREWED + com.pockyl.hextale.thevoid.Thinning.BREW)
+                * com.pockyl.hextale.Config.THINNING_RATE.get().floatValue();
+        boolean[] thrown = {false};
+        helper.succeedWhen(() -> {
+            helper.assertTrue(crucible.boiling(), "the water boils");
+            if (!thrown[0]) {
+                thrown[0] = true;
+                crucible.pour(EssenceMix.pure(Essence.MAGIC, 6));
+                drop(helper, new ItemStack(Items.STONE));
+            }
+            helper.assertTrue(crucible.essence().get(Essence.MAGIC) == 0, "the stone took the magic");
+            float worn = com.pockyl.hextale.thevoid.Thinning.get(chunk);
+            helper.assertTrue(worn >= expected - 0.01F, "the land wore " + worn + ", at least " + expected);
+            helper.assertTrue(com.pockyl.hextale.thevoid.Thinning.sources(helper.getLevel(), helper.absolutePos(AT), 0).stream()
+                    .anyMatch(entry -> entry.getKey() == com.pockyl.hextale.thevoid.Thinning.Source.BREWED), "counted as brewing");
+        });
+    }
+
     /** Magic for two stones out of three: two rise as magic stone, the third dissolves like any other item. */
     @HexTest(maxTicks = 700)
     public static void aCatalystTheWaterCannotPayForDissolves(GameTestHelper helper) {

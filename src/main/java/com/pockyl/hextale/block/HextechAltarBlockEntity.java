@@ -428,7 +428,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
 
     private void finish(ServerLevel level) {
         ChalkMarkBlock.light(level, worldPosition, false);
-        com.pockyl.hextale.thevoid.Thinning.add(level, worldPosition, com.pockyl.hextale.thevoid.Thinning.RITUAL + essenceTotal.total() * com.pockyl.hextale.thevoid.Thinning.RITUAL_PER_MB);
+        com.pockyl.hextale.thevoid.Thinning.add(level, worldPosition, essenceTotal.total() * com.pockyl.hextale.thevoid.Thinning.SPENT, com.pockyl.hextale.thevoid.Thinning.Source.SPENT);
         if (result.is(ModItems.HEXCORE.get()) && !(this instanceof HexcoreBlockEntity)) {
             // The circle's own heart was the work: the altar itself becomes the Hexcore.
             clearRitual();
@@ -479,7 +479,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         for (Player player : level.getEntitiesOfClass(Player.class, new AABB(worldPosition).inflate(4))) {
             player.hurtServer(level, level.damageSources().magic(), 4.0F);
         }
-        com.pockyl.hextale.thevoid.Thinning.add(level, worldPosition, com.pockyl.hextale.thevoid.Thinning.RITUAL_COLLAPSE);
+        com.pockyl.hextale.thevoid.Thinning.add(level, worldPosition, com.pockyl.hextale.thevoid.Thinning.RITUAL_COLLAPSE, com.pockyl.hextale.thevoid.Thinning.Source.RITUAL_COLLAPSE);
         level.blockEvent(worldPosition, getBlockState().getBlock(), 2, 0);
         sync();
     }

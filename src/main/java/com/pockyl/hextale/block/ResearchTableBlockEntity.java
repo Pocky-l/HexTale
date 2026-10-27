@@ -225,9 +225,6 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         if (drawn.isEmpty()) {
             return;
         }
-        if (level instanceof ServerLevel server) {
-            com.pockyl.hextale.thevoid.Thinning.add(server, worldPosition, java.util.Arrays.stream(sections).sum() * com.pockyl.hextale.thevoid.Thinning.INK_SECTION);
-        }
         inkDraws = drawn.entrySet().stream().map(entry -> new JarReach.Draw(entry.getKey().getBlockPos(), entry.getValue())).toList();
         inkDrawnAt = level.getGameTime();
         level.playSound(null, worldPosition, ModSounds.ESSENCE_DRAW.get(), SoundSource.BLOCKS, 0.6F, 1.1F);
@@ -354,7 +351,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
             serverLevel.sendParticles(ModParticles.wisp(ModParticles.INK), orb.x, orb.y, orb.z, 24, 0.25, 0.15, 0.25, 0.08);
             serverLevel.sendParticles(ModParticles.spark(ModParticles.HEXTECH), orb.x, orb.y, orb.z, 20, 0.2, 0.2, 0.2, 0.4);
             level.blockEvent(worldPosition, getBlockState().getBlock(), EVENT_FIZZLE, 0);
-            com.pockyl.hextale.thevoid.Thinning.add(serverLevel, worldPosition, com.pockyl.hextale.thevoid.Thinning.PARCHMENT_BURN);
+            com.pockyl.hextale.thevoid.Thinning.add(serverLevel, worldPosition, com.pockyl.hextale.thevoid.Thinning.PARCHMENT_BURN, com.pockyl.hextale.thevoid.Thinning.Source.PARCHMENT_BURN);
         }
         burnSheet(player, board, cell);
     }
