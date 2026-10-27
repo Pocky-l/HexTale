@@ -13,8 +13,7 @@ import org.jspecify.annotations.Nullable;
  * others are COMPOUNDS of two primals (fire + water = steam): few and plain, so that an item carries one to three
  * essences a researcher can tell apart. Each essence's make-up is a weight per primal ({@link #composition()}), from
  * which research picks the essences that belong to a rune's theme. Order matters: it indexes arrays, icon sheets and
- * stickers (tools/krita/hextale_essences.py draws the icons of the same essences in the same order). Essences of
- * older worlds ({@link #LEGACY}) are read as the essence they were folded into.
+ * stickers (tools/krita/hextale_essences.py draws the icons of the same essences in the same order).
  */
 public enum Essence {
     FIRE("fire", 0xFF8A4C, strokes(
@@ -190,33 +189,7 @@ public enum Essence {
     public static final net.minecraft.network.codec.StreamCodec<io.netty.buffer.ByteBuf, Essence> STREAM_CODEC =
             net.minecraft.network.codec.ByteBufCodecs.VAR_INT.map(i -> values()[i], Essence::ordinal);
 
-    /**
-     * The essences of older versions (there were eighty) and the essence each one was folded into, so saved jars,
-     * stickers and essence items keep working.
-     */
-    public static final java.util.Map<String, Essence> LEGACY = java.util.Map.ofEntries(
-            java.util.Map.entry("smoke", ASH), java.util.Map.entry("sun", LIGHT), java.util.Map.entry("fury", FIRE),
-            java.util.Map.entry("forge", METAL), java.util.Map.entry("blast", FIRE), java.util.Map.entry("clay", EARTH),
-            java.util.Map.entry("mist", WATER), java.util.Map.entry("purity", WATER), java.util.Map.entry("rust", ORE),
-            java.util.Map.entry("storm", SPARK), java.util.Map.entry("dust", EARTH), java.util.Map.entry("depths", SHADOW),
-            java.util.Map.entry("soil", PLANT), java.util.Map.entry("quake", EARTH), java.util.Map.entry("sky", AIR),
-            java.util.Map.entry("silence", SHADOW), java.util.Map.entry("breath", BEAST), java.util.Map.entry("motion", AIR),
-            java.util.Map.entry("thunder", SPARK), java.util.Map.entry("illusion", RIFT), java.util.Map.entry("spirit", MAGIC),
-            java.util.Map.entry("gleam", LIGHT), java.util.Map.entry("energy", MAGIC), java.util.Map.entry("corruption", DECAY),
-            java.util.Map.entry("craft", METAL), java.util.Map.entry("vigor", LIFE), java.util.Map.entry("ice", COLD),
-            java.util.Map.entry("glass", CRYSTAL), java.util.Map.entry("gem", CRYSTAL), java.util.Map.entry("gold", METAL),
-            java.util.Map.entry("wood", PLANT), java.util.Map.entry("seed", PLANT), java.util.Map.entry("flesh", BEAST),
-            java.util.Map.entry("bone", DECAY), java.util.Map.entry("fiber", PLANT), java.util.Map.entry("slime", SAP),
-            java.util.Map.entry("venom", DECAY), java.util.Map.entry("sweet", SAP), java.util.Map.entry("knowledge", MAGIC),
-            java.util.Map.entry("ender", RIFT), java.util.Map.entry("hell", MAGMA), java.util.Map.entry("echo", SHADOW),
-            java.util.Map.entry("food", LIFE), java.util.Map.entry("cloth", BEAST), java.util.Map.entry("mechanism", CIRCUIT),
-            java.util.Map.entry("weapon", METAL), java.util.Map.entry("protection", METAL), java.util.Map.entry("time", MAGIC),
-            java.util.Map.entry("chaos", RIFT), java.util.Map.entry("order", CRYSTAL), java.util.Map.entry("ocean", WATER),
-            java.util.Map.entry("dream", RIFT), java.util.Map.entry("soul", SHADOW), java.util.Map.entry("wind", AIR),
-            java.util.Map.entry("tool", METAL), java.util.Map.entry("dye", PLANT), java.util.Map.entry("star", MAGIC),
-            java.util.Map.entry("blood", BEAST));
-
-    /** An essence by its id; the id of an essence of older versions gives the essence it was folded into. */
+    /** An essence by its id, or null. */
     @Nullable
     public static Essence byId(@Nullable String id) {
         if (id == null) {
@@ -228,7 +201,7 @@ public enum Essence {
                 return essence;
             }
         }
-        return LEGACY.get(key);
+        return null;
     }
 
     private static List<float[]> strokes(float[]... strokes) {

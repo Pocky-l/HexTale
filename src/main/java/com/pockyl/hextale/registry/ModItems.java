@@ -176,7 +176,6 @@ public final class ModItems {
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> ARC_SPIRE = ITEMS.registerSimpleBlockItem(ModBlocks.ARC_SPIRE,
             properties -> properties.rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<BlockItem> RUNE_SHACKLES = ITEMS.registerSimpleBlockItem(ModBlocks.RUNE_SHACKLES);
     public static final DeferredItem<BlockItem> HEXTECH_PURIFIER = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_PURIFIER,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> VOID_ANCHOR = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ANCHOR,

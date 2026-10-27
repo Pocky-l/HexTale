@@ -311,10 +311,6 @@ public final class ModBlocks {
             com.pockyl.hextale.block.HextechPurifierBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(3.0F, 6.0F).sound(SoundType.DEEPSLATE_BRICKS)
                     .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> 5));
-    /** Legacy: the old Rune Shackles plate (no longer made, holds nothing); it breaks into Binding Chalk. */
-    public static final DeferredBlock<Block> RUNE_SHACKLES = BLOCKS.registerBlock("rune_shackles", Block::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
-                    .requiresCorrectToolForDrops());
     /** A glass column in a brass frame: drinks the experience orbs about to appear around it and holds them as a liquid. */
     public static final DeferredBlock<com.pockyl.hextale.block.XpCondenserBlock> XP_CONDENSER = BLOCKS.registerBlock("xp_condenser",
             com.pockyl.hextale.block.XpCondenserBlock::new,

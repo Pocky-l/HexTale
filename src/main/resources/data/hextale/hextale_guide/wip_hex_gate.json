@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "pylons",
-  "stage": "late",
-  "icon": "minecraft:ender_eye",
-  "parents": ["wip_core_rituals", "relay_pylon"],
-  "pos": [1457, 43]
-}
