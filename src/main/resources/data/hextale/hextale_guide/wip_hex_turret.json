@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "pylons",
-  "stage": "mid",
-  "icon": "minecraft:dispenser",
-  "parents": ["relay_pylon"],
-  "pos": [1170, -290]
-}

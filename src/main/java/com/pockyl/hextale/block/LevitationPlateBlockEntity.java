@@ -163,7 +163,7 @@ public class LevitationPlateBlockEntity extends BlockEntity {
             return;
         }
         for (Entity entity : entities) {
-            if (!(entity instanceof net.minecraft.world.entity.item.ItemEntity item) || !item.isAlive() || item.getY() < top - 0.5) {
+            if (!(entity instanceof net.minecraft.world.entity.item.ItemEntity item) || !item.isAlive() || item.getY() < top - 1.0) {
                 continue;
             }
             ItemStack stack = item.getItem();

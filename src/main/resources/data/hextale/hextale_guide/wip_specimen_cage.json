@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "chemtech",
-  "stage": "mid",
-  "icon": "minecraft:iron_bars",
-  "parents": ["axolotl_tank", "lab_bench"],
-  "pos": [-800, 250]
-}

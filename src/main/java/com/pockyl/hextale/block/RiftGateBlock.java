@@ -235,14 +235,13 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         }
         int toll = entity instanceof ItemEntity item ? item.getItem().getCount() : Gate.TOLL_PER_MB;
         if (!gate.afford(server, toll)) {
-            // A dry ring: a thing is spat back out of its front, whatever stands in it is asked again in a second, a
-            // player is told why.
-            cool(entity, now + COOLDOWN, now);
+            // A dry ring: a thing is spat back out of its front; whoever stands in it goes through as soon as the jars
+            // are filled again (the gate looks into them once a second), and a player is told why now and then.
             if (entity instanceof ItemEntity) {
                 Direction front = state.getValue(FACING);
                 entity.setDeltaMovement(front.getStepX() * 0.2, 0.18, front.getStepZ() * 0.2);
             }
-            if (entity instanceof Player player) {
+            if (entity instanceof Player player && now % 40 == 0) {
                 player.sendOverlayMessage(Component.translatable("block.hextale.rift_gate.dry"));
             }
             return;

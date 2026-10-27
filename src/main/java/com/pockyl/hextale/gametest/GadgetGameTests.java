@@ -171,8 +171,12 @@ public final class GadgetGameTests {
         net.minecraft.world.entity.monster.zombie.Zombie zombie = helper.spawn(net.minecraft.world.entity.EntityTypes.ZOMBIE, new Vec3(2.5, 1.07, 1.5));
         double floor = helper.absolutePos(at).getY();
         double startX = zombie.getX();
+        // The highest it got and how far west, over the whole flight.
+        double[] seen = {zombie.getY(), zombie.getX()};
         helper.succeedWhen(() -> {
-            helper.assertTrue(zombie.getY() > floor + 4 && zombie.getX() < startX - 0.3, "flung up and west: " + zombie.position());
+            seen[0] = Math.max(seen[0], zombie.getY());
+            seen[1] = Math.min(seen[1], zombie.getX());
+            helper.assertTrue(seen[0] > floor + 4 && seen[1] < startX - 0.3, "flung up and west: up to " + seen[0] + ", west to " + seen[1]);
             zombie.discard();
         });
     }
@@ -359,29 +363,33 @@ public final class GadgetGameTests {
         BlockPos jar = a.offset(2, 0, 0);
         net.minecraft.world.entity.animal.pig.Pig[] pigs = new net.minecraft.world.entity.animal.pig.Pig[1];
         helper.runAfterDelay(30, () -> {
-            helper.assertTrue(helper.getBlockEntity(a, com.pockyl.hextale.block.RiftGateBlock.Gate.class).dry(), "with no rift essence the gate is dry");
+            com.pockyl.hextale.block.RiftGateBlock.Gate gate = helper.getBlockEntity(a, com.pockyl.hextale.block.RiftGateBlock.Gate.class);
+            helper.assertTrue(!gate.afford(helper.getLevel(), com.pockyl.hextale.block.RiftGateBlock.Gate.TOLL_PER_MB) && gate.dry(),
+                    "with no rift essence the gate is dry");
             helper.assertTrue(helper.getBlockEntity(b.below(), net.minecraft.world.level.block.entity.ChestBlockEntity.class)
                     .countItem(Items.COBBLESTONE) == 0, "and the stone stays out");
             helper.setBlock(jar, ModBlocks.ESSENCE_TANK.get());
             helper.getBlockEntity(jar, com.pockyl.hextale.block.EssenceTankBlockEntity.class).tank()
                     .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.RIFT, 10));
             pigs[0] = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, new Vec3(1.5, 1.2, 1.5));
-            // The dry ring spat the first stone out; another one goes in now.
-            helper.spawnItem(Items.COBBLESTONE, new Vec3(1.5, 1.5, 1.5)).setDeltaMovement(Vec3.ZERO);
+            // The dry ring spat the first stone out; it is put away, and another one goes in once the gate has looked
+            // into its jars again.
+            stone.discard();
         });
-        helper.runAfterDelay(70, () -> {
+        helper.runAfterDelay(60, () -> helper.spawnItem(Items.COBBLESTONE, new Vec3(1.5, 1.5, 1.5)).setDeltaMovement(Vec3.ZERO));
+        helper.runAfterDelay(110, () -> {
             net.minecraft.world.entity.animal.pig.Pig pig = pigs[0];
             helper.assertTrue(pig.isAlive() && pig.position().distanceTo(out) < 2.0, "the pig came out of the other gate: " + pig.position()
                     + " vs " + out);
             net.minecraft.world.level.block.entity.ChestBlockEntity chest = helper.getBlockEntity(b.below(),
                     net.minecraft.world.level.block.entity.ChestBlockEntity.class);
-            helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 1, "the stone dropped into the chest under the other gate");
+            helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 1, "the stone dropped into the chest under the other gate: " + chest.countItem(Items.COBBLESTONE));
             int left = helper.getBlockEntity(jar, com.pockyl.hextale.block.EssenceTankBlockEntity.class).tank().contents()
                     .get(com.pockyl.hextale.rune.Essence.RIFT);
             helper.assertTrue(left == 8, "the pig and the stone cost 2 mB of rift essence, " + left + " left");
             helper.setBlock(b, Blocks.AIR);
         });
-        helper.runAfterDelay(100, () -> {
+        helper.runAfterDelay(140, () -> {
             helper.assertTrue(!helper.getBlockState(a).getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED), "the gate left alone knows it");
             pigs[0].discard();
             helper.succeed();
