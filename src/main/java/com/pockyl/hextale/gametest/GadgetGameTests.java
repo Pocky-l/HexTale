@@ -195,6 +195,32 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
+    /** Reading the notes of a device that takes runes gives a one-star scroll of one of its runes the reader lacks. */
+    @HexTest
+    public static void researchNotesHoldARune(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.world.item.ItemStack notes = com.pockyl.hextale.item.ResearchNotesItem.of(com.pockyl.hextale.research.ResearchTopics.LEVITATION_PLATE);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, notes);
+        notes.use(helper.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        net.minecraft.world.item.ItemStack scroll = net.minecraft.world.item.ItemStack.EMPTY;
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            if (player.getInventory().getItem(i).is(com.pockyl.hextale.registry.ModItems.RUNE_SCROLL.get())) {
+                scroll = player.getInventory().getItem(i);
+            }
+        }
+        var rune = scroll.get(com.pockyl.hextale.registry.ModDataComponents.RUNE.get());
+        helper.assertTrue(rune != null && com.pockyl.hextale.runework.RuneHolder.PLATE.takes(rune)
+                && scroll.get(com.pockyl.hextale.registry.ModDataComponents.STARS.get()) == 1, "a one-star scroll of a plate rune: " + scroll);
+        // Who knows every rune of the device gets none.
+        var knowledge = com.pockyl.hextale.knowledge.Research.of(player);
+        com.pockyl.hextale.runework.RuneHolder.PLATE.takes().forEach(known -> knowledge.learn(known, 1));
+        helper.assertTrue(com.pockyl.hextale.item.ResearchNotesItem.runeFor(player, com.pockyl.hextale.research.ResearchTopics.LEVITATION_PLATE).isEmpty(),
+                "nothing new to sketch");
+        player.discard();
+        helper.succeed();
+    }
+
     /** A charm comes wound; each return spends a winding, none left = no return; a jar of rift essence winds it again. */
     @HexTest
     public static void theRecallCharmWindsAtARiftJar(GameTestHelper helper) {

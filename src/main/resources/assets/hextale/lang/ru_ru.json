@@ -1219,6 +1219,7 @@
   "item.hextale.research_notes.read": "Используйте, чтобы прочитать: потом это можно будет сделать",
   "item.hextale.research_notes.known": "«%s» вы уже исследовали. Записи можно отдать другому исследователю.",
   "item.hextale.research_notes.learned": "Исследовано: %s. Теперь это можно сделать.",
+  "item.hextale.research_notes.rune": "Между строк записей набросана руна: %s",
   "research.hextale.locked": "Сначала исследуйте «%s» за столом исследователя",
   "research.hextale.topic.hextech_tools": "Хекстек-инструменты",
   "gui.hextale.research_table.researched": "Уже исследовано: можно сделать копию записей",

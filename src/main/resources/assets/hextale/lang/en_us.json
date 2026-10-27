@@ -1219,6 +1219,7 @@
   "item.hextale.research_notes.read": "Use to read: then you can make it",
   "item.hextale.research_notes.known": "You have researched %s already. Hand the notes to another researcher.",
   "item.hextale.research_notes.learned": "Researched: %s. You can make it now.",
+  "item.hextale.research_notes.rune": "Between the lines of the notes a rune is sketched: %s",
   "research.hextale.locked": "Research %s at the Research Table first",
   "research.hextale.topic.hextech_tools": "Hextech Tools",
   "gui.hextale.research_table.researched": "Researched already: this makes a copy of the notes",

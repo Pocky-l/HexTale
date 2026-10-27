@@ -15,10 +15,15 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
 import com.pockyl.hextale.knowledge.Research;
+import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.ResearchTopic;
+import com.pockyl.hextale.rune.ComplexRune;
+import com.pockyl.hextale.runework.RuneHolder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
@@ -26,7 +31,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * A finished research written out at the Research Table. Reading the notes (they are used up) teaches the topic: from
  * then on the researcher may craft its items or make them at the altar. Any researcher can read them, so a research done
- * once can be handed to a friend.
+ * once can be handed to a friend. Notes of a device that takes runes also hold one of its runes, sketched between the
+ * lines: the reader gets a one-star scroll of a rune of that device they do not know yet ({@link #runeFor}).
  */
 public class ResearchNotesItem extends Item {
     public ResearchNotesItem(Properties properties) {
@@ -75,6 +81,30 @@ public class ResearchNotesItem extends Item {
         tooltip.accept(Component.translatable("item.hextale.research_notes.read").withStyle(ChatFormatting.DARK_GRAY));
     }
 
+    /**
+     * The rune sketched in the notes: a one-star scroll of a random rune that a device of the topic takes and the
+     * researcher does not know yet; empty when the topic opens no rune holder or they know all its runes.
+     */
+    public static ItemStack runeFor(ServerPlayer player, ResearchTopic topic) {
+        RuneKnowledge knowledge = Research.of(player);
+        List<ComplexRune> unknown = new ArrayList<>();
+        for (var item : topic.items()) {
+            RuneHolder holder = RuneHolder.of(new ItemStack(item.get()));
+            if (holder == null) {
+                continue;
+            }
+            for (ComplexRune rune : holder.takes()) {
+                if (!knowledge.knows(rune) && !unknown.contains(rune)) {
+                    unknown.add(rune);
+                }
+            }
+        }
+        if (unknown.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        return RuneScrollItem.of(unknown.get(player.getRandom().nextInt(unknown.size())), 1, ModItems.RUNE_SCROLL.get());
+    }
+
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
@@ -90,6 +120,15 @@ public class ResearchNotesItem extends Item {
             }
             stack.consume(1, player);
             serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.research_notes.learned", name));
+            ItemStack scroll = runeFor(serverPlayer, topic);
+            if (!scroll.isEmpty()) {
+                ComplexRune rune = scroll.get(ModDataComponents.RUNE.get());
+                serverPlayer.sendSystemMessage(Component.translatable("item.hextale.research_notes.rune",
+                        Component.translatable(rune.translationKey()).withColor(rune.color())));
+                if (!player.getInventory().add(scroll)) {
+                    player.drop(scroll, false, net.minecraft.util.Prediction.SERVER_ONLY);
+                }
+            }
             level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.9F);
             level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 1.2F);
         }

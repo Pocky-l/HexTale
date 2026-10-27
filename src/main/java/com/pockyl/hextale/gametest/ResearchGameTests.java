@@ -1359,7 +1359,8 @@ public final class ResearchGameTests {
         ItemStack notes = ResearchNotesItem.of(ResearchTopics.HEXTECH_TOOLS);
         player.setItemInHand(InteractionHand.MAIN_HAND, notes);
         notes.use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
-        helper.assertTrue(ResearchTopics.mayMake(player, pickaxe, knowledge) && player.getMainHandItem().isEmpty(), "read notes teach the pickaxe");
+        helper.assertTrue(ResearchTopics.mayMake(player, pickaxe, knowledge) && !player.getMainHandItem().is(ModItems.RESEARCH_NOTES.get()),
+                "read notes teach the pickaxe and are used up");
         player.discard();
         helper.succeed();
     }
