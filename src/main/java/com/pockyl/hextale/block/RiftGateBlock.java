@@ -23,6 +23,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -196,6 +197,14 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         return InteractionResult.SUCCESS;
     }
 
+    /** Keeps {@code entity} out of the rings until {@code until}; cooled-down entries are dropped on the way. */
+    private static void cool(Entity entity, long until, long now) {
+        if (COOLING.size() > 64) {
+            COOLING.values().removeIf(time -> time <= now);
+        }
+        COOLING.put(entity.getUUID(), until);
+    }
+
     /** What passes into the ring goes through (server). */
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
@@ -206,7 +215,7 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         Long cool = COOLING.get(entity.getUUID());
         if (cool != null && cool > now) {
             // Still in a ring it has just come out of: it must step out before it can go back.
-            COOLING.put(entity.getUUID(), Math.max(cool, now + 10));
+            cool(entity, Math.max(cool, now + 10), now);
             return;
         }
         if (!travels(entity)) {
@@ -336,6 +345,16 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         /** The partner gate itself, its chunk loaded for the moment if need be (server). */
         @Nullable
         public Gate partnerGate(ServerLevel server) {
+            return partnerGate(server, true);
+        }
+
+        /**
+         * The partner gate; with {@code now} false an unloaded partner is not loaded on the spot: its chunk is asked to
+         * load in the background and stay a while (a portal's ticket), and null comes back until it is there. For the
+         * steady flow of essence and fluid, which would otherwise load the far chunk again and again.
+         */
+        @Nullable
+        public Gate partnerGate(ServerLevel server, boolean now) {
             GlobalPos at = partner();
             if (at == null) {
                 return null;
@@ -344,7 +363,14 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             if (there == null) {
                 return null;
             }
-            there.getChunkAt(at.pos());
+            if (now) {
+                there.getChunkAt(at.pos());
+            } else {
+                there.getChunkSource().addTicketWithRadius(net.minecraft.server.level.TicketType.PORTAL, ChunkPos.containing(at.pos()), 1);
+                if (!there.isLoaded(at.pos())) {
+                    return null;
+                }
+            }
             return there.getBlockEntity(at.pos()) instanceof Gate gate && link.equals(gate.link) ? gate : null;
         }
 
@@ -392,7 +418,7 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             }
             if (level.getGameTime() % FLOW_EVERY == 0 && (!gate.essence.isEmpty() || !gate.fluid.getResource(0).isEmpty())
                     && state.getValue(LINKED)) {
-                Gate partner = gate.partnerGate(server);
+                Gate partner = gate.partnerGate(server, false);
                 if (partner != null && partner.pour(gate)) {
                     long now = level.getGameTime();
                     if (now - gate.flaredAt > 30) {
@@ -507,7 +533,7 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             Vec3 out = Vec3.atLowerCornerOf(worldPosition).add(0.5 + front.getStepX() * 0.45, 0.4, 0.5 + front.getStepZ() * 0.45);
             ItemEntity item = new ItemEntity(server, out.x, out.y, out.z, rest, front.getStepX() * 0.18, 0.12, front.getStepZ() * 0.18);
             item.setDefaultPickUpDelay();
-            COOLING.put(item.getUUID(), level.getGameTime() + COOLDOWN * 3);
+            cool(item, level.getGameTime() + COOLDOWN * 3, level.getGameTime());
             server.addFreshEntity(item);
         }
 
@@ -520,12 +546,12 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             Vec3 inRing = Vec3.atLowerCornerOf(worldPosition).add(0.5, 3 / 16.0, 0.5);
             Vec3 ahead = Vec3.atBottomCenterOf(worldPosition.relative(front));
             Vec3 to = server.noCollision(entity, entity.getBoundingBox().move(ahead.subtract(entity.position()))) ? ahead : inRing;
-            COOLING.put(entity.getUUID(), level.getGameTime() + COOLDOWN);
+            cool(entity, level.getGameTime() + COOLDOWN, level.getGameTime());
             Vec3 push = new Vec3(front.getStepX() * 0.15, 0.05, front.getStepZ() * 0.15);
             Entity moved = entity.teleport(new TeleportTransition(server, to, push, front.toYRot(), entity.getXRot(),
                     TeleportTransition.PLACE_PORTAL_TICKET));
             if (moved != null) {
-                COOLING.put(moved.getUUID(), level.getGameTime() + COOLDOWN);
+                cool(moved, level.getGameTime() + COOLDOWN, level.getGameTime());
                 moved.resetFallDistance();
             }
             arrived();
