@@ -107,14 +107,15 @@ public final class ModBlocks {
     /** Nullstone banded with brass round a gemstone: it holds its chunks loaded while it stands. */
     public static final DeferredBlock<com.pockyl.hextale.block.WorldAnchorBlock> WORLD_ANCHOR = BLOCKS.registerBlock("world_anchor",
             com.pockyl.hextale.block.WorldAnchorBlock::new, () -> nullstoneProperties().lightLevel(state -> 6));
-    /** A coffer sealed with a shadow rune: coffers with the same seal share one pocket. */
-    public static final DeferredBlock<com.pockyl.hextale.block.ShadowCofferBlock> SHADOW_COFFER = BLOCKS.registerBlock("shadow_coffer",
-            com.pockyl.hextale.block.ShadowCofferBlock::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.BASS).strength(2.5F)
-                    .sound(SoundType.WOOD).lightLevel(state -> 3));
+    /** A Lesser Rift Gate: tied to a partner gate, it sends whatever passes into its ring out of the partner. */
+    public static final DeferredBlock<com.pockyl.hextale.block.RiftGateBlock> RIFT_GATE = BLOCKS.registerBlock("rift_gate",
+            com.pockyl.hextale.block.RiftGateBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.BASEDRUM).strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.POLISHED_DEEPSLATE).noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED) ? 7 : 2));
     /** Polished magic stone with a lifting glyph: a jump carries you to the next lift above, a sneak to the one below. */
     public static final DeferredBlock<com.pockyl.hextale.block.HexLiftBlock> HEX_LIFT = BLOCKS.registerBlock("hex_lift",
-            com.pockyl.hextale.block.HexLiftBlock::new, () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF).lightLevel(state -> 4));
+            com.pockyl.hextale.block.HexLiftBlock::new, () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF).lightLevel(state -> 4).noOcclusion());
     /** A plate with a brass arrow: whatever steps on it is thrown up and along the arrow. */
     public static final DeferredBlock<com.pockyl.hextale.block.ImpulsePlateBlock> IMPULSE_PLATE = BLOCKS.registerBlock("impulse_plate",
             com.pockyl.hextale.block.ImpulsePlateBlock::new,

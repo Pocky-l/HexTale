@@ -171,6 +171,11 @@ public final class ModSounds {
     /** The Impulse Plate fires; what it threw at a target lands softly. */
     public static final DeferredHolder<SoundEvent, SoundEvent> IMPULSE_LAUNCH = register("impulse.launch");
     public static final DeferredHolder<SoundEvent, SoundEvent> IMPULSE_LAND = register("impulse.land");
+    /** Lesser Rift Gates: two tied together, something drawn in, something coming out, a gate left alone. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_LINK = register("rift_gate.link");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_SEND = register("rift_gate.send");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_ARRIVE = register("rift_gate.arrive");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_BREAK = register("rift_gate.break");
     /** A Miasma Vent breathes out its fumes. */
     public static final DeferredHolder<SoundEvent, SoundEvent> MIASMA_HISS = register("miasma.hiss");
 

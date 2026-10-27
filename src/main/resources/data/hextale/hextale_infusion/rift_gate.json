@@ -1,0 +1,20 @@
+{
+  "center": "minecraft:ender_eye",
+  "pedestals": [
+    "minecraft:ender_pearl",
+    "minecraft:ender_pearl",
+    "minecraft:obsidian",
+    "minecraft:obsidian",
+    "hextale:unstable_hextech",
+    "hextale:brass_ingot"
+  ],
+  "essences": {
+    "shadow": 16,
+    "rift": 12,
+    "magic": 8
+  },
+  "result": {
+    "id": "hextale:rift_gate",
+    "count": 2
+  }
+}

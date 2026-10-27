@@ -58,7 +58,7 @@ Glassy scars: the way into hextech no longer waits for a storm.
   whoosh, the arc flashes along the way, and the target is marked by a ring of light whenever you hold a plate or
   wear the researcher's goggles. Runes: Shift (higher, and farther targets: 24 blocks, up to 64), Motor (farther,
   and a quicker flight), Breath (a soft landing for unaimed throws too) and Lens.
-- Hex Lift (replaces the "Hex Lift" idea in the diary): standing on one, jump to ride to the next lift straight above
+- Hex Lift (replaces the "Hex Lift" idea in the diary; a low platform with a glowing pad and four brass guide horns): standing on one, jump to ride to the next lift straight above
   within 16 blocks, crouch to ride down; the lift you arrive on needs two blocks of room. Runes: Shift (up to 64
   blocks), Blink (creatures standing on the lift come along), Haste (Speed for a few seconds after a ride) and Lens.
 - Recall Charm (a clock at the Hextech Altar; replaces the "Recall Device" idea): used, it puts you back where you
@@ -69,10 +69,13 @@ Glassy scars: the way into hextech no longer waits for a storm.
   young one comes out grown), Slumber (a hostile one comes out dazed) and Lens.
 - Spawner Cage (at the Hextech Altar): pressed to a monster spawner it folds the spawner in, whole - what it spawns
   and how; pressed to a block it sets the spawner there, and the cage burns out doing it.
-- Shadow Coffers (a pair from the Hextech Altar; replaces the "Shadow Coffer" idea): coffers sealed with one rune share
-  one 27-slot pocket in the shadow, wherever they stand, even in another dimension. Placing the first seals the second
-  in your hand; Shift + right click a placed coffer with coffers in hand to give them its seal. Hoppers and pylons
-  reach the pocket too.
+- Lesser Rift Gates (a pair from the Hextech Altar; replaces the "Shadow Coffer" idea): upright rings of nullstone and
+  brass. Press a hextech crystal to one gate and it becomes a Rift Link Crystal that remembers it; press that to a
+  second gate and the two are tied by a link of their own, wherever they stand - even in another dimension. Whatever
+  then passes into one ring comes out of the other's front: players, creatures, thrown items, and whatever hoppers or
+  pylons feed into it (items drop into a chest or hopper under the far gate if there is one). A linked ring glows
+  with rift light; break one gate and the other's empty ring crackles, alone, until it is linked anew. Right click a
+  gate with an empty hand to ask where it leads.
 - World Anchor (at the Hextech Altar): keeps its chunk loaded and ticking while it stands, even with nobody near.
   Runes: Shift (3x3, then 5x5 chunks), Haste (time runs faster there), Fertility (plants there grow now and then)
   and Lens.

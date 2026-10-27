@@ -156,7 +156,8 @@ public final class Hextale {
         output.accept(ModItems.NULL_LANTERN);
         output.accept(ModItems.IMPULSE_PLATE);
         output.accept(ModItems.HEX_LIFT);
-        output.accept(ModItems.SHADOW_COFFER);
+        output.accept(ModItems.RIFT_GATE);
+        output.accept(ModItems.RIFT_LINK_CRYSTAL);
         output.accept(ModItems.WORLD_ANCHOR);
         output.accept(ModItems.SILENCE_WARD);
         output.accept(ModItems.DISINTEGRATOR);
@@ -348,7 +349,7 @@ public final class Hextale {
             event.accept(ModItems.NULL_LANTERN);
             event.accept(ModItems.IMPULSE_PLATE);
             event.accept(ModItems.HEX_LIFT);
-            event.accept(ModItems.SHADOW_COFFER);
+            event.accept(ModItems.RIFT_GATE);
             event.accept(ModItems.WORLD_ANCHOR);
             event.accept(ModItems.SILENCE_WARD);
             event.accept(ModItems.DISINTEGRATOR);

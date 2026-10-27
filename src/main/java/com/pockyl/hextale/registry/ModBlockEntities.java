@@ -74,9 +74,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.WorldAnchorBlock.Anchor>> WORLD_ANCHOR =
             BLOCK_ENTITIES.register("world_anchor", () -> new BlockEntityType<>(com.pockyl.hextale.block.WorldAnchorBlock.Anchor::new,
                     ModBlocks.WORLD_ANCHOR.get()));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ShadowCofferBlock.Coffer>> SHADOW_COFFER =
-            BLOCK_ENTITIES.register("shadow_coffer", () -> new BlockEntityType<>(com.pockyl.hextale.block.ShadowCofferBlock.Coffer::new,
-                    ModBlocks.SHADOW_COFFER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.RiftGateBlock.Gate>> RIFT_GATE =
+            BLOCK_ENTITIES.register("rift_gate", () -> new BlockEntityType<>(com.pockyl.hextale.block.RiftGateBlock.Gate::new,
+                    ModBlocks.RIFT_GATE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexLiftBlock.Lift>> HEX_LIFT =
             BLOCK_ENTITIES.register("hex_lift", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexLiftBlock.Lift::new,
                     ModBlocks.HEX_LIFT.get()));

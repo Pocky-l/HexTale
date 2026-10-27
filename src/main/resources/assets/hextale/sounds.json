@@ -1194,5 +1194,49 @@
         "volume": 0.7
       }
     ]
+  },
+  "rift_gate.link": {
+    "subtitle": "subtitles.hextale.rift_gate.link",
+    "sounds": [
+      {
+        "name": "hextale:rift_link",
+        "volume": 0.9
+      }
+    ]
+  },
+  "rift_gate.send": {
+    "subtitle": "subtitles.hextale.rift_gate.send",
+    "sounds": [
+      {
+        "name": "hextale:rift_send1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:rift_send2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "rift_gate.arrive": {
+    "subtitle": "subtitles.hextale.rift_gate.arrive",
+    "sounds": [
+      {
+        "name": "hextale:rift_arrive1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:rift_arrive2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "rift_gate.break": {
+    "subtitle": "subtitles.hextale.rift_gate.break",
+    "sounds": [
+      {
+        "name": "hextale:rift_break",
+        "volume": 0.7
+      }
+    ]
   }
 }

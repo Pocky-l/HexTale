@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,linked=false": {
+      "model": "hextale:block/rift_gate"
+    },
+    "facing=north,linked=true": {
+      "model": "hextale:block/rift_gate_linked"
+    },
+    "facing=east,linked=false": {
+      "model": "hextale:block/rift_gate",
+      "y": 90
+    },
+    "facing=east,linked=true": {
+      "model": "hextale:block/rift_gate_linked",
+      "y": 90
+    },
+    "facing=south,linked=false": {
+      "model": "hextale:block/rift_gate",
+      "y": 180
+    },
+    "facing=south,linked=true": {
+      "model": "hextale:block/rift_gate_linked",
+      "y": 180
+    },
+    "facing=west,linked=false": {
+      "model": "hextale:block/rift_gate",
+      "y": 270
+    },
+    "facing=west,linked=true": {
+      "model": "hextale:block/rift_gate_linked",
+      "y": 270
+    }
+  }
+}

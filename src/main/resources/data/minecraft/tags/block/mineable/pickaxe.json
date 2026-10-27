@@ -85,6 +85,7 @@
     "hextale:impulse_plate",
     "hextale:hex_lift",
     "hextale:world_anchor",
-    "hextale:disintegrator"
+    "hextale:disintegrator",
+    "hextale:rift_gate"
   ]
 }
