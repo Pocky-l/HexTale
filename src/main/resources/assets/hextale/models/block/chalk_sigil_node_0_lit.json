@@ -1,0 +1,34 @@
+{
+  "textures": {
+    "particle": "hextale:block/chalk_sigil_line",
+    "chalk_sigil_0": "hextale:block/chalk_sigil_0"
+  },
+  "elements": [
+    {
+      "name": "node_0",
+      "from": [
+        3,
+        0.25,
+        3
+      ],
+      "to": [
+        13,
+        0.25,
+        13
+      ],
+      "light_emission": 10,
+      "shade_direction_override": "up",
+      "faces": {
+        "up": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#chalk_sigil_0"
+        }
+      }
+    }
+  ]
+}

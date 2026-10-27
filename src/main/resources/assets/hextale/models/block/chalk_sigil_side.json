@@ -1,11 +1,11 @@
 {
-  "ambientocclusion": false,
   "textures": {
-    "particle": "hextale:block/chalk_mark_0",
-    "line": "hextale:block/chalk_mark_0"
+    "particle": "hextale:block/chalk_sigil_line",
+    "chalk_sigil_line": "hextale:block/chalk_sigil_line"
   },
   "elements": [
     {
+      "name": "side",
       "from": [
         7,
         0.25,
@@ -14,18 +14,18 @@
       "to": [
         9,
         0.25,
-        7
+        3
       ],
-      "shade": false,
+      "shade_direction_override": "up",
       "faces": {
         "up": {
           "uv": [
             7,
             0,
             9,
-            7
+            3
           ],
-          "texture": "#line"
+          "texture": "#chalk_sigil_line"
         }
       }
     }

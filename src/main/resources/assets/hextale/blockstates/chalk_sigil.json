@@ -1,13 +1,45 @@
 {
   "multipart": [
     {
+      "when": {
+        "variant": "0",
+        "active": "false"
+      },
       "apply": {
-        "model": "hextale:block/chalk_sigil_dot"
+        "model": "hextale:block/chalk_sigil_node_0"
       }
     },
     {
       "when": {
-        "north": "true"
+        "variant": "1",
+        "active": "false"
+      },
+      "apply": {
+        "model": "hextale:block/chalk_sigil_node_1"
+      }
+    },
+    {
+      "when": {
+        "variant": "2",
+        "active": "false"
+      },
+      "apply": {
+        "model": "hextale:block/chalk_sigil_node_2"
+      }
+    },
+    {
+      "when": {
+        "variant": "3",
+        "active": "false"
+      },
+      "apply": {
+        "model": "hextale:block/chalk_sigil_node_3"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "active": "false"
       },
       "apply": {
         "model": "hextale:block/chalk_sigil_side"
@@ -15,7 +47,8 @@
     },
     {
       "when": {
-        "east": "true"
+        "east": "true",
+        "active": "false"
       },
       "apply": {
         "model": "hextale:block/chalk_sigil_side",
@@ -24,7 +57,8 @@
     },
     {
       "when": {
-        "south": "true"
+        "south": "true",
+        "active": "false"
       },
       "apply": {
         "model": "hextale:block/chalk_sigil_side",
@@ -33,10 +67,86 @@
     },
     {
       "when": {
-        "west": "true"
+        "west": "true",
+        "active": "false"
       },
       "apply": {
         "model": "hextale:block/chalk_sigil_side",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "variant": "0",
+        "active": "true"
+      },
+      "apply": {
+        "model": "hextale:block/chalk_sigil_node_0_lit"
+      }
+    },
+    {
+      "when": {
+        "variant": "1",
+        "active": "true"
+      },
+      "apply": {
+        "model": "hextale:block/chalk_sigil_node_1_lit"
+      }
+    },
+    {
+      "when": {
+        "variant": "2",
+        "active": "true"
+      },
+      "apply": {
+        "model": "hextale:block/chalk_sigil_node_2_lit"
+      }
+    },
+    {
+      "when": {
+        "variant": "3",
+        "active": "true"
+      },
+      "apply": {
+        "model": "hextale:block/chalk_sigil_node_3_lit"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "active": "true"
+      },
+      "apply": {
+        "model": "hextale:block/chalk_sigil_side_lit"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "active": "true"
+      },
+      "apply": {
+        "model": "hextale:block/chalk_sigil_side_lit",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "active": "true"
+      },
+      "apply": {
+        "model": "hextale:block/chalk_sigil_side_lit",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "active": "true"
+      },
+      "apply": {
+        "model": "hextale:block/chalk_sigil_side_lit",
         "y": 270
       }
     }
