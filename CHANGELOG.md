@@ -129,6 +129,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - The Breach Heart beats: its cracks flare twice every three seconds, in time with the beat you hear.
 - New look for nullstone (a soft porous stone whose pores fill with violet as it drinks the Thinning), raw zinc and
   its block, the clouded crystal, the hexsteel block, and void rock with its bricks.
+- Floating Stone has a look of its own instead of plain smooth stone: a pale blue-grey hewn block with a thin channel
+  of hextech light running round its foot and a glowing hexagonal lifting sigil on its underside. The light breathes
+  slowly and shows in the dark, so a bridge of it reads as a line of light from below and from the side.
 - Bottles of essence can be drunk: every primal in the bottle gives its own short gift - fire: fire resistance,
   water: water breathing, earth: a full belly, air: slow falling, light: night vision, shadow: invisibility, life:
   regeneration, metal: haste, spark: jump boost - longer the more of it there is. Unknown essence turns the stomach.
