@@ -41,7 +41,21 @@ public final class ModGameTests {
         helper.succeed();
     }
 
-    /** Every recipe, advancement and loot table of the mod parses in the current data formats. */
+    /** Every block of ours that is meant to drop something has its loot table: a missing one deletes the block when mined. */
+    @HexTest
+    public static void everyBlockHasItsLoot(GameTestHelper helper) {
+        MinecraftServer server = helper.getLevel().getServer();
+        List<String> missing = new java.util.ArrayList<>();
+        for (var entry : com.pockyl.hextale.registry.ModBlocks.BLOCKS.getEntries()) {
+            var key = entry.get().getLootTable();
+            if (key.isPresent() && server.reloadableRegistries().getLootTable(key.get()) == LootTable.EMPTY) {
+                missing.add(entry.getId().getPath());
+            }
+        }
+        helper.assertTrue(missing.isEmpty(), "blocks without a loot table (add one, or noLootTable() if on purpose): " + missing);
+        helper.succeed();
+    }
+
     /**
      * Since 26.x a block stands in the world's heightmaps (spawning, the blight's and the breach's search for the ground)
      * only through the tag {@code minecraft:blocks_motion_no_leaves}: every block of ours that has a body must be in it.
