@@ -41,6 +41,7 @@ import java.util.Map;
  */
 public class BrassPipeBlock extends Block {
     public static final Map<Direction, EnumProperty<PipeSide>> SIDES = sides();
+    private static final Map<BlockState, VoxelShape> SHAPES = new java.util.concurrent.ConcurrentHashMap<>();
     /** Ticks between two pulls of a side that pumps a jar out, and the millibuckets of one pull. */
     public static final int PUMP_EVERY = EssenceTankBlockEntity.FLOW_EVERY;
     public static final int PUMP_FLOW = EssenceTankBlockEntity.FLOW;
@@ -234,6 +235,11 @@ public class BrassPipeBlock extends Block {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return SHAPES.computeIfAbsent(state, BrassPipeBlock::shapeOf);
+    }
+
+    /** The core with an arm to every side that has one (729 side combinations, each built once when first needed). */
+    private static VoxelShape shapeOf(BlockState state) {
         VoxelShape shape = CORE;
         for (Direction direction : Direction.values()) {
             PipeSide side = state.getValue(SIDES.get(direction));
