@@ -8,7 +8,7 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes the researcher's clothes take - one on each piece, burned in at the Hextech Altar. Each piece has its own four
+ * The runes the researcher's clothes take - one on each piece, burned in at the Hextech Altar. Each piece has its own runes
  * to choose from (the same codex rune may mean something else on another piece). Strength = stars (1-3; there is no Lens with a
  * single place). Effects live in {@link ClothesEffects}.
  */
@@ -37,6 +37,8 @@ public enum ClothesRune implements HolderRune {
     TROUSERS_GRAVITY(Piece.TROUSERS, "earth_air"),
     /** Trousers: I step up whole blocks without jumping. */
     TROUSERS_SHIFT(Piece.TROUSERS, "air_earth"),
+    /** Trousers: loose items and experience around me drift into my pockets (not while I sneak). */
+    TROUSERS_MAGNET(Piece.TROUSERS, "spark_metal"),
     /** Boots: softer landings. */
     BOOTS_LIFT(Piece.BOOTS, "air_metal"),
     /** Boots: easier walking in water. */
@@ -76,6 +78,8 @@ public enum ClothesRune implements HolderRune {
     /** Chance a blow glances back, and the damage it does to the attacker. */
     public static final float[] MIRROR_CHANCE = {0.15F, 0.2F, 0.25F, 0.3F};
     public static final float[] MIRROR_DAMAGE = {2, 3, 4, 5};
+    /** Blocks around me that Magnet draws loose things from. */
+    public static final int[] PULL_RADIUS = {4, 6, 8, 10};
     /** Step height added. */
     public static final float[] STEP = {0.5F, 0.6F, 0.8F, 1.0F};
     /** Share of hot floor damage taken away. */
@@ -141,6 +145,7 @@ public enum ClothesRune implements HolderRune {
             case HOOD_PURIFICATION -> HolderRune.percent(HolderRune.at(PURIFY, strength));
             case ROBE_MIRROR -> HolderRune.percent(HolderRune.at(MIRROR_CHANCE, strength));
             case TROUSERS_SHIFT -> HolderRune.factor(HolderRune.at(STEP, strength));
+            case TROUSERS_MAGNET -> Integer.toString(HolderRune.at(PULL_RADIUS, strength));
             case BOOTS_QUENCHING -> HolderRune.percent(HolderRune.at(COOL_FEET, strength));
         };
     }

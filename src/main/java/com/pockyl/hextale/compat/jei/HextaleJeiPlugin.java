@@ -129,15 +129,12 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.FLOATING_STONE.get(), "floating_stone");
         info(registration, ModItems.NULL_LANTERN.get(), "null_lantern");
         info(registration, ModItems.IMPULSE_PLATE.get(), "impulse_plate");
-        info(registration, ModItems.HEX_LIFT.get(), "hex_lift");
         info(registration, ModItems.RIFT_GATE.get(), "rift_gate");
         info(registration, ModItems.RIFT_LINK_CRYSTAL.get(), "rift_link_crystal");
         info(registration, ModItems.WORLD_ANCHOR.get(), "world_anchor");
-        info(registration, ModItems.SILENCE_WARD.get(), "silence_ward");
         info(registration, ModItems.DISINTEGRATOR.get(), "disintegrator");
         info(registration, ModItems.RECALL_CHARM.get(), "recall_charm");
         info(registration, ModItems.GRAPPLE_GAUNTLET.get(), "grapple_gauntlet");
-        info(registration, ModItems.HEXTECH_MAGNET.get(), "hextech_magnet");
         info(registration, ModItems.SOUL_FLASK.get(), "soul_flask");
         info(registration, ModItems.SPAWNER_CAGE.get(), "spawner_cage");
         info(registration, ModItems.WARD_GLASS.get(), "ward_glass");

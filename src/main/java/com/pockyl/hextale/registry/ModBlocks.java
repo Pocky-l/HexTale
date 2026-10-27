@@ -113,9 +113,6 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.BASEDRUM).strength(3.0F, 6.0F)
                     .requiresCorrectToolForDrops().sound(SoundType.POLISHED_DEEPSLATE).noOcclusion()
                     .lightLevel(state -> state.getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED) ? 7 : 2));
-    /** Polished magic stone with a lifting glyph: a jump carries you to the next lift above, a sneak to the one below. */
-    public static final DeferredBlock<com.pockyl.hextale.block.HexLiftBlock> HEX_LIFT = BLOCKS.registerBlock("hex_lift",
-            com.pockyl.hextale.block.HexLiftBlock::new, () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF).lightLevel(state -> 4).noOcclusion());
     /** A plate with a brass arrow: whatever steps on it is thrown up and along the arrow. */
     public static final DeferredBlock<com.pockyl.hextale.block.ImpulsePlateBlock> IMPULSE_PLATE = BLOCKS.registerBlock("impulse_plate",
             com.pockyl.hextale.block.ImpulsePlateBlock::new,
@@ -244,10 +241,6 @@ public final class ModBlocks {
             com.pockyl.hextale.block.DisintegratorBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(3.0F).sound(SoundType.POLISHED_DEEPSLATE).noOcclusion()
                     .requiresCorrectToolForDrops());
-    /** A wool cocoon bound in brass round nullstone: it swallows sound around it. */
-    public static final DeferredBlock<com.pockyl.hextale.block.SilenceWardBlock> SILENCE_WARD = BLOCKS.registerBlock("silence_ward",
-            com.pockyl.hextale.block.SilenceWardBlock::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(0.8F).sound(SoundType.WOOL).noOcclusion());
     public static final DeferredBlock<com.pockyl.hextale.block.CrucibleBlock> CRUCIBLE = BLOCKS.registerBlock("crucible",
             com.pockyl.hextale.block.CrucibleBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.5F).sound(SoundType.METAL).noOcclusion()

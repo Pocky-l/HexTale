@@ -122,25 +122,6 @@ public final class GadgetGameTests {
         });
     }
 
-    @HexTest(padding = 2)
-    public static void hexLiftsFindTheNextLiftWithRoom(GameTestHelper helper) {
-        BlockPos low = new BlockPos(1, 1, 1);
-        BlockPos high = low.above(6);
-        helper.setBlock(low, ModBlocks.HEX_LIFT.get());
-        helper.setBlock(high, ModBlocks.HEX_LIFT.get());
-        BlockPos from = helper.absolutePos(low);
-        BlockPos to = helper.absolutePos(high);
-        helper.assertTrue(to.equals(com.pockyl.hextale.block.HexLiftBlock.next(helper.getLevel(), from, true, 16)), "up finds the lift above");
-        helper.assertTrue(from.equals(com.pockyl.hextale.block.HexLiftBlock.next(helper.getLevel(), to, false, 16)), "down finds the lift below");
-        helper.assertTrue(com.pockyl.hextale.block.HexLiftBlock.next(helper.getLevel(), from, true, 4) == null, "beyond its reach there is none");
-        helper.setBlock(high.above(2), net.minecraft.world.level.block.Blocks.STONE);
-        helper.assertTrue(com.pockyl.hextale.block.HexLiftBlock.next(helper.getLevel(), from, true, 16) == null, "a lift without room above is skipped");
-        for (BlockPos pos : new BlockPos[] {low, high, high.above(2)}) {
-            helper.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR);
-        }
-        helper.succeed();
-    }
-
     @HexTest
     public static void theRecallCharmRemembersWhereIStood(GameTestHelper helper) {
         net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -379,44 +360,6 @@ public final class GadgetGameTests {
         });
     }
 
-    @HexTest
-    public static void aSilenceWardHushesItsSurroundings(GameTestHelper helper) {
-        BlockPos ward = new BlockPos(1, 1, 1);
-        helper.setBlock(ward, ModBlocks.SILENCE_WARD.get());
-        Vec3 centre = Vec3.atCenterOf(helper.absolutePos(ward));
-        helper.runAfterDelay(1, () -> {
-            helper.assertTrue(com.pockyl.hextale.block.SilenceWardBlock.Ward.covering(helper.getLevel(), centre.add(5, 0, 0), null) != null,
-                    "a sound five blocks away is hushed");
-            helper.assertTrue(com.pockyl.hextale.block.SilenceWardBlock.Ward.covering(helper.getLevel(), centre.add(12, 0, 0), null) == null,
-                    "twelve blocks away it is not");
-            helper.assertTrue(com.pockyl.hextale.block.SilenceWardBlock.Ward.covering(helper.getLevel(), centre,
-                    com.pockyl.hextale.runework.SilenceRune.INSULATOR) == null, "without Insulator vibrations pass");
-            helper.succeed();
-        });
-    }
-
-    @HexTest(padding = 4)
-    public static void aMagnetDrawsLooseThingsIn(GameTestHelper helper) {
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        Vec3 spot = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(1, 1, 1)));
-        player.teleportTo(spot.x, spot.y, spot.z);
-        ItemEntity near = helper.spawnItem(Items.COBBLESTONE, player.position().add(4, 0.5, 0).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));
-        ItemEntity far = helper.spawnItem(Items.COBBLESTONE, player.position().add(0, 0.5, 9).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));
-        near.setNoPickUpDelay();
-        far.setNoPickUpDelay();
-        int moved = com.pockyl.hextale.item.HextechMagnetItem.pull(helper.getLevel(), player, com.pockyl.hextale.runework.PickaxeRunes.EMPTY);
-        helper.assertTrue(moved == 1, "only the cobblestone within reach is drawn (" + moved + ")");
-        helper.assertTrue(near.getDeltaMovement().x < -0.1, "it flies towards me: " + near.getDeltaMovement());
-        near.discard();
-        far.discard();
-        helper.succeed();
-    }
-
-    /**
-     * A player hanging on the gauntlet's rope swings like a pendulum: thrown at a block above and ahead, the claw bites,
-     * the wearer falls, the rope catches and carries them through the bottom of the arc and up the other side - never
-     * farther from the claw than the rope is long. The player is moved by its own ticks, as a client moves itself.
-     */
     @HexTest(padding = 8, maxTicks = 300)
     public static void aGrappleRopeSwingsItsWearer(GameTestHelper helper) {
         BlockPos anchor = new BlockPos(1, 12, 1);
@@ -489,18 +432,46 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
-    @HexTest(padding = 2)
-    public static void aJumpOffALiftStillRidesUp(GameTestHelper helper) {
-        BlockPos low = new BlockPos(1, 1, 1);
-        helper.setBlock(low, ModBlocks.HEX_LIFT.get());
-        helper.setBlock(low.above(6), ModBlocks.HEX_LIFT.get());
-        BlockPos from = helper.absolutePos(low);
+    /** A lantern with Silence hushes sounds within its quiet; with deep Silence it swallows vibrations as well. */
+    @HexTest
+    public static void aLanternWithSilenceHushes(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 1, 1);
+        helper.setBlock(at, ModBlocks.NULL_LANTERN.get());
+        var lantern = helper.getBlockEntity(at, com.pockyl.hextale.block.NullLanternBlockEntity.class);
+        net.minecraft.world.item.ItemStack runed = new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.NULL_LANTERN.get());
+        runed.set(com.pockyl.hextale.registry.ModDataComponents.NULL_RUNES.get(),
+                com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.NullRune.SILENCE.rune(), 1));
+        lantern.applyComponentsFromItemStack(runed);
+        Vec3 centre = Vec3.atCenterOf(helper.absolutePos(at));
+        // A lantern joins the index once it has loaded, a tick after it is placed.
+        helper.runAfterDelay(1, () -> {
+            helper.assertTrue(com.pockyl.hextale.block.NullLanternBlockEntity.soundLeft(helper.getLevel(), centre.add(5, 0, 0)) < 1,
+                    "a sound five blocks away is hushed");
+            helper.assertTrue(com.pockyl.hextale.block.NullLanternBlockEntity.soundLeft(helper.getLevel(), centre.add(60, 0, 0)) >= 1,
+                    "far outside the quiet it is not");
+            helper.assertTrue(com.pockyl.hextale.block.NullLanternBlockEntity.covering(helper.getLevel(), centre,
+                    com.pockyl.hextale.runework.NullRune.SILENCE, com.pockyl.hextale.runework.NullRune.INSULATING) == null,
+                    "one star of Silence lets vibrations pass");
+            helper.succeed();
+        });
+    }
+
+    /** Trousers with Magnet draw a loose item within reach towards the wearer and leave one beyond it. */
+    @HexTest(padding = 4)
+    public static void magnetTrousersDrawLooseThingsIn(GameTestHelper helper) {
         net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        // Already half a block up in the jump when the client sees the key.
-        player.teleportTo(from.getX() + 0.5, from.getY() + 0.9, from.getZ() + 0.5);
-        helper.assertTrue(com.pockyl.hextale.block.HexLiftBlock.ride(player, from, true), "the jump counts");
-        helper.assertTrue(Math.abs(player.getY() - (from.getY() + 6 + com.pockyl.hextale.block.HexLiftBlock.PAD)) < 0.01,
-                "and lands on the pad of the upper lift: " + player.getY());
+        Vec3 spot = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(1, 1, 1)));
+        player.teleportTo(spot.x, spot.y, spot.z);
+        ItemEntity near = helper.spawnItem(Items.COBBLESTONE, player.position().add(3, 0.5, 0).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));
+        ItemEntity far = helper.spawnItem(Items.COBBLESTONE, player.position().add(0, 0.5, 9).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));
+        near.setNoPickUpDelay();
+        far.setNoPickUpDelay();
+        int moved = com.pockyl.hextale.runework.ClothesEffects.pull(helper.getLevel(), player,
+                com.pockyl.hextale.runework.HolderRune.at(com.pockyl.hextale.runework.ClothesRune.PULL_RADIUS, 1));
+        helper.assertTrue(moved == 1, "only the cobblestone within reach is drawn (" + moved + ")");
+        helper.assertTrue(near.getDeltaMovement().x < -0.1, "it flies towards me: " + near.getDeltaMovement());
+        near.discard();
+        far.discard();
         helper.succeed();
     }
 }

@@ -68,18 +68,12 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.DisintegratorBlock.Bowl>> DISINTEGRATOR =
             BLOCK_ENTITIES.register("disintegrator", () -> new BlockEntityType<>(com.pockyl.hextale.block.DisintegratorBlock.Bowl::new,
                     ModBlocks.DISINTEGRATOR.get()));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.SilenceWardBlock.Ward>> SILENCE_WARD =
-            BLOCK_ENTITIES.register("silence_ward", () -> new BlockEntityType<>(com.pockyl.hextale.block.SilenceWardBlock.Ward::new,
-                    ModBlocks.SILENCE_WARD.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.WorldAnchorBlock.Anchor>> WORLD_ANCHOR =
             BLOCK_ENTITIES.register("world_anchor", () -> new BlockEntityType<>(com.pockyl.hextale.block.WorldAnchorBlock.Anchor::new,
                     ModBlocks.WORLD_ANCHOR.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.RiftGateBlock.Gate>> RIFT_GATE =
             BLOCK_ENTITIES.register("rift_gate", () -> new BlockEntityType<>(com.pockyl.hextale.block.RiftGateBlock.Gate::new,
                     ModBlocks.RIFT_GATE.get()));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexLiftBlock.Lift>> HEX_LIFT =
-            BLOCK_ENTITIES.register("hex_lift", () -> new BlockEntityType<>(com.pockyl.hextale.block.HexLiftBlock.Lift::new,
-                    ModBlocks.HEX_LIFT.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ImpulsePlateBlock.Plate>> IMPULSE_PLATE =
             BLOCK_ENTITIES.register("impulse_plate", () -> new BlockEntityType<>(com.pockyl.hextale.block.ImpulsePlateBlock.Plate::new,
                     ModBlocks.IMPULSE_PLATE.get()));

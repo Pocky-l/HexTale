@@ -238,13 +238,11 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> LEVITATION_PLATE = ITEMS.registerSimpleBlockItem(ModBlocks.LEVITATION_PLATE);
     public static final DeferredItem<BlockItem> NULL_LANTERN = ITEMS.registerSimpleBlockItem(ModBlocks.NULL_LANTERN);
     public static final DeferredItem<BlockItem> IMPULSE_PLATE = ITEMS.registerSimpleBlockItem(ModBlocks.IMPULSE_PLATE);
-    public static final DeferredItem<BlockItem> HEX_LIFT = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_LIFT);
     public static final DeferredItem<BlockItem> RIFT_GATE = ITEMS.registerSimpleBlockItem(ModBlocks.RIFT_GATE);
     /** A hextech crystal that remembers a Lesser Rift Gate, to tie it with another. */
     public static final DeferredItem<com.pockyl.hextale.item.RiftLinkCrystalItem> RIFT_LINK_CRYSTAL = ITEMS.registerItem("rift_link_crystal",
             properties -> new com.pockyl.hextale.item.RiftLinkCrystalItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<BlockItem> DISINTEGRATOR = ITEMS.registerSimpleBlockItem(ModBlocks.DISINTEGRATOR);
-    public static final DeferredItem<BlockItem> SILENCE_WARD = ITEMS.registerSimpleBlockItem(ModBlocks.SILENCE_WARD);
     public static final DeferredItem<BlockItem> WORLD_ANCHOR = ITEMS.registerSimpleBlockItem(ModBlocks.WORLD_ANCHOR,
             properties -> properties.rarity(Rarity.RARE));
     public static final DeferredItem<com.pockyl.hextale.item.FloatingStoneItem> FLOATING_STONE = ITEMS.registerItem("floating_stone",
@@ -257,9 +255,6 @@ public final class ModItems {
     /** A crystal flask that folds one creature into its glass and lets it out elsewhere. */
     public static final DeferredItem<com.pockyl.hextale.item.SoulFlaskItem> SOUL_FLASK = ITEMS.registerItem("soul_flask",
             properties -> new com.pockyl.hextale.item.SoulFlaskItem(properties.stacksTo(16)));
-    /** A brass horseshoe with hextech poles: switched on, it draws loose items and experience to its holder. */
-    public static final DeferredItem<com.pockyl.hextale.item.HextechMagnetItem> HEXTECH_MAGNET = ITEMS.registerItem("hextech_magnet",
-            properties -> new com.pockyl.hextale.item.HextechMagnetItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
     /** A leather glove with a hextech barrel: it throws a tendril at a block and draws its wearer there. */
     public static final DeferredItem<com.pockyl.hextale.item.GrappleGauntletItem> GRAPPLE_GAUNTLET = ITEMS.registerItem("grapple_gauntlet",
             properties -> new com.pockyl.hextale.item.GrappleGauntletItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)
