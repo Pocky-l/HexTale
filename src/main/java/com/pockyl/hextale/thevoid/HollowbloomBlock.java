@@ -37,10 +37,14 @@ public class HollowbloomBlock extends VegetationBlock {
     public static final float[] WAKES_AT = {0, 150, 350, Thinning.Stage.HAZE.from, Thinning.Stage.BLIGHT.from};
     public static final int[] LIGHT = {0, 0, 2, 5, 8};
     public static final int CHECK_TICKS = 100;
-    /** How high the flower's hollow heart sits at each vigor (blocks), for the motes it draws in. */
-    private static final double[] HEART = {0.45, 0.55, 0.62, 0.72, 0.78};
+    /**
+     * Where the flower's heart sits at each vigor (blocks), for the motes it draws in: the drooping dead bud off to one
+     * side, then the closed bud, then the black hollow of the bloom over the middle.
+     */
+    private static final double[] HEART = {0.38, 0.63, 0.70, 0.66, 0.72};
+    private static final double[] HEART_X = {11 / 16.0, 0.5, 0.5, 0.5, 0.5};
     private static final VoxelShape[] SHAPES = {
-            Block.column(10.0, 0.0, 9.0), Block.column(10.0, 0.0, 11.0), Block.column(12.0, 0.0, 12.0),
+            Block.column(10.0, 0.0, 10.0), Block.column(10.0, 0.0, 12.0), Block.column(12.0, 0.0, 13.0),
             Block.column(12.0, 0.0, 14.0), Block.column(14.0, 0.0, 15.0)};
     private static final int DRY = 0x7A6A58;
     private static final int MOTE = 0x2A1C34;
@@ -103,7 +107,7 @@ public class HollowbloomBlock extends VegetationBlock {
         int next = vigor + Integer.signum(wanted - vigor);
         BlockState changed = state.setValue(VIGOR, next);
         level.setBlock(pos, changed, Block.UPDATE_ALL);
-        double x = pos.getX() + 0.5;
+        double x = pos.getX() + HEART_X[next];
         double z = pos.getZ() + 0.5;
         double heart = pos.getY() + HEART[next];
         if (next > vigor) {
@@ -143,7 +147,7 @@ public class HollowbloomBlock extends VegetationBlock {
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         int vigor = state.getValue(VIGOR);
-        double x = pos.getX() + 0.5;
+        double x = pos.getX() + HEART_X[vigor];
         double z = pos.getZ() + 0.5;
         double heart = pos.getY() + HEART[vigor];
         switch (vigor) {

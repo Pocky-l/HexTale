@@ -534,7 +534,7 @@ public final class ModBlocks {
     public static final DeferredBlock<com.pockyl.hextale.thevoid.HollowbloomBlock> HOLLOWBLOOM = BLOCKS.registerBlock("hollowbloom",
             com.pockyl.hextale.thevoid.HollowbloomBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().instabreak().sound(SoundType.ROOTS)
-                    .offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED)
+                    .pushReaction(PushReaction.POPPED)
                     .lightLevel(state -> com.pockyl.hextale.thevoid.HollowbloomBlock.LIGHT[state.getValue(com.pockyl.hextale.thevoid.HollowbloomBlock.VIGOR)]));
 
     private static BlockBehaviour.Properties voidRockProperties() {
