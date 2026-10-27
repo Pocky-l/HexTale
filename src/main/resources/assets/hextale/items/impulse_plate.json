@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "hextale:block/impulse_plate"
+    "model": "hextale:item/impulse_plate"
   }
 }
