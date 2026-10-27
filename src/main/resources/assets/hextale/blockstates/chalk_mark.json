@@ -1,48 +1,93 @@
 {
   "variants": {
-    "facing=north,glyph=0": {
+    "facing=north,glyph=0,lit=false": {
       "model": "hextale:block/chalk_mark_0"
     },
-    "facing=north,glyph=1": {
+    "facing=north,glyph=0,lit=true": {
+      "model": "hextale:block/chalk_mark_0_lit"
+    },
+    "facing=north,glyph=1,lit=false": {
       "model": "hextale:block/chalk_mark_1"
     },
-    "facing=north,glyph=2": {
+    "facing=north,glyph=1,lit=true": {
+      "model": "hextale:block/chalk_mark_1_lit"
+    },
+    "facing=north,glyph=2,lit=false": {
       "model": "hextale:block/chalk_mark_2"
     },
-    "facing=east,glyph=0": {
+    "facing=north,glyph=2,lit=true": {
+      "model": "hextale:block/chalk_mark_2_lit"
+    },
+    "facing=east,glyph=0,lit=false": {
       "model": "hextale:block/chalk_mark_0",
       "y": 90
     },
-    "facing=east,glyph=1": {
+    "facing=east,glyph=0,lit=true": {
+      "model": "hextale:block/chalk_mark_0_lit",
+      "y": 90
+    },
+    "facing=east,glyph=1,lit=false": {
       "model": "hextale:block/chalk_mark_1",
       "y": 90
     },
-    "facing=east,glyph=2": {
+    "facing=east,glyph=1,lit=true": {
+      "model": "hextale:block/chalk_mark_1_lit",
+      "y": 90
+    },
+    "facing=east,glyph=2,lit=false": {
       "model": "hextale:block/chalk_mark_2",
       "y": 90
     },
-    "facing=south,glyph=0": {
+    "facing=east,glyph=2,lit=true": {
+      "model": "hextale:block/chalk_mark_2_lit",
+      "y": 90
+    },
+    "facing=south,glyph=0,lit=false": {
       "model": "hextale:block/chalk_mark_0",
       "y": 180
     },
-    "facing=south,glyph=1": {
+    "facing=south,glyph=0,lit=true": {
+      "model": "hextale:block/chalk_mark_0_lit",
+      "y": 180
+    },
+    "facing=south,glyph=1,lit=false": {
       "model": "hextale:block/chalk_mark_1",
       "y": 180
     },
-    "facing=south,glyph=2": {
+    "facing=south,glyph=1,lit=true": {
+      "model": "hextale:block/chalk_mark_1_lit",
+      "y": 180
+    },
+    "facing=south,glyph=2,lit=false": {
       "model": "hextale:block/chalk_mark_2",
       "y": 180
     },
-    "facing=west,glyph=0": {
+    "facing=south,glyph=2,lit=true": {
+      "model": "hextale:block/chalk_mark_2_lit",
+      "y": 180
+    },
+    "facing=west,glyph=0,lit=false": {
       "model": "hextale:block/chalk_mark_0",
       "y": 270
     },
-    "facing=west,glyph=1": {
+    "facing=west,glyph=0,lit=true": {
+      "model": "hextale:block/chalk_mark_0_lit",
+      "y": 270
+    },
+    "facing=west,glyph=1,lit=false": {
       "model": "hextale:block/chalk_mark_1",
       "y": 270
     },
-    "facing=west,glyph=2": {
+    "facing=west,glyph=1,lit=true": {
+      "model": "hextale:block/chalk_mark_1_lit",
+      "y": 270
+    },
+    "facing=west,glyph=2,lit=false": {
       "model": "hextale:block/chalk_mark_2",
+      "y": 270
+    },
+    "facing=west,glyph=2,lit=true": {
+      "model": "hextale:block/chalk_mark_2_lit",
       "y": 270
     }
   }
