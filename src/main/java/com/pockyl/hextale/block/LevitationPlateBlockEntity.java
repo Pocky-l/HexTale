@@ -26,6 +26,7 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.PlateRune;
@@ -47,8 +48,22 @@ public class LevitationPlateBlockEntity extends BlockEntity {
     /** How far down a sneaking player sinks a tick. */
     private static final double SINK = 0.18;
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
-    /** Entities in the column last tick (server), to know who just left it. */
+    /** Entities in the column last tick (server), to know who just came in and who just left it. */
     private final Set<Integer> inside = new HashSet<>();
+    /** How many ride the column now (both sides; the clients animate and hum by it). */
+    private int riders;
+    /** Client: the ring's turn (degrees) this tick and the last, and how fast it turns now. */
+    public float spin;
+    public float spinO;
+    private float spinSpeed = SPIN_IDLE;
+    /** Client: 0 idle .. 1 carrying someone, eased. */
+    public float lift;
+    public float liftO;
+    /** Client: starts the column's hum when someone rides (set by the client; the server has none). */
+    public static java.util.function.Consumer<LevitationPlateBlockEntity> hum = plate -> {
+    };
+    private static final float SPIN_IDLE = 1.0F;
+    private static final float SPIN_LIFTING = 4.5F;
 
     public LevitationPlateBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.LEVITATION_PLATE.get(), pos, state);
@@ -56,6 +71,10 @@ public class LevitationPlateBlockEntity extends BlockEntity {
 
     public PickaxeRunes runes() {
         return runes;
+    }
+
+    public int riders() {
+        return riders;
     }
 
     private int strength(PlateRune rune) {
@@ -93,12 +112,45 @@ public class LevitationPlateBlockEntity extends BlockEntity {
             }
             if (!level.isClientSide()) {
                 entity.resetFallDistance();
+                // Hovering on the column is not flying: no kick on servers that forbid flight.
+                if (entity instanceof net.minecraft.server.level.ServerPlayer player && player.connection != null) {
+                    player.connection.resetFlyingTicks();
+                }
             }
         }
+        int before = plate.riders;
+        plate.riders = now.size();
         if (level instanceof ServerLevel server) {
+            plate.arrive(server, now);
             plate.leave(server, now);
-            if (!now.isEmpty() && level.getGameTime() % 40 == 0) {
-                level.playSound(null, pos, ModSounds.RITUAL_HUM.get(), SoundSource.BLOCKS, 0.25F, 1.6F);
+        } else {
+            plate.animate(before);
+        }
+    }
+
+    /** Client: the ring turns faster while it carries someone and the carrying eases in and out; the hum starts. */
+    private void animate(int before) {
+        spinO = spin;
+        liftO = lift;
+        spinSpeed += ((riders > 0 ? SPIN_LIFTING : SPIN_IDLE) - spinSpeed) * 0.08F;
+        spin = (spin + spinSpeed) % 360;
+        if (spin < spinO) {
+            spinO -= 360;
+        }
+        lift += ((riders > 0 ? 1 : 0) - lift) * 0.1F;
+        if (riders > 0 && before == 0) {
+            hum.accept(this);
+        }
+    }
+
+    /** Whoever just came into the column is taken up with a soft swell of air. */
+    private void arrive(ServerLevel level, Set<Integer> now) {
+        for (int id : now) {
+            if (!inside.contains(id) && level.getEntity(id) instanceof Entity entity && !(entity instanceof net.minecraft.world.entity.item.ItemEntity)) {
+                level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), ModSounds.LEVITATION_LIFT.get(), SoundSource.BLOCKS, 0.6F,
+                        0.9F + level.getRandom().nextFloat() * 0.2F);
+                level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), worldPosition.getX() + 0.5, worldPosition.getY() + 0.3,
+                        worldPosition.getZ() + 0.5, 0, 0.5, 1, 0, 1);
             }
         }
     }
@@ -119,14 +171,17 @@ public class LevitationPlateBlockEntity extends BlockEntity {
         entity.resetFallDistance();
     }
 
-    /** Living things that just left the column float down slowly for a while (Breath). */
+    /** Whoever just left the column is let go with a sigh of air; living things float down slowly for a while (Breath). */
     private void leave(ServerLevel level, Set<Integer> now) {
         int breath = strength(PlateRune.BREATH);
-        if (breath > 0) {
-            for (int id : inside) {
-                if (!now.contains(id) && level.getEntity(id) instanceof LivingEntity living) {
-                    living.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, PlateRune.FLOAT_TICKS[Mth.clamp(breath, 1, 4) - 1], 0, true, false, true));
-                }
+        for (int id : inside) {
+            if (now.contains(id) || !(level.getEntity(id) instanceof Entity entity) || entity instanceof net.minecraft.world.entity.item.ItemEntity) {
+                continue;
+            }
+            level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), ModSounds.LEVITATION_RELEASE.get(), SoundSource.BLOCKS, 0.5F,
+                    0.9F + level.getRandom().nextFloat() * 0.2F);
+            if (breath > 0 && entity instanceof LivingEntity living) {
+                living.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, PlateRune.FLOAT_TICKS[Mth.clamp(breath, 1, 4) - 1], 0, true, false, true));
             }
         }
         inside.clear();

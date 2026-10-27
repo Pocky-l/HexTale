@@ -56,6 +56,8 @@ public final class GadgetGameTests {
             double height = stone.getY() - floor;
             helper.assertTrue(height > 4.0, "the stone rises in the column (" + height + ")");
             helper.assertTrue(height < PlateRune.HEIGHT + 1.5, "and hangs at its top, not beyond (" + height + ")");
+            helper.assertValueEqual(helper.getBlockEntity(plate, com.pockyl.hextale.block.LevitationPlateBlockEntity.class).riders(), 1,
+                    "riders the plate counts (it animates and hums by them)");
             stone.discard();
         });
     }
@@ -354,7 +356,9 @@ public final class GadgetGameTests {
         double[] farthest = {start.x};
         double[] stretch = {0};
         helper.onEachTick(() -> {
-            if (player.isRemoved()) {
+            com.pockyl.hextale.entity.GrappleHook flying = com.pockyl.hextale.entity.GrappleHook.of(player);
+            if (player.isRemoved() || flying == null || !flying.attached()) {
+                // Test spots sometimes start ticking their entities late: the wearer waits in the air for the bite.
                 return;
             }
             player.doTick();

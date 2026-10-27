@@ -176,6 +176,10 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_SEND = register("rift_gate.send");
     public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_ARRIVE = register("rift_gate.arrive");
     public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_BREAK = register("rift_gate.break");
+    /** The Levitation Plate: something taken up, the column humming while it carries (a loop), something let go. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> LEVITATION_LIFT = register("levitation_plate.lift");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LEVITATION_HUM = register("levitation_plate.hum");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LEVITATION_RELEASE = register("levitation_plate.release");
     /** A Miasma Vent breathes out its fumes. */
     public static final DeferredHolder<SoundEvent, SoundEvent> MIASMA_HISS = register("miasma.hiss");
 

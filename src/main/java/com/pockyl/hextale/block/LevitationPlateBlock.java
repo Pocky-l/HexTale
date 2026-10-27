@@ -50,19 +50,24 @@ public class LevitationPlateBlock extends BaseEntityBlock {
         return createTickerHelper(type, ModBlockEntities.LEVITATION_PLATE.get(), LevitationPlateBlockEntity::tick);
     }
 
-    /** Motes of light drift up the column, and now and then a faint ring rises off the crystal. */
+    /**
+     * Motes of light drift up the column and fade where it ends - so its height shows - and a faint ring hangs at its top
+     * now and then. While it carries someone the motes stream up thickly.
+     */
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if (!(level.getBlockEntity(pos) instanceof LevitationPlateBlockEntity plate)) {
             return;
         }
         int reach = plate.reach(level);
-        for (int i = 0; i < 2; i++) {
-            level.addParticle(ModParticles.glint(ModParticles.HEX_LIGHT), pos.getX() + 0.2 + random.nextDouble() * 0.6,
-                    pos.getY() + 0.25 + random.nextDouble() * reach, pos.getZ() + 0.2 + random.nextDouble() * 0.6, 0, 0.04, 0);
+        int motes = plate.riders() > 0 ? 6 : 2;
+        for (int i = 0; i < motes; i++) {
+            double y = pos.getY() + 0.4 + random.nextDouble() * reach;
+            level.addParticle(ModParticles.glint(ModParticles.HEX_LIGHT), pos.getX() + 0.2 + random.nextDouble() * 0.6, y,
+                    pos.getZ() + 0.2 + random.nextDouble() * 0.6, 0, Math.min(0.06, (pos.getY() + 1 + reach - y) * 0.03), 0);
         }
-        if (random.nextInt(10) == 0) {
-            level.addParticle(ModParticles.ring(ModParticles.HEXTECH), pos.getX() + 0.5, pos.getY() + 0.2, pos.getZ() + 0.5, 0.45, 1, 0);
+        if (random.nextInt(plate.riders() > 0 ? 3 : 8) == 0) {
+            level.addParticle(ModParticles.ring(ModParticles.HEXTECH), pos.getX() + 0.5, pos.getY() + 1 + reach - 0.05, pos.getZ() + 0.5, 0.4, 1, 0);
         }
     }
 }

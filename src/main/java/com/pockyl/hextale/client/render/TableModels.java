@@ -58,6 +58,8 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> GRAPPLE_HOOK = model("item/grapple_hook");
     /** The Impulse Plate's launch panel, built for a north-facing plate, hinged at its front edge (8, 2, 2) px. */
     public static final StandaloneModelKey<BlockStateModelPart> IMPULSE_PANEL = model("block/impulse_plate_panel");
+    /** The Levitation Plate's floating ring, centred on (8, 6, 8) px. */
+    public static final StandaloneModelKey<BlockStateModelPart> LEVITATION_RING = model("block/levitation_plate_ring");
 
     private TableModels() {
     }

@@ -1238,5 +1238,40 @@
         "volume": 0.7
       }
     ]
+  },
+  "levitation_plate.lift": {
+    "subtitle": "subtitles.hextale.levitation_plate.lift",
+    "sounds": [
+      {
+        "name": "hextale:levitation_lift1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:levitation_lift2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "levitation_plate.hum": {
+    "subtitle": "subtitles.hextale.levitation_plate.hum",
+    "sounds": [
+      {
+        "name": "hextale:levitation_hum",
+        "volume": 0.6
+      }
+    ]
+  },
+  "levitation_plate.release": {
+    "subtitle": "subtitles.hextale.levitation_plate.release",
+    "sounds": [
+      {
+        "name": "hextale:levitation_release1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:levitation_release2",
+        "volume": 0.6
+      }
+    ]
   }
 }

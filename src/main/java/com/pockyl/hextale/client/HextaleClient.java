@@ -125,6 +125,7 @@ public final class HextaleClient {
         SilenceHush.register();
         ClientLift.register();
         ClientGrapple.register();
+        LevitationHum.register();
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
         modBus.addListener(ThinningTint::fadeWater);
@@ -281,5 +282,6 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.HEXCORE.get(), com.pockyl.hextale.client.render.HexcoreRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RUNE_STELE.get(), RuneSteleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.IMPULSE_PLATE.get(), com.pockyl.hextale.client.render.ImpulsePlateRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.LEVITATION_PLATE.get(), com.pockyl.hextale.client.render.LevitationPlateRenderer::new);
     }
 }

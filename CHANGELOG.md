@@ -38,8 +38,10 @@ Glassy scars: the way into hextech no longer waits for a storm.
   whole. Creatures close by take a small sting and a push.
 - Levitation Plate: a raw orb set in a brass ring on a stone plate (Hex Workbench). The air above it lifts whatever
   stands there - players, animals, dropped items - up to six blocks or the first block above, and holds it there,
-  gently bobbing; sneaking sinks you back down, and nobody in the column is hurt by falling. Motes of light rise
-  through the column so it can be seen. Runes: Shift (a taller column), Motor (a faster lift), Breath (whoever steps
+  gently bobbing; sneaking sinks you back down, and nobody in the column is hurt by falling. Its brass ring floats
+  and turns over the dais; while it carries someone it spins up, glows and sends rings of light climbing the column
+  to the height it lifts to, motes stream up and fade where the column ends, the air swells as you are taken up, the
+  column hums while it holds you and sighs as it lets you go. Runes: Shift (a taller column), Motor (a faster lift), Breath (whoever steps
   out floats down slowly for a while) and Lens.
 - Ward Glass and Veil Glass (four at the Hex Workbench): glass with a rune of barrier that chooses who passes. Ward
   Glass stops players but lets creatures and dropped items through; Veil Glass lets players walk through and stops
