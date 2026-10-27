@@ -328,22 +328,13 @@ public class WhirlReaperBlockEntity extends BlockEntity {
     @Nullable
     BlockPos findRipe(ServerLevel level) {
         int radius = radius();
-        BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
         List<BlockPos> ripe = new ArrayList<>();
-        for (int dy = -DOWN; dy <= UP; dy++) {
-            for (int dx = -radius; dx <= radius; dx++) {
-                for (int dz = -radius; dz <= radius; dz++) {
-                    at.setWithOffset(worldPosition, dx, dy, dz);
-                    if (dx == 0 && dz == 0 && dy == 0 || !level.isLoaded(at)) {
-                        continue;
-                    }
-                    BlockState state = level.getBlockState(at);
-                    if (Reaping.ripe(level, at, state) != null && !claimed(at)) {
+        com.pockyl.hextale.farm.SectionScan.forEach(level, worldPosition.offset(-radius, -DOWN, -radius), worldPosition.offset(radius, UP, radius),
+                Reaping::mayRipen, (at, state) -> {
+                    if (!at.equals(worldPosition) && Reaping.ripe(level, at, state) != null && !claimed(at)) {
                         ripe.add(at.immutable());
                     }
-                }
-            }
-        }
+                });
         return ripe.stream().min(Comparator.<BlockPos>comparingDouble(p -> p.distSqr(worldPosition)).thenComparingLong(BlockPos::asLong))
                 .orElse(null);
     }

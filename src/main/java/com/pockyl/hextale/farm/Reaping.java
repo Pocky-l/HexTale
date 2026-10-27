@@ -69,6 +69,11 @@ public final class Reaping {
         return height;
     }
 
+    /** Whether the block is a plant a whirl could ever reap (ripe or not): what a field scan looks for. */
+    public static boolean mayRipen(BlockState state) {
+        return isCrop(state) || state.is(ModTags.WHIRL_GOURDS) || state.is(ModTags.WHIRL_STALKS);
+    }
+
     private static boolean isCrop(BlockState state) {
         return state.getBlock() instanceof CropBlock || state.is(ModTags.WHIRL_CROPS);
     }

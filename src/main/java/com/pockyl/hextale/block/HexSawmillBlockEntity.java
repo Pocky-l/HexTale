@@ -304,21 +304,13 @@ public class HexSawmillBlockEntity extends BlockEntity {
         for (Pending saw : pending) {
             claimed.addAll(saw.logs());
         }
-        BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
         List<BlockPos> feet = new ArrayList<>();
-        for (int dy = -DOWN; dy <= UP; dy++) {
-            for (int dx = -radius; dx <= radius; dx++) {
-                for (int dz = -radius; dz <= radius; dz++) {
-                    at.setWithOffset(worldPosition, dx, dy, dz);
-                    if (!level.isLoaded(at) || claimed.contains(at) || notTrees.contains(at)) {
-                        continue;
-                    }
-                    if (Felling.isFoot(level, at, level.getBlockState(at))) {
+        com.pockyl.hextale.farm.SectionScan.forEach(level, worldPosition.offset(-radius, -DOWN, -radius), worldPosition.offset(radius, UP, radius),
+                state -> state.is(net.minecraft.tags.BlockTags.LOGS), (at, state) -> {
+                    if (!claimed.contains(at) && !notTrees.contains(at) && Felling.isFoot(level, at, state)) {
                         feet.add(at.immutable());
                     }
-                }
-            }
-        }
+                });
         feet.sort(Comparator.<BlockPos>comparingDouble(p -> p.distSqr(worldPosition)).thenComparingLong(BlockPos::asLong));
         for (BlockPos foot : feet) {
             if (claimed.contains(foot)) {
