@@ -96,6 +96,11 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
             }
 
             @Override
+            public boolean mayPickup(Player taker) {
+                return stillMade(taker, getItem());
+            }
+
+            @Override
             public void onTake(Player taker, ItemStack stack) {
                 craft(taker);
                 super.onTake(taker, stack);
@@ -173,6 +178,26 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
         data.set(1, cost);
         data.set(2, why.ordinal());
         result.setItem(0, shown);
+    }
+
+    /**
+     * Whether the grid still makes what the result slot shows and the crystal can still pay for it. The slot is only
+     * refreshed when the menu broadcasts, so a hopper or another player at the bench may have changed the grid since:
+     * taking the old result then would give it without using anything.
+     */
+    private boolean stillMade(Player taker, ItemStack shown) {
+        if (!(bench instanceof HexWorkbenchBlockEntity entity) || !(taker.level() instanceof ServerLevel level)) {
+            return true;
+        }
+        CraftingInput input = entity.input().input();
+        Map.Entry<Identifier, HexCraftingRecipe> found = HexCraftingRecipe.find(input, false);
+        if (found != null) {
+            int cost = found.getValue().charge();
+            return ItemStack.matches(found.getValue().result().create(), shown)
+                    && (entity.chargeAvailable() >= cost || taker.getAbilities().instabuild);
+        }
+        RecipeHolder<CraftingRecipe> plain = plainRecipe(level, input);
+        return plain != null && ItemStack.matches(plain.value().assemble(input), shown);
     }
 
     /** The result was taken: the grid gives one of everything (remainders stay or go to the player), the crystal pays. */
