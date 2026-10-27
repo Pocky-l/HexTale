@@ -181,7 +181,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEX_SAWMILL.get(), "hex_sawmill");
         info(registration, ModItems.GREEDY_FUNNEL.get(), "greedy_funnel");
         info(registration, ModItems.ARC_SPIRE.get(), "arc_spire");
-        info(registration, ModItems.RUNE_SHACKLES.get(), "rune_shackles");
+        info(registration, ModItems.BINDING_CHALK.get(), "binding_chalk");
         info(registration, ModItems.XP_CONDENSER.get(), "xp_condenser");
         info(registration, ModItems.MIASMA_VENT.get(), "miasma_vent");
         info(registration, ModItems.FIELD_WARD.get(), "field_ward");

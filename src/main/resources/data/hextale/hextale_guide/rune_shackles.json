@@ -1,13 +1,17 @@
 {
   "region": "pylons",
   "stage": "mid",
-  "icon": "hextale:rune_shackles",
+  "icon": "hextale:binding_chalk",
   "parents": [
     "arc_spire"
   ],
+  "goal": {
+    "type": "event",
+    "event": "binding_figure"
+  },
   "display": {
     "kind": "infusion",
-    "result": "hextale:rune_shackles"
+    "result": "hextale:binding_chalk"
   },
   "research": "rune_shackles",
   "pos": [

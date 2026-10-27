@@ -101,9 +101,6 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ArcSpireBlockEntity>> ARC_SPIRE =
             BLOCK_ENTITIES.register("arc_spire", () -> new BlockEntityType<>(com.pockyl.hextale.block.ArcSpireBlockEntity::new,
                     ModBlocks.ARC_SPIRE.get()));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.RuneShacklesBlockEntity>> RUNE_SHACKLES =
-            BLOCK_ENTITIES.register("rune_shackles", () -> new BlockEntityType<>(com.pockyl.hextale.block.RuneShacklesBlockEntity::new,
-                    ModBlocks.RUNE_SHACKLES.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.XpCondenserBlockEntity>> XP_CONDENSER =
             BLOCK_ENTITIES.register("xp_condenser", () -> new BlockEntityType<>(com.pockyl.hextale.block.XpCondenserBlockEntity::new,
                     ModBlocks.XP_CONDENSER.get()));

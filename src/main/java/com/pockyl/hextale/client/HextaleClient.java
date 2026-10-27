@@ -164,9 +164,6 @@ public final class HextaleClient {
             if (stack.is(ModItems.XP_CONDENSER.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.xp_condenser.hint").withStyle(ChatFormatting.GRAY));
             }
-            if (stack.is(ModItems.RUNE_SHACKLES.get())) {
-                event.getToolTip().add(Component.translatable("block.hextale.rune_shackles.hint").withStyle(ChatFormatting.GRAY));
-            }
             if (stack.is(ModItems.VOID_ANCHOR.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.void_anchor.hint").withStyle(ChatFormatting.GRAY));
             }
@@ -269,7 +266,6 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.ARC_SPIRE.get(), com.pockyl.hextale.client.render.ArcSpireRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_PURIFIER.get(), com.pockyl.hextale.client.render.HextechPurifierRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.VOID_ANCHOR.get(), com.pockyl.hextale.client.render.VoidAnchorRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.RUNE_SHACKLES.get(), com.pockyl.hextale.client.render.RuneShacklesRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.XP_CONDENSER.get(), com.pockyl.hextale.client.render.XpCondenserRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_WORKBENCH.get(), com.pockyl.hextale.client.render.HexWorkbenchRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.AXOLOTL_TANK.get(), com.pockyl.hextale.client.render.AxolotlTankRenderer::new);

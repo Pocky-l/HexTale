@@ -180,6 +180,9 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> LEVITATION_LIFT = register("levitation_plate.lift");
     public static final DeferredHolder<SoundEvent, SoundEvent> LEVITATION_HUM = register("levitation_plate.hum");
     public static final DeferredHolder<SoundEvent, SoundEvent> LEVITATION_RELEASE = register("levitation_plate.release");
+    /** Binding Chalk: a stroke on stone, and a drawn figure closing. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHALK_SCRATCH = register("binding_chalk.scratch");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHALK_CLOSE = register("binding_chalk.close");
     /** A Miasma Vent breathes out its fumes. */
     public static final DeferredHolder<SoundEvent, SoundEvent> MIASMA_HISS = register("miasma.hiss");
 

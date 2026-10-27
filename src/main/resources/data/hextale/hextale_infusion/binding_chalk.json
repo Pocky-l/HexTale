@@ -1,0 +1,17 @@
+{
+  "center": "hextale:rune_chalk",
+  "pedestals": [
+    "hextale:nullstone",
+    "minecraft:iron_chain",
+    "minecraft:iron_chain",
+    "minecraft:amethyst_shard"
+  ],
+  "essences": {
+    "shadow": 12,
+    "earth": 8
+  },
+  "result": {
+    "id": "hextale:binding_chalk",
+    "count": 1
+  }
+}

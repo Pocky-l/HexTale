@@ -105,6 +105,7 @@ public final class Hextale {
         output.accept(ModItems.PEDESTAL);
         output.accept(ModItems.RUNE_STELE);
         output.accept(ModItems.RUNE_CHALK);
+        output.accept(ModItems.BINDING_CHALK);
         output.accept(ModItems.HEXCORE);
         output.accept(ModItems.NULLSTONE);
         output.accept(ModItems.HEXTECH_LAMP);
@@ -137,7 +138,6 @@ public final class Hextale {
         output.accept(ModItems.HEX_SAWMILL);
         output.accept(ModItems.GREEDY_FUNNEL);
         output.accept(ModItems.XP_CONDENSER);
-        output.accept(ModItems.RUNE_SHACKLES);
         output.accept(ModItems.ARC_SPIRE);
         output.accept(ModItems.HEXTECH_PURIFIER);
         output.accept(ModItems.VOID_ANCHOR);

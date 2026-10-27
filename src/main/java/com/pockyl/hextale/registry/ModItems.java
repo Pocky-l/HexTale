@@ -359,6 +359,9 @@ public final class ModItems {
     /** Magic stone ground with dust: draws runes on the floor. */
     public static final DeferredItem<com.pockyl.hextale.item.RuneChalkItem> RUNE_CHALK = ITEMS.registerItem("rune_chalk",
             properties -> new com.pockyl.hextale.item.RuneChalkItem(properties.durability(32)));
+    /** Stabilizing Chalk steeped in shadow: draws binding lines on the floor. */
+    public static final DeferredItem<com.pockyl.hextale.item.BindingChalkItem> BINDING_CHALK = ITEMS.registerItem("binding_chalk",
+            properties -> new com.pockyl.hextale.item.BindingChalkItem(properties.durability(96).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<BlockItem> NULLSTONE = ITEMS.registerSimpleBlockItem(ModBlocks.NULLSTONE);
     public static final DeferredItem<BlockItem> VOID_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_SOIL);
     public static final DeferredItem<BlockItem> VOID_ROCK = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK);

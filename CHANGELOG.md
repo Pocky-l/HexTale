@@ -100,6 +100,13 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed
+- Rune Shackles are replaced by Binding Chalk (at the Hextech Altar, from Stabilizing Chalk steeped in shadow; the
+  same research). It draws lines on the floor that join like redstone dust; a line closed round a patch of floor wakes
+  with a faint violet glow and holds what stands inside: up to six creatures hang still and cost the server nothing,
+  yet can still be struck; a player is only rooted for a moment and then walks free. Bosses and tamed animals are left
+  alone. The holding drinks shadow essence from jars nearby; without it the chalk wears and a line gives way. Shackle
+  blocks already placed break into Binding Chalk.
+- Rune Chalk is now called Stabilizing Chalk.
 - Bottles of essence can be drunk: every primal in the bottle gives its own short gift - fire: fire resistance,
   water: water breathing, earth: a full belly, air: slow falling, light: night vision, shadow: invisibility, life:
   regeneration, metal: haste, spark: jump boost - longer the more of it there is. Unknown essence turns the stomach.

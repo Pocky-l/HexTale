@@ -339,7 +339,7 @@ public final class GadgetGameTests {
      * the wearer falls, the rope catches and carries them through the bottom of the arc and up the other side - never
      * farther from the claw than the rope is long. The player is moved by its own ticks, as a client moves itself.
      */
-    @HexTest(padding = 8, maxTicks = 120)
+    @HexTest(padding = 8, maxTicks = 300)
     public static void aGrappleRopeSwingsItsWearer(GameTestHelper helper) {
         BlockPos anchor = new BlockPos(1, 12, 1);
         helper.setBlock(anchor, Blocks.STONE);

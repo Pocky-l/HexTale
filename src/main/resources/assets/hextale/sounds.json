@@ -1273,5 +1273,31 @@
         "volume": 0.6
       }
     ]
+  },
+  "binding_chalk.scratch": {
+    "subtitle": "subtitles.hextale.binding_chalk.scratch",
+    "sounds": [
+      {
+        "name": "hextale:chalk_scratch1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:chalk_scratch2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:chalk_scratch3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "binding_chalk.close": {
+    "subtitle": "subtitles.hextale.binding_chalk.close",
+    "sounds": [
+      {
+        "name": "hextale:chalk_close",
+        "volume": 0.8
+      }
+    ]
   }
 }

@@ -318,9 +318,8 @@ public final class ModBlocks {
             com.pockyl.hextale.block.HextechPurifierBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(3.0F, 6.0F).sound(SoundType.DEEPSLATE_BRICKS)
                     .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> 5));
-    /** A nullstone block with a ring of runes on top: holds the creatures standing on it still in its glyph. */
-    public static final DeferredBlock<com.pockyl.hextale.block.RuneShacklesBlock> RUNE_SHACKLES = BLOCKS.registerBlock("rune_shackles",
-            com.pockyl.hextale.block.RuneShacklesBlock::new,
+    /** Legacy: the old Rune Shackles plate (no longer made, holds nothing); it breaks into Binding Chalk. */
+    public static final DeferredBlock<Block> RUNE_SHACKLES = BLOCKS.registerBlock("rune_shackles", Block::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .requiresCorrectToolForDrops());
     /** A glass column in a brass frame: drinks the experience orbs about to appear around it and holds them as a liquid. */
@@ -479,6 +478,12 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).replaceable().noCollision().instabreak().noLootTable()
                     .sound(SoundType.CALCITE).pushReaction(PushReaction.POPPED)
                     .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChalkMarkBlock.LIT) ? 6 : 0));
+    /** A line drawn in Binding Chalk: joins its neighbours; a closed figure of them holds what stands inside. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChalkSigilBlock> CHALK_SIGIL = BLOCKS.registerBlock("chalk_sigil",
+            com.pockyl.hextale.block.ChalkSigilBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollision().instabreak().noLootTable()
+                    .sound(SoundType.CALCITE).pushReaction(PushReaction.POPPED)
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChalkSigilBlock.ACTIVE) ? 3 : 0));
     /** Nullstone drinks stray magic: it calms a Hexcore at work and glows as it fills. Polished and bricks are decor. */
     public static final DeferredBlock<com.pockyl.hextale.block.NullstoneBlock> NULLSTONE = BLOCKS.registerBlock("nullstone",
             com.pockyl.hextale.block.NullstoneBlock::new,
