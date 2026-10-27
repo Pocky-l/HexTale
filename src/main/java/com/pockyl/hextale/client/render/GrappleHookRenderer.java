@@ -143,47 +143,46 @@ public class GrappleHookRenderer extends EntityRenderer<GrappleHook, GrappleHook
         }
         Vec3 toCamera = camera.pos.subtract(state.x, state.y, state.z);
         int light = state.lightCoords;
-        collector.submitCustomGeometry(poseStack, RenderTypes.entitySolid(HexFx.WHITE), (pose, consumer) -> {
-            for (int i = 0; i < SEGMENTS; i++) {
-                int color = i % 2 == 0 ? CORD_DARK : CORD_LIGHT;
-                ribbon(consumer, pose, points[i], points[i + 1], toCamera, CORD_WIDTH, color, light);
-            }
-        });
+        collector.submitCustomGeometry(poseStack, RenderTypes.entitySolid(HexFx.WHITE), (pose, consumer) -> cord(consumer, pose, points, toCamera, light));
+        // The sheath: one strip of additive light that writes no depth, lifted a hair towards the camera, so it neither
+        // sorts against itself nor fights the cord for depth.
         float time = state.ageInTicks;
         float base = taut ? 0.55F : state.phase == GrappleHook.ATTACHED ? 0.22F : 0.4F;
-        for (int i = 0; i < SEGMENTS; i++) {
-            float t = (i + 0.5F) / SEGMENTS;
+        Vec3[] lifted = new Vec3[SEGMENTS + 1];
+        float[] glow = new float[SEGMENTS + 1];
+        for (int i = 0; i <= SEGMENTS; i++) {
+            float t = i / (float) SEGMENTS;
             float pulse = taut ? Math.max(0, Mth.sin(t * 14 - time * 0.9F)) * 0.35F : 0;
-            Vec3 from = points[i];
-            Vec3 to = points[i + 1];
-            Vec3 mid = from.add(to).scale(0.5);
-            Vec3 look = toCamera.subtract(mid).normalize();
-            poseStack.pushPose();
-            poseStack.translate(from.x, from.y, from.z);
-            HexFx.beam(poseStack, collector, (float) (to.x - from.x), (float) (to.y - from.y), (float) (to.z - from.z), GLOW_WIDTH,
-                    ModParticles.HEXTECH, base + pulse, new Vector3f((float) look.x, (float) look.y, (float) look.z));
-            poseStack.popPose();
+            glow[i] = base + pulse;
+            lifted[i] = points[i].add(toCamera.subtract(points[i]).normalize().scale(0.02));
         }
+        Vector3f viewer = new Vector3f((float) toCamera.x, (float) toCamera.y, (float) toCamera.z);
+        collector.submitCustomGeometry(poseStack, HexGlow.TYPE,
+                (pose, consumer) -> JarStreamFx.strip(consumer, pose, lifted, glow, viewer, GLOW_WIDTH, ModParticles.HEXTECH, 0.8F));
         super.submit(state, poseStack, collector, camera);
     }
 
-    /** One stretch of cord as a flat strip turned to the camera, both windings. */
-    private static void ribbon(VertexConsumer consumer, PoseStack.Pose pose, Vec3 a, Vec3 b, Vec3 camera, float width, int color, int light) {
-        Vec3 along = b.subtract(a);
-        Vec3 side = camera.subtract(a).cross(along);
-        if (side.lengthSqr() < 1.0E-8) {
-            return;
+    /**
+     * The cord as one camera-facing strip, both windings. Neighbouring stretches share their joint's edge (mitred by
+     * the direction through it), so no two stretches overlap and the alternating colours never fight for depth.
+     */
+    private static void cord(VertexConsumer consumer, PoseStack.Pose pose, Vec3[] points, Vec3 camera, int light) {
+        Vec3[] side = new Vec3[points.length];
+        for (int i = 0; i < points.length; i++) {
+            Vec3 along = points[Math.min(points.length - 1, i + 1)].subtract(points[Math.max(0, i - 1)]);
+            Vec3 across = camera.subtract(points[i]).cross(along);
+            side[i] = across.lengthSqr() < 1.0E-10 ? (i > 0 ? side[i - 1] : new Vec3(0, CORD_WIDTH / 2, 0))
+                    : across.normalize().scale(CORD_WIDTH / 2);
         }
-        side = side.normalize().scale(width / 2);
-        // Overlap the next stretch a hair so the bends close.
-        Vec3 b2 = b.add(along.normalize().scale(width * 0.3));
-        int argb = 0xFF000000 | color;
-        Vec3[] quad = {a.subtract(side), a.add(side), b2.add(side), b2.subtract(side)};
-        for (int pass = 0; pass < 2; pass++) {
-            for (int k = 0; k < 4; k++) {
-                Vec3 v = quad[pass == 0 ? k : 3 - k];
-                consumer.addVertex(pose, (float) v.x, (float) v.y, (float) v.z).setColor(argb).setUv(k == 1 || k == 2 ? 1 : 0, k >= 2 ? 1 : 0)
-                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 1, 0);
+        for (int i = 0; i < points.length - 1; i++) {
+            int argb = 0xFF000000 | (i % 2 == 0 ? CORD_DARK : CORD_LIGHT);
+            Vec3[] quad = {points[i].subtract(side[i]), points[i].add(side[i]), points[i + 1].add(side[i + 1]), points[i + 1].subtract(side[i + 1])};
+            for (int pass = 0; pass < 2; pass++) {
+                for (int k = 0; k < 4; k++) {
+                    Vec3 v = quad[pass == 0 ? k : 3 - k];
+                    consumer.addVertex(pose, (float) v.x, (float) v.y, (float) v.z).setColor(argb).setUv(k == 1 || k == 2 ? 1 : 0, k >= 2 ? 1 : 0)
+                            .setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 1, 0);
+                }
             }
         }
     }
