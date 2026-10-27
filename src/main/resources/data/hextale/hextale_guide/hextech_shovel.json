@@ -1,9 +1,7 @@
 {
   "region": "workshop",
   "icon": "hextale:hextech_shovel",
-  "parents": [
-    "hextech_pickaxe"
-  ],
+  "parents": ["hextech_pickaxe"],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:hextech_shovel",
@@ -12,8 +10,5 @@
       "result": "shovel"
     }
   },
-  "pos": [
-    230,
-    -360
-  ]
+  "pos": [334, -319]
 }

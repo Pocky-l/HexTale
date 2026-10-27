@@ -1,9 +1,7 @@
 {
   "region": "workshop",
   "icon": "hextale:hextech_axe",
-  "parents": [
-    "hextech_pickaxe"
-  ],
+  "parents": ["hextech_pickaxe"],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:hextech_axe",
@@ -12,8 +10,5 @@
       "result": "axe"
     }
   },
-  "pos": [
-    180,
-    -280
-  ]
+  "pos": [233, -249]
 }
