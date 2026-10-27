@@ -157,6 +157,16 @@ Glassy scars: the way into hextech no longer waits for a storm.
   transparent, and small slits showed at the hub, the blade tops, the guard and the pommel nut.
 - Shovel runes (treasures, seeds) and the felling of trees ignored grass blocks, podzol and mycelium: they count as
   soil again.
+- A broken Hex Lapidary was lost: it drops itself now.
+- The Hex Workbench could hand out its result without using anything when the grid changed while it was open (a
+  hopper or another player taking from it).
+- Waking the altar into the Hexcore gave the hextech gemstone back.
+- Breaking a Crucible while a transmuted item was still soaking lost the item.
+- A Soul Flask could take someone else's pet or a creature on someone else's lead.
+- The Spawner Cage could lift spawners in adventure mode and in protected places.
+- Null Lanterns and Silence Wards of a closed world could still keep monsters away or hush sounds in the next world
+  opened in the same game.
+- Rift Gates far apart no longer load the other gate's land over and over while essence or fluid flows between them.
 
 ## [1.2.0] - 2026-10-26
 Two roads of the Void: heal the land, or hold the breach and make it your own.
