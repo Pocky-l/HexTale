@@ -87,6 +87,38 @@ public final class GadgetGameTests {
         });
     }
 
+    /**
+     * An aimed plate is a faith plate: aimed by hand (an empty-handed click on the plate, then a click on the target,
+     * both through the real click path), it throws whatever steps on it so it lands on the target.
+     */
+    @HexTest(setupTicks = 40, maxTicks = 160, padding = 8)
+    public static void anAimedImpulsePlateLandsThingsOnTheTarget(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 1, 1);
+        BlockPos target = new BlockPos(8, 2, 3);
+        helper.setBlock(at, ModBlocks.IMPULSE_PLATE.get());
+        helper.setBlock(target, Blocks.STONE);
+        net.minecraft.server.level.ServerPlayer player = GameTests.watcher(helper, helper.absolutePos(at));
+        net.minecraft.world.InteractionHand hand = net.minecraft.world.InteractionHand.MAIN_HAND;
+        player.gameMode.useItemOn(player, helper.getLevel(), net.minecraft.world.item.ItemStack.EMPTY, hand,
+                new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(helper.absolutePos(at)), net.minecraft.core.Direction.UP,
+                        helper.absolutePos(at), false));
+        player.gameMode.useItemOn(player, helper.getLevel(), net.minecraft.world.item.ItemStack.EMPTY, hand,
+                new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(helper.absolutePos(target)), net.minecraft.core.Direction.UP,
+                        helper.absolutePos(target), false));
+        com.pockyl.hextale.block.ImpulsePlateBlock.Plate plate = helper.getBlockEntity(at, com.pockyl.hextale.block.ImpulsePlateBlock.Plate.class);
+        helper.assertValueEqual(plate.target(), helper.absolutePos(target), "the plate's target");
+        net.minecraft.world.entity.decoration.ArmorStand stand = helper.spawn(net.minecraft.world.entity.EntityTypes.ARMOR_STAND, new Vec3(1.5, 1.1, 1.5));
+        Vec3 landing = Vec3.atCenterOf(helper.absolutePos(target)).add(0, 0.5, 0);
+        boolean[] flew = {false};
+        helper.onEachTick(() -> flew[0] |= stand.getY() > landing.y + 1);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(flew[0], "it flew");
+            helper.assertTrue(stand.onGround() && stand.position().distanceTo(landing) < 1.0, "it landed on the target: " + stand.position()
+                    + " vs " + landing);
+            stand.discard();
+        });
+    }
+
     @HexTest(padding = 2)
     public static void hexLiftsFindTheNextLiftWithRoom(GameTestHelper helper) {
         BlockPos low = new BlockPos(1, 1, 1);

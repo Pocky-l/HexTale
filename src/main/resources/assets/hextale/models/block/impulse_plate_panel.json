@@ -1,0 +1,20 @@
+{
+  "textures": {
+    "particle": "hextale:block/impulse_plate",
+    "texture": "hextale:block/impulse_plate"
+  },
+  "elements": [
+    {
+      "from": [2, 1, 2],
+      "to": [14, 2, 14],
+      "faces": {
+        "north": {"uv": [2, 14, 14, 15], "texture": "#texture"},
+        "east": {"uv": [2, 14, 14, 15], "texture": "#texture"},
+        "south": {"uv": [2, 14, 14, 15], "texture": "#texture"},
+        "west": {"uv": [2, 14, 14, 15], "texture": "#texture"},
+        "up": {"uv": [2, 2, 14, 14], "texture": "#texture"},
+        "down": {"uv": [2, 2, 14, 14], "texture": "#texture"}
+      }
+    }
+  ]
+}

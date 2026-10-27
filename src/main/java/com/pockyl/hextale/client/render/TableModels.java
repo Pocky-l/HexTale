@@ -56,6 +56,8 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> HEXCORE_CRYSTAL = model("block/hexcore/crystal");
     /** The Grapple Gauntlet's claw, pointing along -Z with the rope's eye at (8, 8, 12) px. */
     public static final StandaloneModelKey<BlockStateModelPart> GRAPPLE_HOOK = model("item/grapple_hook");
+    /** The Impulse Plate's launch panel, built for a north-facing plate, hinged at its front edge (8, 2, 2) px. */
+    public static final StandaloneModelKey<BlockStateModelPart> IMPULSE_PANEL = model("block/impulse_plate_panel");
 
     private TableModels() {
     }

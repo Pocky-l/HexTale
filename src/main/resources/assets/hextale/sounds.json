@@ -1168,5 +1168,31 @@
         "volume": 0.7
       }
     ]
+  },
+  "impulse.launch": {
+    "subtitle": "subtitles.hextale.impulse.launch",
+    "sounds": [
+      {
+        "name": "hextale:impulse_launch1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:impulse_launch2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "impulse.land": {
+    "subtitle": "subtitles.hextale.impulse.land",
+    "sounds": [
+      {
+        "name": "hextale:impulse_land1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:impulse_land2",
+        "volume": 0.7
+      }
+    ]
   }
 }

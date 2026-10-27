@@ -51,7 +51,13 @@ Glassy scars: the way into hextech no longer waits for a storm.
   It stands or hangs like a lantern. Runes: Shift (a wider quiet, up to 64), Hush (no phantoms over sleepless players
   in it), Banishing (hostile creatures inside take a small bite now and then) and Lens.
 - Impulse Plate (two at the Hex Workbench): whatever steps on it is thrown up and along its brass arrow, placed facing
-  the way you look. Runes: Shift (higher), Motor (farther), Breath (a soft landing) and Lens.
+  the way you look - or, aimed like a faith plate, onto a spot of your choosing: right click it with an empty hand,
+  then right click the block it should throw to (the arc to the block under your crosshair shows while you choose,
+  red when out of reach). An aimed plate works out the throw for whatever stands on it - player, sheep or dropped
+  stone - so it lands on the target, and the landing is soft. Its launch panel snaps up with a deep thump and a
+  whoosh, the arc flashes along the way, and the target is marked by a ring of light whenever you hold a plate or
+  wear the researcher's goggles. Runes: Shift (higher, and farther targets: 24 blocks, up to 64), Motor (farther,
+  and a quicker flight), Breath (a soft landing for unaimed throws too) and Lens.
 - Hex Lift (replaces the "Hex Lift" idea in the diary): standing on one, jump to ride to the next lift straight above
   within 16 blocks, crouch to ride down; the lift you arrive on needs two blocks of room. Runes: Shift (up to 64
   blocks), Blink (creatures standing on the lift come along), Haste (Speed for a few seconds after a ride) and Lens.

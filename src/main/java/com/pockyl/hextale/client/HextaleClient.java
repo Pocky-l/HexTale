@@ -280,5 +280,6 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.DISINTEGRATOR.get(), com.pockyl.hextale.client.render.DisintegratorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEXCORE.get(), com.pockyl.hextale.client.render.HexcoreRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RUNE_STELE.get(), RuneSteleRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.IMPULSE_PLATE.get(), com.pockyl.hextale.client.render.ImpulsePlateRenderer::new);
     }
 }
