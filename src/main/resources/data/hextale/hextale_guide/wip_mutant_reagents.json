@@ -3,6 +3,11 @@
   "region": "chemtech",
   "stage": "mid",
   "icon": "minecraft:rotten_flesh",
-  "parents": ["wip_specimen_cage"],
-  "pos": [-900, 420]
+  "parents": [
+    "wip_mutation_injector"
+  ],
+  "pos": [
+    -800,
+    -280
+  ]
 }

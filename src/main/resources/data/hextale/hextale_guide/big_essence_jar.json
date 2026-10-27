@@ -1,7 +1,12 @@
 {
   "region": "essences",
   "icon": "hextale:essence_tank",
-  "parents": ["essence_tank", "unstable_hextech", "ink"],
+  "parents": [
+    "essence_tank",
+    "hextech_dust",
+    "ink",
+    "separator"
+  ],
   "goal": {
     "type": "event",
     "event": "big_essence_jar_formed"
@@ -11,5 +16,8 @@
     "result": "big_essence_jar"
   },
   "research": "big_essence_jar",
-  "pos": [240, 320]
+  "pos": [
+    240,
+    320
+  ]
 }

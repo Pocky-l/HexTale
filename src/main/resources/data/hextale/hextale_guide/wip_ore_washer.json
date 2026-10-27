@@ -3,6 +3,12 @@
   "region": "forge",
   "stage": "mid",
   "icon": "minecraft:raw_iron",
-  "parents": ["refined_pickaxe", "pump"],
-  "pos": [963, 180]
+  "parents": [
+    "hex_foundry",
+    "pump"
+  ],
+  "pos": [
+    500,
+    100
+  ]
 }

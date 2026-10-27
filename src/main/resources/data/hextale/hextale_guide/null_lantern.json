@@ -1,9 +1,9 @@
 {
-  "region": "void",
+  "region": "circle",
   "stage": "mid",
   "icon": "hextale:null_lantern",
   "parents": [
-    "hextech_purifier"
+    "nullstone"
   ],
   "display": {
     "kind": "hex_crafting",
@@ -15,7 +15,7 @@
   },
   "research": "null_lantern",
   "pos": [
-    -335,
-    595
+    560,
+    -230
   ]
 }

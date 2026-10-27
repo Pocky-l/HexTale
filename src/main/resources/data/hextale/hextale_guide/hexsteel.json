@@ -2,11 +2,17 @@
   "region": "forge",
   "stage": "mid",
   "icon": "hextale:hexsteel_ingot",
-  "parents": ["hextech_altar", "hex_furnace", "hextech_dust", "ink", "coolant"],
+  "parents": [
+    "hextech_altar",
+    "hex_furnace"
+  ],
   "display": {
     "kind": "alloy",
     "result": "hextale:hexsteel_ingot"
   },
   "research": "hexsteel",
-  "pos": [620, 50]
+  "pos": [
+    620,
+    50
+  ]
 }

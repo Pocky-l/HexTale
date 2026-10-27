@@ -2,8 +2,7 @@
   "region": "workshop",
   "icon": "hextale:hextech_sword",
   "parents": [
-    "ink",
-    "brass"
+    "hextech_pickaxe"
   ],
   "display": {
     "kind": "hex_crafting",
@@ -13,7 +12,6 @@
       "result": "sword"
     }
   },
-  "research": "hextech_tools",
   "pos": [
     270,
     -300

@@ -1,8 +1,14 @@
 {
   "kind": "wip",
-  "region": "workshop",
+  "region": "pylons",
   "stage": "mid",
   "icon": "minecraft:dropper",
-  "parents": ["sorting_matrix", "hex_workbench"],
-  "pos": [1092, -389]
+  "parents": [
+    "sorting_matrix",
+    "hex_workbench"
+  ],
+  "pos": [
+    1092,
+    -389
+  ]
 }
