@@ -30,8 +30,8 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - Hextech Tuning Fork: two brass prongs over a raw orb, made at the Hex Workbench. Held up (hold right click), it
   hums higher and louder the nearer the hextech in the ground, and a thread of light points the way; struck against a
   block (Shift + right click) it listens for that block instead. It takes runes at the altar: Shift (hears farther),
-  Insight (what it hears glows through the stone), Signal (hears several at once), Gemstone (untuned, hears ores too)
-  and Lens.
+  Insight (what it hears glows through the stone), Signal (hears several at once), Gemstone (untuned, hears ores
+  too).
 - Dust Charge: three pinches of hextech dust twisted into paper and tied (three at the Hex Workbench). Thrown or shot
   from a dispenser, it sticks where it lands, hisses for a second and a half and bursts in a cold flash: rock, ores,
   gravel and dirt around it crack apart and drop as if mined with an iron pickaxe, while builds, wood and obsidian stay
@@ -42,7 +42,8 @@ Glassy scars: the way into hextech no longer waits for a storm.
   and turns over the dais; while it carries someone it spins up, glows and sends rings of light climbing the column
   to the height it lifts to, motes stream up and fade where the column ends, the air swells as you are taken up, the
   column hums while it holds you and sighs as it lets you go. Runes: Shift (a taller column), Motor (a faster lift), Breath (whoever steps
-  out floats down slowly for a while) and Lens.
+  out floats down slowly for a while), Cache (what floats at the top goes into the chest or barrel that caps the
+  column) and Slumber (creatures in the column hang asleep and wake slowly after).
 - Ward Glass and Veil Glass (four at the Hex Workbench): glass with a rune of barrier that chooses who passes. Ward
   Glass stops players but lets creatures and dropped items through; Veil Glass lets players walk through and stops
   creatures. Creatures plan their way through Ward Glass and around Veil Glass.
@@ -52,7 +53,7 @@ Glassy scars: the way into hextech no longer waits for a storm.
   hostile creatures form - none spawn by themselves within 24 blocks (spawners, eggs and those who walk in still come).
   It stands or hangs like a lantern. Runes: Shift (a wider quiet, up to 64), Hush (no phantoms over sleepless players
   in it), Banishing (hostile creatures inside take a small bite now and then), Silence (sounds inside go soft, down
-  to nothing; strong enough, no vibration inside reaches sculk sensors, shriekers or wardens) and Lens.
+  to nothing; strong enough, no vibration inside reaches sculk sensors, shriekers or wardens).
 - Impulse Plate (two at the Hex Workbench): whatever steps on it is thrown up and along its brass arrow, placed facing
   the way you look - or, aimed like a faith plate, onto a spot of your choosing: right click it with an empty hand,
   then right click the block it should throw to (the arc to the block under your crosshair shows while you choose,
@@ -60,14 +61,17 @@ Glassy scars: the way into hextech no longer waits for a storm.
   stone - so it lands on the target, and the landing is soft. Its launch panel snaps up with a deep thump and a
   whoosh, the arc flashes along the way, and the target is marked by a ring of light whenever you hold a plate or
   wear the researcher's goggles. Runes: Shift (higher, and farther targets: 24 blocks, up to 64), Motor (farther,
-  and a quicker flight), Breath (a soft landing for unaimed throws too) and Lens.
+  and a quicker flight), Breath (a soft landing for unaimed throws too), Haste (the thrown keeps
+  running fast for a while) and Banishing (a hostile creature that steps on is flung back and high, with no soft
+  landing).
 - Recall Charm (a clock at the Hextech Altar; replaces the "Recall Device" idea): used, it puts you back where you
   stood five seconds ago in the same world, then rests for half a minute. Each return spends one of its six windings;
   right click a jar of rift essence with it to wind it again (4 mB a winding). Runes: Shift (up to 24 seconds back),
-  Haste (a shorter rest), Mending (heals on the way back) and Lens.
+  Haste (a shorter rest), Mending (heals on the way back), Fireproofing (puts out the flames and keeps fire off for a
+  while) and Dam (now and then a return costs no winding).
 - Soul Flask (at the Hextech Altar): right click a creature to fold it into the glass, whole - name, saddle, everything;
   right click a block to let it out there. No players and no bosses. Runes: Healing (it comes out healed), Growth (a
-  young one comes out grown), Slumber (a hostile one comes out dazed) and Lens.
+  young one comes out grown), Slumber (a hostile one comes out dazed).
 - Spawner Cage (at the Hextech Altar): pressed to a monster spawner it folds the spawner in, whole - what it spawns
   and how; pressed to a block it sets the spawner there, and the cage burns out doing it.
 - Lesser Rift Gates (a pair from the Hextech Altar; replaces the "Shadow Coffer" idea): upright rings of nullstone and
@@ -86,11 +90,11 @@ Glassy scars: the way into hextech no longer waits for a storm.
   It eats earth essence from the jars around it every minute - half a mB for every chunk it holds, at least 1 - and
   when they run dry it falls asleep and lets its chunks go until it is fed again. Right click it with an empty hand
   to see what it holds and eats. Runes: Shift (3x3, then 5x5 chunks), Haste (time runs faster there), Fertility
-  (plants there grow now and then) and Lens.
+  (plants there grow now and then) and Dam (now and then a minute costs no essence).
 - Disintegrator (at the Hex Workbench): a deepslate bowl that unmakes whatever is dropped, thrown or piped into it
   into unknown essence and pours it into the jar or pipe below - fuel for the Chem Burner. The unmaking thins the land
   around. Runes: Motor (faster), Dam (more essence), Radiance (experience now and then), Hush (less leaks into the
-  land) and Lens.
+  land).
 - Magnet, a new rune for the Researcher's Trousers: loose items and experience around you drift to you (4 to 10
   blocks by its stars; crouch to let them lie, what you just dropped stays).
 - Sponge, a new rune for the Greedy Funnel: now and then a swallowed death leaves its essence too - what its drops
@@ -100,7 +104,8 @@ Glassy scars: the way into hextech no longer waits for a storm.
   up the other side; release to let go with all your speed and fling yourself on, then throw again mid-air to chain
   swings. Jump reels the rope in, sneak lets it out. The cord sags when slack and pulls tight and bright under your
   weight, and everyone around sees and hears the claw fly, bite, reel and spring back. Runes: Shift (a longer rope),
-  Motor (reels in faster), Breath (no fall damage for a while after letting go) and Lens.
+  Motor (reels in faster), Breath (no fall damage for a while after letting go), Gravity (the claw bites a creature too and yanks it
+  to you) and Blades (the claw cuts what it bites).
 - The gadgets are worked out at the Research Table before they can be made: the Levitation and Impulse Plates, Ward
   and Veil Glass and Floating Stone right after the first researches; the Recall Charm, Soul Flask, Spawner Cage,
   Grapple Gauntlet, Null Lantern and Rift Gates deeper; the World Anchor deepest. The Disintegrator is worked out at
@@ -108,6 +113,13 @@ Glassy scars: the way into hextech no longer waits for a storm.
 - A client option "Show WIP steps in the diary" (off by default) for the devices still being worked out.
 
 ### Changed
+- The Lens rune is gone from every device and tool: a rune's strength is its stars. Its place goes to runes that change
+  what a device gives (see the new runes of the plates, the Grapple Gauntlet, the Recall Charm and the World Anchor
+  above). A Lens already burned into something simply disappears. New runes elsewhere: hex pylons may smelt
+  (Smelting) or grind (Erosion: cobblestone to gravel, gravel to sand) what they carry and leave a little experience by
+  the target (Radiance); the Hextech Purifier may draw without burning light (Dam).
+- Reading the research notes of a device that takes runes also gives a one-star scroll of one of its runes you do not
+  know yet, sketched between the lines - a sure first rune for every new device besides the chests.
 - The hextech tools come much sooner and all together: one research at the Research Table, Hextech Tools, opens the
   pickaxe, axe, shovel and sword right after the first researches. They are made at the Hex Workbench from the iron
   tool, a raw orb, two brass ingots and an amethyst shard (a dark oak log for the axe, flint for the shovel) - no
