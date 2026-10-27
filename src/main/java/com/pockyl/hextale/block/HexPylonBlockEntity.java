@@ -932,7 +932,11 @@ public class HexPylonBlockEntity extends BlockEntity {
         return destinations(level, kind().essence());
     }
 
-    /** The same, keeping only the places that take essence ({@code essence}) or items. */
+    /**
+     * The same, keeping only the places that take essence ({@code essence}) or items, in link order (a relay's places
+     * where the relay's link stands). Every relay is passed once, by the first way to it, and every place is reached once:
+     * walking every possible way through a mesh of relays grows without bound.
+     */
     List<Destination> destinations(ServerLevel level, boolean essence) {
         List<Destination> out = new ArrayList<>();
         Set<BlockPos> seen = new HashSet<>();
@@ -963,7 +967,6 @@ public class HexPylonBlockEntity extends BlockEntity {
                 List<HexPylonBlockEntity> nextThrough = new ArrayList<>(through);
                 nextThrough.add(next);
                 collect(level, next, nextPath, nextThrough, seen, hops + 1, essence, out);
-                seen.remove(link.pos());
                 continue;
             }
             if (gem.distanceTo(Vec3.atCenterOf(link.pos())) > range) {
@@ -974,6 +977,7 @@ public class HexPylonBlockEntity extends BlockEntity {
             if (!takes) {
                 continue;
             }
+            seen.add(link.pos());
             List<Vec3> full = new ArrayList<>(path);
             full.add(link.approach());
             full.add(link.entry());
