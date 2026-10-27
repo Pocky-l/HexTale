@@ -485,6 +485,18 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
         return essence;
     }
 
+    /** Broken while results still soak: they come out with the block instead of vanishing. */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (level != null && !level.isClientSide()) {
+            for (ItemStack result : rising) {
+                net.minecraft.world.Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, result);
+            }
+        }
+        rising.clear();
+    }
+
     /** Results of transmutations about to rise (a copy). */
     public List<ItemStack> rising() {
         return rising.stream().map(ItemStack::copy).toList();

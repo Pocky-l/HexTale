@@ -165,6 +165,28 @@ public final class CrucibleGameTests {
         });
     }
 
+    /** Broken while a magic stone still soaks: it comes out with the pot instead of vanishing. */
+    @HexTest(maxTicks = 700)
+    public static void aBrokenCrucibleGivesBackWhatSoaks(GameTestHelper helper) {
+        helper.setBlock(AT.below(), Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
+        helper.setBlock(AT, ModBlocks.CRUCIBLE.get());
+        CrucibleBlockEntity crucible = helper.getBlockEntity(AT, CrucibleBlockEntity.class);
+        crucible.fillWater(CrucibleBlockEntity.BUCKET, false);
+        boolean[] thrown = {false};
+        helper.succeedWhen(() -> {
+            helper.assertTrue(crucible.boiling(), "the water boils");
+            if (!thrown[0]) {
+                thrown[0] = true;
+                crucible.pour(EssenceMix.pure(Essence.MAGIC, 6));
+                drop(helper, new ItemStack(Items.STONE));
+            }
+            helper.assertFalse(crucible.rising().isEmpty(), "the stone soaks");
+            helper.getLevel().destroyBlock(helper.absolutePos(AT), false);
+            helper.assertTrue(!helper.getLevel().getEntitiesOfClass(ItemEntity.class, new net.minecraft.world.phys.AABB(helper.absolutePos(AT)).inflate(3),
+                    item -> item.getItem().is(com.pockyl.hextale.registry.ModItems.MAGIC_STONE.get())).isEmpty(), "the magic stone came out");
+        });
+    }
+
     /** Thrown over the pot, well above the water: boiling water draws it in from there. */
     private static void drop(GameTestHelper helper, ItemStack stack) {
         Vec3 at = Vec3.atLowerCornerOf(helper.absolutePos(AT)).add(0.5, 1.5, 0.5);
