@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
@@ -18,6 +19,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -34,6 +36,8 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.chem.Brew;
 import com.pockyl.hextale.chem.ChemVialItem;
+import com.pockyl.hextale.network.ModNetwork;
+import com.pockyl.hextale.network.WarmthPayload;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModParticles;
@@ -43,10 +47,14 @@ import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.ToolEffects;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * The Pink Brazier: shimmer burning in an open iron bowl, a pink flame whose light makes everything green around it grow
- * wild - every two seconds a few plants in its light grow a stage. It burns vials of refined shimmer (raw
- * shimmer burns too, half as long); hoppers feed it from any side.
+ * The Pink Brazier: shimmer burning in a fire cage whose stakes go down into the ground and warm the soil around - every
+ * two seconds a few plants in the warmth grow a stage. It burns vials of refined shimmer (raw shimmer burns too, half as
+ * long); hoppers feed it from any side. Each breath sends one {@link WarmthPayload} with the plants that grew, and the
+ * clients draw the warmth running out over the soil to them.
  */
 public class PinkBrazierBlockEntity extends BlockEntity implements Container {
     /** Ticks of flame from a vial of refined shimmer; raw burns half as long. */
@@ -55,10 +63,21 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
     /** Ticks between two breaths of growth, and how many spots each tries. */
     public static final int PULSE_TICKS = 40;
     public static final int PULSE_TRIES = 6;
+    /** Client: ticks the warmth takes to run from the cage to a plant, and to rise from the soil under it. */
+    public static final int CREEP_TICKS = 14;
+    public static final int RISE_TICKS = 16;
+    /** Warm glow of heated soil, and the pink of the shimmer flame. */
+    public static final int WARM = 0xFFB27A;
+    public static final int PINK = 0xFF7AD9;
 
     private ItemStack fuel = ItemStack.EMPTY;
     private int burn;
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
+    /** Client: the plants the last breaths warmed, each with the tick the warmth set out. */
+    private final List<Warmth> warmths = new ArrayList<>();
+
+    private record Warmth(BlockPos plant, long start) {
+    }
 
     public PinkBrazierBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.PINK_BRAZIER.get(), pos, state);
@@ -124,6 +143,7 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
         RandomSource random = level.getRandom();
         int radius = radius();
         int pollen = strength(BrazierRune.POLLEN);
+        List<BlockPos> grown = new ArrayList<>();
         for (int i = 0; i < PULSE_TRIES; i++) {
             BlockPos at = worldPosition.offset(random.nextInt(radius * 2 + 1) - radius, random.nextInt(5) - 2,
                     random.nextInt(radius * 2 + 1) - radius);
@@ -138,7 +158,13 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
             } else {
                 growStep(level, at, plant, random);
             }
-            level.sendParticles(ModParticles.SHIMMER_MOTE.get(), at.getX() + 0.5, at.getY() + 0.6, at.getZ() + 0.5, 3, 0.25, 0.2, 0.25, 0.005);
+            grown.add(at);
+        }
+        if (!grown.isEmpty()) {
+            WarmthPayload payload = new WarmthPayload(worldPosition, grown);
+            for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(worldPosition), false)) {
+                ModNetwork.sendToPlayer(player, payload);
+            }
         }
         int healing = strength(BrazierRune.HEALING);
         if (healing > 0) {
@@ -146,6 +172,57 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
             for (Player player : level.getEntitiesOfClass(Player.class, around)) {
                 if (ToolEffects.keep(player, MobEffects.REGENERATION, HolderRune.at(BrazierRune.HEALING_TICKS, healing), 0)) {
                     ToolEffects.puff(level, player.position().add(0, 1, 0), BrazierRune.HEALING.rune(), 8, 0.4);
+                }
+            }
+        }
+    }
+
+    // ---- Client -----------------------------------------------------------------------------------------------------
+
+    /** Client: a breath warmed these plants; the warmth sets out towards them now. */
+    public void warm(List<BlockPos> plants, long now) {
+        for (BlockPos plant : plants) {
+            warmths.add(new Warmth(plant, now));
+        }
+    }
+
+    /**
+     * Client: the warmth of each breath creeps out of the cage's foot over the soil to the plant it reached - a low run of
+     * warm glints - and rises from the soil under it as a shimmer of heat with a few pink motes. Now and then, while it
+     * burns, a lone warm mote lifts off the soil somewhere in its reach.
+     */
+    public static void clientTick(Level level, BlockPos pos, BlockState state, PinkBrazierBlockEntity brazier) {
+        long now = level.getGameTime();
+        RandomSource random = level.getRandom();
+        Vec3 foot = Vec3.atBottomCenterOf(pos).add(0, 0.08, 0);
+        brazier.warmths.removeIf(warmth -> now - warmth.start() > CREEP_TICKS + RISE_TICKS);
+        for (Warmth warmth : brazier.warmths) {
+            long age = now - warmth.start();
+            Vec3 soil = Vec3.atBottomCenterOf(warmth.plant()).add(0, 0.05, 0);
+            if (age < CREEP_TICKS) {
+                Vec3 at = foot.lerp(soil, (age + random.nextFloat()) / CREEP_TICKS);
+                level.addParticle(ModParticles.glint(WARM), at.x + (random.nextDouble() - 0.5) * 0.2, at.y + random.nextDouble() * 0.15,
+                        at.z + (random.nextDouble() - 0.5) * 0.2, 0, 0.004, 0);
+            } else if (age == CREEP_TICKS) {
+                for (int i = 0; i < 4; i++) {
+                    level.addParticle(ModParticles.vapour(WARM), soil.x + (random.nextDouble() - 0.5) * 0.7, soil.y + 0.02,
+                            soil.z + (random.nextDouble() - 0.5) * 0.7, 0, 0.012 + random.nextDouble() * 0.01, 0);
+                }
+                level.addParticle(ModParticles.glint(PINK), soil.x, soil.y + 0.3, soil.z, 0, 0.02, 0);
+            } else if (random.nextInt(3) == 0) {
+                level.addParticle(ModParticles.SHIMMER_MOTE.get(), soil.x + (random.nextDouble() - 0.5) * 0.6, soil.y + random.nextDouble() * 0.2,
+                        soil.z + (random.nextDouble() - 0.5) * 0.6, 0, 0.02 + random.nextDouble() * 0.02, 0);
+            }
+        }
+        if (state.getValue(PinkBrazierBlock.LIT) && random.nextInt(10) == 0) {
+            int radius = brazier.radius();
+            BlockPos column = pos.offset(random.nextInt(radius * 2 + 1) - radius, 0, random.nextInt(radius * 2 + 1) - radius);
+            for (int dy = 1; dy >= -2; dy--) {
+                BlockPos soil = column.above(dy);
+                if (level.getBlockState(soil).is(BlockTags.SUBSTRATE_OVERWORLD) && !level.getBlockState(soil.above()).isSolid()) {
+                    level.addParticle(ModParticles.glint(random.nextInt(3) == 0 ? PINK : WARM), soil.getX() + random.nextDouble(),
+                            soil.getY() + 1.05, soil.getZ() + random.nextDouble(), 0, 0.012, 0);
+                    break;
                 }
             }
         }

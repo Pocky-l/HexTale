@@ -117,6 +117,9 @@ Glassy scars: the way into hextech no longer waits for a storm.
   brass coils up to the steel tip, the crystal riding above. It needs a free block over it to be placed; breaking
   either half brings the whole spire down as one item, runes kept. Spires already standing grow their top by
   themselves where there is room, and keep working as they are where there is not.
+- The Pink Brazier warms the soil instead of lighting it: the shimmer burns in an iron fire cage whose stakes go into
+  the ground. With every breath you can see the warmth creep out over the soil to the plants it hurries and rise
+  from the ground under them in a pink shimmer; now and then a warm mote lifts off the soil in its reach.
 - Bottles of essence can be drunk: every primal in the bottle gives its own short gift - fire: fire resistance,
   water: water breathing, earth: a full belly, air: slow falling, light: night vision, shadow: invisibility, life:
   regeneration, metal: haste, spark: jump boost - longer the more of it there is. Unknown essence turns the stomach.

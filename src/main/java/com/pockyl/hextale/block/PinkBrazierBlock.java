@@ -122,6 +122,7 @@ public class PinkBrazierBlock extends BaseEntityBlock {
 
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.PINK_BRAZIER.get(), PinkBrazierBlockEntity::serverTick);
+        return createTickerHelper(type, ModBlockEntities.PINK_BRAZIER.get(),
+                level.isClientSide() ? PinkBrazierBlockEntity::clientTick : PinkBrazierBlockEntity::serverTick);
     }
 }
