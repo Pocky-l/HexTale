@@ -1,7 +1,7 @@
 {
   "textures": {
-    "particle": "hextale:item/dust_charge_stuck",
-    "dust_charge_stuck": "hextale:item/dust_charge_stuck"
+    "particle": "hextale:block/dust_charge_stuck",
+    "dust_charge_stuck": "hextale:block/dust_charge_stuck"
   },
   "elements": [
     {
