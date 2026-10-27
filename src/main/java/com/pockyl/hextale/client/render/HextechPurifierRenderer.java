@@ -25,9 +25,9 @@ import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.rune.Essence;
 
 /**
- * The Hextech Purifier at work. Its crystal hangs point down from the arches into the well and turns; as it fills, a plum shadow grows inside its
- * light and the hextech glow around it sinks, until it hangs dark and still - a Clouded Crystal. While it draws, a ring of
- * light turns flat under the crystal and the jar's light essence streams in.
+ * The Hextech Purifier at work. Its crystal hangs point down from the canopy's hub over the font and turns; as it fills,
+ * a plum shadow grows inside its light and the hextech glow around it sinks, until it hangs dark and still - a Clouded
+ * Crystal. While it draws, a ring of light turns flat under the crystal and the jar's light essence streams in.
  */
 public class HextechPurifierRenderer implements BlockEntityRenderer<HextechPurifierBlockEntity, HextechPurifierRenderer.State> {
     private final ItemModelResolver itemModelResolver;
@@ -87,7 +87,7 @@ public class HextechPurifierRenderer implements BlockEntityRenderer<HextechPurif
                         0.55F * clouding * breath);
             }
             poseStack.rotate(Axis.YP.rotationDegrees(clouded ? time * 0.2F : time * 1.4F));
-            // Point down, like a drop about to fall into the well.
+            // Point down, like a drop about to fall into the font.
             poseStack.rotate(Axis.ZP.rotationDegrees(180));
             poseStack.scale(0.36F, 0.36F, 0.36F);
             poseStack.translate(0, -0.2, 0);
@@ -95,7 +95,7 @@ public class HextechPurifierRenderer implements BlockEntityRenderer<HextechPurif
             poseStack.popPose();
 
             if (state.working) {
-                // A ring of light turns flat on the well's dark water while it draws.
+                // A ring of light turns flat on the font's water while it draws.
                 poseStack.pushPose();
                 poseStack.translate(crystal.x, 4.6 / 16, crystal.z);
                 poseStack.rotate(Axis.XP.rotationDegrees(90));

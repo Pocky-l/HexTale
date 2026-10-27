@@ -151,7 +151,7 @@ public class HextechPurifierBlockEntity extends BlockEntity implements WorldlyCo
         return drewAt;
     }
 
-    /** Where the crystal hangs, point down, from the arches into the well. */
+    /** Where the crystal hangs, point down, from the canopy's hub over the font. */
     public static Vec3 crystalAt(BlockPos pos) {
         return Vec3.atLowerCornerOf(pos).add(0.5, 8.5 / 16, 0.5);
     }

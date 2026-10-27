@@ -31,13 +31,15 @@ import java.util.Locale;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Hextech Purifier: a low hexagonal well of nullstone with three hexsteel arches over it; from where they meet, a
- * hextech crystal hangs point down into the well and draws the Thinning out of the land around, clouding over as it fills
+ * The Hextech Purifier: a white calcite font of clear glowing water under a brass canopy; from the canopy's hub a
+ * hextech crystal hangs point down over the water and draws the Thinning out of the land around, clouding over as it fills
  * ({@link HextechPurifierBlockEntity}). A hextech crystal in hand goes in; an empty hand takes the
  * crystal out, or tells what it does when it holds none.
  */
 public class HextechPurifierBlock extends BaseEntityBlock {
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 6, 15), Block.box(6, 6, 6, 10, 16, 10));
+    /** The calcite font, the brass canopy over it on its four posts and the cap of its hub. */
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 5, 14), Block.box(3, 5, 3, 13, 13, 13),
+            Block.box(6, 13, 6, 10, 15, 10));
 
     public HextechPurifierBlock(Properties properties) {
         super(properties);
