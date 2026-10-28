@@ -173,7 +173,8 @@ public final class VoidMites {
     /** Out of blighted ground near the player, in the dark: one or two mites crawl up, unless enough are about. */
     static void spawnAround(ServerPlayer player) {
         ServerLevel level = player.level();
-        if (player.isCreative() || player.isSpectator() || Thinning.get(level, player.blockPosition()) < Thinning.Stage.BLIGHT.from * 0.9F) {
+        if (!com.pockyl.hextale.Config.VOID_MITES_SPAWN.get() || player.isCreative() || player.isSpectator()
+                || Thinning.get(level, player.blockPosition()) < Thinning.Stage.BLIGHT.from * 0.9F) {
             return;
         }
         if (level.getEntitiesOfClass(VoidMite.class, player.getBoundingBox().inflate(24)).size() >= CROWD) {

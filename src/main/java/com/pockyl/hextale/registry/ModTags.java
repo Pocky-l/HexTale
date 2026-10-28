@@ -36,6 +36,8 @@ public final class ModTags {
     /** Stone a splash of acid eats away (ores and everything else stay). */
     /** Ground the Void has touched: its flora roots only here. */
     public static final TagKey<Block> VOID_GROUND = TagKey.create(Registries.BLOCK, Hextale.id("void_ground"));
+    /** Blocks the world's own magic never touches: the blight, the land healing, a Hexcore's lightning. */
+    public static final TagKey<Block> VOID_IMMUNE = TagKey.create(Registries.BLOCK, Hextale.id("void_immune"));
     /** Natural ground that blighted land turns into Void Soil / Void Rock. */
     public static final TagKey<Block> BLIGHTS_TO_SOIL = TagKey.create(Registries.BLOCK, Hextale.id("blights_to_soil"));
     public static final TagKey<Block> BLIGHTS_TO_ROCK = TagKey.create(Registries.BLOCK, Hextale.id("blights_to_rock"));

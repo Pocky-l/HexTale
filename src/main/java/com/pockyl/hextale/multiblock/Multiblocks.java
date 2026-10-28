@@ -19,6 +19,7 @@ import com.pockyl.hextale.research.ResearchTopic;
 
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -118,12 +119,26 @@ public final class Multiblocks {
         event.setCanceled(true);
         event.setCancellationResult(InteractionResult.SUCCESS);
         if (level instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer player) {
+            if (!mayForm(serverLevel, found.get().getKey(), found.get().getValue(), player)) {
+                player.sendOverlayMessage(Component.translatable("hextale.protected"));
+                return;
+            }
             if (!player.getAbilities().instabuild) {
                 event.getItemStack().shrink(1);
             }
             sprinkle(serverLevel, event.getHitVec().getLocation());
             form(serverLevel, found.get().getKey(), found.get().getValue(), player);
         }
+    }
+
+    /** Whether the player may turn every block of the structure into its working parts (claims: none may lie in another's). */
+    private static boolean mayForm(ServerLevel level, Multiblock multiblock, MultiblockPattern.Placement placement, ServerPlayer player) {
+        for (MultiblockPattern.Cell cell : multiblock.pattern().cells()) {
+            if (!WorldEdits.mayBreak(level, placement.at(cell.x(), cell.y(), cell.z()), player)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** Turns the matched blocks into the working structure. */

@@ -10,6 +10,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,6 +30,7 @@ import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.registry.ModTags;
 import com.pockyl.hextale.thevoid.Thinning;
+import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +110,7 @@ public class DustCharge extends ThrowableItemProjectile {
             level().playSound(null, getX(), getY(), getZ(), SoundEvents.TNT_PRIMED, SoundSource.NEUTRAL, 0.35F, 1.6F + (FUSE - left) * 0.01F);
         }
         if (left == 0 && level() instanceof ServerLevel level) {
-            burst(level, position(), this, getOwner());
+            burst(level, position(), this, getOwner(), WorldEdits.actor(level, getOwner(), owner == null ? null : owner.getUUID()));
             discard();
             return;
         }
@@ -140,6 +142,14 @@ public class DustCharge extends ThrowableItemProjectile {
      * get), stings and pushes what lives close by, and shows a cold flash. Returns the cracked positions.
      */
     public static List<BlockPos> burst(ServerLevel level, Vec3 centre, Entity source, Entity owner) {
+        return burst(level, centre, source, owner, WorldEdits.actor(level, owner, null));
+    }
+
+    /**
+     * {@link #burst(ServerLevel, Vec3, Entity, Entity)} cracking only the blocks {@code actor} may break (the thrower, so
+     * a claim keeps its rock).
+     */
+    public static List<BlockPos> burst(ServerLevel level, Vec3 centre, Entity source, Entity owner, Player actor) {
         List<BlockPos> cracked = new ArrayList<>();
         BlockPos middle = BlockPos.containing(centre);
         int r = (int) Math.ceil(RADIUS);
@@ -151,7 +161,7 @@ public class DustCharge extends ThrowableItemProjectile {
             }
             BlockState state = level.getBlockState(pos);
             float hardness = state.getDestroySpeed(level, pos);
-            if (!state.is(ModTags.BLASTABLE) || hardness < 0 || hardness > MAX_HARDNESS) {
+            if (!state.is(ModTags.BLASTABLE) || hardness < 0 || hardness > MAX_HARDNESS || !WorldEdits.mayBreak(level, pos, actor)) {
                 continue;
             }
             Block.dropResources(state, level, pos, level.getBlockEntity(pos), owner, pick);

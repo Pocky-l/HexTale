@@ -53,6 +53,7 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
+import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -314,6 +315,9 @@ public final class ToolEffects {
         }
         PickaxeEffects.chain(() -> {
             for (BlockPos leaf : leaves) {
+                if (!WorldEdits.mayBreak(level, leaf, player)) {
+                    continue;
+                }
                 Block.dropResources(level.getBlockState(leaf), level, leaf, null, player, axe);
                 level.destroyBlock(leaf, false, player);
             }
@@ -340,7 +344,8 @@ public final class ToolEffects {
         BlockState plant = blockItem.getBlock().defaultBlockState();
         // Planted on the next tick: the cut log may not be gone yet.
         level.getServer().execute(() -> {
-            if (!level.getBlockState(foot).canBeReplaced() || !plant.canSurvive(level, foot)) {
+            if (!level.getBlockState(foot).canBeReplaced() || !plant.canSurvive(level, foot)
+                    || !WorldEdits.mayPlace(level, foot, plant, player)) {
                 return;
             }
             int slot = player.getInventory().findSlotMatchingItem(new ItemStack(sapling));

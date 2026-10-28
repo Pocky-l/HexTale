@@ -41,6 +41,17 @@ public final class ModAttachments {
             () -> AttachmentType.builder(() -> 0).serialize(com.mojang.serialization.Codec.INT.fieldOf("count"), count -> count > 0)
                     .sync(net.minecraft.network.codec.ByteBufCodecs.VAR_INT).build());
 
+    /** Placeholder for "nobody": attachments need a default value. */
+    public static final java.util.UUID NOBODY = new java.util.UUID(0L, 0L);
+
+    /**
+     * The player who placed a device of the mod (any block entity of it): the device changes the world in that player's
+     * name (see {@link com.pockyl.hextale.world.WorldEdits}). Saved while set.
+     */
+    public static final Supplier<AttachmentType<java.util.UUID>> PLACED_BY = ATTACHMENT_TYPES.register("placed_by",
+            () -> AttachmentType.builder(() -> NOBODY).serialize(net.minecraft.core.UUIDUtil.CODEC.fieldOf("uuid"),
+                    uuid -> !NOBODY.equals(uuid)).build());
+
     private ModAttachments() {
     }
 

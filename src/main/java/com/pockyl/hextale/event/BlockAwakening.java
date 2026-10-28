@@ -33,6 +33,7 @@ import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -84,6 +85,12 @@ public final class BlockAwakening {
             return;
         }
         Player player = event.getEntity();
+        if (!WorldEdits.mayChange(server, pos, awakening.result().defaultBlockState(), player)) {
+            if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                serverPlayer.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("hextale.protected"));
+            }
+            return;
+        }
         BlockState state = level.getBlockState(pos);
         Direction facing = state.hasProperty(HorizontalDirectionalBlock.FACING) ? state.getValue(HorizontalDirectionalBlock.FACING)
                 : player.getDirection().getOpposite();
@@ -173,14 +180,21 @@ public final class BlockAwakening {
     /** The new block appears in a flash; what the old one held is dropped. */
     private static void finish(ServerLevel level, Pending pending) {
         BlockPos pos = pending.pos();
-        if (level.getBlockEntity(pos) instanceof net.minecraft.world.Container container) {
-            Containers.dropContents(level, pos, container);
-        }
-        BlockState old = level.getBlockState(pos);
         BlockState next = pending.awakening().result().defaultBlockState();
         if (next.hasProperty(HorizontalDirectionalBlock.FACING)) {
             next = next.setValue(HorizontalDirectionalBlock.FACING, pending.facing());
         }
+        Player waker = pending.player() == null ? null : level.getPlayerByUUID(pending.player());
+        if (!WorldEdits.mayChange(level, pos, next, waker != null ? waker : WorldEdits.owner(level, pending.player()))) {
+            if (pending.refund()) {
+                Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, pending.catalyst().copy());
+            }
+            return;
+        }
+        if (level.getBlockEntity(pos) instanceof net.minecraft.world.Container container) {
+            Containers.dropContents(level, pos, container);
+        }
+        BlockState old = level.getBlockState(pos);
         level.setBlock(pos, next, Block.UPDATE_ALL);
         if (old.is(Blocks.WATER_CAULDRON) && level.getBlockEntity(pos) instanceof CrucibleBlockEntity crucible) {
             crucible.setWater(old.getValue(LayeredCauldronBlock.LEVEL) * CrucibleBlockEntity.BUCKET / LayeredCauldronBlock.MAX_FILL_LEVEL);

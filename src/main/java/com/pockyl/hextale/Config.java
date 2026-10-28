@@ -35,6 +35,26 @@ public final class Config {
             .translation("hextale.configuration.breachCooldown")
             .defineInRange("breachCooldownMinutes", 20, 0, 1440);
 
+    public static final ModConfigSpec.BooleanValue BLIGHT_CHANGES_BLOCKS = BUILDER
+            .comment("Whether blighted land changes blocks: grass and stone turn to Void soil and rock, "
+                    + "plants die back or become Void flora. "
+                    + "Off: the Thinning still spreads, hazes and opens breaches, but the ground stays as it is.")
+            .translation("hextale.configuration.blightChangesBlocks")
+            .define("blightChangesBlocks", true);
+    public static final ModConfigSpec.BooleanValue VOID_MITES_SPAWN = BUILDER
+            .comment("Whether Void Mites crawl out of blighted ground near players.")
+            .translation("hextale.configuration.voidMitesSpawn")
+            .define("voidMitesSpawn", true);
+    public static final ModConfigSpec.BooleanValue VOIDLINGS_SPAWN = BUILDER
+            .comment("Whether breaches of the Void send out voidlings (wild ones and those born from feeding a held breach).")
+            .translation("hextale.configuration.voidlingsSpawn")
+            .define("voidlingsSpawn", true);
+    public static final ModConfigSpec.BooleanValue BREACHES = BUILDER
+            .comment("Whether land worn all the way thin tears open into a breach of the Void by itself. "
+                    + "Breach Hearts and the /hextale command still work.")
+            .translation("hextale.configuration.breaches")
+            .define("breaches", true);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {

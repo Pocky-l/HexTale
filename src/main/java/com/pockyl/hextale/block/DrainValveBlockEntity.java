@@ -23,6 +23,7 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModTags;
+import com.pockyl.hextale.world.WorldEdits;
 
 /**
  * An open Drain Valve takes what the pipes bring - up to {@value #DROPS_PER_TICK} mB of essence and
@@ -123,8 +124,13 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
                 soaked = 0;
                 return;
             }
-            soaked -= ESSENCE_PER_STONE;
             BlockState magic = ModBlocks.MAGIC_STONE.get().defaultBlockState();
+            if (!WorldEdits.mayChange(server, stone, magic, WorldEdits.owner(server, this))) {
+                // Protected stone does not drink: the essence is lost on it.
+                soaked = 0;
+                break;
+            }
+            soaked -= ESSENCE_PER_STONE;
             server.setBlockAndUpdate(stone, magic);
             server.gameEvent(GameEvent.BLOCK_CHANGE, stone, GameEvent.Context.of(magic));
             server.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, stone, Block.getId(magic));
