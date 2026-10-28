@@ -55,6 +55,7 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.VoidAnchorBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.XpCondenserBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.MiasmaVentBlock.class);
+        registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexWorkbenchBlock.class);
     }
 
     private enum Machines implements IBlockComponentProvider {
@@ -116,6 +117,9 @@ public class HextaleJadePlugin implements IWailaPlugin {
                 if (!furnace.blocked().isEmpty()) {
                     tooltip.add(Component.translatable("gui.hextale.hex_furnace." + furnace.blocked()).withStyle(ChatFormatting.RED));
                 }
+            } else if (entity instanceof com.pockyl.hextale.block.HexWorkbenchBlockEntity bench) {
+                tooltip.add(Component.translatable("jade.hextale.charge", bench.charge(),
+                        com.pockyl.hextale.block.HexWorkbenchBlockEntity.MAX_CHARGE).withStyle(ChatFormatting.AQUA));
             } else if (entity instanceof com.pockyl.hextale.block.HexFoundryBlockEntity foundry) {
                 if (accessor.getBlockState().getValue(com.pockyl.hextale.block.HexFoundryBlock.FORMED)) {
                     tooltip.add(com.pockyl.hextale.block.HexFoundryBlock.status(foundry).copy().withStyle(ChatFormatting.GRAY));

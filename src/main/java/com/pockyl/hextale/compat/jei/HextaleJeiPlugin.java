@@ -222,13 +222,25 @@ public class HextaleJeiPlugin implements IModPlugin {
     }
 
     @Override
+    public void registerRecipeTransferHandlers(mezz.jei.api.registration.IRecipeTransferRegistration registration) {
+        // Hex Workbench: grid slots 0-8, then the crystal and the result, then the player's 36 slots.
+        registration.addRecipeTransferHandler(com.pockyl.hextale.menu.HexWorkbenchMenu.class, com.pockyl.hextale.registry.ModMenus.HEX_WORKBENCH.get(),
+                HexCraftingCategory.TYPE, 0, 9, 11, 36);
+        registration.addRecipeTransferHandler(com.pockyl.hextale.menu.HexWorkbenchMenu.class, com.pockyl.hextale.registry.ModMenus.HEX_WORKBENCH.get(),
+                mezz.jei.api.constants.RecipeTypes.CRAFTING, 0, 9, 11, 36);
+    }
+
+    @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addCraftingStation(BoilingCategory.TYPE, ModItems.ALEMBIC.get());
         registration.addCraftingStation(SeparationCategory.TYPE, ModItems.SEPARATOR.get());
         registration.addCraftingStation(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.HEXCORE.get(), ModItems.PEDESTAL.get(), ModItems.RUNE_STELE.get());
         registration.addCraftingStation(RuneBurningCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
         registration.addCraftingStation(HexCraftingCategory.TYPE, ModItems.HEX_WORKBENCH.get());
+        // Without a hex recipe the workbench crafts like a table and the furnace smelts like a furnace.
+        registration.addCraftingStation(mezz.jei.api.constants.RecipeTypes.CRAFTING, ModItems.HEX_WORKBENCH.get());
         registration.addCraftingStation(AlloyingCategory.TYPE, ModItems.HEX_FURNACE.get());
+        registration.addCraftingStation(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_FURNACE.get());
         registration.addCraftingStation(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_FOUNDRY.get());
         registration.addCraftingStation(HextechWorkingCategory.TYPE, ModItems.HEX_LAPIDARY.get());
         registration.addCraftingStation(CrucibleCategory.TYPE, ModItems.CRUCIBLE.get());

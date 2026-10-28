@@ -1429,6 +1429,8 @@
   "jei.hextale.working.lightning": "Молния в громоотвод раскалывает аметист - и каждый кристалл, что его касается.",
   "jei.hextale.working.throw": "Брошенная сфера разлетается пылью. (ПКМ)",
   "jei.hextale.working.awaken": "Пыль, просыпанная на блок, будит его. (ПКМ)",
+  "jei.hextale.needs_research": "Открывается исследованием: %s",
+  "jade.hextale.charge": "Заряд %s / %s",
   "jei.hextale.working.cut": "Огранить по скрытым швам.",
   "jei.hextale.working.finish": "Довести до гладкости диском потоньше.",
   "gui.hextale.hex_lapidary.turn": "Поворачивайте кристалл (колесо или A/D), пока полоса не станет зелёной",

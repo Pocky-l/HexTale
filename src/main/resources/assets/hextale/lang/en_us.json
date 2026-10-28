@@ -1429,6 +1429,8 @@
   "jei.hextale.working.lightning": "Lightning on the rod shatters the amethyst - and every crystal touching it.",
   "jei.hextale.working.throw": "A thrown orb shatters into dust. (Right click)",
   "jei.hextale.working.awaken": "Dust sprinkled on the block wakes it. (Right click)",
+  "jei.hextale.needs_research": "Opened by research: %s",
+  "jade.hextale.charge": "Charge %s / %s",
   "jei.hextale.working.cut": "Cut along its hidden seams.",
   "jei.hextale.working.finish": "Finished smooth with a finer disc.",
   "gui.hextale.hex_lapidary.turn": "Turn the crystal (wheel or A/D) until the band glows green",

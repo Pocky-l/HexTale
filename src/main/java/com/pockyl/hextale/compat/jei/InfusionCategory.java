@@ -65,7 +65,7 @@ public class InfusionCategory extends AbstractRecipeCategory<InfusionCategory.Re
         Ingredient center = recipe.center();
         builder.addInputSlot(CX - 8, CY - 8).setStandardSlotBackground().add(center);
         ItemStack shown = center.items().findFirst().map(ItemStack::new).orElse(ItemStack.EMPTY);
-        builder.addOutputSlot(130, CY - 8).setOutputSlotBackground().add(recipe.resultFor(shown));
+        ResearchNote.add(builder.addOutputSlot(130, CY - 8).setOutputSlotBackground().add(recipe.resultFor(shown)), recipe.result().item().value());
         builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 130, 4).add(new ItemStack(ModItems.HEXTECH_ALTAR.get()));
     }
 

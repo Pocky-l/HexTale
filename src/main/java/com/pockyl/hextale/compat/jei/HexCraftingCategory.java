@@ -36,7 +36,7 @@ public class HexCraftingCategory extends AbstractRecipeCategory<HexCraftingCateg
             var slot = builder.addSlot(RecipeIngredientRole.INPUT, 1 + i % 3 * 18, 1 + i / 3 * 18).setStandardSlotBackground();
             cells.get(i).ifPresent(slot::add);
         }
-        builder.addOutputSlot(95, 19).setOutputSlotBackground().add(recipe.recipe().result());
+        ResearchNote.add(builder.addOutputSlot(95, 19).setOutputSlotBackground().add(recipe.recipe().result()), recipe.recipe().result().item().value());
     }
 
     @Override
