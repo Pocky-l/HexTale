@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- The Hextech Altar holds its rings on four slim brass prongs and a horizon ring, like an armillary stand; light runs
+  from the lens along channels carved into the table, and a bigger crystal glows between thinner brass rods. The Hexcore
+  opens the same prongs wide around its matrix. Brass parts are darker, aged brass.
+- The Essence Jar is a real jar now: a round glass body smaller than the block, rounded shoulders, a narrow neck tied
+  with twine and a cork. Its tag hangs from the neck. The Big Essence Jar follows the new shape.
+- The Rune Stele stands two blocks tall: a stone slab with a carved channel and a ring head where the chosen rune turns.
+  Steles placed before grow their top when there is room.
+- The Hex Furnace has a brick crown and a brass chimney; smoke and embers rise from the chimney. Its bricks are darker.
 - New look for the Pedestal: a slender column of magic stone on a stepped octagonal foot, a faint rune seam glowing
   deep in the cut of its fluted shaft, an aged brass collar and a shallow brass dish with a carved rim. The glowing blue
   cubes are gone; the item now floats just over the dish.

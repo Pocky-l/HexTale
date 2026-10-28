@@ -20,6 +20,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import com.pockyl.hextale.block.HextechAltarBlockEntity;
+import com.pockyl.hextale.block.RuneSteleBlockEntity;
 import com.pockyl.hextale.client.render.HexFx;
 import com.pockyl.hextale.client.render.TableModels;
 import com.pockyl.hextale.registry.ModItems;
@@ -101,7 +102,7 @@ public final class AltarDiorama {
             ComplexRune rune = state.rune();
             int color = rune == null ? HexFx.HEXTECH : rune.color();
             float itemY = (float) HextechAltarBlockEntity.ITEM_Y + Mth.sin(time * 0.08F) * 0.04F;
-            float glyphY = 1.55F + Mth.sin(time * 0.06F) * 0.04F;
+            float glyphY = RuneSteleBlockEntity.GLYPH_Y + Mth.sin(time * 0.06F) * 0.02F;
 
             // The altar's gimbal and the pickaxe inside it.
             poseStack.pushPose();
@@ -134,9 +135,9 @@ public final class AltarDiorama {
                 poseStack.translate(0, 0, 0.03F);
                 poseStack.pushPose();
                 poseStack.rotate(Axis.ZP.rotationDegrees(time * 0.6F));
-                HexFx.sigilRing(poseStack, collector, 0.36F, 9, color, 0.35F);
+                HexFx.sigilRing(poseStack, collector, 0.27F, 9, color, 0.35F);
                 poseStack.popPose();
-                HexFx.glyph(poseStack, collector, rune, 0.46F, color, 0.9F);
+                HexFx.glyph(poseStack, collector, rune, 0.36F, color, 0.9F);
                 poseStack.popPose();
 
                 // A thread of light from the rune to the pickaxe, with a spark running along it.

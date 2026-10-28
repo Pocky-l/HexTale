@@ -15,12 +15,13 @@ import com.pockyl.hextale.block.BigEssenceJarBlockEntity;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Big Essence Jar: the Essence Jar's own model, liquid and sticker, four times as large. The jar's glass (pixels 2-14
- * of its block) spans the three blocks around the controller, its lid ends 12 pixels into the fourth layer.
+ * The Big Essence Jar: the Essence Jar's own model, liquid and sticker, four times as large, centred on the controller.
+ * The jar's round body (pixels 3-13 of its block) spans two and a half of the three blocks around it, its cork ends at
+ * the top of the fourth layer.
  */
 public class BigEssenceJarRenderer implements BlockEntityRenderer<BigEssenceJarBlockEntity, EssenceTankRenderer.State> {
     private static final float SCALE = 4;
-    /** Moves the small jar's glass (2/16 from its block's corner) onto the big jar's corner, a block beside the controller. */
+    /** Moves the small jar's middle onto the controller's middle. */
     private static final float SHIFT = -1 - SCALE * 2 / 16F;
 
     private final EssenceTankRenderer jar;

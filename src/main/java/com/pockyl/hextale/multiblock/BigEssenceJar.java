@@ -22,8 +22,11 @@ import java.util.List;
  * bottom's centre. It looks like the Essence Jar, four times as large.
  */
 public final class BigEssenceJar extends Multiblock {
-    /** The jar's lid ends 12 pixels into the top layer (the jar's model is 15 pixels tall, drawn four times larger). */
-    private static final VoxelShape LID = slab(12);
+    /**
+     * The jar's model is 16 pixels tall and drawn four times larger: its round body ends half way up the third layer, the
+     * shoulders, neck and cork stand over the middle column, so the outer blocks of the top layer hold nothing.
+     */
+    private static final VoxelShape SHOULDER = slab(8);
 
     BigEssenceJar() {
         super("big_essence_jar", MultiblockPattern.builder()
@@ -54,7 +57,11 @@ public final class BigEssenceJar extends Multiblock {
 
     @Override
     public VoxelShape partShape(BlockPos offset) {
-        return offset.getY() >= 3 ? LID : Shapes.block();
+        boolean middle = offset.getX() == 0 && offset.getZ() == 0;
+        if (middle || offset.getY() < 2) {
+            return Shapes.block();
+        }
+        return offset.getY() == 2 ? SHOULDER : Shapes.empty();
     }
 
     @Override

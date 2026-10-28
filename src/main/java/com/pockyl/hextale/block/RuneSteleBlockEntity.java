@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,12 +20,15 @@ import com.pockyl.hextale.rune.ComplexRunes;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A rune stele: carries the rune a researcher chose on it, with that researcher's stars. Its hieroglyph floats over
- * the stele; while a ritual of the altar uses it, the stele burns brighter ({@link #activeUntil}).
+ * A rune stele (its lower half): carries the rune a researcher chose on it, with that researcher's stars. Its
+ * hieroglyph turns in the window of the stele's head ({@link #GLYPH_Y}); while a ritual of the altar uses it, the stele
+ * burns brighter ({@link #activeUntil}).
  */
 public class RuneSteleBlockEntity extends BlockEntity {
     /** Block event: a ritual draws on this stele; param = ticks it lasts. */
     public static final int EVENT_ACTIVE = 1;
+    /** Height of the rune's middle over the stele's foot (blocks): the middle of the window in its head (25 px). */
+    public static final float GLYPH_Y = 25F / 16;
 
     @Nullable
     private ComplexRune rune;
@@ -60,8 +64,21 @@ public class RuneSteleBlockEntity extends BlockEntity {
         this.stars = Math.max(1, Math.min(3, stars));
         if (level != null && !level.isClientSide()) {
             level.setBlock(worldPosition, getBlockState().setValue(RuneSteleBlock.LIT, rune != null), Block.UPDATE_ALL);
+            BlockState head = level.getBlockState(worldPosition.above());
+            if (head.is(getBlockState().getBlock()) && RuneSteleBlock.upper(head)) {
+                level.setBlock(worldPosition.above(), head.setValue(RuneSteleBlock.LIT, rune != null), Block.UPDATE_ALL);
+            }
         }
         setChanged();
+    }
+
+    /** A stele from before steles stood two blocks tall grows its upper half (see {@link RuneSteleBlock}). */
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level instanceof ServerLevel server && !server.getBlockState(worldPosition.above()).is(getBlockState().getBlock())) {
+            server.scheduleTick(worldPosition, getBlockState().getBlock(), 20);
+        }
     }
 
     @Override

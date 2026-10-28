@@ -113,7 +113,7 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         // The new matrix reaches out to every part of its circle once.
         Ritual.Circle circle = Ritual.Circle.scan(level, pos);
         for (var stele : circle.steles()) {
-            hexcore.send(level, Vec3.atCenterOf(stele.getBlockPos()).add(0, 0.6, 0), HexcoreStrikePayload.CALM);
+            hexcore.send(level, Vec3.atLowerCornerOf(stele.getBlockPos()).add(0.5, RuneSteleBlockEntity.GLYPH_Y, 0.5), HexcoreStrikePayload.CALM);
         }
         for (var pedestal : circle.pedestals()) {
             hexcore.send(level, Vec3.atCenterOf(pedestal.getBlockPos()).add(0, PedestalBlockEntity.ITEM_Y - 0.5, 0), HexcoreStrikePayload.CALM);

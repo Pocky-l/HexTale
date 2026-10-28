@@ -25,18 +25,20 @@ import com.pockyl.hextale.essence.EssenceTank;
 import com.pockyl.hextale.rune.Essence;
 
 /**
- * An Essence Jar: its glass and lid (the block model only draws the pipe fittings), the glowing liquid inside, as high as
- * the jar is full, and its Essence Sticker as a small paper tag on twine with the essence's sign on every side, except
- * where a pipe joins that side. A right click pushes the jar: it rocks on its foot away from the player and settles.
+ * An Essence Jar: its round glass body, neck, twine and cork (the block model only draws the pipe fittings), the glowing
+ * liquid inside, as high as the jar is full, and its Essence Sticker as a small paper tag hung from the neck on twine
+ * with the essence's sign on every side, except where a pipe joins that side. A right click pushes the jar: it rocks on
+ * its foot away from the player and settles.
  */
 public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlockEntity, EssenceTankRenderer.State> {
-    // Inside the glass (model: body 2-14 with its vertical edges cut back by a pixel, thick glass at the foot up to 1,
-    // the shoulder from 11), a quarter pixel off the walls so the faces never lie in one plane.
-    private static final float MIN = 2.25F / 16;
-    private static final float MAX = 13.75F / 16;
+    // Inside the glass (model: a round body 3-13 whose walls are a pixel thick, so the inside is 4-12 with its corners
+    // stepped back by a pixel; thick glass at the foot up to 1, the shoulder from 10), a quarter pixel off the walls so
+    // the faces never lie in one plane.
+    private static final float MIN = 4.25F / 16;
+    private static final float MAX = 11.75F / 16;
     private static final float CUT = 1F / 16;
     private static final float BOTTOM = 1F / 16;
-    private static final float TOP = 10.75F / 16;
+    private static final float TOP = 9.75F / 16;
 
     private static final Identifier LABELS = Hextale.id("textures/block/essence_labels.png");
     /**
@@ -47,16 +49,17 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
     private static final int LABEL_H = 32;
     private static final int LABEL_CELL = 32;
     private static final float HALF_W = LABEL_W / 2F / 80;
-    private static final float HALF_H = LABEL_H / 2F / 80;
+    /** The cell's top rows hold the twine, the rest the tag with its eyelet. */
+    private static final int TWINE_ROWS = 8;
     /**
-     * Side stickers lie 0.3 px in front of the glass (2 px inside the block), centred across; the twine reaches the top
-     * of the glass (11 px), where it goes over the shoulder to the neck.
+     * The tag hangs flat 0.3 px in front of the glass (whose flat sides lie 3 px inside the block), centred across, its
+     * eyelet just over the body's top; the twine runs from the eyelet up over the shoulders to the tie round the neck
+     * (2 px from the middle, 13 px up).
      */
-    private static final float SIDE_OUT = 0.5F - 1.7F / 16;
-    private static final float TOP_OUT = 15.3F / 16 - 0.5F;
-    private static final float ACROSS = 0;
-    private static final float SIDE_UP = 11F / 16 - HALF_H - 0.5F;
-    private static final float TOP_UP = 0;
+    private static final float SIDE_OUT = 0.5F - 2.7F / 16;
+    private static final float TAG_TOP = 10.4F / 16;
+    private static final float NECK_OUT = 0.5F - 6F / 16;
+    private static final float NECK_Y = 13F / 16;
 
     /** How far a pushed jar leans at first (degrees), how fast it rocks (ticks per swing) and how soon it settles. */
     private static final float WOBBLE_DEGREES = 8;
@@ -175,37 +178,42 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
         return Mth.hsvToRgb(hue, Math.min(1, saturation * 1.45F + 0.06F), Math.min(1, Math.max(max * 1.2F, 0.88F))) & 0xFFFFFF;
     }
 
-    /** One sticker on a face, seen upright from outside: sides with up = +Y, the top with up = north. */
+    /**
+     * One sticker on a side, seen upright from outside: the tag flat in front of the glass, and its twine bent back from
+     * the eyelet over the shoulders to the neck.
+     */
     private static void sticker(VertexConsumer consumer, PoseStack.Pose pose, Direction face, Essence essence, int light) {
         float nx = face.getStepX();
-        float ny = face.getStepY();
         float nz = face.getStepZ();
-        float[] up = face.getAxis().isVertical() ? new float[]{0, 0, -1} : new float[]{0, 1, 0};
-        // right = up x normal
-        float rx = up[1] * nz - up[2] * ny;
-        float ry = up[2] * nx - up[0] * nz;
-        float rz = up[0] * ny - up[1] * nx;
-        float out = face == Direction.UP ? TOP_OUT : SIDE_OUT;
-        float lift = face == Direction.UP ? TOP_UP : SIDE_UP;
-        float cx = 0.5F + nx * out + rx * ACROSS + up[0] * lift;
-        float cy = 0.5F + ny * out + ry * ACROSS + up[1] * lift;
-        float cz = 0.5F + nz * out + rz * ACROSS + up[2] * lift;
-        float w = HALF_W;
-        float h = HALF_H;
         // Stickers sit 16 to a row on a 512 x 256 sheet.
         float u0 = essence.ordinal() % 16 * LABEL_CELL / 512F;
         float u1 = (essence.ordinal() % 16 * LABEL_CELL + LABEL_W) / 512F;
         float v0 = essence.ordinal() / 16 * LABEL_CELL / 256F;
+        float vEyelet = (essence.ordinal() / 16 * LABEL_CELL + TWINE_ROWS) / 256F;
         float v1 = (essence.ordinal() / 16 * LABEL_CELL + LABEL_H) / 256F;
+        float tagBottom = TAG_TOP - (LABEL_H - TWINE_ROWS) / 80F;
+        quad(consumer, pose, nx, nz, SIDE_OUT, tagBottom, SIDE_OUT, TAG_TOP, u0, u1, vEyelet, v1, light);
+        quad(consumer, pose, nx, nz, SIDE_OUT, TAG_TOP, NECK_OUT, NECK_Y, u0, u1, v0, vEyelet, light);
+    }
+
+    /**
+     * A quad 2 * {@link #HALF_W} wide across the side facing ({@code nx}, {@code nz}), from {@code out0} off the jar's
+     * middle at height {@code y0} up to {@code out1} at {@code y1}; {@code vTop} is drawn at the top edge.
+     */
+    private static void quad(VertexConsumer consumer, PoseStack.Pose pose, float nx, float nz, float out0, float y0, float out1, float y1,
+                             float u0, float u1, float vTop, float vBottom, int light) {
+        // right = up x normal
+        float rx = nz * HALF_W;
+        float rz = -nx * HALF_W;
         float[][] corners = {
-                {cx - rx * w - up[0] * h, cy - ry * w - up[1] * h, cz - rz * w - up[2] * h, u0, v1},
-                {cx + rx * w - up[0] * h, cy + ry * w - up[1] * h, cz + rz * w - up[2] * h, u1, v1},
-                {cx + rx * w + up[0] * h, cy + ry * w + up[1] * h, cz + rz * w + up[2] * h, u1, v0},
-                {cx - rx * w + up[0] * h, cy - ry * w + up[1] * h, cz - rz * w + up[2] * h, u0, v0},
+                {0.5F + nx * out0 - rx, y0, 0.5F + nz * out0 - rz, u0, vBottom},
+                {0.5F + nx * out0 + rx, y0, 0.5F + nz * out0 + rz, u1, vBottom},
+                {0.5F + nx * out1 + rx, y1, 0.5F + nz * out1 + rz, u1, vTop},
+                {0.5F + nx * out1 - rx, y1, 0.5F + nz * out1 - rz, u0, vTop},
         };
         for (float[] c : corners) {
             consumer.addVertex(pose, c[0], c[1], c[2]).setColor(-1).setUv(c[3], c[4]).setOverlay(OverlayTexture.NO_OVERLAY)
-                    .setLight(light).setNormal(pose, nx, ny, nz);
+                    .setLight(light).setNormal(pose, nx, 0, nz);
         }
     }
 }

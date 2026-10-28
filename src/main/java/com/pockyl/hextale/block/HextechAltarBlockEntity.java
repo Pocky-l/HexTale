@@ -615,8 +615,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         // Rune steles shed shards of their glyphs into the work for the whole ritual.
         for (RuneSteleBlockEntity stele : circle.steles()) {
             if (stele.rune() != null && random.nextInt(4) == 0) {
-                Vec3 from = Vec3.atCenterOf(stele.getBlockPos()).add((random.nextDouble() - 0.5) * 0.3, 1.05 + random.nextDouble() * 0.2,
-                        (random.nextDouble() - 0.5) * 0.3);
+                Vec3 from = Vec3.atLowerCornerOf(stele.getBlockPos()).add(0.5 + (random.nextDouble() - 0.5) * 0.3,
+                        RuneSteleBlockEntity.GLYPH_Y - 0.1 + random.nextDouble() * 0.2, 0.5 + (random.nextDouble() - 0.5) * 0.3);
                 Vec3 offset = from.subtract(target);
                 level.addParticle(ModParticles.runeShard(stele.rune().color()), target.x, target.y, target.z, offset.x, offset.y, offset.z);
             }
