@@ -69,6 +69,13 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     private static final int COLUMNS = 4;
     private static final int PLAN_Y = JY + 64;
     private static final int CHAIN_Y = PLAN_Y + 34;
+    /** The amount tube and the purity scale under the target's name: their sign, then the gauge. */
+    private static final int AMOUNT_Y = PLAN_Y + 11;
+    private static final int PURITY_Y = PLAN_Y + 21;
+    private static final int GAUGE_H = 8;
+    private static final int GAUGE_INSET = 9;
+    /** Rows of the topic grid shown at once (the wheel scrolls the rest). */
+    private static final int TOPIC_ROWS = 3;
     private static final int CHAIN_STEP = 11;
     private static final int SAMPLE_LINE_Y = PANEL_BOTTOM - 21;
     // The bench.
@@ -123,11 +130,11 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     private static final long FALL_MS = 420;
     private static final long PRESS_MS = 160;
     private static final int[] ZONE_COLORS = {0x5AA8FF, 0x5CE0D8, 0xB8E05A, 0xFF9A3C, 0xFF4A3A};
-    private static final Identifier BUTTON = sprite("button");
-    private static final Identifier BUTTON_HOVER = sprite("button_hover");
-    private static final Identifier BUTTON_PRESSED = sprite("button_pressed");
-    private static final Identifier BUTTON_DISABLED = sprite("button_disabled");
-    private static final Identifier BUTTON_READY = sprite("button_ready");
+    private static final Identifier BUTTON = HexPlate.BUTTON;
+    private static final Identifier BUTTON_HOVER = HexPlate.BUTTON_HOVER;
+    private static final Identifier BUTTON_PRESSED = HexPlate.BUTTON_PRESSED;
+    private static final Identifier BUTTON_DISABLED = HexPlate.BUTTON_DISABLED;
+    private static final Identifier BUTTON_READY = HexPlate.BUTTON_READY;
     private static final Identifier ICON_VENT = sprite("icon_vent");
     private static final Identifier ICON_POUR = sprite("icon_pour");
     private static final Identifier ICON_SEAL = sprite("icon_seal");
@@ -142,6 +149,8 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     private List<Essence> rack = List.of();
     private int[] available = new int[Essence.COUNT];
     private int rackScroll;
+    /** First row of the topic grid shown; -1 until it is set to show the open topic. */
+    private int topicScroll = -1;
     private long rackAt = -100;
     private @Nullable Essence held;
     private int heldTicks;
@@ -307,12 +316,21 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
 
     private int topicAt(double mouseX, double mouseY) {
         List<ResearchTopic> topics = ResearchTopics.lab();
-        for (int i = 0; i < topics.size(); i++) {
-            if (over(mouseX, mouseY, CELLS_X + i % COLUMNS * CELL, CELLS_Y + i / COLUMNS * CELL, CELL, CELL)) {
+        int first = Math.max(0, topicScroll) * COLUMNS;
+        for (int i = first; i < topics.size() && i < first + TOPIC_ROWS * COLUMNS; i++) {
+            if (over(mouseX, mouseY, CELLS_X + i % COLUMNS * CELL, CELLS_Y + (i - first) / COLUMNS * CELL, CELL, CELL)) {
                 return i;
             }
         }
         return -1;
+    }
+
+    private static int topicRows() {
+        return (ResearchTopics.lab().size() + COLUMNS - 1) / COLUMNS;
+    }
+
+    private boolean overTopics(double mouseX, double mouseY) {
+        return over(mouseX, mouseY, CELLS_X, CELLS_Y, COLUMNS * CELL + 2, TOPIC_ROWS * CELL);
     }
 
     private @Nullable Essence pipetteAt(double mouseX, double mouseY) {
@@ -438,6 +456,10 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         LabBenchBlockEntity bench = bench();
+        if (overTopics(mouseX, mouseY) && topicRows() > TOPIC_ROWS) {
+            topicScroll = Math.clamp(topicScroll - (int) Math.signum(scrollY), 0, topicRows() - TOPIC_ROWS);
+            return true;
+        }
         if (overRack(mouseX, mouseY) && rack.size() > PIPETTES) {
             rackScroll = Math.clamp(rackScroll - (int) Math.signum(scrollY), 0, rack.size() - PIPETTES);
             return true;
@@ -552,11 +574,27 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
     /** The topic grid, the open topic's compound, its reactions and the sample it is sealed with. */
     private void journal(GuiGraphicsExtractor graphics, LabBenchBlockEntity bench, RuneKnowledge knowledge, int mouseX, int mouseY) {
         List<ResearchTopic> topics = ResearchTopics.lab();
+        if (topicScroll < 0) {
+            // Open on the rows that show the topic on the bench.
+            int open = bench.topic() == null ? 0 : Math.max(0, topics.indexOf(bench.topic()));
+            topicScroll = Math.clamp(open / COLUMNS - TOPIC_ROWS + 1, 0, Math.max(0, topicRows() - TOPIC_ROWS));
+        }
         int hovered = topicAt(mouseX, mouseY);
-        for (int i = 0; i < topics.size(); i++) {
+        if (topicRows() > TOPIC_ROWS) {
+            // A thin brass bar at the grid's right: where the shown rows are among all of them.
+            int barX = leftPos + CELLS_X + COLUMNS * CELL + 1;
+            int barY = topPos + CELLS_Y;
+            int h = TOPIC_ROWS * CELL;
+            PixelArt.fill(graphics, barX, barY, barX + 1, barY + h, PixelArt.argb(0x1A0F07, 1));
+            int thumb = h * TOPIC_ROWS / topicRows();
+            int ty = barY + (h - thumb) * topicScroll / (topicRows() - TOPIC_ROWS);
+            PixelArt.fill(graphics, barX, ty, barX + 1, ty + thumb, PixelArt.argb(HexPlate.BRASS, 1));
+        }
+        int first = topicScroll * COLUMNS;
+        for (int i = first; i < topics.size() && i < first + TOPIC_ROWS * COLUMNS; i++) {
             ResearchTopic topic = topics.get(i);
             int cx = leftPos + CELLS_X + i % COLUMNS * CELL;
-            int cy = topPos + CELLS_Y + i / COLUMNS * CELL;
+            int cy = topPos + CELLS_Y + (i - first) / COLUMNS * CELL;
             boolean open = Guide.client().canResearch(topic, knowledge);
             HexPlate.cell(graphics, cx, cy, CELL, topic == bench.topic(), hovered == i && open);
             PixelArt.flush(graphics);
@@ -567,7 +605,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
                     PixelArt.fill(graphics, cx + 14, cy + 11, cx + 16, cy + 13, PixelArt.argb(0x6CFF8A, 1));
                 }
             } else {
-                PixelArt.disc(graphics, cx + 9, cy + 9, 10, PixelArt.argb(0x2A2238, 1), PixelArt.argb(0x4A4060, 1));
+                PixelArt.disc(graphics, cx + 9, cy + 9, 10, PixelArt.argb(0x2A1C12, 1), PixelArt.argb(0x4A3826, 1));
             }
         }
         HexPlate.divider(graphics, leftPos + JX - HexPlate.BORDER + 2, topPos + PLAN_Y - 4, JW + 4);
@@ -581,8 +619,12 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
         PixelArt.essence(graphics, target, px, topPos + PLAN_Y, PixelArt.ICON, 0xFF000000 | target.color());
         float amount = Math.min(1, flask.amount(target) / plan.amount());
         float purity = flask.purity(target);
-        bar(graphics, px, topPos + PLAN_Y + 21, JW - 6, amount, amount >= 0.99F ? 0x6CFF8A : target.color());
-        bar(graphics, px, topPos + PLAN_Y + 26, JW - 6, Math.min(1, purity / plan.purity()), purity >= plan.purity() - 0.005F ? 0x6CFF8A : 0xE8D25A);
+        // The amount as liquid in a graduated glass tube, the purity on a scale with a brass notch at what is needed.
+        flaskIcon(graphics, px, topPos + AMOUNT_Y + 1, target.color());
+        tube(graphics, px + GAUGE_INSET, topPos + AMOUNT_Y, JW - 6 - GAUGE_INSET, amount, plan.amount(),
+                amount >= 0.99F ? 0x6CFF8A : target.color());
+        gemIcon(graphics, px + 1, topPos + PURITY_Y + 1);
+        scale(graphics, px + GAUGE_INSET, topPos + PURITY_Y, JW - 6 - GAUGE_INSET, purity, plan.purity());
         List<Essence> chain = plan.chain();
         for (int i = 0; i < chain.size() && i < 3; i++) {
             Essence compound = chain.get(chain.size() - 1 - i);
@@ -619,21 +661,74 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
         return plan.sample().flatMap(ingredient -> ingredient.items().findFirst()).map(item -> new ItemStack(item.value())).orElse(ItemStack.EMPTY);
     }
 
-    private static void bar(GuiGraphicsExtractor graphics, int x, int y, int w, float share, int color) {
-        PixelArt.fill(graphics, x, y, x + w, y + 3, PixelArt.argb(0x0A0810, 1));
-        PixelArt.fill(graphics, x, y, x + Math.round(w * Mth.clamp(share, 0, 1)), y + 3, PixelArt.argb(color, 1));
+    /** A glass tube {@code w} wide: liquid up to {@code share}, a tick at every part of {@code parts}, a glint along the glass. */
+    private static void tube(GuiGraphicsExtractor graphics, int x, int y, int w, float share, int parts, int color) {
+        HexPlate.well(graphics, x, y, w, GAUGE_H);
+        int inner = w - 2;
+        int filled = Math.round(inner * Mth.clamp(share, 0, 1));
+        if (filled > 0) {
+            PixelArt.fill(graphics, x + 1, y + 2, x + 1 + filled, y + GAUGE_H - 1, PixelArt.argb(color, 1));
+            PixelArt.fill(graphics, x + 1, y + GAUGE_H - 2, x + 1 + filled, y + GAUGE_H - 1, PixelArt.argb(PixelArt.mix(color, 0x000000, 0.3F), 1));
+            PixelArt.fill(graphics, x + filled, y + 2, x + 1 + filled, y + GAUGE_H - 1, PixelArt.argb(PixelArt.mix(color, 0xFFFFFF, 0.5F), 1));
+        }
+        for (int k = 1; k < parts; k++) {
+            int tx = x + 1 + inner * k / parts;
+            PixelArt.fill(graphics, tx, y + 1, tx + 1, y + 4, PixelArt.argb(0xF2E6CF, 0.45F));
+        }
+        PixelArt.fill(graphics, x + 2, y + 2, x + w - 2, y + 3, PixelArt.argb(0xFFFFFF, 0.18F));
+    }
+
+    /** A scale {@code w} wide filled to {@code purity} (amber, green once enough), a brass notch at {@code needed}. */
+    private static void scale(GuiGraphicsExtractor graphics, int x, int y, int w, float purity, float needed) {
+        HexPlate.well(graphics, x, y, w, GAUGE_H);
+        int inner = w - 2;
+        boolean enough = purity >= needed - 0.005F;
+        int filled = Math.round(inner * Mth.clamp(purity, 0, 1));
+        int color = enough ? 0x6CFF8A : 0xE8D25A;
+        for (int col = 0; col < filled; col++) {
+            int shade = PixelArt.mix(PixelArt.mix(color, 0x1A0F07, 0.55F), color, col / (float) Math.max(1, inner - 1));
+            PixelArt.fill(graphics, x + 1 + col, y + 2, x + 2 + col, y + GAUGE_H - 2, PixelArt.argb(shade, 1));
+        }
+        int nx = x + 1 + Math.round(inner * Mth.clamp(needed, 0, 1));
+        PixelArt.fill(graphics, nx, y, nx + 1, y + GAUGE_H, PixelArt.argb(HexPlate.BRASS_LIGHT, 1));
+        PixelArt.fill(graphics, nx - 1, y - 1, nx + 2, y, PixelArt.argb(HexPlate.BRASS, 1));
+        PixelArt.fill(graphics, nx - 1, y + GAUGE_H, nx + 2, y + GAUGE_H + 1, PixelArt.argb(HexPlate.BRASS, 1));
+    }
+
+    /** A small glass flask with liquid in it: the sign of the amount tube. */
+    private static void flaskIcon(GuiGraphicsExtractor graphics, int x, int y, int color) {
+        int glass = PixelArt.argb(0xCFEFF5, 0.85F);
+        PixelArt.fill(graphics, x + 2, y, x + 4, y + 2, glass);
+        PixelArt.fill(graphics, x + 1, y + 2, x + 5, y + 3, glass);
+        PixelArt.fill(graphics, x, y + 3, x + 6, y + 6, glass);
+        PixelArt.fill(graphics, x + 1, y + 4, x + 5, y + 6, PixelArt.argb(color, 1));
+        PixelArt.fill(graphics, x + 1, y + 6, x + 5, y + 7, glass);
+    }
+
+    /** A small clear gem: the sign of the purity scale. */
+    private static void gemIcon(GuiGraphicsExtractor graphics, int x, int y) {
+        int light = PixelArt.argb(0xE6FDF8, 1);
+        int shade = PixelArt.argb(0x9FE8F7, 1);
+        PixelArt.fill(graphics, x + 2, y, x + 3, y + 1, light);
+        PixelArt.fill(graphics, x + 1, y + 1, x + 3, y + 2, light);
+        PixelArt.fill(graphics, x + 3, y + 1, x + 4, y + 2, shade);
+        PixelArt.fill(graphics, x, y + 2, x + 3, y + 4, light);
+        PixelArt.fill(graphics, x + 3, y + 2, x + 5, y + 4, shade);
+        PixelArt.fill(graphics, x + 1, y + 4, x + 2, y + 5, light);
+        PixelArt.fill(graphics, x + 2, y + 4, x + 4, y + 5, shade);
+        PixelArt.fill(graphics, x + 2, y + 5, x + 3, y + 6, shade);
     }
 
     /** A small chip in the zone's colour; a grey one with a dot while the zone is unknown. */
     private static void zoneChip(GuiGraphicsExtractor graphics, int x, int y, int zone) {
         if (zone < 0) {
-            PixelArt.fill(graphics, x, y, x + 20, y + 7, PixelArt.argb(0x2A2238, 1));
-            PixelArt.fill(graphics, x + 9, y + 3, x + 11, y + 5, PixelArt.argb(0x7A7090, 1));
+            PixelArt.fill(graphics, x, y, x + 20, y + 7, PixelArt.argb(0x2A1C12, 1));
+            PixelArt.fill(graphics, x + 9, y + 3, x + 11, y + 5, PixelArt.argb(0x8A7A66, 1));
             return;
         }
         PixelArt.fill(graphics, x, y, x + 20, y + 7, PixelArt.argb(ZONE_COLORS[zone], 0.85F));
         for (int i = 0; i <= zone; i++) {
-            PixelArt.fill(graphics, x + 2 + i * 4, y + 2, x + 4 + i * 4, y + 5, PixelArt.argb(0x16121F, 0.9F));
+            PixelArt.fill(graphics, x + 2 + i * 4, y + 2, x + 4 + i * 4, y + 5, PixelArt.argb(0x1A0F07, 0.9F));
         }
     }
 
@@ -666,7 +761,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
             int top = y0 + 8 + dy;
             int bottom = TIP_Y + topPos - 4 + dy;
             PixelArt.fill(graphics, px + 2, top, px + 7, bottom, PixelArt.argb(0xBFE8F0, 0.55F));
-            PixelArt.fill(graphics, px + 3, top, px + 6, bottom, PixelArt.argb(0x0A0810, 0.7F));
+            PixelArt.fill(graphics, px + 3, top, px + 6, bottom, PixelArt.argb(0x1A0F07, 0.7F));
             float full = Math.min(1, available[essence.ordinal()] / 64.0F);
             int level = bottom - Math.round((bottom - top - 1) * full);
             if (full > 0) {
@@ -675,7 +770,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
             }
             PixelArt.fill(graphics, px + 3, bottom, px + 6, bottom + 2, PixelArt.argb(0xBFE8F0, 0.55F));
             PixelArt.fill(graphics, px + 4, bottom + 2, px + 5, bottom + 4, PixelArt.argb(0xBFE8F0, 0.55F));
-            int sign = usable ? 0xFF000000 | essence.color() : 0xFF4A4060;
+            int sign = usable ? 0xFF000000 | essence.color() : 0xFF5A4632;
             PixelArt.essence(graphics, essence, px, TIP_Y + topPos + 2, PixelArt.ICON, sign);
         }
         if (rack.size() > PIPETTES) {
@@ -953,7 +1048,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
             if (k == 0) {
                 // The burner off: an empty nozzle.
                 int cx = x + TILE_W / 2;
-                int nozzle = PixelArt.argb(lit ? 0x9A90B8 : 0x5A5070, 1);
+                int nozzle = PixelArt.argb(lit ? 0xB8AE98 : 0x5A5248, 1);
                 PixelArt.fill(graphics, cx - 3, y + 7 + sink, cx + 3, y + 9 + sink, nozzle);
                 PixelArt.fill(graphics, cx - 1, y + 5 + sink, cx + 1, y + 7 + sink, nozzle);
                 PixelArt.flush(graphics);
@@ -1004,7 +1099,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
         int mercury = ZONE_COLORS[zone];
         PixelArt.fill(graphics, x + 3, top + THERMO_H - column, x + 7, top + THERMO_H + 4, PixelArt.argb(mercury, 1));
         PixelArt.fill(graphics, x + 3, top + THERMO_H - column, x + 4, top + THERMO_H + 4, PixelArt.argb(0xFFFFFF, 0.35F));
-        PixelArt.disc(graphics, x + 5, top + THERMO_H + 8, 12, PixelArt.argb(mercury, 1), PixelArt.argb(0x0A0810, 1));
+        PixelArt.disc(graphics, x + 5, top + THERMO_H + 8, 12, PixelArt.argb(mercury, 1), PixelArt.argb(0x1A0F07, 1));
         // Where the flame pulls the heat: a brass arrow on the left.
         int flameY = top + THERMO_H - Math.round(THERMO_H * Flask.flameHeat(flask.flame()) / Reactions.MAX_TEMPERATURE);
         for (int k = 0; k < 3; k++) {
@@ -1028,7 +1123,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, imageWidth - 16, HexPlate.TITLE, true);
+        HexPlate.title(graphics, font, title, titleLabelX, titleLabelY, imageWidth - 16);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
         int slotCaption = LabBenchMenu.INVENTORY_Y + 1;
         HexPlate.centered(graphics, font, Component.translatable(KEY + "caption.flask"), LabBenchMenu.LEFT_SLOT_X + 8, slotCaption, 56, HexPlate.MUTED);
@@ -1040,7 +1135,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
         }
         boolean ready = sealable(bench);
         HexPlate.line(graphics, font, Component.translatable(KEY + "seal"), SEAL_X + 19, SEAL_Y + 5, SEAL_W - 22,
-                ready ? 0xFFFFF4C0 : 0xFF7A7090, ready);
+                ready ? 0xFFFFF4C0 : 0xFF8A7A66, ready);
         Flask flask = bench.flask();
         ExperimentPlan plan = bench.plan();
         int tx = JX + 3;
@@ -1049,9 +1144,6 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
         } else {
             Essence target = plan.target();
             HexPlate.line(graphics, font, Component.translatable(target.translationKey()), tx + 12, PLAN_Y + 1, JW - 18, 0xFF000000 | target.color(), false);
-            graphics.text(font, Component.literal(parts(flask.amount(target)) + "/" + plan.amount()), tx, PLAN_Y + 11, HexPlate.TEXT, false);
-            String purity = Math.round(flask.purity(target) * 100) + "%/" + Math.round(plan.purity() * 100) + "%";
-            graphics.text(font, Component.literal(purity), tx + JW - 6 - font.width(purity), PLAN_Y + 11, HexPlate.MUTED, false);
             Component sampleText = Component.translatable(plan.needsSample() ? KEY + "sample" : KEY + "sample.none");
             HexPlate.line(graphics, font, sampleText, tx, SAMPLE_LINE_Y + 4, plan.needsSample() ? JW - 28 : JW - 6, HexPlate.MUTED, false);
         }
@@ -1169,6 +1261,18 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
                                     .withColor(ZONE_COLORS[Reactions.zone(compound)]))
                                     : Component.translatable(KEY + "reaction.unknown").withStyle(ChatFormatting.GRAY));
                 }
+            }
+            Essence target = plan.target();
+            if (over(mouseX, mouseY, JX + 3, AMOUNT_Y, JW - 6, GAUGE_H)) {
+                return List.of(Component.translatable(KEY + "gauge.amount", parts(bench.flask().amount(target)), plan.amount()),
+                        Component.translatable(KEY + "goal", plan.amount(), name(target), Math.round(plan.purity() * 100))
+                                .withStyle(ChatFormatting.GRAY));
+            }
+            if (over(mouseX, mouseY, JX + 3, PURITY_Y - 1, JW - 6, GAUGE_H + 2)) {
+                return List.of(Component.translatable(KEY + "gauge.purity", Math.round(bench.flask().purity(target) * 100),
+                                Math.round(plan.purity() * 100)),
+                        Component.translatable(KEY + "goal", plan.amount(), name(target), Math.round(plan.purity() * 100))
+                                .withStyle(ChatFormatting.GRAY));
             }
             if (over(mouseX, mouseY, JX + 3, PLAN_Y - 1, JW - 6, 32)) {
                 return List.of(Component.translatable(KEY + "goal", plan.amount(), name(plan.target()), Math.round(plan.purity() * 100)));

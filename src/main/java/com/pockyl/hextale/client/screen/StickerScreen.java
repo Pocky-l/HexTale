@@ -122,6 +122,9 @@ public class StickerScreen extends Screen {
         int w = width();
         int h = height();
         HexPlate.plate(graphics, x, y, w, h);
+        // The pictograms lie in a tray sunk into the wood.
+        HexPlate.well(graphics, x + PAD - 2, y + PAD + titleHeight() - 2, COLUMNS * CELL + 4,
+                (rows(0) + rows(1) + rows(2)) * CELL + GAP * 2 + 4);
         Essence chosen = current();
         Essence over = at(mouseX, mouseY);
         for (Essence essence : Essence.values()) {
@@ -130,11 +133,7 @@ public class StickerScreen extends Screen {
             PixelArt.essence(graphics, essence, c[0] + 2, c[1] + 2, 9, PixelArt.argb(essence.color(), 1));
         }
         PixelArt.flush(graphics);
-        int ty = y + PAD;
-        for (FormattedCharSequence line : titleLines()) {
-            graphics.centeredText(font, line, x + w / 2, ty, HexPlate.TITLE);
-            ty += 10;
-        }
+        HexPlate.centeredTitle(graphics, font, titleLines(), x + w / 2, y + PAD);
         int[] b = blank();
         boolean overBlank = mouseX >= b[0] && mouseX < b[0] + b[2] && mouseY >= b[1] && mouseY < b[1] + b[3];
         HexPlate.button(graphics, font, b[0], b[1], b[2], b[3], Component.translatable("gui.hextale.sticker.blank"), overBlank, true);

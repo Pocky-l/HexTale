@@ -1970,6 +1970,8 @@
   "gui.hextale.lab_bench.reaction": "%s + %s → %s",
   "gui.hextale.lab_bench.reaction.zone": "Рождается, когда %s",
   "gui.hextale.lab_bench.reaction.unknown": "Её жар неизвестен: увидьте, как она рождается",
+  "gui.hextale.lab_bench.gauge.amount": "Объём: %s из %s частей",
+  "gui.hextale.lab_bench.gauge.purity": "Чистота: %s%% (нужно: %s%%)",
   "gui.hextale.lab_bench.goal": "Получить %s частей: %s, не меньше %s%% колбы",
   "gui.hextale.lab_bench.goal.sample": "Запечатать с образцом на столе: %s",
   "gui.hextale.lab_bench.thermometer": "%s° — %s",

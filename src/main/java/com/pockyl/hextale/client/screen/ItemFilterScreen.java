@@ -88,7 +88,7 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, imageWidth - titleLabelX * 2, HexPlate.TITLE, true);
+        HexPlate.title(graphics, font, title, titleLabelX, titleLabelY, imageWidth - titleLabelX * 2);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
     }
 

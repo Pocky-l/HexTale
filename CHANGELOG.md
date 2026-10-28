@@ -51,11 +51,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   like a woodcut stamp, so no sign turns into a dark blot.
 - The Essence Sticker is now the same paper tag on twine as on the jars, with the essence's colour stamped on it.
 - Carved magic stone instead of rings and spirals: Chiseled Magic Bricks show the earth rune raised in a sunken panel,
-  Whorled Magic Stone is a field of raised stone hexagons that catch the light like little cubes, and the end of a
-  Magic Stone Pillar carries a carved cog.
+  Whorled Magic Stone carries a quiet band of carved hexagons between plain courses, calm enough for a whole wall, and
+  the end of a Magic Stone Pillar carries a clean carved cog.
 - The end of a Stripped Magic Log now looks like a real log end with growth rings and a drying crack, and the Magic
   Trapdoor is a pale wooden hatch with a hexagonal window instead of a die.
 - Chalk marks and chalk figures look hand-drawn now: wobbly rings with gaps and chalk dust instead of clean drawings.
+- The machine screens are made of walnut and aged brass now instead of a flat dark plate: wooden boards in a brass frame
+  with riveted corners, the name on an engraved brass plate, slots and tanks sunk into the wood, product slots in a
+  riveted brass ring and buttons with brass rims. The Research Table and the diary keep their own look.
+- The Hex Lapidary shows the crystal as a cut gem: flat facets that trade the light as you turn it, a bright table and
+  a glint now and then, instead of a smooth gradient.
+- The Lab Bench shows how much of the compound is in the flask as liquid in a graduated glass tube, and its purity on a
+  scale with a brass mark at what the topic needs, instead of small numbers (the numbers are in the tooltips). When there
+  are more topics than fit, the topic grid scrolls with the mouse wheel and no longer covers the open topic.
+- Ward Glass and Veil Glass carry their rune etched into the glass - upright in Ward Glass, turned over in Veil Glass -
+  in a brass and a pewter frame, and the coil under an Impulse Plate's lid is a glowing cog now.
 
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
