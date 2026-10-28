@@ -74,6 +74,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         state.stalled = altar.stalled();
         state.finishing = altar.finishing();
         state.sigilY = altar.sigilY();
+        state.itemY = (float) altar.itemY();
         state.sinceFinish = level == null ? -1 : level.getGameTime() - altar.finishedAt() + partialTick;
         state.sinceCollapse = level == null ? -1 : level.getGameTime() - altar.collapsedAt() + partialTick;
         // The rings keep their phase on the block entity: their speed follows the ritual smoothly.
@@ -140,7 +141,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         float bob = Mth.sin(time * 0.08F) * 0.03F;
 
         poseStack.pushPose();
-        poseStack.translate(0.5 + shake, HextechAltarBlockEntity.ITEM_Y + bob + rise, 0.5);
+        poseStack.translate(0.5 + shake, state.itemY + bob + rise, 0.5);
 
         // Glow under and around the item.
         float glow = 0.35F + 0.5F * activity + 0.8F * flash;
@@ -412,6 +413,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
 
     public static final class State extends BlockEntityRenderState {
         float sigilY = 0.03F;
+        float itemY = (float) HextechAltarBlockEntity.ITEM_Y;
         final ItemStackRenderState center = new ItemStackRenderState();
         float time;
         boolean active;
