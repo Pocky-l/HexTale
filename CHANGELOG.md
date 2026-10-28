@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and outlines and collision that follow them. As before on 26.1.2, poplar saplings are not Magic Tree catalysts and
   overlapping translucent effects (the new hexagons, streams and sigils too) may sort a little differently.
 
+### Fixed
+- Bubbles rising through the liquid in the Alembic, Crucible, Lab Bench and other vessels no longer show as a missing
+  texture: Minecraft 26.1.2 has no white bubble, so the mod's own white bubble takes its place.
+
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
 the altar draws its circle on the ground. No more borrowed chimes, beeps and hisses at the mod's magic moments, and the

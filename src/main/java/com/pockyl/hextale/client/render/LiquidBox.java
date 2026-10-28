@@ -26,8 +26,11 @@ import java.util.List;
  */
 public final class LiquidBox {
     private static final Identifier LIQUID = Hextale.id("block/essence_liquid");
-    /** Vanilla's white bubble (a ring with a glint), tinted by the liquid. */
-    public static final Identifier BUBBLE = Identifier.withDefaultNamespace("textures/particle/bubble_white.png");
+    /**
+     * A white bubble (a ring with a glint), tinted by the liquid. 26.1.2 has only vanilla's blue bubble, so the mod's own
+     * white essence bubble stands in for 26.3's {@code bubble_white}.
+     */
+    public static final Identifier BUBBLE = Hextale.id("textures/particle/essence_bubble_0.png");
     /** Vanilla's bubble bursting, frame by frame. */
     private static final Identifier[] BUBBLE_POP = new Identifier[5];
     /** How much lighter than the liquid a bubble's ring is. */
