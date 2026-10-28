@@ -40,6 +40,7 @@ import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.SawmillRune;
 import com.pockyl.hextale.runework.ToolEffects;
+import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -261,10 +262,12 @@ public class HexSawmillBlockEntity extends BlockEntity {
             axe = lucky == null ? axe : lucky;
         }
         int blades = strength(SawmillRune.BLADES);
-        List<ItemStack> drops = new ArrayList<>(Felling.fell(level, saw.tree(), axe, blades == 0 ? 0 : HolderRune.at(SawmillRune.MORE_LOGS, blades)));
+        net.minecraft.world.entity.player.Player actor = WorldEdits.owner(level, this);
+        float moreLogs = blades == 0 ? 0 : HolderRune.at(SawmillRune.MORE_LOGS, blades);
+        List<ItemStack> drops = new ArrayList<>(Felling.fell(level, saw.tree(), axe, moreLogs, actor));
         Vec3 crown = Vec3.atCenterOf(saw.foot()).add(0, 2, 0);
         if (strength(SawmillRune.HUSH) > 0) {
-            List<ItemStack> nests = Felling.takeNests(level, saw.tree());
+            List<ItemStack> nests = Felling.takeNests(level, saw.tree(), actor);
             if (!nests.isEmpty()) {
                 drops.addAll(nests);
                 ToolEffects.puff(level, crown, SawmillRune.HUSH.rune(), 10, 0.6);
@@ -282,7 +285,7 @@ public class HexSawmillBlockEntity extends BlockEntity {
     private void land(ServerLevel level, Pending saw) {
         List<ItemStack> drops = new ArrayList<>(saw.drops().stream().map(ItemStack::copy).toList());
         List<BlockPos> planted = new ArrayList<>();
-        Felling.replant(level, saw.foot(), saw.feet(), drops, planted);
+        Felling.replant(level, saw.foot(), saw.feet(), drops, planted, WorldEdits.owner(level, this));
         int growth = strength(SawmillRune.GROWTH);
         if (growth > 0 && level.getRandom().nextFloat() < HolderRune.at(SawmillRune.GROW, growth)) {
             for (BlockPos sapling : planted) {
@@ -323,6 +326,11 @@ public class HexSawmillBlockEntity extends BlockEntity {
             }
             // A big tree is found from each of its feet: once is enough.
             if (tree.logs().stream().anyMatch(claimed::contains)) {
+                continue;
+            }
+            // A tree on land the owner may not cut (a claim) is left alone like one that is no tree.
+            if (!WorldEdits.mayBreak(level, foot, WorldEdits.owner(level, this))) {
+                notTrees.add(foot);
                 continue;
             }
             return tree;

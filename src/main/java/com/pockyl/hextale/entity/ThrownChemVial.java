@@ -56,7 +56,8 @@ public class ThrownChemVial extends ThrowableItemProjectile {
                     ? hit.getLocation().add(block.getDirection().getUnitVec3().scale(0.25)) : hit.getLocation();
             Brew brew = ChemVialItem.brew(getItem());
             if (brew != null) {
-                BrewEffects.splash(level, at, brew, getOwner());
+                BrewEffects.splash(level, at, brew, getOwner(),
+                        com.pockyl.hextale.world.WorldEdits.actor(level, getOwner(), owner == null ? null : owner.getUUID()));
             }
             discard();
         }
