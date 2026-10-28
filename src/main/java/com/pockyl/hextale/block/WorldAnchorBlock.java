@@ -186,8 +186,6 @@ public class WorldAnchorBlock extends BaseEntityBlock {
             if (free) {
                 // Dam: this minute is held for nothing.
                 com.pockyl.hextale.runework.ToolEffects.puff(level, Vec3.atCenterOf(worldPosition).add(0, 0.6, 0), AnchorWorldRune.DAM.rune(), 6, 0.3);
-                level.playSound(null, worldPosition, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_RESONATE, net.minecraft.sounds.SoundSource.BLOCKS,
-                        0.4F, 1.3F);
             }
             boolean fed = free || JarReach.pay(level, worldPosition, Vec3.atCenterOf(worldPosition), Essence.EARTH, cost(radius));
             if (fed) {

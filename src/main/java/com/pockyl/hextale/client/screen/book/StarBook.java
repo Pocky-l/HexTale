@@ -22,6 +22,7 @@ import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.quest.Guide;
 import com.pockyl.hextale.quest.Quest;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.ResearchTopic;
 
 import java.util.List;
@@ -499,7 +500,7 @@ public final class StarBook {
                 quest = null;
             }
             if (guide.select(quest) && quest != null) {
-                sound(Guide.done(quest, knowledge) ? 1.4F : 1.1F);
+                sound(Guide.done(quest, knowledge) ? 1.1F : 1.0F);
             }
         }
         dragging = false;
@@ -546,6 +547,6 @@ public final class StarBook {
     }
 
     private static void sound(float pitch) {
-        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.AMETHYST_BLOCK_CHIME, pitch, 0.6F));
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(ModSounds.UI_SELECT.get(), pitch, 0.7F));
     }
 }

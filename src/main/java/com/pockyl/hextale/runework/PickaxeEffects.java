@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.world.WorldEdits;
 
 /**
@@ -286,7 +287,6 @@ public final class PickaxeEffects {
         if (fireproofing > 0 && nextToLava(level, pos) && ToolEffects.keep(player, MobEffects.FIRE_RESISTANCE, FIRE_SHIELD[fireproofing - 1], 0)) {
             level.sendParticles(ModParticles.flame(ModParticles.FIRE), player.getX(), player.getY() + 1, player.getZ(), 16, 0.4, 0.6, 0.4, 0.02);
             ToolEffects.puff(level, player.position().add(0, 1, 0), PickaxeRune.FIREPROOFING.rune(), 12, 0.5);
-            ToolEffects.sound(level, player.position(), SoundEvents.FIRECHARGE_USE, 0.5F, 0.6F);
         }
         int flame = runes.strength(PickaxeRune.ETERNAL_FLAME);
         if (flame > 0 && !CHAINING.get() && level.getMaxLocalRawBrightness(pos) <= DARK && random.nextFloat() < WISP[flame - 1]) {
@@ -296,7 +296,6 @@ public final class PickaxeEffects {
                 if (level.getBlockState(pos).isAir() && WorldEdits.mayPlace(level, pos, wisp, player)) {
                     level.setBlockAndUpdate(pos, wisp);
                     ToolEffects.puff(level, at, PickaxeRune.ETERNAL_FLAME.rune(), 10, 0.2);
-                    ToolEffects.sound(level, at, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.4F, 0.8F);
                 }
             });
         }
@@ -360,7 +359,7 @@ public final class PickaxeEffects {
         Vec3 at = Vec3.atCenterOf(event.getPos());
         level.sendParticles(ModParticles.flame(ModParticles.FIRE), at.x, at.y, at.z, 6, 0.25, 0.25, 0.25, 0.01);
         level.sendParticles(ModParticles.vapour(ModParticles.SMOKE), at.x, at.y + 0.2, at.z, 3, 0.2, 0.1, 0.2, 0.01);
-        level.playSound(null, event.getPos(), SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.2F, 1.6F + level.getRandom().nextFloat() * 0.3F);
+        level.playSound(null, event.getPos(), ModSounds.CHEM_BURNER_IGNITE.get(), SoundSource.BLOCKS, 0.2F, 1.2F + level.getRandom().nextFloat() * 0.2F);
     }
 
     /** The blocks around the broken one on the face it was struck from: 3x3, two deep, or 5x5. */
@@ -514,7 +513,7 @@ public final class PickaxeEffects {
             shown++;
         }
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), player.getX(), player.getY() + 1, player.getZ(), 24, 1.5, 1, 1.5, 0.05);
-        level.playSound(null, centre, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 0.6F);
+        level.playSound(null, centre, ModSounds.CRYSTAL_RESONATE.get(), SoundSource.PLAYERS, 0.9F, 0.8F);
         return true;
     }
 
@@ -575,7 +574,7 @@ public final class PickaxeEffects {
             return false;
         }
         level.playSound(null, player.blockPosition(), SoundEvents.DEEPSLATE_BREAK, SoundSource.PLAYERS, 1.0F, 0.6F);
-        level.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.5F, 1.6F);
+        level.playSound(null, player.blockPosition(), ModSounds.RUNE_PROC.get(), SoundSource.PLAYERS, 0.9F, 0.7F);
         return true;
     }
 

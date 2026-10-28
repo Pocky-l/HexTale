@@ -5,7 +5,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -34,6 +33,7 @@ import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModEntities;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.registry.ModTags;
 
 /**
@@ -68,7 +68,7 @@ public final class VoidMites {
         }
         set(player, count(player) + 1);
         ServerLevel level = player.level();
-        level.playSound(null, player.blockPosition(), SoundEvents.SCULK_CLICKING, SoundSource.HOSTILE, 0.9F, 0.6F);
+        level.playSound(null, player.blockPosition(), ModSounds.VOID_MITE_LATCH.get(), SoundSource.HOSTILE, 0.9F, 1.0F);
         level.sendParticles(ModParticles.voidMote(MOTE), player.getX(), player.getY() + 1, player.getZ(), 10, 0.3, 0.5, 0.3, 0);
         com.pockyl.hextale.quest.Quests.fire(player, com.pockyl.hextale.quest.Quests.VOID_MITE_LATCHED);
         return true;
@@ -91,7 +91,7 @@ public final class VoidMites {
         ServerLevel level = player.level();
         level.sendParticles(ModParticles.voidMote(MOTE), player.getX(), player.getY() + 1, player.getZ(), 12 * mites, 0.4, 0.6, 0.4, 0);
         level.sendParticles(ModParticles.glint(0xD0469E), player.getX(), player.getY() + 1, player.getZ(), 4 * mites, 0.4, 0.6, 0.4, 0.02);
-        level.playSound(null, player.blockPosition(), SoundEvents.SCULK_BLOCK_BREAK, SoundSource.PLAYERS, 1.0F, 0.7F);
+        level.playSound(null, player.blockPosition(), ModSounds.VOID_MITE_SHAKE.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 
     public static void set(ServerPlayer player, int mites) {
@@ -204,7 +204,7 @@ public final class VoidMites {
             level.addFreshEntity(mite);
         }
         level.sendParticles(ModParticles.voidMote(MOTE), at.getX() + 0.5, at.getY() + 0.05, at.getZ() + 0.5, 10, 0.3, 0.05, 0.3, 0);
-        level.playSound(null, at, SoundEvents.SCULK_BLOCK_STEP, SoundSource.HOSTILE, 0.8F, 0.6F);
+        level.playSound(null, at, ModSounds.VOID_MITE_STEP.get(), SoundSource.HOSTILE, 0.8F, 0.9F);
     }
 
     @SubscribeEvent

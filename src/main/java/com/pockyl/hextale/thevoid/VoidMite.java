@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -23,6 +22,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.registry.ModTags;
 
 /**
@@ -87,7 +87,7 @@ public class VoidMite extends Monster {
     /** Back into the ground it came from. */
     private void burrow(ServerLevel level) {
         level.sendParticles(ModParticles.voidMote(MOTE), getX(), getY() + 0.05, getZ(), 8, 0.25, 0.05, 0.25, 0);
-        playSound(SoundEvents.SCULK_BLOCK_STEP, 0.6F, 0.6F);
+        playSound(ModSounds.VOID_MITE_STEP.get(), 0.8F, 0.8F);
         discard();
     }
 
@@ -103,22 +103,22 @@ public class VoidMite extends Monster {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENDERMITE_AMBIENT;
+        return ModSounds.VOID_MITE_AMBIENT.get();
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ENDERMITE_HURT;
+        return ModSounds.VOID_MITE_HURT.get();
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENDERMITE_DEATH;
+        return ModSounds.VOID_MITE_DEATH.get();
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        playSound(SoundEvents.ENDERMITE_STEP, 0.15F, 0.7F);
+        playSound(ModSounds.VOID_MITE_STEP.get(), 0.3F, 1.0F);
     }
 
     @Override

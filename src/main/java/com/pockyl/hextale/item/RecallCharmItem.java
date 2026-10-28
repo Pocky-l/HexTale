@@ -194,8 +194,6 @@ public class RecallCharmItem extends Item {
         if (dam > 0 && server.getRandom().nextFloat() < com.pockyl.hextale.runework.HolderRune.at(RecallRune.FREE, dam)) {
             // Dam: this turn back cost nothing.
             com.pockyl.hextale.runework.ToolEffects.puff(server, mark.pos().add(0, 1.2, 0), RecallRune.DAM.rune(), 6, 0.3);
-            server.playSound(null, mark.pos().x, mark.pos().y, mark.pos().z, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_RESONATE,
-                    SoundSource.PLAYERS, 0.5F, 1.4F);
         } else if (!player.hasInfiniteMaterials()) {
             setWindings(stack, windings(stack) - 1);
         }

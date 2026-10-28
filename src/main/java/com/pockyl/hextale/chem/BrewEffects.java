@@ -151,7 +151,7 @@ public final class BrewEffects {
         }
         level.sendParticles(ParticleTypes.SNOWFLAKE, center.getX() + 0.5, center.getY() + 0.5, center.getZ() + 0.5, 30, 1.2, 0.6, 1.2, 0.02);
         if (hissed) {
-            level.playSound(null, center, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 0.8F, 0.8F);
+            level.playSound(null, center, ModSounds.CRUCIBLE_EVAPORATE.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
         }
     }
 

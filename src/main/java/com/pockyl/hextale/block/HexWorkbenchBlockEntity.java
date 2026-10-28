@@ -10,7 +10,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
@@ -134,7 +133,7 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
         }
         crystal.shrink(1);
         bench.charge += value;
-        level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.5F, 1.6F);
+        level.playSound(null, pos, ModSounds.CRYSTAL_RESONATE.get(), SoundSource.BLOCKS, 0.6F, 1.1F);
         bench.setChanged();
     }
 
@@ -144,7 +143,6 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
         Vec3 top = Vec3.atLowerCornerOf(worldPosition).add(0.5, 1.02, 0.5);
         level.playSound(null, top.x, top.y, top.z, ModSounds.WORKBENCH_CRAFT.get(), SoundSource.BLOCKS, 0.7F,
                 0.9F + level.getRandom().nextFloat() * 0.2F);
-        level.playSound(null, top.x, top.y, top.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.4F, 1.4F);
     }
 
     @Override

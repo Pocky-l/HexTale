@@ -51,15 +51,20 @@ import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.world.WorldEdits;
+
+import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.jspecify.annotations.Nullable;
 
@@ -142,7 +147,6 @@ public final class ToolEffects {
         }
         player.addEffect(new MobEffectInstance(MobEffects.HASTE, ToolRune.HASTE_TICKS, strength >= 3 ? 1 : 0, true, true));
         puff(level, player.position().add(0, 1, 0), rune, 10, 0.6);
-        sound(level, player.position(), SoundEvents.AMETHYST_BLOCK_RESONATE, 0.5F, 1.4F);
     }
 
     /**
@@ -185,10 +189,35 @@ public final class ToolEffects {
         }
     }
 
+    /** Ticks between two rune sounds from the same block and rune: a proc firing every tick stays one soft sound. */
+    public static final int PROC_SOUND_GAP = 30;
+    private static final Map<ServerLevel, Long2LongOpenHashMap> LAST_PROC_SOUND = new WeakHashMap<>();
+
     /** Glints and a ring of light in the rune's colour: the sign that a rune just worked (more glints = a bigger proc). */
     public static void puff(ServerLevel level, Vec3 at, ComplexRune rune, int count, double spread) {
         level.sendParticles(ModParticles.glint(rune.color()), at.x, at.y, at.z, count, spread, spread * 0.6, spread, 0.03);
         level.sendParticles(ModParticles.ring(rune.color()), at.x, at.y, at.z, 0, 0.4 + spread * 1.2, 0, 0, 1);
+        if (procSoundDue(level, at, rune)) {
+            level.playSound(null, at.x, at.y, at.z, ModSounds.RUNE_PROC.get(), SoundSource.PLAYERS, 1.0F, 0.9F + level.getRandom().nextFloat() * 0.2F);
+        }
+    }
+
+    /**
+     * Whether a proc here may play the {@code rune.proc} sound every proc shares: at most once per {@link #PROC_SOUND_GAP}
+     * ticks per block and rune (marks the sound as played when it may).
+     */
+    public static boolean procSoundDue(ServerLevel level, Vec3 at, ComplexRune rune) {
+        Long2LongOpenHashMap last = LAST_PROC_SOUND.computeIfAbsent(level, key -> new Long2LongOpenHashMap());
+        long now = level.getGameTime();
+        long key = BlockPos.containing(at).asLong() * 31 + rune.hashCode();
+        if (now - last.getOrDefault(key, -PROC_SOUND_GAP) < PROC_SOUND_GAP) {
+            return false;
+        }
+        if (last.size() > 512) {
+            last.long2LongEntrySet().removeIf(entry -> now - entry.getLongValue() >= PROC_SOUND_GAP);
+        }
+        last.put(key, now);
+        return true;
     }
 
     public static void sound(ServerLevel level, Vec3 at, SoundEvent sound, float volume, float pitch) {
@@ -563,7 +592,7 @@ public final class ToolEffects {
             ARCING.set(false);
         }
         if (struck.size() > 1) {
-            sound(level, first.position(), SoundEvents.LIGHTNING_BOLT_IMPACT, 0.5F, 1.7F);
+            sound(level, first.position(), ModSounds.ARC_STRIKE.get(), 0.7F, 1.1F);
         }
     }
 
@@ -596,7 +625,6 @@ public final class ToolEffects {
             player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, HolderRune.at(ToolRune.RAGE_TICKS, bellows), 0, true, true));
             level.sendParticles(ModParticles.flame(ModParticles.FIRE), player.getX(), player.getY() + 1, player.getZ(), 12, 0.4, 0.5, 0.4, 0.03);
             puff(level, player.position().add(0, 1, 0), ToolRune.BELLOWS.rune(), 10, 0.5);
-            sound(level, player.position(), SoundEvents.BLAZE_SHOOT, 0.4F, 0.6F);
         }
     }
 
@@ -635,7 +663,6 @@ public final class ToolEffects {
                 event.getDrops().add(new ItemEntity(level, dead.getX(), dead.getY() + 0.5, dead.getZ(), new ItemStack(head)));
                 puff(level, dead.position().add(0, 1, 0), ToolRune.ENGRAVING.rune(), 16, 0.5);
                 level.sendParticles(ModParticles.glint(ModParticles.GOLD), dead.getX(), dead.getY() + 1, dead.getZ(), 10, 0.4, 0.4, 0.4, 0.05);
-                sound(level, dead.position(), SoundEvents.AMETHYST_CLUSTER_BREAK, 0.8F, 0.6F);
             }
         }
     }

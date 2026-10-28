@@ -4,6 +4,29 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-10-28
+The first part of a visual and sound update: HexTale now sounds like itself. No more borrowed chimes, beeps and hisses
+at the mod's magic moments, and the Void's creatures have voices of their own.
+
+### Added
+- Every rune that works now makes a soft sound of its own - a short breath of energy and a low pulse - on tools,
+  clothes, machines and gadgets alike. A rune that works every moment sounds only now and then.
+- Learning a rune from a scroll or from research notes has its own sound: an ink stroke and the knowledge settling in.
+- Voidlings and void mites have their own voices: a dark clicking chitter, their hurt and death cries, a voidling's
+  snap and claws, mites crawling, clinging on and being shaken off.
+- New sounds for a crystal humming (Crystal Battery, dormant hextech, Hex Workbench, Hex Lapidary, Nullstone, the
+  pickaxe's Reveal), the Hexcore's strikes, a Dust Charge sparking up to its burst, unstable hextech thrown, a burner or
+  brazier going out, water flashing into steam, and choosing or being refused in the diary, the research board, the
+  stele and the Lab Bench.
+
+### Changed
+- The drain valve, pump, separator drops, brush strokes, ink on the research board, the alembic's simmer and the Miasma
+  Vent were remade: darker and softer, no squeaks, plucks or hiss.
+- Rune chalk, the research board's ink and the loupe's lenses no longer climb in pitch like notes.
+
+### Fixed
+- The Skypack's jets, the Levitation Plate's column and the Void's breath no longer tick each time their sound loops.
+
 ## [1.4.0] - 2026-10-28
 Ready for modpacks: every recipe can be changed by data packs and recipe scripts, shared materials go by common tags,
 machines respect claims, and other mods' pipes, quests and slots work with HexTale.

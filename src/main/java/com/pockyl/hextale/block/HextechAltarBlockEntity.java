@@ -14,7 +14,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -250,7 +249,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                             : "block.hextale.hextech_altar.nothing"));
                 }
             }
-            serverLevel.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 0.6F);
+            serverLevel.playSound(null, worldPosition, ModSounds.DEVICE_REFUSE.get(), SoundSource.BLOCKS, 0.8F, 0.9F);
             return;
         }
         ResearchTopic topic = plan.kind() == Ritual.Kind.INFUSE ? ResearchTopics.of(plan.result().getItem()) : null;
@@ -260,7 +259,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                 player.sendOverlayMessage(Component.translatable("research.hextale.locked",
                         Component.translatable(topic.translationKey()).withColor(topic.color())));
             }
-            serverLevel.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 0.6F);
+            serverLevel.playSound(null, worldPosition, ModSounds.DEVICE_REFUSE.get(), SoundSource.BLOCKS, 0.8F, 0.9F);
             return;
         }
         kind = plan.kind();

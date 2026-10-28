@@ -834,7 +834,6 @@ public class HexPylonBlockEntity extends BlockEntity {
                 rest.shrink(lucky);
                 split(out, result.copyWithCount(1), result.getCount() * lucky);
                 ToolEffects.puff(level, at, PylonRune.SMELTING.rune(), 5, 0.25);
-                level.playSound(null, at.x, at.y, at.z, net.minecraft.sounds.SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.25F, 1.6F);
             }
         }
         int erosion = strength(PylonRune.EROSION);

@@ -2,7 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -26,6 +25,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
 
 import org.jspecify.annotations.Nullable;
 
@@ -99,7 +99,7 @@ public class CrystalBatteryBlock extends BaseEntityBlock {
                     pos.getY() + 0.3 + random.nextDouble() * 0.5, pos.getZ() + 0.3 + random.nextDouble() * 0.4, 0, 0.01, 0);
         }
         if (fill == 4 && random.nextInt(60) == 0) {
-            level.playLocalSound(pos, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.3F, 1.6F, false);
+            level.playLocalSound(pos, ModSounds.CRYSTAL_RESONATE.get(), SoundSource.BLOCKS, 0.4F, 1.1F, false);
         }
         if (fill > 0 && random.nextInt(4) == 0) {
             level.addParticle(ModParticles.glint(HEXTECH), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0.005, 0);

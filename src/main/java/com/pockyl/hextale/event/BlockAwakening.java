@@ -6,7 +6,6 @@ import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
@@ -116,7 +115,6 @@ public final class BlockAwakening {
         PENDING.add(new Pending(level.dimension(), pos.immutable(), awakening, catalyst.copyWithCount(1), facing, player,
                 level.getGameTime(), refund));
         Vec3 centre = Vec3.atCenterOf(pos);
-        level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.0F, 0.6F);
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.BLOCK_AWAKEN.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
     }
 
@@ -215,7 +213,6 @@ public final class BlockAwakening {
         level.sendParticles(ModParticles.ring(HEXTECH), centre.x, pos.getY() + 0.05, centre.z, 0, 1.8, 1, 0, 1);
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), centre.x, centre.y, centre.z, 16, 0.35, 0.35, 0.35, 0.08);
         level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), centre.x, centre.y + 0.5, centre.z, 20, 0.4, 0.2, 0.4, 0.3);
-        level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0F, 1.2F);
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.ORB_AWAKEN.get(), SoundSource.BLOCKS, 0.6F, 1.4F);
     }
 }

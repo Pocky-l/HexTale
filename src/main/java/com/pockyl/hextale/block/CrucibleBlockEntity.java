@@ -758,8 +758,7 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         brew = null;
         doses = 0;
         rising.clear();
-        playAt(SoundEvents.LAVA_EXTINGUISH, 0.8F, 0.75F + level.getRandom().nextFloat() * 0.1F);
-        playAt(SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, 0.6F, 0.9F);
+        playAt(ModSounds.CRUCIBLE_EVAPORATE.get(), 0.9F, 0.9F + level.getRandom().nextFloat() * 0.1F);
         changed();
     }
 

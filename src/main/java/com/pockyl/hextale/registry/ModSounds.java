@@ -66,7 +66,7 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> LAMP_FLICKER = register("hextech_lamp.flicker");
     /** The Thinning: a distant murmur of the land where the world wore thin. */
     public static final DeferredHolder<SoundEvent, SoundEvent> THINNING_MURMUR = register("thinning.murmur");
-    /** The orb recognises a simple rune; played at the element's pitch. */
+    /** The orb recognises a simple rune. */
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_RECOGNISED = register("rune.recognised");
     /** The orb does not know the drawing. */
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_FAILED = register("rune.failed");
@@ -185,6 +185,39 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CHALK_CLOSE = register("binding_chalk.close");
     /** A Miasma Vent breathes out its fumes. */
     public static final DeferredHolder<SoundEvent, SoundEvent> MIASMA_HISS = register("miasma.hiss");
+    /** A rune doing its work (every proc, played by ToolEffects.puff; throttled per place). */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_PROC = register("rune.proc");
+    /** A rune learned from a scroll or notes. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_LEARN = register("rune.learn");
+    /** A charged crystal answering: a slow glassy hum (replaces the vanilla amethyst resonance). */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRYSTAL_RESONATE = register("crystal.resonate");
+    /** Choosing something in a book or on a board. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> UI_SELECT = register("ui.select");
+    /** A device, board or ritual refuses: a dull muffled knock. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> DEVICE_REFUSE = register("device.refuse");
+    /** Unstable hextech thrown. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> HEXTECH_THROW = register("hextech.throw");
+    /** A burner's or brazier's flame going out. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> FLAME_OUT = register("flame.out");
+    /** Water flashing into steam: a crucible boiled dry, a coolant brew quenching fire. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRUCIBLE_EVAPORATE = register("crucible.evaporate");
+    /** The Hexcore lashing out (and waking), a chain lightning rune leaping. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> HEXCORE_STRIKE = register("hexcore.strike");
+    /** A stuck Dust Charge sparking up to its burst (as long as its fuse). */
+    public static final DeferredHolder<SoundEvent, SoundEvent> DUST_CHARGE_FUSE = register("dust_charge.fuse");
+    /** A voidling's own voice: ambient, hurt, death, attack, steps. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOIDLING_AMBIENT = register("voidling.ambient");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOIDLING_HURT = register("voidling.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOIDLING_DEATH = register("voidling.death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOIDLING_ATTACK = register("voidling.attack");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOIDLING_STEP = register("voidling.step");
+    /** A void mite's own voice: ambient, hurt, death, crawling; mites latching on and shaken off. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_AMBIENT = register("void_mite.ambient");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_HURT = register("void_mite.hurt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_DEATH = register("void_mite.death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_STEP = register("void_mite.step");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_LATCH = register("void_mite.latch");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_SHAKE = register("void_mite.shake");
 
     private ModSounds() {
     }

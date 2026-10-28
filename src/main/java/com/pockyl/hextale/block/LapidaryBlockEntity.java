@@ -187,7 +187,7 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
         outcomeAt = level.getGameTime();
         Vec3 at = Vec3.atCenterOf(worldPosition).add(0, 0.5, 0);
         if (success) {
-            level.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0F, 1.2F);
+            level.playSound(null, at.x, at.y, at.z, ModSounds.CRYSTAL_RESONATE.get(), SoundSource.BLOCKS, 0.9F, 1.15F);
             level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 12, 0.2, 0.2, 0.2, 0.05);
             level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.x, at.y, at.z, 0, 0.8, 0, 0, 1);
         } else {

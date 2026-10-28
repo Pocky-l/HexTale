@@ -3,6 +3,7 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -11,11 +12,13 @@ import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.block.HexFurnaceBlockEntity;
 import com.pockyl.hextale.farm.Felling;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.runework.FurnaceRune;
 import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
@@ -29,7 +32,7 @@ import java.util.Set;
 
 /**
  * The runes every device and tool takes: each holder knows its runes, the furnace melts old tools back into ingots, the
- * axe fells a whole tree and the shovel digs an area, the sawmill takes bee nests whole.
+ * axe fells a whole tree and the shovel digs an area, the sawmill takes bee nests whole; rune sounds stay sparse.
  */
 public final class RuneGiftGameTests {
     private static final BlockPos AT = new BlockPos(0, 1, 0);
@@ -63,6 +66,22 @@ public final class RuneGiftGameTests {
         helper.assertTrue(ToolEffects.saplingOf(ModBlocks.MAGIC_LOG.get().defaultBlockState()) == ModItems.MAGIC_SAPLING.get(),
                 "the magic tree from its sprout");
         helper.succeed();
+    }
+
+    /** A proc firing every tick makes one rune sound, not a sound per tick; another rune or place still sounds. */
+    @HexTest
+    public static void runeProcSoundsAreThrottled(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        Vec3 at = helper.absoluteVec(new Vec3(0.5, 1.5, 0.5));
+        ComplexRune haste = ToolRune.HASTE.rune();
+        helper.assertTrue(ToolEffects.procSoundDue(level, at, haste), "the first proc sounds");
+        helper.assertFalse(ToolEffects.procSoundDue(level, at, haste), "the same proc a tick later stays quiet");
+        helper.assertTrue(ToolEffects.procSoundDue(level, at, ToolRune.MENDING.rune()), "another rune there sounds");
+        helper.assertTrue(ToolEffects.procSoundDue(level, at.add(3, 0, 0), haste), "the same rune elsewhere sounds");
+        helper.runAfterDelay(ToolEffects.PROC_SOUND_GAP + 1, () -> {
+            helper.assertTrue(ToolEffects.procSoundDue(level, at, haste), "after the gap it sounds again");
+            helper.succeed();
+        });
     }
 
     /** Reforging: an old iron sword melts into ingots (two at two stars), not a nugget. */

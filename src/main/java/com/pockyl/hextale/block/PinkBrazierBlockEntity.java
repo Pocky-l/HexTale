@@ -11,7 +11,6 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
@@ -106,7 +105,7 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
             if (lit) {
                 level.playSound(null, worldPosition, ModSounds.PINK_BRAZIER_IGNITE.get(), SoundSource.BLOCKS, 0.7F, 1.0F);
             } else {
-                level.playSound(null, worldPosition, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.3F, 1.4F);
+                level.playSound(null, worldPosition, ModSounds.FLAME_OUT.get(), SoundSource.BLOCKS, 0.6F, 0.9F);
             }
         }
     }

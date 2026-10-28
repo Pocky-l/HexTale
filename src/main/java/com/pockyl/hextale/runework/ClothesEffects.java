@@ -97,7 +97,6 @@ public final class ClothesEffects {
         if (banishing > 0 && level.getMaxLocalRawBrightness(player.blockPosition()) <= DARK
                 && ToolEffects.keep(player, MobEffects.NIGHT_VISION, HolderRune.at(ClothesRune.NIGHT_SIGHT, banishing), 0)) {
             ToolEffects.puff(level, player.position().add(0, 1.7, 0), ClothesRune.HOOD_BANISHING.rune(), 8, 0.35);
-            ToolEffects.sound(level, player.position(), SoundEvents.AMETHYST_BLOCK_RESONATE, 0.35F, 1.3F);
         }
         int purification = strength(player, ClothesRune.HOOD_PURIFICATION);
         if (purification > 0 && random.nextFloat() < HolderRune.at(ClothesRune.PURIFY, purification)) {
@@ -105,7 +104,6 @@ public final class ClothesEffects {
                 if (player.hasEffect(bad)) {
                     player.removeEffect(bad);
                     ToolEffects.puff(level, player.position().add(0, 1.6, 0), ClothesRune.HOOD_PURIFICATION.rune(), 10, 0.4);
-                    ToolEffects.sound(level, player.position(), SoundEvents.AMETHYST_BLOCK_RESONATE, 0.4F, 1.6F);
                     break;
                 }
             }
@@ -113,7 +111,6 @@ public final class ClothesEffects {
         int mending = strength(player, ClothesRune.ROBE_MENDING);
         if (mending > 0 && player.tickCount % MEND_TICKS == 0 && mend(player, HolderRune.at(ClothesRune.MEND, mending))) {
             ToolEffects.puff(level, player.position().add(0, 1.1, 0), ClothesRune.ROBE_MENDING.rune(), 8, 0.4);
-            ToolEffects.sound(level, player.position(), SoundEvents.AMETHYST_BLOCK_RESONATE, 0.3F, 0.9F);
         }
         int pollen = strength(player, ClothesRune.BOOTS_POLLEN);
         if (pollen > 0 && player.tickCount % POLLEN_TICKS == 0) {
@@ -224,20 +221,17 @@ public final class ClothesEffects {
         if (healing > 0 && level.getRandom().nextFloat() < HolderRune.at(ClothesRune.REGEN_CHANCE, healing)) {
             entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 0, true, false, true));
             ToolEffects.puff(level, entity.position().add(0, 1.1, 0), ClothesRune.ROBE_HEALING.rune(), 10, 0.45);
-            ToolEffects.sound(level, entity.position(), SoundEvents.AMETHYST_BLOCK_RESONATE, 0.4F, 1.5F);
         }
         int mirror = strength(entity, ClothesRune.ROBE_MIRROR);
         if (mirror > 0 && event.getSource().getEntity() instanceof LivingEntity attacker && attacker != entity
                 && level.getRandom().nextFloat() < HolderRune.at(ClothesRune.MIRROR_CHANCE, mirror)) {
             attacker.hurtServer(level, level.damageSources().thorns(entity), HolderRune.at(ClothesRune.MIRROR_DAMAGE, mirror));
             ToolEffects.puff(level, attacker.position().add(0, attacker.getBbHeight() / 2, 0), ClothesRune.ROBE_MIRROR.rune(), 10, 0.4);
-            ToolEffects.sound(level, entity.position(), SoundEvents.AMETHYST_BLOCK_HIT, 0.6F, 1.4F);
         }
         int fireproofing = strength(entity, ClothesRune.ROBE_FIREPROOFING);
         if (fireproofing > 0 && event.getSource().is(DamageTypeTags.IS_FIRE)
                 && ToolEffects.keep(entity, MobEffects.FIRE_RESISTANCE, HolderRune.at(ClothesRune.FIRE_SHIELD, fireproofing), 0)) {
             ToolEffects.puff(level, entity.position().add(0, 1.1, 0), ClothesRune.ROBE_FIREPROOFING.rune(), 12, 0.5);
-            ToolEffects.sound(level, entity.position(), SoundEvents.FIRECHARGE_USE, 0.5F, 0.6F);
         }
     }
 

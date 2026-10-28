@@ -11,7 +11,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.effect.MobEffects;
@@ -103,7 +102,7 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
                 level.playSound(null, worldPosition, ModSounds.CHEM_BURNER_IGNITE.get(), SoundSource.BLOCKS, 0.7F,
                         0.9F + level.getRandom().nextFloat() * 0.2F);
             } else {
-                level.playSound(null, worldPosition, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.25F, 1.6F);
+                level.playSound(null, worldPosition, ModSounds.FLAME_OUT.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
             }
             sync();
         }
