@@ -345,7 +345,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         blocked = "";
         total = melt.time();
         heat = Math.min(HEAT_UP, heat + 1);
-        spare += Math.round(speed() * com.pockyl.hextale.chem.Overdrive.factor(level, worldPosition) * 100);
+        spare += Math.round(speed() * 100);
         progress += spare / 100;
         spare %= 100;
         if (progress < total) {

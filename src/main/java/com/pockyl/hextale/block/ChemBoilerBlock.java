@@ -2,14 +2,15 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -33,31 +34,34 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModParticles;
-import com.pockyl.hextale.transport.WaterInlet;
+import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.essence.EssenceFlaskItem;
+import com.pockyl.hextale.registry.ModItems;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Chem Boiler: a riveted pressure tank that sits on a Chem Burner and drives the machines around it with steam
- * ({@link ChemBoilerBlockEntity}, {@link com.pockyl.hextale.chem.Overdrive}). Water comes in by bucket or through pipes
- * on its sides and top; an empty hand reads the gauge. {@link #DRIVING} while its steam drives at least one machine.
+ * The Chem Boiler: a riveted pressure tank that sits on a Chem Burner and cracks mixtures of essence into all their
+ * essences at once ({@link ChemBoilerBlockEntity}). Mixtures come in through pipes on its sides and top, out of the
+ * unstickered jars around it, or from a bottle; an empty hand reads the gauge. {@link #WORKING} while it is heated
+ * with a mixture to crack.
  */
 public class ChemBoilerBlock extends BaseEntityBlock implements EssenceMachine {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
-    public static final BooleanProperty DRIVING = BooleanProperty.create("driving");
+    public static final BooleanProperty WORKING = BooleanProperty.create("working");
     /** Steam with a breath of the green flame in it. */
     public static final int STEAM = 0xDDEDD8;
-    /** What the driven machines puff out. */
-    public static final int EXHAUST = 0xA8C27A;
+    /** What goes up with each batch: green-grey fumes. */
+    public static final int FUMES = 0xA8C27A;
 
     public ChemBoilerBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(DRIVING, false));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WORKING, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, DRIVING);
+        builder.add(FACING, WORKING);
     }
 
     @Override
@@ -65,7 +69,7 @@ public class ChemBoilerBlock extends BaseEntityBlock implements EssenceMachine {
         return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
-    /** Water pipes join it on every side but its floor (the burner is there). */
+    /** Pipes join it on every side but its floor (the burner is there). */
     @Override
     public boolean isPort(BlockState state, Direction face) {
         return face != Direction.DOWN;
@@ -81,35 +85,38 @@ public class ChemBoilerBlock extends BaseEntityBlock implements EssenceMachine {
         return Vec3.atLowerCornerOf(pos).add(0.5, 15.5 / 16, 0.5);
     }
 
-    /** A water bucket (or another mod's water container) fills the tank. */
+    /** Where drawn mixtures go in and cracked essence leaves, in world space: the top of the tank. */
+    public static Vec3 inlet(BlockPos pos) {
+        return Vec3.atLowerCornerOf(pos).add(0.5, 14.0 / 16, 0.5);
+    }
+
+    /** A bottle of essence pours its mixture into the vessel. */
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
-        if (!(level.getBlockEntity(pos) instanceof ChemBoilerBlockEntity boiler)) {
+        if (!stack.is(ModItems.ESSENCE_FLASK.get()) || !(level.getBlockEntity(pos) instanceof ChemBoilerBlockEntity boiler)) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
-        if (!stack.is(Items.WATER_BUCKET)) {
-            int room = Math.min(1000, boiler.fillWater(1000, true));
-            int poured = room <= 0 ? 0 : WaterInlet.pourFromHeld(player, hand, room, true);
-            if (poured <= 0) {
-                return WaterInlet.pourFromHeld(player, hand, 1000, true) > 0 ? InteractionResult.FAIL : InteractionResult.TRY_WITH_EMPTY_HAND;
-            }
-            if (!level.isClientSide()) {
-                poured = WaterInlet.pourFromHeld(player, hand, poured, false);
-                boiler.fillWater(poured, false);
-                level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 0.9F);
-            }
-            return InteractionResult.SUCCESS;
-        }
-        if (boiler.fillWater(1000, true) < 1000) {
-            return InteractionResult.FAIL;
+        EssenceMix bottle = EssenceFlaskItem.contents(stack);
+        if (bottle.isEmpty()) {
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (!level.isClientSide()) {
-            boiler.fillWater(1000, false);
-            if (!player.getAbilities().instabuild) {
-                player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+            int taken = boiler.pourIn(bottle);
+            if (taken <= 0) {
+                player.sendOverlayMessage(Component.translatable("block.hextale.chem_boiler.say.full"));
+                return InteractionResult.FAIL;
             }
-            level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 0.9F);
+            if (!player.getAbilities().instabuild) {
+                ItemStack left = EssenceFlaskItem.filled(bottle.minus(bottle.part(taken)));
+                stack.shrink(1);
+                if (stack.isEmpty()) {
+                    player.setItemInHand(hand, left);
+                } else if (!player.getInventory().add(left)) {
+                    player.drop(left, false, Prediction.SERVER_ONLY);
+                }
+            }
+            level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 0.6F, 0.9F);
         }
         return InteractionResult.SUCCESS;
     }
@@ -122,10 +129,10 @@ public class ChemBoilerBlock extends BaseEntityBlock implements EssenceMachine {
         return InteractionResult.SUCCESS;
     }
 
-    /** While it drives: the tank seethes, a thin plume leaves the vent now and then. */
+    /** While it works: a thin plume of steam leaves the valve now and then. */
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        if (!state.getValue(DRIVING)) {
+        if (!state.getValue(WORKING)) {
             return;
         }
         if (random.nextInt(3) == 0) {

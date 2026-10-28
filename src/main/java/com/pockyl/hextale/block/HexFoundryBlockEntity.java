@@ -316,7 +316,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
         int rise = bellows == 0 ? HEAT_RISE : Math.round(HEAT_RISE * HolderRune.at(FoundryRune.HEATING, bellows));
         heat = Math.min(MAX_HEAT, heat + rise);
         if (heat >= MELT_HEAT) {
-            int step = Math.round(speed() * com.pockyl.hextale.chem.Overdrive.factor(level, worldPosition) * 100);
+            int step = Math.round(speed() * 100);
             for (int slot = 0; slot < INPUTS; slot++) {
                 if (recipes[slot] == null) {
                     continue;

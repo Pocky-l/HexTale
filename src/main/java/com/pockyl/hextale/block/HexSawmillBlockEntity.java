@@ -215,7 +215,7 @@ public class HexSawmillBlockEntity extends BlockEntity {
         }
         mill.setBecalmed(false);
         mill.launch(server, tree);
-        mill.wait = com.pockyl.hextale.chem.Overdrive.shorten(server, mill.worldPosition, interval);
+        mill.wait = interval;
     }
 
     /** Trees whose saw is through fall; fallen trees drop and are planted again. */

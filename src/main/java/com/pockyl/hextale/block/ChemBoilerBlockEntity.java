@@ -14,104 +14,98 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import com.mojang.serialization.Codec;
 import com.pockyl.hextale.chem.HeatUser;
-import com.pockyl.hextale.chem.Overdrive;
+import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
+import com.pockyl.hextale.essence.EssenceTank;
+import com.pockyl.hextale.essence.JarReach;
+import com.pockyl.hextale.farm.SectionScan;
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.BoilerRune;
 import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.ToolEffects;
 import com.pockyl.hextale.thevoid.Thinning;
-import com.pockyl.hextale.transport.WaterInlet;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Chem Boiler's water, pressure and the machines its steam drives ({@link Overdrive}). It stands on a Chem Burner and
- * wants its flame only while some machine in reach asks for steam: then the pressure rises {@value #HEAT_RISE} a tick,
- * and from {@value #DRIVE_FROM} on the machines that asked work {@link #push()} times faster. The steam takes a
- * millibucket of water every few ticks of flame; without a flame the pressure sinks again. Every
- * {@value #FUMES_EVERY} ticks of driving the fumes of each driven machine wear the land ({@link Thinning#FUMES}).
+ * The Chem Boiler's work: chemtech's crude and quick way to split essence, the twin of the hextech Separator. A mixture
+ * comes into its vessel - pushed through pipes, or drawn by the boiler itself out of the jars within
+ * {@link JarReach#RADIUS} that hold a mixture and wear no sticker - and is heated under pressure over the Chem Burner
+ * below. Each time the pressure reaches {@value #CRACK_AT} the safety valve knocks and a batch of {@value #BATCH} mB is
+ * cracked at once into ALL its essences: every essence runs into the nearest jar within reach whose sticker takes it,
+ * whatever finds no jar waits in the boiler until one is there. Nothing to choose, nothing to learn but the boiler -
+ * but crude: a share of every batch goes up as fumes that wear the land ({@link Thinning#FUMES}), and a share burns down
+ * to unknown essence, which drips into the burner below and feeds its flame. The Separator stays the precise way.
  */
-public class ChemBoilerBlockEntity extends BlockEntity implements HeatUser, EssenceNetwork.WaterReceiver, WaterInlet.Vessel {
-    public static final int WATER_CAPACITY = 4000;
+public class ChemBoilerBlockEntity extends BlockEntity implements HeatUser, EssenceNetwork.Receiver {
+    /** Millibuckets of mixture the vessel holds, and of cracked essence waiting for a jar. */
+    public static final int VESSEL = 256;
+    public static final int HELD = 256;
     public static final float MAX_PRESSURE = 100;
-    /** Pressure from which the steam drives the machines. */
-    public static final float DRIVE_FROM = 40;
-    /** Pressure the flame adds per tick. */
+    /** Pressure at which a batch cracks. */
+    public static final float CRACK_AT = 80;
+    /** Pressure the safety valve lets out with a batch. */
+    public static final float VENT = 40;
+    /** Pressure the flame adds per tick, and what is lost per tick without it. */
     public static final float HEAT_RISE = 2;
-    /** Pressure lost per tick without a flame. */
     public static final float COOLING = 0.5F;
-    /** Most machines one boiler drives at once. */
-    public static final int MAX_DRIVEN = 4;
-    /** How many times faster a driven machine works. */
-    public static final float PUSH = 2;
-    /** Extra push while the burner below burns shimmer. */
-    public static final float SHIMMER_PUSH = 0.5F;
-    /** A machine stays under steam this many ticks after it last asked. */
-    public static final int DRIVE_MEMORY = 40;
-    public static final int FUMES_EVERY = 20;
-    /** Ticks between two knocks of the safety valve while it drives. */
-    public static final int KNOCK_EVERY = 30;
+    /** Millibuckets cracked at a time. */
+    public static final int BATCH = 16;
+    /** Share of a batch that goes up as fumes. */
+    public static final float FUMES_SHARE = 0.1F;
+    /** Share of what is left that burns down to unknown essence. */
+    public static final float UNKNOWN_SHARE = 0.15F;
+    public static final int DRAW_TICKS = 20;
+    public static final int DRAW_MB = 16;
+    public static final int POUR_TICKS = 10;
+    /** Ticks a draw's or a pour's stream shows. */
+    public static final int STREAM_TICKS = 40;
+    /** Hextech lamps this close choke in the fumes now and then. */
+    public static final int LAMP_REACH = 4;
     private static final int SYNC_TICKS = 10;
+    private static final Codec<List<JarReach.Draw>> DRAWS = Codec.INT_STREAM.xmap(
+            stream -> JarReach.read(stream.toArray()), draws -> java.util.Arrays.stream(JarReach.write(draws)));
 
-    private int water;
+    private final EssenceTank mix = new EssenceTank(VESSEL);
+    private final EssenceTank held = new EssenceTank(HELD);
     private float pressure;
-    private int steamTicks;
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
-    /** Server: the machines that asked for steam and the game time they last did. */
-    private final Map<BlockPos, Long> asked = new HashMap<>();
-    /** The machines under steam as the clients last heard of them (streams run to them). */
-    private List<BlockPos> shown = List.of();
+    private @Nullable BlockPos drewFrom;
+    private long drewAt = -1000;
+    private List<JarReach.Draw> pours = List.of();
+    private long pouredAt = -1000;
+    private long crackedAt = -1000;
     private float syncedPressure = -1;
     private boolean dirty;
-    private final WaterInlet waterInlet = new WaterInlet(this);
 
-    // Client: the needle follows the pressure with a little lag.
+    // Client: the needle follows the pressure with a little lag; the valve jumps when a batch cracks.
     public float needle;
     public float needleBefore;
-    /** Client: game time of the last knock of the safety valve. */
     public long knockedAt = -1000;
+    private long shownCrack = -1000;
 
     public ChemBoilerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CHEM_BOILER.get(), pos, state);
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        if (level != null) {
-            Overdrive.add(level, worldPosition);
-        }
-    }
-
-    @Override
-    public void setRemoved() {
-        if (level != null) {
-            Overdrive.remove(level, worldPosition);
-        }
-        super.setRemoved();
     }
 
     // ---- Runes --------------------------------------------------------------------------------------------------------
@@ -124,75 +118,87 @@ public class ChemBoilerBlockEntity extends BlockEntity implements HeatUser, Esse
         return runes.strength(rune.rune());
     }
 
-    /** Blocks every way its steam reaches. */
-    public int reach() {
-        return BoilerRune.reach(strength(BoilerRune.SHIFT));
+    /** Pressure the flame adds per tick (Steam: faster). */
+    public float rise() {
+        int steam = strength(BoilerRune.STEAM);
+        return steam > 0 ? HEAT_RISE * HolderRune.at(BoilerRune.FASTER, steam) : HEAT_RISE;
     }
 
-    /** How many times faster the machines it drives work. */
-    public float push() {
-        int bellows = strength(BoilerRune.BELLOWS);
-        float push = PUSH + (bellows > 0 ? HolderRune.at(BoilerRune.PUSH, bellows) : 0);
-        ChemBurnerBlockEntity burner = ChemBurnerBlockEntity.under(level, worldPosition);
-        return burner != null && burner.pink() ? push + SHIMMER_PUSH : push;
+    /** Share of a batch that goes up as fumes (Dam keeps some in). */
+    public float fumesShare() {
+        int dam = strength(BoilerRune.DAM);
+        return dam > 0 ? FUMES_SHARE * (1 - HolderRune.at(BoilerRune.FUMES_KEPT, dam)) : FUMES_SHARE;
     }
 
-    /** Share of the fumes that wears the land (Purification scrubs the rest). */
-    public float fumeShare() {
+    /** Share of the rest that burns down to unknown essence (Purification saves some). */
+    public float unknownShare() {
         int purification = strength(BoilerRune.PURIFICATION);
-        return purification > 0 ? 1 - HolderRune.at(BoilerRune.SCRUBBED, purification) : 1;
+        return purification > 0 ? UNKNOWN_SHARE * (1 - HolderRune.at(BoilerRune.UNKNOWN_SAVED, purification)) : UNKNOWN_SHARE;
     }
 
-    // ---- Steam --------------------------------------------------------------------------------------------------------
+    // ---- State --------------------------------------------------------------------------------------------------------
 
-    public int water() {
-        return water;
+    public EssenceMix mixture() {
+        return mix.contents();
+    }
+
+    /** Cracked essence waiting for a jar. */
+    public EssenceMix held() {
+        return held.contents();
     }
 
     public float pressure() {
         return pressure;
     }
 
-    /** Whether the steam is up and some machine is under it. */
-    public boolean driving() {
-        return pressure >= DRIVE_FROM && !asked.isEmpty();
+    /** The jar it drew from lately, or null. */
+    public @Nullable BlockPos drawing() {
+        return level != null && drewFrom != null && level.getGameTime() - drewAt <= STREAM_TICKS ? drewFrom : null;
     }
 
-    /** The machines under steam (server: those that asked; client: as last synced). */
-    public List<BlockPos> driven() {
-        return level != null && !level.isClientSide() ? List.copyOf(asked.keySet()) : shown;
+    public long drewAt() {
+        return drewAt;
     }
 
-    /** Whether {@code pos} lies within its reach (a cube, every way). */
-    public boolean reaches(BlockPos pos) {
-        int reach = reach();
-        return Math.abs(pos.getX() - worldPosition.getX()) <= reach && Math.abs(pos.getY() - worldPosition.getY()) <= reach
-                && Math.abs(pos.getZ() - worldPosition.getZ()) <= reach && !pos.equals(worldPosition);
+    /** The jars it poured into lately (empty when none). */
+    public List<JarReach.Draw> pouring() {
+        return level != null && level.getGameTime() - pouredAt <= STREAM_TICKS ? pours : List.of();
     }
 
-    public boolean drives(BlockPos machine) {
-        return asked.containsKey(machine);
+    public long pouredAt() {
+        return pouredAt;
     }
 
-    /** Whether it can take on one more machine. */
-    public boolean hasRoom() {
-        return asked.size() < MAX_DRIVEN;
-    }
-
-    /** A machine asks for steam: it is taken on (or kept) and gets the push once the pressure is up. */
-    public float drive(BlockPos machine) {
-        if (level == null) {
-            return 1;
-        }
-        asked.put(machine.immutable(), level.getGameTime());
-        return pressure >= DRIVE_FROM ? push() : 1;
-    }
-
-    /** The burner below burns only while a machine wants steam and there is water to make it of. */
+    /** The burner heats it while there is a mixture to crack and room for what comes out. */
     @Override
     public boolean wantsHeat() {
-        return water > 0 && !asked.isEmpty();
+        return !mix.isEmpty() && held.space() > 0;
     }
+
+    /** Pipes push mixtures in through every side but its floor. */
+    @Override
+    public int receive(Direction side, EssenceMix offer, boolean simulate) {
+        if (side == Direction.DOWN) {
+            return 0;
+        }
+        int taken = mix.fill(offer, simulate);
+        if (taken > 0 && !simulate) {
+            dirty = true;
+            setChanged();
+        }
+        return taken;
+    }
+
+    /** Pours a mixture in (a bottle); returns what was taken. */
+    public int pourIn(EssenceMix offer) {
+        int taken = mix.fill(offer, false);
+        if (taken > 0) {
+            changed();
+        }
+        return taken;
+    }
+
+    // ---- Work ---------------------------------------------------------------------------------------------------------
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ChemBoilerBlockEntity boiler) {
         boiler.tick((ServerLevel) level, state);
@@ -200,138 +206,200 @@ public class ChemBoilerBlockEntity extends BlockEntity implements HeatUser, Esse
 
     private void tick(ServerLevel level, BlockState state) {
         long now = level.getGameTime();
-        int before = asked.size();
-        asked.values().removeIf(time -> now - time > DRIVE_MEMORY);
-        if (asked.size() != before) {
-            dirty = true;
-        }
-        if (ChemBurnerBlockEntity.under(level, worldPosition) != null && water > 0) {
-            pressure = Math.min(MAX_PRESSURE, pressure + HEAT_RISE);
-            if (++steamTicks >= BoilerRune.waterTicks(strength(BoilerRune.DAM))) {
-                steamTicks = 0;
-                water--;
-            }
+        boolean heated = ChemBurnerBlockEntity.under(level, worldPosition) != null;
+        if (heated) {
+            pressure = Math.min(MAX_PRESSURE, pressure + rise());
         } else if (pressure > 0) {
             pressure = Math.max(0, pressure - COOLING);
         }
-        boolean driving = driving();
-        if (driving && now % FUMES_EVERY == 0) {
-            breathe(level, now);
+        if (now % DRAW_TICKS == 0 && mix.space() >= DRAW_MB) {
+            draw(level, now);
         }
-        if (driving != state.getValue(ChemBoilerBlock.DRIVING)) {
-            level.setBlock(worldPosition, state.setValue(ChemBoilerBlock.DRIVING, driving), Block.UPDATE_ALL);
-            level.playSound(null, worldPosition, driving ? ModSounds.CHEM_BOILER_VENT.get() : ModSounds.FLAME_OUT.get(), SoundSource.BLOCKS,
-                    0.6F, driving ? 1.0F : 0.7F);
-            dirty = true;
+        if (now % POUR_TICKS == 0 && !held.isEmpty()) {
+            pour(level, now);
+        }
+        if (pressure >= CRACK_AT && !mix.isEmpty() && held.space() >= Math.min(BATCH, mix.amount())) {
+            crack(level, now);
+        }
+        boolean working = heated && wantsHeat();
+        if (working != state.getValue(ChemBoilerBlock.WORKING)) {
+            level.setBlock(worldPosition, state.setValue(ChemBoilerBlock.WORKING, working), Block.UPDATE_ALL);
         }
         if (Math.abs(pressure - syncedPressure) >= 4 || (pressure == 0) != (syncedPressure == 0)) {
             dirty = true;
         }
         if (dirty && now % SYNC_TICKS == 0) {
-            dirty = false;
-            syncedPressure = pressure;
             changed();
         }
     }
 
-    /** The fumes of the work it drives, and the rhythm the Haste rune passes on to the people around. */
-    private void breathe(ServerLevel level, long now) {
-        int working = 0;
-        for (long time : asked.values()) {
-            if (now - time <= FUMES_EVERY) {
-                working++;
+    /** Draws a portion of a mixture out of the nearest jar without a sticker that holds one (pure jars are left alone). */
+    private void draw(ServerLevel level, long now) {
+        for (EssenceTankBlockEntity jar : JarReach.around(level, worldPosition)) {
+            if (jar.sticker() != null || jar.tank().contents().kinds() < 2) {
+                continue;
             }
-        }
-        if (working > 0) {
-            Thinning.add(level, worldPosition, working * Thinning.FUMES * fumeShare(), Thinning.Source.FUMES);
-        }
-        int haste = strength(BoilerRune.HASTE);
-        if (haste > 0) {
-            int reach = reach();
-            List<Player> players = level.getEntitiesOfClass(Player.class, new AABB(worldPosition).inflate(reach));
-            for (Player player : players) {
-                player.addEffect(new MobEffectInstance(MobEffects.HASTE, FUMES_EVERY * 3, HolderRune.at(BoilerRune.HASTE_LEVEL, haste) - 1,
-                        true, false, true));
+            EssenceMix taken = jar.tank().drain(Math.min(DRAW_MB, mix.space()), jar.isCreative());
+            if (taken.isEmpty()) {
+                continue;
             }
-            if (!players.isEmpty() && level.getRandom().nextInt(6) == 0) {
-                ToolEffects.puff(level, Vec3.atCenterOf(worldPosition).add(0, 0.6, 0), BoilerRune.HASTE.rune(), 5, 0.25);
+            if (!jar.isCreative()) {
+                jar.setChanged();
             }
+            mix.fill(taken, false);
+            drewFrom = jar.getBlockPos();
+            drewAt = now;
+            Vec3 mouth = JarReach.mouth(drewFrom);
+            level.playSound(null, mouth.x, mouth.y, mouth.z, ModSounds.ESSENCE_DRAW.get(), SoundSource.BLOCKS, 0.3F, 0.9F);
+            changed();
+            return;
         }
     }
 
-    /** Fills with up to {@code amount} mB of water. */
-    public int fillWater(int amount, boolean simulate) {
-        int taken = Math.max(0, Math.min(amount, WATER_CAPACITY - water));
-        if (taken > 0 && !simulate) {
-            water += taken;
+    /**
+     * Cracks one batch: the valve knocks and lets the pressure out, part of the batch goes up as fumes, part burns down to
+     * unknown essence, the rest is split into its essences and poured into the jars.
+     */
+    private void crack(ServerLevel level, long now) {
+        RandomSource random = level.getRandom();
+        int amount = Math.min(BATCH, Math.min(mix.amount(), held.space()));
+        EssenceMix batch = mix.drain(amount, false);
+        int purifyingFire = strength(BoilerRune.PURIFYING_FIRE);
+        boolean clean = purifyingFire > 0 && random.nextFloat() < HolderRune.at(BoilerRune.CLEAN_BATCH, purifyingFire);
+        int fumes = clean ? 0 : Math.round(batch.total() * fumesShare());
+        EssenceMix left = batch.part(batch.total() - fumes);
+        if (!clean) {
+            EssenceMix known = left.minus(EssenceMix.unknown(left.unknown()));
+            EssenceMix burnt = known.part(Math.min(known.total(), Math.round(known.total() * unknownShare())));
+            left = left.minus(burnt).plus(EssenceMix.unknown(burnt.total()));
+        }
+        held.fill(left, false);
+        pressure = Math.max(0, pressure - VENT);
+        crackedAt = now;
+        Vec3 valve = ChemBoilerBlock.valve(worldPosition);
+        level.playSound(null, worldPosition, ModSounds.CHEM_BOILER_KNOCK.get(), SoundSource.BLOCKS, 0.55F, 0.9F + random.nextFloat() * 0.2F);
+        level.sendParticles(ModParticles.vapour(ChemBoilerBlock.STEAM), valve.x, valve.y, valve.z, 4, 0.06, 0.04, 0.06, 0.02);
+        if (clean) {
+            ToolEffects.puff(level, valve, BoilerRune.PURIFYING_FIRE.rune(), 8, 0.2);
+        }
+        if (fumes > 0) {
+            Thinning.add(level, worldPosition, fumes * Thinning.FUMES, Thinning.Source.FUMES);
+            level.sendParticles(ModParticles.vapour(ChemBoilerBlock.FUMES), valve.x, valve.y + 0.1, valve.z, 3, 0.1, 0.05, 0.1, 0.01);
+            if (random.nextInt(3) == 0) {
+                chokeLamps(level, random);
+            }
+        }
+        pour(level, now);
+        changed();
+    }
+
+    /** Pours what waits into the jars: each essence into the nearest jar whose sticker takes it, the unknown into the flame. */
+    private void pour(ServerLevel level, long now) {
+        EssenceMix contents = held.contents();
+        List<JarReach.Draw> poured = new ArrayList<>();
+        List<EssenceTankBlockEntity> jars = null;
+        for (Map.Entry<Essence, Integer> entry : contents.asMap().entrySet()) {
+            Essence essence = entry.getKey();
+            int left = entry.getValue();
+            if (jars == null) {
+                jars = JarReach.around(level, worldPosition);
+            }
+            for (EssenceTankBlockEntity jar : jars) {
+                if (jar.sticker() != essence || jar.isCreative()) {
+                    continue;
+                }
+                int took = jar.tank().fill(EssenceMix.pure(essence, left), false);
+                if (took <= 0) {
+                    continue;
+                }
+                jar.setChanged();
+                held.remove(EssenceMix.pure(essence, took));
+                poured.add(new JarReach.Draw(jar.getBlockPos(), essence));
+                left -= took;
+                if (left <= 0) {
+                    break;
+                }
+            }
+        }
+        if (contents.unknown() > 0 && level.getBlockEntity(worldPosition.below()) instanceof ChemBurnerBlockEntity burner) {
+            EssenceMix fed = burner.pour(EssenceMix.unknown(contents.unknown()));
+            held.remove(fed);
+        }
+        if (!poured.isEmpty()) {
+            pours = poured;
+            pouredAt = now;
+            Vec3 mouth = JarReach.mouth(poured.getFirst().jar());
+            level.playSound(null, mouth.x, mouth.y, mouth.z, ModSounds.TANK_GLUG.get(), SoundSource.BLOCKS, 0.3F, 1.1F);
             dirty = true;
-            setChanged();
         }
-        return taken;
     }
 
-    @Override
-    public int receiveWater(Direction side, int amount, boolean simulate) {
-        return side == Direction.DOWN ? 0 : fillWater(amount, simulate);
-    }
-
-    public WaterInlet waterInlet() {
-        return waterInlet;
-    }
-
-    @Override
-    public int waterRoom() {
-        return Math.max(0, WATER_CAPACITY - water);
-    }
-
-    @Override
-    public void pipeWater(int amount) {
-        fillWater(amount, false);
+    /** Hextech lamps near the fumes choke for a moment: chemistry dims the crystal (only a sign). */
+    private void chokeLamps(ServerLevel level, RandomSource random) {
+        BlockPos min = worldPosition.offset(-LAMP_REACH, -LAMP_REACH, -LAMP_REACH);
+        BlockPos max = worldPosition.offset(LAMP_REACH, LAMP_REACH, LAMP_REACH);
+        List<BlockPos> lamps = new ArrayList<>();
+        SectionScan.forEach(level, min, max, state -> state.is(ModBlocks.HEXTECH_LAMP.get()), (pos, state) -> lamps.add(pos.immutable()));
+        for (BlockPos lamp : lamps) {
+            BlockState state = level.getBlockState(lamp);
+            if (!state.getValue(HextechLampBlock.FLICKER)) {
+                HextechLampBlock.choke(state, level, lamp, random);
+            }
+        }
     }
 
     /** One line: what the boiler is doing. */
     public Component status() {
-        if (water <= 0) {
-            return Component.translatable("block.hextale.chem_boiler.status.dry");
-        }
         if (level == null || !(level.getBlockEntity(worldPosition.below()) instanceof ChemBurnerBlockEntity)) {
             return Component.translatable("block.hextale.chem_boiler.status.no_burner");
         }
-        if (getBlockState().getValue(ChemBoilerBlock.DRIVING)) {
-            return Component.translatable("block.hextale.chem_boiler.status.driving", driven().size(), HolderRune.factor(push()));
+        if (mix.isEmpty() && held.isEmpty()) {
+            return Component.translatable("block.hextale.chem_boiler.status.empty");
         }
-        if (pressure >= 1) {
-            return Component.translatable("block.hextale.chem_boiler.status.steam", Math.round(pressure));
+        if (held.space() < Math.min(BATCH, Math.max(1, mix.amount()))) {
+            return Component.translatable("block.hextale.chem_boiler.status.full");
         }
-        return Component.translatable("block.hextale.chem_boiler.status.idle", reach());
+        if (mix.isEmpty()) {
+            return Component.translatable("block.hextale.chem_boiler.status.waiting", held.amount());
+        }
+        return Component.translatable("block.hextale.chem_boiler.status.cracking", Math.round(pressure));
     }
 
     // ---- Client -------------------------------------------------------------------------------------------------------
 
     public static void clientTick(Level level, BlockPos pos, BlockState state, ChemBoilerBlockEntity boiler) {
         boiler.needleBefore = boiler.needle;
-        float target = boiler.pressure / MAX_PRESSURE;
-        boiler.needle += (target - boiler.needle) * 0.15F;
-        if (!state.getValue(ChemBoilerBlock.DRIVING)) {
-            return;
-        }
+        boiler.needle += (boiler.pressure / MAX_PRESSURE - boiler.needle) * 0.2F;
         long now = level.getGameTime();
-        RandomSource random = level.getRandom();
-        if ((now + Math.floorMod(pos.asLong(), KNOCK_EVERY)) % KNOCK_EVERY == 0) {
-            boiler.knockedAt = now;
-            Vec3 valve = ChemBoilerBlock.valve(pos);
-            for (int i = 0; i < 3; i++) {
-                level.addParticle(ModParticles.vapour(ChemBoilerBlock.STEAM), valve.x, valve.y, valve.z,
-                        (random.nextDouble() - 0.5) * 0.04, 0.06 + random.nextDouble() * 0.03, (random.nextDouble() - 0.5) * 0.04);
+        if (boiler.crackedAt != boiler.shownCrack) {
+            boolean fresh = now - boiler.crackedAt < SYNC_TICKS * 2;
+            boiler.shownCrack = boiler.crackedAt;
+            if (fresh) {
+                boiler.knockedAt = now;
+                // The pressure drops at once with the knock.
+                boiler.needle = Math.min(boiler.needle, boiler.pressure / MAX_PRESSURE);
             }
-            level.playLocalSound(pos, ModSounds.CHEM_BOILER_KNOCK.get(), SoundSource.BLOCKS, 0.35F, 0.9F + random.nextFloat() * 0.2F, false);
         }
-        com.pockyl.hextale.client.render.PressureFx.tick(level, boiler, now);
+        BlockPos jar = boiler.drawing();
+        if (jar != null) {
+            float age = now - boiler.drewAt;
+            int color = JarReach.color(level, new JarReach.Draw(jar, null));
+            if (color != -1) {
+                JarReach.shed(level, JarReach.mouth(jar), ChemBoilerBlock.inlet(pos), color, age / 12F, (age - (STREAM_TICKS - 14)) / 12F);
+            }
+        }
+        float poured = now - boiler.pouredAt;
+        for (JarReach.Draw pour : boiler.pouring()) {
+            JarReach.shed(level, ChemBoilerBlock.inlet(pos), JarReach.mouth(pour.jar()), pour.essence() == null ? ChemBoilerBlock.STEAM
+                    : pour.essence().color(), poured / 12F, (poured - (STREAM_TICKS - 14)) / 12F);
+        }
     }
 
     // ---- Saving -------------------------------------------------------------------------------------------------------
 
     private void changed() {
+        dirty = false;
+        syncedPressure = pressure;
         setChanged();
         if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
@@ -341,16 +409,22 @@ public class ChemBoilerBlockEntity extends BlockEntity implements HeatUser, Esse
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        water = input.getIntOr("water", 0);
+        mix.load(input, "mix");
+        held.load(input, "held");
         pressure = input.getFloatOr("pressure", 0);
         runes = input.read("runes", PickaxeRunes.CODEC).orElse(PickaxeRunes.EMPTY);
-        shown = input.read("driven", BlockPos.CODEC.listOf()).orElse(List.of());
+        drewFrom = input.read("drew_from", BlockPos.CODEC).orElse(null);
+        drewAt = input.getLongOr("drew_at", -1000);
+        pours = input.read("pours", DRAWS).orElse(List.of());
+        pouredAt = input.getLongOr("poured_at", -1000);
+        crackedAt = input.getLongOr("cracked_at", -1000);
     }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putInt("water", water);
+        mix.save(output, "mix");
+        held.save(output, "held");
         output.putFloat("pressure", pressure);
         if (!runes.isEmpty()) {
             output.store("runes", PickaxeRunes.CODEC, runes);
@@ -360,8 +434,15 @@ public class ChemBoilerBlockEntity extends BlockEntity implements HeatUser, Esse
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = saveCustomOnly(registries);
-        List<BlockPos> driven = pressure >= DRIVE_FROM ? new ArrayList<>(asked.keySet()) : List.of();
-        tag.store("driven", BlockPos.CODEC.listOf(), driven);
+        if (drewFrom != null) {
+            tag.store("drew_from", BlockPos.CODEC, drewFrom);
+            tag.putLong("drew_at", drewAt);
+        }
+        if (!pours.isEmpty()) {
+            tag.store("pours", DRAWS, pours);
+            tag.putLong("poured_at", pouredAt);
+        }
+        tag.putLong("cracked_at", crackedAt);
         return tag;
     }
 
@@ -390,8 +471,24 @@ public class ChemBoilerBlockEntity extends BlockEntity implements HeatUser, Esse
         output.discard("runes");
     }
 
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        // What was in the vessel is lost on the ground.
+        if (level instanceof ServerLevel server) {
+            EssenceMix lost = mix.contents().plus(held.contents());
+            Thinning.poured(server, pos, lost, lost.total(), false);
+        }
+        super.preRemoveSideEffects(pos, state);
+    }
+
     /** For tests: sets the pressure straight away. */
     public void setPressure(float pressure) {
         this.pressure = Mth.clamp(pressure, 0, MAX_PRESSURE);
+    }
+
+    /** For tests and runes: sets the runes. */
+    public void setRunes(PickaxeRunes runes) {
+        this.runes = runes;
+        setChanged();
     }
 }

@@ -58,8 +58,6 @@ public final class ModCapabilities {
                 insertOnly(RangedResourceHandler.ofSingleIndex(VanillaContainerWrapper.of(bench), HexWorkbenchBlockEntity.CRYSTAL)));
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CRUCIBLE.get(), (crucible, side) ->
                 side == Direction.DOWN ? null : crucible.itemIntake());
-        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.CHEM_BOILER.get(),
-                (boiler, side) -> side == net.minecraft.core.Direction.DOWN ? null : boiler.waterInlet());
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.CRUCIBLE.get(), (crucible, side) -> crucible.waterInlet());
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ALEMBIC.get(), (alembic, side) ->
                 side == null || side.getAxis().isHorizontal() ? alembic.waterInlet() : null);

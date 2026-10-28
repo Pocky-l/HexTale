@@ -117,7 +117,10 @@ public class HextaleJadePlugin implements IWailaPlugin {
                 tooltip.add(still.status());
             } else if (entity instanceof com.pockyl.hextale.block.ChemBoilerBlockEntity boiler) {
                 tooltip.add(boiler.status());
-                tooltip.add(Component.translatable("goggles.hextale.boiler.water", boiler.water(), com.pockyl.hextale.block.ChemBoilerBlockEntity.WATER_CAPACITY));
+                tooltip.add(Component.translatable("goggles.hextale.boiler.mixture", boiler.mixture().total()));
+                if (!boiler.held().isEmpty()) {
+                    tooltip.add(Component.translatable("goggles.hextale.boiler.held", boiler.held().total()));
+                }
             } else if (entity instanceof com.pockyl.hextale.block.PinkBrazierBlockEntity brazier) {
                 tooltip.add(brazier.status());
             } else if (entity instanceof com.pockyl.hextale.block.ChemBurnerBlockEntity burner) {

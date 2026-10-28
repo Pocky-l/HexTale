@@ -101,8 +101,8 @@ public final class Thinning {
     public static final float DISINTEGRATED = 0.3F;
     /** A dose of shimmer refined in a Chem Still. */
     public static final float STILLED = 1;
-    /** The fumes of one machine a Chem Boiler drives, per second of driving. */
-    public static final float FUMES = 0.25F;
+    /** Essence a Chem Boiler's cracking sends up as fumes, per mB. */
+    public static final float FUMES = 0.5F;
 
     // Carelessness and accidents.
     /** Essence poured away and lost on the ground, per mB (unknown essence counts double). */

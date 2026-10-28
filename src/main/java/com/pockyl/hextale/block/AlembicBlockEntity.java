@@ -238,11 +238,9 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         if (tank.space() < boiled.total()) {
             return false;
         }
-        int before = progress;
-        // A Chem Boiler's steam may drive the boiling on.
-        progress += com.pockyl.hextale.chem.Overdrive.steps(level, worldPosition);
+        progress++;
         if (progress < BOIL_TICKS) {
-            return before == 0;
+            return progress == 1;
         }
         tank.fill(boiled, false);
         if (level instanceof net.minecraft.server.level.ServerLevel server) {

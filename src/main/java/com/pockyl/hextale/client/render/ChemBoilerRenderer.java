@@ -8,20 +8,27 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.block.ChemBoilerBlock;
 import com.pockyl.hextale.block.ChemBoilerBlockEntity;
+import com.pockyl.hextale.essence.JarReach;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jspecify.annotations.Nullable;
 
 /**
  * The moving parts of a Chem Boiler: the gauge needle on its front sweeps from empty (left) to full (right) with the
- * pressure and trembles while the steam drives, and the safety valve on top jumps on every knock. Both are standalone
- * models built in the north-facing block's space and turned with the block.
+ * pressure and trembles while it works, and the safety valve on top jumps on every knock (both standalone models built
+ * in the north-facing block's space and turned with the block). Streams of essence run from a jar it draws a mixture
+ * out of into its top, and from its top into every jar it pours the cracked essences into, each in its own colour.
  */
 public class ChemBoilerRenderer implements BlockEntityRenderer<ChemBoilerBlockEntity, ChemBoilerRenderer.State> {
     /** Where the needle turns, in model pixels (the gauge's centre, just in front of its face). */
@@ -36,8 +43,9 @@ public class ChemBoilerRenderer implements BlockEntityRenderer<ChemBoilerBlockEn
         float needle;
         float lift;
         float time;
-        boolean driving;
+        boolean working;
         Direction facing = Direction.NORTH;
+        final List<JarStreamFx.Stream> streams = new ArrayList<>();
     }
 
     public ChemBoilerRenderer(BlockEntityRendererProvider.Context context) {
@@ -53,13 +61,38 @@ public class ChemBoilerRenderer implements BlockEntityRenderer<ChemBoilerBlockEn
                                    ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(boiler, state, partialTick, cameraPosition, breakProgress);
         Level level = boiler.getLevel();
-        state.time = level == null ? 0 : level.getGameTime() + partialTick;
+        state.time = HexFx.time(level, partialTick);
         state.needle = Mth.lerp(partialTick, boiler.needleBefore, boiler.needle);
         float since = level == null ? KNOCK_TICKS : level.getGameTime() - boiler.knockedAt + partialTick;
         // Up at once, settling back over the next ticks.
         state.lift = since >= KNOCK_TICKS ? 0 : VALVE_LIFT * (1 - since / KNOCK_TICKS) * (1 - since / KNOCK_TICKS);
-        state.driving = boiler.getBlockState().getValue(ChemBoilerBlock.DRIVING);
+        state.working = boiler.getBlockState().getValue(ChemBoilerBlock.WORKING);
         state.facing = boiler.getBlockState().getValue(ChemBoilerBlock.FACING);
+        state.streams.clear();
+        if (level == null) {
+            return;
+        }
+        BlockPos pos = boiler.getBlockPos();
+        Vec3 origin = Vec3.atLowerCornerOf(pos);
+        Vec3 inlet = ChemBoilerBlock.inlet(pos).subtract(origin);
+        int seed = (int) pos.asLong();
+        float now = level.getGameTime() + partialTick;
+        BlockPos jar = boiler.drawing();
+        if (jar != null) {
+            int color = JarReach.color(level, new JarReach.Draw(jar, null));
+            float age = now - boiler.drewAt();
+            if (color != -1) {
+                state.streams.add(new JarStreamFx.Stream(JarReach.mouth(jar).subtract(origin), inlet, color, age / 12F,
+                        (age - (ChemBoilerBlockEntity.STREAM_TICKS - 14)) / 12F, seed));
+            }
+        }
+        float poured = now - boiler.pouredAt();
+        int i = 1;
+        for (JarReach.Draw pour : boiler.pouring()) {
+            int color = pour.essence() == null ? ChemBoilerBlock.STEAM : pour.essence().color();
+            state.streams.add(new JarStreamFx.Stream(inlet, JarReach.mouth(pour.jar()).subtract(origin), color, poured / 12F,
+                    (poured - (ChemBoilerBlockEntity.STREAM_TICKS - 14)) / 12F, seed + i++ * 977));
+        }
     }
 
     @Override
@@ -69,7 +102,7 @@ public class ChemBoilerRenderer implements BlockEntityRenderer<ChemBoilerBlockEn
 
         poseStack.pushPose();
         float angle = -SWEEP + 2 * SWEEP * Mth.clamp(state.needle, 0, 1);
-        if (state.driving) {
+        if (state.working) {
             angle += Mth.sin(state.time * 2.3F) * 2.5F + Mth.sin(state.time * 5.1F) * 1.2F;
         }
         poseStack.translate(NEEDLE_PIVOT[0] / 16, NEEDLE_PIVOT[1] / 16, NEEDLE_PIVOT[2] / 16);
@@ -84,5 +117,18 @@ public class ChemBoilerRenderer implements BlockEntityRenderer<ChemBoilerBlockEn
         poseStack.popPose();
 
         poseStack.popPose();
+
+        if (!state.streams.isEmpty()) {
+            Vec3 eye = camera.pos.subtract(Vec3.atLowerCornerOf(state.blockPos));
+            for (JarStreamFx.Stream stream : state.streams) {
+                JarStreamFx.submit(poseStack, collector, camera.orientation, eye, stream, state.time);
+            }
+        }
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(ChemBoilerBlockEntity boiler) {
+        // The streams reach the jars around it.
+        return new AABB(boiler.getBlockPos()).inflate(JarReach.RADIUS + 1);
     }
 }

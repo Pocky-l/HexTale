@@ -1,32 +1,32 @@
 {
   "variants": {
-    "driving=false,facing=north": {
+    "working=false,facing=north": {
       "model": "hextale:block/chem_boiler"
     },
-    "driving=true,facing=north": {
+    "working=true,facing=north": {
       "model": "hextale:block/chem_boiler"
     },
-    "driving=false,facing=east": {
+    "working=false,facing=east": {
       "model": "hextale:block/chem_boiler",
       "y": 90
     },
-    "driving=true,facing=east": {
+    "working=true,facing=east": {
       "model": "hextale:block/chem_boiler",
       "y": 90
     },
-    "driving=false,facing=south": {
+    "working=false,facing=south": {
       "model": "hextale:block/chem_boiler",
       "y": 180
     },
-    "driving=true,facing=south": {
+    "working=true,facing=south": {
       "model": "hextale:block/chem_boiler",
       "y": 180
     },
-    "driving=false,facing=west": {
+    "working=false,facing=west": {
       "model": "hextale:block/chem_boiler",
       "y": 270
     },
-    "driving=true,facing=west": {
+    "working=true,facing=west": {
       "model": "hextale:block/chem_boiler",
       "y": 270
     }

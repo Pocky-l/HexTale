@@ -213,7 +213,8 @@ public final class GogglesView {
         }
         if (entity instanceof com.pockyl.hextale.block.ChemBoilerBlockEntity boiler) {
             rows.add(Row.heading(boiler.status()));
-            rows.add(Row.heading(Component.translatable(KEY + "boiler.water", boiler.water(), com.pockyl.hextale.block.ChemBoilerBlockEntity.WATER_CAPACITY)));
+            rows.add(Row.heading(Component.translatable(KEY + "boiler.mixture", boiler.mixture().total())));
+            rows.add(Row.heading(Component.translatable(KEY + "boiler.held", boiler.held().total())));
             rows.add(Row.heading(Component.translatable(KEY + "boiler.pressure", Math.round(boiler.pressure()))));
         }
         if (entity instanceof com.pockyl.hextale.block.ChemStillBlockEntity still) {

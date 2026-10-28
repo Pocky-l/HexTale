@@ -90,7 +90,7 @@ public class AxolotlTankBlockEntity extends BlockEntity implements WorldlyContai
         if (meals <= 0 || output.getCount() >= output.getMaxStackSize()) {
             return;
         }
-        progress += com.pockyl.hextale.chem.Overdrive.steps(level, worldPosition);
+        progress++;
         if (progress >= shedTicks()) {
             progress = 0;
             shed(level);
