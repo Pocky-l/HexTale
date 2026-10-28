@@ -14,6 +14,12 @@ Void's creatures have voices of their own.
   colour - bigger and brighter for bigger effects. Runes on your pickaxe and clothes never chatter: runes that keep
   things going (Haste, Mending, Radiance, Magnet and the like) only glint, near a player one sign shows at most every two seconds, and a rune on your
   own body draws a smaller, quieter sign. The client option "Rune signs" can hide your own signs or all of them.
+- Runes show what they do, quietly: a Drill pickaxe's lightning strikes every block it takes, Smelting sets the blocks
+  alight for a moment, Erosion, Passage and Quake crumble the stone away block by block, Forge and Gemstone lift hot
+  sparks and gem light out of the rock, Cache sends the drops into your pocket as pieces of themselves, Insight sends a
+  wave through the stone. On the other tools: a felled tree comes down log by log, saplings and seeds rise green,
+  Chain Lightning and Flash strike as bolts, Withering draws the foe's life to you, Spoils glints gold. Each has its
+  own soft sound, played once even when many blocks go at once.
 - Learning a rune from a scroll or from research notes: the rune writes itself in the air before your eyes inside a
   hexagon, holds for a moment and flies into you.
 - The altar's circle: when a ritual starts, a hexagonal sigil lights up on the ground, sweeping round from the north and

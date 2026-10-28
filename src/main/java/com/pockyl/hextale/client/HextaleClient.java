@@ -134,6 +134,7 @@ public final class HextaleClient {
         LevitationHum.register();
         MachineLoops.register();
         WardRipple.register();
+        com.pockyl.hextale.client.render.RuneEffects.register();
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
         modBus.addListener(ThinningTint::fadeWater);

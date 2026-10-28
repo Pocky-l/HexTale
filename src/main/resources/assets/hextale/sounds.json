@@ -1688,5 +1688,105 @@
         "attenuation_distance": 14
       }
     ]
+  },
+  "rune.crackle": {
+    "subtitle": "subtitles.hextale.rune.crackle",
+    "sounds": [
+      {
+        "name": "hextale:rune_crackle1",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_crackle2",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_crackle3",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "rune.kindle": {
+    "subtitle": "subtitles.hextale.rune.kindle",
+    "sounds": [
+      {
+        "name": "hextale:rune_kindle1",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_kindle2",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_kindle3",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "rune.crumble": {
+    "subtitle": "subtitles.hextale.rune.crumble",
+    "sounds": [
+      {
+        "name": "hextale:rune_crumble1",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_crumble2",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_crumble3",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "rune.bloom": {
+    "subtitle": "subtitles.hextale.rune.bloom",
+    "sounds": [
+      {
+        "name": "hextale:rune_bloom1",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_bloom2",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_bloom3",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "rune.gust": {
+    "subtitle": "subtitles.hextale.rune.gust",
+    "sounds": [
+      {
+        "name": "hextale:rune_gust1",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_gust2",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_gust3",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      }
+    ]
   }
 }

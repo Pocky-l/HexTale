@@ -229,6 +229,12 @@ public final class ModSounds {
     /** Loops of a pylon moving things and of a Hextech Purifier drawing the Thinning in. */
     public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_HUM = register("pylon.hum");
     public static final DeferredHolder<SoundEvent, SoundEvent> PURIFIER_LOOP = register("purifier.loop");
+    /** Quiet sounds of the rune effect families (`RuneEffectPayload`): lightning, fire, crumbling stone, rising light, wind. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_CRACKLE = register("rune.crackle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_KINDLE = register("rune.kindle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_CRUMBLE = register("rune.crumble");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_BLOOM = register("rune.bloom");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_GUST = register("rune.gust");
 
     private ModSounds() {
     }
