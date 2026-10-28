@@ -21,14 +21,19 @@ import com.pockyl.hextale.block.LapidaryBlock;
 import com.pockyl.hextale.block.LapidaryBlockEntity;
 
 /**
- * The lapidary at work: the lap disc and, under the bench, the treadle's flywheel gear (their own models) turn on their
- * spindle while someone works at the bench, and the crystal in the clamp hangs just over the disc, turning slowly.
+ * The lapidary at work: the grinding wheel on the bench (with the cutting disc mounted on its side when there is one)
+ * and, under the bench, the treadle's flywheel that drives it by the belt (their own models) turn while someone works at
+ * the bench; the crystal sits in the clamp in front of the wheel, turning slowly as its facets are ground.
  */
 public class LapidaryRenderer implements BlockEntityRenderer<LapidaryBlockEntity, LapidaryRenderer.State> {
-    /** The disc's spindle in model pixels (the disc model is built around it). */
-    private static final double SPINDLE_X = 8 / 16.0;
-    private static final double SPINDLE_Z = 7 / 16.0;
-    private static final double CRYSTAL_Y = 15.5 / 16.0;
+    /** The wheel's axle and the flywheel's, in model pixels (both run along x; the models are built round them). */
+    private static final double WHEEL_Y = 17 / 16.0;
+    private static final double WHEEL_Z = 9 / 16.0;
+    private static final double FLYWHEEL_Y = 5 / 16.0;
+    private static final double FLYWHEEL_Z = 9 / 16.0;
+    /** Degrees a tick; the belt runs from the flywheel (5 px) to the wheel's pulley (3 px), so the wheel turns faster. */
+    private static final float WHEEL_SPEED = 24;
+    private static final float FLYWHEEL_SPEED = WHEEL_SPEED * 3 / 5;
     private final ItemModelResolver itemModelResolver;
 
     public LapidaryRenderer(BlockEntityRendererProvider.Context context) {
@@ -57,22 +62,32 @@ public class LapidaryRenderer implements BlockEntityRenderer<LapidaryBlockEntity
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         poseStack.pushPose();
         TableModels.rotateToFacing(poseStack, state.facing);
+        // The wheel's top runs towards the clamp in front of it.
         poseStack.pushPose();
-        poseStack.translate(SPINDLE_X, 0, SPINDLE_Z);
-        poseStack.rotate(Axis.YP.rotationDegrees(state.working ? state.time * 18 : 0));
-        poseStack.translate(-SPINDLE_X, 0, -SPINDLE_Z);
-        TableModels.submit(poseStack, collector, TableModels.LAPIDARY_GEAR, state.lightCoords);
+        turnAboutX(poseStack, WHEEL_Y, WHEEL_Z, state.working ? -state.time * WHEEL_SPEED : 0);
+        TableModels.submit(poseStack, collector, TableModels.LAPIDARY_WHEEL, state.lightCoords);
         if (state.disc) {
             TableModels.submit(poseStack, collector, TableModels.LAPIDARY_DISC, state.lightCoords);
         }
         poseStack.popPose();
+        poseStack.pushPose();
+        turnAboutX(poseStack, FLYWHEEL_Y, FLYWHEEL_Z, state.working ? -state.time * FLYWHEEL_SPEED : 0);
+        TableModels.submit(poseStack, collector, TableModels.LAPIDARY_GEAR, state.lightCoords);
+        poseStack.popPose();
         if (!state.crystal.isEmpty()) {
-            poseStack.translate(SPINDLE_X, CRYSTAL_Y, SPINDLE_Z);
+            Vec3 at = LapidaryBlockEntity.CRYSTAL;
+            poseStack.translate(at.x / 16, at.y / 16, at.z / 16);
             poseStack.rotate(Axis.YP.rotationDegrees(state.time * 2));
-            poseStack.scale(0.45F, 0.45F, 0.45F);
+            poseStack.scale(0.3F, 0.3F, 0.3F);
             state.crystal.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
         }
         poseStack.popPose();
+    }
+
+    private static void turnAboutX(PoseStack poseStack, double y, double z, float degrees) {
+        poseStack.translate(0, y, z);
+        poseStack.rotate(Axis.XP.rotationDegrees(degrees));
+        poseStack.translate(0, -y, -z);
     }
 
     public static final class State extends BlockEntityRenderState {

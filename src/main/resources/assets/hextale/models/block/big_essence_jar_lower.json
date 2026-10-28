@@ -1,0 +1,1255 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/big_essence_jar",
+    "big_essence_jar": "hextale:block/big_essence_jar"
+  },
+  "elements": [
+    {
+      "name": "wood_floor_c",
+      "from": [
+        0,
+        0,
+        -12
+      ],
+      "to": [
+        16,
+        4,
+        28
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0.75,
+            0,
+            1.75,
+            2.5
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "wood_floor_w1",
+      "from": [
+        -7,
+        0,
+        -7
+      ],
+      "to": [
+        0,
+        4,
+        23
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0.3125,
+            0.3125,
+            0.75,
+            2.1875
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "wood_floor_e1",
+      "from": [
+        16,
+        0,
+        -7
+      ],
+      "to": [
+        23,
+        4,
+        23
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            1.75,
+            0.3125,
+            2.1875,
+            2.1875
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "wood_floor_w2",
+      "from": [
+        -12,
+        0,
+        0
+      ],
+      "to": [
+        -7,
+        4,
+        16
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0.75,
+            0.3125,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "wood_floor_e2",
+      "from": [
+        23,
+        0,
+        0
+      ],
+      "to": [
+        28,
+        4,
+        16
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            2.1875,
+            0.75,
+            2.5,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "wood_stave_n",
+      "from": [
+        -2,
+        0,
+        -15
+      ],
+      "to": [
+        18,
+        12,
+        -13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12.0625,
+            1.6875,
+            13.3125,
+            2.4375
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            13.375,
+            1.6875,
+            14.625,
+            2.4375
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            7.125,
+            4.1875,
+            8.375,
+            4.3125
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "wood_stave_s",
+      "from": [
+        -2,
+        0,
+        29
+      ],
+      "to": [
+        18,
+        12,
+        31
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10.4375,
+            1.8125,
+            11.6875,
+            2.5625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            9.125,
+            1.8125,
+            10.375,
+            2.5625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            2.625,
+            4.25,
+            3.875,
+            4.375
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "wood_stave_e",
+      "from": [
+        29,
+        0,
+        -2
+      ],
+      "to": [
+        31,
+        12,
+        18
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            3.875,
+            1.8125,
+            5.125,
+            2.5625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "west": {
+          "uv": [
+            5.1875,
+            1.8125,
+            6.4375,
+            2.5625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            0,
+            4.25,
+            1.25,
+            4.375
+          ],
+          "rotation": 90,
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "wood_stave_w",
+      "from": [
+        -15,
+        0,
+        -2
+      ],
+      "to": [
+        -13,
+        12,
+        18
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            2.5625,
+            1.25,
+            3.3125
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "west": {
+          "uv": [
+            14.375,
+            2.5,
+            15.625,
+            3.25
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            5.25,
+            4.25,
+            6.5,
+            4.375
+          ],
+          "rotation": 90,
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "wood_stave_ne",
+      "from": [
+        -2.03,
+        -0.03,
+        -15.03
+      ],
+      "to": [
+        18.03,
+        12.03,
+        -12.97
+      ],
+      "rotation": {
+        "angle": -45,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            14.6875,
+            1.6875,
+            15.9375,
+            2.4375
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            2.5625,
+            1.8125,
+            3.8125,
+            2.5625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            8.4375,
+            4.1875,
+            9.6875,
+            4.3125
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "wood_stave_se",
+      "from": [
+        -2.03,
+        -0.03,
+        28.97
+      ],
+      "to": [
+        18.03,
+        12.03,
+        31.03
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            7.8125,
+            1.8125,
+            9.0625,
+            2.5625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            6.5,
+            1.8125,
+            7.75,
+            2.5625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            1.3125,
+            4.25,
+            2.5625,
+            4.375
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "wood_stave_sw",
+      "from": [
+        -2.03,
+        -0.03,
+        28.97
+      ],
+      "to": [
+        18.03,
+        12.03,
+        31.03
+      ],
+      "rotation": {
+        "angle": -45,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            13.0625,
+            2.5,
+            14.3125,
+            3.25
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            11.75,
+            2.5,
+            13,
+            3.25
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            3.9375,
+            4.25,
+            5.1875,
+            4.375
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "wood_stave_nw",
+      "from": [
+        -2.03,
+        -0.03,
+        -15.03
+      ],
+      "to": [
+        18.03,
+        12.03,
+        -12.97
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            1.3125,
+            2.625,
+            2.5625,
+            3.375
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            2.625,
+            2.625,
+            3.875,
+            3.375
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            6.5625,
+            4.375,
+            7.8125,
+            4.5
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "glass_pane_lo_n",
+      "from": [
+        -1,
+        4,
+        -12
+      ],
+      "to": [
+        17,
+        32,
+        -12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2.5625,
+            0,
+            3.6875,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            3.6875,
+            0,
+            2.5625,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "glass_pane_lo_s",
+      "from": [
+        -1,
+        4,
+        28
+      ],
+      "to": [
+        17,
+        32,
+        28
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8.4375,
+            0,
+            7.3125,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            7.3125,
+            0,
+            8.4375,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "glass_pane_lo_e",
+      "from": [
+        28,
+        4,
+        -1
+      ],
+      "to": [
+        28,
+        32,
+        17
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            4.9375,
+            0,
+            6.0625,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "west": {
+          "uv": [
+            6.0625,
+            0,
+            4.9375,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "glass_pane_lo_w",
+      "from": [
+        -12,
+        4,
+        -1
+      ],
+      "to": [
+        -12,
+        32,
+        17
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            10.8125,
+            0,
+            9.6875,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "west": {
+          "uv": [
+            9.6875,
+            0,
+            10.8125,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "glass_pane_lo_ne",
+      "from": [
+        13.14214,
+        4,
+        -6.14214
+      ],
+      "to": [
+        31.14214,
+        32,
+        -6.14214
+      ],
+      "rotation": {
+        "angle": -45,
+        "axis": "y",
+        "origin": [
+          22.14214,
+          4,
+          -6.14214
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            3.75,
+            0,
+            4.875,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            4.875,
+            0,
+            3.75,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "glass_pane_lo_se",
+      "from": [
+        13.14214,
+        4,
+        22.14214
+      ],
+      "to": [
+        31.14214,
+        32,
+        22.14214
+      ],
+      "rotation": {
+        "x": 0,
+        "y": -135,
+        "z": 0,
+        "origin": [
+          22.14214,
+          4,
+          22.14214
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            6.125,
+            0,
+            7.25,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            7.25,
+            0,
+            6.125,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "glass_pane_lo_sw",
+      "from": [
+        -15.14214,
+        4,
+        22.14214
+      ],
+      "to": [
+        2.85786,
+        32,
+        22.14214
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 135,
+        "z": 0,
+        "origin": [
+          -6.14214,
+          4,
+          22.14214
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            8.5,
+            0,
+            9.625,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            9.625,
+            0,
+            8.5,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "glass_pane_lo_nw",
+      "from": [
+        -15.14214,
+        4,
+        -6.14214
+      ],
+      "to": [
+        2.85786,
+        32,
+        -6.14214
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          -6.14214,
+          4,
+          -6.14214
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            10.875,
+            0,
+            12,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            12,
+            0,
+            10.875,
+            1.75
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "brass_hoop_n",
+      "from": [
+        -1.02,
+        21.98,
+        -13.02
+      ],
+      "to": [
+        17.02,
+        24.02,
+        -11.98
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7.875,
+            4.375,
+            9,
+            4.5
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            9.0625,
+            4.375,
+            10.1875,
+            4.5
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            2.375,
+            4.625,
+            3.5,
+            4.6875
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "down": {
+          "uv": [
+            1.1875,
+            4.625,
+            2.3125,
+            4.6875
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "brass_hoop_s",
+      "from": [
+        -1.02,
+        21.98,
+        27.98
+      ],
+      "to": [
+        17.02,
+        24.02,
+        29.02
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11.4375,
+            4.5,
+            12.5625,
+            4.625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            10.25,
+            4.5,
+            11.375,
+            4.625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            3.5625,
+            4.75,
+            4.6875,
+            4.8125
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "down": {
+          "uv": [
+            2.375,
+            4.75,
+            3.5,
+            4.8125
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "brass_hoop_e",
+      "from": [
+        27.98,
+        21.98,
+        -1.02
+      ],
+      "to": [
+        29.02,
+        24.02,
+        17.02
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            1.1875,
+            4.4375,
+            2.3125,
+            4.5625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "west": {
+          "uv": [
+            2.375,
+            4.4375,
+            3.5,
+            4.5625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            10.6875,
+            4.6875,
+            11.8125,
+            4.75
+          ],
+          "rotation": 90,
+          "texture": "#big_essence_jar"
+        },
+        "down": {
+          "uv": [
+            9.5,
+            4.6875,
+            10.625,
+            4.75
+          ],
+          "rotation": 90,
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "brass_hoop_w",
+      "from": [
+        -13.02,
+        21.98,
+        -1.02
+      ],
+      "to": [
+        -11.98,
+        24.02,
+        17.02
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            8.3125,
+            4.5625,
+            9.4375,
+            4.6875
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "west": {
+          "uv": [
+            7.125,
+            4.5625,
+            8.25,
+            4.6875
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            8.3125,
+            4.75,
+            9.4375,
+            4.8125
+          ],
+          "rotation": 90,
+          "texture": "#big_essence_jar"
+        },
+        "down": {
+          "uv": [
+            7.125,
+            4.75,
+            8.25,
+            4.8125
+          ],
+          "rotation": 90,
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "brass_hoop_ne",
+      "from": [
+        13.45069,
+        21.955,
+        -7.04069
+      ],
+      "to": [
+        31.54069,
+        24.045,
+        -5.95069
+      ],
+      "rotation": {
+        "angle": -45,
+        "axis": "y",
+        "origin": [
+          22.49569,
+          22,
+          -6.49569
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            14.3125,
+            4.375,
+            15.4375,
+            4.5
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            0,
+            4.4375,
+            1.125,
+            4.5625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            4.75,
+            4.625,
+            5.875,
+            4.6875
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "down": {
+          "uv": [
+            3.5625,
+            4.625,
+            4.6875,
+            4.6875
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "brass_hoop_se",
+      "from": [
+        13.45069,
+        21.955,
+        21.95069
+      ],
+      "to": [
+        31.54069,
+        24.045,
+        23.04069
+      ],
+      "rotation": {
+        "x": 0,
+        "y": -135,
+        "z": 0,
+        "origin": [
+          22.49569,
+          22,
+          22.49569
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            3.5625,
+            4.4375,
+            4.6875,
+            4.5625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            4.75,
+            4.4375,
+            5.875,
+            4.5625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            1.1875,
+            4.75,
+            2.3125,
+            4.8125
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "down": {
+          "uv": [
+            11.875,
+            4.6875,
+            13,
+            4.75
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "brass_hoop_sw",
+      "from": [
+        -15.54069,
+        21.955,
+        21.95069
+      ],
+      "to": [
+        2.54931,
+        24.045,
+        23.04069
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 135,
+        "z": 0,
+        "origin": [
+          -6.49569,
+          22,
+          22.49569
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            12.625,
+            4.5,
+            13.75,
+            4.625
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            5.9375,
+            4.5625,
+            7.0625,
+            4.6875
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            5.9375,
+            4.75,
+            7.0625,
+            4.8125
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "down": {
+          "uv": [
+            4.75,
+            4.75,
+            5.875,
+            4.8125
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    },
+    {
+      "name": "brass_hoop_nw",
+      "from": [
+        -15.54069,
+        21.955,
+        -7.04069
+      ],
+      "to": [
+        2.54931,
+        24.045,
+        -5.95069
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          -6.49569,
+          22,
+          -6.49569
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            13.8125,
+            4.5625,
+            14.9375,
+            4.6875
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "south": {
+          "uv": [
+            0,
+            4.625,
+            1.125,
+            4.75
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "up": {
+          "uv": [
+            14.25,
+            4.75,
+            15.375,
+            4.8125
+          ],
+          "texture": "#big_essence_jar"
+        },
+        "down": {
+          "uv": [
+            13.0625,
+            4.75,
+            14.1875,
+            4.8125
+          ],
+          "texture": "#big_essence_jar"
+        }
+      }
+    }
+  ]
+}

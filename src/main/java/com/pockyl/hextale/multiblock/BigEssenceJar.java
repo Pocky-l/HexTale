@@ -19,14 +19,16 @@ import java.util.List;
 /**
  * The Big Essence Jar: a 3 x 3 x 4 jar built of glass with a hollow middle and a lid of wooden slabs, woken with a pinch
  * of hextech dust. It holds sixteen jars' worth of essence and works like a jar: bottles by hand, pipes in anywhere, out at the
- * bottom's centre. It looks like the Essence Jar, four times as large.
+ * bottom's centre. It looks like a big octagonal glass vat in a walnut tub under a wide walnut lid
+ * ({@link com.pockyl.hextale.client.render.BigEssenceJarRenderer}).
  */
 public final class BigEssenceJar extends Multiblock {
     /**
-     * The jar's model is 16 pixels tall and drawn four times larger: its round body ends half way up the third layer, the
-     * shoulders, neck and cork stand over the middle column, so the outer blocks of the top layer hold nothing.
+     * The vat's glass body runs 12 px into the third layer before its shoulders narrow in; the lid and its knob stand on
+     * the middle column 9 px into the top layer, so the outer blocks of the top layer hold nothing.
      */
-    private static final VoxelShape SHOULDER = slab(8);
+    private static final VoxelShape SHOULDER = slab(12);
+    private static final VoxelShape LID = slab(9);
 
     BigEssenceJar() {
         super("big_essence_jar", MultiblockPattern.builder()
@@ -58,8 +60,11 @@ public final class BigEssenceJar extends Multiblock {
     @Override
     public VoxelShape partShape(BlockPos offset) {
         boolean middle = offset.getX() == 0 && offset.getZ() == 0;
-        if (middle || offset.getY() < 2) {
+        if (offset.getY() < 2 || middle && offset.getY() == 2) {
             return Shapes.block();
+        }
+        if (middle) {
+            return LID;
         }
         return offset.getY() == 2 ? SHOULDER : Shapes.empty();
     }

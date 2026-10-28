@@ -8,12 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - The Essence Jar is a real jar now: a round glass body smaller than the block, rounded shoulders, a narrow neck tied
-  with twine and a cork. Its tag hangs from the neck. The Big Essence Jar follows the new shape.
+  with twine and a cork. Its tag hangs from the neck.
+- The Big Essence Jar has its own look: a big octagonal glass vat standing in a walnut tub with a brass band, a brass
+  hoop round its middle, frosted shoulders under a wide walnut lid and a paper tag tied under the lid.
 - The Rune Stele stands two blocks tall: a stone slab with a carved channel and a ring head where the chosen rune turns.
   Steles placed before grow their top when there is room.
 - The Hex Furnace has a brick crown and a brass chimney; smoke and embers rise from the chimney. Its bricks are darker.
-- The Hex Lapidary is a walnut treadle bench like the workbench: brass shoes, a brass clamp over the lap disc, a brass
-  splash guard, and a brass flywheel under the bench that turns with the disc while you grind.
+- The Hex Lapidary is a walnut treadle bench like the workbench with a big grinding wheel standing on top in a walnut
+  frame. The crystal sits in a brass clamp in front of the wheel, the cutting disc is mounted on the wheel's side, and a
+  belt runs down to the treadle's flywheel under the bench; wheel and flywheel turn while you grind.
 - New look for the Pedestal: a slender column of magic stone on a stepped octagonal foot, a faint rune seam glowing
   deep in the cut of its fluted shaft, an aged brass collar and a shallow brass dish with a carved rim. The glowing blue
   cubes are gone; the item now floats just over the dish.
@@ -25,8 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   block, a column of four slim pillars caging a glowing hextech crystal, a wide stone table with a brass rim and a
   glowing lens, and four brass claws cupping the turning rings from below. The item floats higher, inside the rings,
   and the glowing cubes are gone.
-- The Hexcore now wakes from the new altar: the same dais and crystal column, its brass claws opened wide round the
-  floating matrix.
+- The Hexcore is the altar grown into a massive cradle: three wide stepped tiers of magic stone, four buttresses with
+  channels of carved light running up into a crown, a glowing heart caged under the crown, and four big brass claws
+  holding the floating matrix from below. Its steps can be climbed, and the ritual's ground sigil keeps clear of them.
 - New look for the Hex Furnace: a kiln of cream fire bricks on walnut posts with brass shoes, a polished stone cap with
   a brass vent and an arched, brass-framed mouth under a small crystal keystone. While it burns, the fire glows in the
   mouth and the keystone lights up; the neon rim is gone.
