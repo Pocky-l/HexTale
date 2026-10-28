@@ -4,6 +4,15 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0+1.21.1] - 2026-10-28
+### Changed
+- Everything of 1.4.0 for Minecraft 26.3 is included: the mod's recipes as ordinary recipe types, common tags, biome
+  tags, claim protection, pipes and tanks of other mods, essence as a fluid, quest triggers and commands, the JEI
+  research notes and recipe transfer, and Curios support. Where 1.21.1 differs:
+  - recipes for HexTale's recipe types written by data packs and recipe scripts use 1.21.1's ingredients
+    (`{"item": ...}`, `{"tag": ...}`) instead of plain ids and `#tags` (the modpack guide shows them so);
+  - Curios support needs Curios 9 for 1.21.1; goggles in a Curios slot are drawn as their worn armour layer.
+
 ## [1.3.0+1.21.1] - 2026-10-28
 ### Changed
 - Everything of 1.1.0 - 1.3.0 for Minecraft 26.3 is included: the Thinning, blight and Void Mites, breaches of the
