@@ -105,6 +105,7 @@ public final class Hextale {
         // Altar and runework.
         output.accept(ModItems.HEXTECH_ALTAR);
         output.accept(ModItems.PEDESTAL);
+        output.accept(ModItems.RUNE_CIRCLE);
         output.accept(ModItems.RUNE_STELE);
         output.accept(ModItems.RUNE_CHALK);
         output.accept(ModItems.BINDING_CHALK);
@@ -342,6 +343,7 @@ public final class Hextale {
             event.accept(ModItems.RESEARCH_TABLE);
             event.accept(ModItems.HEXTECH_ALTAR);
             event.accept(ModItems.PEDESTAL);
+            event.accept(ModItems.RUNE_CIRCLE);
             event.accept(ModItems.RUNE_STELE);
             event.accept(ModItems.HEXTECH_LAMP);
             event.accept(ModItems.LEVITATION_PLATE);

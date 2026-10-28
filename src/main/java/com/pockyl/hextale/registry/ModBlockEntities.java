@@ -7,6 +7,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.block.RuneCircleBlockEntity;
 import com.pockyl.hextale.block.AlembicBlockEntity;
 import com.pockyl.hextale.block.DrainValveBlockEntity;
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
@@ -133,6 +134,8 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("hextech_altar", () -> new BlockEntityType<>(HextechAltarBlockEntity::new, ModBlocks.HEXTECH_ALTAR.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PedestalBlockEntity>> PEDESTAL =
             BLOCK_ENTITIES.register("pedestal", () -> new BlockEntityType<>(PedestalBlockEntity::new, ModBlocks.PEDESTAL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneCircleBlockEntity>> RUNE_CIRCLE =
+            BLOCK_ENTITIES.register("rune_circle", () -> new BlockEntityType<>(RuneCircleBlockEntity::new, ModBlocks.RUNE_CIRCLE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HexcoreBlockEntity>> HEXCORE =
             BLOCK_ENTITIES.register("hexcore", () -> new BlockEntityType<>(HexcoreBlockEntity::new, ModBlocks.HEXCORE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneSteleBlockEntity>> RUNE_STELE =

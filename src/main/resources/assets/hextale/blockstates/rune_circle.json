@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "hextale:block/rune_circle"
+    },
+    "powered=true": {
+      "model": "hextale:block/rune_circle"
+    }
+  }
+}

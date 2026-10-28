@@ -8,13 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Hextech against chemtech: the quick, cheap and dirty road against the slow, clean one.
 
 ### Added
-- Chem Boiler (worked out at the Lab Bench, made at the Hex Workbench): a riveted pressure tank that sits on a Chem
-  Burner and takes water by bucket or pipe. While a machine works near it, it raises steam and drives up to four
-  machines around it twice as fast (faster still on a shimmer flame): alembics, separators, the Hex Furnace and Foundry,
-  Chem Stills, Axolotl Tanks, Whirl Reapers and Hex Sawmills. A pulse of steam runs to each machine it drives, its gauge
-  needle climbs and the safety valve knocks. The fumes of the work it drives wear the land thin, and hextech lamps in
-  them flicker now and then. Its burner rests when no machine needs steam. Takes runes: Shift, Bellows, Dam,
-  Purification (cleaner fumes) and Haste.
+- The Rune Circle, a carved stone circle in the floor made at the Hex Workbench and learned together with the altar.
+  Rune steles stand round it now: lay a tool, a device or a blank scroll in the middle and the steles' runes are burned
+  in, or one is copied onto the scroll, the way the altar used to do it.
+
+### Changed
+- The Hextech Altar only makes things now; burning runes in and copying them moved to the Rune Circle, so making a tool
+  and inscribing it happen in two different places.
+
+### Fixed
+- The ink vials on the Research Table's desk sit in their frames whatever the number of inks.
 
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and

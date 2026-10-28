@@ -49,7 +49,7 @@ public final class ResearchTopics {
     public static final ResearchTopic ESSENCE_STICKER = add("essence_sticker", 2, Essence.LIFE, Essence.WATER, ModItems.ESSENCE_STICKER);
     public static final ResearchTopic PYLON_FILTER = add("pylon_filter", 2, Essence.AIR, Essence.LIGHT, ModItems.PYLON_FILTER);
     public static final ResearchTopic CIRCLE = add("hextech_altar", 1, Essence.SPARK, Essence.EARTH,
-            ModItems.HEXTECH_ALTAR, ModItems.PEDESTAL, ModItems.RUNE_STELE);
+            ModItems.HEXTECH_ALTAR, ModItems.PEDESTAL, ModItems.RUNE_STELE, ModItems.RUNE_CIRCLE);
     public static final ResearchTopic BIG_ESSENCE_JAR = add("big_essence_jar", 1, Essence.WATER, Essence.LIGHT, ModItems.ESSENCE_TANK);
     public static final ResearchTopic LAPIDARY = add("hex_lapidary", 1, Essence.EARTH, Essence.SPARK, ModItems.HEX_LAPIDARY,
             ModItems.CUTTING_DISC);

@@ -2,7 +2,7 @@
   "region": "runes",
   "stage": "mid",
   "icon": "hextale:rune_scroll",
-  "parents": ["blank_scroll", "rune_stele"],
+  "parents": ["blank_scroll", "rune_circle"],
   "goal": {
     "type": "event",
     "event": "rune_scroll_written"
@@ -11,7 +11,7 @@
     "kind": "scheme",
     "ingredients": [
       "hextale:blank_scroll",
-      "hextale:rune_stele"
+      "hextale:rune_circle"
     ],
     "result": "hextale:rune_scroll"
   },
