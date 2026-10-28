@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.4.0+26.1.2] - Unreleased
 ### Changed
-- Ported to Minecraft 26.1.2 ([NeoForge](https://neoforged.net/) 26.1.2). Everything of 1.4.0 for Minecraft 26.3 (below)
-  is included: recipes for data packs and recipe scripts, common tags, claims, pipes and tanks of other mods, essence as
+- Ported to Minecraft 26.1.2 ([NeoForge](https://neoforged.net/) 26.1.2). Everything of 1.4.0 for Minecraft 26.3
+  ([full changelog](https://github.com/Pocky-l/HexTale/blob/main/CHANGELOG.md)) is included: recipes for data packs and recipe scripts, common tags, claims, pipes and tanks of other mods, essence as
   a fluid, quest triggers and commands, and [Curios](https://www.curseforge.com/minecraft/mc-mods/curios) for the
   Researcher's Goggles. What 26.1.2 lacks is replaced as in 1.3.0+26.1.2.
 
