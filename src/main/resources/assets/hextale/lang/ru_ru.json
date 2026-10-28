@@ -2305,6 +2305,8 @@
   "hextale.configuration.breachCinematic.tooltip": "Камера улетает к разлому Пустоты, который открывается рядом.",
   "hextale.configuration.showWipSteps": "WIP-шаги в дневнике",
   "hextale.configuration.showWipSteps.tooltip": "Показывать в дневнике исследователя устройства, которые ещё в работе.",
+  "hextale.configuration.runeSigns": "Знаки рун",
+  "hextale.configuration.runeSigns.tooltip": "Какие знаки рисуются при срабатывании руны: все, все кроме своих или никакие (искры остаются).",
   "commands.hextale.void.breach": "Разлом открывается на %s %s %s",
   "block.hextale.hextech_purifier": "Хекстек-очиститель",
   "block.hextale.hextech_purifier.hint": "Кристалл над купелью чистой воды - земля вокруг отдаёт ему свою тьму. Похоже, жжёт эссенцию света из банок рядом.",

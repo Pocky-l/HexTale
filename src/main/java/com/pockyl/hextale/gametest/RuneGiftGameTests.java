@@ -72,12 +72,15 @@ public final class RuneGiftGameTests {
     @HexTest
     public static void runeProcSignsAreThrottled(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        Vec3 at = helper.absoluteVec(new Vec3(0.5, 1.5, 0.5));
+        // The middle of a 4-block cell (the throttle counts cells), so a step up stays in it.
+        BlockPos origin = helper.absolutePos(BlockPos.ZERO);
+        Vec3 at = new Vec3((origin.getX() >> 2 << 2) + 1.5, (origin.getY() >> 2 << 2) + 1.5, (origin.getZ() >> 2 << 2) + 1.5);
         ComplexRune haste = ToolRune.HASTE.rune();
         helper.assertTrue(ToolEffects.procSignDue(level, at, haste), "the first proc sounds");
         helper.assertFalse(ToolEffects.procSignDue(level, at, haste), "the same proc a tick later stays quiet");
         helper.assertTrue(ToolEffects.procSignDue(level, at, ToolRune.MENDING.rune()), "another rune there sounds");
-        helper.assertTrue(ToolEffects.procSignDue(level, at.add(3, 0, 0), haste), "the same rune elsewhere sounds");
+        helper.assertFalse(ToolEffects.procSignDue(level, at.add(0, 1, 0), haste), "nor right beside it (a miner's next block)");
+        helper.assertTrue(ToolEffects.procSignDue(level, at.add(8, 0, 0), haste), "the same rune elsewhere sounds");
         helper.runAfterDelay(ToolEffects.PROC_SIGN_GAP + 1, () -> {
             helper.assertTrue(ToolEffects.procSignDue(level, at, haste), "after the gap it sounds again");
             helper.succeed();

@@ -2305,6 +2305,8 @@
   "hextale.configuration.breachCinematic.tooltip": "Fly the camera to a breach of the Void that tears open nearby.",
   "hextale.configuration.showWipSteps": "Show WIP steps in the diary",
   "hextale.configuration.showWipSteps.tooltip": "Show the devices still being worked out in the researcher's diary.",
+  "hextale.configuration.runeSigns": "Rune signs",
+  "hextale.configuration.runeSigns.tooltip": "Which rune signs are drawn when a rune works: all, all but your own, or none (runes still glint).",
   "commands.hextale.void.breach": "A breach tears open at %s %s %s",
   "block.hextale.hextech_purifier": "Hextech Purifier",
   "block.hextale.hextech_purifier.hint": "A crystal hung over a font of clear water - the land around gives up its dark to it. It seems to burn light essence from the jars nearby.",

@@ -190,38 +190,62 @@ public final class ToolEffects {
         }
     }
 
-    /** Ticks between two rune signs from the same block and rune: a proc firing every tick stays one soft sign. */
+    /**
+     * Ticks between two signs of one rune in one 4-block cell: a proc firing every tick, or on every block a miner
+     * breaks, stays one soft sign.
+     */
     public static final int PROC_SIGN_GAP = 30;
+    /** Ticks between two full rune signs near one player, whatever the runes: a pickaxe and clothes never chatter. */
+    public static final int PLAYER_SIGN_GAP = 40;
+    /** Procs this small (a few glints: Mending, Magnet...) only glint, without a sign or a sound. */
+    public static final int SMALL_PROC = 4;
+    /** Players this close to a proc count it against their own sign budget. */
+    private static final double SIGN_NEAR = 8;
     private static final Map<ServerLevel, Long2LongOpenHashMap> LAST_PROC_SIGN = new WeakHashMap<>();
 
     /**
-     * The sign that a rune just worked: glints in the rune's colour (more glints = a bigger proc), and - at most once per
-     * {@link #PROC_SIGN_GAP} ticks per block and rune - the {@code rune.proc} sound and the rune's sign drawn by the
-     * clients ({@link RuneFxPayload}: a flat hexagon opening round the spot, the glyph flaring over it).
+     * The sign that a rune just worked: glints in the rune's colour (more glints = a bigger proc), and, for procs bigger
+     * than {@link #SMALL_PROC} when {@link #procSignDue} allows it, the {@code rune.proc} sound and the rune's sign drawn
+     * by the clients ({@link RuneFxPayload}: a flat hexagon opening round the spot, the glyph flaring over it). Owner
+     * (2026-10-28): runes on a pickaxe and clothes must not distract - hence the small procs, the budgets and the quieter
+     * sound of a proc on a player's own body.
      */
     public static void puff(ServerLevel level, Vec3 at, ComplexRune rune, int count, double spread) {
         level.sendParticles(ModParticles.glint(rune.color()), at.x, at.y, at.z, count, spread, spread * 0.6, spread, 0.03);
-        if (procSignDue(level, at, rune)) {
-            level.playSound(null, at.x, at.y, at.z, ModSounds.RUNE_PROC.get(), SoundSource.PLAYERS, 1.0F, 0.9F + level.getRandom().nextFloat() * 0.2F);
+        if (count > SMALL_PROC && procSignDue(level, at, rune)) {
+            Player wearer = level.getNearestPlayer(at.x, at.y - 1, at.z, 1.2, false);
+            level.playSound(null, at.x, at.y, at.z, ModSounds.RUNE_PROC.get(), SoundSource.PLAYERS, wearer != null ? 0.55F : 1.0F,
+                    0.9F + level.getRandom().nextFloat() * 0.2F);
             RuneFxPayload.send(level, RuneFxPayload.proc(at, rune, count, spread));
         }
     }
 
     /**
-     * Whether a proc here may show the full sign (sound + glyph): at most once per {@link #PROC_SIGN_GAP} ticks per block
-     * and rune (marks it as shown when it may).
+     * Whether a proc here may show the full sign (sound + glyph): at most once per {@link #PROC_SIGN_GAP} ticks per rune in
+     * a 4-block cell, and at most once per {@link #PLAYER_SIGN_GAP} ticks near the nearest player (marks both when it
+     * may).
      */
     public static boolean procSignDue(ServerLevel level, Vec3 at, ComplexRune rune) {
         Long2LongOpenHashMap last = LAST_PROC_SIGN.computeIfAbsent(level, key -> new Long2LongOpenHashMap());
         long now = level.getGameTime();
-        long key = BlockPos.containing(at).asLong() * 31 + rune.hashCode();
-        if (now - last.getOrDefault(key, -PROC_SIGN_GAP) < PROC_SIGN_GAP) {
+        BlockPos block = BlockPos.containing(at);
+        long cell = BlockPos.asLong(block.getX() >> 2, block.getY() >> 2, block.getZ() >> 2) * 31 + rune.hashCode();
+        if (now - last.getOrDefault(cell, -PROC_SIGN_GAP) < PROC_SIGN_GAP) {
+            return false;
+        }
+        Player near = level.getNearestPlayer(at.x, at.y, at.z, SIGN_NEAR, false);
+        // Player ids are small and positive; their keys sit below every cell key's range by being negated.
+        long person = near == null ? 0 : -1 - near.getId();
+        if (near != null && now - last.getOrDefault(person, -PLAYER_SIGN_GAP) < PLAYER_SIGN_GAP) {
             return false;
         }
         if (last.size() > 512) {
-            last.long2LongEntrySet().removeIf(entry -> now - entry.getLongValue() >= PROC_SIGN_GAP);
+            last.long2LongEntrySet().removeIf(entry -> now - entry.getLongValue() >= Math.max(PROC_SIGN_GAP, PLAYER_SIGN_GAP));
         }
-        last.put(key, now);
+        last.put(cell, now);
+        if (near != null) {
+            last.put(person, now);
+        }
         return true;
     }
 

@@ -110,6 +110,18 @@ public final class RuneFx {
         int color = sign.color();
         float size = payload.size();
         float strength = payload.strength();
+        com.pockyl.hextale.ClientConfig.RuneSigns shown = com.pockyl.hextale.ClientConfig.RUNE_SIGNS.get();
+        if (shown == com.pockyl.hextale.ClientConfig.RuneSigns.NONE) {
+            return;
+        }
+        if (onMe(payload.at())) {
+            // A rune on the viewer's own tools or clothes: a smaller, fainter sign (or none, as set).
+            if (shown == com.pockyl.hextale.ClientConfig.RuneSigns.NOT_MINE) {
+                return;
+            }
+            size *= 0.6F;
+            strength *= 0.55F;
+        }
         float t = age / PROC_TICKS;
         float open = 1 - cube(1 - Math.min(1, age / PROC_PEAK));
         float fade = age < PROC_PEAK ? 1 : 1 - Mth.square((age - PROC_PEAK) / (PROC_TICKS - PROC_PEAK));
@@ -208,6 +220,18 @@ public final class RuneFx {
         poseStack.rotate(Axis.ZP.rotation(sign.phase()));
         HexFx.hexRing(poseStack, collector, payload.size() * (0.3F + 0.7F * (1 - cube(1 - k))), sign.color(), 0.9F * (1 - k));
         poseStack.popPose();
+    }
+
+    /** Whether {@code at} lies on the local player's own body (a proc of their tools or clothes). */
+    private static boolean onMe(Vec3 at) {
+        net.minecraft.world.entity.player.Player me = Minecraft.getInstance().player;
+        if (me == null) {
+            return false;
+        }
+        double dx = at.x - me.getX();
+        double dz = at.z - me.getZ();
+        double dy = at.y - me.getY();
+        return dx * dx + dz * dz < 1.0 && dy > -0.5 && dy < me.getBbHeight() + 0.5;
     }
 
     /** Client only: shows {@code payload} here without a message from the server (a barrier's ripple). */

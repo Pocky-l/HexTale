@@ -11,7 +11,9 @@ Void's creatures have voices of their own.
 
 ### Added
 - When a rune works, a flat hexagon of light opens round the spot and the rune's own glyph flares over it, in the rune's
-  colour - bigger and brighter for bigger effects. A rune that works every moment shows its sign only now and then.
+  colour - bigger and brighter for bigger effects. Runes on your pickaxe and clothes never chatter: small effects
+  (Mending, Magnet and the like) only glint, near a player one sign shows at most every two seconds, and a rune on your
+  own body draws a smaller, quieter sign. The client option "Rune signs" can hide your own signs or all of them.
 - Learning a rune from a scroll or from research notes: the rune writes itself in the air before your eyes inside a
   hexagon, holds for a moment and flies into you.
 - The altar's circle: when a ritual starts, a hexagonal sigil lights up on the ground, sweeping round from the north and
@@ -49,7 +51,7 @@ Void's creatures have voices of their own.
 - The Void's roads have their moments: when six anchors hold a breach, cold streams run from each into it and a hexagon
   locks round it; healed land opens a hexagon of life over the spot.
 - Every rune that works now makes a soft sound of its own - a short breath of energy and a low pulse - on tools,
-  clothes, machines and gadgets alike. A rune that works every moment sounds only now and then.
+  clothes, machines and gadgets alike.
 - Learning a rune from a scroll or from research notes has its own sound: an ink stroke and the knowledge settling in.
 - Voidlings and void mites have their own voices: a dark clicking chitter, their hurt and death cries, a voidling's
   snap and claws, mites crawling, clinging on and being shaken off.
