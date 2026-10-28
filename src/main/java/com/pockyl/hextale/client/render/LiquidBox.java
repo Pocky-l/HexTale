@@ -25,8 +25,9 @@ import java.util.List;
  */
 public final class LiquidBox {
     private static final ResourceLocation LIQUID = Hextale.id("block/essence_liquid");
-    /** Vanilla's white bubble (a ring with a glint), tinted by the liquid. */
-    public static final ResourceLocation BUBBLE = ResourceLocation.withDefaultNamespace("textures/particle/bubble_white.png");
+    /** A white bubble (a ring with a glint), tinted by the liquid; 1.21.1 has no vanilla bubble_white, so the mod
+     * ships vanilla's bubble in greys. */
+    public static final ResourceLocation BUBBLE = Hextale.id("textures/misc/bubble_white.png");
     /** Vanilla's bubble bursting, frame by frame. */
     private static final ResourceLocation[] BUBBLE_POP = new ResourceLocation[5];
     /** How much lighter than the liquid a bubble's ring is. */

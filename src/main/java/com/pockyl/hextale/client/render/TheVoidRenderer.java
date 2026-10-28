@@ -26,7 +26,7 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
     // Neighbour bits in the masks the shaders read: four sides, then the four corners.
     /** The game's starfield, the dark of the plain look drawn while a shader pack is on. */
     private static final net.minecraft.resources.ResourceLocation STARS = net.minecraft.resources.ResourceLocation.withDefaultNamespace(
-            "textures/entity/end_portal/end_portal.png");
+            "textures/entity/end_portal.png");
     /** The plain look's tint of the stars and colour of the rim. */
     private static final int PLAIN_TINT = 0xFFC9A6FF;
     private static final int RIM = 0xB98FE6;
