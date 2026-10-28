@@ -39,6 +39,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Essence Sticker is now the same paper tag on twine as on the jars, with the essence's colour stamped on it.
 - The Hexcore's matrix is calmer: its tiles are a darker, quieter blue with softer gold edges, and each tile carries
   one of the nine primal rune radicals, glowing in a carved groove, instead of arrows and crosses.
+- Carved magic stone instead of rings and spirals: Chiseled Magic Bricks show the earth rune raised in a sunken panel,
+  Whorled Magic Stone is a field of raised stone hexagons that catch the light like little cubes, and the end of a
+  Magic Stone Pillar carries a carved cog.
+- The end of a Stripped Magic Log now looks like a real log end with growth rings and a drying crack, and the Magic
+  Trapdoor is a pale wooden hatch with a hexagonal window instead of a die.
+- Chalk marks and chalk figures look hand-drawn now: wobbly rings with gaps and chalk dust instead of clean drawings.
 
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
