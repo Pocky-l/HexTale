@@ -184,6 +184,18 @@ public final class RuneKnowledge {
         return researched.add(topic.id());
     }
 
+    /** Forgets one topic, with its parchment's progress; whether it was researched. */
+    public boolean forgetResearch(ResearchTopic topic) {
+        seen.remove(topic.id());
+        attempts.remove(topic.id());
+        return researched.remove(topic.id());
+    }
+
+    /** Ids of the researched topics, in the order they were researched. */
+    public List<String> researchedIds() {
+        return List.copyOf(researched);
+    }
+
     public void forgetResearch() {
         researched.clear();
         seen.clear();
@@ -262,6 +274,11 @@ public final class RuneKnowledge {
 
     public void completeQuest(Quest quest) {
         quests.add(quest.id());
+    }
+
+    /** Un-does one step; whether it was done. */
+    public boolean forgetQuest(Quest quest) {
+        return quests.remove(quest.id());
     }
 
     public void forgetQuests() {
