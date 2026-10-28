@@ -164,8 +164,15 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
                     Component.translatable(tank.sticker().translationKey())));
             return InteractionResult.SUCCESS;
         }
+        boolean pouring = EssenceFlaskItem.isFlask(stack) && !EssenceFlaskItem.contents(stack).isEmpty();
+        int liquid = pouring ? EssenceFlaskItem.contents(stack).color() : tank.tank().contents().color();
         if (Flasks.use(player, hand, stack, tank.tank())) {
             tank.setChanged();
+            if (level instanceof ServerLevel server) {
+                Vec3 mouth = com.pockyl.hextale.essence.JarReach.mouth(pos);
+                Vec3 bottle = com.pockyl.hextale.network.EssenceFxPayload.hand(player);
+                com.pockyl.hextale.network.EssenceFxPayload.pour(server, pouring ? bottle : mouth, pouring ? mouth : bottle, liquid, 10);
+            }
             level.playSound(null, pos, ModSounds.TANK_GLUG.get(), SoundSource.BLOCKS, 0.6F, 0.8F + level.getRandom().nextFloat() * 0.3F);
             return InteractionResult.SUCCESS;
         }

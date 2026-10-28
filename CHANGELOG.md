@@ -22,6 +22,12 @@ Void's creatures have voices of their own.
 - A pedestal item drawn into the altar comes apart into pieces of itself: each piece tears out upwards, swings over in
   its own arc and whirls into the altar's item, leaving a few sparks behind. The item no longer crumbles as if it broke.
 - A working circle breathes: sparks rise slowly off the lines of the sigil and motes of light gather into the work.
+- Essence on the move can be seen: a pulse of light runs through brass pipes in the colour of what they carry (water
+  too); pouring a bottle into a jar or filling it from one, and every device that pays from the jars around it (Binding
+  Chalk, Rift Gates, the World Anchor, winding a Recall Charm), shows a living stream from the jar.
+- The alembic: steam climbs out of the boiling flask into the head, the distillate drips from the beak in the colour of
+  what it holds, and an item boiling down lets its essence rise off the water.
+- The separator's drop through the stopcock falls where you can see it, not only hear it.
 - Every rune that works now makes a soft sound of its own - a short breath of energy and a low pulse - on tools,
   clothes, machines and gadgets alike. A rune that works every moment sounds only now and then.
 - Learning a rune from a scroll or from research notes has its own sound: an ink stroke and the knowledge settling in.

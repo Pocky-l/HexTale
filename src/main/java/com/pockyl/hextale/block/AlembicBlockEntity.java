@@ -251,6 +251,14 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         water -= WATER_PER_ITEM;
         progress = 0;
         level.playSound(null, worldPosition, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 0.2F, 1.4F);
+        if (level instanceof net.minecraft.server.level.ServerLevel server) {
+            // The item is gone into the water: its essence rises off the surface as living drops, a glint or two over it.
+            double x = worldPosition.getX() + 0.5;
+            double y = worldPosition.getY() + 10.8 / 16;
+            double z = worldPosition.getZ() + 0.5;
+            server.sendParticles(com.pockyl.hextale.registry.ModParticles.wisp(boiled.color()), x, y, z, 5, 0.12, 0.02, 0.12, 0.01);
+            server.sendParticles(com.pockyl.hextale.registry.ModParticles.glint(boiled.color()), x, y + 0.15, z, 3, 0.15, 0.08, 0.15, 0.01);
+        }
         return true;
     }
 

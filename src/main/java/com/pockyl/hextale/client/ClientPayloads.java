@@ -86,6 +86,7 @@ public final class ClientPayloads {
             }
         });
         event.register(com.pockyl.hextale.network.RuneFxPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.RuneFx.accept(payload));
+        event.register(com.pockyl.hextale.network.EssenceFxPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.EssenceFx.accept(payload));
         event.register(PylonLinkPayload.TYPE, (payload, context) -> PylonLinking.clientFrom = payload.from().orElse(null));
     }
 

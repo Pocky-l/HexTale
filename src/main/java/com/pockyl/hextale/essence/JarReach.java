@@ -103,10 +103,7 @@ public final class JarReach {
                 jar.setChanged();
             }
             Vec3 mouth = mouth(jar.getBlockPos());
-            Vec3 offset = mouth.subtract(to);
-            for (int i = 0; i < Math.min(8, 2 + taken); i++) {
-                level.sendParticles(ModParticles.flow(essence.color()), to.x, to.y, to.z, 0, offset.x, offset.y, offset.z, 1);
-            }
+            com.pockyl.hextale.network.EssenceFxPayload.pour(level, mouth, to, essence.color(), Math.min(24, 8 + taken * 2));
             if (left == amount) {
                 level.playSound(null, mouth.x, mouth.y, mouth.z, ModSounds.ESSENCE_DRAW.get(), SoundSource.BLOCKS, 0.3F, 1.2F);
             }

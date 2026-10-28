@@ -302,6 +302,8 @@ public final class ChalkFigure {
             jar.setChanged();
             purse.budget += taken * HOLD_PER_MB - cost;
             Vec3 mouth = JarReach.mouth(jar.getBlockPos());
+            com.pockyl.hextale.network.EssenceFxPayload.pour(level, mouth, Vec3.atBottomCenterOf(figure.first()).add(0, 0.1, 0),
+                    Essence.SHADOW.color(), 16);
             level.playSound(null, mouth.x, mouth.y, mouth.z, ModSounds.ESSENCE_DRAW.get(), SoundSource.BLOCKS, 0.3F, 0.7F);
             return true;
         }

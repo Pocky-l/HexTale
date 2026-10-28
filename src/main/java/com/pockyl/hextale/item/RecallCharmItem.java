@@ -101,10 +101,7 @@ public class RecallCharmItem extends Item {
         }
         setWindings(charm, windings(charm) + wound);
         Vec3 mouth = JarReach.mouth(jar.getBlockPos());
-        Vec3 offset = mouth.subtract(to);
-        for (int i = 0; i < 4 + wound * 2; i++) {
-            level.sendParticles(ModParticles.flow(Essence.RIFT.color()), to.x, to.y, to.z, 0, offset.x, offset.y, offset.z, 1);
-        }
+        com.pockyl.hextale.network.EssenceFxPayload.pour(level, mouth, to, Essence.RIFT.color(), 10 + wound * 3);
         level.playSound(null, mouth.x, mouth.y, mouth.z, ModSounds.ESSENCE_DRAW.get(), SoundSource.BLOCKS, 0.35F, 0.9F);
         return wound;
     }
