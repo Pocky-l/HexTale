@@ -1,0 +1,18 @@
+{
+  "type": "hextale:infusion",
+  "center": "#c:bars/iron",
+  "pedestals": [
+    "hextale:unstable_hextech",
+    "hextale:unstable_hextech",
+    "#c:ender_pearls",
+    "#c:ender_pearls",
+    "#c:ingots/brass",
+    "#c:ingots/brass"
+  ],
+  "essences": {
+    "rift": 24,
+    "metal": 16,
+    "beast": 12
+  },
+  "result": "hextale:spawner_cage"
+}

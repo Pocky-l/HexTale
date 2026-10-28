@@ -1,6 +1,7 @@
 package com.pockyl.hextale.crafting;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -20,13 +21,13 @@ import java.util.Comparator;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A Crucible brew, read from {@code data/<namespace>/hextale_brew/<name>.json}: a {@code catalyst} that sinks into water
+ * A Crucible brew, recipe type {@code hextale:brewing}: a {@code catalyst} that sinks into water
  * boiling over at least {@code heat} (fire 2, soul fire 3, lava 4, a Chem Burner 5) and holding the recipe's
  * {@code essences} takes them and turns the water into {@code doses} doses of the {@code brew}. The brew's reaction
  * must be worked out at the Lab Bench by whoever threw or put the catalyst in; for anyone else it is just another item.
  */
 public record BrewRecipe(Ingredient catalyst, EssenceMix essences, Brew brew, int heat, int doses) {
-    public static final Codec<BrewRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<BrewRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Ingredient.CODEC.fieldOf("catalyst").forGetter(BrewRecipe::catalyst),
             EssenceMix.CODEC.fieldOf("essences").forGetter(BrewRecipe::essences),
             Brew.CODEC.fieldOf("brew").forGetter(BrewRecipe::brew),
@@ -43,7 +44,7 @@ public record BrewRecipe(Ingredient catalyst, EssenceMix essences, Brew brew, in
             BrewRecipe::new);
 
     /** Every brew, server and client. */
-    public static final DataRecipes<BrewRecipe> ALL = new DataRecipes<>("hextale_brew", CODEC);
+    public static final DataRecipes<BrewRecipe> ALL = new DataRecipes<>("brewing", MAP_CODEC, STREAM_CODEC, recipe -> null);
 
     /** Heat of a Chem Burner, the hottest there is. */
     public static final int BURNER_HEAT = 5;

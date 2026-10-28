@@ -1,0 +1,16 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "CLC",
+    "C C",
+    "C C"
+  ],
+  "key": {
+    "C": "hextale:arcane_cloth",
+    "L": "#c:leathers"
+  },
+  "result": {
+    "id": "hextale:researcher_trousers"
+  },
+  "charge": 2
+}

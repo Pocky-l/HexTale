@@ -1,0 +1,11 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "#minecraft:wool",
+  "essences": {
+    "magic": 3,
+    "beast": 2
+  },
+  "result": {
+    "id": "hextale:arcane_cloth"
+  }
+}

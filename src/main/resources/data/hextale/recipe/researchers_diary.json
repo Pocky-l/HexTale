@@ -3,8 +3,8 @@
   "category": "misc",
   "ingredients": [
     "minecraft:book",
-    "minecraft:amethyst_shard",
-    "minecraft:feather"
+    "#c:gems/amethyst",
+    "#c:feathers"
   ],
   "result": {
     "id": "hextale:researchers_diary"

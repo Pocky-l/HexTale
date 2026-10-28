@@ -41,11 +41,13 @@ public final class Hextale {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public Hextale(IEventBus modBus, ModContainer container) {
+        com.pockyl.hextale.registry.ModAliases.register();
         ModBlocks.register(modBus);
         ModItems.register(modBus);
         com.pockyl.hextale.registry.ModEntities.register(modBus);
         ModDataComponents.register(modBus);
         ModBlockEntities.register(modBus);
+        com.pockyl.hextale.registry.ModFluids.register(modBus);
         ModCapabilities.register(modBus);
         ModMenus.register(modBus);
         ModAttachments.register(modBus);
@@ -53,6 +55,7 @@ public final class Hextale {
         ModParticles.register(modBus);
         com.pockyl.hextale.registry.ModFeatures.register(modBus);
         ModTriggers.register(modBus);
+        com.pockyl.hextale.registry.ModRecipes.register(modBus);
         modBus.addListener(ModNetwork::register);
         modBus.addListener((net.neoforged.neoforge.common.world.chunk.RegisterTicketControllersEvent event) ->
                 event.register(com.pockyl.hextale.block.WorldAnchorBlock.TICKETS));

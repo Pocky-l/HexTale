@@ -31,6 +31,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.transport.Deliverer;
+import com.pockyl.hextale.transport.WaterInlet;
 import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.essence.EssenceTank;
@@ -57,7 +58,7 @@ import org.jspecify.annotations.Nullable;
  * an online player only: anyone offline counts as nobody.
  */
 public class AlembicBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, EssenceNetwork.WaterReceiver,
-        com.pockyl.hextale.chem.HeatUser {
+        com.pockyl.hextale.chem.HeatUser, WaterInlet.Vessel {
     public static final int INPUT = 0;
     public static final int FLASK_IN = 1;
     public static final int FLASK_OUT = 2;
@@ -82,6 +83,8 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
     private boolean inputKnown;
     /** Client side: smooth boiling progress between syncs. */
     public float clientProgress;
+    /** What other mods' pipes and tanks see: water goes in through the horizontal sides, nothing comes out. */
+    private final WaterInlet waterInlet = new WaterInlet(this);
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -132,6 +135,21 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
             setChanged();
         }
         return taken;
+    }
+
+    /** The water inlet for other mods' pipes and tanks. */
+    public WaterInlet waterInlet() {
+        return waterInlet;
+    }
+
+    @Override
+    public int waterRoom() {
+        return Math.max(0, WATER_CAPACITY - water);
+    }
+
+    @Override
+    public void pipeWater(int amount) {
+        fillWater(amount, false);
     }
 
     /** Pipes bring water in on any side. */

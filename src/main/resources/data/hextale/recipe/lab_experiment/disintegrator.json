@@ -1,0 +1,7 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "disintegrator",
+  "target": "ash",
+  "amount": 6,
+  "purity": 0.6
+}

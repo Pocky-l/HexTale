@@ -7,7 +7,7 @@
     "###"
   ],
   "key": {
-    "#": "hextale:raw_zinc"
+    "#": "#c:raw_materials/zinc"
   },
   "result": {
     "id": "hextale:raw_zinc_block"

@@ -2,7 +2,7 @@
   "type": "minecraft:smelting",
   "category": "misc",
   "group": "zinc_ingot",
-  "ingredient": "hextale:raw_zinc",
+  "ingredient": "#c:raw_materials/zinc",
   "result": {
     "id": "hextale:zinc_ingot"
   },

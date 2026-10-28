@@ -1,0 +1,18 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:hextech_crystal",
+  "pedestals": [
+    "#c:feathers",
+    "#c:feathers",
+    "minecraft:iron_hoe",
+    "#c:ingots/brass",
+    "#c:ingots/brass",
+    "hextale:polished_magic_stone"
+  ],
+  "essences": {
+    "air": 16,
+    "plant": 12,
+    "crystal": 8
+  },
+  "result": "hextale:whirl_reaper"
+}

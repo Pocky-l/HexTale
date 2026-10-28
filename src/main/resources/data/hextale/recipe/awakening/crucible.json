@@ -1,0 +1,8 @@
+{
+  "type": "hextale:awakening",
+  "block": [
+    "minecraft:cauldron",
+    "minecraft:water_cauldron"
+  ],
+  "result": "hextale:crucible"
+}

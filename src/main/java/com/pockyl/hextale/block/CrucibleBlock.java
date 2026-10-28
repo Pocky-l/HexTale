@@ -37,6 +37,7 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.transport.WaterInlet;
 
 import org.jspecify.annotations.Nullable;
 
@@ -96,6 +97,10 @@ public class CrucibleBlock extends BaseEntityBlock {
             }
             return InteractionResult.SUCCESS;
         }
+        InteractionResult container = useFluidContainer(crucible, level, player, hand);
+        if (container != null) {
+            return container;
+        }
         if (isWaterBottle(stack)) {
             if (crucible.fillWater(CrucibleBlockEntity.WATER_BOTTLE, true) == 0) {
                 return say(level, player, "full");
@@ -150,6 +155,33 @@ public class CrucibleBlock extends BaseEntityBlock {
             if (!creative) {
                 stack.shrink(1);
             }
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    /**
+     * Buckets and tanks of other mods work like the vanilla bucket: one holding water pours a bucket's worth in (it may
+     * brim over), an empty one takes a bucket out (the essence in it is lost). Null: the item is no fluid container.
+     */
+    private static @Nullable InteractionResult useFluidContainer(CrucibleBlockEntity crucible, Level level, Player player, InteractionHand hand) {
+        int poured = WaterInlet.pourFromHeld(player, hand, CrucibleBlockEntity.BUCKET, true);
+        if (poured > 0) {
+            if (crucible.fillWater(poured, true) == 0) {
+                return say(level, player, "full");
+            }
+            if (!level.isClientSide() && WaterInlet.pourFromHeld(player, hand, poured, false) == poured) {
+                crucible.fillWater(poured, false);
+            }
+            return InteractionResult.SUCCESS;
+        }
+        if (!WaterInlet.fillHeld(player, hand, CrucibleBlockEntity.BUCKET, true)) {
+            return null;
+        }
+        if (crucible.water() + crucible.essence().total() < CrucibleBlockEntity.BUCKET) {
+            return say(level, player, "not_a_bucket");
+        }
+        if (!level.isClientSide() && WaterInlet.fillHeld(player, hand, CrucibleBlockEntity.BUCKET, false)) {
+            crucible.takeBucket();
         }
         return InteractionResult.SUCCESS;
     }

@@ -1,0 +1,11 @@
+{
+  "type": "hextale:brewing",
+  "catalyst": "minecraft:snowball",
+  "essences": {
+    "cold": 8,
+    "water": 4
+  },
+  "brew": "coolant",
+  "heat": 2,
+  "doses": 3
+}

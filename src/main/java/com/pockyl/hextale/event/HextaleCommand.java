@@ -31,7 +31,11 @@ import com.pockyl.hextale.thevoid.Thinning;
 import java.util.List;
 import java.util.stream.Stream;
 
-/** {@code /hextale runes list|learn <rune|all> [stars]|forget <rune|all>} {@code /hextale quests reset} and {@code /hextale void get|set|add|stage|breach|clear}: test helpers for operators. */
+/**
+ * {@code /hextale runes list|learn <rune|all> [stars]|forget <rune|all>} {@code /hextale quests reset} and
+ * {@code /hextale void get|set|add|stage|breach|clear}: test helpers for operators. {@code /hextale research ...} and
+ * {@code /hextale guide ...} for admins and quest rewards live in {@link KnowledgeCommands}.
+ */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class HextaleCommand {
     private static final String ALL = "all";
@@ -66,6 +70,8 @@ public final class HextaleCommand {
                 .then(Commands.literal("quests")
                         .then(Commands.literal("reset")
                                 .executes(context -> resetQuests(context.getSource()))))
+                .then(KnowledgeCommands.research())
+                .then(KnowledgeCommands.guide())
                 .then(Commands.literal("void")
                         .then(Commands.literal("get")
                                 .executes(context -> getThinning(context.getSource())))

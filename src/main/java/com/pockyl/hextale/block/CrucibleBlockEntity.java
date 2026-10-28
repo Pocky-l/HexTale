@@ -37,6 +37,8 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.ResearchTopic;
+import com.pockyl.hextale.transport.ItemIntake;
+import com.pockyl.hextale.transport.WaterInlet;
 import com.pockyl.hextale.research.ResearchTopics;
 import com.pockyl.hextale.runework.BurnerRune;
 import com.pockyl.hextale.runework.HolderRune;
@@ -62,7 +64,7 @@ import org.jspecify.annotations.Nullable;
  * bottle takes one dose as a Chem Vial. A Chem Burner below is the hottest heat (5); its runes may add a dose and give
  * experience for every brew.
  */
-public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
+public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterInlet.Vessel {
     /** What it holds in all: water and essence. */
     public static final int CAPACITY = 1500;
     public static final int BUCKET = 1000;
@@ -143,6 +145,21 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
     private final long[] grewAt = new long[com.pockyl.hextale.rune.Essence.values().length];
     /** Results just thrown out: no crucible catches them again for a moment. */
     private final java.util.Map<java.util.UUID, Long> thrownOut = new java.util.HashMap<>();
+    /** What other mods' pipes and tanks see: water goes in, nothing comes out. */
+    private final WaterInlet waterInlet = new WaterInlet(this);
+    /** Items piped in fall into the water as if dropped over the pot. */
+    private final ItemIntake itemIntake = new ItemIntake(new ItemIntake.Mouth() {
+        @Override
+        public int room(net.neoforged.neoforge.transfer.item.ItemResource resource, List<ItemIntake.Arrival> pending,
+                        java.util.@Nullable UUID deliverer) {
+            return takesPiped(resource.toStack(1), deliverer) ? resource.getMaxStackSize() : 0;
+        }
+
+        @Override
+        public void arrive(ItemStack stack, java.util.@Nullable UUID deliverer) {
+            piped(stack, deliverer);
+        }
+    });
 
     public CrucibleBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CRUCIBLE.get(), pos, state);
@@ -539,6 +556,70 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
 
     public float sankFrom() {
         return sankFrom;
+    }
+
+    // ---- Pipes, hoppers and tanks of other mods -------------------------------------------------------------------------
+
+    /** The water inlet for other mods' pipes and tanks (any side). */
+    public WaterInlet waterInlet() {
+        return waterInlet;
+    }
+
+    /** The item intake for hoppers, pylons and other mods' pipes (not from below: that is where the heat is). */
+    public ItemIntake itemIntake() {
+        return itemIntake;
+    }
+
+    /** Room for piped water: up to the brim, never over it (only a bucket by hand makes it brim over). */
+    @Override
+    public int waterRoom() {
+        return drying() ? 0 : Math.max(0, CAPACITY - volume());
+    }
+
+    /** Piped water runs in quietly; the clients hear of the new level with the next temperature update. */
+    @Override
+    public void pipeWater(int amount) {
+        boolean wasEmpty = liquid() <= 0;
+        water = Math.min(CAPACITY, water + Math.max(0, amount));
+        setChanged();
+        if (wasEmpty) {
+            sync();
+        } else {
+            dirty = true;
+        }
+    }
+
+    /**
+     * Whether a piped item would be taken in: a catalyst the water can pay for (cold water too), or, in boiling water,
+     * anything with essences or a brew's catalyst. Research locks hold: only the owner of the pylon that brings it counts
+     * as the researcher, a hopper or another mod's pipe never does.
+     */
+    private boolean takesPiped(ItemStack stack, java.util.@Nullable UUID deliverer) {
+        if (level == null || level.isClientSide() || drying() || liquid() <= 0 || stack.isEmpty()) {
+            return false;
+        }
+        if (CrucibleRecipe.find(stack, essence, researcher(deliverer)) != null) {
+            return true;
+        }
+        return boiling() && (!essencesOf(stack).isEmpty() || BrewRecipe.find(stack, essence, heat(), brew) != null);
+    }
+
+    /** Piped items sink as if dropped in; what the water will not take now falls in from just over the rim. */
+    private void piped(ItemStack stack, java.util.@Nullable UUID deliverer) {
+        if (!(level instanceof ServerLevel server) || stack.isEmpty()) {
+            return;
+        }
+        sankFrom = BRIM;
+        int taken = take(stack, stack.getCount(), true, researcher(deliverer));
+        if (taken < stack.getCount()) {
+            ItemEntity rest = new ItemEntity(server, worldPosition.getX() + 0.5, worldPosition.getY() + 1.05, worldPosition.getZ() + 0.5,
+                    stack.copyWithCount(stack.getCount() - taken), 0, 0, 0);
+            server.addFreshEntity(rest);
+        }
+    }
+
+    private @Nullable Player researcher(java.util.@Nullable UUID player) {
+        return player == null || !(level instanceof ServerLevel server) ? null : server.getServer().getPlayerList().getPlayer(player);
     }
 
     // ---- Filling and emptying ------------------------------------------------------------------------------------

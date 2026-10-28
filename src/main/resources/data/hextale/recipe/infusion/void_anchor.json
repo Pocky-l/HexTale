@@ -1,0 +1,21 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:hextech_crystal",
+  "pedestals": [
+    "hextale:nullstone",
+    "hextale:nullstone",
+    "hextale:nullstone",
+    "hextale:nullstone",
+    "#c:ingots/brass",
+    "#c:ingots/brass"
+  ],
+  "essences": {
+    "shadow": 12,
+    "earth": 12,
+    "crystal": 8
+  },
+  "result": {
+    "id": "hextale:void_anchor",
+    "count": 2
+  }
+}

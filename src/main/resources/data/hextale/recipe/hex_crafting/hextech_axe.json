@@ -1,0 +1,19 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "BUB",
+    " T ",
+    " X "
+  ],
+  "key": {
+    "B": "#c:ingots/brass",
+    "U": "hextale:unstable_hextech",
+    "T": "minecraft:iron_axe",
+    "X": "minecraft:dark_oak_log"
+  },
+  "result": {
+    "id": "hextale:hextech_axe",
+    "count": 1
+  },
+  "charge": 2
+}

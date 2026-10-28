@@ -236,7 +236,7 @@ public final class Healing {
     /** Heals one column's top: the ground turns back, the Void's growth on it withers. */
     private static boolean healAt(ServerLevel level, BlockPos pos, RandomSource random, int blessing) {
         BlockState ground = level.getBlockState(pos);
-        if (!ground.is(ModTags.VOID_GROUND)) {
+        if (!ground.is(ModTags.VOID_GROUND) || ground.is(ModTags.VOID_IMMUNE)) {
             return false;
         }
         BlockState healed = restored(level, pos, ground);
@@ -246,7 +246,7 @@ public final class Healing {
         level.sendParticles(ModParticles.vapour(0x3A2440), at.x, at.y, at.z, 2, 0.3, 0.05, 0.3, 0.01);
         BlockPos above = pos.above();
         BlockState plant = level.getBlockState(above);
-        if (plant.getBlock() instanceof VoidFloraBlock) {
+        if (plant.getBlock() instanceof VoidFloraBlock && !plant.is(ModTags.VOID_IMMUNE)) {
             BlockState dead = Blocks.DEAD_BUSH.defaultBlockState();
             level.setBlockAndUpdate(above, random.nextFloat() < 0.4F && dead.canSurvive(level, above) ? dead : Blocks.AIR.defaultBlockState());
             level.sendParticles(ModParticles.vapour(0x2A1A30), above.getX() + 0.5, above.getY() + 0.3, above.getZ() + 0.5, 3, 0.2, 0.2, 0.2, 0.01);

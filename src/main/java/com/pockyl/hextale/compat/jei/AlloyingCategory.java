@@ -36,7 +36,8 @@ public class AlloyingCategory extends AbstractRecipeCategory<AlloyingCategory.Re
             List<ItemStack> stacks = input.ingredient().items().map(item -> new ItemStack(item, input.count())).toList();
             builder.addInputSlot(1 + i * 18, StepCategory.ROW_Y).setStandardSlotBackground().addItemStacks(stacks);
         }
-        builder.addOutputSlot(StepCategory.RESULT_X, StepCategory.ROW_Y).setOutputSlotBackground().add(recipe.recipe().result());
+        ResearchNote.add(builder.addOutputSlot(StepCategory.RESULT_X, StepCategory.ROW_Y).setOutputSlotBackground().add(recipe.recipe().result()),
+                recipe.recipe().result().item().value());
     }
 
     @Override

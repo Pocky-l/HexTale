@@ -78,7 +78,7 @@ public class ImpulsePlateRenderer implements BlockEntityRenderer<ImpulsePlateBlo
             }
         } else {
             boolean shown = level.getGameTime() - plate.aimedAt < SHOW_AFTER_AIM
-                    || player.getItemBySlot(EquipmentSlot.HEAD).is(ModItems.RESEARCHERS_GOGGLES.get())
+                    || com.pockyl.hextale.client.GogglesView.wearing(player)
                     || player.getMainHandItem().is(ModItems.IMPULSE_PLATE.get()) || player.getOffhandItem().is(ModItems.IMPULSE_PLATE.get());
             if (!shown) {
                 target = null;

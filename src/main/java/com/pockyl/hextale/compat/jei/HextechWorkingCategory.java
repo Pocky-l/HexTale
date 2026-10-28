@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import com.pockyl.hextale.crafting.AwakeningRecipe;
 import com.pockyl.hextale.registry.ModItems;
 
 import java.util.List;
@@ -25,20 +26,27 @@ public final class HextechWorkingCategory {
     }
 
     public static List<StepCategory.Step> all() {
-        return List.of(
-                step(List.of(new ItemStack(Items.LIGHTNING_ROD), new ItemStack(Items.AMETHYST_BLOCK)),
-                        new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), "lightning"),
-                step(List.of(new ItemStack(ModItems.UNSTABLE_HEXTECH.get())), new ItemStack(ModItems.HEXTECH_DUST.get(), 2), "throw"),
-                step(List.of(new ItemStack(ModItems.HEXTECH_DUST.get()), new ItemStack(Items.CRAFTING_TABLE)),
-                        new ItemStack(ModItems.HEX_WORKBENCH.get()), "awaken"),
-                step(List.of(new ItemStack(ModItems.HEXTECH_DUST.get()), new ItemStack(Items.FURNACE)),
-                        new ItemStack(ModItems.HEX_FURNACE.get()), "awaken"),
-                step(List.of(new ItemStack(ModItems.HEXTECH_DUST.get()), new ItemStack(Items.CAULDRON)),
-                        new ItemStack(ModItems.CRUCIBLE.get()), "awaken"),
-                step(List.of(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(ModItems.CUTTING_DISC.get())),
-                        new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), "cut"),
-                step(List.of(new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), new ItemStack(ModItems.MASTER_CUTTING_DISC.get())),
-                        new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), "finish"));
+        List<StepCategory.Step> steps = new java.util.ArrayList<>();
+        steps.add(step(List.of(new ItemStack(Items.LIGHTNING_ROD), new ItemStack(Items.AMETHYST_BLOCK)),
+                new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), "lightning"));
+        steps.add(step(List.of(new ItemStack(ModItems.UNSTABLE_HEXTECH.get())), new ItemStack(ModItems.HEXTECH_DUST.get(), 2), "throw"));
+        // Awakenings are data (recipe type hextale:awakening): one step per recipe whose blocks have items.
+        for (AwakeningRecipe recipe : AwakeningRecipe.ALL.get(true).values()) {
+            List<ItemStack> blocks = recipe.block().stream().map(block -> new ItemStack(block.value().asItem()))
+                    .filter(stack -> !stack.isEmpty()).toList();
+            List<ItemStack> catalyst = recipe.catalyst().map(ingredient -> ingredient.items().map(ItemStack::new).toList())
+                    .orElse(List.of(new ItemStack(ModItems.HEXTECH_DUST.get())));
+            ItemStack result = new ItemStack(recipe.result().asItem());
+            if (!blocks.isEmpty() && !result.isEmpty()) {
+                steps.add(new StepCategory.Step(List.of(StepCategory.Input.of(catalyst.toArray(ItemStack[]::new)),
+                        StepCategory.Input.of(blocks.toArray(ItemStack[]::new))), result, Component.translatable("jei.hextale.working.awaken")));
+            }
+        }
+        steps.add(step(List.of(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), new ItemStack(ModItems.CUTTING_DISC.get())),
+                new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), "cut"));
+        steps.add(step(List.of(new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), new ItemStack(ModItems.MASTER_CUTTING_DISC.get())),
+                new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), "finish"));
+        return steps;
     }
 
     private static StepCategory.Step step(List<ItemStack> inputs, ItemStack result, String note) {

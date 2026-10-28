@@ -4,6 +4,59 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0+26.1.2] - Unreleased
+### Changed
+- Ported to Minecraft 26.1.2 ([NeoForge](https://neoforged.net/) 26.1.2). Everything of 1.4.0 for Minecraft 26.3 (below)
+  is included: recipes for data packs and recipe scripts, common tags, claims, pipes and tanks of other mods, essence as
+  a fluid, quest triggers and commands, and [Curios](https://www.curseforge.com/minecraft/mc-mods/curios) for the
+  Researcher's Goggles. What 26.1.2 lacks is replaced as in 1.3.0+26.1.2.
+
+## [1.4.0] - 2026-10-28
+Ready for modpacks: every recipe can be changed by data packs and recipe scripts, shared materials go by common tags,
+machines respect claims, and other mods' pipes, quests and slots work with HexTale.
+
+### Added
+- The mod's recipes are ordinary recipe types now: `hextale:hex_crafting` (Hex Workbench), `hextale:infusion` (the
+  altar), `hextale:alloying` (Hex Furnace), `hextale:crucible`, `hextale:brewing`, `hextale:lab_experiment` and the
+  new `hextale:awakening` (which block hextech dust wakes into what). Data packs, [KubeJS](https://www.curseforge.com/minecraft/mc-mods/kubejs)
+  and [KubeGroovy](https://mods.uncandango.dev/kubegroovy/) can change, add and remove them. The diary still finds a
+  recipe a pack replaced under another name.
+- Common tags: brass, hexsteel, hextech dust and crystal, stripped magic wood; recipes ask for brass, zinc, hexsteel,
+  iron, copper, glass and other shared materials by tag, so the same metals from other mods work.
+- Item tags for the Research Table's parchment (`hextale:research_paper`) and the Separator's fuel
+  (`hextale:separator_fuels`); biome tags for sphalerite, struck geodes and bloom caves
+  (`hextale:has_sphalerite`, `has_struck_geodes`, `has_bloom_caves`) - empty one to turn that feature off.
+- Claims are respected on servers: tools, gadgets, machines and the Void ask claim mods (FTB Chunks, Open Parties and
+  Claims and any mod using NeoForge's block events) before they break or place blocks. Devices act in the name of the
+  player who placed them; the Void and lightning act as "[HexTale]", so server owners can allow or deny them.
+- Server config: `blightChangesBlocks`, `voidMitesSpawn`, `voidlingsSpawn` and `breaches`, all on by default; block tag
+  `hextale:void_immune` for blocks the blight, the healing land and the Hexcore's lightning never touch.
+- Pipes, tanks and hoppers from other mods: the Crucible and Alembic take water, the Crucible takes items as if they
+  were dropped in, the Crystal Battery and the Hex Workbench's socket take crystals, the Hex Lapidary takes crystals and
+  discs and gives out finished stones. Modded buckets and tanks work on the Crucible and Alembic. The Pump fills a tank
+  from another mod on top of it; the Experience Condenser offers its experience as liquid experience when a mod adds one.
+- Pure essence leaves and enters the mod as a fluid, so tanks, pipes and storage networks of other mods can hold and
+  move it: an Essence Jar (also the Big one) gives essence fluid only while it holds a single essence - mixtures stay
+  in the jar and are never split - and takes the essence fluid its sticker allows, mixing it in like a pipe. The
+  Creative Essence Jar gives every essence without end. Essence fluids are named after their essence and tinted in its
+  colour; JEI lists one per essence.
+- The Sorting Matrix knows common modded chests, barrels and drawers.
+- For quests: advancement triggers `hextale:research_completed`, `guide_step`, `guide_event` and `ritual_finished`,
+  and operator commands `/hextale research grant|revoke` and `/hextale guide grant|reset`.
+- JEI: a result's tooltip names the research that opens it; recipes move into the Hex Workbench's grid with the
+  transfer button; the workbench and the Hex Furnace show up for vanilla crafting and smelting. Jade shows the
+  workbench's charge.
+- [Curios](https://www.curseforge.com/minecraft/mc-mods/curios) (optional): the Researcher's Goggles work from a head
+  slot and show on the head there, over a helmet too.
+- A guide for modpack makers: [docs/modpack.md](https://github.com/Pocky-l/HexTale/blob/main/docs/modpack.md). Released item and block ids stay: a renamed one
+  keeps working under its old name.
+
+### Changed
+- The Spawner Cage, multiblock forming and dust awakening tell you when a place is protected.
+
+### Fixed
+- A Rift Gate no longer takes fluids while it is not linked, and pipes can no longer pull fluid out of it.
+- The Hex Lapidary starts a fresh cut when a hopper puts a crystal in.
 ## [1.3.0+26.1.2] - 2026-10-28
 ### Changed
 - Ported to Minecraft 26.1.2 ([NeoForge](https://neoforged.net/) 26.1.2). Everything of 1.3.0 for Minecraft 26.3 is

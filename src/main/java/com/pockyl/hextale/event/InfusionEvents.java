@@ -7,18 +7,15 @@ import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 
 import com.pockyl.hextale.Hextale;
-import com.pockyl.hextale.crafting.AlloyRecipe;
-import com.pockyl.hextale.crafting.HexCraftingRecipe;
-import com.pockyl.hextale.network.CraftingRecipesPayload;
+import com.pockyl.hextale.crafting.DataRecipes;
 import com.pockyl.hextale.network.GuidePayload;
 import com.pockyl.hextale.quest.Guide;
-import com.pockyl.hextale.infusion.InfusionRecipes;
-import com.pockyl.hextale.network.InfusionRecipesPayload;
 import com.pockyl.hextale.network.ModNetwork;
+import com.pockyl.hextale.network.RecipesPayload;
 
 /**
- * Loads the altar, Hex Workbench and Hex Furnace recipes and the researcher's guide with the data packs and sends them to
- * the clients.
+ * Loads the researcher's guide with the data packs and sends it and the mod's recipes (read by the vanilla recipe manager,
+ * see {@code DataRecipes}) to the clients.
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class InfusionEvents {
@@ -27,12 +24,6 @@ public final class InfusionEvents {
 
     @SubscribeEvent
     public static void onAddReloadListeners(AddServerReloadListenersEvent event) {
-        event.addListener(Hextale.id("infusion"), new InfusionRecipes.Loader(event.getServerResources().getRegistryLookup()));
-        event.addListener(Hextale.id("hex_crafting"), HexCraftingRecipe.ALL.loader(event.getServerResources().getRegistryLookup()));
-        event.addListener(Hextale.id("alloying"), AlloyRecipe.ALL.loader(event.getServerResources().getRegistryLookup()));
-        event.addListener(Hextale.id("crucible"), com.pockyl.hextale.crafting.CrucibleRecipe.ALL.loader(event.getServerResources().getRegistryLookup()));
-        event.addListener(Hextale.id("brewing"), com.pockyl.hextale.crafting.BrewRecipe.ALL.loader(event.getServerResources().getRegistryLookup()));
-        event.addListener(Hextale.id("experiments"), com.pockyl.hextale.research.ExperimentPlan.ALL.loader(event.getServerResources().getRegistryLookup()));
         event.addListener(Hextale.id("guide"), Guide.loader(event.getServerResources().getRegistryLookup()));
     }
 
@@ -42,10 +33,9 @@ public final class InfusionEvents {
     }
 
     private static void send(ServerPlayer player) {
-        ModNetwork.sendToPlayer(player, new InfusionRecipesPayload(InfusionRecipes.get(false)));
-        ModNetwork.sendToPlayer(player, new CraftingRecipesPayload(HexCraftingRecipe.ALL.get(false), AlloyRecipe.ALL.get(false),
-                com.pockyl.hextale.crafting.CrucibleRecipe.ALL.get(false), com.pockyl.hextale.crafting.BrewRecipe.ALL.get(false),
-                com.pockyl.hextale.research.ExperimentPlan.ALL.get(false)));
+        for (DataRecipes<?> kind : DataRecipes.kinds()) {
+            ModNetwork.sendToPlayer(player, RecipesPayload.of(kind));
+        }
         ModNetwork.sendToPlayer(player, new GuidePayload(Guide.server().definitions()));
     }
 }

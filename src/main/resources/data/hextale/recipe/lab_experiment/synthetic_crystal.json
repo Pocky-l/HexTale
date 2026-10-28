@@ -1,0 +1,7 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "synthetic_crystal",
+  "target": "crystal",
+  "amount": 8,
+  "purity": 0.65
+}

@@ -102,9 +102,12 @@ block in a thunderstorm makes more, and dungeon chests sometimes hold an orb. Th
 recipe, and most devices are researched at the Research Table before they can be made. In creative mode everything is
 in the Pocky Mods tab.
 
-For modpack makers: working with essence slowly sickens the land around a base (the Thinning). A lilac fog closes in
-to 28 blocks, the ground turns to Void soil, Void Mites latch on and take hearts until a potion of healing shakes them
-off, and at last a breach opens and sends out voidlings. The land can be healed with the mod's own devices.
+For modpack makers: every recipe of the mod is an ordinary recipe type (`hextale:hex_crafting`, `hextale:infusion`,
+`hextale:alloying`, ...), so data packs, [KubeJS](https://www.curseforge.com/minecraft/mc-mods/kubejs) and [KubeGroovy](https://mods.uncandango.dev/kubegroovy/) can change, add and remove them; shared materials go by
+`c:` tags, world generation by biome tags. Machines and the Void respect claims, pipes and hoppers of other mods work
+with the crucible, the alembic and more, and quests get advancement triggers and commands. Everything is listed in
+[the modpack guide](docs/modpack.md). Working with essence slowly sickens the land around a base (the Thinning): a lilac fog,
+Void soil, Void Mites that take hearts, at last a breach with voidlings; the mod's own devices heal it.
 `thinning = false` in `hextale-synced.toml` turns it off, `thinningRate` makes it faster or slower. You are free to use
 HexTale in any modpack.
 
@@ -127,6 +130,8 @@ HexTale in any modpack.
 [![JEI](docs/compat/jei.png)](https://www.curseforge.com/minecraft/mc-mods/jei) ✅ **[JEI](https://www.curseforge.com/minecraft/mc-mods/jei)** (optional) - every recipe of the mod: workbench, alloys, crucible and brews, altar rituals and runes, boiling and separation, lab experiments, chemtech fuel and devices.
 
 [![Jade](docs/compat/jade.png)](https://www.curseforge.com/minecraft/mc-mods/jade) ✅ **[Jade](https://www.curseforge.com/minecraft/mc-mods/jade)** (optional) - what jars, machines and mechanisms hold and do.
+
+[![Curios](docs/compat/curios.png)](https://www.curseforge.com/minecraft/mc-mods/curios) ✅ **[Curios](https://www.curseforge.com/minecraft/mc-mods/curios)** (optional) - the Researcher's Goggles work from a head slot and show on the head, over a helmet too.
 
 ## Installation
 

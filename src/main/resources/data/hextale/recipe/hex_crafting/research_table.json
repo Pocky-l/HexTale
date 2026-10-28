@@ -1,0 +1,17 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "BBB",
+    "PSP",
+    "P P"
+  ],
+  "key": {
+    "B": "#c:ingots/brass",
+    "P": "#minecraft:planks",
+    "S": "#c:bookshelves"
+  },
+  "result": {
+    "id": "hextale:research_table"
+  },
+  "charge": 2
+}

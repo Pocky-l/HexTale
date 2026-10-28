@@ -528,7 +528,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
 
     /** Separation always burns blaze powder. */
     public static boolean isFuel(ItemStack stack) {
-        return stack.is(Items.BLAZE_POWDER);
+        return stack.is(com.pockyl.hextale.registry.ModTags.SEPARATOR_FUELS);
     }
 
     @Override

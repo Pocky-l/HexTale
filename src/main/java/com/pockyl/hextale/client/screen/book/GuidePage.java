@@ -1542,7 +1542,7 @@ final class GuidePage {
                     PixelArt.essence(graphics, essence, sx + 4, y, 10, PixelArt.argb(essence.color(), 1));
                     Component extra = Component.translatable("book.hextale.quest.reagent_for", Component.translatable(essence.translationKey()))
                             .withColor(essence.color());
-                    tooltip = orTooltip(tooltip, slot(graphics, new ItemStack(net.minecraft.world.item.Items.BLAZE_POWDER), sx, y + 12,
+                    tooltip = orTooltip(tooltip, slot(graphics, cycle(com.pockyl.hextale.registry.ModTags.stacks(com.pockyl.hextale.registry.ModTags.SEPARATOR_FUELS), now), sx, y + 12,
                             mouseX, mouseY, extra));
                     sx += SLOT;
                 }
@@ -1564,8 +1564,7 @@ final class GuidePage {
     @Nullable
     private List<FormattedCharSequence> renderHexCrafting(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
                                                           int mouseY, long now) {
-        com.pockyl.hextale.crafting.HexCraftingRecipe recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(true)
-                .get(Identifier.parse(display.result()));
+        com.pockyl.hextale.crafting.HexCraftingRecipe recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.named(Identifier.parse(display.result()), true);
         int centre = x + innerWidth() / 2;
         if (recipe == null) {
             PixelArt.flush(graphics);
@@ -1594,8 +1593,7 @@ final class GuidePage {
     @Nullable
     private List<FormattedCharSequence> renderAlloy(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX,
                                                     int mouseY, long now) {
-        com.pockyl.hextale.crafting.AlloyRecipe recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(true)
-                .get(Identifier.parse(display.result()));
+        com.pockyl.hextale.crafting.AlloyRecipe recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.named(Identifier.parse(display.result()), true);
         int centre = x + innerWidth() / 2;
         if (recipe == null) {
             PixelArt.flush(graphics);
@@ -1733,7 +1731,7 @@ final class GuidePage {
     }
 
     private static int infusionHeight(QuestDisplay display) {
-        InfusionRecipe recipe = InfusionRecipes.get(true).get(Identifier.parse(display.result()));
+        InfusionRecipe recipe = InfusionRecipes.ALL.named(Identifier.parse(display.result()), true);
         if (recipe == null) {
             return INFUSION_RING * 2 + SLOT + 16;
         }
@@ -1750,7 +1748,7 @@ final class GuidePage {
     @Nullable
     private List<FormattedCharSequence> renderInfusion(GuiGraphicsExtractor graphics, QuestDisplay display, int x, int y, int mouseX, int mouseY,
                                                        long now) {
-        InfusionRecipe recipe = InfusionRecipes.get(true).get(Identifier.parse(display.result()));
+        InfusionRecipe recipe = InfusionRecipes.ALL.named(Identifier.parse(display.result()), true);
         if (recipe == null) {
             PixelArt.flush(graphics);
             graphics.centeredText(font, Component.translatable("book.hextale.quest.infusion.missing"), x + innerWidth() / 2, y + 30, MUTED);
@@ -2006,6 +2004,11 @@ final class GuidePage {
     // ---- Small drawing helpers ---------------------------------------------------------------------------------------
 
     /** One of an ingredient's items, changing every second. */
+    /** One of the stacks, switching like the icon lists (blaze powder when the tag is empty). */
+    private static ItemStack cycle(List<ItemStack> stacks, long now) {
+        return stacks.isEmpty() ? new ItemStack(net.minecraft.world.item.Items.BLAZE_POWDER) : stacks.get((int) (now / com.pockyl.hextale.quest.Quest.ICON_TICK % stacks.size()));
+    }
+
     private static ItemStack cycle(Ingredient ingredient, long now, int salt) {
         var items = ingredient.items().toList();
         if (items.isEmpty()) {

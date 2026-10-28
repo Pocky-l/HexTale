@@ -58,6 +58,6 @@ public enum Requirement {
     /** Every research - a rune or an item study - is written on a paper from the table's paper slot when it starts. */
     @Nullable
     public static Requirement paper(Container table, Player player) {
-        return table.getItem(ResearchTableBlockEntity.PAPER).is(Items.PAPER) ? null : PAPER;
+        return table.getItem(ResearchTableBlockEntity.PAPER).is(com.pockyl.hextale.registry.ModTags.RESEARCH_PAPER) ? null : PAPER;
     }
 }

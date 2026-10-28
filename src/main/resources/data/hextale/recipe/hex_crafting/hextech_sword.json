@@ -1,0 +1,19 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "BUB",
+    " T ",
+    " X "
+  ],
+  "key": {
+    "B": "#c:ingots/brass",
+    "U": "hextale:unstable_hextech",
+    "T": "minecraft:iron_sword",
+    "X": "#c:gems/amethyst"
+  },
+  "result": {
+    "id": "hextale:hextech_sword",
+    "count": 1
+  },
+  "charge": 2
+}

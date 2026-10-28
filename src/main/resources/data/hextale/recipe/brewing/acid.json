@@ -1,0 +1,11 @@
+{
+  "type": "hextale:brewing",
+  "catalyst": "minecraft:fermented_spider_eye",
+  "essences": {
+    "decay": 8,
+    "water": 4
+  },
+  "brew": "acid",
+  "heat": 5,
+  "doses": 3
+}

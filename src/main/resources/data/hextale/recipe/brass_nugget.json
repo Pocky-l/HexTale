@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "hextale:brass_ingot"
+    "#c:ingots/brass"
   ],
   "result": {
     "id": "hextale:brass_nugget",

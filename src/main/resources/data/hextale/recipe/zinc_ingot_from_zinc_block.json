@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "hextale:zinc_block"
+    "#c:storage_blocks/zinc"
   ],
   "result": {
     "id": "hextale:zinc_ingot",

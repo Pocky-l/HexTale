@@ -23,7 +23,7 @@ import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A Hex Workbench recipe, read from {@code data/<namespace>/hextale_crafting/<name>.json}: a vanilla-style shaped
+ * A Hex Workbench recipe, recipe type {@code hextale:hex_crafting}: a vanilla-style shaped
  * ({@code key} + {@code pattern}) or shapeless ({@code ingredients}) grid, its {@code result}, and the {@code charge}
  * the workbench's crystal spends on it (default 1).
  */
@@ -31,7 +31,7 @@ public record HexCraftingRecipe(Either<ShapedRecipePattern, List<Ingredient>> sh
     private static final MapCodec<Either<ShapedRecipePattern, List<Ingredient>>> SHAPE_CODEC =
             Codec.mapEither(ShapedRecipePattern.MAP_CODEC, Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients"));
 
-    public static final Codec<HexCraftingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<HexCraftingRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             SHAPE_CODEC.forGetter(HexCraftingRecipe::shape),
             ItemStackTemplate.CODEC.fieldOf("result").forGetter(HexCraftingRecipe::result),
             Codec.intRange(0, 64).optionalFieldOf("charge", 1).forGetter(HexCraftingRecipe::charge)
@@ -45,7 +45,7 @@ public record HexCraftingRecipe(Either<ShapedRecipePattern, List<Ingredient>> sh
             HexCraftingRecipe::new);
 
     /** Every hex crafting recipe, server and client. */
-    public static final DataRecipes<HexCraftingRecipe> ALL = new DataRecipes<>("hextale_crafting", CODEC);
+    public static final DataRecipes<HexCraftingRecipe> ALL = new DataRecipes<>("hex_crafting", MAP_CODEC, STREAM_CODEC, recipe -> recipe.result().item().value());
 
     /** Whether the grid (trimmed to its used rows and columns) holds this recipe. */
     public boolean matches(CraftingInput input) {

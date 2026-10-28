@@ -1,0 +1,11 @@
+{
+  "type": "hextale:brewing",
+  "catalyst": "#hextale:fuel_catalysts",
+  "essences": {
+    "fire": 8,
+    "ash": 4
+  },
+  "brew": "fuel",
+  "heat": 2,
+  "doses": 4
+}

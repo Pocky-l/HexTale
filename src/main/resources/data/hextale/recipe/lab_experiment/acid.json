@@ -1,0 +1,8 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "acid",
+  "target": "decay",
+  "amount": 8,
+  "purity": 0.65,
+  "sample": "minecraft:fermented_spider_eye"
+}

@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "hextale:zinc_ingot"
+    "#c:ingots/zinc"
   ],
   "result": {
     "id": "hextale:zinc_nugget",

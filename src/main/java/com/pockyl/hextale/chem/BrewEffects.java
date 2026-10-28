@@ -35,6 +35,7 @@ import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.registry.ModTags;
+import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,6 +69,11 @@ public final class BrewEffects {
     }
 
     public static void splash(ServerLevel level, Vec3 at, Brew brew, @Nullable Entity thrower) {
+        splash(level, at, brew, thrower, WorldEdits.actor(level, thrower, null));
+    }
+
+    /** {@link #splash(ServerLevel, Vec3, Brew, Entity)} changing only the blocks {@code actor} (who threw it) may change. */
+    public static void splash(ServerLevel level, Vec3 at, Brew brew, @Nullable Entity thrower, Player actor) {
         level.sendParticles(ModParticles.drop(brew.color()), at.x, at.y, at.z, 26, 0.2, 0.15, 0.2, 0.18);
         level.sendParticles(ModParticles.wisp(brew.color()), at.x, at.y, at.z, 10, 0.6, 0.35, 0.6, 0.01);
         level.sendParticles(ModParticles.ring(brew.color()), at.x, at.y + 0.05, at.z, 0, 1.6, 1, 0, 1);
@@ -80,9 +86,9 @@ public final class BrewEffects {
         BlockPos center = BlockPos.containing(at);
         switch (brew) {
             case GROWTH -> growth(level, center, thrower);
-            case COOLANT -> coolant(level, center);
-            case GLOW -> glow(level, center);
-            case ACID -> acid(level, at, thrower);
+            case COOLANT -> coolant(level, center, actor);
+            case GLOW -> glow(level, center, actor);
+            case ACID -> acid(level, at, thrower, actor);
             case FUEL -> level.sendParticles(ModParticles.flame(ModParticles.SOUL_FIRE), at.x, at.y, at.z, 16, 0.4, 0.2, 0.4, 0.03);
         }
     }
@@ -114,7 +120,7 @@ public final class BrewEffects {
         }
     }
 
-    private static void coolant(ServerLevel level, BlockPos center) {
+    private static void coolant(ServerLevel level, BlockPos center, Player actor) {
         boolean hissed = false;
         for (BlockPos pos : BlockPos.betweenClosed(center.offset(-COOLANT_RADIUS, -COOLANT_RADIUS, -COOLANT_RADIUS),
                 center.offset(COOLANT_RADIUS, COOLANT_RADIUS, COOLANT_RADIUS))) {
@@ -131,9 +137,8 @@ public final class BrewEffects {
             } else if (state.is(Blocks.MAGMA_BLOCK)) {
                 into = Blocks.NETHERRACK.defaultBlockState();
             }
-            if (into != null) {
-                BlockPos at = pos.immutable();
-                level.setBlock(at, into, Block.UPDATE_ALL);
+            BlockPos at = pos.immutable();
+            if (into != null && WorldEdits.change(level, at, into, Block.UPDATE_ALL, actor)) {
                 level.sendParticles(ModParticles.vapour(ModParticles.SOOT), at.getX() + 0.5, at.getY() + 0.8, at.getZ() + 0.5, 2, 0.2, 0.1, 0.2, 0.01);
                 hissed = true;
             }
@@ -150,7 +155,7 @@ public final class BrewEffects {
         }
     }
 
-    private static void glow(ServerLevel level, BlockPos center) {
+    private static void glow(ServerLevel level, BlockPos center, Player actor) {
         MultifaceBlock glow = ModBlocks.CHEM_GLOW.get();
         List<BlockPos> spots = new ArrayList<>();
         for (BlockPos pos : BlockPos.betweenClosed(center.offset(-GLOW_RADIUS, -GLOW_RADIUS, -GLOW_RADIUS),
@@ -172,8 +177,9 @@ public final class BrewEffects {
             for (Direction face : Direction.values()) {
                 BlockState with = glow.getStateForPlacement(here, level, pos, face);
                 if (with != null && with != here) {
-                    level.setBlock(pos, with, Block.UPDATE_ALL);
-                    placed++;
+                    if (WorldEdits.change(level, pos, with, Block.UPDATE_ALL, actor)) {
+                        placed++;
+                    }
                     break;
                 }
             }
@@ -184,7 +190,7 @@ public final class BrewEffects {
         level.sendParticles(ModParticles.glint(Brew.GLOW.color()), center.getX() + 0.5, center.getY() + 0.5, center.getZ() + 0.5, 16, 1.0, 0.6, 1.0, 0.02);
     }
 
-    private static void acid(ServerLevel level, Vec3 at, @Nullable Entity thrower) {
+    private static void acid(ServerLevel level, Vec3 at, @Nullable Entity thrower, Player actor) {
         BlockPos center = BlockPos.containing(at);
         int reach = (int) Math.ceil(ACID_RADIUS);
         int eaten = 0;
@@ -201,10 +207,11 @@ public final class BrewEffects {
                 into = copper.getNext(state).orElse(null);
             } else if (state.is(ModTags.ACID_DISSOLVES) && level.getBlockEntity(here) == null && state.getDestroySpeed(level, here) >= 0) {
                 into = Blocks.AIR.defaultBlockState();
-                eaten++;
             }
-            if (into != null) {
-                level.setBlock(here, into, Block.UPDATE_ALL);
+            if (into != null && WorldEdits.change(level, here, into, Block.UPDATE_ALL, actor)) {
+                if (into.isAir()) {
+                    eaten++;
+                }
                 level.sendParticles(ModParticles.wisp(Brew.ACID.color()), here.getX() + 0.5, here.getY() + 0.5, here.getZ() + 0.5,
                         4, 0.3, 0.3, 0.3, 0);
                 level.sendParticles(ModParticles.vapour(ModParticles.SMOKE), here.getX() + 0.5, here.getY() + 0.5, here.getZ() + 0.5, 2, 0.25, 0.25, 0.25, 0.01);

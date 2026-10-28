@@ -82,6 +82,7 @@ public final class HextaleClient {
         modBus.addListener((RegisterColorHandlersEvent.ItemTintSources event) ->
                 event.register(Hextale.id("pickaxe_runes"), com.pockyl.hextale.client.render.PickaxeRuneTint.MAP_CODEC));
         modBus.addListener(TableModels::register);
+        modBus.addListener(com.pockyl.hextale.client.render.EssenceFluidModel::register);
         modBus.addListener((RegisterParticleProvidersEvent event) -> {
             event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new);
             event.registerSpriteSet(ModParticles.VOID_MOTE.get(), com.pockyl.hextale.client.particle.VoidMoteParticle.Provider::new);
@@ -99,6 +100,7 @@ public final class HextaleClient {
             event.registerSpriteSet(ModParticles.SHIMMER_MOTE.get(), ShimmerMoteParticle.Provider::new);
         });
         modBus.addListener(GogglesView::registerLayer);
+        com.pockyl.hextale.compat.curios.CuriosClientCompat.register(modBus);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::addLayers);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::registerModifier);
         modBus.addListener(com.pockyl.hextale.client.render.VoidMiteLayer::addLayers);

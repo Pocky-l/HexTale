@@ -1,0 +1,8 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "combustible_mix",
+  "target": "ash",
+  "amount": 6,
+  "purity": 0.6,
+  "sample": "#hextale:fuel_catalysts"
+}

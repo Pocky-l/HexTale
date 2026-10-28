@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.world.WorldEdits;
 
 /**
  * What the pickaxe runes do. Every value is chosen by a rune's strength - its stars (1-3, index
@@ -291,8 +292,9 @@ public final class PickaxeEffects {
         if (flame > 0 && !CHAINING.get() && level.getMaxLocalRawBrightness(pos) <= DARK && random.nextFloat() < WISP[flame - 1]) {
             // The block is gone by the time the drops fall; a wisp takes its place on the next tick, if nothing else does.
             level.getServer().execute(() -> {
-                if (level.getBlockState(pos).isAir()) {
-                    level.setBlockAndUpdate(pos, com.pockyl.hextale.registry.ModBlocks.HEX_WISP.get().defaultBlockState());
+                BlockState wisp = com.pockyl.hextale.registry.ModBlocks.HEX_WISP.get().defaultBlockState();
+                if (level.getBlockState(pos).isAir() && WorldEdits.mayPlace(level, pos, wisp, player)) {
+                    level.setBlockAndUpdate(pos, wisp);
                     ToolEffects.puff(level, at, PickaxeRune.ETERNAL_FLAME.rune(), 10, 0.2);
                     ToolEffects.sound(level, at, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.4F, 0.8F);
                 }
@@ -445,7 +447,8 @@ public final class PickaxeEffects {
         BlockState state = level.getBlockState(at);
         float speed = state.getDestroySpeed(level, at);
         if (state.isAir() || speed < 0 || level.getBlockEntity(at) != null || !state.getFluidState().isEmpty()
-                || state.requiresCorrectToolForDrops() && !tool.isCorrectToolForDrops(state) || !level.mayInteract(player, at)) {
+                || state.requiresCorrectToolForDrops() && !tool.isCorrectToolForDrops(state) || !level.mayInteract(player, at)
+                || !WorldEdits.mayBreak(level, at, player)) {
             return true;
         }
         Block.dropResources(state, level, at, null, player, tool);
@@ -592,7 +595,7 @@ public final class PickaxeEffects {
             }
             BlockState state = level.getBlockState(at);
             if (!(state.is(BlockTags.BASE_STONE_OVERWORLD) || state.is(BlockTags.BASE_STONE_NETHER) || state.is(Tags.Blocks.COBBLESTONES))
-                    || !level.mayInteract(player, at)) {
+                    || !level.mayInteract(player, at) || !WorldEdits.mayBreak(level, at, player)) {
                 continue;
             }
             level.destroyBlock(at, false, player);
