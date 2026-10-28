@@ -547,7 +547,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     }
 
     /** Height of the centre item over the block's floor (blocks); the Hexcore holds it inside its floating matrix. */
-    protected double itemY() {
+    public double itemY() {
         return ITEM_Y;
     }
 

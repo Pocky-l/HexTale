@@ -44,7 +44,7 @@ public class RuneCircleBlockEntity extends HextechAltarBlockEntity {
     }
 
     @Override
-    protected double itemY() {
+    public double itemY() {
         return ITEM_Y;
     }
 }
