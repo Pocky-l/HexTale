@@ -47,6 +47,7 @@ public final class Hextale {
         com.pockyl.hextale.registry.ModEntities.register(modBus);
         ModDataComponents.register(modBus);
         ModBlockEntities.register(modBus);
+        com.pockyl.hextale.registry.ModFluids.register(modBus);
         ModCapabilities.register(modBus);
         ModMenus.register(modBus);
         ModAttachments.register(modBus);

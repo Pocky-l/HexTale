@@ -17,7 +17,8 @@ import com.pockyl.hextale.block.HexWorkbenchBlockEntity;
 /**
  * The item handlers of the mod's machines, so hex pylons (and other mods' pipes) can feed and empty them like hoppers
  * do: each sided machine takes and gives items through the same faces as for a hopper. Fluid handlers let other mods'
- * pipes fill the water vessels and draw liquid experience (when a mod adds it) from the Experience Condenser.
+ * pipes fill the water vessels, draw liquid experience (when a mod adds it) from the Experience Condenser and move pure
+ * essence in and out of Essence Jars.
  */
 public final class ModCapabilities {
     private ModCapabilities() {
@@ -61,6 +62,11 @@ public final class ModCapabilities {
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ALEMBIC.get(), (alembic, side) ->
                 side == null || side.getAxis().isHorizontal() ? alembic.waterInlet() : null);
         event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.XP_CONDENSER.get(), (condenser, side) -> condenser.outlet());
+        // Pure essence as a fluid: Essence Jars (the creative one too), the Big Essence Jar through every block of it.
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.ESSENCE_TANK.get(), (jar, side) -> jar.fluidPort());
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.BIG_ESSENCE_JAR.get(), (jar, side) -> jar.fluidPort());
+        event.registerBlockEntity(Capabilities.Fluid.BLOCK, ModBlockEntities.MULTIBLOCK_PART.get(), (part, side) ->
+                part.core() instanceof com.pockyl.hextale.block.EssenceTankBlockEntity jar ? jar.fluidPort() : null);
     }
 
     /** The handler with taking out refused. */
