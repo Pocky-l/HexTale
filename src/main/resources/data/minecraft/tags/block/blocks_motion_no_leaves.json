@@ -49,7 +49,6 @@
     "hextale:relay_pylon",
     "hextale:research_table",
     "hextale:riveted_rusted_plating",
-    "hextale:rune_shackles",
     "hextale:rune_stele",
     "hextale:rusted_plating",
     "hextale:sending_pylon",
@@ -88,10 +87,8 @@
     "hextale:floating_stone",
     "hextale:null_lantern",
     "hextale:impulse_plate",
-    "hextale:hex_lift",
     "hextale:rift_gate",
     "hextale:world_anchor",
-    "hextale:disintegrator",
-    "hextale:silence_ward"
+    "hextale:disintegrator"
   ]
 }

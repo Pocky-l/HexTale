@@ -2,7 +2,9 @@
   "region": "circle",
   "stage": "mid",
   "icon": "hextale:hex_lapidary",
-  "parents": ["pedestal", "essence_tank"],
+  "parents": [
+    "pedestal"
+  ],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:hex_lapidary",
@@ -13,5 +15,8 @@
   },
   "research": "hex_lapidary",
   "station": true,
-  "pos": [730, -100]
+  "pos": [
+    730,
+    -100
+  ]
 }

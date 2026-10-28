@@ -260,6 +260,26 @@ public final class PylonGameTests {
         });
     }
 
+    /** Smelting and Erosion change what arrives, piece by piece; what neither rune touches arrives as it left. */
+    @HexTest(maxTicks = 20)
+    public static void pylonRunesChangeWhatArrives(GameTestHelper helper) {
+        clear(helper, 2);
+        HexPylonBlockEntity pylon = place(helper, ModBlocks.SENDING_PYLON.get(), BASE);
+        ItemStack runed = new ItemStack(ModBlocks.SENDING_PYLON.get());
+        runed.set(ModDataComponents.PYLON_RUNES.get(), PickaxeRunes.EMPTY.with(PylonRune.SMELTING.rune(), 3).with(PylonRune.EROSION.rune(), 3));
+        pylon.applyComponentsFromItemStack(runed);
+        BlockPos target = helper.absolutePos(BASE.offset(2, 0, 0));
+        java.util.List<ItemStack> ore = pylon.enrich(helper.getLevel(), new ItemStack(Items.RAW_IRON, 64), target);
+        helper.assertTrue(ore.stream().mapToInt(ItemStack::getCount).sum() == 64 && ore.stream().anyMatch(s -> s.is(Items.IRON_INGOT))
+                && ore.stream().anyMatch(s -> s.is(Items.RAW_IRON)), "some raw iron arrives smelted, the rest raw: " + ore);
+        java.util.List<ItemStack> stone = pylon.enrich(helper.getLevel(), new ItemStack(Items.COBBLESTONE, 64), target);
+        helper.assertTrue(stone.stream().mapToInt(ItemStack::getCount).sum() == 64 && stone.stream().anyMatch(s -> s.is(Items.GRAVEL)),
+                "most cobblestone arrives as gravel: " + stone);
+        java.util.List<ItemStack> dirt = pylon.enrich(helper.getLevel(), new ItemStack(Items.DIRT, 10), target);
+        helper.assertTrue(dirt.size() == 1 && dirt.getFirst().is(Items.DIRT) && dirt.getFirst().getCount() == 10, "dirt arrives as dirt: " + dirt);
+        helper.succeed();
+    }
+
     /** A link reaches 8 blocks; Shift with two stars makes it 16. Four links at most. */
     @HexTest(maxTicks = 20)
     public static void reachAndLinkLimit(GameTestHelper helper) {

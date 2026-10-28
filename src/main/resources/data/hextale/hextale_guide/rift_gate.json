@@ -1,5 +1,5 @@
 {
-  "region": "forge",
+  "region": "pylons",
   "stage": "mid",
   "icon": "hextale:rift_gate",
   "parents": [
@@ -9,6 +9,7 @@
     "kind": "infusion",
     "result": "hextale:rift_gate"
   },
+  "research": "rift_gate",
   "pos": [
     1073,
     -218

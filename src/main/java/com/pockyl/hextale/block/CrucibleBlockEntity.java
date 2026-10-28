@@ -62,7 +62,7 @@ import org.jspecify.annotations.Nullable;
  * bottle takes one dose as a Chem Vial. A Chem Burner below is the hottest heat (5); its runes may add a dose and give
  * experience for every brew.
  */
-public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
+public class CrucibleBlockEntity extends BlockEntity implements HeatUser, com.pockyl.hextale.port.Removal.SideEffects {
     /** What it holds in all: water and essence. */
     public static final int CAPACITY = 1500;
     public static final int BUCKET = 1000;
@@ -293,6 +293,7 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
         if (count <= 0 || level == null) {
             return 0;
         }
+        wear(recipe.essences().times(count), count);
         essence = essence.minus(recipe.essences().times(count));
         int made = recipe.doses() * count;
         ChemBurnerBlockEntity burner = ChemBurnerBlockEntity.under(level, worldPosition);
@@ -370,12 +371,25 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
         return liquid() > 0 && !drying();
     }
 
+    /**
+     * Brewing wears the land thin: per mB of essence a brew or a transmutation takes and per catalyst, up to double with
+     * unknown essence in the water ({@link com.pockyl.hextale.thevoid.Thinning#BREWED}).
+     */
+    private void wear(EssenceMix taken, int catalysts) {
+        if (level instanceof ServerLevel server) {
+            float unknownShare = essence.total() == 0 ? 0 : essence.unknown() / (float) essence.total();
+            com.pockyl.hextale.thevoid.Thinning.add(server, worldPosition, (taken.total() * com.pockyl.hextale.thevoid.Thinning.BREWED + catalysts * com.pockyl.hextale.thevoid.Thinning.BREW) * (1 + unknownShare),
+                    com.pockyl.hextale.thevoid.Thinning.Source.BREWED);
+        }
+    }
+
     /** The catalysts sink, the recipe's essences swirl in after them, and the results rise out a moment later. */
     private int transmute(CrucibleRecipe recipe, ItemStack stack, int count) {
         count = Math.min(count, essence.timesHolds(recipe.essences()));
         if (count <= 0) {
             return 0;
         }
+        wear(recipe.essences().times(count), count);
         essence = essence.minus(recipe.essences().times(count));
         ItemStack result = recipe.result().create();
         result.setCount(result.getCount() * count);
@@ -483,6 +497,17 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
 
     public EssenceMix essence() {
         return essence;
+    }
+
+    /** Broken while results still soak: they come out with the block instead of vanishing. */
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        com.pockyl.hextale.port.Removal.vanilla(this, pos, state);
+        if (level != null && !level.isClientSide()) {
+            for (ItemStack result : rising) {
+                net.minecraft.world.Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, result);
+            }
+        }
+        rising.clear();
     }
 
     /** Results of transmutations about to rise (a copy). */
@@ -656,7 +681,11 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser {
         changed();
     }
 
+    /** Everything goes: water, essence (poured away, it wears the land), brew and soaking things. */
     private void empty() {
+        if (level instanceof ServerLevel server && !essence.isEmpty()) {
+            com.pockyl.hextale.thevoid.Thinning.poured(server, worldPosition, essence, essence.total(), false);
+        }
         water = 0;
         temperature = 0;
         essence = EssenceMix.EMPTY;

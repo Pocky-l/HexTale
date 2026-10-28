@@ -146,18 +146,15 @@ public final class Hextale {
         output.accept(ModItems.TUNING_FORK);
         output.accept(ModItems.RECALL_CHARM);
         output.accept(ModItems.GRAPPLE_GAUNTLET);
-        output.accept(ModItems.HEXTECH_MAGNET);
         output.accept(ModItems.SOUL_FLASK);
         output.accept(ModItems.SPAWNER_CAGE);
         output.accept(ModItems.DUST_CHARGE);
         output.accept(ModItems.LEVITATION_PLATE);
         output.accept(ModItems.NULL_LANTERN);
         output.accept(ModItems.IMPULSE_PLATE);
-        output.accept(ModItems.HEX_LIFT);
         output.accept(ModItems.RIFT_GATE);
         output.accept(ModItems.RIFT_LINK_CRYSTAL);
         output.accept(ModItems.WORLD_ANCHOR);
-        output.accept(ModItems.SILENCE_WARD);
         output.accept(ModItems.DISINTEGRATOR);
         ModItems.PICKAXES.values().forEach(output::accept);
         output.accept(ModItems.HEXTECH_AXE);
@@ -346,10 +343,8 @@ public final class Hextale {
             event.accept(ModItems.LEVITATION_PLATE);
             event.accept(ModItems.NULL_LANTERN);
             event.accept(ModItems.IMPULSE_PLATE);
-            event.accept(ModItems.HEX_LIFT);
             event.accept(ModItems.RIFT_GATE);
             event.accept(ModItems.WORLD_ANCHOR);
-            event.accept(ModItems.SILENCE_WARD);
             event.accept(ModItems.DISINTEGRATOR);
             event.accept(ModItems.FLOATING_STONE);
             event.accept(ModItems.WARD_GLASS);
@@ -402,7 +397,6 @@ public final class Hextale {
             event.accept(ModItems.TUNING_FORK);
             event.accept(ModItems.RECALL_CHARM);
             event.accept(ModItems.GRAPPLE_GAUNTLET);
-            event.accept(ModItems.HEXTECH_MAGNET);
             event.accept(ModItems.SOUL_FLASK);
             event.accept(ModItems.SPAWNER_CAGE);
             event.accept(ModItems.DUST_CHARGE);

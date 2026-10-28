@@ -12,6 +12,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -36,8 +37,10 @@ import com.pockyl.hextale.network.PylonFlightsPayload;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.PylonRune;
+import com.pockyl.hextale.runework.ToolEffects;
 import com.pockyl.hextale.transport.ItemFilter;
 import com.pockyl.hextale.transport.PylonFlight;
 import com.pockyl.hextale.transport.PylonIndex;
@@ -772,17 +775,19 @@ public class HexPylonBlockEntity extends BlockEntity implements com.pockyl.hexta
     private void land(ServerLevel level, Cargo c) {
         BlockPos source = worldPosition.below();
         if (!c.item().isEmpty()) {
-            ItemResource resource = ItemResource.of(c.item());
-            int rest = c.item().getCount();
-            if (level.isLoaded(c.target())) {
-                rest -= PylonInsert.insert(level, c.target(), c.face(), resource, rest, null, owner);
-            }
-            if (rest > 0 && com.pockyl.hextale.port.ResourceHandler.ofBlock(level, source, Direction.UP) != null) {
-                rest -= PylonInsert.insert(level, source, Direction.UP, resource, rest, null, owner);
-            }
-            if (rest > 0) {
-                net.minecraft.world.Containers.dropItemStack(level, worldPosition.getX() + 0.5, worldPosition.getY() + 1, worldPosition.getZ() + 0.5,
-                        c.item().copyWithCount(rest));
+            for (ItemStack stack : enrich(level, c.item(), c.target())) {
+                ItemResource resource = ItemResource.of(stack);
+                int rest = stack.getCount();
+                if (level.isLoaded(c.target())) {
+                    rest -= PylonInsert.insert(level, c.target(), c.face(), resource, rest, null, owner);
+                }
+                if (rest > 0 && com.pockyl.hextale.port.ResourceHandler.ofBlock(level, source, Direction.UP) != null) {
+                    rest -= PylonInsert.insert(level, source, Direction.UP, resource, rest, null, owner);
+                }
+                if (rest > 0) {
+                    net.minecraft.world.Containers.dropItemStack(level, worldPosition.getX() + 0.5, worldPosition.getY() + 1,
+                            worldPosition.getZ() + 0.5, stack.copyWithCount(rest));
+                }
             }
             return;
         }
@@ -794,6 +799,81 @@ public class HexPylonBlockEntity extends BlockEntity implements com.pockyl.hexta
         if (!rest.isEmpty() && level.getBlockEntity(source) instanceof EssenceTankBlockEntity jar && !jar.isCreative()) {
             jar.tank().fill(rest, false);
             jar.setChanged();
+        }
+    }
+
+    /** Stone that Erosion grinds down, one step at a time. */
+    private static final java.util.Map<net.minecraft.world.item.Item, net.minecraft.world.item.Item> GRIND = java.util.Map.of(
+            net.minecraft.world.item.Items.STONE, net.minecraft.world.item.Items.COBBLESTONE,
+            net.minecraft.world.item.Items.DEEPSLATE, net.minecraft.world.item.Items.COBBLED_DEEPSLATE,
+            net.minecraft.world.item.Items.COBBLESTONE, net.minecraft.world.item.Items.GRAVEL,
+            net.minecraft.world.item.Items.COBBLED_DEEPSLATE, net.minecraft.world.item.Items.GRAVEL,
+            net.minecraft.world.item.Items.GRAVEL, net.minecraft.world.item.Items.SAND,
+            net.minecraft.world.item.Items.SANDSTONE, net.minecraft.world.item.Items.SAND,
+            net.minecraft.world.item.Items.RED_SANDSTONE, net.minecraft.world.item.Items.RED_SAND);
+
+    /**
+     * What the cargo arrives as: Smelting smelts each piece a furnace would with a chance, Erosion grinds each piece of
+     * stone one step with a chance; Radiance may leave a little experience by the target. Each change flashes the rune's
+     * light at the target. The stacks keep the cargo's order: changed pieces first, the rest after.
+     */
+    public List<ItemStack> enrich(ServerLevel level, ItemStack item, BlockPos target) {
+        var random = level.getRandom();
+        Vec3 at = Vec3.atCenterOf(target).add(0, 0.6, 0);
+        List<ItemStack> out = new ArrayList<>();
+        ItemStack rest = item.copy();
+        int smelting = strength(PylonRune.SMELTING);
+        if (smelting > 0) {
+            var input = new net.minecraft.world.item.crafting.SingleRecipeInput(rest.copyWithCount(1));
+            var recipe = level.getRecipeManager().getRecipeFor(net.minecraft.world.item.crafting.RecipeType.SMELTING, input, level);
+            ItemStack result = recipe.map(holder -> holder.value().assemble(input, level.registryAccess())).orElse(ItemStack.EMPTY);
+            int lucky = lucky(random, rest.getCount(), HolderRune.at(PylonRune.SMELT_CHANCE, smelting));
+            if (!result.isEmpty() && lucky > 0) {
+                rest.shrink(lucky);
+                split(out, result.copyWithCount(1), result.getCount() * lucky);
+                ToolEffects.puff(level, at, PylonRune.SMELTING.rune(), 5, 0.25);
+                level.playSound(null, at.x, at.y, at.z, net.minecraft.sounds.SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.25F, 1.6F);
+            }
+        }
+        int erosion = strength(PylonRune.EROSION);
+        net.minecraft.world.item.Item ground = rest.isEmpty() ? null : GRIND.get(rest.getItem());
+        if (erosion > 0 && ground != null) {
+            int lucky = lucky(random, rest.getCount(), HolderRune.at(PylonRune.GRIND_CHANCE, erosion));
+            if (lucky > 0) {
+                rest.shrink(lucky);
+                split(out, new ItemStack(ground), lucky);
+                ToolEffects.puff(level, at, PylonRune.EROSION.rune(), 5, 0.25);
+                level.playSound(null, at.x, at.y, at.z, net.minecraft.sounds.SoundEvents.BRUSH_GRAVEL_COMPLETED, SoundSource.BLOCKS, 0.4F, 1.2F);
+            }
+        }
+        if (!rest.isEmpty()) {
+            out.add(rest);
+        }
+        int radiance = strength(PylonRune.RADIANCE);
+        if (radiance > 0 && random.nextFloat() < HolderRune.at(PylonRune.EXPERIENCE_CHANCE, radiance)) {
+            net.minecraft.world.entity.ExperienceOrb.award(level, at, 1 + random.nextInt(2));
+            ToolEffects.puff(level, at, PylonRune.RADIANCE.rune(), 4, 0.2);
+        }
+        return out;
+    }
+
+    /** How many of {@code count} pieces win a roll of {@code chance} each. */
+    private static int lucky(net.minecraft.util.RandomSource random, int count, float chance) {
+        int won = 0;
+        for (int i = 0; i < count; i++) {
+            if (random.nextFloat() < chance) {
+                won++;
+            }
+        }
+        return won;
+    }
+
+    /** {@code count} of {@code one} into {@code out}, in stacks it can hold. */
+    private static void split(List<ItemStack> out, ItemStack one, int count) {
+        while (count > 0) {
+            int part = Math.min(count, one.getMaxStackSize());
+            out.add(one.copyWithCount(part));
+            count -= part;
         }
     }
 
@@ -930,7 +1010,11 @@ public class HexPylonBlockEntity extends BlockEntity implements com.pockyl.hexta
         return destinations(level, kind().essence());
     }
 
-    /** The same, keeping only the places that take essence ({@code essence}) or items. */
+    /**
+     * The same, keeping only the places that take essence ({@code essence}) or items, in link order (a relay's places
+     * where the relay's link stands). Every relay is passed once, by the first way to it, and every place is reached once:
+     * walking every possible way through a mesh of relays grows without bound.
+     */
     List<Destination> destinations(ServerLevel level, boolean essence) {
         List<Destination> out = new ArrayList<>();
         Set<BlockPos> seen = new HashSet<>();
@@ -961,7 +1045,6 @@ public class HexPylonBlockEntity extends BlockEntity implements com.pockyl.hexta
                 List<HexPylonBlockEntity> nextThrough = new ArrayList<>(through);
                 nextThrough.add(next);
                 collect(level, next, nextPath, nextThrough, seen, hops + 1, essence, out);
-                seen.remove(link.pos());
                 continue;
             }
             if (gem.distanceTo(Vec3.atCenterOf(link.pos())) > range) {
@@ -972,6 +1055,7 @@ public class HexPylonBlockEntity extends BlockEntity implements com.pockyl.hexta
             if (!takes) {
                 continue;
             }
+            seen.add(link.pos());
             List<Vec3> full = new ArrayList<>(path);
             full.add(link.approach());
             full.add(link.entry());

@@ -81,13 +81,13 @@ public final class ShimmerGameTests {
         helper.succeed();
     }
 
-    @HexTest(maxTicks = 800)
+    @HexTest(maxTicks = 1000)
     public static void aFedAxolotlShedsSlime(GameTestHelper helper) {
         helper.setBlock(AT, ModBlocks.AXOLOTL_TANK.get());
         AxolotlTankBlockEntity tank = helper.<AxolotlTankBlockEntity>getBlockEntity(AT);
         helper.assertTrue(tank.letIn(new ItemStack(Items.AXOLOTL_BUCKET)), "the axolotl goes in");
         helper.assertFalse(tank.letIn(new ItemStack(Items.AXOLOTL_BUCKET)), "only one per tank");
-        tank.setRunes(PickaxeRunes.EMPTY.with(TankRune.HASTE.rune(), 3).with(TankRune.LENS.rune(), 1));
+        tank.setRunes(PickaxeRunes.EMPTY.with(TankRune.HASTE.rune(), 3));
         helper.assertTrue(tank.feed(new ItemStack(Items.COD, 2)) == 2, "it takes fish");
         helper.succeedWhen(() -> {
             helper.assertTrue(tank.output().is(ModItems.REGENERATIVE_SLIME.get()), "it shed regenerative slime");

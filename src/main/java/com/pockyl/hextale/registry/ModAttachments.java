@@ -26,6 +26,11 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<Float>> THINNING = ATTACHMENT_TYPES.register("thinning",
             () -> AttachmentType.builder(() -> 0F).serialize(com.mojang.serialization.Codec.FLOAT, value -> value > 0).build());
 
+    /** What wore a chunk thin, by {@link com.pockyl.hextale.thevoid.Thinning.Source} name (mod units); saved while any. */
+    public static final Supplier<AttachmentType<java.util.Map<String, Float>>> THINNING_SOURCES = ATTACHMENT_TYPES.register("thinning_sources",
+            () -> AttachmentType.<java.util.Map<String, Float>>builder(() -> java.util.Map.of())
+                    .serialize(com.mojang.serialization.Codec.unboundedMap(com.mojang.serialization.Codec.STRING, com.mojang.serialization.Codec.FLOAT), sources -> !sources.isEmpty()).build());
+
     /** A chunk whose ground the blight took somewhere (see {@link com.pockyl.hextale.thevoid.Healing}); saved while set. */
     public static final Supplier<AttachmentType<Boolean>> SCARRED = ATTACHMENT_TYPES.register("scarred",
             () -> AttachmentType.builder(() -> false).serialize(com.mojang.serialization.Codec.BOOL, value -> value).build());

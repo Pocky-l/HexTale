@@ -3,7 +3,7 @@
   "stage": "mid",
   "icon": "hextale:grapple_gauntlet",
   "parents": [
-    "hex_lift"
+    "hextech_crystal"
   ],
   "display": {
     "kind": "hex_crafting",
@@ -13,6 +13,7 @@
       "result": "grapple"
     }
   },
+  "research": "grapple_gauntlet",
   "pos": [
     980,
     -20

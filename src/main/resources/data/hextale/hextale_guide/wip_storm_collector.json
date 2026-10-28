@@ -1,8 +1,13 @@
 {
   "kind": "wip",
-  "region": "workshop",
+  "region": "circle",
   "stage": "mid",
   "icon": "minecraft:lightning_rod",
-  "parents": ["wip_rain_caller"],
-  "pos": [518, 0]
+  "parents": [
+    "wip_rain_caller"
+  ],
+  "pos": [
+    518,
+    0
+  ]
 }

@@ -10,9 +10,9 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Chem Burner takes - burned in at the Hextech Altar (the burner alone on it), up to {@link #SLOTS}; a broken
- * burner keeps them. Strength = stars, one more with a Lens (1-4). They make the cheap green flame go further: fuel that
- * lasts longer, brews that give more doses and experience, and a warmth that keeps fire off the people beside it.
+ * The runes a Chem Burner takes - burned in at the Hextech Altar (the burner alone on it), up to {@link #SLOTS}; a
+ * broken burner keeps them. Strength = stars (1-3). They make the cheap green flame go further: fuel that lasts longer,
+ * brews that give more doses and experience, and a warmth that keeps fire off the people beside it.
  */
 public enum BurnerRune implements HolderRune {
     /** A portion of fuel may burn twice as long. */
@@ -22,9 +22,7 @@ public enum BurnerRune implements HolderRune {
     /** A brew boiled over it gives experience. */
     RADIANCE("life_light"),
     /** Players beside the lit burner are kept from fire. */
-    FIREPROOFING("life_fire"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    FIREPROOFING("life_fire");
 
     public static final int SLOTS = 3;
     public static final float[] LONGER_BURN = {0.15F, 0.25F, 0.35F, 0.45F};
@@ -64,7 +62,6 @@ public enum BurnerRune implements HolderRune {
             case STEAM -> HolderRune.percent(HolderRune.at(MORE_DOSES, i));
             case RADIANCE -> Integer.toString(HolderRune.at(EXPERIENCE, i));
             case FIREPROOFING -> HolderRune.seconds(HolderRune.at(WARMTH_TICKS, i));
-            case LENS -> "";
         };
     }
 }

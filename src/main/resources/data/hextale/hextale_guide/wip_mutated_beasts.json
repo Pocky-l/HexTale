@@ -3,6 +3,11 @@
   "region": "chemtech",
   "stage": "late",
   "icon": "minecraft:goat_horn",
-  "parents": ["wip_mutant_reagents"],
-  "pos": [-1340, 470]
+  "parents": [
+    "wip_mutant_reagents"
+  ],
+  "pos": [
+    -890,
+    -340
+  ]
 }

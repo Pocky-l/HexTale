@@ -172,7 +172,7 @@ public class DustCharge extends ThrowableItemProjectile {
         level.sendParticles(ModParticles.vapour(ModParticles.SMOKE), centre.x, centre.y, centre.z, 12, RADIUS / 2, RADIUS / 3, RADIUS / 2, 0.02);
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.ORB_CRACK.get(), SoundSource.NEUTRAL, 1.2F, 0.7F);
         level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.NEUTRAL, 0.5F, 1.5F);
-        Thinning.add(level, middle, THINNING);
+        Thinning.add(level, middle, THINNING, Thinning.Source.DUST_CHARGE);
         return cracked;
     }
 }

@@ -2,11 +2,16 @@
   "region": "circle",
   "stage": "mid",
   "icon": "hextale:hextech_lamp",
-  "parents": ["hextech_crystal", "wip_dust_lantern"],
+  "parents": [
+    "hextech_crystal"
+  ],
   "display": {
     "kind": "hex_crafting",
     "result": "hextale:hextech_lamp"
   },
   "research": "hextech_lamp",
-  "pos": [660, -210]
+  "pos": [
+    660,
+    -210
+  ]
 }

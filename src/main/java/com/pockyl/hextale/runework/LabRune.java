@@ -11,7 +11,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The runes a Lab Bench takes - burned in at the Hextech Altar (the bench alone on it), up to {@link #SLOTS}; a broken
- * bench keeps them. Strength = stars, one more with a Lens (1-4). They make experiments cheaper, calmer and faster, pay
+ * bench keeps them. Strength = stars (1-3). They make experiments cheaper, calmer and faster, pay
  * experience for every sealed flask, and sometimes catch a flask on the edge of bursting.
  */
 public enum LabRune implements HolderRune {
@@ -24,9 +24,7 @@ public enum LabRune implements HolderRune {
     /** Every sealed experiment gives experience. */
     RADIANCE("life_light"),
     /** A flask about to burst may let its pressure out by itself. */
-    HEAT_EATER("shadow_fire"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    HEAT_EATER("shadow_fire");
 
     public static final int SLOTS = 3;
     public static final float[] FREE_DROP = {0.2F, 0.3F, 0.4F, 0.5F};
@@ -67,7 +65,6 @@ public enum LabRune implements HolderRune {
             case HASTE -> HolderRune.percent(HolderRune.at(FASTER, i) - 1);
             case RADIANCE -> Integer.toString(HolderRune.at(EXPERIENCE, i));
             case HEAT_EATER -> HolderRune.percent(HolderRune.at(CAUGHT, i));
-            case LENS -> "";
         };
     }
 }

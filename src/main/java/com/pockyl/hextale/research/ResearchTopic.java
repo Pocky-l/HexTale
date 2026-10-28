@@ -25,9 +25,10 @@ import org.jspecify.annotations.Nullable;
  * @param id    stable id, saved in the researcher's knowledge
  * @param items what the topic lets the researcher make; the first one names and shows it (none for a brew)
  * @param brew  the brew a chemtech reaction topic opens, or null
+ * @param name  the topic's own name key when it opens a whole kit (the hextech tools), or null: named after its first item
  */
 public record ResearchTopic(String id, List<Supplier<? extends ItemLike>> items, Essence action, Essence target, int tier, Bench bench,
-                            @Nullable Brew brew) {
+                            @Nullable Brew brew, @Nullable String name) {
     /** Where a topic is worked out. */
     public enum Bench {
         /** The Research Table: a hexagon parchment and an ink thread. */
@@ -45,6 +46,9 @@ public record ResearchTopic(String id, List<Supplier<? extends ItemLike>> items,
     }
 
     public String translationKey() {
+        if (name != null) {
+            return name;
+        }
         return brew != null ? brew.translationKey() : item().getDescriptionId();
     }
 

@@ -122,25 +122,6 @@ public final class GadgetGameTests {
         });
     }
 
-    @HexTest(padding = 2)
-    public static void hexLiftsFindTheNextLiftWithRoom(GameTestHelper helper) {
-        BlockPos low = new BlockPos(1, 1, 1);
-        BlockPos high = low.above(6);
-        helper.setBlock(low, ModBlocks.HEX_LIFT.get());
-        helper.setBlock(high, ModBlocks.HEX_LIFT.get());
-        BlockPos from = helper.absolutePos(low);
-        BlockPos to = helper.absolutePos(high);
-        helper.assertTrue(to.equals(com.pockyl.hextale.block.HexLiftBlock.next(helper.getLevel(), from, true, 16)), "up finds the lift above");
-        helper.assertTrue(from.equals(com.pockyl.hextale.block.HexLiftBlock.next(helper.getLevel(), to, false, 16)), "down finds the lift below");
-        helper.assertTrue(com.pockyl.hextale.block.HexLiftBlock.next(helper.getLevel(), from, true, 4) == null, "beyond its reach there is none");
-        helper.setBlock(high.above(2), net.minecraft.world.level.block.Blocks.STONE);
-        helper.assertTrue(com.pockyl.hextale.block.HexLiftBlock.next(helper.getLevel(), from, true, 16) == null, "a lift without room above is skipped");
-        for (BlockPos pos : new BlockPos[] {low, high, high.above(2)}) {
-            helper.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR);
-        }
-        helper.succeed();
-    }
-
     @HexTest
     public static void theRecallCharmRemembersWhereIStood(GameTestHelper helper) {
         net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -157,6 +138,123 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
+    /** Cache: an item lifted to the top of the column goes into the chest that caps it. */
+    @HexTest(maxTicks = 200, setupTicks = 40, padding = 2)
+    public static void aLevitationPlatePutsAwayWhatItLifts(GameTestHelper helper) {
+        BlockPos plate = new BlockPos(1, 1, 1);
+        BlockPos chest = plate.above(4);
+        helper.setBlock(plate, ModBlocks.LEVITATION_PLATE.get());
+        helper.setBlock(chest, Blocks.CHEST);
+        net.minecraft.world.item.ItemStack runed = new net.minecraft.world.item.ItemStack(ModBlocks.LEVITATION_PLATE.get());
+        runed.set(com.pockyl.hextale.registry.ModDataComponents.PLATE_RUNES.get(),
+                com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(PlateRune.CACHE.rune(), 3));
+        helper.<com.pockyl.hextale.block.LevitationPlateBlockEntity>getBlockEntity(plate).applyComponentsFromItemStack(runed);
+        ItemEntity stone = helper.spawnItem(Items.COBBLESTONE, new Vec3(1.5, 1.3, 1.5));
+        stone.setPickUpDelay(400);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(chest)
+                    .countItem(Items.COBBLESTONE) == 1, "the stone went into the chest over the column");
+            helper.assertFalse(stone.isAlive(), "and is no longer floating");
+        });
+    }
+
+    /** Banishing: a zombie stepping on the plate is flung back against the arrow and high. */
+    @HexTest(setupTicks = 40, maxTicks = 200, padding = 2)
+    public static void aBanishingPlateFlingsHostiles(GameTestHelper helper) {
+        BlockPos at = new BlockPos(2, 1, 1);
+        helper.setBlock(at, ModBlocks.IMPULSE_PLATE.get().defaultBlockState()
+                .setValue(com.pockyl.hextale.block.ImpulsePlateBlock.FACING, net.minecraft.core.Direction.EAST));
+        net.minecraft.world.item.ItemStack runed = new net.minecraft.world.item.ItemStack(ModBlocks.IMPULSE_PLATE.get());
+        runed.set(com.pockyl.hextale.registry.ModDataComponents.IMPULSE_RUNES.get(),
+                com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.ImpulseRune.BANISHING.rune(), 2));
+        helper.<com.pockyl.hextale.block.ImpulsePlateBlock.Plate>getBlockEntity(at).applyComponentsFromItemStack(runed);
+        net.minecraft.world.entity.monster.Zombie zombie = helper.spawn(net.minecraft.world.entity.EntityType.ZOMBIE, new Vec3(2.5, 1.07, 1.5));
+        double floor = helper.absolutePos(at).getY();
+        double startX = zombie.getX();
+        // The highest it got and how far west, over the whole flight.
+        double[] seen = {zombie.getY(), zombie.getX()};
+        helper.succeedWhen(() -> {
+            seen[0] = Math.max(seen[0], zombie.getY());
+            seen[1] = Math.min(seen[1], zombie.getX());
+            helper.assertTrue(seen[0] > floor + 4 && seen[1] < startX - 0.3, "flung up and west: up to " + seen[0] + ", west to " + seen[1]);
+            zombie.discard();
+        });
+    }
+
+    /** Fireproofing: the way back puts the fire out and keeps it off. */
+    @HexTest
+    public static void aFireproofRecallPutsTheFireOut(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.world.item.ItemStack charm = new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.RECALL_CHARM.get());
+        com.pockyl.hextale.runework.RuneHolder.RECALL.set(charm,
+                com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.RecallRune.FIREPROOFING.rune(), 1));
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, charm);
+        com.pockyl.hextale.item.RecallCharmItem.mark(player);
+        player.igniteForSeconds(5);
+        charm.use(helper.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        helper.assertFalse(player.isOnFire(), "the fire is out");
+        helper.assertTrue(player.hasEffect(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE), "and fire keeps off for a while");
+        player.discard();
+        helper.succeed();
+    }
+
+    /** Reading the notes of a device that takes runes gives a one-star scroll of one of its runes the reader lacks. */
+    @HexTest
+    public static void researchNotesHoldARune(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.world.item.ItemStack notes = com.pockyl.hextale.item.ResearchNotesItem.of(com.pockyl.hextale.research.ResearchTopics.LEVITATION_PLATE);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, notes);
+        notes.use(helper.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        net.minecraft.world.item.ItemStack scroll = net.minecraft.world.item.ItemStack.EMPTY;
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            if (player.getInventory().getItem(i).is(com.pockyl.hextale.registry.ModItems.RUNE_SCROLL.get())) {
+                scroll = player.getInventory().getItem(i);
+            }
+        }
+        var rune = scroll.get(com.pockyl.hextale.registry.ModDataComponents.RUNE.get());
+        helper.assertTrue(rune != null && com.pockyl.hextale.runework.RuneHolder.PLATE.takes(rune)
+                && scroll.get(com.pockyl.hextale.registry.ModDataComponents.STARS.get()) == 1, "a one-star scroll of a plate rune: " + scroll);
+        // Who knows every rune of the device gets none.
+        var knowledge = com.pockyl.hextale.knowledge.Research.of(player);
+        com.pockyl.hextale.runework.RuneHolder.PLATE.takes().forEach(known -> knowledge.learn(known, 1));
+        helper.assertTrue(com.pockyl.hextale.item.ResearchNotesItem.runeFor(player, com.pockyl.hextale.research.ResearchTopics.LEVITATION_PLATE).isEmpty(),
+                "nothing new to sketch");
+        player.discard();
+        helper.succeed();
+    }
+
+    /** A charm comes wound; each return spends a winding, none left = no return; a jar of rift essence winds it again. */
+    @HexTest
+    public static void theRecallCharmWindsAtARiftJar(GameTestHelper helper) {
+        net.minecraft.world.item.ItemStack charm = new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.RECALL_CHARM.get());
+        int full = com.pockyl.hextale.item.RecallCharmItem.WINDINGS;
+        helper.assertTrue(com.pockyl.hextale.item.RecallCharmItem.windings(charm) == full, "a new charm comes fully wound");
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, charm);
+        com.pockyl.hextale.item.RecallCharmItem.mark(player);
+        com.pockyl.hextale.item.RecallCharmItem.setWindings(charm, 0);
+        helper.assertTrue(charm.use(helper.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND).getResult()
+                == net.minecraft.world.InteractionResult.FAIL, "a run-down charm takes nobody back");
+        com.pockyl.hextale.item.RecallCharmItem.setWindings(charm, 2);
+        charm.use(helper.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        helper.assertTrue(com.pockyl.hextale.item.RecallCharmItem.windings(charm) == 1, "a return spends one winding");
+        BlockPos at = new BlockPos(1, 1, 1);
+        helper.setBlock(at, ModBlocks.ESSENCE_TANK.get());
+        com.pockyl.hextale.block.EssenceTankBlockEntity jar = helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(at);
+        int mb = com.pockyl.hextale.item.RecallCharmItem.MB_PER_WINDING;
+        jar.tank().set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.RIFT, mb * 2 + 1));
+        int wound = com.pockyl.hextale.item.RecallCharmItem.wind(helper.getLevel(), jar, charm, Vec3.atCenterOf(helper.absolutePos(at)));
+        helper.assertTrue(wound == 2 && com.pockyl.hextale.item.RecallCharmItem.windings(charm) == 3
+                && jar.tank().contents().get(com.pockyl.hextale.rune.Essence.RIFT) == 1, "two windings drank their rift essence, wound " + wound);
+        helper.assertTrue(com.pockyl.hextale.item.RecallCharmItem.wind(helper.getLevel(), jar, charm, Vec3.ZERO) == 0,
+                "what is left is too little for a winding");
+        player.discard();
+        helper.succeed();
+    }
+
     @HexTest(padding = 2)
     public static void aSoulFlaskKeepsACreatureWhole(GameTestHelper helper) {
         net.minecraft.world.entity.animal.Pig pig = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new BlockPos(1, 2, 1));
@@ -169,6 +267,36 @@ public final class GadgetGameTests {
         helper.assertTrue(out instanceof net.minecraft.world.entity.animal.Pig && out.getCustomName() != null
                 && out.getCustomName().getString().equals("Wilbur"), "the same pig comes out, name and all: " + out);
         out.discard();
+        helper.succeed();
+    }
+
+    /** Someone else's dog stays out of a flask; its owner may fold it. */
+    @HexTest(padding = 2)
+    public static void aSoulFlaskLeavesOthersPets(GameTestHelper helper) {
+        net.minecraft.world.entity.player.Player owner = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.world.entity.player.Player stranger = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.world.entity.animal.Wolf wolf = helper.spawn(net.minecraft.world.entity.EntityType.WOLF, new BlockPos(1, 2, 1));
+        wolf.tame(owner);
+        helper.assertFalse(com.pockyl.hextale.item.SoulFlaskItem.takes(stranger, wolf), "a stranger cannot bottle the dog");
+        helper.assertTrue(com.pockyl.hextale.item.SoulFlaskItem.takes(owner, wolf), "its owner can");
+        wolf.discard();
+        helper.succeed();
+    }
+
+    /** In adventure mode the cage cannot lift a spawner out of the world. */
+    @HexTest(padding = 2)
+    public static void aSpawnerCageAsksForBuildRights(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at, net.minecraft.world.level.block.Blocks.SPAWNER);
+        net.minecraft.world.entity.player.Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.ADVENTURE);
+        // A mock player keeps its abilities; a real one in adventure mode has mayBuild off.
+        player.getAbilities().mayBuild = false;
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.SPAWNER_CAGE.get()));
+        var hit = new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(helper.absolutePos(at)), net.minecraft.core.Direction.UP,
+                helper.absolutePos(at), false);
+        player.getMainHandItem().useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND, hit));
+        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.SPAWNER, at);
+        helper.setBlock(at, Blocks.AIR);
         helper.succeed();
     }
 
@@ -193,8 +321,9 @@ public final class GadgetGameTests {
 
     /**
      * Two Lesser Rift Gates tied by hand (a hextech crystal pressed to one, the link crystal it becomes pressed to the
-     * other, both through the real click path): a pig standing in one ring comes out of the other's front, a stone
-     * dropped into the ring lands in the chest under the other gate, and breaking a gate leaves its partner alone.
+     * other, both through the real click path). With no rift essence beside it the gate is dry and keeps a dropped stone;
+     * once a jar of rift essence stands by, a pig standing in one ring comes out of the other's front, the stone lands in
+     * the chest under the other gate, the crossings drink their toll, and breaking a gate leaves its partner alone.
      */
     @HexTest(setupTicks = 20, maxTicks = 200, padding = 8)
     public static void riftGatesSendWhatEntersThem(GameTestHelper helper) {
@@ -228,20 +357,40 @@ public final class GadgetGameTests {
         click(helper, player, b);
         helper.assertTrue(helper.getBlockState(a).getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED)
                 && helper.getBlockState(b).getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED), "both gates are linked");
-        net.minecraft.world.entity.animal.Pig pig = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new Vec3(1.5, 1.2, 1.5));
         ItemEntity stone = helper.spawnItem(Items.COBBLESTONE, new Vec3(1.5, 1.5, 1.5));
         stone.setDeltaMovement(Vec3.ZERO);
         Vec3 out = Vec3.atBottomCenterOf(helper.absolutePos(b));
-        helper.runAfterDelay(40, () -> {
+        BlockPos jar = a.offset(2, 0, 0);
+        net.minecraft.world.entity.animal.Pig[] pigs = new net.minecraft.world.entity.animal.Pig[1];
+        helper.runAfterDelay(30, () -> {
+            com.pockyl.hextale.block.RiftGateBlock.Gate gate = helper.<com.pockyl.hextale.block.RiftGateBlock.Gate>getBlockEntity(a);
+            helper.assertTrue(!gate.afford(helper.getLevel(), com.pockyl.hextale.block.RiftGateBlock.Gate.TOLL_PER_MB) && gate.dry(),
+                    "with no rift essence the gate is dry");
+            helper.assertTrue(helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(b.below())
+                    .countItem(Items.COBBLESTONE) == 0, "and the stone stays out");
+            helper.setBlock(jar, ModBlocks.ESSENCE_TANK.get());
+            helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(jar).tank()
+                    .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.RIFT, 10));
+            pigs[0] = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new Vec3(1.5, 1.2, 1.5));
+            // The dry ring spat the first stone out; it is put away, and another one goes in once the gate has looked
+            // into its jars again.
+            stone.discard();
+        });
+        helper.runAfterDelay(60, () -> helper.spawnItem(Items.COBBLESTONE, new Vec3(1.5, 1.5, 1.5)).setDeltaMovement(Vec3.ZERO));
+        helper.runAfterDelay(110, () -> {
+            net.minecraft.world.entity.animal.Pig pig = pigs[0];
             helper.assertTrue(pig.isAlive() && pig.position().distanceTo(out) < 2.0, "the pig came out of the other gate: " + pig.position()
                     + " vs " + out);
             net.minecraft.world.level.block.entity.ChestBlockEntity chest = helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(b.below());
-            helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 1, "the stone dropped into the chest under the other gate");
+            helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 1, "the stone dropped into the chest under the other gate: " + chest.countItem(Items.COBBLESTONE));
+            int left = helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(jar).tank().contents()
+                    .get(com.pockyl.hextale.rune.Essence.RIFT);
+            helper.assertTrue(left == 8, "the pig and the stone cost 2 mB of rift essence, " + left + " left");
             helper.setBlock(b, Blocks.AIR);
         });
-        helper.runAfterDelay(70, () -> {
+        helper.runAfterDelay(140, () -> {
             helper.assertTrue(!helper.getBlockState(a).getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED), "the gate left alone knows it");
-            pig.discard();
+            pigs[0].discard();
             helper.succeed();
         });
     }
@@ -266,6 +415,11 @@ public final class GadgetGameTests {
         helper.setBlock(a.above(), ModBlocks.ESSENCE_TANK.get());
         helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(a.above()).tank()
                 .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.FIRE, 300));
+        // The toll: rift essence beside both sending gates.
+        BlockPos toll = new BlockPos(1, 2, 3);
+        helper.setBlock(toll, ModBlocks.ESSENCE_TANK.get());
+        helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(toll).tank()
+                .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.RIFT, 100));
         net.minecraft.server.level.ServerPlayer player = GameTests.watcher(helper, helper.absolutePos(a));
         net.minecraft.world.InteractionHand hand = net.minecraft.world.InteractionHand.MAIN_HAND;
         for (BlockPos[] pair : new BlockPos[][] {{a, b}, {c, d}}) {
@@ -318,14 +472,29 @@ public final class GadgetGameTests {
         });
     }
 
-    @HexTest
-    public static void aWorldAnchorHoldsItsChunk(GameTestHelper helper) {
+    /** An anchor fed earth essence holds its chunk and pays for the first minute; one with no jar beside it falls asleep. */
+    @HexTest(padding = 8)
+    public static void aWorldAnchorHoldsItsChunkWhileFed(GameTestHelper helper) {
         BlockPos anchor = new BlockPos(1, 1, 1);
+        BlockPos jar = new BlockPos(2, 1, 1);
+        BlockPos hungry = new BlockPos(9, 1, 1);
+        helper.setBlock(jar, ModBlocks.ESSENCE_TANK.get());
+        helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(jar).tank()
+                .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.EARTH, 3));
         helper.setBlock(anchor, ModBlocks.WORLD_ANCHOR.get());
+        helper.setBlock(hungry, ModBlocks.WORLD_ANCHOR.get());
         helper.runAfterDelay(2, () -> {
+            helper.assertFalse(helper.<com.pockyl.hextale.block.WorldAnchorBlock.Anchor>getBlockEntity(anchor).asleep(), "the fed anchor is awake");
             helper.assertTrue(net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.hasForcedChunks(helper.getLevel()),
                     "the anchor holds its chunk");
+            int left = helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(jar).tank().contents()
+                    .get(com.pockyl.hextale.rune.Essence.EARTH);
+            helper.assertTrue(left == 3 - com.pockyl.hextale.block.WorldAnchorBlock.cost(0), "one chunk's minute was paid, " + left + " left");
+            helper.assertTrue(helper.<com.pockyl.hextale.block.WorldAnchorBlock.Anchor>getBlockEntity(hungry).asleep(),
+                    "the anchor with no earth essence around falls asleep");
+            helper.assertTrue(com.pockyl.hextale.block.WorldAnchorBlock.cost(2) == 13, "25 chunks eat 13 mB a minute");
             helper.setBlock(anchor, Blocks.AIR);
+            helper.setBlock(hungry, Blocks.AIR);
             helper.succeed();
         });
     }
@@ -345,44 +514,6 @@ public final class GadgetGameTests {
         });
     }
 
-    @HexTest
-    public static void aSilenceWardHushesItsSurroundings(GameTestHelper helper) {
-        BlockPos ward = new BlockPos(1, 1, 1);
-        helper.setBlock(ward, ModBlocks.SILENCE_WARD.get());
-        Vec3 centre = Vec3.atCenterOf(helper.absolutePos(ward));
-        helper.runAfterDelay(1, () -> {
-            helper.assertTrue(com.pockyl.hextale.block.SilenceWardBlock.Ward.covering(helper.getLevel(), centre.add(5, 0, 0), null) != null,
-                    "a sound five blocks away is hushed");
-            helper.assertTrue(com.pockyl.hextale.block.SilenceWardBlock.Ward.covering(helper.getLevel(), centre.add(12, 0, 0), null) == null,
-                    "twelve blocks away it is not");
-            helper.assertTrue(com.pockyl.hextale.block.SilenceWardBlock.Ward.covering(helper.getLevel(), centre,
-                    com.pockyl.hextale.runework.SilenceRune.INSULATOR) == null, "without Insulator vibrations pass");
-            helper.succeed();
-        });
-    }
-
-    @HexTest(padding = 4)
-    public static void aMagnetDrawsLooseThingsIn(GameTestHelper helper) {
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        Vec3 spot = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(1, 1, 1)));
-        player.teleportTo(spot.x, spot.y, spot.z);
-        ItemEntity near = helper.spawnItem(Items.COBBLESTONE, player.position().add(4, 0.5, 0).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));
-        ItemEntity far = helper.spawnItem(Items.COBBLESTONE, player.position().add(0, 0.5, 9).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));
-        near.setNoPickUpDelay();
-        far.setNoPickUpDelay();
-        int moved = com.pockyl.hextale.item.HextechMagnetItem.pull(helper.getLevel(), player, com.pockyl.hextale.runework.PickaxeRunes.EMPTY);
-        helper.assertTrue(moved == 1, "only the cobblestone within reach is drawn (" + moved + ")");
-        helper.assertTrue(near.getDeltaMovement().x < -0.1, "it flies towards me: " + near.getDeltaMovement());
-        near.discard();
-        far.discard();
-        helper.succeed();
-    }
-
-    /**
-     * A player hanging on the gauntlet's rope swings like a pendulum: thrown at a block above and ahead, the claw bites,
-     * the wearer falls, the rope catches and carries them through the bottom of the arc and up the other side - never
-     * farther from the claw than the rope is long. The player is moved by its own ticks, as a client moves itself.
-     */
     @HexTest(padding = 8, maxTicks = 300)
     public static void aGrappleRopeSwingsItsWearer(GameTestHelper helper) {
         BlockPos anchor = new BlockPos(1, 12, 1);
@@ -455,18 +586,46 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
-    @HexTest(padding = 2)
-    public static void aJumpOffALiftStillRidesUp(GameTestHelper helper) {
-        BlockPos low = new BlockPos(1, 1, 1);
-        helper.setBlock(low, ModBlocks.HEX_LIFT.get());
-        helper.setBlock(low.above(6), ModBlocks.HEX_LIFT.get());
-        BlockPos from = helper.absolutePos(low);
+    /** A lantern with Silence hushes sounds within its quiet; with deep Silence it swallows vibrations as well. */
+    @HexTest
+    public static void aLanternWithSilenceHushes(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 1, 1);
+        helper.setBlock(at, ModBlocks.NULL_LANTERN.get());
+        var lantern = helper.<com.pockyl.hextale.block.NullLanternBlockEntity>getBlockEntity(at);
+        net.minecraft.world.item.ItemStack runed = new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.NULL_LANTERN.get());
+        runed.set(com.pockyl.hextale.registry.ModDataComponents.NULL_RUNES.get(),
+                com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.NullRune.SILENCE.rune(), 1));
+        lantern.applyComponentsFromItemStack(runed);
+        Vec3 centre = Vec3.atCenterOf(helper.absolutePos(at));
+        // A lantern joins the index once it has loaded, a tick after it is placed.
+        helper.runAfterDelay(1, () -> {
+            helper.assertTrue(com.pockyl.hextale.block.NullLanternBlockEntity.soundLeft(helper.getLevel(), centre.add(5, 0, 0)) < 1,
+                    "a sound five blocks away is hushed");
+            helper.assertTrue(com.pockyl.hextale.block.NullLanternBlockEntity.soundLeft(helper.getLevel(), centre.add(60, 0, 0)) >= 1,
+                    "far outside the quiet it is not");
+            helper.assertTrue(com.pockyl.hextale.block.NullLanternBlockEntity.covering(helper.getLevel(), centre,
+                    com.pockyl.hextale.runework.NullRune.SILENCE, com.pockyl.hextale.runework.NullRune.INSULATING) == null,
+                    "one star of Silence lets vibrations pass");
+            helper.succeed();
+        });
+    }
+
+    /** Trousers with Magnet draw a loose item within reach towards the wearer and leave one beyond it. */
+    @HexTest(padding = 4)
+    public static void magnetTrousersDrawLooseThingsIn(GameTestHelper helper) {
         net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        // Already half a block up in the jump when the client sees the key.
-        player.teleportTo(from.getX() + 0.5, from.getY() + 0.9, from.getZ() + 0.5);
-        helper.assertTrue(com.pockyl.hextale.block.HexLiftBlock.ride(player, from, true), "the jump counts");
-        helper.assertTrue(Math.abs(player.getY() - (from.getY() + 6 + com.pockyl.hextale.block.HexLiftBlock.PAD)) < 0.01,
-                "and lands on the pad of the upper lift: " + player.getY());
+        Vec3 spot = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(1, 1, 1)));
+        player.teleportTo(spot.x, spot.y, spot.z);
+        ItemEntity near = helper.spawnItem(Items.COBBLESTONE, player.position().add(3, 0.5, 0).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));
+        ItemEntity far = helper.spawnItem(Items.COBBLESTONE, player.position().add(0, 0.5, 9).subtract(Vec3.atLowerCornerOf(helper.absolutePos(BlockPos.ZERO))));
+        near.setNoPickUpDelay();
+        far.setNoPickUpDelay();
+        int moved = com.pockyl.hextale.runework.ClothesEffects.pull(helper.getLevel(), player,
+                com.pockyl.hextale.runework.HolderRune.at(com.pockyl.hextale.runework.ClothesRune.PULL_RADIUS, 1));
+        helper.assertTrue(moved == 1, "only the cobblestone within reach is drawn (" + moved + ")");
+        helper.assertTrue(near.getDeltaMovement().x < -0.1, "it flies towards me: " + near.getDeltaMovement());
+        near.discard();
+        far.discard();
         helper.succeed();
     }
 }

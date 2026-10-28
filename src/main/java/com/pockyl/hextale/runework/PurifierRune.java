@@ -11,9 +11,9 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Hextech Purifier takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more
- * with a Lens (1-4); index 0 of the tables is the purifier without the rune. It reaches more land, draws faster, its
- * crystal holds more before it clouds, and the land it heals may bloom.
+ * The runes a Hextech Purifier takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3);
+ * index 0 of the tables is the purifier without the rune. It reaches more land, draws faster, its crystal holds more
+ * before it clouds, the land it heals may bloom, and a draw may cost no light.
  */
 public enum PurifierRune implements HolderRune {
     /** It draws on land farther away. */
@@ -24,10 +24,12 @@ public enum PurifierRune implements HolderRune {
     PURIFICATION("light_water"),
     /** Land it heals may sprout grass and flowers. */
     FERTILITY("earth_life"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    /** Now and then a draw costs no light essence. */
+    DAM("earth_water");
 
     public static final int SLOTS = 3;
+    /** Chance a draw costs no light (Dam), by strength. */
+    public static final float[] FREE = {0.2F, 0.35F, 0.5F, 0.65F};
     /** Chunks every way it draws on, by strength. */
     private static final int[] RADIUS = {1, 2, 2, 3, 4};
     /** Ticks between two draws, by strength. */
@@ -77,7 +79,7 @@ public enum PurifierRune implements HolderRune {
             case MOTOR -> String.format(Locale.ROOT, "%.2f", interval(i) / 20.0F);
             case PURIFICATION -> "+" + HolderRune.percent(HolderRune.at(ROOM, i));
             case FERTILITY -> HolderRune.percent(bloomChance(i));
-            case LENS -> "";
+            case DAM -> HolderRune.percent(HolderRune.at(FREE, i));
         };
     }
 }

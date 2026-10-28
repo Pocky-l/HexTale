@@ -3,6 +3,12 @@
   "region": "forge",
   "stage": "late",
   "icon": "minecraft:netherite_chestplate",
-  "parents": ["wip_living_metal", "wip_hexsteel_armor"],
-  "pos": [1330, -111]
+  "parents": [
+    "wip_living_metal",
+    "hexsteel_gear"
+  ],
+  "pos": [
+    1330,
+    -111
+  ]
 }

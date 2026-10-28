@@ -10,15 +10,12 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes the hextech axe, shovel and sword take, like the pickaxe's: up to {@link PickaxeRunes#SLOTS} burned in at the
- * Hextech Altar, kept in the same {@code hextale:pickaxe_runes} component. Each rune belongs to the tools it names
- * (Mending, Haste and Lens to more than one). Strength = stars, one more with a Lens (1-4). The effects live in
- * {@link ToolEffects}.
+ * The runes the hextech axe, shovel and sword take, like the pickaxe's: up to {@link PickaxeRunes#SLOTS} burned in at
+ * the Hextech Altar, kept in the same {@code hextale:pickaxe_runes} component. Each rune belongs to the tools it names
+ * (Mending and Haste to more than one). Strength = stars (1-3). The effects live in {@link ToolEffects}.
  */
 public enum ToolRune implements HolderRune {
     // Shared
-    /** The other runes work one star stronger. */
-    LENS("water_light", Tool.AXE, Tool.SHOVEL, Tool.SWORD),
     /** Wear may be shrugged off and mended a point. */
     MENDING("life_metal", Tool.AXE, Tool.SHOVEL, Tool.SWORD),
     /** A chance of Haste while chopping or digging. */
@@ -119,7 +116,6 @@ public enum ToolRune implements HolderRune {
     public String amountText(int strength) {
         int i = Mth.clamp(strength, 1, 4);
         return switch (this) {
-            case LENS -> "";
             case MENDING -> HolderRune.percent(HolderRune.at(MEND, i));
             case HASTE -> HolderRune.percent(HolderRune.at(HASTE_CHANCE, i));
             case GRAVITY -> Integer.toString(HolderRune.at(TREE, i));

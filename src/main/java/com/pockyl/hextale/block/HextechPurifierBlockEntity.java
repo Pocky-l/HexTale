@@ -232,7 +232,14 @@ public class HextechPurifierBlockEntity extends BlockEntity implements WorldlyCo
             wait = 40;
             return;
         }
-        light = Math.max(0, light - want);
+        int dam = strength(PurifierRune.DAM);
+        if (dam > 0 && level.getRandom().nextFloat() < com.pockyl.hextale.runework.HolderRune.at(PurifierRune.FREE, dam)) {
+            // Dam: this draw burns no light.
+            com.pockyl.hextale.runework.ToolEffects.puff(level, crystalAt(worldPosition), PurifierRune.DAM.rune(), 4, 0.2);
+            level.playSound(null, worldPosition, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.3F, 1.4F);
+        } else {
+            light = Math.max(0, light - want);
+        }
         float taken = Thinning.drain(level, land, want);
         held += taken;
         setMode(Mode.WORKING);

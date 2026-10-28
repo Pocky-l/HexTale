@@ -6,6 +6,7 @@ import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import com.pockyl.hextale.port.client.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import com.pockyl.hextale.port.client.EntityRenderState;
+import com.pockyl.hextale.port.client.RenderTypes;
 import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
@@ -23,6 +24,12 @@ import com.pockyl.hextale.thevoid.VoidShape;
  */
 public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.State> {
     // Neighbour bits in the masks the shaders read: four sides, then the four corners.
+    /** The game's starfield, the dark of the plain look drawn while a shader pack is on. */
+    private static final net.minecraft.resources.ResourceLocation STARS = net.minecraft.resources.ResourceLocation.withDefaultNamespace(
+            "textures/entity/end_portal/end_portal.png");
+    /** The plain look's tint of the stars and colour of the rim. */
+    private static final int PLAIN_TINT = 0xFFC9A6FF;
+    private static final int RIM = 0xB98FE6;
     private static final int[][] NEIGHBOURS = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
 
     public TheVoidRenderer(EntityRendererProvider.Context context) {
@@ -108,8 +115,21 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
             poseStack.popPose();
             return;
         }
-        collector.submitCustomGeometry(poseStack, VoidPipelines.BODY_TYPE, (pose, consumer) -> frame.body(consumer, pose));
-        collector.submitCustomGeometry(poseStack, VoidPipelines.HALO_TYPE, (pose, consumer) -> frame.halo(consumer, pose));
+        if (com.pockyl.hextale.client.IrisCompat.shadersOn()) {
+            if (com.pockyl.hextale.client.IrisCompat.shadowPass()) {
+                // The Void casts no shadow.
+            } else if (VoidOverlay.works()) {
+                // A shader pack cannot run our shaders: they are drawn once the pack has finished the picture.
+                VoidOverlay.queue(poseStack.last(), frame::body, frame::halo);
+            } else {
+                // The plain look, a starry dark with a glowing rim, in the pack's own programs.
+                collector.submitCustomGeometry(poseStack, RenderTypes.entitySolid(STARS), (pose, consumer) -> frame.plainBody(consumer, pose));
+                collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> frame.plainHalo(consumer, pose));
+            }
+        } else {
+            collector.submitCustomGeometry(poseStack, VoidPipelines.BODY_TYPE, (pose, consumer) -> frame.body(consumer, pose));
+            collector.submitCustomGeometry(poseStack, VoidPipelines.HALO_TYPE, (pose, consumer) -> frame.halo(consumer, pose));
+        }
         poseStack.popPose();
         super.submit(state, poseStack, collector, camera);
     }
@@ -293,6 +313,103 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
                     vertex(consumer, pose, x0, y1, 0, x0, y1, on, seed, 0, 0, 0, 0, 1);
                 }
             }
+        }
+
+        /** The plain look: every shown cell a slab of stars (both faces and its open sides), each cell its own patch of sky. */
+        void plainBody(VertexConsumer consumer, PoseStack.Pose pose) {
+            float t = layout.halfThickness();
+            for (int j = 0; j < layout.height; j++) {
+                for (int i = 0; i < layout.width; i++) {
+                    if (!at(i, j)) {
+                        continue;
+                    }
+                    float x0 = layout.x(i);
+                    float y0 = layout.y(j);
+                    float x1 = layout.x(i + 1);
+                    float y1 = layout.y(j + 1);
+                    float dz = lift(i, j);
+                    float u = patch(i * 31 + j * 17);
+                    float v = patch(i * 13 + j * 29 + 7);
+                    float s = 0.25F;
+                    plain(consumer, pose, x0, y0, t + dz, u, v, 0, 0, 1);
+                    plain(consumer, pose, x1, y0, t + dz, u + s, v, 0, 0, 1);
+                    plain(consumer, pose, x1, y1, t + dz, u + s, v + s, 0, 0, 1);
+                    plain(consumer, pose, x0, y1, t + dz, u, v + s, 0, 0, 1);
+                    plain(consumer, pose, x0, y1, -t + dz, u, v + s, 0, 0, -1);
+                    plain(consumer, pose, x1, y1, -t + dz, u + s, v + s, 0, 0, -1);
+                    plain(consumer, pose, x1, y0, -t + dz, u + s, v, 0, 0, -1);
+                    plain(consumer, pose, x0, y0, -t + dz, u, v, 0, 0, -1);
+                    if (!at(i + 1, j)) {
+                        plainSide(consumer, pose, x1, y0, x1, y1, -t + dz, t + dz, u, v, 1, 0);
+                    }
+                    if (!at(i, j + 1)) {
+                        plainSide(consumer, pose, x0, y1, x1, y1, -t + dz, t + dz, u, v, 0, 1);
+                    }
+                    if (!at(i - 1, j)) {
+                        plainSide(consumer, pose, x0, y0, x0, y1, -t + dz, t + dz, u, v, -1, 0);
+                    }
+                    if (!at(i, j - 1)) {
+                        plainSide(consumer, pose, x0, y0, x1, y0, -t + dz, t + dz, u, v, 0, -1);
+                    }
+                }
+            }
+        }
+
+        /** Where in the starfield a cell's patch starts (0..0.75), fixed per breach and cell. */
+        private float patch(int salt) {
+            int h = (salt + seed * 101) * 0x9E3779B1;
+            return ((h >>> 8) & 0xFFFF) / 65536F * 0.75F;
+        }
+
+        /** A side wall of the plain look; both windings, so it shows from either side. */
+        private void plainSide(VertexConsumer consumer, PoseStack.Pose pose, float ax, float ay, float bx, float by, float z0, float z1, float u,
+                               float v, float nx, float ny) {
+            float s = 0.25F;
+            plain(consumer, pose, ax, ay, z0, u, v, nx, ny, 0);
+            plain(consumer, pose, bx, by, z0, u + s, v, nx, ny, 0);
+            plain(consumer, pose, bx, by, z1, u + s, v + 0.05F, nx, ny, 0);
+            plain(consumer, pose, ax, ay, z1, u, v + 0.05F, nx, ny, 0);
+            plain(consumer, pose, ax, ay, z1, u, v + 0.05F, nx, ny, 0);
+            plain(consumer, pose, bx, by, z1, u + s, v + 0.05F, nx, ny, 0);
+            plain(consumer, pose, bx, by, z0, u + s, v, nx, ny, 0);
+            plain(consumer, pose, ax, ay, z0, u, v, nx, ny, 0);
+        }
+
+        private void plain(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float u, float v, float nx, float ny, float nz) {
+            consumer.addVertex(pose, x, y, z).setColor(PLAIN_TINT).setUv(u, v).setOverlay(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY)
+                    .setLight(net.minecraft.client.renderer.LightTexture.FULL_BRIGHT).setNormal(pose, nx, ny, nz);
+        }
+
+        /** The plain rim: the free cells beside the breach glow, brightest at the corners that touch it, fading outwards. */
+        void plainHalo(VertexConsumer consumer, PoseStack.Pose pose) {
+            int alpha = Math.round(160 * Mth.clamp(reveal, 0, 1));
+            for (int j = 0; j < layout.height; j++) {
+                for (int i = 0; i < layout.width; i++) {
+                    if (at(i, j)) {
+                        continue;
+                    }
+                    int c00 = touches(i, j) ? alpha : 0;
+                    int c10 = touches(i + 1, j) ? alpha : 0;
+                    int c11 = touches(i + 1, j + 1) ? alpha : 0;
+                    int c01 = touches(i, j + 1) ? alpha : 0;
+                    if ((c00 | c10 | c11 | c01) == 0) {
+                        continue;
+                    }
+                    float x0 = layout.x(i);
+                    float y0 = layout.y(j);
+                    float x1 = layout.x(i + 1);
+                    float y1 = layout.y(j + 1);
+                    consumer.addVertex(pose, x0, y0, 0).setColor(c00 << 24 | RIM);
+                    consumer.addVertex(pose, x1, y0, 0).setColor(c10 << 24 | RIM);
+                    consumer.addVertex(pose, x1, y1, 0).setColor(c11 << 24 | RIM);
+                    consumer.addVertex(pose, x0, y1, 0).setColor(c01 << 24 | RIM);
+                }
+            }
+        }
+
+        /** Whether the cell corner at (i, j) touches a shown cell. */
+        private boolean touches(int i, int j) {
+            return at(i, j) || at(i - 1, j) || at(i, j - 1) || at(i - 1, j - 1);
         }
 
         private void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float u, float v, int mask, int flags, int data,

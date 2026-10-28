@@ -10,8 +10,8 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes an Impulse Plate takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more with
- * a Lens (1-4). They throw higher and farther and soften the landing.
+ * The runes an Impulse Plate takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3). They
+ * throw higher and farther, soften the landing, keep the thrown running and fling hostile creatures away.
  */
 public enum ImpulseRune implements HolderRune {
     /** It throws higher, and an aimed plate reaches farther targets. */
@@ -20,10 +20,18 @@ public enum ImpulseRune implements HolderRune {
     MOTOR("metal_spark"),
     /** Whoever it threw lands softly. */
     BREATH("air_life"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    /** Whoever it throws keeps running fast for a while after. */
+    HASTE("spark_life"),
+    /** A hostile creature that steps on is flung back and high, with no soft landing. */
+    BANISHING("light_shadow");
 
     public static final int SLOTS = 3;
+    /** Ticks of Speed after a throw (Haste), by strength; Speed II from three stars. */
+    public static final int[] HASTE_TICKS = {60, 100, 140, 180};
+    /** Upward speed a hostile creature is flung with (Banishing), by strength. */
+    public static final double[] BANISH_UP = {1.1, 1.4, 1.7, 2.0};
+    /** Speed it is flung back with, against the arrow. */
+    public static final double BANISH_BACK = 0.6;
     /** Upward speed of a throw, blocks a tick, by Shift's strength (index 0 = without it). */
     private static final double[] UP = {1.0, 1.2, 1.4, 1.65, 1.95};
     /** Speed along the arrow, by Motor's strength. */
@@ -70,7 +78,18 @@ public enum ImpulseRune implements HolderRune {
         return switch (this) {
             case SHIFT -> HolderRune.percent((float) (up(i) / up(0) - 1));
             case MOTOR -> HolderRune.percent((float) (forward(i) / forward(0) - 1));
-            case BREATH, LENS -> "";
+            case BREATH -> "";
+            case HASTE -> HolderRune.seconds(HolderRune.at(HASTE_TICKS, i));
+            case BANISHING -> Integer.toString(apex(BANISH_UP[Mth.clamp(i, 1, 4) - 1]));
         };
+    }
+
+    /** About how many blocks a throw straight up with {@code speed} rises (vanilla gravity and drag). */
+    public static int apex(double speed) {
+        double y = 0;
+        for (double v = speed; v > 0; v = (v - 0.08) * 0.98) {
+            y += v;
+        }
+        return (int) Math.round(y);
     }
 }

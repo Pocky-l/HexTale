@@ -1,8 +1,14 @@
 {
   "kind": "wip",
-  "region": "workshop",
+  "region": "chemtech",
   "stage": "mid",
   "icon": "minecraft:leather_helmet",
-  "parents": ["wip_the_gray", "researchers_goggles"],
-  "pos": [-1125, -216]
+  "parents": [
+    "wip_fume_hood",
+    "researchers_goggles"
+  ],
+  "pos": [
+    -1125,
+    -216
+  ]
 }

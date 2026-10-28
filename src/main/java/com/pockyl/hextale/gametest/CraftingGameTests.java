@@ -79,13 +79,13 @@ public final class CraftingGameTests {
         helper.succeed();
     }
 
-    /** Every piece of the clothes takes one rune of its own four; the trousers' rune quickens the wearer. */
+    /** Every piece of the clothes takes one rune of its own (four or more); the trousers' rune quickens the wearer. */
     @HexTest
     public static void theClothesTakeOneRuneEach(GameTestHelper helper) {
         var pieces = java.util.List.of(ModItems.RESEARCHER_HOOD, ModItems.RESEARCHER_ROBE, ModItems.RESEARCHER_TROUSERS, ModItems.RESEARCHER_BOOTS);
         for (var piece : pieces) {
             var holder = com.pockyl.hextale.runework.RuneHolder.of(new ItemStack(piece.get()));
-            helper.assertTrue(holder != null && holder.slots() == 1 && holder.holderRunes().size() == 4, piece.getId() + " takes one of four runes");
+            helper.assertTrue(holder != null && holder.slots() == 1 && holder.holderRunes().size() >= 4, piece.getId() + " takes one of its runes");
         }
         ItemStack trousers = new ItemStack(ModItems.RESEARCHER_TROUSERS.get());
         com.pockyl.hextale.runework.RuneHolder.TROUSERS.set(trousers, com.pockyl.hextale.runework.PickaxeRunes.EMPTY
@@ -121,6 +121,25 @@ public final class CraftingGameTests {
             vanilla.add(i < 3 ? new ItemStack(Items.COPPER_INGOT) : ItemStack.EMPTY);
         }
         helper.assertTrue(HexCraftingRecipe.find(CraftingInput.of(3, 3, vanilla), false) == null, "copper in a row is nothing");
+        helper.succeed();
+    }
+
+    /** A result shown for a grid that has changed since (a hopper took from it) cannot be taken for nothing. */
+    @HexTest
+    public static void theWorkbenchGivesNothingForAnEmptiedGrid(GameTestHelper helper) {
+        helper.setBlock(AT, ModBlocks.HEX_WORKBENCH.get());
+        HexWorkbenchBlockEntity bench = helper.<HexWorkbenchBlockEntity>getBlockEntity(AT);
+        for (int i = 0; i < 3; i++) {
+            bench.setItem(3 + i, new ItemStack(ModItems.BRASS_INGOT.get()));
+        }
+        bench.setItem(HexWorkbenchBlockEntity.CRYSTAL, new ItemStack(ModItems.UNSTABLE_HEXTECH.get()));
+        net.minecraft.world.entity.player.Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        var menu = new com.pockyl.hextale.menu.HexWorkbenchMenu(1, player.getInventory(), bench, helper.absolutePos(AT));
+        menu.broadcastChanges();
+        var result = menu.getSlot(HexWorkbenchBlockEntity.SIZE);
+        helper.assertTrue(result.getItem().is(ModItems.BRASS_PIPE.get()) && result.mayPickup(player), "the pipes are shown and can be taken");
+        bench.removeItem(4, 1);
+        helper.assertFalse(result.mayPickup(player), "with an ingot gone the old result cannot be taken");
         helper.succeed();
     }
 

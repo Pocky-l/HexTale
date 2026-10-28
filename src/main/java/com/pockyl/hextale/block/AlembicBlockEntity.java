@@ -226,7 +226,8 @@ public class AlembicBlockEntity extends BaseContainerBlockEntity implements Worl
         }
         tank.fill(boiled, false);
         if (level instanceof net.minecraft.server.level.ServerLevel server) {
-            com.pockyl.hextale.thevoid.Thinning.add(server, worldPosition, boiled.total() * (inputKnown ? com.pockyl.hextale.thevoid.Thinning.BOILED : com.pockyl.hextale.thevoid.Thinning.BOILED * 2));
+            com.pockyl.hextale.thevoid.Thinning.add(server, worldPosition, boiled.total() * (inputKnown ? com.pockyl.hextale.thevoid.Thinning.BOILED : com.pockyl.hextale.thevoid.Thinning.BOILED * 2),
+                    com.pockyl.hextale.thevoid.Thinning.Source.BOILED);
         }
         inside.shrink(1);
         water -= WATER_PER_ITEM;

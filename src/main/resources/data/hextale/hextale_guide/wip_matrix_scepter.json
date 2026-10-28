@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "circle",
-  "stage": "late",
-  "icon": "minecraft:blaze_rod",
-  "parents": ["hexcore", "wip_crystal_wand"],
-  "pos": [1273, -37]
-}

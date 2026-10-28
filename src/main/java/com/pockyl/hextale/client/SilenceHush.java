@@ -12,13 +12,14 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
-import com.pockyl.hextale.block.SilenceWardBlock;
+import com.pockyl.hextale.block.NullLanternBlockEntity;
 
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Silence Ward's hush: a sound that starts inside a ward's reach is played quieter (or not at all with a full Hush).
- * Sounds that follow something (tickable ones), music, sounds without a place and the player's own interface stay.
+ * The hush of a Null Lantern with Silence: a sound that starts inside its quiet is played quieter (or not at all with
+ * the deepest Silence). Sounds that follow something (tickable ones), music, sounds without a place and the player's own
+ * interface stay.
  * (1.21.1 has no interface sound source: interface sounds have no place and stay anyway.)
  */
 public final class SilenceHush {
@@ -37,11 +38,10 @@ public final class SilenceHush {
                 || sound.getSource() == SoundSource.MASTER) {
             return;
         }
-        SilenceWardBlock.Ward ward = SilenceWardBlock.Ward.covering(minecraft.level, new Vec3(sound.getX(), sound.getY(), sound.getZ()), null);
-        if (ward == null) {
+        float left = NullLanternBlockEntity.soundLeft(minecraft.level, new Vec3(sound.getX(), sound.getY(), sound.getZ()));
+        if (left >= 1) {
             return;
         }
-        float left = ward.left();
         event.setSound(left <= 0 ? null : new Muffled(sound, left));
     }
 

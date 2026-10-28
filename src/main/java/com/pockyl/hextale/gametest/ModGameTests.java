@@ -41,10 +41,26 @@ public final class ModGameTests {
         helper.succeed();
     }
 
-    /** Every recipe, advancement and loot table of the mod parses in the current data formats. */
+    /** Every block of ours that is meant to drop something has its loot table: a missing one deletes the block when mined. */
+    @HexTest
+    public static void everyBlockHasItsLoot(GameTestHelper helper) {
+        MinecraftServer server = helper.getLevel().getServer();
+        List<String> missing = new java.util.ArrayList<>();
+        for (var entry : com.pockyl.hextale.registry.ModBlocks.BLOCKS.getEntries()) {
+            var key = entry.get().getLootTable();
+            if (key != net.minecraft.world.level.storage.loot.BuiltInLootTables.EMPTY
+                    && server.reloadableRegistries().getLootTable(key) == LootTable.EMPTY) {
+                missing.add(entry.getId().getPath());
+            }
+        }
+        helper.assertTrue(missing.isEmpty(), "blocks without a loot table (add one, or noLootTable() if on purpose): " + missing);
+        helper.succeed();
+    }
+
     // 26.x: solidBlocksStandInTheHeightmap (every block with a body is in minecraft:blocks_motion_no_leaves). 1.21.1 has
     // no such tag: its heightmaps ask the block whether it blocks motion, as they always did.
 
+    /** Every recipe, advancement and loot table of the mod parses in the current data formats. */
     @HexTest
     public static void dataFilesLoad(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();

@@ -1,15 +1,20 @@
 {
-  "region": "forge",
-  "stage": "mid",
+  "region": "workshop",
   "icon": "hextale:hextech_pickaxe",
-  "parents": ["hextech_crystal"],
+  "parents": [
+    "ink",
+    "brass"
+  ],
   "goal": {
     "type": "pickaxe"
   },
   "display": {
-    "kind": "infusion",
+    "kind": "hex_crafting",
     "result": "hextale:hextech_pickaxe"
   },
-  "research": "hextech_pickaxe",
-  "pos": [800, 150]
+  "research": "hextech_tools",
+  "pos": [
+    330,
+    -240
+  ]
 }

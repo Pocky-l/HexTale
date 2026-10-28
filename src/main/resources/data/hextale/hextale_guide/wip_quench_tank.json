@@ -1,8 +1,14 @@
 {
   "kind": "wip",
-  "region": "essences",
+  "region": "forge",
   "stage": "mid",
   "icon": "minecraft:water_bucket",
-  "parents": ["hexsteel", "coolant"],
-  "pos": [674, 47]
+  "parents": [
+    "hexsteel",
+    "coolant"
+  ],
+  "pos": [
+    674,
+    47
+  ]
 }

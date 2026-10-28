@@ -1,8 +1,13 @@
 {
   "kind": "wip",
-  "region": "forge",
+  "region": "workshop",
   "stage": "late",
   "icon": "minecraft:firework_star",
-  "parents": ["radiant_pickaxe"],
-  "pos": [1510, 187]
+  "parents": [
+    "dust_charge"
+  ],
+  "pos": [
+    -240,
+    -75
+  ]
 }

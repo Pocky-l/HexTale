@@ -2,7 +2,10 @@
   "region": "chemtech",
   "stage": "mid",
   "icon": "hextale:rusted_plating",
-  "parents": ["chem_burner", "chem_vial"],
+  "parents": [
+    "chem_burner",
+    "acid"
+  ],
   "display": {
     "kind": "scheme",
     "ingredients": [
@@ -12,5 +15,8 @@
     ],
     "result": "hextale:rusted_plating"
   },
-  "pos": [-960, -90]
+  "pos": [
+    -960,
+    -90
+  ]
 }

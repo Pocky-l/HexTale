@@ -3,7 +3,8 @@
   "icon": "hextale:levitation_plate",
   "parents": [
     "hex_workbench",
-    "brass"
+    "brass",
+    "ink"
   ],
   "display": {
     "kind": "hex_crafting",
@@ -13,6 +14,7 @@
       "result": "plate"
     }
   },
+  "research": "levitation_plate",
   "pos": [
     -80,
     60

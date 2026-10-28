@@ -12,7 +12,8 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The runes a hex pylon takes - burned in at the Hextech Altar like a smelter's, up to {@link #SLOTS}. Strength =
- * stars, one more with a Lens (1-4); index 0 of every table is the pylon without the rune.
+ * stars (1-3); index 0 of every table is the pylon without the rune. Besides reach, pace and load, runes may smelt or
+ * grind what they carry and leave experience by the target.
  */
 public enum PylonRune implements HolderRune {
     /** A wider reach: the gathering radius and how far a link may go. */
@@ -21,10 +22,20 @@ public enum PylonRune implements HolderRune {
     MOTOR("metal_spark"),
     /** Moves more items at once. */
     LIFT("air_metal"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    /** Now and then an ore or a raw lump arrives smelted. */
+    SMELTING("fire_earth"),
+    /** Now and then stone arrives ground down: cobblestone to gravel, gravel to sand. */
+    EROSION("water_earth"),
+    /** A delivery now and then leaves a little experience by the target. */
+    RADIANCE("life_light");
 
     public static final int SLOTS = 3;
+    /** Chance each carried item that a furnace would smelt arrives smelted (Smelting), by strength. */
+    public static final float[] SMELT_CHANCE = {0.1F, 0.2F, 0.3F, 0.4F};
+    /** Chance each carried stone arrives ground down (Erosion), by strength. */
+    public static final float[] GRIND_CHANCE = {0.25F, 0.5F, 0.75F, 1.0F};
+    /** Chance a delivery leaves experience by the target (Radiance), by strength. */
+    public static final float[] EXPERIENCE_CHANCE = {0.1F, 0.2F, 0.3F, 0.4F};
     /** Blocks around the pylon it gathers from, by strength. */
     private static final int[] RADIUS = {6, 8, 10, 12, 16};
     /** Blocks a link may span, gem to gem, by strength. */
@@ -83,7 +94,9 @@ public enum PylonRune implements HolderRune {
             case SHIFT -> radius(i) + " / " + range(i);
             case MOTOR -> String.format(Locale.ROOT, "%.1f", interval(i) / 20.0F);
             case LIFT -> Integer.toString(amount(i));
-            case LENS -> "";
+            case SMELTING -> HolderRune.percent(HolderRune.at(SMELT_CHANCE, i));
+            case EROSION -> HolderRune.percent(HolderRune.at(GRIND_CHANCE, i));
+            case RADIANCE -> HolderRune.percent(HolderRune.at(EXPERIENCE_CHANCE, i));
         };
     }
 }

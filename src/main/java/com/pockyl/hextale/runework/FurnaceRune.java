@@ -10,10 +10,9 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Hex Furnace takes - burned in at the Hextech Altar (the furnace alone on it), up to {@link #SLOTS}; a broken
- * furnace keeps them. Strength = stars, one more with a Lens (1-4). They make its melts richer: more ingots from ore,
- * more experience, fuel spared, a fire that speeds up the longer it burns, and old metal tools and armour melted back
- * into ingots.
+ * The runes a Hex Furnace takes - burned in at the Hextech Altar (the furnace alone on it), up to {@link #SLOTS}; a
+ * broken furnace keeps them. Strength = stars (1-3). They make its melts richer: more ingots from ore, more experience,
+ * fuel spared, a fire that speeds up the longer it burns, and old metal tools and armour melted back into ingots.
  */
 public enum FurnaceRune implements HolderRune {
     /** Ore may give one more ingot. */
@@ -25,9 +24,7 @@ public enum FurnaceRune implements HolderRune {
     /** The longer it works without a pause, the faster it melts. */
     BELLOWS("air_fire"),
     /** Iron, gold and copper tools and armour melt into ingots instead of a nugget. */
-    REFORGING("fire_metal"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    REFORGING("fire_metal");
 
     public static final int SLOTS = 3;
     /** Chance of each ore to give one ingot more. */
@@ -69,7 +66,6 @@ public enum FurnaceRune implements HolderRune {
             case ETERNAL_FLAME -> HolderRune.percent(HolderRune.at(FREE_FUEL, i));
             case BELLOWS -> HolderRune.factor(HolderRune.at(TOP_SPEED, i));
             case REFORGING -> Integer.toString(HolderRune.at(INGOTS_BACK, i));
-            case LENS -> "";
         };
     }
 }

@@ -15,6 +15,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,8 +28,10 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.PlateRune;
+import com.pockyl.hextale.runework.ToolEffects;
 
 import java.util.HashSet;
 import java.util.List;
@@ -37,11 +40,12 @@ import java.util.Set;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Levitation Plate: a column of still air above it lifts whatever stands in it - creatures, players, dropped items -
- * up to the top of the column and holds it there, bobbing; a sneaking player sinks back down. Nobody in the column is
+ * The Levitation Plate: a column of still air above it lifts whatever stands in it - creatures, players, dropped items
+ * - up to the top of the column and holds it there, bobbing; a sneaking player sinks back down. Nobody in the column is
  * hurt by falling. Runs on both sides like a bubble column: every entity is moved where its movement is simulated
  * ({@link Entity#canSimulateMovement()}), so a player's own client lifts them without lag. The column ends at the first
- * solid block above. Takes runes (Shift, Motor, Breath, Lens).
+ * solid block above. Takes runes (Shift, Motor, Breath, Cache: items at the top go into the container that caps the
+ * column; Slumber: creatures in it hang asleep).
  */
 public class LevitationPlateBlockEntity extends BlockEntity {
     /** How far down a sneaking player sinks a tick. */
@@ -122,6 +126,8 @@ public class LevitationPlateBlockEntity extends BlockEntity {
         if (level instanceof ServerLevel server) {
             plate.arrive(server, now);
             plate.leave(server, now);
+            plate.cache(server, entities, top, column);
+            plate.slumber(server, entities);
         } else {
             plate.animate(before);
         }
@@ -139,6 +145,61 @@ public class LevitationPlateBlockEntity extends BlockEntity {
         lift += ((riders > 0 ? 1 : 0) - lift) * 0.1F;
         if (riders > 0 && before == 0) {
             hum.accept(this);
+        }
+    }
+
+    /**
+     * Cache: now and then the items hovering at the top of the column go into the container that caps it (put in from
+     * below, like a hopper would), each with a puff of the rune's light.
+     */
+    private void cache(ServerLevel level, List<Entity> entities, double top, AABB column) {
+        int cache = strength(PlateRune.CACHE);
+        if (cache <= 0 || level.getGameTime() % HolderRune.at(PlateRune.CACHE_EVERY, cache) != 0) {
+            return;
+        }
+        BlockPos cap = BlockPos.containing(worldPosition.getX(), column.maxY, worldPosition.getZ());
+        if (com.pockyl.hextale.port.ResourceHandler.ofBlock(level, cap, net.minecraft.core.Direction.DOWN) == null) {
+            return;
+        }
+        for (Entity entity : entities) {
+            if (!(entity instanceof net.minecraft.world.entity.item.ItemEntity item) || !item.isAlive() || item.getY() < top - 1.0) {
+                continue;
+            }
+            ItemStack stack = item.getItem();
+            int moved = com.pockyl.hextale.transport.PylonInsert.insert(level, cap, net.minecraft.core.Direction.DOWN,
+                    com.pockyl.hextale.port.ItemResource.of(stack), stack.getCount(), null, null);
+            if (moved <= 0) {
+                continue;
+            }
+            stack.shrink(moved);
+            if (stack.isEmpty()) {
+                item.discard();
+            } else {
+                item.setItem(stack);
+            }
+            ToolEffects.puff(level, item.position().add(0, 0.25, 0), PlateRune.CACHE.rune(), 4, 0.15);
+            level.playSound(null, item.getX(), item.getY(), item.getZ(), ModSounds.PYLON_ARRIVE.get(), SoundSource.BLOCKS, 0.35F,
+                    1.1F + level.getRandom().nextFloat() * 0.2F);
+        }
+    }
+
+    /** Slumber: creatures in the column hang asleep - slowed to a stop, harmless, forgetting whom they hunted. */
+    private void slumber(ServerLevel level, List<Entity> entities) {
+        int slumber = strength(PlateRune.SLUMBER);
+        if (slumber <= 0 || level.getGameTime() % 20 != 0) {
+            return;
+        }
+        int ticks = HolderRune.at(PlateRune.SLUMBER_TICKS, slumber);
+        for (Entity entity : entities) {
+            if (entity instanceof net.minecraft.world.entity.Mob mob && mob.isAlive()) {
+                mob.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, ticks, 4, true, false, true));
+                mob.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, ticks, 1, true, false, true));
+                mob.setTarget(null);
+                if (level.getRandom().nextInt(3) == 0) {
+                    level.sendParticles(ModParticles.glint(PlateRune.SLUMBER.rune().color()), mob.getX(), mob.getY() + mob.getBbHeight() + 0.2,
+                            mob.getZ(), 2, 0.2, 0.1, 0.2, 0.01);
+                }
+            }
         }
     }
 

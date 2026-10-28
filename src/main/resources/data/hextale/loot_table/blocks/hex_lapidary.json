@@ -10,11 +10,12 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "hextale:binding_chalk"
+          "name": "hextale:hex_lapidary"
         }
       ],
       "rolls": 1,
       "bonus_rolls": 0.0
     }
-  ]
+  ],
+  "random_sequence": "hextale:blocks/hex_lapidary"
 }

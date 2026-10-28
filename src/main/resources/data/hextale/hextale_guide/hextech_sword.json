@@ -1,16 +1,19 @@
 {
-  "region": "forge",
-  "stage": "mid",
+  "region": "workshop",
   "icon": "hextale:hextech_sword",
-  "parents": ["hextech_pickaxe"],
+  "parents": [
+    "hextech_pickaxe"
+  ],
   "display": {
-    "kind": "infusion",
+    "kind": "hex_crafting",
     "result": "hextale:hextech_sword",
     "then": {
       "kind": "runes",
       "result": "sword"
     }
   },
-  "research": "hextech_sword",
-  "pos": [880, 260]
+  "pos": [
+    270,
+    -300
+  ]
 }

@@ -458,7 +458,7 @@ public class TheVoid extends Entity {
                 if (starve(level)) {
                     return;
                 }
-                Thinning.add(level, blockPosition(), FEED);
+                Thinning.add(level, blockPosition(), FEED, Thinning.Source.BREACH);
             }
         }
         long pushAt = entityData.get(DATA_PUSH_AT);

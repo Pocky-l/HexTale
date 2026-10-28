@@ -358,7 +358,7 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
         }
         int color = flask.color();
         flask.shatter();
-        com.pockyl.hextale.thevoid.Thinning.add(server, worldPosition, com.pockyl.hextale.thevoid.Thinning.LAB_BURST);
+        com.pockyl.hextale.thevoid.Thinning.add(server, worldPosition, com.pockyl.hextale.thevoid.Thinning.LAB_BURST, com.pockyl.hextale.thevoid.Thinning.Source.LAB_BURST);
         items.get(FLASK).shrink(1);
         outcome = OUTCOME_BURST;
         outcomeAt = server.getGameTime();

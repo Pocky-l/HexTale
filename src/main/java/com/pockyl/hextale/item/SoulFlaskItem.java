@@ -16,8 +16,10 @@ import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Leashable;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -43,7 +45,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Soul Flask: right click a creature with an empty flask and it folds into the glass, whole (everything it is and
  * carries is kept); right click a block with a full flask and it steps out there. No players, no bosses. Takes runes
- * (Healing, Growth, Slumber, Lens) that act when the creature comes out.
+ * (Healing, Growth, Slumber) that act when the creature comes out.
  */
 @EventBusSubscriber(modid = com.pockyl.hextale.Hextale.MOD_ID)
 public class SoulFlaskItem extends Item {
@@ -55,6 +57,18 @@ public class SoulFlaskItem extends Item {
     public static boolean takes(LivingEntity entity) {
         return entity instanceof Mob && entity.isAlive() && !(entity instanceof Player) && !entity.getType().is(Tags.EntityTypes.BOSSES)
                 && !entity.isPassenger() && !entity.isVehicle();
+    }
+
+    /** Whether {@code player} may fold this creature: never someone else's pet, nor one on someone else's lead. */
+    public static boolean takes(Player player, LivingEntity entity) {
+        if (!takes(entity)) {
+            return false;
+        }
+        if (entity instanceof OwnableEntity pet && pet.getOwnerUUID() != null
+                && !pet.getOwnerUUID().equals(player.getUUID())) {
+            return false;
+        }
+        return !(entity instanceof Leashable leashed && leashed.getLeashHolder() instanceof Player holder && holder != player);
     }
 
     @Override
@@ -70,7 +84,7 @@ public class SoulFlaskItem extends Item {
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         ItemStack stack = event.getItemStack();
         if (stack.getItem() instanceof SoulFlaskItem && !stack.has(ModDataComponents.SOUL.get())
-                && event.getTarget() instanceof LivingEntity target && takes(target)) {
+                && event.getTarget() instanceof LivingEntity target && takes(event.getEntity(), target)) {
             event.setCancellationResult(fold(stack, event.getEntity(), target, event.getHand()));
             event.setCanceled(true);
         }
@@ -78,7 +92,7 @@ public class SoulFlaskItem extends Item {
 
     /** Folds {@code target} into the empty flask {@code stack}. */
     public static InteractionResult fold(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
-        if (stack.has(ModDataComponents.SOUL.get()) || !takes(target)) {
+        if (stack.has(ModDataComponents.SOUL.get()) || !takes(player, target)) {
             return InteractionResult.PASS;
         }
         if (target.level() instanceof ServerLevel level) {

@@ -57,7 +57,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Disintegrator: a stone bowl that unmakes whatever is put into it - by hand, hopper, pylon or thrown in - into
  * unknown essence, poured into the jar or pipe under it. One essence point of the thing = 1 mB. The unmaking leaks into
- * the land (the Thinning) twice as much as boiling. Takes runes (Motor, Dam, Radiance, Hush, Lens).
+ * the land (the Thinning) twice as much as boiling. Takes runes (Motor, Dam, Radiance, Hush).
  */
 public class DisintegratorBlock extends BaseEntityBlock implements EssenceMachine {
     private static final VoxelShape INSIDE = Block.box(4, 5, 4, 12, 16, 12);
@@ -253,8 +253,8 @@ public class DisintegratorBlock extends BaseEntityBlock implements EssenceMachin
             tank.fill(EssenceMix.unknown(made), false);
             item.shrink(1);
             int hush = strength(DisintegratorRune.HUSH);
-            float leak = made * Thinning.BOILED * 2 * (hush <= 0 ? 1 : 1 - HolderRune.at(DisintegratorRune.QUIET, hush));
-            Thinning.add(level, worldPosition, leak);
+            float leak = made * Thinning.DISINTEGRATED * (hush <= 0 ? 1 : 1 - HolderRune.at(DisintegratorRune.QUIET, hush));
+            Thinning.add(level, worldPosition, leak, Thinning.Source.DISINTEGRATED);
             Vec3 centre = Vec3.atCenterOf(worldPosition).add(0, 0.25, 0);
             RandomSource random = level.getRandom();
             int radiance = strength(DisintegratorRune.RADIANCE);

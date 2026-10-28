@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "chemtech",
-  "stage": "mid",
-  "icon": "minecraft:soul_lantern",
-  "parents": ["chem_burner"],
-  "pos": [-966, -7]
-}

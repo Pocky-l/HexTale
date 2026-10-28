@@ -11,9 +11,9 @@ import java.util.Locale;
 import org.jspecify.annotations.Nullable;
 
 /**
- * One rune a {@link RuneHolder} takes: the codex rune it is, what it does there (one short line, {@link #descriptionKey()})
- * and the number behind each strength ({@link #valueKey()} with {@link #amountText}). Strength = stars, one more with a
- * Lens (1-4). Burning it in costs its own essence (the compound of its primals), more for a later chapter.
+ * One rune a {@link RuneHolder} takes: the codex rune it is, what it does there (one short line, {@link
+ * #descriptionKey()}) and the number behind each strength ({@link #valueKey()} with {@link #amountText}). Strength =
+ * stars (1-3). Burning it in costs its own essence (the compound of its primals), more for a later chapter.
  */
 public interface HolderRune {
     /** mB of a rune's own essence per star, by its chapter (I, II, III). */

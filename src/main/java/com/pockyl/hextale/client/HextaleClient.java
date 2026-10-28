@@ -112,11 +112,11 @@ public final class HextaleClient {
         com.pockyl.hextale.client.screen.MultiblockDiorama.register();
 
         modBus.addListener(com.pockyl.hextale.client.render.VoidPipelines::registerShaders);
+        modBus.addListener((net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) -> event.enqueueWork(IrisCompat::init));
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
         BreachCinematic.register(modBus);
         SilenceHush.register();
-        ClientLift.register();
         ClientGrapple.register();
         LevitationHum.register();
         ThinningAtmosphere.register(modBus);
@@ -177,9 +177,8 @@ public final class HextaleClient {
                 event.getToolTip().add(Component.translatable("block.hextale." + id + ".hint").withStyle(ChatFormatting.GRAY));
             }
             if (stack.is(ModItems.LEVITATION_PLATE.get()) || stack.is(ModItems.NULL_LANTERN.get()) || stack.is(ModItems.IMPULSE_PLATE.get())
-                    || stack.is(ModItems.HEX_LIFT.get()) || stack.is(ModItems.RIFT_GATE.get())
-                    || stack.is(ModItems.WORLD_ANCHOR.get()) || stack.is(ModItems.DISINTEGRATOR.get())
-                    || stack.is(ModItems.SILENCE_WARD.get())) {
+                    || stack.is(ModItems.RIFT_GATE.get())
+                    || stack.is(ModItems.WORLD_ANCHOR.get()) || stack.is(ModItems.DISINTEGRATOR.get())) {
                 event.getToolTip().add(Component.translatable(stack.getItem().getDescriptionId() + ".hint").withStyle(ChatFormatting.GRAY));
             }
             // How a pipe's sides are set.
@@ -196,6 +195,7 @@ public final class HextaleClient {
             }
         });
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientKnowledge.clear());
+        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> com.pockyl.hextale.block.NullLanternBlockEntity.forget(true));
         ClientPylons.register();
         EssenceLookup.register();
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> ResearchBoards.warmUp());

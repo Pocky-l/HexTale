@@ -88,7 +88,7 @@ public class MiasmaVentBlockEntity extends BlockEntity {
             }
         }
         server.blockEvent(pos, state.getBlock(), PUFF, 0);
-        Thinning.add(server, pos, Thinning.MIASMA_PUFF);
+        Thinning.add(server, pos, Thinning.MIASMA_PUFF, Thinning.Source.MIASMA);
         server.playSound(null, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, ModSounds.MIASMA_HISS.get(), SoundSource.BLOCKS, 0.6F,
                 0.9F + server.getRandom().nextFloat() * 0.2F);
     }

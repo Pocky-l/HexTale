@@ -3,6 +3,8 @@ package com.pockyl.hextale.thevoid;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -53,6 +55,10 @@ public final class Breaches {
     public static final int CHECK_TICKS = 100;
     /** Chunks every way around a player that are looked at. */
     public static final int SEARCH_RADIUS = 4;
+    /** Ticks before a sick chunk that had no ground for a breach is searched again. */
+    public static final int GROUND_RETRY_TICKS = 2400;
+    /** Sick chunks (per dimension) whose last search found no ground, and when they may be searched again. */
+    private static final java.util.Map<ResourceKey<Level>, java.util.Map<Long, Long>> NO_GROUND = new java.util.concurrent.ConcurrentHashMap<>();
     /** Players this close (blocks) watch a breach open. */
     public static final double WATCH_RADIUS = 64;
     /** Ticks from the omen's start until the cinematic is over at the latest. */
@@ -219,16 +225,23 @@ public final class Breaches {
         // The sickest first: that is where the edge gives.
         ready.sort((a, b) -> Float.compare(Thinning.get(b), Thinning.get(a)));
         Sites sites = sites(level);
+        java.util.Map<Long, Long> noGround = NO_GROUND.computeIfAbsent(level.dimension(), key -> new java.util.concurrent.ConcurrentHashMap<>());
+        long now = level.getGameTime();
+        noGround.values().removeIf(retry -> retry <= now);
         for (LevelChunk chunk : ready) {
             BlockPos middle = chunk.getPos().getMiddleBlockPosition(0);
-            if (sites.near(middle) != null || sites.resting(middle, level.getGameTime())) {
+            if (sites.near(middle) != null || sites.resting(middle, now)) {
                 return false;
+            }
+            if (noGround.containsKey(chunk.getPos().toLong())) {
+                continue;
             }
             BlockPos ground = findGround(level, chunk.getPos(), level.getRandom());
             if (ground != null) {
                 open(level, ground, player.position());
                 return true;
             }
+            noGround.put(chunk.getPos().toLong(), now + GROUND_RETRY_TICKS);
         }
         return false;
     }
@@ -375,5 +388,6 @@ public final class Breaches {
     public static void onServerStopped(ServerStoppedEvent event) {
         WATCHING.clear();
         WITNESSES.clear();
+        NO_GROUND.clear();
     }
 }

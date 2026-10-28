@@ -1,0 +1,26 @@
+{
+  "pattern": [
+    "BUB",
+    " T ",
+    " X "
+  ],
+  "key": {
+    "B": {
+      "item": "hextale:brass_ingot"
+    },
+    "U": {
+      "item": "hextale:unstable_hextech"
+    },
+    "T": {
+      "item": "minecraft:iron_axe"
+    },
+    "X": {
+      "item": "minecraft:dark_oak_log"
+    }
+  },
+  "result": {
+    "id": "hextale:hextech_axe",
+    "count": 1
+  },
+  "charge": 2
+}

@@ -5,7 +5,8 @@
     "hextale:veil_glass"
   ],
   "parents": [
-    "hex_workbench"
+    "hex_workbench",
+    "ink"
   ],
   "goal": {
     "type": "any_of",
@@ -28,6 +29,7 @@
       "result": "hextale:veil_glass"
     }
   },
+  "research": "sieve_glass",
   "pos": [
     -20,
     -30

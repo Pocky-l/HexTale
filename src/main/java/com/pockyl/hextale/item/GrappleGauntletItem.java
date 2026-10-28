@@ -44,7 +44,8 @@ import java.util.function.ToIntFunction;
  *
  * <p>The rope works on the side that moves the wearer ({@link net.minecraft.world.entity.Entity#canSimulateMovement()}:
  * their own client) in {@link #rope}; the server only keeps the falls from hurting while the rope bears the weight and
- * tells the flying check that a hanging player is not cheating. Takes runes (Shift, Motor, Breath, Lens).
+ * tells the flying check that a hanging player is not cheating. Takes runes (Shift, Motor, Breath, Gravity,
+ * Blades).
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public class GrappleGauntletItem extends Item {
@@ -97,7 +98,8 @@ public class GrappleGauntletItem extends Item {
             Vec3 from = player.getEyePosition().add(0, -0.25, 0);
             GrappleHook hook = new GrappleHook(server, player, from, player.getLookAngle(),
                     GrappleRune.reach(runes.strength(GrappleRune.SHIFT.rune())), GrappleRune.reel(runes.strength(GrappleRune.MOTOR.rune())),
-                    runes.strength(GrappleRune.BREATH.rune()) > 0);
+                    runes.strength(GrappleRune.BREATH.rune()) > 0, runes.strength(GrappleRune.GRAVITY.rune()),
+                    runes.strength(GrappleRune.BLADES.rune()));
             server.addFreshEntity(hook);
             server.playSound(null, player.getX(), player.getEyeY(), player.getZ(), ModSounds.GRAPPLE_FIRE.get(), SoundSource.PLAYERS, 0.8F,
                     0.95F + player.getRandom().nextFloat() * 0.1F);

@@ -10,8 +10,8 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Levitation Plate takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more
- * with a Lens (1-4). They make the column taller and quicker and the way down soft.
+ * The runes a Levitation Plate takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3).
+ * They make the column taller and quicker and the way down soft, put away what it lifts and lull the creatures in it.
  */
 public enum PlateRune implements HolderRune {
     /** The column reaches higher. */
@@ -20,10 +20,16 @@ public enum PlateRune implements HolderRune {
     MOTOR("metal_spark"),
     /** Whoever leaves the column floats down slowly for a while. */
     BREATH("air_life"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    /** Items held at the top of the column are put into the container that caps it. */
+    CACHE("earth_shadow"),
+    /** Creatures in the column hang asleep, and stay dazed for a while after. */
+    SLUMBER("life_shadow");
 
     public static final int SLOTS = 3;
+    /** Ticks between two puttings away at the top (Cache), by strength. */
+    public static final int[] CACHE_EVERY = {20, 10, 5, 2};
+    /** Ticks a creature stays dazed after the column (Slumber), by strength. */
+    public static final int[] SLUMBER_TICKS = {60, 120, 200, 300};
     /** Blocks the column reaches without Shift. */
     public static final int HEIGHT = 6;
     public static final int[] EXTRA_HEIGHT = {3, 6, 10, 18};
@@ -68,7 +74,8 @@ public enum PlateRune implements HolderRune {
             case SHIFT -> Integer.toString(height(i));
             case MOTOR -> HolderRune.percent(speed(i) / speed(0) - 1);
             case BREATH -> HolderRune.seconds(HolderRune.at(FLOAT_TICKS, i));
-            case LENS -> "";
+            case CACHE -> HolderRune.seconds(HolderRune.at(CACHE_EVERY, i));
+            case SLUMBER -> HolderRune.seconds(HolderRune.at(SLUMBER_TICKS, i));
         };
     }
 }

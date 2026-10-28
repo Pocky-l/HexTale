@@ -10,9 +10,9 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes an Axolotl Tank takes - burned in at the Hextech Altar (the tank alone on it), up to {@link #SLOTS}; a broken
- * tank keeps them. Strength = stars, one more with a Lens (1-4). They make the creature in it thrive: more slime and
- * sooner, meals that go further, experience, and some of its healing shared with the people around.
+ * The runes an Axolotl Tank takes - burned in at the Hextech Altar (the tank alone on it), up to {@link #SLOTS}; a
+ * broken tank keeps them. Strength = stars (1-3). They make the creature in it thrive: more slime and sooner, meals
+ * that go further, experience, and some of its healing shared with the people around.
  */
 public enum TankRune implements HolderRune {
     /** A shedding may give one slime more. */
@@ -24,9 +24,7 @@ public enum TankRune implements HolderRune {
     /** Players around a fed tank keep Regeneration. */
     HEALING("water_life"),
     /** Every shedding gives experience. */
-    RADIANCE("life_light"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    RADIANCE("life_light");
 
     public static final int SLOTS = 3;
     public static final float[] MORE_SLIME = {0.2F, 0.35F, 0.5F, 0.65F};
@@ -68,7 +66,6 @@ public enum TankRune implements HolderRune {
             case DAM -> HolderRune.percent(HolderRune.at(MEAL_SPARED, i));
             case HEALING -> HolderRune.seconds(HolderRune.at(HEALING_TICKS, i));
             case RADIANCE -> Integer.toString(HolderRune.at(EXPERIENCE, i));
-            case LENS -> "";
         };
     }
 }

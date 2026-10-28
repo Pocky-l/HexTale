@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -43,6 +44,9 @@ public final class ClothesEffects {
     public static final int MEND_TICKS = 200;
     /** How often, while walking, the boots' Pollen may find a plant. */
     public static final int POLLEN_TICKS = 40;
+    /** Ticks between two pulls of Magnet, and how fast things drift to the wearer (blocks per tick). */
+    public static final int PULL_TICKS = 4;
+    public static final double PULL_SPEED = 0.45;
     private static final int POLLEN_RADIUS = 3;
     private static final int DARK = 7;
     private static final Map<Player, Vec3> LAST_STEP = new WeakHashMap<>();
@@ -81,6 +85,10 @@ public final class ClothesEffects {
                 level.sendParticles(ModParticles.bubble(ModParticles.WATER), player.getX(), player.getEyeY(), player.getZ(), 4, 0.25, 0.15, 0.25, 0.04);
             }
         }
+        int magnet = strength(player, ClothesRune.TROUSERS_MAGNET);
+        if (magnet > 0 && player.tickCount % PULL_TICKS == 0 && !player.isShiftKeyDown() && !player.isSpectator()) {
+            pull(level, player, HolderRune.at(ClothesRune.PULL_RADIUS, magnet));
+        }
         if (player.tickCount % 20 != 0) {
             return;
         }
@@ -113,6 +121,36 @@ public final class ClothesEffects {
                 grow(level, player.blockPosition(), random);
             }
         }
+    }
+
+    /** Magnet: the loose items and experience within {@code radius} drift to the wearer; returns how many things moved. */
+    public static int pull(ServerLevel level, Player player, int radius) {
+        Vec3 target = player.position().add(0, 0.6, 0);
+        AABB reach = player.getBoundingBox().inflate(radius);
+        int moved = 0;
+        for (net.minecraft.world.entity.item.ItemEntity item : level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, reach,
+                item -> item.isAlive() && !item.hasPickUpDelay())) {
+            moved += drift(item, target);
+        }
+        for (net.minecraft.world.entity.ExperienceOrb orb : level.getEntitiesOfClass(net.minecraft.world.entity.ExperienceOrb.class, reach,
+                net.minecraft.world.entity.Entity::isAlive)) {
+            moved += drift(orb, target);
+        }
+        if (moved > 0 && level.getRandom().nextInt(3) == 0) {
+            ToolEffects.puff(level, player.position().add(0, 0.8, 0), ClothesRune.TROUSERS_MAGNET.rune(), 2, 0.3);
+        }
+        return moved;
+    }
+
+    private static int drift(net.minecraft.world.entity.Entity entity, Vec3 target) {
+        Vec3 way = target.subtract(entity.position());
+        double length = way.length();
+        if (length < 0.3) {
+            return 0;
+        }
+        entity.setDeltaMovement(way.scale(Math.min(PULL_SPEED, length) / length));
+        entity.hurtMarked = true;
+        return 1;
     }
 
     /** Mends every worn piece of the clothes a little; whether anything needed it. */

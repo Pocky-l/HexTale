@@ -10,9 +10,9 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes a Void Anchor takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars, one more with a
- * Lens (1-4). Its crystal clouds slower, it strikes the Void's creatures that come near with arcs, or holds them slow and
- * shining so they cannot creep up on anyone.
+ * The runes a Void Anchor takes - burned in at the Hextech Altar, up to {@link #SLOTS}. Strength = stars (1-3). Its
+ * crystal clouds slower, it strikes the Void's creatures that come near with arcs, or holds them slow and shining so
+ * they cannot creep up on anyone.
  */
 public enum AnchorRune implements HolderRune {
     /** Its crystal clouds slower. */
@@ -20,9 +20,7 @@ public enum AnchorRune implements HolderRune {
     /** Arcs leap from its crystal into the Void's creatures near it. */
     CHAIN_LIGHTNING("spark_air"),
     /** The Void's creatures near it slow down and shine. */
-    BANISHING("light_shadow"),
-    /** The other runes work one star stronger. */
-    LENS("water_light");
+    BANISHING("light_shadow");
 
     public static final int SLOTS = 2;
     /** Share of the clouding it saves. */
@@ -60,7 +58,6 @@ public enum AnchorRune implements HolderRune {
             case DAM -> HolderRune.percent(HolderRune.at(THRIFT, i));
             case CHAIN_LIGHTNING -> HolderRune.factor(HolderRune.at(ARC, i));
             case BANISHING -> HolderRune.roman(i);
-            case LENS -> "";
         };
     }
 }

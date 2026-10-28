@@ -1166,7 +1166,7 @@ final class GuidePage {
         }
         for (QuestDisplay display = displayOf(quest); display != null; display = display.then()) {
             if (shown(quest, display)) {
-                h += displayHeight(display) + 8;
+                h += displayHeight(quest, display) + 8;
             }
         }
         if (onRunesTab(quest)) {
@@ -1301,7 +1301,7 @@ final class GuidePage {
             if (hover != null) {
                 tooltip = hover;
             }
-            y += displayHeight(display) + 6;
+            y += displayHeight(quest, display) + 6;
         }
         PixelArt.flush(graphics);
         boolean about = !onRunesTab(quest);
@@ -1446,11 +1446,11 @@ final class GuidePage {
     private static final int SCENE_HEIGHT = 128;
     private static final float SCENE_SCALE = 19;
 
-    private int displayHeight(QuestDisplay display) {
+    private int displayHeight(Quest quest, QuestDisplay display) {
         return switch (display.kind()) {
             case SHAPED -> SLOT * 3;
             case SHAPELESS -> SLOT * 3 + 10;
-            case SCHEME -> SLOT + captionLines(display).size() * 10;
+            case SCHEME -> SLOT + captionLines(quest, display).size() * 10;
             case ESSENCES -> SLOT;
             case REAGENTS -> 30;
             case INFUSION -> infusionHeight(display);
@@ -1463,13 +1463,21 @@ final class GuidePage {
         };
     }
 
-    private static String captionKey(QuestDisplay display) {
+    /**
+     * A scheme's caption key: the step's own ({@code scheme.<step id>}) for its first picture when there is one - steps
+     * that share a result (every crucible brew shows a vial) tell their own way - else the result's.
+     */
+    private static String captionKey(Quest quest, QuestDisplay display) {
+        String own = "book.hextale.quest.scheme." + quest.id();
+        if (display == quest.display() && Language.getInstance().has(own)) {
+            return own;
+        }
         return "book.hextale.quest.scheme." + display.result().substring(display.result().indexOf(':') + 1);
     }
 
     /** A scheme's caption wrapped to the plate's width; none when it has no caption. */
-    private List<FormattedCharSequence> captionLines(QuestDisplay display) {
-        String caption = captionKey(display);
+    private List<FormattedCharSequence> captionLines(Quest quest, QuestDisplay display) {
+        String caption = captionKey(quest, display);
         return Language.getInstance().has(caption) ? font.split(Component.translatable(caption), innerWidth() - 4) : List.of();
     }
 
@@ -1508,7 +1516,7 @@ final class GuidePage {
                 }
                 arrow(graphics, sx + 4, y + SLOT / 2);
                 tooltip = orTooltip(tooltip, slot(graphics, result(quest, display), sx + 26, y, mouseX, mouseY, null));
-                List<FormattedCharSequence> caption = captionLines(display);
+                List<FormattedCharSequence> caption = captionLines(quest, display);
                 if (!caption.isEmpty()) {
                     PixelArt.flush(graphics);
                     for (int i = 0; i < caption.size(); i++) {

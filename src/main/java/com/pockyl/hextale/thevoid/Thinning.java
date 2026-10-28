@@ -46,12 +46,19 @@ import java.util.UUID;
 /**
  * The Thinning: how worn the edge of the world is in a chunk. Careless magic - essence poured away, raw crystals
  * bursting, rituals breaking - wears it thin, and the Void, which hungers for magic, seeps in where it is thinnest:
- * first as a haze, then as a sickness of the land, at last as a breach. Everyday work with magic wears it too, a little
- * at a time - boiling essence, separating it, drawing ink, rituals, charged crafts, waking crystals - so a researcher's
- * home sickens slowly as the research goes on: noticeable in the middle of it, at its worst near the end. A value per
- * chunk (a chunk attachment) that never heals by itself; the land around catches it, each ring of chunks a share
- * ({@link #FALLOFF}) of the one inside, so a base and its surroundings sicken together. Players get the values of the
- * chunks around them for the haze, fog and colours.
+ * first as a haze, then as a sickness of the land, at last as a breach. Working essence wears it too, a little at a
+ * time - boiling it out of matter, splitting it, brewing with it in the crucible, spending it on rituals and devices -
+ * so a researcher's home sickens slowly as the work goes on; the Disintegrator, which unmakes matter outright, wears it
+ * fastest. Research itself, the workbench and lightning do not. A value per chunk (a chunk attachment) that never heals
+ * by itself; the land around catches it, each ring of chunks a share ({@link #FALLOFF}) of the one inside, so a base and
+ * its surroundings sicken together. Players get the values of the chunks around them for the haze, fog and colours.
+ * What fed a chunk is counted per {@link Source} (attachment {@code hextale:thinning_sources}) for
+ * {@code /hextale void sources}.
+ *
+ * <p>The everyday rates were picked with a flow model of a mid-game base (about 1500 mB boiled, 1000 mB split, 260 mB
+ * brewed with 25 catalysts, 300 mB spent on rituals and devices an hour): all in one chunk the haze shows after about
+ * two hours, the blight after four, a breach after seven; spread over two chunks about three, six and ten hours. A
+ * Disintegrator fed without pause opens a breach in under an hour.
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class Thinning {
@@ -78,20 +85,21 @@ public final class Thinning {
     /** Chunks every way around a player whose values the player gets. */
     public static final int SYNC_RADIUS = 8;
 
-    // Everyday work, per unit: slow on purpose - the haze shows in the middle of the research, the worst near its end.
-    /** Essence boiled out of matter in an alembic, per mB (out of unknown things: double). */
-    public static final float BOILED = 0.04F;
+    // Working essence, per unit: slow on purpose - the haze shows in the middle of the work, the worst near its end.
+    /** Essence boiled out of matter (an alembic, a funnel's sponge), per mB (out of unknown things: double). */
+    public static final float BOILED = 0.09F;
     /** Essence a separator splits, per mB of the portion. */
-    public static final float SEPARATED = 0.01F;
-    /** A section of ink drawn on a research parchment. */
-    public static final float INK_SECTION = 0.25F;
-    /** A finished ritual, plus per mB of essence it drew. */
-    public static final float RITUAL = 3;
-    public static final float RITUAL_PER_MB = 0.08F;
-    /** Charge a Hex Workbench spends on a craft, per point. */
-    public static final float CHARGE = 0.15F;
-    /** A crystal block lightning shatters into raw hextech. */
-    public static final float AWAKENED = 1;
+    public static final float SEPARATED = 0.02F;
+    /** Essence a crucible brew or transmutation takes, per mB (with unknown essence in the water: up to double). */
+    public static final float BREWED = 0.2F;
+    /** Every catalyst a crucible brew or transmutation takes. */
+    public static final float BREW = 1.5F;
+    /** Essence spent: drawn by an altar ritual, or a device's running cost from the jars, per mB. */
+    public static final float SPENT = 0.07F;
+    /** Matter a Disintegrator unmakes, per mB of unknown essence: the deliberate way to thin the land. */
+    public static final float DISINTEGRATED = 0.3F;
+    /** A dose of shimmer refined in a Chem Still. */
+    public static final float STILLED = 1;
 
     // Carelessness and accidents.
     /** Essence poured away and lost on the ground, per mB (unknown essence counts double). */
@@ -139,6 +147,16 @@ public final class Thinning {
         }
     }
 
+    /** What wore a chunk thin, for {@code /hextale void sources}. */
+    public enum Source {
+        BOILED, SEPARATED, BREWED, SPENT, DISINTEGRATED, STILLED, POURED, MIASMA, DUST_CHARGE, ORB_BURST, RITUAL_COLLAPSE,
+        LAB_BURST, PARCHMENT_BURN, BREACH;
+
+        public String key() {
+            return "thinning.hextale.source." + name().toLowerCase(java.util.Locale.ROOT);
+        }
+    }
+
     /** Chunks with a value above zero, per loaded level - the only ones the flow looks at. */
     private static final Map<ResourceKey<Level>, LongSet> ACTIVE = new HashMap<>();
     /** What each player was last sent. */
@@ -166,13 +184,46 @@ public final class Thinning {
         return Stage.of(get(level, pos));
     }
 
-    /** Wears the edge thinner where {@code pos} is (scaled by the config; nothing when the Thinning is off). */
-    public static void add(ServerLevel level, BlockPos pos, float amount) {
+    /**
+     * Wears the edge thinner where {@code pos} is (scaled by the config; nothing when the Thinning is off) and counts it
+     * for its source.
+     */
+    public static void add(ServerLevel level, BlockPos pos, float amount, Source source) {
         if (!Config.THINNING.get() || amount <= 0) {
             return;
         }
         LevelChunk chunk = level.getChunkAt(pos);
-        set(level, chunk, get(chunk) + amount * Config.THINNING_RATE.get().floatValue());
+        float scaled = amount * Config.THINNING_RATE.get().floatValue();
+        set(level, chunk, get(chunk) + scaled);
+        java.util.Map<String, Float> counted = new java.util.HashMap<>(chunk.getData(ModAttachments.THINNING_SOURCES));
+        counted.merge(source.name(), scaled, Float::sum);
+        chunk.setData(ModAttachments.THINNING_SOURCES, counted);
+        chunk.setUnsaved(true);
+    }
+
+    /** What fed the loaded chunks within {@code radius} chunks of {@code pos}, by source, the most first. */
+    public static List<java.util.Map.Entry<Source, Float>> sources(ServerLevel level, BlockPos pos, int radius) {
+        java.util.EnumMap<Source, Float> total = new java.util.EnumMap<>(Source.class);
+        int cx = pos.getX() >> 4;
+        int cz = pos.getZ() >> 4;
+        for (int x = cx - radius; x <= cx + radius; x++) {
+            for (int z = cz - radius; z <= cz + radius; z++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
+                if (chunk == null || !chunk.hasData(ModAttachments.THINNING_SOURCES)) {
+                    continue;
+                }
+                chunk.getData(ModAttachments.THINNING_SOURCES).forEach((name, value) -> {
+                    for (Source source : Source.values()) {
+                        if (source.name().equals(name)) {
+                            total.merge(source, value, Float::sum);
+                        }
+                    }
+                });
+            }
+        }
+        List<java.util.Map.Entry<Source, Float>> list = new ArrayList<>(total.entrySet());
+        list.sort(java.util.Map.Entry.<Source, Float>comparingByValue().reversed());
+        return list;
     }
 
     /**
@@ -212,7 +263,7 @@ public final class Thinning {
             return;
         }
         float unknownShare = mix.unknown() / (float) mix.total();
-        add(level, pos, amount * (soaked ? POURED_SOAKED : POURED_LOST) * (1 + unknownShare));
+        add(level, pos, amount * (soaked ? POURED_SOAKED : POURED_LOST) * (1 + unknownShare), Source.POURED);
     }
 
     public static void set(ServerLevel level, LevelChunk chunk, float value) {
