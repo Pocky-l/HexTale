@@ -10,45 +10,44 @@
   <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/License-MIT-blue"></a>
 </p>
 
-<p align="center"><i>Pages from the diary of a researcher who should have stopped after the first explosion.</i></p>
+<p align="center"><i>A magic mod about hextech crystals, essences and runes.</i></p>
 
-<p align="center"><b>Hextech magic in the spirit of Arcane and Thaumcraft. Study the world, boil it down to essences, draw your
-devices before you build them, burn runes into everything you own, and live with what all that magic does to the land.</b></p>
+<p align="center"><b>After a thunderstorm you find your first hextech crystals. Then you work out what everything in the world is made of and build tools and machines that run on it. The more magic you use near your base, the sicker the land around it gets.</b></p>
 
 <p align="center"><img src="docs/showcase/hexcore.gif" alt="A ritual on the Hexcore" width="720"></p>
 
-<p align="center"><b>300+</b> blocks and items &middot; <b>22</b> essences &middot; <b>72</b> runes &middot; <b>33</b> things that take them &middot; <b>180</b> diary entries</p>
+<p align="center"><b>300+</b> blocks and items &middot; <b>22</b> essences &middot; <b>72</b> runes &middot; <b>180</b> steps in the guide<br><i>The mod is still in development, and a lot more is planned.</i></p>
 
 ## Features
 
-<h3 align="center">Page 4. What things are made of</h3>
+<h3 align="center">Page 4. Essences</h3>
 <p align="center"><img src="docs/showcase/workshop.gif" alt="The workshop: jars of essence, alembic, separator and crucible" width="720"></p>
-<p align="center"><i>Coal is fire and nothing else. Seeds are life. I boil everything down in the alembic,<br>keep the brew in jars (labelled, after one bad evening) and run it through brass pipes.</i></p>
+<p align="center"><i>Everything breaks down into essences. Coal is mostly fire, seeds are mostly life. I boil things in the alembic,<br>keep what comes out in jars and move it around with brass pipes.</i></p>
 
-<h3 align="center">Page 15. Runes in old chests</h3>
+<h3 align="center">Page 15. Runes</h3>
 <p align="center"><img src="docs/showcase/altar.gif" alt="A ritual at the Hextech Altar" width="720"></p>
-<p align="center"><i>I did not invent the runes. They turn up in dungeon chests and in the margins of my notes.<br>The altar burns them in. My pickaxe now smelts what it digs and sees ore through stone.</i></p>
+<p align="center"><i>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>The altar burns them into tools and machines. My pickaxe smelts ore now and can see it through stone.</i></p>
 
-<h3 align="center">Page 19. Small wonders that do the work</h3>
+<h3 align="center">Page 19. Machines</h3>
 <p align="center">
   <img src="docs/showcase/pylons.gif" alt="Pylons gathering loot" width="264">
   <img src="docs/showcase/reaper.gif" alt="The Whirl Reaper" width="264">
   <img src="docs/showcase/sawmill.gif" alt="The Hex Sawmill" width="264">
 </p>
-<p align="center"><i>Pylons that pick things up with threads of light. A reaper that harvests with little whirlwinds.<br>A sawmill that fells and replants. Rift gates, a skypack, a claw on a cord of light.</i></p>
+<p align="center"><i>Pylons carry items into chests, the reaper harvests the field around it, and the sawmill cuts trees<br>and plants new ones. They all run on essence from the jars nearby.</i></p>
 
-<h3 align="center">Page 22. Something is wrong with the grass</h3>
+<h3 align="center">Page 22. The Void</h3>
 <p align="center"><img src="docs/showcase/void.gif" alt="A breach of the Void, voidlings at its feet" width="720"></p>
-<p align="center"><i>Every jar I boiled wore the world a little thinner. Now there is a lilac haze at dusk,<br>and last week the air tore open behind the barn. I could heal the land. Or feed the breach.</i></p>
+<p align="center"><i>I think I used too much magic around the house. The grass is going grey, there's a purple haze in the evenings,<br>and a few days ago a rift opened behind the barn. I haven't decided yet whether to close it or see what happens if I feed it.</i></p>
 
 <h3 align="center">Every page. The diary</h3>
 <p align="center"><img src="docs/showcase/diary.gif" alt="The Researcher's Diary" width="720"></p>
-<p align="center"><i>Drawn as a star chart: every device, every brew, every rune, and the roads between them.</i></p>
+<p align="center"><i>I write down every step in my diary so I don't forget anything.</i></p>
 
 ## Getting started
 
-Craft the **Researcher's Diary** (book + amethyst shard + feather); it shows every next step with its recipe. The first
-hextech waits under glassy fulgurite scars on the surface, where an old strike left a geode of dormant crystal. Most
+Craft the **Researcher's Diary** (book + amethyst shard + feather); it shows what to do next and the recipe for it. The
+first hextech crystals are under the glassy fulgurite marks on the surface, where an old lightning strike left a geode. Most
 devices are researched at the Research Table before they can be made. In creative mode everything is in the Pocky Mods tab.
 
 **For modpack makers:** every recipe is an ordinary data-driven recipe type (`hextale:hex_crafting`, `hextale:infusion`,

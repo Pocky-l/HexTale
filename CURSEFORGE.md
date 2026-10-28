@@ -4,40 +4,40 @@
 
 <p style="text-align:center"><a href="https://www.curseforge.com/minecraft/mc-mods/hextale/files"><img src="https://img.shields.io/badge/Minecraft-26.3%20%7C%2026.1.2%20%7C%201.21.1-62B47A?style=for-the-badge" alt="Minecraft 26.3, 26.1.2, 1.21.1"></a> <a href="https://neoforged.net"><img src="https://img.shields.io/badge/NeoForge-required-F16436?style=for-the-badge" alt="NeoForge"></a> <a href="https://github.com/Pocky-l/HexTale/blob/main/docs/modpack.md"><img src="https://img.shields.io/badge/Modpacks-welcome-8a6bd1?style=for-the-badge" alt="Modpacks welcome"></a> <a href="https://github.com/Pocky-l/HexTale"><img src="https://img.shields.io/badge/Source-GitHub-24292f?style=for-the-badge&amp;logo=github" alt="GitHub"></a></p>
 
-<p style="text-align:center"><em>Pages from the diary of a researcher who should have stopped after the first explosion.</em></p>
+<p style="text-align:center"><em>A magic mod about hextech crystals, essences and runes.</em></p>
 
-<p style="text-align:center"><strong>Hextech magic in the spirit of Arcane and Thaumcraft. Study the world, boil it down to essences, draw your devices before you build them, burn runes into everything you own, and live with what all that magic does to the land.</strong></p>
+<p style="text-align:center"><strong>After a thunderstorm you find your first hextech crystals. Then you work out what everything in the world is made of and build tools and machines that run on it. The more magic you use near your base, the sicker the land around it gets.</strong></p>
 
 <p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/hexcore.gif" width="720" alt="A ritual on the Hexcore"></p>
 
-<p style="text-align:center"><span style="color:#e2b86a"><strong>300+</strong></span> blocks and items &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>22</strong></span> essences &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>72</strong></span> runes &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>33</strong></span> things that take them &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>180</strong></span> diary entries</p>
+<p style="text-align:center"><span style="color:#e2b86a"><strong>300+</strong></span> blocks and items &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>22</strong></span> essences &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>72</strong></span> runes &nbsp;&middot;&nbsp; <span style="color:#e2b86a"><strong>180</strong></span> steps in the guide<br><em>The mod is still in development, and a lot more is planned.</em></p>
 
 <hr>
 
-<h2 style="text-align:center"><span style="color:#e2b86a">Page 4.</span> What things are made of</h2>
+<h2 style="text-align:center"><span style="color:#e2b86a">Page 4.</span> Essences</h2>
 <p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/workshop.gif" width="720" alt="The workshop: jars of essence, alembic, separator and crucible"></p>
-<p style="text-align:center"><em>Coal is fire and nothing else. Seeds are life. I boil everything down in the alembic,<br>keep the brew in jars (labelled, after one bad evening) and run it through brass pipes.</em></p>
+<p style="text-align:center"><em>Everything breaks down into essences. Coal is mostly fire, seeds are mostly life. I boil things in the alembic,<br>keep what comes out in jars and move it around with brass pipes.</em></p>
 
-<h2 style="text-align:center"><span style="color:#e2b86a">Page 15.</span> Runes in old chests</h2>
+<h2 style="text-align:center"><span style="color:#e2b86a">Page 15.</span> Runes</h2>
 <p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/altar.gif" width="720" alt="A ritual at the Hextech Altar"></p>
-<p style="text-align:center"><em>I did not invent the runes. They turn up in dungeon chests and in the margins of my notes.<br>The altar burns them in. My pickaxe now smelts what it digs and sees ore through stone.</em></p>
+<p style="text-align:center"><em>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>The altar burns them into tools and machines. My pickaxe smelts ore now and can see it through stone.</em></p>
 
-<h2 style="text-align:center"><span style="color:#e2b86a">Page 19.</span> Small wonders that do the work</h2>
+<h2 style="text-align:center"><span style="color:#e2b86a">Page 19.</span> Machines</h2>
 <p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/pylons.gif" width="264" alt="Pylons gathering loot"> <img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/reaper.gif" width="264" alt="The Whirl Reaper"> <img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/sawmill.gif" width="264" alt="The Hex Sawmill"></p>
-<p style="text-align:center"><em>Pylons that pick things up with threads of light. A reaper that harvests with little whirlwinds.<br>A sawmill that fells and replants. Rift gates, a skypack, a claw on a cord of light.</em></p>
+<p style="text-align:center"><em>Pylons carry items into chests, the reaper harvests the field around it, and the sawmill cuts trees<br>and plants new ones. They all run on essence from the jars nearby.</em></p>
 
-<h2 style="text-align:center"><span style="color:#e2b86a">Page 22.</span> Something is wrong with the grass</h2>
+<h2 style="text-align:center"><span style="color:#e2b86a">Page 22.</span> The Void</h2>
 <p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/void.gif" width="720" alt="A breach of the Void, voidlings at its feet"></p>
-<p style="text-align:center"><em>Every jar I boiled wore the world a little thinner. Now there is a lilac haze at dusk,<br>and last week the air tore open behind the barn. I could heal the land. Or feed the breach.</em></p>
+<p style="text-align:center"><em>I think I used too much magic around the house. The grass is going grey, there's a purple haze in the evenings,<br>and a few days ago a rift opened behind the barn. I haven't decided yet whether to close it or see what happens if I feed it.</em></p>
 
 <h2 style="text-align:center"><span style="color:#e2b86a">Every page.</span> The diary</h2>
 <p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/diary.gif" width="720" alt="The Researcher's Diary"></p>
-<p style="text-align:center"><em>Drawn as a star chart: every device, every brew, every rune, and the roads between them.</em></p>
+<p style="text-align:center"><em>I write down every step in my diary so I don't forget anything.</em></p>
 
 <hr>
 
-<h3 style="text-align:center">In the margins</h3>
-<p style="text-align:center">Start with the <strong>Researcher's Diary</strong> (book + amethyst shard + feather). It shows every next step with its recipe.<br>The first hextech waits under glassy fulgurite scars on the surface. In creative, everything is in the Pocky Mods tab.</p>
+<h3 style="text-align:center">Getting started</h3>
+<p style="text-align:center">Start with the <strong>Researcher's Diary</strong> (book + amethyst shard + feather). It shows what to do next and the recipe for it.<br>The first hextech crystals are under the glassy fulgurite marks on the surface. In creative, everything is in the Pocky Mods tab.</p>
 <p style="text-align:center">For modpack makers: every recipe is a data-driven recipe type (data packs, <a href="https://www.curseforge.com/minecraft/mc-mods/kubejs">KubeJS</a>), materials go by <code>c:</code> tags,<br>machines respect claims, the Thinning can be tuned or turned off. All of it is in <a href="https://github.com/Pocky-l/HexTale/blob/main/docs/modpack.md">the modpack guide</a>. Free to use in any modpack.</p>
 
 <p style="text-align:center"><strong>Works with</strong></p>
