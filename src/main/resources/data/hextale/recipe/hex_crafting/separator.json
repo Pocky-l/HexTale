@@ -1,0 +1,16 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "BGB",
+    "G G",
+    "BBB"
+  ],
+  "key": {
+    "B": "#c:ingots/brass",
+    "G": "#c:glass_blocks/colorless"
+  },
+  "result": {
+    "id": "hextale:separator"
+  },
+  "charge": 1
+}

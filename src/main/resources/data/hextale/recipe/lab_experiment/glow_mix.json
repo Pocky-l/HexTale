@@ -1,0 +1,8 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "glow_mix",
+  "target": "sap",
+  "amount": 8,
+  "purity": 0.65,
+  "sample": "#c:dusts/glowstone"
+}

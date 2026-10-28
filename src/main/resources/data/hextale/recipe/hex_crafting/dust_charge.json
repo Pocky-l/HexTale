@@ -1,0 +1,15 @@
+{
+  "type": "hextale:hex_crafting",
+  "ingredients": [
+    "hextale:hextech_dust",
+    "hextale:hextech_dust",
+    "hextale:hextech_dust",
+    "minecraft:paper",
+    "#c:strings"
+  ],
+  "result": {
+    "id": "hextale:dust_charge",
+    "count": 3
+  },
+  "charge": 1
+}

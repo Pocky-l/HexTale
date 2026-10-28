@@ -5,7 +5,7 @@
     "minecraft:clay_ball",
     "minecraft:clay_ball",
     "#c:sands",
-    "minecraft:gravel"
+    "#c:gravels"
   ],
   "result": {
     "id": "hextale:fireclay_ball",

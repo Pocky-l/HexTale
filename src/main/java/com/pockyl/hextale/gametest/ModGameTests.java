@@ -88,11 +88,11 @@ public final class ModGameTests {
                     "the advancement unlocking " + recipe + " is loaded");
         }
         for (String recipe : HEX_CRAFTING) {
-            helper.assertTrue(com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(false).containsKey(Hextale.id(recipe)),
+            helper.assertTrue((com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.named(Hextale.id(recipe), false) != null),
                     "hex crafting " + recipe + " is loaded");
         }
         for (String recipe : ALLOYS) {
-            helper.assertTrue(com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(false).containsKey(Hextale.id(recipe)), "alloy " + recipe + " is loaded");
+            helper.assertTrue((com.pockyl.hextale.crafting.AlloyRecipe.ALL.named(Hextale.id(recipe), false) != null), "alloy " + recipe + " is loaded");
         }
         for (String advancement : ADVANCEMENTS) {
             helper.assertTrue(server.getAdvancements().get(Hextale.id("research/" + advancement)) != null,

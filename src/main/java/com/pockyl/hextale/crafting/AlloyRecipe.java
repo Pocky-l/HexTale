@@ -1,6 +1,7 @@
 package com.pockyl.hextale.crafting;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -16,14 +17,14 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A Hex Furnace alloy, read from {@code data/<namespace>/hextale_alloying/<name>.json}: one to three {@code inputs}
+ * A Hex Furnace alloy, recipe type {@code hextale:alloying}: one to three {@code inputs}
  * (ingredient + count, each in its own input slot, any order) melt together in {@code time} ticks of burning fuel into
  * {@code result}, paying {@code experience} when the result is taken out.
  */
 public record AlloyRecipe(List<SizedIngredient> inputs, ItemStackTemplate result, int time, float experience) {
     public static final int SLOTS = 3;
 
-    public static final Codec<AlloyRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<AlloyRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             SizedIngredient.NESTED_CODEC.listOf(1, SLOTS).fieldOf("inputs").forGetter(AlloyRecipe::inputs),
             ItemStackTemplate.CODEC.fieldOf("result").forGetter(AlloyRecipe::result),
             Codec.intRange(1, 6000).optionalFieldOf("time", 200).forGetter(AlloyRecipe::time),
@@ -38,7 +39,7 @@ public record AlloyRecipe(List<SizedIngredient> inputs, ItemStackTemplate result
             AlloyRecipe::new);
 
     /** Every alloy, server and client. */
-    public static final DataRecipes<AlloyRecipe> ALL = new DataRecipes<>("hextale_alloying", CODEC);
+    public static final DataRecipes<AlloyRecipe> ALL = new DataRecipes<>("alloying", MAP_CODEC, STREAM_CODEC, recipe -> recipe.result().item().value());
 
     /**
      * Which input slot feeds each of the recipe's inputs, or null when the slots do not hold the recipe: every input

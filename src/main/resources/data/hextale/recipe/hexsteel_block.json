@@ -7,7 +7,7 @@
     "###"
   ],
   "key": {
-    "#": "hextale:hexsteel_ingot"
+    "#": "#c:ingots/hexsteel"
   },
   "result": {
     "id": "hextale:hexsteel_block"

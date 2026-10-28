@@ -193,19 +193,19 @@ public final class QuestGameTests {
             Identifier id = display.result().contains(":") ? Identifier.parse(display.result()) : null;
             switch (display.kind()) {
                 case INFUSION -> {
-                    InfusionRecipe recipe = InfusionRecipes.get(false).get(id);
+                    InfusionRecipe recipe = InfusionRecipes.ALL.named(id, false);
                     if (recipe != null) {
                         out.add(BuiltInRegistries.ITEM.getKey(recipe.result().item().value()));
                     }
                 }
                 case HEX_CRAFTING -> {
-                    var recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(false).get(id);
+                    var recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.named(id, false);
                     if (recipe != null) {
                         out.add(BuiltInRegistries.ITEM.getKey(recipe.result().item().value()));
                     }
                 }
                 case ALLOY -> {
-                    var recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(false).get(id);
+                    var recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.named(id, false);
                     if (recipe != null) {
                         out.add(BuiltInRegistries.ITEM.getKey(recipe.result().item().value()));
                     }
@@ -258,7 +258,7 @@ public final class QuestGameTests {
                 case SHAPED, SHAPELESS, SCHEME -> display.ingredients().stream().filter(id -> !id.isEmpty() && !id.startsWith("#"))
                         .map(Identifier::parse).forEach(needed::add);
                 case INFUSION -> {
-                    InfusionRecipe recipe = InfusionRecipes.get(false).get(Identifier.parse(display.result()));
+                    InfusionRecipe recipe = InfusionRecipes.ALL.named(Identifier.parse(display.result()), false);
                     helper.assertTrue(recipe != null, quest.id() + ": ritual " + display.result() + " exists");
                     helper.assertTrue(before.contains(step("hextech_altar")), quest.id() + " comes after the altar");
                     helper.assertTrue(recipe.pedestals().isEmpty() || before.contains(step("pedestal")), quest.id() + " comes after the Pedestal");
@@ -271,7 +271,7 @@ public final class QuestGameTests {
                     }
                 }
                 case HEX_CRAFTING -> {
-                    var recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.get(false).get(Identifier.parse(display.result()));
+                    var recipe = com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.named(Identifier.parse(display.result()), false);
                     helper.assertTrue(recipe != null, quest.id() + ": workbench recipe " + display.result() + " exists");
                     helper.assertTrue(before.contains(step("hex_workbench")), quest.id() + " comes after the Hex Workbench");
                     for (var cell : recipe.grid()) {
@@ -279,7 +279,7 @@ public final class QuestGameTests {
                     }
                 }
                 case ALLOY -> {
-                    var recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.get(false).get(Identifier.parse(display.result()));
+                    var recipe = com.pockyl.hextale.crafting.AlloyRecipe.ALL.named(Identifier.parse(display.result()), false);
                     helper.assertTrue(recipe != null, quest.id() + ": alloy " + display.result() + " exists");
                     helper.assertTrue(before.contains(step("hex_furnace")), quest.id() + " comes after the Hex Furnace");
                     for (var input : recipe.inputs()) {

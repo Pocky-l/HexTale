@@ -1,6 +1,7 @@
 package com.pockyl.hextale.infusion;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -17,7 +18,7 @@ import com.pockyl.hextale.rune.ComplexRunes;
 import java.util.List;
 
 /**
- * One thing the Hextech Altar makes, read from {@code data/<namespace>/hextale_infusion/<name>.json}: the centre item,
+ * One thing the Hextech Altar makes, recipe type {@code hextale:infusion}: the centre item,
  * the pedestal items (any order) and the essences become {@code result}, while every rune in {@code runes} stands chosen
  * on a rune stele around the altar. Runes take no items, only essence: each adds {@link #runeEssence(ComplexRune)} to
  * what the altar draws ({@link #totalEssences()}).
@@ -29,7 +30,7 @@ public record InfusionRecipe(Ingredient center, List<Ingredient> pedestals, Esse
     /** mB of a rune's essence by its chapter (I, II, III). */
     private static final int[] RUNE_MB = {16, 24, 32};
 
-    public static final Codec<InfusionRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<InfusionRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Ingredient.CODEC.fieldOf("center").forGetter(InfusionRecipe::center),
             Ingredient.CODEC.listOf().optionalFieldOf("pedestals", List.of()).forGetter(InfusionRecipe::pedestals),
             EssenceMix.CODEC.optionalFieldOf("essences", EssenceMix.EMPTY).forGetter(InfusionRecipe::essences),

@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "hextale:hexsteel_block"
+    "#c:storage_blocks/hexsteel"
   ],
   "result": {
     "id": "hextale:hexsteel_ingot",

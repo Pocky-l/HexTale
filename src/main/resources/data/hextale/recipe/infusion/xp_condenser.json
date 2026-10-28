@@ -1,0 +1,18 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:hextech_crystal",
+  "pedestals": [
+    "#c:glass_blocks/colorless",
+    "#c:glass_blocks/colorless",
+    "#c:gems/lapis",
+    "#c:ingots/brass",
+    "#c:ingots/brass",
+    "hextale:polished_magic_stone"
+  ],
+  "essences": {
+    "light": 16,
+    "life": 12,
+    "crystal": 8
+  },
+  "result": "hextale:xp_condenser"
+}

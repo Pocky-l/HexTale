@@ -104,7 +104,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addRecipes(BoilingCategory.TYPE, List.of(new BoilingCategory.Recipe(boilable)));
         List<SeparationCategory.Recipe> separations = new ArrayList<>();
         for (Essence essence : Essence.values()) {
-            separations.add(new SeparationCategory.Recipe(essence, List.of(new ItemStack(net.minecraft.world.item.Items.BLAZE_POWDER))));
+            separations.add(new SeparationCategory.Recipe(essence, com.pockyl.hextale.registry.ModTags.stacks(com.pockyl.hextale.registry.ModTags.SEPARATOR_FUELS)));
         }
         registration.addRecipes(SeparationCategory.TYPE, separations);
         registration.addRecipes(InfusionCategory.TYPE, InfusionRecipes.get(true).entrySet().stream()

@@ -1,9 +1,0 @@
-{
-  "catalyst": "minecraft:glass",
-  "essences": {
-    "decay": 3
-  },
-  "result": {
-    "id": "hextale:chem_glass"
-  }
-}

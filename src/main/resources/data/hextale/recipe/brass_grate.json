@@ -7,7 +7,7 @@
     " B "
   ],
   "key": {
-    "B": "hextale:brass_ingot"
+    "B": "#c:ingots/brass"
   },
   "result": {
     "id": "hextale:brass_grate",

@@ -1,0 +1,19 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "BUB",
+    " T ",
+    " X "
+  ],
+  "key": {
+    "B": "#c:ingots/brass",
+    "U": "hextale:unstable_hextech",
+    "T": "minecraft:iron_shovel",
+    "X": "minecraft:flint"
+  },
+  "result": {
+    "id": "hextale:hextech_shovel",
+    "count": 1
+  },
+  "charge": 2
+}

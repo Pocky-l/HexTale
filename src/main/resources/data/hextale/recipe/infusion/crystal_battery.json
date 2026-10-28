@@ -1,0 +1,18 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:hextech_crystal",
+  "pedestals": [
+    "#c:glass_blocks/colorless",
+    "#c:glass_blocks/colorless",
+    "#c:storage_blocks/brass",
+    "#c:ingots/hexsteel",
+    "#c:ingots/hexsteel",
+    "minecraft:lightning_rod"
+  ],
+  "essences": {
+    "crystal": 16,
+    "spark": 12,
+    "metal": 8
+  },
+  "result": "hextale:crystal_battery"
+}

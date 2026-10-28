@@ -1,0 +1,18 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "IEI",
+    "RCR",
+    "RRR"
+  ],
+  "key": {
+    "I": "#c:bars/iron",
+    "E": "minecraft:fermented_spider_eye",
+    "R": "hextale:rusted_plating",
+    "C": "hextale:chem_burner"
+  },
+  "result": {
+    "id": "hextale:miasma_vent"
+  },
+  "charge": 3
+}

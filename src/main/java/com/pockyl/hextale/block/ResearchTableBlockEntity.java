@@ -641,7 +641,7 @@ public class ResearchTableBlockEntity extends BaseContainerBlockEntity implement
         return switch (slot) {
             case DIARY -> stack.is(ModItems.RESEARCHERS_DIARY.get());
             case HEXTECH -> stack.is(ModItems.UNSTABLE_HEXTECH.get());
-            case PAPER -> stack.is(Items.PAPER);
+            case PAPER -> stack.is(com.pockyl.hextale.registry.ModTags.RESEARCH_PAPER);
             default -> false;
         };
     }

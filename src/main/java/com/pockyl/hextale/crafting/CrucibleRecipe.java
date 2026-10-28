@@ -1,6 +1,7 @@
 package com.pockyl.hextale.crafting;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -19,14 +20,14 @@ import java.util.Comparator;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A Crucible transmutation, read from {@code data/<namespace>/hextale_crucible/<name>.json}: a {@code catalyst} item
+ * A Crucible transmutation, recipe type {@code hextale:crucible}: a {@code catalyst} item
  * thrown into a crucible that holds at least the recipe's {@code essences} takes them out of the water and rises as
  * {@code result}. A catalyst the water cannot pay for is just another item: boiling water dissolves it into its own
  * essences. A result that must be researched first (the Magic Tree Sprout) comes only for the researcher who threw or put
  * the catalyst in and has researched it; for anyone else the catalyst is just another item.
  */
 public record CrucibleRecipe(Ingredient catalyst, EssenceMix essences, ItemStackTemplate result) {
-    public static final Codec<CrucibleRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<CrucibleRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Ingredient.CODEC.fieldOf("catalyst").forGetter(CrucibleRecipe::catalyst),
             EssenceMix.CODEC.fieldOf("essences").forGetter(CrucibleRecipe::essences),
             ItemStackTemplate.CODEC.fieldOf("result").forGetter(CrucibleRecipe::result)
@@ -56,7 +57,7 @@ public record CrucibleRecipe(Ingredient catalyst, EssenceMix essences, ItemStack
     }
 
     /** Every transmutation, server and client. */
-    public static final DataRecipes<CrucibleRecipe> ALL = new DataRecipes<>("hextale_crucible", CODEC);
+    public static final DataRecipes<CrucibleRecipe> ALL = new DataRecipes<>("crucible", MAP_CODEC, STREAM_CODEC, recipe -> recipe.result().item().value());
 
     /**
      * The transmutation this item starts in water holding {@code essence}: of the recipes for it that the water can pay,

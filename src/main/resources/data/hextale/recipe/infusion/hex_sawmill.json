@@ -1,0 +1,18 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:hextech_crystal",
+  "pedestals": [
+    "minecraft:iron_axe",
+    "minecraft:dark_oak_log",
+    "minecraft:dark_oak_log",
+    "minecraft:oak_sapling",
+    "#c:ingots/brass",
+    "#c:ingots/brass"
+  ],
+  "essences": {
+    "air": 16,
+    "plant": 12,
+    "metal": 8
+  },
+  "result": "hextale:hex_sawmill"
+}

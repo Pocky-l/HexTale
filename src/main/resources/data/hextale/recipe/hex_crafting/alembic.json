@@ -1,0 +1,16 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " B ",
+    "G G",
+    "BGB"
+  ],
+  "key": {
+    "B": "#c:ingots/brass",
+    "G": "#c:glass_blocks/colorless"
+  },
+  "result": {
+    "id": "hextale:alembic"
+  },
+  "charge": 1
+}

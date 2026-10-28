@@ -7,7 +7,7 @@
     "XXX"
   ],
   "key": {
-    "X": "hextale:hexsteel_ingot"
+    "X": "#c:ingots/hexsteel"
   },
   "result": {
     "id": "hextale:hexsteel_chestplate"

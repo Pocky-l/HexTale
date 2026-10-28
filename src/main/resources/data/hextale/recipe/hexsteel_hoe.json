@@ -7,8 +7,8 @@
     " #"
   ],
   "key": {
-    "X": "hextale:hexsteel_ingot",
-    "#": "minecraft:stick"
+    "X": "#c:ingots/hexsteel",
+    "#": "#c:rods/wooden"
   },
   "result": {
     "id": "hextale:hexsteel_hoe"

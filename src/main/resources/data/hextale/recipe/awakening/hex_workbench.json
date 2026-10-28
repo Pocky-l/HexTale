@@ -1,0 +1,5 @@
+{
+  "type": "hextale:awakening",
+  "block": "minecraft:crafting_table",
+  "result": "hextale:hex_workbench"
+}

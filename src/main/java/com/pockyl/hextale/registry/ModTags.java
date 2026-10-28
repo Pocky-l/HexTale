@@ -42,6 +42,19 @@ public final class ModTags {
     public static final TagKey<Block> ACID_DISSOLVES = TagKey.create(Registries.BLOCK, Hextale.id("acid_dissolves"));
     /** Catalysts of the combustible mix (coal and charcoal by default). */
     public static final TagKey<Item> FUEL_CATALYSTS = TagKey.create(Registries.ITEM, Hextale.id("fuel_catalysts"));
+    /** What the Research Table takes as parchment (paper by default). */
+    public static final TagKey<Item> RESEARCH_PAPER = TagKey.create(Registries.ITEM, Hextale.id("research_paper"));
+    /** What burns in the Separator's fuel slot (blaze powder by default). */
+    public static final TagKey<Item> SEPARATOR_FUELS = TagKey.create(Registries.ITEM, Hextale.id("separator_fuels"));
+
+    /** Every item of a tag as one stack each, for the guide and JEI (empty before tags load). */
+    public static java.util.List<net.minecraft.world.item.ItemStack> stacks(TagKey<Item> tag) {
+        java.util.List<net.minecraft.world.item.ItemStack> out = new java.util.ArrayList<>();
+        for (net.minecraft.core.Holder<Item> item : net.minecraft.core.registries.BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
+            out.add(new net.minecraft.world.item.ItemStack(item));
+        }
+        return out;
+    }
 
     private ModTags() {
     }

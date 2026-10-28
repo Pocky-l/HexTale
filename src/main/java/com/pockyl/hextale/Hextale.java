@@ -53,6 +53,7 @@ public final class Hextale {
         ModParticles.register(modBus);
         com.pockyl.hextale.registry.ModFeatures.register(modBus);
         ModTriggers.register(modBus);
+        com.pockyl.hextale.registry.ModRecipes.register(modBus);
         modBus.addListener(ModNetwork::register);
         modBus.addListener((net.neoforged.neoforge.common.world.chunk.RegisterTicketControllersEvent event) ->
                 event.register(com.pockyl.hextale.block.WorldAnchorBlock.TICKETS));

@@ -1,0 +1,18 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "GBG",
+    "SSS",
+    "I I"
+  ],
+  "key": {
+    "G": "hextale:chem_glass",
+    "B": "minecraft:brewing_stand",
+    "S": "minecraft:dark_oak_slab",
+    "I": "#c:ingots/iron"
+  },
+  "result": {
+    "id": "hextale:lab_bench"
+  },
+  "charge": 2
+}

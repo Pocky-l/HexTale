@@ -1,0 +1,16 @@
+{
+  "type": "hextale:infusion",
+  "center": "#c:ingots/hexsteel",
+  "pedestals": [
+    "#c:gems/diamond",
+    "#c:gems/diamond",
+    "hextale:hextech_dust",
+    "hextale:hextech_dust",
+    "hextale:hextech_crystal"
+  ],
+  "essences": {
+    "crystal": 40,
+    "metal": 12
+  },
+  "result": "hextale:master_cutting_disc"
+}

@@ -1,0 +1,17 @@
+{
+  "type": "hextale:infusion",
+  "center": "#c:ingots/iron",
+  "pedestals": [
+    "minecraft:flint",
+    "minecraft:flint",
+    "minecraft:flint",
+    "minecraft:flint",
+    "hextale:hextech_dust",
+    "hextale:hextech_dust"
+  ],
+  "essences": {
+    "ore": 8,
+    "crystal": 8
+  },
+  "result": "hextale:cutting_disc"
+}

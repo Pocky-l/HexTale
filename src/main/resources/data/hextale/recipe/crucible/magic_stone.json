@@ -1,0 +1,10 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "#hextale:soaks_essence",
+  "essences": {
+    "magic": 6
+  },
+  "result": {
+    "id": "hextale:magic_stone"
+  }
+}

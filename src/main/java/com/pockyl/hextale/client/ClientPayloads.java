@@ -8,7 +8,6 @@ import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlers
 import com.pockyl.hextale.client.screen.ResearchTableScreen;
 import com.pockyl.hextale.client.screen.book.StarBookScreen;
 import com.pockyl.hextale.infusion.InfusionRecipes;
-import com.pockyl.hextale.network.InfusionRecipesPayload;
 import com.pockyl.hextale.network.ItemEssencesPayload;
 import com.pockyl.hextale.network.OpenStelePayload;
 import com.pockyl.hextale.client.screen.SteleScreen;
@@ -36,15 +35,8 @@ public final class ClientPayloads {
         event.register(ItemEssencesPayload.TYPE, (payload, context) -> itemElements(payload));
         event.register(ResearchMessagePayload.TYPE, (payload, context) -> researchMessage(payload));
         event.register(OpenDiaryPayload.TYPE, (payload, context) -> openDiary(payload));
-        event.register(InfusionRecipesPayload.TYPE, (payload, context) -> InfusionRecipes.setClient(payload.recipes()));
+        event.register(com.pockyl.hextale.network.RecipesPayload.TYPE, (payload, context) -> payload.recipes().apply());
         event.register(com.pockyl.hextale.network.GuidePayload.TYPE, (payload, context) -> com.pockyl.hextale.quest.Guide.setClient(payload.steps()));
-        event.register(com.pockyl.hextale.network.CraftingRecipesPayload.TYPE, (payload, context) -> {
-            com.pockyl.hextale.crafting.HexCraftingRecipe.ALL.setClient(payload.crafting());
-            com.pockyl.hextale.crafting.AlloyRecipe.ALL.setClient(payload.alloying());
-            com.pockyl.hextale.crafting.CrucibleRecipe.ALL.setClient(payload.crucible());
-            com.pockyl.hextale.crafting.BrewRecipe.ALL.setClient(payload.brewing());
-            com.pockyl.hextale.research.ExperimentPlan.ALL.setClient(payload.experiments());
-        });
         event.register(com.pockyl.hextale.network.ThinningPayload.TYPE, (payload, context) -> ClientThinning.accept(payload));
         event.register(com.pockyl.hextale.network.BreachCinematicPayload.TYPE, (payload, context) -> BreachCinematic.start(payload.breach()));
         event.register(OpenStelePayload.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new SteleScreen(payload.pos())));

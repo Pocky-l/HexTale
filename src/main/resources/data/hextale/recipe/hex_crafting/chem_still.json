@@ -1,0 +1,18 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "CCB",
+    "C G",
+    "PCP"
+  ],
+  "key": {
+    "C": "#c:ingots/copper",
+    "B": "#c:bars/copper",
+    "G": "hextale:chem_glass",
+    "P": "hextale:rusted_plating"
+  },
+  "result": {
+    "id": "hextale:chem_still"
+  },
+  "charge": 3
+}

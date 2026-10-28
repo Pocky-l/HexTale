@@ -1,0 +1,16 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "LBL",
+    "G G"
+  ],
+  "key": {
+    "L": "#c:leathers",
+    "B": "#c:ingots/brass",
+    "G": "#c:glass_panes/colorless"
+  },
+  "result": {
+    "id": "hextale:researchers_goggles"
+  },
+  "charge": 1
+}

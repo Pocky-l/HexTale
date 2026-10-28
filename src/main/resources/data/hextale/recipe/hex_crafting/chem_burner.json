@@ -1,0 +1,18 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "IGI",
+    "CFC",
+    "III"
+  ],
+  "key": {
+    "I": "#c:ingots/iron",
+    "G": "hextale:chem_glass",
+    "C": "#c:ingots/copper",
+    "F": "minecraft:flint_and_steel"
+  },
+  "result": {
+    "id": "hextale:chem_burner"
+  },
+  "charge": 2
+}

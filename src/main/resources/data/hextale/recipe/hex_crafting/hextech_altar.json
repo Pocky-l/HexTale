@@ -1,0 +1,20 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "KHK",
+    "IAI",
+    "CBC"
+  ],
+  "key": {
+    "K": "hextale:rune_chalk",
+    "H": "hextale:unstable_hextech",
+    "I": "#c:ingots/brass",
+    "A": "minecraft:amethyst_block",
+    "C": "hextale:chiseled_magic_bricks",
+    "B": "hextale:magic_bricks"
+  },
+  "result": {
+    "id": "hextale:hextech_altar"
+  },
+  "charge": 3
+}

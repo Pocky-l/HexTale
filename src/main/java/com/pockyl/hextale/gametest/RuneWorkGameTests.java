@@ -305,12 +305,12 @@ public final class RuneWorkGameTests {
     @HexTest
     public static void thePickaxeRecipesLoad(GameTestHelper helper) {
         for (HextechPickaxe kind : List.of(HextechPickaxe.REFINED, HextechPickaxe.RADIANT)) {
-            InfusionRecipe recipe = InfusionRecipes.get(false).get(Hextale.id(kind.id()));
+            InfusionRecipe recipe = InfusionRecipes.ALL.named(Hextale.id(kind.id()), false);
             helper.assertTrue(recipe != null, kind.id() + " has an altar recipe");
             helper.assertTrue(recipe.result().item().value() == ModItems.pickaxe(kind).get(), kind.id() + " makes itself");
             helper.assertTrue(recipe.keepComponents(), kind.id() + " keeps runes and enchantments");
         }
-        helper.assertTrue(InfusionRecipes.get(false).get(Hextale.id("refined_hextech_pickaxe")).center()
+        helper.assertTrue(InfusionRecipes.ALL.named(Hextale.id("refined_hextech_pickaxe"), false).center()
                 .test(new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get())), "the refined pickaxe is made from the plain one");
         helper.succeed();
     }
@@ -328,13 +328,13 @@ public final class RuneWorkGameTests {
                 "hextech_axe", new ItemStack(ModItems.HEXTECH_AXE.get()), "hextech_shovel", new ItemStack(ModItems.HEXTECH_SHOVEL.get()),
                 "hextech_sword", new ItemStack(ModItems.HEXTECH_SWORD.get()));
         for (String id : irons.keySet()) {
-            HexCraftingRecipe recipe = HexCraftingRecipe.ALL.get(false).get(Hextale.id(id));
+            HexCraftingRecipe recipe = HexCraftingRecipe.ALL.named(Hextale.id(id), false);
             helper.assertTrue(recipe != null, id + " has a workbench recipe");
             helper.assertTrue(recipe.grid().stream().anyMatch(slot -> slot.isPresent() && slot.get().test(irons.get(id))),
                     id + " is made from its iron tool");
             helper.assertTrue(recipe.result().item().value() == tools.get(id).getItem(), id + " makes itself");
             helper.assertTrue(ResearchTopics.of(tools.get(id).getItem()) == ResearchTopics.HEXTECH_TOOLS, id + " is opened by the tools research");
-            helper.assertTrue(InfusionRecipes.get(false).get(Hextale.id(id)) == null, id + " is no longer made at the altar");
+            helper.assertTrue(InfusionRecipes.ALL.named(Hextale.id(id), false) == null, id + " is no longer made at the altar");
         }
         helper.assertTrue(tools.get("hextech_axe").has(net.minecraft.core.component.DataComponents.BLOCK_TRANSFORMER), "the axe strips logs");
         helper.assertTrue(tools.get("hextech_shovel").getDestroySpeed(Blocks.DIRT.defaultBlockState()) > 6.0F, "the shovel digs dirt fast");

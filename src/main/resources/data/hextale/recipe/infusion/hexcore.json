@@ -1,0 +1,19 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:hextech_gemstone",
+  "pedestals": [
+    "hextale:hextech_crystal",
+    "hextale:hextech_crystal",
+    "#c:ingots/hexsteel",
+    "#c:ingots/hexsteel",
+    "minecraft:lightning_rod",
+    "hextale:crystal_battery",
+    "hextale:regenerative_slime"
+  ],
+  "essences": {
+    "magic": 32,
+    "circuit": 24,
+    "crystal": 16
+  },
+  "result": "hextale:hexcore"
+}
