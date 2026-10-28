@@ -54,7 +54,8 @@ Void's creatures have voices of their own.
 - Pylons hum softly while they move things, and a Hextech Purifier breathes in while it draws the Thinning.
 - Devices show their reach: an empty hand on a Null Lantern (or placing it) and on a World Anchor (or it waking) lays a
   hexagon of light on the ground out to the quiet zone or the held chunks.
-- Ward Glass ripples with an amber hexagon where you push against it.
+- Ward Glass ripples with an amber hexagon where you push against it, and Veil Glass ripples pale where a creature
+  comes up against it.
 - A Recall Charm opens the rift's sign where you leave and where you land; a Soul Flask draws a creature in as a stream
   of light and pours it out again.
 - The Hexcore draws the same circle on the ground as the altar, with streams from its jars.
@@ -62,6 +63,23 @@ Void's creatures have voices of their own.
 - The hextech hexagon everywhere: the sigils of pylons, plates, the funnel, the sawmill, the purifier, the skypack's
   jets and the diary's pictures are hexagons now.
 - The Thinning's blight creeps into the ground with its own dark sound.
+- The Research Table's orb is a crystal of light now: two faceted shapes of fine glowing lines turning against each
+  other round a bright spark, glints circling it, and a hexagon turning round it while you draw.
+- Pylon links show as fine lines of light hanging between the gems, with pulses running out along them the way things
+  will go; the Sorting Matrix's lattice of lenses is joined by glowing edges that light up as it reads what passes.
+- Drinking a bottle of essence shows each gift it gives: fire, water, light, life and metal rise round you in their
+  colour, air and shadow whirl round you, earth crumbles under your feet, spark strikes the ground. Unknown essence
+  leaves a murky haze.
+- A Binding Chalk figure closing runs light round its line from end to end, then the whole figure glows.
+- A new compound forming in the Lab Bench's flask flashes in its colour, and a hexagon opens round the flask.
+- A Chem Burner lights with a whoosh of flame out of its window and a puff from the flue; a Pink Brazier bursts into
+  pink fire; both leave a curl of smoke when they go out.
+- Waking a block with hextech dust opens a hexagon of hextech light on the ground round it, a rune rising over it.
+- Stone drinking essence under a drain valve: the drops sink into it, a hexagon of the essence's colour flares on its
+  top and warm sparks rise off the new magic stone - no more crumbling as if it broke.
+- A pump's stroke draws the water in from every side; a sticker put on a jar ripples over the face in its colour; a
+  crystal soaked into a Crystal Battery comes apart into pieces that whirl into it, and the battery feeds a Hex
+  Workbench through a thread of light.
 - The Void's roads have their moments: when six anchors hold a breach, cold streams run from each into it and a hexagon
   locks round it; healed land opens a hexagon of life over the spot.
 - Every rune that works now makes a soft sound of its own - a short breath of energy and a low pulse - on tools,

@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.registry.ModSounds;
@@ -27,6 +28,9 @@ import java.util.function.Supplier;
  * <li>{@link Family#CRUMBLE}: dust and a thread of light running block by block along {@code blocks};</li>
  * <li>{@link Family#RISE}: motes spiralling up from {@code at} (life, light, heat - by colour);</li>
  * <li>{@link Family#GUST}: a breath of air whirling round {@code at}.</li>
+ * <li>{@link Family#TRACE}: light running along the floor through {@code blocks} in order and closing the loop back to
+ * the first, then the whole line glowing and fading (a figure drawn on the ground waking; silent - the figure has its
+ * own sound).</li>
  * </ul>
  */
 public record RuneEffectPayload(int family, Vec3 at, List<BlockPos> blocks, int color, float size) implements CustomPacketPayload {
@@ -38,12 +42,13 @@ public record RuneEffectPayload(int family, Vec3 at, List<BlockPos> blocks, int 
         KINDLE(ModSounds.RUNE_KINDLE, 0.35F),
         CRUMBLE(ModSounds.RUNE_CRUMBLE, 0.35F),
         RISE(ModSounds.RUNE_BLOOM, 0.25F),
-        GUST(ModSounds.RUNE_GUST, 0.3F);
+        GUST(ModSounds.RUNE_GUST, 0.3F),
+        TRACE(null, 0);
 
-        final Supplier<SoundEvent> sound;
+        final @Nullable Supplier<SoundEvent> sound;
         final float volume;
 
-        Family(Supplier<SoundEvent> sound, float volume) {
+        Family(@Nullable Supplier<SoundEvent> sound, float volume) {
             this.sound = sound;
             this.volume = volume;
         }
@@ -64,12 +69,20 @@ public record RuneEffectPayload(int family, Vec3 at, List<BlockPos> blocks, int 
 
     /** Shows {@code family} at {@code at} over {@code blocks} in {@code color} to the players near, with its quiet sound. */
     public static void show(ServerLevel level, Family family, Vec3 at, List<BlockPos> blocks, int color, float size) {
+        show(level, family, at, blocks, color, size, true);
+    }
+
+    /** {@link #show}, with the family's sound only when {@code sound} (a moment that already has its own sound). */
+    public static void show(ServerLevel level, Family family, Vec3 at, List<BlockPos> blocks, int color, float size, boolean sound) {
         List<BlockPos> sent = blocks.size() > MAX_BLOCKS ? List.copyOf(blocks.subList(0, MAX_BLOCKS)) : List.copyOf(blocks);
         RuneEffectPayload payload = new RuneEffectPayload(family.ordinal(), at, sent, color, size);
         for (ServerPlayer player : level.players()) {
             if (player.distanceToSqr(at) <= RADIUS * RADIUS) {
                 ModNetwork.sendToPlayer(player, payload);
             }
+        }
+        if (!sound || family.sound == null) {
+            return;
         }
         // One sound for one moment: a 3x3 smelted at once is one kindling, not nine.
         long now = level.getGameTime();

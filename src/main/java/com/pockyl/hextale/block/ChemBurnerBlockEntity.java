@@ -31,6 +31,7 @@ import com.pockyl.hextale.chem.HeatUser;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.runework.BurnerRune;
@@ -104,6 +105,7 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
             } else {
                 level.playSound(null, worldPosition, ModSounds.FLAME_OUT.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
             }
+            flare(level, state, lit);
             sync();
         }
         long now = level.getGameTime();
@@ -221,6 +223,33 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
     }
 
     /** Whether the flame is shimmer's pink one. */
+    /**
+     * Lighting: the flame whooshes out of the window and licks up, a puff of smoke leaves the flue. Going out: the last
+     * flicker and a curl of smoke from the window.
+     */
+    public void flare(Level level, BlockState state, boolean lit) {
+        if (!(level instanceof ServerLevel server)) {
+            return;
+        }
+        Vec3 window = ChemBurnerBlock.window(state, worldPosition);
+        Direction facing = state.getValue(ChemBurnerBlock.FACING);
+        int flame = pink ? ChemBurnerBlock.PINK_FLAME : ChemBurnerBlock.FLAME;
+        int smoke = pink ? ChemBurnerBlock.PINK_SMOKE : ChemBurnerBlock.SMOKE;
+        if (lit) {
+            for (int i = 0; i < 10; i++) {
+                double out = 0.03 + server.getRandom().nextDouble() * 0.05;
+                server.sendParticles(ModParticles.flame(flame), window.x, window.y + 0.05, window.z, 0,
+                        facing.getStepX() * out + (server.getRandom().nextDouble() - 0.5) * 0.04, 0.05 + server.getRandom().nextDouble() * 0.04,
+                        facing.getStepZ() * out + (server.getRandom().nextDouble() - 0.5) * 0.04, 1);
+            }
+            server.sendParticles(ModParticles.glint(flame), window.x, window.y + 0.1, window.z, 5, 0.15, 0.1, 0.15, 0.02);
+            server.sendParticles(ModParticles.vapour(smoke), worldPosition.getX() + 0.5, worldPosition.getY() + 1.0,
+                    worldPosition.getZ() + 0.5, 4, 0.2, 0.05, 0.2, 0.02);
+        } else {
+            server.sendParticles(ModParticles.vapour(smoke), window.x, window.y + 0.1, window.z, 6, 0.12, 0.08, 0.12, 0.01);
+        }
+    }
+
     public boolean pink() {
         return pink;
     }

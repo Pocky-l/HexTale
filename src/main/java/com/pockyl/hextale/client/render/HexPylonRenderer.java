@@ -300,18 +300,20 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             {-1, -1, -1}, {1, -1, -1}, {1, 1, -1}, {-1, 1, -1}, {-1, -1, 1}, {1, -1, 1}, {1, 1, 1}, {-1, 1, 1}};
     private static final int[][] LATTICE_EDGES = {
             {0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6}, {6, 7}, {7, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
+    private static final int EDGE_POINTS = 6;
+    private static final int THREAD_POINTS = 20;
 
     /**
-     * The sorting matrix's heart: a cube of eight lenses turning on its corner around the gem, joined by faint threads of
-     * light, inside three crossed rings that turn on their own axes. A move spins it up and lights the lenses; the
-     * lattice breathes a little, as if it read each item passing.
+     * The sorting matrix's heart: a cube of eight lenses turning on its corner around the gem, joined by fine lines of
+     * light, inside three crossed hexagons that turn on their own axes. A move spins it up, lights the lenses and sends
+     * light running along the cube's edges, as if it read each item passing.
      */
     private static void lattice(PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, Vec3 eye, State state, Vec3 at,
                                 float time) {
         float spin = 1 + 6 * state.flare;
         poseStack.pushPose();
         poseStack.translate(at.x, at.y, at.z);
-        // Three crossed rings, each on its own axis.
+        // Three crossed hexagons, each on its own axis.
         for (int ring = 0; ring < 3; ring++) {
             poseStack.pushPose();
             poseStack.rotate(Axis.YP.rotationDegrees(ring * 60 + time * 0.7F * spin));
@@ -320,56 +322,96 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             HexFx.sigilRing(poseStack, collector, 0.25F - ring * 0.02F, 4, state.color, 0.35F + 0.35F * state.flare);
             poseStack.popPose();
         }
-        // The lens lattice: corners rotated with the cube, then drawn as camera-facing lenses and threads between them.
+        // The lens lattice: corners turned with the cube, edges as lines of light, lenses as glints.
         float half = 0.13F + 0.012F * Mth.sin(time * 0.09F) + 0.03F * state.flare;
         org.joml.Quaternionf turn = new org.joml.Quaternionf()
                 .rotateY(time * 0.012F * spin)
                 .rotateX(0.6155F)
                 .rotateZ(Mth.PI / 4);
-        Vector3f[] corners = new Vector3f[LATTICE.length];
+        Vec3[] corners = new Vec3[LATTICE.length];
         for (int i = 0; i < LATTICE.length; i++) {
-            corners[i] = turn.transform(new Vector3f(LATTICE[i][0] * half, LATTICE[i][1] * half, LATTICE[i][2] * half));
+            Vector3f c = turn.transform(new Vector3f(LATTICE[i][0] * half, LATTICE[i][1] * half, LATTICE[i][2] * half));
+            corners[i] = new Vec3(c.x, c.y, c.z);
         }
         Vector3f toCamera = eye.subtract(at).toVector3f();
-        for (int[] edge : LATTICE_EDGES) {
-            Vector3f a = corners[edge[0]];
-            Vector3f b = corners[edge[1]];
-            poseStack.pushPose();
-            poseStack.translate(a.x, a.y, a.z);
-            HexFx.beam(poseStack, collector, b.x - a.x, b.y - a.y, b.z - a.z, 0.018F, state.color, 0.25F + 0.35F * state.flare,
-                    new Vector3f(toCamera).sub(a));
-            poseStack.popPose();
-        }
+        int vivid = JarStreamFx.vivid(state.color);
+        int core = RuneDrawing.mix(vivid, 0xFFFFFF, 0.65F);
+        float base = 0.3F + 0.3F * state.flare;
+        collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
+            Vec3[] points = new Vec3[EDGE_POINTS];
+            float[] light = new float[EDGE_POINTS];
+            for (int e = 0; e < LATTICE_EDGES.length; e++) {
+                Vec3 a = corners[LATTICE_EDGES[e][0]];
+                Vec3 b = corners[LATTICE_EDGES[e][1]];
+                for (int k = 0; k < EDGE_POINTS; k++) {
+                    float u = k / (float) (EDGE_POINTS - 1);
+                    points[k] = a.add(b.subtract(a).scale(u));
+                    // While it reads, light runs along every edge, each a little behind the last.
+                    float crest = frac(time * 0.08F + e * 0.27F);
+                    light[k] = 0.55F + 0.45F * state.flare * (float) Math.exp(-Mth.square(u - crest) / 0.04F);
+                }
+                JarStreamFx.strip(consumer, pose, points, light, toCamera, 0.05F, vivid, 0.4F * base);
+                JarStreamFx.strip(consumer, pose, points, light, toCamera, 0.012F, core, base * 1.6F);
+            }
+        });
+        List<float[]> lenses = new ArrayList<>(corners.length);
         for (int i = 0; i < corners.length; i++) {
-            Vector3f c = corners[i];
+            Vec3 c = corners[i];
             float glint = 0.5F + 0.5F * Mth.sin(time * 0.2F + i * 0.8F);
-            poseStack.pushPose();
-            poseStack.translate(c.x, c.y, c.z);
-            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.1F + 0.05F * state.flare, state.color, 0.3F + 0.3F * glint);
-            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.MOTE, 0.055F, RuneDrawing.lighten(state.color, 0.5F),
-                    0.7F + 0.3F * state.flare);
-            poseStack.popPose();
+            lenses.add(HexFx.quad(c.x, c.y, c.z, 0.035F + 0.012F * glint + 0.015F * state.flare, i % HexFx.GLINT_FRAMES, time * 0.03F + i,
+                    Math.min(1, 0.55F + 0.3F * glint + 0.3F * state.flare), RuneDrawing.lighten(state.color, 0.5F)));
         }
+        HexFx.sheet(poseStack, collector, camera.orientation, HexFx.GLINT, HexFx.GLINT_FRAMES, lenses);
         poseStack.popPose();
     }
 
-    /** A thin glowing line from the gem to {@code to} with three motes running along it. */
+    /**
+     * A link: a fine line of light from the gem to {@code to}, hanging in a slight curve, with pulses of light (a glint
+     * riding each) running out of the gem along it - the way things will go.
+     */
     private static void thread(PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, Vec3 eye, Vec3 from, Vec3 to,
                                int color, float alpha, float time) {
         Vec3 d = to.subtract(from);
-        poseStack.pushPose();
-        poseStack.translate(from.x, from.y, from.z);
-        Vector3f toCamera = eye.subtract(from).toVector3f();
-        HexFx.beam(poseStack, collector, (float) d.x, (float) d.y, (float) d.z, 0.04F, color, alpha, toCamera);
         float length = (float) d.length();
-        for (int k = 0; k < 3; k++) {
-            float s = ((time * 0.04F / Math.max(1, length)) + k / 3F) % 1F;
-            poseStack.pushPose();
-            poseStack.translate(d.x * s, d.y * s, d.z * s);
-            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.MOTE, 0.09F, RuneDrawing.lighten(color, 0.4F), Math.min(1, alpha * 3));
-            poseStack.popPose();
+        if (length < 0.05F) {
+            return;
         }
-        poseStack.popPose();
+        float sag = Math.min(0.3F, 0.035F * length);
+        Vec3[] points = new Vec3[THREAD_POINTS + 1];
+        float[] light = new float[THREAD_POINTS + 1];
+        float[] crests = new float[2];
+        for (int j = 0; j < crests.length; j++) {
+            crests[j] = frac(time * 0.045F / Math.max(1, length * 0.5F) + j / (float) crests.length);
+        }
+        for (int i = 0; i <= THREAD_POINTS; i++) {
+            float k = i / (float) THREAD_POINTS;
+            points[i] = from.add(d.scale(k)).add(0, -Mth.sin(k * Mth.PI) * sag, 0);
+            float pulse = 0;
+            for (float crest : crests) {
+                pulse += (float) Math.exp(-Mth.square(k - crest) * length * length / 0.08F);
+            }
+            // Soft at both ends, where it meets the gem and its target.
+            float ends = Math.min(1, Math.min(k, 1 - k) * length * 4 + 0.3F);
+            light[i] = ends * (0.4F + 0.6F * Math.min(1, pulse));
+        }
+        int vivid = JarStreamFx.vivid(color);
+        int core = RuneDrawing.mix(vivid, 0xFFFFFF, 0.6F);
+        Vector3f view = eye.toVector3f();
+        collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
+            JarStreamFx.strip(consumer, pose, points, light, view, 0.12F, vivid, Math.min(1, alpha * 1.3F));
+            JarStreamFx.strip(consumer, pose, points, light, view, 0.025F, core, Math.min(1, alpha * 3));
+        });
+        List<float[]> glints = new ArrayList<>(crests.length);
+        for (int j = 0; j < crests.length; j++) {
+            float k = crests[j];
+            Vec3 p = from.add(d.scale(k)).add(0, -Mth.sin(k * Mth.PI) * sag, 0);
+            glints.add(HexFx.quad(p.x, p.y, p.z, 0.05F, j, time * 0.06F + j, Math.min(1, alpha * 3) * Mth.sin(k * Mth.PI), core));
+        }
+        HexFx.sheet(poseStack, collector, camera.orientation, HexFx.GLINT, HexFx.GLINT_FRAMES, glints);
+    }
+
+    private static float frac(float x) {
+        return x - Mth.floor(x);
     }
 
     /**

@@ -42,8 +42,8 @@ public class PinkBrazierBlock extends BaseEntityBlock {
     /** Legs and pan, the grate cage with its brass band, and the heat rods lying on the ground to the four sides. */
     private static final VoxelShape SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 4, 14), Block.box(3, 4, 3, 13, 13, 13),
             Block.box(2, 10, 2, 14, 11, 14), Block.box(0, 0, 7, 16, 1, 9), Block.box(7, 0, 0, 9, 1, 16));
-    private static final int FLAME = 0xFF7AD9;
-    private static final int FADE = 0xB04CF0;
+    static final int FLAME = 0xFF7AD9;
+    static final int FADE = 0xB04CF0;
 
     public PinkBrazierBlock(Properties properties) {
         super(properties);

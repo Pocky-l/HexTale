@@ -197,10 +197,9 @@ public final class ChalkFigure {
         if (woke) {
             Vec3 middle = middle(figure);
             level.playSound(null, middle.x, middle.y, middle.z, ModSounds.CHALK_CLOSE.get(), SoundSource.BLOCKS, 0.8F, 1.0F);
-            for (BlockPos cell : figure.cells()) {
-                level.sendParticles(ModParticles.glint(ChalkSigilBlock.SHADOW), cell.getX() + 0.5, cell.getY() + 0.1, cell.getZ() + 0.5, 2, 0.2, 0.02,
-                        0.2, 0.02);
-            }
+            // Light runs round the line from its first cell, closes the loop, and the whole figure glows.
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.TRACE, middle,
+                    alongTheLine(figure), ChalkSigilBlock.SHADOW, 1, false);
             Quests.fireNear(level, middle, 12, Quests.BINDING_FIGURE);
         }
         if (pos.equals(figure.first())) {
@@ -209,6 +208,33 @@ public final class ChalkFigure {
         } else if (!level.getBlockTicks().hasScheduledTick(figure.first(), ModBlocks.CHALK_SIGIL.get())) {
             level.scheduleTick(figure.first(), ModBlocks.CHALK_SIGIL.get(), 1);
         }
+    }
+
+    /**
+     * The figure's cells in the order the line runs, from its first cell: each next one a neighbour not yet walked
+     * (a branch's dead end jumps to the nearest cell left, which the drawing skips).
+     */
+    static List<BlockPos> alongTheLine(Figure figure) {
+        Set<BlockPos> left = new HashSet<>(figure.cells());
+        List<BlockPos> line = new ArrayList<>(left.size());
+        BlockPos at = figure.first();
+        while (at != null) {
+            left.remove(at);
+            line.add(at);
+            BlockPos next = null;
+            for (Direction side : Direction.Plane.HORIZONTAL) {
+                if (left.contains(at.relative(side))) {
+                    next = at.relative(side);
+                    break;
+                }
+            }
+            if (next == null && !left.isEmpty()) {
+                BlockPos from = at;
+                next = left.stream().min(Comparator.comparingDouble(cell -> cell.distSqr(from))).orElse(null);
+            }
+            at = next;
+        }
+        return line;
     }
 
     private static Vec3 middle(Figure figure) {

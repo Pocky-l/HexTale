@@ -34,6 +34,11 @@ public final class RuneEffects {
     private static final int KINDLE_TICKS = 14;
     private static final int RISE_TICKS = 16;
     private static final int GUST_TICKS = 12;
+    /** A traced loop: the light runs round it in at most this many ticks, then the whole line glows and fades. */
+    private static final float TRACE_RUN = 24;
+    private static final int TRACE_GLOW = 20;
+    /** A traced line lies just over the floor of its blocks (chalk height). */
+    private static final double TRACE_Y = 0.08;
     private static final int DUST = 0x9C8A70;
     private static final int AIR = 0xEEF4F8;
 
@@ -49,8 +54,18 @@ public final class RuneEffects {
                 case CRUMBLE -> n * STAGGER + 12;
                 case RISE -> RISE_TICKS;
                 case GUST -> GUST_TICKS;
+                case TRACE -> n * traceStagger(n) + TRACE_GLOW;
             };
         }
+    }
+
+    /** Ticks the light of a trace takes from one block to the next. */
+    private static float traceStagger(int n) {
+        return Math.min(1, TRACE_RUN / Math.max(1, n));
+    }
+
+    private static Vec3 traceAt(BlockPos pos) {
+        return new Vec3(pos.getX() + 0.5, pos.getY() + TRACE_Y, pos.getZ() + 0.5);
     }
 
     private RuneEffects() {
@@ -157,6 +172,26 @@ public final class RuneEffects {
                         }
                     }
                 }
+                case TRACE -> {
+                    int n = blocks.size();
+                    if (n == 0) {
+                        break;
+                    }
+                    float stagger = traceStagger(n);
+                    int head = (int) (age / stagger);
+                    if (head < n) {
+                        // A glint rides the head of the light.
+                        Vec3 c = traceAt(blocks.get(head));
+                        current.addParticle(ModParticles.glint(payload.color()), c.x, c.y + 0.05, c.z, 0, 0.01, 0);
+                    } else if (age == (int) Math.ceil(n * stagger)) {
+                        // Closed: the whole line breathes out a few motes.
+                        for (int i = 0; i < n; i += 3) {
+                            Vec3 c = traceAt(blocks.get(i));
+                            current.addParticle(ModParticles.glint(payload.color()), c.x + (random.nextDouble() - 0.5) * 0.4, c.y + 0.1,
+                                    c.z + (random.nextDouble() - 0.5) * 0.4, 0, 0.03, 0);
+                        }
+                    }
+                }
             }
         }
     }
@@ -211,6 +246,38 @@ public final class RuneEffects {
                         Vec3[] link = {Vec3.atCenterOf(blocks.get(i - 1)).subtract(camera), Vec3.atCenterOf(blocks.get(i)).subtract(camera)};
                         float[] light = {1, 1};
                         JarStreamFx.strip(consumer, pose, link, light, eye, 0.08F, payload.color(), 0.6F * (1 - a / 10));
+                    }
+                });
+                case TRACE -> collector.submitCustomGeometry(event.getPoseStack(), HexGlow.TYPE, (pose, consumer) -> {
+                    int n = blocks.size();
+                    float stagger = traceStagger(n);
+                    float run = n * stagger;
+                    int core = RuneDrawing.mix(payload.color(), 0xFFFFFF, 0.65F);
+                    // After the loop closes the whole line flares and fades.
+                    float closed = age < run ? 0 : Math.max(0, 1 - (age - run) / TRACE_GLOW);
+                    float flare = age < run ? 0 : closed * (age - run < 4 ? 1 + 0.6F * (1 - (age - run) / 4) : 1);
+                    for (int i = 0; i < n; i++) {
+                        // Segment i runs from block i to the next, the last one back to the first.
+                        float lit = (age - i * stagger) / stagger;
+                        if (lit <= 0 || n < 2) {
+                            continue;
+                        }
+                        BlockPos from = blocks.get(i);
+                        BlockPos to = blocks.get((i + 1) % n);
+                        if (from.distManhattan(to) != 1) {
+                            // Not neighbours: the line jumps (a branch, or a figure longer than one message) - no light across.
+                            continue;
+                        }
+                        Vec3 a = traceAt(from).subtract(camera);
+                        Vec3 b = traceAt(to).subtract(camera);
+                        Vec3 end = lit < 1 ? a.add(b.subtract(a).scale(lit)) : b;
+                        // Bright at the head, a glowing trail behind it.
+                        float behind = age - (i + 1) * stagger;
+                        float trail = age < run ? Math.max(0.35F, 1 - Math.max(0, behind) / 8) : flare;
+                        Vec3[] link = {a, end};
+                        float[] light = {1, 1};
+                        JarStreamFx.strip(consumer, pose, link, light, eye, 0.24F, payload.color(), 0.3F * trail);
+                        JarStreamFx.strip(consumer, pose, link, light, eye, 0.05F, core, 0.85F * trail);
                     }
                 });
                 default -> {

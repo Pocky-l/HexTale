@@ -51,10 +51,10 @@ import org.jspecify.annotations.Nullable;
 public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    private static final int FLAME = 0x8CFF5A;
-    private static final int SMOKE = 0x3A4A34;
-    private static final int PINK_FLAME = 0xFF6FD8;
-    private static final int PINK_SMOKE = 0x4A2F4A;
+    static final int FLAME = 0x8CFF5A;
+    static final int SMOKE = 0x3A4A34;
+    static final int PINK_FLAME = 0xFF6FD8;
+    static final int PINK_SMOKE = 0x4A2F4A;
 
     public ChemBurnerBlock(Properties properties) {
         super(properties);
@@ -151,6 +151,12 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
             player.sendOverlayMessage(burner.status());
         }
         return InteractionResult.SUCCESS;
+    }
+
+    /** Behind the front window, where the flame burns. */
+    static Vec3 window(BlockState state, BlockPos pos) {
+        Direction facing = state.getValue(FACING);
+        return Vec3.atBottomCenterOf(pos).add(facing.getStepX() * 0.52, 0.32, facing.getStepZ() * 0.52);
     }
 
     /** The green flame licks behind the window, smoke rises from the flue, and it roars low now and then. */

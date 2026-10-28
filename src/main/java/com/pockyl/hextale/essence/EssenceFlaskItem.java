@@ -1,8 +1,10 @@
 package com.pockyl.hextale.essence;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -13,12 +15,17 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
+import com.pockyl.hextale.network.RuneEffectPayload;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.research.ResearchText;
 import com.pockyl.hextale.rune.Essence;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -84,10 +91,12 @@ public class EssenceFlaskItem extends Item {
             }
         });
         int gifts = 0;
+        List<Integer> given = new ArrayList<>();
         for (int i = 0; i < primal.length; i++) {
             if (primal[i] < GIFT_MIN) {
                 continue;
             }
+            given.add(i);
             int ticks = (int) Math.round((15 + primal[i] * 3) * 20);
             Holder<MobEffect> effect = GIFTS.get(i);
             if (effect == MobEffects.SATURATION) {
@@ -101,11 +110,45 @@ public class EssenceFlaskItem extends Item {
             drinker.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200 + essence.unknown() * 10));
             drinker.addEffect(new MobEffectInstance(MobEffects.POISON, 40 + essence.unknown() * 5));
         }
-        if (drinker.level() instanceof net.minecraft.server.level.ServerLevel server) {
+        if (drinker.level() instanceof ServerLevel server) {
             server.sendParticles(com.pockyl.hextale.registry.ModParticles.wisp(essence.color()), drinker.getX(), drinker.getY() + 1.2, drinker.getZ(),
                     10, 0.3, 0.4, 0.3, 0.02);
+            given.sort(Comparator.comparingDouble(i -> -primal[i]));
+            for (int k = 0; k < Math.min(SHOWN_GIFTS, given.size()); k++) {
+                // The strongest gift is heard; the others only seen.
+                showGift(server, drinker, Essence.PRIMALS.get(given.get(k)), k == 0);
+            }
+            if (essence.unknown() > 0) {
+                // A bad brew: murky fumes sink round the drinker.
+                server.sendParticles(com.pockyl.hextale.registry.ModParticles.vapour(EssenceMix.UNKNOWN_COLOR), drinker.getX(), drinker.getY() + 1.4,
+                        drinker.getZ(), 8, 0.3, 0.2, 0.3, 0.0);
+                RuneEffectPayload.show(server, RuneEffectPayload.Family.GUST,
+                        drinker.position().add(0, 0.6, 0), List.of(), EssenceMix.UNKNOWN_COLOR, 0.8F, false);
+            }
         }
         return gifts;
+    }
+
+    /** At most this many gifts of one sip are shown, the strongest first. */
+    private static final int SHOWN_GIFTS = 3;
+
+    /**
+     * Each primal's gift has its own look on the drinker, from the rune effects: fire, water, light, life and metal rise
+     * round the body in their colour, air and shadow whirl round it, earth crumbles under the feet, spark arcs into the
+     * ground.
+     */
+    private static void showGift(ServerLevel level, LivingEntity drinker, Essence primal, boolean sound) {
+        Vec3 body = drinker.position().add(0, drinker.getBbHeight() * 0.45, 0);
+        BlockPos ground = drinker.blockPosition().below();
+        RuneEffectPayload.Family family = switch (primal) {
+            case AIR, SHADOW -> RuneEffectPayload.Family.GUST;
+            case EARTH -> RuneEffectPayload.Family.CRUMBLE;
+            case SPARK -> RuneEffectPayload.Family.ARCS;
+            default -> RuneEffectPayload.Family.RISE;
+        };
+        List<BlockPos> blocks = family == RuneEffectPayload.Family.CRUMBLE
+                || family == RuneEffectPayload.Family.ARCS ? List.of(ground) : List.of();
+        RuneEffectPayload.show(level, family, body, blocks, primal.color(), 0.9F, sound);
     }
 
     /** The gift of each primal, in {@link Essence#PRIMALS} order. */

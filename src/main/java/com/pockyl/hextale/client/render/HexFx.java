@@ -10,6 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionfc;
 import org.jspecify.annotations.Nullable;
 import org.joml.Vector3f;
@@ -146,6 +147,43 @@ public final class HexFx {
         poseStack.rotate(Axis.ZP.rotationDegrees(30));
         cube(poseStack, collector, size * 1.42F, color, 0.28F + 0.12F * intensity);
         poseStack.popPose();
+    }
+
+    /**
+     * A hextech crystal of additive light: the edges of a hexagonal bipyramid (six round its girdle, twelve to its two
+     * points) as fine near-white lines in a soft glow of {@code color}, turned by {@code turn}, {@code radius} blocks to
+     * the girdle and {@code height} to each point. {@code eye} is the camera in the pose's space (the pose must not be
+     * rotated: turn the crystal with {@code turn}). The gem drawn as light, like the stele runes and the streams.
+     */
+    public static void lightCrystal(PoseStack poseStack, SubmitNodeCollector collector, Vector3fc eye, Quaternionfc turn, float radius,
+                                    float height, int color, float alpha) {
+        if (alpha <= 0.01F) {
+            return;
+        }
+        Vec3[] corner = new Vec3[8];
+        for (int i = 0; i < 6; i++) {
+            float a = Mth.TWO_PI * i / 6;
+            corner[i] = vec(turn.transform(new Vector3f(Mth.cos(a) * radius, 0, Mth.sin(a) * radius)));
+        }
+        corner[6] = vec(turn.transform(new Vector3f(0, height, 0)));
+        corner[7] = vec(turn.transform(new Vector3f(0, -height, 0)));
+        int vivid = JarStreamFx.vivid(color);
+        int core = RuneDrawing.mix(vivid, 0xFFFFFF, 0.65F);
+        Vector3f view = new Vector3f(eye);
+        float[] light = {1, 1};
+        collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
+            for (int i = 0; i < 6; i++) {
+                for (Vec3 end : new Vec3[]{corner[(i + 1) % 6], corner[6], corner[7]}) {
+                    Vec3[] edge = {corner[i], end};
+                    JarStreamFx.strip(consumer, pose, edge, light, view, radius * 0.45F, vivid, 0.22F * alpha);
+                    JarStreamFx.strip(consumer, pose, edge, light, view, radius * 0.1F, core, 0.8F * alpha);
+                }
+            }
+        });
+    }
+
+    private static Vec3 vec(Vector3f v) {
+        return new Vec3(v.x, v.y, v.z);
     }
 
     /**

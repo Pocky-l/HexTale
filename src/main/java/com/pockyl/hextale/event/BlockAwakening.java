@@ -28,10 +28,13 @@ import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.CrucibleBlockEntity;
 import com.pockyl.hextale.block.HexFurnaceBlockEntity;
 import com.pockyl.hextale.crafting.AwakeningRecipe;
+import com.pockyl.hextale.network.RuneFxPayload;
 import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.rune.ComplexRunes;
+import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.ArrayList;
@@ -116,6 +119,10 @@ public final class BlockAwakening {
                 level.getGameTime(), refund));
         Vec3 centre = Vec3.atCenterOf(pos);
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.BLOCK_AWAKEN.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
+        // The first magic the player works: a hexagon of hextech light opens on the ground round the block and a rune of
+        // quickening rises over it while the dust swirls.
+        RuneFxPayload.send(level, RuneFxPayload.area(Vec3.atBottomCenterOf(pos), ComplexRunes.of(Essence.SPARK, Essence.LIFE), 1.3F,
+                ModParticles.HEXTECH));
     }
 
     @SubscribeEvent

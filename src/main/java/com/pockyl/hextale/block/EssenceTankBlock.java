@@ -152,8 +152,13 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             }
             level.playSound(null, pos, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 1.3F);
             if (level instanceof ServerLevel serverLevel) {
-                Vec3 at = hitResult.getLocation();
-                serverLevel.sendParticles(ModParticles.glint(ModParticles.GOLD), at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
+                // The label takes: a hexagon of its essence's colour ripples over the face it went on, a wisp of it rises.
+                Direction face = hitResult.getDirection();
+                Vec3 at = hitResult.getLocation().add(face.getStepX() * 0.03, face.getStepY() * 0.03, face.getStepZ() * 0.03);
+                int color = essence.color();
+                com.pockyl.hextale.network.RuneFxPayload.send(serverLevel, com.pockyl.hextale.network.RuneFxPayload.ripple(at, face, 0.4F, color));
+                serverLevel.sendParticles(ModParticles.wisp(color), at.x, at.y, at.z, 4, 0.08, 0.1, 0.08, 0.01);
+                serverLevel.sendParticles(ModParticles.glint(color), at.x, at.y, at.z, 3, 0.12, 0.12, 0.12, 0.01);
             }
             player.sendOverlayMessage(Component.translatable("block.hextale.essence_tank.sticker", Component.translatable(essence.translationKey())));
             return InteractionResult.SUCCESS;

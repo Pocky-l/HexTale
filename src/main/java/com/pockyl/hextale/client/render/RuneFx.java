@@ -28,7 +28,8 @@ import java.util.List;
  * breathing for a moment, then shrinks and flies into the reader's chest with a last flash.
  * <p>An area opens a flat hexagon on the ground out to a device's reach (and a smaller one turning against it), the
  * rune's glyph rising over the middle, and fades. A ripple is a small hexagon flaring on a barrier's face where
- * something pushed against it.
+ * something pushed against it. A sigil is a small flat hexagon snapping open round a device's moment and fading, a
+ * fainter one running on outwards.
  */
 public final class RuneFx {
     private static final int PROC_TICKS = 22;
@@ -41,6 +42,7 @@ public final class RuneFx {
     private static final int MAX_SIGNS = 96;
     private static final int AREA_TICKS = 60;
     private static final int RIPPLE_TICKS = 12;
+    private static final int SIGIL_TICKS = 20;
 
     private static final List<Sign> SIGNS = new ArrayList<>();
     private static @Nullable ClientLevel level;
@@ -51,6 +53,7 @@ public final class RuneFx {
                 case RuneFxPayload.LEARN -> LEARN_TICKS;
                 case RuneFxPayload.AREA -> AREA_TICKS;
                 case RuneFxPayload.RIPPLE -> RIPPLE_TICKS;
+                case RuneFxPayload.SIGIL -> SIGIL_TICKS;
                 default -> PROC_TICKS;
             };
         }
@@ -99,6 +102,7 @@ public final class RuneFx {
                 case RuneFxPayload.LEARN -> learn(poseStack, collector, camera, current, sign, age, state.worldPartialTicks);
                 case RuneFxPayload.AREA -> area(poseStack, collector, camera, sign, age);
                 case RuneFxPayload.RIPPLE -> ripple(poseStack, collector, camera, sign, age);
+                case RuneFxPayload.SIGIL -> sigil(poseStack, collector, camera, sign, age);
                 default -> proc(poseStack, collector, camera, sign, age);
             }
         }
@@ -219,6 +223,22 @@ public final class RuneFx {
         poseStack.rotate(Axis.XP.rotationDegrees(90));
         poseStack.rotate(Axis.ZP.rotation(sign.phase()));
         HexFx.hexRing(poseStack, collector, payload.size() * (0.3F + 0.7F * (1 - cube(1 - k))), sign.color(), 0.9F * (1 - k));
+        poseStack.popPose();
+    }
+
+    private static void sigil(PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, Sign sign, float age) {
+        RuneFxPayload payload = sign.payload();
+        float t = age / SIGIL_TICKS;
+        float open = 1 - cube(1 - Math.min(1, age / 4F));
+        float fade = age < 4 ? 1 : 1 - Mth.square((age - 4) / (SIGIL_TICKS - 4));
+        float flare = 1 + 0.7F * Math.max(0, 1 - Math.abs(age - 3) / 3);
+        Vec3 rel = payload.at().subtract(camera.pos);
+        poseStack.pushPose();
+        poseStack.translate(rel.x, rel.y, rel.z);
+        poseStack.rotate(Axis.XP.rotationDegrees(90));
+        poseStack.rotate(Axis.ZP.rotation(sign.phase() + age * 0.05F));
+        HexFx.hexRing(poseStack, collector, payload.size() * (0.4F + 0.6F * open), sign.color(), 0.75F * fade * flare);
+        HexFx.hexRing(poseStack, collector, payload.size() * (0.5F + 0.9F * (1 - cube(1 - t))), sign.color(), 0.35F * Mth.square(1 - t));
         poseStack.popPose();
     }
 

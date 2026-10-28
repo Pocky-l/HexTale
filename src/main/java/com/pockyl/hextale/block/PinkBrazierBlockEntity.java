@@ -107,6 +107,28 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
             } else {
                 level.playSound(null, worldPosition, ModSounds.FLAME_OUT.get(), SoundSource.BLOCKS, 0.6F, 0.9F);
             }
+            flare(level, lit);
+        }
+    }
+
+    /** Lighting: pink fire bursts up out of the cage with shimmer; going out: a curl of pink smoke. */
+    public void flare(Level level, boolean lit) {
+        if (!(level instanceof ServerLevel server)) {
+            return;
+        }
+        double x = worldPosition.getX() + 0.5;
+        double y = worldPosition.getY() + 0.7;
+        double z = worldPosition.getZ() + 0.5;
+        if (lit) {
+            for (int i = 0; i < 12; i++) {
+                double angle = i * Math.PI * 2 / 12;
+                server.sendParticles(ModParticles.flame(i % 3 == 0 ? PinkBrazierBlock.FADE : PinkBrazierBlock.FLAME), x + Math.cos(angle) * 0.15, y,
+                        z + Math.sin(angle) * 0.15, 0, Math.cos(angle) * 0.03, 0.07 + server.getRandom().nextDouble() * 0.04, Math.sin(angle) * 0.03, 1);
+            }
+            server.sendParticles(ModParticles.SHIMMER_MOTE.get(), x, y + 0.3, z, 6, 0.2, 0.2, 0.2, 0.02);
+            server.sendParticles(ModParticles.glint(PinkBrazierBlock.FLAME), x, y + 0.2, z, 5, 0.2, 0.15, 0.2, 0.02);
+        } else {
+            server.sendParticles(ModParticles.vapour(0x4A2F4A), x, y, z, 6, 0.15, 0.1, 0.15, 0.01);
         }
     }
 

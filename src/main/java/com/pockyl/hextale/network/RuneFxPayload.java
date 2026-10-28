@@ -17,7 +17,8 @@ import com.pockyl.hextale.rune.ComplexRunes;
  * Server to the clients near a rune sign: a rune just worked at {@code at} ({@link #PROC}: a flat hexagon opens round
  * the spot and the rune's glyph flares over it), or a player learned it ({@link #LEARN}: the glyph writes itself in the
  * air at {@code at} and flies into the entity {@code follow}), or {@link #AREA}: a flat hexagon on the ground opening out
- * to a device's reach. {@code size} is the sign's radius in blocks, {@code strength} (0-1) its brightness, {@code
+ * to a device's reach, or {@link #SIGIL}: a small flat hexagon flaring open and fading with no glyph (a device's moment:
+ * a crystal soaked in, a flame lit, stone drinking essence). {@code size} is the sign's radius in blocks, {@code strength} (0-1) its brightness, {@code
  * color} its colour ({@link #RUNE_COLOR} = the rune's).
  */
 public record RuneFxPayload(int kind, Vec3 at, ComplexRune rune, float size, float strength, int follow, int color)
@@ -25,8 +26,9 @@ public record RuneFxPayload(int kind, Vec3 at, ComplexRune rune, float size, flo
     public static final int PROC = 0;
     public static final int LEARN = 1;
     public static final int AREA = 2;
-    /** Client only: a ripple on a barrier's face ({@code follow} = the face's direction). */
+    /** A ripple on a block's face ({@code follow} = the face's direction). */
     public static final int RIPPLE = 3;
+    public static final int SIGIL = 4;
     public static final int RUNE_COLOR = -1;
     /** Players this far from a sign see it. */
     public static final double RADIUS = 48;
@@ -59,6 +61,19 @@ public record RuneFxPayload(int kind, Vec3 at, ComplexRune rune, float size, flo
     public static RuneFxPayload area(Vec3 at, ComplexRune rune, float radius, int color) {
         return new RuneFxPayload(AREA, at, rune, radius, 1, -1, color);
     }
+
+    /** A flat hexagon of {@code radius} blocks flaring open round {@code at} and fading; no glyph. */
+    public static RuneFxPayload sigil(Vec3 at, float radius, int color) {
+        return new RuneFxPayload(SIGIL, at, NO_GLYPH, radius, 1, -1, color);
+    }
+
+    /** A small hexagon rippling out over a block's {@code face} at {@code at} (a barrier pushed, a label put on). */
+    public static RuneFxPayload ripple(Vec3 at, net.minecraft.core.Direction face, float size, int color) {
+        return new RuneFxPayload(RIPPLE, at, NO_GLYPH, size, 1, face.get3DDataValue(), color);
+    }
+
+    /** The rune a sign without a glyph carries (the message always names one). */
+    private static final ComplexRune NO_GLYPH = ComplexRunes.of(com.pockyl.hextale.rune.Essence.LIGHT, com.pockyl.hextale.rune.Essence.SHADOW);
 
     /** Sends the sign to every player near it whose client has the mod. */
     public static void send(ServerLevel level, RuneFxPayload payload) {

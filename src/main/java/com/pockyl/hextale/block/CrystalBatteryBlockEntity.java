@@ -15,6 +15,8 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
+import com.pockyl.hextale.network.EssenceFxPayload;
+import com.pockyl.hextale.network.RuneFxPayload;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModParticles;
@@ -119,8 +121,20 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
         changed();
         if (level instanceof ServerLevel server) {
             Vec3 at = Vec3.atCenterOf(worldPosition);
-            server.sendParticles(ModParticles.ring(HEXTECH), at.x, at.y, at.z, 0, 0.9, 0, 0, 1);
-            server.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 8, 0.2, 0.2, 0.2, 0.08);
+            // The crystal comes apart into the battery: its pieces whirl into the core, sparks are drawn in from round the
+            // cube and a hexagon flares on its top.
+            for (int i = 0; i < 6; i++) {
+                // Each piece is spawned at the core with its way back to where it starts (over the cube) as velocity.
+                double angle = i * Math.PI / 3;
+                server.sendParticles(ModParticles.itemDraw(crystal), at.x, at.y + 0.1, at.z, 0, Math.cos(angle) * 0.35, 0.85,
+                        Math.sin(angle) * 0.35, 1);
+            }
+            for (int i = 0; i < 8; i++) {
+                double angle = i * Math.PI / 4;
+                server.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x + Math.cos(angle) * 0.7, at.y + 0.2, at.z + Math.sin(angle) * 0.7, 0,
+                        -Math.cos(angle), -0.2, -Math.sin(angle), 0.09);
+            }
+            RuneFxPayload.send(server, RuneFxPayload.sigil(at.add(0, 0.52, 0), 0.6F, HEXTECH));
             server.playSound(null, worldPosition, ModSounds.ORB_AWAKEN.get(), SoundSource.BLOCKS, 0.5F, 1.6F);
             if (bonus) {
                 ToolEffects.puff(server, at.add(0, 0.4, 0), BatteryRune.DAM.rune(), 6, 0.3);
@@ -173,10 +187,11 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
                 int given = bench.receive(Math.min(FEED, battery.charge));
                 if (given > 0) {
                     battery.charge -= given;
-                    Vec3 to = Vec3.atCenterOf(at).add(0, 0.5, 0);
-                    Vec3 from = Vec3.atCenterOf(pos);
-                    for (int i = 0; i < 3; i++) {
-                        server.sendParticles(ModParticles.flow(HEXTECH), to.x, to.y, to.z, 0, from.x - to.x, from.y - to.y, from.z - to.z, 1.0);
+                    // A thread of hextech light from the battery's top into the worktop, renewed every other feed so
+                    // a steady charge reads as one steady stream.
+                    if (level.getGameTime() / FEED_TICKS % 2 == 0) {
+                        EssenceFxPayload.pour(server, Vec3.atCenterOf(pos).add(0, 0.5, 0),
+                                Vec3.atCenterOf(at).add(0, 0.45, 0), HEXTECH, FEED_TICKS * 2 - 4);
                     }
                 }
             }
