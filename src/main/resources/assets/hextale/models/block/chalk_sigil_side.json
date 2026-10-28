@@ -16,7 +16,6 @@
         0.25,
         3
       ],
-      "shade_direction_override": "up",
       "faces": {
         "up": {
           "uv": [
@@ -27,7 +26,8 @@
           ],
           "texture": "#chalk_sigil_line"
         }
-      }
+      },
+      "shade": false
     }
   ]
 }

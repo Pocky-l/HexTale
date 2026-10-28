@@ -17,7 +17,6 @@
         16
       ],
       "light_emission": 8,
-      "shade_direction_override": "up",
       "faces": {
         "up": {
           "uv": [
@@ -28,7 +27,8 @@
           ],
           "texture": "#chalk_mark_1_lit"
         }
-      }
+      },
+      "shade": false
     }
   ]
 }

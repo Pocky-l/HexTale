@@ -97,7 +97,6 @@
         16
       ],
       "light_emission": 15,
-      "shade_direction_override": "up",
       "faces": {
         "north": {
           "uv": [
@@ -149,7 +148,8 @@
           "texture": "#floating_stone_bottom_glow",
           "cullface": "down"
         }
-      }
+      },
+      "shade": false
     }
   ]
 }
