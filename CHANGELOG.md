@@ -39,6 +39,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Clouded Crystal a heavy dark lump with a cloud inside, the Void Shard a sharp black sliver with a glowing crack, Void
   Chitin a ridged plate of shell, and the Scroll of Oblivion an ash-grey scroll with a violet seal. The Hextech Crystal
   keeps its look.
+- The 22 essence signs are redrawn as one set, like stamped emblems: the same bold outline, the same light from the
+  top left and the same amount of detail. Every essence keeps its subject (a flame, a sun, a skull, a paw...), so you
+  know them at once, but water is now a breaking wave instead of a drop inside the drop, and the pale and dark essences
+  show their signs more clearly. The drops, the screens and the jar tags all use the new signs; the tags print them
+  like a woodcut stamp, so no sign turns into a dark blot.
+- The Essence Sticker is now the same paper tag on twine as on the jars, with the essence's colour stamped on it.
+- The Hexcore's matrix is calmer: its tiles are a darker, quieter blue with softer gold edges, and each tile carries
+  one of the nine primal rune radicals, glowing in a carved groove, instead of arrows and crosses.
 
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
