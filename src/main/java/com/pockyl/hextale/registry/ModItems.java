@@ -195,6 +195,8 @@ public final class ModItems {
             properties -> new KnowledgeScrollItem(false, properties.stacksTo(1).rarity(Rarity.EPIC)));
     public static final DeferredItem<BlockItem> PEDESTAL = ITEMS.registerSimpleBlockItem(ModBlocks.PEDESTAL);
     public static final DeferredItem<BlockItem> RUNE_STELE = ITEMS.registerSimpleBlockItem(ModBlocks.RUNE_STELE);
+    public static final DeferredItem<BlockItem> RUNE_CIRCLE = ITEMS.registerSimpleBlockItem(ModBlocks.RUNE_CIRCLE,
+            properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEXCORE = ITEMS.registerSimpleBlockItem(ModBlocks.HEXCORE,
             properties -> properties.rarity(Rarity.EPIC));
     /** A crafting recipe that uses a bottle of essence (soaking magic stone) gives the glass bottle back. */

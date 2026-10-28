@@ -248,11 +248,19 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             }
             return;
         }
-        circle = Ritual.Circle.scan(serverLevel, worldPosition);
+        circle = scan(serverLevel);
         Ritual.Plan plan = Ritual.plan(center, circle, false);
+        if (plan != null && !performs(plan.kind())) {
+            // Making and inscribing are two circles: the altar makes, the Rune Circle burns runes in and copies them.
+            if (player != null) {
+                player.sendOverlayMessage(Component.translatable(messageKey("elsewhere")));
+            }
+            serverLevel.playSound(null, worldPosition, ModSounds.DEVICE_REFUSE.get(), SoundSource.BLOCKS, 0.8F, 0.9F);
+            return;
+        }
         if (plan == null) {
             if (player != null) {
-                Ritual.Hint hint = center.isEmpty() ? Ritual.Hint.NONE : Ritual.hint(center, circle, false);
+                Ritual.Hint hint = center.isEmpty() || !performs(Ritual.Kind.INFUSE) ? Ritual.Hint.NONE : Ritual.hint(center, circle, false);
                 if (com.pockyl.hextale.runework.RuneHolder.of(center) != null && circle.filledPedestals().isEmpty() && !circle.chosenRunes().isEmpty()) {
                     // Why the steles' runes cannot go into this pickaxe.
                     Ritual.Engraving engraving = Ritual.engraving(center, circle);
@@ -272,8 +280,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                     }
                     player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.nothing.runes_missing", names));
                 } else {
-                    player.sendOverlayMessage(Component.translatable(center.isEmpty() ? "block.hextale.hextech_altar.empty"
-                            : "block.hextale.hextech_altar.nothing"));
+                    player.sendOverlayMessage(Component.translatable(messageKey(center.isEmpty() ? "empty" : "nothing")));
                 }
             }
             serverLevel.playSound(null, worldPosition, ModSounds.DEVICE_REFUSE.get(), SoundSource.BLOCKS, 0.8F, 0.9F);
@@ -342,7 +349,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         }
         if (altar.circle == null || ++altar.rescan >= RESCAN_TICKS) {
             altar.rescan = 0;
-            altar.circle = Ritual.Circle.scan(serverLevel, pos);
+            altar.circle = altar.scan(serverLevel);
             altar.chalkSpeed = ChalkMarkBlock.speed(serverLevel, pos);
         }
         boolean progressed = altar.tickInfusion(serverLevel);
@@ -495,7 +502,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
 
     /** The runes went into the work: every stele of the circle goes dark until a rune is chosen again. */
     private void resetSteles(ServerLevel level) {
-        for (RuneSteleBlockEntity stele : Ritual.Circle.scan(level, worldPosition).steles()) {
+        for (RuneSteleBlockEntity stele : scan(level).steles()) {
             if (stele.rune() != null) {
                 stele.choose(null, 1);
             }
@@ -544,7 +551,35 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         return ITEM_Y;
     }
 
-    // ---- Hooks for the Hexcore --------------------------------------------------------------------------------------
+    /**
+     * Whether this centre does this kind of ritual: the altar (and the Hexcore) makes things, the
+     * {@link RuneCircleBlockEntity Rune Circle} burns runes in and writes them on scrolls.
+     */
+    public boolean performs(Ritual.Kind kind) {
+        return kind == Ritual.Kind.INFUSE;
+    }
+
+    /** Whether the steles round this centre lend it their runes to burn in (they serve the nearest such centre). */
+    public boolean inscribes() {
+        return performs(Ritual.Kind.ENGRAVE);
+    }
+
+    /** Height of the ritual's ground sigil over the block's floor (blocks). */
+    public float sigilY() {
+        return 0.03F;
+    }
+
+    /** What stands round this centre and takes part in its rituals. */
+    protected Ritual.Circle scan(Level level) {
+        return Ritual.Circle.scan(level, worldPosition);
+    }
+
+    /** The overlay message for this centre: {@code empty}, {@code nothing}, {@code hint} or {@code elsewhere}. */
+    public String messageKey(String what) {
+        return "block.hextale.hextech_altar." + what;
+    }
+
+    // ---- Hooks for the Hexcore and the Rune Circle --------------------------------------------------------------------
 
     /** Server: a ritual has just started (its inputs, essences and circle are set). */
     protected void ritualStarted(ServerLevel level) {
@@ -601,7 +636,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         RandomSource random = level.getRandom();
         Vec3 target = altar.itemPosition();
         if (altar.circle == null || level.getGameTime() % RESCAN_TICKS == 0) {
-            altar.circle = Ritual.Circle.scan(level, pos);
+            altar.circle = altar.scan(level);
         }
         Ritual.Circle circle = altar.circle;
         // Essence streams: once the items are in, from every jar holding the essence drawn now (JarStreamFx).
@@ -701,8 +736,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
 
     /** Client: works out what the circle lacks; each missing item floats over a free pedestal, the rest around the altar. */
     private void updateGhosts(Level level) {
-        Ritual.Circle scanned = Ritual.Circle.scan(level, worldPosition);
-        Ritual.Hint hint = Ritual.hint(center, scanned, true);
+        Ritual.Circle scanned = scan(level);
+        Ritual.Hint hint = performs(Ritual.Kind.INFUSE) ? Ritual.hint(center, scanned, true) : Ritual.Hint.NONE;
         List<Ghost> next = new java.util.ArrayList<>();
         List<PedestalBlockEntity> free = scanned.pedestals().stream().filter(pedestal -> pedestal.item().isEmpty()).toList();
         int around = Math.max(0, hint.missing().size() - free.size());

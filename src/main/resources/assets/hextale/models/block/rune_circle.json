@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "hextale:block/magic_bricks",
+    "top": "hextale:block/chiseled_magic_bricks",
+    "side": "hextale:block/magic_bricks"
+  }
+}
