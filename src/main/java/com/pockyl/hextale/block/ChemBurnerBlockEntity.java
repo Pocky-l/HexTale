@@ -151,6 +151,8 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
             ticks *= 2;
             if (ticks >= VIAL_TICKS || level.getRandom().nextInt(8) == 0) {
                 ToolEffects.puff(level, Vec3.atCenterOf(worldPosition).add(0, 0.3, 0), BurnerRune.ETERNAL_FLAME.rune(), 6, 0.3);
+                // The flame burns for nothing.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atCenterOf(worldPosition).add(0, 0.3, 0), com.pockyl.hextale.registry.ModParticles.FIRE, 0.6F);
             }
         }
         burn = ticks;
@@ -168,6 +170,8 @@ public class ChemBurnerBlockEntity extends BlockEntity implements Container, Ess
         for (Player player : level.getEntitiesOfClass(Player.class, around)) {
             if (ToolEffects.keep(player, MobEffects.FIRE_RESISTANCE, HolderRune.at(BurnerRune.WARMTH_TICKS, warmth), 0)) {
                 ToolEffects.puff(level, player.position().add(0, 1, 0), BurnerRune.FIREPROOFING.rune(), 8, 0.4);
+                // Fire kept off the keeper.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, player.position().add(0, 1, 0), com.pockyl.hextale.registry.ModParticles.FIRE, 1.0F);
             }
         }
     }

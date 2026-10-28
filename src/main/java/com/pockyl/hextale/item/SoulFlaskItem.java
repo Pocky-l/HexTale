@@ -181,6 +181,16 @@ public class SoulFlaskItem extends Item {
     /** What the flask's runes do to the creature stepping out. */
     private static void bless(ItemStack flask, LivingEntity creature) {
         var runes = RuneHolder.SOUL.runes(flask);
+        if (creature.level() instanceof ServerLevel level) {
+            // The flask's runes show on the creature let out: life rising for Healing and Growth, a dusk for Slumber.
+            Vec3 at = creature.position().add(0, creature.getBbHeight() * 0.3, 0);
+            if (runes.strength(SoulRune.HEALING.rune()) > 0 || runes.strength(SoulRune.GROWTH.rune()) > 0) {
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, 0x8FE07A, 0.9F);
+            }
+            if (runes.strength(SoulRune.SLUMBER.rune()) > 0 && creature instanceof Enemy) {
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, at, 0x6E5A8C, 0.8F);
+            }
+        }
         if (runes.strength(SoulRune.HEALING.rune()) > 0) {
             creature.setHealth(creature.getMaxHealth());
         }

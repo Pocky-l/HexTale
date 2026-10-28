@@ -360,6 +360,8 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
             if (fits(more)) {
                 result = more;
                 ToolEffects.puff(level, grate.add(0, 0.6, 0), FoundryRune.FORGE.rune(), 8, 0.35);
+                // The extra ingot comes out hot.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, grate.add(0, 0.6, 0), com.pockyl.hextale.registry.ModParticles.FIRE, 0.8F);
                 level.sendParticles(ModParticles.glint(ModParticles.GOLD), grate.x, grate.y + 0.6, grate.z, 6, 0.3, 0.3, 0.3, 0.05);
             }
         }
@@ -370,6 +372,8 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
             if (fits(nugget)) {
                 insert(nugget);
                 ToolEffects.puff(level, grate.add(0, 0.6, 0), FoundryRune.SMELTING.rune(), 6, 0.3);
+                // Stone melts into metal grains.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, grate.add(0, 0.6, 0), com.pockyl.hextale.registry.ModParticles.FIRE, 0.7F);
             }
         }
         int radiance = strength(FoundryRune.RADIANCE);

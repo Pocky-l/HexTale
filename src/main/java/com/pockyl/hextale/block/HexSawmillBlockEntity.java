@@ -271,12 +271,16 @@ public class HexSawmillBlockEntity extends BlockEntity {
             if (!nests.isEmpty()) {
                 drops.addAll(nests);
                 ToolEffects.puff(level, crown, SawmillRune.HUSH.rune(), 10, 0.6);
+                // The nest taken whole, the bees hushed.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, crown, 0x6E5A8C, 0.8F);
             }
         }
         int light = strength(SawmillRune.PHOTOSYNTHESIS);
         if (light > 0 && level.getRandom().nextFloat() < HolderRune.at(SawmillRune.GOLDEN, light)) {
             drops.add(new ItemStack(Items.GOLDEN_APPLE));
             ToolEffects.puff(level, crown, SawmillRune.PHOTOSYNTHESIS.rune(), 16, 0.8);
+            // A golden apple in the crown.
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, crown, com.pockyl.hextale.registry.ModParticles.GOLD, 1.2F);
             level.sendParticles(ModParticles.glint(ModParticles.GOLD), crown.x, crown.y, crown.z, 12, 0.6, 0.6, 0.6, 0.05);
         }
         return drops;
@@ -293,6 +297,8 @@ public class HexSawmillBlockEntity extends BlockEntity {
             }
             if (!planted.isEmpty()) {
                 ToolEffects.puff(level, Vec3.atCenterOf(saw.foot()), SawmillRune.GROWTH.rune(), 10, 0.4);
+                // The sapling planted again.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atCenterOf(saw.foot()), 0x8FE07A, 0.8F);
             }
         }
         Felling.drop(level, saw.foot(), drops);

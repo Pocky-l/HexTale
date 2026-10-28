@@ -128,6 +128,8 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
         if (flame > 0 && level.getRandom().nextFloat() < HolderRune.at(BrazierRune.LONGER_BURN, flame)) {
             ticks *= 2;
             ToolEffects.puff(level, Vec3.atCenterOf(worldPosition).add(0, 0.5, 0), BrazierRune.ETERNAL_FLAME.rune(), 10, 0.3);
+            // The pink flame burns for nothing.
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atCenterOf(worldPosition).add(0, 0.5, 0), 0xF06AC8, 0.7F);
         }
         burn = ticks;
         changed();
@@ -154,6 +156,8 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
                     && random.nextFloat() < HolderRune.at(BrazierRune.BLOOM, pollen)) {
                 bonemealable.performBonemeal(level, random, at, plant, BonemealSource.INTERACTION);
                 ToolEffects.puff(level, Vec3.atCenterOf(at), BrazierRune.POLLEN.rune(), 8, 0.3);
+                // Flowers.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atCenterOf(at), 0xF2A8D0, 0.6F);
             } else {
                 growStep(level, at, plant, random);
             }
@@ -171,6 +175,8 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
             for (Player player : level.getEntitiesOfClass(Player.class, around)) {
                 if (ToolEffects.keep(player, MobEffects.REGENERATION, HolderRune.at(BrazierRune.HEALING_TICKS, healing), 0)) {
                     ToolEffects.puff(level, player.position().add(0, 1, 0), BrazierRune.HEALING.rune(), 8, 0.4);
+                    // The warmth heals.
+                    com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, player.position().add(0, 1, 0), 0x8FE07A, 0.9F);
                 }
             }
         }

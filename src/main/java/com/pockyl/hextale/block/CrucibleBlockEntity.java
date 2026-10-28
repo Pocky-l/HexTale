@@ -321,6 +321,8 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
                 if (server.getRandom().nextFloat() < HolderRune.at(BurnerRune.MORE_DOSES, steam)) {
                     made++;
                     ToolEffects.puff(server, at.add(0, 0.2, 0), BurnerRune.STEAM.rune(), 10, 0.25);
+                    // Steam: one dose more.
+                    com.pockyl.hextale.network.RuneEffectPayload.show(server, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, at.add(0, 0.2, 0), 0xDDE6EA, 0.7F);
                 }
             }
             int radiance = burner.strength(BurnerRune.RADIANCE);

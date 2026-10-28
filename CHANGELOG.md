@@ -20,6 +20,9 @@ Void's creatures have voices of their own.
   wave through the stone. On the other tools: a felled tree comes down log by log, saplings and seeds rise green,
   Chain Lightning and Flash strike as bolts, Withering draws the foe's life to you, Spoils glints gold. Each has its
   own soft sound, played once even when many blocks go at once.
+- The same goes for the rest: clothes heal, cleanse and ward off fire in rising light, a Mirror robe strikes back as a
+  bolt, boots cushion a fall with a gust; the grapple's Gravity drags its catch in along a stream of light; machines'
+  runes rise hot, golden, green or as steam where they work; the Null Lantern and the Void Anchors bite with thin bolts.
 - Learning a rune from a scroll or from research notes: the rune writes itself in the air before your eyes inside a
   hexagon, holds for a moment and flies into you.
 - The altar's circle: when a ritual starts, a hexagonal sigil lights up on the ground, sweeping round from the north and

@@ -367,6 +367,8 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
             // This melt burned nothing: its time goes back into the fire.
             litTime = Math.min(litTime + melt.time(), litDuration + melt.time());
             ToolEffects.puff(level, Vec3.atCenterOf(worldPosition).add(0, 0.6, 0), FurnaceRune.ETERNAL_FLAME.rune(), 6, 0.25);
+            // The melt's time goes back into the fire.
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atCenterOf(worldPosition).add(0, 0.6, 0), com.pockyl.hextale.registry.ModParticles.FIRE, 0.6F);
         }
         Vec3 mouth = Vec3.atCenterOf(worldPosition);
         level.playSound(null, mouth.x, mouth.y, mouth.z, ModSounds.FORGE_MELT.get(), SoundSource.BLOCKS, 0.7F, 0.9F + level.getRandom().nextFloat() * 0.2F);
@@ -400,6 +402,8 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         more.grow(extra);
         Vec3 mouth = Vec3.atCenterOf(worldPosition);
         ToolEffects.puff(level, mouth, FurnaceRune.FORGE.rune(), 8, 0.35);
+        // The extra ingot comes out hot.
+        com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, mouth, com.pockyl.hextale.registry.ModParticles.FIRE, 0.8F);
         level.sendParticles(ModParticles.glint(ModParticles.GOLD), mouth.x, mouth.y, mouth.z, 6, 0.3, 0.3, 0.3, 0.05);
         return more;
     }

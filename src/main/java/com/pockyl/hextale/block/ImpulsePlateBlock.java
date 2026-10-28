@@ -203,6 +203,8 @@ public class ImpulsePlateBlock extends BaseEntityBlock {
             server.blockEvent(pos, this, LAUNCH_EVENT, 0);
             server.playSound(null, pos, ModSounds.IMPULSE_LAUNCH.get(), SoundSource.BLOCKS, 0.9F, 0.7F + server.getRandom().nextFloat() * 0.1F);
             com.pockyl.hextale.runework.ToolEffects.puff(server, Vec3.atCenterOf(pos).add(0, -0.3, 0), ImpulseRune.BANISHING.rune(), 10, 0.4);
+            // Hostiles flung back.
+            com.pockyl.hextale.network.RuneEffectPayload.show(server, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, Vec3.atCenterOf(pos).add(0, -0.3, 0), 0xE8F4FF, 1.0F);
         }
     }
 

@@ -353,6 +353,8 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
         if (heatEater > 0 && server.getRandom().nextFloat() < HolderRune.at(LabRune.CAUGHT, heatEater)) {
             flask.vent();
             ToolEffects.puff(server, at.add(0, 0.2, 0), LabRune.HEAT_EATER.rune(), 14, 0.2);
+            // The heat eaten.
+            com.pockyl.hextale.network.RuneEffectPayload.show(server, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, at.add(0, 0.2, 0), 0xBFE8FF, 0.6F);
             server.playSound(null, worldPosition, ModSounds.LAB_VENT.get(), SoundSource.BLOCKS, 0.8F, 0.8F);
             outcome = OUTCOME_CAUGHT;
             outcomeAt = server.getGameTime();
