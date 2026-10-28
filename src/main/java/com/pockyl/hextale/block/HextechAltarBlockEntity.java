@@ -360,9 +360,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         if (altar.kind != null && serverLevel.getGameTime() % SYNC_TICKS == 0) {
             altar.sync();
         }
-        if (altar.kind != null && altar.stalled == 0 && serverLevel.getGameTime() % 40 == 0) {
-            serverLevel.playSound(null, pos, ModSounds.RITUAL_HUM.get(), SoundSource.BLOCKS, 0.6F, 0.9F + 0.2F * altar.elapsed / Math.max(1F, altar.duration));
-        }
         if (altar.kind != null && altar.stalled > 10 && serverLevel.getGameTime() % 40 == 0) {
             // It never says what it waits for: the researcher has to see for themselves what went missing.
             serverLevel.playSound(null, pos, ModSounds.RITUAL_STALL.get(), SoundSource.BLOCKS, 0.5F, 1.0F);

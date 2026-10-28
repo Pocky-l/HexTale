@@ -34,6 +34,16 @@ Void's creatures have voices of their own.
   a new facet catches the light.
 - A melt settling in the Hex Furnace or the Hex Foundry has its own soft sound and a breath of hex flame; the foundry
   burns with the same fire, smoke and sparks as the furnace, and catches with a deep roar when it is built.
+- Machines sound like they work: a running ritual, the Hex Furnace, the Hex Foundry and the separator have soft working
+  sounds that fade in and out with them (a ritual's rises as it goes on and sinks when it stalls). The furnace and
+  foundry no longer use the vanilla crackle.
+- Devices show their reach: an empty hand on a Null Lantern (or placing it) and on a World Anchor (or it waking) lays a
+  hexagon of light on the ground out to the quiet zone or the held chunks.
+- Ward Glass ripples with an amber hexagon where you push against it.
+- A Recall Charm opens the rift's sign where you leave and where you land; a Soul Flask draws a creature in as a stream
+  of light and pours it out again.
+- The Void's roads have their moments: when six anchors hold a breach, cold streams run from each into it and a hexagon
+  locks round it; healed land opens a hexagon of life over the spot.
 - Every rune that works now makes a soft sound of its own - a short breath of energy and a low pulse - on tools,
   clothes, machines and gadgets alike. A rune that works every moment sounds only now and then.
 - Learning a rune from a scroll or from research notes has its own sound: an ink stroke and the knowledge settling in.

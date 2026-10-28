@@ -181,8 +181,12 @@ public class RecallCharmItem extends Item {
                     com.pockyl.hextale.runework.HolderRune.at(RecallRune.FIRE_TICKS, fireproofing), 0, true, false, true));
             com.pockyl.hextale.runework.ToolEffects.puff(server, mark.pos().add(0, 1, 0), RecallRune.FIREPROOFING.rune(), 8, 0.4);
         }
+        com.pockyl.hextale.rune.ComplexRune rift = com.pockyl.hextale.rune.ComplexRunes.of(com.pockyl.hextale.rune.Essence.SHADOW,
+                com.pockyl.hextale.rune.Essence.SPARK);
         for (Vec3 at : new Vec3[] {from, mark.pos()}) {
-            server.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.x, at.y + 0.1, at.z, 0, 1.2, 1, 0, 1);
+            // The rift's sign opens where the researcher leaves and where they land.
+            com.pockyl.hextale.network.RuneFxPayload.send(server, new com.pockyl.hextale.network.RuneFxPayload(
+                    com.pockyl.hextale.network.RuneFxPayload.PROC, at.add(0, 0.1, 0), rift, 1.3F, 1, -1, Essence.RIFT.color()));
             server.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y + 1, at.z, 14, 0.3, 0.6, 0.3, 0.03);
         }
         server.playSound(null, mark.pos().x, mark.pos().y, mark.pos().z, ModSounds.SKYPACK_IGNITE.get(), SoundSource.PLAYERS, 0.7F, 0.7F);

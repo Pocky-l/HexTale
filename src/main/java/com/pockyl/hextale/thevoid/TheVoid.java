@@ -525,6 +525,15 @@ public class TheVoid extends Entity {
             level.playSound(null, getX(), getY(), getZ(), ModSounds.THE_VOID_SUBDUE.get(), SoundSource.AMBIENT, 1.2F, 1.0F);
             level.sendParticles(ModParticles.ring(com.pockyl.hextale.block.VoidAnchorBlockEntity.COLD), getX(), getY(), getZ(), 0,
                     size() * 0.7, 0, 0, 1);
+            // The six anchors close their ring: a cold stream from each into the breach, a hexagon locking round it.
+            Vec3 heart = position().add(0, size() * 0.5, 0);
+            for (BlockPos anchor : anchors) {
+                com.pockyl.hextale.network.EssenceFxPayload.pour(level, Vec3.atCenterOf(anchor).add(0, 0.6, 0), heart,
+                        com.pockyl.hextale.block.VoidAnchorBlockEntity.COLD, 40);
+            }
+            com.pockyl.hextale.network.RuneFxPayload.send(level, com.pockyl.hextale.network.RuneFxPayload.area(
+                    Vec3.atBottomCenterOf(blockPosition()), com.pockyl.hextale.rune.ComplexRunes.of(com.pockyl.hextale.rune.Essence.EARTH,
+                            com.pockyl.hextale.rune.Essence.SHADOW), 9, com.pockyl.hextale.block.VoidAnchorBlockEntity.COLD));
             entityData.set(DATA_PUSH_AT, -1L);
             Quests.fireNear(level, position(), Breaches.WATCH_RADIUS, Quests.BREACH_SUBDUED);
         } else if (was && !nowHeld) {

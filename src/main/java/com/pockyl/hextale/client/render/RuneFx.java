@@ -26,6 +26,9 @@ import java.util.List;
  * one keeps running outwards and the glyph drifts up and dies away.
  * <p>A learned rune writes itself stroke by stroke in the air before its reader inside an upright hexagon, holds there
  * breathing for a moment, then shrinks and flies into the reader's chest with a last flash.
+ * <p>An area opens a flat hexagon on the ground out to a device's reach (and a smaller one turning against it), the
+ * rune's glyph rising over the middle, and fades. A ripple is a small hexagon flaring on a barrier's face where
+ * something pushed against it.
  */
 public final class RuneFx {
     private static final int PROC_TICKS = 22;
@@ -36,13 +39,24 @@ public final class RuneFx {
     private static final int FLY_TICKS = 16;
     private static final int LEARN_TICKS = WRITE_TICKS + HOLD_TICKS + FLY_TICKS;
     private static final int MAX_SIGNS = 96;
+    private static final int AREA_TICKS = 60;
+    private static final int RIPPLE_TICKS = 12;
 
     private static final List<Sign> SIGNS = new ArrayList<>();
     private static @Nullable ClientLevel level;
 
     record Sign(RuneFxPayload payload, long start, float phase) {
         int length() {
-            return payload.kind() == RuneFxPayload.LEARN ? LEARN_TICKS : PROC_TICKS;
+            return switch (payload.kind()) {
+                case RuneFxPayload.LEARN -> LEARN_TICKS;
+                case RuneFxPayload.AREA -> AREA_TICKS;
+                case RuneFxPayload.RIPPLE -> RIPPLE_TICKS;
+                default -> PROC_TICKS;
+            };
+        }
+
+        int color() {
+            return payload.color() == RuneFxPayload.RUNE_COLOR ? payload.rune().color() : payload.color();
         }
     }
 
@@ -81,10 +95,11 @@ public final class RuneFx {
         SubmitNodeCollector collector = event.getSubmitNodeCollector();
         for (Sign sign : SIGNS) {
             float age = Math.max(0, now - sign.start());
-            if (sign.payload().kind() == RuneFxPayload.LEARN) {
-                learn(poseStack, collector, camera, current, sign, age, state.worldPartialTicks);
-            } else {
-                proc(poseStack, collector, camera, sign, age);
+            switch (sign.payload().kind()) {
+                case RuneFxPayload.LEARN -> learn(poseStack, collector, camera, current, sign, age, state.worldPartialTicks);
+                case RuneFxPayload.AREA -> area(poseStack, collector, camera, sign, age);
+                case RuneFxPayload.RIPPLE -> ripple(poseStack, collector, camera, sign, age);
+                default -> proc(poseStack, collector, camera, sign, age);
             }
         }
     }
@@ -92,7 +107,7 @@ public final class RuneFx {
     private static void proc(PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, Sign sign, float age) {
         RuneFxPayload payload = sign.payload();
         ComplexRune rune = payload.rune();
-        int color = rune.color();
+        int color = sign.color();
         float size = payload.size();
         float strength = payload.strength();
         float t = age / PROC_TICKS;
@@ -126,7 +141,7 @@ public final class RuneFx {
                               Sign sign, float age, float partialTick) {
         RuneFxPayload payload = sign.payload();
         ComplexRune rune = payload.rune();
-        int color = rune.color();
+        int color = sign.color();
         float size = payload.size();
         float strength = payload.strength();
         Vec3 at = payload.at();
@@ -156,6 +171,48 @@ public final class RuneFx {
         HexFx.glyph(poseStack, collector, rune, size * 1.1F * scale, color, Math.min(1, strength * alpha * breathe),
                 write * write * (3 - 2 * write));
         poseStack.popPose();
+    }
+
+    private static void area(PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, Sign sign, float age) {
+        RuneFxPayload payload = sign.payload();
+        int color = sign.color();
+        float open = 1 - cube(1 - Math.min(1, age / 18F));
+        float fade = age < 30 ? 1 : 1 - (age - 30) / (AREA_TICKS - 30);
+        Vec3 rel = payload.at().subtract(camera.pos);
+        poseStack.pushPose();
+        poseStack.translate(rel.x, rel.y + 0.05, rel.z);
+        poseStack.pushPose();
+        poseStack.rotate(Axis.XP.rotationDegrees(90));
+        poseStack.rotate(Axis.ZP.rotation(sign.phase() + age * 0.01F));
+        HexFx.hexRing(poseStack, collector, payload.size() * (0.1F + 0.9F * open), color, 0.8F * fade);
+        poseStack.rotate(Axis.ZP.rotation(-age * 0.025F + Mth.PI / 6));
+        HexFx.hexRing(poseStack, collector, payload.size() * (0.1F + 0.75F * open), color, 0.35F * fade);
+        poseStack.popPose();
+        // The rune of the device rising over the middle.
+        float rise = Math.min(1, age / 20F);
+        poseStack.translate(0, 0.8 + 0.5 * rise, 0);
+        poseStack.rotate(Axis.YP.rotation((float) Mth.atan2(-rel.x, -rel.z)));
+        HexFx.glyph(poseStack, collector, payload.rune(), 0.7F, color, 0.9F * fade, rise);
+        poseStack.popPose();
+    }
+
+    private static void ripple(PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, Sign sign, float age) {
+        RuneFxPayload payload = sign.payload();
+        float k = age / RIPPLE_TICKS;
+        net.minecraft.core.Direction face = net.minecraft.core.Direction.from3DDataValue(payload.follow());
+        Vec3 rel = payload.at().subtract(camera.pos);
+        poseStack.pushPose();
+        poseStack.translate(rel.x, rel.y, rel.z);
+        poseStack.rotate(face.getRotation());
+        poseStack.rotate(Axis.XP.rotationDegrees(90));
+        poseStack.rotate(Axis.ZP.rotation(sign.phase()));
+        HexFx.hexRing(poseStack, collector, payload.size() * (0.3F + 0.7F * (1 - cube(1 - k))), sign.color(), 0.9F * (1 - k));
+        poseStack.popPose();
+    }
+
+    /** Client only: shows {@code payload} here without a message from the server (a barrier's ripple). */
+    public static void local(RuneFxPayload payload) {
+        accept(payload);
     }
 
     private static float cube(float x) {

@@ -132,6 +132,8 @@ public final class HextaleClient {
         SilenceHush.register();
         ClientGrapple.register();
         LevitationHum.register();
+        MachineLoops.register();
+        WardRipple.register();
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
         modBus.addListener(ThinningTint::fadeWater);

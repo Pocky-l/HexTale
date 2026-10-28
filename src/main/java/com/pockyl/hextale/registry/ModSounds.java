@@ -221,6 +221,11 @@ public final class ModSounds {
     /** A melt settling in the Hex Furnace or the Hex Foundry, and the foundry catching fire when it is built. */
     public static final DeferredHolder<SoundEvent, SoundEvent> FORGE_MELT = register("forge.melt");
     public static final DeferredHolder<SoundEvent, SoundEvent> FORGE_CATCH = register("forge.catch");
+    /** Loops of working machines (client `MachineLoops`): a ritual, the Hex Furnace, the Hex Foundry, the separator. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RITUAL_LOOP = register("ritual.loop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FORGE_BURN = register("forge.burn");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FOUNDRY_ROAR = register("foundry.roar");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SEPARATOR_SIMMER = register("separator.simmer");
 
     private ModSounds() {
     }

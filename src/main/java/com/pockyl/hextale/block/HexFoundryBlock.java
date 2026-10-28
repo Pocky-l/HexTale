@@ -3,8 +3,6 @@ package com.pockyl.hextale.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.WorldlyContainer;
@@ -126,12 +124,6 @@ public class HexFoundryBlock extends BaseEntityBlock implements WorldlyContainer
         if (random.nextInt(4) == 0) {
             level.addParticle(ModParticles.spark(ModParticles.FIRE), grate.x + random.nextGaussian() * 0.15, grate.y + 0.55,
                     grate.z + random.nextGaussian() * 0.15, 0, 0.08, 0);
-        }
-        if (random.nextInt(6) == 0) {
-            level.playLocalSound(pos, SoundEvents.BLASTFURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 1.0F, 0.7F, false);
-        }
-        if (random.nextInt(40) == 0) {
-            level.playLocalSound(grate.x, grate.y, grate.z, SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.2F, 0.6F, false);
         }
     }
 

@@ -1628,5 +1628,45 @@
         "volume": 0.9
       }
     ]
+  },
+  "ritual.loop": {
+    "subtitle": "subtitles.hextale.ritual.loop",
+    "sounds": [
+      {
+        "name": "hextale:ritual_loop",
+        "volume": 0.6,
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "forge.burn": {
+    "subtitle": "subtitles.hextale.forge.burn",
+    "sounds": [
+      {
+        "name": "hextale:forge_burn",
+        "volume": 0.6,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "foundry.roar": {
+    "subtitle": "subtitles.hextale.foundry.roar",
+    "sounds": [
+      {
+        "name": "hextale:foundry_roar",
+        "volume": 0.8,
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "separator.simmer": {
+    "subtitle": "subtitles.hextale.separator.simmer",
+    "sounds": [
+      {
+        "name": "hextale:separator_simmer",
+        "volume": 0.5,
+        "attenuation_distance": 10
+      }
+    ]
   }
 }
