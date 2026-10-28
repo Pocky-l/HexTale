@@ -154,9 +154,16 @@ models for the altar, the Hexcore, the jars, steles, furnace and lapidary, one f
   scale with a brass mark at what the topic needs, instead of small numbers (the numbers are in the tooltips). When there
   are more topics than fit, the topic grid scrolls with the mouse wheel and no longer covers the open topic.
 - The coil under an Impulse Plate's lid is a glowing cog now.
+- Outlines and collision follow the models: what you aim at, click and stand on is the shape you see, not a box that is
+  too big or too small. The Hextech Altar, the Hexcore, the Hex Furnace, the Hex Lapidary and the Pink Brazier reach
+  past their own block, and there they can be aimed at, clicked and mined too (the Hexcore's tiers, the altar's dais,
+  the furnace's chimney); a block put into such a spot simply takes its place.
+- The Hexcore's claws are slimmer with tilted knuckles, and its ribs sit closer to the cradle.
+- The Hex Furnace works three times quieter.
 
 ### Fixed
 - The Skypack's jets, the Levitation Plate's column and the Void's breath no longer tick each time their sound loops.
+- The gem bezel on the Hex Workbench no longer flickers.
 
 ## [1.4.0] - 2026-10-28
 Ready for modpacks: every recipe can be changed by data packs and recipe scripts, shared materials go by common tags,

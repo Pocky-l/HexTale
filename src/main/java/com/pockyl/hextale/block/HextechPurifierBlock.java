@@ -12,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -20,7 +19,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -37,9 +35,6 @@ import org.jspecify.annotations.Nullable;
  * crystal out, or tells what it does when it holds none.
  */
 public class HextechPurifierBlock extends BaseEntityBlock {
-    /** The calcite font, the brass canopy over it on its four posts and the cap of its hub. */
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 5, 14), Block.box(3, 5, 3, 13, 13, 13),
-            Block.box(6, 13, 6, 10, 15, 10));
 
     public HextechPurifierBlock(Properties properties) {
         super(properties);
@@ -90,7 +85,7 @@ public class HextechPurifierBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     @Override

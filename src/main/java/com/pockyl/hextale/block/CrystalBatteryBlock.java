@@ -36,7 +36,6 @@ import org.jspecify.annotations.Nullable;
  */
 public class CrystalBatteryBlock extends BaseEntityBlock {
     public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 4);
-    private static final VoxelShape SHAPE = Block.column(12.0, 0.0, 13.0);
     private static final int HEXTECH = 0x7FD8FF;
 
     public CrystalBatteryBlock(Properties properties) {
@@ -51,7 +50,7 @@ public class CrystalBatteryBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     @Override

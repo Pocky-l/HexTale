@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
@@ -26,13 +25,6 @@ import com.pockyl.hextale.thevoid.Thinning;
  * gem chokes and the lamp {@link #FLICKER}s dim for a moment, a few times in a row on blighted land.
  */
 public class HextechLampBlock extends LanternBlock {
-    /** The cage is the same in both forms; standing adds a foot and a stem below and a finial on top, hanging a finial
-     *  below and the rod it hangs by. */
-    private static final VoxelShape CAGE = Block.column(8.0, 3.0, 13.0);
-    private static final VoxelShape SHAPE_STANDING = Shapes.or(CAGE, Block.column(6.0, 0.0, 2.0), Block.column(2.0, 2.0, 3.0),
-            Block.column(6.0, 13.0, 14.0), Block.column(2.0, 14.0, 15.0));
-    private static final VoxelShape SHAPE_HANGING = Shapes.or(CAGE, Block.column(2.0, 1.0, 2.0), Block.column(6.0, 2.0, 3.0),
-            Block.column(6.0, 13.0, 14.0), Block.column(2.0, 14.0, 16.0));
 
     public static final BooleanProperty FLICKER = BooleanProperty.create("flicker");
     /** Light while it chokes. */
@@ -91,7 +83,7 @@ public class HextechLampBlock extends LanternBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return state.getValue(HANGING) ? SHAPE_HANGING : SHAPE_STANDING;
+        return ModelShapes.of(state);
     }
 
     @Override

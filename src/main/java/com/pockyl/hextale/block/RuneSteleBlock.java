@@ -32,7 +32,6 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.network.ModNetwork;
@@ -52,13 +51,6 @@ public class RuneSteleBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
-    /** Plinth, its step and the slab, for a stele facing north or south (its broad faces); [1] turned a quarter. */
-    private static final VoxelShape[] LOWER = {Shapes.or(Block.box(2, 0, 2, 14, 3, 14), Block.box(4, 3, 6, 12, 16, 10)),
-            Shapes.or(Block.box(2, 0, 2, 14, 3, 14), Block.box(6, 3, 4, 10, 16, 12))};
-    /** The slab under the collar, then the ring head with its cap. */
-    private static final VoxelShape[] UPPER = {Shapes.or(Block.box(4, 0, 6, 12, 4, 10), Block.box(2, 4, 6, 14, 15, 10),
-            Block.box(5, 15, 5, 11, 16, 11)),
-            Shapes.or(Block.box(6, 0, 4, 10, 4, 12), Block.box(6, 4, 2, 10, 15, 14), Block.box(5, 15, 5, 11, 16, 11))};
     /** How soon a stele without its upper half looks for room again. */
     private static final int GROW_TICKS = 100;
 
@@ -189,8 +181,7 @@ public class RuneSteleBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        int turned = state.getValue(FACING).getAxis() == Direction.Axis.X ? 1 : 0;
-        return upper(state) ? UPPER[turned] : LOWER[turned];
+        return ModelShapes.of(state);
     }
 
     @Override

@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -31,7 +30,6 @@ import org.jspecify.annotations.Nullable;
  * a right click with an empty hand tells what it does now.
  */
 public class HexSawmillBlock extends BaseEntityBlock {
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 7, 14), Block.box(2, 7, 7, 14, 16, 10));
 
     public HexSawmillBlock(Properties properties) {
         super(properties);
@@ -66,7 +64,7 @@ public class HexSawmillBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     @Override

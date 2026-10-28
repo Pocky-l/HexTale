@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -38,12 +37,6 @@ import org.jspecify.annotations.Nullable;
  * sneak + right click with an empty hand takes all its links away.
  */
 public class HexPylonBlock extends BaseEntityBlock {
-    private static final VoxelShape GATHERING_SHAPE = Shapes.or(Block.box(5, 0, 5, 11, 2, 11), Block.box(2, 2, 2, 14, 6, 14));
-    private static final VoxelShape SENDING_SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 2, 15), Block.box(4, 2, 4, 12, 7, 12));
-    private static final VoxelShape RELAY_SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 1, 13), Block.box(5, 1, 5, 11, 15, 11));
-    private static final VoxelShape SIPHON_SHAPE = Shapes.or(Block.box(5, 0, 5, 11, 4, 11), Block.box(4, 4, 4, 12, 11, 12),
-            Block.box(5, 11, 5, 11, 15, 11));
-    private static final VoxelShape SORTING_SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 3, 15), Block.box(3, 3, 3, 13, 14, 13));
 
     private final PylonKind kind;
 
@@ -162,13 +155,7 @@ public class HexPylonBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (kind) {
-            case GATHERING -> GATHERING_SHAPE;
-            case SENDING -> SENDING_SHAPE;
-            case RELAY -> RELAY_SHAPE;
-            case SIPHON -> SIPHON_SHAPE;
-            case SORTING -> SORTING_SHAPE;
-        };
+        return ModelShapes.of(state);
     }
 
     @Override

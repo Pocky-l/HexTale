@@ -41,7 +41,6 @@ import org.jspecify.annotations.Nullable;
  */
 public class AxolotlTankBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
-    private static final VoxelShape SHAPE = Block.column(14.0, 0.0, 15.0);
 
     public AxolotlTankBlock(Properties properties) {
         super(properties);
@@ -60,7 +59,7 @@ public class AxolotlTankBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     @Override

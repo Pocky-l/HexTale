@@ -100,6 +100,8 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         if (placer != null) {
             WorldEdits.setPlacer(hexcore, placer);
         }
+        // The cradle spreads further than the altar did: stand-ins for the new cells, in the placer's name.
+        ShapeParts.refresh(level, pos, null);
         hexcore.bornAt = level.getGameTime();
         hexcore.setChanged();
         Vec3 at = Vec3.atBottomCenterOf(pos).add(0, REST_Y, 0);

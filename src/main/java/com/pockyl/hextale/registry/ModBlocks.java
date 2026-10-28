@@ -76,6 +76,9 @@ public final class ModBlocks {
     public static final DeferredBlock<com.pockyl.hextale.multiblock.MultiblockPartBlock> MULTIBLOCK_PART = BLOCKS.registerBlock("multiblock_part",
             com.pockyl.hextale.multiblock.MultiblockPartBlock::new, () -> BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(0.6F)
                     .sound(SoundType.GLASS).noOcclusion().noLootTable());
+    public static final DeferredBlock<com.pockyl.hextale.block.ShapePartBlock> SHAPE_PART = BLOCKS.registerBlock("shape_part",
+            com.pockyl.hextale.block.ShapePartBlock::new, () -> BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(0.0F)
+                    .noOcclusion().noLootTable().replaceable().dynamicShape().pushReaction(PushReaction.POPPED));
     public static final DeferredBlock<BrassPipeBlock> BRASS_PIPE = BLOCKS.registerBlock("brass_pipe", BrassPipeBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.0F).sound(SoundType.COPPER).noOcclusion());
 

@@ -27,7 +27,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.essence.EssenceFlaskItem;
@@ -48,9 +47,6 @@ import org.jspecify.annotations.Nullable;
  * bottom and through pipes set to pump it out. A bottle of essence by hand pours in, a glass bottle draws out; an empty hand reads it.
  */
 public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine {
-    /** The glass body and the shoulder, the neck and the lid above it (as the model, without the pipe fittings). */
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 10, 13), Block.box(4, 10, 4, 12, 12, 12),
-            Block.box(5, 12, 5, 11, 16, 11));
 
     public EssenceTankBlock(Properties properties) {
         super(properties);
@@ -70,7 +66,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     /** Every face: in everywhere, out at the bottom (and where a pipe pumps); the model shows a fitting where a pipe joins. */

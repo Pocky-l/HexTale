@@ -38,7 +38,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -59,7 +58,6 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     /** Heat below: the alembic works. */
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 12, 13), Block.box(6, 12, 6, 10, 14, 10));
 
     public AlembicBlock(Properties properties) {
         super(properties);
@@ -174,7 +172,7 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     /**
