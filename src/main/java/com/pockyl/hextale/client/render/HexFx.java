@@ -201,25 +201,32 @@ public final class HexFx {
     }
 
     /**
-     * A thin ring of additive light of {@code radius} in the pose's XY plane, with {@code ticks} short marks on its
-     * outside - the sigil circle around a rune.
+     * The sigil round a rune or a device: a thin hexagon of additive light, {@code radius} to its corners, in the pose's
+     * XY plane, with {@code ticks} short marks standing out of its outline (evenly round it, the first on a corner) -
+     * the hextech hexagon motif everywhere (2026-10-28, was a round ring). Line width stops growing at a 1.25-block
+     * ring, so a device's wide reach stays a fine line.
      */
     public static void sigilRing(PoseStack poseStack, SubmitNodeCollector collector, float radius, int ticks, int color, float alpha) {
         if (alpha <= 0.01F) {
             return;
         }
+        float w = Math.min(radius, 1.25F);
         collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
-            int segments = 48;
-            for (int i = 0; i < segments; i++) {
-                float a0 = Mth.TWO_PI * i / segments;
-                float a1 = Mth.TWO_PI * (i + 1) / segments;
+            for (int i = 0; i < 6; i++) {
+                float a0 = Mth.TWO_PI * i / 6;
+                float a1 = Mth.TWO_PI * (i + 1) / 6;
                 glowSegment(consumer, pose, Mth.cos(a0) * radius, Mth.sin(a0) * radius, Mth.cos(a1) * radius, Mth.sin(a1) * radius,
-                        radius * 0.08F, color, alpha);
+                        w * 0.08F, color, alpha);
             }
+            float apothem = radius * Mth.cos(Mth.PI / 6);
             for (int i = 0; i < ticks; i++) {
                 float a = Mth.TWO_PI * i / ticks;
-                glowSegment(consumer, pose, Mth.cos(a) * radius * 1.04F, Mth.sin(a) * radius * 1.04F, Mth.cos(a) * radius * 1.16F,
-                        Mth.sin(a) * radius * 1.16F, radius * 0.07F, color, alpha * 1.3F);
+                // Where the mark's ray leaves the hexagon: the outline's distance at this angle.
+                float inSide = (a % (Mth.TWO_PI / 6)) - Mth.PI / 6;
+                float edge = apothem / Mth.cos(inSide);
+                float out = w * 0.12F;
+                glowSegment(consumer, pose, Mth.cos(a) * (edge + w * 0.03F), Mth.sin(a) * (edge + w * 0.03F), Mth.cos(a) * (edge + out),
+                        Mth.sin(a) * (edge + out), w * 0.07F, color, alpha * 1.3F);
             }
         });
     }

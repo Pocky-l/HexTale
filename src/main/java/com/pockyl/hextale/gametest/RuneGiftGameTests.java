@@ -76,13 +76,21 @@ public final class RuneGiftGameTests {
         BlockPos origin = helper.absolutePos(BlockPos.ZERO);
         Vec3 at = new Vec3((origin.getX() >> 2 << 2) + 1.5, (origin.getY() >> 2 << 2) + 1.5, (origin.getZ() >> 2 << 2) + 1.5);
         ComplexRune haste = ToolRune.HASTE.rune();
-        helper.assertTrue(ToolEffects.procSignDue(level, at, haste), "the first proc sounds");
-        helper.assertFalse(ToolEffects.procSignDue(level, at, haste), "the same proc a tick later stays quiet");
-        helper.assertTrue(ToolEffects.procSignDue(level, at, ToolRune.MENDING.rune()), "another rune there sounds");
-        helper.assertFalse(ToolEffects.procSignDue(level, at.add(0, 1, 0), haste), "nor right beside it (a miner's next block)");
-        helper.assertTrue(ToolEffects.procSignDue(level, at.add(8, 0, 0), haste), "the same rune elsewhere sounds");
-        helper.runAfterDelay(ToolEffects.PROC_SIGN_GAP + 1, () -> {
-            helper.assertTrue(ToolEffects.procSignDue(level, at, haste), "after the gap it sounds again");
+        // The cell rule alone (no player near: a mock player of another test may stand close by).
+        helper.assertTrue(ToolEffects.procSignDue(level, at, haste, null), "the first proc sounds");
+        helper.assertFalse(ToolEffects.procSignDue(level, at, haste, null), "the same proc a tick later stays quiet");
+        helper.assertTrue(ToolEffects.procSignDue(level, at, ToolRune.MENDING.rune(), null), "another rune there sounds");
+        helper.assertFalse(ToolEffects.procSignDue(level, at.add(0, 1, 0), haste, null), "nor right beside it (a miner's next block)");
+        helper.assertTrue(ToolEffects.procSignDue(level, at.add(8, 0, 0), haste, null), "the same rune elsewhere sounds");
+        // A player's budget: one sign near them, whatever the rune and place, until the gap passes.
+        net.minecraft.world.entity.player.Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        Vec3 far = at.add(0, 0, 16);
+        helper.assertTrue(ToolEffects.procSignDue(level, far, haste, player), "a sign near the player");
+        helper.assertFalse(ToolEffects.procSignDue(level, far.add(8, 0, 0), ToolRune.SPOILS.rune(), player),
+                "a second sign near the same player waits, other rune and place or not");
+        helper.runAfterDelay(Math.max(ToolEffects.PROC_SIGN_GAP, ToolEffects.PLAYER_SIGN_GAP) + 1, () -> {
+            helper.assertTrue(ToolEffects.procSignDue(level, at, haste, null), "after the gap it sounds again");
+            helper.assertTrue(ToolEffects.procSignDue(level, far.add(8, 0, 0), ToolRune.SPOILS.rune(), player), "and the player's budget refills");
             helper.succeed();
         });
     }

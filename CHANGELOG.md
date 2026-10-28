@@ -57,6 +57,11 @@ Void's creatures have voices of their own.
 - Ward Glass ripples with an amber hexagon where you push against it.
 - A Recall Charm opens the rift's sign where you leave and where you land; a Soul Flask draws a creature in as a stream
   of light and pours it out again.
+- The Hexcore draws the same circle on the ground as the altar, with streams from its jars.
+- A rune on a stele stands upright in the air inside a hexagon instead of always facing the screen.
+- The hextech hexagon everywhere: the sigils of pylons, plates, the funnel, the sawmill, the purifier, the skypack's
+  jets and the diary's pictures are hexagons now.
+- The Thinning's blight creeps into the ground with its own dark sound.
 - The Void's roads have their moments: when six anchors hold a breach, cold streams run from each into it and a hexagon
   locks round it; healed land opens a hexagon of life over the spot.
 - Every rune that works now makes a soft sound of its own - a short breath of energy and a low pulse - on tools,
@@ -70,8 +75,9 @@ Void's creatures have voices of their own.
   stele and the Lab Bench.
 
 ### Changed
-- The drain valve, pump, separator drops, brush strokes, ink on the research board, the alembic's simmer and the Miasma
-  Vent were remade: darker and softer, no squeaks, plucks or hiss.
+- The drain valve, pump, separator drops, brush strokes, ink on the research board, the alembic's simmer, the Miasma
+  Vent, the still's and lab bench's drops, the loupe's lens and arm and the tank's glug were remade: darker and softer,
+  no squeaks, plucks or hiss.
 - Rune chalk, the research board's ink and the loupe's lenses no longer climb in pitch like notes.
 
 ### Fixed

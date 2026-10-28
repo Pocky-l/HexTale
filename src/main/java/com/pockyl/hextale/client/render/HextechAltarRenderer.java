@@ -173,6 +173,35 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         poseStack.popPose();
 
         ghosts(state.ghosts, state.extras, state.time, poseStack, collector, camera);
+        submitSigil(state, poseStack, collector, camera);
+    }
+
+    /**
+     * The ritual's ground sigil and jar streams for a state filled by {@link #extractSigil} - the Hexcore, a woken altar,
+     * draws the same circle through these two.
+     */
+    public static void extractSigil(HextechAltarBlockEntity altar, State state, float partialTick) {
+        Level level = altar.getLevel();
+        state.blockPos = altar.getBlockPos();
+        state.time = HexFx.time(level, partialTick);
+        state.active = altar.active();
+        state.progress = altar.progress(partialTick);
+        state.ritualTime = altar.ritualTime(partialTick);
+        state.stalled = altar.stalled();
+        state.sinceFinish = level == null ? -1 : level.getGameTime() - altar.finishedAt() + partialTick;
+        state.sinceCollapse = level == null ? -1 : level.getGameTime() - altar.collapsedAt() + partialTick;
+        state.sigilPhase = altar.animateSigil(state.time, state.active ? (state.stalled ? 0.002F : 0.006F + 0.03F * state.progress) : 0.004F);
+        extractCircle(altar, state, partialTick);
+    }
+
+    public static void submitSigil(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        float flash = fade(state.sinceFinish, FLASH_TICKS);
+        float collapse = fade(state.sinceCollapse, COLLAPSE_TICKS);
+        int color = state.stalled ? RuneDrawing.mix(HexFx.HEXTECH, STALL_COLOR, 0.5F + 0.5F * Mth.sin(state.time * 0.6F))
+                : RuneDrawing.mix(HexFx.HEXTECH, 0xFFFFFF, flash * 0.6F);
+        if (collapse > 0) {
+            color = RuneDrawing.mix(color, ASH_COLOR, collapse);
+        }
         sigil(poseStack, collector, state, color, flash, collapse);
         if (!state.streams.isEmpty()) {
             Vec3 eye = camera.pos.subtract(Vec3.atLowerCornerOf(state.blockPos));

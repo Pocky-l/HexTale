@@ -239,6 +239,11 @@ public final class ToolEffects {
      * may).
      */
     public static boolean procSignDue(ServerLevel level, Vec3 at, ComplexRune rune) {
+        return procSignDue(level, at, rune, level.getNearestPlayer(at.x, at.y, at.z, SIGN_NEAR, false));
+    }
+
+    /** {@link #procSignDue} with the player whose budget the sign counts against given (null = none near). */
+    public static boolean procSignDue(ServerLevel level, Vec3 at, ComplexRune rune, @Nullable Player near) {
         Long2LongOpenHashMap last = LAST_PROC_SIGN.computeIfAbsent(level, key -> new Long2LongOpenHashMap());
         long now = level.getGameTime();
         BlockPos block = BlockPos.containing(at);
@@ -246,7 +251,6 @@ public final class ToolEffects {
         if (now - last.getOrDefault(cell, -PROC_SIGN_GAP) < PROC_SIGN_GAP) {
             return false;
         }
-        Player near = level.getNearestPlayer(at.x, at.y, at.z, SIGN_NEAR, false);
         // Player ids are small and positive; their keys sit below every cell key's range by being negated.
         long person = near == null ? 0 : -1 - near.getId();
         if (near != null && now - last.getOrDefault(person, -PLAYER_SIGN_GAP) < PLAYER_SIGN_GAP) {
