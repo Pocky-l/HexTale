@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ported to Minecraft 26.1.2 ([NeoForge](https://neoforged.net/) 26.1.2). Everything of 1.4.0 for Minecraft 26.3
   ([full changelog](https://github.com/Pocky-l/HexTale/blob/main/CHANGELOG.md)) is included: recipes for data packs and recipe scripts, common tags, claims, pipes and tanks of other mods, essence as
   a fluid, quest triggers and commands, and [Curios](https://www.curseforge.com/minecraft/mc-mods/curios) for the
-  Researcher's Goggles. What 26.1.2 lacks is replaced as in 1.3.0+26.1.2.
+  Researcher's Goggles. As before on 26.1.2, poplar saplings are not Magic Tree catalysts and overlapping translucent
+  effects may sort a little differently.
 
 ## [1.4.0] - 2026-10-28
 Ready for modpacks: every recipe can be changed by data packs and recipe scripts, shared materials go by common tags,
