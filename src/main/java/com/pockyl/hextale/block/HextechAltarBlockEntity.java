@@ -441,7 +441,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         pedestal.take();
         // Its last fragments are still on their way (client); the pedestal lets go with a breath of light, the work
         // swallows it with a flare (no crumbs: they read as an item breaking).
-        Vec3 at = Vec3.atCenterOf(pedestal.getBlockPos()).add(0, 0.75, 0);
+        Vec3 at = Vec3.atCenterOf(pedestal.getBlockPos()).add(0, PedestalBlockEntity.ITEM_Y - 0.37, 0);
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 5, 0.12, 0.08, 0.12, 0.015);
         Vec3 core = itemPosition();
         level.sendParticles(ModParticles.glint(0xF0D27A), core.x, core.y, core.z, 6, 0.18, 0.18, 0.18, 0.03);
@@ -624,7 +624,8 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                 && !altar.stalled()) {
             int fragments = random.nextInt(5) < 3 ? 1 : 0;
             for (int i = 0; i < fragments; i++) {
-                Vec3 from = Vec3.atCenterOf(drawing).add((random.nextDouble() - 0.5) * 0.25, 0.8 + random.nextDouble() * 0.15,
+                Vec3 from = Vec3.atCenterOf(drawing).add((random.nextDouble() - 0.5) * 0.25,
+                        PedestalBlockEntity.ITEM_Y - 0.32 + random.nextDouble() * 0.15,
                         (random.nextDouble() - 0.5) * 0.25);
                 Vec3 offset = from.subtract(target);
                 level.addParticle(ModParticles.itemDraw(pedestal.item()), target.x, target.y, target.z, offset.x, offset.y, offset.z);
@@ -710,7 +711,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             }
             if (i < free.size()) {
                 BlockPos at = free.get(i).getBlockPos().subtract(worldPosition);
-                next.add(new Ghost(new Vec3(at.getX() + 0.5, at.getY() + 1.12, at.getZ() + 0.5), item));
+                next.add(new Ghost(new Vec3(at.getX() + 0.5, at.getY() + PedestalBlockEntity.ITEM_Y, at.getZ() + 0.5), item));
             } else {
                 // No free pedestal for it: it circles the altar, telling the player to set one more pedestal.
                 double angle = Math.PI * 2 * aroundIndex++ / around;

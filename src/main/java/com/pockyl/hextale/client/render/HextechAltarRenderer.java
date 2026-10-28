@@ -23,6 +23,7 @@ import org.joml.Quaternionfc;
 import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.block.HextechAltarBlockEntity;
+import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.infusion.Ritual;
 
@@ -341,7 +342,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         }
         extras.clear();
         for (BlockPos pos : altar.extras()) {
-            extras.add(Vec3.atLowerCornerOf(pos.subtract(altar.getBlockPos())).add(0.5, 1.12, 0.5));
+            extras.add(Vec3.atLowerCornerOf(pos.subtract(altar.getBlockPos())).add(0.5, PedestalBlockEntity.ITEM_Y, 0.5));
         }
     }
 

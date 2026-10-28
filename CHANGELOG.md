@@ -4,6 +4,16 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- New look for the Pedestal: a slender column of magic stone on a stepped octagonal foot, a fine rune seam glowing in
+  the cut of its fluted shaft, an aged brass collar and a shallow brass dish with a carved rim. The glowing blue cubes
+  are gone; the item now floats just over the dish.
+- New look for the Hex Workbench: a craftsman's bench of walnut and brass instead of a stone slab with a neon grid. The
+  3x3 grid is inlaid in brass into a thick walnut top, the legs stand in brass shoes over a lower shelf, a saw and a
+  mallet hang at its side, and a hextech crystal set in a brass socket at the front is the only thing that glows.
+
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
 the altar draws its circle on the ground. No more borrowed chimes, beeps and hisses at the mod's magic moments, and the

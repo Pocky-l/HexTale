@@ -21,6 +21,7 @@ import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEven
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.client.render.HexFx;
 import com.pockyl.hextale.client.render.TableModels;
 import com.pockyl.hextale.essence.EssenceMix;
@@ -167,7 +168,7 @@ public final class CircleDiorama {
                 float ease = k * k * (3 - 2 * k);
                 float x = Mth.lerp(ease, px, 0);
                 float z = Mth.lerp(ease, pz, 0);
-                float y = Mth.lerp(ease, 1.15F, CENTRE_Y) + Mth.sin(k * Mth.PI) * 0.9F + Mth.sin(time * 0.1F + i) * 0.03F;
+                float y = Mth.lerp(ease, (float) PedestalBlockEntity.ITEM_Y + 0.03F, CENTRE_Y) + Mth.sin(k * Mth.PI) * 0.9F + Mth.sin(time * 0.1F + i) * 0.03F;
                 float size = 0.55F * (1 - 0.7F * ease * ease);
                 poseStack.pushPose();
                 poseStack.translate(x, y, z);

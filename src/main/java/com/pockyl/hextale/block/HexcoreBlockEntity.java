@@ -116,7 +116,7 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
             hexcore.send(level, Vec3.atCenterOf(stele.getBlockPos()).add(0, 0.6, 0), HexcoreStrikePayload.CALM);
         }
         for (var pedestal : circle.pedestals()) {
-            hexcore.send(level, Vec3.atCenterOf(pedestal.getBlockPos()).add(0, 0.6, 0), HexcoreStrikePayload.CALM);
+            hexcore.send(level, Vec3.atCenterOf(pedestal.getBlockPos()).add(0, PedestalBlockEntity.ITEM_Y - 0.5, 0), HexcoreStrikePayload.CALM);
         }
         for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, new AABB(pos).inflate(Ritual.TANK_RADIUS * 2))) {
             Quests.fire(player, Quests.HEXCORE_AWAKENED);
@@ -439,7 +439,7 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         BlockPos pos = getBlockPos();
         int pick = random.nextInt(4);
         if (circle != null && pick == 0 && !circle.pedestals().isEmpty()) {
-            return Vec3.atCenterOf(circle.pedestals().get(random.nextInt(circle.pedestals().size())).getBlockPos()).add(0, 0.6, 0);
+            return Vec3.atCenterOf(circle.pedestals().get(random.nextInt(circle.pedestals().size())).getBlockPos()).add(0, PedestalBlockEntity.ITEM_Y - 0.5, 0);
         }
         if (circle != null && pick == 1 && !circle.steles().isEmpty()) {
             return Vec3.atCenterOf(circle.steles().get(random.nextInt(circle.steles().size())).getBlockPos()).add(0, 0.9, 0);
