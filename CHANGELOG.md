@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Chemtech starts to look like the other road: rusted iron, copper and a toxic green glow instead of walnut and brass.
   The Disintegrator is now a riveted iron vat with a copper rim, a pool of acid glowing inside, a porthole and a vent
   stack.
+- The Axolotl Tank is a riveted iron frame round stained chem glass, with a copper feeding hatch, a little tap at the
+  bottom and greener water.
 
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and

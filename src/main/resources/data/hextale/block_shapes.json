@@ -26,10 +26,10 @@
     {"when": {"half": "upper"}, "boxes": [[5, 0, 5, 11, 15, 11]]}
   ]},
   "hextale:axolotl_tank": {"mode": "first", "cases": [
-    {"when": {"facing": "north"}, "boxes": [[1, 0, 1, 15, 16, 15]]},
-    {"when": {"facing": "east"}, "boxes": [[1, 0, 1, 15, 16, 15]]},
-    {"when": {"facing": "south"}, "boxes": [[1, 0, 1, 15, 16, 15]]},
-    {"when": {"facing": "west"}, "boxes": [[1, 0, 1, 15, 16, 15]]}
+    {"when": {"facing": "north"}, "boxes": [[1, 0, 0, 15, 16, 15]]},
+    {"when": {"facing": "east"}, "boxes": [[1, 0, 1, 16, 16, 15]]},
+    {"when": {"facing": "south"}, "boxes": [[1, 0, 1, 15, 16, 16]]},
+    {"when": {"facing": "west"}, "boxes": [[0, 0, 1, 15, 16, 15]]}
   ]},
   "hextale:big_essence_jar": {"mode": "all", "cases": [
     {"boxes": []}
