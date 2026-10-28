@@ -267,7 +267,7 @@ Commands (permission level 2), e.g. for quest rewards:
 ## Curios
 
 With [Curios](https://www.curseforge.com/minecraft/mc-mods/curios) installed, the Researcher's Goggles also work from
-a Curios head slot (item tag `curios:head`).
+a Curios head slot (item tag `curios:head`) and show on the head, over a helmet too.
 
 ## Stable ids
 

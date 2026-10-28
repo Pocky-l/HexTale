@@ -131,7 +131,7 @@ HexTale in any modpack.
 
 [![Jade](docs/compat/jade.png)](https://www.curseforge.com/minecraft/mc-mods/jade) ✅ **[Jade](https://www.curseforge.com/minecraft/mc-mods/jade)** (optional) - what jars, machines and mechanisms hold and do.
 
-[![Curios](docs/compat/curios.png)](https://www.curseforge.com/minecraft/mc-mods/curios) ✅ **[Curios](https://www.curseforge.com/minecraft/mc-mods/curios)** (optional) - the Researcher's Goggles work from a head slot.
+[![Curios](docs/compat/curios.png)](https://www.curseforge.com/minecraft/mc-mods/curios) ✅ **[Curios](https://www.curseforge.com/minecraft/mc-mods/curios)** (optional) - the Researcher's Goggles work from a head slot and show on the head, over a helmet too.
 
 ## Installation
 

@@ -40,7 +40,7 @@ machines respect claims, and other mods' pipes, quests and slots work with HexTa
   transfer button; the workbench and the Hex Furnace show up for vanilla crafting and smelting. Jade shows the
   workbench's charge.
 - [Curios](https://www.curseforge.com/minecraft/mc-mods/curios) (optional): the Researcher's Goggles work from a head
-  slot.
+  slot and show on the head there, over a helmet too.
 - A guide for modpack makers: [docs/modpack.md](https://github.com/Pocky-l/HexTale/blob/main/docs/modpack.md). Released item and block ids stay: a renamed one
   keeps working under its old name.
 

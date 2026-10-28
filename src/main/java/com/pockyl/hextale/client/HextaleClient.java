@@ -100,6 +100,7 @@ public final class HextaleClient {
             event.registerSpriteSet(ModParticles.SHIMMER_MOTE.get(), ShimmerMoteParticle.Provider::new);
         });
         modBus.addListener(GogglesView::registerLayer);
+        com.pockyl.hextale.compat.curios.CuriosClientCompat.register(modBus);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::addLayers);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::registerModifier);
         modBus.addListener(com.pockyl.hextale.client.render.VoidMiteLayer::addLayers);
