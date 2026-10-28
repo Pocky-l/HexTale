@@ -62,7 +62,7 @@ public final class MachineLoops {
                 return !altar.active() ? 0 : altar.stalled() ? 0.45F : 1;
             }
         },
-        FURNACE(ModSounds.FORGE_BURN, 0.4F) {
+        FURNACE(ModSounds.FORGE_BURN, 0.13F) {
             @Override
             float level(BlockEntity entity) {
                 BlockState state = entity.getBlockState();
