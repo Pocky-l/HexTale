@@ -1,0 +1,21 @@
+{
+  "region": "workshop",
+  "icon": "hextale:tuning_fork",
+  "parents": [
+    "hex_workbench",
+    "brass"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:tuning_fork",
+    "then": {
+      "kind": "runes",
+      "result": "fork"
+    }
+  },
+  "aura": "storm",
+  "pos": [
+    -160,
+    60
+  ]
+}

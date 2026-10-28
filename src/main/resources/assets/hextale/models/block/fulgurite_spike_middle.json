@@ -1,0 +1,398 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/fulgurite",
+    "fulgurite": "hextale:block/fulgurite"
+  },
+  "elements": [
+    {
+      "name": "fulgurite_bottom",
+      "from": [
+        5,
+        0,
+        5
+      ],
+      "to": [
+        11,
+        2,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            14,
+            11,
+            16
+          ],
+          "texture": "#fulgurite"
+        },
+        "east": {
+          "uv": [
+            5,
+            14,
+            11,
+            16
+          ],
+          "texture": "#fulgurite"
+        },
+        "south": {
+          "uv": [
+            5,
+            14,
+            11,
+            16
+          ],
+          "texture": "#fulgurite"
+        },
+        "west": {
+          "uv": [
+            5,
+            14,
+            11,
+            16
+          ],
+          "texture": "#fulgurite"
+        },
+        "up": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#fulgurite"
+        },
+        "down": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#fulgurite",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "fulgurite_trunk",
+      "from": [
+        6,
+        1,
+        6
+      ],
+      "to": [
+        10,
+        16,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            0,
+            10,
+            15
+          ],
+          "texture": "#fulgurite"
+        },
+        "east": {
+          "uv": [
+            6,
+            0,
+            10,
+            15
+          ],
+          "texture": "#fulgurite"
+        },
+        "south": {
+          "uv": [
+            6,
+            0,
+            10,
+            15
+          ],
+          "texture": "#fulgurite"
+        },
+        "west": {
+          "uv": [
+            6,
+            0,
+            10,
+            15
+          ],
+          "texture": "#fulgurite"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#fulgurite",
+          "cullface": "up"
+        }
+      }
+    },
+    {
+      "name": "fulgurite_knob",
+      "from": [
+        5,
+        9,
+        5
+      ],
+      "to": [
+        11,
+        11,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            5,
+            11,
+            7
+          ],
+          "texture": "#fulgurite"
+        },
+        "east": {
+          "uv": [
+            5,
+            5,
+            11,
+            7
+          ],
+          "texture": "#fulgurite"
+        },
+        "south": {
+          "uv": [
+            5,
+            5,
+            11,
+            7
+          ],
+          "texture": "#fulgurite"
+        },
+        "west": {
+          "uv": [
+            5,
+            5,
+            11,
+            7
+          ],
+          "texture": "#fulgurite"
+        },
+        "up": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#fulgurite"
+        },
+        "down": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#fulgurite"
+        }
+      }
+    },
+    {
+      "name": "fulgurite_shoot",
+      "from": [
+        3,
+        6,
+        7
+      ],
+      "to": [
+        6,
+        7,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10,
+            9,
+            13,
+            10
+          ],
+          "texture": "#fulgurite"
+        },
+        "south": {
+          "uv": [
+            3,
+            9,
+            6,
+            10
+          ],
+          "texture": "#fulgurite"
+        },
+        "west": {
+          "uv": [
+            7,
+            9,
+            9,
+            10
+          ],
+          "texture": "#fulgurite"
+        },
+        "up": {
+          "uv": [
+            3,
+            7,
+            6,
+            9
+          ],
+          "texture": "#fulgurite"
+        },
+        "down": {
+          "uv": [
+            3,
+            7,
+            6,
+            9
+          ],
+          "texture": "#fulgurite"
+        }
+      }
+    },
+    {
+      "name": "fulgurite_shoot_low",
+      "from": [
+        10,
+        2,
+        7
+      ],
+      "to": [
+        13,
+        3,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            13,
+            6,
+            14
+          ],
+          "texture": "#fulgurite"
+        },
+        "east": {
+          "uv": [
+            7,
+            13,
+            9,
+            14
+          ],
+          "texture": "#fulgurite"
+        },
+        "south": {
+          "uv": [
+            10,
+            13,
+            13,
+            14
+          ],
+          "texture": "#fulgurite"
+        },
+        "up": {
+          "uv": [
+            10,
+            7,
+            13,
+            9
+          ],
+          "texture": "#fulgurite"
+        },
+        "down": {
+          "uv": [
+            10,
+            7,
+            13,
+            9
+          ],
+          "texture": "#fulgurite"
+        }
+      }
+    },
+    {
+      "name": "fulgurite_shoot_low_tip",
+      "from": [
+        12,
+        3,
+        7
+      ],
+      "to": [
+        15,
+        4,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            12,
+            4,
+            13
+          ],
+          "texture": "#fulgurite"
+        },
+        "east": {
+          "uv": [
+            7,
+            12,
+            9,
+            13
+          ],
+          "texture": "#fulgurite"
+        },
+        "south": {
+          "uv": [
+            12,
+            12,
+            15,
+            13
+          ],
+          "texture": "#fulgurite"
+        },
+        "west": {
+          "uv": [
+            7,
+            12,
+            9,
+            13
+          ],
+          "texture": "#fulgurite"
+        },
+        "up": {
+          "uv": [
+            12,
+            7,
+            15,
+            9
+          ],
+          "texture": "#fulgurite"
+        },
+        "down": {
+          "uv": [
+            12,
+            7,
+            15,
+            9
+          ],
+          "texture": "#fulgurite"
+        }
+      }
+    }
+  ]
+}

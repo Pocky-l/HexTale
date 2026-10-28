@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "hextale:scorched_calcite_bricks"
+  },
+  "result": {
+    "id": "hextale:chiseled_scorched_calcite"
+  }
+}

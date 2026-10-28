@@ -53,6 +53,25 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> MAGIC_BRICK_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_BRICK_SLAB);
     public static final DeferredItem<BlockItem> MAGIC_BRICK_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_BRICK_WALL);
     public static final DeferredItem<BlockItem> CHISELED_MAGIC_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.CHISELED_MAGIC_BRICKS);
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> DORMANT_HEXTECH = ITEMS.registerItem("dormant_hextech",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.DORMANT_HEXTECH.get(), properties));
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> FULGURITE = ITEMS.registerItem("fulgurite",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.FULGURITE.get(), properties));
+    public static final DeferredItem<BlockItem> FULGURITE_SPIKE = ITEMS.registerSimpleBlockItem(ModBlocks.FULGURITE_SPIKE);
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> HEXTECH_CLUSTER = ITEMS.registerItem("hextech_cluster",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.HEXTECH_CLUSTER.get(), properties));
+    public static final DeferredItem<BlockItem> LARGE_HEXTECH_BUD = ITEMS.registerSimpleBlockItem(ModBlocks.LARGE_HEXTECH_BUD);
+    public static final DeferredItem<BlockItem> MEDIUM_HEXTECH_BUD = ITEMS.registerSimpleBlockItem(ModBlocks.MEDIUM_HEXTECH_BUD);
+    public static final DeferredItem<BlockItem> SMALL_HEXTECH_BUD = ITEMS.registerSimpleBlockItem(ModBlocks.SMALL_HEXTECH_BUD);
+    public static final DeferredItem<BlockItem> FULGURITE_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.FULGURITE_GLASS);
+    public static final DeferredItem<BlockItem> FULGURITE_GLASS_PANE = ITEMS.registerSimpleBlockItem(ModBlocks.FULGURITE_GLASS_PANE);
+    public static final DeferredItem<BlockItem> SCORCHED_CALCITE = ITEMS.registerSimpleBlockItem(ModBlocks.SCORCHED_CALCITE);
+    public static final DeferredItem<BlockItem> POLISHED_SCORCHED_CALCITE = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_SCORCHED_CALCITE);
+    public static final DeferredItem<BlockItem> SCORCHED_CALCITE_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.SCORCHED_CALCITE_BRICKS);
+    public static final DeferredItem<BlockItem> SCORCHED_CALCITE_BRICK_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.SCORCHED_CALCITE_BRICK_STAIRS);
+    public static final DeferredItem<BlockItem> SCORCHED_CALCITE_BRICK_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.SCORCHED_CALCITE_BRICK_SLAB);
+    public static final DeferredItem<BlockItem> SCORCHED_CALCITE_BRICK_WALL = ITEMS.registerSimpleBlockItem(ModBlocks.SCORCHED_CALCITE_BRICK_WALL);
+    public static final DeferredItem<BlockItem> CHISELED_SCORCHED_CALCITE = ITEMS.registerSimpleBlockItem(ModBlocks.CHISELED_SCORCHED_CALCITE);
     public static final DeferredItem<BlockItem> HEXTECH_ALTAR = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_ALTAR,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEXTECH_LAMP = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_LAMP);
@@ -218,6 +237,9 @@ public final class ModItems {
     public static final DeferredItem<Item> RESEARCHERS_GOGGLES = ITEMS.registerItem("researchers_goggles",
             properties -> new ArmorItem(GOGGLES_ARMOR.holder(), ArmorItem.Type.HELMET, properties.stacksTo(1)));
     /** Worn on the back: with air essence in its tanks it lets me glide, and its jets push me like a rocket. */
+    /** Held up and listened to, it hums nearer what it listens for: hextech, or the block it was struck against. */
+    public static final DeferredItem<com.pockyl.hextale.item.TuningForkItem> TUNING_FORK = ITEMS.registerItem("tuning_fork",
+            properties -> new com.pockyl.hextale.item.TuningForkItem(properties.stacksTo(1)));
     public static final DeferredItem<com.pockyl.hextale.item.HextechSkypackItem> HEXTECH_SKYPACK = ITEMS.registerItem("hextech_skypack",
             properties -> new com.pockyl.hextale.item.HextechSkypackItem(properties.stacksTo(1).rarity(Rarity.RARE).fireResistant()));
     public static final DeferredItem<ResearchersDiaryItem> RESEARCHERS_DIARY = ITEMS.registerItem("researchers_diary",

@@ -69,6 +69,17 @@ public final class LightningEvents {
             if (level.getBlockState(base).is(ModTags.AWAKENS_INTO_HEXTECH)) {
                 strike(level, base);
             }
+        } else {
+            fuseSand(level, BlockPos.containing(position.x, position.y - 1.0E-6, position.z));
+        }
+    }
+
+    /** A bolt that goes into sand fuses a short column of it into fulgurite. */
+    private static void fuseSand(ServerLevel level, BlockPos top) {
+        BlockPos.MutableBlockPos pos = top.mutable();
+        for (int depth = 1 + level.getRandom().nextInt(3); depth > 0 && level.getBlockState(pos).is(net.minecraft.tags.BlockTags.SAND); depth--) {
+            level.setBlockAndUpdate(pos, com.pockyl.hextale.registry.ModBlocks.FULGURITE.get().defaultBlockState());
+            pos.move(0, -1, 0);
         }
     }
 

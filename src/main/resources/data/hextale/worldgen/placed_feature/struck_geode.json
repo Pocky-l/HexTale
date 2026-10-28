@@ -1,0 +1,11 @@
+{
+  "feature": "hextale:struck_geode",
+  "placement": [
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

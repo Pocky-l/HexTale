@@ -20,6 +20,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
+import com.pockyl.hextale.ClientConfig;
 import com.pockyl.hextale.client.ClientKnowledge;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.essence.EssenceMix;
@@ -96,8 +97,9 @@ final class GuidePage {
     private final Font font;
     /** The dev editor shows every step, fog or not. */
     boolean revealAll;
-    /** Devices still being worked out (WIP) stay off the map; only the dev editor's switch shows them. Kept until the game closes. */
-    static boolean hideWip = true;
+    /** The dev editor's switch over WIP steps; null = the client config decides. Kept until the game closes. */
+    @Nullable
+    static Boolean wipOverride;
     @Nullable
     private Quest selected;
     /** The step under the mouse while the map is drawn. */
@@ -979,7 +981,12 @@ final class GuidePage {
     }
 
     private static boolean hiddenWip(Quest quest) {
-        return hideWip && quest.kind() == Quest.Kind.WIP;
+        return hideWip() && quest.kind() == Quest.Kind.WIP;
+    }
+
+    /** Devices still being worked out (WIP) stay off the map unless the client config or the dev editor shows them. */
+    static boolean hideWip() {
+        return wipOverride != null ? wipOverride : !ClientConfig.SHOW_WIP_STEPS.get();
     }
 
     /** A step's name, in gold; the Void's steps in their own dark ink. */

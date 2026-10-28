@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "hextale:block/scorched_calcite_bricks",
+    "top": "hextale:block/scorched_calcite_bricks",
+    "side": "hextale:block/scorched_calcite_bricks"
+  }
+}

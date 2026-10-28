@@ -1,0 +1,23 @@
+{
+  "pattern": [
+    "B B",
+    " U ",
+    " S "
+  ],
+  "key": {
+    "B": {
+      "item": "hextale:brass_ingot"
+    },
+    "U": {
+      "item": "hextale:unstable_hextech"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "id": "hextale:tuning_fork",
+    "count": 1
+  },
+  "charge": 1
+}

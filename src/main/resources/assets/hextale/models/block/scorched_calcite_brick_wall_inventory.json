@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/wall_inventory",
+  "textures": {
+    "wall": "hextale:block/scorched_calcite_bricks"
+  }
+}

@@ -64,6 +64,20 @@
     "hextale:void_rock_bricks",
     "hextale:void_rock_brick_stairs",
     "hextale:void_rock_brick_slab",
-    "hextale:void_rock_brick_wall"
+    "hextale:void_rock_brick_wall",
+    "hextale:dormant_hextech",
+    "hextale:fulgurite",
+    "hextale:scorched_calcite",
+    "hextale:polished_scorched_calcite",
+    "hextale:scorched_calcite_bricks",
+    "hextale:scorched_calcite_brick_stairs",
+    "hextale:scorched_calcite_brick_slab",
+    "hextale:scorched_calcite_brick_wall",
+    "hextale:chiseled_scorched_calcite",
+    "hextale:fulgurite_spike",
+    "hextale:hextech_cluster",
+    "hextale:large_hextech_bud",
+    "hextale:medium_hextech_bud",
+    "hextale:small_hextech_bud"
   ]
 }

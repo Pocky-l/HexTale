@@ -10,6 +10,8 @@ import com.pockyl.hextale.Hextale;
 public final class ModTags {
     /** Blocks that lightning, led in by a lightning rod standing on them, shatters into unstable hextech. */
     public static final TagKey<Block> AWAKENS_INTO_HEXTECH = TagKey.create(Registries.BLOCK, Hextale.id("awakens_into_hextech"));
+    /** What an untuned Tuning Fork hears: hextech in the ground (dormant hextech, woken crystals, budding amethyst). */
+    public static final TagKey<Block> RESONANT = TagKey.create(Registries.BLOCK, Hextale.id("resonant"));
     /** Blocks a lightning wave runs through: everything that awakens plus budding amethyst, which is never shattered. */
     public static final TagKey<Block> CARRIES_LIGHTNING = TagKey.create(Registries.BLOCK, Hextale.id("carries_lightning"));
     /** What repairs hextech tools. */

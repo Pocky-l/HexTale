@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "hextale:scorched_calcite_bricks"
+    }
+  },
+  "result": {
+    "id": "hextale:scorched_calcite_brick_stairs",
+    "count": 4
+  }
+}

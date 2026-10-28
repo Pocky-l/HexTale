@@ -134,6 +134,14 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SKYPACK_RUNES =
             COMPONENTS.registerComponentType("skypack_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> FORK_RUNES =
+            COMPONENTS.registerComponentType("fork_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    /** The block a Tuning Fork was struck against: what it listens for. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.minecraft.world.level.block.Block>> TUNED_BLOCK =
+            COMPONENTS.registerComponentType("tuned_block", builder -> builder
+                    .persistent(net.minecraft.core.registries.BuiltInRegistries.BLOCK.byNameCodec())
+                    .networkSynchronized(ByteBufCodecs.registry(Registries.BLOCK)));
     /** The rune on a piece of the researcher's clothes. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> CLOTHES_RUNES =
             COMPONENTS.registerComponentType("clothes_runes", builder -> builder

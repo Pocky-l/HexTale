@@ -1,0 +1,36 @@
+{
+  "region": "workshop",
+  "icon": [
+    "hextale:fulgurite",
+    "hextale:dormant_hextech"
+  ],
+  "parents": [
+    "researchers_diary"
+  ],
+  "goal": {
+    "type": "any_of",
+    "goals": [
+      {
+        "type": "has_item",
+        "item": "hextale:fulgurite"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:dormant_hextech"
+      }
+    ]
+  },
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "hextale:dormant_hextech",
+      "minecraft:iron_pickaxe"
+    ],
+    "result": "hextale:unstable_hextech"
+  },
+  "aura": "storm",
+  "pos": [
+    -365,
+    -15
+  ]
+}

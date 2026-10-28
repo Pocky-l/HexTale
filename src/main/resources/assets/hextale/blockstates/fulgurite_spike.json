@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "part=base": {
+      "model": "hextale:block/fulgurite_spike_base"
+    },
+    "part=middle": {
+      "model": "hextale:block/fulgurite_spike_middle"
+    },
+    "part=tip": {
+      "model": "hextale:block/fulgurite_spike_tip"
+    }
+  }
+}

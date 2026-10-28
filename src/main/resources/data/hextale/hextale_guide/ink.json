@@ -9,7 +9,7 @@
   "parents": [
     "item_study",
     "essence_tank",
-    "concentrate"
+    "alembic"
   ],
   "goal": {
     "type": "ink_at_table"
