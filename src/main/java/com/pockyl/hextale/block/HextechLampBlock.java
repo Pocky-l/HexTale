@@ -22,13 +22,16 @@ import com.pockyl.hextale.thevoid.Thinning;
  * (like a lantern). It shines at full light and now and then sheds a cold mote.
  *
  * <p>On land the Thinning has made sick (from {@link Thinning.Stage#MIASMA}) the Void eats at its light: now and then the
- * gem chokes and the lamp {@link #FLICKER}s dim for a moment, a few times in a row on blighted land.
+ * gem chokes and the lamp {@link #FLICKER}s dim for a moment, a few times in a row on blighted land. The fumes of a Chem
+ * Boiler at work make it choke now and then too: chemistry dims the crystal (a sign only).
  */
 public class HextechLampBlock extends LanternBlock {
 
     public static final BooleanProperty FLICKER = BooleanProperty.create("flicker");
     /** Light while it chokes. */
     public static final int DIM = 4;
+    /** Chance per random tick that the gem chokes in a Chem Boiler's fumes (only a moment, nothing else). */
+    public static final float FUMES_CHOKE = 0.35F;
     private static final int VOID_DARK = 0x2C0A26;
 
     public HextechLampBlock(Properties properties) {
@@ -47,11 +50,17 @@ public class HextechLampBlock extends LanternBlock {
         return true;
     }
 
-    /** On sick land the gem may choke. */
+    /** On sick land the gem may choke - and in the fumes of a Chem Boiler at work, now and then, too. */
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (state.getValue(FLICKER)) {
+            return;
+        }
         Thinning.Stage stage = Thinning.stage(level, pos);
-        if (stage.ordinal() < Thinning.Stage.MIASMA.ordinal() || state.getValue(FLICKER)) {
+        if (stage.ordinal() < Thinning.Stage.MIASMA.ordinal()) {
+            if (random.nextFloat() < FUMES_CHOKE && com.pockyl.hextale.chem.Overdrive.fumesAt(level, pos)) {
+                choke(state, level, pos, random);
+            }
             return;
         }
         float chance = stage == Thinning.Stage.MIASMA ? 0.5F : 0.85F;

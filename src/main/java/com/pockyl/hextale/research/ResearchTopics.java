@@ -65,6 +65,7 @@ public final class ResearchTopics {
     public static final ResearchTopic MAGIC_TREE = lab("magic_sapling", 2, Essence.LIFE, Essence.LIGHT, ModItems.MAGIC_SAPLING);
     public static final ResearchTopic AXOLOTL_TANK = lab("axolotl_tank", 1, Essence.WATER, Essence.LIFE, ModItems.AXOLOTL_TANK);
     public static final ResearchTopic CHEM_STILL = lab("chem_still", 2, Essence.FIRE, Essence.EARTH, ModItems.CHEM_STILL);
+    public static final ResearchTopic CHEM_BOILER = lab("chem_boiler", 2, Essence.FIRE, Essence.WATER, ModItems.CHEM_BOILER);
     public static final ResearchTopic PINK_BRAZIER = lab("pink_brazier", 2, Essence.FIRE, Essence.SPARK, ModItems.PINK_BRAZIER);
     public static final ResearchTopic SYNTHETIC_CRYSTAL = lab("synthetic_crystal", 2, Essence.LIGHT, Essence.EARTH, ModItems.SYNTHETIC_CRYSTAL);
     // Chemtech reactions: each brew is worked out at the Lab Bench before the Crucible brews it for the researcher.

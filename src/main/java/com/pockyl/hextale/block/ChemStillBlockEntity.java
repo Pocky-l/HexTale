@@ -74,7 +74,7 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
     private void tick(ServerLevel level, BlockState state) {
         boolean working = wantsHeat() && ChemBurnerBlockEntity.under(level, worldPosition) != null;
         if (working) {
-            progress++;
+            progress += com.pockyl.hextale.chem.Overdrive.steps(level, worldPosition);
             dirty = true;
             if (progress >= refineTicks()) {
                 progress = 0;

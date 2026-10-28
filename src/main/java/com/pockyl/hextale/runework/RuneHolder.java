@@ -47,6 +47,8 @@ public enum RuneHolder {
     STILL(() -> ModDataComponents.STILL_RUNES.get(), StillRune.SLOTS, StillRune.values()),
     /** The Lab Bench. */
     LAB(() -> ModDataComponents.LAB_RUNES.get(), LabRune.SLOTS, LabRune.values()),
+    /** The Chem Boiler. */
+    BOILER(() -> ModDataComponents.BOILER_RUNES.get(), BoilerRune.SLOTS, BoilerRune.values()),
     /** The Pink Brazier. */
     BRAZIER(() -> ModDataComponents.BRAZIER_RUNES.get(), BrazierRune.SLOTS, BrazierRune.values()),
     /** The Hextech Skypack. */
@@ -131,6 +133,9 @@ public enum RuneHolder {
         }
         if (item == ModItems.CHEM_STILL.get()) {
             return STILL;
+        }
+        if (item == ModItems.CHEM_BOILER.get()) {
+            return BOILER;
         }
         if (item == ModItems.PINK_BRAZIER.get()) {
             return BRAZIER;
@@ -309,6 +314,7 @@ public enum RuneHolder {
             case BURNER -> List.of(new ItemStack(ModItems.CHEM_BURNER.get()));
             case TANK -> List.of(new ItemStack(ModItems.AXOLOTL_TANK.get()));
             case STILL -> List.of(new ItemStack(ModItems.CHEM_STILL.get()));
+            case BOILER -> List.of(new ItemStack(ModItems.CHEM_BOILER.get()));
             case BRAZIER -> List.of(new ItemStack(ModItems.PINK_BRAZIER.get()));
             case LAB -> List.of(new ItemStack(ModItems.LAB_BENCH.get()));
             case SKYPACK -> List.of(new ItemStack(ModItems.HEXTECH_SKYPACK.get()));

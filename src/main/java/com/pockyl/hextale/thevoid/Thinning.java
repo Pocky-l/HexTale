@@ -101,6 +101,8 @@ public final class Thinning {
     public static final float DISINTEGRATED = 0.3F;
     /** A dose of shimmer refined in a Chem Still. */
     public static final float STILLED = 1;
+    /** The fumes of one machine a Chem Boiler drives, per second of driving. */
+    public static final float FUMES = 0.25F;
 
     // Carelessness and accidents.
     /** Essence poured away and lost on the ground, per mB (unknown essence counts double). */
@@ -151,7 +153,7 @@ public final class Thinning {
     /** What wore a chunk thin, for {@code /hextale void sources}. */
     public enum Source {
         BOILED, SEPARATED, BREWED, SPENT, DISINTEGRATED, STILLED, POURED, MIASMA, DUST_CHARGE, ORB_BURST, RITUAL_COLLAPSE,
-        LAB_BURST, PARCHMENT_BURN, BREACH;
+        LAB_BURST, PARCHMENT_BURN, BREACH, FUMES;
 
         public String key() {
             return "thinning.hextale.source." + name().toLowerCase(java.util.Locale.ROOT);

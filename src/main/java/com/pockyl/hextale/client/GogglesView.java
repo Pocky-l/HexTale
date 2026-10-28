@@ -211,6 +211,11 @@ public final class GogglesView {
             }
             return new Reading(name, rows);
         }
+        if (entity instanceof com.pockyl.hextale.block.ChemBoilerBlockEntity boiler) {
+            rows.add(Row.heading(boiler.status()));
+            rows.add(Row.heading(Component.translatable(KEY + "boiler.water", boiler.water(), com.pockyl.hextale.block.ChemBoilerBlockEntity.WATER_CAPACITY)));
+            rows.add(Row.heading(Component.translatable(KEY + "boiler.pressure", Math.round(boiler.pressure()))));
+        }
         if (entity instanceof com.pockyl.hextale.block.ChemStillBlockEntity still) {
             rows.add(Row.heading(still.status()));
             rows.add(Row.heading(Component.translatable(KEY + "still.raw", still.input().getCount())));

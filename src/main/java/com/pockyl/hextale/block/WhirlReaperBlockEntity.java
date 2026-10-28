@@ -212,7 +212,7 @@ public class WhirlReaperBlockEntity extends BlockEntity {
         }
         reaper.setBecalmed(false);
         reaper.launch(server, target);
-        reaper.wait = interval;
+        reaper.wait = com.pockyl.hextale.chem.Overdrive.shorten(server, pos, interval);
     }
 
     /** Arrivals and harvests that are due now. */

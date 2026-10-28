@@ -1,0 +1,76 @@
+{
+  "textures": {
+    "valve": "hextale:block/rusted_plating",
+    "particle": "hextale:block/rusted_plating"
+  },
+  "elements": [
+    {
+      "from": [
+        6.5,
+        14,
+        6.5
+      ],
+      "to": [
+        9.5,
+        16,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            3,
+            2
+          ],
+          "texture": "#valve"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            3,
+            2
+          ],
+          "texture": "#valve"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            3,
+            2
+          ],
+          "texture": "#valve"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            3,
+            2
+          ],
+          "texture": "#valve"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            3,
+            3
+          ],
+          "texture": "#valve"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            3,
+            3
+          ],
+          "texture": "#valve"
+        }
+      }
+    }
+  ]
+}

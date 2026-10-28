@@ -360,7 +360,8 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             step = 0;
             return had;
         }
-        if (++step < STEP_TICKS) {
+        step += com.pockyl.hextale.chem.Overdrive.steps(level, worldPosition);
+        if (step < STEP_TICKS) {
             return false;
         }
         step = 0;

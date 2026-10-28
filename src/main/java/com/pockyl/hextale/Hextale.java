@@ -124,6 +124,7 @@ public final class Hextale {
         // Chemtech.
         output.accept(ModItems.CHEM_BURNER);
         output.accept(ModItems.CHEM_STILL);
+        output.accept(ModItems.CHEM_BOILER);
         output.accept(ModItems.AXOLOTL_TANK);
         output.accept(ModItems.PINK_BRAZIER);
 

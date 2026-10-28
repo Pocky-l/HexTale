@@ -103,6 +103,8 @@ public final class ModItems {
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> CHEM_STILL = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_STILL,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> CHEM_BOILER = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_BOILER,
+            properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> PINK_BRAZIER = ITEMS.registerSimpleBlockItem(ModBlocks.PINK_BRAZIER,
             properties -> properties.rarity(Rarity.UNCOMMON));
     /** What an axolotl in a tank sheds as it heals: the living half of shimmer. */

@@ -4,6 +4,18 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+Hextech against chemtech: the quick, cheap and dirty road against the slow, clean one.
+
+### Added
+- Chem Boiler (worked out at the Lab Bench, made at the Hex Workbench): a riveted pressure tank that sits on a Chem
+  Burner and takes water by bucket or pipe. While a machine works near it, it raises steam and drives up to four
+  machines around it twice as fast (faster still on a shimmer flame): alembics, separators, the Hex Furnace and Foundry,
+  Chem Stills, Axolotl Tanks, Whirl Reapers and Hex Sawmills. A pulse of steam runs to each machine it drives, its gauge
+  needle climbs and the safety valve knocks. The fumes of the work it drives wear the land thin, and hextech lamps in
+  them flicker now and then. Its burner rests when no machine needs steam. Takes runes: Shift, Bellows, Dam,
+  Purification (cleaner fumes) and Haste.
+
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
 the altar draws its circle on the ground. No more borrowed chimes, beeps and hisses at the mod's magic moments, and the
