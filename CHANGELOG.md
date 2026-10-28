@@ -4,70 +4,11 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Changed
-- The Essence Jar is a real jar now: a round glass body smaller than the block, rounded shoulders, a narrow neck tied
-  with twine and a cork. Its tag hangs from the neck.
-- The Rune Stele stands two blocks tall: a stone slab with a carved channel and a ring head where the chosen rune turns.
-  Steles placed before grow their top when there is room.
-- The Hex Furnace has a brick crown and a brass chimney; smoke and embers rise from the chimney. Its bricks are darker.
-- The Hex Lapidary is a walnut treadle bench like the workbench with a big grinding wheel standing on top in a walnut
-  frame. The crystal sits in a brass clamp in front of the wheel, the cutting disc is mounted on the wheel's side, and a
-  belt runs down to the treadle's flywheel under the bench; wheel and flywheel turn while you grind.
-- The Greedy Funnel is a real funnel now: a nullstone cone narrowing from a brass-cornered rim down to a brass spout,
-  with brass seams down its corners and the shadow vortex turning in its mouth.
-- New look for the Pedestal: a slender column of magic stone on a stepped octagonal foot, a faint rune seam glowing
-  deep in the cut of its fluted shaft, an aged brass collar and a shallow brass dish with a carved rim. The glowing blue
-  cubes are gone; the item now floats just over the dish.
-- New look for the Hex Workbench: a craftsman's bench of walnut and brass instead of a stone slab with a neon grid. The
-  3x3 grid is inlaid in thin, darkened brass into a thick walnut top, the legs stand in brass shoes over a lower shelf, a
-  saw and a mallet hang at its side, and a large hextech crystal in a diamond-shaped brass setting at the front is the
-  only thing that glows.
-- New look for the Hextech Altar, the heart of the circle: a stepped octagonal dais of magic stone that spreads past its
-  block, a column of four slim pillars caging a glowing hextech crystal, a wide stone table with a brass rim and a
-  glowing lens, and four brass claws cupping the turning rings from below. The item floats higher, inside the rings,
-  and the glowing cubes are gone.
-- The Hexcore is the altar grown into a massive cradle: three wide stepped tiers of magic stone, four buttresses with
-  channels of carved light running up into a crown, a glowing heart caged under the crown, and four big brass claws
-  holding the floating matrix from below. Its steps can be climbed, and the ritual's ground sigil keeps clear of them.
-- New look for the Hex Furnace: a kiln of cream fire bricks on walnut posts with brass shoes, a polished stone cap with
-  a brass vent and an arched, brass-framed mouth under a small crystal keystone. While it burns, the fire glows in the
-  mouth and the keystone lights up; the neon rim is gone.
-- The essences are now one family: each is a drop of living essence in its own colour with its sign glowing inside,
-  drawn at a finer 32 px scale. The signs are the same ones the screens show.
-- Essence Jars wear a small paper tag on twine with the essence's sign instead of a big card over half the glass.
-- Seven items that all looked like the same violet stick got their own shapes: the Synthetic Crystal is a cluster grown
-  on a brass seed plate, the Rift Link Crystal a crystal broken in two halves that still hold to each other, the
-  Clouded Crystal a heavy dark lump with a cloud inside, the Void Shard a sharp black sliver with a glowing crack, Void
-  Chitin a ridged plate of shell, and the Scroll of Oblivion an ash-grey scroll with a violet seal. The Hextech Crystal
-  keeps its look.
-- The 22 essence signs are redrawn as one set, like stamped emblems: the same bold outline, the same light from the
-  top left and the same amount of detail. Every essence keeps its subject (a flame, a sun, a skull, a paw...), so you
-  know them at once, but water is now a breaking wave instead of a drop inside the drop, and the pale and dark essences
-  show their signs more clearly. The drops, the screens and the jar tags all use the new signs; the tags print them
-  like a woodcut stamp, so no sign turns into a dark blot.
-- The Essence Sticker is now the same paper tag on twine as on the jars, with the essence's colour stamped on it.
-- Carved magic stone instead of rings and spirals: Chiseled Magic Bricks show the earth rune raised in a sunken panel,
-  Whorled Magic Stone carries a quiet band of carved hexagons between plain courses, calm enough for a whole wall, and
-  the end of a Magic Stone Pillar carries a clean carved cog.
-- The end of a Stripped Magic Log now looks like a real log end with growth rings and a drying crack, and the Magic
-  Trapdoor is a pale wooden hatch with a hexagonal window instead of a die.
-- Chalk marks and chalk figures look hand-drawn now: wobbly rings with gaps and chalk dust instead of clean drawings.
-- The machine screens are made of walnut and aged brass now instead of a flat dark plate: wooden boards in a brass frame
-  with riveted corners, the name on an engraved brass plate, slots and tanks sunk into the wood, product slots in a
-  riveted brass ring and buttons with brass rims. The Research Table and the diary keep their own look.
-- The Hex Lapidary shows the crystal as a cut gem: flat facets that trade the light as you turn it, a bright table and
-  a glint now and then, instead of a smooth gradient.
-- The Lab Bench shows how much of the compound is in the flask as liquid in a graduated glass tube, and its purity on a
-  scale with a brass mark at what the topic needs, instead of small numbers (the numbers are in the tooltips). When there
-  are more topics than fit, the topic grid scrolls with the mouse wheel and no longer covers the open topic.
-- The coil under an Impulse Plate's lid is a glowing cog now.
-
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
 the altar draws its circle on the ground. No more borrowed chimes, beeps and hisses at the mod's magic moments, and the
-Void's creatures have voices of their own.
+Void's creatures have voices of their own. The workshop has a new look too: machine screens of walnut and brass, new
+models for the altar, the Hexcore, the jars, steles, furnace and lapidary, one family of essence signs and carved stone.
 
 ### Added
 - When a rune works, a flat hexagon of light opens round the spot and the rune's own glyph flares over it, in the rune's
@@ -157,6 +98,62 @@ Void's creatures have voices of their own.
   Vent, the still's and lab bench's drops, the loupe's lens and arm and the tank's glug were remade: darker and softer,
   no squeaks, plucks or hiss.
 - Rune chalk, the research board's ink and the loupe's lenses no longer climb in pitch like notes.
+
+- The Essence Jar is a real jar now: a round glass body smaller than the block, rounded shoulders, a narrow neck tied
+  with twine and a cork. Its tag hangs from the neck.
+- The Rune Stele stands two blocks tall: a stone slab with a carved channel and a ring head where the chosen rune turns.
+  Steles placed before grow their top when there is room.
+- The Hex Lapidary is a walnut treadle bench like the workbench with a big grinding wheel standing on top in a walnut
+  frame. The crystal sits in a brass clamp in front of the wheel, the cutting disc is mounted on the wheel's side, and a
+  belt runs down to the treadle's flywheel under the bench; wheel and flywheel turn while you grind.
+- The Greedy Funnel is a real funnel now: a nullstone cone narrowing from a brass-cornered rim down to a brass spout,
+  with brass seams down its corners and the shadow vortex turning in its mouth.
+- New look for the Pedestal: a slender column of magic stone on a stepped octagonal foot, a faint rune seam glowing
+  deep in the cut of its fluted shaft, an aged brass collar and a shallow brass dish with a carved rim. The glowing blue
+  cubes are gone; the item now floats just over the dish.
+- New look for the Hex Workbench: a craftsman's bench of walnut and brass instead of a stone slab with a neon grid. The
+  3x3 grid is inlaid in thin, darkened brass into a thick walnut top, the legs stand in brass shoes over a lower shelf, a
+  saw and a mallet hang at its side, and a large hextech crystal in a diamond-shaped brass setting at the front is the
+  only thing that glows.
+- New look for the Hextech Altar, the heart of the circle: a stepped octagonal dais of magic stone that spreads past its
+  block, a column of four slim pillars caging a glowing hextech crystal, a wide stone table with a brass rim and a
+  glowing lens, and four brass claws cupping the turning rings from below. The item floats higher, inside the rings,
+  and the glowing cubes are gone.
+- The Hexcore is the altar grown into a massive cradle: three wide stepped tiers of magic stone, four buttresses with
+  channels of carved light running up into a crown, a glowing heart caged under the crown, and four big brass claws
+  holding the floating matrix from below. Its steps can be climbed, and the ritual's ground sigil keeps clear of them.
+- New look for the Hex Furnace: a kiln of warm fire bricks on walnut posts with brass shoes, a brick crown with a brass
+  chimney and an arched, brass-framed mouth under a small crystal keystone. While it burns, the fire glows in the mouth,
+  the keystone lights up and smoke and embers rise from the chimney; the neon rim is gone.
+- The essences are now one family: each is a drop of living essence in its own colour with its sign glowing inside,
+  drawn at a finer 32 px scale. The signs are the same ones the screens show.
+- Essence Jars wear a small paper tag on twine with the essence's sign instead of a big card over half the glass.
+- Seven items that all looked like the same violet stick got their own shapes: the Synthetic Crystal is a cluster grown
+  on a brass seed plate, the Rift Link Crystal a crystal broken in two halves that still hold to each other, the
+  Clouded Crystal a heavy dark lump with a cloud inside, the Void Shard a sharp black sliver with a glowing crack, Void
+  Chitin a ridged plate of shell, and the Scroll of Oblivion an ash-grey scroll with a violet seal. The Hextech Crystal
+  keeps its look.
+- The 22 essence signs are redrawn as one set, like stamped emblems: the same bold outline, the same light from the
+  top left and the same amount of detail. Every essence keeps its subject (a flame, a sun, a skull, a paw...), so you
+  know them at once, but water is now a breaking wave instead of a drop inside the drop, and the pale and dark essences
+  show their signs more clearly. The drops, the screens and the jar tags all use the new signs; the tags print them
+  like a woodcut stamp, so no sign turns into a dark blot.
+- The Essence Sticker is now the same paper tag on twine as on the jars, with the essence's colour stamped on it.
+- Carved magic stone instead of rings and spirals: Chiseled Magic Bricks show the earth rune raised in a sunken panel,
+  Whorled Magic Stone carries a quiet band of carved hexagons between plain courses, calm enough for a whole wall, and
+  the end of a Magic Stone Pillar carries a clean carved cog.
+- The end of a Stripped Magic Log now looks like a real log end with growth rings and a drying crack, and the Magic
+  Trapdoor is a pale wooden hatch with a hexagonal window instead of a die.
+- Chalk marks and chalk figures look hand-drawn now: wobbly rings with gaps and chalk dust instead of clean drawings.
+- The machine screens are made of walnut and aged brass now instead of a flat dark plate: wooden boards in a brass frame
+  with riveted corners, the name on an engraved brass plate, slots and tanks sunk into the wood, product slots in a
+  riveted brass ring and buttons with brass rims. The Research Table and the diary keep their own look.
+- The Hex Lapidary shows the crystal as a cut gem: flat facets that trade the light as you turn it, a bright table and
+  a glint now and then, instead of a smooth gradient.
+- The Lab Bench shows how much of the compound is in the flask as liquid in a graduated glass tube, and its purity on a
+  scale with a brass mark at what the topic needs, instead of small numbers (the numbers are in the tooltips). When there
+  are more topics than fit, the topic grid scrolls with the mouse wheel and no longer covers the open topic.
+- The coil under an Impulse Plate's lid is a glowing cog now.
 
 ### Fixed
 - The Skypack's jets, the Levitation Plate's column and the Void's breath no longer tick each time their sound loops.
