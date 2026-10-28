@@ -41,6 +41,12 @@ import java.util.WeakHashMap;
  */
 @EventBusSubscriber(modid = Hextale.MOD_ID)
 public final class ClothesEffects {
+    /** Colours of the clothes' rune effects: pale light, clean water, life rising, steam. */
+    private static final int PALE_LIGHT = 0xE8F4FF;
+    private static final int CLEAN_WATER = 0x9FE6FF;
+    private static final int LIFE = 0x8FE07A;
+    private static final int STEAM = 0xDDE6EA;
+
     /** How often the robe's Mending works. */
     public static final int MEND_TICKS = 200;
     /** How often, while walking, the boots' Pollen may find a plant. */
@@ -97,6 +103,7 @@ public final class ClothesEffects {
         if (banishing > 0 && level.getMaxLocalRawBrightness(player.blockPosition()) <= DARK
                 && ToolEffects.keep(player, MobEffects.NIGHT_VISION, HolderRune.at(ClothesRune.NIGHT_SIGHT, banishing), 0)) {
             ToolEffects.puff(level, player.position().add(0, 1.7, 0), ClothesRune.HOOD_BANISHING.rune(), 8, 0.35);
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, player.getEyePosition(), PALE_LIGHT, 0.5F);
         }
         int purification = strength(player, ClothesRune.HOOD_PURIFICATION);
         if (purification > 0 && random.nextFloat() < HolderRune.at(ClothesRune.PURIFY, purification)) {
@@ -104,6 +111,7 @@ public final class ClothesEffects {
                 if (player.hasEffect(bad)) {
                     player.removeEffect(bad);
                     ToolEffects.puff(level, player.position().add(0, 1.6, 0), ClothesRune.HOOD_PURIFICATION.rune(), 10, 0.4);
+                    com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, player.position().add(0, 1.4, 0), CLEAN_WATER, 0.8F);
                     break;
                 }
             }
@@ -111,6 +119,7 @@ public final class ClothesEffects {
         int mending = strength(player, ClothesRune.ROBE_MENDING);
         if (mending > 0 && player.tickCount % MEND_TICKS == 0 && mend(player, HolderRune.at(ClothesRune.MEND, mending))) {
             ToolEffects.puff(level, player.position().add(0, 1.1, 0), ClothesRune.ROBE_MENDING.rune(), 8, 0.4);
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, player.position().add(0, 0.9, 0), LIFE, 0.6F);
         }
         int pollen = strength(player, ClothesRune.BOOTS_POLLEN);
         if (pollen > 0 && player.tickCount % POLLEN_TICKS == 0) {
@@ -175,6 +184,7 @@ public final class ClothesEffects {
                 plant.performBonemeal(level, random, pos, state, BonemealSource.INTERACTION);
                 level.levelEvent(1505, pos, 15);
                 ToolEffects.puff(level, Vec3.atCenterOf(pos), ClothesRune.BOOTS_POLLEN.rune(), 8, 0.4);
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atBottomCenterOf(pos), LIFE, 0.6F);
                 ToolEffects.sound(level, Vec3.atCenterOf(pos), SoundEvents.BONE_MEAL_USE, 0.5F, 1.1F);
                 return;
             }
@@ -202,11 +212,16 @@ public final class ClothesEffects {
         int quenching = strength(entity, ClothesRune.BOOTS_QUENCHING);
         if (quenching > 0 && event.getSource().is(net.minecraft.world.damagesource.DamageTypes.HOT_FLOOR)) {
             event.setAmount(event.getAmount() * (1 - HolderRune.at(ClothesRune.COOL_FEET, quenching)));
+            if (entity.level() instanceof ServerLevel server && server.getRandom().nextInt(3) == 0) {
+                // The heat hisses off the boots as steam.
+                com.pockyl.hextale.network.RuneEffectPayload.show(server, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, entity.position().add(0, 0.2, 0), STEAM, 0.6F);
+            }
         }
         int lift = strength(entity, ClothesRune.BOOTS_LIFT);
         if (lift > 0 && event.getSource().is(DamageTypeTags.IS_FALL) && entity.level() instanceof ServerLevel level) {
             event.setAmount(event.getAmount() * (1 - HolderRune.at(ClothesRune.CUSHION, lift)));
             ToolEffects.puff(level, entity.position().add(0, 0.2, 0), ClothesRune.BOOTS_LIFT.rune(), 10, 0.5);
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, entity.position().add(0, 0.2, 0), 0, 0.8F);
             ToolEffects.sound(level, entity.position(), SoundEvents.BREEZE_IDLE_GROUND, 0.4F, 1.2F);
         }
     }
@@ -221,17 +236,22 @@ public final class ClothesEffects {
         if (healing > 0 && level.getRandom().nextFloat() < HolderRune.at(ClothesRune.REGEN_CHANCE, healing)) {
             entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 0, true, false, true));
             ToolEffects.puff(level, entity.position().add(0, 1.1, 0), ClothesRune.ROBE_HEALING.rune(), 10, 0.45);
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, entity.position().add(0, 0.6, 0), LIFE, 0.9F);
         }
         int mirror = strength(entity, ClothesRune.ROBE_MIRROR);
         if (mirror > 0 && event.getSource().getEntity() instanceof LivingEntity attacker && attacker != entity
                 && level.getRandom().nextFloat() < HolderRune.at(ClothesRune.MIRROR_CHANCE, mirror)) {
             attacker.hurtServer(level, level.damageSources().thorns(entity), HolderRune.at(ClothesRune.MIRROR_DAMAGE, mirror));
             ToolEffects.puff(level, attacker.position().add(0, attacker.getBbHeight() / 2, 0), ClothesRune.ROBE_MIRROR.rune(), 10, 0.4);
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.ARCS, entity.position().add(0, entity.getBbHeight() * 0.6, 0),
+                    java.util.List.of(net.minecraft.core.BlockPos.containing(attacker.position().add(0, attacker.getBbHeight() / 2, 0))),
+                    ClothesRune.ROBE_MIRROR.rune().color(), 1);
         }
         int fireproofing = strength(entity, ClothesRune.ROBE_FIREPROOFING);
         if (fireproofing > 0 && event.getSource().is(DamageTypeTags.IS_FIRE)
                 && ToolEffects.keep(entity, MobEffects.FIRE_RESISTANCE, HolderRune.at(ClothesRune.FIRE_SHIELD, fireproofing), 0)) {
             ToolEffects.puff(level, entity.position().add(0, 1.1, 0), ClothesRune.ROBE_FIREPROOFING.rune(), 12, 0.5);
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, entity.position().add(0, 0.3, 0), com.pockyl.hextale.registry.ModParticles.FIRE, 1);
         }
     }
 
