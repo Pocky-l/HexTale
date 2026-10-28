@@ -70,7 +70,7 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
     /** A glass tube of charge over the crystal socket: cyan light rising with the charge, a red pulse when short. */
     private static void gauge(GuiGraphicsExtractor graphics, int x, int y, int charge, boolean short_) {
         HexPlate.well(graphics, x - 1, y - 1, GAUGE_W + 2, GAUGE_H + 2);
-        PixelArt.fill(graphics, x, y, x + GAUGE_W, y + GAUGE_H, PixelArt.argb(0x120E1A, 1));
+        PixelArt.fill(graphics, x, y, x + GAUGE_W, y + GAUGE_H, PixelArt.argb(0x1A120B, 1));
         int filled = Math.round(GAUGE_H * Mth.clamp(charge / (float) GAUGE_FULL, 0, 1));
         long now = Util.getMillis();
         for (int row = 0; row < filled; row++) {
@@ -91,7 +91,7 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, W - titleLabelX * 2, HexPlate.TITLE, true);
+        HexPlate.title(graphics, font, title, titleLabelX, titleLabelY, W - titleLabelX * 2);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
         if (menu.cost() > 0) {
             Component price = Component.translatable("gui.hextale.hex_workbench.cost", menu.cost());

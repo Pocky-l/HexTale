@@ -59,12 +59,14 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         HexPlate.plate(graphics, leftPos, topPos, PLATE_W, imageHeight);
         HexPlate.divider(graphics, leftPos, topPos + MachineMenu.INVENTORY_Y - 15, PLATE_W);
+        // Brass rings first, wells over them: neighbouring product slots share one brass rim.
         for (Slot slot : menu.slots) {
             if (!(slot.container instanceof Inventory) && isOutput(slot.getContainerSlot())) {
-                HexPlate.outputSlot(graphics, leftPos + slot.x, topPos + slot.y);
-            } else {
-                HexPlate.slot(graphics, leftPos + slot.x, topPos + slot.y);
+                HexPlate.outputRing(graphics, leftPos + slot.x, topPos + slot.y);
             }
+        }
+        for (Slot slot : menu.slots) {
+            HexPlate.slot(graphics, leftPos + slot.x, topPos + slot.y);
         }
         PixelArt.flush(graphics);
         renderMachine(graphics, mouseX, mouseY);
@@ -73,7 +75,7 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, PLATE_W - titleLabelX * 2, HexPlate.TITLE, true);
+        HexPlate.title(graphics, font, title, titleLabelX, titleLabelY, PLATE_W - titleLabelX * 2);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
     }
 
@@ -154,7 +156,7 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
     /** The well a tank's glass sits in, one pixel round it. */
     private static void glass(GuiGraphicsExtractor graphics, int x, int y, int height) {
         HexPlate.well(graphics, x - 1, y - 1, TANK_W + 2, height + 2);
-        PixelArt.fill(graphics, x, y, x + TANK_W, y + height, PixelArt.argb(0x120E1A, 1));
+        PixelArt.fill(graphics, x, y, x + TANK_W, y + height, PixelArt.argb(0x1A120B, 1));
         PixelArt.flush(graphics);
     }
 
@@ -190,15 +192,15 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
         graphics.fill(x + w, y, x + w + 1, y + h, colour);
     }
 
-    /** A brass arrow pointing right, filled from the left by {@code progress} (0-1). */
+    /** An arrow carved into the wood pointing right, filled with brass from the left by {@code progress} (0-1). */
     protected static void arrow(GuiGraphicsExtractor graphics, int x, int y, int length, float progress) {
         int done = Math.round(length * Mth.clamp(progress, 0, 1));
         for (int i = 0; i < length; i++) {
-            int colour = i < done ? 0xFFF0C24A : 0xFF4A3A28;
+            int colour = i < done ? 0xFFE2C67A : 0xFF24170D;
             graphics.fill(x + i, y + 3, x + i + 1, y + 6, colour);
         }
         for (int k = 0; k < 5; k++) {
-            int colour = done >= length ? 0xFFF0C24A : 0xFF4A3A28;
+            int colour = done >= length ? 0xFFE2C67A : 0xFF24170D;
             graphics.fill(x + length + k, y + k, x + length + k + 1, y + 9 - k, colour);
         }
     }
