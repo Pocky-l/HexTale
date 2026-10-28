@@ -66,6 +66,8 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
     /** Last result for the screen: 1 = cut, -1 = shattered, 0 = none yet (synced). */
     private int outcome;
     private long outcomeAt = -1000;
+    /** The crystal the cut in progress belongs to (one of it): another one in the clamp means a fresh cut. */
+    private ItemStack cutCrystal = ItemStack.EMPTY;
 
     public LapidaryBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.LAPIDARY.get(), pos, state);
@@ -123,6 +125,7 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
 
     /** A new crystal in the clamp: new planes, a clean cut. */
     private void freshCut() {
+        cutCrystal = items.get(INPUT).copyWithCount(1);
         seed = level == null ? 0 : level.getRandom().nextLong();
         Cleavage.Grade grade = grade();
         ground = new int[grade == null ? 0 : grade.facets];
@@ -201,6 +204,12 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
     @Override
     public void setChanged() {
         super.setChanged();
+        Cleavage.Grade grade = grade();
+        if (level != null && !level.isClientSide()
+                && (!ItemStack.isSameItemSameComponents(cutCrystal, items.get(INPUT)) || ground.length != (grade == null ? 0 : grade.facets))) {
+            // Hoppers and pipes put crystals and discs in without the plain setItem: the cut follows here.
+            freshCut();
+        }
         if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
         }
@@ -285,6 +294,7 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
         lastStroke = input.getLongOr("last_stroke", 0);
         outcome = input.getIntOr("outcome", 0);
         outcomeAt = input.getLongOr("outcome_at", -1000);
+        cutCrystal = items.get(INPUT).copyWithCount(1);
     }
 
     @Override

@@ -343,7 +343,17 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             }
 
             @Override
+            public int insert(FluidResource resource, int amount, TransactionContext transaction) {
+                return getBlockState().getValue(LINKED) ? super.insert(resource, amount, transaction) : 0;
+            }
+
+            @Override
             public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
+                return 0;
+            }
+
+            @Override
+            public int extract(FluidResource resource, int amount, TransactionContext transaction) {
                 return 0;
             }
         };
