@@ -1,0 +1,22 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": -786517349
+    }
+  },
+  "parents": [
+    "void_blight"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "void_mite_latched"
+  },
+  "secret": true,
+  "pos": [
+    340,
+    700
+  ]
+}

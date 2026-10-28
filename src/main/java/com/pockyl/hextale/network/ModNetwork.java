@@ -43,6 +43,7 @@ public final class ModNetwork {
         registrar.playToServer(LapidaryStrokePayload.TYPE, LapidaryStrokePayload.STREAM_CODEC, LapidaryStrokePayload::handle);
         registrar.playToServer(LabActionPayload.TYPE, LabActionPayload.STREAM_CODEC, LabActionPayload::handle);
         registrar.playToServer(BreachCinematicDonePayload.TYPE, BreachCinematicDonePayload.STREAM_CODEC, BreachCinematicDonePayload::handle);
+        registrar.playToServer(QuestNoticedPayload.TYPE, QuestNoticedPayload.STREAM_CODEC, QuestNoticedPayload::handle);
     }
 
     /** Sends to the player if their client has this mod (fake and game-test players do not). */

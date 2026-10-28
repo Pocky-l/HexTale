@@ -70,6 +70,7 @@ public final class VoidMites {
         ServerLevel level = player.serverLevel();
         level.playSound(null, player.blockPosition(), SoundEvents.SCULK_CLICKING, SoundSource.HOSTILE, 0.9F, 0.6F);
         level.sendParticles(ModParticles.voidMote(MOTE), player.getX(), player.getY() + 1, player.getZ(), 10, 0.3, 0.5, 0.3, 0);
+        com.pockyl.hextale.quest.Quests.fire(player, com.pockyl.hextale.quest.Quests.VOID_MITE_LATCHED);
         return true;
     }
 

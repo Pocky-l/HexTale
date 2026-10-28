@@ -263,9 +263,32 @@ public final class Guide {
         return true;
     }
 
-    /** What the book shows: done steps and open ones. The rest stays in the fog. */
+    /** What the book shows: done steps and open ones (a secret one only once done). The rest stays in the fog. */
     public static boolean visible(Quest quest, RuneKnowledge knowledge) {
-        return done(quest, knowledge) || open(quest, knowledge);
+        return done(quest, knowledge) || open(quest, knowledge) && !quest.secret();
+    }
+
+    /** What is new about a step for the reader: nothing, it just opened, or it happened by itself. */
+    public enum Fresh {
+        NONE,
+        /** Open now and not looked at yet. */
+        OPENED,
+        /** Done without the reader doing it on purpose (a secret step: something that happened), not looked at yet. */
+        HAPPENED
+    }
+
+    /**
+     * Whether the book shows this step as new: an item step that opened, or was written down by itself, and that the
+     * reader has not looked at since. Steps done on purpose are taken in as they are done ({@link Quests}).
+     */
+    public static Fresh fresh(Quest quest, RuneKnowledge knowledge) {
+        if (quest.kind() != Quest.Kind.ITEM || !knowledge.noticing() || knowledge.noticed(quest.id())) {
+            return Fresh.NONE;
+        }
+        if (done(quest, knowledge)) {
+            return Fresh.HAPPENED;
+        }
+        return visible(quest, knowledge) ? Fresh.OPENED : Fresh.NONE;
     }
 
     /**
@@ -273,7 +296,7 @@ public final class Guide {
      * seen. The book shows it greyed out, as "not reachable yet"; everything further stays in the fog.
      */
     public static boolean ahead(Quest quest, RuneKnowledge knowledge) {
-        if (quest.kind() != Quest.Kind.ITEM || visible(quest, knowledge)) {
+        if (quest.kind() != Quest.Kind.ITEM || quest.secret() || visible(quest, knowledge)) {
             return false;
         }
         for (Quest parent : quest.parents()) {

@@ -69,9 +69,10 @@ public final class HextaleClient {
         com.pockyl.hextale.port.client.SpecialItemModels.register(
                 com.pockyl.hextale.client.render.EssenceJarItemRenderer.ID, com.pockyl.hextale.client.render.EssenceJarItemRenderer.Unbaked.MAP_CODEC);
         ClientPayloads.register(new com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent());
+        com.pockyl.hextale.port.client.SpecialItemModels.register(
+                com.pockyl.hextale.client.render.HexcoreItemRenderer.ID, com.pockyl.hextale.client.render.HexcoreItemRenderer.Unbaked.MAP_CODEC);
         com.pockyl.hextale.port.client.ItemTints.register(Hextale.id("essence"), EssenceTint.MAP_CODEC);
         com.pockyl.hextale.port.client.ItemTints.register(Hextale.id("rune"), RuneTint.MAP_CODEC);
-        com.pockyl.hextale.port.client.ItemTints.register(Hextale.id("essence_kind"), com.pockyl.hextale.client.render.EssenceKindTint.MAP_CODEC);
         com.pockyl.hextale.port.client.ItemTints.register(Hextale.id("sticker"), com.pockyl.hextale.client.render.StickerTint.MAP_CODEC);
         com.pockyl.hextale.port.client.ItemTints.register(Hextale.id("brew"), com.pockyl.hextale.client.render.BrewTint.MAP_CODEC);
         com.pockyl.hextale.port.client.ItemTints.register(Hextale.id("pickaxe_runes"), com.pockyl.hextale.client.render.PickaxeRuneTint.MAP_CODEC);

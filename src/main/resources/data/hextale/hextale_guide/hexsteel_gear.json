@@ -1,24 +1,174 @@
 {
   "region": "forge",
   "stage": "mid",
-  "icon": "hextale:hexsteel_chestplate",
+  "icon": [
+    "hextale:hexsteel_helmet",
+    "hextale:hexsteel_chestplate",
+    "hextale:hexsteel_leggings",
+    "hextale:hexsteel_boots",
+    "hextale:hexsteel_sword",
+    "hextale:hexsteel_pickaxe",
+    "hextale:hexsteel_axe",
+    "hextale:hexsteel_shovel",
+    "hextale:hexsteel_hoe"
+  ],
   "parents": ["hexsteel"],
-  "display": {
-    "kind": "shaped",
-    "ingredients": [
-      "hextale:hexsteel_ingot", "", "hextale:hexsteel_ingot",
-      "hextale:hexsteel_ingot", "hextale:hexsteel_ingot", "hextale:hexsteel_ingot",
-      "hextale:hexsteel_ingot", "hextale:hexsteel_ingot", "hextale:hexsteel_ingot"
-    ],
-    "result": "hextale:hexsteel_chestplate",
-    "then": {
+  "goal": {
+    "type": "any_of",
+    "goals": [
+      {
+        "type": "has_item",
+        "item": "hextale:hexsteel_helmet"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:hexsteel_chestplate"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:hexsteel_leggings"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:hexsteel_boots"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:hexsteel_sword"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:hexsteel_pickaxe"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:hexsteel_axe"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:hexsteel_shovel"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:hexsteel_hoe"
+      }
+    ]
+  },
+  "display": [
+    {
       "kind": "shaped",
       "ingredients": [
-        "hextale:hexsteel_ingot", "hextale:hexsteel_ingot", "hextale:hexsteel_ingot",
-        "", "minecraft:stick", "",
-        "", "minecraft:stick", ""
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "",
+        "hextale:hexsteel_ingot",
+        "",
+        "",
+        ""
+      ],
+      "result": "hextale:hexsteel_helmet"
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "hextale:hexsteel_ingot",
+        "",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot"
+      ],
+      "result": "hextale:hexsteel_chestplate"
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "",
+        "hextale:hexsteel_ingot"
+      ],
+      "result": "hextale:hexsteel_leggings"
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "hextale:hexsteel_ingot",
+        "",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "",
+        "hextale:hexsteel_ingot",
+        "",
+        "",
+        ""
+      ],
+      "result": "hextale:hexsteel_boots"
+    },
+    {
+      "kind": "shaped",
+      "ingredients": ["hextale:hexsteel_ingot", "", "", "hextale:hexsteel_ingot", "", "", "minecraft:stick", "", ""],
+      "result": "hextale:hexsteel_sword"
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "",
+        "minecraft:stick",
+        "",
+        "",
+        "minecraft:stick",
+        ""
       ],
       "result": "hextale:hexsteel_pickaxe"
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "",
+        "hextale:hexsteel_ingot",
+        "minecraft:stick",
+        "",
+        "",
+        "minecraft:stick",
+        ""
+      ],
+      "result": "hextale:hexsteel_axe"
+    },
+    {
+      "kind": "shaped",
+      "ingredients": ["hextale:hexsteel_ingot", "", "", "minecraft:stick", "", "", "minecraft:stick", "", ""],
+      "result": "hextale:hexsteel_shovel"
+    },
+    {
+      "kind": "shaped",
+      "ingredients": [
+        "hextale:hexsteel_ingot",
+        "hextale:hexsteel_ingot",
+        "",
+        "",
+        "minecraft:stick",
+        "",
+        "",
+        "minecraft:stick",
+        ""
+      ],
+      "result": "hextale:hexsteel_hoe"
     }
-  }
+  ]
 }

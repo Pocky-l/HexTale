@@ -1,0 +1,35 @@
+{
+  "parent": "hextale:item/guide/ink",
+  "overrides": [
+    {
+      "predicate": {
+        "hextale:select": 0.01
+      },
+      "model": "hextale:item/guide/ink"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.02
+      },
+      "model": "hextale:item/guide/item_study"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.03
+      },
+      "model": "hextale:item/guide/the_thinning"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.04
+      },
+      "model": "hextale:item/guide/let_it_spread"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.05
+      },
+      "model": "hextale:item/guide/void_mites"
+    }
+  ]
+}

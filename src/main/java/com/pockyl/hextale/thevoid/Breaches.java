@@ -27,6 +27,7 @@ import org.jspecify.annotations.Nullable;
 import com.pockyl.hextale.Config;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.network.BreachCinematicPayload;
+import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.registry.ModTags;
@@ -38,7 +39,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Where the Thinning tears the world open. When a chunk near a player has gone all the way ({@link Thinning.Stage#BREACH}),
+ * Where the Thinning tears the world open. When a chunk near a player has gone all the way ({@link Thinning.Stage#BREACH}, the most it can wear: 2000),
  * a breach of the Void opens in it - on open ground under the sky, away from anything built - but never within
  * {@link #SPACING} blocks of another one: one sick land, one breach. The places are remembered per level (even while
  * their chunks sleep). Players near a breach that opens are shown it ({@link BreachCinematicPayload}) and come to no
@@ -61,6 +62,13 @@ public final class Breaches {
 
     /** Players watching a breach open, and the game time until which nothing hurts them. */
     private static final Map<UUID, Long> WATCHING = new HashMap<>();
+    /**
+     * Players who saw a breach tear open, and the game time their diary notes it: once the first voidling is out and the
+     * camera is back, so the line is not lost under the cinematic.
+     */
+    private static final Map<UUID, Long> WITNESSES = new HashMap<>();
+    /** How long before the cinematic's end at the latest the diary notes the breach. */
+    private static final int NOTE_BEFORE_END = 40;
 
     private Breaches() {
     }
@@ -135,7 +143,13 @@ public final class Breaches {
 
     @SubscribeEvent
     public static void onLevelTick(LevelTickEvent.Post event) {
-        if (!(event.getLevel() instanceof ServerLevel level) || level.getGameTime() % CHECK_TICKS != 7 || !Config.THINNING.get()) {
+        if (!(event.getLevel() instanceof ServerLevel level)) {
+            return;
+        }
+        if (!WITNESSES.isEmpty() && level.getGameTime() % 10 == 3) {
+            noteWitnesses(level);
+        }
+        if (level.getGameTime() % CHECK_TICKS != 7 || !Config.THINNING.get()) {
             return;
         }
         for (ServerPlayer player : level.players()) {
@@ -264,12 +278,26 @@ public final class Breaches {
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.THE_VOID_OMEN.get(), SoundSource.AMBIENT, 1.0F, 1.0F);
         long until = level.getGameTime() + CINEMATIC_TICKS;
         for (ServerPlayer player : level.players()) {
-            if (!player.isSpectator() && player.position().distanceTo(centre) <= WATCH_RADIUS
-                    && ModNetwork.sendToPlayer(player, new BreachCinematicPayload(breach.getId()))) {
+            if (player.isSpectator() || player.position().distanceTo(centre) > WATCH_RADIUS) {
+                continue;
+            }
+            WITNESSES.put(player.getUUID(), until - NOTE_BEFORE_END);
+            if (ModNetwork.sendToPlayer(player, new BreachCinematicPayload(breach.getId()))) {
                 WATCHING.put(player.getUUID(), until);
             }
         }
         return breach;
+    }
+
+    /** Tells the guide about the breach for the witnesses whose time has come. */
+    private static void noteWitnesses(ServerLevel level) {
+        for (ServerPlayer player : level.players()) {
+            Long at = WITNESSES.get(player.getUUID());
+            if (at != null && level.getGameTime() >= at) {
+                WITNESSES.remove(player.getUUID());
+                Quests.fire(player, Quests.BREACH_OPENED);
+            }
+        }
     }
 
     /** The player stopped watching (it ended, was skipped or is turned off). */
@@ -299,10 +327,12 @@ public final class Breaches {
     @SubscribeEvent
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         WATCHING.remove(event.getEntity().getUUID());
+        WITNESSES.remove(event.getEntity().getUUID());
     }
 
     @SubscribeEvent
     public static void onServerStopped(ServerStoppedEvent event) {
         WATCHING.clear();
+        WITNESSES.clear();
     }
 }

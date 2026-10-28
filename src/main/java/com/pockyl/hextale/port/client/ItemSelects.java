@@ -55,10 +55,21 @@ public final class ItemSelects {
                 return;
             }
             model = JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("model");
+            // The mod's "animated" wrapper only matters to the 26.x GUI item cache.
+            while (model.has("type") && "hextale:animated".equals(model.get("type").getAsString())) {
+                model = model.getAsJsonObject("model");
+            }
         } catch (Exception e) {
             return;
         }
-        if (!"minecraft:select".equals(model.get("type").getAsString()) || !"minecraft:component".equals(model.get("property").getAsString())) {
+        if (!"minecraft:select".equals(model.get("type").getAsString())) {
+            return;
+        }
+        if ("minecraft:custom_model_data".equals(model.get("property").getAsString())) {
+            registerCustomModelData(item, model);
+            return;
+        }
+        if (!"minecraft:component".equals(model.get("property").getAsString())) {
             return;
         }
         DataComponentType<?> component = BuiltInRegistries.DATA_COMPONENT_TYPE.get(ResourceLocation.parse(model.get("component").getAsString()));
@@ -83,6 +94,36 @@ public final class ItemSelects {
             }
             for (int i = 0; i < cases.size(); i++) {
                 if (cases.get(i).contains(value)) {
+                    return (i + 1) / 100F;
+                }
+            }
+            return 0;
+        });
+    }
+
+    /**
+     * 26.x custom model data holds strings; 1.21.1 one number. The data port script stores a string as its Java hash
+     * code, so a case matches when the stack's number is the hash of one of its strings.
+     */
+    private static void registerCustomModelData(Item item, JsonObject model) {
+        List<List<Integer>> cases = new ArrayList<>();
+        for (JsonElement element : model.getAsJsonArray("cases")) {
+            JsonElement when = element.getAsJsonObject().get("when");
+            List<Integer> values = new ArrayList<>();
+            if (when instanceof JsonArray array) {
+                array.forEach(value -> values.add(value.getAsString().hashCode()));
+            } else {
+                values.add(when.getAsString().hashCode());
+            }
+            cases.add(values);
+        }
+        ItemProperties.register(item, PROPERTY, (stack, level, entity, seed) -> {
+            net.minecraft.world.item.component.CustomModelData data = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_MODEL_DATA);
+            if (data == null) {
+                return 0;
+            }
+            for (int i = 0; i < cases.size(); i++) {
+                if (cases.get(i).contains(data.value())) {
                     return (i + 1) / 100F;
                 }
             }

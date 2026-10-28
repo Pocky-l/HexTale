@@ -1,0 +1,8 @@
+{
+  "kind": "wip",
+  "region": "void",
+  "stage": "mid",
+  "icon": "minecraft:ender_eye",
+  "parents": ["wip_purifier", "void_breach"],
+  "pos": [-230, 775]
+}

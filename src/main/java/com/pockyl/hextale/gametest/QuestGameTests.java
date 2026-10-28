@@ -48,8 +48,8 @@ public final class QuestGameTests {
     public static void questRecipesMatchTheRecipes(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();
         for (Quest quest : Guide.server().all()) {
-            QuestDisplay display = quest.display();
-            if (display == null || !display.isRecipe()) {
+            for (QuestDisplay display : quest.displays()) {
+            if (!display.isRecipe()) {
                 continue;
             }
             ResourceLocation id = ResourceLocation.parse(display.result());
@@ -64,6 +64,7 @@ public final class QuestGameTests {
             helper.assertTrue(real.size() == shown.size(), quest.id() + ": " + shown.size() + " ingredients shown, recipe has " + real.size());
             for (int i = 0; i < real.size(); i++) {
                 helper.assertTrue(real.get(i).test(sample(shown.get(i))), quest.id() + ": ingredient " + i + " is " + shown.get(i));
+            }
             }
         }
         helper.succeed();
@@ -99,8 +100,9 @@ public final class QuestGameTests {
                 helper.assertTrue(parent.stage().ordinal() <= quest.stage().ordinal(),
                         quest.id() + " (" + quest.stage() + ") never needs a later stage's " + parent.id());
             }
-            helper.assertTrue(quest.parents().isEmpty() == (quest == step("sphalerite") || quest == step("researchers_diary")),
-                    quest.id() + ": only sphalerite and the diary start the guide");
+            helper.assertTrue(quest.parents().isEmpty() == (quest == step("sphalerite") || quest == step("researchers_diary")
+                            || quest == step("the_thinning")),
+                    quest.id() + ": only sphalerite, the diary and the Thinning (the Void's own branch) start the guide");
             for (Quest other : Guide.server().all()) {
                 if (other.index() > quest.index()) {
                     double distance = Math.hypot(other.x() - quest.x(), other.y() - quest.y());
@@ -168,11 +170,22 @@ public final class QuestGameTests {
             "magic_stone", List.of("hextale:polished_magic_stone", "hextale:magic_bricks", "hextale:magic_brick_slab",
                     "hextale:magic_brick_stairs", "hextale:magic_brick_wall", "hextale:chiseled_magic_bricks", "hextale:magic_stone_pillar"));
 
-    /** Item ids a step yields: its icon, its picture's result and what is crafted straight from it. */
+    /** Every picture of a step, the ones under the others included. */
+    private static List<QuestDisplay> pictures(Quest quest) {
+        List<QuestDisplay> out = new ArrayList<>();
+        for (QuestDisplay first : quest.displays()) {
+            for (QuestDisplay display = first; display != null; display = display.then()) {
+                out.add(display);
+            }
+        }
+        return out;
+    }
+
+    /** Item ids a step yields: its icons, its pictures' results and what is crafted straight from it. */
     private static Set<ResourceLocation> yields(Quest quest) {
         Set<ResourceLocation> out = new HashSet<>();
-        out.add(BuiltInRegistries.ITEM.getKey(quest.icon().getItem()));
-        for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
+        quest.icons().forEach(icon -> out.add(BuiltInRegistries.ITEM.getKey(icon.getItem())));
+        for (QuestDisplay display : pictures(quest)) {
             ResourceLocation id = display.result().contains(":") ? ResourceLocation.parse(display.result()) : null;
             switch (display.kind()) {
                 case INFUSION -> {
@@ -233,8 +246,10 @@ public final class QuestGameTests {
             Set<Quest> before = ancestors(quest);
             Set<ResourceLocation> available = new HashSet<>();
             before.forEach(step -> available.addAll(yields(step)));
+            // A step about finding things (sick land: its soil and rock) may show what they are made into.
+            quest.icons().forEach(icon -> available.add(BuiltInRegistries.ITEM.getKey(icon.getItem())));
             List<ResourceLocation> needed = new ArrayList<>();
-            for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
+            for (QuestDisplay display : pictures(quest)) {
             switch (display.kind()) {
                 case SHAPED, SHAPELESS, SCHEME -> display.ingredients().stream().filter(id -> !id.isEmpty() && !id.startsWith("#"))
                         .map(ResourceLocation::parse).forEach(needed::add);
@@ -403,6 +418,93 @@ public final class QuestGameTests {
         Quests.check(player);
         helper.assertTrue(knowledge.questDone(step("rune_scroll")), "with the altar standing, the studied scroll completes the step");
         helper.assertTrue(Guide.open(step("blank_scroll"), knowledge), "the altar and the lore open the blank scroll");
+        helper.succeed();
+    }
+
+    /**
+     * The Void's branch stands on its own: it appears only once the land shows the haze, its happenings (a mite, a breach)
+     * stay in the fog until they happen and are written down when the game reports them.
+     */
+    @HexTest
+    public static void theVoidBranchOpensWithTheHaze(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        RuneKnowledge knowledge = Research.of(player);
+        var level = helper.getLevel();
+        var chunk = level.getChunkAt(player.blockPosition());
+        com.pockyl.hextale.thevoid.Thinning.set(level, chunk, 0);
+        helper.assertFalse(Guide.visible(step("the_thinning"), knowledge) || Guide.ahead(step("the_thinning"), knowledge),
+                "nothing tells of the Void before the land shows it");
+        Quests.check(player);
+        helper.assertFalse(knowledge.questDone(step("the_thinning")), "clean land writes nothing");
+        com.pockyl.hextale.thevoid.Thinning.set(level, chunk, com.pockyl.hextale.thevoid.Thinning.Stage.HAZE.from);
+        Quests.check(player);
+        com.pockyl.hextale.thevoid.Thinning.set(level, chunk, 0);
+        helper.assertTrue(knowledge.questDone(step("the_thinning")), "the haze opens the Void's branch");
+        helper.assertTrue(Guide.visible(step("let_it_spread"), knowledge), "and with it the way to let it be");
+        helper.assertFalse(Guide.visible(step("hollowbloom"), knowledge), "the bush to watch it by still waits for the dust");
+        for (Quest quest : ancestors(step("hollowbloom"))) {
+            knowledge.completeQuest(quest);
+        }
+        helper.assertTrue(Guide.visible(step("hollowbloom"), knowledge), "with the dust, the bush to watch it by");
+
+        Quests.fire(player, Quests.BREACH_OPENED);
+        helper.assertFalse(knowledge.questDone(step("void_breach")), "a breach is written down only after the sick land");
+        for (Quest quest : ancestors(step("void_breach"))) {
+            knowledge.completeQuest(quest);
+        }
+        helper.assertFalse(Guide.visible(step("void_breach"), knowledge) || Guide.ahead(step("void_breach"), knowledge),
+                "the breach stays in the fog until it happens");
+        Quests.fire(player, Quests.BREACH_OPENED);
+        helper.assertTrue(knowledge.questDone(step("void_breach")) && Guide.visible(step("void_chitin"), knowledge),
+                "a breach seen tearing open is written down and opens what came out of it");
+        ServerPlayer other = helper.makeMockServerPlayerInLevel();
+        RuneKnowledge late = Research.of(other);
+        for (Quest quest : ancestors(step("void_breach"))) {
+            late.completeQuest(quest);
+        }
+        com.pockyl.hextale.thevoid.Thinning.set(level, level.getChunkAt(other.blockPosition()), com.pockyl.hextale.thevoid.Thinning.MAX);
+        Quests.check(other);
+        com.pockyl.hextale.thevoid.Thinning.set(level, level.getChunkAt(other.blockPosition()), 0);
+        helper.assertTrue(late.questDone(step("void_breach")) && Guide.visible(step("void_chitin"), late),
+                "land gone all the way (where the breach appears) writes it down too, and opens the chitin");
+        Quests.fire(player, Quests.VOID_MITE_LATCHED);
+        helper.assertTrue(knowledge.questDone(step("void_mites")), "a mite that latched on is written down");
+
+        Quest clothes = step("researcher_robe");
+        helper.assertTrue(clothes.icons().size() == 4 && clothes.displays().size() == 4, "the researcher's clothes are one step for four pieces");
+        helper.succeed();
+    }
+
+    /**
+     * The book points at what is new: a step that opened, or one written down by itself, until the reader looks at it; a
+     * step done on purpose is taken in as it is done. Knowledge saved before this takes in what it already shows.
+     */
+    @HexTest
+    public static void newStepsWaitToBeLookedAt(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        RuneKnowledge knowledge = Research.of(player);
+        knowledge.forgetQuests();
+        helper.assertTrue(Guide.fresh(step("researchers_diary"), knowledge) == Guide.Fresh.OPENED, "a new reader's first steps are new");
+        helper.assertTrue(Guide.fresh(step("unstable_hextech"), knowledge) == Guide.Fresh.NONE, "what is still in the fog is not");
+        player.getInventory().add(new ItemStack(ModItems.RESEARCHERS_DIARY.get()));
+        Quests.check(player);
+        helper.assertTrue(Guide.fresh(step("researchers_diary"), knowledge) == Guide.Fresh.NONE, "a step done on purpose is taken in");
+        helper.assertTrue(Guide.fresh(step("unstable_hextech"), knowledge) == Guide.Fresh.OPENED, "the step it opened is new");
+        Quests.noticed(player, "unstable_hextech");
+        helper.assertTrue(Guide.fresh(step("unstable_hextech"), knowledge) == Guide.Fresh.NONE, "looked at, it is not new any more");
+
+        for (Quest quest : ancestors(step("void_mites"))) {
+            knowledge.completeQuest(quest);
+            knowledge.notice(quest.id());
+        }
+        Quests.fire(player, Quests.VOID_MITE_LATCHED);
+        helper.assertTrue(Guide.fresh(step("void_mites"), knowledge) == Guide.Fresh.HAPPENED, "something that happened waits to be read");
+
+        RuneKnowledge decoded = RuneKnowledge.CODEC.parse(NbtOps.INSTANCE,
+                RuneKnowledge.CODEC.encodeStart(NbtOps.INSTANCE, knowledge).getOrThrow()).getOrThrow();
+        helper.assertTrue(decoded.noticing() && decoded.noticed("unstable_hextech") && !decoded.noticed("void_mites"), "taken-in steps save and load");
+        RuneKnowledge old = RuneKnowledge.CODEC.parse(NbtOps.INSTANCE, new net.minecraft.nbt.CompoundTag()).getOrThrow();
+        helper.assertFalse(old.noticing(), "knowledge saved before has nothing taken in yet");
         helper.succeed();
     }
 

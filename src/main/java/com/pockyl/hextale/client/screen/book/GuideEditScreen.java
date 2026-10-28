@@ -233,8 +233,8 @@ final class GuideEditScreen extends Screen {
         }
         String id = base + n;
         Quest at = guide.byId(quest.id());
-        QuestDefinition definition = new QuestDefinition(kind, quest.region(), quest.stage(), new ItemStackTemplate(Items.BOOK), List.of(quest.id()),
-                Optional.empty(), Optional.empty(), Optional.empty(), Quest.Aura.NONE, false, false, Optional.empty(),
+        QuestDefinition definition = new QuestDefinition(kind, quest.region(), quest.stage(), List.of(new ItemStackTemplate(Items.BOOK)), List.of(quest.id()),
+                Optional.empty(), List.of(), Optional.empty(), Quest.Aura.NONE, false, false, false, Optional.empty(),
                 Optional.of(freeSpot(guide, at != null ? at : quest)));
         Map<String, @Nullable QuestDefinition> changed = new LinkedHashMap<>();
         changed.put(id, definition);

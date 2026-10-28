@@ -11,7 +11,11 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
+import org.joml.Quaternionfc;
 import com.pockyl.hextale.Hextale;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Glowing liquid essence filling a box inside a glass vessel. The animated {@code block/essence_liquid} sprite (light
@@ -21,6 +25,18 @@ import com.pockyl.hextale.Hextale;
  */
 public final class LiquidBox {
     private static final ResourceLocation LIQUID = Hextale.id("block/essence_liquid");
+    /** Vanilla's white bubble (a ring with a glint), tinted by the liquid. */
+    public static final ResourceLocation BUBBLE = ResourceLocation.withDefaultNamespace("textures/particle/bubble_white.png");
+    /** Vanilla's bubble bursting, frame by frame. */
+    private static final ResourceLocation[] BUBBLE_POP = new ResourceLocation[5];
+    /** How much lighter than the liquid a bubble's ring is. */
+    private static final float BUBBLE_LIGHT = 0.55F;
+
+    static {
+        for (int i = 0; i < BUBBLE_POP.length; i++) {
+            BUBBLE_POP[i] = ResourceLocation.withDefaultNamespace("textures/particle/bubble_pop_" + i + ".png");
+        }
+    }
     /** The surface catches light, the depths darken. */
     private static final float SURFACE_LIGHT = 0.28F;
     private static final float DEPTH_SHADE = 0.6F;
@@ -54,14 +70,12 @@ public final class LiquidBox {
         int deep = alpha << 24 | RuneDrawing.mix(rgb, 0x000000, 1 - DEPTH_SHADE);
         int high = argb;
         // The sides' colour runs from the surface down to the depth over the whole vessel, not over this box only.
+        Box box = new Box(minX, minZ, maxX, maxZ, bottom, top, sprite);
         collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(TextureAtlas.LOCATION_BLOCKS), (pose, consumer) -> {
-            Box box = new Box(minX, minZ, maxX, maxZ, bottom, top, sprite);
             box.top(consumer, pose, surface);
             box.sides(consumer, pose, high, deep);
-            for (int i = 0; i < bubbles; i++) {
-                bubble(consumer, pose, box, time, seed, i, alpha);
-            }
         });
+        rise(poseStack, collector, box, time, seed, bubbles, rgb, alpha);
     }
 
     /**
@@ -85,39 +99,67 @@ public final class LiquidBox {
         // Round the outline the same way as a box's walls (north edge first, towards +x), two corners per cut.
         float[][] outline = {{x0, minZ}, {x1, minZ}, {x1, z0}, {maxX, z0}, {maxX, z1}, {x1, z1}, {x1, maxZ}, {x0, maxZ}, {x0, z1},
                 {minX, z1}, {minX, z0}, {x0, z0}};
+        Box middle = new Box(x0, z0, x1, z1, bottom, top, sprite);
         collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(TextureAtlas.LOCATION_BLOCKS), (pose, consumer) -> {
             new Box(x0, minZ, x1, maxZ, bottom, top, sprite).top(consumer, pose, surface);
             new Box(minX, z0, x0, z1, bottom, top, sprite).top(consumer, pose, surface);
             new Box(x1, z0, maxX, z1, bottom, top, sprite).top(consumer, pose, surface);
-            Box middle = new Box(x0, z0, x1, z1, bottom, top, sprite);
             for (int i = 0; i < outline.length; i++) {
                 middle.wall(consumer, pose, outline[i], outline[(i + 1) % outline.length], argb, deep);
             }
-            for (int i = 0; i < bubbles; i++) {
-                bubble(consumer, pose, middle, time, seed, i, alpha);
-            }
         });
+        rise(poseStack, collector, middle, time, seed, bubbles, rgb, alpha);
     }
 
-    /** A small bright bead rising from the bottom to the surface, then starting over somewhere else. */
-    private static void bubble(VertexConsumer consumer, PoseStack.Pose pose, Box box, float time, long seed, int index, int alpha) {
-        float period = 40 + (Math.floorMod(seed * 31 + index * 17, 23));
-        float phase = (time + index * 37 + Math.floorMod(seed, 97)) / period;
-        int cycle = (int) Math.floor(phase);
-        float t = phase - cycle;
-        long h = seed * 6364136223846793005L + index * 1442695040888963407L + cycle * 2862933555777941L;
-        float fx = ((h >>> 20) & 1023) / 1023F;
-        float fz = ((h >>> 40) & 1023) / 1023F;
-        float size = 0.5F / 16 + ((h >>> 10) & 3) * 0.12F / 16;
-        float pad = size + 0.4F / 16;
-        float x = Mth.lerp(fx, box.minX + pad, box.maxX - pad) + Mth.sin(t * 9 + index) * 0.25F / 16;
-        float z = Mth.lerp(fz, box.minZ + pad, box.maxZ - pad);
-        float y = Mth.lerp(t, box.bottom + size, box.top - size);
-        if (box.top - box.bottom < size * 3) {
+    /** Bubbles rising from the bottom to the surface, each starting over somewhere else when it gets there. */
+    private static void rise(PoseStack poseStack, SubmitNodeCollector collector, Box box, float time, long seed, int bubbles, int rgb, int alpha) {
+        if (bubbles <= 0) {
             return;
         }
-        int color = (int) (alpha * 0.9F * Math.min(1, (1 - t) * 4)) << 24 | 0xFFFFFF;
-        new Box(x - size, z - size, x + size, z + size, y - size, y + size, box.sprite).cube(consumer, pose, color);
+        List<float[]> quads = new ArrayList<>(bubbles);
+        int color = RuneDrawing.mix(rgb, 0xFFFFFF, BUBBLE_LIGHT);
+        for (int index = 0; index < bubbles; index++) {
+            float period = 40 + (Math.floorMod(seed * 31 + index * 17, 23));
+            float phase = (time + index * 37 + Math.floorMod(seed, 97)) / period;
+            int cycle = (int) Math.floor(phase);
+            float t = phase - cycle;
+            long h = seed * 6364136223846793005L + index * 1442695040888963407L + cycle * 2862933555777941L;
+            float fx = ((h >>> 20) & 1023) / 1023F;
+            float fz = ((h >>> 40) & 1023) / 1023F;
+            // Half the quad: the ring fills 6 of the texture's 8 pixels, so a bubble looks 1.5-2.4 px across.
+            float half = (1 + ((h >>> 10) & 3) * 0.2F) / 16;
+            float pad = half * 0.75F + 0.3F / 16;
+            if (box.top - box.bottom < pad * 3 || box.maxX - box.minX < pad * 2 || box.maxZ - box.minZ < pad * 2) {
+                continue;
+            }
+            float x = Mth.lerp(fx, box.minX + pad, box.maxX - pad) + Mth.sin(t * 9 + index) * 0.25F / 16;
+            float z = Mth.lerp(fz, box.minZ + pad, box.maxZ - pad);
+            float y = Mth.lerp(t, box.bottom + pad, box.top - pad);
+            quads.add(HexFx.quad(x, y, z, half, 0, 0, alpha / 255F * 0.9F * Math.min(1, (1 - t) * 4), color));
+        }
+        bubbles(poseStack, collector, quads);
+    }
+
+    /** Vanilla bubbles facing the camera, in one batch: quads as {@link HexFx#quad} makes them (frame 0). */
+    public static void bubbles(PoseStack poseStack, SubmitNodeCollector collector, List<float[]> quads) {
+        HexFx.sheet(poseStack, collector, Minecraft.getInstance().gameRenderer.getMainCamera().rotation(), BUBBLE, 1, quads);
+    }
+
+    /**
+     * One vanilla bubble sitting on a surface at the pose origin: it swells for the first {@code swell} of its life
+     * ({@code t} 0-1), then bursts through vanilla's five pop frames. {@code half} is half the bubble's quad.
+     */
+    public static void surfaceBubble(PoseStack poseStack, SubmitNodeCollector collector, float t, float swell, float half, int rgb, float alpha) {
+        int color = RuneDrawing.mix(rgb, 0xFFFFFF, BUBBLE_LIGHT);
+        Quaternionfc camera = Minecraft.getInstance().gameRenderer.getMainCamera().rotation();
+        if (t < swell) {
+            float size = half * (0.4F + 0.6F * Mth.sqrt(t / swell));
+            HexFx.sheet(poseStack, collector, camera, BUBBLE, 1, List.of(HexFx.quad(0, size * 0.5F, 0, size, 0, 0, alpha, color)));
+        } else {
+            // The pop frames are 16 px with the burst in their middle: twice the bubble's quad shows it at the same size.
+            int frame = Math.min(BUBBLE_POP.length - 1, (int) ((t - swell) / (1 - swell) * BUBBLE_POP.length));
+            HexFx.sheet(poseStack, collector, camera, BUBBLE_POP[frame], 1, List.of(HexFx.quad(0, half * 0.5F, 0, half * 2, 0, 0, alpha, color)));
+        }
     }
 
     /** A box of liquid with its texture coordinates taken from where it sits in the block. */
@@ -167,16 +209,6 @@ public final class LiquidBox {
             vertex(consumer, pose, b[0], top, b[1], ub, vTop, high, -nx, 0, -nz);
             vertex(consumer, pose, b[0], bottom, b[1], ub, vBottom, deep, -nx, 0, -nz);
             vertex(consumer, pose, a[0], bottom, a[1], ua, vBottom, deep, -nx, 0, -nz);
-        }
-
-        /** All six faces in one colour (bubbles). */
-        void cube(VertexConsumer consumer, PoseStack.Pose pose, int argb) {
-            top(consumer, pose, argb);
-            sides(consumer, pose, argb, argb);
-            float[][] corners = {{minX, minZ}, {maxX, minZ}, {maxX, maxZ}, {minX, maxZ}};
-            for (int i = 3; i >= 0; i--) {
-                vertex(consumer, pose, corners[i][0], bottom, corners[i][1], u(corners[i][0]), v(corners[i][1]), argb, 0, -1, 0);
-            }
         }
     }
 

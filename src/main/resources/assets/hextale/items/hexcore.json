@@ -1,6 +1,12 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "hextale:item/hexcore"
+    "type": "hextale:animated",
+    "model": {
+      "type": "minecraft:special",
+      "base": "hextale:item/hexcore",
+      "model": {
+        "type": "hextale:hexcore"
+      }
+    }
   }
 }

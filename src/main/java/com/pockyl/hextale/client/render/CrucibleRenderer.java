@@ -293,9 +293,8 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         }
     }
 
-    /** Bubbles swelling on the surface and breaking, each in its own place and time. */
+    /** Bubbles swelling on the surface and bursting, each in its own place and time. */
     private static void rollingSurface(State state, PoseStack poseStack, SubmitNodeCollector collector, float top, int count) {
-        int light = RuneDrawing.mix(state.color, 0xFFFFFF, 0.45F);
         for (int i = 0; i < count; i++) {
             float period = 14 + Math.floorMod(state.seed * 7 + i * 13, 11);
             float phase = (state.time + i * 5.3F) / period;
@@ -304,14 +303,13 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
             long h = state.seed * 6364136223846793005L + i * 1442695040888963407L + cycle * 2862933555777941L;
             float fx = ((h >>> 20) & 1023) / 1023F;
             float fz = ((h >>> 40) & 1023) / 1023F;
-            float radius = (0.35F + 0.65F * ((h >>> 8) & 7) / 7F) * Mth.sin(t * Mth.PI) * 0.9F / 16;
-            if (radius < 0.08F / 16) {
-                continue;
-            }
-            float x = Mth.lerp(fx, MIN + 1F / 16, MAX - 1F / 16);
-            float z = Mth.lerp(fz, MIN + 1F / 16, MAX - 1F / 16);
-            LiquidBox.submit(poseStack, collector, x - radius, z - radius, x + radius, z + radius, top - radius * 0.3F, top + radius * 0.7F,
-                    RuneDrawing.argb(light, 0.75F * (1 - t * 0.6F)));
+            float half = (0.8F + 0.7F * ((h >>> 8) & 7) / 7F) / 16;
+            float x = Mth.lerp(fx, MIN + 1.5F / 16, MAX - 1.5F / 16);
+            float z = Mth.lerp(fz, MIN + 1.5F / 16, MAX - 1.5F / 16);
+            poseStack.pushPose();
+            poseStack.translate(x, top, z);
+            LiquidBox.surfaceBubble(poseStack, collector, t, 0.75F, half, state.color, 0.85F);
+            poseStack.popPose();
         }
     }
 

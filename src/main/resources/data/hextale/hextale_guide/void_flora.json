@@ -1,0 +1,24 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": ["hextale:void_coral", "hextale:void_roots", "hextale:void_bulb"],
+  "parents": ["void_blight"],
+  "goal": {
+    "type": "any_of",
+    "goals": [
+      {
+        "type": "has_item",
+        "item": "hextale:void_coral"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:void_roots"
+      },
+      {
+        "type": "has_item",
+        "item": "hextale:void_bulb"
+      }
+    ]
+  },
+  "pos": [350, 590]
+}

@@ -1,10 +1,22 @@
 {
   "region": "workshop",
-  "icon": "minecraft:ink_sac",
-  "parents": ["item_study", "essence_tank", "concentrate"],
+  "icon": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": 104422
+    }
+  },
+  "parents": [
+    "item_study",
+    "essence_tank",
+    "concentrate"
+  ],
   "goal": {
     "type": "ink_at_table"
   },
   "aura": "gold",
-  "pos": [230, -130]
+  "pos": [
+    230,
+    -130
+  ]
 }

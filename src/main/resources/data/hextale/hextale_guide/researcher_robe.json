@@ -1,22 +1,46 @@
 {
   "region": "workshop",
-  "icon": "hextale:researcher_robe",
-  "parents": [
-    "arcane_cloth",
-    "hex_workbench",
-    "ink"
+  "icon": [
+    "hextale:researcher_robe",
+    "hextale:researcher_hood",
+    "hextale:researcher_trousers",
+    "hextale:researcher_boots"
   ],
-  "display": {
-    "kind": "hex_crafting",
-    "result": "hextale:researcher_robe",
-    "then": {
-      "kind": "runes",
-      "result": "robe"
+  "parents": ["arcane_cloth", "hex_workbench", "ink"],
+  "display": [
+    {
+      "kind": "hex_crafting",
+      "result": "hextale:researcher_robe",
+      "then": {
+        "kind": "runes",
+        "result": "robe"
+      }
+    },
+    {
+      "kind": "hex_crafting",
+      "result": "hextale:researcher_hood",
+      "then": {
+        "kind": "runes",
+        "result": "hood"
+      }
+    },
+    {
+      "kind": "hex_crafting",
+      "result": "hextale:researcher_trousers",
+      "then": {
+        "kind": "runes",
+        "result": "trousers"
+      }
+    },
+    {
+      "kind": "hex_crafting",
+      "result": "hextale:researcher_boots",
+      "then": {
+        "kind": "runes",
+        "result": "boots"
+      }
     }
-  },
+  ],
   "research": "researcher_robe",
-  "pos": [
-    -489,
-    -184
-  ]
+  "pos": [-489, -184]
 }

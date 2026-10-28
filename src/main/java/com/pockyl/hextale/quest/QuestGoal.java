@@ -17,6 +17,7 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.runework.HextechPickaxeItem;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.RuneHolder;
+import com.pockyl.hextale.thevoid.Thinning;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +40,7 @@ public interface QuestGoal {
             Map.entry("pylon_runes", PylonRunes.CODEC),
             Map.entry("concentrate", Concentrate.CODEC),
             Map.entry("ink_at_table", InkAtTable.CODEC),
+            Map.entry("thinning", ThinningAt.CODEC),
             Map.entry("event", Event.CODEC),
             Map.entry("any_of", AnyOf.CODEC));
 
@@ -208,6 +210,30 @@ public interface QuestGoal {
             return player.containerMenu instanceof ResearchTableMenu menu
                     && player.level().getBlockEntity(menu.pos()) instanceof ResearchTableBlockEntity table
                     && Arrays.stream(table.inkSupply().available()).anyMatch(amount -> amount > 0);
+        }
+    }
+
+    /** The land where the player stands has worn at least this thin ({@code haze}, {@code miasma}, {@code blight}, {@code breach}). */
+    record ThinningAt(Thinning.Stage stage) implements QuestGoal {
+        static final Codec<Thinning.Stage> STAGE = Codec.STRING.comapFlatMap(name -> {
+            for (Thinning.Stage stage : Thinning.Stage.values()) {
+                if (stage.name().equalsIgnoreCase(name)) {
+                    return com.mojang.serialization.DataResult.success(stage);
+                }
+            }
+            return com.mojang.serialization.DataResult.error(() -> "Unknown stage of the Thinning " + name);
+        }, stage -> stage.name().toLowerCase(java.util.Locale.ROOT));
+        static final MapCodec<ThinningAt> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                STAGE.fieldOf("stage").forGetter(ThinningAt::stage)).apply(i, ThinningAt::new));
+
+        @Override
+        public String type() {
+            return "thinning";
+        }
+
+        @Override
+        public boolean isMet(ServerPlayer player) {
+            return Thinning.stage(player.level(), player.blockPosition()).ordinal() >= stage.ordinal();
         }
     }
 

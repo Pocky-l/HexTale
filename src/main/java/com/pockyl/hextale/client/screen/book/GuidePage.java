@@ -112,6 +112,9 @@ final class GuidePage {
     /** A device's plate opens on its description; its runes lie on a tab of their own. Where the tabs were drawn last. */
     private boolean runesTab;
     private int tabY = Integer.MIN_VALUE;
+    /** On the plate of a step for a set of things: the thing picked in the row of its icons, and where the row was drawn. */
+    private int variant;
+    private int variantY = Integer.MIN_VALUE;
 
     GuidePage(StarBook book) {
         this.book = book;
@@ -216,6 +219,9 @@ final class GuidePage {
             renderAheadNode(graphics, quest, quest == hovered);
         }
         for (Quest quest : shown) {
+            if (Blight.of(quest)) {
+                Blight.behind(graphics, quest.x(), quest.y(), size(quest), Guide.done(quest, knowledge), now, quest.index());
+            }
             Auras.draw(graphics, quest, size(quest), now);
         }
         for (Quest quest : shown) {
@@ -223,7 +229,7 @@ final class GuidePage {
         }
         PixelArt.flush(graphics);
         for (Quest quest : ahead) {
-            icon(graphics, quest);
+            icon(graphics, quest, now);
         }
         PixelArt.flush(graphics);
         for (Quest quest : ahead) {
@@ -232,7 +238,7 @@ final class GuidePage {
         }
         PixelArt.flush(graphics);
         for (Quest quest : shown) {
-            icon(graphics, quest);
+            icon(graphics, quest, now);
         }
         // Small badges only where they can be read: zoomed out they would only speckle the sky. The research badge stays:
         // it tells which steps go through a research bench.
@@ -270,16 +276,17 @@ final class GuidePage {
         PixelArt.flush(graphics);
     }
 
-    private static void icon(GuiGraphicsExtractor graphics, Quest quest) {
+    /** The step's item; a step for a set of things shows them in turn. */
+    private static void icon(GuiGraphicsExtractor graphics, Quest quest, long now) {
         if (quest.landmark()) {
             // The landmark's item is drawn twice as large, filling its great medallion.
             graphics.pose().pushMatrix();
             graphics.pose().translate(quest.x(), quest.y());
             graphics.pose().scale(2, 2);
-            graphics.item(quest.icon(), -8, -8);
+            graphics.item(quest.icon(now), -8, -8);
             graphics.pose().popMatrix();
         } else {
-            graphics.item(quest.icon(), quest.x() - 8, quest.y() - 8);
+            graphics.item(quest.icon(now), quest.x() - 8, quest.y() - 8);
         }
     }
 
@@ -324,6 +331,10 @@ final class GuidePage {
             if (quest.kind() == Quest.Kind.WIP) {
                 continue;
             }
+            if (Blight.of(quest)) {
+                Blight.haze(graphics, quest);
+                continue;
+            }
             int color = quest.region().color();
             int widest = quest.landmark() ? 220 : 130;
             for (int ring = 0; ring < 5; ring++) {
@@ -363,6 +374,10 @@ final class GuidePage {
             }
             if (quest.region() == Region.CHEMTECH) {
                 Vines.link(graphics, path, lit, Vines.decay(quest), now, quest.index());
+                continue;
+            }
+            if (Blight.of(quest)) {
+                Blight.link(graphics, path, lit, now, quest.index());
                 continue;
             }
             for (int[] p : path) {
@@ -437,9 +452,14 @@ final class GuidePage {
         boolean done = Guide.done(quest, knowledge);
         boolean wip = quest.kind() == Quest.Kind.WIP;
         float pulse = pulse(now, quest.index());
+        boolean blight = Blight.of(quest);
+        if (blight) {
+            // The Void's steps do not breathe evenly: they seethe and flare.
+            pulse = Blight.anger(now, quest.index());
+        }
         if (!done && !wip) {
-            // An open step breathes in cyan, one waiting for its research in violet.
-            int breath = researchStep(quest) && !knowledge.researched(quest.topic()) ? RESEARCH : OPEN;
+            // An open step breathes in cyan, one waiting for its research in violet, one of the Void in an angry red.
+            int breath = blight ? Blight.ANGRY : researchStep(quest) && !knowledge.researched(quest.topic()) ? RESEARCH : OPEN;
             for (int ring = 0; ring < 3; ring++) {
                 int halo = PixelArt.argb(breath, (0.14F - ring * 0.04F) * (0.6F + 0.4F * pulse));
                 PixelArt.disc(graphics, x, y, size + 4 + ring * 4, halo, 0);
@@ -448,7 +468,7 @@ final class GuidePage {
         // Done steps keep the metal of their stage: brass early (tinted by the branch, key steps bright gold), blued steel in
         // the middle, white gold at the end.
         int rim = done ? stageRim(quest, quest.important() || quest.landmark() || quest.station())
-                : wip ? WIP : PixelArt.mix(0x2B8FB8, 0x7EF0FF, pulse);
+                : wip ? (blight ? 0xA0386E : WIP) : blight ? PixelArt.mix(0x7A1E48, 0xFF5A9A, pulse) : PixelArt.mix(0x2B8FB8, 0x7EF0FF, pulse);
         if (quest == selected || hovered) {
             rim = PixelArt.mix(StarBook.GOLD, 0xFFF6D6, pulse);
         }
@@ -470,6 +490,9 @@ final class GuidePage {
                     int hexRim = done || quest == selected || hovered ? rim : researched ? 0xC8A050 : PixelArt.mix(0x7A4FD0, RESEARCH, pulse);
                     int fill = done ? stageFill(quest) : researched ? 0x1E1A10 : 0x1A1030;
                     hexMedallion(graphics, x, y, size, hexRim, fill, PixelArt.mix(fill, researched || done ? StarBook.GOLD : RESEARCH, 0.16F), 1);
+                } else if (blight) {
+                    int fill = done ? Blight.FILL : 0x1A0614;
+                    medallion(graphics, x, y, size, rim, fill, PixelArt.mix(fill, Blight.GLOW, done ? 0.1F : 0.08F + 0.12F * pulse), 1);
                 } else {
                     int fill = done ? stageFill(quest) : 0x0C1A2A;
                     medallion(graphics, x, y, size, rim, fill, done ? PixelArt.mix(fill, stageColor(quest.stage()), 0.18F) : PixelArt.mix(fill, OPEN, 0.12F), 1);
@@ -490,11 +513,14 @@ final class GuidePage {
                 }
             }
         }
+        if (blight && !wip) {
+            Blight.over(graphics, x, y, size, done, now, quest.index());
+        }
         Vines.Frame frame = Vines.frame(quest);
         if (frame != Vines.Frame.NONE && quest.kind() != Quest.Kind.WIP && !quest.station()) {
             Vines.ring(graphics, x, y, size, frame == Vines.Frame.HALF, Vines.decay(quest), now, quest.index());
         }
-        if (quest.stage() == Quest.Stage.LATE && !wip && !quest.landmark()) {
+        if (quest.stage() == Quest.Stage.LATE && !wip && !quest.landmark() && !blight) {
             // A thin violet seam around the late steps, like the gold seams on the Hexcore's tiles.
             PixelArt.discRing(graphics, x, y, size + 4, PixelArt.argb(LATE_VIOLET, 0.3F + 0.25F * pulse));
         }
@@ -518,6 +544,9 @@ final class GuidePage {
 
     /** The rim of a done step: brass early, blued steel in the middle, white gold at the end. */
     private static int stageRim(Quest quest, boolean key) {
+        if (Blight.of(quest)) {
+            return key ? Blight.RIM_KEY : Blight.RIM;
+        }
         return switch (quest.stage()) {
             case EARLY -> quest.region() == Region.CHEMTECH ? Vines.BRONZE
                     : key ? StarBook.GOLD : PixelArt.mix(0xB08A40, quest.region().color(), 0.25F);
@@ -934,6 +963,11 @@ final class GuidePage {
         return seen(quest, knowledge);
     }
 
+    /** Whether the map shows this step to the reader (not only to the dev editor's eye): only those can be taken in. */
+    boolean seenOnMap(Quest quest, RuneKnowledge knowledge) {
+        return !hiddenWip(quest) && Guide.visible(quest, knowledge);
+    }
+
     /** Whether the map shows a step as done or open (the dev editor shows them all). */
     private boolean seen(Quest quest, RuneKnowledge knowledge) {
         return !hiddenWip(quest) && (revealAll || Guide.visible(quest, knowledge));
@@ -948,9 +982,12 @@ final class GuidePage {
         return hideWip && quest.kind() == Quest.Kind.WIP;
     }
 
+    /** A step's name, in gold; the Void's steps in their own dark ink. */
     private static Component title(Quest quest) {
-        return Component.translatable(quest.translationKey()).withColor(StarBook.GOLD);
+        return Component.translatable(quest.translationKey()).withColor(Blight.of(quest) ? VOID_INK : StarBook.GOLD);
     }
+
+    private static final int VOID_INK = 0xE070A8;
 
     private static Component status(Quest quest, RuneKnowledge knowledge) {
         boolean done = Guide.done(quest, knowledge);
@@ -960,7 +997,8 @@ final class GuidePage {
                     ? Component.translatable(quest.topic().lab() ? "book.hextale.quest.lab_first" : "book.hextale.quest.research_first",
                             Component.translatable(quest.topic().translationKey()))
                     .withColor(0x9FE6FF)
-                    : Component.translatable("book.hextale.quest.goal", Component.translatable(quest.translationKey() + ".goal")).withColor(OPEN);
+                    : Component.translatable("book.hextale.quest.goal", Component.translatable(quest.translationKey() + ".goal"))
+                    .withColor(Blight.of(quest) ? Blight.GLOW : OPEN);
             case WIP -> Component.translatable("book.hextale.guide.wip_status").withColor(WIP);
         };
     }
@@ -981,6 +1019,8 @@ final class GuidePage {
         runeGridX = Integer.MIN_VALUE;
         runesTab = false;
         tabY = Integer.MIN_VALUE;
+        variant = 0;
+        variantY = Integer.MIN_VALUE;
         return true;
     }
 
@@ -1064,9 +1104,28 @@ final class GuidePage {
                 || display.kind() == QuestDisplay.Kind.RUNES;
     }
 
+    /** A step for a set of things with a picture per thing: its plate shows a row of them to pick from. */
+    private static boolean hasVariants(Quest quest) {
+        return quest.displays().size() > 1;
+    }
+
+    /** The picture on the plate: the step's own, or the one of the thing picked in the row. */
+    @Nullable
+    private QuestDisplay displayOf(Quest quest) {
+        return hasVariants(quest) ? quest.displays().get(Math.min(variant, quest.displays().size() - 1)) : quest.display();
+    }
+
+    /** The sign in the plate's header: the thing picked, or the step's icons in turn. */
+    private ItemStack headerIcon(Quest quest, long now) {
+        return hasVariants(quest) && variant < quest.icons().size() ? quest.icons().get(variant) : quest.icon(now);
+    }
+
+    private static final int VARIANT_ROW = SLOT + 6;
+    private static final int VARIANT_GAP = 4;
+
     /** A step whose runes picture follows its other pictures (a device and the runes it takes) gets two tabs. */
-    private static boolean hasRunesTab(Quest quest) {
-        QuestDisplay first = quest.display();
+    private boolean hasRunesTab(Quest quest) {
+        QuestDisplay first = displayOf(quest);
         if (first == null || runesKind(first)) {
             return false;
         }
@@ -1089,13 +1148,16 @@ final class GuidePage {
 
     private int contentHeight(Quest quest, RuneKnowledge knowledge) {
         int h = PAD + headerHeight(quest) + statusLines(quest, knowledge).size() * 10 + 6;
+        if (hasVariants(quest)) {
+            h += VARIANT_ROW;
+        }
         if (hasRunesTab(quest)) {
             h += TAB_HEIGHT + 6;
         }
         if (quest.scene() != null && !onRunesTab(quest)) {
             h += SCENE_HEIGHT + 8;
         }
-        for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
+        for (QuestDisplay display = displayOf(quest); display != null; display = display.then()) {
             if (shown(quest, display)) {
                 h += displayHeight(display) + 8;
             }
@@ -1160,6 +1222,15 @@ final class GuidePage {
         // The map sinks into the dark behind the window.
         PixelArt.fill(graphics, book.skyLeft(), book.skyTop(), book.skyLeft() + book.skyWidth(), book.skyTop() + book.skyHeight(), 0xB0040310);
         StarBook.plateBackground(graphics, x, top, w, h);
+        if (Blight.of(quest)) {
+            // A page of the Void: the paper darkened, a thin sick line along its rim.
+            PixelArt.fill(graphics, x + 1, top + 1, x + w - 1, top + h - 1, PixelArt.argb(0x12040E, 0.4F));
+            int edge = PixelArt.argb(Blight.GLOW, 0.25F + 0.25F * Blight.anger(now, quest.index()));
+            PixelArt.fill(graphics, x + 1, top + 1, x + w - 1, top + 2, edge);
+            PixelArt.fill(graphics, x + 1, top + h - 2, x + w - 1, top + h - 1, edge);
+            PixelArt.fill(graphics, x + 1, top + 2, x + 2, top + h - 2, edge);
+            PixelArt.fill(graphics, x + w - 2, top + 2, x + w - 1, top + h - 2, edge);
+        }
         PixelArt.flush(graphics);
         int footer = footerHeight(quest);
         graphics.enableScissor(x + 1, top + 1, x + w - 1, top + h - 1 - footer);
@@ -1170,7 +1241,7 @@ final class GuidePage {
         int y = top + PAD - scroll;
         // Header: the step's sign and name.
         int sx = ix + BACK + 4;
-        graphics.item(quest.icon(), sx, y);
+        graphics.item(headerIcon(quest, now), sx, y);
         int ty = y + Math.max(0, (headerHeight(quest) - titleLines(quest).size() * 10) / 2 - 1);
         for (FormattedCharSequence line : titleLines(quest)) {
             graphics.text(font, line, ix + TITLE_INDENT, ty, 0xFFFFFFFF, true);
@@ -1187,6 +1258,14 @@ final class GuidePage {
         y += 2;
         PixelArt.fill(graphics, ix, y, ix + innerWidth(), y + 1, PixelArt.argb(StarBook.GOLD, 0.3F));
         y += 4;
+        if (hasVariants(quest)) {
+            variantY = y;
+            List<FormattedCharSequence> hover = renderVariants(graphics, quest, ix, y, mouseIn ? mouseX : -1, mouseY, now);
+            if (hover != null) {
+                tooltip = hover;
+            }
+            y += VARIANT_ROW;
+        }
         if (hasRunesTab(quest)) {
             tabY = y;
             renderTabs(graphics, ix, y, mouseIn ? mouseX : -1, mouseY);
@@ -1206,7 +1285,7 @@ final class GuidePage {
             CircleDiorama.draw(graphics, quest.scene(), now / 50F, ix + 1, y + 1, ix + sw - 1, y + SCENE_HEIGHT - 1, SCENE_SCALE);
             y += SCENE_HEIGHT + 8;
         }
-        for (QuestDisplay display = quest.display(); display != null; display = display.then()) {
+        for (QuestDisplay display = displayOf(quest); display != null; display = display.then()) {
             if (!shown(quest, display)) {
                 continue;
             }
@@ -1281,6 +1360,50 @@ final class GuidePage {
             Component label = Component.translatable(tab == 0 ? "book.hextale.guide.tab.about" : "book.hextale.guide.tab.runes");
             graphics.centeredText(font, label, tx + tw / 2, y + 2, open ? 0xFFFFF6D6 : hovered ? TEXT : 0xFF8A80A0);
         }
+    }
+
+    /** The row of things a step stands for, the picked one in a lit gold frame; returns the tooltip under the mouse. */
+    @Nullable
+    private List<FormattedCharSequence> renderVariants(GuiGraphicsExtractor graphics, Quest quest, int x, int y, int mouseX, int mouseY, long now) {
+        List<FormattedCharSequence> tooltip = null;
+        int count = Math.min(quest.icons().size(), quest.displays().size());
+        for (int i = 0; i < count; i++) {
+            int sx = x + i * (SLOT + VARIANT_GAP);
+            if (i == variant) {
+                float glow = 0.6F + 0.4F * pulse(now, i);
+                PixelArt.fill(graphics, sx - 2, y - 2, sx + SLOT + 2, y + SLOT + 2, PixelArt.argb(StarBook.GOLD, glow));
+                PixelArt.fill(graphics, sx - 1, y - 1, sx + SLOT + 1, y + SLOT + 1, PixelArt.argb(0x2E2440, 1));
+            }
+            List<FormattedCharSequence> hover = slot(graphics, quest.icons().get(i), sx, y, mouseX, mouseY, null);
+            if (hover != null) {
+                tooltip = hover;
+            }
+        }
+        return tooltip;
+    }
+
+    /** Picks the thing under the mouse in a set's row; true when one was hit. */
+    private boolean pickVariant(double mouseX, double mouseY) {
+        if (selected == null || !hasVariants(selected) || variantY == Integer.MIN_VALUE || mouseY < variantY || mouseY >= variantY + SLOT) {
+            return false;
+        }
+        int ix = plateLeft() + PAD;
+        int count = Math.min(selected.icons().size(), selected.displays().size());
+        for (int i = 0; i < count; i++) {
+            int sx = ix + i * (SLOT + VARIANT_GAP);
+            if (mouseX >= sx && mouseX < sx + SLOT) {
+                if (i != variant) {
+                    variant = i;
+                    scroll = 0;
+                    optionRune = null;
+                    runeGridX = Integer.MIN_VALUE;
+                    tabY = Integer.MIN_VALUE;
+                    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.2F, 0.6F));
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Opens the tab under the mouse; true when a tab was hit. */
@@ -1838,7 +1961,7 @@ final class GuidePage {
             return false;
         }
         RuneHolder holder = null;
-        for (QuestDisplay display = selected.display(); display != null && holder == null; display = display.then()) {
+        for (QuestDisplay display = displayOf(selected); display != null && holder == null; display = display.then()) {
             holder = switch (display.kind()) {
                 case PICKAXE_RUNES -> RuneHolder.PICKAXE;
                 case PYLON_RUNES -> RuneHolder.PYLON;
@@ -1964,7 +2087,7 @@ final class GuidePage {
             close();
             return;
         }
-        if (pickTab(mouseX, mouseY) || pickRune(mouseX, mouseY) || pickLayer(mouseX, mouseY) || !studyButton(quest)) {
+        if (pickVariant(mouseX, mouseY) || pickTab(mouseX, mouseY) || pickRune(mouseX, mouseY) || pickLayer(mouseX, mouseY) || !studyButton(quest)) {
             return;
         }
         int ix = plateLeft() + PAD;

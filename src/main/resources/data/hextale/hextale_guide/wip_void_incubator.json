@@ -1,0 +1,8 @@
+{
+  "kind": "wip",
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:void_chitin",
+  "parents": ["wip_subdued_breach"],
+  "pos": [-50, 975]
+}

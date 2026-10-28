@@ -37,9 +37,7 @@ import org.jspecify.annotations.Nullable;
  * found so far ({@link RunesPage}). Shown by {@link StarBookScreen} in hand and inside the table's screen.
  */
 public final class StarBook {
-    private static final ResourceLocation COSMOS = Hextale.id("textures/gui/cosmos.png");
     private static final ResourceLocation FRAME = Hextale.id("textures/gui/star_book_frame.png");
-    private static final int COSMOS_SIZE = 256;
     private static final int FRAME_SIZE = 48;
     private static final int FRAME_CORNER = 16;
     /** The frame's leather band; the sky starts inside it. */
@@ -86,6 +84,10 @@ public final class StarBook {
     private final GuidePage guide;
     private final RunesPage runes;
     private final GuideEditor editor;
+    private final FreshMarks marks = new FreshMarks(this);
+    /** Where the sky is flying to after a click on an arrow (map coordinates), or null. */
+    private float @Nullable [] glide;
+    private long glideFrame;
     private boolean dragging;
     private boolean pressed;
     private double pressX;
@@ -175,6 +177,36 @@ public final class StarBook {
         return skyTop() + skyHeight() / 2.0F;
     }
 
+    /** The screen point of a map point. */
+    float screenX(float mapX) {
+        return (mapX - cameraX) * zoom() + centreX();
+    }
+
+    float screenY(float mapY) {
+        return (mapY - cameraY) * zoom() + centreY();
+    }
+
+    /** Flies the sky smoothly until this map point is in the middle. */
+    void glideTo(float x, float y) {
+        glide = new float[]{x, y};
+        glideFrame = Util.getMillis();
+    }
+
+    private void stepGlide(long now) {
+        if (glide == null) {
+            return;
+        }
+        // Eased by time, not by frame: the same flight at any frame rate.
+        float k = 1 - (float) Math.exp(-(now - glideFrame) / 110.0);
+        glideFrame = now;
+        cameraX += (glide[0] - cameraX) * k;
+        cameraY += (glide[1] - cameraY) * k;
+        clampCamera();
+        if (Math.abs(glide[0] - cameraX) < 0.5F && Math.abs(glide[1] - cameraY) < 0.5F) {
+            glide = null;
+        }
+    }
+
     /** Map coordinates under a screen point. */
     float mapX(double screenX) {
         return (float) ((screenX - centreX()) / zoom() + cameraX);
@@ -199,7 +231,9 @@ public final class StarBook {
             aim(knowledge);
         }
         graphics.enableScissor(skyLeft(), skyTop(), skyLeft() + skyWidth(), skyTop() + skyHeight());
-        renderSpace(graphics, now);
+        boolean trail = tab == Tab.QUESTS && guide.selected() == null && overSky(mouseX, mouseY) && !overTabs(mouseX, mouseY);
+        Sky.render(graphics, skyLeft(), skyTop(), skyWidth(), skyHeight(), cameraX, cameraY, zoom(),
+                (GuidePage.minX() + GuidePage.maxX()) / 2.0F, (GuidePage.minY() + GuidePage.maxY()) / 2.0F, trail, mouseX, mouseY, now);
         if (tab == Tab.RUNES) {
             List<FormattedCharSequence> tooltip = runes.render(graphics, knowledge, mouseX, mouseY, now);
             PixelArt.flush(graphics);
@@ -211,16 +245,23 @@ public final class StarBook {
             return tabTip != null ? tabTip : tooltip;
         }
 
+        stepGlide(now);
+        marks.layout(knowledge);
         graphics.pose().pushMatrix();
         graphics.pose().translate(centreX(), centreY());
         graphics.pose().scale(zoom(), zoom());
         graphics.pose().translate(-cameraX, -cameraY);
-        // While a plate is open the map waits behind it.
-        boolean free = !dragging && overSky(mouseX, mouseY) && guide.selected() == null;
+        // While a plate is open the map waits behind it; an arrow covers the map under it.
+        boolean free = !dragging && overSky(mouseX, mouseY) && guide.selected() == null && !overTabs(mouseX, mouseY)
+                && marks.at(mouseX, mouseY) == null;
         Quest hovered = free ? guide.questAt(mouseX, mouseY, knowledge) : null;
+        if (hovered != null && guide.seenOnMap(hovered, knowledge)) {
+            FreshMarks.notice(hovered, knowledge);
+        }
         guide.renderMap(graphics, knowledge, now, hovered);
         PixelArt.flush(graphics);
         graphics.pose().popMatrix();
+        List<FormattedCharSequence> markTip = guide.selected() == null ? marks.render(graphics, mouseX, mouseY, now) : null;
         editor.renderHint(graphics, skyLeft() + skyWidth() - 4, skyTop() + skyHeight() - 4, mouseX, mouseY);
 
         List<FormattedCharSequence> tabTip = guide.selected() == null ? renderTabs(graphics, mouseX, mouseY) : null;
@@ -232,6 +273,9 @@ public final class StarBook {
         PixelArt.flush(graphics);
         if (tabTip != null) {
             return tabTip;
+        }
+        if (markTip != null) {
+            return markTip;
         }
         if (hovered != null && tooltip == null && !overTabs(mouseX, mouseY)) {
             tooltip = guide.tooltip(hovered, knowledge);
@@ -249,6 +293,19 @@ public final class StarBook {
 
     private boolean overTab(double x, double y, int index) {
         return x >= tabX(index) && x < tabX(index) + TAB_WIDTH && y >= tabY() && y < tabY() + TAB_HEIGHT;
+    }
+
+    /** The tab bar's right and bottom edges (the arrows of new steps keep out of it). */
+    int tabBarRight() {
+        return tabX(1) + TAB_WIDTH + 5;
+    }
+
+    int tabBarBottom() {
+        return tabY() + TAB_HEIGHT + 4;
+    }
+
+    boolean overTabBar(double x, double y) {
+        return x >= skyLeft() - 8 && x < tabBarRight() + 8 && y >= skyTop() - 8 && y < tabBarBottom() + 8;
     }
 
     /** The tab bar: a small plate in the sky's corner holding both chips; the map never shows through it. */
@@ -293,58 +350,6 @@ public final class StarBook {
             }
         }
         return tooltip;
-    }
-
-    /** The nebula drifts slower than the stars of the map; three layers of small stars drift at their own speeds. */
-    private void renderSpace(GuiGraphicsExtractor graphics, long now) {
-        int x0 = skyLeft();
-        int y0 = skyTop();
-        int w = skyWidth();
-        int h = skyHeight();
-        PixelArt.fill(graphics, x0, y0, x0 + w, y0 + h, 0xFF06050D);
-        int offsetX = Math.floorMod((int) (cameraX * 0.25F), COSMOS_SIZE);
-        int offsetY = Math.floorMod((int) (cameraY * 0.25F), COSMOS_SIZE);
-        for (int ty = -offsetY; ty < h; ty += COSMOS_SIZE) {
-            for (int tx = -offsetX; tx < w; tx += COSMOS_SIZE) {
-                PixelArt.flush(graphics);
-                graphics.blit(RenderPipelines.GUI_TEXTURED, COSMOS, x0 + tx, y0 + ty, 0, 0, COSMOS_SIZE, COSMOS_SIZE, COSMOS_SIZE, COSMOS_SIZE);
-            }
-        }
-        float[] speeds = {0.12F, 0.3F, 0.55F};
-        int[] counts = {90, 60, 34};
-        for (int layer = 0; layer < speeds.length; layer++) {
-            float shiftX = cameraX * speeds[layer] * zoom();
-            float shiftY = cameraY * speeds[layer] * zoom();
-            int cell = 512;
-            int count = counts[layer] * Math.max(1, w * h / (300 * 180));
-            for (int i = 0; i < count; i++) {
-                long seed = i * 2654435761L + layer * 40503L;
-                int sx = (int) Math.floorMod((long) (hash(seed) % cell) - (long) shiftX, cell);
-                int sy = (int) Math.floorMod((long) (hash(seed + 7) % cell) - (long) shiftY, cell);
-                if (sx >= w || sy >= h) {
-                    continue;
-                }
-                float twinkle = 0.55F + 0.45F * Mth.sin(now / (700.0F + hash(seed + 3) % 900) + i);
-                int tint = layer == 2 ? 0xFFF6E0 : hash(seed + 5) % 3 == 0 ? 0xB8C8FF : 0xE0D8F0;
-                int argb = PixelArt.argb(tint, (0.25F + 0.25F * layer) * twinkle);
-                PixelArt.fill(graphics, x0 + sx, y0 + sy, x0 + sx + 1, y0 + sy + 1, argb);
-                if (layer == 2 && hash(seed + 11) % 4 == 0) {
-                    int dim = PixelArt.argb(tint, 0.25F * twinkle);
-                    PixelArt.fill(graphics, x0 + sx - 1, y0 + sy, x0 + sx, y0 + sy + 1, dim);
-                    PixelArt.fill(graphics, x0 + sx + 1, y0 + sy, x0 + sx + 2, y0 + sy + 1, dim);
-                    PixelArt.fill(graphics, x0 + sx, y0 + sy - 1, x0 + sx + 1, y0 + sy, dim);
-                    PixelArt.fill(graphics, x0 + sx, y0 + sy + 1, x0 + sx + 1, y0 + sy + 2, dim);
-                }
-            }
-        }
-    }
-
-    private static long hash(long value) {
-        long x = value * 0x9E3779B97F4A7C15L;
-        x ^= x >>> 31;
-        x *= 0xBF58476D1CE4E5B9L;
-        x ^= x >>> 27;
-        return Math.abs(x);
     }
 
     /** Dark glass in a gold rim with cyan corner studs: the plates of both pages. */
@@ -443,6 +448,13 @@ public final class StarBook {
             }
             return true;
         }
+        FreshMarks.Mark mark = marks.at(mouseX, mouseY);
+        if (mark != null) {
+            // An arrow flies the sky to the new step it points at.
+            glideTo(mark.target().x(), mark.target().y());
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.3F, 0.5F));
+            return true;
+        }
         pressed = true;
         dragging = false;
         pressX = mouseX;
@@ -461,6 +473,7 @@ public final class StarBook {
         }
         if (!dragging && Math.abs(mouseX - pressX) + Math.abs(mouseY - pressY) >= DRAG_THRESHOLD) {
             dragging = true;
+            glide = null;
         }
         if (dragging) {
             cameraX = pressCameraX - (float) ((mouseX - pressX) / zoom());

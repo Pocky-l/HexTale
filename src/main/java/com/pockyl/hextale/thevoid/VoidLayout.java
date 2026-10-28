@@ -247,12 +247,12 @@ public final class VoidLayout {
         float far = 0;
         for (int at = 0; at < region.length; at++) {
             if (region[at] != EMPTY) {
-                far = Math.max(far, (float) Mth.length(at % width + 0.5F - cx, at / width + 0.5F - cy));
+                far = Math.max(far, (float) com.pockyl.hextale.port.PortMath.length(at % width + 0.5F - cx, at / width + 0.5F - cy));
             }
         }
         for (int at = 0; at < region.length; at++) {
             if (region[at] != EMPTY) {
-                float d = (float) Mth.length(at % width + 0.5F - cx, at / width + 0.5F - cy) / Math.max(1, far);
+                float d = (float) com.pockyl.hextale.port.PortMath.length(at % width + 0.5F - cx, at / width + 0.5F - cy) / Math.max(1, far);
                 delay[at] = Math.min(0.8F, d * 0.7F + random.nextFloat() * 0.18F);
             }
         }

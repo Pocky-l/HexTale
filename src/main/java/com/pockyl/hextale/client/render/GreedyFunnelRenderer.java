@@ -12,10 +12,8 @@ import com.pockyl.hextale.port.client.ItemStackRenderState;
 import com.pockyl.hextale.port.client.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -24,7 +22,6 @@ import org.jspecify.annotations.Nullable;
 import com.pockyl.hextale.block.GreedyFunnelBlockEntity;
 import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.farm.FunnelTimeline;
-import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
@@ -32,9 +29,9 @@ import java.util.List;
 
 /**
  * The Greedy Funnel at work. A slow vortex of shadow turns in its mouth - faster while it draws a death in, hardly at
- * all when it is hungry - under a hextech crystal that glows greener the more experience it holds. Every swallowed death
- * is drawn from its timeline ({@link FunnelTimeline}): the drops are plucked up where the creature fell and pulled
- * into the bowl, the experience follows as motes into the crystal. Drawing decay out of a jar shows the jar's stream.
+ * all when it is hungry. Every swallowed death is drawn from its timeline ({@link FunnelTimeline}): the drops are
+ * plucked up where the creature fell and pulled into the bowl, the experience follows as motes into the mouth. Drawing
+ * decay out of a jar shows the jar's stream into the mouth.
  */
 public class GreedyFunnelRenderer implements BlockEntityRenderer<GreedyFunnelBlockEntity, GreedyFunnelRenderer.State> {
     private static final int VORTEX_MOTES = 7;
@@ -60,20 +57,14 @@ public class GreedyFunnelRenderer implements BlockEntityRenderer<GreedyFunnelBlo
         state.time = HexFx.time(level, partialTick) + (seed & 127);
         state.vortex = Mth.lerp(partialTick, funnel.vortexBefore, funnel.vortex);
         state.hungry = funnel.hungry();
-        state.full = funnel.full();
-        state.filled = Math.min(1, funnel.experience() / (float) GreedyFunnelBlockEntity.EXPERIENCE_CAP);
-        state.color = PickaxeRuneTint.blend(funnel.runes());
-        state.crystalAt = GreedyFunnelBlockEntity.crystal(pos).subtract(origin);
         state.mouthAt = GreedyFunnelBlockEntity.mouth(pos).subtract(origin);
-        itemModelResolver.updateForTopItem(state.crystal, new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), ItemDisplayContext.GROUND, level,
-                null, seed);
         float now = level == null ? 0 : level.getGameTime() + partialTick;
 
         state.stream = null;
         BlockPos jar = funnel.drawing();
         if (jar != null) {
             float age = now - funnel.drewAt();
-            state.stream = new JarStreamFx.Stream(JarReach.mouth(jar).subtract(origin), state.crystalAt, Essence.DECAY.color(),
+            state.stream = new JarStreamFx.Stream(JarReach.mouth(jar).subtract(origin), state.mouthAt, Essence.DECAY.color(),
                     age / 12F, (age - (GreedyFunnelBlockEntity.STREAM_TICKS - 14)) / 12F, seed);
         }
 
@@ -119,7 +110,6 @@ public class GreedyFunnelRenderer implements BlockEntityRenderer<GreedyFunnelBlo
 
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
-        float time = state.time;
         Vec3 eye = camera.pos.subtract(Vec3.atLowerCornerOf(state.blockPos));
         float calm = state.hungry ? 0.3F : 1;
 
@@ -150,26 +140,8 @@ public class GreedyFunnelRenderer implements BlockEntityRenderer<GreedyFunnelBlo
         }
         poseStack.popPose();
 
-        // The crystal: greener with the experience it holds, dim when hungry, reddened when it can hold no more.
-        Vec3 crystal = state.crystalAt;
-        float bob = Mth.sin(time * 0.06F) * 0.03F;
-        poseStack.pushPose();
-        poseStack.translate(crystal.x, crystal.y + bob, crystal.z);
-        int halo = state.full ? 0xE0604A : state.color;
-        HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.5F, halo, 0.35F * calm);
-        if (state.filled > 0) {
-            HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.35F + 0.35F * state.filled, FunnelTimeline.EXPERIENCE,
-                    0.15F + 0.45F * state.filled);
-        }
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.vortex * 0.4F));
-        poseStack.scale(0.36F, 0.36F, 0.36F);
-        poseStack.translate(0, -0.2, 0);
-        state.crystal.submit(poseStack, collector, state.hungry ? state.lightCoords : LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY, 0);
-        poseStack.popPose();
-
         if (state.stream != null) {
-            JarStreamFx.submit(poseStack, collector, camera.orientation, eye, state.stream, time);
+            JarStreamFx.submit(poseStack, collector, camera.orientation, eye, state.stream, state.time);
         }
 
         for (int i = 0; i < state.dropCount; i++) {
@@ -207,19 +179,14 @@ public class GreedyFunnelRenderer implements BlockEntityRenderer<GreedyFunnelBlo
     }
 
     public static final class State extends BlockEntityRenderState {
-        final ItemStackRenderState crystal = new ItemStackRenderState();
         final List<DropState> drops = new ArrayList<>();
         final List<MoteState> motes = new ArrayList<>();
         int dropCount;
         int moteCount;
         float time;
         float vortex;
-        float filled;
         boolean hungry;
-        boolean full;
         boolean drawing;
-        int color;
-        Vec3 crystalAt = Vec3.ZERO;
         Vec3 mouthAt = Vec3.ZERO;
         JarStreamFx.@Nullable Stream stream;
     }

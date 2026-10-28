@@ -17,7 +17,7 @@ import org.jspecify.annotations.Nullable;
  * Client: how a swallowed death is drawn into a Greedy Funnel, shared by its renderer and its particles. Every drop
  * shown ({@link GreedyFunnelBlockEntity.Shown#icons()}) leaves a little after the one before it: it is plucked up from
  * where the creature died ({@link #RISE} ticks, turning), pulled along an arc to the mouth ({@link #FLY}) and sinks into
- * the bowl ({@link #SINK}), trailing shadow. The experience follows as a string of motes into the crystal.
+ * the bowl ({@link #SINK}), trailing shadow. The experience follows as a string of motes into the mouth.
  */
 public final class FunnelTimeline {
     public static final int RISE = 8;
@@ -98,7 +98,7 @@ public final class FunnelTimeline {
         }
         float angle = index * 2.1F + (death.seed() & 7);
         Vec3 from = death.from().add(Mth.cos(angle) * 0.25, 0.2 + index * 0.04, Mth.sin(angle) * 0.25);
-        return JarReach.arc(from, GreedyFunnelBlockEntity.crystal(funnel), smooth(a / MOTE_TICKS));
+        return JarReach.arc(from, GreedyFunnelBlockEntity.mouth(funnel), smooth(a / MOTE_TICKS));
     }
 
     /**

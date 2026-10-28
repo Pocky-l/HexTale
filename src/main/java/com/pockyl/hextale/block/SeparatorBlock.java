@@ -3,6 +3,7 @@ package com.pockyl.hextale.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -30,6 +31,9 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModParticles;
@@ -42,9 +46,10 @@ import java.util.Map;
 
 /**
  * The Separator: a separating flask over a dish of blaze powder that draws the essence chosen on its screen out of a
- * mixture, burning the powder. What each side does is set per side (see {@link Side}); the top is the gas vent. While
- * it works ({@link #LIT}) the powder glows, small flames lick the flask and the gas of separation smokes out of the
- * vent.
+ * mixture, burning the powder. What each side does is set per side (see {@link Side}); the top is the gas vent. A new
+ * separator is shut all round: a side opens by itself when something it works with is set right beside it (see
+ * {@link #opensAs}) and shuts again when that is taken away. While it works ({@link #LIT}) the powder glows, small
+ * flames lick the flask and the gas of separation smokes out of the vent.
  */
 public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerHolder, EssenceMachine {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
@@ -81,16 +86,6 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
     public enum Side {
         FRONT, BACK, LEFT, RIGHT;
 
-        /** The modes of a new separator: the mixture in at the back and the left, the concentrate out at the right, the
-         * rest out at the front. */
-        public PortMode defaultMode() {
-            return switch (this) {
-                case FRONT -> PortMode.WASTE;
-                case RIGHT -> PortMode.PRODUCT;
-                default -> PortMode.INLET;
-            };
-        }
-
         public Direction face(Direction facing) {
             return switch (this) {
                 case FRONT -> facing;
@@ -126,7 +121,7 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
             return state;
         }
         Side side = Side.of(face, state.getValue(FACING));
-        PortMode mode = level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator ? separator.mode(side) : side.defaultMode();
+        PortMode mode = level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator ? separator.mode(side) : PortMode.NONE;
         return state.setValue(look, mode);
     }
 
@@ -138,9 +133,57 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
         return state;
     }
 
+    /**
+     * What a shut side opens as when this is set right beside it: a jar with essence in it, or an alembic, feeds the
+     * separator (inlet); an empty jar takes what it lets out (the concentrate first, then the rest); a pipe brings the
+     * mixture in - its way can be changed on the block, the screen or the pipe. Null for anything the separator does
+     * not work with: a side beside it shuts.
+     */
+    @Nullable
+    static PortMode opensAs(SeparatorBlockEntity separator, BlockState neighbour, BlockGetter level, BlockPos at) {
+        if (neighbour.getBlock() instanceof BrassPipeBlock || neighbour.getBlock() instanceof AlembicBlock) {
+            return PortMode.INLET;
+        }
+        EssenceTankBlockEntity jar = EssenceTankBlockEntity.at(level, at);
+        if (jar != null) {
+            return jar.tank().isEmpty() ? separator.freeOutlet() : PortMode.INLET;
+        }
+        return neighbour.getBlock() instanceof EssenceTankBlock ? separator.freeOutlet() : null;
+    }
+
     @Override
     protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+        if (!level.isClientSide() && LOOKS.containsKey(direction) && level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator) {
+            // Decided a tick later, once a placed jar has its contents.
+            separator.notice(direction);
+            level.scheduleTick(pos, this, 1);
+        }
         return withLook(state, direction, neighbour, level, pos);
+    }
+
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState old, boolean movedByPiston) {
+        super.onPlace(state, level, pos, old, movedByPiston);
+        if (!old.is(this) && !level.isClientSide()) {
+            // Whatever already stands around a new separator opens its sides as if it were set beside it now.
+            level.scheduleTick(pos, this, 1);
+        }
+    }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (!(level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator)) {
+            return;
+        }
+        for (Direction face : separator.takeNoticed()) {
+            Side side = Side.of(face, state.getValue(FACING));
+            BlockPos at = pos.relative(face);
+            separator.meet(side, opensAs(separator, level.getBlockState(at), level, at));
+        }
+        BlockState looks = withLooks(state, level, pos);
+        if (looks != state) {
+            level.setBlock(pos, looks, Block.UPDATE_ALL);
+        }
     }
 
     @Override
@@ -196,6 +239,53 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
             level.addParticle(ModParticles.vapour(ModParticles.SMOKE), x, pos.getY() + 1.02, z, (random.nextDouble() - 0.5) * 0.01, 0.03,
                     (random.nextDouble() - 0.5) * 0.01);
         }
+    }
+
+    /** The parts of the model that look the same whichever way it faces: base, dish, flask, ring, neck and vent. */
+    private static final VoxelShape BODY = Shapes.or(
+            Block.box(3, 0, 2, 13, 1, 14), Block.box(2, 0, 3, 14, 1, 13),
+            Block.box(5, 1, 5, 11, 2, 11),
+            Block.box(7, 2, 7, 9, 4, 9),
+            Block.box(5, 4, 5, 11, 5, 11),
+            Block.box(4, 5, 4, 12, 6, 12),
+            Block.box(4, 6, 3, 12, 11, 13), Block.box(3, 6, 4, 13, 11, 12),
+            Block.box(5, 11, 5, 11, 12, 11),
+            Block.box(6, 12, 6, 10, 14, 10),
+            Block.box(7, 14, 7, 9, 15, 9),
+            Block.box(6, 15, 6, 10, 16, 10));
+    private static final Map<BlockState, VoxelShape> SHAPES = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** The block's outline and collision: the flask on its stand and the joints of the open sides, not a full cube. */
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return SHAPES.computeIfAbsent(state, SeparatorBlock::shapeOf);
+    }
+
+    private static VoxelShape shapeOf(BlockState state) {
+        // The stand's rod sits at the back left of a separator facing north.
+        VoxelShape shape = Shapes.or(BODY, turned(3, 1, 12, 4, 11, 13, state.getValue(FACING)));
+        for (Map.Entry<Direction, EnumProperty<PortMode>> look : LOOKS.entrySet()) {
+            Direction face = look.getKey();
+            // Joint boxes as on the north face, like the joint models.
+            shape = switch (state.getValue(look.getValue())) {
+                case NONE -> shape;
+                case INLET -> Shapes.or(shape, turned(7, 7, 0, 9, 9, 3, face));
+                case PRODUCT -> Shapes.or(shape, turned(7, 7, 1, 9, 9, 3, face), turned(6, 6, 0, 10, 10, 1, face));
+                case WASTE -> Shapes.or(shape, turned(7, 7, 1, 9, 9, 3, face), turned(6, 6, 0, 10, 10, 1, face),
+                        turned(7, 10, 0, 9, 11, 1, face));
+            };
+        }
+        return shape;
+    }
+
+    /** A box given as it lies for the north face (pixels), turned about the block's middle to {@code face}. */
+    private static VoxelShape turned(double x0, double y0, double z0, double x1, double y1, double z1, Direction face) {
+        return switch (face) {
+            case EAST -> Block.box(16 - z1, y0, x0, 16 - z0, y1, x1);
+            case SOUTH -> Block.box(16 - x1, y0, 16 - z1, 16 - x0, y1, 16 - z0);
+            case WEST -> Block.box(z0, y0, 16 - x1, z1, y1, 16 - x0);
+            default -> Block.box(x0, y0, z0, x1, y1, z1);
+        };
     }
 
     @Override

@@ -1,7 +1,15 @@
 {
   "region": "workshop",
-  "icon": "minecraft:paper",
-  "parents": ["research_table", "researchers_diary"],
+  "icon": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": -1951985251
+    }
+  },
+  "parents": [
+    "research_table",
+    "researchers_diary"
+  ],
   "goal": {
     "type": "studied"
   },
@@ -9,5 +17,8 @@
     "kind": "essences",
     "count": 0
   },
-  "pos": [150, -200]
+  "pos": [
+    150,
+    -200
+  ]
 }

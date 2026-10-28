@@ -71,6 +71,10 @@ public final class ItemTints {
                 return null;
             }
             model = JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("model");
+            // The mod's "animated" wrapper only matters to the 26.x GUI item cache.
+            while (model.has("type") && "hextale:animated".equals(model.get("type").getAsString())) {
+                model = model.getAsJsonObject("model");
+            }
         } catch (Exception e) {
             Hextale.LOGGER.warn("Item definition of {} not readable", id, e);
             return null;

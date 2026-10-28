@@ -119,18 +119,21 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
             poseStack.translate(-0.5, 0, -0.5);
         }
         TableModels.submit(poseStack, collector, state.creative ? TableModels.CREATIVE_JAR : TableModels.ESSENCE_JAR, state.lightCoords);
-        submitContents(poseStack, collector, state.fill, state.color, state.time, state.seed, state.labels, state.lightCoords);
+        submitContents(poseStack, collector, state.fill, state.color, state.time, state.seed, 3, state.labels, state.lightCoords);
         poseStack.popPose();
     }
 
-    /** The liquid and the stickers, in the jar's own block space (shared with the jar item's renderer). */
-    static void submitContents(PoseStack poseStack, SubmitNodeCollector collector, float fill, int color, float time, long seed,
+    /**
+     * The liquid and the stickers, in the jar's own block space (shared with the jar item's renderer, which has no
+     * bubbles: they face the world's camera).
+     */
+    static void submitContents(PoseStack poseStack, SubmitNodeCollector collector, float fill, int color, float time, long seed, int bubbles,
                                @Nullable Essence[] labels, int light) {
         if (fill > 0) {
             // The surface breathes a little, unless the jar is brim-full.
             float wave = fill < 0.98F ? Mth.sin(time * 0.08F + seed % 7) * 0.12F / 16 : 0;
             float top = Math.min(TOP, BOTTOM + (TOP - BOTTOM) * Math.min(1, fill) + wave);
-            LiquidBox.submitCutCorners(poseStack, collector, MIN, MIN, MAX, MAX, CUT, BOTTOM, top, RuneDrawing.argb(vivid(color), 0.9F), time, seed, 3);
+            LiquidBox.submitCutCorners(poseStack, collector, MIN, MIN, MAX, MAX, CUT, BOTTOM, top, RuneDrawing.argb(vivid(color), 0.9F), time, seed, bubbles);
         }
         boolean any = false;
         for (Essence label : labels) {

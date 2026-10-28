@@ -1,0 +1,23 @@
+{
+  "region": "void",
+  "icon": [
+    {
+      "id": "hextale:guide_mark",
+      "components": {
+        "minecraft:custom_model_data": 358990307
+      }
+    },
+    "hextale:void_soil"
+  ],
+  "parents": [
+    "the_thinning"
+  ],
+  "goal": {
+    "type": "thinning",
+    "stage": "miasma"
+  },
+  "pos": [
+    120,
+    560
+  ]
+}

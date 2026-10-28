@@ -139,7 +139,7 @@ public class ArcSpireBlockEntity extends BlockEntity {
 
     /** Where the arcs leave from: the crystal held over the spire's tip. */
     public static Vec3 crystal(BlockPos pos) {
-        return Vec3.atLowerCornerOf(pos).add(0.5, 1 + 1.0 / 16, 0.5);
+        return Vec3.atLowerCornerOf(pos).add(0.5, 1 + 3.0 / 16, 0.5);
     }
 
     public void wake() {

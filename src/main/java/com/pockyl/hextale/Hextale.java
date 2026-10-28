@@ -2,6 +2,7 @@ package com.pockyl.hextale;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -67,165 +68,202 @@ public final class Hextale {
         GameTests.register(modBus);
         modBus.addListener(ModDataMaps::register);
         modBus.addListener(Hextale::addToVanillaTabs);
-        PockyModsTab.register(modBus, () -> new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), output -> {
-            output.accept(ModItems.RESEARCH_TABLE);
-            output.accept(ModItems.RESEARCHERS_GOGGLES);
-            output.accept(ModItems.ALEMBIC);
-            output.accept(ModItems.SEPARATOR);
-            output.accept(ModItems.ESSENCE_TANK);
-            // For creative building: the Creative Essence Tank (every essence, endless) is the one jar of essence; bottles of primals.
-            output.accept(ModItems.CREATIVE_ESSENCE_TANK);
-            for (Essence essence : Essence.PRIMALS) {
-                output.accept(EssenceFlaskItem.filled(EssenceMix.pure(essence, EssenceFlaskItem.CAPACITY)));
-            }
-            output.accept(EssenceFlaskItem.filled(EssenceMix.unknown(EssenceFlaskItem.CAPACITY)));
-            // Every essence as an item, in catalogue order: primals, pairs, deeper compounds.
-            for (Essence essence : Essence.values()) {
-                output.accept(com.pockyl.hextale.item.EssenceItem.of(essence));
-            }
-            output.accept(ModItems.BRASS_PIPE);
-            output.accept(ModItems.PUMP);
-            output.accept(ModItems.DRAIN_VALVE);
-            output.accept(ModItems.HEXTECH_ALTAR);
-            output.accept(ModItems.PEDESTAL);
-            output.accept(ModItems.RUNE_STELE);
-            output.accept(ModItems.MAGIC_STONE);
-            output.accept(ModItems.POLISHED_MAGIC_STONE);
-            output.accept(ModItems.MAGIC_BRICKS);
-            output.accept(ModItems.MAGIC_BRICK_STAIRS);
-            output.accept(ModItems.MAGIC_BRICK_SLAB);
-            output.accept(ModItems.MAGIC_BRICK_WALL);
-            output.accept(ModItems.CHISELED_MAGIC_BRICKS);
-            output.accept(ModItems.MAGIC_SAPLING);
-            output.accept(ModItems.MAGIC_LEAVES);
-            output.accept(ModItems.MAGIC_LOG);
-            output.accept(ModItems.MAGIC_WOOD);
-            output.accept(ModItems.STRIPPED_MAGIC_LOG);
-            output.accept(ModItems.STRIPPED_MAGIC_WOOD);
-            output.accept(ModItems.MAGIC_PLANKS);
-            output.accept(ModItems.MAGIC_STAIRS);
-            output.accept(ModItems.MAGIC_SLAB);
-            output.accept(ModItems.MAGIC_FENCE);
-            output.accept(ModItems.MAGIC_FENCE_GATE);
-            output.accept(ModItems.MAGIC_DOOR);
-            output.accept(ModItems.MAGIC_TRAPDOOR);
-            output.accept(ModItems.MAGIC_PRESSURE_PLATE);
-            output.accept(ModItems.MAGIC_BUTTON);
-            output.accept(ModItems.HEXTECH_LAMP);
-            output.accept(ModItems.HEX_WORKBENCH);
-            output.accept(ModItems.CRUCIBLE);
-            output.accept(ModItems.CHEM_BURNER);
-            for (com.pockyl.hextale.chem.Brew brew : com.pockyl.hextale.chem.Brew.values()) {
-                output.accept(com.pockyl.hextale.chem.ChemVialItem.of(brew));
-            }
-            output.accept(ModItems.CHEM_GLASS);
-            output.accept(ModItems.CHEM_GLASS_PANE);
-            output.accept(ModItems.RUSTED_PLATING);
-            output.accept(ModItems.RUSTED_PLATING_STAIRS);
-            output.accept(ModItems.RUSTED_PLATING_SLAB);
-            output.accept(ModItems.RIVETED_RUSTED_PLATING);
-            output.accept(ModItems.SHIMMERBLOOM);
-            output.accept(ModItems.SHIMMER_MOSS);
-            output.accept(ModItems.SHIMMER_MOSS_CARPET);
-            output.accept(ModItems.REGENERATIVE_SLIME);
-            output.accept(ModItems.AXOLOTL_TANK);
-            output.accept(ModItems.LAB_BENCH);
-            output.accept(ModItems.CHEM_STILL);
-            output.accept(ModItems.PINK_BRAZIER);
-            output.accept(ModItems.SYNTHETIC_CRYSTAL);
-            output.accept(ModItems.HEX_FURNACE);
-            output.accept(ModItems.HEX_FOUNDRY);
-            output.accept(ModItems.FIRECLAY_BALL);
-            output.accept(ModItems.FIRE_BRICK);
-            output.accept(ModItems.FIRE_BRICKS);
-            output.accept(ModItems.FIRE_BRICK_STAIRS);
-            output.accept(ModItems.FIRE_BRICK_SLAB);
-            output.accept(ModItems.FIRE_BRICK_WALL);
-            output.accept(ModItems.HEX_LAPIDARY);
-            output.accept(ModItems.CUTTING_DISC);
-            output.accept(ModItems.MASTER_CUTTING_DISC);
-            output.accept(ModItems.BRASS_BLOCK);
-            output.accept(ModItems.SPHALERITE_ORE);
-            output.accept(ModItems.DEEPSLATE_SPHALERITE_ORE);
-            output.accept(ModItems.RAW_ZINC_BLOCK);
-            output.accept(ModItems.ZINC_BLOCK);
-            output.accept(ModItems.HEXSTEEL_BLOCK);
-            output.accept(ModItems.BRASS_GRATE);
-            output.accept(ModItems.WHORLED_MAGIC_STONE);
-            output.accept(ModItems.MAGIC_STONE_PILLAR);
-            output.accept(ModItems.GATHERING_PYLON);
-            output.accept(ModItems.SENDING_PYLON);
-            output.accept(ModItems.RELAY_PYLON);
-            output.accept(ModItems.SIPHON_PYLON);
-            output.accept(ModItems.SORTING_MATRIX);
-            output.accept(ModItems.CRYSTAL_BATTERY);
-            output.accept(ModItems.NULLSTONE);
-            output.accept(ModItems.POLISHED_NULLSTONE);
-            output.accept(ModItems.NULLSTONE_BRICKS);
-            output.accept(ModItems.VOID_SOIL);
-            output.accept(ModItems.VOID_ROCK);
-            output.accept(ModItems.VOID_ROCK_BRICKS);
-            output.accept(ModItems.VOID_ROCK_BRICK_STAIRS);
-            output.accept(ModItems.VOID_ROCK_BRICK_SLAB);
-            output.accept(ModItems.VOID_ROCK_BRICK_WALL);
-            output.accept(ModItems.VOID_CORAL);
-            output.accept(ModItems.VOID_ROOTS);
-            output.accept(ModItems.VOID_BULB);
-            output.accept(ModItems.HOLLOWBLOOM);
-            output.accept(ModItems.VOID_CHITIN);
-            output.accept(ModItems.HEXCORE);
-            output.accept(ModItems.WHIRL_REAPER);
-            output.accept(ModItems.HEX_SAWMILL);
-            output.accept(ModItems.GREEDY_FUNNEL);
-            output.accept(ModItems.ARC_SPIRE);
-            output.accept(ModItems.RUNE_SHACKLES);
-            output.accept(ModItems.XP_CONDENSER);
-            output.accept(ModItems.MIASMA_VENT);
-            output.accept(ModItems.FIELD_WARD);
-            output.accept(ModItems.PYLON_FILTER);
-            output.accept(ModItems.ESSENCE_STICKER);
-            ModItems.PICKAXES.values().forEach(output::accept);
-            output.accept(ModItems.RUNE_CHALK);
-            output.accept(ModItems.HEXTECH_AXE);
-            output.accept(ModItems.HEXTECH_SHOVEL);
-            output.accept(ModItems.HEXTECH_SWORD);
-            output.accept(ModItems.HEXSTEEL_SWORD);
-            output.accept(ModItems.HEXSTEEL_PICKAXE);
-            output.accept(ModItems.HEXSTEEL_AXE);
-            output.accept(ModItems.HEXSTEEL_SHOVEL);
-            output.accept(ModItems.HEXSTEEL_HOE);
-            output.accept(ModItems.HEXSTEEL_HELMET);
-            output.accept(ModItems.HEXSTEEL_CHESTPLATE);
-            output.accept(ModItems.HEXSTEEL_LEGGINGS);
-            output.accept(ModItems.HEXSTEEL_BOOTS);
-            output.accept(ModItems.ARCANE_CLOTH);
-            output.accept(ModItems.RESEARCHER_HOOD);
-            output.accept(ModItems.RESEARCHER_ROBE);
-            output.accept(ModItems.RESEARCHER_TROUSERS);
-            output.accept(ModItems.RESEARCHER_BOOTS);
-            output.accept(ModItems.HEXTECH_SKYPACK);
-            output.accept(com.pockyl.hextale.item.HextechSkypackItem.full());
-            output.accept(ModItems.RESEARCHERS_DIARY);
-            output.accept(ModItems.UNSTABLE_HEXTECH);
-            output.accept(ModItems.HEXTECH_DUST);
-            output.accept(ModItems.HEXTECH_CRYSTAL);
-            output.accept(ModItems.HEXTECH_GEMSTONE);
-            output.accept(ModItems.BRASS_INGOT);
-            output.accept(ModItems.BRASS_NUGGET);
-            output.accept(ModItems.RAW_ZINC);
-            output.accept(ModItems.ZINC_INGOT);
-            output.accept(ModItems.ZINC_NUGGET);
-            output.accept(ModItems.HEXSTEEL_INGOT);
-            output.accept(exampleScroll());
-            output.accept(ModItems.BLANK_SCROLL);
-            com.pockyl.hextale.research.ResearchTopics.all().forEach(topic -> output.accept(com.pockyl.hextale.item.ResearchNotesItem.of(topic)));
-            output.accept(ModItems.SCROLL_OF_OMNISCIENCE);
-            output.accept(ModItems.SCROLL_OF_OBLIVION);
-            output.accept(ModItems.VOID_SHARD);
-        });
+        PockyModsTab.register(modBus, () -> new ItemStack(ModItems.HEXCORE.get()), Hextale::fillCreativeTab);
 
         container.registerConfig(ModConfig.Type.SERVER, Config.SPEC);
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
+    }
+
+    /**
+     * The mod's part of the Pocky Mods tab, grouped the way a player meets things: research, the workshop, the altar,
+     * essence works, chemtech, pylons, automation, gear, materials, blocks, nature; the long lists of variants
+     * (essences, brews, research notes) and the creative-only items come last.
+     */
+    private static void fillCreativeTab(CreativeModeTab.Output output) {
+        // Research: where every path starts.
+        output.accept(ModItems.RESEARCHERS_DIARY);
+        output.accept(ModItems.RESEARCH_TABLE);
+        output.accept(ModItems.LAB_BENCH);
+        output.accept(ModItems.RESEARCHERS_GOGGLES);
+        output.accept(ModItems.BLANK_SCROLL);
+        output.accept(exampleScroll());
+
+        // Workshop: crafting and processing stations with what they run on.
+        output.accept(ModItems.HEX_WORKBENCH);
+        output.accept(ModItems.CRYSTAL_BATTERY);
+        output.accept(ModItems.HEX_LAPIDARY);
+        output.accept(ModItems.CUTTING_DISC);
+        output.accept(ModItems.MASTER_CUTTING_DISC);
+        output.accept(ModItems.HEX_FURNACE);
+        output.accept(ModItems.HEX_FOUNDRY);
+        output.accept(ModItems.CRUCIBLE);
+
+        // Altar and runework.
+        output.accept(ModItems.HEXTECH_ALTAR);
+        output.accept(ModItems.PEDESTAL);
+        output.accept(ModItems.RUNE_STELE);
+        output.accept(ModItems.RUNE_CHALK);
+        output.accept(ModItems.HEXCORE);
+        output.accept(ModItems.NULLSTONE);
+        output.accept(ModItems.HEXTECH_LAMP);
+
+        // Essence works.
+        output.accept(ModItems.ALEMBIC);
+        output.accept(ModItems.SEPARATOR);
+        output.accept(ModItems.ESSENCE_TANK);
+        output.accept(ModItems.BRASS_PIPE);
+        output.accept(ModItems.PUMP);
+        output.accept(ModItems.DRAIN_VALVE);
+        output.accept(ModItems.ESSENCE_STICKER);
+
+        // Chemtech.
+        output.accept(ModItems.CHEM_BURNER);
+        output.accept(ModItems.CHEM_STILL);
+        output.accept(ModItems.AXOLOTL_TANK);
+        output.accept(ModItems.PINK_BRAZIER);
+
+        // Pylon logistics.
+        output.accept(ModItems.GATHERING_PYLON);
+        output.accept(ModItems.SENDING_PYLON);
+        output.accept(ModItems.RELAY_PYLON);
+        output.accept(ModItems.SIPHON_PYLON);
+        output.accept(ModItems.SORTING_MATRIX);
+        output.accept(ModItems.PYLON_FILTER);
+
+        // Automation: farms, mob handling, defence.
+        output.accept(ModItems.WHIRL_REAPER);
+        output.accept(ModItems.HEX_SAWMILL);
+        output.accept(ModItems.GREEDY_FUNNEL);
+        output.accept(ModItems.XP_CONDENSER);
+        output.accept(ModItems.RUNE_SHACKLES);
+        output.accept(ModItems.ARC_SPIRE);
+        output.accept(ModItems.MIASMA_VENT);
+        output.accept(ModItems.FIELD_WARD);
+
+        // Tools and weapons: the hextech line by tier, then the hexsteel set.
+        ModItems.PICKAXES.values().forEach(output::accept);
+        output.accept(ModItems.HEXTECH_AXE);
+        output.accept(ModItems.HEXTECH_SHOVEL);
+        output.accept(ModItems.HEXTECH_SWORD);
+        output.accept(ModItems.HEXSTEEL_PICKAXE);
+        output.accept(ModItems.HEXSTEEL_AXE);
+        output.accept(ModItems.HEXSTEEL_SHOVEL);
+        output.accept(ModItems.HEXSTEEL_HOE);
+        output.accept(ModItems.HEXSTEEL_SWORD);
+
+        // Armour and wearables.
+        output.accept(ModItems.HEXSTEEL_HELMET);
+        output.accept(ModItems.HEXSTEEL_CHESTPLATE);
+        output.accept(ModItems.HEXSTEEL_LEGGINGS);
+        output.accept(ModItems.HEXSTEEL_BOOTS);
+        output.accept(ModItems.RESEARCHER_HOOD);
+        output.accept(ModItems.RESEARCHER_ROBE);
+        output.accept(ModItems.RESEARCHER_TROUSERS);
+        output.accept(ModItems.RESEARCHER_BOOTS);
+        output.accept(ModItems.HEXTECH_SKYPACK);
+        output.accept(com.pockyl.hextale.item.HextechSkypackItem.full());
+
+        // Materials: hextech from raw to cut, then metals, then the rest.
+        output.accept(ModItems.UNSTABLE_HEXTECH);
+        output.accept(ModItems.HEXTECH_DUST);
+        output.accept(ModItems.HEXTECH_CRYSTAL);
+        output.accept(ModItems.SYNTHETIC_CRYSTAL);
+        output.accept(ModItems.HEXTECH_GEMSTONE);
+        output.accept(ModItems.RAW_ZINC);
+        output.accept(ModItems.ZINC_NUGGET);
+        output.accept(ModItems.ZINC_INGOT);
+        output.accept(ModItems.BRASS_NUGGET);
+        output.accept(ModItems.BRASS_INGOT);
+        output.accept(ModItems.HEXSTEEL_INGOT);
+        output.accept(ModItems.FIRECLAY_BALL);
+        output.accept(ModItems.FIRE_BRICK);
+        output.accept(ModItems.ARCANE_CLOTH);
+        output.accept(ModItems.REGENERATIVE_SLIME);
+        output.accept(ModItems.VOID_CHITIN);
+
+        // Ores and storage blocks.
+        output.accept(ModItems.SPHALERITE_ORE);
+        output.accept(ModItems.DEEPSLATE_SPHALERITE_ORE);
+        output.accept(ModItems.RAW_ZINC_BLOCK);
+        output.accept(ModItems.ZINC_BLOCK);
+        output.accept(ModItems.BRASS_BLOCK);
+        output.accept(ModItems.HEXSTEEL_BLOCK);
+
+        // Building blocks, one family after another.
+        output.accept(ModItems.MAGIC_STONE);
+        output.accept(ModItems.POLISHED_MAGIC_STONE);
+        output.accept(ModItems.WHORLED_MAGIC_STONE);
+        output.accept(ModItems.MAGIC_STONE_PILLAR);
+        output.accept(ModItems.MAGIC_BRICKS);
+        output.accept(ModItems.MAGIC_BRICK_STAIRS);
+        output.accept(ModItems.MAGIC_BRICK_SLAB);
+        output.accept(ModItems.MAGIC_BRICK_WALL);
+        output.accept(ModItems.CHISELED_MAGIC_BRICKS);
+        output.accept(ModItems.MAGIC_LOG);
+        output.accept(ModItems.MAGIC_WOOD);
+        output.accept(ModItems.STRIPPED_MAGIC_LOG);
+        output.accept(ModItems.STRIPPED_MAGIC_WOOD);
+        output.accept(ModItems.MAGIC_PLANKS);
+        output.accept(ModItems.MAGIC_STAIRS);
+        output.accept(ModItems.MAGIC_SLAB);
+        output.accept(ModItems.MAGIC_FENCE);
+        output.accept(ModItems.MAGIC_FENCE_GATE);
+        output.accept(ModItems.MAGIC_DOOR);
+        output.accept(ModItems.MAGIC_TRAPDOOR);
+        output.accept(ModItems.MAGIC_PRESSURE_PLATE);
+        output.accept(ModItems.MAGIC_BUTTON);
+        output.accept(ModItems.FIRE_BRICKS);
+        output.accept(ModItems.FIRE_BRICK_STAIRS);
+        output.accept(ModItems.FIRE_BRICK_SLAB);
+        output.accept(ModItems.FIRE_BRICK_WALL);
+        output.accept(ModItems.RUSTED_PLATING);
+        output.accept(ModItems.RUSTED_PLATING_STAIRS);
+        output.accept(ModItems.RUSTED_PLATING_SLAB);
+        output.accept(ModItems.RIVETED_RUSTED_PLATING);
+        output.accept(ModItems.BRASS_GRATE);
+        output.accept(ModItems.CHEM_GLASS);
+        output.accept(ModItems.CHEM_GLASS_PANE);
+        output.accept(ModItems.POLISHED_NULLSTONE);
+        output.accept(ModItems.NULLSTONE_BRICKS);
+        output.accept(ModItems.VOID_ROCK_BRICKS);
+        output.accept(ModItems.VOID_ROCK_BRICK_STAIRS);
+        output.accept(ModItems.VOID_ROCK_BRICK_SLAB);
+        output.accept(ModItems.VOID_ROCK_BRICK_WALL);
+
+        // Nature: the magic grove and shimmer, then the land the Void wears thin.
+        output.accept(ModItems.MAGIC_SAPLING);
+        output.accept(ModItems.MAGIC_LEAVES);
+        output.accept(ModItems.SHIMMERBLOOM);
+        output.accept(ModItems.SHIMMER_MOSS);
+        output.accept(ModItems.SHIMMER_MOSS_CARPET);
+        output.accept(ModItems.VOID_SOIL);
+        output.accept(ModItems.VOID_ROCK);
+        output.accept(ModItems.VOID_CORAL);
+        output.accept(ModItems.VOID_ROOTS);
+        output.accept(ModItems.VOID_BULB);
+        output.accept(ModItems.HOLLOWBLOOM);
+
+        // Bottles of the primals and of unknown essence, then every essence as an item in catalogue order
+        // (primals, pairs, deeper compounds), then every brew.
+        for (Essence essence : Essence.PRIMALS) {
+            output.accept(EssenceFlaskItem.filled(EssenceMix.pure(essence, EssenceFlaskItem.CAPACITY)));
+        }
+        output.accept(EssenceFlaskItem.filled(EssenceMix.unknown(EssenceFlaskItem.CAPACITY)));
+        for (Essence essence : Essence.values()) {
+            output.accept(com.pockyl.hextale.item.EssenceItem.of(essence));
+        }
+        for (com.pockyl.hextale.chem.Brew brew : com.pockyl.hextale.chem.Brew.values()) {
+            output.accept(com.pockyl.hextale.chem.ChemVialItem.of(brew));
+        }
+
+        // Research notes of every topic.
+        com.pockyl.hextale.research.ResearchTopics.all().forEach(topic -> output.accept(com.pockyl.hextale.item.ResearchNotesItem.of(topic)));
+
+        // Creative only: the Creative Essence Jar (every essence, endless) is the one jar of essence.
+        output.accept(ModItems.CREATIVE_ESSENCE_TANK);
+        output.accept(ModItems.SCROLL_OF_OMNISCIENCE);
+        output.accept(ModItems.SCROLL_OF_OBLIVION);
+        output.accept(ModItems.VOID_SHARD);
     }
 
     /** A scroll of "Smelting" shows players what scrolls look like; real ones come from the Research Table. */
