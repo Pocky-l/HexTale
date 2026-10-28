@@ -2,15 +2,17 @@
   "type": "minecraft:entity",
   "pools": [
     {
-      "condition": {
-        "type": "minecraft:killed_by_player"
-      },
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
-          "modifier": [
+          "functions": [
             {
-              "type": "minecraft:set_count",
+              "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "max": 1,
@@ -18,7 +20,7 @@
               }
             },
             {
-              "type": "minecraft:enchanted_count_increase",
+              "function": "minecraft:enchanted_count_increase",
               "count": {
                 "type": "minecraft:uniform",
                 "max": 1.0,

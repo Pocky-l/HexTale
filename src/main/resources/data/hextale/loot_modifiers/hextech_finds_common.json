@@ -11,7 +11,16 @@
     "minecraft:chests/shipwreck_treasure"
   ],
   "entries": [
-    {"item": "hextale:hextech_dust", "chance": 0.45, "min": 1, "max": 4},
-    {"item": "hextale:unstable_hextech", "chance": 0.12}
-  ]
+    {
+      "item": "hextale:hextech_dust",
+      "chance": 0.45,
+      "min": 1,
+      "max": 4
+    },
+    {
+      "item": "hextale:unstable_hextech",
+      "chance": 0.12
+    }
+  ],
+  "conditions": []
 }

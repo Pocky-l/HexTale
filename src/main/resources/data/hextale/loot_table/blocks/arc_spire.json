@@ -2,27 +2,33 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": {
-        "type": "minecraft:survives_explosion"
-      },
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
-          "condition": {
-            "type": "minecraft:match_block",
-            "blocks": "hextale:arc_spire",
-            "state": {
-              "half": "lower"
+          "conditions": [
+            {
+              "condition": "minecraft:block_state_property",
+              "block": "hextale:arc_spire",
+              "properties": {
+                "half": "lower"
+              }
             }
-          },
+          ],
           "name": "hextale:arc_spire",
-          "modifier": {
-            "type": "minecraft:copy_components",
-            "include": [
-              "hextale:spire_runes"
-            ],
-            "source": "block_entity"
-          }
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "hextale:spire_runes"
+              ],
+              "source": "block_entity"
+            }
+          ]
         }
       ],
       "rolls": 1

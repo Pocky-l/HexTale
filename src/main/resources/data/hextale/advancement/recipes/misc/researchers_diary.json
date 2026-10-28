@@ -4,7 +4,7 @@
     "has_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipes": "hextale:researchers_diary"
+        "recipe": "hextale:researchers_diary"
       }
     },
     "has_item_0": {

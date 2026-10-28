@@ -2,20 +2,24 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": {
-        "type": "minecraft:survives_explosion"
-      },
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "hextale:levitation_plate",
-          "modifier": {
-            "type": "minecraft:copy_components",
-            "include": [
-              "hextale:plate_runes"
-            ],
-            "source": "block_entity"
-          }
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "hextale:plate_runes"
+              ],
+              "source": "block_entity"
+            }
+          ]
         }
       ],
       "rolls": 1

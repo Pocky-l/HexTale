@@ -8,7 +8,10 @@
     "minecraft:dark_oak_sapling",
     "minecraft:cherry_sapling",
     "minecraft:pale_oak_sapling",
-    "minecraft:poplar_sapling",
+    {
+      "id": "minecraft:poplar_sapling",
+      "required": false
+    },
     "minecraft:mangrove_propagule"
   ]
 }

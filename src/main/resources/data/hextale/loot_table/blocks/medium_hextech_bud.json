@@ -7,7 +7,23 @@
         {
           "type": "minecraft:item",
           "name": "hextale:medium_hextech_bud",
-          "condition": "minecraft:tool/can_silk_touch"
+          "conditions": [
+            {
+              "condition": "minecraft:match_tool",
+              "predicate": {
+                "predicates": {
+                  "minecraft:enchantments": [
+                    {
+                      "enchantments": "minecraft:silk_touch",
+                      "levels": {
+                        "min": 1
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
         }
       ]
     }

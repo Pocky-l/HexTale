@@ -2,19 +2,23 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": {
-        "type": "minecraft:survives_explosion"
-      },
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
-          "condition": {
-            "type": "minecraft:match_block",
-            "blocks": "hextale:magic_door",
-            "state": {
-              "half": "lower"
+          "conditions": [
+            {
+              "condition": "minecraft:block_state_property",
+              "block": "hextale:magic_door",
+              "properties": {
+                "half": "lower"
+              }
             }
-          },
+          ],
           "name": "hextale:magic_door"
         }
       ],

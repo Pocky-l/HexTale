@@ -1,0 +1,10 @@
+{
+  "values": {
+    "hextale:magic_log": {
+      "stripped_block": "hextale:stripped_magic_log"
+    },
+    "hextale:magic_wood": {
+      "stripped_block": "hextale:stripped_magic_wood"
+    }
+  }
+}
