@@ -4,6 +4,18 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0+1.21.1] - 2026-10-28
+### Changed
+- Everything of 1.5.0 for Minecraft 26.3 is included: the visual and sound update with the mod's own sounds, rune signs
+  where runes work, the altar's and the Hexcore's ground sigil, essence streams and pulses, working sounds of machines,
+  the walnut-and-brass machine screens, the new models and textures (Pedestal, Hex Workbench, Hextech Altar, Hexcore,
+  Hex Furnace, two-block Rune Stele, Essence Jar, Greedy Funnel, Hex Lapidary, essence signs, carved stone, chalk), and
+  outlines and collision that follow the models, with the devices that spread past their block clickable and minable
+  there too ([Jade](https://www.curseforge.com/minecraft/mc-mods/jade) shows the device). Where 1.21.1 differs:
+  - the new light drawn in the world (rune signs, essence streams, the bolts and hexagons of rune effects) is drawn
+    after the particles without Minecraft's newer transparency sorting, like the other glowing things on 1.21.1, so
+    where it overlaps glass or water it may sort a little differently.
+
 ## [1.4.0+1.21.1] - 2026-10-28
 ### Changed
 - Everything of 1.1.0 - 1.4.0 for Minecraft 26.3 is included: the Thinning, blight and Void Mites, breaches of the
