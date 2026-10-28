@@ -1070,5 +1070,6 @@
         "angle": 45
       }
     }
-  ]
+  ],
+  "render_type": "minecraft:cutout"
 }

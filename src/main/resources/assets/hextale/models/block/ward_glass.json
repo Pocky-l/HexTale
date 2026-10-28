@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "hextale:block/ward_glass"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

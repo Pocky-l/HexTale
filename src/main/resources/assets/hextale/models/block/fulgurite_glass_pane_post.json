@@ -3,5 +3,6 @@
   "textures": {
     "pane": "hextale:block/fulgurite_glass",
     "edge": "hextale:block/fulgurite_glass_pane_top"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

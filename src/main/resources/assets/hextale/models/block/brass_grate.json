@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "hextale:block/brass_grate"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

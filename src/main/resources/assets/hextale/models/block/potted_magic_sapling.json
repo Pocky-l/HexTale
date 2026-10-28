@@ -2,5 +2,6 @@
   "parent": "minecraft:block/flower_pot_cross",
   "textures": {
     "plant": "hextale:block/magic_sapling"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

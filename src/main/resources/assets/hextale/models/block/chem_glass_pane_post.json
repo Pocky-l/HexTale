@@ -3,5 +3,6 @@
   "textures": {
     "pane": "hextale:block/chem_glass",
     "edge": "hextale:block/chem_glass_pane_top"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

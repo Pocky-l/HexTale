@@ -830,5 +830,6 @@
       },
       "light_emission": 15
     }
-  ]
+  ],
+  "render_type": "minecraft:cutout"
 }

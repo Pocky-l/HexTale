@@ -2,5 +2,6 @@
   "parent": "minecraft:block/template_glass_pane_noside_alt",
   "textures": {
     "pane": "hextale:block/chem_glass"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

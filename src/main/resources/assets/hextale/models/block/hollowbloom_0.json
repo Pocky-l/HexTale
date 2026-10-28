@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "hextale:block/hollowbloom_0"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

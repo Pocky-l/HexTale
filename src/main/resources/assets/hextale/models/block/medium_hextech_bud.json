@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "hextale:block/medium_hextech_bud"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

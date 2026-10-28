@@ -2,5 +2,6 @@
   "parent": "minecraft:block/template_lantern",
   "textures": {
     "lantern": "hextale:block/null_lantern"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }
