@@ -26,8 +26,8 @@ import com.pockyl.hextale.rune.Essence;
 
 /**
  * An Essence Jar: its glass and lid (the block model only draws the pipe fittings), the glowing liquid inside, as high as
- * the jar is full, and its Essence Sticker as a small paper label with the essence's sign on every side, except where a
- * pipe joins that side. A right click pushes the jar: it rocks on its foot away from the player and settles.
+ * the jar is full, and its Essence Sticker as a small paper tag on twine with the essence's sign on every side, except
+ * where a pipe joins that side. A right click pushes the jar: it rocks on its foot away from the player and settles.
  */
 public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlockEntity, EssenceTankRenderer.State> {
     // Inside the glass (model: body 2-14 with its vertical edges cut back by a pixel, thick glass at the foot up to 1,
@@ -40,19 +40,22 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
 
     private static final Identifier LABELS = Hextale.id("textures/block/essence_labels.png");
     /**
-     * A sticker is a small paper label of 26 x 30 texels drawn at four texels per pixel (6.5 x 7.5 px), so its sign is
-     * small and sharp; in the sheet one per 32 x 32 cell of a 512 x 256 texture.
+     * A sticker is a small paper tag on twine, 20 x 32 texels drawn at five texels per pixel (4 x 6.4 px: the tag below,
+     * its twine above), so its sign is small and sharp; in the sheet one per 32 x 32 cell of a 512 x 256 texture.
      */
-    private static final int LABEL_W = 26;
-    private static final int LABEL_H = 30;
+    private static final int LABEL_W = 20;
+    private static final int LABEL_H = 32;
     private static final int LABEL_CELL = 32;
-    private static final float HALF_W = LABEL_W / 2F / 64;
-    private static final float HALF_H = LABEL_H / 2F / 64;
-    /** Side stickers lie 0.3 px in front of the glass (2 px inside the block), centred across, a little below the middle. */
+    private static final float HALF_W = LABEL_W / 2F / 80;
+    private static final float HALF_H = LABEL_H / 2F / 80;
+    /**
+     * Side stickers lie 0.3 px in front of the glass (2 px inside the block), centred across; the twine reaches the top
+     * of the glass (11 px), where it goes over the shoulder to the neck.
+     */
     private static final float SIDE_OUT = 0.5F - 1.7F / 16;
     private static final float TOP_OUT = 15.3F / 16 - 0.5F;
     private static final float ACROSS = 0;
-    private static final float SIDE_UP = -2F / 16;
+    private static final float SIDE_UP = 11F / 16 - HALF_H - 0.5F;
     private static final float TOP_UP = 0;
 
     /** How far a pushed jar leans at first (degrees), how fast it rocks (ticks per swing) and how soon it settles. */
