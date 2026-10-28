@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New look for the Hex Workbench: a craftsman's bench of walnut and brass instead of a stone slab with a neon grid. The
   3x3 grid is inlaid in brass into a thick walnut top, the legs stand in brass shoes over a lower shelf, a saw and a
   mallet hang at its side, and a hextech crystal set in a brass socket at the front is the only thing that glows.
+- The essences are now one family: each is a drop of living essence in its own colour with its sign glowing inside,
+  drawn at a finer 32 px scale. The signs are the same ones the screens show.
+- Essence Jars wear a small paper tag on twine with the essence's sign instead of a big card over half the glass.
+- Seven items that all looked like the same violet stick got their own shapes: the Synthetic Crystal is a cluster grown
+  on a brass seed plate, the Rift Link Crystal a crystal broken in two halves that still hold to each other, the
+  Clouded Crystal a heavy dark lump with a cloud inside, the Void Shard a sharp black sliver with a glowing crack, Void
+  Chitin a ridged plate of shell, and the Scroll of Oblivion an ash-grey scroll with a violet seal. The Hextech Crystal
+  keeps its look.
 
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
