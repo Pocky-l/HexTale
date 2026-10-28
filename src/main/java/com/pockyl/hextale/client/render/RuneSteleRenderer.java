@@ -72,14 +72,17 @@ public class RuneSteleRenderer implements BlockEntityRenderer<RuneSteleBlockEnti
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.MOTE, 0.06F, RuneDrawing.lighten(color, 0.4F), 0.7F * twinkle * entrance);
             poseStack.popPose();
         }
-        // Always readable: the glyph faces the viewer and sways a little, in front of the halo.
-        poseStack.mulPose(camera.orientation);
+        // A rune standing in the air, not a sticker on the screen: upright, turning only round its own axis to face the
+        // viewer (readable from every side), a hexagon round it; it sways a little.
+        double dx = camera.pos.x - (state.blockPos.getX() + 0.5);
+        double dz = camera.pos.z - (state.blockPos.getZ() + 0.5);
+        poseStack.mulPose(Axis.YP.rotation((float) Mth.atan2(dx, dz)));
         poseStack.translate(0, 0, 0.03F);
         float size = 0.46F * (state.active ? 1.08F : 1);
         float alpha = pulse * (state.active ? 1 : 0.85F);
         poseStack.pushPose();
         poseStack.mulPose(Axis.ZP.rotationDegrees(time * (state.active ? 1.2F : 0.35F)));
-        HexFx.sigilRing(poseStack, collector, 0.36F * (0.6F + 0.4F * entrance), 9, color, 0.35F * alpha * entrance);
+        HexFx.hexRing(poseStack, collector, 0.36F * (0.6F + 0.4F * entrance), color, 0.35F * alpha * entrance);
         poseStack.popPose();
         poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.sin(time * 0.05F) * 3));
         HexFx.glyph(poseStack, collector, rune, size, color, alpha, entrance);

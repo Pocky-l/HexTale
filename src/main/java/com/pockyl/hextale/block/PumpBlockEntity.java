@@ -39,10 +39,28 @@ public class PumpBlockEntity extends BlockEntity {
             // Every fourth push is a full stroke: heard and seen.
             if (moved > 0 && level.getGameTime() % (EVERY * 4) == 0 && level instanceof ServerLevel serverLevel) {
                 level.playSound(null, pos, ModSounds.PUMP_STROKE.get(), SoundSource.BLOCKS, 0.45F, 0.9F + level.getRandom().nextFloat() * 0.2F);
-                serverLevel.sendParticles(ModParticles.bubble(ModParticles.WATER), pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5, 6, 0.25, 0.1, 0.25, 0.05);
-                serverLevel.sendParticles(ModParticles.drop(ModParticles.WATER), pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 4, 0.15, 0.05, 0.15, 0.1);
+                stroke(serverLevel, pos);
             }
         }
+    }
+
+    /**
+     * A full stroke: the water round the pump is drawn in - bubbles converge on its intake from every side - and a puff
+     * of spray leaves the outlet on top.
+     */
+    public static void stroke(ServerLevel level, BlockPos pos) {
+        double x = pos.getX() + 0.5;
+        double y = pos.getY() + 0.3;
+        double z = pos.getZ() + 0.5;
+        for (int i = 0; i < 8; i++) {
+            double angle = i * Math.PI / 4 + level.getRandom().nextDouble() * 0.4;
+            double r = 0.75;
+            // Count 0: the "spread" is the bubble's speed, aimed at the intake.
+            level.sendParticles(ModParticles.bubble(ModParticles.WATER), x + Math.cos(angle) * r, y + (level.getRandom().nextDouble() - 0.5) * 0.3,
+                    z + Math.sin(angle) * r, 0, -Math.cos(angle), 0.1, -Math.sin(angle), 0.12);
+        }
+        level.sendParticles(ModParticles.drop(ModParticles.WATER), x, pos.getY() + 1.0, z, 4, 0.12, 0.05, 0.12, 0.08);
+        level.sendParticles(ModParticles.glint(ModParticles.WATER), x, pos.getY() + 0.95, z, 2, 0.1, 0.05, 0.1, 0.01);
     }
 
     private static int fillAbove(Level level, BlockPos pos) {

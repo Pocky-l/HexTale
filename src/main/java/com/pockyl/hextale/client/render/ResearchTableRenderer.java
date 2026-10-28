@@ -22,7 +22,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 import org.joml.Quaternionfc;
+import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.Hextale;
@@ -39,10 +41,11 @@ import java.util.List;
 
 /**
  * Shows what lies on the Research Table - the open diary on its rest, parchment, ink and brush, a finished scroll - and
- * the unstable hextech hanging from the brass arm: a faceted crystal turning inside two spinning gimbal rings, wrapped in
- * a soft glow with motes circling it. While someone draws, the rings and motes speed up and the orb brightens; a finished
- * research flares in the topic's colour and lifts the researched item over the desk; a lost sheet shakes the orb and greys it for a moment.
- * Glow sprites use real alpha (not additive blending over black), so they look right with shader packs too.
+ * the unstable hextech hanging from the brass arm: a crystal of light (two hexagonal bipyramids of additive lines turning
+ * against each other round a four-pointed glint) inside two spinning gimbal rings, in a soft glow with glints circling
+ * it. While someone draws, the rings and glints speed up, the orb brightens and a hexagon turns round it; a finished
+ * research flares in the topic's colour and lifts the researched item over the desk; a lost sheet shakes the orb and
+ * greys it for a moment. The soft body glow uses real alpha, so the orb still reads in daylight.
  *
  * <p>The table is read into a {@link State} on extraction; {@link #submit} only turns that state into geometry.
  */
@@ -164,7 +167,8 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         Vec3 orb = TableGeometry.toWorld(BlockPos.ZERO, state.facing, TableGeometry.ORB);
         poseStack.pushPose();
         poseStack.translate(orb.x, orb.y, orb.z);
-        submitOrb(state, poseStack, collector, camera.orientation);
+        Vector3f orbEye = camera.pos.subtract(Vec3.atLowerCornerOf(state.blockPos)).subtract(orb).toVector3f();
+        submitOrb(state, poseStack, collector, camera.orientation, orbEye);
         submitGlyph(state, poseStack, collector, camera.orientation);
         poseStack.popPose();
         if (!state.inkStreams.isEmpty()) {
@@ -254,7 +258,7 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         poseStack.popPose();
     }
 
-    private static void submitOrb(State state, PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera) {
+    private static void submitOrb(State state, PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera, Vector3f eye) {
         float crack = 0.5F * fade(state.sinceFizzle, CRACK_TICKS);
         float fizzle = state.sinceFizzle >= 0 && state.sinceFizzle < 12 ? (state.sinceFizzle % 4 < 2 ? 0.3F : 1) : 1;
         if (!state.orb && state.flare <= 0 && crack <= 0) {
@@ -270,40 +274,53 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
 
         poseStack.pushPose();
         poseStack.translate(shake, bob, 0);
-        HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.42F + 0.16F * intensity, color, Math.min(0.9F, 0.25F + 0.4F * intensity));
+        Vector3f view = new Vector3f(eye).sub(shake, bob, 0);
+        HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.36F + 0.14F * intensity, color, Math.min(0.75F, 0.2F + 0.35F * intensity));
         if (state.orb && crack < 0.6F) {
+            float deg = Mth.DEG_TO_RAD;
+            Quaternionf inner = new Quaternionf()
+                    .rotateY(time * (drawing ? 4.5F : 1.4F) * deg)
+                    .rotateX((20 + Mth.sin(time * 0.05F) * 12) * deg);
+            HexFx.lightCrystal(poseStack, collector, view, inner, (1.5F + 0.2F * state.flare) / 16, (2.7F + 0.3F * state.flare) / 16,
+                    RuneDrawing.lighten(color, 0.15F * intensity), Math.min(1, 0.55F + 0.35F * intensity));
+            Quaternionf outer = new Quaternionf()
+                    .rotateY(-time * (drawing ? 3 : 0.9F) * deg)
+                    .rotateZ(30 * deg);
+            HexFx.lightCrystal(poseStack, collector, view, outer, (2.5F + 0.3F * intensity) / 16, (3.5F + 0.3F * intensity) / 16, color,
+                    0.22F + 0.14F * intensity);
+            // The heart: a four-pointed glint turning slowly.
+            HexFx.sheet(poseStack, collector, camera, HexFx.GLINT, HexFx.GLINT_FRAMES, List.of(HexFx.quad(0, 0, 0,
+                    0.06F + 0.03F * intensity, 0, time * 0.02F, Math.min(1, 0.6F + 0.3F * intensity), RuneDrawing.mix(color, 0xFFFFFF, 0.6F))));
+        }
+        float ring = (drawing ? 0.35F : 0) + 0.7F * state.flare;
+        if (ring > 0.01F) {
+            // A hexagon turning round the orb's girdle while ink is drawn; it flares with a finished research.
             poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(time * (drawing ? 4.5F : 1.4F)));
-            poseStack.mulPose(Axis.XP.rotationDegrees(35 + Mth.sin(time * 0.05F) * 12));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(45));
-            HexFx.cube(poseStack, collector, (2.6F + 0.3F * state.flare) / 16, RuneDrawing.lighten(color, 0.25F * intensity), 1);
-            poseStack.popPose();
-            poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(-time * (drawing ? 3 : 0.9F)));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(30));
-            HexFx.cube(poseStack, collector, (3.7F + 0.4F * intensity) / 16, color, 0.28F + 0.12F * intensity);
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(time * (drawing ? 1.6F : 0.6F)));
+            HexFx.hexRing(poseStack, collector, 0.34F + 0.08F * state.flare, color, Math.min(1, ring));
             poseStack.popPose();
         }
         submitMotes(poseStack, collector, camera, time, drawing, color, intensity);
         poseStack.popPose();
     }
 
-    /** Sparkles on tilted orbits around the orb; more of them, faster and wider while someone draws. */
+    /** Glints on tilted orbits around the orb; more of them, faster and wider while someone draws. */
     private static void submitMotes(PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera, float time, boolean drawing,
                                     int color, float intensity) {
         int count = drawing ? MOTES : MOTES / 2;
         float speed = drawing ? 0.16F : 0.05F;
+        List<float[]> glints = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             float angle = time * speed * (1 + i * 0.13F) + i * Mth.TWO_PI / count;
             float tilt = i * 1.1F;
             float radius = (drawing ? 4.6F : 3.6F) / 16 + Mth.sin(time * 0.1F + i) * 0.01F;
-            poseStack.pushPose();
-            poseStack.translate(Mth.cos(angle) * radius, Mth.sin(angle) * radius * Mth.sin(tilt), Mth.sin(angle) * radius * Mth.cos(tilt));
             float twinkle = 0.6F + 0.4F * Mth.sin(time * 0.6F + i * 2.3F);
-            HexFx.sprite(poseStack, collector, camera, HexFx.MOTE, 0.07F, RuneDrawing.lighten(color, 0.4F),
-                    Math.min(1, 0.55F * twinkle * (0.6F + intensity)));
-            poseStack.popPose();
+            glints.add(HexFx.quad(Mth.cos(angle) * radius, Mth.sin(angle) * radius * Mth.sin(tilt), Mth.sin(angle) * radius * Mth.cos(tilt),
+                    0.035F * (0.8F + 0.4F * twinkle), i % HexFx.GLINT_FRAMES, time * 0.05F + i, Math.min(1, 0.6F * twinkle * (0.6F + intensity)),
+                    RuneDrawing.lighten(color, 0.4F)));
         }
+        HexFx.sheet(poseStack, collector, camera, HexFx.GLINT, HexFx.GLINT_FRAMES, glints);
     }
 
     /** The item of a freshly finished research rises over the orb, turning, and shrinks away. */

@@ -135,6 +135,9 @@ public class NullLanternBlockEntity extends BlockEntity {
             victim.hurt(server.damageSources().magic(), 1.0F);
             server.sendParticles(ModParticles.glint(0xC6B4F2), victim.getX(), victim.getY() + victim.getBbHeight() / 2, victim.getZ(),
                     4, 0.2, 0.3, 0.2, 0.02);
+            // A thin bolt of null light from the lantern bites it.
+            com.pockyl.hextale.network.RuneEffectPayload.show(server, com.pockyl.hextale.network.RuneEffectPayload.Family.ARCS, net.minecraft.world.phys.Vec3.atCenterOf(pos),
+                    java.util.List.of(BlockPos.containing(victim.position().add(0, victim.getBbHeight() / 2, 0))), 0xC6B4F2, 1);
         }
     }
 

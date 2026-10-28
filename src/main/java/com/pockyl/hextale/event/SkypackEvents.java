@@ -85,6 +85,7 @@ public final class SkypackEvents {
         }
         float cushion = HolderRune.at(SkypackRune.CUSHION, breath);
         ToolEffects.puff(level, player.position().add(0, 0.5, 0), SkypackRune.BREATH.rune(), 10, 0.5);
+        com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, player.position().add(0, 0.3, 0), 0, 1);
         if (cushion >= 1) {
             event.setCanceled(true);
         } else {

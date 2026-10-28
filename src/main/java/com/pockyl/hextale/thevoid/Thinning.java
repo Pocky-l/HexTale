@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
@@ -35,6 +34,7 @@ import com.pockyl.hextale.network.ThinningPayload;
 import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.registry.ModTags;
 import com.pockyl.hextale.world.WorldEdits;
 
@@ -398,7 +398,7 @@ public final class Thinning {
         } else if (random.nextFloat() < NEW_FOCUS_CHANCE) {
             disc(level, x, z, 2 + random.nextInt(2), random);
             level.playSound(null, new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z),
-                    SoundEvents.SCULK_BLOCK_SPREAD, SoundSource.BLOCKS, 0.8F, 0.5F);
+                    ModSounds.THINNING_BLIGHT.get(), SoundSource.BLOCKS, 0.8F, 0.9F);
         }
     }
 
@@ -487,7 +487,7 @@ public final class Thinning {
             level.setBlockAndUpdate(pos, blighted);
             Healing.scar(level, level.getChunkAt(pos));
             if (loud) {
-                level.playSound(null, pos, SoundEvents.SCULK_BLOCK_SPREAD, SoundSource.BLOCKS, 0.6F, 0.6F);
+                level.playSound(null, pos, ModSounds.THINNING_BLIGHT.get(), SoundSource.BLOCKS, 0.6F, 1.0F);
             }
             level.sendParticles(ModParticles.voidMote(0x24162E), pos.getX() + 0.5, pos.getY() + 1.05, pos.getZ() + 0.5, 4, 0.35, 0.05, 0.35, 0);
         }

@@ -2,7 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
@@ -10,6 +9,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
 
 /**
  * Dormant hextech: amethyst that a lightning strike changed long ago, found in struck geodes. It keeps a faint charge -
@@ -37,7 +37,7 @@ public class DormantHextechBlock extends Block {
         level.addParticle(ModParticles.spark(ModParticles.HEXTECH), x, y, z,
                 face.getStepX() * 0.02, face.getStepY() * 0.02, face.getStepZ() * 0.02);
         if (random.nextInt(12) == 0) {
-            level.playLocalSound(pos, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.25F, 0.6F + random.nextFloat() * 0.2F, false);
+            level.playLocalSound(pos, ModSounds.CRYSTAL_RESONATE.get(), SoundSource.BLOCKS, 0.3F, 0.75F + random.nextFloat() * 0.15F, false);
         }
     }
 }

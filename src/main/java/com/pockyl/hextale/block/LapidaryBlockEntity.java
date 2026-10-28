@@ -161,11 +161,21 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
         cracks = cut.cracks;
         heat = cut.heat;
         Vec3 at = Vec3.atCenterOf(worldPosition).add(0, 0.5, 0);
+        // The disc throws grit of the crystal and sparks while it bites; hotter strokes spark more and redder.
+        Vec3 disc = Vec3.atLowerCornerOf(worldPosition).add(0.5, 14.8 / 16, 0.47);
+        int grit = Math.min(10, 2 + ticks / 4);
+        server.sendParticles(new net.minecraft.core.particles.ItemParticleOption(net.minecraft.core.particles.ParticleTypes.ITEM,
+                items.get(INPUT).copyWithCount(1)), disc.x, disc.y, disc.z, grit, 0.12, 0.02, 0.12, 0.08);
+        int hot = cut.heat > 0.6F ? ModParticles.FIRE : ModParticles.HEXTECH;
+        server.sendParticles(ModParticles.spark(hot), disc.x, disc.y + 0.05, disc.z, Math.min(8, 1 + ticks / 6), 0.1, 0.02, 0.1, 0.25);
         if (cut.cracks > cracksBefore) {
             server.playSound(null, at.x, at.y, at.z, ModSounds.ORB_CRACK.get(), SoundSource.BLOCKS, 0.6F, 1.3F);
         }
         if (cut.facetsCut() > facetsBefore) {
             server.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.BLOCKS, 0.8F, 1.5F);
+            // A new facet catches the light: a glint off the crystal over the disc.
+            Vec3 crystal = Vec3.atLowerCornerOf(worldPosition).add(0.5, 15.5 / 16 + 0.1, 0.47);
+            server.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), crystal.x, crystal.y, crystal.z, 4, 0.08, 0.06, 0.08, 0.01);
         }
         if (cut.over()) {
             finish(server, cut);
@@ -187,7 +197,7 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
         outcomeAt = level.getGameTime();
         Vec3 at = Vec3.atCenterOf(worldPosition).add(0, 0.5, 0);
         if (success) {
-            level.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0F, 1.2F);
+            level.playSound(null, at.x, at.y, at.z, ModSounds.CRYSTAL_RESONATE.get(), SoundSource.BLOCKS, 0.9F, 1.15F);
             level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 12, 0.2, 0.2, 0.2, 0.05);
             level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.x, at.y, at.z, 0, 0.8, 0, 0, 1);
         } else {

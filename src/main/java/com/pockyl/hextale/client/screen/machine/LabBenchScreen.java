@@ -33,6 +33,7 @@ import com.pockyl.hextale.menu.LabBenchMenu;
 import com.pockyl.hextale.network.LabActionPayload;
 import com.pockyl.hextale.network.ResearchMessagePayload;
 import com.pockyl.hextale.quest.Guide;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.ExperimentPlan;
 import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.research.ResearchTopics;
@@ -383,7 +384,7 @@ public class LabBenchScreen extends AbstractContainerScreen<LabBenchMenu> {
                 heldTicks = 0;
                 drip(bench, essence);
             } else {
-                sound(SoundEvents.DISPENSER_FAIL, 1.6F, 0.25F);
+                sound(ModSounds.DEVICE_REFUSE.get(), 1.0F, 0.5F);
             }
             return true;
         }

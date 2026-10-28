@@ -110,12 +110,21 @@ public class WorldAnchorBlock extends BaseEntityBlock implements com.pockyl.hext
         return Math.max(1, (chunks + 1) / 2);
     }
 
-    /** An empty hand asks the anchor what it holds and what it eats, or why it sleeps. */
+    /** The chunks an anchor holds, as a hexagon on the ground reaching to their edge. */
+    static void showArea(net.minecraft.server.level.ServerLevel level, BlockPos pos, int radius) {
+        Vec3 at = Vec3.atBottomCenterOf(pos);
+        com.pockyl.hextale.network.RuneFxPayload.send(level, com.pockyl.hextale.network.RuneFxPayload.area(at,
+                com.pockyl.hextale.rune.ComplexRunes.of(com.pockyl.hextale.rune.Essence.EARTH, com.pockyl.hextale.rune.Essence.LIGHT),
+                (radius + 0.5F) * 16, com.pockyl.hextale.registry.ModParticles.HEXTECH));
+    }
+
+    /** An empty hand asks the anchor what it holds and what it eats, or why it sleeps (and shows its chunks). */
     @Override
     protected net.minecraft.world.InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.player.Player player,
                                                                   net.minecraft.world.phys.BlockHitResult hit) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof Anchor anchor) {
             int radius = AnchorWorldRune.radius(anchor.strength(AnchorWorldRune.SHIFT));
+            showArea((net.minecraft.server.level.ServerLevel) level, pos, radius);
             player.displayClientMessage(anchor.asleep() ? net.minecraft.network.chat.Component.translatable("block.hextale.world_anchor.asleep")
                     : net.minecraft.network.chat.Component.translatable("block.hextale.world_anchor.status", (2 * radius + 1) * (2 * radius + 1), cost(radius)), true);
         }
@@ -182,8 +191,6 @@ public class WorldAnchorBlock extends BaseEntityBlock implements com.pockyl.hext
             if (free) {
                 // Dam: this minute is held for nothing.
                 com.pockyl.hextale.runework.ToolEffects.puff(level, Vec3.atCenterOf(worldPosition).add(0, 0.6, 0), AnchorWorldRune.DAM.rune(), 6, 0.3);
-                level.playSound(null, worldPosition, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_RESONATE, net.minecraft.sounds.SoundSource.BLOCKS,
-                        0.4F, 1.3F);
             }
             boolean fed = free || JarReach.pay(level, worldPosition, Vec3.atCenterOf(worldPosition), Essence.EARTH, cost(radius));
             if (fed) {
@@ -194,6 +201,9 @@ public class WorldAnchorBlock extends BaseEntityBlock implements com.pockyl.hext
             if (asleep == fed) {
                 asleep = !fed;
                 hold(level, worldPosition, radius, fed);
+                if (fed) {
+                    showArea(level, worldPosition, radius);
+                }
                 level.playSound(null, worldPosition, fed ? ModSounds.BLOCK_AWAKEN.get() : ModSounds.RIFT_BREAK.get(),
                         net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, fed ? 1.2F : 0.6F);
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);

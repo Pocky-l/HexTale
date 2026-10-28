@@ -49,17 +49,24 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 
 import com.pockyl.hextale.item.RuneScrollItem;
+import com.pockyl.hextale.network.RuneEffectPayload;
+import com.pockyl.hextale.network.RuneFxPayload;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.ResearchBook;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.world.WorldEdits;
+
+import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.jspecify.annotations.Nullable;
 
@@ -142,7 +149,7 @@ public final class ToolEffects {
         }
         player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, ToolRune.HASTE_TICKS, strength >= 3 ? 1 : 0, true, true));
         puff(level, player.position().add(0, 1, 0), rune, 10, 0.6);
-        sound(level, player.position(), SoundEvents.AMETHYST_BLOCK_RESONATE, 0.5F, 1.4F);
+        RuneEffectPayload.show(level, RuneEffectPayload.Family.GUST, player.position().add(0, 1.1, 0), 0xF0E08A, 0.5F);
     }
 
     /**
@@ -185,10 +192,78 @@ public final class ToolEffects {
         }
     }
 
-    /** Glints and a ring of light in the rune's colour: the sign that a rune just worked (more glints = a bigger proc). */
+    /**
+     * Ticks between two signs of one rune in one 4-block cell: a proc firing every tick, or on every block a miner
+     * breaks, stays one soft sign.
+     */
+    public static final int PROC_SIGN_GAP = 30;
+    /** Colours of the tools' rune effects: life rising, petals, acid. */
+    private static final int LIFE = 0x8FE07A;
+    private static final int PETALS = 0xF2A8D0;
+    private static final int ACID = 0x9CD64A;
+    /** Ticks between two full rune signs near one player, whatever the runes: a pickaxe and clothes never chatter. */
+    public static final int PLAYER_SIGN_GAP = 40;
+    /** Procs this small (a few glints: Mending, Magnet...) only glint, without a sign or a sound. */
+    public static final int SMALL_PROC = 4;
+    /** Players this close to a proc count it against their own sign budget. */
+    private static final double SIGN_NEAR = 8;
+    private static final Map<ServerLevel, Long2LongOpenHashMap> LAST_PROC_SIGN = new WeakHashMap<>();
+    /**
+     * Codex runes whose procs keep things going rather than reward (Haste, Mending, Radiance, Breath, Fireproofing,
+     * Banishing, Magnet, Dam, Eternal Flame): they work often, so they never show the generic sign - only glints and
+     * their own quiet effect. Owner 2026-10-28: rune effects must not distract.
+     */
+    private static final Set<String> MAINTENANCE = Set.of("spark_life", "life_metal", "life_light", "air_life", "life_fire",
+            "light_shadow", "spark_metal", "earth_water", "fire_light");
+
+    /**
+     * The sign that a rune just worked: glints in the rune's colour (more glints = a bigger proc), and, for procs bigger
+     * than {@link #SMALL_PROC} when {@link #procSignDue} allows it, the {@code rune.proc} sound and the rune's sign drawn
+     * by the clients ({@link RuneFxPayload}: a flat hexagon opening round the spot, the glyph flaring over it). Owner
+     * (2026-10-28): runes on a pickaxe and clothes must not distract - hence the small procs, the budgets and the quieter
+     * sound of a proc on a player's own body.
+     */
     public static void puff(ServerLevel level, Vec3 at, ComplexRune rune, int count, double spread) {
         level.sendParticles(ModParticles.glint(rune.color()), at.x, at.y, at.z, count, spread, spread * 0.6, spread, 0.03);
-        level.sendParticles(ModParticles.ring(rune.color()), at.x, at.y, at.z, 0, 0.4 + spread * 1.2, 0, 0, 1);
+        if (count > SMALL_PROC && !MAINTENANCE.contains(rune.key()) && procSignDue(level, at, rune)) {
+            Player wearer = level.getNearestPlayer(at.x, at.y - 1, at.z, 1.2, false);
+            level.playSound(null, at.x, at.y, at.z, ModSounds.RUNE_PROC.get(), SoundSource.PLAYERS, wearer != null ? 0.55F : 1.0F,
+                    0.9F + level.getRandom().nextFloat() * 0.2F);
+            RuneFxPayload.send(level, RuneFxPayload.proc(at, rune, count, spread));
+        }
+    }
+
+    /**
+     * Whether a proc here may show the full sign (sound + glyph): at most once per {@link #PROC_SIGN_GAP} ticks per rune in
+     * a 4-block cell, and at most once per {@link #PLAYER_SIGN_GAP} ticks near the nearest player (marks both when it
+     * may).
+     */
+    public static boolean procSignDue(ServerLevel level, Vec3 at, ComplexRune rune) {
+        return procSignDue(level, at, rune, level.getNearestPlayer(at.x, at.y, at.z, SIGN_NEAR, false));
+    }
+
+    /** {@link #procSignDue} with the player whose budget the sign counts against given (null = none near). */
+    public static boolean procSignDue(ServerLevel level, Vec3 at, ComplexRune rune, @Nullable Player near) {
+        Long2LongOpenHashMap last = LAST_PROC_SIGN.computeIfAbsent(level, key -> new Long2LongOpenHashMap());
+        long now = level.getGameTime();
+        BlockPos block = BlockPos.containing(at);
+        long cell = BlockPos.asLong(block.getX() >> 2, block.getY() >> 2, block.getZ() >> 2) * 31 + rune.hashCode();
+        if (now - last.getOrDefault(cell, -PROC_SIGN_GAP) < PROC_SIGN_GAP) {
+            return false;
+        }
+        // Player ids are small and positive; their keys sit below every cell key's range by being negated.
+        long person = near == null ? 0 : -1 - near.getId();
+        if (near != null && now - last.getOrDefault(person, -PLAYER_SIGN_GAP) < PLAYER_SIGN_GAP) {
+            return false;
+        }
+        if (last.size() > 512) {
+            last.long2LongEntrySet().removeIf(entry -> now - entry.getLongValue() >= Math.max(PROC_SIGN_GAP, PLAYER_SIGN_GAP));
+        }
+        last.put(cell, now);
+        if (near != null) {
+            last.put(person, now);
+        }
+        return true;
     }
 
     public static void sound(ServerLevel level, Vec3 at, SoundEvent sound, float volume, float pitch) {
@@ -233,6 +308,7 @@ public final class ToolEffects {
             rerollWithFortune(event, player, HolderRune.at(ToolRune.LEAF_FORTUNE, pollen));
             if (level.getRandom().nextInt(4) == 0) {
                 puff(level, Vec3.atCenterOf(pos), ToolRune.POLLEN.rune(), 4, 0.3);
+                RuneEffectPayload.show(level, RuneEffectPayload.Family.RISE, Vec3.atCenterOf(pos), PETALS, 0.6F);
             }
         }
         if (!state.is(BlockTags.LOGS) || PickaxeEffects.chaining()) {
@@ -328,6 +404,10 @@ public final class ToolEffects {
             }
         });
         puff(level, Vec3.atCenterOf(start).add(0, 1.5, 0), ToolRune.GRAVITY.rune(), 16, 1.2);
+        List<BlockPos> trunk = new ArrayList<>(logs);
+        trunk.add(0, start);
+        trunk.sort(java.util.Comparator.comparingInt(BlockPos::getY));
+        RuneEffectPayload.show(level, RuneEffectPayload.Family.CRUMBLE, Vec3.atCenterOf(start), trunk, ToolRune.GRAVITY.rune().color(), 1);
         sound(level, Vec3.atCenterOf(start), SoundEvents.WOOD_BREAK, 1.0F, 0.6F);
     }
 
@@ -356,6 +436,7 @@ public final class ToolEffects {
             }
             level.setBlockAndUpdate(foot, plant);
             puff(level, Vec3.atCenterOf(foot), ToolRune.GROWTH.rune(), 8, 0.3);
+            RuneEffectPayload.show(level, RuneEffectPayload.Family.RISE, Vec3.atBottomCenterOf(foot), LIFE, 0.8F);
             level.levelEvent(net.minecraft.world.level.block.LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, foot, 0);
         });
     }
@@ -388,12 +469,14 @@ public final class ToolEffects {
         RandomSource random = level.getRandom();
         int erosion = runes.strength(ToolRune.EROSION.rune());
         if (erosion > 0 && !PickaxeEffects.chaining() && !player.isShiftKeyDown()) {
-            PickaxeEffects.area(event, player, shovel, 1, erosion >= 3 ? 2 : 1, s -> s.is(BlockTags.MINEABLE_WITH_SHOVEL));
+            PickaxeEffects.area(event, player, shovel, 1, erosion >= 3 ? 2 : 1, s -> s.is(BlockTags.MINEABLE_WITH_SHOVEL),
+                    RuneEffectPayload.Family.CRUMBLE, ToolRune.EROSION.rune().color());
         }
         int cache = runes.strength(ToolRune.CACHE.rune());
         if (cache > 0 && soil(state) && random.nextFloat() < HolderRune.at(ToolRune.TREASURE, cache)) {
             event.getDrops().add(drop(level, pos, treasure(level, random)));
             puff(level, Vec3.atCenterOf(pos), ToolRune.CACHE.rune(), 12, 0.35);
+            RuneEffectPayload.show(level, RuneEffectPayload.Family.RISE, Vec3.atCenterOf(pos), ModParticles.GOLD, 0.8F);
             level.sendParticles(ModParticles.glint(ModParticles.GOLD), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 8, 0.3, 0.3, 0.3, 0.05);
             sound(level, Vec3.atCenterOf(pos), SoundEvents.BRUSH_GRAVEL_COMPLETED, 0.8F, 0.9F);
         }
@@ -401,6 +484,7 @@ public final class ToolEffects {
         if (fertility > 0 && state.is(BlockTags.DIRT) && random.nextFloat() < HolderRune.at(ToolRune.SEEDS, fertility)) {
             event.getDrops().add(drop(level, pos, seed(random)));
             puff(level, Vec3.atCenterOf(pos), ToolRune.FERTILITY.rune(), 8, 0.3);
+            RuneEffectPayload.show(level, RuneEffectPayload.Family.RISE, Vec3.atCenterOf(pos), LIFE, 0.7F);
         }
     }
 
@@ -499,6 +583,10 @@ public final class ToolEffects {
         if (flash > 0 && target.getHealth() >= target.getMaxHealth()) {
             event.setAmount(event.getAmount() * (1 + HolderRune.at(ToolRune.FIRST_STRIKE, flash)));
             puff(level, target.position().add(0, target.getBbHeight() * 0.6, 0), ToolRune.FLASH.rune(), 10, 0.3);
+            if (event.getSource().getEntity() instanceof Player striker) {
+                RuneEffectPayload.show(level, RuneEffectPayload.Family.ARCS, striker.getEyePosition().add(0, -0.3, 0),
+                        List.of(BlockPos.containing(target.position().add(0, target.getBbHeight() * 0.6, 0))), 0xFFF6C8, 1);
+            }
             level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 6, 0.2, 0.2, 0.2, 0.08);
         }
         int corrosion = strength(weapon, ToolRune.Tool.AXE, ToolRune.CORROSION);
@@ -512,6 +600,7 @@ public final class ToolEffects {
             }
             level.sendParticles(ParticleTypes.SCRAPE, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), 14, 0.3, 0.4, 0.3, 0.1);
             puff(level, target.position().add(0, target.getBbHeight() * 0.5, 0), ToolRune.CORROSION.rune(), 8, 0.3);
+            RuneEffectPayload.show(level, RuneEffectPayload.Family.RISE, target.position().add(0, target.getBbHeight() * 0.3, 0), ACID, 0.7F);
             sound(level, target.position(), SoundEvents.AXE_SCRAPE, 0.8F, 0.7F);
         }
     }
@@ -531,6 +620,8 @@ public final class ToolEffects {
             player.heal(HolderRune.at(ToolRune.HEAL, withering));
             level.sendParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), 4, 0.2, 0.2, 0.2, 0.1);
             puff(level, player.position().add(0, 1, 0), ToolRune.WITHERING.rune(), 10, 0.4);
+            com.pockyl.hextale.network.EssenceFxPayload.pour(level, target.position().add(0, target.getBbHeight() * 0.6, 0),
+                    player.position().add(0, 1.1, 0), ToolRune.WITHERING.rune().color(), 10);
             sound(level, player.position(), SoundEvents.SOUL_ESCAPE.value(), 0.8F, 0.8F);
         }
         int chain = strength(weapon, ToolRune.Tool.SWORD, ToolRune.CHAIN_LIGHTNING);
@@ -563,7 +654,7 @@ public final class ToolEffects {
             ARCING.set(false);
         }
         if (struck.size() > 1) {
-            sound(level, first.position(), SoundEvents.LIGHTNING_BOLT_IMPACT, 0.5F, 1.7F);
+            sound(level, first.position(), ModSounds.ARC_STRIKE.get(), 0.7F, 1.1F);
         }
     }
 
@@ -573,12 +664,8 @@ public final class ToolEffects {
 
     /** Sparks along the arc between two points. */
     private static void line(ServerLevel level, Vec3 from, Vec3 to) {
-        Vec3 step = to.subtract(from);
-        int points = Math.max(4, (int) (step.length() * 4));
-        for (int i = 0; i <= points; i++) {
-            Vec3 at = from.add(step.scale(i / (double) points));
-            level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 1, 0.05, 0.05, 0.05, 0);
-        }
+        RuneEffectPayload.show(level, RuneEffectPayload.Family.ARCS, from, List.of(BlockPos.containing(to)),
+                ToolRune.CHAIN_LIGHTNING.rune().color(), 1);
         puff(level, to, ToolRune.CHAIN_LIGHTNING.rune(), 6, 0.2);
     }
 
@@ -596,7 +683,7 @@ public final class ToolEffects {
             player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, HolderRune.at(ToolRune.RAGE_TICKS, bellows), 0, true, true));
             level.sendParticles(ModParticles.flame(ModParticles.FIRE), player.getX(), player.getY() + 1, player.getZ(), 12, 0.4, 0.5, 0.4, 0.03);
             puff(level, player.position().add(0, 1, 0), ToolRune.BELLOWS.rune(), 10, 0.5);
-            sound(level, player.position(), SoundEvents.BLAZE_SHOOT, 0.4F, 0.6F);
+            RuneEffectPayload.show(level, RuneEffectPayload.Family.GUST, player.position().add(0, 1, 0), ModParticles.FIRE, 1);
         }
     }
 
@@ -626,6 +713,7 @@ public final class ToolEffects {
             }
             if (more) {
                 puff(level, dead.position().add(0, 0.5, 0), ToolRune.SPOILS.rune(), 8, 0.4);
+                RuneEffectPayload.show(level, RuneEffectPayload.Family.RISE, dead.position().add(0, 0.3, 0), ModParticles.GOLD, 0.8F);
             }
         }
         int engraving = strength(sword, ToolRune.Tool.SWORD, ToolRune.ENGRAVING);
@@ -635,7 +723,6 @@ public final class ToolEffects {
                 event.getDrops().add(new ItemEntity(level, dead.getX(), dead.getY() + 0.5, dead.getZ(), new ItemStack(head)));
                 puff(level, dead.position().add(0, 1, 0), ToolRune.ENGRAVING.rune(), 16, 0.5);
                 level.sendParticles(ModParticles.glint(ModParticles.GOLD), dead.getX(), dead.getY() + 1, dead.getZ(), 10, 0.4, 0.4, 0.4, 0.05);
-                sound(level, dead.position(), SoundEvents.AMETHYST_CLUSTER_BREAK, 0.8F, 0.6F);
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.pockyl.hextale.port.client.SubmitNodeCollector;
 import com.pockyl.hextale.port.client.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -15,6 +16,7 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.block.LabBenchBlock;
 import com.pockyl.hextale.block.LabBenchBlockEntity;
+import com.pockyl.hextale.block.TableGeometry;
 import com.pockyl.hextale.chem.Flask;
 import com.pockyl.hextale.essence.JarReach;
 
@@ -26,6 +28,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Lab Bench in the world: the liquid in its flask (its mixed colour, as full as the flask is, bubbling hot or while
  * something forms) and the streams of essence running from the jars around into the flask's mouth as drops are let in.
+ * When a new compound begins to form, the flask flashes in its colour: a glow and a four-pointed glint flare in the
+ * belly and a flat hexagon snaps open round it and fades.
  * Coordinates are those of the north-facing model, turned with the block.
  */
 public class LabBenchRenderer implements BlockEntityRenderer<LabBenchBlockEntity, LabBenchRenderer.State> {
@@ -36,6 +40,9 @@ public class LabBenchRenderer implements BlockEntityRenderer<LabBenchBlockEntity
     private static final float MAX_Z = 10.6F / 16;
     private static final float BOTTOM = 16.2F / 16;
     private static final float TOP = 19.8F / 16;
+    /** The middle of the flask's belly on the north-facing model, in pixels. */
+    private static final Vec3 BELLY = new Vec3(7.5, 17.6, 7.5);
+    private static final float FLASH_TICKS = 26;
 
     public static final class State extends BlockEntityRenderState {
         float level;
@@ -45,6 +52,8 @@ public class LabBenchRenderer implements BlockEntityRenderer<LabBenchBlockEntity
         long seed;
         boolean flask;
         Direction facing = Direction.NORTH;
+        float sinceFlash = -1;
+        int flashColor;
         final List<JarStreamFx.Stream> streams = new ArrayList<>();
     }
 
@@ -70,6 +79,8 @@ public class LabBenchRenderer implements BlockEntityRenderer<LabBenchBlockEntity
         state.color = 0xE0000000 | flask.color();
         boolean forming = level != null && bench.formed() != null && level.getGameTime() - bench.formedAt() < 20;
         state.bubbles = forming ? 4 : flask.temperature() > 45 ? 2 : 0;
+        state.sinceFlash = level == null || bench.formed() == null ? -1 : state.time - bench.flashAt();
+        state.flashColor = bench.formed() == null ? 0 : JarStreamFx.vivid(bench.formed().color());
         state.streams.clear();
         float age = bench.sinceDrawn() + partialTick;
         Vec3 origin = Vec3.atLowerCornerOf(bench.getBlockPos());
@@ -90,12 +101,34 @@ public class LabBenchRenderer implements BlockEntityRenderer<LabBenchBlockEntity
             LiquidBox.submit(poseStack, collector, MIN_X, MIN_Z, MAX_X, MAX_Z, BOTTOM, top, state.color, state.time, state.seed, state.bubbles);
             poseStack.popPose();
         }
+        if (state.sinceFlash >= 0 && state.sinceFlash < FLASH_TICKS) {
+            flash(state, poseStack, collector, camera);
+        }
         if (!state.streams.isEmpty()) {
             Vec3 eye = camera.pos.subtract(Vec3.atLowerCornerOf(state.blockPos));
             for (JarStreamFx.Stream stream : state.streams) {
                 JarStreamFx.submit(poseStack, collector, camera.orientation, eye, stream, state.time);
             }
         }
+    }
+
+    /** A new compound: the belly flares in its colour (peak in the first beats), a hexagon snaps open round the flask. */
+    private static void flash(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        float age = state.sinceFlash;
+        float peak = Math.max(0, 1 - Math.abs(age - 3) / 3);
+        float fade = age < 3 ? age / 3 : 1 - (age - 3) / (FLASH_TICKS - 3);
+        int color = state.flashColor;
+        Vec3 belly = TableGeometry.toWorld(BlockPos.ZERO, state.facing, BELLY);
+        poseStack.pushPose();
+        poseStack.translate(belly.x, belly.y, belly.z);
+        HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.35F + 0.25F * peak, color, 0.25F + 0.5F * fade * (0.5F + peak));
+        HexFx.sheet(poseStack, collector, camera.orientation, HexFx.GLINT, HexFx.GLINT_FRAMES, List.of(HexFx.quad(0, 0, 0,
+                0.05F + 0.1F * peak, 0, age * 0.08F, Math.min(1, fade * 1.2F), RuneDrawing.mix(color, 0xFFFFFF, 0.6F))));
+        float open = 1 - (float) Math.pow(1 - Math.min(1, age / 5), 3);
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(state.time * 1.5F));
+        HexFx.hexRing(poseStack, collector, 0.25F + 0.2F * open, color, 0.8F * fade);
+        poseStack.popPose();
     }
 
     @Override

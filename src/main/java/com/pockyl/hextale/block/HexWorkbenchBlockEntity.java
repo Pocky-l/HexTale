@@ -10,7 +10,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
@@ -52,6 +51,11 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
     private static final int SOAK_TICKS = 10;
     /** Block event: a craft was made (clients flash the worktop). */
     public static final int CRAFTED = 1;
+    /** Block event: a crystal in the socket soaked into charge (clients draw it sinking into the worktop). */
+    public static final int SOAKED = 2;
+    /** How long the clients show a craft and a soak (ticks). */
+    public static final int CRAFT_SHOWN_TICKS = 26;
+    public static final int SOAK_SHOWN_TICKS = 24;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
     private int charge;
@@ -134,7 +138,8 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
         }
         crystal.shrink(1);
         bench.charge += value;
-        level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.5F, 1.6F);
+        level.playSound(null, pos, ModSounds.CRYSTAL_RESONATE.get(), SoundSource.BLOCKS, 0.6F, 1.1F);
+        level.blockEvent(pos, state.getBlock(), SOAKED, 0);
         bench.setChanged();
     }
 
@@ -144,13 +149,24 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
         Vec3 top = Vec3.atLowerCornerOf(worldPosition).add(0.5, 1.02, 0.5);
         level.playSound(null, top.x, top.y, top.z, ModSounds.WORKBENCH_CRAFT.get(), SoundSource.BLOCKS, 0.7F,
                 0.9F + level.getRandom().nextFloat() * 0.2F);
-        level.playSound(null, top.x, top.y, top.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.4F, 1.4F);
+        level.sendParticles(com.pockyl.hextale.registry.ModParticles.glint(com.pockyl.hextale.registry.ModParticles.HEX_LIGHT),
+                top.x, top.y + 0.25, top.z, 5, 0.15, 0.12, 0.15, 0.02);
     }
 
     @Override
     public boolean triggerEvent(int id, int param) {
+        // A new craft or soak never restarts one still being shown (crafts in a row, a socket full of crystals
+        // soaking every few ticks): the next one starts once the last has played out, so nothing jumps.
+        if (id == SOAKED) {
+            if (level != null && level.isClientSide() && (soakedAt < 0 || level.getGameTime() - soakedAt >= SOAK_SHOWN_TICKS)) {
+                soakedAt = level.getGameTime();
+            }
+            return true;
+        }
         if (id == CRAFTED && level != null && level.isClientSide()) {
-            craftedAt = level.getGameTime();
+            if (level.getGameTime() - craftedAt >= CRAFT_SHOWN_TICKS) {
+                craftedAt = level.getGameTime();
+            }
             return true;
         }
         return super.triggerEvent(id, param);
@@ -232,4 +248,12 @@ public class HexWorkbenchBlockEntity extends BaseContainerBlockEntity {
         float age = level.getGameTime() - craftedAt + partialTick;
         return age < 0 || age > ticks ? 0 : 1 - age / ticks;
     }
+
+    /** Client: ticks since a crystal soaked into charge (large when it never did). */
+    public float sinceSoak(Level level, float partialTick) {
+        return soakedAt < 0 ? Float.MAX_VALUE : level.getGameTime() - soakedAt + partialTick;
+    }
+
+    /** Client side: game time of the last soak. */
+    private long soakedAt = -1;
 }

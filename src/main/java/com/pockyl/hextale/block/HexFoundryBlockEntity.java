@@ -12,7 +12,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.ContainerHelper;
@@ -358,6 +357,8 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
             if (fits(more)) {
                 result = more;
                 ToolEffects.puff(level, grate.add(0, 0.6, 0), FoundryRune.FORGE.rune(), 8, 0.35);
+                // The extra ingot comes out hot.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, grate.add(0, 0.6, 0), com.pockyl.hextale.registry.ModParticles.FIRE, 0.8F);
                 level.sendParticles(ModParticles.glint(ModParticles.GOLD), grate.x, grate.y + 0.6, grate.z, 6, 0.3, 0.3, 0.3, 0.05);
             }
         }
@@ -368,13 +369,15 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
             if (fits(nugget)) {
                 insert(nugget);
                 ToolEffects.puff(level, grate.add(0, 0.6, 0), FoundryRune.SMELTING.rune(), 6, 0.3);
+                // Stone melts into metal grains.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, grate.add(0, 0.6, 0), com.pockyl.hextale.registry.ModParticles.FIRE, 0.7F);
             }
         }
         int radiance = strength(FoundryRune.RADIANCE);
         experience += recipe.value().getExperience() * (radiance > 0 ? HolderRune.at(FoundryRune.EXPERIENCE, radiance) : 1);
         if (level.getRandom().nextInt(3) == 0) {
-            level.playSound(null, grate.x, grate.y, grate.z, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.5F, 0.7F + level.getRandom().nextFloat() * 0.3F);
-            level.sendParticles(net.minecraft.core.particles.ParticleTypes.LAVA, grate.x, grate.y + 0.5, grate.z, 1, 0.2, 0, 0.2, 0);
+            level.playSound(null, grate.x, grate.y, grate.z, ModSounds.FORGE_MELT.get(), SoundSource.BLOCKS, 0.6F, 0.8F + level.getRandom().nextFloat() * 0.2F);
+            level.sendParticles(ModParticles.spark(ModParticles.FIRE), grate.x, grate.y + 0.5, grate.z, 3, 0.2, 0.05, 0.2, 0.15);
         }
     }
 
@@ -487,8 +490,8 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
         }
         if (took) {
             Vec3 grate = grate();
-            level.playSound(null, grate.x, grate.y, grate.z, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.25F, 1.4F);
-            level.sendParticles(net.minecraft.core.particles.ParticleTypes.FLAME, grate.x, grate.y + 0.55, grate.z, 4, 0.2, 0.05, 0.2, 0.02);
+            level.playSound(null, grate.x, grate.y, grate.z, ModSounds.FORGE_MELT.get(), SoundSource.BLOCKS, 0.35F, 1.3F);
+            level.sendParticles(ModParticles.flame(ModParticles.FIRE), grate.x, grate.y + 0.55, grate.z, 4, 0.2, 0.05, 0.2, 0.02);
             setChanged();
         }
     }

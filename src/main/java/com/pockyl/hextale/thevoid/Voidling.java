@@ -6,7 +6,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -227,7 +226,7 @@ public class Voidling extends Monster {
         ServerLevel level = (ServerLevel) level();
         boolean hit = super.doHurtTarget(target);
         if (hit) {
-            playSound(SoundEvents.PHANTOM_BITE, 0.8F, 0.6F + random.nextFloat() * 0.15F);
+            playSound(ModSounds.VOIDLING_ATTACK.get(), 0.9F, 0.9F + random.nextFloat() * 0.15F);
         }
         return hit;
     }
@@ -263,21 +262,21 @@ public class Voidling extends Monster {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.SILVERFISH_AMBIENT;
+        return ModSounds.VOIDLING_AMBIENT.get();
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.SILVERFISH_HURT;
+        return ModSounds.VOIDLING_HURT.get();
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.SILVERFISH_DEATH;
+        return ModSounds.VOIDLING_DEATH.get();
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        playSound(SoundEvents.SPIDER_STEP, 0.25F, 1.3F);
+        playSound(ModSounds.VOIDLING_STEP.get(), 0.5F, 1.0F);
     }
 }

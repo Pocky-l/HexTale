@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.world.WorldEdits;
 
 /**
@@ -224,11 +225,15 @@ public final class PickaxeEffects {
                 }
             }
             event.getDrops().addAll(more);
+            if (!more.isEmpty()) {
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atCenterOf(event.getPos()), ModParticles.FIRE, 0.8F);
+            }
         }
         int gemstone = runes.strength(PickaxeRune.GEMSTONE);
         if (gemstone > 0 && state.is(BlockTags.BASE_STONE_OVERWORLD) && random.nextFloat() < GEMS[gemstone - 1]) {
             event.getDrops().add(drop(level, event.getPos(), gem(random, GEM_TABLE[gemstone - 1])));
             burst(level, Vec3.atCenterOf(event.getPos()), ModParticles.glint(ModParticles.GOLD), 8);
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atCenterOf(event.getPos()), ModParticles.GOLD, 1);
         }
         int smelting = runes.strength(PickaxeRune.SMELTING);
         if (smelting > 0) {
@@ -236,8 +241,11 @@ public final class PickaxeEffects {
         }
         gifts(event, level, player, runes, ore);
         if (runes.strength(PickaxeRune.CACHE) > 0) {
+            Vec3 chest = player.position().add(0, player.getBbHeight() * 0.6, 0);
+            Vec3 from = Vec3.atCenterOf(event.getPos()).subtract(chest);
             for (Iterator<ItemEntity> it = event.getDrops().iterator(); it.hasNext(); ) {
                 ItemStack stack = it.next().getItem();
+                level.sendParticles(ModParticles.itemDraw(stack), chest.x, chest.y, chest.z, 0, from.x, from.y, from.z, 1);
                 player.getInventory().add(stack);
                 if (stack.isEmpty()) {
                     it.remove();
@@ -256,10 +264,10 @@ public final class PickaxeEffects {
         if (radiance > 0) {
             if (ore && event.getDroppedExperience() > 0) {
                 event.setDroppedExperience(Math.round(event.getDroppedExperience() * (1 + RADIANCE_ORE[radiance - 1])));
-                ToolEffects.puff(level, at, PickaxeRune.RADIANCE.rune(), 5, 0.3);
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, 0xC6F25C, 0.6F);
             } else if (state.is(BlockTags.BASE_STONE_OVERWORLD) && random.nextFloat() < RADIANCE_STONE[radiance - 1]) {
                 event.setDroppedExperience(event.getDroppedExperience() + 1 + random.nextInt(2));
-                ToolEffects.puff(level, at, PickaxeRune.RADIANCE.rune(), 5, 0.3);
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, 0xC6F25C, 0.6F);
             }
         }
         ToolEffects.haste(level, player, PickaxeRune.HASTE.rune(), runes.strength(PickaxeRune.HASTE));
@@ -272,7 +280,7 @@ public final class PickaxeEffects {
             if (player.getFoodData().needsFood() && random.nextFloat() < FEED[breath - 1]) {
                 player.getFoodData().eat(1, 0.5F);
                 ToolEffects.puff(level, player.position().add(0, 1, 0), PickaxeRune.BREATH.rune(), 8, 0.4);
-                ToolEffects.sound(level, player.position(), SoundEvents.BREEZE_IDLE_GROUND, 0.4F, 1.2F);
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, player.getEyePosition().add(0, -0.2, 0), 0, 0.7F);
             }
         }
         boolean dark = level.getMaxLocalRawBrightness(player.blockPosition()) <= DARK;
@@ -282,9 +290,8 @@ public final class PickaxeEffects {
         }
         int fireproofing = runes.strength(PickaxeRune.FIREPROOFING);
         if (fireproofing > 0 && nextToLava(level, pos) && ToolEffects.keep(player, MobEffects.FIRE_RESISTANCE, FIRE_SHIELD[fireproofing - 1], 0)) {
-            level.sendParticles(ModParticles.flame(ModParticles.FIRE), player.getX(), player.getY() + 1, player.getZ(), 16, 0.4, 0.6, 0.4, 0.02);
             ToolEffects.puff(level, player.position().add(0, 1, 0), PickaxeRune.FIREPROOFING.rune(), 12, 0.5);
-            ToolEffects.sound(level, player.position(), SoundEvents.FIRECHARGE_USE, 0.5F, 0.6F);
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, player.position().add(0, 0.3, 0), ModParticles.FIRE, 1.2F);
         }
         int flame = runes.strength(PickaxeRune.ETERNAL_FLAME);
         if (flame > 0 && !CHAINING.get() && level.getMaxLocalRawBrightness(pos) <= DARK && random.nextFloat() < WISP[flame - 1]) {
@@ -294,7 +301,8 @@ public final class PickaxeEffects {
                 if (level.getBlockState(pos).isAir() && WorldEdits.mayPlace(level, pos, wisp, player)) {
                     level.setBlockAndUpdate(pos, wisp);
                     ToolEffects.puff(level, at, PickaxeRune.ETERNAL_FLAME.rune(), 10, 0.2);
-                    ToolEffects.sound(level, at, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.4F, 0.8F);
+                    com.pockyl.hextale.network.EssenceFxPayload.pour(level, com.pockyl.hextale.network.EssenceFxPayload.hand(player), at,
+                            ModParticles.FIRE, 8);
                 }
             });
         }
@@ -355,20 +363,19 @@ public final class PickaxeEffects {
             xp++;
         }
         event.setDroppedExperience(event.getDroppedExperience() + xp);
-        Vec3 at = Vec3.atCenterOf(event.getPos());
-        level.sendParticles(ModParticles.flame(ModParticles.FIRE), at.x, at.y, at.z, 6, 0.25, 0.25, 0.25, 0.01);
-        level.sendParticles(ModParticles.vapour(ModParticles.SMOKE), at.x, at.y + 0.2, at.z, 3, 0.2, 0.1, 0.2, 0.01);
-        level.playSound(null, event.getPos(), SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.2F, 1.6F + level.getRandom().nextFloat() * 0.3F);
+        // Smelting: the block catches fire for a moment, glowing hot, flames licking up its sides.
+        com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.KINDLE, Vec3.atCenterOf(event.getPos()), List.of(event.getPos()), ModParticles.FIRE, 1);
     }
 
     /** The blocks around the broken one on the face it was struck from: 3x3, two deep, or 5x5. */
     private static void area(BlockDropsEvent event, Player player, ItemStack tool, int radius, int depth) {
-        area(event, player, tool, radius, depth, state -> true);
+        area(event, player, tool, radius, depth, state -> true, com.pockyl.hextale.network.RuneEffectPayload.Family.ARCS, PickaxeRune.DRILL.rune().color());
     }
 
     /** {@link #area} over the blocks that pass {@code which} only (a shovel's soil). */
     static void area(BlockDropsEvent event, Player player, ItemStack tool, int radius, int depth,
-                     java.util.function.Predicate<BlockState> which) {
+                     java.util.function.Predicate<BlockState> which, com.pockyl.hextale.network.RuneEffectPayload.Family family, int color) {
+        List<BlockPos> taken = new ArrayList<>();
         ServerLevel level = event.getLevel();
         HitResult hit = player.pick(6, 0, false);
         Direction face = hit instanceof BlockHitResult block ? block.getDirection() : Direction.UP;
@@ -383,13 +390,22 @@ public final class PickaxeEffects {
                             continue;
                         }
                         BlockState state = level.getBlockState(at);
-                        if (which.test(state) && state.getDestroySpeed(level, at) <= hardness * 1.5F + 0.5F && !take(level, player, tool, at)) {
-                            return;
+                        if (which.test(state) && state.getDestroySpeed(level, at) <= hardness * 1.5F + 0.5F) {
+                            if (!take(level, player, tool, at)) {
+                                return;
+                            }
+                            if (level.getBlockState(at).isAir()) {
+                                taken.add(at);
+                            }
                         }
                     }
                 }
             }
         });
+        if (!taken.isEmpty()) {
+            // Drill: arcs from the struck block into every block it took (a shovel's ground crumbles instead).
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, family, Vec3.atCenterOf(origin), taken, color, 1);
+        }
     }
 
     /** The ore vein the broken block belonged to: the same ore touching it, nearest first. */
@@ -400,24 +416,28 @@ public final class PickaxeEffects {
         ArrayDeque<BlockPos> queue = new ArrayDeque<>();
         seen.add(event.getPos());
         queue.add(event.getPos());
+        List<BlockPos> taken = new ArrayList<>();
+        taken.add(event.getPos());
         chain(() -> {
-            int taken = 0;
-            while (!queue.isEmpty() && taken < size) {
+            while (!queue.isEmpty() && taken.size() <= size) {
                 BlockPos at = queue.poll();
                 for (BlockPos next : BlockPos.betweenClosed(at.offset(-1, -1, -1), at.offset(1, 1, 1))) {
-                    if (taken >= size || !seen.add(next.immutable()) || !level.getBlockState(next).is(ore)) {
+                    if (taken.size() > size || !seen.add(next.immutable()) || !level.getBlockState(next).is(ore)) {
                         continue;
                     }
                     BlockPos pos = next.immutable();
                     if (!take(level, player, tool, pos)) {
                         return;
                     }
-                    level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 3, 0.2, 0.2, 0.2, 0.05);
-                    taken++;
+                    taken.add(pos);
                     queue.add(pos);
                 }
             }
         });
+        if (taken.size() > 1) {
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.CRUMBLE, Vec3.atCenterOf(event.getPos()), taken,
+                    PickaxeRune.EROSION.rune().color(), 1);
+        }
     }
 
     /** Whether a tool is breaking extra blocks right now (their drops must not start another chain). */
@@ -512,7 +532,9 @@ public final class PickaxeEffects {
             shown++;
         }
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), player.getX(), player.getY() + 1, player.getZ(), 24, 1.5, 1, 1.5, 0.05);
-        level.playSound(null, centre, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 0.6F);
+        com.pockyl.hextale.network.RuneFxPayload.send(level, com.pockyl.hextale.network.RuneFxPayload.area(player.position(),
+                PickaxeRune.INSIGHT.rune(), radius, com.pockyl.hextale.network.RuneFxPayload.RUNE_COLOR));
+        level.playSound(null, centre, ModSounds.CRYSTAL_RESONATE.get(), SoundSource.PLAYERS, 0.9F, 0.8F);
         return true;
     }
 
@@ -546,6 +568,7 @@ public final class PickaxeEffects {
         }
         Direction face = into.getOpposite();
         int[] dug = {0};
+        List<BlockPos> opened = new ArrayList<>();
         BlockPos origin = start;
         chain(() -> {
             for (int d = 0; d < depth; d++) {
@@ -561,8 +584,8 @@ public final class PickaxeEffects {
                         }
                         if (level.getBlockState(at).isAir()) {
                             dug[0]++;
-                            if (dug[0] % 3 == 0) {
-                                level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 2, 0.3, 0.3, 0.3, 0.05);
+                            if (a == 0 && b == 0) {
+                                opened.add(at);
                             }
                         }
                     }
@@ -573,7 +596,9 @@ public final class PickaxeEffects {
             return false;
         }
         level.playSound(null, player.blockPosition(), SoundEvents.DEEPSLATE_BREAK, SoundSource.PLAYERS, 1.0F, 0.6F);
-        level.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.5F, 1.6F);
+        if (!opened.isEmpty()) {
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.CRUMBLE, Vec3.atCenterOf(origin), opened, PickaxeRune.PASSAGE.rune().color(), 1);
+        }
         return true;
     }
 
@@ -587,6 +612,7 @@ public final class PickaxeEffects {
         }
         BlockPos centre = hit.getBlockPos();
         int shattered = 0;
+        List<BlockPos> broken = new ArrayList<>();
         for (BlockPos at : BlockPos.betweenClosed(centre.offset(-radius, -radius, -radius), centre.offset(radius, radius, radius))) {
             if (at.distSqr(centre) > (radius + 0.5) * (radius + 0.5)) {
                 continue;
@@ -597,8 +623,9 @@ public final class PickaxeEffects {
                 continue;
             }
             level.destroyBlock(at, false, player);
-            if (++shattered % 4 == 0) {
-                level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 3, 0.3, 0.3, 0.3, 0.1);
+            shattered++;
+            if (broken.size() < com.pockyl.hextale.network.RuneEffectPayload.MAX_BLOCKS) {
+                broken.add(at.immutable());
             }
         }
         if (shattered == 0) {
@@ -606,8 +633,10 @@ public final class PickaxeEffects {
         }
         tool.hurtAndBreak(1 + shattered / 8, player, EquipmentSlot.MAINHAND);
         level.sendParticles(ParticleTypes.EXPLOSION, centre.getX() + 0.5, centre.getY() + 0.5, centre.getZ() + 0.5, 1, 0, 0, 0, 0);
-        level.sendParticles(ModParticles.ring(PickaxeRune.QUAKE.rune().color()), centre.getX() + 0.5, centre.getY() + 0.5, centre.getZ() + 0.5,
-                0, 2.5, 0, 0, 1);
+        broken.sort(java.util.Comparator.comparingDouble(at -> at.distSqr(centre)));
+        com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.CRUMBLE, Vec3.atCenterOf(centre), broken, PickaxeRune.QUAKE.rune().color(), 1);
+        com.pockyl.hextale.network.RuneFxPayload.send(level, com.pockyl.hextale.network.RuneFxPayload.area(Vec3.atCenterOf(centre),
+                PickaxeRune.QUAKE.rune(), radius + 0.5F, com.pockyl.hextale.network.RuneFxPayload.RUNE_COLOR));
         level.playSound(null, centre, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.7F, 0.5F);
         level.playSound(null, centre, SoundEvents.DEEPSLATE_BREAK, SoundSource.BLOCKS, 1.0F, 0.5F);
         return true;

@@ -96,7 +96,7 @@ public class DustCharge extends ThrowableItemProjectile {
             }
             return;
         }
-        // Stuck: it does not move; the hiss quickens as the fuse burns down.
+        // Stuck: it does not move; the sparks quicken as the fuse burns down.
         if (level().isClientSide()) {
             if (random.nextInt(Math.max(1, left / 8 + 1)) == 0) {
                 level().addParticle(ModParticles.spark(ModParticles.HEXTECH), getX(), getY() + 0.1, getZ(),
@@ -107,8 +107,9 @@ public class DustCharge extends ThrowableItemProjectile {
             }
             return;
         }
-        if (left % 10 == 0) {
-            level().playSound(null, getX(), getY(), getZ(), SoundEvents.TNT_PRIMED, SoundSource.NEUTRAL, 0.35F, 1.6F + (FUSE - left) * 0.01F);
+        if (left == FUSE) {
+            // One sound as long as the fuse: the sparks quicken into the burst.
+            level().playSound(null, getX(), getY(), getZ(), ModSounds.DUST_CHARGE_FUSE.get(), SoundSource.NEUTRAL, 0.7F, 1.0F);
         }
         if (left == 0 && level() instanceof ServerLevel level) {
             burst(level, position(), this, getOwner(), WorldEdits.actor(level, getOwner(), ownerUUID));

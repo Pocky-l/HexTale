@@ -316,16 +316,12 @@ public class VoidAnchorBlockEntity extends BlockEntity implements WorldlyContain
         Vec3 at = crystalAt(worldPosition);
         List<LivingEntity> spawn = level.getEntitiesOfClass(LivingEntity.class, new AABB(worldPosition).inflate(AnchorRune.REACH),
                 living -> living.isAlive() && (living instanceof Voidling || living instanceof VoidMite));
-        RandomSource random = level.getRandom();
         for (LivingEntity creature : spawn) {
             Vec3 to = creature.position().add(0, creature.getBbHeight() * 0.5, 0);
             if (chain > 0) {
                 creature.hurt(level.damageSources().magic(), HolderRune.at(AnchorRune.ARC, chain));
-                for (int i = 0; i < 6; i++) {
-                    Vec3 p = at.lerp(to, i / 6.0).add((random.nextDouble() - 0.5) * 0.3, (random.nextDouble() - 0.5) * 0.3,
-                            (random.nextDouble() - 0.5) * 0.3);
-                    level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), p.x, p.y, p.z, 1, 0, 0, 0, 0);
-                }
+                // A bolt from the anchor's crystal into the creature.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.ARCS, at, List.of(BlockPos.containing(to)), AnchorRune.CHAIN_LIGHTNING.rune().color(), 1);
             }
             if (banish > 0) {
                 creature.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, banish - 1, false, true));

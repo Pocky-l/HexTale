@@ -8,7 +8,6 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.Util;
@@ -23,6 +22,7 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.network.SteleRunePayload;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 import com.pockyl.hextale.rune.Essence;
@@ -469,7 +469,7 @@ public class SteleScreen extends Screen {
                 send(rune.index());
                 onClose();
             } else if (refused && minecraft != null) {
-                minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.VILLAGER_NO, 1.0F, 0.4F));
+                minecraft.getSoundManager().play(SimpleSoundInstance.forUI(ModSounds.DEVICE_REFUSE.get(), 1.0F, 0.6F));
             }
             return true;
         }
@@ -500,7 +500,7 @@ public class SteleScreen extends Screen {
     private void send(int rune) {
         PacketDistributor.sendToServer(new SteleRunePayload(pos, rune));
         if (minecraft != null) {
-            minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.AMETHYST_BLOCK_CHIME, 1.2F));
+            minecraft.getSoundManager().play(SimpleSoundInstance.forUI(ModSounds.UI_SELECT.get(), 1.0F, 0.7F));
         }
     }
 }

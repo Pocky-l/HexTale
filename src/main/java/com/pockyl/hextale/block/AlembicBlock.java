@@ -41,6 +41,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.transport.WaterInlet;
 import com.pockyl.hextale.research.ResearchItems;
@@ -174,13 +175,29 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
         return SHAPE;
     }
 
-    /** While it boils, the alembic simmers quietly now and then (heard by the client only). */
+    /**
+     * While it boils, the alembic simmers quietly now and then; steam climbs out of the flask into the head and the
+     * distillate drips from the beak's tip in the colour of what it holds (client only).
+     */
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        if (state.getValue(LIT) && random.nextInt(50) == 0 && level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic
-                && ResearchItems.of(alembic.input()) != null && alembic.water() >= AlembicBlockEntity.WATER_PER_ITEM) {
+        if (!state.getValue(LIT) || !(level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic)) {
+            return;
+        }
+        boolean boiling = ResearchItems.of(alembic.input()) != null && alembic.water() >= AlembicBlockEntity.WATER_PER_ITEM;
+        if (boiling && random.nextInt(50) == 0) {
             level.playLocalSound(pos, ModSounds.ALEMBIC_BUBBLE.get(), SoundSource.BLOCKS, 0.35F + random.nextFloat() * 0.15F,
                     0.9F + random.nextFloat() * 0.2F, false);
+        }
+        if (boiling && random.nextInt(3) == 0) {
+            level.addParticle(ModParticles.vapour(ModParticles.STEAM), pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.1,
+                    pos.getY() + 11.6 / 16, pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.1, 0, 0.012, 0);
+        }
+        if (!alembic.tank().isEmpty() && random.nextInt(boiling ? 5 : 14) == 0) {
+            // The beak's tip, 6.5 px out of the centre towards the front and 10.4 px up.
+            Direction front = state.getValue(FACING);
+            level.addParticle(ModParticles.drop(alembic.tank().contents().color()), pos.getX() + 0.5 + front.getStepX() * 6.5 / 16,
+                    pos.getY() + 10.4 / 16, pos.getZ() + 0.5 + front.getStepZ() * 6.5 / 16, 0, 0, 0);
         }
     }
 

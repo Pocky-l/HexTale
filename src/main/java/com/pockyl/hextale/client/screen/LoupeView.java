@@ -298,7 +298,7 @@ final class LoupeView {
         int lenses = studiable ? Loupe.lenses(ticks) : 1;
         if (lenses > lensesIn) {
             lensesIn = lenses;
-            sound(ModSounds.LOUPE_LENS.get(), 0.85F + 0.12F * (lenses - 1), 0.45F);
+            sound(ModSounds.LOUPE_LENS.get(), 0.85F + (float) Math.random() * 0.08F, 0.45F);
         }
         if (studiable && !known && !sent && ticks >= Loupe.STUDY_TICKS) {
             sent = true;

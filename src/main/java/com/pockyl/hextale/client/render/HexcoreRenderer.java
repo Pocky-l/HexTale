@@ -70,6 +70,8 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
         state.rise = core.animateRise(time);
         itemModelResolver.updateForTopItem(state.center, core.center(), ItemDisplayContext.GROUND, level, null, seed);
         HextechAltarRenderer.extractGhosts(core, itemModelResolver, state.ghosts, state.extras, seed);
+        // The woken altar keeps its circle: the same ground sigil and jar streams as the altar's.
+        HextechAltarRenderer.extractSigil(core, state.circle, partialTick);
 
         // Spin and tumble follow the ritual smoothly (the altar's ring phases, reused).
         float target = state.active ? (state.stalled ? 1.5F : 2.5F + 9 * state.progress) : 0.7F;
@@ -109,6 +111,7 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
 
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        HextechAltarRenderer.submitSigil(state.circle, poseStack, collector, camera);
         float time = state.time;
         float flash = state.sinceFinish >= 0 && state.sinceFinish < FLASH_TICKS ? 1 - state.sinceFinish / FLASH_TICKS : 0;
         float birth = state.sinceBirth >= 0 && state.sinceBirth < HexcoreBlockEntity.BIRTH_TICKS ? state.sinceBirth : -1;
@@ -285,7 +288,7 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
     @Override
     public AABB getRenderBoundingBox(HexcoreBlockEntity core) {
         // Ghosts and arcs reach anywhere in the circle; the matrix rises over two blocks.
-        return new AABB(core.getBlockPos()).inflate(Ritual.PEDESTAL_RADIUS + 1, 3, Ritual.PEDESTAL_RADIUS + 1).expandTowards(0, 1, 0);
+        return new AABB(core.getBlockPos()).inflate(Ritual.TANK_RADIUS + 2, 3, Ritual.TANK_RADIUS + 2).expandTowards(0, 1, 0);
     }
 
     record ArcState(Vec3 to, float age, int seed, boolean strong) {
@@ -293,6 +296,8 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
 
     public static final class State extends BlockEntityRenderState {
         final ItemStackRenderState center = new ItemStackRenderState();
+        /** The ground sigil and jar streams, drawn by the altar's renderer. */
+        final HextechAltarRenderer.State circle = new HextechAltarRenderer.State();
         final Quaternionf[] tiles = new Quaternionf[TILES];
         final List<ArcState> arcs = new ArrayList<>();
         final List<HextechAltarRenderer.GhostState> ghosts = new ArrayList<>();

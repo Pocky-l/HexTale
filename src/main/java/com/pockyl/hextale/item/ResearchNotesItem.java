@@ -15,8 +15,10 @@ import net.minecraft.world.level.Level;
 
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
+import com.pockyl.hextale.network.RuneFxPayload;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.research.ResearchTopic;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.runework.RuneHolder;
@@ -121,6 +123,7 @@ public class ResearchNotesItem extends Item {
             ItemStack scroll = runeFor(serverPlayer, topic);
             if (!scroll.isEmpty()) {
                 ComplexRune rune = scroll.get(ModDataComponents.RUNE.get());
+                RuneFxPayload.send(serverPlayer.serverLevel(), RuneFxPayload.learn(serverPlayer, rune, 1));
                 serverPlayer.sendSystemMessage(Component.translatable("item.hextale.research_notes.rune",
                         Component.translatable(rune.translationKey()).withColor(rune.color())));
                 if (!player.getInventory().add(scroll)) {
@@ -128,7 +131,7 @@ public class ResearchNotesItem extends Item {
                 }
             }
             level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.9F);
-            level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 1.2F);
+            level.playSound(null, player.blockPosition(), ModSounds.RUNE_LEARN.get(), SoundSource.PLAYERS, 0.8F, 1.0F);
         }
         return InteractionResult.SUCCESS;
     }

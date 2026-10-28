@@ -10,7 +10,6 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
@@ -104,8 +103,30 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
             if (lit) {
                 level.playSound(null, worldPosition, ModSounds.PINK_BRAZIER_IGNITE.get(), SoundSource.BLOCKS, 0.7F, 1.0F);
             } else {
-                level.playSound(null, worldPosition, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.3F, 1.4F);
+                level.playSound(null, worldPosition, ModSounds.FLAME_OUT.get(), SoundSource.BLOCKS, 0.6F, 0.9F);
             }
+            flare(level, lit);
+        }
+    }
+
+    /** Lighting: pink fire bursts up out of the cage with shimmer; going out: a curl of pink smoke. */
+    public void flare(Level level, boolean lit) {
+        if (!(level instanceof ServerLevel server)) {
+            return;
+        }
+        double x = worldPosition.getX() + 0.5;
+        double y = worldPosition.getY() + 0.7;
+        double z = worldPosition.getZ() + 0.5;
+        if (lit) {
+            for (int i = 0; i < 12; i++) {
+                double angle = i * Math.PI * 2 / 12;
+                server.sendParticles(ModParticles.flame(i % 3 == 0 ? PinkBrazierBlock.FADE : PinkBrazierBlock.FLAME), x + Math.cos(angle) * 0.15, y,
+                        z + Math.sin(angle) * 0.15, 0, Math.cos(angle) * 0.03, 0.07 + server.getRandom().nextDouble() * 0.04, Math.sin(angle) * 0.03, 1);
+            }
+            server.sendParticles(ModParticles.SHIMMER_MOTE.get(), x, y + 0.3, z, 6, 0.2, 0.2, 0.2, 0.02);
+            server.sendParticles(ModParticles.glint(PinkBrazierBlock.FLAME), x, y + 0.2, z, 5, 0.2, 0.15, 0.2, 0.02);
+        } else {
+            server.sendParticles(ModParticles.vapour(0x4A2F4A), x, y, z, 6, 0.15, 0.1, 0.15, 0.01);
         }
     }
 
@@ -127,6 +148,8 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
         if (flame > 0 && level.getRandom().nextFloat() < HolderRune.at(BrazierRune.LONGER_BURN, flame)) {
             ticks *= 2;
             ToolEffects.puff(level, Vec3.atCenterOf(worldPosition).add(0, 0.5, 0), BrazierRune.ETERNAL_FLAME.rune(), 10, 0.3);
+            // The pink flame burns for nothing.
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atCenterOf(worldPosition).add(0, 0.5, 0), 0xF06AC8, 0.7F);
         }
         burn = ticks;
         changed();
@@ -153,6 +176,8 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
                     && random.nextFloat() < HolderRune.at(BrazierRune.BLOOM, pollen)) {
                 bonemealable.performBonemeal(level, random, at, plant);
                 ToolEffects.puff(level, Vec3.atCenterOf(at), BrazierRune.POLLEN.rune(), 8, 0.3);
+                // Flowers.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atCenterOf(at), 0xF2A8D0, 0.6F);
             } else {
                 growStep(level, at, plant, random);
             }
@@ -170,6 +195,8 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
             for (Player player : level.getEntitiesOfClass(Player.class, around)) {
                 if (ToolEffects.keep(player, MobEffects.REGENERATION, HolderRune.at(BrazierRune.HEALING_TICKS, healing), 0)) {
                     ToolEffects.puff(level, player.position().add(0, 1, 0), BrazierRune.HEALING.rune(), 8, 0.4);
+                    // The warmth heals.
+                    com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, player.position().add(0, 1, 0), 0x8FE07A, 0.9F);
                 }
             }
         }

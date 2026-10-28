@@ -109,7 +109,7 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 50, 0.4, 0.4, 0.4, 0.25);
         level.playSound(null, pos, ModSounds.RITUAL_COMPLETE.get(), SoundSource.BLOCKS, 1.2F, 0.8F);
         level.playSound(null, pos, ModSounds.BLOCK_AWAKEN.get(), SoundSource.BLOCKS, 1.2F, 0.7F);
-        level.playSound(null, pos, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.BLOCKS, 0.5F, 1.5F);
+        level.playSound(null, pos, ModSounds.HEXCORE_STRIKE.get(), SoundSource.BLOCKS, 0.9F, 0.75F);
         // The new matrix reaches out to every part of its circle once.
         Ritual.Circle circle = Ritual.Circle.scan(level, pos);
         for (var stele : circle.steles()) {
@@ -378,8 +378,8 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         if (!calm) {
             level.sendParticles(ModParticles.vapour(ModParticles.SOOT), at.x, at.y, at.z, 8, 0.2, 0.15, 0.2, 0.02);
         }
-        level.playSound(null, BlockPos.containing(at), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.BLOCKS,
-                calm ? 0.45F : 1.0F, 1.3F + level.getRandom().nextFloat() * 0.3F);
+        level.playSound(null, BlockPos.containing(at), ModSounds.HEXCORE_STRIKE.get(), SoundSource.BLOCKS,
+                calm ? 0.45F : 1.0F, 0.95F + level.getRandom().nextFloat() * 0.15F);
     }
 
     private void send(ServerLevel level, Vec3 at, int kind) {

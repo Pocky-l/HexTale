@@ -1299,5 +1299,514 @@
         "volume": 0.8
       }
     ]
+  },
+  "rune.proc": {
+    "subtitle": "subtitles.hextale.rune.proc",
+    "sounds": [
+      {
+        "name": "hextale:rune_proc1",
+        "volume": 0.45
+      },
+      {
+        "name": "hextale:rune_proc2",
+        "volume": 0.45
+      },
+      {
+        "name": "hextale:rune_proc3",
+        "volume": 0.45
+      },
+      {
+        "name": "hextale:rune_proc4",
+        "volume": 0.45
+      }
+    ]
+  },
+  "rune.learn": {
+    "subtitle": "subtitles.hextale.rune.learn",
+    "sounds": [
+      {
+        "name": "hextale:rune_learn",
+        "volume": 0.8
+      }
+    ]
+  },
+  "crystal.resonate": {
+    "subtitle": "subtitles.hextale.crystal.resonate",
+    "sounds": [
+      {
+        "name": "hextale:crystal_resonate1",
+        "volume": 0.5,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:crystal_resonate2",
+        "volume": 0.5,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:crystal_resonate3",
+        "volume": 0.5,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "ui.select": {
+    "subtitle": "subtitles.hextale.ui.select",
+    "sounds": [
+      {
+        "name": "hextale:ui_select1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:ui_select2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:ui_select3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "device.refuse": {
+    "subtitle": "subtitles.hextale.device.refuse",
+    "sounds": [
+      {
+        "name": "hextale:device_refuse1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:device_refuse2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "hextech.throw": {
+    "subtitle": "subtitles.hextale.hextech.throw",
+    "sounds": [
+      {
+        "name": "hextale:hextech_throw1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:hextech_throw2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "flame.out": {
+    "subtitle": "subtitles.hextale.flame.out",
+    "sounds": [
+      {
+        "name": "hextale:flame_out1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:flame_out2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "crucible.evaporate": {
+    "subtitle": "subtitles.hextale.crucible.evaporate",
+    "sounds": [
+      {
+        "name": "hextale:crucible_evaporate1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:crucible_evaporate2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "hexcore.strike": {
+    "subtitle": "subtitles.hextale.hexcore.strike",
+    "sounds": [
+      {
+        "name": "hextale:hexcore_strike1",
+        "volume": 0.9,
+        "attenuation_distance": 32
+      },
+      {
+        "name": "hextale:hexcore_strike2",
+        "volume": 0.9,
+        "attenuation_distance": 32
+      },
+      {
+        "name": "hextale:hexcore_strike3",
+        "volume": 0.9,
+        "attenuation_distance": 32
+      }
+    ]
+  },
+  "dust_charge.fuse": {
+    "subtitle": "subtitles.hextale.dust_charge.fuse",
+    "sounds": [
+      {
+        "name": "hextale:dust_charge_fuse",
+        "volume": 0.5
+      }
+    ]
+  },
+  "voidling.ambient": {
+    "subtitle": "subtitles.hextale.voidling.ambient",
+    "sounds": [
+      {
+        "name": "hextale:voidling_ambient1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:voidling_ambient2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:voidling_ambient3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "voidling.hurt": {
+    "subtitle": "subtitles.hextale.voidling.hurt",
+    "sounds": [
+      {
+        "name": "hextale:voidling_hurt1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:voidling_hurt2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "voidling.death": {
+    "subtitle": "subtitles.hextale.voidling.death",
+    "sounds": [
+      {
+        "name": "hextale:voidling_death1",
+        "volume": 0.9
+      },
+      {
+        "name": "hextale:voidling_death2",
+        "volume": 0.9
+      }
+    ]
+  },
+  "voidling.attack": {
+    "subtitle": "subtitles.hextale.voidling.attack",
+    "sounds": [
+      {
+        "name": "hextale:voidling_attack1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:voidling_attack2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "voidling.step": {
+    "subtitle": "subtitles.hextale.voidling.step",
+    "sounds": [
+      {
+        "name": "hextale:voidling_step1",
+        "volume": 0.35
+      },
+      {
+        "name": "hextale:voidling_step2",
+        "volume": 0.35
+      },
+      {
+        "name": "hextale:voidling_step3",
+        "volume": 0.35
+      }
+    ]
+  },
+  "void_mite.ambient": {
+    "subtitle": "subtitles.hextale.void_mite.ambient",
+    "sounds": [
+      {
+        "name": "hextale:void_mite_ambient1",
+        "volume": 0.45
+      },
+      {
+        "name": "hextale:void_mite_ambient2",
+        "volume": 0.45
+      },
+      {
+        "name": "hextale:void_mite_ambient3",
+        "volume": 0.45
+      }
+    ]
+  },
+  "void_mite.hurt": {
+    "subtitle": "subtitles.hextale.void_mite.hurt",
+    "sounds": [
+      {
+        "name": "hextale:void_mite_hurt1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:void_mite_hurt2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "void_mite.death": {
+    "subtitle": "subtitles.hextale.void_mite.death",
+    "sounds": [
+      {
+        "name": "hextale:void_mite_death1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:void_mite_death2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "void_mite.step": {
+    "subtitle": "subtitles.hextale.void_mite.step",
+    "sounds": [
+      {
+        "name": "hextale:void_mite_step1",
+        "volume": 0.3
+      },
+      {
+        "name": "hextale:void_mite_step2",
+        "volume": 0.3
+      }
+    ]
+  },
+  "void_mite.latch": {
+    "subtitle": "subtitles.hextale.void_mite.latch",
+    "sounds": [
+      {
+        "name": "hextale:void_mite_latch1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:void_mite_latch2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "void_mite.shake": {
+    "subtitle": "subtitles.hextale.void_mite.shake",
+    "sounds": [
+      {
+        "name": "hextale:void_mite_shake1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:void_mite_shake2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "forge.melt": {
+    "subtitle": "subtitles.hextale.forge.melt",
+    "sounds": [
+      {
+        "name": "hextale:forge_melt1",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:forge_melt2",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:forge_melt3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "forge.catch": {
+    "subtitle": "subtitles.hextale.forge.catch",
+    "sounds": [
+      {
+        "name": "hextale:forge_catch",
+        "volume": 0.9
+      }
+    ]
+  },
+  "ritual.loop": {
+    "subtitle": "subtitles.hextale.ritual.loop",
+    "sounds": [
+      {
+        "name": "hextale:ritual_loop",
+        "volume": 0.6,
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "forge.burn": {
+    "subtitle": "subtitles.hextale.forge.burn",
+    "sounds": [
+      {
+        "name": "hextale:forge_burn",
+        "volume": 0.6,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "foundry.roar": {
+    "subtitle": "subtitles.hextale.foundry.roar",
+    "sounds": [
+      {
+        "name": "hextale:foundry_roar",
+        "volume": 0.8,
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "separator.simmer": {
+    "subtitle": "subtitles.hextale.separator.simmer",
+    "sounds": [
+      {
+        "name": "hextale:separator_simmer",
+        "volume": 0.5,
+        "attenuation_distance": 10
+      }
+    ]
+  },
+  "pylon.hum": {
+    "subtitle": "subtitles.hextale.pylon.hum",
+    "sounds": [
+      {
+        "name": "hextale:pylon_hum",
+        "volume": 0.4,
+        "attenuation_distance": 10
+      }
+    ]
+  },
+  "purifier.loop": {
+    "subtitle": "subtitles.hextale.purifier.loop",
+    "sounds": [
+      {
+        "name": "hextale:purifier_draw_loop",
+        "volume": 0.6,
+        "attenuation_distance": 14
+      }
+    ]
+  },
+  "rune.crackle": {
+    "subtitle": "subtitles.hextale.rune.crackle",
+    "sounds": [
+      {
+        "name": "hextale:rune_crackle1",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_crackle2",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_crackle3",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "rune.kindle": {
+    "subtitle": "subtitles.hextale.rune.kindle",
+    "sounds": [
+      {
+        "name": "hextale:rune_kindle1",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_kindle2",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_kindle3",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "rune.crumble": {
+    "subtitle": "subtitles.hextale.rune.crumble",
+    "sounds": [
+      {
+        "name": "hextale:rune_crumble1",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_crumble2",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_crumble3",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "rune.bloom": {
+    "subtitle": "subtitles.hextale.rune.bloom",
+    "sounds": [
+      {
+        "name": "hextale:rune_bloom1",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_bloom2",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_bloom3",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "rune.gust": {
+    "subtitle": "subtitles.hextale.rune.gust",
+    "sounds": [
+      {
+        "name": "hextale:rune_gust1",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_gust2",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      },
+      {
+        "name": "hextale:rune_gust3",
+        "volume": 0.8,
+        "attenuation_distance": 12
+      }
+    ]
+  },
+  "thinning.blight": {
+    "subtitle": "subtitles.hextale.thinning.blight",
+    "sounds": [
+      {
+        "name": "hextale:thinning_blight1",
+        "volume": 0.7,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "hextale:thinning_blight2",
+        "volume": 0.7,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "hextale:thinning_blight3",
+        "volume": 0.7,
+        "attenuation_distance": 16
+      }
+    ]
   }
 }

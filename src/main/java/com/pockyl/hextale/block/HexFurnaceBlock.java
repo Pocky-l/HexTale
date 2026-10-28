@@ -2,8 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.WorldlyContainer;
@@ -111,9 +109,6 @@ public class HexFurnaceBlock extends BaseEntityBlock implements WorldlyContainer
         level.addParticle(ModParticles.flame(random.nextInt(3) == 0 ? ModParticles.SOUL_FIRE : ModParticles.FIRE), x + ax, y, z + az, 0, 0.005, 0);
         if (random.nextInt(3) == 0) {
             level.addParticle(ModParticles.vapour(ModParticles.SMOKE), x + ax, y + 0.3, z + az, 0, 0.02, 0);
-        }
-        if (random.nextInt(10) == 0) {
-            level.playLocalSound(pos, SoundEvents.FURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 1.0F, 1.0F, false);
         }
     }
 

@@ -109,6 +109,8 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
         if (steam > 0 && level.getRandom().nextFloat() < HolderRune.at(StillRune.SECOND_VIAL, steam)) {
             made++;
             ToolEffects.puff(level, at.add(0, 0.3, 0), StillRune.STEAM.rune(), 10, 0.3);
+            // Steam.
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, at.add(0, 0.3, 0), 0xDDE6EA, 0.7F);
         }
         int room = output.isEmpty() ? 16 : output.getMaxStackSize() - output.getCount();
         made = Math.min(made, room);
@@ -127,6 +129,8 @@ public class ChemStillBlockEntity extends BlockEntity implements WorldlyContaine
         if (purification > 0 && level.getRandom().nextFloat() < HolderRune.at(StillRune.CRYSTAL, purification)) {
             Containers.dropItemStack(level, at.x, at.y + 0.6, at.z, new ItemStack(ModItems.SYNTHETIC_CRYSTAL.get()));
             ToolEffects.puff(level, at.add(0, 0.6, 0), StillRune.PURIFICATION.rune(), 16, 0.35);
+            // A crystal clears out of the brew.
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at.add(0, 0.6, 0), 0x9FE6FF, 0.8F);
         }
         level.sendParticles(ModParticles.SHIMMER_MOTE.get(), at.x, at.y + 0.2, at.z, 10, 0.25, 0.2, 0.25, 0.01);
         level.playSound(null, worldPosition, ModSounds.CHEM_STILL_DRIP.get(), SoundSource.BLOCKS, 0.7F,

@@ -80,6 +80,7 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.EssenceFluidModel::register);
         modBus.addListener((RegisterParticleProvidersEvent event) -> {
             event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new);
+            event.registerSpecial(ModParticles.ITEM_DRAW.get(), new com.pockyl.hextale.client.particle.ItemDrawParticle.Provider());
             event.registerSpriteSet(ModParticles.VOID_MOTE.get(), com.pockyl.hextale.client.particle.VoidMoteParticle.Provider::new);
             event.registerSpriteSet(ModParticles.RUNE_SHARD.get(), RuneShardParticle.Provider::new);
             event.registerSpriteSet(ModParticles.ESSENCE_WISP.get(), EssenceWispParticle.Provider::new);
@@ -112,15 +113,21 @@ public final class HextaleClient {
         com.pockyl.hextale.client.screen.book.AltarDiorama.register();
         com.pockyl.hextale.client.screen.book.CircleDiorama.register();
         com.pockyl.hextale.client.screen.MultiblockDiorama.register();
+        com.pockyl.hextale.port.client.SubmitCustomGeometryEvent.register();
 
         modBus.addListener(com.pockyl.hextale.client.render.VoidPipelines::registerShaders);
         modBus.addListener((net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) -> event.enqueueWork(IrisCompat::init));
+        NeoForge.EVENT_BUS.addListener(com.pockyl.hextale.client.render.RuneFx::submit);
+        NeoForge.EVENT_BUS.addListener(com.pockyl.hextale.client.render.EssenceFx::submit);
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
         BreachCinematic.register(modBus);
         SilenceHush.register();
         ClientGrapple.register();
         LevitationHum.register();
+        MachineLoops.register();
+        WardRipple.register();
+        com.pockyl.hextale.client.render.RuneEffects.register();
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
         ThinningTint.fadeWater();
@@ -246,6 +253,7 @@ public final class HextaleClient {
                 net.minecraft.client.renderer.entity.NoopRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RESEARCH_TABLE.get(), ResearchTableRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ALEMBIC.get(), AlembicRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.RIFT_GATE.get(), com.pockyl.hextale.client.render.RiftGateRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SEPARATOR.get(), SeparatorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ESSENCE_TANK.get(), EssenceTankRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.BIG_ESSENCE_JAR.get(), com.pockyl.hextale.client.render.BigEssenceJarRenderer::new);

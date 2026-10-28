@@ -17,6 +17,7 @@ public class CameraRenderState {
     public float xRot;
     public float yRot;
     public boolean initialized;
+    public boolean isFirstPerson;
     public Quaternionf orientation = new Quaternionf();
 
     /** The state of the main camera this frame. */
@@ -31,6 +32,7 @@ public class CameraRenderState {
         state.xRot = camera.getXRot();
         state.yRot = camera.getYRot();
         state.initialized = camera.isInitialized();
+        state.isFirstPerson = !camera.isDetached();
         state.orientation = new Quaternionf(camera.rotation());
         return state;
     }

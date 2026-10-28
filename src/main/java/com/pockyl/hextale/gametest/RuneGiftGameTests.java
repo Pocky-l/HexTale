@@ -3,6 +3,7 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -11,11 +12,13 @@ import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.block.HexFurnaceBlockEntity;
 import com.pockyl.hextale.farm.Felling;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
+import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.runework.FurnaceRune;
 import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
@@ -29,7 +32,7 @@ import java.util.Set;
 
 /**
  * The runes every device and tool takes: each holder knows its runes, the furnace melts old tools back into ingots, the
- * axe fells a whole tree and the shovel digs an area, the sawmill takes bee nests whole.
+ * axe fells a whole tree and the shovel digs an area, the sawmill takes bee nests whole; rune signs stay sparse.
  */
 public final class RuneGiftGameTests {
     private static final BlockPos AT = new BlockPos(0, 1, 0);
@@ -63,6 +66,33 @@ public final class RuneGiftGameTests {
         helper.assertTrue(ToolEffects.saplingOf(ModBlocks.MAGIC_LOG.get().defaultBlockState()) == ModItems.MAGIC_SAPLING.get(),
                 "the magic tree from its sprout");
         helper.succeed();
+    }
+
+    /** A proc firing every tick shows one rune sign, not a sign per tick; another rune or place still shows one. */
+    @HexTest
+    public static void runeProcSignsAreThrottled(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        // The middle of a 4-block cell (the throttle counts cells), so a step up stays in it.
+        BlockPos origin = helper.absolutePos(BlockPos.ZERO);
+        Vec3 at = new Vec3((origin.getX() >> 2 << 2) + 1.5, (origin.getY() >> 2 << 2) + 1.5, (origin.getZ() >> 2 << 2) + 1.5);
+        ComplexRune haste = ToolRune.HASTE.rune();
+        // The cell rule alone (no player near: a mock player of another test may stand close by).
+        helper.assertTrue(ToolEffects.procSignDue(level, at, haste, null), "the first proc sounds");
+        helper.assertFalse(ToolEffects.procSignDue(level, at, haste, null), "the same proc a tick later stays quiet");
+        helper.assertTrue(ToolEffects.procSignDue(level, at, ToolRune.MENDING.rune(), null), "another rune there sounds");
+        helper.assertFalse(ToolEffects.procSignDue(level, at.add(0, 1, 0), haste, null), "nor right beside it (a miner's next block)");
+        helper.assertTrue(ToolEffects.procSignDue(level, at.add(8, 0, 0), haste, null), "the same rune elsewhere sounds");
+        // A player's budget: one sign near them, whatever the rune and place, until the gap passes.
+        net.minecraft.world.entity.player.Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        Vec3 far = at.add(0, 0, 16);
+        helper.assertTrue(ToolEffects.procSignDue(level, far, haste, player), "a sign near the player");
+        helper.assertFalse(ToolEffects.procSignDue(level, far.add(8, 0, 0), ToolRune.SPOILS.rune(), player),
+                "a second sign near the same player waits, other rune and place or not");
+        helper.runAfterDelay(Math.max(ToolEffects.PROC_SIGN_GAP, ToolEffects.PLAYER_SIGN_GAP) + 1, () -> {
+            helper.assertTrue(ToolEffects.procSignDue(level, at, haste, null), "after the gap it sounds again");
+            helper.assertTrue(ToolEffects.procSignDue(level, far.add(8, 0, 0), ToolRune.SPOILS.rune(), player), "and the player's budget refills");
+            helper.succeed();
+        });
     }
 
     /** Reforging: an old iron sword melts into ingots (two at two stars), not a nugget. */
