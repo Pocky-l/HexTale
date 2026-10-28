@@ -54,6 +54,8 @@ public final class Hextale {
         com.pockyl.hextale.registry.ModFeatures.register(modBus);
         ModTriggers.register(modBus);
         modBus.addListener(ModNetwork::register);
+        modBus.addListener((net.neoforged.neoforge.common.world.chunk.RegisterTicketControllersEvent event) ->
+                event.register(com.pockyl.hextale.block.WorldAnchorBlock.TICKETS));
         PickaxeEffects.register();
         com.pockyl.hextale.runework.ToolEffects.register();
         com.pockyl.hextale.farm.FunnelEvents.register();
@@ -144,6 +146,20 @@ public final class Hextale {
 
         // Tools and weapons: the hextech line by tier, then the hexsteel set.
         output.accept(ModItems.TUNING_FORK);
+        output.accept(ModItems.RECALL_CHARM);
+        output.accept(ModItems.GRAPPLE_GAUNTLET);
+        output.accept(ModItems.HEXTECH_MAGNET);
+        output.accept(ModItems.SOUL_FLASK);
+        output.accept(ModItems.SPAWNER_CAGE);
+        output.accept(ModItems.DUST_CHARGE);
+        output.accept(ModItems.LEVITATION_PLATE);
+        output.accept(ModItems.NULL_LANTERN);
+        output.accept(ModItems.IMPULSE_PLATE);
+        output.accept(ModItems.HEX_LIFT);
+        output.accept(ModItems.SHADOW_COFFER);
+        output.accept(ModItems.WORLD_ANCHOR);
+        output.accept(ModItems.SILENCE_WARD);
+        output.accept(ModItems.DISINTEGRATOR);
         ModItems.PICKAXES.values().forEach(output::accept);
         output.accept(ModItems.HEXTECH_AXE);
         output.accept(ModItems.HEXTECH_SHOVEL);
@@ -224,6 +240,9 @@ public final class Hextale {
         output.accept(ModItems.FULGURITE_SPIKE);
         output.accept(ModItems.FULGURITE_GLASS);
         output.accept(ModItems.FULGURITE_GLASS_PANE);
+        output.accept(ModItems.FLOATING_STONE);
+        output.accept(ModItems.WARD_GLASS);
+        output.accept(ModItems.VEIL_GLASS);
         output.accept(ModItems.MAGIC_LOG);
         output.accept(ModItems.MAGIC_WOOD);
         output.accept(ModItems.STRIPPED_MAGIC_LOG);
@@ -325,6 +344,17 @@ public final class Hextale {
             event.accept(ModItems.PEDESTAL);
             event.accept(ModItems.RUNE_STELE);
             event.accept(ModItems.HEXTECH_LAMP);
+            event.accept(ModItems.LEVITATION_PLATE);
+            event.accept(ModItems.NULL_LANTERN);
+            event.accept(ModItems.IMPULSE_PLATE);
+            event.accept(ModItems.HEX_LIFT);
+            event.accept(ModItems.SHADOW_COFFER);
+            event.accept(ModItems.WORLD_ANCHOR);
+            event.accept(ModItems.SILENCE_WARD);
+            event.accept(ModItems.DISINTEGRATOR);
+            event.accept(ModItems.FLOATING_STONE);
+            event.accept(ModItems.WARD_GLASS);
+            event.accept(ModItems.VEIL_GLASS);
         } else if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(ModItems.MAGIC_STONE);
             event.accept(ModItems.POLISHED_MAGIC_STONE);
@@ -371,6 +401,12 @@ public final class Hextale {
             event.accept(ModItems.HEXSTEEL_AXE);
             event.accept(ModItems.HEXSTEEL_HOE);
             event.accept(ModItems.TUNING_FORK);
+            event.accept(ModItems.RECALL_CHARM);
+            event.accept(ModItems.GRAPPLE_GAUNTLET);
+            event.accept(ModItems.HEXTECH_MAGNET);
+            event.accept(ModItems.SOUL_FLASK);
+            event.accept(ModItems.SPAWNER_CAGE);
+            event.accept(ModItems.DUST_CHARGE);
             event.accept(ModItems.HEXTECH_SKYPACK);
         } else if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.HEXTECH_SWORD);

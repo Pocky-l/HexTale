@@ -1,0 +1,15 @@
+{
+  "region": "workshop",
+  "icon": "hextale:floating_stone",
+  "parents": [
+    "levitation_plate"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:floating_stone"
+  },
+  "pos": [
+    -120,
+    100
+  ]
+}

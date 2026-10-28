@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hextale:block/impulse_plate"
+    },
+    "facing=east": {
+      "model": "hextale:block/impulse_plate",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hextale:block/impulse_plate",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hextale:block/impulse_plate",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "region": "circle",
+  "stage": "mid",
+  "icon": "hextale:recall_charm",
+  "parents": [
+    "hextech_altar",
+    "pedestal"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:recall_charm",
+    "then": {
+      "kind": "runes",
+      "result": "recall"
+    }
+  },
+  "pos": [
+    452,
+    -66
+  ]
+}

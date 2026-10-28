@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "circle",
-  "stage": "late",
-  "icon": "minecraft:respawn_anchor",
-  "parents": ["hexcore", "hextech_gemstone"],
-  "pos": [1370, 89]
-}

@@ -1,0 +1,26 @@
+{
+  "pattern": [
+    "B B",
+    "SUS",
+    "SHS"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:copper_ingot"
+    },
+    "S": {
+      "item": "minecraft:polished_deepslate"
+    },
+    "U": {
+      "item": "hextale:hextech_dust"
+    },
+    "H": {
+      "item": "minecraft:hopper"
+    }
+  },
+  "result": {
+    "id": "hextale:disintegrator",
+    "count": 1
+  },
+  "charge": 4
+}

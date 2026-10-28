@@ -1,0 +1,25 @@
+{
+  "center": {
+    "item": "minecraft:clock"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:unstable_hextech"
+    },
+    {
+      "item": "minecraft:ender_pearl"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    },
+    {
+      "item": "hextale:brass_ingot"
+    }
+  ],
+  "essences": {
+    "rift": 16,
+    "magic": 12,
+    "metal": 8
+  },
+  "result": "hextale:recall_charm"
+}

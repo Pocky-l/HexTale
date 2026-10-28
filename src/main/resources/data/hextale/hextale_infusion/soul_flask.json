@@ -1,0 +1,25 @@
+{
+  "center": {
+    "item": "minecraft:glass_bottle"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:unstable_hextech"
+    },
+    {
+      "item": "minecraft:soul_sand"
+    },
+    {
+      "item": "minecraft:ender_pearl"
+    },
+    {
+      "item": "hextale:brass_nugget"
+    }
+  ],
+  "essences": {
+    "life": 16,
+    "magic": 12,
+    "beast": 8
+  },
+  "result": "hextale:soul_flask"
+}

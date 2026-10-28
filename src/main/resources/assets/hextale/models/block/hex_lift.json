@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "hextale:block/hex_lift_top",
+    "side": "hextale:block/magic_bricks",
+    "bottom": "hextale:block/polished_magic_stone"
+  }
+}

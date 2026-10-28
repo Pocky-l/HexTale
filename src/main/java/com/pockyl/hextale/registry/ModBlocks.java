@@ -104,6 +104,41 @@ public final class ModBlocks {
     public static final DeferredBlock<Block> CHISELED_MAGIC_BRICKS = BLOCKS.registerBlock("chiseled_magic_bricks", Block::new,
             ModBlocks::brickProperties);
 
+    /** Nullstone banded with brass round a gemstone: it holds its chunks loaded while it stands. */
+    public static final DeferredBlock<com.pockyl.hextale.block.WorldAnchorBlock> WORLD_ANCHOR = BLOCKS.registerBlock("world_anchor",
+            com.pockyl.hextale.block.WorldAnchorBlock::new, () -> nullstoneProperties().lightLevel(state -> 6));
+    /** A coffer sealed with a shadow rune: coffers with the same seal share one pocket. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ShadowCofferBlock> SHADOW_COFFER = BLOCKS.registerBlock("shadow_coffer",
+            com.pockyl.hextale.block.ShadowCofferBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.BASS).strength(2.5F)
+                    .sound(SoundType.WOOD).lightLevel(state -> 3));
+    /** Polished magic stone with a lifting glyph: a jump carries you to the next lift above, a sneak to the one below. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HexLiftBlock> HEX_LIFT = BLOCKS.registerBlock("hex_lift",
+            com.pockyl.hextale.block.HexLiftBlock::new, () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF).lightLevel(state -> 4));
+    /** A plate with a brass arrow: whatever steps on it is thrown up and along the arrow. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ImpulsePlateBlock> IMPULSE_PLATE = BLOCKS.registerBlock("impulse_plate",
+            com.pockyl.hextale.block.ImpulsePlateBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops()
+                    .strength(1.5F, 6.0F).sound(SoundType.POLISHED_TUFF).lightLevel(state -> 3));
+    /** A lantern of nullstone: no hostile creature forms by itself within its quiet. */
+    public static final DeferredBlock<com.pockyl.hextale.block.NullLanternBlock> NULL_LANTERN = BLOCKS.registerBlock("null_lantern",
+            com.pockyl.hextale.block.NullLanternBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).forceSolidOn().strength(3.5F).sound(SoundType.LANTERN)
+                    .lightLevel(state -> 12).noOcclusion().pushReaction(PushReaction.DESTROY));
+    /** Smooth stone with a rune of lifting underneath: it can be set into thin air. */
+    public static final DeferredBlock<Block> FLOATING_STONE = BLOCKS.registerBlock("floating_stone", Block::new,
+            () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF).lightLevel(state -> 4));
+    /** Glass woven with a rune of barrier: Ward Glass stops players and lets creatures through, Veil Glass the other way. */
+    public static final DeferredBlock<com.pockyl.hextale.block.SieveGlassBlock> WARD_GLASS = BLOCKS.registerBlock("ward_glass",
+            properties -> new com.pockyl.hextale.block.SieveGlassBlock(true, properties), ModBlocks::sieveGlassProperties);
+    public static final DeferredBlock<com.pockyl.hextale.block.SieveGlassBlock> VEIL_GLASS = BLOCKS.registerBlock("veil_glass",
+            properties -> new com.pockyl.hextale.block.SieveGlassBlock(false, properties), ModBlocks::sieveGlassProperties);
+    /** A stone plate with a hextech crystal in a brass ring: the air above it lifts whatever stands there. */
+    public static final DeferredBlock<com.pockyl.hextale.block.LevitationPlateBlock> LEVITATION_PLATE = BLOCKS.registerBlock("levitation_plate",
+            com.pockyl.hextale.block.LevitationPlateBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops()
+                    .strength(2.0F, 6.0F).sound(SoundType.POLISHED_TUFF).lightLevel(state -> 6));
+
     // Struck geodes: an amethyst geode lightning hit long ago. Its amethyst partly turned into dormant hextech, its calcite
     // shell scorched, and the bolt fused the ground on its way down into fulgurite.
     public static final DeferredBlock<com.pockyl.hextale.block.DormantHextechBlock> DORMANT_HEXTECH = BLOCKS.registerBlock("dormant_hextech",
@@ -203,6 +238,15 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD).noOcclusion()
                     .lightLevel(state -> 4));
     /** A cauldron woken with hextech dust: boils water over heat and dissolves essences and items in it. */
+    /** A deepslate bowl that unmakes what falls into it into unknown essence. */
+    public static final DeferredBlock<com.pockyl.hextale.block.DisintegratorBlock> DISINTEGRATOR = BLOCKS.registerBlock("disintegrator",
+            com.pockyl.hextale.block.DisintegratorBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(3.0F).sound(SoundType.POLISHED_DEEPSLATE).noOcclusion()
+                    .requiresCorrectToolForDrops());
+    /** A wool cocoon bound in brass round nullstone: it swallows sound around it. */
+    public static final DeferredBlock<com.pockyl.hextale.block.SilenceWardBlock> SILENCE_WARD = BLOCKS.registerBlock("silence_ward",
+            com.pockyl.hextale.block.SilenceWardBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(0.8F).sound(SoundType.WOOL).noOcclusion());
     public static final DeferredBlock<com.pockyl.hextale.block.CrucibleBlock> CRUCIBLE = BLOCKS.registerBlock("crucible",
             com.pockyl.hextale.block.CrucibleBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.5F).sound(SoundType.METAL).noOcclusion()
@@ -519,6 +563,12 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties fireBrickProperties() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.BASEDRUM)
                 .requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.MUD_BRICKS);
+    }
+
+    private static BlockBehaviour.Properties sieveGlassProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(0.6F).sound(SoundType.GLASS).noOcclusion().dynamicShape()
+                .isValidSpawn((state, level, pos, type) -> false).isRedstoneConductor((state, level, pos) -> false)
+                .isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos) -> false);
     }
 
     private static BlockBehaviour.Properties hextechCrystalProperties(int light) {

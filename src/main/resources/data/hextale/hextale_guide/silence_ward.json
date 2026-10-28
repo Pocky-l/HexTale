@@ -1,0 +1,20 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": "hextale:silence_ward",
+  "parents": [
+    "null_lantern"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:silence_ward",
+    "then": {
+      "kind": "runes",
+      "result": "silence_ward"
+    }
+  },
+  "pos": [
+    -380,
+    590
+  ]
+}

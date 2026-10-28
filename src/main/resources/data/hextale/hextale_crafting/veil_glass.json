@@ -1,0 +1,22 @@
+{
+  "pattern": [
+    "GXG",
+    "GDG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "D": {
+      "item": "hextale:hextech_dust"
+    },
+    "X": {
+      "item": "minecraft:feather"
+    }
+  },
+  "result": {
+    "id": "hextale:veil_glass",
+    "count": 4
+  },
+  "charge": 1
+}

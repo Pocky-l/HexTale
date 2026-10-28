@@ -39,6 +39,7 @@ public final class ModNetwork {
         registrar.playToClient(BreachCinematicPayload.TYPE, BreachCinematicPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToServer(ChooseStickerPayload.TYPE, ChooseStickerPayload.STREAM_CODEC, ChooseStickerPayload::handle);
         registrar.playToServer(PylonCancelPayload.TYPE, PylonCancelPayload.STREAM_CODEC, PylonCancelPayload::handle);
+        registrar.playToServer(HexLiftPayload.TYPE, HexLiftPayload.STREAM_CODEC, HexLiftPayload::handle);
         registrar.playToServer(SteleRunePayload.TYPE, SteleRunePayload.STREAM_CODEC, SteleRunePayload::handle);
         registrar.playToServer(LapidaryStrokePayload.TYPE, LapidaryStrokePayload.STREAM_CODEC, LapidaryStrokePayload::handle);
         registrar.playToServer(LabActionPayload.TYPE, LabActionPayload.STREAM_CODEC, LabActionPayload::handle);

@@ -1,0 +1,22 @@
+{
+  "pattern": [
+    "BUB",
+    "SSS"
+  ],
+  "key": {
+    "B": {
+      "item": "hextale:brass_ingot"
+    },
+    "U": {
+      "item": "hextale:unstable_hextech"
+    },
+    "S": {
+      "item": "minecraft:smooth_stone_slab"
+    }
+  },
+  "result": {
+    "id": "hextale:levitation_plate",
+    "count": 1
+  },
+  "charge": 2
+}

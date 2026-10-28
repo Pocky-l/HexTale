@@ -1,0 +1,20 @@
+{
+  "region": "workshop",
+  "icon": "hextale:levitation_plate",
+  "parents": [
+    "hex_workbench",
+    "brass"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:levitation_plate",
+    "then": {
+      "kind": "runes",
+      "result": "plate"
+    }
+  },
+  "pos": [
+    -80,
+    60
+  ]
+}

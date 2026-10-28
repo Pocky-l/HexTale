@@ -115,6 +115,8 @@ public final class HextaleClient {
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
         BreachCinematic.register(modBus);
+        SilenceHush.register();
+        ClientLift.register();
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
         ThinningTint.fadeWater();
@@ -174,6 +176,16 @@ public final class HextaleClient {
             if (stack.is(ModItems.WHIRL_REAPER.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.whirl_reaper.hint").withStyle(ChatFormatting.GRAY));
             }
+            if (stack.is(ModItems.WARD_GLASS.get()) || stack.is(ModItems.VEIL_GLASS.get()) || stack.is(ModItems.FLOATING_STONE.get())) {
+                String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+                event.getToolTip().add(Component.translatable("block.hextale." + id + ".hint").withStyle(ChatFormatting.GRAY));
+            }
+            if (stack.is(ModItems.LEVITATION_PLATE.get()) || stack.is(ModItems.NULL_LANTERN.get()) || stack.is(ModItems.IMPULSE_PLATE.get())
+                    || stack.is(ModItems.HEX_LIFT.get()) || stack.is(ModItems.SHADOW_COFFER.get())
+                    || stack.is(ModItems.WORLD_ANCHOR.get()) || stack.is(ModItems.DISINTEGRATOR.get())
+                    || stack.is(ModItems.SILENCE_WARD.get())) {
+                event.getToolTip().add(Component.translatable(stack.getItem().getDescriptionId() + ".hint").withStyle(ChatFormatting.GRAY));
+            }
             // How a pipe's sides are set.
             if (stack.is(ModItems.BRASS_PIPE.get())) {
                 event.getToolTip().add(Component.translatable("block.hextale.brass_pipe.hint").withStyle(ChatFormatting.DARK_AQUA));
@@ -220,6 +232,8 @@ public final class HextaleClient {
     private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THROWN_HEXTECH.get(),
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.DUST_CHARGE.get(),
+                net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THROWN_CHEM_VIAL.get(),
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THE_VOID.get(),
@@ -253,6 +267,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.CRUCIBLE.get(), com.pockyl.hextale.client.render.CrucibleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_PYLON.get(), com.pockyl.hextale.client.render.HexPylonRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL.get(), PedestalRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.DISINTEGRATOR.get(), com.pockyl.hextale.client.render.DisintegratorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEXCORE.get(), com.pockyl.hextale.client.render.HexcoreRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RUNE_STELE.get(), RuneSteleRenderer::new);
     }

@@ -14,4 +14,12 @@ public final class PortEntities {
         return stack.getItem() instanceof Equipable equipable && equipable.getEquipmentSlot() == slot
                 && stack.getItem().canElytraFly(stack, null);
     }
+
+    /**
+     * 26.x {@code Entity#canSimulateMovement}: whether this side moves the entity itself - a player on its own client,
+     * anything else where it is controlled (the server, or the client of the player riding it).
+     */
+    public static boolean canSimulateMovement(net.minecraft.world.entity.Entity entity) {
+        return entity instanceof net.minecraft.world.entity.player.Player player ? player.isLocalPlayer() : entity.isControlledByLocalInstance();
+    }
 }

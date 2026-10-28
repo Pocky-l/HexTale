@@ -118,6 +118,23 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.DORMANT_HEXTECH.get(), "dormant_hextech");
         info(registration, ModItems.FULGURITE.get(), "fulgurite");
         info(registration, ModItems.TUNING_FORK.get(), "tuning_fork");
+        info(registration, ModItems.DUST_CHARGE.get(), "dust_charge");
+        info(registration, ModItems.LEVITATION_PLATE.get(), "levitation_plate");
+        info(registration, ModItems.FLOATING_STONE.get(), "floating_stone");
+        info(registration, ModItems.NULL_LANTERN.get(), "null_lantern");
+        info(registration, ModItems.IMPULSE_PLATE.get(), "impulse_plate");
+        info(registration, ModItems.HEX_LIFT.get(), "hex_lift");
+        info(registration, ModItems.SHADOW_COFFER.get(), "shadow_coffer");
+        info(registration, ModItems.WORLD_ANCHOR.get(), "world_anchor");
+        info(registration, ModItems.SILENCE_WARD.get(), "silence_ward");
+        info(registration, ModItems.DISINTEGRATOR.get(), "disintegrator");
+        info(registration, ModItems.RECALL_CHARM.get(), "recall_charm");
+        info(registration, ModItems.GRAPPLE_GAUNTLET.get(), "grapple_gauntlet");
+        info(registration, ModItems.HEXTECH_MAGNET.get(), "hextech_magnet");
+        info(registration, ModItems.SOUL_FLASK.get(), "soul_flask");
+        info(registration, ModItems.SPAWNER_CAGE.get(), "spawner_cage");
+        info(registration, ModItems.WARD_GLASS.get(), "ward_glass");
+        info(registration, ModItems.VEIL_GLASS.get(), "veil_glass");
         info(registration, ModItems.HEX_FURNACE.get(), "hex_furnace");
         info(registration, ModItems.HEX_FOUNDRY.get(), "hex_foundry");
         registration.addRecipes(BrewingCategory.TYPE, com.pockyl.hextale.crafting.BrewRecipe.ALL.get(true).entrySet().stream()

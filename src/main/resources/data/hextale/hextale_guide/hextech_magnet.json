@@ -1,0 +1,20 @@
+{
+  "region": "pylons",
+  "stage": "mid",
+  "icon": "hextale:hextech_magnet",
+  "parents": [
+    "gathering_pylon"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:hextech_magnet",
+    "then": {
+      "kind": "runes",
+      "result": "magnet"
+    }
+  },
+  "pos": [
+    880,
+    -220
+  ]
+}

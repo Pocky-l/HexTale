@@ -53,6 +53,28 @@ public enum RuneHolder {
     SKYPACK(() -> ModDataComponents.SKYPACK_RUNES.get(), SkypackRune.SLOTS, SkypackRune.values()),
     /** The Hextech Tuning Fork. */
     FORK(() -> ModDataComponents.FORK_RUNES.get(), ForkRune.SLOTS, ForkRune.values()),
+    /** The Levitation Plate. */
+    PLATE(() -> ModDataComponents.PLATE_RUNES.get(), PlateRune.SLOTS, PlateRune.values()),
+    /** The Null Lantern. */
+    NULL_LANTERN(() -> ModDataComponents.NULL_RUNES.get(), NullRune.SLOTS, NullRune.values()),
+    /** The Impulse Plate. */
+    IMPULSE(() -> ModDataComponents.IMPULSE_RUNES.get(), ImpulseRune.SLOTS, ImpulseRune.values()),
+    /** The Hex Lift. */
+    LIFT(() -> ModDataComponents.LIFT_RUNES.get(), LiftRune.SLOTS, LiftRune.values()),
+    /** The Recall Charm. */
+    RECALL(() -> ModDataComponents.RECALL_RUNES.get(), RecallRune.SLOTS, RecallRune.values()),
+    /** The Grapple Gauntlet. */
+    GRAPPLE(() -> ModDataComponents.GRAPPLE_RUNES.get(), GrappleRune.SLOTS, GrappleRune.values()),
+    /** The Hextech Magnet. */
+    MAGNET(() -> ModDataComponents.MAGNET_RUNES.get(), MagnetRune.SLOTS, MagnetRune.values()),
+    /** The Soul Flask. */
+    SOUL(() -> ModDataComponents.SOUL_RUNES.get(), SoulRune.SLOTS, SoulRune.values()),
+    /** The World Anchor. */
+    WORLD_ANCHOR(() -> ModDataComponents.WORLD_ANCHOR_RUNES.get(), AnchorWorldRune.SLOTS, AnchorWorldRune.values()),
+    /** The Disintegrator. */
+    DISINTEGRATOR(() -> ModDataComponents.DISINTEGRATOR_RUNES.get(), DisintegratorRune.SLOTS, DisintegratorRune.values()),
+    /** The Silence Ward. */
+    SILENCE_WARD(() -> ModDataComponents.SILENCE_WARD_RUNES.get(), SilenceRune.SLOTS, SilenceRune.values()),
     /** The Crystal Battery. */
     BATTERY(() -> ModDataComponents.BATTERY_RUNES.get(), BatteryRune.SLOTS, BatteryRune.values()),
     /** The Hextech Purifier. */
@@ -127,6 +149,39 @@ public enum RuneHolder {
         }
         if (item == ModItems.TUNING_FORK.get()) {
             return FORK;
+        }
+        if (item == ModItems.LEVITATION_PLATE.get()) {
+            return PLATE;
+        }
+        if (item == ModItems.NULL_LANTERN.get()) {
+            return NULL_LANTERN;
+        }
+        if (item == ModItems.IMPULSE_PLATE.get()) {
+            return IMPULSE;
+        }
+        if (item == ModItems.HEX_LIFT.get()) {
+            return LIFT;
+        }
+        if (item == ModItems.RECALL_CHARM.get()) {
+            return RECALL;
+        }
+        if (item == ModItems.GRAPPLE_GAUNTLET.get()) {
+            return GRAPPLE;
+        }
+        if (item == ModItems.HEXTECH_MAGNET.get()) {
+            return MAGNET;
+        }
+        if (item == ModItems.SOUL_FLASK.get()) {
+            return SOUL;
+        }
+        if (item == ModItems.WORLD_ANCHOR.get()) {
+            return WORLD_ANCHOR;
+        }
+        if (item == ModItems.DISINTEGRATOR.get()) {
+            return DISINTEGRATOR;
+        }
+        if (item == ModItems.SILENCE_WARD.get()) {
+            return SILENCE_WARD;
         }
         if (item == ModItems.CRYSTAL_BATTERY.get()) {
             return BATTERY;
@@ -262,6 +317,17 @@ public enum RuneHolder {
             case LAB -> List.of(new ItemStack(ModItems.LAB_BENCH.get()));
             case SKYPACK -> List.of(new ItemStack(ModItems.HEXTECH_SKYPACK.get()));
             case FORK -> List.of(new ItemStack(ModItems.TUNING_FORK.get()));
+            case PLATE -> List.of(new ItemStack(ModItems.LEVITATION_PLATE.get()));
+            case NULL_LANTERN -> List.of(new ItemStack(ModItems.NULL_LANTERN.get()));
+            case IMPULSE -> List.of(new ItemStack(ModItems.IMPULSE_PLATE.get()));
+            case LIFT -> List.of(new ItemStack(ModItems.HEX_LIFT.get()));
+            case RECALL -> List.of(new ItemStack(ModItems.RECALL_CHARM.get()));
+            case GRAPPLE -> List.of(new ItemStack(ModItems.GRAPPLE_GAUNTLET.get()));
+            case MAGNET -> List.of(new ItemStack(ModItems.HEXTECH_MAGNET.get()));
+            case SOUL -> List.of(new ItemStack(ModItems.SOUL_FLASK.get()));
+            case WORLD_ANCHOR -> List.of(new ItemStack(ModItems.WORLD_ANCHOR.get()));
+            case DISINTEGRATOR -> List.of(new ItemStack(ModItems.DISINTEGRATOR.get()));
+            case SILENCE_WARD -> List.of(new ItemStack(ModItems.SILENCE_WARD.get()));
             case BATTERY -> List.of(new ItemStack(ModItems.CRYSTAL_BATTERY.get()));
             case PURIFIER -> List.of(new ItemStack(ModItems.HEXTECH_PURIFIER.get()));
             case ANCHOR -> List.of(new ItemStack(ModItems.VOID_ANCHOR.get()));

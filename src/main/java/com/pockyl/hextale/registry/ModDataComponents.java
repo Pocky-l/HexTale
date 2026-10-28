@@ -137,6 +137,51 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> FORK_RUNES =
             COMPONENTS.registerComponentType("fork_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SOUL_RUNES =
+            COMPONENTS.registerComponentType("soul_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> DISINTEGRATOR_RUNES =
+            COMPONENTS.registerComponentType("disintegrator_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> SILENCE_WARD_RUNES =
+            COMPONENTS.registerComponentType("silence_ward_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> WORLD_ANCHOR_RUNES =
+            COMPONENTS.registerComponentType("world_anchor_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    /** The seal of a Shadow Coffer: coffers with the same one share a pocket. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.UUID>> COFFER_PAIR =
+            COMPONENTS.registerComponentType("coffer_pair", builder -> builder
+                    .persistent(net.minecraft.core.UUIDUtil.STRING_CODEC).networkSynchronized(net.minecraft.core.UUIDUtil.STREAM_CODEC));
+    /** The monster spawner folded into a Spawner Cage: its block entity data. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.minecraft.nbt.CompoundTag>> CAGED_SPAWNER =
+            COMPONENTS.registerComponentType("caged_spawner", builder -> builder
+                    .persistent(net.minecraft.nbt.CompoundTag.CODEC).networkSynchronized(ByteBufCodecs.COMPOUND_TAG));
+    /** The creature folded into a Soul Flask: everything it is, its type under "id". */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.minecraft.nbt.CompoundTag>> SOUL =
+            COMPONENTS.registerComponentType("soul", builder -> builder
+                    .persistent(net.minecraft.nbt.CompoundTag.CODEC).networkSynchronized(ByteBufCodecs.COMPOUND_TAG));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> MAGNET_RUNES =
+            COMPONENTS.registerComponentType("magnet_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> GRAPPLE_RUNES =
+            COMPONENTS.registerComponentType("grapple_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> RECALL_RUNES =
+            COMPONENTS.registerComponentType("recall_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> LIFT_RUNES =
+            COMPONENTS.registerComponentType("lift_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> IMPULSE_RUNES =
+            COMPONENTS.registerComponentType("impulse_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> NULL_RUNES =
+            COMPONENTS.registerComponentType("null_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> PLATE_RUNES =
+            COMPONENTS.registerComponentType("plate_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
     /** The block a Tuning Fork was struck against: what it listens for. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.minecraft.world.level.block.Block>> TUNED_BLOCK =
             COMPONENTS.registerComponentType("tuned_block", builder -> builder

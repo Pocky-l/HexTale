@@ -1,6 +1,8 @@
 {
   "values": [
     "hextale:chem_glass",
-    "hextale:fulgurite_glass"
+    "hextale:fulgurite_glass",
+    "hextale:ward_glass",
+    "hextale:veil_glass"
   ]
 }

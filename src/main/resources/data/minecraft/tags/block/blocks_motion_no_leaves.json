@@ -82,6 +82,17 @@
     "hextale:hextech_cluster",
     "hextale:large_hextech_bud",
     "hextale:medium_hextech_bud",
-    "hextale:small_hextech_bud"
+    "hextale:small_hextech_bud",
+    "hextale:levitation_plate",
+    "hextale:ward_glass",
+    "hextale:veil_glass",
+    "hextale:floating_stone",
+    "hextale:null_lantern",
+    "hextale:impulse_plate",
+    "hextale:hex_lift",
+    "hextale:shadow_coffer",
+    "hextale:world_anchor",
+    "hextale:disintegrator",
+    "hextale:silence_ward"
   ]
 }

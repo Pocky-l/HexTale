@@ -30,6 +30,9 @@ public final class ModCapabilities {
         });
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.RESEARCH_TABLE.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.PEDESTAL.get(), (pedestal, side) -> VanillaContainerWrapper.of(pedestal));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.DISINTEGRATOR.get(), (bowl, side) -> VanillaContainerWrapper.of(bowl));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.SHADOW_COFFER.get(),
+                (coffer, side) -> coffer.container() == null ? null : VanillaContainerWrapper.of(coffer.container()));
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CHEM_BURNER.get(), (burner, side) -> VanillaContainerWrapper.of(burner));
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.AXOLOTL_TANK.get(), WorldlyContainerWrapper::new);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CHEM_STILL.get(), WorldlyContainerWrapper::new);

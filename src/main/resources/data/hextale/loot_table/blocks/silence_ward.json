@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:silence_ward",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "hextale:silence_ward_runes"
+              ],
+              "source": "block_entity"
+            }
+          ]
+        }
+      ],
+      "rolls": 1,
+      "bonus_rolls": 0.0
+    }
+  ],
+  "random_sequence": "hextale:blocks/silence_ward"
+}

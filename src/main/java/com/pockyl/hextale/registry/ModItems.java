@@ -237,6 +237,37 @@ public final class ModItems {
     public static final DeferredItem<Item> RESEARCHERS_GOGGLES = ITEMS.registerItem("researchers_goggles",
             properties -> new ArmorItem(GOGGLES_ARMOR.holder(), ArmorItem.Type.HELMET, properties.stacksTo(1)));
     /** Worn on the back: with air essence in its tanks it lets me glide, and its jets push me like a rocket. */
+    public static final DeferredItem<BlockItem> LEVITATION_PLATE = ITEMS.registerSimpleBlockItem(ModBlocks.LEVITATION_PLATE);
+    public static final DeferredItem<BlockItem> NULL_LANTERN = ITEMS.registerSimpleBlockItem(ModBlocks.NULL_LANTERN);
+    public static final DeferredItem<BlockItem> IMPULSE_PLATE = ITEMS.registerSimpleBlockItem(ModBlocks.IMPULSE_PLATE);
+    public static final DeferredItem<BlockItem> HEX_LIFT = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_LIFT);
+    public static final DeferredItem<BlockItem> SHADOW_COFFER = ITEMS.registerSimpleBlockItem(ModBlocks.SHADOW_COFFER);
+    public static final DeferredItem<BlockItem> DISINTEGRATOR = ITEMS.registerSimpleBlockItem(ModBlocks.DISINTEGRATOR);
+    public static final DeferredItem<BlockItem> SILENCE_WARD = ITEMS.registerSimpleBlockItem(ModBlocks.SILENCE_WARD);
+    public static final DeferredItem<BlockItem> WORLD_ANCHOR = ITEMS.registerSimpleBlockItem(ModBlocks.WORLD_ANCHOR,
+            properties -> properties.rarity(Rarity.RARE));
+    public static final DeferredItem<com.pockyl.hextale.item.FloatingStoneItem> FLOATING_STONE = ITEMS.registerItem("floating_stone",
+            properties -> new com.pockyl.hextale.item.FloatingStoneItem(ModBlocks.FLOATING_STONE.get(), properties));
+    public static final DeferredItem<BlockItem> WARD_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.WARD_GLASS);
+    public static final DeferredItem<BlockItem> VEIL_GLASS = ITEMS.registerSimpleBlockItem(ModBlocks.VEIL_GLASS);
+    /** A hextech cage that folds a monster spawner into itself and unfolds it once elsewhere. */
+    public static final DeferredItem<com.pockyl.hextale.item.SpawnerCageItem> SPAWNER_CAGE = ITEMS.registerItem("spawner_cage",
+            properties -> new com.pockyl.hextale.item.SpawnerCageItem(properties.stacksTo(1).rarity(Rarity.RARE)));
+    /** A crystal flask that folds one creature into its glass and lets it out elsewhere. */
+    public static final DeferredItem<com.pockyl.hextale.item.SoulFlaskItem> SOUL_FLASK = ITEMS.registerItem("soul_flask",
+            properties -> new com.pockyl.hextale.item.SoulFlaskItem(properties.stacksTo(16)));
+    /** A brass horseshoe with hextech poles: switched on, it draws loose items and experience to its holder. */
+    public static final DeferredItem<com.pockyl.hextale.item.HextechMagnetItem> HEXTECH_MAGNET = ITEMS.registerItem("hextech_magnet",
+            properties -> new com.pockyl.hextale.item.HextechMagnetItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
+    /** A leather glove with a hextech barrel: it throws a tendril at a block and draws its wearer there. */
+    public static final DeferredItem<com.pockyl.hextale.item.GrappleGauntletItem> GRAPPLE_GAUNTLET = ITEMS.registerItem("grapple_gauntlet",
+            properties -> new com.pockyl.hextale.item.GrappleGauntletItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
+    /** A pocket watch with a hextech face: it puts its holder back where they stood a few seconds ago. */
+    public static final DeferredItem<com.pockyl.hextale.item.RecallCharmItem> RECALL_CHARM = ITEMS.registerItem("recall_charm",
+            properties -> new com.pockyl.hextale.item.RecallCharmItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
+    /** Hextech dust packed tight: thrown, it sticks and cracks the rock around it. */
+    public static final DeferredItem<com.pockyl.hextale.item.DustChargeItem> DUST_CHARGE = ITEMS.registerItem("dust_charge",
+            properties -> new com.pockyl.hextale.item.DustChargeItem(properties.stacksTo(16)));
     /** Held up and listened to, it hums nearer what it listens for: hextech, or the block it was struck against. */
     public static final DeferredItem<com.pockyl.hextale.item.TuningForkItem> TUNING_FORK = ITEMS.registerItem("tuning_fork",
             properties -> new com.pockyl.hextale.item.TuningForkItem(properties.stacksTo(1)));
