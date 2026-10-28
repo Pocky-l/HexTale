@@ -3,7 +3,6 @@ package com.pockyl.hextale.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -54,7 +53,7 @@ public class PedestalBlock extends BaseEntityBlock {
         }
         if (!level.isClientSide()) {
             ItemStack taken = pedestal.take();
-            player.getInventory().placeItemBackInInventory(taken, Prediction.SERVER_ONLY);
+            player.getInventory().placeItemBackInInventory(taken);
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.7F, 1.2F);
         }
         return InteractionResult.SUCCESS;
@@ -79,5 +78,10 @@ public class PedestalBlock extends BaseEntityBlock {
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new PedestalBlockEntity(pos, state);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<PedestalBlock> codec() {
+        return simpleCodec(PedestalBlock::new);
     }
 }

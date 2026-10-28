@@ -73,7 +73,7 @@ public final class CraftingGameTests {
         helper.assertTrue(com.pockyl.hextale.event.ResearcherRobeEvents.isSparks(sources.inFire())
                 && com.pockyl.hextale.event.ResearcherRobeEvents.isSparks(sources.explosion(null, null))
                 && !com.pockyl.hextale.event.ResearcherRobeEvents.isSparks(sources.generic()), "only sparks, flames and blasts are softened");
-        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.ZOMBIE, AT);
+        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE, AT);
         zombie.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, robe);
         helper.assertTrue(com.pockyl.hextale.event.ResearcherRobeEvents.wearsRobe(zombie), "a robe on the chest counts");
         helper.succeed();
@@ -90,7 +90,7 @@ public final class CraftingGameTests {
         ItemStack trousers = new ItemStack(ModItems.RESEARCHER_TROUSERS.get());
         com.pockyl.hextale.runework.RuneHolder.TROUSERS.set(trousers, com.pockyl.hextale.runework.PickaxeRunes.EMPTY
                 .with(com.pockyl.hextale.runework.ClothesRune.TROUSERS_HASTE.rune(), 2));
-        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityTypes.ZOMBIE, AT);
+        var zombie = helper.spawnWithNoFreeWill(net.minecraft.world.entity.EntityType.ZOMBIE, AT);
         double before = zombie.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
         zombie.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, trousers);
         helper.runAfterDelay(2, () -> {

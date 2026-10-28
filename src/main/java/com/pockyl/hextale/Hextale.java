@@ -71,7 +71,7 @@ public final class Hextale {
         modBus.addListener(Hextale::addToVanillaTabs);
         PockyModsTab.register(modBus, () -> new ItemStack(ModItems.HEXCORE.get()), Hextale::fillCreativeTab);
 
-        container.registerConfig(ModConfig.Type.SYNCED, Config.SPEC);
+        container.registerConfig(ModConfig.Type.SERVER, Config.SPEC);
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
     }
 

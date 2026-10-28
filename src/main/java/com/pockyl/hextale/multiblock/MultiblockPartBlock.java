@@ -106,7 +106,7 @@ public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachi
 
     /** Mined by a player: drops what the block was, as if that block had been mined. */
     @Override
-    public void playerDestroy(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity,
+    public void playerDestroy(net.minecraft.world.level.Level level, net.minecraft.world.entity.player.Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity,
                               ItemStack destroyedWith) {
         player.awardStat(net.minecraft.stats.Stats.BLOCK_MINED.get(this));
         player.causeFoodExhaustion(0.005F);
@@ -123,5 +123,10 @@ public class MultiblockPartBlock extends BaseEntityBlock implements EssenceMachi
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new MultiblockPartBlockEntity(pos, state);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<MultiblockPartBlock> codec() {
+        return simpleCodec(MultiblockPartBlock::new);
     }
 }

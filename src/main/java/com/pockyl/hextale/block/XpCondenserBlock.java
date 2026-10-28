@@ -57,7 +57,7 @@ public class XpCondenserBlock extends BaseEntityBlock {
             if (!player.getAbilities().instabuild) {
                 stack.shrink(1);
             }
-            player.getInventory().placeItemBackInInventory(new ItemStack(Items.EXPERIENCE_BOTTLE), net.minecraft.util.Prediction.SERVER_ONLY);
+            player.getInventory().placeItemBackInInventory(new ItemStack(Items.EXPERIENCE_BOTTLE));
             level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 0.8F, 1.0F);
         }
         return InteractionResult.SUCCESS;
@@ -101,5 +101,10 @@ public class XpCondenserBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? createTickerHelper(type, ModBlockEntities.XP_CONDENSER.get(), XpCondenserBlockEntity::clientTick) : null;
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<XpCondenserBlock> codec() {
+        return simpleCodec(XpCondenserBlock::new);
     }
 }

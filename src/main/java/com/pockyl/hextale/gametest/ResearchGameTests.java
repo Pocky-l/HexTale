@@ -10,7 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeColor;
@@ -334,7 +334,7 @@ public final class ResearchGameTests {
         }
         StringBuilder sample = new StringBuilder();
         for (Item item : List.of(Items.OAK_LOG, Items.OAK_PLANKS, Items.STICK, Items.CRAFTING_TABLE, Items.IRON_PICKAXE, Items.IRON_BLOCK,
-                Items.GLASS, Items.BREAD, Items.TNT, Items.PISTON, Items.ENDER_EYE, Items.WOOL.pick(DyeColor.WHITE), Items.DIAMOND_SWORD,
+                Items.GLASS, Items.BREAD, Items.TNT, Items.PISTON, Items.ENDER_EYE, Items.WHITE_WOOL, Items.DIAMOND_SWORD,
                 Items.COOKED_BEEF, Items.NETHERITE_SWORD, Items.SPONGE, Items.BOOKSHELF, Items.LANTERN, Items.SHULKER_BOX,
                 Items.ELYTRA, Items.DRAGON_EGG, Items.MUSIC_DISC_CAT, Items.ZOMBIE_SPAWN_EGG, Items.DIRT, Items.STONE_BRICKS)) {
             sample.append(BuiltInRegistries.ITEM.getKey(item).getPath()).append('=').append(all.get(item)).append("; ");
@@ -1229,8 +1229,8 @@ public final class ResearchGameTests {
         BlockPos amethyst = new BlockPos(1, 1, 1);
         BlockPos rod = amethyst.above();
         helper.setBlock(amethyst, Blocks.AMETHYST_BLOCK);
-        helper.setBlock(rod, Blocks.LIGHTNING_ROD.weathering().unaffected().defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
-        LightningBolt bolt = EntityTypes.LIGHTNING_BOLT.create(helper.getLevel(), EntitySpawnReason.TRIGGERED);
+        helper.setBlock(rod, Blocks.LIGHTNING_ROD.defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
+        LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel(), EntitySpawnReason.TRIGGERED);
         helper.assertTrue(bolt != null, "a bolt can be created");
         bolt.snapTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above(boltAboveRod))));
         helper.getLevel().addFreshEntity(bolt);
@@ -1238,7 +1238,7 @@ public final class ResearchGameTests {
         bolt.tick();
         helper.succeedWhen(() -> {
             helper.assertBlockPresent(Blocks.AIR, amethyst);
-            helper.assertBlockPresent(Blocks.LIGHTNING_ROD.weathering().unaffected(), rod);
+            helper.assertBlockPresent(Blocks.LIGHTNING_ROD, rod);
             List<ItemEntity> found = orbs(helper, amethyst);
             int orbs = found.stream().mapToInt(item -> item.getItem().getCount()).sum();
             helper.assertTrue(orbs >= 1 && orbs <= 3, "the amethyst shattered into 1-3 orbs, got " + orbs);
@@ -1251,9 +1251,9 @@ public final class ResearchGameTests {
         BlockPos base = new BlockPos(1, 1, 1);
         BlockPos rod = base.above();
         helper.setBlock(base, Blocks.STONE);
-        helper.setBlock(rod, Blocks.LIGHTNING_ROD.weathering().unaffected().defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
+        helper.setBlock(rod, Blocks.LIGHTNING_ROD.defaultBlockState().setValue(LightningRodBlock.FACING, Direction.UP));
         orbs(helper, base).forEach(ItemEntity::discard);
-        LightningBolt bolt = EntityTypes.LIGHTNING_BOLT.create(helper.getLevel(), EntitySpawnReason.TRIGGERED);
+        LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel(), EntitySpawnReason.TRIGGERED);
         helper.assertTrue(bolt != null, "a bolt can be created");
         bolt.snapTo(Vec3.atBottomCenterOf(helper.absolutePos(rod.above())));
         helper.getLevel().addFreshEntity(bolt);

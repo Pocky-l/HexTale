@@ -8,11 +8,11 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.renderpearl.api.buffers.GpuBuffer;
-import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
-import com.mojang.renderpearl.api.commands.RenderPass;
-import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.OptionalInt;
 import java.util.function.BiConsumer;
 
 /**
@@ -60,7 +61,7 @@ public final class VoidOverlay {
         List<Queued> queued = List.copyOf(QUEUE);
         QUEUE.clear();
         try {
-            RenderTarget target = Minecraft.getInstance().gameRenderer.mainRenderTarget();
+            RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
             GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(new Matrix4f(event.getModelViewMatrix()),
                     new Vector4f(1, 1, 1, 1), new Vector3f(), new Matrix4f());
             draw(target, transforms, VoidPipelines.BODY, queued, true);
@@ -73,7 +74,7 @@ public final class VoidOverlay {
 
     private static void draw(RenderTarget target, GpuBufferSlice transforms, RenderPipeline pipeline, List<Queued> queued, boolean body) {
         try (ByteBufferBuilder bytes = new ByteBufferBuilder(DefaultVertexFormat.ENTITY.getVertexSize() * 1024)) {
-            BufferBuilder builder = new BufferBuilder(bytes, PrimitiveTopology.QUADS, DefaultVertexFormat.ENTITY);
+            BufferBuilder builder = new BufferBuilder(bytes, VertexFormat.Mode.QUADS, DefaultVertexFormat.ENTITY);
             for (Queued breach : queued) {
                 (body ? breach.body() : breach.halo()).accept(builder, breach.pose());
             }
@@ -83,16 +84,16 @@ public final class VoidOverlay {
                 }
                 int indexCount = mesh.drawState().indexCount();
                 GpuBuffer vertices = RenderSystem.getDevice().createBuffer(() -> "hextale void overlay", GpuBuffer.USAGE_VERTEX, mesh.vertexBuffer());
-                RenderSystem.AutoStorageIndexBuffer sequence = RenderSystem.getSequentialBuffer(PrimitiveTopology.QUADS);
+                RenderSystem.AutoStorageIndexBuffer sequence = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
                 GpuBuffer indices = sequence.getBuffer(indexCount);
                 try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(() -> "hextale void overlay",
-                        target.getColorTextureView(), Optional.empty(), target.getDepthTextureView(), OptionalDouble.empty())) {
-                    pass.setPipeline(RenderSystem.getCompiledPipeline(pipeline));
+                        target.getColorTextureView(), OptionalInt.empty(), target.getDepthTextureView(), OptionalDouble.empty())) {
+                    pass.setPipeline(pipeline);
                     RenderSystem.bindDefaultUniforms(pass);
                     pass.setUniform("DynamicTransforms", transforms);
-                    pass.setVertexBuffer(0, vertices.slice());
+                    pass.setVertexBuffer(0, vertices);
                     pass.setIndexBuffer(indices, sequence.type());
-                    pass.drawIndexed(indexCount, 1, 0, 0, 0);
+                    pass.drawIndexed(0, 0, indexCount, 1);
                 }
                 vertices.close();
             }

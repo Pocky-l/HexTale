@@ -44,7 +44,7 @@ public final class HexcoreItemRenderer implements NoDataSpecialModelRenderer {
         poseStack.translate(0.5F, 0.5F, 0.5F);
         for (int i = 0; i < HexcoreMatrix.TILES.length; i++) {
             poseStack.pushPose();
-            poseStack.rotate(matrix.pose(i, time));
+            poseStack.mulPose(matrix.pose(i, time));
             poseStack.translate(-0.5F, -0.5F, -0.5F);
             TableModels.submit(poseStack, collector, TableModels.HEXCORE_TILES.get(i), LightCoordsUtil.FULL_BRIGHT);
             poseStack.popPose();

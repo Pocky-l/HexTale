@@ -115,7 +115,7 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
             // Rock on the foot: the top leans towards the push.
             Direction towards = Direction.from2DDataValue(state.tiltDirection);
             poseStack.translate(0.5, 0, 0.5);
-            poseStack.rotate(Axis.of(new org.joml.Vector3f(towards.getStepZ(), 0, -towards.getStepX())).rotationDegrees(state.tilt));
+            poseStack.mulPose(Axis.of(new org.joml.Vector3f(towards.getStepZ(), 0, -towards.getStepX())).rotationDegrees(state.tilt));
             poseStack.translate(-0.5, 0, -0.5);
         }
         TableModels.submit(poseStack, collector, state.creative ? TableModels.CREATIVE_JAR : TableModels.ESSENCE_JAR, state.lightCoords);

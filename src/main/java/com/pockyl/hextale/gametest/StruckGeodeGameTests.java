@@ -9,7 +9,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.Feature;
 
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
@@ -34,7 +33,8 @@ public final class StruckGeodeGameTests {
         for (BlockPos pos : BlockPos.betweenClosed(min, max)) {
             level.setBlock(pos, pos.getY() == max.getY() ? Blocks.DIRT.defaultBlockState() : Blocks.STONE.defaultBlockState(), Block.UPDATE_CLIENTS);
         }
-        Feature feature = level.registryAccess().lookupOrThrow(Registries.FEATURE).getValueOrThrow(StruckGeodeFeature.KEY);
+        net.minecraft.world.level.levelgen.feature.ConfiguredFeature<?, ?> feature =
+                level.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).getValueOrThrow(StruckGeodeFeature.KEY);
         BlockPos origin = new BlockPos(base.getX(), max.getY() + 1, base.getZ());
         boolean placed = false;
         for (int tries = 0; tries < 8 && !placed; tries++) {

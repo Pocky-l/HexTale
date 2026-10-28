@@ -120,4 +120,9 @@ public class CrystalBatteryBlock extends BaseEntityBlock {
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.CRYSTAL_BATTERY.get(), CrystalBatteryBlockEntity::serverTick);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<CrystalBatteryBlock> codec() {
+        return simpleCodec(CrystalBatteryBlock::new);
+    }
 }

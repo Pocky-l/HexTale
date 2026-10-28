@@ -3,7 +3,7 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.zombie.Zombie;
@@ -40,12 +40,12 @@ public final class SkypackGameTests {
 
     @HexTest
     public static void aLaunchSpendsAirAndTheGlideIsFree(GameTestHelper helper) {
-        Zombie wearer = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, AT);
+        Zombie wearer = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, AT);
         ItemStack pack = HextechSkypackItem.full();
         HextechSkypackItem.launch(helper.getLevel(), wearer, pack);
         helper.assertTrue(HextechSkypackItem.air(pack) == HextechSkypackItem.CAPACITY - HextechSkypackItem.LAUNCH_AIR,
                 "a launch costs air, left " + HextechSkypackItem.air(pack));
-        pack.onGlideDamage(wearer, EquipmentSlot.CHEST);
+        ((HextechSkypackItem) pack.getItem()).onGlideDamage(pack, wearer, EquipmentSlot.CHEST);
         helper.assertTrue(HextechSkypackItem.air(pack) == HextechSkypackItem.CAPACITY - HextechSkypackItem.LAUNCH_AIR,
                 "gliding is free");
         HextechSkypackItem.setAir(pack, HextechSkypackItem.LAUNCH_AIR);

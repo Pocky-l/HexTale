@@ -2,7 +2,7 @@ package com.pockyl.hextale.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.entity.animal.cow.Cow;
@@ -44,12 +44,12 @@ public final class CreativeJarGameTests {
         ArcSpireBlockEntity spire = helper.getBlockEntity(BASE.offset(3, 0, -3), ArcSpireBlockEntity.class);
         helper.runAfterDelay(5, () -> {
             Player player = helper.makeMockPlayer(GameType.SURVIVAL);
-            Sheep sheep = helper.spawnWithNoFreeWill(EntityTypes.SHEEP, BASE.offset(2, 0, 2));
+            Sheep sheep = helper.spawnWithNoFreeWill(EntityType.SHEEP, BASE.offset(2, 0, 2));
             sheep.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(player), 1000);
             helper.assertTrue(!funnel.hungry() && funnel.charges() > 0, "the funnel fed on the creative jar (hungry " + funnel.hungry() + ")");
-            Spider spider = helper.spawnWithNoFreeWill(EntityTypes.SPIDER, BASE.offset(3, 0, -1));
+            Spider spider = helper.spawnWithNoFreeWill(EntityType.SPIDER, BASE.offset(3, 0, -1));
             spider.setHealth(ArcSpireBlockEntity.DAMAGE - 2);
-            Cow held = helper.spawn(EntityTypes.COW, new Vec3(-1.5, 1.0, 4.5));
+            Cow held = helper.spawn(EntityType.COW, new Vec3(-1.5, 1.0, 4.5));
             spire.wake();
             helper.runAfterDelay(110, () -> {
                 helper.assertTrue(!spider.isAlive(), "the spire struck with spark from the creative jar (uncharged " + spire.uncharged() + ")");

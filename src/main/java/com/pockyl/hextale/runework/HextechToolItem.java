@@ -23,7 +23,7 @@ public class HextechToolItem extends Item {
 
     /** Mending: points of wear are often shrugged off and mended. */
     @Override
-    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<ItemStack> onBroken) {
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
         RuneHolder holder = RuneHolder.of(stack);
         if (holder == null || entity == null) {
             return amount;
@@ -48,5 +48,11 @@ public class HextechToolItem extends Item {
         }
         tooltip.accept(Component.translatable("item.hextale.hextech_pickaxe.slots", runes.count(), PickaxeRunes.SLOTS)
                 .withStyle(ChatFormatting.DARK_GRAY));
+    }
+
+    /** The axe strips logs, the shovel makes paths (26.3: their block_transformer component). */
+    @Override
+    public net.minecraft.world.InteractionResult useOn(net.minecraft.world.item.context.UseOnContext context) {
+        return com.pockyl.hextale.port.PortTransformers.useOn(context);
     }
 }

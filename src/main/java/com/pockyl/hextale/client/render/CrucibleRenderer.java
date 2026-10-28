@@ -229,7 +229,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
                 rising(state, poseStack, collector, camera, age, color, y, x, i);
             }
             poseStack.translate(0, y, 0);
-            poseStack.rotate(camera.orientation);
+            poseStack.mulPose(camera.orientation);
             poseStack.translate(x, 0, 0);
             float size = ICON_SIZE * (1 + 0.35F * pop);
             HexFx.sprite(poseStack, collector, facing, HexFx.HALO, size * (1.9F + pop), color, (0.45F + 0.4F * pop) * fade);
@@ -361,8 +361,8 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
             float y = fall < 1 ? Mth.lerp(fall * fall, Math.max(state.sinkFrom, top + 0.12F), top + 0.12F) : top + 0.12F - t * 0.4F;
             poseStack.pushPose();
             poseStack.translate(0.5F, y, 0.5F);
-            poseStack.rotate(Axis.YP.rotationDegrees(state.time * 9));
-            poseStack.rotate(Axis.XP.rotationDegrees(25 + t * 40));
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.time * 9));
+            poseStack.mulPose(Axis.XP.rotationDegrees(25 + t * 40));
             float scale = 0.32F * (1 - t * 0.7F);
             poseStack.scale(scale, scale, scale);
             state.sinking.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);

@@ -97,7 +97,7 @@ public class ChemStillBlock extends BaseEntityBlock {
                 player.sendOverlayMessage(still.status());
             } else {
                 if (!player.getInventory().add(refined)) {
-                    player.drop(refined, false, net.minecraft.util.Prediction.SERVER_ONLY);
+                    player.drop(refined, false);
                 }
                 level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 0.6F, 1.2F);
             }
@@ -157,5 +157,10 @@ public class ChemStillBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.CHEM_STILL.get(), ChemStillBlockEntity::serverTick);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<ChemStillBlock> codec() {
+        return simpleCodec(ChemStillBlock::new);
     }
 }

@@ -70,4 +70,9 @@ public class LevitationPlateBlock extends BaseEntityBlock {
             level.addParticle(ModParticles.ring(ModParticles.HEXTECH), pos.getX() + 0.5, pos.getY() + 1 + reach - 0.05, pos.getZ() + 0.5, 0.4, 1, 0);
         }
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<LevitationPlateBlock> codec() {
+        return simpleCodec(LevitationPlateBlock::new);
+    }
 }

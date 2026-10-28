@@ -101,4 +101,9 @@ public class ChalkMarkBlock extends HorizontalDirectionalBlock {
             }
         }
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<ChalkMarkBlock> codec() {
+        return simpleCodec(ChalkMarkBlock::new);
+    }
 }

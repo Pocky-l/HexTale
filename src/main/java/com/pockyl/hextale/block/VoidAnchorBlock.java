@@ -5,7 +5,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -99,7 +98,7 @@ public class VoidAnchorBlock extends BaseEntityBlock {
             if (anchor.crystal().isEmpty()) {
                 player.sendOverlayMessage(status(anchor));
             } else {
-                player.getInventory().placeItemBackInInventory(anchor.take(), Prediction.SERVER_ONLY);
+                player.getInventory().placeItemBackInInventory(anchor.take());
                 level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.BLOCKS, 0.7F, 1.0F);
             }
         }
@@ -155,5 +154,10 @@ public class VoidAnchorBlock extends BaseEntityBlock {
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return createTickerHelper(type, ModBlockEntities.VOID_ANCHOR.get(),
                 level.isClientSide() ? VoidAnchorBlockEntity::clientTick : VoidAnchorBlockEntity::serverTick);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<VoidAnchorBlock> codec() {
+        return simpleCodec(VoidAnchorBlock::new);
     }
 }

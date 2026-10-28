@@ -52,18 +52,13 @@ public final class SilenceHush {
         }
 
         @Override
-        public @Nullable WeighedSoundEvents getOrResolve(SoundManager soundManager) {
-            return sound.getOrResolve(soundManager);
+        public @Nullable WeighedSoundEvents resolve(SoundManager soundManager) {
+            return sound.resolve(soundManager);
         }
 
         @Override
         public @Nullable Sound getSound() {
             return sound.getSound();
-        }
-
-        @Override
-        public @Nullable WeighedSoundEvents getSoundEvent() {
-            return sound.getSoundEvent();
         }
 
         @Override

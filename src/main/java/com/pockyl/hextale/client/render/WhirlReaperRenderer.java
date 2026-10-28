@@ -150,7 +150,7 @@ public class WhirlReaperRenderer implements BlockEntityRenderer<WhirlReaperBlock
 
         poseStack.pushPose();
         poseStack.translate(MAST, 0, MAST);
-        poseStack.rotate(Axis.YP.rotationDegrees(-state.vanes));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-state.vanes));
         poseStack.translate(-MAST, 0, -MAST);
         TableModels.submit(poseStack, collector, TableModels.WHIRL_REAPER_VANES, state.lightCoords);
         poseStack.popPose();
@@ -162,7 +162,7 @@ public class WhirlReaperRenderer implements BlockEntityRenderer<WhirlReaperBlock
         poseStack.pushPose();
         poseStack.translate(crystal.x, crystal.y + bob, crystal.z);
         HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.5F, state.color, 0.4F * calm);
-        poseStack.rotate(Axis.YP.rotationDegrees(state.vanes * 0.6F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.vanes * 0.6F));
         poseStack.scale(0.4F, 0.4F, 0.4F);
         poseStack.translate(0, -0.2, 0);
         state.crystal.submit(poseStack, collector, state.becalmed ? state.lightCoords : LightCoordsUtil.FULL_BRIGHT,
@@ -184,11 +184,11 @@ public class WhirlReaperRenderer implements BlockEntityRenderer<WhirlReaperBlock
             BlockRender render = state.blocks.get(i);
             poseStack.pushPose();
             poseStack.translate(render.at.x, render.at.y, render.at.z);
-            poseStack.rotate(Axis.YP.rotationDegrees(render.spin));
-            poseStack.rotate(Axis.XP.rotationDegrees(render.tilt));
+            poseStack.mulPose(Axis.YP.rotationDegrees(render.spin));
+            poseStack.mulPose(Axis.XP.rotationDegrees(render.tilt));
             poseStack.scale(render.scale, render.scale, render.scale);
             poseStack.translate(-0.5, 0, -0.5);
-            collector.submitMovingBlock(poseStack, render.block, 0);
+            collector.submitMovingBlock(poseStack, render.block);
             poseStack.popPose();
         }
     }

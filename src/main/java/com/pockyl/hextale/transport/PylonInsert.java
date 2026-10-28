@@ -71,6 +71,6 @@ public final class PylonInsert {
         if (level.recipeAccess().getRecipeFor(type, new SingleRecipeInput(stack), level).isPresent()) {
             return Direction.UP;
         }
-        return stack.has(DataComponents.COOKING_FUEL) ? Direction.NORTH : null;
+        return com.pockyl.hextale.port.PortFuel.isFuel(stack) ? Direction.NORTH : null;
     }
 }

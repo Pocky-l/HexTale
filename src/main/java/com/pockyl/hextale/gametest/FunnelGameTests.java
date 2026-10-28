@@ -2,7 +2,7 @@ package com.pockyl.hextale.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -52,7 +52,7 @@ public final class FunnelGameTests {
     }
 
     private static Sheep sheep(GameTestHelper helper) {
-        return helper.spawnWithNoFreeWill(EntityTypes.SHEEP, BASE.offset(3, 0, 1));
+        return helper.spawnWithNoFreeWill(EntityType.SHEEP, BASE.offset(3, 0, 1));
     }
 
     /**

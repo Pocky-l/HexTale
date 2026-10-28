@@ -75,17 +75,17 @@ public class VoidMiteLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
             poseStack.translate(spot[0], spot[1], spot[2]);
             // Its back faces away from the body: out of the back (+z), the chest (-z) or up from a shoulder.
             if (spot[3] > 0) {
-                poseStack.rotate(Axis.XP.rotationDegrees(-90));
+                poseStack.mulPose(Axis.XP.rotationDegrees(-90));
             } else if (spot[3] < 0) {
-                poseStack.rotate(Axis.XP.rotationDegrees(90));
+                poseStack.mulPose(Axis.XP.rotationDegrees(90));
             }
-            poseStack.rotate(Axis.YP.rotationDegrees(YAWS[i]));
+            poseStack.mulPose(Axis.YP.rotationDegrees(YAWS[i]));
             poseStack.scale(SCALE, SCALE, SCALE);
             poseStack.translate(0, -1.5F + 1 / 16F, 0);
             mite.ageInTicks = state.ageInTicks + i * 13;
             mite.walkAnimationPos = state.ageInTicks * 0.15F + i;
             mite.walkAnimationSpeed = 0.15F;
-            collector.submitModel(model, mite, poseStack, VoidMiteRenderer.TEXTURE, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
+            collector.submitModel(model, mite, poseStack, VoidMiteRenderer.TEXTURE, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
             poseStack.popPose();
         }
     }

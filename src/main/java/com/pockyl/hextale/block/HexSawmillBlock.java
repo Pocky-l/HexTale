@@ -84,4 +84,9 @@ public class HexSawmillBlock extends BaseEntityBlock {
         return createTickerHelper(type, ModBlockEntities.HEX_SAWMILL.get(),
                 level.isClientSide() ? HexSawmillBlockEntity::clientTick : HexSawmillBlockEntity::serverTick);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<HexSawmillBlock> codec() {
+        return simpleCodec(HexSawmillBlock::new);
+    }
 }

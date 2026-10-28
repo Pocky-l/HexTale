@@ -26,7 +26,7 @@ public final class HextechWorkingCategory {
 
     public static List<StepCategory.Step> all() {
         return List.of(
-                step(List.of(new ItemStack(Items.LIGHTNING_ROD.asList().getFirst()), new ItemStack(Items.AMETHYST_BLOCK)),
+                step(List.of(new ItemStack(Items.LIGHTNING_ROD), new ItemStack(Items.AMETHYST_BLOCK)),
                         new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), "lightning"),
                 step(List.of(new ItemStack(ModItems.UNSTABLE_HEXTECH.get())), new ItemStack(ModItems.HEXTECH_DUST.get(), 2), "throw"),
                 step(List.of(new ItemStack(ModItems.HEXTECH_DUST.get()), new ItemStack(Items.CRAFTING_TABLE)),

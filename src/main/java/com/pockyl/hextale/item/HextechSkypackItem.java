@@ -71,8 +71,11 @@ public class HextechSkypackItem extends Item {
         int value = Mth.clamp(air, 0, CAPACITY);
         if (value == 0) {
             stack.remove(ModDataComponents.SKYPACK_AIR.get());
+            stack.remove(net.minecraft.core.component.DataComponents.GLIDER);
         } else {
             stack.set(ModDataComponents.SKYPACK_AIR.get(), value);
+            // 26.1.2 glides on the vanilla glider component (26.3: NeoForge's gliding attribute, lent while there is air).
+            stack.set(net.minecraft.core.component.DataComponents.GLIDER, net.minecraft.util.Unit.INSTANCE);
         }
     }
 
@@ -93,8 +96,7 @@ public class HextechSkypackItem extends Item {
         return RuneHolder.SKYPACK.runes(stack).strength(rune.rune());
     }
 
-    /** Called by vanilla every second of a glide: Fireproofing keeps fire away. Gliding itself costs nothing. */
-    @Override
+    /** Called every second of a glide (by SkypackEvents): Fireproofing keeps fire away. Gliding itself costs nothing. */
     public void onGlideDamage(ItemStack stack, LivingEntity wearer, EquipmentSlot slot) {
         int fire = strength(stack, SkypackRune.FIREPROOFING);
         if (fire > 0 && wearer.level() instanceof ServerLevel) {

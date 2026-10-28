@@ -129,4 +129,9 @@ public class PinkBrazierBlock extends BaseEntityBlock {
         return createTickerHelper(type, ModBlockEntities.PINK_BRAZIER.get(),
                 level.isClientSide() ? PinkBrazierBlockEntity::clientTick : PinkBrazierBlockEntity::serverTick);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<PinkBrazierBlock> codec() {
+        return simpleCodec(PinkBrazierBlock::new);
+    }
 }

@@ -39,7 +39,7 @@ public class HextechPickaxeItem extends Item {
 
     /** Tempering: points of wear are often shrugged off; Mending shrugs off more and mends a point. */
     @Override
-    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<ItemStack> onBroken) {
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
         if (entity == null || entity.level().isClientSide()) {
             return amount;
         }

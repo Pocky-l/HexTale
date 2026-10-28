@@ -171,4 +171,9 @@ public class ArcSpireBlock extends BaseEntityBlock {
         return createTickerHelper(type, ModBlockEntities.ARC_SPIRE.get(),
                 level.isClientSide() ? ArcSpireBlockEntity::clientTick : ArcSpireBlockEntity::serverTick);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<ArcSpireBlock> codec() {
+        return simpleCodec(ArcSpireBlock::new);
+    }
 }

@@ -61,8 +61,8 @@ public class HexWorkbenchRenderer implements BlockEntityRenderer<HexWorkbenchBlo
             int row = i / 3;
             poseStack.pushPose();
             poseStack.translate((1 - col) * CELL, 1.0 + 0.012 + i * 0.0005, (1 - row) * CELL);
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
-            poseStack.rotate(Axis.ZP.rotationDegrees(180));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180));
             poseStack.scale(0.22F, 0.22F, 0.22F);
             state.cells[i].submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();

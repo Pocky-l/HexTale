@@ -8,14 +8,16 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
 
 import com.pockyl.hextale.Hextale;
@@ -28,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -37,21 +40,19 @@ import java.util.Set;
  * from the pads' rims. Every leaf lies within
  * {@value #MAX_LEAF_DISTANCE} steps of the wood, so nothing of it decays.
  */
-public record MagicTreeFeature() implements Feature {
+public record MagicTreeFeature() implements FeatureConfiguration {
     public static final MapCodec<MagicTreeFeature> CODEC = MapCodec.unit(MagicTreeFeature::new);
-    /** The configured feature {@code data/hextale/worldgen/feature/magic_tree.json} the sprout grows. */
-    public static final ResourceKey<Feature> KEY = ResourceKey.create(Registries.FEATURE, Hextale.id("magic_tree"));
-    public static final TreeGrower GROWER = new TreeGrower("hextale_magic", WeightedList.of(KEY), WeightedList.of(), WeightedList.of(), KEY);
+    /** The configured feature {@code data/hextale/worldgen/configured_feature/magic_tree.json} the sprout grows. */
+    public static final ResourceKey<ConfiguredFeature<?, ?>> KEY = ResourceKey.create(Registries.CONFIGURED_FEATURE, Hextale.id("magic_tree"));
+    public static final TreeGrower GROWER = new TreeGrower("hextale_magic", Optional.empty(), Optional.of(KEY), Optional.empty());
     private static final int MAX_LEAF_DISTANCE = LeavesBlock.DECAY_DISTANCE - 1;
     /** Like vanilla trees: no neighbour shape updates while the tree is set down, the leaves get their distances here. */
     private static final int FLAGS = 19;
 
-    @Override
     public MapCodec<MagicTreeFeature> codec() {
         return CODEC;
     }
 
-    @Override
     public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
         Plan plan = plan(random, origin);
         int top = origin.getY() + plan.height + 4;
@@ -252,6 +253,18 @@ public record MagicTreeFeature() implements Feature {
 
         void wood(BlockPos pos, BlockState state) {
             logs.put(pos, state);
+        }
+    }
+
+    /** The 26.1.2 feature type: places the configured record (26.3 records are features themselves). */
+    public static final class Type extends Feature<MagicTreeFeature> {
+        public Type() {
+            super(CODEC.codec());
+        }
+
+        @Override
+        public boolean place(FeaturePlaceContext<MagicTreeFeature> context) {
+            return context.config().place(context.level(), context.chunkGenerator(), context.random(), context.origin());
         }
     }
 }

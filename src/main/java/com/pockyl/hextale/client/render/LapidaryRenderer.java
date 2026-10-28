@@ -60,14 +60,14 @@ public class LapidaryRenderer implements BlockEntityRenderer<LapidaryBlockEntity
         if (state.disc) {
             poseStack.pushPose();
             poseStack.translate(SPINDLE_X, 0, SPINDLE_Z);
-            poseStack.rotate(Axis.YP.rotationDegrees(state.working ? state.time * 18 : 0));
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.working ? state.time * 18 : 0));
             poseStack.translate(-SPINDLE_X, 0, -SPINDLE_Z);
             TableModels.submit(poseStack, collector, TableModels.LAPIDARY_DISC, state.lightCoords);
             poseStack.popPose();
         }
         if (!state.crystal.isEmpty()) {
             poseStack.translate(SPINDLE_X, CRYSTAL_Y, SPINDLE_Z);
-            poseStack.rotate(Axis.YP.rotationDegrees(state.time * 2));
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.time * 2));
             poseStack.scale(0.45F, 0.45F, 0.45F);
             state.crystal.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
         }

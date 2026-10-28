@@ -58,7 +58,7 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.5F + 0.4F * draw, 0x9FE6FF, 0.6F * draw);
         }
         if (!state.item.isEmpty()) {
-            poseStack.rotate(Axis.YP.rotationDegrees(time * (1.8F + 20 * draw)));
+            poseStack.mulPose(Axis.YP.rotationDegrees(time * (1.8F + 20 * draw)));
             float scale = 0.7F * (1 - 0.6F * draw * draw);
             poseStack.scale(scale, scale, scale);
             poseStack.translate(0, -0.15, 0);

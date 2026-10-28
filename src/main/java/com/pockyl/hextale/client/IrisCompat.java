@@ -1,6 +1,6 @@
 package com.pockyl.hextale.client;
 
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.neoforged.fml.ModList;
 
 import com.pockyl.hextale.Hextale;

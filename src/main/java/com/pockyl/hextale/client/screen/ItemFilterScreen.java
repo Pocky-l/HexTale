@@ -189,7 +189,7 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         int slot = ghostAt(mouseX, mouseY);
         if (slot >= 0 && scrollY != 0 && menu.filter().at(slot) != null) {
-            boolean ten = minecraft != null && (InputConstants.isKeyDown(InputConstants.KEY_LSHIFT) || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT));
+            boolean ten = minecraft != null && (InputConstants.isKeyDown(net.minecraft.client.Minecraft.getInstance().getWindow(), InputConstants.KEY_LSHIFT) || InputConstants.isKeyDown(net.minecraft.client.Minecraft.getInstance().getWindow(), InputConstants.KEY_RSHIFT));
             int id = scrollY > 0 ? (ten ? ItemFilterMenu.PLUS_TEN : ItemFilterMenu.PLUS) : (ten ? ItemFilterMenu.MINUS_TEN : ItemFilterMenu.MINUS);
             if (minecraft != null && minecraft.gameMode != null) {
                 minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id + slot);

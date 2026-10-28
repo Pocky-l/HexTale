@@ -125,4 +125,9 @@ public class DrainValveBlock extends BaseEntityBlock implements EssenceMachine {
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.DRAIN_VALVE.get(), DrainValveBlockEntity::serverTick);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<DrainValveBlock> codec() {
+        return simpleCodec(DrainValveBlock::new);
+    }
 }

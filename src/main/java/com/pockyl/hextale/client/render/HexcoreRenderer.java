@@ -135,9 +135,9 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
                 RuneDrawing.mix(0x5FA8F0, color, 0.5F), 0.16F + 0.08F * breath + 0.2F * activity + 0.4F * swell);
 
         poseStack.pushPose();
-        poseStack.rotate(Axis.YP.rotationDegrees(state.spin));
-        poseStack.rotate(Axis.XP.rotationDegrees(14 + Mth.sin(state.tumble * Mth.DEG_TO_RAD) * (10 + 20 * activity)));
-        poseStack.rotate(Axis.ZP.rotationDegrees(Mth.sin(time * 0.009F) * 12));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.spin));
+        poseStack.mulPose(Axis.XP.rotationDegrees(14 + Mth.sin(state.tumble * Mth.DEG_TO_RAD) * (10 + 20 * activity)));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.sin(time * 0.009F) * 12));
         Vector3f offset = new Vector3f();
         for (int i = 0; i < TILES; i++) {
             float away = open;
@@ -154,9 +154,9 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
             }
             poseStack.pushPose();
             if (swirl != 0) {
-                poseStack.rotate(Axis.YP.rotationDegrees(swirl));
+                poseStack.mulPose(Axis.YP.rotationDegrees(swirl));
             }
-            poseStack.rotate(state.tiles[i]);
+            poseStack.mulPose(state.tiles[i]);
             HexcoreMatrix.NORMALS[i].mul(away / 16, offset);
             poseStack.translate(offset.x, offset.y, offset.z);
             poseStack.translate(-0.5, -0.5, -0.5);
@@ -177,7 +177,7 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
         // The item held in the heart of the matrix.
         if (!state.center.isEmpty()) {
             poseStack.pushPose();
-            poseStack.rotate(Axis.YP.rotationDegrees(state.itemTurn));
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.itemTurn));
             poseStack.scale(0.6F, 0.6F, 0.6F);
             poseStack.translate(0, -0.15, 0);
             state.center.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);

@@ -116,7 +116,7 @@ public class HexSawmillRenderer implements BlockEntityRenderer<HexSawmillBlockEn
         // The disc turns round its axle, which runs north-south through its hub.
         poseStack.pushPose();
         poseStack.translate(0.5, AXLE_Y, AXLE_Z);
-        poseStack.rotate(Axis.ZP.rotationDegrees(-state.disc));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(-state.disc));
         poseStack.translate(-0.5, -AXLE_Y, -AXLE_Z);
         TableModels.submit(poseStack, collector, TableModels.HEX_SAW_DISC, state.lightCoords);
         poseStack.popPose();
@@ -134,12 +134,12 @@ public class HexSawmillRenderer implements BlockEntityRenderer<HexSawmillBlockEn
             poseStack.translate(ss.at.x, ss.at.y, ss.at.z);
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, ss.sawing ? 0.9F : 0.6F, GLOW, 0.45F * ss.alpha);
             poseStack.pushPose();
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
-            poseStack.rotate(Axis.ZP.rotationDegrees(ss.spin));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(ss.spin));
             HexFx.sigilRing(poseStack, collector, 0.36F, 12, GLOW, 0.8F * ss.alpha);
             poseStack.popPose();
-            poseStack.rotate(Axis.YP.rotationDegrees(ss.spin));
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.YP.rotationDegrees(ss.spin));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
             poseStack.scale(0.7F, 0.7F, 0.7F);
             poseStack.translate(-0.5, -0.5, -8.5 / 16);
             TableModels.submit(poseStack, collector, TableModels.HEX_SAW_DISC, LightCoordsUtil.FULL_BRIGHT);
@@ -149,9 +149,9 @@ public class HexSawmillRenderer implements BlockEntityRenderer<HexSawmillBlockEn
             BlockRender render = state.blocks.get(i);
             poseStack.pushPose();
             poseStack.translate(render.pivot.x, render.pivot.y, render.pivot.z);
-            poseStack.rotate(render.turn);
+            poseStack.mulPose(render.turn);
             poseStack.translate(render.offset.x, render.offset.y, render.offset.z);
-            collector.submitMovingBlock(poseStack, render.block, 0);
+            collector.submitMovingBlock(poseStack, render.block);
             poseStack.popPose();
         }
     }

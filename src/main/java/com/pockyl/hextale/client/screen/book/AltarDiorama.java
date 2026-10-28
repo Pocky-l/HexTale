@@ -58,6 +58,10 @@ public final class AltarDiorama {
     }
 
     static final class Renderer extends PictureInPictureRenderer<State> {
+        Renderer(net.minecraft.client.renderer.MultiBufferSource.BufferSource portBuffers) {
+            super(portBuffers);
+        }
+
         private final ItemStackRenderState altar = new ItemStackRenderState();
         private final ItemStackRenderState stele = new ItemStackRenderState();
         private final ItemStackRenderState pickaxe = new ItemStackRenderState();
@@ -68,20 +72,27 @@ public final class AltarDiorama {
         }
 
         @Override
-        protected void renderToTexture(State state, PoseStack poseStack, SubmitNodeCollector collector) {
+        protected void renderToTexture(State state, PoseStack poseStack) {
+            net.minecraft.client.renderer.feature.FeatureRenderDispatcher portFeatures =
+                    net.minecraft.client.Minecraft.getInstance().gameRenderer.getFeatureRenderDispatcher();
+            renderToTexture(state, poseStack, portFeatures.getSubmitNodeStorage());
+            portFeatures.renderAllFeatures();
+        }
+
+        private void renderToTexture(State state, PoseStack poseStack, SubmitNodeCollector collector) {
             Minecraft minecraft = Minecraft.getInstance();
             var resolver = minecraft.getItemModelResolver();
             resolver.updateForTopItem(altar, new ItemStack(ModItems.HEXTECH_ALTAR.get()), ItemDisplayContext.NONE, minecraft.level, null, 0);
             resolver.updateForTopItem(stele, new ItemStack(ModItems.RUNE_STELE.get()), ItemDisplayContext.NONE, minecraft.level, null, 1);
             resolver.updateForTopItem(pickaxe, state.pickaxe(), ItemDisplayContext.GROUND, minecraft.level, null, 2);
-            minecraft.gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_3D);
+            minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_3D);
 
             float time = state.time();
             float yaw = time * 0.9F;
             // GUI y grows downwards: flip it so the scene stands upright, then look at it from a little above.
             poseStack.scale(1, -1, -1);
-            poseStack.rotate(Axis.XP.rotationDegrees(TILT));
-            poseStack.rotate(Axis.YP.rotationDegrees(yaw));
+            poseStack.mulPose(Axis.XP.rotationDegrees(TILT));
+            poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
             Quaternionf camera = new Quaternionf().rotationY(-yaw * Mth.DEG_TO_RAD).rotateX(-TILT * Mth.DEG_TO_RAD);
             Vector3f toCamera = camera.transform(new Vector3f(0, 0, 1));
             // The pair turns around its middle.
@@ -107,17 +118,17 @@ public final class AltarDiorama {
             poseStack.translate(0, itemY, 0);
             HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.8F, color, 0.3F);
             poseStack.pushPose();
-            poseStack.rotate(Axis.YP.rotationDegrees(time * 2.2F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(time * 2.2F));
             poseStack.pushPose();
             poseStack.translate(-0.5, -0.5, -0.5);
             TableModels.submit(poseStack, collector, TableModels.ALTAR_RING_OUTER, light);
             poseStack.popPose();
-            poseStack.rotate(Axis.XP.rotationDegrees(time * 3.1F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(time * 3.1F));
             poseStack.translate(-0.5, -0.5, -0.5);
             TableModels.submit(poseStack, collector, TableModels.ALTAR_RING_INNER, light);
             poseStack.popPose();
             poseStack.pushPose();
-            poseStack.rotate(Axis.YP.rotationDegrees(-time * 2.6F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(-time * 2.6F));
             poseStack.scale(1.1F, 1.1F, 1.1F);
             poseStack.translate(0, -0.15, 0);
             pickaxe.submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
@@ -129,10 +140,10 @@ public final class AltarDiorama {
                 poseStack.pushPose();
                 poseStack.translate(STELE_X, glyphY, 0);
                 HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.7F, color, 0.35F);
-                poseStack.rotate(camera);
+                poseStack.mulPose(camera);
                 poseStack.translate(0, 0, 0.03F);
                 poseStack.pushPose();
-                poseStack.rotate(Axis.ZP.rotationDegrees(time * 0.6F));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(time * 0.6F));
                 HexFx.sigilRing(poseStack, collector, 0.36F, 9, color, 0.35F);
                 poseStack.popPose();
                 HexFx.glyph(poseStack, collector, rune, 0.46F, color, 0.9F);

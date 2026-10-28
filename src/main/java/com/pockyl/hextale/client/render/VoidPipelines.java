@@ -1,12 +1,12 @@
 package com.pockyl.hextale.client.render;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.renderpearl.api.pipeline.BlendFunction;
-import com.mojang.renderpearl.api.pipeline.ColorTargetState;
-import com.mojang.renderpearl.api.pipeline.CompareOp;
-import com.mojang.renderpearl.api.pipeline.DepthStencilState;
-import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.platform.CompareOp;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -25,8 +25,7 @@ public final class VoidPipelines {
             .withLocation(Hextale.id("pipeline/the_void"))
             .withVertexShader(Hextale.id("core/the_void"))
             .withFragmentShader(Hextale.id("core/the_void"))
-            .withVertexBinding(0, DefaultVertexFormat.ENTITY)
-            .withPrimitiveTopology(PrimitiveTopology.QUADS)
+            .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
             .withColorTargetState(ColorTargetState.DEFAULT)
             .withDepthStencilState(DepthStencilState.DEFAULT)
             .withCull(false)
@@ -35,10 +34,9 @@ public final class VoidPipelines {
             .withLocation(Hextale.id("pipeline/the_void_halo"))
             .withVertexShader(Hextale.id("core/the_void"))
             .withFragmentShader(Hextale.id("core/the_void_halo"))
-            .withVertexBinding(0, DefaultVertexFormat.ENTITY)
-            .withPrimitiveTopology(PrimitiveTopology.QUADS)
+            .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
             .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
-            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
+            .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
             .withCull(false)
             .build();
     public static final RenderType BODY_TYPE = RenderType.create("hextale_the_void", RenderSetup.builder(BODY).createRenderSetup());

@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -68,7 +67,7 @@ public class HextechPurifierBlock extends BaseEntityBlock {
             if (purifier.crystal().isEmpty()) {
                 player.sendOverlayMessage(status(purifier));
             } else {
-                player.getInventory().placeItemBackInInventory(purifier.take(), Prediction.SERVER_ONLY);
+                player.getInventory().placeItemBackInInventory(purifier.take());
                 level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.BLOCKS, 0.7F, 1.2F);
             }
         }
@@ -120,5 +119,10 @@ public class HextechPurifierBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.HEXTECH_PURIFIER.get(), HextechPurifierBlockEntity::serverTick);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<HextechPurifierBlock> codec() {
+        return simpleCodec(HextechPurifierBlock::new);
     }
 }

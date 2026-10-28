@@ -3,7 +3,7 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.cow.Cow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -68,7 +68,7 @@ public final class ShackleGameTests {
         for (BlockPos cell : cells) {
             helper.assertBlockPresent(ModBlocks.CHALK_SIGIL.get(), cell);
         }
-        Cow cow = helper.spawn(EntityTypes.COW, new Vec3(1.5, 1.0, 1.5));
+        Cow cow = helper.spawn(EntityType.COW, new Vec3(1.5, 1.0, 1.5));
         Vec3[] at = new Vec3[1];
         float[] health = new float[1];
         helper.runAfterDelay(30, () -> {

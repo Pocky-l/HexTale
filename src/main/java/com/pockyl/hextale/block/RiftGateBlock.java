@@ -174,7 +174,7 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             ItemStack crystal = RiftLinkCrystalItem.remembering(UUID.randomUUID(), GlobalPos.of(level.dimension(), pos));
             stack.consume(1, player);
             if (!player.getInventory().add(crystal)) {
-                player.drop(crystal, false, net.minecraft.util.Prediction.SERVER_ONLY);
+                player.drop(crystal, false);
             }
             player.sendOverlayMessage(Component.translatable("block.hextale.rift_gate.attuned"));
             server.playSound(null, pos, ModSounds.RIFT_SEND.get(), SoundSource.BLOCKS, 0.6F, 1.5F);
@@ -761,5 +761,10 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         public void clearContent() {
             mouth = ItemStack.EMPTY;
         }
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<RiftGateBlock> codec() {
+        return simpleCodec(RiftGateBlock::new);
     }
 }

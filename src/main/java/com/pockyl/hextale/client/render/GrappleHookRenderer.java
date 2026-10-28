@@ -57,7 +57,7 @@ public class GrappleHookRenderer extends EntityRenderer<GrappleHook, GrappleHook
     }
 
     @Override
-    public boolean shouldRender(GrappleHook hook, Frustum frustum, double camX, double camY, double camZ, float partialTick) {
+    public boolean shouldRender(GrappleHook hook, Frustum frustum, double camX, double camY, double camZ) {
         return hook.owner() != null;
     }
 
@@ -117,7 +117,7 @@ public class GrappleHookRenderer extends EntityRenderer<GrappleHook, GrappleHook
         // The claw: its centre a little behind the point it holds, so the prongs sink into the block.
         poseStack.pushPose();
         poseStack.translate(-dir.x * 0.25F, -dir.y * 0.25F, -dir.z * 0.25F);
-        poseStack.rotate(turn);
+        poseStack.mulPose(turn);
         poseStack.translate(-0.5F, -0.5F, -0.5F);
         TableModels.submit(poseStack, collector, TableModels.GRAPPLE_HOOK, state.lightCoords);
         poseStack.popPose();

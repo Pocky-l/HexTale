@@ -78,4 +78,9 @@ public class GreedyFunnelBlock extends BaseEntityBlock {
         return createTickerHelper(type, ModBlockEntities.GREEDY_FUNNEL.get(),
                 level.isClientSide() ? GreedyFunnelBlockEntity::clientTick : GreedyFunnelBlockEntity::serverTick);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<GreedyFunnelBlock> codec() {
+        return simpleCodec(GreedyFunnelBlock::new);
+    }
 }

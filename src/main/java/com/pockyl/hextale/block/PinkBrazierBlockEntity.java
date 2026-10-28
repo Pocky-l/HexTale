@@ -23,7 +23,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -151,9 +150,9 @@ public class PinkBrazierBlockEntity extends BlockEntity implements Container {
             if (!grows(plant)) {
                 continue;
             }
-            if (pollen > 0 && plant.getBlock() instanceof BonemealableBlock bonemealable && bonemealable.isValidBonemealTarget(level, at, plant, BonemealSource.INTERACTION)
+            if (pollen > 0 && plant.getBlock() instanceof BonemealableBlock bonemealable && bonemealable.isValidBonemealTarget(level, at, plant)
                     && random.nextFloat() < HolderRune.at(BrazierRune.BLOOM, pollen)) {
-                bonemealable.performBonemeal(level, random, at, plant, BonemealSource.INTERACTION);
+                bonemealable.performBonemeal(level, random, at, plant);
                 ToolEffects.puff(level, Vec3.atCenterOf(at), BrazierRune.POLLEN.rune(), 8, 0.3);
             } else {
                 growStep(level, at, plant, random);

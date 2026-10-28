@@ -96,4 +96,9 @@ public class MiasmaVentBlock extends BaseEntityBlock {
         return createTickerHelper(type, ModBlockEntities.MIASMA_VENT.get(),
                 level.isClientSide() ? MiasmaVentBlockEntity::clientTick : MiasmaVentBlockEntity::serverTick);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<MiasmaVentBlock> codec() {
+        return simpleCodec(MiasmaVentBlock::new);
+    }
 }

@@ -47,7 +47,7 @@ public final class VoidHearts {
         int absorption = Mth.ceil(player.getAbsorptionAmount());
         int rows = Mth.ceil((maxHealth + absorption) / 2.0F / 10.0F);
         int rowHeight = Math.max(10 - (rows - 2), 3);
-        int yLineBase = graphics.guiHeight() - (minecraft.gui.hud.leftHeight - ((rows - 1) * rowHeight + 10));
+        int yLineBase = graphics.guiHeight() - (minecraft.gui.leftHeight - ((rows - 1) * rowHeight + 10));
         int xLeft = graphics.guiWidth() / 2 - 91;
         int first = Mth.ceil(maxHealth / 2.0) + Mth.ceil(absorption / 2.0);
         for (int i = 0; i < Math.min(mites, VoidMites.MAX); i++) {

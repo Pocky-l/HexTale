@@ -103,7 +103,7 @@ public final class VoidGameTests {
         Vec3 centre = Vec3.atCenterOf(helper.absolutePos(new BlockPos(1, 3, 1)));
         TheVoid breach = TheVoid.open(helper.getLevel(), centre, 0, VoidShape.GATE, 3.0F, 4242);
         helper.getLevel().addFreshEntity(breach);
-        net.minecraft.world.entity.animal.pig.Pig pig = net.minecraft.world.entity.EntityTypes.PIG.create(helper.getLevel(),
+        net.minecraft.world.entity.animal.pig.Pig pig = net.minecraft.world.entity.EntityType.PIG.create(helper.getLevel(),
                 net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
         helper.assertTrue(pig != null, "a pig to touch it");
         pig.snapTo(centre.x, centre.y - pig.getBbHeight() * 0.5, centre.z, 0, 0);

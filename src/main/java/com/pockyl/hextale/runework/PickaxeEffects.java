@@ -14,7 +14,7 @@ import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -517,7 +517,7 @@ public final class PickaxeEffects {
 
     /** A block glows through everything for a while (a glowing block marker over it); false when no marker could be made. */
     public static boolean glow(ServerLevel level, BlockPos at, BlockState state, int ticks) {
-        Entity marker = EntityTypes.BLOCK_DISPLAY.create(level, EntitySpawnReason.TRIGGERED);
+        Entity marker = EntityType.BLOCK_DISPLAY.create(level, EntitySpawnReason.TRIGGERED);
         if (marker == null) {
             return false;
         }

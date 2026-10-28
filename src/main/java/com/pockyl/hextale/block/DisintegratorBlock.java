@@ -415,4 +415,9 @@ public class DisintegratorBlock extends BaseEntityBlock implements EssenceMachin
             return ClientboundBlockEntityDataPacket.create(this);
         }
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<DisintegratorBlock> codec() {
+        return simpleCodec(DisintegratorBlock::new);
+    }
 }

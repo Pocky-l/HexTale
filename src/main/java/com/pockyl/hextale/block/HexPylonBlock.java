@@ -203,4 +203,9 @@ public class HexPylonBlock extends BaseEntityBlock {
         super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
         PylonLinking.forget(level, pos);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<HexPylonBlock> codec() {
+        throw new UnsupportedOperationException("HexPylonBlock has no type codec");
+    }
 }

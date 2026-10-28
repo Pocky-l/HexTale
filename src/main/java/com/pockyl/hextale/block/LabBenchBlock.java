@@ -222,4 +222,9 @@ public class LabBenchBlock extends BaseEntityBlock implements WorldlyContainerHo
     public @Nullable WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
         return level.getBlockEntity(mainPos(state, pos)) instanceof LabBenchBlockEntity bench ? bench : null;
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<LabBenchBlock> codec() {
+        return simpleCodec(LabBenchBlock::new);
+    }
 }

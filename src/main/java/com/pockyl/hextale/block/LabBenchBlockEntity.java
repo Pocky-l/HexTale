@@ -17,7 +17,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -389,7 +388,7 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
         ItemStack older = items.get(OUTPUT);
         items.set(OUTPUT, notes);
         if (!older.isEmpty() && !player.getInventory().add(older)) {
-            player.drop(older, false, Prediction.SERVER_ONLY);
+            player.drop(older, false);
         }
     }
 

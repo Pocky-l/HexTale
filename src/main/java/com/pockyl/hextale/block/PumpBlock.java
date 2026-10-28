@@ -93,4 +93,9 @@ public class PumpBlock extends BaseEntityBlock implements EssenceMachine, Simple
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.PUMP.get(), PumpBlockEntity::serverTick);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<PumpBlock> codec() {
+        return simpleCodec(PumpBlock::new);
+    }
 }

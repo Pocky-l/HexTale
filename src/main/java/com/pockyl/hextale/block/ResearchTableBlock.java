@@ -177,4 +177,9 @@ public class ResearchTableBlock extends BaseEntityBlock implements WorldlyContai
     public @Nullable WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
         return level.getBlockEntity(mainPos(state, pos)) instanceof ResearchTableBlockEntity table ? table : null;
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<ResearchTableBlock> codec() {
+        return simpleCodec(ResearchTableBlock::new);
+    }
 }

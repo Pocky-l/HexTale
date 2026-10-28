@@ -21,8 +21,11 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.GeodeFeature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.GeodeConfiguration;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.FulguriteSpikeBlock;
@@ -42,14 +45,14 @@ import org.jspecify.annotations.Nullable;
  * in the middle, glassy spikes standing on its rim and woken hextech crystals glowing on its floor. Never under water; one per cell of {@code spacing} chunks (see {@link #chosen}). Stays within the 3x3 chunks around its
  * chunk.
  */
-public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth, int spacing, int separation) implements Feature {
+public record StruckGeodeFeature(GeodeConfiguration geode, IntProvider depth, int spacing, int separation) implements FeatureConfiguration {
     public static final MapCodec<StruckGeodeFeature> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-                    GeodeFeature.CODEC.fieldOf("geode").forGetter(StruckGeodeFeature::geode),
+                    GeodeConfiguration.CODEC.fieldOf("geode").forGetter(StruckGeodeFeature::geode),
                     IntProviders.codec(1, 24).fieldOf("depth").forGetter(StruckGeodeFeature::depth),
                     com.mojang.serialization.Codec.intRange(2, 128).fieldOf("spacing").forGetter(StruckGeodeFeature::spacing),
                     com.mojang.serialization.Codec.intRange(0, 127).fieldOf("separation").forGetter(StruckGeodeFeature::separation))
             .apply(i, StruckGeodeFeature::new));
-    public static final ResourceKey<Feature> KEY = ResourceKey.create(Registries.FEATURE, Hextale.id("struck_geode"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> KEY = ResourceKey.create(Registries.CONFIGURED_FEATURE, Hextale.id("struck_geode"));
     /** From a geode's origin to its middle: its distribution points lie 4-6 blocks out on every axis. */
     private static final int CENTRE = 5;
     /** The channel leans this far off its axis at most. */
@@ -64,12 +67,10 @@ public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth, int spac
     private static final float DEPTH = 2.4F;
     private static final float RIM = 1.15F;
 
-    @Override
     public MapCodec<StruckGeodeFeature> codec() {
         return CODEC;
     }
 
-    @Override
     public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
         // Placed by hand (/place feature, tests) it goes where it is asked; the world itself keeps them apart.
         if (!(level instanceof ServerLevel) && !chosen(level.getSeed(), SectionPos.blockToSectionCoord(origin.getX()), SectionPos.blockToSectionCoord(origin.getZ()))) {
@@ -86,7 +87,7 @@ public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth, int spac
         if (middle - CENTRE - 4 < level.getMinY() + 4) {
             return false;
         }
-        if (!geode.place(level, chunkGenerator, random, new BlockPos(x - CENTRE, middle - CENTRE, z - CENTRE))) {
+        if (!Feature.GEODE.place(geode, level, chunkGenerator, random, new BlockPos(x - CENTRE, middle - CENTRE, z - CENTRE))) {
             return false;
         }
         BlockPos end = channel(level, random, ground, middle);
@@ -335,5 +336,17 @@ public record StruckGeodeFeature(GeodeFeature geode, IntProvider depth, int spac
     /** The first free height of a column: the worldgen heightmap while the world generates, the live one when placed by hand. */
     private static int surface(WorldGenLevel level, int x, int z) {
         return level.getHeight(level instanceof ServerLevel ? Heightmap.Types.WORLD_SURFACE : Heightmap.Types.WORLD_SURFACE_WG, x, z);
+    }
+
+    /** The 26.1.2 feature type: places the configured record (26.3 records are features themselves). */
+    public static final class Type extends Feature<StruckGeodeFeature> {
+        public Type() {
+            super(CODEC.codec());
+        }
+
+        @Override
+        public boolean place(FeaturePlaceContext<StruckGeodeFeature> context) {
+            return context.config().place(context.level(), context.chunkGenerator(), context.random(), context.origin());
+        }
     }
 }

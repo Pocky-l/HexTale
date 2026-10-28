@@ -42,7 +42,7 @@ public class VoidlingRenderer extends MobRenderer<Voidling, VoidlingRenderer.Sta
     @Override
     public void extractRenderState(Voidling voidling, State state, float partialTick) {
         super.extractRenderState(voidling, state, partialTick);
-        state.bite = voidling.getSwingAnimation(partialTick);
+        state.bite = voidling.getAttackAnim(partialTick);
         state.emerge = voidling.emerging(partialTick);
         state.idleVariant = voidling.getId();
         state.molt = voidling.molting(partialTick);

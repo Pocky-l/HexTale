@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -199,7 +198,7 @@ public class CrucibleBlock extends BaseEntityBlock {
         if (held.isEmpty()) {
             player.setItemInHand(hand, result);
         } else if (!player.getInventory().add(result)) {
-            player.drop(result, false, Prediction.SERVER_ONLY);
+            player.drop(result, false);
         }
     }
 
@@ -243,5 +242,10 @@ public class CrucibleBlock extends BaseEntityBlock {
         return level.isClientSide()
                 ? createTickerHelper(type, ModBlockEntities.CRUCIBLE.get(), CrucibleBlockEntity::clientTick)
                 : createTickerHelper(type, ModBlockEntities.CRUCIBLE.get(), CrucibleBlockEntity::serverTick);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<CrucibleBlock> codec() {
+        return simpleCodec(CrucibleBlock::new);
     }
 }

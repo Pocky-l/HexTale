@@ -86,9 +86,9 @@ public class HextechPurifierRenderer implements BlockEntityRenderer<HextechPurif
                 HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.3F + 0.4F * clouding, HextechPurifierBlockEntity.PLUM,
                         0.55F * clouding * breath);
             }
-            poseStack.rotate(Axis.YP.rotationDegrees(clouded ? time * 0.2F : time * 1.4F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(clouded ? time * 0.2F : time * 1.4F));
             // Point down, like a drop about to fall into the font.
-            poseStack.rotate(Axis.ZP.rotationDegrees(180));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180));
             poseStack.scale(0.36F, 0.36F, 0.36F);
             poseStack.translate(0, -0.2, 0);
             state.crystal.submit(poseStack, collector, clouded ? state.lightCoords : LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
@@ -98,10 +98,10 @@ public class HextechPurifierRenderer implements BlockEntityRenderer<HextechPurif
                 // A ring of light turns flat on the font's water while it draws.
                 poseStack.pushPose();
                 poseStack.translate(crystal.x, 4.6 / 16, crystal.z);
-                poseStack.rotate(Axis.XP.rotationDegrees(90));
-                poseStack.rotate(Axis.ZP.rotationDegrees(time * 0.9F));
+                poseStack.mulPose(Axis.XP.rotationDegrees(90));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(time * 0.9F));
                 HexFx.sigilRing(poseStack, collector, 0.36F, 6, state.color, 0.55F * (1 - clouding * 0.6F));
-                poseStack.rotate(Axis.ZP.rotationDegrees(-time * 2.1F));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(-time * 2.1F));
                 HexFx.sigilRing(poseStack, collector, 0.2F, 0, HextechPurifierBlockEntity.PLUM, 0.35F + 0.4F * clouding);
                 poseStack.popPose();
             }

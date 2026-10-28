@@ -176,31 +176,31 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             case GATHERING -> {
                 // Lying in the bowl, just over its carved floor.
                 poseStack.translate(0.5, 3.3 / 16, 0.5);
-                poseStack.rotate(Axis.XP.rotationDegrees(90));
-                poseStack.rotate(Axis.ZP.rotationDegrees(time * 0.6F));
+                poseStack.mulPose(Axis.XP.rotationDegrees(90));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(time * 0.6F));
                 HexFx.sigilRing(poseStack, collector, 0.34F, 6, state.color, 0.45F + 0.4F * state.flare);
             }
             case SENDING -> {
                 poseStack.translate(gem.x, gem.y + bob, gem.z);
-                poseStack.rotate(Axis.YP.rotationDegrees(time * (2.2F + 10 * state.flare)));
+                poseStack.mulPose(Axis.YP.rotationDegrees(time * (2.2F + 10 * state.flare)));
                 HexFx.sigilRing(poseStack, collector, 0.17F, 4, state.color, 0.5F + 0.4F * state.flare);
             }
             case RELAY -> {
                 poseStack.translate(gem.x, gem.y + bob, gem.z);
                 poseStack.pushPose();
-                poseStack.rotate(Axis.YP.rotationDegrees(time * (1.8F + 8 * state.flare)));
+                poseStack.mulPose(Axis.YP.rotationDegrees(time * (1.8F + 8 * state.flare)));
                 HexFx.sigilRing(poseStack, collector, 0.17F, 3, state.color, 0.45F + 0.4F * state.flare);
                 poseStack.popPose();
-                poseStack.rotate(Axis.YP.rotationDegrees(-time * (1.3F + 8 * state.flare) + 90));
-                poseStack.rotate(Axis.XP.rotationDegrees(70));
+                poseStack.mulPose(Axis.YP.rotationDegrees(-time * (1.3F + 8 * state.flare) + 90));
+                poseStack.mulPose(Axis.XP.rotationDegrees(70));
                 HexFx.sigilRing(poseStack, collector, 0.15F, 3, state.color, 0.35F + 0.4F * state.flare);
             }
             case SORTING -> lattice(poseStack, collector, camera, eye, state, gem.add(0, bob, 0), time);
             case SIPHON -> {
                 // Under the cap, turning: the siphon's sigil.
                 poseStack.translate(0.5, 10.8 / 16, 0.5);
-                poseStack.rotate(Axis.XP.rotationDegrees(90));
-                poseStack.rotate(Axis.ZP.rotationDegrees(-time * (1.5F + 8 * state.flare)));
+                poseStack.mulPose(Axis.XP.rotationDegrees(90));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(-time * (1.5F + 8 * state.flare)));
                 HexFx.sigilRing(poseStack, collector, 0.2F, 6, state.essenceColor >= 0 ? state.essenceColor : state.color, 0.4F + 0.4F * state.flare);
             }
         }
@@ -229,7 +229,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             poseStack.pushPose();
             poseStack.translate(gem.x, gem.y + bob, gem.z);
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.45F + 0.3F * state.flare, state.color, 0.35F + 0.4F * state.flare);
-            poseStack.rotate(Axis.YP.rotationDegrees(time * (1.5F + 12 * state.flare)));
+            poseStack.mulPose(Axis.YP.rotationDegrees(time * (1.5F + 12 * state.flare)));
             poseStack.scale(scale, scale, scale);
             poseStack.translate(0, -0.2, 0);
             state.gem.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
@@ -242,7 +242,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             poseStack.pushPose();
             poseStack.translate(gem.x + Mth.cos(angle) * 0.3F, gem.y + 0.05F + Mth.sin(time * 0.07F + i) * 0.03F, gem.z + Mth.sin(angle) * 0.3F);
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.22F, state.filterWhitelist ? 0xF0C24A : 0xE04A3A, 0.4F);
-            poseStack.rotate(Axis.YP.rotationDegrees(-time * 2));
+            poseStack.mulPose(Axis.YP.rotationDegrees(-time * 2));
             poseStack.scale(0.18F, 0.18F, 0.18F);
             poseStack.translate(0, -0.15, 0);
             state.filterIcons.get(i).submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
@@ -264,8 +264,8 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             // The ground the gathering pylon reaches: a wide slow ring around the container it stands on.
             poseStack.pushPose();
             poseStack.translate(0.5, -0.94, 0.5);
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
-            poseStack.rotate(Axis.ZP.rotationDegrees(time * 0.15F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(time * 0.15F));
             HexFx.sigilRing(poseStack, collector, state.reach + 0.5F, 36, state.color, 0.35F);
             poseStack.popPose();
         }
@@ -275,8 +275,8 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
             float pulse = 0.5F + 0.5F * Mth.sin(time * 0.15F - i * 0.6F);
             poseStack.pushPose();
             poseStack.translate(at.x, at.y, at.z);
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
-            poseStack.rotate(Axis.ZP.rotationDegrees(time * 0.8F + i * 40));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(time * 0.8F + i * 40));
             HexFx.sigilRing(poseStack, collector, 0.3F, 6, GOLD, 0.3F + 0.3F * pulse);
             poseStack.popPose();
         }
@@ -314,9 +314,9 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         // Three crossed rings, each on its own axis.
         for (int ring = 0; ring < 3; ring++) {
             poseStack.pushPose();
-            poseStack.rotate(Axis.YP.rotationDegrees(ring * 60 + time * 0.7F * spin));
-            poseStack.rotate(Axis.XP.rotationDegrees(55 + ring * 35));
-            poseStack.rotate(Axis.ZP.rotationDegrees((ring % 2 == 0 ? 1 : -1) * time * (1.6F + ring * 0.5F) * spin));
+            poseStack.mulPose(Axis.YP.rotationDegrees(ring * 60 + time * 0.7F * spin));
+            poseStack.mulPose(Axis.XP.rotationDegrees(55 + ring * 35));
+            poseStack.mulPose(Axis.ZP.rotationDegrees((ring % 2 == 0 ? 1 : -1) * time * (1.6F + ring * 0.5F) * spin));
             HexFx.sigilRing(poseStack, collector, 0.25F - ring * 0.02F, 4, state.color, 0.35F + 0.35F * state.flare);
             poseStack.popPose();
         }
@@ -477,7 +477,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         }
         poseStack.pushPose();
         poseStack.translate(at.x, at.y, at.z);
-        poseStack.rotate(Axis.YP.rotationDegrees(spin));
+        poseStack.mulPose(Axis.YP.rotationDegrees(spin));
         poseStack.scale(size, size, size);
         poseStack.translate(0, -0.15, 0);
         fs.item.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
@@ -490,8 +490,8 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         poseStack.pushPose();
         poseStack.translate(at.x, at.y, at.z);
         HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, radius * 2.6F, color, 0.3F * alpha);
-        poseStack.rotate(camera.orientation);
-        poseStack.rotate(Axis.ZP.rotation(time * 0.12F));
+        poseStack.mulPose(camera.orientation);
+        poseStack.mulPose(Axis.ZP.rotation(time * 0.12F));
         HexFx.sigilRing(poseStack, collector, radius, 4, RuneDrawing.lighten(color, 0.3F), alpha);
         poseStack.popPose();
     }
@@ -504,8 +504,8 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         }
         poseStack.pushPose();
         poseStack.translate(at.x, at.y, at.z);
-        poseStack.rotate(Axis.XP.rotationDegrees(90));
-        poseStack.rotate(Axis.ZP.rotation(-time * 0.08F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
+        poseStack.mulPose(Axis.ZP.rotation(-time * 0.08F));
         HexFx.sigilRing(poseStack, collector, radius, 6, color, Math.min(1, alpha));
         poseStack.popPose();
     }

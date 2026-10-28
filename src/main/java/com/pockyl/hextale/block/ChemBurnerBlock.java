@@ -3,7 +3,6 @@ package com.pockyl.hextale.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -135,7 +134,7 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
                     if (stack.isEmpty()) {
                         player.setItemInHand(hand, left);
                     } else if (!player.getInventory().add(left)) {
-                        player.drop(left, false, Prediction.SERVER_ONLY);
+                        player.drop(left, false);
                     }
                 }
                 level.playSound(null, pos, net.minecraft.sounds.SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 0.6F, 0.9F);
@@ -206,5 +205,10 @@ public class ChemBurnerBlock extends BaseEntityBlock implements EssenceMachine {
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.CHEM_BURNER.get(), ChemBurnerBlockEntity::serverTick);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<ChemBurnerBlock> codec() {
+        return simpleCodec(ChemBurnerBlock::new);
     }
 }

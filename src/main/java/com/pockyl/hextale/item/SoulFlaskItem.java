@@ -110,7 +110,7 @@ public class SoulFlaskItem extends Item {
             if (stack.isEmpty()) {
                 player.setItemInHand(hand, full);
             } else if (!player.getInventory().add(full)) {
-                player.drop(full, false, net.minecraft.util.Prediction.SERVER_ONLY);
+                player.drop(full, false);
             }
         }
         return InteractionResult.SUCCESS;

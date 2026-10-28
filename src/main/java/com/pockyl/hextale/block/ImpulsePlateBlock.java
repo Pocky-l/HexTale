@@ -315,4 +315,9 @@ public class ImpulsePlateBlock extends BaseEntityBlock {
     public static Component message(String key, Object... args) {
         return Component.translatable("block.hextale.impulse_plate." + key, args);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<ImpulsePlateBlock> codec() {
+        return simpleCodec(ImpulsePlateBlock::new);
+    }
 }

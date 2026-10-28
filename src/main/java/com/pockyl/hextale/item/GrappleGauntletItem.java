@@ -8,9 +8,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -216,28 +214,15 @@ public class GrappleGauntletItem extends Item {
 
     /** Low air drag while swinging and, less so, during a fling after letting go mid-air (until the ground). */
     private static void drag(Player player, boolean hanging) {
-        AttributeInstance drag = player.getAttribute(Attributes.AIR_DRAG_MODIFIER);
-        if (drag == null) {
-            return;
-        }
         Map<UUID, Long> flings = flings(player.level());
         Long until = flings.get(player.getUUID());
         boolean flying = !hanging && until != null && until > player.level().getGameTime() && !player.onGround() && !player.isInWater();
         if (until != null && !flying) {
             flings.remove(player.getUUID());
         }
-        toggle(drag, SWING, hanging && !player.onGround());
-        toggle(drag, FLING, flying);
-    }
-
-    private static void toggle(AttributeInstance attribute, AttributeModifier modifier, boolean on) {
-        if (on) {
-            if (!attribute.hasModifier(modifier.id())) {
-                attribute.addTransientModifier(modifier);
-            }
-        } else if (attribute.hasModifier(modifier.id())) {
-            attribute.removeModifier(modifier.id());
-        }
+        // 26.1.2 has no air drag attribute: port.PortAirDrag applies the same modifiers after the movement tick.
+        com.pockyl.hextale.port.PortAirDrag.toggle(player, SWING, hanging && !player.onGround());
+        com.pockyl.hextale.port.PortAirDrag.toggle(player, FLING, flying);
     }
 
     @SubscribeEvent

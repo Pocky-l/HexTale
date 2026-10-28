@@ -53,7 +53,7 @@ public class BigEssenceJarBlock extends EssenceTankBlock {
     }
 
     @Override
-    public void playerDestroy(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity,
+    public void playerDestroy(net.minecraft.world.level.Level level, net.minecraft.world.entity.player.Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity,
                               ItemStack destroyedWith) {
         player.awardStat(net.minecraft.stats.Stats.BLOCK_MINED.get(this));
         player.causeFoodExhaustion(0.005F);

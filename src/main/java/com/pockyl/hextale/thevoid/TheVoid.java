@@ -621,7 +621,7 @@ public class TheVoid extends Entity {
         Quaternionf inverse = orientation().conjugate(new Quaternionf());
         AABB area = new AABB(position(), position()).inflate(layout.reach() + 1.5);
         for (LivingEntity living : level.getEntitiesOfClass(LivingEntity.class, area, TheVoid::touchable)) {
-            if (living.getInvulnerableTime() > 10) {
+            if (living.invulnerableTime > 10) {
                 continue;
             }
             Vec3 centre = living.getBoundingBox().getCenter();
@@ -646,7 +646,7 @@ public class TheVoid extends Entity {
         living.hurtServer(level, level.damageSources().magic(), TOUCH_DAMAGE);
         living.setDeltaMovement(away.x * 0.9, Math.max(0.35, away.y * 0.9), away.z * 0.9);
         living.needsSync = true;
-        living.setInvulnerableTime(Math.max(living.getInvulnerableTime(), 20));
+        living.invulnerableTime = Math.max(living.invulnerableTime, 20);
         Vec3 at = toWorld(new Vector3f(local.x, local.y, 0));
         level.broadcastEntityEvent(this, REPEL_EVENT);
         level.sendParticles(ModParticles.ring(MAGENTA), at.x, at.y, at.z, 1, 0, 0, 0, 0);
@@ -970,7 +970,7 @@ public class TheVoid extends Entity {
 
     @Override
     public PushReaction getPistonPushReaction() {
-        return PushReaction.IGNORE_ENTITY;
+        return PushReaction.IGNORE;
     }
 
     @Override

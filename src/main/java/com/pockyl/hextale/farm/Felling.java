@@ -14,7 +14,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.LevelEvent;
@@ -241,8 +240,8 @@ public final class Felling {
         BlockState state = level.getBlockState(pos);
         if (state.getBlock() instanceof SaplingBlock sapling) {
             sapling.advanceTree(level, pos, state, level.getRandom());
-        } else if (state.getBlock() instanceof BonemealableBlock meal && meal.isValidBonemealTarget(level, pos, state, BonemealSource.MOB)) {
-            meal.performBonemeal(level, level.getRandom(), pos, state, BonemealSource.MOB);
+        } else if (state.getBlock() instanceof BonemealableBlock meal && meal.isValidBonemealTarget(level, pos, state)) {
+            meal.performBonemeal(level, level.getRandom(), pos, state);
         }
         level.levelEvent(LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, pos, 15);
     }

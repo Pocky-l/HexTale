@@ -51,7 +51,7 @@ public class LevitationPlateRenderer implements BlockEntityRenderer<LevitationPl
         float bob = Mth.sin(state.time * 0.08F) * BOB * (1 + state.lift);
         poseStack.pushPose();
         poseStack.translate(0.5F, PIVOT_Y + bob + state.lift * 0.03F, 0.5F);
-        poseStack.rotate(Axis.YP.rotationDegrees(state.spin));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.spin));
         float pulse = 1 + state.lift * 0.04F * Mth.sin(state.time * 0.4F);
         poseStack.scale(pulse, 1, pulse);
         poseStack.translate(-0.5F, -PIVOT_Y, -0.5F);
@@ -72,15 +72,15 @@ public class LevitationPlateRenderer implements BlockEntityRenderer<LevitationPl
             float alpha = state.lift * 0.5F * Mth.sin(t * Mth.PI);
             poseStack.pushPose();
             poseStack.translate(0.5F, y, 0.5F);
-            poseStack.rotate(Axis.YP.rotationDegrees(state.spin * 0.5F + i * 40));
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.spin * 0.5F + i * 40));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
             HexFx.sigilRing(poseStack, collector, 0.42F - t * 0.08F, 6, ModParticles.HEXTECH, alpha);
             poseStack.popPose();
         }
         poseStack.pushPose();
         poseStack.translate(0.5F, 1 + state.reach - 0.05F, 0.5F);
-        poseStack.rotate(Axis.YP.rotationDegrees(-state.spin * 0.7F));
-        poseStack.rotate(Axis.XP.rotationDegrees(90));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-state.spin * 0.7F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
         HexFx.sigilRing(poseStack, collector, 0.36F, 8, ModParticles.HEX_LIGHT, 0.45F * state.lift);
         poseStack.popPose();
     }

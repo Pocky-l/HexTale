@@ -83,7 +83,7 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
     }
 
     @Override
-    protected AABB getBoundingBoxForCulling(TheVoid breach, float partialTick) {
+    protected AABB getBoundingBoxForCulling(TheVoid breach) {
         return new AABB(breach.position(), breach.position()).inflate(breach.layout().reach() + 1);
     }
 
@@ -110,7 +110,7 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         }
         Frame frame = new Frame(layout, shows, state);
         poseStack.pushPose();
-        poseStack.rotate(state.orientation);
+        poseStack.mulPose(state.orientation);
         if (state.fold > 0 && !fold(state, poseStack)) {
             poseStack.popPose();
             return;
@@ -147,7 +147,7 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         float tremble = Mth.sin(state.ageInTicks * 3.1F) * 0.05F * Math.min(1, f * 4) * collapse;
         float squeeze = smooth(f / 0.85F);
         float shorten = smooth((f - 0.3F) / 0.55F);
-        poseStack.rotate(new org.joml.Quaternionf().rotationZ(f * f * Mth.TWO_PI * 1.25F));
+        poseStack.mulPose(new org.joml.Quaternionf().rotationZ(f * f * Mth.TWO_PI * 1.25F));
         poseStack.scale((1 - 0.82F * squeeze) * collapse + tremble, (1 - 0.45F * shorten) * collapse - tremble, collapse);
         return true;
     }

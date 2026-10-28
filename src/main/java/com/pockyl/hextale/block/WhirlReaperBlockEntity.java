@@ -28,7 +28,6 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.FarmlandBlock;
 import net.minecraft.world.level.block.LevelEvent;
@@ -299,9 +298,9 @@ public class WhirlReaperBlockEntity extends BlockEntity {
         RandomSource random = level.getRandom();
         int fertility = strength(ReaperRune.FERTILITY);
         BlockState plant = level.getBlockState(pos);
-        if (fertility > 0 && plant.getBlock() instanceof BonemealableBlock meal && meal.isValidBonemealTarget(level, pos, plant, BonemealSource.MOB)
+        if (fertility > 0 && plant.getBlock() instanceof BonemealableBlock meal && meal.isValidBonemealTarget(level, pos, plant)
                 && random.nextFloat() < HolderRune.at(ReaperRune.BONEMEAL, fertility)) {
-            meal.performBonemeal(level, random, pos, plant, BonemealSource.MOB);
+            meal.performBonemeal(level, random, pos, plant);
             level.levelEvent(LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, pos, 15);
             ToolEffects.puff(level, Vec3.atCenterOf(pos), ReaperRune.FERTILITY.rune(), 6, 0.3);
         }

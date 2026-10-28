@@ -309,4 +309,9 @@ public class SeparatorBlock extends BaseEntityBlock implements WorldlyContainerH
     public @Nullable WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
         return level.getBlockEntity(pos) instanceof SeparatorBlockEntity separator ? separator : null;
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<SeparatorBlock> codec() {
+        return simpleCodec(SeparatorBlock::new);
+    }
 }

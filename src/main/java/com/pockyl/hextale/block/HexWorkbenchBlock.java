@@ -96,4 +96,9 @@ public class HexWorkbenchBlock extends BaseEntityBlock {
         BlockEntity entity = level.getBlockEntity(pos);
         return entity != null && entity.triggerEvent(id, param);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<HexWorkbenchBlock> codec() {
+        return simpleCodec(HexWorkbenchBlock::new);
+    }
 }

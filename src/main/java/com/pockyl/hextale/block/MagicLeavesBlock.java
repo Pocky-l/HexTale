@@ -1,11 +1,11 @@
 package com.pockyl.hextale.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.ParticleUtils;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.FallingParticlesLeavesBlock;
-import net.minecraft.world.level.block.sounds.AmbientLeavesBlockSoundPlayer;
+import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 import com.pockyl.hextale.registry.ModParticles;
@@ -14,12 +14,17 @@ import com.pockyl.hextale.registry.ModParticles;
  * The magic tree's canopy: glowing leaves drift down from it (more often than cherry petals), and now and then a mote of
  * cold light rises out of it.
  */
-public class MagicLeavesBlock extends FallingParticlesLeavesBlock {
+public class MagicLeavesBlock extends LeavesBlock {
     private static final float LEAF_CHANCE = 0.06F;
     private static final float MOTE_CHANCE = 0.015F;
 
     public MagicLeavesBlock(Properties properties) {
-        super(LEAF_CHANCE, AmbientLeavesBlockSoundPlayer.noAmbientSound(), properties);
+        super(LEAF_CHANCE, properties);
+    }
+
+    @Override
+    public MapCodec<MagicLeavesBlock> codec() {
+        return simpleCodec(MagicLeavesBlock::new);
     }
 
     @Override

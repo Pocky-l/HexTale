@@ -3,7 +3,7 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.cow.Cow;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.spider.Spider;
@@ -43,11 +43,11 @@ public final class VentGameTests {
         floor(helper);
         helper.setBlock(BASE, ModBlocks.MIASMA_VENT.get());
         int edge = MiasmaVentBlockEntity.RADIUS;
-        Creeper creeper = helper.spawnWithNoFreeWill(EntityTypes.CREEPER, BASE.offset(edge, 0, 0));
+        Creeper creeper = helper.spawnWithNoFreeWill(EntityType.CREEPER, BASE.offset(edge, 0, 0));
         float creeperHealth = creeper.getHealth();
-        Zombie zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, BASE.offset(-edge, 0, edge));
+        Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, BASE.offset(-edge, 0, edge));
         zombie.setHealth(MiasmaVentBlockEntity.DAMAGE - 1);
-        Cow cow = helper.spawnWithNoFreeWill(EntityTypes.COW, BASE.offset(0, 0, -2));
+        Cow cow = helper.spawnWithNoFreeWill(EntityType.COW, BASE.offset(0, 0, -2));
         float cowHealth = cow.getHealth();
         helper.runAfterDelay(10, () -> {
             helper.assertTrue(!zombie.isAlive(), "the fumes ate the undead zombie");
@@ -66,7 +66,7 @@ public final class VentGameTests {
         floor(helper);
         helper.setBlock(BASE, ModBlocks.MIASMA_VENT.get());
         helper.setBlock(BASE.west(), Blocks.REDSTONE_BLOCK);
-        Spider spider = helper.spawnWithNoFreeWill(EntityTypes.SPIDER, BASE.offset(2, 0, 0));
+        Spider spider = helper.spawnWithNoFreeWill(EntityType.SPIDER, BASE.offset(2, 0, 0));
         spider.setHealth(1);
         helper.runAfterDelay(100, () -> {
             helper.assertTrue(helper.getBlockState(BASE).getValue(MiasmaVentBlock.POWERED), "the vent sees the signal");

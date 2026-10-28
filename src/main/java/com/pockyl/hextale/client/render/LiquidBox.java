@@ -143,7 +143,7 @@ public final class LiquidBox {
 
     /** Vanilla bubbles facing the camera, in one batch: quads as {@link HexFx#quad} makes them (frame 0). */
     public static void bubbles(PoseStack poseStack, SubmitNodeCollector collector, List<float[]> quads) {
-        HexFx.sheet(poseStack, collector, Minecraft.getInstance().gameRenderer.mainCamera().rotation(), BUBBLE, 1, quads);
+        HexFx.sheet(poseStack, collector, Minecraft.getInstance().gameRenderer.getMainCamera().rotation(), BUBBLE, 1, quads);
     }
 
     /**
@@ -152,7 +152,7 @@ public final class LiquidBox {
      */
     public static void surfaceBubble(PoseStack poseStack, SubmitNodeCollector collector, float t, float swell, float half, int rgb, float alpha) {
         int color = RuneDrawing.mix(rgb, 0xFFFFFF, BUBBLE_LIGHT);
-        Quaternionfc camera = Minecraft.getInstance().gameRenderer.mainCamera().rotation();
+        Quaternionfc camera = Minecraft.getInstance().gameRenderer.getMainCamera().rotation();
         if (t < swell) {
             float size = half * (0.4F + 0.6F * Mth.sqrt(t / swell));
             HexFx.sheet(poseStack, collector, camera, BUBBLE, 1, List.of(HexFx.quad(0, size * 0.5F, 0, size, 0, 0, alpha, color)));

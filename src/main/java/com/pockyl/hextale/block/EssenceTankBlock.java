@@ -211,4 +211,9 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
         return createTickerHelper(type, ModBlockEntities.ESSENCE_TANK.get(),
                 level.isClientSide() ? EssenceTankBlockEntity::clientTick : EssenceTankBlockEntity::serverTick);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<EssenceTankBlock> codec() {
+        return simpleCodec(EssenceTankBlock::new);
+    }
 }

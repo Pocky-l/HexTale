@@ -12,6 +12,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
 import com.pockyl.hextale.block.ShimmerbloomBlock;
 import com.pockyl.hextale.registry.ModBlocks;
@@ -23,7 +25,7 @@ import com.pockyl.hextale.registry.ModBlocks;
  * Outside the regions it places nothing, so a cave is either thick with blooms or has none. Runs once per chunk (the
  * placed feature has no placement modifiers: the origin is the chunk's lowest corner) and stays inside the chunk.
  */
-public record BloomCaveFeature() implements Feature {
+public record BloomCaveFeature() implements FeatureConfiguration {
     public static final MapCodec<BloomCaveFeature> CODEC = MapCodec.unit(BloomCaveFeature::new);
     /** Blooms grow only below this height and well under the surface. */
     public static final int TOP = 40;
@@ -36,12 +38,10 @@ public record BloomCaveFeature() implements Feature {
     private static final int WALL_SEARCH = 5;
     private static final int FLAGS = Block.UPDATE_CLIENTS;
 
-    @Override
     public MapCodec<BloomCaveFeature> codec() {
         return CODEC;
     }
 
-    @Override
     public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
         long seed = level.getSeed();
         int minX = origin.getX();
@@ -187,5 +187,17 @@ public record BloomCaveFeature() implements Feature {
 
     private static boolean inside(BlockPos pos, int minX, int minZ) {
         return pos.getX() >= minX && pos.getX() < minX + 16 && pos.getZ() >= minZ && pos.getZ() < minZ + 16;
+    }
+
+    /** The 26.1.2 feature type: places the configured record (26.3 records are features themselves). */
+    public static final class Type extends Feature<BloomCaveFeature> {
+        public Type() {
+            super(CODEC.codec());
+        }
+
+        @Override
+        public boolean place(FeaturePlaceContext<BloomCaveFeature> context) {
+            return context.config().place(context.level(), context.chunkGenerator(), context.random(), context.origin());
+        }
     }
 }

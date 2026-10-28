@@ -117,10 +117,10 @@ public class AxolotlTankRenderer implements BlockEntityRenderer<AxolotlTankBlock
 
         poseStack.pushPose();
         poseStack.translate(x, y, z);
-        poseStack.rotate(Axis.YP.rotationDegrees(180 - yaw));
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 - yaw));
         poseStack.scale(-SCALE, -SCALE, SCALE);
         poseStack.translate(0, -1.501F, 0);
-        collector.submitModel(model, axolotl, poseStack, TEXTURES.get(state.variant), state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+        collector.submitModel(model, axolotl, poseStack, TEXTURES.get(state.variant), state.lightCoords, OverlayTexture.NO_OVERLAY, 0, null);
         poseStack.popPose();
     }
 }

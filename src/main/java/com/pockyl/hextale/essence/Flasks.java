@@ -1,7 +1,6 @@
 package com.pockyl.hextale.essence;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -45,7 +44,7 @@ public final class Flasks {
         if (held.isEmpty()) {
             player.setItemInHand(hand, result);
         } else if (!player.getInventory().add(result)) {
-            player.drop(result, false, Prediction.SERVER_ONLY);
+            player.drop(result, false);
         }
     }
 

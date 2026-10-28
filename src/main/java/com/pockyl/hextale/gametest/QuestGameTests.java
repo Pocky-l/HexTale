@@ -49,8 +49,8 @@ public final class QuestGameTests {
     @HexTest
     public static void questRecipesMatchTheRecipes(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();
-        ContextMap context = ContextMap.builder().set(SlotDisplayContext.REGISTRIES, server.registryAccess())
-                .buildAndValidate(SlotDisplayContext.CONTEXT);
+        ContextMap context = new ContextMap.Builder().withParameter(SlotDisplayContext.REGISTRIES, server.registryAccess())
+                .create(SlotDisplayContext.CONTEXT);
         for (Quest quest : Guide.server().all()) {
             for (QuestDisplay display : quest.displays()) {
             if (!display.isRecipe()) {

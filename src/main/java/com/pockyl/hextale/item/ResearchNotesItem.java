@@ -126,7 +126,7 @@ public class ResearchNotesItem extends Item {
                 serverPlayer.sendSystemMessage(Component.translatable("item.hextale.research_notes.rune",
                         Component.translatable(rune.translationKey()).withColor(rune.color())));
                 if (!player.getInventory().add(scroll)) {
-                    player.drop(scroll, false, net.minecraft.util.Prediction.SERVER_ONLY);
+                    player.drop(scroll, false);
                 }
             }
             level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.9F);

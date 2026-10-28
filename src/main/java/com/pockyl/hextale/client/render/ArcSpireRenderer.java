@@ -109,7 +109,7 @@ public class ArcSpireRenderer implements BlockEntityRenderer<ArcSpireBlockEntity
         poseStack.translate(crystal.x, crystal.y + Mth.sin(time * 0.08F) * 0.015F, crystal.z);
         HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.45F + 0.3F * state.afterglow, state.color,
                 (0.35F + 0.5F * state.afterglow) * calm);
-        poseStack.rotate(Axis.YP.rotationDegrees(time * 1.5F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(time * 1.5F));
         poseStack.scale(0.34F, 0.34F, 0.34F);
         poseStack.translate(0, -0.2, 0);
         state.crystal.submit(poseStack, collector, state.uncharged ? state.lightCoords : LightCoordsUtil.FULL_BRIGHT,

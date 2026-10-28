@@ -56,28 +56,6 @@ public final class ModGameTests {
         helper.succeed();
     }
 
-    /**
-     * Since 26.x a block stands in the world's heightmaps (spawning, the blight's and the breach's search for the ground)
-     * only through the tag {@code minecraft:blocks_motion_no_leaves}: every block of ours that has a body must be in it.
-     */
-    @HexTest
-    public static void solidBlocksStandInTheHeightmap(GameTestHelper helper) {
-        List<String> missing = new java.util.ArrayList<>();
-        for (net.minecraft.world.level.block.Block block : net.minecraft.core.registries.BuiltInRegistries.BLOCK) {
-            net.minecraft.resources.Identifier id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block);
-            net.minecraft.world.level.block.state.BlockState state = block.defaultBlockState();
-            // Pots and carpets stand outside the tag in vanilla too.
-            if (id.getNamespace().equals(Hextale.MOD_ID) && !id.getPath().startsWith("potted_") && !id.getPath().endsWith("_carpet")
-                    && !state.getCollisionShape(net.minecraft.world.level.EmptyBlockGetter.INSTANCE,
-                    net.minecraft.core.BlockPos.ZERO).isEmpty() && !state.is(net.minecraft.tags.BlockTags.BLOCKS_MOTION_IN_HEIGHTMAP)) {
-                missing.add(id.toString());
-            }
-        }
-        java.util.Collections.sort(missing);
-        helper.assertTrue(missing.isEmpty(), "not in minecraft:blocks_motion_no_leaves: " + String.join(" ", missing));
-        helper.succeed();
-    }
-
     @HexTest
     public static void dataFilesLoad(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();

@@ -199,7 +199,7 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         // The boom's model turns about its knuckle at (12.5, 8.5) and sits 4 px lower than drawn (on the post's top at
         // 5); its lens points along -x at yaw 0.
         poseStack.translate(8.5 / 16, -4 / 16.0, 8.5 / 16);
-        poseStack.rotate(Axis.YP.rotationDegrees(Mth.lerp(state.loupeSwing, LOUPE_REST_YAW, LOUPE_LOOK_YAW)));
+        poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(state.loupeSwing, LOUPE_REST_YAW, LOUPE_LOOK_YAW)));
         poseStack.translate(-12.5 / 16, 0, -8.5 / 16);
         TableModels.submit(poseStack, collector, TableModels.LOUPE_ARM, light);
         submitHingedLens(poseStack, collector, light, 10.5F, 10, 0, state.loupeFoldA);
@@ -212,8 +212,8 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
                                          float fold) {
         poseStack.pushPose();
         poseStack.translate(4.5 / 16, y / 16, z / 16);
-        poseStack.rotate(Axis.YP.rotationDegrees(side));
-        poseStack.rotate(Axis.XN.rotationDegrees(fold * 180));
+        poseStack.mulPose(Axis.YP.rotationDegrees(side));
+        poseStack.mulPose(Axis.XN.rotationDegrees(fold * 180));
         poseStack.translate(-8.5 / 16, -8.5 / 16, -0.5);
         TableModels.submit(poseStack, collector, TableModels.LOUPE_LENS, light);
         poseStack.popPose();
@@ -228,13 +228,13 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         Vec3 at = TableGeometry.DIARY;
         poseStack.pushPose();
         poseStack.translate(at.x / 16, at.y / 16, at.z / 16);
-        poseStack.rotate(Axis.YP.rotationDegrees(90));
-        poseStack.rotate(Axis.ZP.rotationDegrees(67.5F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(90));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(67.5F));
         poseStack.translate(0, -0.125, 0);
         poseStack.scale(0.8F, 0.8F, 0.8F);
         float flip = state.sinceFlare >= 0 && state.sinceFlare < 24 ? Mth.clamp(state.sinceFlare / 16.0F, 0, 1) : 0;
         BookModel.State pages = BookModel.State.forAnimation(state.time, 0.1F + flip * 0.8F, 0.9F, 1.2F);
-        collector.submitModel(book, pages, poseStack, BOOK_TEXTURE, light, OverlayTexture.NO_OVERLAY, 0);
+        collector.submitModel(book, pages, poseStack, BOOK_TEXTURE, light, OverlayTexture.NO_OVERLAY, 0, null);
         poseStack.popPose();
     }
 
@@ -243,12 +243,12 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         Vec3 orb = TableGeometry.ORB;
         poseStack.pushPose();
         poseStack.translate(orb.x / 16, orb.y / 16, orb.z / 16);
-        poseStack.rotate(Axis.YP.rotationDegrees(state.outerPhase));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.outerPhase));
         poseStack.pushPose();
         poseStack.translate(-0.5, -0.5, -0.5);
         TableModels.submit(poseStack, collector, TableModels.RING_OUTER, light);
         poseStack.popPose();
-        poseStack.rotate(Axis.XP.rotationDegrees(state.innerPhase));
+        poseStack.mulPose(Axis.XP.rotationDegrees(state.innerPhase));
         poseStack.translate(-0.5, -0.5, -0.5);
         TableModels.submit(poseStack, collector, TableModels.RING_INNER, light);
         poseStack.popPose();
@@ -273,14 +273,14 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.42F + 0.16F * intensity, color, Math.min(0.9F, 0.25F + 0.4F * intensity));
         if (state.orb && crack < 0.6F) {
             poseStack.pushPose();
-            poseStack.rotate(Axis.YP.rotationDegrees(time * (drawing ? 4.5F : 1.4F)));
-            poseStack.rotate(Axis.XP.rotationDegrees(35 + Mth.sin(time * 0.05F) * 12));
-            poseStack.rotate(Axis.ZP.rotationDegrees(45));
+            poseStack.mulPose(Axis.YP.rotationDegrees(time * (drawing ? 4.5F : 1.4F)));
+            poseStack.mulPose(Axis.XP.rotationDegrees(35 + Mth.sin(time * 0.05F) * 12));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(45));
             HexFx.cube(poseStack, collector, (2.6F + 0.3F * state.flare) / 16, RuneDrawing.lighten(color, 0.25F * intensity), 1);
             poseStack.popPose();
             poseStack.pushPose();
-            poseStack.rotate(Axis.YP.rotationDegrees(-time * (drawing ? 3 : 0.9F)));
-            poseStack.rotate(Axis.ZP.rotationDegrees(30));
+            poseStack.mulPose(Axis.YP.rotationDegrees(-time * (drawing ? 3 : 0.9F)));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(30));
             HexFx.cube(poseStack, collector, (3.7F + 0.4F * intensity) / 16, color, 0.28F + 0.12F * intensity);
             poseStack.popPose();
         }
@@ -316,7 +316,7 @@ public class ResearchTableRenderer implements BlockEntityRenderer<ResearchTableB
         float scale = 0.45F * Math.min(1, since / 8) * (t > 0.7F ? 1 - (t - 0.7F) / 0.3F : 1);
         poseStack.pushPose();
         poseStack.translate(0, 0.28F + t * 0.22F, 0);
-        poseStack.rotate(Axis.YP.rotationDegrees(state.time * 6));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.time * 6));
         poseStack.scale(scale, scale, scale);
         poseStack.translate(0, -0.15, 0);
         state.flareItem.submit(poseStack, collector, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);

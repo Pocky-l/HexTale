@@ -107,7 +107,7 @@ public class ImpulsePlateRenderer implements BlockEntityRenderer<ImpulsePlateBlo
         poseStack.pushPose();
         TableModels.rotateToFacing(poseStack, state.facing);
         poseStack.translate(0, HINGE_Y, HINGE_Z);
-        poseStack.rotate(Axis.XP.rotationDegrees(-FLIP * state.flip));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-FLIP * state.flip));
         poseStack.translate(0, -HINGE_Y, -HINGE_Z);
         TableModels.submit(poseStack, collector, TableModels.IMPULSE_PANEL, state.lightCoords);
         poseStack.popPose();
@@ -127,8 +127,8 @@ public class ImpulsePlateRenderer implements BlockEntityRenderer<ImpulsePlateBlo
         // The target: a ring lying on it, turning, with a breathing inner ring.
         poseStack.pushPose();
         poseStack.translate(state.target.x, state.target.y + 0.03, state.target.z);
-        poseStack.rotate(Axis.YP.rotationDegrees(state.time * 1.5F));
-        poseStack.rotate(Axis.XP.rotationDegrees(90));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.time * 1.5F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
         HexFx.sigilRing(poseStack, collector, 0.5F, 8, color, 0.8F);
         HexFx.sigilRing(poseStack, collector, 0.28F + 0.04F * Mth.sin(state.time * 0.2F), 0, color, 0.6F);
         poseStack.popPose();

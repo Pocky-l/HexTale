@@ -123,7 +123,7 @@ public class AxolotlTankBlock extends BaseEntityBlock {
                 player.sendOverlayMessage(tank.status());
             } else {
                 if (!player.getInventory().add(slime)) {
-                    player.drop(slime, false, net.minecraft.util.Prediction.SERVER_ONLY);
+                    player.drop(slime, false);
                 }
                 level.playSound(null, pos, SoundEvents.SLIME_BLOCK_HIT, SoundSource.BLOCKS, 0.6F, 1.3F);
             }
@@ -163,5 +163,10 @@ public class AxolotlTankBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(type, ModBlockEntities.AXOLOTL_TANK.get(), AxolotlTankBlockEntity::serverTick);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<AxolotlTankBlock> codec() {
+        return simpleCodec(AxolotlTankBlock::new);
     }
 }

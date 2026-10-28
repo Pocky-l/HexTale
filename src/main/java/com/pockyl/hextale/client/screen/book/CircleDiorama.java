@@ -81,6 +81,10 @@ public final class CircleDiorama {
     }
 
     static final class Renderer extends PictureInPictureRenderer<State> {
+        Renderer(net.minecraft.client.renderer.MultiBufferSource.BufferSource portBuffers) {
+            super(portBuffers);
+        }
+
         private final ItemStackRenderState altar = new ItemStackRenderState();
         private final ItemStackRenderState pedestal = new ItemStackRenderState();
         private final ItemStackRenderState stele = new ItemStackRenderState();
@@ -95,7 +99,14 @@ public final class CircleDiorama {
         }
 
         @Override
-        protected void renderToTexture(State state, PoseStack poseStack, SubmitNodeCollector collector) {
+        protected void renderToTexture(State state, PoseStack poseStack) {
+            net.minecraft.client.renderer.feature.FeatureRenderDispatcher portFeatures =
+                    net.minecraft.client.Minecraft.getInstance().gameRenderer.getFeatureRenderDispatcher();
+            renderToTexture(state, poseStack, portFeatures.getSubmitNodeStorage());
+            portFeatures.renderAllFeatures();
+        }
+
+        private void renderToTexture(State state, PoseStack poseStack, SubmitNodeCollector collector) {
             Minecraft minecraft = Minecraft.getInstance();
             ItemModelResolver resolver = minecraft.getItemModelResolver();
             float time = state.time();
@@ -120,12 +131,12 @@ public final class CircleDiorama {
             }
             resolver.updateForTopItem(centre, new ItemStack(made ? ModItems.HEXTECH_GEMSTONE.get() : ModItems.UNSTABLE_HEXTECH.get()),
                     ItemDisplayContext.GROUND, minecraft.level, null, 20);
-            minecraft.gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_3D);
+            minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_3D);
 
             float yaw = time * 0.35F + 20;
             poseStack.scale(1, -1, -1);
-            poseStack.rotate(Axis.XP.rotationDegrees(TILT));
-            poseStack.rotate(Axis.YP.rotationDegrees(yaw));
+            poseStack.mulPose(Axis.XP.rotationDegrees(TILT));
+            poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
             Quaternionf camera = new Quaternionf().rotationY(-yaw * Mth.DEG_TO_RAD).rotateX(-TILT * Mth.DEG_TO_RAD);
             Vector3f toCamera = camera.transform(new Vector3f(0, 0, 1));
             poseStack.translate(0, -0.8F, 0);
@@ -174,7 +185,7 @@ public final class CircleDiorama {
                 if (k > 0 && k < 1) {
                     HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.5F, HexFx.HEXTECH, 0.5F * Mth.sin(k * Mth.PI));
                 }
-                poseStack.rotate(Axis.YP.rotationDegrees(time * 3 + i * 90));
+                poseStack.mulPose(Axis.YP.rotationDegrees(time * 3 + i * 90));
                 poseStack.scale(size, size, size);
                 poseStack.translate(0, -0.15F, 0);
                 offerings[i].submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
@@ -189,7 +200,7 @@ public final class CircleDiorama {
                 poseStack.pushPose();
                 poseStack.translate(sx, 1.45F + Mth.sin(time * 0.06F + side) * 0.04F, 0);
                 HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.6F, rune.color(), 0.3F + (focus == Quest.Scene.STELE ? 0.25F * pulse : 0));
-                poseStack.rotate(camera);
+                poseStack.mulPose(camera);
                 poseStack.translate(0, 0, 0.03F);
                 HexFx.glyph(poseStack, collector, rune, 0.4F, rune.color(), 0.9F);
                 poseStack.popPose();
@@ -228,17 +239,17 @@ public final class CircleDiorama {
             poseStack.translate(0, CENTRE_Y + Mth.sin(time * 0.08F) * 0.04F, 0);
             HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.9F + 1.6F * flash, made ? 0x9FE6FF : HexFx.HEXTECH, 0.3F + 0.2F * spin + 0.5F * flash);
             poseStack.pushPose();
-            poseStack.rotate(Axis.YP.rotationDegrees(time * (1.5F + 5 * spin)));
+            poseStack.mulPose(Axis.YP.rotationDegrees(time * (1.5F + 5 * spin)));
             poseStack.pushPose();
             poseStack.translate(-0.5, -0.5, -0.5);
             TableModels.submit(poseStack, collector, TableModels.ALTAR_RING_OUTER, light);
             poseStack.popPose();
-            poseStack.rotate(Axis.XP.rotationDegrees(time * (2 + 6 * spin)));
+            poseStack.mulPose(Axis.XP.rotationDegrees(time * (2 + 6 * spin)));
             poseStack.translate(-0.5, -0.5, -0.5);
             TableModels.submit(poseStack, collector, TableModels.ALTAR_RING_INNER, light);
             poseStack.popPose();
             poseStack.pushPose();
-            poseStack.rotate(Axis.YP.rotationDegrees(-time * 2.4F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(-time * 2.4F));
             poseStack.scale(0.8F, 0.8F, 0.8F);
             poseStack.translate(0, -0.15F, 0);
             centre.submit(poseStack, collector, light, OverlayTexture.NO_OVERLAY, 0);
@@ -257,8 +268,8 @@ public final class CircleDiorama {
         private static void groundRing(PoseStack poseStack, SubmitNodeCollector collector, float x, float z, float radius, float time, float pulse) {
             poseStack.pushPose();
             poseStack.translate(x, 0.02F, z);
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
-            poseStack.rotate(Axis.ZP.rotationDegrees(time * 0.8F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(time * 0.8F));
             HexFx.sigilRing(poseStack, collector, radius, 12, 0x9FE6FF, 0.35F + 0.35F * pulse);
             poseStack.popPose();
         }

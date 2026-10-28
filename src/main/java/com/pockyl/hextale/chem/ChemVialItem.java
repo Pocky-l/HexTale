@@ -21,14 +21,11 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.Consumables;
-import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.component.UseCooldown;
 import net.minecraft.world.item.component.UseRemainder;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders;
-import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.entity.ThrownChemVial;
@@ -67,8 +64,7 @@ public class ChemVialItem extends Item implements ProjectileItem {
         ItemStack stack = new ItemStack(ModItems.CHEM_VIAL.get(), count);
         stack.set(ModDataComponents.BREW.get(), brew);
         if (brew == Brew.FUEL) {
-            stack.set(DataComponents.COOKING_FUEL,
-                    new CookingFuel(ContextIntProviders.COOKING_TIME_BLAZE_ROD, ContextFloatProviders.COOKING_DEFAULT_SPEED_MULTIPLIER));
+            // 26.1.2: a fuel vial burns through getBurnTime below (26.3: cooking_fuel component).
         } else if (brew == Brew.REFINED_SHIMMER) {
             stack.set(DataComponents.CONSUMABLE, Consumables.defaultDrink().sound(SoundEvents.HONEY_DRINK)
                     .onConsume(new ApplyStatusEffectsConsumeEffect(shimmerEffects())).build());
@@ -142,5 +138,14 @@ public class ChemVialItem extends Item implements ProjectileItem {
     public DispenseConfig createDispenseConfig() {
         return DispenseConfig.builder().uncertainty(DispenseConfig.DEFAULT.uncertainty() * 0.5F)
                 .power(DispenseConfig.DEFAULT.power() * 1.25F).build();
+    }
+
+    /** A fuel vial burns as long as a blaze rod. */
+    @Override
+    public int getBurnTime(ItemStack stack, net.minecraft.world.item.crafting.@Nullable RecipeType<?> recipeType,
+            net.minecraft.world.level.block.entity.FuelValues fuelValues) {
+        return stack.get(ModDataComponents.BREW.get()) == Brew.FUEL
+                ? Items.BLAZE_ROD.getDefaultInstance().getBurnTime(recipeType, fuelValues)
+                : super.getBurnTime(stack, recipeType, fuelValues);
     }
 }

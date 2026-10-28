@@ -67,7 +67,7 @@ public final class GadgetGameTests {
         com.pockyl.hextale.block.SieveGlassBlock ward = ModBlocks.WARD_GLASS.get();
         com.pockyl.hextale.block.SieveGlassBlock veil = ModBlocks.VEIL_GLASS.get();
         net.minecraft.world.entity.player.Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
-        net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, new BlockPos(1, 2, 1));
+        net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new BlockPos(1, 2, 1));
         helper.assertTrue(!ward.passes(player) && ward.passes(pig), "Ward Glass stops players and lets creatures through");
         helper.assertTrue(veil.passes(player) && !veil.passes(pig), "Veil Glass lets players through and stops creatures");
         pig.discard();
@@ -80,7 +80,7 @@ public final class GadgetGameTests {
         helper.setBlock(at, ModBlocks.IMPULSE_PLATE.get().defaultBlockState()
                 .setValue(com.pockyl.hextale.block.ImpulsePlateBlock.FACING, net.minecraft.core.Direction.EAST));
         // A pig standing on the plate - no direct call: the plate must notice it by itself.
-        net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, new Vec3(1.5, 1.07, 1.5));
+        net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new Vec3(1.5, 1.07, 1.5));
         double floor = helper.absolutePos(at).getY();
         double startX = pig.getX();
         helper.succeedWhen(() -> {
@@ -109,7 +109,7 @@ public final class GadgetGameTests {
                         helper.absolutePos(target), false));
         com.pockyl.hextale.block.ImpulsePlateBlock.Plate plate = helper.getBlockEntity(at, com.pockyl.hextale.block.ImpulsePlateBlock.Plate.class);
         helper.assertValueEqual(plate.target(), helper.absolutePos(target), "the plate's target");
-        net.minecraft.world.entity.decoration.ArmorStand stand = helper.spawn(net.minecraft.world.entity.EntityTypes.ARMOR_STAND, new Vec3(1.5, 1.1, 1.5));
+        net.minecraft.world.entity.decoration.ArmorStand stand = helper.spawn(net.minecraft.world.entity.EntityType.ARMOR_STAND, new Vec3(1.5, 1.1, 1.5));
         Vec3 landing = Vec3.atCenterOf(helper.absolutePos(target)).add(0, 0.5, 0);
         boolean[] flew = {false};
         helper.onEachTick(() -> flew[0] |= stand.getY() > landing.y + 1);
@@ -168,7 +168,7 @@ public final class GadgetGameTests {
         runed.set(com.pockyl.hextale.registry.ModDataComponents.IMPULSE_RUNES.get(),
                 com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.ImpulseRune.BANISHING.rune(), 2));
         helper.getBlockEntity(at, com.pockyl.hextale.block.ImpulsePlateBlock.Plate.class).applyComponentsFromItemStack(runed);
-        net.minecraft.world.entity.monster.zombie.Zombie zombie = helper.spawn(net.minecraft.world.entity.EntityTypes.ZOMBIE, new Vec3(2.5, 1.07, 1.5));
+        net.minecraft.world.entity.monster.zombie.Zombie zombie = helper.spawn(net.minecraft.world.entity.EntityType.ZOMBIE, new Vec3(2.5, 1.07, 1.5));
         double floor = helper.absolutePos(at).getY();
         double startX = zombie.getX();
         // The highest it got and how far west, over the whole flight.
@@ -257,7 +257,7 @@ public final class GadgetGameTests {
 
     @HexTest(padding = 2)
     public static void aSoulFlaskKeepsACreatureWhole(GameTestHelper helper) {
-        net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, new BlockPos(1, 2, 1));
+        net.minecraft.world.entity.animal.pig.Pig pig = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new BlockPos(1, 2, 1));
         pig.setCustomName(net.minecraft.network.chat.Component.literal("Wilbur"));
         helper.assertTrue(com.pockyl.hextale.item.SoulFlaskItem.takes(pig), "a pig fits in a flask");
         net.minecraft.nbt.CompoundTag soul = com.pockyl.hextale.item.SoulFlaskItem.capture(helper.getLevel(), pig);
@@ -275,7 +275,7 @@ public final class GadgetGameTests {
     public static void aSoulFlaskLeavesOthersPets(GameTestHelper helper) {
         net.minecraft.world.entity.player.Player owner = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
         net.minecraft.world.entity.player.Player stranger = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
-        net.minecraft.world.entity.animal.wolf.Wolf wolf = helper.spawn(net.minecraft.world.entity.EntityTypes.WOLF, new BlockPos(1, 2, 1));
+        net.minecraft.world.entity.animal.wolf.Wolf wolf = helper.spawn(net.minecraft.world.entity.EntityType.WOLF, new BlockPos(1, 2, 1));
         wolf.tame(owner);
         helper.assertFalse(com.pockyl.hextale.item.SoulFlaskItem.takes(stranger, wolf), "a stranger cannot bottle the dog");
         helper.assertTrue(com.pockyl.hextale.item.SoulFlaskItem.takes(owner, wolf), "its owner can");
@@ -306,7 +306,7 @@ public final class GadgetGameTests {
         BlockPos to = helper.absolutePos(new BlockPos(3, 2, 3));
         helper.getLevel().setBlockAndUpdate(from, net.minecraft.world.level.block.Blocks.SPAWNER.defaultBlockState());
         if (helper.getLevel().getBlockEntity(from) instanceof net.minecraft.world.level.block.entity.SpawnerBlockEntity spawner) {
-            spawner.setEntityId(net.minecraft.world.entity.EntityTypes.ZOMBIE, helper.getLevel().getRandom());
+            spawner.setEntityId(net.minecraft.world.entity.EntityType.ZOMBIE, helper.getLevel().getRandom());
         }
         net.minecraft.nbt.CompoundTag caged = com.pockyl.hextale.item.SpawnerCageItem.fold(helper.getLevel(), from);
         helper.assertTrue(helper.getLevel().getBlockState(from).isAir(), "the spawner leaves its place");
@@ -371,7 +371,7 @@ public final class GadgetGameTests {
             helper.setBlock(jar, ModBlocks.ESSENCE_TANK.get());
             helper.getBlockEntity(jar, com.pockyl.hextale.block.EssenceTankBlockEntity.class).tank()
                     .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.RIFT, 10));
-            pigs[0] = helper.spawn(net.minecraft.world.entity.EntityTypes.PIG, new Vec3(1.5, 1.2, 1.5));
+            pigs[0] = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new Vec3(1.5, 1.2, 1.5));
             // The dry ring spat the first stone out; it is put away, and another one goes in once the gate has looked
             // into its jars again.
             stone.discard();

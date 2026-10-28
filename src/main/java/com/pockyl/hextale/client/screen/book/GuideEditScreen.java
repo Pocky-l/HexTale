@@ -252,7 +252,7 @@ final class GuideEditScreen extends Screen {
         }
         saved &= GuideEditor.saveTexts(texts);
         GuideEditor.report(id + " added", saved);
-        minecraft.gui.setScreen(new GuideEditScreen(child, parent));
+        minecraft.setScreen(new GuideEditScreen(child, parent));
     }
 
     /** A place next to a step that keeps clear of every other step. */
@@ -290,7 +290,7 @@ final class GuideEditScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.gui.setScreen(parent);
+        minecraft.setScreen(parent);
     }
 
     @Override

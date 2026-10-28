@@ -47,7 +47,7 @@ public class DustChargeRenderer extends ThrownItemRenderer<DustCharge> {
         poseStack.pushPose();
         // The entity hangs 0.1 off the face; the cartridge's base lies on the face itself.
         poseStack.translate(-out.x * 0.1F, -out.y * 0.1F, -out.z * 0.1F);
-        poseStack.rotate(new Quaternionf().rotationTo(new Vector3f(0, 0, 1), out));
+        poseStack.mulPose(new Quaternionf().rotationTo(new Vector3f(0, 0, 1), out));
         poseStack.translate(-0.5F, -0.5F, 0);
         TableModels.submit(poseStack, collector, TableModels.DUST_CHARGE_STUCK, state.lightCoords);
         poseStack.popPose();

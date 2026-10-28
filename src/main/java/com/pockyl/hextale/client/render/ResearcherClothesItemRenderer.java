@@ -47,7 +47,7 @@ public final class ResearcherClothesItemRenderer implements NoDataSpecialModelRe
     public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, int overlay, boolean hasFoil, int outlineColor) {
         poseStack.pushPose();
         frame(poseStack);
-        collector.submitModel(model, Unit.INSTANCE, poseStack, ResearcherClothesClient.TEXTURE, light, overlay, outlineColor);
+        collector.submitModel(model, Unit.INSTANCE, poseStack, ResearcherClothesClient.TEXTURE, light, overlay, outlineColor, null);
         poseStack.popPose();
     }
 

@@ -189,4 +189,9 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
     public @Nullable WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
         return level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic ? alembic : null;
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<AlembicBlock> codec() {
+        return simpleCodec(AlembicBlock::new);
+    }
 }

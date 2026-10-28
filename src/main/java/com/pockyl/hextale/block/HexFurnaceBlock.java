@@ -136,4 +136,9 @@ public class HexFurnaceBlock extends BaseEntityBlock implements WorldlyContainer
     public @Nullable WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
         return level.getBlockEntity(pos) instanceof HexFurnaceBlockEntity furnace ? furnace : null;
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<HexFurnaceBlock> codec() {
+        return simpleCodec(HexFurnaceBlock::new);
+    }
 }

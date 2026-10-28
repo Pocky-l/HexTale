@@ -118,13 +118,13 @@ public class GreedyFunnelRenderer implements BlockEntityRenderer<GreedyFunnelBlo
         poseStack.pushPose();
         poseStack.translate(mouth.x, mouth.y + 0.02, mouth.z);
         poseStack.pushPose();
-        poseStack.rotate(Axis.YP.rotationDegrees(state.vortex));
-        poseStack.rotate(Axis.XP.rotationDegrees(90));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.vortex));
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
         HexFx.sigilRing(poseStack, collector, 0.36F, 12, FunnelTimeline.SHADOW, 0.55F * calm);
         poseStack.popPose();
         poseStack.pushPose();
-        poseStack.rotate(Axis.YP.rotationDegrees(-state.vortex * 1.6F));
-        poseStack.rotate(Axis.XP.rotationDegrees(90));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-state.vortex * 1.6F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
         HexFx.sigilRing(poseStack, collector, 0.2F, 6, FunnelTimeline.SHADOW, 0.45F * calm);
         poseStack.popPose();
         for (int i = 0; i < VORTEX_MOTES; i++) {
@@ -149,7 +149,7 @@ public class GreedyFunnelRenderer implements BlockEntityRenderer<GreedyFunnelBlo
             poseStack.pushPose();
             poseStack.translate(drop.at.x, drop.at.y, drop.at.z);
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.45F * drop.scale, FunnelTimeline.SHADOW, 0.35F);
-            poseStack.rotate(Axis.YP.rotationDegrees(drop.spin));
+            poseStack.mulPose(Axis.YP.rotationDegrees(drop.spin));
             poseStack.scale(drop.scale, drop.scale, drop.scale);
             poseStack.translate(0, -0.125, 0);
             drop.item.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);

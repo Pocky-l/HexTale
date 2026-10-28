@@ -106,4 +106,9 @@ public class RuneSteleBlock extends BaseEntityBlock {
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new RuneSteleBlockEntity(pos, state);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<RuneSteleBlock> codec() {
+        return simpleCodec(RuneSteleBlock::new);
+    }
 }

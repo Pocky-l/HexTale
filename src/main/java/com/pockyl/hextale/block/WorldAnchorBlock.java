@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -268,8 +267,8 @@ public class WorldAnchorBlock extends BaseEntityBlock {
                 for (BlockPos at : new BlockPos[] {top, top.above()}) {
                     BlockState state = level.getBlockState(at);
                     if (state.getBlock() instanceof BonemealableBlock plant && !(state.getBlock() instanceof net.minecraft.world.level.block.GrassBlock)
-                            && plant.isValidBonemealTarget(level, at, state, BonemealSource.INTERACTION) && plant.isBonemealSuccess(level, random, at, state, BonemealSource.INTERACTION)) {
-                        plant.performBonemeal(level, random, at, state, BonemealSource.INTERACTION);
+                            && plant.isValidBonemealTarget(level, at, state) && plant.isBonemealSuccess(level, random, at, state)) {
+                        plant.performBonemeal(level, random, at, state);
                         level.sendParticles(ModParticles.glint(0xB8F08A), at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 4, 0.3, 0.3, 0.3, 0.01);
                         plants--;
                         break;
@@ -325,5 +324,10 @@ public class WorldAnchorBlock extends BaseEntityBlock {
         public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
             return ClientboundBlockEntityDataPacket.create(this);
         }
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<WorldAnchorBlock> codec() {
+        return simpleCodec(WorldAnchorBlock::new);
     }
 }

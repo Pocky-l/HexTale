@@ -15,7 +15,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -174,8 +173,8 @@ public final class ClothesEffects {
                     random.nextInt(POLLEN_RADIUS * 2 + 1) - POLLEN_RADIUS);
             BlockState state = level.getBlockState(pos);
             if ((state.is(BlockTags.CROPS) || state.is(BlockTags.SAPLINGS)) && state.getBlock() instanceof BonemealableBlock plant
-                    && plant.isValidBonemealTarget(level, pos, state, BonemealSource.INTERACTION)) {
-                plant.performBonemeal(level, random, pos, state, BonemealSource.INTERACTION);
+                    && plant.isValidBonemealTarget(level, pos, state)) {
+                plant.performBonemeal(level, random, pos, state);
                 level.levelEvent(1505, pos, 15);
                 ToolEffects.puff(level, Vec3.atCenterOf(pos), ClothesRune.BOOTS_POLLEN.rune(), 8, 0.4);
                 ToolEffects.sound(level, Vec3.atCenterOf(pos), SoundEvents.BONE_MEAL_USE, 0.5F, 1.1F);

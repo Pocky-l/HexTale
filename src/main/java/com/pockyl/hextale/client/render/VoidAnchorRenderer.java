@@ -89,7 +89,7 @@ public class VoidAnchorRenderer implements BlockEntityRenderer<VoidAnchorBlockEn
             if (clouding > 0) {
                 HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.26F + 0.3F * clouding, 0x7A2A6E, 0.5F * clouding);
             }
-            poseStack.rotate(Axis.YP.rotationDegrees(clouded ? 0 : time * (state.tied ? 0.6F : 1.6F)));
+            poseStack.mulPose(Axis.YP.rotationDegrees(clouded ? 0 : time * (state.tied ? 0.6F : 1.6F)));
             poseStack.scale(0.3F, 0.3F, 0.3F);
             poseStack.translate(0, -0.2, 0);
             state.crystal.submit(poseStack, collector, clouded ? state.lightCoords : LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);

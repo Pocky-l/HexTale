@@ -72,7 +72,7 @@ public final class ItemEssenceResolver {
 
         // What each item can be made from.
         // Recipes only keep their result in their displays (what the recipe book shows).
-        ContextMap context = ContextMap.builder().set(SlotDisplayContext.REGISTRIES, registries).buildAndValidate(SlotDisplayContext.CONTEXT);
+        ContextMap context = new ContextMap.Builder().withParameter(SlotDisplayContext.REGISTRIES, registries).create(SlotDisplayContext.CONTEXT);
         Map<Item, List<Made>> makers = new HashMap<>();
         for (RecipeHolder<?> holder : recipes.getRecipes()) {
             Recipe<?> recipe = holder.value();

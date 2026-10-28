@@ -57,8 +57,8 @@ public class DisintegratorRenderer implements BlockEntityRenderer<DisintegratorB
         poseStack.pushPose();
         poseStack.translate(0.5, 0.42 + 0.28 * rise + Mth.sin(state.time * 0.12F) * 0.02F, 0.5);
         HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.55F + 0.25F * apart, 0x6A5A7A, 0.25F + 0.45F * apart);
-        poseStack.rotate(Axis.YP.rotationDegrees(state.time * (3 + 14 * apart)));
-        poseStack.rotate(Axis.XP.rotationDegrees(Mth.sin(state.time * 0.2F) * 12 * apart));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.time * (3 + 14 * apart)));
+        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.sin(state.time * 0.2F) * 12 * apart));
         float scale = 0.6F * rise * (1 - 0.85F * apart * apart);
         poseStack.scale(scale, scale, scale);
         poseStack.translate(0, -0.15, 0);

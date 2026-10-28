@@ -235,7 +235,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
                     if (entity.getItem(slot).isEmpty()) {
                         entity.setItem(slot, rest);
                     } else if (!taker.getInventory().add(rest)) {
-                        taker.getInventory().placeItemBackInInventory(rest, net.minecraft.util.Prediction.SERVER_ONLY);
+                        taker.getInventory().placeItemBackInInventory(rest);
                     }
                 }
             }
@@ -268,7 +268,7 @@ public class HexWorkbenchMenu extends AbstractContainerMenu {
                 if (entity.getItem(slot).isEmpty()) {
                     entity.setItem(slot, rest);
                 } else if (!taker.getInventory().add(rest)) {
-                    taker.getInventory().placeItemBackInInventory(rest, net.minecraft.util.Prediction.SERVER_ONLY);
+                    taker.getInventory().placeItemBackInInventory(rest);
                 }
             }
         }

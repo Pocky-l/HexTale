@@ -84,7 +84,7 @@ public final class TableModels {
     /** Turns the pose like a blockstate "y" rotation of a model built facing north. */
     public static void rotateToFacing(PoseStack poseStack, Direction facing) {
         poseStack.translate(0.5, 0, 0.5);
-        poseStack.rotate(Axis.YP.rotationDegrees(-((facing.toYRot() + 180) % 360)));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-((facing.toYRot() + 180) % 360)));
         poseStack.translate(-0.5, 0, -0.5);
     }
 

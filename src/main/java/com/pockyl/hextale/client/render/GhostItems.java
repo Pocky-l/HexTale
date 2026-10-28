@@ -36,7 +36,7 @@ public final class GhostItems {
             int[] tints = layer.tintLayers().toIntArray();
             // One draw per texture atlas the quads sample.
             Map<Identifier, List<BakedQuad>> byAtlas = new LinkedHashMap<>();
-            for (BakedQuad quad : layer.quads.all()) {
+            for (BakedQuad quad : layer.quads) {
                 byAtlas.computeIfAbsent(quad.materialInfo().sprite().atlasLocation(), key -> new ArrayList<>()).add(quad);
             }
             poseStack.pushPose();

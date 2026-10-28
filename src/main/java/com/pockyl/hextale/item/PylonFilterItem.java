@@ -35,7 +35,7 @@ public class PylonFilterItem extends Item {
     /** Into the player's inventory, or at their feet when it is full. */
     public static void give(Player player, ItemStack stack) {
         if (!player.getInventory().add(stack)) {
-            player.drop(stack, false, net.minecraft.util.Prediction.SERVER_ONLY);
+            player.drop(stack, false);
         }
     }
 

@@ -52,4 +52,9 @@ public class VoidFloraBlock extends VegetationBlock {
             level.addParticle(ModParticles.wisp(MOTE), x, pos.getY() + 0.3, z, 0, 0.012, 0);
         }
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<VoidFloraBlock> codec() {
+        throw new UnsupportedOperationException("VoidFloraBlock has no type codec");
+    }
 }

@@ -113,7 +113,7 @@ configurations {
 }
 
 dependencies {
-    // Optional integrations, compiled against their APIs only; the playtest-26.3 client runs the mods themselves.
+    // Optional integrations, compiled against their APIs only; the playtest-26.1.2 client runs the mods themselves.
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     compileOnly "maven.modrinth:jade:${jade_version}"
@@ -143,6 +143,7 @@ neoForge.ideSyncTask generateModMetadata
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+    options.compilerArgs += ['-Xmaxerrs', '50000']
 }
 
 tasks.named('jar', Jar) {

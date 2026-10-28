@@ -84,4 +84,9 @@ public class WhirlReaperBlock extends BaseEntityBlock {
         return createTickerHelper(type, ModBlockEntities.WHIRL_REAPER.get(),
                 level.isClientSide() ? WhirlReaperBlockEntity::clientTick : WhirlReaperBlockEntity::serverTick);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<WhirlReaperBlock> codec() {
+        return simpleCodec(WhirlReaperBlock::new);
+    }
 }

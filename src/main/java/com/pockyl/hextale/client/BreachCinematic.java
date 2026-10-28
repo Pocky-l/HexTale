@@ -62,7 +62,7 @@ public final class BreachCinematic {
     private static final Identifier LETTERBOX = Hextale.id("breach_letterbox");
 
     public static final KeyMapping.Category CATEGORY = new KeyMapping.Category(Hextale.id("hextale"));
-    public static final KeyMapping SKIP = new KeyMapping("key.hextale.skip_cinematic", InputConstants.Type.KEYBOARD,
+    public static final KeyMapping SKIP = new KeyMapping("key.hextale.skip_cinematic", InputConstants.Type.KEYSYM,
             InputConstants.KEY_BACKSPACE, CATEGORY);
 
     private static int pendingId = -1;

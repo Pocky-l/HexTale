@@ -74,7 +74,7 @@ public class ChemStillRenderer implements BlockEntityRenderer<ChemStillBlockEnti
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         poseStack.pushPose();
         poseStack.translate(0.5, 0, 0.5);
-        poseStack.rotate(Axis.YP.rotationDegrees(-(state.facing.toYRot() + 180)));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-(state.facing.toYRot() + 180)));
         poseStack.translate(-0.5, 0, -0.5);
         if (state.refined > 0) {
             float top = RECEIVER_BOTTOM + (RECEIVER_TOP - RECEIVER_BOTTOM) * Math.min(1, 0.08F + state.refined);

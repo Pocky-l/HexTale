@@ -57,7 +57,7 @@ public class SpawnerCageItem extends Item {
                 if (stack.isEmpty()) {
                     player.setItemInHand(context.getHand(), full);
                 } else if (!player.getInventory().add(full)) {
-                    player.drop(full, false, net.minecraft.util.Prediction.SERVER_ONLY);
+                    player.drop(full, false);
                 }
             }
             return InteractionResult.SUCCESS;

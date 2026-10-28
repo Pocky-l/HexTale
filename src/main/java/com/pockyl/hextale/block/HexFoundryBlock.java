@@ -158,4 +158,9 @@ public class HexFoundryBlock extends BaseEntityBlock implements WorldlyContainer
         return Component.translatable(foundry.heat() < HexFoundryBlockEntity.MELT_HEAT ? "gui.hextale.hex_foundry.waking" : "gui.hextale.hex_foundry.heat",
                 percent);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<HexFoundryBlock> codec() {
+        return simpleCodec(HexFoundryBlock::new);
+    }
 }

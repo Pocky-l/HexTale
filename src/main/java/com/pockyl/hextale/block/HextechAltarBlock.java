@@ -6,7 +6,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -89,7 +88,7 @@ public class HextechAltarBlock extends BaseEntityBlock {
             player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.busy"));
         } else if (!altar.center().isEmpty()) {
             ItemStack taken = altar.take();
-            player.getInventory().placeItemBackInInventory(taken, Prediction.SERVER_ONLY);
+            player.getInventory().placeItemBackInInventory(taken);
             level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 1.4F);
         } else {
             player.sendOverlayMessage(Component.translatable("block.hextale.hextech_altar.hint"));
@@ -135,5 +134,10 @@ public class HextechAltarBlock extends BaseEntityBlock {
         return level.isClientSide()
                 ? createTickerHelper(type, ModBlockEntities.HEXTECH_ALTAR.get(), HextechAltarBlockEntity::clientTick)
                 : createTickerHelper(type, ModBlockEntities.HEXTECH_ALTAR.get(), HextechAltarBlockEntity::serverTick);
+    }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<HextechAltarBlock> codec() {
+        return simpleCodec(HextechAltarBlock::new);
     }
 }

@@ -172,6 +172,10 @@ public final class MultiblockDiorama {
     }
 
     static final class Renderer extends PictureInPictureRenderer<State> {
+        Renderer(net.minecraft.client.renderer.MultiBufferSource.BufferSource portBuffers) {
+            super(portBuffers);
+        }
+
         private final BlockModelRenderState block = new BlockModelRenderState();
         private final List<ItemStackRenderState> items = new ArrayList<>();
         private final BlockDisplayContext context = BlockDisplayContext.create();
@@ -182,13 +186,20 @@ public final class MultiblockDiorama {
         }
 
         @Override
-        protected void renderToTexture(State state, PoseStack poseStack, SubmitNodeCollector collector) {
+        protected void renderToTexture(State state, PoseStack poseStack) {
+            net.minecraft.client.renderer.feature.FeatureRenderDispatcher portFeatures =
+                    net.minecraft.client.Minecraft.getInstance().gameRenderer.getFeatureRenderDispatcher();
+            renderToTexture(state, poseStack, portFeatures.getSubmitNodeStorage());
+            portFeatures.renderAllFeatures();
+        }
+
+        private void renderToTexture(State state, PoseStack poseStack, SubmitNodeCollector collector) {
             Multiblock multiblock = Multiblocks.byId(state.multiblock());
             if (multiblock == null) {
                 return;
             }
             Minecraft minecraft = Minecraft.getInstance();
-            minecraft.gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_3D);
+            minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_3D);
             MultiblockPattern pattern = multiblock.pattern();
             Plan plan = plan(multiblock);
             float time = state.time();
@@ -200,8 +211,8 @@ public final class MultiblockDiorama {
 
             float yaw = time * 0.5F + 30 + state.yaw();
             poseStack.scale(1, -1, -1);
-            poseStack.rotate(Axis.XP.rotationDegrees(TILT));
-            poseStack.rotate(Axis.YP.rotationDegrees(yaw));
+            poseStack.mulPose(Axis.XP.rotationDegrees(TILT));
+            poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
             Quaternionf camera = new Quaternionf().rotationY(-yaw * Mth.DEG_TO_RAD).rotateX(-TILT * Mth.DEG_TO_RAD);
             float cx = pattern.width() / 2F;
             float cz = pattern.depth() / 2F;
@@ -275,7 +286,7 @@ public final class MultiblockDiorama {
             poseStack.popPose();
             poseStack.pushPose();
             poseStack.translate(pattern.width() / 2F, y + 0.01F, pattern.depth() / 2F);
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
             HexFx.sigilRing(poseStack, collector, Math.max(pattern.width(), pattern.depth()) * 0.74F, 12, LIGHT, alpha * 1.4F);
             poseStack.popPose();
         }
@@ -285,8 +296,8 @@ public final class MultiblockDiorama {
             poseStack.pushPose();
             poseStack.translate(cell.x() + 0.5F, cell.y() + 0.5F, cell.z() + 0.5F);
             HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.7F, LIGHT, 0.35F * k);
-            poseStack.rotate(Axis.YP.rotationDegrees(time * 4));
-            poseStack.rotate(Axis.XP.rotationDegrees(35));
+            poseStack.mulPose(Axis.YP.rotationDegrees(time * 4));
+            poseStack.mulPose(Axis.XP.rotationDegrees(35));
             HexFx.cube(poseStack, collector, 0.18F * k, 0xCFF3FF, 0.7F * k);
             poseStack.popPose();
         }
@@ -323,8 +334,8 @@ public final class MultiblockDiorama {
                 poseStack.popPose();
                 poseStack.pushPose();
                 poseStack.translate(cx, y, cz);
-                poseStack.rotate(Axis.XP.rotationDegrees(90));
-                poseStack.rotate(Axis.ZP.rotationDegrees(time * 2));
+                poseStack.mulPose(Axis.XP.rotationDegrees(90));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(time * 2));
                 HexFx.sigilRing(poseStack, collector, Math.max(pattern.width(), pattern.depth()) * 0.8F, 12, 0xCFF3FF, 0.9F * Mth.sin(w * Mth.PI));
                 poseStack.popPose();
             }

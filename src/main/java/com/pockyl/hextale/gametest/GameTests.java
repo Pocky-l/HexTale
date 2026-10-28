@@ -57,8 +57,7 @@ public final class GameTests {
                 Identifier id = Hextale.id(test.name());
                 Holder<TestEnvironmentDefinition<?>> environment = event.registerEnvironment(id,
                         new TestEnvironmentDefinition.AllOf(List.of()));
-                TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment,
-                        net.minecraft.world.level.Level.OVERWORLD, STRUCTURE, test.settings().maxTicks(), test.settings().setupTicks(),
+                TestData<Holder<TestEnvironmentDefinition<?>>> data = new TestData<>(environment, STRUCTURE, test.settings().maxTicks(), test.settings().setupTicks(),
                         true, net.minecraft.world.level.block.Rotation.NONE, false, 1, 1, false, test.settings().padding());
                 event.registerTest(id, new FunctionGameTestInstance(ResourceKey.create(Registries.TEST_FUNCTION, id), data));
             }

@@ -84,7 +84,7 @@ public class AlembicRenderer implements BlockEntityRenderer<AlembicBlockEntity, 
         if (!state.item.isEmpty()) {
             poseStack.pushPose();
             poseStack.translate(0.5F, BOTTOM + 1.6F / 16, 0.5F);
-            poseStack.rotate(Axis.YP.rotationDegrees(state.time * 0.6F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.time * 0.6F));
             poseStack.scale(0.28F, 0.28F, 0.28F);
             state.item.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();

@@ -141,7 +141,7 @@ public final class RuneWorkGameTests {
         EssenceMix essence = EssenceMix.of(Map.of(Essence.MAGIC, 32, Essence.CIRCUIT, 24, Essence.CRYSTAL, 16));
         HextechAltarBlockEntity altar = circle(helper, new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), items, essence);
         List<ItemStack> more = List.of(new ItemStack(ModItems.CRYSTAL_BATTERY.get()), new ItemStack(ModItems.REGENERATIVE_SLIME.get()),
-                new ItemStack(Items.LIGHTNING_ROD.weathering().unaffected()));
+                new ItemStack(Items.LIGHTNING_ROD));
         List<BlockPos> corners = List.of(new BlockPos(5, 2, 1), new BlockPos(5, 2, 5), new BlockPos(1, 2, 5));
         for (int i = 0; i < corners.size(); i++) {
             helper.setBlock(corners.get(i), ModBlocks.PEDESTAL.get());
@@ -336,7 +336,7 @@ public final class RuneWorkGameTests {
             helper.assertTrue(ResearchTopics.of(tools.get(id).getItem()) == ResearchTopics.HEXTECH_TOOLS, id + " is opened by the tools research");
             helper.assertTrue(InfusionRecipes.get(false).get(Hextale.id(id)) == null, id + " is no longer made at the altar");
         }
-        helper.assertTrue(tools.get("hextech_axe").has(net.minecraft.core.component.DataComponents.BLOCK_TRANSFORMER), "the axe strips logs");
+        helper.assertTrue(com.pockyl.hextale.port.PortTransformers.transforms(tools.get("hextech_axe")), "the axe strips logs");
         helper.assertTrue(tools.get("hextech_shovel").getDestroySpeed(Blocks.DIRT.defaultBlockState()) > 6.0F, "the shovel digs dirt fast");
         helper.assertTrue(tools.get("hextech_sword").is(net.minecraft.tags.ItemTags.SWORDS), "the sword counts as a sword");
         helper.succeed();

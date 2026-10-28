@@ -159,7 +159,7 @@ public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
             float u = (age + frac(worn.time())) / RING_TICKS;
             poseStack.pushPose();
             poseStack.translate(0, -0.06F - u * 0.25F, 0);
-            poseStack.rotate(Axis.XP.rotationDegrees(90));
+            poseStack.mulPose(Axis.XP.rotationDegrees(90));
             HexFx.sigilRing(poseStack, collector, 0.08F + u * 0.32F, 6, FLAME, 1 - u);
             poseStack.popPose();
         }
@@ -191,7 +191,7 @@ public class SkypackLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
     /** The camera's rotation seen from inside the current pose: sprites turned by it face the camera. */
     private static Quaternionf facing(PoseStack poseStack) {
         Quaternionf local = poseStack.last().pose().getNormalizedRotation(new Quaternionf()).conjugate();
-        return local.mul(Minecraft.getInstance().gameRenderer.mainCamera().rotation());
+        return local.mul(Minecraft.getInstance().gameRenderer.getMainCamera().rotation());
     }
 
     private static float frac(float value) {

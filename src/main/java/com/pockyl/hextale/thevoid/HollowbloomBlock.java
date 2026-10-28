@@ -186,4 +186,9 @@ public class HollowbloomBlock extends VegetationBlock {
         level.addParticle(ModParticles.voidMote(MOTE), x, heart, z, Math.cos(angle) * distance, -0.2 + random.nextDouble() * 0.6,
                 Math.sin(angle) * distance);
     }
+
+    @Override
+    protected com.mojang.serialization.MapCodec<HollowbloomBlock> codec() {
+        return simpleCodec(HollowbloomBlock::new);
+    }
 }

@@ -28,7 +28,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -40,7 +39,6 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
@@ -390,7 +388,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
     private boolean kindle(ServerLevel level) {
         ItemStack fuel = items.get(FUEL);
         int burn = fuel.isEmpty() ? 0
-                : ResolvableInt.getFromItem(fuel, DataComponents.COOKING_FUEL, CookingFuel::burnTime, getLootContext(level, fuel), 0);
+                : com.pockyl.hextale.port.PortFuel.burnTime(level, fuel);
         if (burn > 0) {
             ItemStackTemplate remainder = fuel.getCraftingRemainder();
             fuel.shrink(1);
@@ -610,7 +608,7 @@ public class HexFoundryBlockEntity extends BaseContainerBlockEntity implements W
 
     /** What each slot takes: anything into the inputs, only fuel into the fuel slot, nothing into the outputs. */
     public static boolean accepts(int slot, ItemStack stack) {
-        return slot < INPUTS || slot == FUEL && stack.has(DataComponents.COOKING_FUEL);
+        return slot < INPUTS || slot == FUEL && com.pockyl.hextale.port.PortFuel.isFuel(stack);
     }
 
     @Override
