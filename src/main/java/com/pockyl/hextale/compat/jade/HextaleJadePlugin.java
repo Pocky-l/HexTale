@@ -34,6 +34,18 @@ import java.util.Locale;
 public class HextaleJadePlugin implements IWailaPlugin {
     @Override
     public void registerClient(IWailaClientRegistration registration) {
+        // A device's stand-in in a cell its model spreads into reads as the device itself.
+        registration.addRayTraceCallback((hit, accessor, original) -> {
+            if (accessor instanceof BlockAccessor block && block.getBlock() instanceof com.pockyl.hextale.block.ShapePartBlock) {
+                net.minecraft.core.BlockPos device = com.pockyl.hextale.block.ShapePartBlock.device(block.getBlockState(), block.getPosition());
+                net.minecraft.world.level.block.state.BlockState state = block.getLevel().getBlockState(device);
+                if (state.is(com.pockyl.hextale.block.ShapeParts.OWNERS)) {
+                    return registration.blockAccessor().from(block).blockState(state)
+                            .blockEntity(() -> block.getLevel().getBlockEntity(device)).hit(block.getHitResult().withPosition(device)).build();
+                }
+            }
+            return accessor;
+        });
         registration.registerBlockComponent(Machines.INSTANCE, EssenceTankBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, SeparatorBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, AlembicBlock.class);

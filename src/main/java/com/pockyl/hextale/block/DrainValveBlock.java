@@ -25,7 +25,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -40,8 +39,6 @@ import org.jspecify.annotations.Nullable;
  */
 public class DrainValveBlock extends BaseEntityBlock implements EssenceMachine {
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(5, 5, 5, 11, 11, 11), Block.box(7, 1, 7, 9, 5, 9),
-            Block.box(6, 0, 6, 10, 1, 10), Block.box(3, 11, 3, 13, 15, 13));
 
     public DrainValveBlock(Properties properties) {
         super(properties);
@@ -95,18 +92,7 @@ public class DrainValveBlock extends BaseEntityBlock implements EssenceMachine {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        VoxelShape shape = SHAPE;
-        for (Direction face : Direction.Plane.HORIZONTAL) {
-            if (state.getValue(PORTS.get(face))) {
-                shape = Shapes.or(shape, switch (face) {
-                    case NORTH -> Block.box(6, 6, 0, 10, 10, 5);
-                    case SOUTH -> Block.box(6, 6, 11, 10, 10, 16);
-                    case WEST -> Block.box(0, 6, 6, 5, 10, 10);
-                    default -> Block.box(11, 6, 6, 16, 10, 10);
-                });
-            }
-        }
-        return shape;
+        return ModelShapes.of(state);
     }
 
     @Override

@@ -939,6 +939,7 @@
   "book.hextale.guide.wip": "WIP",
   "block.hextale.big_essence_jar": "Big Essence Jar",
   "block.hextale.multiblock_part": "Part of a Structure",
+  "block.hextale.shape_part": "Part of a Device",
   "multiblock.hextale.big_essence_jar.formed": "The Big Essence Jar wakes up",
   "quest.hextale.big_essence_jar": "Big Essence Jar",
   "quest.hextale.big_essence_jar.goal": "build a Big Essence Jar and wake it",

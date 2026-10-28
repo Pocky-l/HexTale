@@ -153,6 +153,11 @@ public final class GogglesView {
         if (level.getBlockEntity(pos) instanceof com.pockyl.hextale.multiblock.MultiblockPartBlockEntity part) {
             pos = part.controller();
         }
+        // A device's stand-in in a cell its model spreads into reads as the device.
+        BlockState here = level.getBlockState(pos);
+        if (here.getBlock() instanceof com.pockyl.hextale.block.ShapePartBlock) {
+            pos = com.pockyl.hextale.block.ShapePartBlock.device(here, pos);
+        }
         BlockState state = level.getBlockState(pos);
         Component name = state.getBlock().getName();
         BlockEntity entity = level.getBlockEntity(pos);

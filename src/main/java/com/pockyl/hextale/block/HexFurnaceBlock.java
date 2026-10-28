@@ -44,7 +44,6 @@ public class HexFurnaceBlock extends BaseEntityBlock implements WorldlyContainer
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     /** Burning right now: the mouth glows and the block gives light. */
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    private static final VoxelShape SHAPE = Block.box(1, 0, 1, 15, 15, 15);
 
     public HexFurnaceBlock(Properties properties) {
         super(properties);
@@ -90,7 +89,7 @@ public class HexFurnaceBlock extends BaseEntityBlock implements WorldlyContainer
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     /** While it burns: blue-tinged flames and a little smoke at the mouth, a low roar now and then. */
