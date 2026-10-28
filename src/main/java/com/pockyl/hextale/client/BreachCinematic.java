@@ -205,10 +205,7 @@ public final class BreachCinematic {
         double bestDistance = -1;
         for (float turn : new float[] {18, -18, 32, -32, 0}) {
             Vec3 way = new Vec3(normal.x, 0, normal.z).yRot(turn * Mth.DEG_TO_RAD).normalize();
-            if (found.shape().lying()) {
-                way = new Vec3(Mth.sin(turn * Mth.DEG_TO_RAD), 0, Mth.cos(turn * Mth.DEG_TO_RAD));
-            }
-            Vec3 target = centre.add(way.scale(distance)).add(0, found.shape().lying() ? distance * 0.6 : 0.8, 0);
+            Vec3 target = centre.add(way.scale(distance)).add(0, 0.8, 0);
             BlockHitResult hit = level.clip(new ClipContext(centre, target, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE,
                     net.minecraft.world.phys.shapes.CollisionContext.empty()));
             Vec3 at = hit.getType() == HitResult.Type.MISS ? target : hit.getLocation().subtract(way.scale(0.7));

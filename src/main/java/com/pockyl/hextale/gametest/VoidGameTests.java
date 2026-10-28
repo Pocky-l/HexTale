@@ -32,13 +32,14 @@ public final class VoidGameTests {
     }
 
     @HexTest
-    public static void breachesLieFlat(GameTestHelper helper) {
-        for (int yaw = 0; yaw < 360; yaw += 23) {
-            Vector3f lying = TheVoid.orientation(yaw, VoidShape.BREACH).transform(new Vector3f(0, 0, 1));
-            helper.assertTrue(Math.abs(lying.y) > 0.99F, "a breach faces up or down, got " + lying);
-            Vector3f standing = TheVoid.orientation(yaw, VoidShape.GATE).transform(new Vector3f(0, 0, 1));
-            helper.assertTrue(Math.abs(standing.y) < 0.01F, "a gate stands upright, got " + standing);
+    public static void everyBreachStandsUpright(GameTestHelper helper) {
+        for (VoidShape shape : VoidShape.values()) {
+            for (int yaw = 0; yaw < 360; yaw += 23) {
+                Vector3f normal = TheVoid.orientation(yaw, shape).transform(new Vector3f(0, 0, 1));
+                helper.assertTrue(Math.abs(normal.y) < 0.01F, "a " + shape.id() + " stands upright, got " + normal);
+            }
         }
+        helper.assertTrue(VoidShape.byId("breach") == VoidShape.GATE, "a lying breach of an old save stands up as a gate");
         helper.succeed();
     }
 
@@ -74,6 +75,30 @@ public final class VoidGameTests {
     }
 
     @HexTest
+    public static void theLandRestsAfterABreachIsGone(GameTestHelper helper) {
+        com.pockyl.hextale.thevoid.Breaches.Sites sites = new com.pockyl.hextale.thevoid.Breaches.Sites();
+        BlockPos gone = new BlockPos(100, 64, 100);
+        sites.rest(gone, 1000);
+        helper.assertTrue(sites.resting(new BlockPos(100 + 990, 70, 100), 500), "no new breach near a lately gone one");
+        helper.assertTrue(!sites.resting(new BlockPos(100 + 1010, 64, 100), 500), "far off the land does not rest");
+        helper.assertTrue(!sites.resting(gone, 1000), "the rest ends");
+
+        // A rooted breach that is gone (starved, folded, closed) leaves its land resting.
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        BlockPos at = helper.absolutePos(new BlockPos(1, 4, 1));
+        TheVoid breach = TheVoid.rooted(level, Vec3.atCenterOf(at), 0, VoidShape.GATE, 3.5F, 885);
+        level.addFreshEntity(breach);
+        com.pockyl.hextale.thevoid.Breaches.sites(level).add(breach.blockPosition());
+        breach.discard();
+        com.pockyl.hextale.thevoid.Breaches.Sites real = com.pockyl.hextale.thevoid.Breaches.sites(level);
+        helper.assertTrue(real.near(at) == null || real.near(at).distSqr(at) > 16 * 16, "its site is forgotten");
+        helper.assertTrue(real.resting(at, level.getGameTime()), "but the land around it rests");
+        helper.assertTrue(!real.resting(at, level.getGameTime() + com.pockyl.hextale.Config.BREACH_COOLDOWN.get() * 1200L + 1),
+                "for the configured minutes");
+        helper.succeed();
+    }
+
+    @HexTest
     public static void touchingTheVoidHurtsAndThrowsBack(GameTestHelper helper) {
         Vec3 centre = Vec3.atCenterOf(helper.absolutePos(new BlockPos(1, 3, 1)));
         TheVoid breach = TheVoid.open(helper.getLevel(), centre, 0, VoidShape.GATE, 3.0F, 4242);
@@ -91,11 +116,8 @@ public final class VoidGameTests {
     @HexTest(maxTicks = 400)
     public static void aRootedBreachSendsOutAVoidling(GameTestHelper helper) {
         // A creative player: near enough to call the voidling out, but neither hunted nor bitten.
-        net.minecraft.server.level.ServerPlayer watcher = helper.makeMockServerPlayerInLevel();
-        watcher.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        GameTests.watcher(helper, helper.absolutePos(new BlockPos(1, 4, 1)));
         Vec3 centre = Vec3.atCenterOf(helper.absolutePos(new BlockPos(1, 4, 1)));
-        // 1.21.1 puts mock players at the world spawn, not at the test.
-        watcher.moveTo(centre.x, centre.y - 2, centre.z + 6, 0, 0);
         TheVoid breach = TheVoid.rooted(helper.getLevel(), centre, 0, VoidShape.EYE, 3.5F, 777);
         helper.getLevel().addFreshEntity(breach);
         helper.assertTrue(breach.foretold() && breach.reveal(0) == 0, "the omen comes first, nothing shows yet");

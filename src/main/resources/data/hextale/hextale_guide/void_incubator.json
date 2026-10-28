@@ -1,0 +1,16 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:void_chitin",
+  "parents": [
+    "void_maw"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "void_birth"
+  },
+  "pos": [
+    210,
+    1040
+  ]
+}

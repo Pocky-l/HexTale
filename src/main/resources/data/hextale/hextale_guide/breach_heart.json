@@ -1,0 +1,18 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:breach_heart",
+  "parents": [
+    "subdued_breach",
+    "clouded_crystal"
+  ],
+  "goal": {
+    "type": "has_item",
+    "item": "hextale:breach_heart"
+  },
+  "aura": "void",
+  "pos": [
+    -40,
+    1070
+  ]
+}

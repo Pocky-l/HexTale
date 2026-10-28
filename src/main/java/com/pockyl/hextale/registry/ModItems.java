@@ -162,6 +162,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RUNE_SHACKLES = ITEMS.registerSimpleBlockItem(ModBlocks.RUNE_SHACKLES);
     public static final DeferredItem<BlockItem> HEXTECH_PURIFIER = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_PURIFIER,
             properties -> properties.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<BlockItem> VOID_ANCHOR = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ANCHOR,
+            properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> XP_CONDENSER = ITEMS.registerSimpleBlockItem(ModBlocks.XP_CONDENSER,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> MIASMA_VENT = ITEMS.registerSimpleBlockItem(ModBlocks.MIASMA_VENT);
@@ -322,8 +324,11 @@ public final class ModItems {
     public static final DeferredItem<com.pockyl.hextale.item.NotedItem> VOID_CHITIN = ITEMS.registerItem("void_chitin",
             com.pockyl.hextale.item.NotedItem::new);
     /** A hextech crystal clouded through with the Void it drew out of the land (or held a breach with). */
-    public static final DeferredItem<com.pockyl.hextale.item.NotedItem> CLOUDED_CRYSTAL = ITEMS.registerItem("clouded_crystal",
-            properties -> new com.pockyl.hextale.item.NotedItem(properties.rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<com.pockyl.hextale.item.CloudedCrystalItem> CLOUDED_CRYSTAL = ITEMS.registerItem("clouded_crystal",
+            properties -> new com.pockyl.hextale.item.CloudedCrystalItem(properties.rarity(Rarity.UNCOMMON)));
+    /** A held breach folded into a beating heart: carried somewhere else and unfolded there. */
+    public static final DeferredItem<com.pockyl.hextale.item.BreachHeartItem> BREACH_HEART = ITEMS.registerItem("breach_heart",
+            properties -> new com.pockyl.hextale.item.BreachHeartItem(properties.stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
     public static final DeferredItem<BlockItem> POLISHED_NULLSTONE = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_NULLSTONE);
     public static final DeferredItem<BlockItem> NULLSTONE_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.NULLSTONE_BRICKS);
     public static final DeferredItem<BlockItem> CRYSTAL_BATTERY = ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_BATTERY,

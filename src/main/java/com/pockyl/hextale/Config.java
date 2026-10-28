@@ -30,6 +30,10 @@ public final class Config {
             .comment("How fast careless magic wears the edge thin (1 = as designed).")
             .translation("hextale.configuration.thinningRate")
             .defineInRange("thinningRate", 1.0, 0.0, 10.0);
+    public static final ModConfigSpec.IntValue BREACH_COOLDOWN = BUILDER
+            .comment("Minutes after a breach is gone (starved, folded or closed) before a new one may tear open within 1000 blocks of it.")
+            .translation("hextale.configuration.breachCooldown")
+            .defineInRange("breachCooldownMinutes", 20, 0, 1440);
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 

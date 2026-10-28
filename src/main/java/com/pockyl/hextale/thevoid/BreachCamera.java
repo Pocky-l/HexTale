@@ -24,12 +24,12 @@ public class BreachCamera extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(net.minecraft.nbt.CompoundTag portTag) {
+    public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag portTag) {
         ValueInput input = ValueInput.of(portTag, registryAccess());
     }
 
     @Override
-    protected void addAdditionalSaveData(net.minecraft.nbt.CompoundTag portTag) {
+    public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag portTag) {
         ValueOutput output = ValueOutput.of(portTag, registryAccess());
     }
 

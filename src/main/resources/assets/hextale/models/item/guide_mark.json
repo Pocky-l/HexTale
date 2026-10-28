@@ -42,6 +42,24 @@
         "hextale:select": 0.07
       },
       "model": "hextale:item/guide/breach_fades"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.08
+      },
+      "model": "hextale:item/guide/subdued_breach"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.09
+      },
+      "model": "hextale:item/guide/void_maw"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.1
+      },
+      "model": "hextale:item/guide/voidling_growth"
     }
   ]
 }

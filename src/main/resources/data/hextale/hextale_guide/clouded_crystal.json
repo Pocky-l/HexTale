@@ -3,14 +3,15 @@
   "stage": "mid",
   "icon": "hextale:clouded_crystal",
   "parents": [
-    "hextech_purifier"
+    "the_thinning"
   ],
   "goal": {
     "type": "has_item",
     "item": "hextale:clouded_crystal"
   },
   "pos": [
-    -430,
-    640
-  ]
+    -90,
+    430
+  ],
+  "secret": true
 }

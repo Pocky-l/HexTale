@@ -1,0 +1,22 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": -1686014400
+    }
+  },
+  "parents": [
+    "void_anchor"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "breach_subdued"
+  },
+  "aura": "void",
+  "pos": [
+    -10,
+    920
+  ]
+}

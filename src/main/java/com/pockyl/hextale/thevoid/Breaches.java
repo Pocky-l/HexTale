@@ -76,18 +76,43 @@ public final class Breaches {
     /** The breaches of one level. */
     public static final class Sites extends SavedData {
         public static final Codec<Sites> CODEC = RecordCodecBuilder.create(i -> i.group(
-                BlockPos.CODEC.listOf().fieldOf("sites").forGetter(sites -> sites.sites)
+                BlockPos.CODEC.listOf().fieldOf("sites").forGetter(sites -> sites.sites),
+                Rest.CODEC.listOf().optionalFieldOf("resting", List.of()).forGetter(sites -> sites.resting)
         ).apply(i, Sites::new));
         public static final SavedDataType<Sites> TYPE = new SavedDataType<>(Hextale.id("breaches"), Sites::new, CODEC);
 
         private final List<BlockPos> sites;
+        /** Places where a breach was lately gone, and the game time until which no new one opens near them. */
+        private final List<Rest> resting;
 
         public Sites() {
-            this(List.of());
+            this(List.of(), List.of());
         }
 
-        private Sites(List<BlockPos> sites) {
+        private Sites(List<BlockPos> sites, List<Rest> resting) {
             this.sites = new ArrayList<>(sites);
+            this.resting = new ArrayList<>(resting);
+        }
+
+        /** Whether a breach was gone within {@link #SPACING} blocks of {@code pos} too lately for a new one to open. */
+        public boolean resting(BlockPos pos, long now) {
+            if (resting.removeIf(rest -> rest.until() <= now)) {
+                setDirty();
+            }
+            for (Rest rest : resting) {
+                double dx = rest.pos().getX() - pos.getX();
+                double dz = rest.pos().getZ() - pos.getZ();
+                if (dx * dx + dz * dz < (double) SPACING * SPACING) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /** No new breach opens near {@code pos} until {@code until}. */
+        public void rest(BlockPos pos, long until) {
+            resting.add(new Rest(pos.immutable(), until));
+            setDirty();
         }
 
         public List<BlockPos> sites() {
@@ -136,9 +161,25 @@ public final class Breaches {
         return Sites.TYPE.get(level.getDataStorage());
     }
 
-    /** A rooted breach that is gone for good no longer keeps the land around from opening again. */
+    /** A place a breach was gone from, and the game time until which the land around it rests. */
+    public record Rest(BlockPos pos, long until) {
+        static final Codec<Rest> CODEC = RecordCodecBuilder.create(i -> i.group(
+                BlockPos.CODEC.fieldOf("pos").forGetter(Rest::pos),
+                Codec.LONG.fieldOf("until").forGetter(Rest::until)
+        ).apply(i, Rest::new));
+    }
+
+    /**
+     * A rooted breach that is gone for good no longer keeps the land around from opening again - but only after a rest
+     * ({@link Config#BREACH_COOLDOWN}): the land does not tear open again the moment one closes or is carried away.
+     */
     static void forget(ServerLevel level, TheVoid breach) {
-        sites(level).remove(breach.blockPosition());
+        Sites sites = sites(level);
+        sites.remove(breach.blockPosition());
+        long rest = Config.BREACH_COOLDOWN.get() * 60L * 20L;
+        if (rest > 0) {
+            sites.rest(breach.blockPosition(), level.getGameTime() + rest);
+        }
     }
 
     @SubscribeEvent
@@ -180,7 +221,7 @@ public final class Breaches {
         Sites sites = sites(level);
         for (LevelChunk chunk : ready) {
             BlockPos middle = chunk.getPos().getMiddleBlockPosition(0);
-            if (sites.near(middle) != null) {
+            if (sites.near(middle) != null || sites.resting(middle, level.getGameTime())) {
                 return false;
             }
             BlockPos ground = findGround(level, chunk.getPos(), level.getRandom());

@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "void",
-  "stage": "mid",
-  "icon": "hextale:void_shard",
-  "parents": ["wip_void_anchor"],
-  "pos": [0, 890]
-}

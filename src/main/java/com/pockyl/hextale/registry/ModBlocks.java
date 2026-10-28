@@ -210,6 +210,11 @@ public final class ModBlocks {
             com.pockyl.hextale.block.ArcSpireBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.COPPER)
                     .requiresCorrectToolForDrops().noOcclusion());
+    /** A standing stone of nullstone with a crystal in its window: six round a breach hold it. */
+    public static final DeferredBlock<com.pockyl.hextale.block.VoidAnchorBlock> VOID_ANCHOR = BLOCKS.registerBlock("void_anchor",
+            com.pockyl.hextale.block.VoidAnchorBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(3.5F, 9.0F).sound(SoundType.DEEPSLATE_BRICKS)
+                    .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> 4));
     /** A hextech crystal over a nullstone basin: draws the Thinning out of the land around into the crystal. */
     public static final DeferredBlock<com.pockyl.hextale.block.HextechPurifierBlock> HEXTECH_PURIFIER = BLOCKS.registerBlock("hextech_purifier",
             com.pockyl.hextale.block.HextechPurifierBlock::new,

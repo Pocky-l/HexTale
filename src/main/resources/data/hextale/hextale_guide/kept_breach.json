@@ -1,0 +1,31 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": [
+    {
+      "id": "hextale:guide_mark",
+      "components": {
+        "minecraft:custom_model_data": -1686014400
+      }
+    },
+    {
+      "id": "hextale:guide_mark",
+      "components": {
+        "minecraft:custom_model_data": 1840678563
+      }
+    }
+  ],
+  "parents": [
+    "subdued_breach",
+    "healed_land"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "breach_kept"
+  },
+  "aura": "void",
+  "pos": [
+    -150,
+    960
+  ]
+}

@@ -83,6 +83,7 @@ public final class ResearchTopics {
     public static final ResearchTopic HEX_SAWMILL = add("hex_sawmill", 1, Essence.METAL, Essence.LIFE, ModItems.HEX_SAWMILL);
     public static final ResearchTopic GREEDY_FUNNEL = add("greedy_funnel", 2, Essence.SHADOW, Essence.LIFE, ModItems.GREEDY_FUNNEL);
     public static final ResearchTopic ARC_SPIRE = add("arc_spire", 2, Essence.SPARK, Essence.SHADOW, ModItems.ARC_SPIRE);
+    public static final ResearchTopic VOID_ANCHOR = add("void_anchor", 2, Essence.SHADOW, Essence.EARTH, ModItems.VOID_ANCHOR);
     public static final ResearchTopic HEXTECH_PURIFIER = add("hextech_purifier", 2, Essence.LIGHT, Essence.SHADOW, ModItems.HEXTECH_PURIFIER);
     public static final ResearchTopic RUNE_SHACKLES = add("rune_shackles", 2, Essence.SHADOW, Essence.EARTH, ModItems.RUNE_SHACKLES);
     public static final ResearchTopic XP_CONDENSER = add("xp_condenser", 2, Essence.LIGHT, Essence.LIFE, ModItems.XP_CONDENSER);

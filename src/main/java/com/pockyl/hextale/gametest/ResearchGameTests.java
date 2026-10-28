@@ -1214,12 +1214,12 @@ public final class ResearchGameTests {
 
     // ---- Lightning ------------------------------------------------------------------------------------------------
 
-    @HexTest(maxTicks = 60)
+    @HexTest(maxTicks = 60, padding = 9)
     public static void lightningOnRodAndAmethystMakesOrbs(GameTestHelper helper) {
         strikeRodOnAmethyst(helper, 1);
     }
 
-    @HexTest(maxTicks = 60)
+    @HexTest(maxTicks = 60, padding = 9)
     public static void boltInsideTheRodAlsoWorks(GameTestHelper helper) {
         // A Channeling trident or /summon at the rod's own block puts the bolt inside the rod instead of on top.
         strikeRodOnAmethyst(helper, 0);
@@ -1246,7 +1246,7 @@ public final class ResearchGameTests {
         });
     }
 
-    @HexTest(maxTicks = 60)
+    @HexTest(maxTicks = 60, padding = 9)
     public static void rodWithoutAmethystMakesNothing(GameTestHelper helper) {
         BlockPos base = new BlockPos(1, 1, 1);
         BlockPos rod = base.above();

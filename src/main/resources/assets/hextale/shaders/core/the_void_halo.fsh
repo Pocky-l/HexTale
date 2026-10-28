@@ -51,5 +51,8 @@ void main() {
     // A breach still breaking through burns brighter.
     col *= pulse * (1.0 + 1.2 * (1.0 - open));
 
+    float calm = float(freshSize.y >> 11) / 15.0;
+    float l = dot(col, vec3(0.38, 0.27, 0.35));
+    col = mix(col, vec3(l * 0.62, l * 0.58, l * 1.45), calm);
     fragColor = vec4(col * linear_fog_fade(vertexDistance, FogStart, FogEnd), 1.0);
 }

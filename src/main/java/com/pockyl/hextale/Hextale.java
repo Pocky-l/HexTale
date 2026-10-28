@@ -138,6 +138,7 @@ public final class Hextale {
         output.accept(ModItems.RUNE_SHACKLES);
         output.accept(ModItems.ARC_SPIRE);
         output.accept(ModItems.HEXTECH_PURIFIER);
+        output.accept(ModItems.VOID_ANCHOR);
         output.accept(ModItems.MIASMA_VENT);
         output.accept(ModItems.FIELD_WARD);
 
@@ -182,6 +183,11 @@ public final class Hextale {
         output.accept(ModItems.REGENERATIVE_SLIME);
         output.accept(ModItems.VOID_CHITIN);
         output.accept(ModItems.CLOUDED_CRYSTAL);
+        // A heart holds a breach of its own: the tab's one holds an eye of the Void.
+        ItemStack heart = new ItemStack(ModItems.BREACH_HEART.get());
+        heart.set(com.pockyl.hextale.registry.ModDataComponents.BREACH_HEART.get(),
+                new com.pockyl.hextale.thevoid.BreachHeart(com.pockyl.hextale.thevoid.VoidShape.EYE, 4.0F, 1337, 0));
+        output.accept(heart);
 
         // Ores and storage blocks.
         output.accept(ModItems.SPHALERITE_ORE);

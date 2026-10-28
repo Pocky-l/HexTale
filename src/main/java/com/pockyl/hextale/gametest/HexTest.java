@@ -17,4 +17,10 @@ public @interface HexTest {
 
     /** Ticks to wait before the test starts, e.g. for the chunks around a fresh test spot to load. */
     int setupTicks() default 0;
+
+    /**
+     * Blocks of room every way round the test spot: cleared of blocks and entities before it starts and kept apart from
+     * the next spot. For tests that build around the spot (a ring of anchors) and would meet what a neighbour left.
+     */
+    int padding() default 0;
 }

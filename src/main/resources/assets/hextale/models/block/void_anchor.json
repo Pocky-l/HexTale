@@ -1,0 +1,422 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/void_anchor",
+    "void_anchor": "hextale:block/void_anchor"
+  },
+  "elements": [
+    {
+      "name": "stone_foot",
+      "from": [
+        2,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        2,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            3,
+            0.5
+          ],
+          "texture": "#void_anchor"
+        },
+        "east": {
+          "uv": [
+            0,
+            1,
+            3,
+            1.5
+          ],
+          "texture": "#void_anchor"
+        },
+        "south": {
+          "uv": [
+            0,
+            0.5,
+            3,
+            1
+          ],
+          "texture": "#void_anchor"
+        },
+        "west": {
+          "uv": [
+            0,
+            1.5,
+            3,
+            2
+          ],
+          "texture": "#void_anchor"
+        },
+        "up": {
+          "uv": [
+            0,
+            2,
+            3,
+            5
+          ],
+          "texture": "#void_anchor"
+        },
+        "down": {
+          "uv": [
+            3,
+            2,
+            6,
+            5
+          ],
+          "texture": "#void_anchor",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "stone_pillar_l",
+      "from": [
+        4,
+        2,
+        4
+      ],
+      "to": [
+        6,
+        14,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            0,
+            6.5,
+            3
+          ],
+          "texture": "#void_anchor"
+        },
+        "east": {
+          "uv": [
+            9,
+            0,
+            11,
+            3
+          ],
+          "texture": "#void_anchor"
+        },
+        "south": {
+          "uv": [
+            6.5,
+            0,
+            7,
+            3
+          ],
+          "texture": "#void_anchor"
+        },
+        "west": {
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ],
+          "texture": "#void_anchor"
+        },
+        "up": {
+          "uv": [
+            11,
+            0,
+            11.5,
+            2
+          ],
+          "texture": "#void_anchor"
+        }
+      }
+    },
+    {
+      "name": "stone_pillar_r",
+      "from": [
+        10,
+        2,
+        4
+      ],
+      "to": [
+        12,
+        14,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            0,
+            6.5,
+            3
+          ],
+          "texture": "#void_anchor"
+        },
+        "east": {
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ],
+          "texture": "#void_anchor"
+        },
+        "south": {
+          "uv": [
+            6.5,
+            0,
+            7,
+            3
+          ],
+          "texture": "#void_anchor"
+        },
+        "west": {
+          "uv": [
+            9,
+            0,
+            11,
+            3
+          ],
+          "texture": "#void_anchor"
+        },
+        "up": {
+          "uv": [
+            11,
+            0,
+            11.5,
+            2
+          ],
+          "texture": "#void_anchor"
+        }
+      }
+    },
+    {
+      "name": "stone_sill",
+      "from": [
+        6,
+        2,
+        4
+      ],
+      "to": [
+        10,
+        5,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            5,
+            1,
+            5.75
+          ],
+          "texture": "#void_anchor"
+        },
+        "south": {
+          "uv": [
+            1,
+            5,
+            2,
+            5.75
+          ],
+          "texture": "#void_anchor"
+        },
+        "up": {
+          "uv": [
+            2,
+            5,
+            3,
+            7
+          ],
+          "texture": "#void_anchor"
+        }
+      }
+    },
+    {
+      "name": "stone_lintel",
+      "from": [
+        6,
+        11,
+        4
+      ],
+      "to": [
+        10,
+        14,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            5,
+            4,
+            5.75
+          ],
+          "texture": "#void_anchor"
+        },
+        "south": {
+          "uv": [
+            4,
+            5,
+            5,
+            5.75
+          ],
+          "texture": "#void_anchor"
+        },
+        "up": {
+          "uv": [
+            6,
+            5,
+            7,
+            7
+          ],
+          "texture": "#void_anchor"
+        },
+        "down": {
+          "uv": [
+            5,
+            5,
+            6,
+            7
+          ],
+          "texture": "#void_anchor"
+        }
+      }
+    },
+    {
+      "name": "brass_collar",
+      "from": [
+        3,
+        12,
+        3
+      ],
+      "to": [
+        13,
+        13,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            7.5,
+            2.5,
+            7.75
+          ],
+          "texture": "#void_anchor"
+        },
+        "east": {
+          "uv": [
+            5,
+            7.5,
+            7.5,
+            7.75
+          ],
+          "texture": "#void_anchor"
+        },
+        "south": {
+          "uv": [
+            2.5,
+            7.5,
+            5,
+            7.75
+          ],
+          "texture": "#void_anchor"
+        },
+        "west": {
+          "uv": [
+            7.5,
+            7.5,
+            10,
+            7.75
+          ],
+          "texture": "#void_anchor"
+        },
+        "up": {
+          "uv": [
+            0,
+            8,
+            2.5,
+            10.5
+          ],
+          "texture": "#void_anchor"
+        },
+        "down": {
+          "uv": [
+            2.5,
+            8,
+            5,
+            10.5
+          ],
+          "texture": "#void_anchor"
+        }
+      }
+    },
+    {
+      "name": "stone_cap",
+      "from": [
+        5,
+        14,
+        5
+      ],
+      "to": [
+        11,
+        16,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10,
+            7.5,
+            11.5,
+            8
+          ],
+          "texture": "#void_anchor"
+        },
+        "east": {
+          "uv": [
+            13,
+            7.5,
+            14.5,
+            8
+          ],
+          "texture": "#void_anchor"
+        },
+        "south": {
+          "uv": [
+            11.5,
+            7.5,
+            13,
+            8
+          ],
+          "texture": "#void_anchor"
+        },
+        "west": {
+          "uv": [
+            14.5,
+            7.5,
+            16,
+            8
+          ],
+          "texture": "#void_anchor"
+        },
+        "up": {
+          "uv": [
+            10,
+            8,
+            11.5,
+            9.5
+          ],
+          "texture": "#void_anchor",
+          "cullface": "up"
+        }
+      }
+    }
+  ]
+}

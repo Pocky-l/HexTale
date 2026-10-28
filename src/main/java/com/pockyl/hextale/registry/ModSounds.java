@@ -40,6 +40,20 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_REPEL = register("the_void.repel");
     /** A voidling pushing out of a breach and dropping into the world. */
     public static final DeferredHolder<SoundEvent, SoundEvent> VOIDLING_EMERGE = register("voidling.emerge");
+    /** A voidling molting into a bigger one. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOIDLING_GROW = register("voidling.grow");
+    /** The anchors' ring closing round a breach: it is held. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_SUBDUE = register("the_void.subdue");
+    /** A held breach swallowing what it is fed. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_EAT = register("the_void.eat");
+    /** A Void Anchor's thread tied to a breach, and snapping when its crystal clouds through. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> ANCHOR_TIE = register("void_anchor.tie");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ANCHOR_SNAP = register("void_anchor.snap");
+    /** A held breach folding into its heart. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_FOLD = register("the_void.fold");
+    /** A Breach Heart beating, and letting go as it unfolds. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> HEART_BEAT = register("breach_heart.beat");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HEART_UNFOLD = register("breach_heart.unfold");
     /** Void ground healing back into earth. */
     public static final DeferredHolder<SoundEvent, SoundEvent> LAND_HEAL = register("land.heal");
     /** A nullstone drinking the Thinning out of the ground. */

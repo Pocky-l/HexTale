@@ -30,7 +30,7 @@ public final class GameTests {
             RuneWorkGameTests.class, HextechGameTests.class, CraftingGameTests.class, PylonGameTests.class,
             MultiblockGameTests.class, CrucibleGameTests.class, MagicTreeGameTests.class, WhirlReaperGameTests.class, SawmillGameTests.class,
             RuneGiftGameTests.class, ChemGameTests.class, ShimmerGameTests.class, LabGameTests.class,
-            SkypackGameTests.class, VoidGameTests.class, GateGameTests.class, FunnelGameTests.class, SpireGameTests.class, ShackleGameTests.class, CondenserGameTests.class, FoundryGameTests.class, VentGameTests.class, WardGameTests.class, CreativeJarGameTests.class, ThinningGameTests.class, HollowbloomGameTests.class, HealingGameTests.class);
+            SkypackGameTests.class, VoidGameTests.class, GateGameTests.class, FunnelGameTests.class, SpireGameTests.class, ShackleGameTests.class, CondenserGameTests.class, FoundryGameTests.class, VentGameTests.class, WardGameTests.class, CreativeJarGameTests.class, ThinningGameTests.class, HollowbloomGameTests.class, HealingGameTests.class, VoidRoadGameTests.class);
 
     private record Test(String name, Method method, HexTest settings) {
     }
@@ -54,7 +54,7 @@ public final class GameTests {
             String name = Hextale.MOD_ID + ":" + test.name();
             // Sky access: no barrier ceiling, so trees grow and things fall from any height.
             functions.add(new TestFunction(name, name, STRUCTURE.toString(), net.minecraft.world.level.block.Rotation.NONE,
-                    test.settings().maxTicks(), test.settings().setupTicks(), true, false, 1, 1, true, helper -> run(test.method(), helper)));
+                    test.settings().maxTicks(), test.settings().setupTicks(), true, false, 1, 1, true, helper -> run(test.method(), test.settings(), helper)));
         }
         return functions;
     }
@@ -77,7 +77,18 @@ public final class GameTests {
         return tests;
     }
 
-    private static void run(Method method, GameTestHelper helper) {
+    private static void run(Method method, HexTest settings, GameTestHelper helper) {
+        if (settings.padding() > 0) {
+            clearAround(helper, settings.padding());
+        }
+        // Only the spot's own chunk is kept ticking by the framework: a breach hung beside a 1x1x1 spot may fall into
+        // the next chunk, where entities stand still. Keep every chunk round the spot fully ticking.
+        net.minecraft.core.BlockPos spot = helper.absolutePos(net.minecraft.core.BlockPos.ZERO);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                helper.getLevel().setChunkForced((spot.getX() >> 4) + dx, (spot.getZ() >> 4) + dz, true);
+            }
+        }
         try {
             method.invoke(null, helper);
         } catch (InvocationTargetException e) {
@@ -90,6 +101,39 @@ public final class GameTests {
             throw new IllegalStateException(e.getCause());
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    /**
+     * A creative mock player standing a few blocks from {@code near}: one is needed for a breach to send anything out.
+     * The framework places mock players at the world spawn, often far from the test spot.
+     */
+    public static net.minecraft.server.level.ServerPlayer watcher(GameTestHelper helper, net.minecraft.core.BlockPos near) {
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        player.moveTo(near.getX() + 0.5, near.getY(), near.getZ() - 6.5, 0, 0);
+        return player;
+    }
+
+    /**
+     * 26.x keeps a padded test apart from its neighbours and clears its room; 1.21.1 has no padding, so the room round
+     * the structure is cleared of blocks and entities here before the test starts.
+     */
+    private static void clearAround(GameTestHelper helper, int padding) {
+        net.minecraft.world.phys.AABB bounds = helper.getBounds();
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        net.minecraft.core.BlockPos from = net.minecraft.core.BlockPos.containing(bounds.minX - padding, bounds.minY, bounds.minZ - padding);
+        net.minecraft.core.BlockPos to = net.minecraft.core.BlockPos.containing(bounds.maxX + padding, bounds.maxY + padding, bounds.maxZ + padding);
+        for (net.minecraft.core.BlockPos pos : net.minecraft.core.BlockPos.betweenClosed(from, to)) {
+            if (!bounds.contains(net.minecraft.world.phys.Vec3.atCenterOf(pos)) && !level.getBlockState(pos).isAir()) {
+                level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2 | 16);
+            }
+        }
+        net.minecraft.world.phys.AABB room = new net.minecraft.world.phys.AABB(net.minecraft.world.phys.Vec3.atLowerCornerOf(from),
+                net.minecraft.world.phys.Vec3.atLowerCornerOf(to.offset(1, 1, 1)));
+        for (net.minecraft.world.entity.Entity entity : level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, room,
+                entity -> !(entity instanceof net.minecraft.world.entity.player.Player))) {
+            entity.discard();
         }
     }
 
