@@ -1,15 +1,17 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "minecraft:block/polished_deepslate",
-    "log": "minecraft:block/dark_oak_log",
-    "stone": "minecraft:block/polished_deepslate",
-    "top": "hextale:block/hex_furnace_top",
-    "front": "hextale:block/hex_furnace_front_lit"
+    "particle": "hextale:block/fire_bricks",
+    "hex_furnace_top": "hextale:block/hex_furnace_top",
+    "hex_workbench_leg": "hextale:block/hex_workbench_leg",
+    "fire_bricks": "hextale:block/fire_bricks",
+    "polished_magic_stone": "hextale:block/polished_magic_stone",
+    "hex_furnace_front_open": "hextale:block/hex_furnace_front_open",
+    "hex_furnace_front_lit": "hextale:block/hex_furnace_front_lit"
   },
   "elements": [
     {
-      "name": "log_fl",
+      "name": "post_fl",
       "from": [
         1,
         0,
@@ -23,21 +25,21 @@
       "faces": {
         "north": {
           "uv": [
-            13,
+            12,
             2,
-            15,
+            14,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "east": {
           "uv": [
-            13,
+            12,
             2,
-            15,
+            14,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
@@ -46,7 +48,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
@@ -55,7 +57,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -64,13 +66,13 @@
             3,
             15
           ],
-          "texture": "#log",
+          "texture": "#hex_workbench_leg",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "log_fr",
+      "name": "post_fr",
       "from": [
         13,
         0,
@@ -89,25 +91,25 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "east": {
           "uv": [
-            13,
+            12,
             2,
-            15,
+            14,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
-            13,
+            12,
             2,
-            15,
+            14,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
@@ -116,7 +118,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -125,13 +127,13 @@
             15,
             15
           ],
-          "texture": "#log",
+          "texture": "#hex_workbench_leg",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "log_bl",
+      "name": "post_bl",
       "from": [
         1,
         0,
@@ -145,12 +147,12 @@
       "faces": {
         "north": {
           "uv": [
-            13,
+            12,
             2,
-            15,
+            14,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "east": {
           "uv": [
@@ -159,7 +161,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
@@ -168,16 +170,16 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
-            13,
+            12,
             2,
-            15,
+            14,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -186,13 +188,13 @@
             3,
             3
           ],
-          "texture": "#log",
+          "texture": "#hex_workbench_leg",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "log_br",
+      "name": "post_br",
       "from": [
         13,
         0,
@@ -211,7 +213,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "east": {
           "uv": [
@@ -220,25 +222,25 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
-            13,
+            12,
             2,
-            15,
+            14,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
-            13,
+            12,
             2,
-            15,
+            14,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -247,13 +249,13 @@
             15,
             3
           ],
-          "texture": "#log",
+          "texture": "#hex_workbench_leg",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "top_slab",
+      "name": "stone_cap",
       "from": [
         0,
         14,
@@ -268,41 +270,41 @@
         "north": {
           "uv": [
             0,
-            0,
+            14,
             16,
-            2
+            16
           ],
-          "texture": "#stone",
+          "texture": "#polished_magic_stone",
           "cullface": "north"
         },
         "east": {
           "uv": [
             0,
-            0,
+            14,
             16,
-            2
+            16
           ],
-          "texture": "#stone",
+          "texture": "#polished_magic_stone",
           "cullface": "east"
         },
         "south": {
           "uv": [
             0,
-            0,
+            14,
             16,
-            2
+            16
           ],
-          "texture": "#stone",
+          "texture": "#polished_magic_stone",
           "cullface": "south"
         },
         "west": {
           "uv": [
             0,
-            0,
+            14,
             16,
-            2
+            16
           ],
-          "texture": "#stone",
+          "texture": "#polished_magic_stone",
           "cullface": "west"
         },
         "up": {
@@ -312,7 +314,7 @@
             16,
             16
           ],
-          "texture": "#top",
+          "texture": "#hex_furnace_top",
           "cullface": "up"
         },
         "down": {
@@ -322,12 +324,12 @@
             16,
             16
           ],
-          "texture": "#stone"
+          "texture": "#polished_magic_stone"
         }
       }
     },
     {
-      "name": "stone_body",
+      "name": "brick_body",
       "from": [
         3,
         0,
@@ -346,7 +348,7 @@
             13,
             16
           ],
-          "texture": "#front"
+          "texture": "#hex_furnace_front_open"
         },
         "south": {
           "uv": [
@@ -355,7 +357,7 @@
             13,
             16
           ],
-          "texture": "#stone"
+          "texture": "#fire_bricks"
         },
         "down": {
           "uv": [
@@ -364,13 +366,13 @@
             13,
             14
           ],
-          "texture": "#stone",
+          "texture": "#fire_bricks",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "stone_side_w",
+      "name": "brick_side_w",
       "from": [
         2,
         0,
@@ -389,7 +391,7 @@
             13,
             16
           ],
-          "texture": "#stone"
+          "texture": "#fire_bricks"
         },
         "down": {
           "uv": [
@@ -398,13 +400,13 @@
             3,
             13
           ],
-          "texture": "#stone",
+          "texture": "#fire_bricks",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "stone_side_e",
+      "name": "brick_side_e",
       "from": [
         13,
         0,
@@ -423,7 +425,7 @@
             13,
             16
           ],
-          "texture": "#stone"
+          "texture": "#fire_bricks"
         },
         "down": {
           "uv": [
@@ -432,8 +434,33 @@
             14,
             13
           ],
-          "texture": "#stone",
+          "texture": "#fire_bricks",
           "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "glow_mouth",
+      "from": [
+        2.97,
+        -0.03,
+        1.97
+      ],
+      "to": [
+        13.03,
+        14.03,
+        3.03
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            2,
+            13,
+            16
+          ],
+          "texture": "#hex_furnace_front_lit"
         }
       }
     }

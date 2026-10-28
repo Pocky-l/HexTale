@@ -55,8 +55,11 @@ import org.jspecify.annotations.Nullable;
  * collapses: the drawn items are lost, the centre stays, the backlash hurts whoever stands close.
  */
 public class HextechAltarBlockEntity extends BlockEntity implements Container {
-    /** Height of the centre item over the altar's base (blocks). */
-    public static final double ITEM_Y = 1.3;
+    /**
+     * Height of the centre item over the altar's base (blocks): inside the four brass claws, its gimbal clear of the
+     * table (top at 19 px). The book's dioramas float their centre items at this height too.
+     */
+    public static final double ITEM_Y = 1.7;
     private static final int RESCAN_TICKS = 40;
     /** How often the client looks again which pedestal items the circle lacks. */
     private static final int GHOST_TICKS = 10;
@@ -475,7 +478,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 40, 0.1, 0.1, 0.1, 0.18);
         level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 20, 0.3, 0.3, 0.3, 0.3);
         level.sendParticles(ModParticles.ring(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 0, 1.4, 0, 0, 1);
-        level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), worldPosition.getX() + 0.5, worldPosition.getY() + 0.05,
+        level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), worldPosition.getX() + 0.5, worldPosition.getY() + 0.14,
                 worldPosition.getZ() + 0.5, 0, 3.5, 1, 0, 1);
         level.playSound(null, worldPosition, ModSounds.RITUAL_COMPLETE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         level.blockEvent(worldPosition, getBlockState().getBlock(), 1, 0);

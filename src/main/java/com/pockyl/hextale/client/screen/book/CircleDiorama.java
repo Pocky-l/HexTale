@@ -21,6 +21,7 @@ import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEven
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import com.pockyl.hextale.block.HextechAltarBlockEntity;
 import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.client.render.HexFx;
 import com.pockyl.hextale.client.render.TableModels;
@@ -53,7 +54,7 @@ public final class CircleDiorama {
     private static final float PEDESTAL_R = 2.1F;
     private static final float STELE_R = 3.1F;
     private static final float JAR_R = 3.0F;
-    private static final float CENTRE_Y = 1.35F;
+    private static final float CENTRE_Y = (float) HextechAltarBlockEntity.ITEM_Y + 0.05F;
     private static final float TILT = 30;
     private static final List<Essence> DRAWN = List.of(Essence.CRYSTAL, Essence.MAGIC, Essence.SPARK);
 

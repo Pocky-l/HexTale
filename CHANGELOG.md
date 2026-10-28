@@ -7,12 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- New look for the Pedestal: a slender column of magic stone on a stepped octagonal foot, a fine rune seam glowing in
-  the cut of its fluted shaft, an aged brass collar and a shallow brass dish with a carved rim. The glowing blue cubes
-  are gone; the item now floats just over the dish.
+- New look for the Pedestal: a slender column of magic stone on a stepped octagonal foot, a faint rune seam glowing
+  deep in the cut of its fluted shaft, an aged brass collar and a shallow brass dish with a carved rim. The glowing blue
+  cubes are gone; the item now floats just over the dish.
 - New look for the Hex Workbench: a craftsman's bench of walnut and brass instead of a stone slab with a neon grid. The
-  3x3 grid is inlaid in brass into a thick walnut top, the legs stand in brass shoes over a lower shelf, a saw and a
-  mallet hang at its side, and a hextech crystal set in a brass socket at the front is the only thing that glows.
+  3x3 grid is inlaid in thin, darkened brass into a thick walnut top, the legs stand in brass shoes over a lower shelf, a
+  saw and a mallet hang at its side, and a large hextech crystal in a diamond-shaped brass setting at the front is the
+  only thing that glows.
+- New look for the Hextech Altar, the heart of the circle: a stepped octagonal dais of magic stone that spreads past its
+  block, a column of four slim pillars caging a glowing hextech crystal, a wide stone table with a brass rim and a
+  glowing lens, and four brass claws cupping the turning rings from below. The item floats higher, inside the rings,
+  and the glowing cubes are gone.
+- The Hexcore now wakes from the new altar: the same dais and crystal column, its brass claws opened wide round the
+  floating matrix.
+- New look for the Hex Furnace: a kiln of cream fire bricks on walnut posts with brass shoes, a polished stone cap with
+  a brass vent and an arched, brass-framed mouth under a small crystal keystone. While it burns, the fire glows in the
+  mouth and the keystone lights up; the neon rim is gone.
 
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and

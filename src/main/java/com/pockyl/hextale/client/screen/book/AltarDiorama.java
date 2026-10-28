@@ -19,6 +19,7 @@ import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEven
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import com.pockyl.hextale.block.HextechAltarBlockEntity;
 import com.pockyl.hextale.client.render.HexFx;
 import com.pockyl.hextale.client.render.TableModels;
 import com.pockyl.hextale.registry.ModItems;
@@ -99,7 +100,7 @@ public final class AltarDiorama {
 
             ComplexRune rune = state.rune();
             int color = rune == null ? HexFx.HEXTECH : rune.color();
-            float itemY = 1.3F + Mth.sin(time * 0.08F) * 0.04F;
+            float itemY = (float) HextechAltarBlockEntity.ITEM_Y + Mth.sin(time * 0.08F) * 0.04F;
             float glyphY = 1.55F + Mth.sin(time * 0.06F) * 0.04F;
 
             // The altar's gimbal and the pickaxe inside it.
