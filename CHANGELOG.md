@@ -6,24 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.4.0+1.21.1] - 2026-10-28
 ### Changed
-- Everything of 1.4.0 for Minecraft 26.3 is included: the mod's recipes as ordinary recipe types, common tags, biome
-  tags, claim protection, pipes and tanks of other mods, essence as a fluid, quest triggers and commands, the JEI
-  research notes and recipe transfer, and Curios support. Where 1.21.1 differs:
-  - recipes for HexTale's recipe types written by data packs and recipe scripts use 1.21.1's ingredients
-    (`{"item": ...}`, `{"tag": ...}`) instead of plain ids and `#tags` (the modpack guide shows them so);
-  - Curios support needs Curios 9 for 1.21.1; goggles in a Curios slot are drawn as their worn armour layer.
-
-## [1.3.0+1.21.1] - 2026-10-28
-### Changed
-- Everything of 1.1.0 - 1.3.0 for Minecraft 26.3 is included: the Thinning, blight and Void Mites, breaches of the
+- Everything of 1.1.0 - 1.4.0 for Minecraft 26.3 is included: the Thinning, blight and Void Mites, breaches of the
   Void and voidlings, the healing of the land, held breaches and the Breach Heart, struck geodes and the Tuning Fork,
-  the gadgets and their runes, the Rift Gates, the Binding Chalk and the diary's Void branch. Where 1.21.1 differs:
+  the gadgets and their runes, the Rift Gates, the Binding Chalk and the diary's Void branch; and for modpacks the
+  mod's recipes as ordinary recipe types, common tags, biome tags, claim protection, pipes and tanks of other mods,
+  essence as a fluid, quest triggers and commands, the JEI research notes and recipe transfer, and
+  [Curios](https://www.curseforge.com/minecraft/mc-mods/curios) support. Where 1.21.1 differs:
   - the Binding Chalk takes chains instead of iron chains;
   - with a shader pack on, a breach keeps the plain look (a starry dark with a glowing rim): 1.21.1 shader packs leave
     no moment to draw it with its own shaders after the pack's picture;
   - while you use the Grapple Gauntlet you walk at full speed as on 26.3, but you cannot start a sprint;
   - the Grapple Gauntlet's low air drag while swinging and flinging is made by raising your speed each tick (26.3 has
-    an air drag attribute), so a swing may feel a touch different.
+    an air drag attribute), so a swing may feel a touch different;
+  - recipes for HexTale's recipe types written by data packs and recipe scripts use 1.21.1's ingredients
+    (`{"item": ...}`, `{"tag": ...}`) instead of plain ids and `#tags` (the modpack guide shows them so);
+  - Curios support needs Curios 9 for 1.21.1; goggles in a Curios slot are drawn as their worn armour layer.
 
 ### Fixed
 - Blocks with see-through textures (crystals, glass, plants, many devices) draw their clear parts clear: every block
