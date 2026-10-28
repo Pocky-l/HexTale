@@ -7,9 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- The Hextech Altar holds its rings on four slim brass prongs and a horizon ring, like an armillary stand; light runs
-  from the lens along channels carved into the table, and a bigger crystal glows between thinner brass rods. The Hexcore
-  opens the same prongs wide around its matrix. Brass parts are darker, aged brass.
 - The Essence Jar is a real jar now: a round glass body smaller than the block, rounded shoulders, a narrow neck tied
   with twine and a cork. Its tag hangs from the neck. The Big Essence Jar follows the new shape.
 - The Rune Stele stands two blocks tall: a stone slab with a carved channel and a ring head where the chosen rune turns.
@@ -47,8 +44,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   show their signs more clearly. The drops, the screens and the jar tags all use the new signs; the tags print them
   like a woodcut stamp, so no sign turns into a dark blot.
 - The Essence Sticker is now the same paper tag on twine as on the jars, with the essence's colour stamped on it.
-- The Hexcore's matrix is calmer: its tiles are a darker, quieter blue with softer gold edges, and each tile carries
-  one of the nine primal rune radicals, glowing in a carved groove, instead of arrows and crosses.
 - Carved magic stone instead of rings and spirals: Chiseled Magic Bricks show the earth rune raised in a sunken panel,
   Whorled Magic Stone is a field of raised stone hexagons that catch the light like little cubes, and the end of a
   Magic Stone Pillar carries a carved cog.
