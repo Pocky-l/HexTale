@@ -218,6 +218,9 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_STEP = register("void_mite.step");
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_LATCH = register("void_mite.latch");
     public static final DeferredHolder<SoundEvent, SoundEvent> VOID_MITE_SHAKE = register("void_mite.shake");
+    /** A melt settling in the Hex Furnace or the Hex Foundry, and the foundry catching fire when it is built. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> FORGE_MELT = register("forge.melt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FORGE_CATCH = register("forge.catch");
 
     private ModSounds() {
     }

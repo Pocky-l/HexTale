@@ -1585,6 +1585,8 @@
   "subtitles.hextale.void_mite.step": "Something crawls",
   "subtitles.hextale.void_mite.latch": "Void mites latch on",
   "subtitles.hextale.void_mite.shake": "Void mites shaken off",
+  "subtitles.hextale.forge.melt": "Melt settles",
+  "subtitles.hextale.forge.catch": "Fire takes hold",
   "block.hextale.miasma_vent.status.shut": "Shut: a redstone signal holds the stack closed",
   "death.attack.hextale.miasma": "%1$s choked in miasma",
   "death.attack.hextale.miasma.player": "%1$s choked in miasma while fighting %2$s",

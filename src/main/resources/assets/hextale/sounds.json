@@ -1602,5 +1602,31 @@
         "volume": 0.8
       }
     ]
+  },
+  "forge.melt": {
+    "subtitle": "subtitles.hextale.forge.melt",
+    "sounds": [
+      {
+        "name": "hextale:forge_melt1",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:forge_melt2",
+        "volume": 0.5
+      },
+      {
+        "name": "hextale:forge_melt3",
+        "volume": 0.5
+      }
+    ]
+  },
+  "forge.catch": {
+    "subtitle": "subtitles.hextale.forge.catch",
+    "sounds": [
+      {
+        "name": "hextale:forge_catch",
+        "volume": 0.9
+      }
+    ]
   }
 }

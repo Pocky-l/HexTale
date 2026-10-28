@@ -1585,6 +1585,8 @@
   "subtitles.hextale.void_mite.step": "Что-то ползёт",
   "subtitles.hextale.void_mite.latch": "Клещи Пустоты вцепляются",
   "subtitles.hextale.void_mite.shake": "Клещи Пустоты стряхнуты",
+  "subtitles.hextale.forge.melt": "Оседает расплав",
+  "subtitles.hextale.forge.catch": "Разгорается огонь",
   "block.hextale.miasma_vent.status.shut": "Закрыта: сигнал редстоуна держит трубу запертой",
   "death.attack.hextale.miasma": "%1$s задохнулся в миазмах",
   "death.attack.hextale.miasma.player": "%1$s задохнулся в миазмах, сражаясь с %2$s",

@@ -28,6 +28,12 @@ Void's creatures have voices of their own.
 - The alembic: steam climbs out of the boiling flask into the head, the distillate drips from the beak in the colour of
   what it holds, and an item boiling down lets its essence rise off the water.
 - The separator's drop through the stopcock falls where you can see it, not only hear it.
+- The Hex Workbench shows its work: a craft lights the carved channels, a hexagon flares in every filled cell and the
+  light leaps up from the middle; a crystal soaking into charge sinks into the worktop as a closing hexagon of light.
+- The Hex Lapidary throws grit of the crystal and sparks off the disc with every stroke (redder when it runs hot), and
+  a new facet catches the light.
+- A melt settling in the Hex Furnace or the Hex Foundry has its own soft sound and a breath of hex flame; the foundry
+  burns with the same fire, smoke and sparks as the furnace, and catches with a deep roar when it is built.
 - Every rune that works now makes a soft sound of its own - a short breath of energy and a low pulse - on tools,
   clothes, machines and gadgets alike. A rune that works every moment sounds only now and then.
 - Learning a rune from a scroll or from research notes has its own sound: an ink stroke and the knowledge settling in.
