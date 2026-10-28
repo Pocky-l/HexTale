@@ -1,0 +1,12 @@
+{
+  "parent": "hextale:block/thinning/tinted_cube_mirrored",
+  "textures": {
+    "particle": "#all",
+    "down": "#all",
+    "up": "#all",
+    "north": "#all",
+    "south": "#all",
+    "west": "#all",
+    "east": "#all"
+  }
+}

@@ -43,6 +43,13 @@ public final class SubmitNodeCollector {
         }
     }
 
+    /** An entity model posed from its state, drawn cut out with its texture. */
+    public <S> void submitModel(EntityModel<S> model, S state, PoseStack poseStack, net.minecraft.resources.ResourceLocation texture,
+                                int lightCoords, int overlayCoords, int outlineColor) {
+        model.setupAnim(state);
+        model.renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityCutoutNoCull(texture)), lightCoords, overlayCoords, -1);
+    }
+
     /** Like vanilla's falling block renderer: the block's model in its own render types, lit by the client level. */
     public void submitMovingBlock(PoseStack poseStack, MovingBlockRenderState state, int outlineColor) {
         Minecraft minecraft = Minecraft.getInstance();

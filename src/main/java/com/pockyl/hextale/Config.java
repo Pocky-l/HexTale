@@ -22,6 +22,15 @@ public final class Config {
             .translation("hextale.configuration.maxChain")
             .defineInRange("maxChain", 125, 1, 1024);
 
+    public static final ModConfigSpec.BooleanValue THINNING = BUILDER
+            .comment("Whether careless magic wears the edge of the world thin: haze, sick land and at last breaches of the Void around a base.")
+            .translation("hextale.configuration.thinning")
+            .define("thinning", true);
+    public static final ModConfigSpec.DoubleValue THINNING_RATE = BUILDER
+            .comment("How fast careless magic wears the edge thin (1 = as designed).")
+            .translation("hextale.configuration.thinningRate")
+            .defineInRange("thinningRate", 1.0, 0.0, 10.0);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {

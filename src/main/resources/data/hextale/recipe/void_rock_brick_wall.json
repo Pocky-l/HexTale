@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "hextale:void_rock_bricks"
+    }
+  },
+  "result": {
+    "id": "hextale:void_rock_brick_wall",
+    "count": 6
+  }
+}

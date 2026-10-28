@@ -84,6 +84,7 @@ public final class HextaleClient {
             event.registerSpriteSet(ModParticles.ESSENCE_DROP.get(), EssenceDropParticle.Provider::new);
             event.registerSpriteSet(ModParticles.ESSENCE_BUBBLE.get(), EssenceBubbleParticle.Provider::new);
             event.registerSpriteSet(ModParticles.VAPOUR.get(), VapourParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.THINNING_HAZE.get(), com.pockyl.hextale.client.particle.ThinningHazeParticle.Provider::new);
             event.registerSpriteSet(ModParticles.HEX_SPARK.get(), HexSparkParticle.Provider::new);
             event.registerSpriteSet(ModParticles.GLINT.get(), GlintParticle.Provider::new);
             event.registerSpriteSet(ModParticles.HEX_RING.get(), HexRingParticle.Provider::new);
@@ -93,6 +94,9 @@ public final class HextaleClient {
         });
         modBus.addListener(GogglesView::registerLayer);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::addLayers);
+        modBus.addListener(com.pockyl.hextale.client.render.VoidMiteLayer::addLayers);
+        modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
+                com.pockyl.hextale.client.render.VoidMiteModel.LAYER, com.pockyl.hextale.client.render.VoidMiteModel::createBodyLayer));
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerLayers);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::bake);
         modBus.addListener(com.pockyl.hextale.client.render.ResearcherClothesClient::registerExtensions);
@@ -107,6 +111,10 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.VoidPipelines::registerShaders);
         TheVoidSounds.register();
         VoidAtmosphere.register(modBus);
+        ThinningAtmosphere.register(modBus);
+        modBus.addListener(ThinningTint::register);
+        ThinningTint.fadeWater();
+        VoidHearts.register(modBus);
         NeoForge.EVENT_BUS.addListener(GogglesView::tick);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
                 event.register(EssencesTooltip.class, ClientEssencesTooltip::new));
@@ -206,6 +214,8 @@ public final class HextaleClient {
                 net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.THE_VOID.get(),
                 com.pockyl.hextale.client.render.TheVoidRenderer::new);
+        event.registerEntityRenderer(com.pockyl.hextale.registry.ModEntities.VOID_MITE.get(),
+                com.pockyl.hextale.client.render.VoidMiteRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RESEARCH_TABLE.get(), ResearchTableRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ALEMBIC.get(), AlembicRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SEPARATOR.get(), SeparatorRenderer::new);

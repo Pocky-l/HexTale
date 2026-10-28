@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "hextale:void_rock_bricks"
+  },
+  "result": {
+    "id": "hextale:void_rock_brick_wall"
+  }
+}

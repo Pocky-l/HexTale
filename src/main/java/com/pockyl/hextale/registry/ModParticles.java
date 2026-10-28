@@ -67,6 +67,9 @@ public final class ModParticles {
     /** A soft puff of steam or smoke that rises, swells and thins out. */
     public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> VAPOUR = colored("vapour");
 
+    /** The haze of a thinning land: a wide faint veil that hugs the ground and drifts. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> THINNING_HAZE = colored("thinning_haze");
+
     /** A crackle of hextech lightning: a short-lived flickering spark. */
     public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> HEX_SPARK = colored("hex_spark");
 
@@ -139,6 +142,12 @@ public final class ModParticles {
 
     public static ColorParticleOption vapour(int rgb) {
         return of(VAPOUR, rgb);
+    }
+
+    /** Haze of colour {@code rgb}; {@code density} (0-1) makes the veil thicker. */
+    public static ColorParticleOption haze(int rgb, float density) {
+        int alpha = Math.round(net.minecraft.util.Mth.clamp(density, 0, 1) * 255);
+        return ColorParticleOption.create(THINNING_HAZE.get(), alpha << 24 | rgb);
     }
 
     public static ColorParticleOption spark(int rgb) {

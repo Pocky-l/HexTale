@@ -133,6 +133,7 @@ public class UnstableHextechItem extends Item implements ProjectileItem {
             pinch.setDeltaMovement(0, 0.2, 0);
             level.addFreshEntity(pinch);
         }
+        com.pockyl.hextale.thevoid.Thinning.add(level, entity.blockPosition(), count * com.pockyl.hextale.thevoid.Thinning.ORB_BURST);
         FALLS.remove(entity);
         entity.discard();
     }

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hextale:void_rock_bricks"
+        }
+      ],
+      "rolls": 1,
+      "bonus_rolls": 0.0
+    }
+  ],
+  "random_sequence": "hextale:blocks/void_rock_bricks"
+}

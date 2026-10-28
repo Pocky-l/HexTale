@@ -162,6 +162,15 @@ public final class Hextale {
             output.accept(ModItems.NULLSTONE);
             output.accept(ModItems.POLISHED_NULLSTONE);
             output.accept(ModItems.NULLSTONE_BRICKS);
+            output.accept(ModItems.VOID_SOIL);
+            output.accept(ModItems.VOID_ROCK);
+            output.accept(ModItems.VOID_ROCK_BRICKS);
+            output.accept(ModItems.VOID_ROCK_BRICK_STAIRS);
+            output.accept(ModItems.VOID_ROCK_BRICK_SLAB);
+            output.accept(ModItems.VOID_ROCK_BRICK_WALL);
+            output.accept(ModItems.VOID_CORAL);
+            output.accept(ModItems.VOID_ROOTS);
+            output.accept(ModItems.VOID_BULB);
             output.accept(ModItems.HEXCORE);
             output.accept(ModItems.WHIRL_REAPER);
             output.accept(ModItems.HEX_SAWMILL);
@@ -223,6 +232,11 @@ public final class Hextale {
 
     private static void addToVanillaTabs(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
+            event.accept(ModItems.VOID_SOIL);
+            event.accept(ModItems.VOID_ROCK);
+            event.accept(ModItems.VOID_CORAL);
+            event.accept(ModItems.VOID_ROOTS);
+            event.accept(ModItems.VOID_BULB);
             event.accept(ModItems.SPHALERITE_ORE);
             event.accept(ModItems.DEEPSLATE_SPHALERITE_ORE);
             event.accept(ModItems.RAW_ZINC_BLOCK);
@@ -249,6 +263,10 @@ public final class Hextale {
             event.accept(ModItems.FIRE_BRICK_STAIRS);
             event.accept(ModItems.FIRE_BRICK_SLAB);
             event.accept(ModItems.FIRE_BRICK_WALL);
+            event.accept(ModItems.VOID_ROCK_BRICKS);
+            event.accept(ModItems.VOID_ROCK_BRICK_STAIRS);
+            event.accept(ModItems.VOID_ROCK_BRICK_SLAB);
+            event.accept(ModItems.VOID_ROCK_BRICK_WALL);
         } else if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItems.BRASS_INGOT);
             event.accept(ModItems.BRASS_NUGGET);
