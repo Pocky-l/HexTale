@@ -41,6 +41,7 @@ public final class Hextale {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public Hextale(IEventBus modBus, ModContainer container) {
+        com.pockyl.hextale.registry.ModAliases.register();
         ModBlocks.register(modBus);
         ModItems.register(modBus);
         com.pockyl.hextale.registry.ModEntities.register(modBus);

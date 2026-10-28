@@ -42,6 +42,14 @@ repositories {
             includeGroup 'mezz.jei'
         }
     }
+    maven {
+        // Curios (optional integration).
+        name = 'Curios'
+        url = 'https://maven.theillusivec4.top/'
+        content {
+            includeGroup 'top.theillusivec4.curios'
+        }
+    }
     exclusiveContent {
         // Jade (optional integration).
         forRepository {
@@ -74,6 +82,7 @@ neoForge {
         gameTestServer {
             type = 'gameTestServer'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            systemProperty 'hextale.releasedIds', project.file('docs/released-ids.txt').absolutePath
         }
 
         // Opens the mod's screens by a script and saves screenshots (scripts in tools/guishots/, pictures in
@@ -117,6 +126,7 @@ dependencies {
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     compileOnly "maven.modrinth:jade:${jade_version}"
+    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
 }
 
 var generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {

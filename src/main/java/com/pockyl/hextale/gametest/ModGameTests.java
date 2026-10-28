@@ -104,6 +104,33 @@ public final class ModGameTests {
         helper.succeed();
     }
 
+    /**
+     * Every item and block id the mod has released still resolves (registered, or an alias of its new name), so packs,
+     * quests and worlds never lose one. The list is docs/released-ids.txt (path from the run's system property).
+     */
+    @HexTest
+    public static void releasedIdsStillResolve(GameTestHelper helper) throws java.io.IOException {
+        String file = System.getProperty("hextale.releasedIds");
+        if (file == null) {
+            helper.succeed();
+            return;
+        }
+        for (String line : java.nio.file.Files.readAllLines(java.nio.file.Path.of(file))) {
+            if (line.isBlank() || line.startsWith("#")) {
+                continue;
+            }
+            String[] parts = line.trim().split(" ");
+            net.minecraft.resources.Identifier id = net.minecraft.resources.Identifier.parse(parts[1]);
+            boolean found = switch (parts[0]) {
+                case "item" -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id).isPresent();
+                case "block" -> net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(id).isPresent();
+                default -> false;
+            };
+            helper.assertTrue(found, line + " still resolves (or has an alias in ModAliases)");
+        }
+        helper.succeed();
+    }
+
     @HexTest
     public static void seventyTwoDistinctRunes(GameTestHelper helper) {
         helper.assertTrue(ComplexRunes.all().size() == ComplexRunes.COUNT, "72 complex runes");
