@@ -10,6 +10,15 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "conditions": [
+            {
+              "condition": "minecraft:block_state_property",
+              "block": "hextale:rune_stele",
+              "properties": {
+                "half": "lower"
+              }
+            }
+          ],
           "name": "hextale:rune_stele"
         }
       ],

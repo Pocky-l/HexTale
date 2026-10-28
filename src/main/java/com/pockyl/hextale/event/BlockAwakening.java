@@ -6,7 +6,6 @@ import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
@@ -29,10 +28,13 @@ import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.CrucibleBlockEntity;
 import com.pockyl.hextale.block.HexFurnaceBlockEntity;
 import com.pockyl.hextale.crafting.AwakeningRecipe;
+import com.pockyl.hextale.network.RuneFxPayload;
 import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.rune.ComplexRunes;
+import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.ArrayList;
@@ -116,8 +118,11 @@ public final class BlockAwakening {
         PENDING.add(new Pending(level.dimension(), pos.immutable(), awakening, catalyst.copyWithCount(1), facing, player,
                 level.getGameTime(), refund));
         Vec3 centre = Vec3.atCenterOf(pos);
-        level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.0F, 0.6F);
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.BLOCK_AWAKEN.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
+        // The first magic the player works: a hexagon of hextech light opens on the ground round the block and a rune of
+        // quickening rises over it while the dust swirls.
+        RuneFxPayload.send(level, RuneFxPayload.area(Vec3.atBottomCenterOf(pos), ComplexRunes.of(Essence.SPARK, Essence.LIFE), 1.3F,
+                ModParticles.HEXTECH));
     }
 
     @SubscribeEvent
@@ -215,7 +220,6 @@ public final class BlockAwakening {
         level.sendParticles(ModParticles.ring(HEXTECH), centre.x, pos.getY() + 0.05, centre.z, 0, 1.8, 1, 0, 1);
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), centre.x, centre.y, centre.z, 16, 0.35, 0.35, 0.35, 0.08);
         level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), centre.x, centre.y + 0.5, centre.z, 20, 0.4, 0.2, 0.4, 0.3);
-        level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0F, 1.2F);
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.ORB_AWAKEN.get(), SoundSource.BLOCKS, 0.6F, 1.4F);
     }
 }

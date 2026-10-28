@@ -2,11 +2,13 @@ package com.pockyl.hextale.registry;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -98,6 +100,27 @@ public final class ModParticles {
      * drifts at first, swirls, then is dragged in faster and faster and vanishes.
      */
     public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> VOID_MOTE = colored("void_mote");
+
+    /**
+     * A fragment of an item's own texture drawn into the altar: spawned AT the altar's item with the offset to the item it
+     * comes from as velocity (client: {@code ItemDrawParticle}).
+     */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ItemParticleOption>> ITEM_DRAW = PARTICLES.register("item_draw",
+            () -> new ParticleType<ItemParticleOption>(false) {
+                @Override
+                public MapCodec<ItemParticleOption> codec() {
+                    return ItemParticleOption.codec(this);
+                }
+
+                @Override
+                public StreamCodec<? super RegistryFriendlyByteBuf, ItemParticleOption> streamCodec() {
+                    return ItemParticleOption.streamCodec(this);
+                }
+            });
+
+    public static ItemParticleOption itemDraw(ItemStack item) {
+        return new ItemParticleOption(ITEM_DRAW.get(), item.getItem());
+    }
 
     private static DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> colored(String name) {
         return PARTICLES.register(name, () -> new ParticleType<ColorParticleOption>(false) {

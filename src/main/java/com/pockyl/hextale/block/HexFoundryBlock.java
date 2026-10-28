@@ -2,10 +2,7 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.WorldlyContainer;
@@ -33,6 +30,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
+import com.pockyl.hextale.registry.ModParticles;
 
 import org.jspecify.annotations.Nullable;
 
@@ -117,20 +115,15 @@ public class HexFoundryBlock extends BaseEntityBlock implements WorldlyContainer
         double az = front.getAxis() == Direction.Axis.Z ? 0 : across;
         double x = pos.getX() + 0.5 + front.getStepX() * 0.55 + ax;
         double z = pos.getZ() + 0.5 + front.getStepZ() * 0.55 + az;
-        level.addParticle(ParticleTypes.FLAME, x, pos.getY() + 0.25 + random.nextDouble() * 0.2, z, 0, 0.004, 0);
+        level.addParticle(ModParticles.flame(ModParticles.FIRE), x, pos.getY() + 0.25 + random.nextDouble() * 0.2, z, 0, 0.004, 0);
         Vec3 grate = Vec3.atCenterOf(HexFoundryBlockEntity.heart(pos, front).above());
         if (random.nextInt(2) == 0) {
-            level.addParticle(ParticleTypes.LARGE_SMOKE, grate.x + random.nextGaussian() * 0.15, grate.y + 0.6, grate.z + random.nextGaussian() * 0.15,
-                    0, 0.06, 0);
+            level.addParticle(ModParticles.vapour(ModParticles.SMOKE), grate.x + random.nextGaussian() * 0.15, grate.y + 0.6,
+                    grate.z + random.nextGaussian() * 0.15, 0, 0.05, 0);
         }
         if (random.nextInt(4) == 0) {
-            level.addParticle(ParticleTypes.LAVA, grate.x + random.nextGaussian() * 0.15, grate.y + 0.55, grate.z + random.nextGaussian() * 0.15, 0, 0, 0);
-        }
-        if (random.nextInt(6) == 0) {
-            level.playLocalSound(pos, SoundEvents.BLASTFURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 1.0F, 0.7F, false);
-        }
-        if (random.nextInt(40) == 0) {
-            level.playLocalSound(grate.x, grate.y, grate.z, SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 1.2F, 0.6F, false);
+            level.addParticle(ModParticles.spark(ModParticles.FIRE), grate.x + random.nextGaussian() * 0.15, grate.y + 0.55,
+                    grate.z + random.nextGaussian() * 0.15, 0, 0.08, 0);
         }
     }
 

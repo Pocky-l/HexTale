@@ -43,8 +43,13 @@ public final class TableModels {
     /** The Essence Jar's body (drawn by the jar's renderer so it can rock; four times larger for the Big Essence Jar). */
     public static final StandaloneModelKey<BlockStateModelPart> ESSENCE_JAR = model("block/essence_tank");
     public static final StandaloneModelKey<BlockStateModelPart> CREATIVE_JAR = model("block/creative_essence_tank");
-    /** The Hex Lapidary's lap disc, turned by the lapidary's renderer about its spindle. */
+    /**
+     * The Hex Lapidary's grinding wheel, the cutting disc on its side and the treadle's flywheel under the bench, turned by
+     * the lapidary's renderer about their axles (along x).
+     */
+    public static final StandaloneModelKey<BlockStateModelPart> LAPIDARY_WHEEL = model("block/hex_lapidary_wheel");
     public static final StandaloneModelKey<BlockStateModelPart> LAPIDARY_DISC = model("block/hex_lapidary_disc");
+    public static final StandaloneModelKey<BlockStateModelPart> LAPIDARY_GEAR = model("block/hex_lapidary_gear");
     public static final StandaloneModelKey<BlockStateModelPart> WHIRL_REAPER_VANES = model("block/whirl_reaper_vanes");
     public static final StandaloneModelKey<BlockStateModelPart> HEX_SAW_DISC = model("block/hex_sawmill_disc");
     /** The formed Hex Foundry round its heart, facing north, and its glowing parts (drawn at full light while hot). */

@@ -17,7 +17,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.ContainerHelper;
@@ -50,6 +49,7 @@ import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.menu.HexFurnaceMenu;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.runework.FurnaceRune;
 import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
@@ -365,9 +365,18 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
             // This melt burned nothing: its time goes back into the fire.
             litTime = Math.min(litTime + melt.time(), litDuration + melt.time());
             ToolEffects.puff(level, Vec3.atCenterOf(worldPosition).add(0, 0.6, 0), FurnaceRune.ETERNAL_FLAME.rune(), 6, 0.25);
+            // The melt's time goes back into the fire.
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atCenterOf(worldPosition).add(0, 0.6, 0), com.pockyl.hextale.registry.ModParticles.FIRE, 0.6F);
         }
         Vec3 mouth = Vec3.atCenterOf(worldPosition);
-        level.playSound(null, mouth.x, mouth.y, mouth.z, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.5F, 0.8F + level.getRandom().nextFloat() * 0.2F);
+        level.playSound(null, mouth.x, mouth.y, mouth.z, ModSounds.FORGE_MELT.get(), SoundSource.BLOCKS, 0.23F, 0.9F + level.getRandom().nextFloat() * 0.2F);
+        if (level instanceof ServerLevel server) {
+            // The fire breathes out of the mouth as the melt settles.
+            net.minecraft.core.Direction front = getBlockState().getValue(com.pockyl.hextale.block.HexFurnaceBlock.FACING);
+            Vec3 at = mouth.add(front.getStepX() * 0.55, -0.2, front.getStepZ() * 0.55);
+            server.sendParticles(ModParticles.flame(ModParticles.FIRE), at.x, at.y, at.z, 5, 0.15, 0.08, 0.15, 0.01);
+            server.sendParticles(ModParticles.spark(ModParticles.FIRE), at.x, at.y + 0.1, at.z, 3, 0.1, 0.05, 0.1, 0.15);
+        }
         setChanged();
     }
 
@@ -391,6 +400,8 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
         more.grow(extra);
         Vec3 mouth = Vec3.atCenterOf(worldPosition);
         ToolEffects.puff(level, mouth, FurnaceRune.FORGE.rune(), 8, 0.35);
+        // The extra ingot comes out hot.
+        com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, mouth, com.pockyl.hextale.registry.ModParticles.FIRE, 0.8F);
         level.sendParticles(ModParticles.glint(ModParticles.GOLD), mouth.x, mouth.y, mouth.z, 6, 0.3, 0.3, 0.3, 0.05);
         return more;
     }

@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -35,8 +34,6 @@ import org.jspecify.annotations.Nullable;
  */
 public class PumpBlock extends BaseEntityBlock implements EssenceMachine, SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 2, 13), Block.box(4, 2, 4, 12, 10, 12),
-            Block.box(5, 10, 5, 11, 16, 11));
 
     public PumpBlock(Properties properties) {
         super(properties);
@@ -76,7 +73,7 @@ public class PumpBlock extends BaseEntityBlock implements EssenceMachine, Simple
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     @Override

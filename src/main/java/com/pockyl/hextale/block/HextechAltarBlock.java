@@ -26,7 +26,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -40,8 +39,6 @@ import org.jspecify.annotations.Nullable;
  */
 public class HextechAltarBlock extends BaseEntityBlock {
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 3, 15), Block.box(4, 3, 4, 12, 11, 12),
-            Block.box(3, 11, 3, 13, 12, 13), Block.box(1, 12, 1, 15, 13, 15));
 
     public HextechAltarBlock(Properties properties) {
         super(properties);
@@ -110,7 +107,7 @@ public class HextechAltarBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     @Override

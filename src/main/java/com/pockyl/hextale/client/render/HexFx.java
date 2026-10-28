@@ -10,6 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionfc;
 import org.jspecify.annotations.Nullable;
 import org.joml.Vector3f;
@@ -149,6 +150,43 @@ public final class HexFx {
     }
 
     /**
+     * A hextech crystal of additive light: the edges of a hexagonal bipyramid (six round its girdle, twelve to its two
+     * points) as fine near-white lines in a soft glow of {@code color}, turned by {@code turn}, {@code radius} blocks to
+     * the girdle and {@code height} to each point. {@code eye} is the camera in the pose's space (the pose must not be
+     * rotated: turn the crystal with {@code turn}). The gem drawn as light, like the stele runes and the streams.
+     */
+    public static void lightCrystal(PoseStack poseStack, SubmitNodeCollector collector, Vector3fc eye, Quaternionfc turn, float radius,
+                                    float height, int color, float alpha) {
+        if (alpha <= 0.01F) {
+            return;
+        }
+        Vec3[] corner = new Vec3[8];
+        for (int i = 0; i < 6; i++) {
+            float a = Mth.TWO_PI * i / 6;
+            corner[i] = vec(turn.transform(new Vector3f(Mth.cos(a) * radius, 0, Mth.sin(a) * radius)));
+        }
+        corner[6] = vec(turn.transform(new Vector3f(0, height, 0)));
+        corner[7] = vec(turn.transform(new Vector3f(0, -height, 0)));
+        int vivid = JarStreamFx.vivid(color);
+        int core = RuneDrawing.mix(vivid, 0xFFFFFF, 0.65F);
+        Vector3f view = new Vector3f(eye);
+        float[] light = {1, 1};
+        collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
+            for (int i = 0; i < 6; i++) {
+                for (Vec3 end : new Vec3[]{corner[(i + 1) % 6], corner[6], corner[7]}) {
+                    Vec3[] edge = {corner[i], end};
+                    JarStreamFx.strip(consumer, pose, edge, light, view, radius * 0.45F, vivid, 0.22F * alpha);
+                    JarStreamFx.strip(consumer, pose, edge, light, view, radius * 0.1F, core, 0.8F * alpha);
+                }
+            }
+        });
+    }
+
+    private static Vec3 vec(Vector3f v) {
+        return new Vec3(v.x, v.y, v.z);
+    }
+
+    /**
      * A rune's hieroglyph as glowing strokes of {@code size} blocks, in the pose's XY plane: a wide faint glow, a
      * narrower one and a near-white core, each fading to nothing at its edges. Drawn with additive light (the
      * {@link HexGlow} type, no depth writes), so the layers never need sorting or depth tests against each other.
@@ -201,25 +239,68 @@ public final class HexFx {
     }
 
     /**
-     * A thin ring of additive light of {@code radius} in the pose's XY plane, with {@code ticks} short marks on its
-     * outside - the sigil circle around a rune.
+     * The sigil round a rune or a device: a thin hexagon of additive light, {@code radius} to its corners, in the pose's
+     * XY plane, with {@code ticks} short marks standing out of its outline (evenly round it, the first on a corner) -
+     * the hextech hexagon motif everywhere (2026-10-28, was a round ring). Line width stops growing at a 1.25-block
+     * ring, so a device's wide reach stays a fine line.
      */
     public static void sigilRing(PoseStack poseStack, SubmitNodeCollector collector, float radius, int ticks, int color, float alpha) {
         if (alpha <= 0.01F) {
             return;
         }
+        float w = Math.min(radius, 1.25F);
         collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
-            int segments = 48;
-            for (int i = 0; i < segments; i++) {
-                float a0 = Mth.TWO_PI * i / segments;
-                float a1 = Mth.TWO_PI * (i + 1) / segments;
+            for (int i = 0; i < 6; i++) {
+                float a0 = Mth.TWO_PI * i / 6;
+                float a1 = Mth.TWO_PI * (i + 1) / 6;
                 glowSegment(consumer, pose, Mth.cos(a0) * radius, Mth.sin(a0) * radius, Mth.cos(a1) * radius, Mth.sin(a1) * radius,
-                        radius * 0.08F, color, alpha);
+                        w * 0.08F, color, alpha);
             }
+            float apothem = radius * Mth.cos(Mth.PI / 6);
             for (int i = 0; i < ticks; i++) {
                 float a = Mth.TWO_PI * i / ticks;
-                glowSegment(consumer, pose, Mth.cos(a) * radius * 1.04F, Mth.sin(a) * radius * 1.04F, Mth.cos(a) * radius * 1.16F,
-                        Mth.sin(a) * radius * 1.16F, radius * 0.07F, color, alpha * 1.3F);
+                // Where the mark's ray leaves the hexagon: the outline's distance at this angle.
+                float inSide = (a % (Mth.TWO_PI / 6)) - Mth.PI / 6;
+                float edge = apothem / Mth.cos(inSide);
+                float out = w * 0.12F;
+                glowSegment(consumer, pose, Mth.cos(a) * (edge + w * 0.03F), Mth.sin(a) * (edge + w * 0.03F), Mth.cos(a) * (edge + out),
+                        Mth.sin(a) * (edge + out), w * 0.07F, color, alpha * 1.3F);
+            }
+        });
+    }
+
+    /**
+     * A flat hexagon of additive light, {@code radius} blocks to its corners, in the pose's XY plane: a soft wide glow with
+     * a near-white core along the outer line, a fainter inner hexagon turned half a side, and short marks pointing out of
+     * the corners - the hextech sigil. Line widths grow with the radius only up to a 1.2 block hexagon, so a great ground
+     * sigil stays drawn in fine lines.
+     */
+    public static void hexRing(PoseStack poseStack, SubmitNodeCollector collector, float radius, int color, float alpha) {
+        if (alpha <= 0.01F || radius <= 0.01F) {
+            return;
+        }
+        int core = RuneDrawing.mix(color, 0xFFFFFF, 0.6F);
+        float w = Math.min(radius, 1.2F);
+        float mark = w * 0.2F;
+        collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
+            float inner = radius - w * 0.25F;
+            for (int i = 0; i < 6; i++) {
+                float a0 = Mth.TWO_PI * i / 6;
+                float a1 = Mth.TWO_PI * (i + 1) / 6;
+                float x0 = Mth.cos(a0) * radius;
+                float y0 = Mth.sin(a0) * radius;
+                float x1 = Mth.cos(a1) * radius;
+                float y1 = Mth.sin(a1) * radius;
+                glowSegment(consumer, pose, x0, y0, x1, y1, w * 0.16F, color, alpha * 0.35F);
+                glowSegment(consumer, pose, x0, y0, x1, y1, w * 0.045F, core, alpha);
+                float b0 = a0 + Mth.PI / 6;
+                float b1 = a1 + Mth.PI / 6;
+                glowSegment(consumer, pose, Mth.cos(b0) * inner, Mth.sin(b0) * inner, Mth.cos(b1) * inner, Mth.sin(b1) * inner,
+                        w * 0.05F, color, alpha * 0.45F);
+                float cx = Mth.cos(a0);
+                float cy = Mth.sin(a0);
+                glowSegment(consumer, pose, cx * (radius + mark * 0.3F), cy * (radius + mark * 0.3F), cx * (radius + mark),
+                        cy * (radius + mark), w * 0.06F, core, alpha * 0.8F);
             }
         });
     }
@@ -228,7 +309,7 @@ public final class HexFx {
      * A segment of additive light: full {@code alpha} along its centre line, fading to 0 at both long edges, ends
      * reaching a little past the points so strokes join (drawn without culling).
      */
-    private static void glowSegment(VertexConsumer consumer, PoseStack.Pose pose, float x0, float y0, float x1, float y1, float width,
+    public static void glowSegment(VertexConsumer consumer, PoseStack.Pose pose, float x0, float y0, float x1, float y1, float width,
                                     int color, float alpha) {
         float dx = x1 - x0;
         float dy = y1 - y0;

@@ -335,7 +335,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
         if (flags(current.topic()).get(cell)) {
             // A flagged section is the researcher's own warning: take the flag off first.
-            refuse(cell, 0.7F);
+            refuse(cell);
             return false;
         }
         int[] candidate = Arrays.copyOf(tree, tree.length + 2);
@@ -343,12 +343,12 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         candidate[tree.length + 1] = cell;
         ResearchSheet.Trace next = ResearchSheet.trace(current, candidate);
         if (next == null) {
-            refuse(cell, 0.6F);
+            refuse(cell);
             return false;
         }
         if (!next.affordable(ink())) {
             vialFlash[ResearchSheet.paying(current, from, cell).ordinal()] = Util.getMillis();
-            refuse(cell, 0.8F);
+            refuse(cell);
             return false;
         }
         int lit = trace == null ? 0 : trace.lit();
@@ -363,9 +363,9 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             return true;
         }
         if ((next.lit() & ~lit) != 0 && point >= 0) {
-            sound(ModSounds.RUNE_RECOGNISED.get(), 0.8F + current.points().get(point).element().ordinal() * 0.06F, 0.6F);
+            sound(ModSounds.RUNE_RECOGNISED.get(), 0.95F + (float) Math.random() * 0.1F, 0.6F);
         } else {
-            sound(ModSounds.INK_STEP.get(), 0.75F + paying.ordinal() * 0.06F + (float) Math.random() * 0.05F, 0.5F);
+            sound(ModSounds.INK_STEP.get(), 0.95F + (float) Math.random() * 0.1F, 0.5F);
             if (++lastStepSound % 3 == 0) {
                 sound(ModSounds.BRUSH_STROKE.get(), 0.9F + (float) Math.random() * 0.3F, 0.2F);
             }
@@ -387,15 +387,15 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
     }
 
-    private void refuse(int cell, float pitch) {
+    private void refuse(int cell) {
         board.shake(cell);
-        sound(SoundEvents.NOTE_BLOCK_BASS.value(), pitch, 0.5F);
+        sound(ModSounds.DEVICE_REFUSE.get(), 1.0F, 0.6F);
     }
 
     private void nudgeRequirement(int cell) {
         requirementFlash = Util.getMillis();
         board.shake(cell);
-        sound(SoundEvents.NOTE_BLOCK_BASS.value(), 0.5F, 0.5F);
+        sound(ModSounds.DEVICE_REFUSE.get(), 0.9F, 0.6F);
     }
 
     /** Follows the mouse section by section while drawing: forward into new sections, back along this stroke. */

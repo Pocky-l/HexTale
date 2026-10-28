@@ -10,21 +10,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import org.jspecify.annotations.Nullable;
 
 /** A pedestal of the ritual circle: an item in hand goes onto it, an empty hand takes it back. */
 public class PedestalBlock extends BaseEntityBlock {
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 2, 13), Block.box(5, 2, 5, 11, 11, 11),
-            Block.box(4, 11, 4, 12, 12, 12), Block.box(3, 12, 3, 13, 13, 13));
 
     public PedestalBlock(Properties properties) {
         super(properties);
@@ -61,7 +57,7 @@ public class PedestalBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     @Override

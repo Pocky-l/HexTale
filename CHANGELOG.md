@@ -4,6 +4,175 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0+26.1.2] - 2026-10-28
+### Changed
+- Ported to Minecraft 26.1.2 ([NeoForge](https://neoforged.net/) 26.1.2). Everything of 1.5.0 for Minecraft 26.3
+  ([full changelog](https://github.com/Pocky-l/HexTale/blob/main/CHANGELOG.md)) is included: rune signs and sounds, the
+  altar's ground sigil, essence streams, the machines' working sounds, walnut-and-brass machine screens, the new models,
+  and outlines and collision that follow them. As before on 26.1.2, poplar saplings are not Magic Tree catalysts and
+  overlapping translucent effects (the new hexagons, streams and sigils too) may sort a little differently.
+
+## [1.5.0] - 2026-10-28
+The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
+the altar draws its circle on the ground. No more borrowed chimes, beeps and hisses at the mod's magic moments, and the
+Void's creatures have voices of their own. The workshop has a new look too: machine screens of walnut and brass, new
+models for the altar, the Hexcore, the jars, steles, furnace and lapidary, one family of essence signs and carved stone.
+
+### Added
+- When a rune works, a flat hexagon of light opens round the spot and the rune's own glyph flares over it, in the rune's
+  colour - bigger and brighter for bigger effects. Runes on your pickaxe and clothes never chatter: runes that keep
+  things going (Haste, Mending, Radiance, Magnet and the like) only glint, near a player one sign shows at most every two seconds, and a rune on your
+  own body draws a smaller, quieter sign. The client option "Rune signs" can hide your own signs or all of them.
+- Runes show what they do, quietly: a Drill pickaxe's lightning strikes every block it takes, Smelting sets the blocks
+  alight for a moment, Erosion, Passage and Quake crumble the stone away block by block, Forge and Gemstone lift hot
+  sparks and gem light out of the rock, Cache sends the drops into your pocket as pieces of themselves, Insight sends a
+  wave through the stone. On the other tools: a felled tree comes down log by log, saplings and seeds rise green,
+  Chain Lightning and Flash strike as bolts, Withering draws the foe's life to you, Spoils glints gold. Each has its
+  own soft sound, played once even when many blocks go at once.
+- The same goes for the rest: clothes heal, cleanse and ward off fire in rising light, a Mirror robe strikes back as a
+  bolt, boots cushion a fall with a gust; the grapple's Gravity drags its catch in along a stream of light; machines'
+  runes rise hot, golden, green or as steam where they work; the Null Lantern and the Void Anchors bite with thin bolts.
+- Learning a rune from a scroll or from research notes: the rune writes itself in the air before your eyes inside a
+  hexagon, holds for a moment and flies into you.
+- The altar's circle: when a ritual starts, a hexagonal sigil lights up on the ground, sweeping round from the north and
+  drawing a line to every pedestal, stele and jar of the circle. Light runs along the lines into the altar - brightest
+  from the pedestal or jar being drawn - and the sigil turns faster as the work goes on. A stalled ritual reddens it, a
+  collapse cracks it apart, a finished one throws it outwards as it fades.
+- The altar draws essence from its jars as living streams, like every other machine that draws from jars.
+- A pedestal item drawn into the altar comes apart into pieces of itself: each piece tears out upwards, swings over in
+  its own arc and whirls into the altar's item, leaving a few sparks behind. The item no longer crumbles as if it broke.
+- A working circle breathes: sparks rise slowly off the lines of the sigil and motes of light gather into the work.
+- Essence on the move can be seen: a pulse of light runs through brass pipes in the colour of what they carry (water
+  too); pouring a bottle into a jar or filling it from one, and every device that pays from the jars around it (Binding
+  Chalk, Rift Gates, the World Anchor, winding a Recall Charm), shows a living stream from the jar.
+- The alembic: steam climbs out of the boiling flask into the head, the distillate drips from the beak in the colour of
+  what it holds, and an item boiling down lets its essence rise off the water.
+- The separator's drop through the stopcock falls where you can see it, not only hear it.
+- The Hex Workbench shows its work: a craft lights the carved channels, a hexagon flares in every filled cell and the
+  light leaps up from the middle; a crystal soaking into charge sinks into the worktop as a closing hexagon of light.
+- The Hex Lapidary throws grit of the crystal and sparks off the disc with every stroke (redder when it runs hot), and
+  a new facet catches the light.
+- A melt settling in the Hex Furnace or the Hex Foundry has its own soft sound and a breath of hex flame; the foundry
+  burns with the same fire, smoke and sparks as the furnace, and catches with a deep roar when it is built.
+- Machines sound like they work: a running ritual, the Hex Furnace, the Hex Foundry and the separator have soft working
+  sounds that fade in and out with them (a ritual's rises as it goes on and sinks when it stalls). The furnace and
+  foundry no longer use the vanilla crackle.
+- Rift Gates show their ring alive: a slow whirl of rift light spirals into a bright core while the gate is linked,
+  dim and stuttering when its jars are dry, only a broken flicker when its partner is gone; it flares when something
+  goes through.
+- Pylons hum softly while they move things, and a Hextech Purifier breathes in while it draws the Thinning.
+- Devices show their reach: an empty hand on a Null Lantern (or placing it) and on a World Anchor (or it waking) lays a
+  hexagon of light on the ground out to the quiet zone or the held chunks.
+- Ward Glass ripples with an amber hexagon where you push against it, and Veil Glass ripples pale where a creature
+  comes up against it.
+- A Recall Charm opens the rift's sign where you leave and where you land; a Soul Flask draws a creature in as a stream
+  of light and pours it out again.
+- The Hexcore draws the same circle on the ground as the altar, with streams from its jars.
+- A rune on a stele stands upright in the air inside a hexagon instead of always facing the screen.
+- The hextech hexagon everywhere: the sigils of pylons, plates, the funnel, the sawmill, the purifier, the skypack's
+  jets and the diary's pictures are hexagons now.
+- The Thinning's blight creeps into the ground with its own dark sound.
+- The Research Table's orb is a crystal of light now: two faceted shapes of fine glowing lines turning against each
+  other round a bright spark, glints circling it, and a hexagon turning round it while you draw.
+- Pylon links show as fine lines of light hanging between the gems, with pulses running out along them the way things
+  will go; the Sorting Matrix's lattice of lenses is joined by glowing edges that light up as it reads what passes.
+- Drinking a bottle of essence shows each gift it gives: fire, water, light, life and metal rise round you in their
+  colour, air and shadow whirl round you, earth crumbles under your feet, spark strikes the ground. Unknown essence
+  leaves a murky haze.
+- A Binding Chalk figure closing runs light round its line from end to end, then the whole figure glows.
+- A new compound forming in the Lab Bench's flask flashes in its colour, and a hexagon opens round the flask.
+- A Chem Burner lights with a whoosh of flame out of its window and a puff from the flue; a Pink Brazier bursts into
+  pink fire; both leave a curl of smoke when they go out.
+- Waking a block with hextech dust opens a hexagon of hextech light on the ground round it, a rune rising over it.
+- Stone drinking essence under a drain valve: the drops sink into it, a hexagon of the essence's colour flares on its
+  top and warm sparks rise off the new magic stone - no more crumbling as if it broke.
+- A pump's stroke draws the water in from every side; a sticker put on a jar ripples over the face in its colour; a
+  crystal soaked into a Crystal Battery comes apart into pieces that whirl into it, and the battery feeds a Hex
+  Workbench through a thread of light.
+- The Void's roads have their moments: when six anchors hold a breach, cold streams run from each into it and a hexagon
+  locks round it; healed land opens a hexagon of life over the spot.
+- Every rune that works now makes a soft sound of its own - a short breath of energy and a low pulse - on tools,
+  clothes, machines and gadgets alike.
+- Learning a rune from a scroll or from research notes has its own sound: an ink stroke and the knowledge settling in.
+- Voidlings and void mites have their own voices: a dark clicking chitter, their hurt and death cries, a voidling's
+  snap and claws, mites crawling, clinging on and being shaken off.
+- New sounds for a crystal humming (Crystal Battery, dormant hextech, Hex Workbench, Hex Lapidary, Nullstone, the
+  pickaxe's Reveal), the Hexcore's strikes, a Dust Charge sparking up to its burst, unstable hextech thrown, a burner or
+  brazier going out, water flashing into steam, and choosing or being refused in the diary, the research board, the
+  stele and the Lab Bench.
+
+### Changed
+- The drain valve, pump, separator drops, brush strokes, ink on the research board, the alembic's simmer, the Miasma
+  Vent, the still's and lab bench's drops, the loupe's lens and arm and the tank's glug were remade: darker and softer,
+  no squeaks, plucks or hiss.
+- Rune chalk, the research board's ink and the loupe's lenses no longer climb in pitch like notes.
+
+- The Essence Jar is a real jar now: a round glass body smaller than the block, rounded shoulders, a narrow neck tied
+  with twine and a cork. Its tag hangs from the neck.
+- The Rune Stele stands two blocks tall: a stone slab with a carved channel and a ring head where the chosen rune turns.
+  Steles placed before grow their top when there is room.
+- The Hex Lapidary is a walnut treadle bench like the workbench with a big grinding wheel standing on top in a walnut
+  frame. The crystal sits in a brass clamp in front of the wheel, the cutting disc is mounted on the wheel's side, and a
+  belt runs down to the treadle's flywheel under the bench; wheel and flywheel turn while you grind.
+- The Greedy Funnel is a real funnel now: a nullstone cone narrowing from a brass-cornered rim down to a brass spout,
+  with brass seams down its corners and the shadow vortex turning in its mouth.
+- New look for the Pedestal: a slender column of magic stone on a stepped octagonal foot, a faint rune seam glowing
+  deep in the cut of its fluted shaft, an aged brass collar and a shallow brass dish with a carved rim. The glowing blue
+  cubes are gone; the item now floats just over the dish.
+- New look for the Hex Workbench: a craftsman's bench of walnut and brass instead of a stone slab with a neon grid. The
+  3x3 grid is inlaid in thin, darkened brass into a thick walnut top, the legs stand in brass shoes over a lower shelf, a
+  saw and a mallet hang at its side, and a large hextech crystal in a diamond-shaped brass setting at the front is the
+  only thing that glows.
+- New look for the Hextech Altar, the heart of the circle: a stepped octagonal dais of magic stone that spreads past its
+  block, a column of four slim pillars caging a glowing hextech crystal, a wide stone table with a brass rim and a
+  glowing lens, and four brass claws cupping the turning rings from below. The item floats higher, inside the rings,
+  and the glowing cubes are gone.
+- The Hexcore is the altar grown into a massive cradle: three wide stepped tiers of magic stone, four buttresses with
+  channels of carved light running up into a crown, a glowing heart caged under the crown, and four big brass claws
+  holding the floating matrix from below. Its steps can be climbed, and the ritual's ground sigil keeps clear of them.
+- New look for the Hex Furnace: a kiln of warm fire bricks on walnut posts with brass shoes, a brick crown with a brass
+  chimney and an arched, brass-framed mouth under a small crystal keystone. While it burns, the fire glows in the mouth,
+  the keystone lights up and smoke and embers rise from the chimney; the neon rim is gone.
+- The essences are now one family: each is a drop of living essence in its own colour with its sign glowing inside,
+  drawn at a finer 32 px scale. The signs are the same ones the screens show.
+- Essence Jars wear a small paper tag on twine with the essence's sign instead of a big card over half the glass.
+- Seven items that all looked like the same violet stick got their own shapes: the Synthetic Crystal is a cluster grown
+  on a brass seed plate, the Rift Link Crystal a crystal broken in two halves that still hold to each other, the
+  Clouded Crystal a heavy dark lump with a cloud inside, the Void Shard a sharp black sliver with a glowing crack, Void
+  Chitin a ridged plate of shell, and the Scroll of Oblivion an ash-grey scroll with a violet seal. The Hextech Crystal
+  keeps its look.
+- The 22 essence signs are redrawn as one set, like stamped emblems: the same bold outline, the same light from the
+  top left and the same amount of detail. Every essence keeps its subject (a flame, a sun, a skull, a paw...), so you
+  know them at once, but water is now a breaking wave instead of a drop inside the drop, and the pale and dark essences
+  show their signs more clearly. The drops, the screens and the jar tags all use the new signs; the tags print them
+  like a woodcut stamp, so no sign turns into a dark blot.
+- The Essence Sticker is now the same paper tag on twine as on the jars, with the essence's colour stamped on it.
+- Carved magic stone instead of rings and spirals: Chiseled Magic Bricks show the earth rune raised in a sunken panel,
+  Whorled Magic Stone carries a quiet band of carved hexagons between plain courses, calm enough for a whole wall, and
+  the end of a Magic Stone Pillar carries a clean carved cog.
+- The end of a Stripped Magic Log now looks like a real log end with growth rings and a drying crack, and the Magic
+  Trapdoor is a pale wooden hatch with a hexagonal window instead of a die.
+- Chalk marks and chalk figures look hand-drawn now: wobbly rings with gaps and chalk dust instead of clean drawings.
+- The machine screens are made of walnut and aged brass now instead of a flat dark plate: wooden boards in a brass frame
+  with riveted corners, the name on an engraved brass plate, slots and tanks sunk into the wood, product slots in a
+  riveted brass ring and buttons with brass rims. The Research Table and the diary keep their own look.
+- The Hex Lapidary shows the crystal as a cut gem: flat facets that trade the light as you turn it, a bright table and
+  a glint now and then, instead of a smooth gradient.
+- The Lab Bench shows how much of the compound is in the flask as liquid in a graduated glass tube, and its purity on a
+  scale with a brass mark at what the topic needs, instead of small numbers (the numbers are in the tooltips). When there
+  are more topics than fit, the topic grid scrolls with the mouse wheel and no longer covers the open topic.
+- The coil under an Impulse Plate's lid is a glowing cog now.
+- Outlines and collision follow the models: what you aim at, click and stand on is the shape you see, not a box that is
+  too big or too small. The Hextech Altar, the Hexcore, the Hex Furnace, the Hex Lapidary and the Pink Brazier reach
+  past their own block, and there they can be aimed at, clicked and mined too (the Hexcore's tiers, the altar's dais,
+  the furnace's chimney); a block put into such a spot simply takes its place.
+- The Hexcore's claws are slimmer with tilted knuckles, and its ribs sit closer to the cradle.
+- The Hex Furnace works three times quieter.
+
+### Fixed
+- The Skypack's jets, the Levitation Plate's column and the Void's breath no longer tick each time their sound loops.
+- The gem bezel on the Hex Workbench no longer flickers.
+
 ## [1.4.0+26.1.2] - 2026-10-28
 ### Changed
 - Ported to Minecraft 26.1.2 ([NeoForge](https://neoforged.net/) 26.1.2). Everything of 1.4.0 for Minecraft 26.3

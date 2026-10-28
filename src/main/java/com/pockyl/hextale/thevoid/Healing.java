@@ -194,6 +194,11 @@ public final class Healing {
         }
         if (sound != null) {
             level.playSound(null, sound, ModSounds.LAND_HEAL.get(), SoundSource.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+            // Where the land came back: a hexagon of life opening over it, the rune of growth rising.
+            com.pockyl.hextale.network.RuneFxPayload.send(level, com.pockyl.hextale.network.RuneFxPayload.area(
+                    net.minecraft.world.phys.Vec3.atBottomCenterOf(sound.above()), com.pockyl.hextale.rune.ComplexRunes.of(
+                            com.pockyl.hextale.rune.Essence.LIFE, com.pockyl.hextale.rune.Essence.EARTH), 2.5F,
+                    com.pockyl.hextale.network.RuneFxPayload.RUNE_COLOR));
             Quests.fireNear(level, Vec3.atCenterOf(sound), NOTE_RADIUS, Quests.LAND_HEALED);
         }
         return healed > 0;

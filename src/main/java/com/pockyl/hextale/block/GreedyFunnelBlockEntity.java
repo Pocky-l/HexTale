@@ -158,9 +158,9 @@ public class GreedyFunnelBlockEntity extends BlockEntity {
         return drewAt;
     }
 
-    /** Where the drawn-in deaths sink: just over the floor of the bowl, five pixels under the rim. */
+    /** Where the drawn-in deaths sink: in the cone, a few pixels under the rim, where it is as wide as the vortex. */
     public static Vec3 mouth(BlockPos pos) {
-        return Vec3.atLowerCornerOf(pos).add(0.5, 9.0 / 16, 0.5);
+        return Vec3.atLowerCornerOf(pos).add(0.5, 12.0 / 16, 0.5);
     }
 
     /** Where the crystal hangs, over the mouth. */
@@ -294,6 +294,8 @@ public class GreedyFunnelBlockEntity extends BlockEntity {
                         com.pockyl.hextale.thevoid.Thinning.Source.BOILED);
                 Vec3 at = mouth(worldPosition);
                 ToolEffects.puff(level, at, FunnelRune.SPONGE.rune(), 8, 0.3);
+                // The drops' essences soak away.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, 0x4FB3FF, 0.6F);
                 ToolEffects.sound(level, at, ModSounds.ESSENCE_DRAW.get(), 0.4F, 0.8F);
                 return soaked;
             }

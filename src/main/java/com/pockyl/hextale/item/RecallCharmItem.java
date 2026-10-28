@@ -101,10 +101,7 @@ public class RecallCharmItem extends Item {
         }
         setWindings(charm, windings(charm) + wound);
         Vec3 mouth = JarReach.mouth(jar.getBlockPos());
-        Vec3 offset = mouth.subtract(to);
-        for (int i = 0; i < 4 + wound * 2; i++) {
-            level.sendParticles(ModParticles.flow(Essence.RIFT.color()), to.x, to.y, to.z, 0, offset.x, offset.y, offset.z, 1);
-        }
+        com.pockyl.hextale.network.EssenceFxPayload.pour(level, mouth, to, Essence.RIFT.color(), 10 + wound * 3);
         level.playSound(null, mouth.x, mouth.y, mouth.z, ModSounds.ESSENCE_DRAW.get(), SoundSource.BLOCKS, 0.35F, 0.9F);
         return wound;
     }
@@ -184,8 +181,12 @@ public class RecallCharmItem extends Item {
                     com.pockyl.hextale.runework.HolderRune.at(RecallRune.FIRE_TICKS, fireproofing), 0, true, false, true));
             com.pockyl.hextale.runework.ToolEffects.puff(server, mark.pos().add(0, 1, 0), RecallRune.FIREPROOFING.rune(), 8, 0.4);
         }
+        com.pockyl.hextale.rune.ComplexRune rift = com.pockyl.hextale.rune.ComplexRunes.of(com.pockyl.hextale.rune.Essence.SHADOW,
+                com.pockyl.hextale.rune.Essence.SPARK);
         for (Vec3 at : new Vec3[] {from, mark.pos()}) {
-            server.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.x, at.y + 0.1, at.z, 0, 1.2, 1, 0, 1);
+            // The rift's sign opens where the researcher leaves and where they land.
+            com.pockyl.hextale.network.RuneFxPayload.send(server, new com.pockyl.hextale.network.RuneFxPayload(
+                    com.pockyl.hextale.network.RuneFxPayload.PROC, at.add(0, 0.1, 0), rift, 1.3F, 1, -1, Essence.RIFT.color()));
             server.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y + 1, at.z, 14, 0.3, 0.6, 0.3, 0.03);
         }
         server.playSound(null, mark.pos().x, mark.pos().y, mark.pos().z, ModSounds.SKYPACK_IGNITE.get(), SoundSource.PLAYERS, 0.7F, 0.7F);
@@ -194,8 +195,6 @@ public class RecallCharmItem extends Item {
         if (dam > 0 && server.getRandom().nextFloat() < com.pockyl.hextale.runework.HolderRune.at(RecallRune.FREE, dam)) {
             // Dam: this turn back cost nothing.
             com.pockyl.hextale.runework.ToolEffects.puff(server, mark.pos().add(0, 1.2, 0), RecallRune.DAM.rune(), 6, 0.3);
-            server.playSound(null, mark.pos().x, mark.pos().y, mark.pos().z, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_RESONATE,
-                    SoundSource.PLAYERS, 0.5F, 1.4F);
         } else if (!player.hasInfiniteMaterials()) {
             setWindings(stack, windings(stack) - 1);
         }

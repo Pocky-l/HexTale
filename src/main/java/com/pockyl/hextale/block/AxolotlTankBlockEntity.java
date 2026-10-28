@@ -114,6 +114,8 @@ public class AxolotlTankBlockEntity extends BlockEntity implements WorldlyContai
         if (spring > 0 && level.getRandom().nextFloat() < HolderRune.at(TankRune.MORE_SLIME, spring)) {
             made++;
             ToolEffects.puff(level, at, TankRune.SPRING.rune(), 10, 0.3);
+            // Fresh water.
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, 0x4FB3FF, 0.7F);
         }
         int dam = strength(TankRune.DAM);
         if (dam > 0 && level.getRandom().nextFloat() < HolderRune.at(TankRune.MEAL_SPARED, dam)) {
@@ -149,6 +151,8 @@ public class AxolotlTankBlockEntity extends BlockEntity implements WorldlyContai
         for (Player player : level.getEntitiesOfClass(Player.class, around)) {
             if (ToolEffects.keep(player, MobEffects.REGENERATION, HolderRune.at(TankRune.HEALING_TICKS, healing), 0)) {
                 ToolEffects.puff(level, player.position().add(0, 1, 0), TankRune.HEALING.rune(), 8, 0.4);
+                // The keeper healed.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, player.position().add(0, 1, 0), 0x8FE07A, 0.9F);
             }
         }
     }

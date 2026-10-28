@@ -27,7 +27,6 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -45,11 +44,6 @@ import org.jspecify.annotations.Nullable;
  */
 public class ArcSpireBlock extends BaseEntityBlock {
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
-    /** Plinth, its step and the foot of the mast with the lower coils. */
-    private static final VoxelShape LOWER = Shapes.or(Block.box(1, 0, 1, 15, 2, 15), Block.box(3, 2, 3, 13, 5, 13),
-            Block.box(4, 5, 4, 12, 16, 12));
-    /** The mast with the upper coils, then the needle and the crown. */
-    private static final VoxelShape UPPER = Shapes.or(Block.box(5, 0, 5, 11, 12, 11), Block.box(6, 12, 6, 10, 15, 10));
 
     public ArcSpireBlock(Properties properties) {
         super(properties);
@@ -150,7 +144,7 @@ public class ArcSpireBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return upper(state) ? UPPER : LOWER;
+        return ModelShapes.of(state);
     }
 
     @Override

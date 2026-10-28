@@ -310,3 +310,5 @@ block hextale:whorled_magic_stone
 block hextale:world_anchor
 block hextale:xp_condenser
 block hextale:zinc_block
+# Released in 1.5.0:
+block hextale:shape_part

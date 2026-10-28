@@ -8,20 +8,22 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 
 import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.EssenceNetwork;
+import com.pockyl.hextale.network.RuneFxPayload;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.registry.ModTags;
 import com.pockyl.hextale.world.WorldEdits;
 
@@ -133,11 +135,28 @@ public class DrainValveBlockEntity extends BlockEntity implements EssenceNetwork
             soaked -= ESSENCE_PER_STONE;
             server.setBlockAndUpdate(stone, magic);
             server.gameEvent(GameEvent.BLOCK_CHANGE, stone, GameEvent.Context.of(magic));
-            server.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, stone, Block.getId(magic));
-            server.playSound(null, stone, SoundEvents.SCULK_BLOCK_SPREAD, SoundSource.BLOCKS, 0.7F, 0.8F);
+            drink(server, stone, mix.color());
         }
         setChanged();
     }
+
+    /**
+     * Stone drinking essence and turning magic: drops of the essence sink into its top, a flat hexagon in the essence's
+     * colour flares on it, warm glints rise off the new stone; the stone drinks with a soft gulp.
+     */
+    public static void drink(ServerLevel server, BlockPos stone, int color) {
+        double x = stone.getX() + 0.5;
+        double top = stone.getY() + 1.02;
+        double z = stone.getZ() + 0.5;
+        server.sendParticles(ModParticles.drop(color), x, top + 0.25, z, 6, 0.25, 0.05, 0.25, 0);
+        server.sendParticles(ModParticles.glint(MAGIC_STONE_GLOW), x, top, z, 6, 0.3, 0.05, 0.3, 0.01);
+        server.sendParticles(ModParticles.wisp(color), x, top - 0.3, z, 4, 0.3, 0.2, 0.3, 0.01);
+        RuneFxPayload.send(server, RuneFxPayload.sigil(new Vec3(x, top, z), 0.55F, color));
+        server.playSound(null, stone, ModSounds.NULLSTONE_DRINK.get(), SoundSource.BLOCKS, 0.5F, 1.25F);
+    }
+
+    /** The warm cream of magic stone, for the glints rising off a soaked block. */
+    private static final int MAGIC_STONE_GLOW = 0xF6E3B8;
 
     /**
      * Where the next block soaks: the stream falls from the spout to the first block that is not air; among the

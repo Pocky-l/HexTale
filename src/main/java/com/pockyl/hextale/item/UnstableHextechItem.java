@@ -63,7 +63,7 @@ public class UnstableHextechItem extends Item implements ProjectileItem {
         ItemStack stack = player.getItemInHand(hand);
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F,
                 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.NEUTRAL, 0.6F, 1.4F);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.HEXTECH_THROW.get(), SoundSource.NEUTRAL, 0.7F, 1.0F);
         if (level instanceof ServerLevel serverLevel) {
             Projectile.spawnProjectileFromRotation(ThrownHextech::new, serverLevel, stack, player, 0.0F, 1.2F, 1.0F);
         }

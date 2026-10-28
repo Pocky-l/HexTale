@@ -99,6 +99,8 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
     /** The last compound that formed and when (synced: bubbles of its colour, the screen's flash). */
     private @Nullable Essence formed;
     private long formedAt = -1000;
+    /** When a new compound last began to form (synced: the flask flashes in its colour). */
+    private long flashAt = -1000;
     /** How the last experiment ended (synced for the screen and the world). */
     private int outcome;
     private long outcomeAt = -1000;
@@ -126,6 +128,9 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
                 Essence first = made.getFirst();
                 if (first != formed || level.getGameTime() - formedAt > 40) {
                     level.playSound(null, worldPosition, ModSounds.LAB_REACT.get(), SoundSource.BLOCKS, 0.5F, 0.9F + level.getRandom().nextFloat() * 0.2F);
+                    flashAt = level.getGameTime();
+                    // Seen at once, not at the next regular sync.
+                    changed();
                 }
                 formed = first;
                 formedAt = level.getGameTime();
@@ -186,6 +191,19 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
 
     public long formedAt() {
         return formedAt;
+    }
+
+    public long flashAt() {
+        return flashAt;
+    }
+
+    /** Shows {@code compound} beginning to form in the flask (the flash), without a reaction (the FX lab). */
+    public void showFormed(Essence compound) {
+        if (level != null) {
+            formed = compound;
+            formedAt = flashAt = level.getGameTime();
+            changed();
+        }
     }
 
     public int outcome() {
@@ -352,6 +370,8 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
         if (heatEater > 0 && server.getRandom().nextFloat() < HolderRune.at(LabRune.CAUGHT, heatEater)) {
             flask.vent();
             ToolEffects.puff(server, at.add(0, 0.2, 0), LabRune.HEAT_EATER.rune(), 14, 0.2);
+            // The heat eaten.
+            com.pockyl.hextale.network.RuneEffectPayload.show(server, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, at.add(0, 0.2, 0), 0xBFE8FF, 0.6F);
             server.playSound(null, worldPosition, ModSounds.LAB_VENT.get(), SoundSource.BLOCKS, 0.8F, 0.8F);
             outcome = OUTCOME_CAUGHT;
             outcomeAt = server.getGameTime();
@@ -493,6 +513,7 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
         outcomeAt = input.getLongOr("outcome_at", -1000);
         formed = Essence.byId(input.getStringOr("formed", ""));
         formedAt = input.getLongOr("formed_at", -1000);
+        flashAt = input.getLongOr("flash_at", -1000);
         draws = JarReach.read(input.getIntArray("draws").orElse(new int[0]));
         drawnAt = input.getLongOr("drawn_at", -1000);
     }
@@ -538,6 +559,7 @@ public class LabBenchBlockEntity extends BaseContainerBlockEntity implements Wor
         if (formed != null) {
             tag.putString("formed", formed.id());
             tag.putLong("formed_at", formedAt);
+            tag.putLong("flash_at", flashAt);
         }
         if (level != null && level.getGameTime() - drawnAt <= STREAM_TICKS) {
             tag.putIntArray("draws", JarReach.write(draws));

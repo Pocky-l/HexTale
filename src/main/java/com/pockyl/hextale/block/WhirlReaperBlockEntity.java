@@ -273,11 +273,15 @@ public class WhirlReaperBlockEntity extends BlockEntity {
         if (pollen > 0 && random.nextFloat() < HolderRune.at(ReaperRune.MORE, pollen)) {
             drops.add(produce.copyWithCount(1 + random.nextInt(2)));
             ToolEffects.puff(level, at, ReaperRune.POLLEN.rune(), 6, 0.3);
+            // More produce: petals rising.
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, 0xF2A8D0, 0.6F);
         }
         int light = strength(ReaperRune.PHOTOSYNTHESIS);
         if (light > 0 && random.nextFloat() < HolderRune.at(ReaperRune.GOLDEN, light)) {
             drops.add(new ItemStack(golden(drops)));
             ToolEffects.puff(level, at, ReaperRune.PHOTOSYNTHESIS.rune(), 14, 0.4);
+            // A golden harvest.
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, com.pockyl.hextale.registry.ModParticles.GOLD, 1.0F);
             level.sendParticles(ModParticles.glint(ModParticles.GOLD), at.x, at.y, at.z, 10, 0.3, 0.3, 0.3, 0.05);
             level.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_CLUSTER_PLACE, SoundSource.BLOCKS, 0.6F, 0.7F);
         }
@@ -306,6 +310,8 @@ public class WhirlReaperBlockEntity extends BlockEntity {
             meal.performBonemeal(level, random, pos, plant);
             level.levelEvent(LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, pos, 15);
             ToolEffects.puff(level, Vec3.atCenterOf(pos), ReaperRune.FERTILITY.rune(), 6, 0.3);
+            // Bonemeal after the reaping.
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atCenterOf(pos), 0x8FE07A, 0.7F);
         }
         int spring = strength(ReaperRune.SPRING);
         if (spring > 0) {

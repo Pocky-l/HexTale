@@ -16,7 +16,9 @@ import net.minecraft.world.level.Level;
 
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
+import com.pockyl.hextale.network.RuneFxPayload;
 import com.pockyl.hextale.registry.ModDataComponents;
+import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.ComplexRune;
 
 import java.util.function.Consumer;
@@ -94,7 +96,8 @@ public class RuneScrollItem extends Item {
             serverPlayer.sendOverlayMessage(Component.translatable("item.hextale.rune_scroll.studied", name,
                     "★".repeat(stars) + "☆".repeat(3 - stars)));
             level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.9F);
-            level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 1.2F);
+            level.playSound(null, player.blockPosition(), ModSounds.RUNE_LEARN.get(), SoundSource.PLAYERS, 0.8F, 1.0F);
+            RuneFxPayload.send(serverPlayer.level(), RuneFxPayload.learn(serverPlayer, rune, stars));
         }
         return InteractionResult.SUCCESS;
     }

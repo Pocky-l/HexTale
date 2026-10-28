@@ -26,6 +26,11 @@ public class SieveGlassBlock extends TransparentBlock {
         this.stopsPlayers = stopsPlayers;
     }
 
+    /** Whether it is Ward Glass (stops players) rather than Veil Glass (stops creatures). */
+    public boolean stopsPlayers() {
+        return stopsPlayers;
+    }
+
     /** Whether this glass lets {@code entity} through. */
     public boolean passes(Entity entity) {
         return entity instanceof Player != stopsPlayers;

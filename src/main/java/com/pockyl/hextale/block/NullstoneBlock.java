@@ -2,7 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
@@ -137,7 +136,7 @@ public class NullstoneBlock extends Block {
         if (next == FULL) {
             Vec3 at = Vec3.atCenterOf(pos);
             level.sendParticles(ModParticles.ring(VIOLET), at.x, at.y, at.z, 0, 1.6, 0, 0, 1);
-            level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.8F, 0.5F);
+            level.playSound(null, pos, ModSounds.CRYSTAL_RESONATE.get(), SoundSource.BLOCKS, 0.8F, 0.7F);
         }
     }
 }

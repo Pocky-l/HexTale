@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 import com.pockyl.hextale.block.HexFurnaceBlockEntity;
 import com.pockyl.hextale.client.render.PixelArt;
+import com.pockyl.hextale.client.screen.HexPlate;
 import com.pockyl.hextale.menu.HexFurnaceMenu;
 
 import java.util.List;
@@ -62,8 +63,8 @@ public class HexFurnaceScreen extends MachineScreen<HexFurnaceMenu> {
 
     /** A shallow pool of molten metal under the inputs, filling and glowing as the alloy melts. */
     private static void pool(GuiGraphicsExtractor graphics, int x, int y, float melt) {
-        PixelArt.fill(graphics, x - 1, y, x + POOL_W + 1, y + 6, PixelArt.argb(0x0A0810, 1));
-        PixelArt.fill(graphics, x, y + 1, x + POOL_W, y + 5, PixelArt.argb(0x231C2C, 1));
+        PixelArt.fill(graphics, x - 1, y, x + POOL_W + 1, y + 6, PixelArt.argb(0x1A0F07, 1));
+        PixelArt.fill(graphics, x, y + 1, x + POOL_W, y + 5, PixelArt.argb(HexPlate.WELL_FLOOR, 1));
         int filled = Math.round(POOL_W * Mth.clamp(melt, 0, 1));
         long now = Util.getMillis();
         for (int col = 0; col < filled; col++) {
@@ -81,7 +82,7 @@ public class HexFurnaceScreen extends MachineScreen<HexFurnaceMenu> {
     private static void flames(GuiGraphicsExtractor graphics, int x, int y, float fuel) {
         long now = Util.getMillis();
         for (int col = 0; col < 14; col++) {
-            graphics.fill(x + col, y + 14, x + col + 1, y + 16, fuel > 0 ? 0xFF5A2410 : 0xFF2A2420);
+            graphics.fill(x + col, y + 14, x + col + 1, y + 16, fuel > 0 ? 0xFF5A2410 : 0xFF2A1C12);
             if (fuel <= 0) {
                 continue;
             }

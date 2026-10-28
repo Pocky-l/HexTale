@@ -33,6 +33,25 @@ configurations {
     devtoolsRuntimeClasspath.extendsFrom runtimeClasspath
 }
 
+// FX lab: a separate dev-only mod (hextale_fxlab) that lays out the mod's effects and sounds in a world for review.
+// Its jar goes only into the playtest client (-Pplaytest.extras=hextale_fxlab), never into a release.
+sourceSets {
+    fxlab {
+        compileClasspath += sourceSets.main.output
+    }
+}
+configurations {
+    fxlabCompileClasspath.extendsFrom compileClasspath
+}
+tasks.register('fxlabJar', Jar) {
+    group = 'build'
+    description = 'Builds the dev-only FX lab mod jar into build/fxlab/.'
+    from sourceSets.fxlab.output
+    archiveBaseName = 'hextale_fxlab'
+    archiveVersion = ''
+    destinationDirectory = layout.buildDirectory.dir('fxlab')
+}
+
 repositories {
     maven {
         // JEI (optional integration).

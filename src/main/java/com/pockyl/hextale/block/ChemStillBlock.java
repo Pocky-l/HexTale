@@ -46,7 +46,6 @@ import org.jspecify.annotations.Nullable;
 public class ChemStillBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
-    private static final VoxelShape SHAPE = Block.column(14.0, 0.0, 15.0);
     private static final int DRIP = Brew.REFINED_SHIMMER.color();
 
     public ChemStillBlock(Properties properties) {
@@ -66,7 +65,7 @@ public class ChemStillBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     @Override

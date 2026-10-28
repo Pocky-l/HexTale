@@ -2,7 +2,6 @@ package com.pockyl.hextale.multiblock;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -67,11 +66,12 @@ public final class HexFoundry extends Multiblock {
     @Override
     public void showForming(ServerLevel level, List<BlockPos> cells, BlockPos controller) {
         for (BlockPos pos : cells) {
-            level.sendParticles(ParticleTypes.LARGE_SMOKE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 2, 0.35, 0.35, 0.35, 0.01);
-            level.sendParticles(ParticleTypes.FLAME, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.4, 0.4, 0.4, 0.01);
+            level.sendParticles(com.pockyl.hextale.registry.ModParticles.vapour(com.pockyl.hextale.registry.ModParticles.SOOT),
+                    pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 2, 0.35, 0.35, 0.35, 0.01);
+            level.sendParticles(com.pockyl.hextale.registry.ModParticles.flame(com.pockyl.hextale.registry.ModParticles.FIRE),
+                    pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.4, 0.4, 0.4, 0.01);
         }
-        level.playSound(null, controller, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.9F, 0.7F);
-        level.playSound(null, controller, SoundEvents.BLAZE_SHOOT, SoundSource.BLOCKS, 0.4F, 0.5F);
+        level.playSound(null, controller, com.pockyl.hextale.registry.ModSounds.FORGE_CATCH.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
     }
 
     @Override

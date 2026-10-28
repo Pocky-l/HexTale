@@ -27,7 +27,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.essence.EssenceFlaskItem;
@@ -48,8 +47,6 @@ import org.jspecify.annotations.Nullable;
  * bottom and through pipes set to pump it out. A bottle of essence by hand pours in, a glass bottle draws out; an empty hand reads it.
  */
 public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine {
-    /** The glass body and the shoulder, the neck and the lid above it (as the model, without the pipe fittings). */
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 11, 14), Block.box(3, 11, 3, 13, 15, 13));
 
     public EssenceTankBlock(Properties properties) {
         super(properties);
@@ -69,7 +66,7 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     /** Every face: in everywhere, out at the bottom (and where a pipe pumps); the model shows a fitting where a pipe joins. */
@@ -152,8 +149,13 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
             }
             level.playSound(null, pos, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 0.8F, 1.3F);
             if (level instanceof ServerLevel serverLevel) {
-                Vec3 at = hitResult.getLocation();
-                serverLevel.sendParticles(ModParticles.glint(ModParticles.GOLD), at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
+                // The label takes: a hexagon of its essence's colour ripples over the face it went on, a wisp of it rises.
+                Direction face = hitResult.getDirection();
+                Vec3 at = hitResult.getLocation().add(face.getStepX() * 0.03, face.getStepY() * 0.03, face.getStepZ() * 0.03);
+                int color = essence.color();
+                com.pockyl.hextale.network.RuneFxPayload.send(serverLevel, com.pockyl.hextale.network.RuneFxPayload.ripple(at, face, 0.4F, color));
+                serverLevel.sendParticles(ModParticles.wisp(color), at.x, at.y, at.z, 4, 0.08, 0.1, 0.08, 0.01);
+                serverLevel.sendParticles(ModParticles.glint(color), at.x, at.y, at.z, 3, 0.12, 0.12, 0.12, 0.01);
             }
             player.sendOverlayMessage(Component.translatable("block.hextale.essence_tank.sticker", Component.translatable(essence.translationKey())));
             return InteractionResult.SUCCESS;
@@ -164,8 +166,15 @@ public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine 
                     Component.translatable(tank.sticker().translationKey())));
             return InteractionResult.SUCCESS;
         }
+        boolean pouring = EssenceFlaskItem.isFlask(stack) && !EssenceFlaskItem.contents(stack).isEmpty();
+        int liquid = pouring ? EssenceFlaskItem.contents(stack).color() : tank.tank().contents().color();
         if (Flasks.use(player, hand, stack, tank.tank())) {
             tank.setChanged();
+            if (level instanceof ServerLevel server) {
+                Vec3 mouth = com.pockyl.hextale.essence.JarReach.mouth(pos);
+                Vec3 bottle = com.pockyl.hextale.network.EssenceFxPayload.hand(player);
+                com.pockyl.hextale.network.EssenceFxPayload.pour(server, pouring ? bottle : mouth, pouring ? mouth : bottle, liquid, 10);
+            }
             level.playSound(null, pos, ModSounds.TANK_GLUG.get(), SoundSource.BLOCKS, 0.6F, 0.8F + level.getRandom().nextFloat() * 0.3F);
             return InteractionResult.SUCCESS;
         }

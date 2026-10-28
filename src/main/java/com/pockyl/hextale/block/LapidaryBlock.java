@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import org.jspecify.annotations.Nullable;
@@ -35,9 +34,8 @@ import org.jspecify.annotations.Nullable;
  */
 public class LapidaryBlock extends BaseEntityBlock implements WorldlyContainerHolder {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
-    /** Someone works at the bench: the disc turns. */
+    /** Someone works at the bench: the grinding wheel turns. */
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(0, 9, 0, 16, 12, 16), Block.box(1, 0, 1, 15, 9, 15));
 
     public LapidaryBlock(Properties properties) {
         super(properties);
@@ -84,7 +82,7 @@ public class LapidaryBlock extends BaseEntityBlock implements WorldlyContainerHo
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     @Override

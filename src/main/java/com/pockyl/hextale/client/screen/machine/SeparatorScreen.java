@@ -89,10 +89,10 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
             graphics.fill(at[0], at[1], at[0] + CELL, at[1] + CELL, rim);
             graphics.fill(at[0] + 1, at[1] + 1, at[0] + CELL - 1, at[1] + CELL - 1, colour(mode));
             switch (mode) {
-                case INLET -> graphics.fill(at[0] + 3, at[1] + 3, at[0] + CELL - 3, at[1] + CELL - 3, 0xFF15121A);
+                case INLET -> graphics.fill(at[0] + 3, at[1] + 3, at[0] + CELL - 3, at[1] + CELL - 3, 0xFF1A0F07);
                 case PRODUCT -> {
                     graphics.fill(at[0] + 3, at[1] + 3, at[0] + CELL - 3, at[1] + CELL - 3, 0xFF98E3FB);
-                    graphics.fill(at[0] + 4, at[1] + 4, at[0] + CELL - 4, at[1] + CELL - 4, 0xFF15121A);
+                    graphics.fill(at[0] + 4, at[1] + 4, at[0] + CELL - 4, at[1] + CELL - 4, 0xFF1A0F07);
                 }
                 case WASTE -> graphics.fill(at[0] + 2, at[1] + 4, at[0] + CELL - 2, at[1] + 6, 0xFFE9C66D);
                 default -> {
@@ -115,7 +115,7 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         int vy = topPos + PANEL_Y + 19;
         graphics.fill(vx, vy, vx + CELL, vy + CELL, 0xFF4A3312);
         graphics.fill(vx + 2, vy + 2, vx + CELL - 2, vy + CELL - 2, 0xFF8A9A7A);
-        graphics.fill(vx + 4, vy + 4, vx + CELL - 4, vy + CELL - 4, 0xFF15121A);
+        graphics.fill(vx + 4, vy + 4, vx + CELL - 4, vy + CELL - 4, 0xFF1A0F07);
         if (isOver(mouseX, mouseY, vx, vy, CELL, CELL)) {
             tooltip(List.of(Component.translatable("gui.hextale.separator.vent"),
                     Component.translatable("gui.hextale.separator.vent.hint").withStyle(ChatFormatting.GRAY)));
@@ -244,11 +244,10 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         int h = pickHeight();
         HexPlate.plate(graphics, x, y, w, h);
         PixelArt.flush(graphics);
-        int ty = y + PICK_PAD;
-        for (FormattedCharSequence line : pickTitle()) {
-            graphics.centeredText(font, line, x + w / 2, ty, HexPlate.TITLE);
-            ty += 10;
-        }
+        HexPlate.centeredTitle(graphics, font, pickTitle(), x + w / 2, y + PICK_PAD);
+        // The essences lie in a tray sunk into the wood.
+        HexPlate.well(graphics, x + PICK_PAD - 2, y + PICK_PAD + pickTitleHeight() - 2, PICK_COLUMNS * PICK_CELL + 4,
+                (pickRows() + 1) * PICK_CELL + PICK_GAP * 3 + 4);
         Essence chosen = menu.chosen();
         Essence over = pickedAt(mouseX, mouseY);
         SeparatorBlockEntity separator = blockEntity(SeparatorBlockEntity.class);
@@ -260,7 +259,7 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
                 lit(graphics, at[0], at[1], essence.color());
             }
             HexPlate.cell(graphics, at[0], at[1], PICK_CELL, essence == chosen, essence == over);
-            PixelArt.essence(graphics, essence, at[0] + 1, at[1] + 1, 9, PixelArt.argb(held ? essence.color() : PixelArt.mix(essence.color(), 0x1A1426, 0.6F), held ? 1 : 0.55F));
+            PixelArt.essence(graphics, essence, at[0] + 1, at[1] + 1, 9, PixelArt.argb(held ? essence.color() : PixelArt.mix(essence.color(), HexPlate.WELL_FLOOR, 0.6F), held ? 1 : 0.55F));
         }
         int[] unknown = unknownCell();
         boolean overDark = overUnknown(mouseX, mouseY);
@@ -284,7 +283,7 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
     /** A cell lit from within in an essence's colour: the mixture holds that essence. */
     private static void lit(GuiGraphicsExtractor graphics, int x, int y, int color) {
         PixelArt.fill(graphics, x, y, x + PICK_CELL, y + PICK_CELL, PixelArt.argb(color, 0.55F));
-        PixelArt.fill(graphics, x + 1, y + 1, x + PICK_CELL - 1, y + PICK_CELL - 1, PixelArt.argb(PixelArt.mix(color, 0x120E1C, 0.72F), 1));
+        PixelArt.fill(graphics, x + 1, y + 1, x + PICK_CELL - 1, y + PICK_CELL - 1, PixelArt.argb(PixelArt.mix(color, 0x1A0F07, 0.72F), 1));
     }
 
     @Override
@@ -369,7 +368,7 @@ public class SeparatorScreen extends MachineScreen<SeparatorMenu> {
         // The essence to draw out on a small plate above the powder; the powder's charge under it.
         boolean overPlate = overChooser(mouseX, mouseY) && !picking;
         graphics.fill(rx, ry - 15, rx + 16, ry - 2, 0xFF000000 | (overPlate ? HexPlate.BRASS_LIGHT : HexPlate.BRASS));
-        graphics.fill(rx + 1, ry - 14, rx + 15, ry - 3, 0xFF0A0810);
+        graphics.fill(rx + 1, ry - 14, rx + 15, ry - 3, 0xFF1A0F07);
         if (element != null) {
             PixelArt.essence(graphics, element, rx + 3, ry - 13, 9, PixelArt.argb(element.color(), 1));
         } else if (menu.chosenUnknown()) {

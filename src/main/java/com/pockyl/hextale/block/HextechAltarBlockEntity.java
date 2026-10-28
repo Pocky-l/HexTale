@@ -3,8 +3,6 @@ package com.pockyl.hextale.block;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.particles.ItemParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -14,7 +12,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -32,6 +29,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -57,8 +55,11 @@ import org.jspecify.annotations.Nullable;
  * collapses: the drawn items are lost, the centre stays, the backlash hurts whoever stands close.
  */
 public class HextechAltarBlockEntity extends BlockEntity implements Container {
-    /** Height of the centre item over the altar's base (blocks). */
-    public static final double ITEM_Y = 1.3;
+    /**
+     * Height of the centre item over the altar's base (blocks): inside the four brass claws, its gimbal clear of the
+     * table (top at 19 px). The book's dioramas float their centre items at this height too.
+     */
+    public static final double ITEM_Y = 1.7;
     private static final int RESCAN_TICKS = 40;
     /** How often the client looks again which pedestal items the circle lacks. */
     private static final int GHOST_TICKS = 10;
@@ -103,6 +104,9 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     private float ringTime = Float.NaN;
     private float itemTurn;
     private float itemTime = Float.NaN;
+    private float sigilPhase;
+    private float sigilSpin;
+    private float sigilTime = Float.NaN;
 
     public HextechAltarBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntities.HEXTECH_ALTAR.get(), pos, state);
@@ -171,6 +175,28 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         itemTime = time;
         itemTurn = (itemTurn + speed * delta) % 360;
         return itemTurn;
+    }
+
+    /**
+     * Client side: the ground sigil's turn (radians) at {@code time}, its speed easing towards {@code targetSpin} radians
+     * per tick so it speeds up with the ritual without a jump.
+     */
+    public float animateSigil(float time, float targetSpin) {
+        float delta = Float.isNaN(sigilTime) || time < sigilTime ? 0 : Math.min(time - sigilTime, 5);
+        sigilTime = time;
+        sigilSpin = Mth.lerp(Math.min(1, 0.05F * delta), sigilSpin, targetSpin);
+        sigilPhase = (sigilPhase + sigilSpin * delta) % Mth.TWO_PI;
+        return sigilPhase;
+    }
+
+    /** Client: the circle as last scanned (pedestals, steles, jars), or null before the first ritual tick. */
+    public Ritual.@Nullable Circle shownCircle() {
+        return circle;
+    }
+
+    /** Client: the living streams of essence from the circle's jars into the centre item. */
+    public List<Stream> streams() {
+        return streams;
     }
 
     public long finishedAt() {
@@ -250,7 +276,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                             : "block.hextale.hextech_altar.nothing"));
                 }
             }
-            serverLevel.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 0.6F);
+            serverLevel.playSound(null, worldPosition, ModSounds.DEVICE_REFUSE.get(), SoundSource.BLOCKS, 0.8F, 0.9F);
             return;
         }
         ResearchTopic topic = plan.kind() == Ritual.Kind.INFUSE ? ResearchTopics.of(plan.result().getItem()) : null;
@@ -260,7 +286,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                 player.sendOverlayMessage(Component.translatable("research.hextale.locked",
                         Component.translatable(topic.translationKey()).withColor(topic.color())));
             }
-            serverLevel.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.BLOCKS, 0.8F, 0.6F);
+            serverLevel.playSound(null, worldPosition, ModSounds.DEVICE_REFUSE.get(), SoundSource.BLOCKS, 0.8F, 0.9F);
             return;
         }
         kind = plan.kind();
@@ -336,9 +362,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         }
         if (altar.kind != null && serverLevel.getGameTime() % SYNC_TICKS == 0) {
             altar.sync();
-        }
-        if (altar.kind != null && altar.stalled == 0 && serverLevel.getGameTime() % 40 == 0) {
-            serverLevel.playSound(null, pos, ModSounds.RITUAL_HUM.get(), SoundSource.BLOCKS, 0.6F, 0.9F + 0.2F * altar.elapsed / Math.max(1F, altar.duration));
         }
         if (altar.kind != null && altar.stalled > 10 && serverLevel.getGameTime() % 40 == 0) {
             // It never says what it waits for: the researcher has to see for themselves what went missing.
@@ -418,10 +441,13 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     }
 
     private void absorb(ServerLevel level, PedestalBlockEntity pedestal) {
-        ItemStack item = pedestal.take();
-        Vec3 at = Vec3.atCenterOf(pedestal.getBlockPos()).add(0, 0.6, 0);
-        level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, item.getItem()), at.x, at.y, at.z, 10, 0.12, 0.12, 0.12, 0.06);
-        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
+        pedestal.take();
+        // Its last fragments are still on their way (client); the pedestal lets go with a breath of light, the work
+        // swallows it with a flare (no crumbs: they read as an item breaking).
+        Vec3 at = Vec3.atCenterOf(pedestal.getBlockPos()).add(0, PedestalBlockEntity.ITEM_Y - 0.37, 0);
+        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 5, 0.12, 0.08, 0.12, 0.015);
+        Vec3 core = itemPosition();
+        level.sendParticles(ModParticles.glint(0xF0D27A), core.x, core.y, core.z, 6, 0.18, 0.18, 0.18, 0.03);
         level.playSound(null, pedestal.getBlockPos(), ModSounds.RITUAL_ABSORB.get(), SoundSource.BLOCKS, 0.9F,
                 0.85F + 0.3F * (itemsTotal - inputs.size()) / Math.max(1, itemsTotal));
     }
@@ -452,7 +478,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 40, 0.1, 0.1, 0.1, 0.18);
         level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 20, 0.3, 0.3, 0.3, 0.3);
         level.sendParticles(ModParticles.ring(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 0, 1.4, 0, 0, 1);
-        level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), worldPosition.getX() + 0.5, worldPosition.getY() + 0.05,
+        level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), worldPosition.getX() + 0.5, worldPosition.getY() + 0.14,
                 worldPosition.getZ() + 0.5, 0, 3.5, 1, 0, 1);
         level.playSound(null, worldPosition, ModSounds.RITUAL_COMPLETE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         level.blockEvent(worldPosition, getBlockState().getBlock(), 1, 0);
@@ -560,6 +586,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     public static void clientTick(Level level, BlockPos pos, BlockState state, HextechAltarBlockEntity altar) {
         altar.clientUpdate(level);
         if (altar.kind == null) {
+            altar.updateStreams(level, null);
             altar.clientElapsed = 0;
             if (level.getGameTime() % GHOST_TICKS == 0) {
                 altar.updateGhosts(level);
@@ -577,36 +604,81 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             altar.circle = Ritual.Circle.scan(level, pos);
         }
         Ritual.Circle circle = altar.circle;
-        // An essence stream: once the items are in, from every tank holding the essence drawn now.
-        Essence drawingEssence = altar.inputs.isEmpty() ? Ritual.drawingEssence(altar.essenceLeft) : null;
-        if (drawingEssence != null) {
-            Essence essence = drawingEssence;
-            for (EssenceTankBlockEntity tank : circle.tanks()) {
-                if (tank.tank().contents().get(essence) > 0 && random.nextInt(2) == 0) {
-                    Vec3 from = Vec3.atCenterOf(tank.getBlockPos()).add((random.nextDouble() - 0.5) * 0.4, 0.3, (random.nextDouble() - 0.5) * 0.4);
-                    spawnFlow(level, target, from, essence.color());
-                }
-            }
+        // Essence streams: once the items are in, from every jar holding the essence drawn now (JarStreamFx).
+        Essence drawingEssence = altar.inputs.isEmpty() && altar.elapsed >= Ritual.WARMUP_TICKS ? Ritual.drawingEssence(altar.essenceLeft) : null;
+        altar.updateStreams(level, altar.stalled() ? null : drawingEssence);
+        long now = level.getGameTime();
+        for (Stream stream : altar.streams) {
+            JarReach.shed(level, JarReach.mouth(stream.jar()), target, stream.essence().color(), stream.head(now, 0),
+                    stream.tail(now, 0));
         }
         // Rune steles shed shards of their glyphs into the work for the whole ritual.
         for (RuneSteleBlockEntity stele : circle.steles()) {
             if (stele.rune() != null && random.nextInt(4) == 0) {
-                Vec3 from = Vec3.atCenterOf(stele.getBlockPos()).add((random.nextDouble() - 0.5) * 0.3, 1.05 + random.nextDouble() * 0.2,
-                        (random.nextDouble() - 0.5) * 0.3);
+                Vec3 from = Vec3.atLowerCornerOf(stele.getBlockPos()).add(0.5 + (random.nextDouble() - 0.5) * 0.3,
+                        RuneSteleBlockEntity.GLYPH_Y - 0.1 + random.nextDouble() * 0.2, 0.5 + (random.nextDouble() - 0.5) * 0.3);
                 Vec3 offset = from.subtract(target);
                 level.addParticle(ModParticles.runeShard(stele.rune().color()), target.x, target.y, target.z, offset.x, offset.y, offset.z);
             }
         }
+        // The pedestal item being drawn comes apart: fragments of its own texture, each on its own arc, whirl into the altar.
         BlockPos drawing = altar.drawing();
-        if (drawing != null && level.getBlockEntity(drawing) instanceof PedestalBlockEntity pedestal && !pedestal.item().isEmpty()) {
-            for (int i = 0; i < 2; i++) {
-                Vec3 from = Vec3.atCenterOf(drawing).add((random.nextDouble() - 0.5) * 0.3, 0.75, (random.nextDouble() - 0.5) * 0.3);
-                spawnFlow(level, target, from, i == 0 ? 0xF0D27A : 0x9FE6FF);
+        if (drawing != null && level.getBlockEntity(drawing) instanceof PedestalBlockEntity pedestal && !pedestal.item().isEmpty()
+                && !altar.stalled()) {
+            int fragments = random.nextInt(5) < 3 ? 1 : 0;
+            for (int i = 0; i < fragments; i++) {
+                Vec3 from = Vec3.atCenterOf(drawing).add((random.nextDouble() - 0.5) * 0.25,
+                        PedestalBlockEntity.ITEM_Y - 0.32 + random.nextDouble() * 0.15,
+                        (random.nextDouble() - 0.5) * 0.25);
+                Vec3 offset = from.subtract(target);
+                level.addParticle(ModParticles.itemDraw(pedestal.item()), target.x, target.y, target.z, offset.x, offset.y, offset.z);
             }
+        }
+        if (!altar.stalled()) {
+            altar.embers(level, random, drawingEssence);
         }
         if (altar.stalled() && random.nextInt(4) == 0) {
             level.addParticle(ModParticles.spark(ModParticles.HEXTECH), target.x + (random.nextDouble() - 0.5) * 0.8, target.y + random.nextDouble() * 0.4,
                     target.z + (random.nextDouble() - 0.5) * 0.8, 0, 0.02, 0);
+        }
+    }
+
+    /**
+     * Client: one jar's stream into the centre item: it grows out of the jar from {@code start} and runs into the item
+     * from {@code end} (-1 while it flows).
+     */
+    public record Stream(BlockPos jar, Essence essence, long start, long end) {
+        public static final float GROW_TICKS = 12;
+
+        public float head(long now, float partialTick) {
+            return (now - start + partialTick) / GROW_TICKS;
+        }
+
+        public float tail(long now, float partialTick) {
+            return end < 0 ? 0 : (now - end + partialTick) / GROW_TICKS;
+        }
+    }
+
+    private final List<Stream> streams = new ArrayList<>();
+
+    /** Client: starts a stream from every jar of the circle holding {@code drawing}, lets the others run out. */
+    private void updateStreams(Level level, @Nullable Essence drawing) {
+        long now = level.getGameTime();
+        List<EssenceTankBlockEntity> tanks = drawing == null || circle == null ? List.of() : circle.tanks();
+        for (int i = 0; i < streams.size(); i++) {
+            Stream stream = streams.get(i);
+            boolean flows = stream.essence() == drawing && tanks.stream().anyMatch(tank -> tank.getBlockPos().equals(stream.jar())
+                    && !tank.isRemoved() && tank.tank().contents().get(drawing) > 0);
+            if (stream.end() < 0 && !flows) {
+                streams.set(i, new Stream(stream.jar(), stream.essence(), stream.start(), now));
+            }
+        }
+        streams.removeIf(stream -> stream.end() >= 0 && now - stream.end() > Stream.GROW_TICKS + 2);
+        for (EssenceTankBlockEntity tank : tanks) {
+            if (!tank.isRemoved() && tank.tank().contents().get(drawing) > 0
+                    && streams.stream().noneMatch(stream -> stream.end() < 0 && stream.jar().equals(tank.getBlockPos()))) {
+                streams.add(new Stream(tank.getBlockPos(), drawing, now, -1));
+            }
         }
     }
 
@@ -642,7 +714,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             }
             if (i < free.size()) {
                 BlockPos at = free.get(i).getBlockPos().subtract(worldPosition);
-                next.add(new Ghost(new Vec3(at.getX() + 0.5, at.getY() + 1.12, at.getZ() + 0.5), item));
+                next.add(new Ghost(new Vec3(at.getX() + 0.5, at.getY() + PedestalBlockEntity.ITEM_Y, at.getZ() + 0.5), item));
             } else {
                 // No free pedestal for it: it circles the altar, telling the player to set one more pedestal.
                 double angle = Math.PI * 2 * aroundIndex++ / around;
@@ -653,9 +725,26 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         extras = hint.extra();
     }
 
-    private static void spawnFlow(Level level, Vec3 to, Vec3 from, int color) {
-        Vec3 offset = from.subtract(to);
-        level.addParticle(ModParticles.flow(color), to.x, to.y, to.z, offset.x, offset.y, offset.z);
+    /**
+     * Client: the air of a working circle, kept sparse - glints rising slowly off the ground sigil's lines (in the colour
+     * of the essence being drawn once the items are in).
+     */
+    private void embers(Level level, RandomSource random, @Nullable Essence drawing) {
+        if (circle == null) {
+            return;
+        }
+        int color = drawing != null ? drawing.color() : random.nextInt(4) == 0 ? 0xF0D27A : ModParticles.HEXTECH;
+        if (random.nextInt(3) == 0) {
+            // A point on a line from the altar to one of the circle's members.
+            List<BlockPos> members = new ArrayList<>();
+            circle.pedestals().forEach(pedestal -> members.add(pedestal.getBlockPos()));
+            circle.steles().forEach(stele -> members.add(stele.getBlockPos()));
+            circle.tanks().forEach(tank -> members.add(tank.getBlockPos()));
+            Vec3 foot = Vec3.atBottomCenterOf(worldPosition);
+            Vec3 end = members.isEmpty() ? foot.add(2, 0, 0) : Vec3.atBottomCenterOf(members.get(random.nextInt(members.size())));
+            Vec3 at = foot.lerp(new Vec3(end.x, foot.y, end.z), 0.25 + random.nextDouble() * 0.7).add(0, 0.05, 0);
+            level.addParticle(ModParticles.glint(color), at.x, at.y, at.z, 0, 0.012 + random.nextDouble() * 0.01, 0);
+        }
     }
 
     @Override

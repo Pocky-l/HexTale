@@ -104,6 +104,8 @@ public class SoulFlaskItem extends Item {
             full.set(ModDataComponents.SOUL.get(), capture(level, target));
             Vec3 at = target.position();
             runes(level, at.add(0, target.getBbHeight() / 2, 0), target.getBbWidth(), target.getBbHeight());
+            com.pockyl.hextale.network.EssenceFxPayload.pour(level, at.add(0, target.getBbHeight() / 2, 0),
+                    com.pockyl.hextale.network.EssenceFxPayload.hand(player), ModParticles.HEXTECH, 12);
             level.playSound(null, at.x, at.y, at.z, ModSounds.ESSENCE_DRAW.get(), SoundSource.PLAYERS, 0.8F, 1.2F);
             target.discard();
             stack.shrink(1);
@@ -159,6 +161,10 @@ public class SoulFlaskItem extends Item {
                 bless(stack, living);
             }
             level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), entity.getX(), entity.getY() + 0.1, entity.getZ(), 0, 1.0, 1, 0, 1);
+            if (context.getPlayer() != null) {
+                com.pockyl.hextale.network.EssenceFxPayload.pour(level, com.pockyl.hextale.network.EssenceFxPayload.hand(context.getPlayer()),
+                        entity.position().add(0, entity.getBbHeight() / 2, 0), ModParticles.HEXTECH, 10);
+            }
             runes(level, entity.position().add(0, entity.getBbHeight() / 2, 0), entity.getBbWidth(), entity.getBbHeight());
             level.playSound(null, pos, ModSounds.PYLON_ARRIVE.get(), SoundSource.PLAYERS, 0.8F, 1.1F);
             stack.remove(ModDataComponents.SOUL.get());
@@ -175,6 +181,16 @@ public class SoulFlaskItem extends Item {
     /** What the flask's runes do to the creature stepping out. */
     private static void bless(ItemStack flask, LivingEntity creature) {
         var runes = RuneHolder.SOUL.runes(flask);
+        if (creature.level() instanceof ServerLevel level) {
+            // The flask's runes show on the creature let out: life rising for Healing and Growth, a dusk for Slumber.
+            Vec3 at = creature.position().add(0, creature.getBbHeight() * 0.3, 0);
+            if (runes.strength(SoulRune.HEALING.rune()) > 0 || runes.strength(SoulRune.GROWTH.rune()) > 0) {
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, 0x8FE07A, 0.9F);
+            }
+            if (runes.strength(SoulRune.SLUMBER.rune()) > 0 && creature instanceof Enemy) {
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, at, 0x6E5A8C, 0.8F);
+            }
+        }
         if (runes.strength(SoulRune.HEALING.rune()) > 0) {
             creature.setHealth(creature.getMaxHealth());
         }

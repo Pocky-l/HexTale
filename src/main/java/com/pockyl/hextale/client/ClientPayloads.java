@@ -85,6 +85,9 @@ public final class ClientPayloads {
                 core.strike(payload, level.getGameTime());
             }
         });
+        event.register(com.pockyl.hextale.network.RuneFxPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.RuneFx.accept(payload));
+        event.register(com.pockyl.hextale.network.EssenceFxPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.EssenceFx.accept(payload));
+        event.register(com.pockyl.hextale.network.RuneEffectPayload.TYPE, (payload, context) -> com.pockyl.hextale.client.render.RuneEffects.accept(payload));
         event.register(PylonLinkPayload.TYPE, (payload, context) -> PylonLinking.clientFrom = payload.from().orElse(null));
     }
 

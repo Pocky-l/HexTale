@@ -834,7 +834,8 @@ public class HexPylonBlockEntity extends BlockEntity {
                 rest.shrink(lucky);
                 split(out, result.copyWithCount(1), result.getCount() * lucky);
                 ToolEffects.puff(level, at, PylonRune.SMELTING.rune(), 5, 0.25);
-                level.playSound(null, at.x, at.y, at.z, net.minecraft.sounds.SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.25F, 1.6F);
+                // The cargo lands smelted.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, com.pockyl.hextale.registry.ModParticles.FIRE, 0.6F);
             }
         }
         int erosion = strength(PylonRune.EROSION);
@@ -845,6 +846,8 @@ public class HexPylonBlockEntity extends BlockEntity {
                 rest.shrink(lucky);
                 split(out, new ItemStack(ground), lucky);
                 ToolEffects.puff(level, at, PylonRune.EROSION.rune(), 5, 0.25);
+                // The cargo lands ground down.
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, 0x9C8A70, 0.6F);
                 level.playSound(null, at.x, at.y, at.z, net.minecraft.sounds.SoundEvents.BRUSH_GRAVEL_COMPLETED, SoundSource.BLOCKS, 0.4F, 1.2F);
             }
         }

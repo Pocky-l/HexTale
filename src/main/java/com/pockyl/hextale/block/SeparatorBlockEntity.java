@@ -390,6 +390,11 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         if (drawn > 0 && level.getRandom().nextInt(3) == 0) {
             level.playSound(null, worldPosition, ModSounds.SEPARATOR_DRIP.get(), SoundSource.BLOCKS, 0.6F,
                     0.9F + level.getRandom().nextFloat() * 0.2F);
+            if (level instanceof net.minecraft.server.level.ServerLevel server) {
+                // The drop falls from the flask's tip into the dish.
+                server.sendParticles(com.pockyl.hextale.registry.ModParticles.drop(out.color()), worldPosition.getX() + 0.5,
+                        worldPosition.getY() + 3.2 / 16, worldPosition.getZ() + 0.5, 1, 0, 0, 0, 0);
+            }
         }
         return true;
     }

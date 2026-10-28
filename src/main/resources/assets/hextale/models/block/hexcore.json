@@ -2,1450 +2,3366 @@
   "parent": "minecraft:block/block",
   "textures": {
     "particle": "hextale:block/polished_magic_stone",
-    "stone": "hextale:block/polished_magic_stone",
-    "brass": "hextale:block/brass",
-    "glow": "hextale:block/hextech_glow",
-    "top": "hextale:block/hextech_altar_top"
+    "hexcore_cradle": "hextale:block/hexcore_cradle"
   },
   "elements": [
     {
-      "name": "stone_plinth_c",
+      "name": "stone_t1_c",
       "from": [
-        2,
+        -2,
         0,
-        2
+        -10
       ],
       "to": [
-        14,
-        2,
-        14
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            2,
-            14,
-            14,
-            16
-          ],
-          "texture": "#stone"
-        },
-        "east": {
-          "uv": [
-            2,
-            14,
-            14,
-            16
-          ],
-          "texture": "#stone"
-        },
-        "south": {
-          "uv": [
-            2,
-            14,
-            14,
-            16
-          ],
-          "texture": "#stone"
-        },
-        "west": {
-          "uv": [
-            2,
-            14,
-            14,
-            16
-          ],
-          "texture": "#stone"
-        },
-        "down": {
-          "uv": [
-            2,
-            2,
-            14,
-            14
-          ],
-          "texture": "#stone",
-          "cullface": "down"
-        }
-      }
-    },
-    {
-      "name": "brass_trim",
-      "from": [
-        2,
-        2,
-        2
-      ],
-      "to": [
-        14,
+        18,
         3,
-        14
+        26
       ],
       "faces": {
         "north": {
           "uv": [
-            2,
-            13,
-            14,
-            14
+            12.25,
+            11.375,
+            14.75,
+            11.75
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            2,
-            13,
-            14,
-            14
+            0,
+            10.375,
+            4.5,
+            10.75
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            2,
-            13,
-            14,
-            14
+            2.875,
+            11.5,
+            5.375,
+            11.875
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            2,
+            8.5,
+            9.875,
             13,
-            14,
-            14
+            10.25
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "up": {
           "uv": [
-            2,
-            2,
-            14,
-            14
+            1,
+            0,
+            3.5,
+            4.5
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "stone_column",
+      "name": "stone_t1_w1",
+      "from": [
+        -7,
+        0,
+        -7
+      ],
+      "to": [
+        -2,
+        3,
+        23
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            15.125,
+            12.375,
+            15.75,
+            12.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            10.5,
+            12.875,
+            11.125,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            8.5,
+            10.375,
+            12.25,
+            10.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            0.375,
+            0.375,
+            1,
+            4.125
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t1_e1",
+      "from": [
+        18,
+        0,
+        -7
+      ],
+      "to": [
+        23,
+        3,
+        23
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11.25,
+            12.875,
+            11.875,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            4.625,
+            10.5,
+            8.375,
+            10.875
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            12,
+            12.875,
+            12.625,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            3.5,
+            0.375,
+            4.125,
+            4.125
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t1_w2",
+      "from": [
+        -10,
+        0,
+        -2
+      ],
+      "to": [
+        -7,
+        3,
+        18
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12.75,
+            12.875,
+            13.125,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            13.25,
+            12.875,
+            13.625,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            0,
+            11.875,
+            2.5,
+            12.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            0,
+            1,
+            0.375,
+            3.5
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t1_e2",
+      "from": [
+        23,
+        0,
+        -2
+      ],
+      "to": [
+        26,
+        3,
+        18
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13.75,
+            12.875,
+            14.125,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            5.5,
+            11.875,
+            8,
+            12.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            14.25,
+            12.875,
+            14.625,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            4.125,
+            1,
+            4.5,
+            3.5
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t2_c",
+      "from": [
+        0,
+        3,
+        -6
+      ],
+      "to": [
+        16,
+        6,
+        22
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            12.375,
+            2,
+            12.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            0,
+            10.875,
+            3.5,
+            11.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            5,
+            12.375,
+            7,
+            12.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            12.375,
+            10.375,
+            15.875,
+            10.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            5.375,
+            0,
+            7.375,
+            3.5
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t2_w1",
+      "from": [
+        -3,
+        3,
+        -3
+      ],
+      "to": [
+        0,
+        6,
+        19
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            14.75,
+            12.875,
+            15.125,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            15.25,
+            12.875,
+            15.625,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            3.625,
+            11,
+            6.375,
+            11.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            5,
+            0.375,
+            5.375,
+            3.125
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t2_e1",
+      "from": [
+        16,
+        3,
+        -3
+      ],
+      "to": [
+        19,
+        6,
+        19
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1.875,
+            13,
+            2.25,
+            13.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            0,
+            11.375,
+            2.75,
+            11.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            2.375,
+            13,
+            2.75,
+            13.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            7.375,
+            0.375,
+            7.75,
+            3.125
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t2_w2",
+      "from": [
+        -6,
+        3,
+        0
+      ],
+      "to": [
+        -3,
+        6,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2.875,
+            13,
+            3.25,
+            13.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            3.375,
+            13,
+            3.75,
+            13.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            7.125,
+            12.375,
+            9.125,
+            12.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            4.625,
+            0.75,
+            5,
+            2.75
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t2_e2",
+      "from": [
+        19,
+        3,
+        0
+      ],
+      "to": [
+        22,
+        6,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            13.375,
+            0.375,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            9.25,
+            12.375,
+            11.25,
+            12.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            0.5,
+            13.375,
+            0.875,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            7.75,
+            0.75,
+            8.125,
+            2.75
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t3_c",
+      "from": [
+        2,
+        6,
+        -3
+      ],
+      "to": [
+        14,
+        9,
+        19
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            12.875,
+            5.5,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            9.375,
+            11.375,
+            12.125,
+            11.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            5.625,
+            12.875,
+            7.125,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            6.5,
+            11.375,
+            9.25,
+            11.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            12.25,
+            3.375,
+            13.75,
+            6.125
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t3_w1",
+      "from": [
+        -1,
+        6,
+        -1
+      ],
+      "to": [
+        2,
+        9,
+        17
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            13.375,
+            1.375,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            3.875,
+            13.375,
+            4.25,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            13.375,
+            11.875,
+            15.625,
+            12.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            11.875,
+            3.625,
+            12.25,
+            5.875
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t3_e1",
+      "from": [
+        14,
+        6,
+        -1
+      ],
+      "to": [
+        17,
+        9,
+        17
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4.375,
+            13.375,
+            4.75,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            2.625,
+            12,
+            4.875,
+            12.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            4.875,
+            13.375,
+            5.25,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            13.75,
+            3.625,
+            14.125,
+            5.875
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t3_w2",
+      "from": [
+        -3,
+        6,
+        2
+      ],
+      "to": [
+        -1,
+        9,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            15.75,
+            12.875,
+            16,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            1.5,
+            13.375,
+            1.75,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            7.25,
+            12.875,
+            8.75,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            11.625,
+            4,
+            11.875,
+            5.5
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_t3_e2",
+      "from": [
+        17,
+        6,
+        2
+      ],
+      "to": [
+        19,
+        9,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11.375,
+            13.375,
+            11.625,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            8.875,
+            12.875,
+            10.375,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            11.75,
+            13.375,
+            12,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            14.125,
+            4,
+            14.375,
+            5.5
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_post_nw",
+      "from": [
+        0,
+        9,
+        0
+      ],
+      "to": [
+        3,
+        15,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            7.625,
+            8.375,
+            8.375
+          ],
+          "texture": "#hexcore_cradle",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            9.5,
+            7.625,
+            9.875,
+            8.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            8.5,
+            7.625,
+            8.875,
+            8.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            9,
+            7.625,
+            9.375,
+            8.375
+          ],
+          "texture": "#hexcore_cradle",
+          "cullface": "west"
+        }
+      }
+    },
+    {
+      "name": "stone_post_ne",
+      "from": [
+        13,
+        9,
+        0
+      ],
+      "to": [
+        16,
+        15,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10,
+            7.625,
+            10.375,
+            8.375
+          ],
+          "texture": "#hexcore_cradle",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            11.5,
+            7.625,
+            11.875,
+            8.375
+          ],
+          "texture": "#hexcore_cradle",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            10.5,
+            7.625,
+            10.875,
+            8.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            11,
+            7.625,
+            11.375,
+            8.375
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_post_sw",
+      "from": [
+        0,
+        9,
+        13
+      ],
+      "to": [
+        3,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            7.625,
+            12.375,
+            8.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            13.5,
+            7.625,
+            13.875,
+            8.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            12.5,
+            7.625,
+            12.875,
+            8.375
+          ],
+          "texture": "#hexcore_cradle",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            13,
+            7.625,
+            13.375,
+            8.375
+          ],
+          "texture": "#hexcore_cradle",
+          "cullface": "west"
+        }
+      }
+    },
+    {
+      "name": "stone_post_se",
+      "from": [
+        13,
+        9,
+        13
+      ],
+      "to": [
+        16,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3.5,
+            7.75,
+            3.875,
+            8.5
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            5,
+            7.75,
+            5.375,
+            8.5
+          ],
+          "texture": "#hexcore_cradle",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            4,
+            7.75,
+            4.375,
+            8.5
+          ],
+          "texture": "#hexcore_cradle",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            4.5,
+            7.75,
+            4.875,
+            8.5
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "glow_heart",
       "from": [
         5,
-        3,
+        9,
         5
       ],
       "to": [
         11,
-        8,
+        15,
         11
       ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          12,
+          8
+        ]
+      },
+      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
-            5,
-            8,
-            11,
-            13
+            7.75,
+            6.75,
+            8.5,
+            7.5
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            5,
-            8,
-            11,
-            13
+            10.375,
+            6.75,
+            11.125,
+            7.5
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            5,
-            8,
-            11,
-            13
+            8.625,
+            6.75,
+            9.375,
+            7.5
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            5,
-            8,
-            11,
-            13
+            9.5,
+            6.75,
+            10.25,
+            7.5
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "glow_channel_x",
+      "name": "stone_crown_c",
       "from": [
-        6.97,
-        2.97,
-        4.97
+        1,
+        15,
+        -5
       ],
       "to": [
-        9.03,
-        8.03,
-        11.03
+        15,
+        18,
+        21
       ],
       "faces": {
         "north": {
           "uv": [
-            7,
-            8,
-            9,
-            13
+            11.375,
+            12.375,
+            13.125,
+            12.75
           ],
-          "texture": "#glow"
-        },
-        "south": {
-          "uv": [
-            7,
-            8,
-            9,
-            13
-          ],
-          "texture": "#glow"
-        }
-      }
-    },
-    {
-      "name": "glow_channel_z",
-      "from": [
-        4.97,
-        2.97,
-        6.97
-      ],
-      "to": [
-        11.03,
-        8.03,
-        9.03
-      ],
-      "faces": {
-        "east": {
-          "uv": [
-            7,
-            8,
-            9,
-            13
-          ],
-          "texture": "#glow"
-        },
-        "west": {
-          "uv": [
-            7,
-            8,
-            9,
-            13
-          ],
-          "texture": "#glow"
-        }
-      }
-    },
-    {
-      "name": "brass_collar",
-      "from": [
-        3.97,
-        6.97,
-        3.97
-      ],
-      "to": [
-        12.03,
-        8.03,
-        12.03
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            4,
-            8,
-            12,
-            9
-          ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            4,
-            8,
-            12,
-            9
+            11.875,
+            10.875,
+            15.125,
+            11.25
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            4,
-            8,
-            12,
-            9
+            13.25,
+            12.375,
+            15,
+            12.75
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            4,
-            8,
-            12,
-            9
+            8.5,
+            10.875,
+            11.75,
+            11.25
           ],
-          "texture": "#brass"
-        },
-        "down": {
-          "uv": [
-            4,
-            4,
-            12,
-            12
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "brass_capital",
-      "from": [
-        3,
-        8,
-        3
-      ],
-      "to": [
-        13,
-        10,
-        13
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            3,
-            6,
-            13,
-            8
-          ],
-          "texture": "#brass"
-        },
-        "east": {
-          "uv": [
-            3,
-            6,
-            13,
-            8
-          ],
-          "texture": "#brass"
-        },
-        "south": {
-          "uv": [
-            3,
-            6,
-            13,
-            8
-          ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            3,
-            6,
-            13,
-            8
-          ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "up": {
           "uv": [
-            3,
-            3,
-            13,
-            13
+            9,
+            0,
+            10.75,
+            3.25
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "down": {
           "uv": [
-            3,
-            3,
-            13,
-            13
+            12.375,
+            0,
+            14.125,
+            3.25
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "top_dish",
+      "name": "stone_crown_w1",
+      "from": [
+        -2,
+        15,
+        -2
+      ],
+      "to": [
+        1,
+        18,
+        18
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5.375,
+            13.375,
+            5.75,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            5.875,
+            13.375,
+            6.25,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            8.125,
+            11.875,
+            10.625,
+            12.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            8.625,
+            0.375,
+            9,
+            2.875
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "down": {
+          "uv": [
+            12,
+            0.375,
+            12.375,
+            2.875
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_crown_e1",
+      "from": [
+        15,
+        15,
+        -2
+      ],
+      "to": [
+        18,
+        18,
+        18
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6.375,
+            13.375,
+            6.75,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            10.75,
+            11.875,
+            13.25,
+            12.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            6.875,
+            13.375,
+            7.25,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            10.75,
+            0.375,
+            11.125,
+            2.875
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "down": {
+          "uv": [
+            14.125,
+            0.375,
+            14.5,
+            2.875
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_crown_w2",
+      "from": [
+        -5,
+        15,
+        1
+      ],
+      "to": [
+        -2,
+        18,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7.375,
+            13.375,
+            7.75,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            7.875,
+            13.375,
+            8.25,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            2.125,
+            12.5,
+            3.875,
+            12.875
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            8.25,
+            0.75,
+            8.625,
+            2.5
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "down": {
+          "uv": [
+            11.625,
+            0.75,
+            12,
+            2.5
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_crown_e2",
+      "from": [
+        18,
+        15,
+        1
+      ],
+      "to": [
+        21,
+        18,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8.375,
+            13.375,
+            8.75,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            0,
+            12.875,
+            1.75,
+            13.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            8.875,
+            13.375,
+            9.25,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            11.125,
+            0.75,
+            11.5,
+            2.5
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "down": {
+          "uv": [
+            14.5,
+            0.75,
+            14.875,
+            2.5
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_pier_n",
       "from": [
         4,
-        10,
-        4
+        3,
+        -9
       ],
       "to": [
         12,
-        11,
+        8,
+        -4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            14,
+            7.75,
+            15,
+            8.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            12.25,
+            8.5,
+            12.875,
+            9.125
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            0,
+            8.25,
+            1,
+            8.875
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            15.125,
+            7.75,
+            15.75,
+            8.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            1.125,
+            8.25,
+            2.125,
+            8.875
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_pier_e",
+      "from": [
+        20,
+        3,
+        4
+      ],
+      "to": [
+        25,
+        8,
         12
       ],
       "faces": {
         "north": {
           "uv": [
-            4,
-            5,
-            12,
-            6
+            13,
+            8.5,
+            13.625,
+            9.125
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            4,
-            5,
-            12,
-            6
+            5.5,
+            8.375,
+            6.5,
+            9
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            4,
-            5,
-            12,
-            6
+            13.75,
+            8.5,
+            14.375,
+            9.125
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            4,
-            5,
-            12,
-            6
+            2.25,
+            8.25,
+            3.25,
+            8.875
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "up": {
           "uv": [
-            4,
-            4,
-            12,
-            12
+            6.25,
+            6.375,
+            6.875,
+            7.375
           ],
-          "texture": "#top"
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "brass_claw_se",
+      "name": "stone_pier_s",
       "from": [
-        11,
-        9,
-        11
-      ],
-      "to": [
-        13,
-        14,
-        13
-      ],
-      "rotation": {
-        "x": 40,
-        "y": 45,
-        "z": 0,
-        "origin": [
-          12,
-          9,
-          12
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            3,
-            2,
-            5,
-            7
-          ],
-          "texture": "#brass"
-        },
-        "east": {
-          "uv": [
-            3,
-            2,
-            5,
-            7
-          ],
-          "texture": "#brass"
-        },
-        "south": {
-          "uv": [
-            11,
-            2,
-            13,
-            7
-          ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            11,
-            2,
-            13,
-            7
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "brass_finger_se",
-      "from": [
-        12.97,
-        11.97,
-        12.97
-      ],
-      "to": [
-        15.03,
-        15.03,
-        15.03
-      ],
-      "rotation": {
-        "x": 15,
-        "y": 45,
-        "z": 0,
-        "origin": [
-          14,
-          13,
-          14
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            7,
-            6,
-            9,
-            9
-          ],
-          "texture": "#brass"
-        },
-        "east": {
-          "uv": [
-            7,
-            6,
-            9,
-            9
-          ],
-          "texture": "#brass"
-        },
-        "south": {
-          "uv": [
-            7,
-            6,
-            9,
-            9
-          ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            7,
-            6,
-            9,
-            9
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "glow_tip_se",
-      "from": [
-        12.95,
-        14.95,
-        12.95
-      ],
-      "to": [
-        15.05,
-        17.05,
-        15.05
-      ],
-      "rotation": {
-        "x": 15,
-        "y": 45,
-        "z": 0,
-        "origin": [
-          14,
-          13,
-          14
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            7,
-            6,
-            9,
-            8
-          ],
-          "texture": "#glow"
-        },
-        "east": {
-          "uv": [
-            7,
-            6,
-            9,
-            8
-          ],
-          "texture": "#glow"
-        },
-        "south": {
-          "uv": [
-            7,
-            6,
-            9,
-            8
-          ],
-          "texture": "#glow"
-        },
-        "west": {
-          "uv": [
-            7,
-            6,
-            9,
-            8
-          ],
-          "texture": "#glow"
-        },
-        "up": {
-          "uv": [
-            7,
-            7,
-            9,
-            9
-          ],
-          "texture": "#glow"
-        }
-      }
-    },
-    {
-      "name": "brass_claw_sw",
-      "from": [
+        4,
         3,
-        9,
-        11
+        20
       ],
       "to": [
-        5,
-        14,
-        13
+        12,
+        8,
+        25
       ],
-      "rotation": {
-        "x": 40,
-        "y": -45,
-        "z": 0,
-        "origin": [
-          4,
-          9,
-          12
-        ]
-      },
       "faces": {
         "north": {
           "uv": [
-            11,
-            2,
-            13,
-            7
+            6.625,
+            8.5,
+            7.625,
+            9.125
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            3,
-            2,
-            5,
-            7
+            15.25,
+            8.5,
+            15.875,
+            9.125
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            3,
-            2,
-            5,
-            7
+            7.75,
+            8.5,
+            8.75,
+            9.125
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            11,
-            2,
-            13,
-            7
+            14.5,
+            8.5,
+            15.125,
+            9.125
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            8.875,
+            8.5,
+            9.875,
+            9.125
+          ],
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "brass_finger_sw",
+      "name": "stone_pier_w",
       "from": [
-        0.97,
-        11.97,
-        12.97
+        -9,
+        3,
+        4
       ],
       "to": [
-        3.03,
-        15.03,
-        15.03
+        -4,
+        8,
+        12
       ],
-      "rotation": {
-        "x": 15,
-        "y": -45,
-        "z": 0,
-        "origin": [
-          2,
-          13,
-          14
-        ]
-      },
       "faces": {
         "north": {
           "uv": [
-            7,
-            6,
-            9,
-            9
+            3.375,
+            8.625,
+            4,
+            9.25
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            7,
-            6,
-            9,
-            9
+            11.125,
+            8.5,
+            12.125,
+            9.125
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            7,
-            6,
-            9,
-            9
+            4.125,
+            8.625,
+            4.75,
+            9.25
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            7,
-            6,
-            9,
-            9
+            10,
+            8.5,
+            11,
+            9.125
           ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "glow_tip_sw",
-      "from": [
-        0.95,
-        14.95,
-        12.95
-      ],
-      "to": [
-        3.05,
-        17.05,
-        15.05
-      ],
-      "rotation": {
-        "x": 15,
-        "y": -45,
-        "z": 0,
-        "origin": [
-          2,
-          13,
-          14
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            7,
-            6,
-            9,
-            8
-          ],
-          "texture": "#glow"
-        },
-        "east": {
-          "uv": [
-            7,
-            6,
-            9,
-            8
-          ],
-          "texture": "#glow"
-        },
-        "south": {
-          "uv": [
-            7,
-            6,
-            9,
-            8
-          ],
-          "texture": "#glow"
-        },
-        "west": {
-          "uv": [
-            7,
-            6,
-            9,
-            8
-          ],
-          "texture": "#glow"
+          "texture": "#hexcore_cradle"
         },
         "up": {
           "uv": [
             7,
-            7,
-            9,
-            9
+            6.375,
+            7.625,
+            7.375
           ],
-          "texture": "#glow"
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "brass_claw_ne",
+      "name": "glow_crown",
       "from": [
-        11,
-        9,
-        3
+        -5,
+        18.03,
+        -5
       ],
       "to": [
-        13,
-        14,
+        21,
+        18.03,
+        21
+      ],
+      "light_emission": 15,
+      "faces": {
+        "up": {
+          "uv": [
+            8.25,
+            3.375,
+            11.5,
+            6.625
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "glow_side_n",
+      "from": [
+        7,
+        15,
+        -5.05
+      ],
+      "to": [
+        9,
+        18,
+        -5.05
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            12.125,
+            13.375,
+            12.375,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "glow_side_e",
+      "from": [
+        21.05,
+        15,
+        7
+      ],
+      "to": [
+        21.05,
+        18,
+        9
+      ],
+      "light_emission": 15,
+      "faces": {
+        "east": {
+          "uv": [
+            12.5,
+            13.375,
+            12.75,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "glow_side_s",
+      "from": [
+        7,
+        15,
+        21.05
+      ],
+      "to": [
+        9,
+        18,
+        21.05
+      ],
+      "light_emission": 15,
+      "faces": {
+        "south": {
+          "uv": [
+            12.875,
+            13.375,
+            13.125,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "glow_side_w",
+      "from": [
+        -5.05,
+        15,
+        7
+      ],
+      "to": [
+        -5.05,
+        18,
+        9
+      ],
+      "light_emission": 15,
+      "faces": {
+        "west": {
+          "uv": [
+            13.25,
+            13.375,
+            13.5,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_rib_n",
+      "from": [
+        5,
+        7,
+        -7
+      ],
+      "to": [
+        11,
+        17,
+        -3
+      ],
+      "rotation": {
+        "angle": 24,
+        "axis": "x",
+        "origin": [
+          8,
+          12,
+          -5
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            15,
+            0,
+            15.75,
+            1.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            3.5,
+            4.625,
+            4,
+            5.875
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            15,
+            1.375,
+            15.75,
+            2.625
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            15.375,
+            4.125,
+            15.875,
+            5.375
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "glow_rib_n",
+      "from": [
+        5,
+        7,
+        -7.05
+      ],
+      "to": [
+        11,
+        17,
+        -7.05
+      ],
+      "rotation": {
+        "angle": 24,
+        "axis": "x",
+        "origin": [
+          8,
+          12,
+          -5
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            15,
+            2.75,
+            15.75,
+            4
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_rib_e",
+      "from": [
+        19,
+        7,
         5
       ],
+      "to": [
+        23,
+        17,
+        11
+      ],
       "rotation": {
-        "x": 40,
-        "y": 135,
-        "z": 0,
+        "angle": 24,
+        "axis": "z",
         "origin": [
+          21,
           12,
-          9,
-          4
+          8
         ]
       },
       "faces": {
         "north": {
           "uv": [
-            3,
-            2,
+            4.125,
             5,
-            7
+            4.625,
+            6.25
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            11,
-            2,
-            13,
-            7
+            5.5,
+            3.625,
+            6.25,
+            4.875
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            11,
-            2,
-            13,
-            7
+            4.75,
+            5,
+            5.25,
+            6.25
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            3,
-            2,
-            5,
-            7
+            4.625,
+            3.625,
+            5.375,
+            4.875
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "brass_finger_ne",
+      "name": "glow_rib_e",
       "from": [
-        12.97,
-        11.97,
-        0.97
+        23.05,
+        7,
+        5
       ],
       "to": [
-        15.03,
-        15.03,
-        3.03
+        23.05,
+        17,
+        11
       ],
       "rotation": {
-        "x": 15,
-        "y": 135,
-        "z": 0,
+        "angle": 24,
+        "axis": "z",
         "origin": [
-          14,
-          13,
-          2
+          21,
+          12,
+          8
         ]
       },
+      "light_emission": 15,
       "faces": {
-        "north": {
-          "uv": [
-            7,
-            6,
-            9,
-            9
-          ],
-          "texture": "#brass"
-        },
         "east": {
           "uv": [
-            7,
-            6,
-            9,
-            9
+            6.375,
+            3.625,
+            7.125,
+            4.875
           ],
-          "texture": "#brass"
-        },
-        "south": {
-          "uv": [
-            7,
-            6,
-            9,
-            9
-          ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            7,
-            6,
-            9,
-            9
-          ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "glow_tip_ne",
+      "name": "stone_rib_s",
       "from": [
-        12.95,
-        14.95,
-        0.95
+        5,
+        7,
+        19
       ],
       "to": [
-        15.05,
-        17.05,
-        3.05
+        11,
+        17,
+        23
       ],
       "rotation": {
-        "x": 15,
-        "y": 135,
-        "z": 0,
+        "angle": -24,
+        "axis": "x",
         "origin": [
-          14,
-          13,
-          2
+          8,
+          12,
+          21
         ]
       },
       "faces": {
         "north": {
           "uv": [
-            7,
-            6,
-            9,
-            8
+            7.25,
+            3.625,
+            8,
+            4.875
           ],
-          "texture": "#glow"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            7,
             6,
-            9,
-            8
+            5,
+            6.5,
+            6.25
           ],
-          "texture": "#glow"
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            7,
-            6,
-            9,
-            8
+            14.5,
+            4.125,
+            15.25,
+            5.375
           ],
-          "texture": "#glow"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            7,
-            6,
-            9,
-            8
+            5.375,
+            5,
+            5.875,
+            6.25
           ],
-          "texture": "#glow"
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "glow_rib_s",
+      "from": [
+        5,
+        7,
+        23.05
+      ],
+      "to": [
+        11,
+        17,
+        23.05
+      ],
+      "rotation": {
+        "angle": -24,
+        "axis": "x",
+        "origin": [
+          8,
+          12,
+          21
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "south": {
+          "uv": [
+            0,
+            4.625,
+            0.75,
+            5.875
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "stone_rib_w",
+      "from": [
+        -7,
+        7,
+        5
+      ],
+      "to": [
+        -3,
+        17,
+        11
+      ],
+      "rotation": {
+        "angle": -24,
+        "axis": "z",
+        "origin": [
+          -5,
+          12,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            6.625,
+            5,
+            7.125,
+            6.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            1.75,
+            4.625,
+            2.5,
+            5.875
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            7.25,
+            5,
+            7.75,
+            6.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            0.875,
+            4.625,
+            1.625,
+            5.875
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "glow_rib_w",
+      "from": [
+        -7.05,
+        7,
+        5
+      ],
+      "to": [
+        -7.05,
+        17,
+        11
+      ],
+      "rotation": {
+        "angle": -24,
+        "axis": "z",
+        "origin": [
+          -5,
+          12,
+          8
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "west": {
+          "uv": [
+            2.625,
+            4.625,
+            3.375,
+            5.875
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "brass_knuckle_nw",
+      "from": [
+        -5.18234,
+        16,
+        -5.18234
+      ],
+      "to": [
+        0.81766,
+        20,
+        0.81766
+      ],
+      "rotation": {
+        "x": -40,
+        "y": 45,
+        "z": 0,
+        "origin": [
+          -2.18234,
+          18,
+          -2.18234
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            9,
+            0.75,
+            9.5
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            4.875,
+            9.125,
+            5.625,
+            9.625
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            0.875,
+            9,
+            1.625,
+            9.5
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            1.75,
+            9,
+            2.5,
+            9.5
+          ],
+          "texture": "#hexcore_cradle"
         },
         "up": {
           "uv": [
-            7,
-            7,
-            9,
-            9
+            15,
+            6.875,
+            15.75,
+            7.625
           ],
-          "texture": "#glow"
+          "texture": "#hexcore_cradle"
+        },
+        "down": {
+          "uv": [
+            14.125,
+            6.875,
+            14.875,
+            7.625
+          ],
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "brass_claw_nw",
+      "name": "brass_arm_nw",
       "from": [
-        3,
-        9,
-        3
+        -3.78234,
+        19.4,
+        -3.78234
       ],
       "to": [
-        5,
-        14,
-        5
+        -0.58234,
+        28.6,
+        -0.58234
       ],
       "rotation": {
-        "x": 40,
-        "y": -135,
+        "x": -10,
+        "y": 45,
         "z": 0,
         "origin": [
-          4,
-          9,
-          4
+          -2.18234,
+          19,
+          -2.18234
         ]
       },
       "faces": {
         "north": {
           "uv": [
-            11,
-            2,
-            13,
-            7
+            14.5,
+            5.5,
+            15,
+            6.75
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            11,
-            2,
-            13,
-            7
+            0.625,
+            6,
+            1.125,
+            7.25
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            3,
-            2,
-            5,
-            7
+            15.125,
+            5.5,
+            15.625,
+            6.75
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            3,
-            2,
-            5,
-            7
+            0,
+            6,
+            0.5,
+            7.25
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
       "name": "brass_finger_nw",
       "from": [
-        0.97,
-        11.97,
-        0.97
+        -4.88442,
+        27.7,
+        -4.88442
       ],
       "to": [
-        3.03,
-        15.03,
-        3.03
+        -1.88442,
+        31.7,
+        -1.88442
       ],
       "rotation": {
-        "x": 15,
-        "y": -135,
+        "x": 18,
+        "y": 45,
         "z": 0,
         "origin": [
-          2,
-          13,
-          2
+          -3.38442,
+          28,
+          -3.38442
         ]
       },
       "faces": {
         "north": {
           "uv": [
-            7,
-            6,
-            9,
-            9
+            15.375,
+            9.25,
+            15.75,
+            9.75
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            7,
-            6,
-            9,
-            9
+            0,
+            9.625,
+            0.375,
+            10.125
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            7,
-            6,
-            9,
-            9
+            3.5,
+            9.375,
+            3.875,
+            9.875
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            7,
-            6,
-            9,
-            9
+            4,
+            9.375,
+            4.375,
+            9.875
           ],
-          "texture": "#brass"
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            9.375,
+            13.375,
+            9.75,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "glow_tip_nw",
+      "name": "brass_knuckle_ne",
       "from": [
-        0.95,
-        14.95,
-        0.95
+        15.18234,
+        16,
+        -5.18234
       ],
       "to": [
-        3.05,
-        17.05,
-        3.05
+        21.18234,
+        20,
+        0.81766
       ],
       "rotation": {
-        "x": 15,
-        "y": -135,
-        "z": 0,
+        "x": -32.73241,
+        "y": 32.79775,
+        "z": -49.87926,
         "origin": [
-          2,
-          13,
-          2
+          18.18234,
+          18,
+          -2.18234
         ]
       },
       "faces": {
         "north": {
           "uv": [
-            7,
-            6,
-            9,
-            8
+            5.75,
+            9.125,
+            6.5,
+            9.625
           ],
-          "texture": "#glow"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            7,
-            6,
-            9,
-            8
+            8.375,
+            9.25,
+            9.125,
+            9.75
           ],
-          "texture": "#glow"
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            7,
-            6,
-            9,
-            8
+            6.625,
+            9.25,
+            7.375,
+            9.75
           ],
-          "texture": "#glow"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            7,
-            6,
-            9,
-            8
+            7.5,
+            9.25,
+            8.25,
+            9.75
           ],
-          "texture": "#glow"
+          "texture": "#hexcore_cradle"
         },
         "up": {
           "uv": [
-            7,
-            7,
-            9,
-            9
+            0.875,
+            7.375,
+            1.625,
+            8.125
           ],
-          "texture": "#glow"
+          "texture": "#hexcore_cradle"
+        },
+        "down": {
+          "uv": [
+            0,
+            7.375,
+            0.75,
+            8.125
+          ],
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "stone_plinth_w",
+      "name": "brass_arm_ne",
       "from": [
-        1,
-        0,
-        3
+        16.58234,
+        19.4,
+        -3.78234
       ],
       "to": [
-        2,
-        2,
-        13
+        19.78234,
+        28.6,
+        -0.58234
       ],
+      "rotation": {
+        "x": -10,
+        "y": -45,
+        "z": 0,
+        "origin": [
+          18.18234,
+          19,
+          -2.18234
+        ]
+      },
       "faces": {
         "north": {
           "uv": [
-            14,
-            14,
-            15,
-            16
+            1.25,
+            6,
+            1.75,
+            7.25
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            3.125,
+            6,
+            3.625,
+            7.25
+          ],
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            1,
-            14,
-            2,
-            16
+            1.875,
+            6,
+            2.375,
+            7.25
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
+            2.5,
+            6,
             3,
-            14,
-            13,
-            16
+            7.25
           ],
-          "texture": "#stone"
-        },
-        "up": {
-          "uv": [
-            1,
-            3,
-            2,
-            13
-          ],
-          "texture": "#stone"
-        },
-        "down": {
-          "uv": [
-            1,
-            3,
-            2,
-            13
-          ],
-          "texture": "#stone",
-          "cullface": "down"
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "stone_plinth_e",
+      "name": "brass_finger_ne",
       "from": [
-        14,
-        0,
-        3
+        17.88442,
+        27.7,
+        -4.88442
       ],
       "to": [
-        15,
-        2,
-        13
+        20.88442,
+        31.7,
+        -1.88442
       ],
+      "rotation": {
+        "x": 18,
+        "y": -45,
+        "z": 0,
+        "origin": [
+          19.38442,
+          28,
+          -3.38442
+        ]
+      },
       "faces": {
         "north": {
           "uv": [
-            1,
-            14,
-            2,
-            16
+            0.5,
+            9.625,
+            0.875,
+            10.125
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            3,
-            14,
-            13,
-            16
+            2,
+            9.625,
+            2.375,
+            10.125
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
-            14,
-            14,
-            15,
-            16
+            1,
+            9.625,
+            1.375,
+            10.125
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            1.5,
+            9.625,
+            1.875,
+            10.125
+          ],
+          "texture": "#hexcore_cradle"
         },
         "up": {
           "uv": [
-            14,
-            3,
-            15,
-            13
+            9.875,
+            13.375,
+            10.25,
+            13.75
           ],
-          "texture": "#stone"
-        },
-        "down": {
-          "uv": [
-            14,
-            3,
-            15,
-            13
-          ],
-          "texture": "#stone",
-          "cullface": "down"
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "stone_plinth_n",
+      "name": "brass_knuckle_se",
       "from": [
-        3,
-        0,
-        1
+        15.18234,
+        16,
+        15.18234
       ],
       "to": [
-        13,
-        2,
-        2
+        21.18234,
+        20,
+        21.18234
       ],
+      "rotation": {
+        "x": 40,
+        "y": 45,
+        "z": 0,
+        "origin": [
+          18.18234,
+          18,
+          18.18234
+        ]
+      },
       "faces": {
         "north": {
           "uv": [
-            3,
-            14,
-            13,
-            16
+            9.25,
+            9.25,
+            10,
+            9.75
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
         },
         "east": {
           "uv": [
-            14,
-            14,
-            15,
-            16
+            11.875,
+            9.25,
+            12.625,
+            9.75
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            10.125,
+            9.25,
+            10.875,
+            9.75
+          ],
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            1,
-            14,
-            2,
-            16
+            11,
+            9.25,
+            11.75,
+            9.75
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
         },
         "up": {
           "uv": [
-            3,
-            1,
-            13,
-            2
+            2.625,
+            7.375,
+            3.375,
+            8.125
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
         },
         "down": {
           "uv": [
-            3,
-            14,
-            13,
-            15
+            1.75,
+            7.375,
+            2.5,
+            8.125
           ],
-          "texture": "#stone",
-          "cullface": "down"
+          "texture": "#hexcore_cradle"
         }
       }
     },
     {
-      "name": "stone_plinth_s",
+      "name": "brass_arm_se",
       "from": [
-        3,
-        0,
-        14
+        16.58234,
+        19.4,
+        16.58234
       ],
       "to": [
-        13,
-        2,
-        15
+        19.78234,
+        28.6,
+        19.78234
       ],
+      "rotation": {
+        "x": -10,
+        "y": -135,
+        "z": 0,
+        "origin": [
+          18.18234,
+          19,
+          18.18234
+        ]
+      },
       "faces": {
+        "north": {
+          "uv": [
+            11.625,
+            6.25,
+            12.125,
+            7.5
+          ],
+          "texture": "#hexcore_cradle"
+        },
         "east": {
           "uv": [
-            1,
+            13.5,
+            6.25,
             14,
-            2,
-            16
+            7.5
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            12.25,
+            6.25,
+            12.75,
+            7.5
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            12.875,
+            6.25,
+            13.375,
+            7.5
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "brass_finger_se",
+      "from": [
+        17.88442,
+        27.7,
+        17.88442
+      ],
+      "to": [
+        20.88442,
+        31.7,
+        20.88442
+      ],
+      "rotation": {
+        "x": 18,
+        "y": -135,
+        "z": 0,
+        "origin": [
+          19.38442,
+          28,
+          19.38442
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            4.5,
+            9.75,
+            4.875,
+            10.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            6,
+            9.75,
+            6.375,
+            10.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            5,
+            9.75,
+            5.375,
+            10.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            5.5,
+            9.75,
+            5.875,
+            10.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            10.375,
+            13.375,
+            10.75,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "brass_knuckle_sw",
+      "from": [
+        -5.18234,
+        16,
+        15.18234
+      ],
+      "to": [
+        0.81766,
+        20,
+        21.18234
+      ],
+      "rotation": {
+        "x": 26.56505,
+        "y": 37.76124,
+        "z": 39.23152,
+        "origin": [
+          -2.18234,
+          18,
+          18.18234
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            12.75,
+            9.25,
+            13.5,
+            9.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            2.625,
+            9.375,
+            3.375,
+            9.875
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            13.625,
+            9.25,
+            14.375,
+            9.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            14.5,
+            9.25,
+            15.25,
+            9.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            7.125,
+            7.625,
+            7.875,
+            8.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "down": {
+          "uv": [
+            6.25,
+            7.5,
+            7,
+            8.25
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "brass_arm_sw",
+      "from": [
+        -3.78234,
+        19.4,
+        16.58234
+      ],
+      "to": [
+        -0.58234,
+        28.6,
+        19.78234
+      ],
+      "rotation": {
+        "x": -10,
+        "y": 135,
+        "z": 0,
+        "origin": [
+          -2.18234,
+          19,
+          18.18234
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            3.75,
+            6.375,
+            4.25,
+            7.625
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            5.625,
+            6.375,
+            6.125,
+            7.625
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            4.375,
+            6.375,
+            4.875,
+            7.625
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            5,
+            6.375,
+            5.5,
+            7.625
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "brass_finger_sw",
+      "from": [
+        -4.88442,
+        27.7,
+        17.88442
+      ],
+      "to": [
+        -1.88442,
+        31.7,
+        20.88442
+      ],
+      "rotation": {
+        "x": 18,
+        "y": 135,
+        "z": 0,
+        "origin": [
+          -3.38442,
+          28,
+          19.38442
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            6.5,
+            9.875,
+            6.875,
+            10.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            8,
+            9.875,
+            8.375,
+            10.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            7,
+            9.875,
+            7.375,
+            10.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            7.5,
+            9.875,
+            7.875,
+            10.375
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "up": {
+          "uv": [
+            10.875,
+            13.375,
+            11.25,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "brass_tip_nw",
+      "from": [
+        -3.57832,
+        28.5,
+        -3.57832
+      ],
+      "to": [
+        -1.57832,
+        31.5,
+        -1.57832
+      ],
+      "rotation": {
+        "x": -156,
+        "y": 45,
+        "z": 0,
+        "origin": [
+          -2.57832,
+          31.5,
+          -2.57832
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            13.625,
+            13.375,
+            13.875,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            14.75,
+            13.375,
+            15,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            14,
+            13.375,
+            14.25,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            14.375,
+            13.375,
+            14.625,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "down": {
+          "uv": [
+            3.75,
+            13.875,
+            4,
+            14.125
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "brass_tip_ne",
+      "from": [
+        17.57832,
+        28.5,
+        -3.57832
+      ],
+      "to": [
+        19.57832,
+        31.5,
+        -1.57832
+      ],
+      "rotation": {
+        "x": -156,
+        "y": -45,
+        "z": 0,
+        "origin": [
+          18.57832,
+          31.5,
+          -2.57832
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            15.125,
+            13.375,
+            15.375,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            2.25,
+            13.5,
+            2.5,
+            13.875
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            15.5,
+            13.375,
+            15.75,
+            13.75
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            1.875,
+            13.5,
+            2.125,
+            13.875
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "down": {
+          "uv": [
+            4.125,
+            13.875,
+            4.375,
+            14.125
+          ],
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "brass_tip_se",
+      "from": [
+        17.57832,
+        28.5,
+        17.57832
+      ],
+      "to": [
+        19.57832,
+        31.5,
+        19.57832
+      ],
+      "rotation": {
+        "x": -156,
+        "y": -135,
+        "z": 0,
+        "origin": [
+          18.57832,
+          31.5,
+          18.57832
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            2.625,
+            13.5,
+            2.875,
+            13.875
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            0,
+            13.875,
+            0.25,
+            14.25
+          ],
+          "texture": "#hexcore_cradle"
         },
         "south": {
           "uv": [
             3,
-            14,
-            13,
-            16
+            13.5,
+            3.25,
+            13.875
           ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
         },
         "west": {
           "uv": [
-            14,
-            14,
-            15,
-            16
+            3.375,
+            13.5,
+            3.625,
+            13.875
           ],
-          "texture": "#stone"
-        },
-        "up": {
-          "uv": [
-            3,
-            14,
-            13,
-            15
-          ],
-          "texture": "#stone"
+          "texture": "#hexcore_cradle"
         },
         "down": {
           "uv": [
-            3,
-            1,
-            13,
-            2
+            4.5,
+            13.875,
+            4.75,
+            14.125
           ],
-          "texture": "#stone",
-          "cullface": "down"
+          "texture": "#hexcore_cradle"
+        }
+      }
+    },
+    {
+      "name": "brass_tip_sw",
+      "from": [
+        -3.57832,
+        28.5,
+        17.57832
+      ],
+      "to": [
+        -1.57832,
+        31.5,
+        19.57832
+      ],
+      "rotation": {
+        "x": -156,
+        "y": 135,
+        "z": 0,
+        "origin": [
+          -2.57832,
+          31.5,
+          18.57832
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0.375,
+            13.875,
+            0.625,
+            14.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "east": {
+          "uv": [
+            1.5,
+            13.875,
+            1.75,
+            14.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "south": {
+          "uv": [
+            0.75,
+            13.875,
+            1,
+            14.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "west": {
+          "uv": [
+            1.125,
+            13.875,
+            1.375,
+            14.25
+          ],
+          "texture": "#hexcore_cradle"
+        },
+        "down": {
+          "uv": [
+            4.875,
+            13.875,
+            5.125,
+            14.125
+          ],
+          "texture": "#hexcore_cradle"
         }
       }
     }
-  ]
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        -1.5
+      ],
+      "scale": [
+        0.14,
+        0.14,
+        0.14
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        -1.5
+      ],
+      "scale": [
+        0.14,
+        0.14,
+        0.14
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.15,
+        0.15,
+        0.15
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.15,
+        0.15,
+        0.15
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        1.5,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.1,
+        0.1
+      ]
+    },
+    "gui": {
+      "rotation": [
+        30,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        -3,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        6,
+        0
+      ],
+      "scale": [
+        0.3,
+        0.3,
+        0.3
+      ]
+    },
+    "fixed": {
+      "translation": [
+        0,
+        -2.5,
+        0
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    }
+  }
 }

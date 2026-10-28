@@ -100,6 +100,8 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         if (placer != null) {
             WorldEdits.setPlacer(hexcore, placer);
         }
+        // The cradle spreads further than the altar did: stand-ins for the new cells, in the placer's name.
+        ShapeParts.refresh(level, pos, null);
         hexcore.bornAt = level.getGameTime();
         hexcore.setChanged();
         Vec3 at = Vec3.atBottomCenterOf(pos).add(0, REST_Y, 0);
@@ -109,14 +111,14 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 50, 0.4, 0.4, 0.4, 0.25);
         level.playSound(null, pos, ModSounds.RITUAL_COMPLETE.get(), SoundSource.BLOCKS, 1.2F, 0.8F);
         level.playSound(null, pos, ModSounds.BLOCK_AWAKEN.get(), SoundSource.BLOCKS, 1.2F, 0.7F);
-        level.playSound(null, pos, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.BLOCKS, 0.5F, 1.5F);
+        level.playSound(null, pos, ModSounds.HEXCORE_STRIKE.get(), SoundSource.BLOCKS, 0.9F, 0.75F);
         // The new matrix reaches out to every part of its circle once.
         Ritual.Circle circle = Ritual.Circle.scan(level, pos);
         for (var stele : circle.steles()) {
-            hexcore.send(level, Vec3.atCenterOf(stele.getBlockPos()).add(0, 0.6, 0), HexcoreStrikePayload.CALM);
+            hexcore.send(level, Vec3.atLowerCornerOf(stele.getBlockPos()).add(0.5, RuneSteleBlockEntity.GLYPH_Y, 0.5), HexcoreStrikePayload.CALM);
         }
         for (var pedestal : circle.pedestals()) {
-            hexcore.send(level, Vec3.atCenterOf(pedestal.getBlockPos()).add(0, 0.6, 0), HexcoreStrikePayload.CALM);
+            hexcore.send(level, Vec3.atCenterOf(pedestal.getBlockPos()).add(0, PedestalBlockEntity.ITEM_Y - 0.5, 0), HexcoreStrikePayload.CALM);
         }
         for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, new AABB(pos).inflate(Ritual.TANK_RADIUS * 2))) {
             Quests.fire(player, Quests.HEXCORE_AWAKENED);
@@ -378,8 +380,8 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         if (!calm) {
             level.sendParticles(ModParticles.vapour(ModParticles.SOOT), at.x, at.y, at.z, 8, 0.2, 0.15, 0.2, 0.02);
         }
-        level.playSound(null, BlockPos.containing(at), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.BLOCKS,
-                calm ? 0.45F : 1.0F, 1.3F + level.getRandom().nextFloat() * 0.3F);
+        level.playSound(null, BlockPos.containing(at), ModSounds.HEXCORE_STRIKE.get(), SoundSource.BLOCKS,
+                calm ? 0.45F : 1.0F, 0.95F + level.getRandom().nextFloat() * 0.15F);
     }
 
     private void send(ServerLevel level, Vec3 at, int kind) {
@@ -439,7 +441,7 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
         BlockPos pos = getBlockPos();
         int pick = random.nextInt(4);
         if (circle != null && pick == 0 && !circle.pedestals().isEmpty()) {
-            return Vec3.atCenterOf(circle.pedestals().get(random.nextInt(circle.pedestals().size())).getBlockPos()).add(0, 0.6, 0);
+            return Vec3.atCenterOf(circle.pedestals().get(random.nextInt(circle.pedestals().size())).getBlockPos()).add(0, PedestalBlockEntity.ITEM_Y - 0.5, 0);
         }
         if (circle != null && pick == 1 && !circle.steles().isEmpty()) {
             return Vec3.atCenterOf(circle.steles().get(random.nextInt(circle.steles().size())).getBlockPos()).add(0, 0.9, 0);

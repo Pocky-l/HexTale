@@ -34,6 +34,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class EssenceNetwork {
     public static final int MAX_PIPES = 256;
+    /**
+     * Ticks between two pulses shown on one run of pipes (owner 2026-10-28: a base's pipes work all day - a pulse every
+     * second made the whole base blink), and the colour of water in them.
+     */
+    private static final int PULSE_TICKS = 70;
+    private static final int WATER_COLOR = 0x5FA8E8;
+    private static final Map<Level, it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap> PULSES = new WeakHashMap<>();
     /** A remembered network is walked again after this many ticks even if no pipe changed (chunks loaded meanwhile). */
     private static final int CACHE_TICKS = 100;
 
@@ -103,7 +110,8 @@ public final class EssenceNetwork {
         if (offer.isEmpty()) {
             return 0;
         }
-        return deliver(level, from, face, null, (vessel, side) -> vessel instanceof Receiver receiver ? receiver.receive(side, offer, false) : 0);
+        return deliver(level, from, face, null, offer.color(),
+                (vessel, side) -> vessel instanceof Receiver receiver ? receiver.receive(side, offer, false) : 0);
     }
 
     /**
@@ -116,7 +124,8 @@ public final class EssenceNetwork {
         if (offer.isEmpty()) {
             return 0;
         }
-        return deliver(level, from, face, jar, (vessel, side) -> vessel instanceof Receiver receiver ? receiver.receive(side, offer, false) : 0);
+        return deliver(level, from, face, jar, offer.color(),
+                (vessel, side) -> vessel instanceof Receiver receiver ? receiver.receive(side, offer, false) : 0);
     }
 
     /**
@@ -128,11 +137,11 @@ public final class EssenceNetwork {
         if (amount <= 0) {
             return 0;
         }
-        return deliver(level, from, face, null,
+        return deliver(level, from, face, null, WATER_COLOR,
                 (vessel, side) -> vessel instanceof WaterReceiver receiver ? receiver.receiveWater(side, amount, false) : 0);
     }
 
-    private static int deliver(Level level, BlockPos from, Direction face, @Nullable EssenceTankBlockEntity source, Taker taker) {
+    private static int deliver(Level level, BlockPos from, Direction face, @Nullable EssenceTankBlockEntity source, int color, Taker taker) {
         BlockPos start = from.relative(face);
         BlockState first = level.getBlockState(start);
         if (!(first.getBlock() instanceof BrassPipeBlock)) {
@@ -156,6 +165,7 @@ public final class EssenceNetwork {
             }
             int taken = taker.take(vessel, outlet.direction().getOpposite());
             if (taken > 0) {
+                showFlow(level, from, start, at, outlet.direction(), network.pipes(), color);
                 return taken;
             }
         }
@@ -195,10 +205,78 @@ public final class EssenceNetwork {
             }
             EssenceTankBlockEntity tank = EssenceTankBlockEntity.at(level, at);
             if (tank != null && !tank.tank().isEmpty()) {
-                return take(tank, amount);
+                EssenceMix drawn = take(tank, amount);
+                if (!drawn.isEmpty()) {
+                    showFlow(level, at, at.relative(outlet.direction().getOpposite()), to, face.getOpposite(), network.pipes(), drawn.color());
+                }
+                return drawn;
             }
         }
         return EssenceMix.EMPTY;
+    }
+
+    /**
+     * Shows a pulse of light running from {@code source} through the pipes, entering at {@code first}, to the block at
+     * {@code target}, which the pipe beside it reaches through {@code into} - at most once per {@link #PULSE_TICKS} for one
+     * run, so a pump working every few ticks shows a steady beat, not a blur.
+     */
+    private static void showFlow(Level level, BlockPos source, BlockPos first, BlockPos target, Direction into, Set<BlockPos> pipes, int color) {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel server)) {
+            return;
+        }
+        BlockPos last = target.relative(into.getOpposite());
+        long key = first.asLong() * 31 + target.asLong();
+        it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap shown = PULSES.computeIfAbsent(level, l -> new it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap());
+        long now = level.getGameTime();
+        if (now - shown.getOrDefault(key, -PULSE_TICKS) < PULSE_TICKS) {
+            return;
+        }
+        if (shown.size() > 512) {
+            shown.long2LongEntrySet().removeIf(entry -> now - entry.getLongValue() >= PULSE_TICKS);
+        }
+        shown.put(key, now);
+        List<BlockPos> run = route(first, last, pipes);
+        if (run.isEmpty()) {
+            return;
+        }
+        List<BlockPos> path = new ArrayList<>(run.size() + 2);
+        path.add(source);
+        path.addAll(run);
+        path.add(target);
+        com.pockyl.hextale.network.EssenceFxPayload.pipe(server, path, color);
+    }
+
+    /** The shortest way through {@code pipes} from {@code from} to {@code to} (both included), or empty. */
+    private static List<BlockPos> route(BlockPos from, BlockPos to, Set<BlockPos> pipes) {
+        if (!pipes.contains(from) || !pipes.contains(to)) {
+            return List.of();
+        }
+        Map<BlockPos, BlockPos> came = new java.util.HashMap<>();
+        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+        came.put(from, from);
+        queue.add(from);
+        while (!queue.isEmpty()) {
+            BlockPos at = queue.poll();
+            if (at.equals(to)) {
+                List<BlockPos> way = new ArrayList<>();
+                for (BlockPos step = to; ; step = came.get(step)) {
+                    way.add(step);
+                    if (step.equals(from)) {
+                        break;
+                    }
+                }
+                java.util.Collections.reverse(way);
+                return way;
+            }
+            for (Direction direction : Direction.values()) {
+                BlockPos next = at.relative(direction);
+                if (pipes.contains(next) && !came.containsKey(next)) {
+                    came.put(next, at);
+                    queue.add(next);
+                }
+            }
+        }
+        return List.of();
     }
 
     private static EssenceMix take(EssenceTankBlockEntity tank, int amount) {

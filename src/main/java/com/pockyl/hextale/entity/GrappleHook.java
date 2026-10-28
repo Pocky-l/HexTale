@@ -266,6 +266,7 @@ public class GrappleHook extends Projectile {
             target.hurtServer(level, owner != null ? damageSources().playerAttack(owner) : damageSources().magic(),
                     com.pockyl.hextale.runework.HolderRune.at(com.pockyl.hextale.runework.GrappleRune.CUT, blades));
             com.pockyl.hextale.runework.ToolEffects.puff(level, at, com.pockyl.hextale.runework.GrappleRune.BLADES.rune(), 6, 0.25);
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, at, 0xD8DEE6, 0.5F);
         }
         if (gravity > 0 && owner != null && target.isAlive()) {
             Vec3 way = owner.position().subtract(target.position());
@@ -274,6 +275,8 @@ public class GrappleHook extends Projectile {
             target.setDeltaMovement(yank);
             target.needsSync = true;
             com.pockyl.hextale.runework.ToolEffects.puff(level, at, com.pockyl.hextale.runework.GrappleRune.GRAVITY.rune(), 6, 0.25);
+            com.pockyl.hextale.network.EssenceFxPayload.pour(level, at, owner.position().add(0, 1, 0),
+                    com.pockyl.hextale.runework.GrappleRune.GRAVITY.rune().color(), 8);
         }
         level.playSound(null, at.x, at.y, at.z, ModSounds.GRAPPLE_ATTACH.get(), SoundSource.PLAYERS, 0.8F, 1.3F + random.nextFloat() * 0.1F);
         retract();

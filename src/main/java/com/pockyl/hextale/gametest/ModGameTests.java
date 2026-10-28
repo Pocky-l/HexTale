@@ -41,6 +41,38 @@ public final class ModGameTests {
         helper.succeed();
     }
 
+    /**
+     * A device whose model spreads past its cell gets stand-ins in the empty cells it reaches: they outline the device,
+     * take a click and the mining to it and go together with it.
+     */
+    @HexTest(padding = 3)
+    public static void spreadingDevicesGetStandIns(GameTestHelper helper) {
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        net.minecraft.core.BlockPos altar = helper.absolutePos(new net.minecraft.core.BlockPos(2, 1, 2));
+        for (net.minecraft.core.BlockPos cell : net.minecraft.core.BlockPos.betweenClosed(altar.offset(-1, 0, -1), altar.offset(1, 1, 1))) {
+            level.setBlock(cell, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+        }
+        level.setBlock(altar, com.pockyl.hextale.registry.ModBlocks.HEXTECH_ALTAR.get().defaultBlockState(), 3);
+        com.pockyl.hextale.block.ShapeParts.refresh(level, altar, null);
+        net.minecraft.core.BlockPos east = altar.east();
+        net.minecraft.world.level.block.state.BlockState part = level.getBlockState(east);
+        helper.assertTrue(part.getBlock() instanceof com.pockyl.hextale.block.ShapePartBlock, "the dais spreads into the cell east");
+        helper.assertTrue(level.getBlockState(altar.above()).getBlock() instanceof com.pockyl.hextale.block.ShapePartBlock,
+                "the prongs reach into the cell above");
+        helper.assertTrue(level.getBlockState(altar.north().west()).getBlock() instanceof com.pockyl.hextale.block.ShapePartBlock,
+                "and the dais into the corner cells");
+        helper.assertTrue(com.pockyl.hextale.block.ShapePartBlock.device(part, east).equals(altar), "a part knows its device");
+        helper.assertTrue(part.getShape(level, east).bounds().equals(level.getBlockState(altar).getShape(level, altar).bounds().move(-1, 0, 0)),
+                "a part outlines the whole device");
+        net.minecraft.server.level.ServerPlayer player = GameTests.watcher(helper, altar);
+        player.gameMode.destroyBlock(east);
+        helper.assertTrue(level.getBlockState(altar).isAir(), "mining a part mines the device");
+        // The parts follow a tick at a time, quietly.
+        helper.succeedWhen(() -> helper.assertTrue(level.getBlockState(east).isAir() && level.getBlockState(altar.above()).isAir()
+                && level.getBlockState(altar.north().west()).isAir() && level.getBlockState(altar.above().south().east()).isAir(),
+                "the parts go with the device"));
+    }
+
     /** Every block of ours that is meant to drop something has its loot table: a missing one deletes the block when mined. */
     @HexTest
     public static void everyBlockHasItsLoot(GameTestHelper helper) {

@@ -2,8 +2,6 @@ package com.pockyl.hextale.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.WorldlyContainer;
@@ -46,7 +44,6 @@ public class HexFurnaceBlock extends BaseEntityBlock implements WorldlyContainer
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     /** Burning right now: the mouth glows and the block gives light. */
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    private static final VoxelShape SHAPE = Block.box(1, 0, 1, 15, 15, 15);
 
     public HexFurnaceBlock(Properties properties) {
         super(properties);
@@ -92,7 +89,7 @@ public class HexFurnaceBlock extends BaseEntityBlock implements WorldlyContainer
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return ModelShapes.of(state);
     }
 
     /** While it burns: blue-tinged flames and a little smoke at the mouth, a low roar now and then. */
@@ -109,11 +106,16 @@ public class HexFurnaceBlock extends BaseEntityBlock implements WorldlyContainer
         double ax = front.getAxis() == Direction.Axis.X ? 0 : across;
         double az = front.getAxis() == Direction.Axis.Z ? 0 : across;
         level.addParticle(ModParticles.flame(random.nextInt(3) == 0 ? ModParticles.SOUL_FIRE : ModParticles.FIRE), x + ax, y, z + az, 0, 0.005, 0);
-        if (random.nextInt(3) == 0) {
-            level.addParticle(ModParticles.vapour(ModParticles.SMOKE), x + ax, y + 0.3, z + az, 0, 0.02, 0);
+        // Smoke and now and then an ember leave from the brass chimney's mouth (8 px over the block, 2 px behind the middle).
+        double cx = pos.getX() + 0.5 - front.getStepX() * 2 / 16.0;
+        double cz = pos.getZ() + 0.5 - front.getStepZ() * 2 / 16.0;
+        double cy = pos.getY() + 24.2 / 16;
+        if (random.nextInt(2) == 0) {
+            level.addParticle(ModParticles.vapour(ModParticles.SMOKE), cx + (random.nextDouble() - 0.5) * 0.12, cy, cz + (random.nextDouble() - 0.5) * 0.12,
+                    0, 0.03, 0);
         }
-        if (random.nextInt(10) == 0) {
-            level.playLocalSound(pos, SoundEvents.FURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 1.0F, 1.0F, false);
+        if (random.nextInt(6) == 0) {
+            level.addParticle(ModParticles.spark(ModParticles.FIRE), cx, cy, cz, (random.nextDouble() - 0.5) * 0.02, 0.05, (random.nextDouble() - 0.5) * 0.02);
         }
     }
 
