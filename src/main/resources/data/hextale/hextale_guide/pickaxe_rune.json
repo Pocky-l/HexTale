@@ -2,7 +2,7 @@
   "region": "forge",
   "stage": "mid",
   "icon": "hextale:rune_scroll",
-  "parents": ["hextech_pickaxe", "rune_stele", "rune_scroll"],
+  "parents": ["hextech_pickaxe", "rune_circle", "rune_scroll"],
   "goal": {
     "type": "pickaxe_runes"
   },

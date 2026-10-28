@@ -4,6 +4,19 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- The Rune Circle, a carved stone circle in the floor made at the Hex Workbench and learned together with the altar.
+  Rune steles stand round it now: lay a tool, a device or a blank scroll in the middle and the steles' runes are burned
+  in, or one is copied onto the scroll, the way the altar used to do it.
+
+### Changed
+- The Hextech Altar only makes things now; burning runes in and copying them moved to the Rune Circle, so making a tool
+  and inscribing it happen in two different places.
+
+### Fixed
+- The ink vials on the Research Table's desk sit in their frames whatever the number of inks.
+
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
 the altar draws its circle on the ground. No more borrowed chimes, beeps and hisses at the mod's magic moments, and the
