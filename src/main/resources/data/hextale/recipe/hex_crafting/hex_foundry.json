@@ -1,0 +1,26 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "SBS",
+    "IFI",
+    "SBS"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:ingots/hexsteel"
+    },
+    "B": {
+      "item": "hextale:fire_bricks"
+    },
+    "I": {
+      "tag": "c:bars/iron"
+    },
+    "F": {
+      "item": "minecraft:blast_furnace"
+    }
+  },
+  "result": {
+    "id": "hextale:hex_foundry"
+  },
+  "charge": 3
+}

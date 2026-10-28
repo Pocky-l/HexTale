@@ -47,6 +47,10 @@ public class HextaleJeiPlugin implements IModPlugin {
         // The diary's step pictures are no items anyone can have.
         runtime.getIngredientManager().removeIngredientsAtRuntime(mezz.jei.api.constants.VanillaTypes.ITEM_STACK,
                 java.util.List.of(new net.minecraft.world.item.ItemStack(ModItems.GUIDE_MARK.get())));
+        // The essence fluid without a kind is no essence at all: only the 22 pure ones are shown.
+        runtime.getIngredientManager().removeIngredientsAtRuntime(mezz.jei.api.neoforge.NeoForgeTypes.FLUID_STACK,
+                java.util.List.of(new net.neoforged.neoforge.fluids.FluidStack(com.pockyl.hextale.registry.ModFluids.ESSENCE.get(),
+                        net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME)));
     }
 
     @Override
@@ -54,6 +58,25 @@ public class HextaleJeiPlugin implements IModPlugin {
         com.pockyl.hextale.port.PortJei.registerFromDataComponentTypes(registration, ModItems.ESSENCE_FLASK.get(), ModDataComponents.ESSENCE.get());
         com.pockyl.hextale.port.PortJei.registerFromDataComponentTypes(registration, ModItems.ESSENCE.get(), ModDataComponents.ESSENCE_KIND.get());
         com.pockyl.hextale.port.PortJei.registerFromDataComponentTypes(registration, ModItems.CHEM_VIAL.get(), ModDataComponents.BREW.get());
+    }
+
+    /** The essence fluid of each essence is its own ingredient. */
+    @Override
+    public <T> void registerFluidSubtypes(ISubtypeRegistration registration, mezz.jei.api.helpers.IPlatformFluidHelper<T> platformFluidHelper) {
+        registration.registerSubtypeInterpreter(mezz.jei.api.neoforge.NeoForgeTypes.FLUID_STACK, com.pockyl.hextale.registry.ModFluids.ESSENCE.get(),
+                new mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter<net.neoforged.neoforge.fluids.FluidStack>() {
+                    @Override
+                    public Object getSubtypeData(net.neoforged.neoforge.fluids.FluidStack stack, mezz.jei.api.ingredients.subtypes.UidContext context) {
+                        return com.pockyl.hextale.essence.EssenceFluid.kind(stack);
+                    }
+
+                    @Override
+                    public String getLegacyStringSubtypeInfo(net.neoforged.neoforge.fluids.FluidStack stack,
+                                                             mezz.jei.api.ingredients.subtypes.UidContext context) {
+                        com.pockyl.hextale.rune.Essence kind = com.pockyl.hextale.essence.EssenceFluid.kind(stack);
+                        return kind == null ? "" : kind.name();
+                    }
+                });
     }
 
     /** A bottle of each concentrate and one of unknown essence, so they can be looked up. */
@@ -65,6 +88,12 @@ public class HextaleJeiPlugin implements IModPlugin {
         }
         bottles.add(EssenceFlaskItem.filled(EssenceMix.unknown(EssenceFlaskItem.CAPACITY)));
         registration.addExtraItemStacks(bottles);
+        // Pure essence as a fluid, as other mods' tanks hold it.
+        List<net.neoforged.neoforge.fluids.FluidStack> fluids = new ArrayList<>();
+        for (Essence essence : Essence.values()) {
+            fluids.add(com.pockyl.hextale.essence.EssenceFluid.stack(essence, net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME));
+        }
+        registration.addExtraIngredients(mezz.jei.api.neoforge.NeoForgeTypes.FLUID_STACK, fluids);
     }
 
     @Override
@@ -98,7 +127,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addRecipes(BoilingCategory.TYPE, List.of(new BoilingCategory.Recipe(boilable)));
         List<SeparationCategory.Recipe> separations = new ArrayList<>();
         for (Essence essence : Essence.values()) {
-            separations.add(new SeparationCategory.Recipe(essence, List.of(new ItemStack(net.minecraft.world.item.Items.BLAZE_POWDER))));
+            separations.add(new SeparationCategory.Recipe(essence, com.pockyl.hextale.registry.ModTags.stacks(com.pockyl.hextale.registry.ModTags.SEPARATOR_FUELS)));
         }
         registration.addRecipes(SeparationCategory.TYPE, separations);
         registration.addRecipes(InfusionCategory.TYPE, InfusionRecipes.get(true).entrySet().stream()
@@ -216,13 +245,25 @@ public class HextaleJeiPlugin implements IModPlugin {
     }
 
     @Override
+    public void registerRecipeTransferHandlers(mezz.jei.api.registration.IRecipeTransferRegistration registration) {
+        // Hex Workbench: grid slots 0-8, then the crystal and the result, then the player's 36 slots.
+        registration.addRecipeTransferHandler(com.pockyl.hextale.menu.HexWorkbenchMenu.class, com.pockyl.hextale.registry.ModMenus.HEX_WORKBENCH.get(),
+                HexCraftingCategory.TYPE, 0, 9, 11, 36);
+        registration.addRecipeTransferHandler(com.pockyl.hextale.menu.HexWorkbenchMenu.class, com.pockyl.hextale.registry.ModMenus.HEX_WORKBENCH.get(),
+                mezz.jei.api.constants.RecipeTypes.CRAFTING, 0, 9, 11, 36);
+    }
+
+    @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalysts(BoilingCategory.TYPE, ModItems.ALEMBIC.get());
         registration.addRecipeCatalysts(SeparationCategory.TYPE, ModItems.SEPARATOR.get());
         registration.addRecipeCatalysts(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.HEXCORE.get(), ModItems.PEDESTAL.get(), ModItems.RUNE_STELE.get());
         registration.addRecipeCatalysts(RuneBurningCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
         registration.addRecipeCatalysts(HexCraftingCategory.TYPE, ModItems.HEX_WORKBENCH.get());
+        // Without a hex recipe the workbench crafts like a table and the furnace smelts like a furnace.
+        registration.addRecipeCatalysts(mezz.jei.api.constants.RecipeTypes.CRAFTING, ModItems.HEX_WORKBENCH.get());
         registration.addRecipeCatalysts(AlloyingCategory.TYPE, ModItems.HEX_FURNACE.get());
+        registration.addRecipeCatalysts(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_FURNACE.get());
         registration.addRecipeCatalysts(mezz.jei.api.constants.RecipeTypes.SMELTING, ModItems.HEX_FOUNDRY.get());
         registration.addRecipeCatalysts(HextechWorkingCategory.TYPE, ModItems.HEX_LAPIDARY.get());
         registration.addRecipeCatalysts(CrucibleCategory.TYPE, ModItems.CRUCIBLE.get());

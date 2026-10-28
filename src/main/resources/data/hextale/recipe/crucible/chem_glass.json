@@ -1,0 +1,12 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": {
+    "tag": "c:glass_blocks/colorless"
+  },
+  "essences": {
+    "decay": 3
+  },
+  "result": {
+    "id": "hextale:chem_glass"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:hextech_gemstone"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:nullstone"
+    },
+    {
+      "item": "hextale:nullstone"
+    },
+    {
+      "item": "hextale:nullstone"
+    },
+    {
+      "item": "hextale:nullstone"
+    },
+    {
+      "tag": "c:storage_blocks/brass"
+    },
+    {
+      "item": "minecraft:ender_eye"
+    }
+  ],
+  "essences": {
+    "earth": 32,
+    "rift": 24,
+    "magic": 16
+  },
+  "result": "hextale:world_anchor"
+}

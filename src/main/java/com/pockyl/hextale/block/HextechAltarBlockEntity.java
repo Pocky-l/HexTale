@@ -428,6 +428,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
 
     private void finish(ServerLevel level) {
         ChalkMarkBlock.light(level, worldPosition, false);
+        finished(level, result, kind);
         com.pockyl.hextale.thevoid.Thinning.add(level, worldPosition, essenceTotal.total() * com.pockyl.hextale.thevoid.Thinning.SPENT, com.pockyl.hextale.thevoid.Thinning.Source.SPENT);
         if (result.is(ModItems.HEXCORE.get()) && !(this instanceof HexcoreBlockEntity)) {
             // The circle's own heart was the work: the altar itself becomes the Hexcore.
@@ -456,6 +457,14 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         level.playSound(null, worldPosition, ModSounds.RITUAL_COMPLETE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         level.blockEvent(worldPosition, getBlockState().getBlock(), 1, 0);
         sync();
+    }
+
+    /** Quest makers' trigger: every researcher by the circle saw the work finish. */
+    private void finished(ServerLevel level, ItemStack made, Ritual.@Nullable Kind done) {
+        String name = done == null ? "infuse" : done.name().toLowerCase(java.util.Locale.ROOT);
+        for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, new AABB(worldPosition).inflate(Ritual.TANK_RADIUS))) {
+            com.pockyl.hextale.registry.ModTriggers.RITUAL_FINISHED.get().trigger(player, made, name);
+        }
     }
 
     /** The runes went into the work: every stele of the circle goes dark until a rune is chosen again. */

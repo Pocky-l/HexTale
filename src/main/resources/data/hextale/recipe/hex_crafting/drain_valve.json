@@ -1,0 +1,23 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " I ",
+    "BPB"
+  ],
+  "key": {
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
+    },
+    "P": {
+      "item": "hextale:brass_pipe"
+    }
+  },
+  "result": {
+    "id": "hextale:drain_valve",
+    "count": 1
+  },
+  "charge": 1
+}

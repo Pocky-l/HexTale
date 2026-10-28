@@ -25,6 +25,7 @@ import com.pockyl.hextale.network.CondensePayload;
 import com.pockyl.hextale.network.ModNetwork;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.transport.ExperienceOutlet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ import org.jspecify.annotations.Nullable;
  * it exists, and a Greedy Funnel in reach pours its deaths' experience straight in. The experience waits in the glass as
  * a glowing liquid ({@value #CAPACITY} points) until a player takes it, a level at a time or all at once, or bottles it.
  */
-public class XpCondenserBlockEntity extends BlockEntity implements com.pockyl.hextale.port.Removal.SideEffects {
+public class XpCondenserBlockEntity extends BlockEntity implements ExperienceOutlet.Store, com.pockyl.hextale.port.Removal.SideEffects {
     /** Blocks around it in which no orb appears. */
     public static final int RADIUS = 8;
     /** The loaded condensers, asked by every orb and every funnel. */
@@ -52,6 +53,8 @@ public class XpCondenserBlockEntity extends BlockEntity implements com.pockyl.he
 
     private int points;
     private long sentAt = -1;
+    /** Liquid experience for other mods' pipes and tanks, when a mod adds such a liquid. */
+    private final ExperienceOutlet outlet = new ExperienceOutlet(this);
     /** Client: streams of experience being drawn in now. */
     public final List<Shown> shown = new ArrayList<>();
     /** Client: the liquid's height eased towards the fill (0-1). */
@@ -68,6 +71,25 @@ public class XpCondenserBlockEntity extends BlockEntity implements com.pockyl.he
 
     public int points() {
         return points;
+    }
+
+    @Override
+    public int capacity() {
+        return CAPACITY;
+    }
+
+    /** Pipes of other mods draw the experience out as liquid (null: no mod adds liquid experience). */
+    public @Nullable ExperienceOutlet outlet() {
+        return ExperienceOutlet.fluid() == null ? null : outlet;
+    }
+
+    @Override
+    public void drainPoints(int taken) {
+        int drained = Math.min(taken, points);
+        if (drained > 0) {
+            points -= drained;
+            changed();
+        }
     }
 
     public float fill() {

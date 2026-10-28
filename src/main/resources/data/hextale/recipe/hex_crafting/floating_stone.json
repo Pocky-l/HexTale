@@ -1,0 +1,22 @@
+{
+  "type": "hextale:hex_crafting",
+  "ingredients": [
+    {
+      "item": "minecraft:smooth_stone"
+    },
+    {
+      "item": "minecraft:smooth_stone"
+    },
+    {
+      "item": "hextale:hextech_dust"
+    },
+    {
+      "tag": "c:feathers"
+    }
+  ],
+  "result": {
+    "id": "hextale:floating_stone",
+    "count": 2
+  },
+  "charge": 1
+}

@@ -22,6 +22,9 @@ import com.pockyl.hextale.runework.BatteryRune;
 import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.ToolEffects;
+import com.pockyl.hextale.transport.ItemIntake;
+
+import org.jspecify.annotations.Nullable;
 
 /**
  * The Crystal Battery's store: up to {@link #CAPACITY} charge (more with Cache), soaked from crystals given to it and
@@ -38,6 +41,27 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
 
     private int charge;
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
+    /** Hoppers, pylons and other mods' pipes feed it crystals; they soak in as they arrive. */
+    private final ItemIntake intake = new ItemIntake(new ItemIntake.Mouth() {
+        @Override
+        public int room(com.pockyl.hextale.port.ItemResource resource, java.util.List<ItemIntake.Arrival> pending,
+                        java.util.@Nullable UUID deliverer) {
+            int value = HexWorkbenchBlockEntity.chargeOf(resource.toStack(1));
+            if (value <= 0) {
+                return 0;
+            }
+            int promised = 0;
+            for (ItemIntake.Arrival arrival : pending) {
+                promised += HexWorkbenchBlockEntity.chargeOf(arrival.resource().toStack(1)) * arrival.count();
+            }
+            return Math.max(0, (capacity() - charge - promised) / value);
+        }
+
+        @Override
+        public void arrive(ItemStack stack, java.util.@Nullable UUID deliverer) {
+            soak(stack, stack.getCount());
+        }
+    });
 
     public CrystalBatteryBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CRYSTAL_BATTERY.get(), pos, state);
@@ -66,15 +90,31 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
         return REACH + (chain > 0 ? HolderRune.at(BatteryRune.REACH, chain) : 0);
     }
 
+    /** The item handler hoppers and pipes put crystals in through (insert only). */
+    public ItemIntake intake() {
+        return intake;
+    }
+
     /** Soaks one crystal into charge; false when it has no room for it. */
     public boolean soak(ItemStack crystal) {
+        return soak(crystal, 1) > 0;
+    }
+
+    /** Soaks up to {@code count} of the crystal into charge, as many as there is room for; returns how many. */
+    public int soak(ItemStack crystal, int count) {
         int value = HexWorkbenchBlockEntity.chargeOf(crystal);
-        if (value <= 0 || charge + value > capacity()) {
-            return false;
-        }
         int dam = strength(BatteryRune.DAM);
-        boolean bonus = dam > 0 && level != null && level.getRandom().nextFloat() < HolderRune.at(BatteryRune.BONUS, dam);
-        charge = Math.min(capacity(), charge + value + (bonus ? value / 2 : 0));
+        int soaked = 0;
+        boolean bonus = false;
+        while (soaked < count && value > 0 && charge + value <= capacity()) {
+            boolean lucky = dam > 0 && level != null && level.getRandom().nextFloat() < HolderRune.at(BatteryRune.BONUS, dam);
+            charge = Math.min(capacity(), charge + value + (lucky ? value / 2 : 0));
+            bonus |= lucky;
+            soaked++;
+        }
+        if (soaked == 0) {
+            return 0;
+        }
         changed();
         if (level instanceof ServerLevel server) {
             Vec3 at = Vec3.atCenterOf(worldPosition);
@@ -85,7 +125,7 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
                 ToolEffects.puff(server, at.add(0, 0.4, 0), BatteryRune.DAM.rune(), 6, 0.3);
             }
         }
-        return true;
+        return soaked;
     }
 
     /** Takes up to {@code amount} charge out (the Hexcore and tests draw on it); returns what was taken. */

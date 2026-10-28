@@ -1,0 +1,23 @@
+{
+  "type": "hextale:alloying",
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/copper"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "tag": "c:ingots/zinc"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "hextale:brass_ingot",
+    "count": 4
+  },
+  "time": 200,
+  "experience": 0.7
+}

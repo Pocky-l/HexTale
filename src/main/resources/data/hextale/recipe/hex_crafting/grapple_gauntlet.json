@@ -1,0 +1,27 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " C ",
+    "LSL",
+    "LBL"
+  ],
+  "key": {
+    "C": {
+      "item": "hextale:hextech_crystal"
+    },
+    "L": {
+      "tag": "c:leathers"
+    },
+    "S": {
+      "item": "minecraft:lead"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
+    }
+  },
+  "result": {
+    "id": "hextale:grapple_gauntlet",
+    "count": 1
+  },
+  "charge": 4
+}

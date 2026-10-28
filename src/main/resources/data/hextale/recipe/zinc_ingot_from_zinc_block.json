@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "hextale:zinc_block"
+      "tag": "c:storage_blocks/zinc"
     }
   ],
   "result": {

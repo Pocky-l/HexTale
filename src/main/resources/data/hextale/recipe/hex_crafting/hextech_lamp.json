@@ -1,0 +1,27 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " N ",
+    "BGB",
+    " S "
+  ],
+  "key": {
+    "N": {
+      "tag": "c:nuggets/brass"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
+    },
+    "G": {
+      "item": "hextale:hextech_crystal"
+    },
+    "S": {
+      "item": "hextale:magic_brick_slab"
+    }
+  },
+  "result": {
+    "id": "hextale:hextech_lamp",
+    "count": 2
+  },
+  "charge": 2
+}

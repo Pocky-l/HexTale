@@ -196,7 +196,7 @@ public final class Breaches {
         if (!WITNESSES.isEmpty() && level.getGameTime() % 10 == 3) {
             noteWitnesses(level);
         }
-        if (level.getGameTime() % CHECK_TICKS != 7 || !Config.THINNING.get()) {
+        if (level.getGameTime() % CHECK_TICKS != 7 || !Config.THINNING.get() || !Config.BREACHES.get()) {
             return;
         }
         for (ServerPlayer player : level.players()) {

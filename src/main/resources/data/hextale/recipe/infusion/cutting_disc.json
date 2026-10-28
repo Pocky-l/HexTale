@@ -1,0 +1,31 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "tag": "c:ingots/iron"
+  },
+  "pedestals": [
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "hextale:hextech_dust"
+    },
+    {
+      "item": "hextale:hextech_dust"
+    }
+  ],
+  "essences": {
+    "ore": 8,
+    "crystal": 8
+  },
+  "result": "hextale:cutting_disc"
+}

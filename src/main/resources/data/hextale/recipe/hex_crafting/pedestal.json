@@ -1,0 +1,24 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " I ",
+    " B ",
+    "BCB"
+  ],
+  "key": {
+    "I": {
+      "tag": "c:ingots/brass"
+    },
+    "B": {
+      "item": "hextale:magic_bricks"
+    },
+    "C": {
+      "item": "hextale:chiseled_magic_bricks"
+    }
+  },
+  "result": {
+    "id": "hextale:pedestal",
+    "count": 2
+  },
+  "charge": 2
+}

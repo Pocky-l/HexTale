@@ -6,6 +6,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
+
+import com.pockyl.hextale.world.WorldEdits;
 
 /**
  * What a Hex Sawmill fells and how - pure world rules, no timing. A tree is a trunk of logs standing on dirt with leaves
@@ -159,6 +162,14 @@ public final class Felling {
      * every log to give one more.
      */
     public static List<ItemStack> fell(ServerLevel level, Tree tree, ItemStack axe, float moreLogs) {
+        return fell(level, tree, axe, moreLogs, null);
+    }
+
+    /**
+     * {@link #fell(ServerLevel, Tree, ItemStack, float)} taking only the blocks {@code actor} may break (the sawmill's
+     * owner: a tree on a claim border leaves its other half standing); no questions asked when {@code actor} is null.
+     */
+    public static List<ItemStack> fell(ServerLevel level, Tree tree, ItemStack axe, float moreLogs, @Nullable Player actor) {
         List<ItemStack> drops = new ArrayList<>();
         List<BlockPos> order = new ArrayList<>(tree.leaves());
         List<BlockPos> logs = new ArrayList<>(tree.logs());
@@ -166,7 +177,7 @@ public final class Felling {
         order.addAll(logs);
         for (BlockPos pos : order) {
             BlockState state = level.getBlockState(pos);
-            if (!state.is(BlockTags.LOGS) && !state.is(BlockTags.LEAVES)) {
+            if (!state.is(BlockTags.LOGS) && !state.is(BlockTags.LEAVES) || actor != null && !WorldEdits.mayBreak(level, pos, actor)) {
                 continue;
             }
             boolean log = state.is(BlockTags.LOGS);
@@ -208,6 +219,12 @@ public final class Felling {
 
     /** {@link #replant(ServerLevel, BlockPos, List, List)}, adding where it planted to {@code planted}. */
     public static int replant(ServerLevel level, BlockPos foot, List<BlockPos> feet, List<ItemStack> drops, List<BlockPos> plantedAt) {
+        return replant(level, foot, feet, drops, plantedAt, null);
+    }
+
+    /** {@link #replant(ServerLevel, BlockPos, List, List, List)} planting only where {@code actor} may place (null: anywhere). */
+    public static int replant(ServerLevel level, BlockPos foot, List<BlockPos> feet, List<ItemStack> drops, List<BlockPos> plantedAt,
+                              @Nullable Player actor) {
         ItemStack best = ItemStack.EMPTY;
         for (ItemStack stack : drops) {
             if (stack.getItem() instanceof BlockItem item && item.getBlock().defaultBlockState().is(BlockTags.SAPLINGS)
@@ -222,7 +239,8 @@ public final class Felling {
         List<BlockPos> spots = best.getCount() >= feet.size() && feet.size() > 1 ? feet : List.of(foot);
         int planted = 0;
         for (BlockPos spot : spots) {
-            if (best.isEmpty() || !level.getBlockState(spot).canBeReplaced() || !sapling.canSurvive(level, spot)) {
+            if (best.isEmpty() || !level.getBlockState(spot).canBeReplaced() || !sapling.canSurvive(level, spot)
+                    || actor != null && !WorldEdits.mayPlace(level, spot, sapling, actor)) {
                 continue;
             }
             level.setBlock(spot, sapling, Block.UPDATE_ALL);
@@ -251,6 +269,11 @@ public final class Felling {
      * honey stay inside. Returns them as items.
      */
     public static List<ItemStack> takeNests(ServerLevel level, Tree tree) {
+        return takeNests(level, tree, null);
+    }
+
+    /** {@link #takeNests(ServerLevel, Tree)} taking only the nests {@code actor} may break (null: all). */
+    public static List<ItemStack> takeNests(ServerLevel level, Tree tree, @Nullable Player actor) {
         List<ItemStack> nests = new ArrayList<>();
         ItemStack silk = new ItemStack(Items.IRON_AXE);
         silk.enchant(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH), 1);
@@ -259,7 +282,8 @@ public final class Felling {
             for (Direction side : Direction.values()) {
                 BlockPos pos = log.relative(side);
                 BlockState state = level.getBlockState(pos);
-                if (!seen.add(pos) || !(state.getBlock() instanceof BeehiveBlock)) {
+                if (!seen.add(pos) || !(state.getBlock() instanceof BeehiveBlock)
+                        || actor != null && !WorldEdits.mayBreak(level, pos, actor)) {
                     continue;
                 }
                 nests.addAll(Block.getDrops(state, level, pos, level.getBlockEntity(pos), null, silk));

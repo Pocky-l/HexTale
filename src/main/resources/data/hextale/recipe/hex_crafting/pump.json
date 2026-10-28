@@ -1,0 +1,24 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " P ",
+    "BXB",
+    "BBB"
+  ],
+  "key": {
+    "P": {
+      "item": "hextale:brass_pipe"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
+    },
+    "X": {
+      "item": "minecraft:piston"
+    }
+  },
+  "result": {
+    "id": "hextale:pump",
+    "count": 1
+  },
+  "charge": 1
+}

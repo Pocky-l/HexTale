@@ -22,8 +22,7 @@ public final class ModNetwork {
         registrar.playToClient(ItemEssencesPayload.TYPE, ItemEssencesPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(ResearchMessagePayload.TYPE, ResearchMessagePayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(OpenDiaryPayload.TYPE, OpenDiaryPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
-        registrar.playToClient(InfusionRecipesPayload.TYPE, InfusionRecipesPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
-        registrar.playToClient(CraftingRecipesPayload.TYPE, CraftingRecipesPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
+        registrar.playToClient(RecipesPayload.TYPE, RecipesPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(GuidePayload.TYPE, GuidePayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(OpenStelePayload.TYPE, OpenStelePayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(PylonFlightsPayload.TYPE, PylonFlightsPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);

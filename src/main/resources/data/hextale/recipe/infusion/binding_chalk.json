@@ -1,0 +1,28 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:rune_chalk"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:nullstone"
+    },
+    {
+      "tag": "c:chains"
+    },
+    {
+      "tag": "c:chains"
+    },
+    {
+      "tag": "c:gems/amethyst"
+    }
+  ],
+  "essences": {
+    "shadow": 12,
+    "earth": 8
+  },
+  "result": {
+    "id": "hextale:binding_chalk",
+    "count": 1
+  }
+}

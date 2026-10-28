@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "hextale:brass_block"
+      "tag": "c:storage_blocks/brass"
     }
   ],
   "result": {

@@ -1,0 +1,26 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "PCP",
+    "G G",
+    "PSP"
+  ],
+  "key": {
+    "P": {
+      "item": "hextale:rusted_plating"
+    },
+    "C": {
+      "tag": "c:ingots/copper"
+    },
+    "G": {
+      "item": "hextale:chem_glass"
+    },
+    "S": {
+      "item": "minecraft:sea_pickle"
+    }
+  },
+  "result": {
+    "id": "hextale:axolotl_tank"
+  },
+  "charge": 2
+}

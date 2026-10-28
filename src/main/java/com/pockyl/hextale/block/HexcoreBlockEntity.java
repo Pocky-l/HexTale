@@ -33,6 +33,8 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.registry.ModTags;
+import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,9 +91,14 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
     public static void awaken(ServerLevel level, BlockPos pos, BlockState altar) {
         BlockState core = ModBlocks.HEXCORE.get().defaultBlockState()
                 .setValue(HextechAltarBlock.POWERED, altar.getValue(HextechAltarBlock.POWERED));
+        // The core acts in the name of whoever placed the altar it grew from.
+        java.util.UUID placer = level.getBlockEntity(pos) == null ? null : WorldEdits.placer(level.getBlockEntity(pos));
         level.setBlock(pos, core, Block.UPDATE_ALL);
         if (!(level.getBlockEntity(pos) instanceof HexcoreBlockEntity hexcore)) {
             return;
+        }
+        if (placer != null) {
+            WorldEdits.setPlacer(hexcore, placer);
         }
         hexcore.bornAt = level.getGameTime();
         hexcore.setChanged();
@@ -234,7 +241,8 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
     private boolean ignite(ServerLevel level, RandomSource random) {
         for (int attempt = 0; attempt < 16; attempt++) {
             BlockPos at = around(random).above();
-            if (level.isEmptyBlock(at) && BaseFireBlock.canBePlacedAt(level, at, Direction.UP)) {
+            if (level.isEmptyBlock(at) && BaseFireBlock.canBePlacedAt(level, at, Direction.UP)
+                    && WorldEdits.mayPlace(level, at, BaseFireBlock.getState(level, at), WorldEdits.owner(level, this))) {
                 level.setBlockAndUpdate(at, BaseFireBlock.getState(level, at));
                 land(level, Vec3.atBottomCenterOf(at), HexcoreStrikePayload.HARM);
                 return true;
@@ -252,7 +260,8 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
             BlockState state = level.getBlockState(at);
             float hardness = state.getDestroySpeed(level, at);
             if (state.isAir() || state.hasBlockEntity() || !state.getFluidState().isEmpty() || hardness < 0 || hardness > 1.0F
-                    || at.equals(pos) || "hextale".equals(BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace())) {
+                    || at.equals(pos) || "hextale".equals(BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace())
+                    || state.is(ModTags.VOID_IMMUNE) || !WorldEdits.mayBreak(level, at, WorldEdits.owner(level, this))) {
                 continue;
             }
             land(level, Vec3.atCenterOf(at), HexcoreStrikePayload.HARM);
@@ -314,17 +323,19 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
             return true;
         }
         BlockState state = level.getBlockState(ground);
-        if (state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM) || state.is(Blocks.MOSS_BLOCK)
-                || state.is(Blocks.DIRT_PATH)) {
-            level.setBlockAndUpdate(ground, Blocks.COARSE_DIRT.defaultBlockState());
+        net.minecraft.world.entity.player.Player actor = WorldEdits.owner(level, this);
+        if ((state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM) || state.is(Blocks.MOSS_BLOCK)
+                || state.is(Blocks.DIRT_PATH)) && !state.is(ModTags.VOID_IMMUNE)) {
+            WorldEdits.change(level, ground, Blocks.COARSE_DIRT.defaultBlockState(), Block.UPDATE_ALL, actor);
         }
         BlockPos above = ground.above();
         BlockState top = level.getBlockState(above);
-        if (!top.isAir() && top.canBeReplaced() && top.getFluidState().isEmpty()) {
+        if (!top.isAir() && top.canBeReplaced() && top.getFluidState().isEmpty() && !top.is(ModTags.VOID_IMMUNE)) {
             // Grass and flowers on the spot burn away.
-            level.destroyBlock(above, false);
+            WorldEdits.destroy(level, above, false, actor);
         }
-        if (random.nextFloat() < 0.3F && level.isEmptyBlock(above) && BaseFireBlock.canBePlacedAt(level, above, Direction.UP)) {
+        if (random.nextFloat() < 0.3F && level.isEmptyBlock(above) && BaseFireBlock.canBePlacedAt(level, above, Direction.UP)
+                && WorldEdits.mayPlace(level, above, BaseFireBlock.getState(level, above), actor)) {
             level.setBlockAndUpdate(above, BaseFireBlock.getState(level, above));
         }
         return true;

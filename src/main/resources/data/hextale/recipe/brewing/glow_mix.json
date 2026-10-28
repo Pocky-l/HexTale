@@ -1,0 +1,13 @@
+{
+  "type": "hextale:brewing",
+  "catalyst": {
+    "tag": "c:dusts/glowstone"
+  },
+  "essences": {
+    "light": 6,
+    "sap": 4
+  },
+  "brew": "glow",
+  "heat": 3,
+  "doses": 3
+}

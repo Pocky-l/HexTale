@@ -1,0 +1,32 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:hextech_crystal"
+  },
+  "pedestals": [
+    {
+      "item": "minecraft:lightning_rod"
+    },
+    {
+      "tag": "c:ingots/hexsteel"
+    },
+    {
+      "tag": "c:ingots/hexsteel"
+    },
+    {
+      "tag": "c:ingots/brass"
+    },
+    {
+      "tag": "c:ingots/brass"
+    },
+    {
+      "item": "hextale:polished_magic_stone"
+    }
+  ],
+  "essences": {
+    "spark": 16,
+    "metal": 12,
+    "crystal": 8
+  },
+  "result": "hextale:arc_spire"
+}

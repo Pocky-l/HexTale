@@ -50,7 +50,8 @@ public class CrucibleCategory extends AbstractRecipeCategory<CrucibleCategory.Re
         int y = EssenceColumn.middle(rows);
         builder.addInputSlot(EssenceColumn.CATALYST_X, y).setStandardSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(recipe.recipe().catalyst()))
                 .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable("jei.hextale.crucible.catalyst")));
-        builder.addOutputSlot(StepCategory.RESULT_X, y).setOutputSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(recipe.recipe().result()));
+        ResearchNote.add(builder.addOutputSlot(StepCategory.RESULT_X, y).setOutputSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(recipe.recipe().result())),
+                recipe.recipe().result().item().value());
     }
 
     @Override

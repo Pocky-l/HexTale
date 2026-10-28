@@ -1,0 +1,5 @@
+{
+  "type": "hextale:awakening",
+  "block": "minecraft:furnace",
+  "result": "hextale:hex_furnace"
+}

@@ -28,23 +28,24 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.block.CrucibleBlockEntity;
 import com.pockyl.hextale.block.HexFurnaceBlockEntity;
+import com.pockyl.hextale.crafting.AwakeningRecipe;
 import com.pockyl.hextale.quest.Quests;
-import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
 /**
  * Hextech dust wakes ordinary blocks: sprinkled on a crafting table it makes a Hex Workbench, on a furnace a Hex Furnace,
- * on a cauldron a Crucible (keeping the cauldron's water), on a dead bush a Hollowbloom.
+ * on a cauldron a Crucible (keeping the cauldron's water), on a dead bush a Hollowbloom. What wakes into what is data:
+ * recipe type {@code hextale:awakening} ({@link AwakeningRecipe}).
  * The change takes {@value #TICKS} ticks: the dust swirls into the block, sparks climb its sides, and the new block
  * appears in a flash. Breaking or changing the block meanwhile stops it and gives the dust back.
  */
@@ -53,37 +54,13 @@ public final class BlockAwakening {
     public static final int TICKS = 40;
     private static final int HEXTECH = 0x7FD8FF;
 
-    /** What a block wakes into. */
-    public record Awakening(Block from, Supplier<? extends Block> to) {
-    }
-
-    private static final List<Awakening> TABLE = List.of(
-            new Awakening(Blocks.CRAFTING_TABLE, ModBlocks.HEX_WORKBENCH),
-            new Awakening(Blocks.FURNACE, ModBlocks.HEX_FURNACE),
-            new Awakening(Blocks.CAULDRON, ModBlocks.CRUCIBLE),
-            new Awakening(Blocks.WATER_CAULDRON, ModBlocks.CRUCIBLE),
-            new Awakening(Blocks.DEAD_BUSH, ModBlocks.HOLLOWBLOOM));
-
-    private record Pending(ResourceKey<Level> dimension, BlockPos pos, Awakening awakening, Direction facing, @Nullable UUID player,
-                           long start, boolean refund) {
+    private record Pending(ResourceKey<Level> dimension, BlockPos pos, AwakeningRecipe awakening, ItemStack catalyst, Direction facing,
+                           @Nullable UUID player, long start, boolean refund) {
     }
 
     private static final List<Pending> PENDING = new ArrayList<>();
 
     private BlockAwakening() {
-    }
-
-    public static @Nullable Awakening of(BlockState state) {
-        for (Awakening awakening : TABLE) {
-            if (state.is(awakening.from())) {
-                return awakening;
-            }
-        }
-        return null;
-    }
-
-    public static List<Awakening> table() {
-        return TABLE;
     }
 
     public static boolean waking(Level level, BlockPos pos) {
@@ -93,12 +70,12 @@ public final class BlockAwakening {
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         ItemStack stack = event.getItemStack();
-        if (!stack.is(ModItems.HEXTECH_DUST.get())) {
+        if (stack.isEmpty()) {
             return;
         }
         Level level = event.getLevel();
         BlockPos pos = event.getPos();
-        Awakening awakening = of(level.getBlockState(pos));
+        AwakeningRecipe awakening = AwakeningRecipe.of(level.getBlockState(pos), stack, level.isClientSide());
         if (awakening == null) {
             return;
         }
@@ -108,23 +85,36 @@ public final class BlockAwakening {
             return;
         }
         Player player = event.getEntity();
+        if (!WorldEdits.mayChange(server, pos, awakening.result().defaultBlockState(), player)) {
+            if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.translatable("hextale.protected"), true);
+            }
+            return;
+        }
         BlockState state = level.getBlockState(pos);
         Direction facing = state.hasProperty(HorizontalDirectionalBlock.FACING) ? state.getValue(HorizontalDirectionalBlock.FACING)
                 : player.getDirection().getOpposite();
         boolean refund = !player.getAbilities().instabuild;
+        ItemStack catalyst = stack.copyWithCount(1);
         if (refund) {
             stack.shrink(1);
         }
-        start(server, pos, facing, player.getUUID(), refund);
+        start(server, pos, catalyst, facing, player.getUUID(), refund);
     }
 
-    /** Starts waking the block at {@code pos} (game tests call it directly). */
+    /** Starts waking the block at {@code pos} with hextech dust (game tests call it directly). */
     public static void start(ServerLevel level, BlockPos pos, Direction facing, @Nullable UUID player, boolean refund) {
-        Awakening awakening = of(level.getBlockState(pos));
+        start(level, pos, new ItemStack(ModItems.HEXTECH_DUST.get()), facing, player, refund);
+    }
+
+    /** Starts waking the block at {@code pos} with {@code catalyst}; it falls back out when the block changes meanwhile. */
+    public static void start(ServerLevel level, BlockPos pos, ItemStack catalyst, Direction facing, @Nullable UUID player, boolean refund) {
+        AwakeningRecipe awakening = AwakeningRecipe.of(level.getBlockState(pos), catalyst, false);
         if (awakening == null || waking(level, pos)) {
             return;
         }
-        PENDING.add(new Pending(level.dimension(), pos.immutable(), awakening, facing, player, level.getGameTime(), refund));
+        PENDING.add(new Pending(level.dimension(), pos.immutable(), awakening, catalyst.copyWithCount(1), facing, player,
+                level.getGameTime(), refund));
         Vec3 centre = Vec3.atCenterOf(pos);
         level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.0F, 0.6F);
         level.playSound(null, centre.x, centre.y, centre.z, ModSounds.BLOCK_AWAKEN.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
@@ -142,11 +132,11 @@ public final class BlockAwakening {
                 continue;
             }
             BlockState state = level.getBlockState(pending.pos());
-            if (!state.is(pending.awakening().from())) {
+            if (!state.is(pending.awakening().block())) {
                 // The block was broken or changed: the dust falls back out.
                 if (pending.refund()) {
                     Containers.dropItemStack(level, pending.pos().getX() + 0.5, pending.pos().getY() + 0.5, pending.pos().getZ() + 0.5,
-                            new ItemStack(ModItems.HEXTECH_DUST.get()));
+                            pending.catalyst().copy());
                 }
                 it.remove();
                 continue;
@@ -190,14 +180,21 @@ public final class BlockAwakening {
     /** The new block appears in a flash; what the old one held is dropped. */
     private static void finish(ServerLevel level, Pending pending) {
         BlockPos pos = pending.pos();
+        BlockState next = pending.awakening().result().defaultBlockState();
+        if (next.hasProperty(HorizontalDirectionalBlock.FACING)) {
+            next = next.setValue(HorizontalDirectionalBlock.FACING, pending.facing());
+        }
+        Player waker = pending.player() == null ? null : level.getPlayerByUUID(pending.player());
+        if (!WorldEdits.mayChange(level, pos, next, waker != null ? waker : WorldEdits.owner(level, pending.player()))) {
+            if (pending.refund()) {
+                Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, pending.catalyst().copy());
+            }
+            return;
+        }
         if (level.getBlockEntity(pos) instanceof net.minecraft.world.Container container) {
             Containers.dropContents(level, pos, container);
         }
         BlockState old = level.getBlockState(pos);
-        BlockState next = pending.awakening().to().get().defaultBlockState();
-        if (next.hasProperty(HorizontalDirectionalBlock.FACING)) {
-            next = next.setValue(HorizontalDirectionalBlock.FACING, pending.facing());
-        }
         level.setBlock(pos, next, Block.UPDATE_ALL);
         if (old.is(Blocks.WATER_CAULDRON) && level.getBlockEntity(pos) instanceof CrucibleBlockEntity crucible) {
             crucible.setWater(old.getValue(LayeredCauldronBlock.LEVEL) * CrucibleBlockEntity.BUCKET / LayeredCauldronBlock.MAX_FILL_LEVEL);

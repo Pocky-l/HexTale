@@ -1,0 +1,32 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:refined_hextech_pickaxe"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:hextech_gemstone"
+    },
+    {
+      "item": "hextale:hextech_gemstone"
+    },
+    {
+      "tag": "c:ingots/netherite"
+    },
+    {
+      "item": "minecraft:amethyst_block"
+    },
+    {
+      "item": "minecraft:echo_shard"
+    },
+    {
+      "item": "minecraft:echo_shard"
+    }
+  ],
+  "essences": {
+    "magic": 72,
+    "crystal": 24
+  },
+  "result": "hextale:radiant_hextech_pickaxe",
+  "keep_components": true
+}

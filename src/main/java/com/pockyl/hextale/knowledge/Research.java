@@ -17,7 +17,9 @@ import com.pockyl.hextale.research.ResearchTopics;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Server-side changes to a researcher's knowledge. Every change is synced to the player's client and updates the codex
@@ -51,7 +53,56 @@ public final class Research {
     public static boolean research(ServerPlayer player, ResearchTopic topic) {
         boolean fresh = of(player).research(topic);
         sync(player);
+        if (fresh) {
+            ModTriggers.RESEARCH_COMPLETED.get().trigger(player, topic.id());
+        }
         return fresh;
+    }
+
+    /** Researches every topic given at once (an operator's command); returns how many were new. */
+    public static int researchAll(ServerPlayer player, Collection<ResearchTopic> topics) {
+        RuneKnowledge knowledge = of(player);
+        List<ResearchTopic> fresh = new ArrayList<>();
+        for (ResearchTopic topic : topics) {
+            if (knowledge.research(topic)) {
+                fresh.add(topic);
+            }
+        }
+        sync(player);
+        fresh.forEach(topic -> ModTriggers.RESEARCH_COMPLETED.get().trigger(player, topic.id()));
+        return fresh.size();
+    }
+
+    /**
+     * Forgets every topic given at once (an operator's command): their items are locked again, their parchments start
+     * afresh. Returns how many were researched.
+     */
+    public static int unresearchAll(ServerPlayer player, Collection<ResearchTopic> topics) {
+        RuneKnowledge knowledge = of(player);
+        int forgotten = 0;
+        for (ResearchTopic topic : topics) {
+            if (knowledge.forgetResearch(topic)) {
+                forgotten++;
+            }
+        }
+        sync(player);
+        return forgotten;
+    }
+
+    /**
+     * Fires the quest makers' triggers again for everything the player already knows: an advancement or quest added to
+     * a pack after the fact is met at the next login.
+     */
+    public static void catchUp(ServerPlayer player) {
+        RuneKnowledge knowledge = of(player);
+        for (String topic : knowledge.researchedIds()) {
+            ModTriggers.RESEARCH_COMPLETED.get().trigger(player, topic);
+        }
+        for (Quest quest : Guide.server().all()) {
+            if (knowledge.questDone(quest)) {
+                ModTriggers.GUIDE_STEP.get().trigger(player, quest.id());
+            }
+        }
     }
 
     /** Records compounds seen forming in a Lab Bench flask: the journal shows their zones from now on. */
@@ -103,15 +154,26 @@ public final class Research {
     public static void learnEverything(ServerPlayer player) {
         RuneKnowledge knowledge = of(player);
         ComplexRunes.all().forEach(rune -> knowledge.learn(rune, 3));
-        ResearchTopics.all().forEach(knowledge::research);
+        List<ResearchTopic> topics = new ArrayList<>();
+        for (ResearchTopic topic : ResearchTopics.all()) {
+            if (knowledge.research(topic)) {
+                topics.add(topic);
+            }
+        }
         ItemEssenceTable.byId().keySet().forEach(knowledge::study);
+        List<Quest> steps = new ArrayList<>();
         for (Quest quest : Guide.server().all()) {
             if (quest.kind() == Quest.Kind.ITEM) {
+                if (!knowledge.questDone(quest)) {
+                    steps.add(quest);
+                }
                 knowledge.completeQuest(quest);
                 knowledge.notice(quest.id());
             }
         }
         sync(player);
+        topics.forEach(topic -> ModTriggers.RESEARCH_COMPLETED.get().trigger(player, topic.id()));
+        steps.forEach(quest -> ModTriggers.GUIDE_STEP.get().trigger(player, quest.id()));
     }
 
     /** The Scroll of Oblivion: runes, research, studied items, quests and every parchment's memory are gone. */

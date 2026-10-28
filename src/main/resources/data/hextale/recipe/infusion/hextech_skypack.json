@@ -1,0 +1,35 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:hextech_gemstone"
+  },
+  "pedestals": [
+    {
+      "item": "minecraft:phantom_membrane"
+    },
+    {
+      "item": "minecraft:phantom_membrane"
+    },
+    {
+      "tag": "c:ingots/hexsteel"
+    },
+    {
+      "tag": "c:ingots/hexsteel"
+    },
+    {
+      "item": "hextale:brass_pipe"
+    },
+    {
+      "item": "hextale:brass_pipe"
+    },
+    {
+      "tag": "c:leathers"
+    }
+  ],
+  "essences": {
+    "air": 24,
+    "magic": 12,
+    "metal": 8
+  },
+  "result": "hextale:hextech_skypack"
+}

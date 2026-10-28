@@ -8,4 +8,7 @@ package com.pockyl.hextale.port;
 public interface TransactionContext {
     /** Runs the real change when the transaction commits; until then the handlers only simulate. */
     void onCommit(Runnable change);
+
+    /** Runs when the transaction closes without a commit. */
+    void onAbort(Runnable revert);
 }

@@ -36,6 +36,7 @@ import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModTags;
+import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -381,6 +382,9 @@ public final class Thinning {
      * plants on the blighted ground die back and the Void's own growth takes root in their place.
      */
     private static void blight(ServerLevel level, LevelChunk chunk, float value) {
+        if (!Config.BLIGHT_CHANGES_BLOCKS.get()) {
+            return;
+        }
         RandomSource random = level.getRandom();
         float k = Mth.clamp((felt(value) - Stage.BLIGHT.felt) / (WORST - Stage.BLIGHT.felt), 0, 1);
         if (random.nextFloat() >= BLIGHT_CHANCE * (0.3F + k)) {
@@ -461,10 +465,24 @@ public final class Thinning {
         return null;
     }
 
+    /**
+     * Blights one spot of ground and what grows on it. Nothing changes when the config keeps the blight off the blocks,
+     * on {@code hextale:void_immune} blocks, or where the world's protection refuses the world's own doing
+     * ({@link WorldEdits#world}: a claim the server does not open to "[HexTale]").
+     */
     private static void blightAt(ServerLevel level, BlockPos pos, RandomSource random, boolean loud) {
+        if (!Config.BLIGHT_CHANGES_BLOCKS.get()) {
+            return;
+        }
+        net.minecraft.world.entity.player.Player actor = WorldEdits.world(level);
         BlockState ground = level.getBlockState(pos);
-        BlockState blighted = ground.is(ModTags.BLIGHTS_TO_SOIL) ? ModBlocks.VOID_SOIL.get().defaultBlockState()
+        BlockState blighted = ground.is(ModTags.VOID_IMMUNE) ? null
+                : ground.is(ModTags.BLIGHTS_TO_SOIL) ? ModBlocks.VOID_SOIL.get().defaultBlockState()
                 : ground.is(ModTags.BLIGHTS_TO_ROCK) ? ModBlocks.VOID_ROCK.get().defaultBlockState() : null;
+        if (blighted != null && !WorldEdits.mayChange(level, pos, blighted, actor)) {
+            // A protected spot keeps its ground and what grows on it.
+            return;
+        }
         if (blighted != null) {
             level.setBlockAndUpdate(pos, blighted);
             Healing.scar(level, level.getChunkAt(pos));
@@ -475,14 +493,15 @@ public final class Thinning {
         }
         BlockPos above = pos.above();
         BlockState plant = level.getBlockState(above);
-        if (plant.getBlock() instanceof VoidFloraBlock || !plant.getFluidState().isEmpty() || !(plant.isAir() || plant.canBeReplaced())) {
+        if (plant.getBlock() instanceof VoidFloraBlock || !plant.getFluidState().isEmpty() || !(plant.isAir() || plant.canBeReplaced())
+                || plant.is(ModTags.VOID_IMMUNE)) {
             return;
         }
         if (random.nextFloat() < FLORA_CHANCE) {
             float pick = random.nextFloat();
             Block flora = pick < 0.4F ? ModBlocks.VOID_ROOTS.get() : pick < 0.8F ? ModBlocks.VOID_CORAL.get() : ModBlocks.VOID_BULB.get();
-            level.setBlockAndUpdate(above, flora.defaultBlockState());
-        } else if (!plant.isAir()) {
+            WorldEdits.change(level, above, flora.defaultBlockState(), Block.UPDATE_ALL, actor);
+        } else if (!plant.isAir() && WorldEdits.mayBreak(level, above, actor)) {
             level.destroyBlock(above, false);
         }
     }

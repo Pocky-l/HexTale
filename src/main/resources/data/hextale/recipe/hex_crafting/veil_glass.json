@@ -1,0 +1,23 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "GXG",
+    "GDG"
+  ],
+  "key": {
+    "G": {
+      "tag": "c:glass_blocks/colorless"
+    },
+    "D": {
+      "item": "hextale:hextech_dust"
+    },
+    "X": {
+      "tag": "c:feathers"
+    }
+  },
+  "result": {
+    "id": "hextale:veil_glass",
+    "count": 4
+  },
+  "charge": 1
+}

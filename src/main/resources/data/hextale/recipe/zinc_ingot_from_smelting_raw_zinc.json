@@ -3,7 +3,7 @@
   "category": "misc",
   "group": "zinc_ingot",
   "ingredient": {
-    "item": "hextale:raw_zinc"
+    "tag": "c:raw_materials/zinc"
   },
   "result": {
     "id": "hextale:zinc_ingot"

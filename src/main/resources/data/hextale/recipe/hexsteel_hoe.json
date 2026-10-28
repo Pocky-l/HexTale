@@ -8,10 +8,10 @@
   ],
   "key": {
     "X": {
-      "item": "hextale:hexsteel_ingot"
+      "tag": "c:ingots/hexsteel"
     },
     "#": {
-      "item": "minecraft:stick"
+      "tag": "c:rods/wooden"
     }
   },
   "result": {

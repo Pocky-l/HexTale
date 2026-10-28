@@ -12,7 +12,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -35,6 +37,7 @@ import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.registry.ModTags;
+import com.pockyl.hextale.world.WorldEdits;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -70,15 +73,18 @@ public final class LightningEvents {
                 strike(level, base);
             }
         } else {
-            fuseSand(level, BlockPos.containing(position.x, position.y - 1.0E-6, position.z));
+            fuseSand(level, BlockPos.containing(position.x, position.y - 1.0E-6, position.z),
+                    WorldEdits.actor(level, ((LightningBolt) event.getCause()).getCause(), null));
         }
     }
 
-    /** A bolt that goes into sand fuses a short column of it into fulgurite. */
-    private static void fuseSand(ServerLevel level, BlockPos top) {
+    /** A bolt that goes into sand fuses a short column of it into fulgurite (as far as {@code actor} may change it). */
+    private static void fuseSand(ServerLevel level, BlockPos top, Player actor) {
         BlockPos.MutableBlockPos pos = top.mutable();
-        for (int depth = 1 + level.getRandom().nextInt(3); depth > 0 && level.getBlockState(pos).is(net.minecraft.tags.BlockTags.SAND); depth--) {
-            level.setBlockAndUpdate(pos, com.pockyl.hextale.registry.ModBlocks.FULGURITE.get().defaultBlockState());
+        BlockState fulgurite = com.pockyl.hextale.registry.ModBlocks.FULGURITE.get().defaultBlockState();
+        for (int depth = 1 + level.getRandom().nextInt(3); depth > 0 && level.getBlockState(pos).is(net.minecraft.tags.BlockTags.SAND)
+                && WorldEdits.mayChange(level, pos, fulgurite, actor); depth--) {
+            level.setBlockAndUpdate(pos, fulgurite);
             pos.move(0, -1, 0);
         }
     }
@@ -136,7 +142,8 @@ public final class LightningEvents {
         }
         long now = level.getGameTime();
         for (BlockPos pos : shattered) {
-            WAVES.add(new Shatter(level.dimension(), pos, cameFrom.get(pos), now + (long) ring.get(pos) * RING_TICKS, ring.get(pos)));
+            WAVES.add(new Shatter(level.dimension(), pos, cameFrom.get(pos), now + (long) ring.get(pos) * RING_TICKS, ring.get(pos),
+                    new ChunkPos(base).toLong()));
         }
         Vec3 centre = Vec3.atCenterOf(base);
         level.playSound(null, base, ModSounds.ORB_AWAKEN.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
@@ -147,8 +154,12 @@ public final class LightningEvents {
     /** Ticks between two rings of the wave. */
     public static final int RING_TICKS = 3;
 
-    /** One block the wave will shatter: when, and from which block the spark jumps into it. */
-    private record Shatter(ResourceKey<Level> dimension, BlockPos pos, BlockPos from, long at, int ring) {
+    /**
+     * One block the wave will shatter: when, and from which block the spark jumps into it. {@code home} = the chunk of the
+     * struck block: the wave shatters freely there (whoever built the rod stands there), elsewhere it asks the world's
+     * protection as the world's own doing ({@link WorldEdits#world}), so it stops at a claimed neighbour's border.
+     */
+    private record Shatter(ResourceKey<Level> dimension, BlockPos pos, BlockPos from, long at, int ring, long home) {
     }
 
     private static final List<Shatter> WAVES = new ArrayList<>();
@@ -181,7 +192,9 @@ public final class LightningEvents {
             }
         }
         for (Shatter shatter : due) {
-            if (level.getBlockState(shatter.pos()).is(ModTags.AWAKENS_INTO_HEXTECH)) {
+            if (level.getBlockState(shatter.pos()).is(ModTags.AWAKENS_INTO_HEXTECH)
+                    && (new ChunkPos(shatter.pos()).toLong() == shatter.home()
+                    || WorldEdits.mayBreak(level, shatter.pos(), WorldEdits.world(level)))) {
                 arc(level, shatter.from(), shatter.pos());
                 awaken(level, shatter.pos(), shatter.ring());
             }

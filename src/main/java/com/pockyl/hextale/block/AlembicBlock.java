@@ -42,6 +42,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.transport.WaterInlet;
 import com.pockyl.hextale.research.ResearchItems;
 
 import org.jspecify.annotations.Nullable;
@@ -81,12 +82,15 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
         return face.getAxis().isHorizontal();
     }
 
-    /** A water bucket fills the flask. */
+    /** A water bucket fills the flask; so do the buckets and tanks of other mods, a bucket's worth at most. */
     @Override
     protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
-        if (!stack.is(Items.WATER_BUCKET) || !(level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic)) {
+        if (!(level.getBlockEntity(pos) instanceof AlembicBlockEntity alembic)) {
             return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+        if (!stack.is(Items.WATER_BUCKET)) {
+            return com.pockyl.hextale.port.Interactions.itemOn(pourContainer(alembic, level, pos, player, hand));
         }
         if (alembic.fillWater(1000, true) < 1000) {
             return net.minecraft.world.ItemInteractionResult.FAIL;
@@ -99,6 +103,20 @@ public class AlembicBlock extends BaseEntityBlock implements WorldlyContainerHol
             level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
         return net.minecraft.world.ItemInteractionResult.SUCCESS;
+    }
+
+    private static InteractionResult pourContainer(AlembicBlockEntity alembic, Level level, BlockPos pos, Player player, InteractionHand hand) {
+        int room = Math.min(1000, alembic.fillWater(1000, true));
+        int poured = room <= 0 ? 0 : WaterInlet.pourFromHeld(player, hand, room, true);
+        if (poured <= 0) {
+            return WaterInlet.pourFromHeld(player, hand, 1000, true) > 0 ? InteractionResult.FAIL : InteractionResult.PASS;
+        }
+        if (!level.isClientSide()) {
+            poured = WaterInlet.pourFromHeld(player, hand, poured, false);
+            alembic.fillWater(poured, false);
+            level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+        return InteractionResult.SUCCESS;
     }
 
     /** Whether the block below heats an alembic. */

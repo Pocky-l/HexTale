@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.function.Consumer;
 
@@ -47,6 +48,12 @@ public class SpawnerCageItem extends Item {
             if (!mayChange(level, player, pos, context)) {
                 return InteractionResult.FAIL;
             }
+            // Asked before the spawner goes: a refusal after the fold would leave the cage full and the spawner back.
+            Player actor = player != null ? player : WorldEdits.world(level);
+            if (!WorldEdits.mayBreak(level, pos, actor) || !WorldEdits.mayPlace(level, pos, Blocks.AIR.defaultBlockState(), actor)) {
+                refuse(player);
+                return InteractionResult.FAIL;
+            }
             ItemStack full = stack.copyWithCount(1);
             full.set(ModDataComponents.CAGED_SPAWNER.get(), fold(level, pos));
             stack.shrink(1);
@@ -63,9 +70,19 @@ public class SpawnerCageItem extends Item {
         if (!level.getBlockState(at).canBeReplaced() || !mayChange(level, player, at, context)) {
             return InteractionResult.FAIL;
         }
+        if (!WorldEdits.mayChange(level, at, Blocks.SPAWNER.defaultBlockState(), player != null ? player : WorldEdits.world(level))) {
+            refuse(player);
+            return InteractionResult.FAIL;
+        }
         unfold(level, at, caged);
         stack.shrink(1);
         return InteractionResult.SUCCESS;
+    }
+
+    private static void refuse(@org.jspecify.annotations.Nullable Player player) {
+        if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+            serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.translatable("hextale.protected"), true);
+        }
     }
 
     /** Whether {@code player} may change the block at {@code pos}: not in adventure mode, not in a protected spot. */

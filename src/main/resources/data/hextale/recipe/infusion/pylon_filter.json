@@ -1,0 +1,25 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "tag": "c:ingots/brass"
+  },
+  "pedestals": [
+    {
+      "tag": "c:strings"
+    },
+    {
+      "tag": "c:nuggets/brass"
+    },
+    {
+      "tag": "c:nuggets/brass"
+    },
+    {
+      "tag": "c:gems/amethyst"
+    }
+  ],
+  "essences": {
+    "crystal": 8,
+    "air": 6
+  },
+  "result": "hextale:pylon_filter"
+}

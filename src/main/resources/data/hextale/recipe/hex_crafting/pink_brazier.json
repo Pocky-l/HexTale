@@ -1,0 +1,27 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "P P",
+    "PVP",
+    "I I"
+  ],
+  "key": {
+    "P": {
+      "item": "hextale:rusted_plating"
+    },
+    "V": {
+      "items": "hextale:chem_vial",
+      "components": {
+        "hextale:brew": "refined_shimmer"
+      },
+      "type": "neoforge:components"
+    },
+    "I": {
+      "tag": "c:bars/iron"
+    }
+  },
+  "result": {
+    "id": "hextale:pink_brazier"
+  },
+  "charge": 3
+}

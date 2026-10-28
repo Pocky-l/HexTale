@@ -1,0 +1,23 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " A ",
+    " C ",
+    "BBB"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:gems/amethyst"
+    },
+    "C": {
+      "item": "hextale:chiseled_magic_bricks"
+    },
+    "B": {
+      "item": "hextale:magic_bricks"
+    }
+  },
+  "result": {
+    "id": "hextale:rune_stele"
+  },
+  "charge": 2
+}

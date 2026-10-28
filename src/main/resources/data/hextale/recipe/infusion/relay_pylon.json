@@ -1,0 +1,34 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "minecraft:lightning_rod"
+  },
+  "pedestals": [
+    {
+      "tag": "c:gems/amethyst"
+    },
+    {
+      "tag": "c:gems/amethyst"
+    },
+    {
+      "item": "minecraft:calcite"
+    },
+    {
+      "item": "minecraft:calcite"
+    },
+    {
+      "tag": "c:ingots/copper"
+    },
+    {
+      "tag": "c:ingots/copper"
+    }
+  ],
+  "essences": {
+    "spark": 12,
+    "crystal": 8
+  },
+  "result": {
+    "id": "hextale:relay_pylon",
+    "count": 2
+  }
+}

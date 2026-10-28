@@ -1,0 +1,10 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "coolant",
+  "target": "cold",
+  "amount": 8,
+  "purity": 0.65,
+  "sample": {
+    "item": "minecraft:snowball"
+  }
+}

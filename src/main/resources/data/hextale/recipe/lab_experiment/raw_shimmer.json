@@ -1,0 +1,10 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "raw_shimmer",
+  "target": "rift",
+  "amount": 10,
+  "purity": 0.7,
+  "sample": {
+    "item": "hextale:regenerative_slime"
+  }
+}

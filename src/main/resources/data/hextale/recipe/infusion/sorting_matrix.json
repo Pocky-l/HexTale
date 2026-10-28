@@ -1,0 +1,32 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:hextech_crystal"
+  },
+  "pedestals": [
+    {
+      "item": "minecraft:observer"
+    },
+    {
+      "item": "minecraft:comparator"
+    },
+    {
+      "tag": "c:glass_blocks/colorless"
+    },
+    {
+      "tag": "c:glass_blocks/colorless"
+    },
+    {
+      "tag": "c:ingots/brass"
+    },
+    {
+      "tag": "c:ingots/brass"
+    }
+  ],
+  "essences": {
+    "crystal": 16,
+    "magic": 12,
+    "air": 8
+  },
+  "result": "hextale:sorting_matrix"
+}

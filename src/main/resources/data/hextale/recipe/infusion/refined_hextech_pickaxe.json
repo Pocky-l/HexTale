@@ -1,0 +1,34 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:hextech_pickaxe"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:hextech_gemstone"
+    },
+    {
+      "item": "hextale:hextech_gemstone"
+    },
+    {
+      "tag": "c:gems/diamond"
+    },
+    {
+      "tag": "c:gems/diamond"
+    },
+    {
+      "tag": "c:ingots/hexsteel"
+    },
+    {
+      "tag": "c:ingots/hexsteel"
+    }
+  ],
+  "essences": {
+    "metal": 32,
+    "ore": 24,
+    "crystal": 16,
+    "magic": 16
+  },
+  "result": "hextale:refined_hextech_pickaxe",
+  "keep_components": true
+}

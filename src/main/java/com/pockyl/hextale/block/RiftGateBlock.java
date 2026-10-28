@@ -371,6 +371,7 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             public FluidStack drain(int maxDrain, FluidAction action) {
                 return FluidStack.EMPTY;
             }
+
         };
         private long flaredAt;
         @Nullable

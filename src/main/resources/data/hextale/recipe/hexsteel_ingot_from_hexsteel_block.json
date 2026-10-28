@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "hextale:hexsteel_block"
+      "tag": "c:storage_blocks/hexsteel"
     }
   ],
   "result": {

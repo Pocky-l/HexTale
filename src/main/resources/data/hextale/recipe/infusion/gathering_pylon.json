@@ -1,0 +1,29 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:hextech_crystal"
+  },
+  "pedestals": [
+    {
+      "item": "minecraft:hopper"
+    },
+    {
+      "item": "minecraft:bowl"
+    },
+    {
+      "tag": "c:ingots/brass"
+    },
+    {
+      "tag": "c:ingots/brass"
+    },
+    {
+      "item": "hextale:polished_magic_stone"
+    }
+  ],
+  "essences": {
+    "air": 16,
+    "magic": 12,
+    "crystal": 8
+  },
+  "result": "hextale:gathering_pylon"
+}

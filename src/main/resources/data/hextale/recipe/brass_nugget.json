@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "hextale:brass_ingot"
+      "tag": "c:ingots/brass"
     }
   ],
   "result": {

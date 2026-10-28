@@ -1,0 +1,24 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "B B",
+    " U ",
+    " S "
+  ],
+  "key": {
+    "B": {
+      "tag": "c:ingots/brass"
+    },
+    "U": {
+      "item": "hextale:unstable_hextech"
+    },
+    "S": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "result": {
+    "id": "hextale:tuning_fork",
+    "count": 1
+  },
+  "charge": 1
+}

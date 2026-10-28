@@ -1,0 +1,28 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:hextech_crystal"
+  },
+  "pedestals": [
+    {
+      "item": "minecraft:dropper"
+    },
+    {
+      "tag": "c:feathers"
+    },
+    {
+      "tag": "c:ingots/brass"
+    },
+    {
+      "tag": "c:ingots/brass"
+    },
+    {
+      "item": "hextale:magic_stone_pillar"
+    }
+  ],
+  "essences": {
+    "air": 28,
+    "crystal": 8
+  },
+  "result": "hextale:sending_pylon"
+}

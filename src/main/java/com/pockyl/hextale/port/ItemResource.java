@@ -38,6 +38,10 @@ public final class ItemResource {
         return toStack(1);
     }
 
+    public int getMaxStackSize() {
+        return toStack().getMaxStackSize();
+    }
+
     public Item getItem() {
         return prototype.getItem();
     }

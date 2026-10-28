@@ -1,0 +1,22 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "C C",
+    "LBL"
+  ],
+  "key": {
+    "C": {
+      "item": "hextale:arcane_cloth"
+    },
+    "L": {
+      "tag": "c:leathers"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
+    }
+  },
+  "result": {
+    "id": "hextale:researcher_boots"
+  },
+  "charge": 2
+}

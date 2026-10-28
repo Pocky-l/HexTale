@@ -1,0 +1,27 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "BUB",
+    " T ",
+    " X "
+  ],
+  "key": {
+    "B": {
+      "tag": "c:ingots/brass"
+    },
+    "U": {
+      "item": "hextale:unstable_hextech"
+    },
+    "T": {
+      "item": "minecraft:iron_pickaxe"
+    },
+    "X": {
+      "tag": "c:gems/amethyst"
+    }
+  },
+  "result": {
+    "id": "hextale:hextech_pickaxe",
+    "count": 1
+  },
+  "charge": 2
+}

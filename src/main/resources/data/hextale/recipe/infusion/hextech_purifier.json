@@ -1,0 +1,32 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:hextech_gemstone"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:nullstone"
+    },
+    {
+      "item": "hextale:nullstone"
+    },
+    {
+      "item": "hextale:nullstone"
+    },
+    {
+      "tag": "c:ingots/hexsteel"
+    },
+    {
+      "tag": "c:ingots/hexsteel"
+    },
+    {
+      "tag": "c:ingots/brass"
+    }
+  ],
+  "essences": {
+    "light": 16,
+    "crystal": 12,
+    "shadow": 8
+  },
+  "result": "hextale:hextech_purifier"
+}

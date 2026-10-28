@@ -1,0 +1,25 @@
+{
+  "type": "hextale:hex_crafting",
+  "ingredients": [
+    {
+      "tag": "c:gems/amethyst"
+    },
+    {
+      "tag": "c:gems/amethyst"
+    },
+    {
+      "items": "hextale:chem_vial",
+      "components": {
+        "hextale:brew": "refined_shimmer"
+      },
+      "type": "neoforge:components"
+    },
+    {
+      "item": "hextale:hextech_dust"
+    }
+  ],
+  "result": {
+    "id": "hextale:synthetic_crystal"
+  },
+  "charge": 1
+}

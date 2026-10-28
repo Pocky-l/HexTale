@@ -9,6 +9,8 @@ import net.minecraft.sounds.SoundSource;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
 import com.pockyl.hextale.registry.ModSounds;
+import com.pockyl.hextale.registry.ModTriggers;
+import com.pockyl.hextale.research.ResearchTopic;
 
 /** Server side of the researcher's guide: notices met goals and reported events and marks their item steps done. */
 public final class Quests {
@@ -68,7 +70,7 @@ public final class Quests {
         Quest last = null;
         for (Quest quest : guide.all()) {
             if (quest.kind() == Quest.Kind.ITEM && !knowledge.questDone(quest) && Guide.open(quest, knowledge) && quest.isMet(player, guide)) {
-                complete(knowledge, quest);
+                complete(player, knowledge, quest);
                 announce(player, quest);
                 last = quest;
             }
@@ -96,11 +98,31 @@ public final class Quests {
     }
 
     /** A step done on purpose is taken in as it is done; a secret one happened by itself and waits to be looked at. */
-    private static void complete(RuneKnowledge knowledge, Quest quest) {
+    private static void complete(ServerPlayer player, RuneKnowledge knowledge, Quest quest) {
         knowledge.completeQuest(quest);
         if (!quest.secret()) {
             knowledge.notice(quest.id());
         }
+        ModTriggers.GUIDE_STEP.get().trigger(player, quest.id());
+    }
+
+    /**
+     * Marks a step done for an operator's command, quietly: no message or sound; the caller syncs the knowledge. A
+     * research step researches its topic too, else the step would be done with its item still locked.
+     *
+     * @return whether it was not done before
+     */
+    public static boolean grant(ServerPlayer player, Quest quest) {
+        RuneKnowledge knowledge = Research.of(player);
+        if (quest.kind() != Quest.Kind.ITEM || knowledge.questDone(quest)) {
+            return false;
+        }
+        complete(player, knowledge, quest);
+        ResearchTopic topic = quest.topic();
+        if (topic != null && Guide.server().forTopic(topic) == quest && knowledge.research(topic)) {
+            ModTriggers.RESEARCH_COMPLETED.get().trigger(player, topic.id());
+        }
+        return true;
     }
 
     /** The reader looked at a step in the book (sent by the client): it is no longer shown as new. */
@@ -112,11 +134,12 @@ public final class Quests {
 
     /** Reports an event (one of the names above): every open step whose goal waits for it is done for this player. */
     public static void fire(ServerPlayer player, String event) {
+        ModTriggers.GUIDE_EVENT.get().trigger(player, event);
         RuneKnowledge knowledge = Research.of(player);
         Quest last = null;
         for (Quest quest : Guide.server().all()) {
             if (!knowledge.questDone(quest) && Guide.open(quest, knowledge) && quest.answers(event)) {
-                complete(knowledge, quest);
+                complete(player, knowledge, quest);
                 announce(player, quest);
                 last = quest;
             }

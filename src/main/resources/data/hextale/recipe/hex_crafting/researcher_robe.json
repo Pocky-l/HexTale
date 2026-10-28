@@ -1,0 +1,26 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "C C",
+    "CDC",
+    "LBL"
+  ],
+  "key": {
+    "C": {
+      "item": "hextale:arcane_cloth"
+    },
+    "D": {
+      "item": "hextale:hextech_dust"
+    },
+    "L": {
+      "tag": "c:leathers"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
+    }
+  },
+  "result": {
+    "id": "hextale:researcher_robe"
+  },
+  "charge": 2
+}

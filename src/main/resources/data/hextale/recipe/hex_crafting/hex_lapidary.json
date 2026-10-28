@@ -1,0 +1,29 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "SCS",
+    "IDI",
+    "P P"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:smooth_stone_slab"
+    },
+    "C": {
+      "tag": "c:bars/iron"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "D": {
+      "item": "minecraft:grindstone"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "result": {
+    "id": "hextale:hex_lapidary"
+  },
+  "charge": 2
+}

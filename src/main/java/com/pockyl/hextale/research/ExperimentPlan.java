@@ -1,6 +1,7 @@
 package com.pockyl.hextale.research;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -19,13 +20,13 @@ import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
 /**
- * What the Lab Bench asks to work out a chemtech topic, read from {@code data/<namespace>/hextale_experiment/<name>.json}:
+ * What the Lab Bench asks to work out a chemtech topic, recipe type {@code hextale:lab_experiment}:
  * make {@code amount} parts of the {@code target} compound in the flask, at least {@code purity} of the liquid, and seal
  * it with the {@code sample} lying on the bench (a brew's catalyst; it goes into the sealed flask). A topic without a
  * file asks for the compound of its two theme essences.
  */
 public record ExperimentPlan(ResearchTopic topic, Essence target, int amount, float purity, Optional<Ingredient> sample) {
-    public static final Codec<ExperimentPlan> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<ExperimentPlan> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             ResearchTopics.CODEC.fieldOf("topic").forGetter(ExperimentPlan::topic),
             Essence.ID_CODEC.fieldOf("target").forGetter(ExperimentPlan::target),
             Codec.intRange(1, 24).optionalFieldOf("amount", 6).forGetter(ExperimentPlan::amount),
@@ -42,7 +43,7 @@ public record ExperimentPlan(ResearchTopic topic, Essence target, int amount, fl
             ExperimentPlan::new);
 
     /** Every experiment, server and client. */
-    public static final DataRecipes<ExperimentPlan> ALL = new DataRecipes<>("hextale_experiment", CODEC);
+    public static final DataRecipes<ExperimentPlan> ALL = new DataRecipes<>("lab_experiment", MAP_CODEC, STREAM_CODEC, plan -> null);
 
     /** The experiment of a Lab Bench topic: its file, or the compound of its two theme essences. */
     public static ExperimentPlan of(ResearchTopic topic, boolean clientSide) {

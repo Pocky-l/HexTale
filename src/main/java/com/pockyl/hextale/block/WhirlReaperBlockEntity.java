@@ -46,6 +46,7 @@ import com.pockyl.hextale.runework.HolderRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.runework.ReaperRune;
 import com.pockyl.hextale.runework.ToolEffects;
+import com.pockyl.hextale.world.WorldEdits;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -84,6 +85,8 @@ public class WhirlReaperBlockEntity extends BlockEntity implements com.pockyl.he
     private int charges;
     private boolean becalmed;
     private final List<Pending> pending = new ArrayList<>();
+    /** Ripe plants the owner may not reap (a claim beside the field), not looked at again for a while. */
+    private final WorldEdits.Refusals refusals = new WorldEdits.Refusals();
     private int wait;
     private int idle;
     private @Nullable BlockPos drewFrom;
@@ -333,8 +336,14 @@ public class WhirlReaperBlockEntity extends BlockEntity implements com.pockyl.he
                         ripe.add(at.immutable());
                     }
                 });
-        return ripe.stream().min(Comparator.<BlockPos>comparingDouble(p -> p.distSqr(worldPosition)).thenComparingLong(BlockPos::asLong))
-                .orElse(null);
+        ripe.sort(Comparator.<BlockPos>comparingDouble(p -> p.distSqr(worldPosition)).thenComparingLong(BlockPos::asLong));
+        net.minecraft.world.entity.player.Player actor = WorldEdits.owner(level, this);
+        for (BlockPos at : ripe) {
+            if (refusals.mayBreak(level, at, actor)) {
+                return at;
+            }
+        }
+        return null;
     }
 
     private boolean claimed(BlockPos target) {

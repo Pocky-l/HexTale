@@ -1,0 +1,28 @@
+{
+  "type": "hextale:alloying",
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "c:ingots/iron"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "hextale:hextech_dust"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "tag": "minecraft:coals"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "hextale:hexsteel_ingot"
+  },
+  "time": 300,
+  "experience": 1.0
+}

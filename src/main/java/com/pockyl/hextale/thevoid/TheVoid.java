@@ -656,7 +656,7 @@ public class TheVoid extends Entity {
 
     /** A voidling may come out: few of them around, a player near to meet it, a world that allows monsters. */
     private boolean maySend(ServerLevel level) {
-        if (level.getDifficulty() == Difficulty.PEACEFUL) {
+        if (level.getDifficulty() == Difficulty.PEACEFUL || !com.pockyl.hextale.Config.VOIDLINGS_SPAWN.get()) {
             return false;
         }
         AABB around = getBoundingBox().inflate(40);

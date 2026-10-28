@@ -65,7 +65,7 @@ public class InfusionCategory extends AbstractRecipeCategory<InfusionCategory.Re
         Ingredient center = recipe.center();
         builder.addInputSlot(CX - 8, CY - 8).setStandardSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(center));
         ItemStack shown = com.pockyl.hextale.port.PortIngredients.items(center).findFirst().map(ItemStack::new).orElse(ItemStack.EMPTY);
-        builder.addOutputSlot(130, CY - 8).setOutputSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(recipe.resultFor(shown)));
+        ResearchNote.add(builder.addOutputSlot(130, CY - 8).setOutputSlotBackground().addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(recipe.resultFor(shown))), recipe.result().item().value());
         builder.addSlot(RecipeIngredientRole.CATALYST, 130, 4).addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(new ItemStack(ModItems.HEXTECH_ALTAR.get())));
     }
 

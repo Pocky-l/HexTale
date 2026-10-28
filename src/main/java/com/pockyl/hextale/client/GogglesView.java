@@ -84,8 +84,10 @@ public final class GogglesView {
         }
     }
 
+    /** Goggles on the head, or in a Curios slot when Curios is there. */
     public static boolean wearing(@Nullable Player player) {
-        return player != null && player.getItemBySlot(EquipmentSlot.HEAD).is(ModItems.RESEARCHERS_GOGGLES.get());
+        return player != null && (player.getItemBySlot(EquipmentSlot.HEAD).is(ModItems.RESEARCHERS_GOGGLES.get())
+                || com.pockyl.hextale.compat.curios.CuriosCompat.wears(player, ModItems.RESEARCHERS_GOGGLES.get()));
     }
 
     @Nullable

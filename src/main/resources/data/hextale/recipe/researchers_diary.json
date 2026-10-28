@@ -6,10 +6,10 @@
       "item": "minecraft:book"
     },
     {
-      "item": "minecraft:amethyst_shard"
+      "tag": "c:gems/amethyst"
     },
     {
-      "item": "minecraft:feather"
+      "tag": "c:feathers"
     }
   ],
   "result": {

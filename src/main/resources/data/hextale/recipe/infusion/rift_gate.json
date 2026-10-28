@@ -1,0 +1,35 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "minecraft:ender_eye"
+  },
+  "pedestals": [
+    {
+      "tag": "c:ender_pearls"
+    },
+    {
+      "tag": "c:ender_pearls"
+    },
+    {
+      "tag": "c:obsidians/normal"
+    },
+    {
+      "tag": "c:obsidians/normal"
+    },
+    {
+      "item": "hextale:unstable_hextech"
+    },
+    {
+      "tag": "c:ingots/brass"
+    }
+  ],
+  "essences": {
+    "shadow": 16,
+    "rift": 12,
+    "magic": 8
+  },
+  "result": {
+    "id": "hextale:rift_gate",
+    "count": 2
+  }
+}

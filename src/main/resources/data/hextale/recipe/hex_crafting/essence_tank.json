@@ -1,0 +1,20 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "SSS",
+    "G G",
+    "GGG"
+  ],
+  "key": {
+    "S": {
+      "tag": "minecraft:wooden_slabs"
+    },
+    "G": {
+      "tag": "c:glass_blocks/colorless"
+    }
+  },
+  "result": {
+    "id": "hextale:essence_tank"
+  },
+  "charge": 1
+}

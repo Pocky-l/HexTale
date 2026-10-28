@@ -36,6 +36,7 @@ public final class PlayerEvents {
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             Research.sync(player);
+            Research.catchUp(player);
         }
     }
 

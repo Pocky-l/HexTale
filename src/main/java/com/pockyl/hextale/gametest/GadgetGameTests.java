@@ -372,6 +372,8 @@ public final class GadgetGameTests {
             helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(jar).tank()
                     .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.RIFT, 10));
             pigs[0] = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new Vec3(1.5, 1.2, 1.5));
+            // 1.21.1: a wandering pig may step out of the ring before the gate looks into its jars again.
+            pigs[0].getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED).setBaseValue(0);
             // The dry ring spat the first stone out; it is put away, and another one goes in once the gate has looked
             // into its jars again.
             stone.discard();

@@ -15,6 +15,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 
 import com.pockyl.hextale.registry.ModParticles;
+import com.pockyl.hextale.world.WorldEdits;
 
 /**
  * Floating Stone: placed like any block against another, and also into thin air - right click with nothing aimed at
@@ -32,7 +33,8 @@ public class FloatingStoneItem extends BlockItem {
         BlockPos at = BlockPos.containing(eye.add(player.getLookAngle().scale(REACH)));
         BlockState state = getBlock().defaultBlockState();
         if (!level.getBlockState(at).canBeReplaced() || !level.isUnobstructed(state, at, CollisionContext.empty())
-                || !level.mayInteract(player, at)) {
+                || !level.mayInteract(player, at)
+                || level instanceof ServerLevel server && !WorldEdits.mayPlace(server, at, state, player)) {
             return InteractionResult.PASS;
         }
         if (level instanceof ServerLevel server) {

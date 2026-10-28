@@ -1,0 +1,29 @@
+{
+  "type": "hextale:infusion",
+  "center": {
+    "item": "hextale:essence_tank"
+  },
+  "pedestals": [
+    {
+      "item": "hextale:hextech_crystal"
+    },
+    {
+      "item": "hextale:brass_pipe"
+    },
+    {
+      "item": "hextale:brass_pipe"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    }
+  ],
+  "essences": {
+    "water": 16,
+    "air": 12,
+    "magic": 8
+  },
+  "result": "hextale:siphon_pylon"
+}
