@@ -17,13 +17,23 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Hexcore: the Hextech Altar after its heart woke up - a rune matrix floating over a brass cradle. It is used like
- * the altar (item in hand onto it, sneak-use or redstone to start); the matrix is drawn by
+ * The Hexcore: the Hextech Altar after its heart woke up - its body grown into a massive cradle (three stepped tiers,
+ * four buttresses carrying light up into a crown, four brass claws holding the rune matrix that floats over it). It is
+ * used like the altar (item in hand onto it, sneak-use or redstone to start); the matrix is drawn by
  * {@link com.pockyl.hextale.client.render.HexcoreRenderer}.
  */
 public class HexcoreBlock extends HextechAltarBlock {
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(1, 0, 1, 15, 3, 15), Block.box(5, 3, 5, 11, 8, 11),
-            Block.box(3, 8, 3, 13, 11, 13));
+    /** What is aimed at and outlined: the cradle's middle, inside its own block (the base spreads into the neighbours). */
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(0, 0, 0, 16, 9, 16), Block.box(1, 9, 1, 15, 15, 15),
+            Block.box(0, 15, 0, 16, 18, 16));
+    /** What is stood on: the three stepped octagons, the piers and the crown, so the tiers can be climbed like stairs. */
+    private static final VoxelShape COLLISION = Shapes.or(
+            Block.box(-2, 0, -10, 18, 3, 26), Block.box(-7, 0, -7, 23, 3, 23), Block.box(-10, 0, -2, 26, 3, 18),
+            Block.box(0, 3, -6, 16, 6, 22), Block.box(-3, 3, -3, 19, 6, 19), Block.box(-6, 3, 0, 22, 6, 16),
+            Block.box(4, 3, -9, 12, 8, 25), Block.box(-9, 3, 4, 25, 8, 12),
+            Block.box(2, 6, -3, 14, 9, 19), Block.box(-1, 6, -1, 17, 9, 17), Block.box(-3, 6, 2, 19, 9, 14),
+            Block.box(1, 9, 1, 15, 15, 15),
+            Block.box(1, 15, -5, 15, 18, 21), Block.box(-2, 15, -2, 18, 18, 18), Block.box(-5, 15, 1, 21, 18, 15));
 
     public HexcoreBlock(Properties properties) {
         super(properties);
@@ -32,6 +42,11 @@ public class HexcoreBlock extends HextechAltarBlock {
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return COLLISION;
     }
 
     @Override

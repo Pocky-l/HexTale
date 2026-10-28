@@ -21,6 +21,9 @@ import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEven
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import com.pockyl.hextale.block.HextechAltarBlockEntity;
+import com.pockyl.hextale.block.RuneSteleBlockEntity;
+import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.client.render.HexFx;
 import com.pockyl.hextale.client.render.TableModels;
 import com.pockyl.hextale.essence.EssenceMix;
@@ -52,7 +55,7 @@ public final class CircleDiorama {
     private static final float PEDESTAL_R = 2.1F;
     private static final float STELE_R = 3.1F;
     private static final float JAR_R = 3.0F;
-    private static final float CENTRE_Y = 1.35F;
+    private static final float CENTRE_Y = (float) HextechAltarBlockEntity.ITEM_Y + 0.05F;
     private static final float TILT = 30;
     private static final List<Essence> DRAWN = List.of(Essence.CRYSTAL, Essence.MAGIC, Essence.SPARK);
 
@@ -167,7 +170,7 @@ public final class CircleDiorama {
                 float ease = k * k * (3 - 2 * k);
                 float x = Mth.lerp(ease, px, 0);
                 float z = Mth.lerp(ease, pz, 0);
-                float y = Mth.lerp(ease, 1.15F, CENTRE_Y) + Mth.sin(k * Mth.PI) * 0.9F + Mth.sin(time * 0.1F + i) * 0.03F;
+                float y = Mth.lerp(ease, (float) PedestalBlockEntity.ITEM_Y + 0.03F, CENTRE_Y) + Mth.sin(k * Mth.PI) * 0.9F + Mth.sin(time * 0.1F + i) * 0.03F;
                 float size = 0.55F * (1 - 0.7F * ease * ease);
                 poseStack.pushPose();
                 poseStack.translate(x, y, z);
@@ -187,16 +190,16 @@ public final class CircleDiorama {
             for (int side = -1; side <= 1; side += 2) {
                 float sx = STELE_R * side;
                 poseStack.pushPose();
-                poseStack.translate(sx, 1.45F + Mth.sin(time * 0.06F + side) * 0.04F, 0);
+                poseStack.translate(sx, RuneSteleBlockEntity.GLYPH_Y + Mth.sin(time * 0.06F + side) * 0.02F, 0);
                 HexFx.sprite(poseStack, collector, camera, HexFx.HALO, 0.6F, rune.color(), 0.3F + (focus == Quest.Scene.STELE ? 0.25F * pulse : 0));
                 poseStack.rotate(camera);
                 poseStack.translate(0, 0, 0.03F);
-                HexFx.glyph(poseStack, collector, rune, 0.4F, rune.color(), 0.9F);
+                HexFx.glyph(poseStack, collector, rune, 0.34F, rune.color(), 0.9F);
                 poseStack.popPose();
                 if (running) {
                     poseStack.pushPose();
-                    poseStack.translate(sx, 1.45F, 0);
-                    HexFx.beam(poseStack, collector, -sx, CENTRE_Y - 1.45F, 0, 0.05F, rune.color(), 0.25F + 0.2F * pulse, toCamera);
+                    poseStack.translate(sx, RuneSteleBlockEntity.GLYPH_Y, 0);
+                    HexFx.beam(poseStack, collector, -sx, CENTRE_Y - RuneSteleBlockEntity.GLYPH_Y, 0, 0.05F, rune.color(), 0.25F + 0.2F * pulse, toCamera);
                     poseStack.popPose();
                 }
             }

@@ -158,9 +158,9 @@ public class GreedyFunnelBlockEntity extends BlockEntity {
         return drewAt;
     }
 
-    /** Where the drawn-in deaths sink: just over the floor of the bowl, five pixels under the rim. */
+    /** Where the drawn-in deaths sink: in the cone, a few pixels under the rim, where it is as wide as the vortex. */
     public static Vec3 mouth(BlockPos pos) {
-        return Vec3.atLowerCornerOf(pos).add(0.5, 9.0 / 16, 0.5);
+        return Vec3.atLowerCornerOf(pos).add(0.5, 12.0 / 16, 0.5);
     }
 
     /** Where the crystal hangs, over the mouth. */

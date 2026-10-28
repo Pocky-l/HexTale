@@ -51,6 +51,12 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
     private static final int GAUGE_Y = FIELD_Y + 10;
     private static final int GAUGE_H = 92;
     private static final int OUTLINE_POINTS = 28;
+    /** Facet sectors of the crystal; the light comes from the top left of the screen. */
+    private static final int SECTORS = 8;
+    private static final float LIGHT = (float) Math.atan2(-1, -1);
+    /** The hextech gem ramps (outline, deep, dark, mid, light, glint): the raw stone deeper, the finish brighter. */
+    private static final int[] ROUGH_RAMP = {0x1B1F4A, 0x26407E, 0x2F63B0, 0x3A8FD8, 0x5EC4F0, 0x9FE8F7};
+    private static final int[] FINISH_RAMP = {0x1B1F4A, 0x2F63B0, 0x3A8FD8, 0x5EC4F0, 0x9FE8F7, 0xE6FDF8};
 
     /** Turning: the crystal's angle (degrees) and spin; the keys push the spin, friction settles it. */
     private float angle;
@@ -293,7 +299,7 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
             for (int dx = -half; dx <= half; dx++) {
                 float a = (float) Math.atan2(dy * rx / (float) ry, dx);
                 float r = Mth.sqrt(dx * dx + (dy * rx / (float) ry) * (dy * rx / (float) ry)) / rx;
-                int base = present ? (cut != null && cut.grade == Cleavage.Grade.FINISH ? 0x9AA6B8 : 0x7A7F88) : 0x2A2630;
+                int base = present ? (cut != null && cut.grade == Cleavage.Grade.FINISH ? 0x9AA6B8 : 0x7A7F88) : 0x2A1C12;
                 boolean groove = present && ((int) Math.floor((a + turn) * 6 / Mth.PI) & 1) == 0 && r > 0.25F;
                 int colour = groove ? PixelArt.mix(base, 0x000000, 0.25F) : base;
                 if (r > 0.92F) {
@@ -308,8 +314,12 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
     }
 
     /**
-     * The crystal: a rough outline clipped by every plane as far as it is ground (cut facets are flat, sharp edges), turned
-     * by the angle, drawn in chunky pixels with light from the top left; cracks run as dark jagged lines.
+     * The crystal as pixel art with facets, like the gemstone item: a rough outline clipped by every plane as far as it
+     * is ground (cut facets are flat, sharp edges), turned by the angle, drawn in chunky pixels. The stone is cut into
+     * {@link #SECTORS} sectors in its own frame, each a flat plane in three rings - the table in the middle, the crown
+     * and the girdle at the rim; a plane's tone comes from how it faces the light at the top left of the screen, so the
+     * facets trade light as the stone turns. The outline is darkest on the shadow side, the far rim lets light through,
+     * a glint now and then crosses the facet facing the light; cracks run as dark jagged lines.
      */
     private void crystal(GuiGraphicsExtractor graphics, int cx, int cy, Cleavage.Cut cut, long seed) {
         float shown = grinding ? strokeAngle : angle;
@@ -321,11 +331,10 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
         for (float[] p : outline) {
             turned.add(new float[]{p[0] * cos - p[1] * sin, p[0] * sin + p[1] * cos});
         }
-        boolean finish = cut.grade == Cleavage.Grade.FINISH;
-        int dark = finish ? 0x2A7FB8 : 0x1A557F;
-        int mid = finish ? 0x7AD6F6 : 0x3FA9DF;
-        int light = finish ? 0xE8FBFF : 0x98E3FB;
-        long now = Util.getMillis();
+        int[] ramp = cut.grade == Cleavage.Grade.FINISH ? FINISH_RAMP : ROUGH_RAMP;
+        float sector = Mth.TWO_PI / SECTORS;
+        float phase = (seed & 1023) / 1023.0F * sector;
+        boolean glint = Util.getMillis() % 3500 < 260;
         for (int py = -RADIUS - 2; py <= RADIUS + 2; py++) {
             for (int px = -RADIUS - 2; px <= RADIUS + 2; px++) {
                 float fx = px + 0.5F;
@@ -334,13 +343,31 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
                     continue;
                 }
                 float edge = edgeDistance(turned, fx, fy);
-                float lightness = 0.5F - (fx + fy) / (RADIUS * 4.0F);
-                float shimmer = 0.03F * Mth.sin(now / 500.0F + (px + py) * 0.15F);
-                int colour = lightness + shimmer > 0.62F ? light : lightness + shimmer > 0.38F ? mid : dark;
+                // The pixel in the stone's own frame: which sector, and how far out towards the rim (0 centre, 1 rim).
+                float ox = fx * cos + fy * sin;
+                float oy = -fx * sin + fy * cos;
+                float r = Mth.sqrt(ox * ox + oy * oy);
+                float out = r / (r + edge);
+                int facet = (int) (Mth.positiveModulo((float) Math.atan2(oy, ox) - phase, Mth.TWO_PI) / sector);
+                float facing = Mth.cos(phase + (facet + 0.5F) * sector + rad - LIGHT);
+                int tone;
                 if (edge < 1.0F) {
-                    colour = PixelArt.mix(colour, (fx + fy) < 0 ? 0xFFFFFF : 0x100820, 0.55F);
+                    tone = facing > 0.3F ? 2 : 0;
+                } else if (out < 0.42F) {
+                    // The table: one bright plane, its specular point towards the light.
+                    tone = (fx + fy) < -RADIUS * 0.22F && (fx + fy) > -RADIUS * 0.5F && out > 0.12F ? 5 : 4;
+                } else if (out < 0.78F) {
+                    tone = Mth.clamp(3 + Math.round(facing * 1.4F), 1, 5);
+                } else {
+                    tone = Mth.clamp(2 + Math.round(facing * 1.6F), 1, 4);
+                    if (facing < -0.5F && edge < 2.0F) {
+                        tone = 3;
+                    }
                 }
-                PixelArt.fill(graphics, cx + px * PX, cy + py * PX, cx + px * PX + PX, cy + py * PX + PX, PixelArt.argb(colour, 1));
+                if (glint && facing > Mth.cos(sector * 0.5F) && edge >= 1.0F) {
+                    tone = Math.min(5, tone + 1);
+                }
+                PixelArt.fill(graphics, cx + px * PX, cy + py * PX, cx + px * PX + PX, cy + py * PX + PX, PixelArt.argb(ramp[tone], 1));
             }
         }
         // Cracks: jagged dark lines from the edge inward, one per crack, placed by the seed.
@@ -354,7 +381,7 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
                 float x1 = x0 * 0.78F + (random.nextFloat() - 0.5F) * 4;
                 float y1 = y0 * 0.78F + (random.nextFloat() - 0.5F) * 4;
                 PixelArt.line(graphics, cx + Math.round(x0 * PX), cy + Math.round(y0 * PX), cx + Math.round(x1 * PX), cy + Math.round(y1 * PX),
-                        PixelArt.argb(0x200410, 0.9F));
+                        PixelArt.argb(0x14102A, 0.9F));
                 x0 = x1;
                 y0 = y1;
             }
@@ -455,7 +482,7 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
         int colour = grinding && !aligned ? 0xE0503C : aligned ? 0x6CFF8A : PixelArt.mix(0x6A6A78, 0xE8D25A, warmth);
         // The contact band: three pixels thick, grey when far, warming to yellow as a plane nears, bright pulsing green
         // when one lies along the disc; arrows at its ends point at it then.
-        PixelArt.fill(graphics, cx - 50, lineY - 1, cx + 50, lineY + 2, PixelArt.argb(0x0A0810, 0.8F));
+        PixelArt.fill(graphics, cx - 50, lineY - 1, cx + 50, lineY + 2, PixelArt.argb(0x1A0F07, 0.8F));
         PixelArt.fill(graphics, cx - 49, lineY, cx + 49, lineY + 1, PixelArt.argb(colour, aligned ? 0.75F + 0.25F * pulse : 0.6F + 0.4F * warmth));
         if (aligned || warmth > 0.3F) {
             PixelArt.fill(graphics, cx - 49, lineY - 1, cx + 49, lineY, PixelArt.argb(colour, 0.35F * warmth + (aligned ? 0.3F * pulse : 0)));
@@ -498,7 +525,7 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, imageWidth - 16, HexPlate.TITLE, true);
+        HexPlate.title(graphics, font, title, titleLabelX, titleLabelY, imageWidth - 16);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
         LapidaryBlockEntity lapidary = lapidary();
         if (lapidary == null) {

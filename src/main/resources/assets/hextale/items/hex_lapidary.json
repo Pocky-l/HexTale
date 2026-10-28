@@ -8,7 +8,11 @@
       },
       {
         "type": "minecraft:model",
-        "model": "hextale:block/hex_lapidary_disc"
+        "model": "hextale:block/hex_lapidary_wheel"
+      },
+      {
+        "type": "minecraft:model",
+        "model": "hextale:block/hex_lapidary_gear"
       }
     ]
   }

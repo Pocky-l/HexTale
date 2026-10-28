@@ -125,7 +125,7 @@ public class SteleScreen extends Screen {
         HexPlate.plate(graphics, left, top, w, PANEL_H);
         PixelArt.flush(graphics);
         int textWidth = w - HexPlate.BORDER * 2 - 8;
-        HexPlate.centered(graphics, font, title, left + w / 2, top + 9, textWidth, HexPlate.TITLE);
+        HexPlate.centeredTitle(graphics, font, title, left + w / 2, top + 9, textWidth);
         List<ComplexRune> others = uses == null ? List.of() : onOtherSteles();
         Component subtitle = uses == null ? Component.translatable("gui.hextale.stele.subtitle")
                 : Component.translatable("gui.hextale.stele.for", altarItem.getHoverName());
@@ -162,6 +162,8 @@ public class SteleScreen extends Screen {
     // ---- The whole codex (empty altar) ------------------------------------------------------------------------------
 
     private @Nullable List<Component> grid(GuiGraphicsExtractor graphics, int left, int mouseX, int mouseY, long now) {
+        // The codex lies in a tray sunk into the wood, the action signs in the margin left of it.
+        HexPlate.well(graphics, left + GRID_X - 3, top + GRID_Y - 3, 8 * TILE + 6, 9 * TILE + 6);
         ComplexRune current = current();
         List<Component> tooltip = null;
         for (Essence action : Essence.PRIMALS) {
@@ -192,11 +194,11 @@ public class SteleScreen extends Screen {
         int cy = y + TILE / 2;
         int color = rune.color();
         if (!known) {
-            PixelArt.hex(graphics, cx, cy, 15, PixelArt.argb(0x1A1630, 0.85F), PixelArt.argb(0x3A3460, 1));
+            PixelArt.hex(graphics, cx, cy, 15, PixelArt.argb(0x24170D, 0.85F), PixelArt.argb(0x4A3826, 1));
             return;
         }
-        int rim = chosen ? GOLD : hover ? PixelArt.mix(color, 0xFFFFFF, 0.4F) : PixelArt.mix(color, 0x101018, 0.45F);
-        PixelArt.hex(graphics, cx, cy, 17, PixelArt.argb(0x140F24, 0.92F), PixelArt.argb(rim, 1));
+        int rim = chosen ? GOLD : hover ? PixelArt.mix(color, 0xFFFFFF, 0.4F) : PixelArt.mix(color, 0x1A0F07, 0.45F);
+        PixelArt.hex(graphics, cx, cy, 17, PixelArt.argb(0x1A0F07, 0.92F), PixelArt.argb(rim, 1));
         if (chosen) {
             float pulse = 0.5F + 0.5F * Mth.sin(now / 200.0F);
             PixelArt.hex(graphics, cx, cy, 19, 0, PixelArt.argb(GOLD, 0.35F + 0.4F * pulse));
@@ -264,7 +266,7 @@ public class SteleScreen extends Screen {
                 PixelArt.fill(graphics, x0, y, x0 + rowW, y + ROW_H - 1, PixelArt.argb(chosen ? GOLD : rune.color(), chosen ? 0.16F : 0.1F));
             }
             if (i > 0) {
-                PixelArt.fill(graphics, x0 + 4, y - 1, x0 + rowW - 4, y, PixelArt.argb(0x3A3460, 0.6F));
+                PixelArt.fill(graphics, x0 + 4, y - 1, x0 + rowW - 4, y, PixelArt.argb(0x6A4C2E, 0.6F));
             }
             tile(graphics, rune, x0 + 1, y + 2, known && refusal == null, hover, chosen, now);
             PixelArt.flush(graphics);
@@ -276,7 +278,7 @@ public class SteleScreen extends Screen {
                     refusal != null ? REFUSED : HexPlate.MUTED, false);
             if (refusal != null) {
                 // Cannot be chosen now: the row dims.
-                PixelArt.fill(graphics, x0, y, x0 + rowW, y + ROW_H - 1, PixelArt.argb(0x0A0814, 0.45F));
+                PixelArt.fill(graphics, x0, y, x0 + rowW, y + ROW_H - 1, PixelArt.argb(0x1A0F07, 0.45F));
                 PixelArt.flush(graphics);
             }
             if (hover) {
@@ -291,7 +293,7 @@ public class SteleScreen extends Screen {
             int barX = left + LIST_W - HexPlate.BORDER - 6;
             int y0 = listTop();
             int h = visibleRows() * ROW_H;
-            PixelArt.fill(graphics, barX, y0, barX + 2, y0 + h, PixelArt.argb(0x3A3460, 0.8F));
+            PixelArt.fill(graphics, barX, y0, barX + 2, y0 + h, PixelArt.argb(0x1A0F07, 0.8F));
             int thumb = Math.max(8, h * visibleRows() / uses.size());
             int ty = y0 + (h - thumb) * scroll / maxScroll(uses);
             PixelArt.fill(graphics, barX, ty, barX + 2, ty + thumb, PixelArt.argb(HexPlate.BRASS, 1));
@@ -352,10 +354,10 @@ public class SteleScreen extends Screen {
         int stars = stars(rune);
         MutableComponent line = nameWithStars(rune, stars);
         if (!known) {
-            line = Component.translatable(rune.translationKey()).withColor(0x6A6090)
-                    .append(Component.literal("  ").append(Component.translatable("gui.hextale.stele.not_learned")).withColor(0x6A6090));
+            line = Component.translatable(rune.translationKey()).withColor(0x8A7A66)
+                    .append(Component.literal("  ").append(Component.translatable("gui.hextale.stele.not_learned")).withColor(0x8A7A66));
         } else if (use.holder() != null) {
-            line.append(Component.literal("  " + amount(use.holder(), rune, stars)).withColor(0xFFE8E0F0));
+            line.append(Component.literal("  " + amount(use.holder(), rune, stars)).withColor(0xFFF2E6CF));
         }
         return line;
     }

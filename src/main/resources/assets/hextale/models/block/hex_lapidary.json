@@ -3,9 +3,8 @@
   "textures": {
     "particle": "minecraft:block/dark_oak_planks",
     "planks": "minecraft:block/dark_oak_planks",
-    "log": "minecraft:block/dark_oak_log",
-    "iron": "minecraft:block/iron_block",
-    "guard": "minecraft:block/smooth_stone"
+    "hex_workbench_leg": "hextale:block/hex_workbench_leg",
+    "aged_brass": "hextale:block/aged_brass"
   },
   "elements": [
     {
@@ -82,7 +81,7 @@
       }
     },
     {
-      "name": "log_fl",
+      "name": "leg_fl",
       "from": [
         1,
         0,
@@ -101,7 +100,7 @@
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "east": {
           "uv": [
@@ -110,7 +109,7 @@
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
@@ -119,7 +118,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
@@ -128,7 +127,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -137,13 +136,13 @@
             3,
             15
           ],
-          "texture": "#log",
+          "texture": "#hex_workbench_leg",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "log_fr",
+      "name": "leg_fr",
       "from": [
         13,
         0,
@@ -162,7 +161,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "east": {
           "uv": [
@@ -171,7 +170,7 @@
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
@@ -180,7 +179,7 @@
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
@@ -189,7 +188,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -198,13 +197,13 @@
             15,
             15
           ],
-          "texture": "#log",
+          "texture": "#hex_workbench_leg",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "log_bl",
+      "name": "leg_bl",
       "from": [
         1,
         0,
@@ -223,7 +222,7 @@
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "east": {
           "uv": [
@@ -232,7 +231,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
@@ -241,7 +240,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
@@ -250,7 +249,7 @@
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -259,13 +258,13 @@
             3,
             3
           ],
-          "texture": "#log",
+          "texture": "#hex_workbench_leg",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "log_br",
+      "name": "leg_br",
       "from": [
         13,
         0,
@@ -284,7 +283,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "east": {
           "uv": [
@@ -293,7 +292,7 @@
             3,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
@@ -302,7 +301,7 @@
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
@@ -311,7 +310,7 @@
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -320,13 +319,13 @@
             15,
             3
           ],
-          "texture": "#log",
+          "texture": "#hex_workbench_leg",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "plank_stretch_l",
+      "name": "leg_stretch_l",
       "from": [
         1,
         3,
@@ -345,7 +344,7 @@
             13,
             13
           ],
-          "texture": "#planks"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
@@ -354,7 +353,7 @@
             13,
             13
           ],
-          "texture": "#planks"
+          "texture": "#hex_workbench_leg"
         },
         "up": {
           "uv": [
@@ -363,7 +362,7 @@
             3,
             13
           ],
-          "texture": "#planks"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -372,12 +371,12 @@
             3,
             13
           ],
-          "texture": "#planks"
+          "texture": "#hex_workbench_leg"
         }
       }
     },
     {
-      "name": "plank_stretch_r",
+      "name": "leg_stretch_r",
       "from": [
         13,
         3,
@@ -396,7 +395,7 @@
             13,
             13
           ],
-          "texture": "#planks"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
@@ -405,7 +404,7 @@
             13,
             13
           ],
-          "texture": "#planks"
+          "texture": "#hex_workbench_leg"
         },
         "up": {
           "uv": [
@@ -414,7 +413,7 @@
             15,
             13
           ],
-          "texture": "#planks"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -423,7 +422,7 @@
             15,
             13
           ],
-          "texture": "#planks"
+          "texture": "#hex_workbench_leg"
         }
       }
     },
@@ -506,404 +505,718 @@
       }
     },
     {
-      "name": "iron_rod",
+      "name": "brass_rod",
       "from": [
-        8,
+        9,
         2,
-        5
+        4
       ],
       "to": [
-        9,
         10,
-        6
+        7,
+        5
       ],
       "faces": {
         "north": {
           "uv": [
-            7,
             6,
-            8,
+            9,
+            7,
             14
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
         },
         "east": {
           "uv": [
-            10,
-            6,
             11,
+            9,
+            12,
             14
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
         },
         "south": {
           "uv": [
-            8,
-            6,
             9,
+            9,
+            10,
             14
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
         },
         "west": {
           "uv": [
+            4,
+            9,
             5,
-            6,
-            6,
             14
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
+        },
+        "up": {
+          "uv": [
+            9,
+            4,
+            10,
+            5
+          ],
+          "texture": "#aged_brass"
         },
         "down": {
           "uv": [
-            8,
-            10,
             9,
-            11
-          ],
-          "texture": "#iron"
-        }
-      }
-    },
-    {
-      "name": "stone_guard_f",
-      "from": [
-        2,
-        12,
-        1
-      ],
-      "to": [
-        14,
-        13,
-        2
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            2,
-            3,
-            14,
-            4
-          ],
-          "texture": "#guard"
-        },
-        "east": {
-          "uv": [
-            14,
-            3,
-            15,
-            4
-          ],
-          "texture": "#guard"
-        },
-        "south": {
-          "uv": [
-            2,
-            3,
-            14,
-            4
-          ],
-          "texture": "#guard"
-        },
-        "west": {
-          "uv": [
-            1,
-            3,
-            2,
-            4
-          ],
-          "texture": "#guard"
-        },
-        "up": {
-          "uv": [
-            2,
-            1,
-            14,
-            2
-          ],
-          "texture": "#guard"
-        }
-      }
-    },
-    {
-      "name": "stone_guard_l",
-      "from": [
-        13,
-        12,
-        2
-      ],
-      "to": [
-        14,
-        13,
-        12
-      ],
-      "faces": {
-        "east": {
-          "uv": [
-            4,
-            3,
-            14,
-            4
-          ],
-          "texture": "#guard"
-        },
-        "south": {
-          "uv": [
-            13,
-            3,
-            14,
-            4
-          ],
-          "texture": "#guard"
-        },
-        "west": {
-          "uv": [
-            2,
-            3,
-            12,
-            4
-          ],
-          "texture": "#guard"
-        },
-        "up": {
-          "uv": [
-            13,
-            2,
-            14,
+            11,
+            10,
             12
           ],
-          "texture": "#guard"
+          "texture": "#aged_brass"
         }
       }
     },
     {
-      "name": "stone_guard_r",
+      "name": "wood_upright_l",
       "from": [
-        2,
+        1,
         12,
-        2
+        7
       ],
       "to": [
         3,
-        13,
-        12
+        20,
+        11
       ],
       "faces": {
+        "north": {
+          "uv": [
+            13,
+            0,
+            15,
+            8
+          ],
+          "texture": "#hex_workbench_leg"
+        },
         "east": {
           "uv": [
-            4,
-            3,
-            14,
-            4
+            5,
+            0,
+            9,
+            8
           ],
-          "texture": "#guard"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
-            2,
+            1,
+            0,
             3,
-            3,
-            4
+            8
           ],
-          "texture": "#guard"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
-            2,
-            3,
-            12,
-            4
+            7,
+            0,
+            11,
+            8
           ],
-          "texture": "#guard"
+          "texture": "#hex_workbench_leg"
         },
         "up": {
           "uv": [
-            2,
-            2,
+            1,
+            7,
             3,
-            12
+            11
           ],
-          "texture": "#guard"
+          "texture": "#hex_workbench_leg"
         }
       }
     },
     {
-      "name": "iron_post",
+      "name": "wood_upright_r",
       "from": [
-        7,
+        10,
         12,
-        13
+        7
+      ],
+      "to": [
+        12,
+        20,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            0,
+            6,
+            8
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "east": {
+          "uv": [
+            5,
+            0,
+            9,
+            8
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "south": {
+          "uv": [
+            10,
+            0,
+            12,
+            8
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "west": {
+          "uv": [
+            7,
+            0,
+            11,
+            8
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "up": {
+          "uv": [
+            10,
+            7,
+            12,
+            11
+          ],
+          "texture": "#hex_workbench_leg"
+        }
+      }
+    },
+    {
+      "name": "brass_axle",
+      "from": [
+        0,
+        16,
+        8
+      ],
+      "to": [
+        13,
+        18,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            0,
+            16,
+            2
+          ],
+          "texture": "#aged_brass"
+        },
+        "east": {
+          "uv": [
+            6,
+            0,
+            8,
+            2
+          ],
+          "texture": "#aged_brass"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            13,
+            2
+          ],
+          "texture": "#aged_brass"
+        },
+        "west": {
+          "uv": [
+            8,
+            0,
+            10,
+            2
+          ],
+          "texture": "#aged_brass",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            8,
+            13,
+            10
+          ],
+          "texture": "#aged_brass"
+        },
+        "down": {
+          "uv": [
+            0,
+            6,
+            13,
+            8
+          ],
+          "texture": "#aged_brass"
+        }
+      }
+    },
+    {
+      "name": "brass_rest",
+      "from": [
+        2,
+        15,
+        1
       ],
       "to": [
         9,
-        20,
-        15
+        16,
+        3
       ],
       "faces": {
         "north": {
           "uv": [
             7,
-            4,
-            9,
-            12
+            0,
+            14,
+            1
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
         },
         "east": {
           "uv": [
-            1,
-            4,
-            3,
-            12
+            13,
+            0,
+            15,
+            1
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
         },
         "south": {
           "uv": [
-            7,
-            4,
+            2,
+            0,
             9,
-            12
+            1
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
         },
         "west": {
           "uv": [
-            13,
-            4,
-            15,
-            12
+            1,
+            0,
+            3,
+            1
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
         },
         "up": {
           "uv": [
-            7,
+            2,
+            1,
+            9,
+            3
+          ],
+          "texture": "#aged_brass",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            2,
             13,
             9,
             15
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
         }
       }
     },
     {
-      "name": "iron_arm",
+      "name": "brass_rest_post",
       "from": [
-        7,
-        19,
-        5
+        5,
+        12,
+        1
       ],
       "to": [
-        9,
-        20,
-        13
+        6,
+        15,
+        2
       ],
       "faces": {
         "north": {
           "uv": [
-            7,
-            4,
-            9,
-            5
-          ],
-          "texture": "#iron"
-        },
-        "east": {
-          "uv": [
-            3,
-            4,
-            11,
-            5
-          ],
-          "texture": "#iron"
-        },
-        "west": {
-          "uv": [
-            5,
-            4,
-            13,
-            5
-          ],
-          "texture": "#iron"
-        },
-        "up": {
-          "uv": [
-            7,
-            5,
-            9,
-            13
-          ],
-          "texture": "#iron"
-        },
-        "down": {
-          "uv": [
-            7,
-            3,
-            9,
-            11
-          ],
-          "texture": "#iron"
-        }
-      }
-    },
-    {
-      "name": "iron_jaw",
-      "from": [
-        7,
-        18,
-        6
-      ],
-      "to": [
-        9,
-        19,
-        8
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            7,
-            5,
-            9,
-            6
-          ],
-          "texture": "#iron"
-        },
-        "east": {
-          "uv": [
-            8,
-            5,
             10,
-            6
+            1,
+            11,
+            4
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
+        },
+        "east": {
+          "uv": [
+            14,
+            1,
+            15,
+            4
+          ],
+          "texture": "#aged_brass"
         },
         "south": {
           "uv": [
-            7,
             5,
-            9,
-            6
+            1,
+            6,
+            4
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
         },
         "west": {
           "uv": [
-            6,
-            5,
-            8,
-            6
+            1,
+            1,
+            2,
+            4
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
+        }
+      }
+    },
+    {
+      "name": "brass_jaw_l",
+      "from": [
+        2,
+        16,
+        1
+      ],
+      "to": [
+        3,
+        19,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13,
+            0,
+            14,
+            3
+          ],
+          "texture": "#aged_brass"
+        },
+        "east": {
+          "uv": [
+            13,
+            0,
+            15,
+            3
+          ],
+          "texture": "#aged_brass"
+        },
+        "south": {
+          "uv": [
+            2,
+            0,
+            3,
+            3
+          ],
+          "texture": "#aged_brass"
+        },
+        "west": {
+          "uv": [
+            1,
+            0,
+            3,
+            3
+          ],
+          "texture": "#aged_brass"
+        },
+        "up": {
+          "uv": [
+            2,
+            1,
+            3,
+            3
+          ],
+          "texture": "#aged_brass"
+        }
+      }
+    },
+    {
+      "name": "brass_jaw_r",
+      "from": [
+        8,
+        16,
+        1
+      ],
+      "to": [
+        9,
+        19,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            0,
+            8,
+            3
+          ],
+          "texture": "#aged_brass"
+        },
+        "east": {
+          "uv": [
+            13,
+            0,
+            15,
+            3
+          ],
+          "texture": "#aged_brass"
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            9,
+            3
+          ],
+          "texture": "#aged_brass"
+        },
+        "west": {
+          "uv": [
+            1,
+            0,
+            3,
+            3
+          ],
+          "texture": "#aged_brass"
+        },
+        "up": {
+          "uv": [
+            8,
+            1,
+            9,
+            3
+          ],
+          "texture": "#aged_brass"
+        }
+      }
+    },
+    {
+      "name": "brass_screw",
+      "from": [
+        9,
+        17,
+        1
+      ],
+      "to": [
+        11,
+        18,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            0,
+            7,
+            1
+          ],
+          "texture": "#aged_brass"
+        },
+        "east": {
+          "uv": [
+            14,
+            0,
+            15,
+            1
+          ],
+          "texture": "#aged_brass"
+        },
+        "south": {
+          "uv": [
+            9,
+            0,
+            11,
+            1
+          ],
+          "texture": "#aged_brass"
+        },
+        "up": {
+          "uv": [
+            9,
+            1,
+            11,
+            2
+          ],
+          "texture": "#aged_brass"
         },
         "down": {
           "uv": [
-            7,
-            8,
             9,
-            10
+            14,
+            11,
+            15
           ],
-          "texture": "#iron"
+          "texture": "#aged_brass"
+        }
+      }
+    },
+    {
+      "name": "belt_front",
+      "from": [
+        8,
+        5,
+        4
+      ],
+      "to": [
+        9,
+        17,
+        5
+      ],
+      "rotation": {
+        "angle": 9.5,
+        "axis": "x",
+        "origin": [
+          8.5,
+          5,
+          4
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            0,
+            8,
+            12
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "east": {
+          "uv": [
+            11,
+            0,
+            12,
+            12
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            9,
+            12
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "west": {
+          "uv": [
+            4,
+            0,
+            5,
+            12
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "up": {
+          "uv": [
+            8,
+            4,
+            9,
+            5
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "down": {
+          "uv": [
+            8,
+            11,
+            9,
+            12
+          ],
+          "texture": "#hex_workbench_leg"
+        }
+      }
+    },
+    {
+      "name": "belt_back",
+      "from": [
+        8,
+        5,
+        14
+      ],
+      "to": [
+        9,
+        17,
+        15
+      ],
+      "rotation": {
+        "angle": -9.5,
+        "axis": "x",
+        "origin": [
+          8.5,
+          5,
+          15
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            0,
+            8,
+            12
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "east": {
+          "uv": [
+            1,
+            0,
+            2,
+            12
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            9,
+            12
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "west": {
+          "uv": [
+            14,
+            0,
+            15,
+            12
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "up": {
+          "uv": [
+            8,
+            14,
+            9,
+            15
+          ],
+          "texture": "#hex_workbench_leg"
+        },
+        "down": {
+          "uv": [
+            8,
+            1,
+            9,
+            2
+          ],
+          "texture": "#hex_workbench_leg"
         }
       }
     }
@@ -970,25 +1283,25 @@
       ],
       "translation": [
         0,
-        -1.5,
-        0
-      ],
-      "scale": [
-        0.5,
-        0.5,
-        0.5
-      ]
-    },
-    "fixed": {
-      "translation": [
-        0,
-        -1,
+        -2.5,
         0
       ],
       "scale": [
         0.45,
         0.45,
         0.45
+      ]
+    },
+    "fixed": {
+      "translation": [
+        0,
+        -1.5,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
       ]
     }
   }

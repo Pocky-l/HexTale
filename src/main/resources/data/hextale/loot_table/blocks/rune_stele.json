@@ -8,6 +8,13 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "hextale:rune_stele",
+            "state": {
+              "half": "lower"
+            }
+          },
           "name": "hextale:rune_stele"
         }
       ],

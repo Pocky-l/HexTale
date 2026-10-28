@@ -1,18 +1,21 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "minecraft:block/dark_oak_planks",
-    "planks": "minecraft:block/dark_oak_planks",
-    "log": "minecraft:block/dark_oak_log",
-    "stone": "minecraft:block/polished_deepslate",
-    "top": "hextale:block/hex_workbench_top"
+    "particle": "hextale:block/hex_workbench_side",
+    "dark_oak_planks": "minecraft:block/dark_oak_planks",
+    "hex_workbench_top": "hextale:block/hex_workbench_top",
+    "brass": "hextale:block/brass",
+    "hex_workbench_tools": "hextale:block/hex_workbench_tools",
+    "hex_workbench_side": "hextale:block/hex_workbench_side",
+    "hex_workbench_leg": "hextale:block/hex_workbench_leg",
+    "hextech_gem": "hextale:block/hextech_gem"
   },
   "elements": [
     {
-      "name": "top_slab",
+      "name": "top",
       "from": [
         0,
-        12,
+        13,
         0
       ],
       "to": [
@@ -26,9 +29,9 @@
             0,
             0,
             16,
-            4
+            3
           ],
-          "texture": "#stone",
+          "texture": "#hex_workbench_side",
           "cullface": "north"
         },
         "east": {
@@ -36,9 +39,9 @@
             0,
             0,
             16,
-            4
+            3
           ],
-          "texture": "#stone",
+          "texture": "#hex_workbench_side",
           "cullface": "east"
         },
         "south": {
@@ -46,9 +49,9 @@
             0,
             0,
             16,
-            4
+            3
           ],
-          "texture": "#stone",
+          "texture": "#hex_workbench_side",
           "cullface": "south"
         },
         "west": {
@@ -56,9 +59,9 @@
             0,
             0,
             16,
-            4
+            3
           ],
-          "texture": "#stone",
+          "texture": "#hex_workbench_side",
           "cullface": "west"
         },
         "up": {
@@ -68,7 +71,7 @@
             16,
             16
           ],
-          "texture": "#top",
+          "texture": "#hex_workbench_top",
           "cullface": "up"
         },
         "down": {
@@ -78,12 +81,12 @@
             16,
             16
           ],
-          "texture": "#stone"
+          "texture": "#dark_oak_planks"
         }
       }
     },
     {
-      "name": "log_fl",
+      "name": "leg_nw",
       "from": [
         1,
         0,
@@ -91,45 +94,45 @@
       ],
       "to": [
         4,
-        12,
+        13,
         4
       ],
       "faces": {
         "north": {
           "uv": [
             12,
-            4,
+            3,
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "east": {
           "uv": [
             12,
-            4,
+            3,
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
             1,
-            4,
+            3,
             4,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
             1,
-            4,
+            3,
             4,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -138,13 +141,13 @@
             4,
             15
           ],
-          "texture": "#log",
+          "texture": "#hex_workbench_leg",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "log_fr",
+      "name": "leg_ne",
       "from": [
         12,
         0,
@@ -152,45 +155,45 @@
       ],
       "to": [
         15,
-        12,
+        13,
         4
       ],
       "faces": {
         "north": {
           "uv": [
             1,
-            4,
+            3,
             4,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "east": {
           "uv": [
             12,
-            4,
+            3,
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
             12,
-            4,
+            3,
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
             1,
-            4,
+            3,
             4,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -199,13 +202,13 @@
             15,
             15
           ],
-          "texture": "#log",
+          "texture": "#hex_workbench_leg",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "log_bl",
+      "name": "leg_sw",
       "from": [
         1,
         0,
@@ -213,45 +216,45 @@
       ],
       "to": [
         4,
-        12,
+        13,
         15
       ],
       "faces": {
         "north": {
           "uv": [
             12,
-            4,
+            3,
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "east": {
           "uv": [
             1,
-            4,
+            3,
             4,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
             1,
-            4,
+            3,
             4,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
             12,
-            4,
+            3,
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -260,13 +263,13 @@
             4,
             4
           ],
-          "texture": "#log",
+          "texture": "#hex_workbench_leg",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "log_br",
+      "name": "leg_se",
       "from": [
         12,
         0,
@@ -274,45 +277,45 @@
       ],
       "to": [
         15,
-        12,
+        13,
         15
       ],
       "faces": {
         "north": {
           "uv": [
             1,
-            4,
+            3,
             4,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "east": {
           "uv": [
             1,
-            4,
+            3,
             4,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "south": {
           "uv": [
             12,
-            4,
+            3,
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "west": {
           "uv": [
             12,
-            4,
+            3,
             15,
             16
           ],
-          "texture": "#log"
+          "texture": "#hex_workbench_leg"
         },
         "down": {
           "uv": [
@@ -321,392 +324,411 @@
             15,
             4
           ],
-          "texture": "#log",
+          "texture": "#hex_workbench_leg",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "plank_shelf_mid",
+      "name": "apron_back",
       "from": [
-        1,
-        3,
+        4,
+        10,
+        13
+      ],
+      "to": [
+        12,
+        13,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            3,
+            12,
+            6
+          ],
+          "texture": "#dark_oak_planks"
+        },
+        "south": {
+          "uv": [
+            4,
+            3,
+            12,
+            6
+          ],
+          "texture": "#dark_oak_planks"
+        },
+        "down": {
+          "uv": [
+            4,
+            2,
+            12,
+            3
+          ],
+          "texture": "#dark_oak_planks"
+        }
+      }
+    },
+    {
+      "name": "apron_east",
+      "from": [
+        13,
+        10,
         4
       ],
       "to": [
-        15,
-        4,
+        14,
+        13,
         12
       ],
       "faces": {
         "east": {
           "uv": [
             4,
+            3,
             12,
-            12,
-            13
+            6
           ],
-          "texture": "#planks"
+          "texture": "#dark_oak_planks"
         },
         "west": {
           "uv": [
             4,
+            3,
             12,
-            12,
-            13
+            6
           ],
-          "texture": "#planks"
+          "texture": "#dark_oak_planks"
         },
-        "up": {
+        "down": {
           "uv": [
-            1,
+            13,
             4,
-            15,
+            14,
             12
           ],
-          "texture": "#planks"
-        },
-        "down": {
-          "uv": [
-            1,
-            4,
-            15,
-            12
-          ],
-          "texture": "#planks"
+          "texture": "#dark_oak_planks"
         }
       }
     },
     {
-      "name": "plank_shelf_front",
+      "name": "apron_west",
+      "from": [
+        2,
+        10,
+        4
+      ],
+      "to": [
+        3,
+        13,
+        12
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            4,
+            3,
+            12,
+            6
+          ],
+          "texture": "#dark_oak_planks"
+        },
+        "west": {
+          "uv": [
+            4,
+            3,
+            12,
+            6
+          ],
+          "texture": "#dark_oak_planks"
+        },
+        "down": {
+          "uv": [
+            2,
+            4,
+            3,
+            12
+          ],
+          "texture": "#dark_oak_planks"
+        }
+      }
+    },
+    {
+      "name": "panel_front",
       "from": [
         4,
-        3,
-        1
+        5,
+        2
       ],
       "to": [
         12,
-        4,
-        4
+        13,
+        3
       ],
       "faces": {
         "north": {
           "uv": [
             4,
+            3,
             12,
-            12,
-            13
+            11
           ],
-          "texture": "#planks"
+          "texture": "#dark_oak_planks"
         },
-        "up": {
-          "uv": [
-            4,
-            1,
-            12,
-            4
-          ],
-          "texture": "#planks"
-        },
-        "down": {
-          "uv": [
-            4,
-            12,
-            12,
-            15
-          ],
-          "texture": "#planks"
-        }
-      }
-    },
-    {
-      "name": "plank_shelf_back",
-      "from": [
-        4,
-        3,
-        12
-      ],
-      "to": [
-        12,
-        4,
-        15
-      ],
-      "faces": {
         "south": {
           "uv": [
             4,
+            3,
             12,
-            12,
-            13
+            11
           ],
-          "texture": "#planks"
-        },
-        "up": {
-          "uv": [
-            4,
-            12,
-            12,
-            15
-          ],
-          "texture": "#planks"
+          "texture": "#dark_oak_planks"
         },
         "down": {
           "uv": [
             4,
-            1,
+            13,
             12,
-            4
+            14
           ],
-          "texture": "#planks"
+          "texture": "#dark_oak_planks"
         }
       }
     },
     {
-      "name": "plank_apron_front",
+      "name": "brass_bezel",
       "from": [
-        4,
-        8,
+        5,
+        6,
         1
       ],
       "to": [
-        12,
+        11,
         12,
         2
       ],
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [
+          8,
+          9,
+          1
+        ]
+      },
       "faces": {
         "north": {
           "uv": [
+            5,
             4,
-            4,
-            12,
-            8
+            11,
+            10
           ],
-          "texture": "#planks"
+          "texture": "#brass"
         },
-        "south": {
-          "uv": [
-            4,
-            4,
-            12,
-            8
-          ],
-          "texture": "#planks"
-        },
-        "down": {
-          "uv": [
-            4,
-            14,
-            12,
-            15
-          ],
-          "texture": "#planks"
-        }
-      }
-    },
-    {
-      "name": "plank_apron_back",
-      "from": [
-        4,
-        9,
-        14
-      ],
-      "to": [
-        12,
-        12,
-        15
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            4,
-            4,
-            12,
-            7
-          ],
-          "texture": "#planks"
-        },
-        "south": {
-          "uv": [
-            4,
-            4,
-            12,
-            7
-          ],
-          "texture": "#planks"
-        },
-        "down": {
-          "uv": [
-            4,
-            1,
-            12,
-            2
-          ],
-          "texture": "#planks"
-        }
-      }
-    },
-    {
-      "name": "plank_apron_left",
-      "from": [
-        1,
-        9,
-        4
-      ],
-      "to": [
-        2,
-        12,
-        12
-      ],
-      "faces": {
         "east": {
           "uv": [
+            5,
             4,
-            4,
-            12,
-            7
+            6,
+            10
           ],
-          "texture": "#planks"
+          "texture": "#brass"
         },
         "west": {
           "uv": [
+            10,
             4,
-            4,
-            12,
-            7
+            11,
+            10
           ],
-          "texture": "#planks"
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            5,
+            4,
+            11,
+            5
+          ],
+          "texture": "#brass"
         },
         "down": {
           "uv": [
-            1,
-            4,
-            2,
-            12
+            5,
+            9,
+            11,
+            10
           ],
-          "texture": "#planks"
+          "texture": "#brass"
         }
       }
     },
     {
-      "name": "plank_apron_right",
+      "name": "shelf",
       "from": [
+        2,
+        2,
+        2
+      ],
+      "to": [
         14,
-        9,
+        3,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            13,
+            14,
+            14
+          ],
+          "texture": "#dark_oak_planks"
+        },
+        "east": {
+          "uv": [
+            2,
+            13,
+            14,
+            14
+          ],
+          "texture": "#dark_oak_planks"
+        },
+        "south": {
+          "uv": [
+            2,
+            13,
+            14,
+            14
+          ],
+          "texture": "#dark_oak_planks"
+        },
+        "west": {
+          "uv": [
+            2,
+            13,
+            14,
+            14
+          ],
+          "texture": "#dark_oak_planks"
+        },
+        "up": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#dark_oak_planks"
+        },
+        "down": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#dark_oak_planks"
+        }
+      }
+    },
+    {
+      "name": "glow_gem",
+      "from": [
+        6,
+        7,
+        0
+      ],
+      "to": [
+        10,
+        11,
+        2
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "z",
+        "origin": [
+          8,
+          9,
+          1
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#hextech_gem",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            6,
+            6,
+            8,
+            10
+          ],
+          "texture": "#hextech_gem"
+        },
+        "west": {
+          "uv": [
+            6,
+            6,
+            8,
+            10
+          ],
+          "texture": "#hextech_gem"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            8
+          ],
+          "texture": "#hextech_gem"
+        },
+        "down": {
+          "uv": [
+            6,
+            6,
+            10,
+            8
+          ],
+          "texture": "#hextech_gem"
+        }
+      }
+    },
+    {
+      "name": "tools_plane",
+      "from": [
+        15,
+        3,
         4
       ],
       "to": [
         15,
-        12,
+        11,
         12
       ],
       "faces": {
         "east": {
           "uv": [
             4,
-            4,
+            5,
             12,
-            7
+            13
           ],
-          "texture": "#planks"
-        },
-        "west": {
-          "uv": [
-            4,
-            4,
-            12,
-            7
-          ],
-          "texture": "#planks"
-        },
-        "down": {
-          "uv": [
-            14,
-            4,
-            15,
-            12
-          ],
-          "texture": "#planks"
+          "texture": "#hex_workbench_tools"
         }
       }
     }
-  ],
-  "display": {
-    "thirdperson_righthand": {
-      "rotation": [
-        75,
-        45,
-        0
-      ],
-      "translation": [
-        0,
-        2.5,
-        0
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    },
-    "firstperson_righthand": {
-      "rotation": [
-        0,
-        45,
-        0
-      ],
-      "scale": [
-        0.4,
-        0.4,
-        0.4
-      ]
-    },
-    "firstperson_lefthand": {
-      "rotation": [
-        0,
-        -135,
-        0
-      ],
-      "scale": [
-        0.4,
-        0.4,
-        0.4
-      ]
-    },
-    "ground": {
-      "translation": [
-        0,
-        3,
-        0
-      ],
-      "scale": [
-        0.25,
-        0.25,
-        0.25
-      ]
-    },
-    "gui": {
-      "rotation": [
-        30,
-        -135,
-        0
-      ],
-      "scale": [
-        0.625,
-        0.625,
-        0.625
-      ]
-    },
-    "fixed": {
-      "translation": [
-        0,
-        -1,
-        0
-      ],
-      "scale": [
-        0.45,
-        0.45,
-        0.45
-      ]
-    }
-  }
+  ]
 }
