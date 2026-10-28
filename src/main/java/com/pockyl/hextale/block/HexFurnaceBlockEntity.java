@@ -371,7 +371,7 @@ public class HexFurnaceBlockEntity extends BaseContainerBlockEntity implements W
             com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, Vec3.atCenterOf(worldPosition).add(0, 0.6, 0), com.pockyl.hextale.registry.ModParticles.FIRE, 0.6F);
         }
         Vec3 mouth = Vec3.atCenterOf(worldPosition);
-        level.playSound(null, mouth.x, mouth.y, mouth.z, ModSounds.FORGE_MELT.get(), SoundSource.BLOCKS, 0.7F, 0.9F + level.getRandom().nextFloat() * 0.2F);
+        level.playSound(null, mouth.x, mouth.y, mouth.z, ModSounds.FORGE_MELT.get(), SoundSource.BLOCKS, 0.23F, 0.9F + level.getRandom().nextFloat() * 0.2F);
         if (level instanceof ServerLevel server) {
             // The fire breathes out of the mouth as the melt settles.
             net.minecraft.core.Direction front = getBlockState().getValue(com.pockyl.hextale.block.HexFurnaceBlock.FACING);
