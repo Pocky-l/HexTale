@@ -30,7 +30,7 @@ description='''${mod_description}'''
 [[dependencies.${mod_id}]]
     modId="jei"
     type="optional"
-    versionRange="[31,)"
+    versionRange="[29.47,)"
     ordering="NONE"
     side="CLIENT"
 
