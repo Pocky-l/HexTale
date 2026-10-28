@@ -58,6 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Lab Bench shows how much of the compound is in the flask as liquid in a graduated glass tube, and its purity on a
   scale with a brass mark at what the topic needs, instead of small numbers (the numbers are in the tooltips). When there
   are more topics than fit, the topic grid scrolls with the mouse wheel and no longer covers the open topic.
+- Ward Glass and Veil Glass carry their rune etched into the glass - upright in Ward Glass, turned over in Veil Glass -
+  in a brass and a pewter frame, and the coil under an Impulse Plate's lid is a glowing cog now.
 
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
