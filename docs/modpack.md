@@ -226,7 +226,14 @@ Other mods' pipes, tanks and hoppers:
 | Hex Lapidary | - | crystal in from the top, disc from the sides, finished stone out from the bottom |
 | Experience Condenser | liquid experience out (the first fluid in `c:experience`, 20 mB per point) | - |
 | Pump | pushes water into another mod's tank on top | - |
+| Essence Jar, Big Essence Jar | essence fluid in and out (see below) | - |
+| Creative Essence Jar | every essence fluid out, endless | - |
 | Separator, Hex Furnace, Hex Foundry, Research Table, Lab Bench, Pedestal, Disintegrator, ... | - | as before (sided slots) |
+
+Essence as a fluid: `hextale:essence` with the data component `hextale:essence_kind` (the essence id, e.g. `fire`);
+1 mB of fluid = 1 mB of essence. A jar gives fluid only while it holds one essence and nothing else (mixtures are the
+mod's own business and are never split); it takes the essence fluid its sticker allows. The fluid has no bucket and no
+block, so it cannot be placed in the world.
 
 Research still holds: hoppers and pipes never count as a researcher, so what they bring only makes what needs no
 research. The Sorting Matrix fills any storage with an item handler; it finds chests, barrels and drawers by itself

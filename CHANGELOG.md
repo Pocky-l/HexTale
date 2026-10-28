@@ -28,6 +28,11 @@ machines respect claims, and other mods' pipes, quests and slots work with HexTa
   were dropped in, the Crystal Battery and the Hex Workbench's socket take crystals, the Hex Lapidary takes crystals and
   discs and gives out finished stones. Modded buckets and tanks work on the Crucible and Alembic. The Pump fills a tank
   from another mod on top of it; the Experience Condenser offers its experience as liquid experience when a mod adds one.
+- Pure essence leaves and enters the mod as a fluid, so tanks, pipes and storage networks of other mods can hold and
+  move it: an Essence Jar (also the Big one) gives essence fluid only while it holds a single essence - mixtures stay
+  in the jar and are never split - and takes the essence fluid its sticker allows, mixing it in like a pipe. The
+  Creative Essence Jar gives every essence without end. Essence fluids are named after their essence and tinted in its
+  colour; JEI lists one per essence.
 - The Sorting Matrix knows common modded chests, barrels and drawers.
 - For quests: advancement triggers `hextale:research_completed`, `guide_step`, `guide_event` and `ritual_finished`,
   and operator commands `/hextale research grant|revoke` and `/hextale guide grant|reset`.
