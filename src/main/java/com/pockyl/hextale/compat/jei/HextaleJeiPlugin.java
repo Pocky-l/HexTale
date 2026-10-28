@@ -47,6 +47,10 @@ public class HextaleJeiPlugin implements IModPlugin {
         // The diary's step pictures are no items anyone can have.
         runtime.getIngredientManager().removeIngredientsAtRuntime(mezz.jei.api.constants.VanillaTypes.ITEM_STACK,
                 java.util.List.of(new net.minecraft.world.item.ItemStack(ModItems.GUIDE_MARK.get())));
+        // The essence fluid without a kind is no essence at all: only the 22 pure ones are shown.
+        runtime.getIngredientManager().removeIngredientsAtRuntime(mezz.jei.api.neoforge.NeoForgeTypes.FLUID_STACK,
+                java.util.List.of(new net.neoforged.neoforge.fluids.FluidStack(com.pockyl.hextale.registry.ModFluids.ESSENCE.get(),
+                        net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME)));
     }
 
     @Override
@@ -54,6 +58,13 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.registerFromDataComponentTypes(ModItems.ESSENCE_FLASK.get(), ModDataComponents.ESSENCE.get());
         registration.registerFromDataComponentTypes(ModItems.ESSENCE.get(), ModDataComponents.ESSENCE_KIND.get());
         registration.registerFromDataComponentTypes(ModItems.CHEM_VIAL.get(), ModDataComponents.BREW.get());
+    }
+
+    /** The essence fluid of each essence is its own ingredient. */
+    @Override
+    public <T> void registerFluidSubtypes(ISubtypeRegistration registration, mezz.jei.api.helpers.IPlatformFluidHelper<T> platformFluidHelper) {
+        registration.registerSubtypeInterpreter(mezz.jei.api.neoforge.NeoForgeTypes.FLUID_STACK, com.pockyl.hextale.registry.ModFluids.ESSENCE.get(),
+                (stack, context) -> com.pockyl.hextale.essence.EssenceFluid.kind(stack));
     }
 
     /** Typing an essence's name also finds the studied items that carry it. */
@@ -71,6 +82,12 @@ public class HextaleJeiPlugin implements IModPlugin {
         }
         bottles.add(EssenceFlaskItem.filled(EssenceMix.unknown(EssenceFlaskItem.CAPACITY)));
         registration.addExtraItemStacks(bottles);
+        // Pure essence as a fluid, as other mods' tanks hold it.
+        List<net.neoforged.neoforge.fluids.FluidStack> fluids = new ArrayList<>();
+        for (Essence essence : Essence.values()) {
+            fluids.add(com.pockyl.hextale.essence.EssenceFluid.stack(essence, net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME));
+        }
+        registration.addExtraIngredients(mezz.jei.api.neoforge.NeoForgeTypes.FLUID_STACK, fluids);
     }
 
     @Override

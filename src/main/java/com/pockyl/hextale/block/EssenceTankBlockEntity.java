@@ -72,6 +72,16 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
         return tank;
     }
 
+    /** The jar as other mods' tanks and pipes see it: pure essence as a fluid (one per jar: it keeps transaction state). */
+    public com.pockyl.hextale.transport.JarFluidPort fluidPort() {
+        if (fluidPort == null) {
+            fluidPort = new com.pockyl.hextale.transport.JarFluidPort(this);
+        }
+        return fluidPort;
+    }
+
+    private com.pockyl.hextale.transport.@Nullable JarFluidPort fluidPort;
+
     /** The essence on the jar's sticker, or null. */
     public @Nullable Essence sticker() {
         return sticker;

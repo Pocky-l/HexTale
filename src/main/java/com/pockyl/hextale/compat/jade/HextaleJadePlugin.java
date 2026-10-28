@@ -56,6 +56,12 @@ public class HextaleJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.XpCondenserBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.MiasmaVentBlock.class);
         registration.registerBlockComponent(Machines.INSTANCE, com.pockyl.hextale.block.HexWorkbenchBlock.class);
+        // A jar names its contents itself; Jade's own fluid bar would show a mixture as an empty tank.
+        registration.addTooltipCollectedCallback((box, accessor) -> {
+            if (accessor instanceof BlockAccessor block && EssenceTankBlockEntity.at(block.getLevel(), block.getPosition()) != null) {
+                box.getTooltip().remove(snownee.jade.api.JadeIds.UNIVERSAL_FLUID_STORAGE);
+            }
+        });
     }
 
     private enum Machines implements IBlockComponentProvider {
