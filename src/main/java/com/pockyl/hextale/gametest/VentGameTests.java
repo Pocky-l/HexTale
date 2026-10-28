@@ -2,47 +2,75 @@ package com.pockyl.hextale.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Spider;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.block.Blocks;
 
-import com.pockyl.hextale.block.EssenceTankBlockEntity;
+import com.pockyl.hextale.block.MiasmaVentBlock;
 import com.pockyl.hextale.block.MiasmaVentBlockEntity;
-import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.registry.ModBlocks;
 
-/** The Miasma Vent: dry without unknown essence, choking with it. */
+/** The Miasma Vent: free fumes that eat the hostile (the undead too) and spare the rest; redstone shuts it. */
 public final class VentGameTests {
     private static final BlockPos BASE = new BlockPos(1, 1, 1);
 
     private VentGameTests() {
     }
 
-    /** A weak spider over a vent with no unknown essence stays alive; once a jar of the murk stands by, the fumes kill it. */
-    @HexTest(maxTicks = 200)
-    public static void theVentChokesTheHostile(GameTestHelper helper) {
-        for (int x = -3; x <= 3; x++) {
-            for (int z = -3; z <= 3; z++) {
+    private static void floor(GameTestHelper helper) {
+        int reach = MiasmaVentBlockEntity.RADIUS + 1;
+        for (int x = -reach; x <= reach; x++) {
+            for (int z = -reach; z <= reach; z++) {
                 helper.setBlock(BASE.offset(x, -1, z), Blocks.STONE);
                 for (int y = 0; y <= 4; y++) {
                     helper.setBlock(BASE.offset(x, y, z), Blocks.AIR);
                 }
             }
         }
+    }
+
+    /**
+     * With no fuel anywhere, the first breath poisons and hurts a creeper at the edge of the cloud and kills a weak zombie
+     * (poison alone could not touch it); a cow in the cloud is left whole. (Only the first breath is checked: in some test
+     * runs the creatures do not tick, and an untouched hurt cooldown would turn the next blows away.)
+     */
+    @HexTest(maxTicks = 120, padding = 6)
+    public static void theVentChokesTheHostileForFree(GameTestHelper helper) {
+        floor(helper);
         helper.setBlock(BASE, ModBlocks.MIASMA_VENT.get());
-        MiasmaVentBlockEntity vent = helper.<MiasmaVentBlockEntity>getBlockEntity(BASE);
-        Spider spider = helper.spawnWithNoFreeWill(EntityType.SPIDER, BASE.above());
-        spider.setHealth(MiasmaVentBlockEntity.DAMAGE - 1);
-        helper.runAfterDelay(20, () -> {
-            helper.assertTrue(vent.dry(), "no unknown essence - the vent is dry");
-            helper.assertTrue(spider.isAlive(), "no fumes while dry");
-            BlockPos jarPos = BASE.offset(-2, 0, -2);
-            helper.setBlock(jarPos, ModBlocks.ESSENCE_TANK.get());
-            helper.<EssenceTankBlockEntity>getBlockEntity(jarPos).tank().set(EssenceMix.unknown(8));
+        int edge = MiasmaVentBlockEntity.RADIUS;
+        Creeper creeper = helper.spawnWithNoFreeWill(EntityType.CREEPER, BASE.offset(edge, 0, 0));
+        float creeperHealth = creeper.getHealth();
+        Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, BASE.offset(-edge, 0, edge));
+        zombie.setHealth(MiasmaVentBlockEntity.DAMAGE - 1);
+        Cow cow = helper.spawnWithNoFreeWill(EntityType.COW, BASE.offset(0, 0, -2));
+        float cowHealth = cow.getHealth();
+        helper.runAfterDelay(10, () -> {
+            helper.assertTrue(!zombie.isAlive(), "the fumes ate the undead zombie");
+            helper.assertTrue(creeper.hasEffect(MobEffects.POISON) && creeper.getHealth() < creeperHealth, "the creeper breathed poison");
+            helper.assertTrue(cow.getHealth() == cowHealth, "the cow only coughs");
         });
-        helper.runAfterDelay(120, () -> {
-            helper.assertTrue(!spider.isAlive(), "the fumes killed the spider");
-            helper.assertTrue(!vent.dry(), "fed with the murk");
+        helper.runAfterDelay(90, () -> {
+            helper.assertTrue(cow.isAlive() && cow.getHealth() == cowHealth, "the cow is still whole");
+            helper.succeed();
+        });
+    }
+
+    /** A redstone signal holds the stack shut: the weak spider over it lives. */
+    @HexTest(maxTicks = 120, padding = 6)
+    public static void redstoneShutsTheVent(GameTestHelper helper) {
+        floor(helper);
+        helper.setBlock(BASE, ModBlocks.MIASMA_VENT.get());
+        helper.setBlock(BASE.west(), Blocks.REDSTONE_BLOCK);
+        Spider spider = helper.spawnWithNoFreeWill(EntityType.SPIDER, BASE.offset(2, 0, 0));
+        spider.setHealth(1);
+        helper.runAfterDelay(100, () -> {
+            helper.assertTrue(helper.getBlockState(BASE).getValue(MiasmaVentBlock.POWERED), "the vent sees the signal");
+            helper.assertTrue(spider.isAlive() && spider.getHealth() == 1, "a shut vent breathes nothing");
             helper.succeed();
         });
     }

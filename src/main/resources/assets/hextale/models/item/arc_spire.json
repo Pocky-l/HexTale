@@ -1,3 +1,1071 @@
 {
-  "parent": "hextale:block/arc_spire"
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/polished_magic_stone",
+    "stone": "hextale:block/polished_magic_stone",
+    "brass": "hextale:block/brass",
+    "steel": "hextale:block/hexsteel_block"
+  },
+  "elements": [
+    {
+      "name": "stone_foot",
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        2,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ],
+          "texture": "#stone"
+        },
+        "east": {
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ],
+          "texture": "#stone"
+        },
+        "south": {
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ],
+          "texture": "#stone"
+        },
+        "west": {
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ],
+          "texture": "#stone"
+        },
+        "up": {
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ],
+          "texture": "#stone"
+        },
+        "down": {
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ],
+          "texture": "#stone",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "stone_plinth",
+      "from": [
+        3,
+        2,
+        3
+      ],
+      "to": [
+        13,
+        5,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            11,
+            13,
+            14
+          ],
+          "texture": "#stone"
+        },
+        "east": {
+          "uv": [
+            3,
+            11,
+            13,
+            14
+          ],
+          "texture": "#stone"
+        },
+        "south": {
+          "uv": [
+            3,
+            11,
+            13,
+            14
+          ],
+          "texture": "#stone"
+        },
+        "west": {
+          "uv": [
+            3,
+            11,
+            13,
+            14
+          ],
+          "texture": "#stone"
+        },
+        "up": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#stone"
+        }
+      }
+    },
+    {
+      "name": "steel_post_low",
+      "from": [
+        6,
+        5,
+        6
+      ],
+      "to": [
+        10,
+        16,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            0,
+            10,
+            11
+          ],
+          "texture": "#steel"
+        },
+        "east": {
+          "uv": [
+            6,
+            0,
+            10,
+            11
+          ],
+          "texture": "#steel"
+        },
+        "south": {
+          "uv": [
+            6,
+            0,
+            10,
+            11
+          ],
+          "texture": "#steel"
+        },
+        "west": {
+          "uv": [
+            6,
+            0,
+            10,
+            11
+          ],
+          "texture": "#steel"
+        }
+      }
+    },
+    {
+      "name": "brass_coil_1",
+      "from": [
+        4,
+        7,
+        4
+      ],
+      "to": [
+        12,
+        9,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            7,
+            12,
+            9
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            4,
+            7,
+            12,
+            9
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            4,
+            7,
+            12,
+            9
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            4,
+            7,
+            12,
+            9
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "brass_coil_2",
+      "from": [
+        4,
+        11,
+        4
+      ],
+      "to": [
+        12,
+        13,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            3,
+            12,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            4,
+            3,
+            12,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            4,
+            3,
+            12,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            4,
+            3,
+            12,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "brass_coil_3",
+      "from": [
+        5,
+        14,
+        5
+      ],
+      "to": [
+        11,
+        16,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            0,
+            11,
+            2
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            5,
+            0,
+            11,
+            2
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            5,
+            0,
+            11,
+            2
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            5,
+            0,
+            11,
+            2
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#brass",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "steel_post_up",
+      "from": [
+        6,
+        16,
+        6
+      ],
+      "to": [
+        10,
+        22,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            10,
+            10,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "east": {
+          "uv": [
+            6,
+            10,
+            10,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "south": {
+          "uv": [
+            6,
+            10,
+            10,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "west": {
+          "uv": [
+            6,
+            10,
+            10,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#steel"
+        }
+      }
+    },
+    {
+      "name": "brass_coil_4",
+      "from": [
+        5,
+        18,
+        5
+      ],
+      "to": [
+        11,
+        20,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            12,
+            11,
+            14
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            5,
+            12,
+            11,
+            14
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            5,
+            12,
+            11,
+            14
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            5,
+            12,
+            11,
+            14
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "steel_needle",
+      "from": [
+        7,
+        22,
+        7
+      ],
+      "to": [
+        9,
+        30,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            2,
+            9,
+            10
+          ],
+          "texture": "#steel"
+        },
+        "east": {
+          "uv": [
+            7,
+            2,
+            9,
+            10
+          ],
+          "texture": "#steel"
+        },
+        "south": {
+          "uv": [
+            7,
+            2,
+            9,
+            10
+          ],
+          "texture": "#steel"
+        },
+        "west": {
+          "uv": [
+            7,
+            2,
+            9,
+            10
+          ],
+          "texture": "#steel"
+        },
+        "up": {
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ],
+          "texture": "#steel"
+        }
+      }
+    },
+    {
+      "name": "brass_coil_5",
+      "from": [
+        6,
+        23,
+        6
+      ],
+      "to": [
+        10,
+        25,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            7,
+            10,
+            9
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            6,
+            7,
+            10,
+            9
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            6,
+            7,
+            10,
+            9
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            6,
+            7,
+            10,
+            9
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "brass_collar",
+      "from": [
+        6,
+        27,
+        6
+      ],
+      "to": [
+        10,
+        28,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            4,
+            10,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            6,
+            4,
+            10,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            6,
+            4,
+            10,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            6,
+            4,
+            10,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "brass_prong_nw",
+      "from": [
+        6,
+        28,
+        6
+      ],
+      "to": [
+        7,
+        31,
+        7
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9,
+            1,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            9,
+            1,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            6,
+            1,
+            7,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            6,
+            1,
+            7,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            7,
+            7
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "brass_prong_ne",
+      "from": [
+        9,
+        28,
+        6
+      ],
+      "to": [
+        10,
+        31,
+        7
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            1,
+            7,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            9,
+            1,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            9,
+            1,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            6,
+            1,
+            7,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            9,
+            6,
+            10,
+            7
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "brass_prong_sw",
+      "from": [
+        6,
+        28,
+        9
+      ],
+      "to": [
+        7,
+        31,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9,
+            1,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            6,
+            1,
+            7,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            6,
+            1,
+            7,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            9,
+            1,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            6,
+            9,
+            7,
+            10
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "brass_prong_se",
+      "from": [
+        9,
+        28,
+        9
+      ],
+      "to": [
+        10,
+        31,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            1,
+            7,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            6,
+            1,
+            7,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            9,
+            1,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            9,
+            1,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            9,
+            9,
+            10,
+            10
+          ],
+          "texture": "#brass"
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        -3.5,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        -3.5,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    }
+  }
 }

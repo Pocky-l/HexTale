@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "hextale:block/hollowbloom_3"
+    "model": "hextale:item/hollowbloom"
   }
 }

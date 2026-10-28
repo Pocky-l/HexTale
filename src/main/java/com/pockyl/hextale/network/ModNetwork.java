@@ -7,7 +7,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModNetwork {
-    private static final String PROTOCOL_VERSION = "12";
+    private static final String PROTOCOL_VERSION = "13";
 
     private ModNetwork() {
     }
@@ -31,6 +31,7 @@ public final class ModNetwork {
         registrar.playToClient(SawPayload.TYPE, SawPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(FunnelPayload.TYPE, FunnelPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(ArcPayload.TYPE, ArcPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
+        registrar.playToClient(WarmthPayload.TYPE, WarmthPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(CondensePayload.TYPE, CondensePayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(HexcoreStrikePayload.TYPE, HexcoreStrikePayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);
         registrar.playToClient(PylonLinkPayload.TYPE, PylonLinkPayload.STREAM_CODEC, com.pockyl.hextale.port.RegisterClientPayloadHandlersEvent::handle);

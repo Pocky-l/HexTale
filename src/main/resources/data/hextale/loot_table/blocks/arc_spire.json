@@ -10,6 +10,15 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "conditions": [
+            {
+              "condition": "minecraft:block_state_property",
+              "block": "hextale:arc_spire",
+              "properties": {
+                "half": "lower"
+              }
+            }
+          ],
           "name": "hextale:arc_spire",
           "functions": [
             {

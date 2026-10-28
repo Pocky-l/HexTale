@@ -46,7 +46,7 @@ public class WorldAnchorBlock extends BaseEntityBlock implements com.pockyl.hext
     /** Ticks between two Fertility pinches. */
     private static final int GROWTH_TICKS = 100;
 
-    /** A deepslate socket with the anchor's crown, shank and stock standing in it. */
+    /** A deepslate socket with the anchor's crown, flukes and shank standing in it, the ring on top. */
     private static final net.minecraft.world.phys.shapes.VoxelShape SHAPE = net.minecraft.world.phys.shapes.Shapes.or(
             net.minecraft.world.level.block.Block.box(0, 0, 0, 16, 4, 16), net.minecraft.world.level.block.Block.box(3, 4, 3, 13, 12, 13),
             net.minecraft.world.level.block.Block.box(6, 12, 6, 10, 16, 10));

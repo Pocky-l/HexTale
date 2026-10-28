@@ -38,8 +38,8 @@ import java.util.List;
  */
 public class ArcSpireRenderer implements BlockEntityRenderer<ArcSpireBlockEntity, ArcSpireRenderer.State> {
     private static final int BOLT_COLOR = 0x8FD8FF;
-    /** Heights of the coils (in blocks) that glow after a strike. */
-    private static final float[] COILS = {5.5F / 16, 8.5F / 16, 11.5F / 16};
+    /** Heights of the coils (in blocks over the base) that glow after a strike, up both halves. */
+    private static final float[] COILS = {8F / 16, 12F / 16, 15F / 16, 1 + 3F / 16, 1 + 8F / 16};
     private final ItemModelResolver itemModelResolver;
 
     public ArcSpireRenderer(BlockEntityRendererProvider.Context context) {
@@ -62,7 +62,8 @@ public class ArcSpireRenderer implements BlockEntityRenderer<ArcSpireBlockEntity
         state.time = HexFx.time(level, partialTick) + (seed & 127);
         state.uncharged = spire.uncharged();
         state.color = PickaxeRuneTint.blend(spire.runes());
-        state.crystalAt = ArcSpireBlockEntity.crystal(pos).subtract(origin);
+        state.crystalAt = spire.crystal().subtract(origin);
+        state.tall = spire.tall();
         state.eye = cameraPosition.subtract(origin);
         itemModelResolver.updateForTopItem(state.crystal, new ItemStack(ModItems.HEXTECH_CRYSTAL.get()), ItemDisplayContext.GROUND, level,
                 null, seed);
@@ -94,6 +95,9 @@ public class ArcSpireRenderer implements BlockEntityRenderer<ArcSpireBlockEntity
         // The coils catch the charge for a moment after every strike.
         if (state.afterglow > 0) {
             for (float y : COILS) {
+                if (y > 1 && !state.tall) {
+                    break;
+                }
                 poseStack.pushPose();
                 poseStack.translate(0.5, y, 0.5);
                 HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.7F, BOLT_COLOR, 0.45F * state.afterglow);
@@ -182,7 +186,7 @@ public class ArcSpireRenderer implements BlockEntityRenderer<ArcSpireBlockEntity
     @Override
     public AABB getRenderBoundingBox(ArcSpireBlockEntity spire) {
         BlockPos pos = spire.getBlockPos();
-        AABB box = new AABB(pos).inflate(0.6).expandTowards(0, 0.8, 0);
+        AABB box = new AABB(pos).inflate(0.6).expandTowards(0, 1.8, 0);
         for (ArcSpireBlockEntity.Shown arc : spire.shown) {
             box = box.minmax(AABB.ofSize(arc.to(), 2, 2, 2));
         }
@@ -202,6 +206,7 @@ public class ArcSpireRenderer implements BlockEntityRenderer<ArcSpireBlockEntity
         float time;
         float afterglow;
         boolean uncharged;
+        boolean tall;
         int color;
         Vec3 crystalAt = Vec3.ZERO;
         Vec3 eye = Vec3.ZERO;

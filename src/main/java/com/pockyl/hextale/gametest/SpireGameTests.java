@@ -2,18 +2,26 @@ package com.pockyl.hextale.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Spider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
+import com.pockyl.hextale.block.ArcSpireBlock;
 import com.pockyl.hextale.block.ArcSpireBlockEntity;
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
 import com.pockyl.hextale.block.GreedyFunnelBlockEntity;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.registry.ModBlocks;
+import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.Essence;
 
 /** The Hex Arc Spire: no spark - no arcs; charged, it fells the hostile creatures as a player would and spares the rest. */
@@ -72,6 +80,34 @@ public final class SpireGameTests {
             boolean condenser = com.pockyl.hextale.block.XpCondenserBlockEntity.INDEX.covering(helper.getLevel(),
                     GreedyFunnelBlockEntity.crystal(funnel.getBlockPos())) != null;
             helper.assertTrue(funnel.experience() > 0 || condenser, "the spider's experience was a player's kill's, in the funnel");
+            helper.succeed();
+        });
+    }
+
+    /**
+     * A spire set down as one block (as old worlds hold them) grows its upper half; a player breaking that upper half
+     * takes the whole spire down and gets one spire back, with its runes kept on it.
+     */
+    @HexTest(maxTicks = 60)
+    @SuppressWarnings("removal")
+    public static void theSpireStandsTwoBlocksTallAndFallsWhole(GameTestHelper helper) {
+        clear(helper);
+        helper.setBlock(BASE, ModBlocks.ARC_SPIRE.get());
+        helper.runAfterDelay(3, () -> {
+            BlockState top = helper.getBlockState(BASE.above());
+            helper.assertTrue(top.is(ModBlocks.ARC_SPIRE.get()) && ArcSpireBlock.upper(top), "the spire grew its upper half, got " + top);
+            ArcSpireBlockEntity spire = helper.<ArcSpireBlockEntity>getBlockEntity(BASE);
+            helper.assertTrue(spire.tall() && spire.crystal().y - helper.absolutePos(BASE).getY() > 2, "the crystal rides over the top");
+            ServerPlayer player = helper.makeMockServerPlayerInLevel();
+            player.setGameMode(GameType.SURVIVAL);
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_PICKAXE));
+            player.gameMode.destroyBlock(helper.absolutePos(BASE.above()));
+            helper.assertBlockNotPresent(ModBlocks.ARC_SPIRE.get(), BASE);
+            helper.assertBlockNotPresent(ModBlocks.ARC_SPIRE.get(), BASE.above());
+            AABB area = new AABB(helper.absolutePos(BASE)).inflate(3);
+            int dropped = helper.getLevel().getEntitiesOfClass(ItemEntity.class, area, item -> item.getItem().is(ModItems.ARC_SPIRE.get()))
+                    .stream().mapToInt(item -> item.getItem().getCount()).sum();
+            helper.assertTrue(dropped == 1, "one spire dropped, got " + dropped);
             helper.succeed();
         });
     }

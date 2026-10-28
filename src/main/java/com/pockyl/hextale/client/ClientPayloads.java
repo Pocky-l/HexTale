@@ -80,6 +80,12 @@ public final class ClientPayloads {
                 spire.show(payload, level.getGameTime());
             }
         });
+        event.register(com.pockyl.hextale.network.WarmthPayload.TYPE, (payload, context) -> {
+            ClientLevel level = Minecraft.getInstance().level;
+            if (level != null && level.getBlockEntity(payload.brazier()) instanceof com.pockyl.hextale.block.PinkBrazierBlockEntity brazier) {
+                brazier.warm(payload.grown(), level.getGameTime());
+            }
+        });
         event.register(com.pockyl.hextale.network.CondensePayload.TYPE, (payload, context) -> {
             ClientLevel level = Minecraft.getInstance().level;
             if (level != null && level.getBlockEntity(payload.condenser()) instanceof com.pockyl.hextale.block.XpCondenserBlockEntity condenser) {

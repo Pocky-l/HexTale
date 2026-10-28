@@ -1,381 +1,1039 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "hextale:block/rusted_plating",
-    "rusted_plating": "hextale:block/rusted_plating",
-    "pink_brazier_top": "hextale:block/pink_brazier_top"
+    "particle": "hextale:block/pink_brazier_coals",
+    "steel": "hextale:block/hexsteel_block",
+    "brass": "hextale:block/brass",
+    "grate": "hextale:block/pink_brazier_grate",
+    "coals": "hextale:block/pink_brazier_coals"
   },
   "elements": [
     {
-      "name": "plating_leg_nw",
-      "from": [
-        3,
-        0,
-        3
-      ],
-      "to": [
-        5,
-        6,
-        5
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            11,
-            10,
-            13,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "east": {
-          "uv": [
-            11,
-            10,
-            13,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "south": {
-          "uv": [
-            3,
-            10,
-            5,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "west": {
-          "uv": [
-            3,
-            10,
-            5,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "down": {
-          "uv": [
-            3,
-            11,
-            5,
-            13
-          ],
-          "texture": "#rusted_plating",
-          "cullface": "down"
-        }
-      }
-    },
-    {
-      "name": "plating_leg_ne",
-      "from": [
-        11,
-        0,
-        3
-      ],
-      "to": [
-        13,
-        6,
-        5
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            3,
-            10,
-            5,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "east": {
-          "uv": [
-            11,
-            10,
-            13,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "south": {
-          "uv": [
-            11,
-            10,
-            13,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "west": {
-          "uv": [
-            3,
-            10,
-            5,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "down": {
-          "uv": [
-            11,
-            11,
-            13,
-            13
-          ],
-          "texture": "#rusted_plating",
-          "cullface": "down"
-        }
-      }
-    },
-    {
-      "name": "plating_leg_sw",
-      "from": [
-        3,
-        0,
-        11
-      ],
-      "to": [
-        5,
-        6,
-        13
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            11,
-            10,
-            13,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "east": {
-          "uv": [
-            3,
-            10,
-            5,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "south": {
-          "uv": [
-            3,
-            10,
-            5,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "west": {
-          "uv": [
-            11,
-            10,
-            13,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "down": {
-          "uv": [
-            3,
-            3,
-            5,
-            5
-          ],
-          "texture": "#rusted_plating",
-          "cullface": "down"
-        }
-      }
-    },
-    {
-      "name": "plating_leg_se",
-      "from": [
-        11,
-        0,
-        11
-      ],
-      "to": [
-        13,
-        6,
-        13
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            3,
-            10,
-            5,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "east": {
-          "uv": [
-            3,
-            10,
-            5,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "south": {
-          "uv": [
-            11,
-            10,
-            13,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "west": {
-          "uv": [
-            11,
-            10,
-            13,
-            16
-          ],
-          "texture": "#rusted_plating"
-        },
-        "down": {
-          "uv": [
-            11,
-            3,
-            13,
-            5
-          ],
-          "texture": "#rusted_plating",
-          "cullface": "down"
-        }
-      }
-    },
-    {
-      "name": "plating_bowl",
-      "from": [
-        3,
-        6,
-        3
-      ],
-      "to": [
-        13,
-        8,
-        13
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            3,
-            8,
-            13,
-            10
-          ],
-          "texture": "#rusted_plating"
-        },
-        "east": {
-          "uv": [
-            3,
-            8,
-            13,
-            10
-          ],
-          "texture": "#rusted_plating"
-        },
-        "south": {
-          "uv": [
-            3,
-            8,
-            13,
-            10
-          ],
-          "texture": "#rusted_plating"
-        },
-        "west": {
-          "uv": [
-            3,
-            8,
-            13,
-            10
-          ],
-          "texture": "#rusted_plating"
-        },
-        "down": {
-          "uv": [
-            3,
-            3,
-            13,
-            13
-          ],
-          "texture": "#rusted_plating"
-        }
-      }
-    },
-    {
-      "name": "plating_rim",
+      "name": "steel_leg_nw",
       "from": [
         2,
-        8,
+        0,
+        2
+      ],
+      "to": [
+        4,
+        3,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            13,
+            14,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "east": {
+          "uv": [
+            12,
+            13,
+            14,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "south": {
+          "uv": [
+            2,
+            13,
+            4,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "west": {
+          "uv": [
+            2,
+            13,
+            4,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "up": {
+          "uv": [
+            2,
+            2,
+            4,
+            4
+          ],
+          "texture": "#steel"
+        },
+        "down": {
+          "uv": [
+            2,
+            12,
+            4,
+            14
+          ],
+          "texture": "#steel",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "steel_leg_ne",
+      "from": [
+        12,
+        0,
         2
       ],
       "to": [
         14,
-        10,
+        3,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            13,
+            4,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "east": {
+          "uv": [
+            12,
+            13,
+            14,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "south": {
+          "uv": [
+            12,
+            13,
+            14,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "west": {
+          "uv": [
+            2,
+            13,
+            4,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "up": {
+          "uv": [
+            12,
+            2,
+            14,
+            4
+          ],
+          "texture": "#steel"
+        },
+        "down": {
+          "uv": [
+            12,
+            12,
+            14,
+            14
+          ],
+          "texture": "#steel",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "steel_leg_sw",
+      "from": [
+        2,
+        0,
+        12
+      ],
+      "to": [
+        4,
+        3,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            13,
+            14,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "east": {
+          "uv": [
+            2,
+            13,
+            4,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "south": {
+          "uv": [
+            2,
+            13,
+            4,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "west": {
+          "uv": [
+            12,
+            13,
+            14,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "up": {
+          "uv": [
+            2,
+            12,
+            4,
+            14
+          ],
+          "texture": "#steel"
+        },
+        "down": {
+          "uv": [
+            2,
+            2,
+            4,
+            4
+          ],
+          "texture": "#steel",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "steel_leg_se",
+      "from": [
+        12,
+        0,
+        12
+      ],
+      "to": [
+        14,
+        3,
         14
       ],
       "faces": {
         "north": {
           "uv": [
             2,
-            6,
-            14,
-            8
+            13,
+            4,
+            16
           ],
-          "texture": "#rusted_plating"
+          "texture": "#steel"
         },
         "east": {
           "uv": [
             2,
-            6,
-            14,
-            8
+            13,
+            4,
+            16
           ],
-          "texture": "#rusted_plating"
+          "texture": "#steel"
         },
         "south": {
           "uv": [
-            2,
-            6,
+            12,
+            13,
             14,
-            8
+            16
           ],
-          "texture": "#rusted_plating"
+          "texture": "#steel"
+        },
+        "west": {
+          "uv": [
+            12,
+            13,
+            14,
+            16
+          ],
+          "texture": "#steel"
+        },
+        "up": {
+          "uv": [
+            12,
+            12,
+            14,
+            14
+          ],
+          "texture": "#steel"
+        },
+        "down": {
+          "uv": [
+            12,
+            2,
+            14,
+            4
+          ],
+          "texture": "#steel",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "steel_pan",
+      "from": [
+        3,
+        3,
+        3
+      ],
+      "to": [
+        13,
+        4,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            12,
+            13,
+            13
+          ],
+          "texture": "#steel"
+        },
+        "east": {
+          "uv": [
+            3,
+            12,
+            13,
+            13
+          ],
+          "texture": "#steel"
+        },
+        "south": {
+          "uv": [
+            3,
+            12,
+            13,
+            13
+          ],
+          "texture": "#steel"
+        },
+        "west": {
+          "uv": [
+            3,
+            12,
+            13,
+            13
+          ],
+          "texture": "#steel"
+        },
+        "up": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#steel"
+        },
+        "down": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#steel"
+        }
+      }
+    },
+    {
+      "name": "coals_bed",
+      "from": [
+        4,
+        4,
+        4
+      ],
+      "to": [
+        12,
+        5,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            11,
+            12,
+            12
+          ],
+          "texture": "#coals"
+        },
+        "east": {
+          "uv": [
+            4,
+            11,
+            12,
+            12
+          ],
+          "texture": "#coals"
+        },
+        "south": {
+          "uv": [
+            4,
+            11,
+            12,
+            12
+          ],
+          "texture": "#coals"
+        },
+        "west": {
+          "uv": [
+            4,
+            11,
+            12,
+            12
+          ],
+          "texture": "#coals"
+        },
+        "up": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#coals"
+        }
+      }
+    },
+    {
+      "name": "grate_n",
+      "from": [
+        3,
+        4,
+        3
+      ],
+      "to": [
+        13,
+        13,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            3,
+            13,
+            12
+          ],
+          "texture": "#grate"
+        },
+        "south": {
+          "uv": [
+            3,
+            3,
+            13,
+            12
+          ],
+          "texture": "#grate"
+        }
+      }
+    },
+    {
+      "name": "grate_s",
+      "from": [
+        3,
+        4,
+        13
+      ],
+      "to": [
+        13,
+        13,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            3,
+            13,
+            12
+          ],
+          "texture": "#grate"
+        },
+        "south": {
+          "uv": [
+            3,
+            3,
+            13,
+            12
+          ],
+          "texture": "#grate"
+        }
+      }
+    },
+    {
+      "name": "grate_w",
+      "from": [
+        3,
+        4,
+        3
+      ],
+      "to": [
+        3,
+        13,
+        13
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            3,
+            3,
+            13,
+            12
+          ],
+          "texture": "#grate"
+        },
+        "west": {
+          "uv": [
+            3,
+            3,
+            13,
+            12
+          ],
+          "texture": "#grate"
+        }
+      }
+    },
+    {
+      "name": "grate_e",
+      "from": [
+        13,
+        4,
+        3
+      ],
+      "to": [
+        13,
+        13,
+        13
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            3,
+            3,
+            13,
+            12
+          ],
+          "texture": "#grate"
+        },
+        "west": {
+          "uv": [
+            3,
+            3,
+            13,
+            12
+          ],
+          "texture": "#grate"
+        }
+      }
+    },
+    {
+      "name": "brass_band_n",
+      "from": [
+        2,
+        10,
+        2
+      ],
+      "to": [
+        14,
+        11,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            5,
+            14,
+            6
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            13,
+            5,
+            14,
+            6
+          ],
+          "texture": "#brass"
         },
         "west": {
           "uv": [
             2,
-            6,
-            14,
-            8
+            5,
+            3,
+            6
           ],
-          "texture": "#rusted_plating"
+          "texture": "#brass"
         },
         "up": {
           "uv": [
             2,
             2,
             14,
+            3
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            2,
+            13,
+            14,
             14
           ],
-          "texture": "#pink_brazier_top"
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "brass_band_s",
+      "from": [
+        2,
+        10,
+        13
+      ],
+      "to": [
+        14,
+        11,
+        14
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            2,
+            5,
+            3,
+            6
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            2,
+            5,
+            14,
+            6
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            13,
+            5,
+            14,
+            6
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            2,
+            13,
+            14,
+            14
+          ],
+          "texture": "#brass"
         },
         "down": {
           "uv": [
             2,
             2,
             14,
-            14
+            3
           ],
-          "texture": "#rusted_plating"
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "brass_band_w",
+      "from": [
+        2,
+        10,
+        3
+      ],
+      "to": [
+        3,
+        11,
+        13
+      ],
+      "faces": {
+        "west": {
+          "uv": [
+            3,
+            5,
+            13,
+            6
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            2,
+            3,
+            3,
+            13
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            2,
+            3,
+            3,
+            13
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "brass_band_e",
+      "from": [
+        13,
+        10,
+        3
+      ],
+      "to": [
+        14,
+        11,
+        13
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            3,
+            5,
+            13,
+            6
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            13,
+            3,
+            14,
+            13
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            13,
+            3,
+            14,
+            13
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "rod_n",
+      "from": [
+        7,
+        0,
+        0
+      ],
+      "to": [
+        9,
+        1,
+        5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            15,
+            9,
+            16
+          ],
+          "texture": "#brass",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            11,
+            15,
+            16,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            7,
+            15,
+            9,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            0,
+            15,
+            5,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            7,
+            0,
+            9,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            7,
+            11,
+            9,
+            16
+          ],
+          "texture": "#brass",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "rod_s",
+      "from": [
+        7,
+        0,
+        11
+      ],
+      "to": [
+        9,
+        1,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            15,
+            9,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            0,
+            15,
+            5,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            7,
+            15,
+            9,
+            16
+          ],
+          "texture": "#brass",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            11,
+            15,
+            16,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            7,
+            11,
+            9,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            7,
+            0,
+            9,
+            5
+          ],
+          "texture": "#brass",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "rod_w",
+      "from": [
+        0,
+        0,
+        7
+      ],
+      "to": [
+        5,
+        1,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11,
+            15,
+            16,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            7,
+            15,
+            9,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            0,
+            15,
+            5,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            7,
+            15,
+            9,
+            16
+          ],
+          "texture": "#brass",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            7,
+            5,
+            9
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            0,
+            7,
+            5,
+            9
+          ],
+          "texture": "#brass",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "rod_e",
+      "from": [
+        11,
+        0,
+        7
+      ],
+      "to": [
+        16,
+        1,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            15,
+            5,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            7,
+            15,
+            9,
+            16
+          ],
+          "texture": "#brass",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            11,
+            15,
+            16,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            7,
+            15,
+            9,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            11,
+            7,
+            16,
+            9
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            11,
+            7,
+            16,
+            9
+          ],
+          "texture": "#brass",
+          "cullface": "down"
         }
       }
     }

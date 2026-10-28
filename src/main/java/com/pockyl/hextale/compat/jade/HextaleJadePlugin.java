@@ -65,6 +65,10 @@ public class HextaleJadePlugin implements IWailaPlugin {
         @Override
         public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
             BlockEntity entity = accessor.getBlockEntity();
+            if (entity == null && accessor.getBlock() instanceof com.pockyl.hextale.block.ArcSpireBlock) {
+                // The upper half of a spire has no block entity of its own: tell about the base under it.
+                entity = com.pockyl.hextale.block.ArcSpireBlock.spireAt(accessor.getLevel(), accessor.getPosition(), accessor.getBlockState());
+            }
             if (entity instanceof EssenceTankBlockEntity tank) {
                 tooltip.add(contents(tank.tank()));
             } else if (entity instanceof SeparatorBlockEntity separator) {
@@ -118,9 +122,8 @@ public class HextaleJadePlugin implements IWailaPlugin {
                 }
             } else if (entity instanceof com.pockyl.hextale.block.HexSawmillBlockEntity mill) {
                 tooltip.add(com.pockyl.hextale.block.HexSawmillBlock.status(mill).copy().withStyle(ChatFormatting.GRAY));
-            } else if (entity instanceof com.pockyl.hextale.block.MiasmaVentBlockEntity vent) {
-                tooltip.add((vent.dry() ? Component.translatable("block.hextale.miasma_vent.status.dry")
-                        : Component.translatable("block.hextale.miasma_vent.status", vent.charges())).withStyle(ChatFormatting.GRAY));
+            } else if (entity instanceof com.pockyl.hextale.block.MiasmaVentBlockEntity) {
+                tooltip.add(com.pockyl.hextale.block.MiasmaVentBlock.status(accessor.getBlockState()).copy().withStyle(ChatFormatting.GRAY));
             } else if (entity instanceof com.pockyl.hextale.block.XpCondenserBlockEntity condenser) {
                 tooltip.add(Component.translatable("block.hextale.xp_condenser.status", condenser.points(),
                         com.pockyl.hextale.block.XpCondenserBlockEntity.CAPACITY).withStyle(ChatFormatting.GRAY));

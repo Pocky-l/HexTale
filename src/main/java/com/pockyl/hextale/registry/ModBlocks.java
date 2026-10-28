@@ -303,11 +303,11 @@ public final class ModBlocks {
             com.pockyl.hextale.block.HexSawmillBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(2.5F, 6.0F).sound(SoundType.WOOD).noOcclusion()
                     .lightLevel(state -> 4));
-    /** A hexsteel spike wound with brass coils under a hextech crystal: strikes the hostile creatures around it with arcs. */
+    /** A two-block hexsteel spike wound with brass coils under a hextech crystal: strikes the hostile creatures around it with arcs. */
     public static final DeferredBlock<com.pockyl.hextale.block.ArcSpireBlock> ARC_SPIRE = BLOCKS.registerBlock("arc_spire",
             com.pockyl.hextale.block.ArcSpireBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.COPPER)
-                    .requiresCorrectToolForDrops().noOcclusion());
+                    .requiresCorrectToolForDrops().noOcclusion().pushReaction(PushReaction.BLOCK));
     /** A standing stone of nullstone with a crystal in its window: six round a breach hold it. */
     public static final DeferredBlock<com.pockyl.hextale.block.VoidAnchorBlock> VOID_ANCHOR = BLOCKS.registerBlock("void_anchor",
             com.pockyl.hextale.block.VoidAnchorBlock::new,
@@ -327,11 +327,11 @@ public final class ModBlocks {
             com.pockyl.hextale.block.XpCondenserBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).strength(2.0F, 6.0F).sound(SoundType.GLASS)
                     .noOcclusion());
-    /** A rusted iron block with a grate: breathes choking fumes on the hostile creatures standing over it. */
+    /** A rusted chemtech stack: breathes choking fumes over the hostile creatures around it, for nothing, for ever. */
     public static final DeferredBlock<com.pockyl.hextale.block.MiasmaVentBlock> MIASMA_VENT = BLOCKS.registerBlock("miasma_vent",
             com.pockyl.hextale.block.MiasmaVentBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(3.0F, 6.0F).sound(SoundType.COPPER)
-                    .requiresCorrectToolForDrops());
+                    .requiresCorrectToolForDrops().noOcclusion());
     /** A nullstone bowl on brass ribs under a hextech crystal: swallows the deaths around it into the container below. */
     public static final DeferredBlock<com.pockyl.hextale.block.GreedyFunnelBlock> GREEDY_FUNNEL = BLOCKS.registerBlock("greedy_funnel",
             com.pockyl.hextale.block.GreedyFunnelBlock::new,
@@ -534,7 +534,7 @@ public final class ModBlocks {
     public static final DeferredBlock<com.pockyl.hextale.thevoid.HollowbloomBlock> HOLLOWBLOOM = BLOCKS.registerBlock("hollowbloom",
             com.pockyl.hextale.thevoid.HollowbloomBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollission().instabreak().sound(SoundType.ROOTS)
-                    .offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.DESTROY)
+                    .pushReaction(PushReaction.DESTROY)
                     .lightLevel(state -> com.pockyl.hextale.thevoid.HollowbloomBlock.LIGHT[state.getValue(com.pockyl.hextale.thevoid.HollowbloomBlock.VIGOR)]));
 
     private static BlockBehaviour.Properties voidRockProperties() {
