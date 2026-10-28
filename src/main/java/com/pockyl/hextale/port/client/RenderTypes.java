@@ -23,4 +23,8 @@ public final class RenderTypes {
     public static RenderType itemTranslucent(ResourceLocation texture) {
         return RenderType.itemEntityTranslucentCull(texture);
     }
+
+    public static RenderType eyes(ResourceLocation texture) {
+        return RenderType.eyes(texture);
+    }
 }

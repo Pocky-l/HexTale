@@ -34,6 +34,12 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_OPEN = register("the_void.open");
     public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_HUM = register("the_void.hum");
     public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_CLOSE = register("the_void.close");
+    /** The ground groaning and a riser climbing before a breach tears open. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_OMEN = register("the_void.omen");
+    /** A breach throwing back what touched it. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> THE_VOID_REPEL = register("the_void.repel");
+    /** A voidling pushing out of a breach and dropping into the world. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> VOIDLING_EMERGE = register("voidling.emerge");
     /** The Thinning: a distant murmur of the land where the world wore thin. */
     public static final DeferredHolder<SoundEvent, SoundEvent> THINNING_MURMUR = register("thinning.murmur");
     /** The orb recognises a simple rune; played at the element's pitch. */

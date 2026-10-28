@@ -11,7 +11,10 @@
     "minecraft:gravel",
     "minecraft:mud",
     "minecraft:moss_block",
-    "minecraft:pale_moss_block",
+    {
+      "id": "minecraft:pale_moss_block",
+      "required": false
+    },
     "minecraft:dirt_path"
   ]
 }

@@ -44,6 +44,14 @@ public abstract class MobRenderer<T extends Mob, S extends LivingEntityRenderSta
         state.isInvisible = entity.isInvisible();
     }
 
+    protected void scale(S state, PoseStack poseStack) {
+    }
+
+    @Override
+    protected void scale(T entity, PoseStack poseStack, float partialTick) {
+        scale(state(entity, partialTick), poseStack);
+    }
+
     protected float getFlipDegrees() {
         return 90.0F;
     }

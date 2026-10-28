@@ -36,6 +36,10 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         int seed;
         float reveal;
         final Quaternionf orientation = new Quaternionf();
+        /** Where a voidling pushes out (local), and how hard (0 = nothing pushes). */
+        float pushX;
+        float pushY;
+        float push;
     }
 
     @Override
@@ -51,6 +55,12 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         state.seed = breach.seed();
         state.reveal = breach.reveal(partialTick);
         state.orientation.set(breach.orientation());
+        org.joml.Vector3fc push = breach.pushPoint();
+        state.push = push == null ? 0 : breach.push(partialTick);
+        if (push != null) {
+            state.pushX = push.x();
+            state.pushY = push.y();
+        }
     }
 
     @Override
@@ -98,6 +108,8 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
         private final int core;
         private final int sizeCm;
         private final float reveal;
+        /** How far each cell bulges out of the front (blocks), null when nothing pushes. */
+        private final float @org.jspecify.annotations.Nullable [] bulge;
 
         Frame(VoidLayout layout, boolean[] shows, State state) {
             this.layout = layout;
@@ -108,6 +120,29 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
             core = Math.round(state.shape.core() * 1000);
             sizeCm = Math.round(state.size * 100);
             reveal = state.reveal;
+            bulge = state.push > 0.001F ? bulge(layout, state) : null;
+        }
+
+        /** The cells round a voidling pushing out stretch forward, most at the point, like a skin about to give. */
+        private static float[] bulge(VoidLayout layout, State state) {
+            float[] out = new float[layout.width * layout.height];
+            float radius = 0.95F * (0.6F + 0.4F * state.push);
+            float amount = 0.55F * state.push;
+            for (int j = 0; j < layout.height; j++) {
+                float cy = (layout.y(j) + layout.y(j + 1)) * 0.5F - state.pushY;
+                for (int i = 0; i < layout.width; i++) {
+                    float cx = (layout.x(i) + layout.x(i + 1)) * 0.5F - state.pushX;
+                    float d = (cx * cx + cy * cy) / (radius * radius);
+                    if (d < 1) {
+                        out[i + j * layout.width] = amount * (1 - d) * (1 - d);
+                    }
+                }
+            }
+            return out;
+        }
+
+        private float lift(int i, int j) {
+            return bulge == null || !layout.inside(i, j) ? 0 : bulge[i + j * layout.width];
         }
 
         private boolean at(int i, int j) {
@@ -151,21 +186,22 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
                     // The neighbour's own numbers, not x0 + c: rounding apart would open hairline cracks.
                     float x1 = layout.x(i + 1);
                     float y1 = layout.y(j + 1);
+                    float dz = lift(i, j);
                     // Front and back: both look into the Void.
-                    face(consumer, pose, x0, y0, x1, y1, t, off, data, fresh, 1);
-                    face(consumer, pose, x0, y0, x1, y1, -t, off, data, fresh, -1);
-                    // The burning sides where the breach ends.
-                    if ((off & 1) != 0) {
-                        side(consumer, pose, x1, y0, x1, y1, t, 1, 0, fresh);
+                    face(consumer, pose, x0, y0, x1, y1, t + dz, off, data, fresh, 1);
+                    face(consumer, pose, x0, y0, x1, y1, -t + dz, off, data, fresh, -1);
+                    // The burning sides where the breach ends, and where a bulging cell stands out of its neighbour.
+                    if ((off & 1) != 0 || lift(i + 1, j) < dz - 0.002F) {
+                        side(consumer, pose, x1, y0, x1, y1, -t + ((off & 1) != 0 ? dz : lift(i + 1, j)), t + dz, 1, 0, fresh);
                     }
-                    if ((off & 2) != 0) {
-                        side(consumer, pose, x0, y1, x1, y1, t, 0, 1, fresh);
+                    if ((off & 2) != 0 || lift(i, j + 1) < dz - 0.002F) {
+                        side(consumer, pose, x0, y1, x1, y1, -t + ((off & 2) != 0 ? dz : lift(i, j + 1)), t + dz, 0, 1, fresh);
                     }
-                    if ((off & 4) != 0) {
-                        side(consumer, pose, x0, y0, x0, y1, t, -1, 0, fresh);
+                    if ((off & 4) != 0 || lift(i - 1, j) < dz - 0.002F) {
+                        side(consumer, pose, x0, y0, x0, y1, -t + ((off & 4) != 0 ? dz : lift(i - 1, j)), t + dz, -1, 0, fresh);
                     }
-                    if ((off & 8) != 0) {
-                        side(consumer, pose, x0, y0, x1, y0, t, 0, -1, fresh);
+                    if ((off & 8) != 0 || lift(i, j - 1) < dz - 0.002F) {
+                        side(consumer, pose, x0, y0, x1, y0, -t + ((off & 8) != 0 ? dz : lift(i, j - 1)), t + dz, 0, -1, fresh);
                     }
                 }
             }
@@ -179,15 +215,16 @@ public class TheVoidRenderer extends EntityRenderer<TheVoid, TheVoidRenderer.Sta
             vertex(consumer, pose, x0, y1, z, x0, y1, off, seed, data, fresh, 0, 0, nz);
         }
 
-        /** A side wall from (ax, ay) to (bx, by) through the slab; UV = (along, z share -1..1). */
-        private void side(VertexConsumer consumer, PoseStack.Pose pose, float ax, float ay, float bx, float by, float t, float nx, float ny, int fresh) {
+        /** A side wall from (ax, ay) to (bx, by), from z0 at the back to z1 at the front; UV = (along, z share -1..1). */
+        private void side(VertexConsumer consumer, PoseStack.Pose pose, float ax, float ay, float bx, float by, float z0, float z1, float nx, float ny,
+                          int fresh) {
             float a = ax + ay;
             float b = bx + by;
             int flag = seed + 128;
-            vertex(consumer, pose, ax, ay, -t, a, -1, 0, flag, 0, fresh, nx, ny, 0);
-            vertex(consumer, pose, bx, by, -t, b, -1, 0, flag, 0, fresh, nx, ny, 0);
-            vertex(consumer, pose, bx, by, t, b, 1, 0, flag, 0, fresh, nx, ny, 0);
-            vertex(consumer, pose, ax, ay, t, a, 1, 0, flag, 0, fresh, nx, ny, 0);
+            vertex(consumer, pose, ax, ay, z0, a, -1, 0, flag, 0, fresh, nx, ny, 0);
+            vertex(consumer, pose, bx, by, z0, b, -1, 0, flag, 0, fresh, nx, ny, 0);
+            vertex(consumer, pose, bx, by, z1, b, 1, 0, flag, 0, fresh, nx, ny, 0);
+            vertex(consumer, pose, ax, ay, z1, a, 1, 0, flag, 0, fresh, nx, ny, 0);
         }
 
         /** The glow: every free cell beside the breach, told which of its neighbours burn. */
