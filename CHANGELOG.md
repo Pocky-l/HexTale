@@ -36,7 +36,7 @@ machines respect claims, and other mods' pipes, quests and slots work with HexTa
   workbench's charge.
 - [Curios](https://www.curseforge.com/minecraft/mc-mods/curios) (optional): the Researcher's Goggles work from a head
   slot.
-- A guide for modpack makers: `docs/modpack.md` in the repository. Released item and block ids stay: a renamed one
+- A guide for modpack makers: [docs/modpack.md](https://github.com/Pocky-l/HexTale/blob/main/docs/modpack.md). Released item and block ids stay: a renamed one
   keeps working under its old name.
 
 ### Changed
