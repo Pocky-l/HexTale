@@ -42,6 +42,9 @@ public final class ModGameTests {
     }
 
     /** Every recipe, advancement and loot table of the mod parses in the current data formats. */
+    // 26.x: solidBlocksStandInTheHeightmap (every block with a body is in minecraft:blocks_motion_no_leaves). 1.21.1 has
+    // no such tag: its heightmaps ask the block whether it blocks motion, as they always did.
+
     @HexTest
     public static void dataFilesLoad(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();

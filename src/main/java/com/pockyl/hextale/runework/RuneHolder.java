@@ -53,6 +53,8 @@ public enum RuneHolder {
     SKYPACK(() -> ModDataComponents.SKYPACK_RUNES.get(), SkypackRune.SLOTS, SkypackRune.values()),
     /** The Crystal Battery. */
     BATTERY(() -> ModDataComponents.BATTERY_RUNES.get(), BatteryRune.SLOTS, BatteryRune.values()),
+    /** The Hextech Purifier. */
+    PURIFIER(() -> ModDataComponents.PURIFIER_RUNES.get(), PurifierRune.SLOTS, PurifierRune.values()),
     /** The hextech axe, shovel and sword keep their runes where the pickaxe does. */
     AXE(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.AXE)),
     SHOVEL(() -> ModDataComponents.PICKAXE_RUNES.get(), PickaxeRunes.SLOTS, tool(ToolRune.Tool.SHOVEL)),
@@ -121,6 +123,9 @@ public enum RuneHolder {
         }
         if (item == ModItems.CRYSTAL_BATTERY.get()) {
             return BATTERY;
+        }
+        if (item == ModItems.HEXTECH_PURIFIER.get()) {
+            return PURIFIER;
         }
         if (item == ModItems.HEXTECH_AXE.get()) {
             return AXE;
@@ -247,6 +252,7 @@ public enum RuneHolder {
             case LAB -> List.of(new ItemStack(ModItems.LAB_BENCH.get()));
             case SKYPACK -> List.of(new ItemStack(ModItems.HEXTECH_SKYPACK.get()));
             case BATTERY -> List.of(new ItemStack(ModItems.CRYSTAL_BATTERY.get()));
+            case PURIFIER -> List.of(new ItemStack(ModItems.HEXTECH_PURIFIER.get()));
             case AXE -> List.of(new ItemStack(ModItems.HEXTECH_AXE.get()));
             case SHOVEL -> List.of(new ItemStack(ModItems.HEXTECH_SHOVEL.get()));
             case SWORD -> List.of(new ItemStack(ModItems.HEXTECH_SWORD.get()));

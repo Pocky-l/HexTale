@@ -30,6 +30,7 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
+import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModEntities;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
@@ -66,6 +67,10 @@ public class TheVoid extends Entity {
     public static final int FEED_TICKS = 100;
     /** Thinning a rooted breach adds to its chunk per feeding. */
     public static final float FEED = 1.5F;
+    /** A rooted breach whose land is healed below this starves (unless it is held). */
+    public static final float FADES_BELOW = 1500;
+    /** Ticks a starving breach lasts before it closes. */
+    public static final int STARVE_TICKS = 1200;
     /** Magic damage of a touch. */
     public static final float TOUCH_DAMAGE = 4;
     private static final byte REPEL_EVENT = 60;
@@ -88,6 +93,8 @@ public class TheVoid extends Entity {
     private static final EntityDataAccessor<Boolean> DATA_ROOTED = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Long> DATA_PUSH_AT = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.LONG);
     private static final EntityDataAccessor<Vector3f> DATA_PUSH = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.VECTOR3);
+    /** Ticks it has starved for (0 while the land feeds it). */
+    private static final EntityDataAccessor<Integer> DATA_STARVED = SynchedEntityData.defineId(TheVoid.class, EntityDataSerializers.INT);
 
     private boolean burstShown;
     /** Server: when the next voidling may bulge out. */
@@ -136,6 +143,7 @@ public class TheVoid extends Entity {
         builder.define(DATA_ROOTED, false);
         builder.define(DATA_PUSH_AT, -1L);
         builder.define(DATA_PUSH, new Vector3f());
+        builder.define(DATA_STARVED, 0);
     }
 
     public int seed() {
@@ -211,6 +219,16 @@ public class TheVoid extends Entity {
             return k * k * (0.85F + 0.15F * Mth.sin(since * 0.9F));
         }
         return Mth.clamp(1 - (since - PUSH_TICKS) / 8, 0, 1) * 0.4F;
+    }
+
+    /** Sets how long it has starved already (tests). */
+    public void setStarved(int ticks) {
+        entityData.set(DATA_STARVED, Math.max(0, ticks));
+    }
+
+    /** 0 while the land feeds it, rising to 1 as it starves to its end. */
+    public float starving() {
+        return Mth.clamp(entityData.get(DATA_STARVED) / (float) STARVE_TICKS, 0, 1);
     }
 
     public boolean closing() {
@@ -298,6 +316,9 @@ public class TheVoid extends Entity {
             return;
         }
         if (now % FEED_TICKS == 0) {
+            if (starve(level)) {
+                return;
+            }
             Thinning.add(level, blockPosition(), FEED);
         }
         long pushAt = entityData.get(DATA_PUSH_AT);
@@ -315,6 +336,28 @@ public class TheVoid extends Entity {
                 nextPush = now + 100;
             }
         }
+    }
+
+    /**
+     * Healed land does not feed it: below {@link #FADES_BELOW} it starves, and after {@link #STARVE_TICKS} it closes for
+     * good. Land that sickens again feeds it back. Returns whether it closed.
+     */
+    private boolean starve(ServerLevel level) {
+        int starved = entityData.get(DATA_STARVED);
+        if (Thinning.get(level, blockPosition()) >= FADES_BELOW) {
+            if (starved > 0) {
+                entityData.set(DATA_STARVED, Math.max(0, starved - FEED_TICKS * 2));
+            }
+            return false;
+        }
+        starved += FEED_TICKS;
+        entityData.set(DATA_STARVED, starved);
+        if (starved < STARVE_TICKS) {
+            return false;
+        }
+        close();
+        Quests.fireNear(level, position(), Breaches.WATCH_RADIUS, Quests.BREACH_FADED);
+        return true;
     }
 
     /** Throws back, hurt, every creature that touches the breach (the Void's own spawn excepted). */
@@ -579,6 +622,7 @@ public class TheVoid extends Entity {
         entityData.set(DATA_OMEN, input.getIntOr("omen", 0));
         entityData.set(DATA_OPEN, Math.max(1, input.getIntOr("open", OPEN_TICKS)));
         nextPush = input.getLongOr("next_push", rooted() ? level().getGameTime() + PUSH_PAUSE : -1);
+        entityData.set(DATA_STARVED, input.getIntOr("starved", 0));
     }
 
     @Override
@@ -593,6 +637,7 @@ public class TheVoid extends Entity {
         output.putInt("omen", entityData.get(DATA_OMEN));
         output.putInt("open", openTicks());
         output.putLong("next_push", nextPush);
+        output.putInt("starved", entityData.get(DATA_STARVED));
     }
 
     @Override

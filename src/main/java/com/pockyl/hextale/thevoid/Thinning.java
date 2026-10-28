@@ -175,6 +175,37 @@ public final class Thinning {
         set(level, chunk, get(chunk) + amount * Config.THINNING_RATE.get().floatValue());
     }
 
+    /**
+     * Draws {@code amount} out of a chunk (the land heals by it; never below zero, never scaled by the config). Returns
+     * how much was really taken.
+     */
+    public static float drain(ServerLevel level, LevelChunk chunk, float amount) {
+        float value = get(chunk);
+        float taken = Math.min(value, Math.max(0, amount));
+        if (taken > 0) {
+            set(level, chunk, value - taken);
+        }
+        return taken;
+    }
+
+    /** The sickest loaded chunk within {@code radius} chunks of {@code pos} (null when all of them are clean). */
+    public static @org.jspecify.annotations.Nullable LevelChunk sickestAround(ServerLevel level, BlockPos pos, int radius) {
+        int cx = pos.getX() >> 4;
+        int cz = pos.getZ() >> 4;
+        LevelChunk best = null;
+        float bestValue = 0;
+        for (int x = cx - radius; x <= cx + radius; x++) {
+            for (int z = cz - radius; z <= cz + radius; z++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
+                if (chunk != null && get(chunk) > bestValue) {
+                    best = chunk;
+                    bestValue = get(chunk);
+                }
+            }
+        }
+        return best;
+    }
+
     /** Essence poured away at {@code pos}: lost on the ground, or soaked into stone (much less). */
     public static void poured(ServerLevel level, BlockPos pos, EssenceMix mix, int amount, boolean soaked) {
         if (amount <= 0 || mix.isEmpty()) {
@@ -362,7 +393,7 @@ public final class Thinning {
     }
 
     /** The topmost ground block of a column that the blight takes (or already took), or null. */
-    private static BlockPos surface(ServerLevel level, int x, int z) {
+    static BlockPos surface(ServerLevel level, int x, int z) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x,
                 level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
         for (int step = 0; step < 3; step++) {
@@ -385,6 +416,7 @@ public final class Thinning {
                 : ground.is(ModTags.BLIGHTS_TO_ROCK) ? ModBlocks.VOID_ROCK.get().defaultBlockState() : null;
         if (blighted != null) {
             level.setBlockAndUpdate(pos, blighted);
+            Healing.scar(level, level.getChunkAt(pos));
             if (loud) {
                 level.playSound(null, pos, SoundEvents.SCULK_BLOCK_SPREAD, SoundSource.BLOCKS, 0.6F, 0.6F);
             }

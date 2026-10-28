@@ -30,6 +30,18 @@
         "hextale:select": 0.05
       },
       "model": "hextale:item/guide/void_mites"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.06
+      },
+      "model": "hextale:item/guide/healed_land"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.07
+      },
+      "model": "hextale:item/guide/breach_fades"
     }
   ]
 }

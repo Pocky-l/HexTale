@@ -1,0 +1,23 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": "hextale:hextech_purifier",
+  "parents": [
+    "cleanse_land",
+    "hextech_gemstone",
+    "hexsteel"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:hextech_purifier",
+    "then": {
+      "kind": "runes",
+      "result": "purifier"
+    }
+  },
+  "research": "hextech_purifier",
+  "pos": [
+    -290,
+    600
+  ]
+}

@@ -1,8 +1,0 @@
-{
-  "kind": "wip",
-  "region": "void",
-  "stage": "mid",
-  "icon": "hextale:nullstone",
-  "parents": ["wip_cleanse_land"],
-  "pos": [-250, 535]
-}

@@ -124,7 +124,8 @@ public final class ModBlocks {
     /** A refined gemstone in a brass cage: stands or hangs like a lantern, full light. */
     public static final DeferredBlock<HextechLampBlock> HEXTECH_LAMP = BLOCKS.registerBlock("hextech_lamp", HextechLampBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5F).sound(SoundType.LANTERN)
-                    .lightLevel(state -> 15).noOcclusion().pushReaction(PushReaction.DESTROY).requiresCorrectToolForDrops());
+                    .lightLevel(state -> state.getValue(HextechLampBlock.FLICKER) ? HextechLampBlock.DIM : 15).noOcclusion()
+                    .pushReaction(PushReaction.DESTROY).requiresCorrectToolForDrops());
 
     /** A furnace woken with hextech dust: it melts metals into alloys; light while it burns. */
     public static final DeferredBlock<HexFurnaceBlock> HEX_FURNACE = BLOCKS.registerBlock("hex_furnace", HexFurnaceBlock::new,
@@ -209,6 +210,11 @@ public final class ModBlocks {
             com.pockyl.hextale.block.ArcSpireBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.COPPER)
                     .requiresCorrectToolForDrops().noOcclusion());
+    /** A hextech crystal over a nullstone basin: draws the Thinning out of the land around into the crystal. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HextechPurifierBlock> HEXTECH_PURIFIER = BLOCKS.registerBlock("hextech_purifier",
+            com.pockyl.hextale.block.HextechPurifierBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(3.0F, 6.0F).sound(SoundType.DEEPSLATE_BRICKS)
+                    .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> 5));
     /** A nullstone block with a ring of runes on top: holds the creatures standing on it still in its glyph. */
     public static final DeferredBlock<com.pockyl.hextale.block.RuneShacklesBlock> RUNE_SHACKLES = BLOCKS.registerBlock("rune_shackles",
             com.pockyl.hextale.block.RuneShacklesBlock::new,
