@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/showcase/banner.gif" alt="HexTale" width="834">
+  <img src="docs/showcase/title.gif" alt="HexTale" width="834">
 </p>
 
 <p align="center">
