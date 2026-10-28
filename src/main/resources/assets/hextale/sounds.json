@@ -1668,5 +1668,25 @@
         "attenuation_distance": 10
       }
     ]
+  },
+  "pylon.hum": {
+    "subtitle": "subtitles.hextale.pylon.hum",
+    "sounds": [
+      {
+        "name": "hextale:pylon_hum",
+        "volume": 0.4,
+        "attenuation_distance": 10
+      }
+    ]
+  },
+  "purifier.loop": {
+    "subtitle": "subtitles.hextale.purifier.loop",
+    "sounds": [
+      {
+        "name": "hextale:purifier_draw_loop",
+        "volume": 0.6,
+        "attenuation_distance": 14
+      }
+    ]
   }
 }

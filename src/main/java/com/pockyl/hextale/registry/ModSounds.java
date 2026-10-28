@@ -226,6 +226,9 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> FORGE_BURN = register("forge.burn");
     public static final DeferredHolder<SoundEvent, SoundEvent> FOUNDRY_ROAR = register("foundry.roar");
     public static final DeferredHolder<SoundEvent, SoundEvent> SEPARATOR_SIMMER = register("separator.simmer");
+    /** Loops of a pylon moving things and of a Hextech Purifier drawing the Thinning in. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> PYLON_HUM = register("pylon.hum");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PURIFIER_LOOP = register("purifier.loop");
 
     private ModSounds() {
     }

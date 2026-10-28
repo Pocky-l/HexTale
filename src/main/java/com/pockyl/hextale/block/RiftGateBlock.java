@@ -267,6 +267,9 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
     @Override
     protected boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
         if (level.isClientSide() && (id == SEND_EVENT || id == ARRIVE_EVENT)) {
+            if (level.getBlockEntity(pos) instanceof Gate gate) {
+                gate.crossedAt = level.getGameTime();
+            }
             Vec3 centre = Vec3.atLowerCornerOf(pos).add(0.5, 9 / 16.0, 0.5);
             RandomSource random = level.getRandom();
             for (int i = 0; i < 16; i++) {
@@ -366,6 +369,8 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
         private int credit;
         /** Its jars had no rift essence the last time it looked (synced: the ring smokes). */
         private boolean dry;
+        /** Client: game time of the last crossing, for the surface's flare. */
+        public long crossedAt = -1000;
         private long retryAt;
 
         public Gate(BlockPos pos, BlockState state) {

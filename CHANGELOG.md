@@ -37,6 +37,10 @@ Void's creatures have voices of their own.
 - Machines sound like they work: a running ritual, the Hex Furnace, the Hex Foundry and the separator have soft working
   sounds that fade in and out with them (a ritual's rises as it goes on and sinks when it stalls). The furnace and
   foundry no longer use the vanilla crackle.
+- Rift Gates show their ring alive: a slow whirl of rift light spirals into a bright core while the gate is linked,
+  dim and stuttering when its jars are dry, only a broken flicker when its partner is gone; it flares when something
+  goes through.
+- Pylons hum softly while they move things, and a Hextech Purifier breathes in while it draws the Thinning.
 - Devices show their reach: an empty hand on a Null Lantern (or placing it) and on a World Anchor (or it waking) lays a
   hexagon of light on the ground out to the quiet zone or the held chunks.
 - Ward Glass ripples with an amber hexagon where you push against it.

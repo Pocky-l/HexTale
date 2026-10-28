@@ -18,7 +18,9 @@ import com.pockyl.hextale.block.HexFoundryBlock;
 import com.pockyl.hextale.block.HexFoundryBlockEntity;
 import com.pockyl.hextale.block.HexFurnaceBlock;
 import com.pockyl.hextale.block.HexFurnaceBlockEntity;
+import com.pockyl.hextale.block.HexPylonBlockEntity;
 import com.pockyl.hextale.block.HextechAltarBlockEntity;
+import com.pockyl.hextale.block.HextechPurifierBlockEntity;
 import com.pockyl.hextale.block.SeparatorBlock;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.registry.ModSounds;
@@ -28,7 +30,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * Working sounds that follow a machine while it works: every half second the client looks for working machines near
+ * Working sounds that follow a machine while it works (a ritual, the Hex Furnace and Foundry, the separator, a pylon
+ * moving things, a Hextech Purifier drawing): every half second the client looks for working machines near
  * the listener (the block entities of the chunks around, never block by block) and gives each one a looping sound that
  * fades in, follows the machine's state (an altar's loop rises with the ritual and sinks when it stalls) and fades out
  * and stops when the work ends or the machine is gone.
@@ -37,6 +40,8 @@ public final class MachineLoops {
     /** Blocks around the listener where machines are heard. */
     private static final int REACH = 20;
     private static final int SCAN_TICKS = 10;
+    /** Ticks a pylon's loop goes on after its last move. */
+    private static final int PYLON_LINGER = 80;
     private static final Map<BlockPos, Loop> PLAYING = new HashMap<>();
 
     /** One kind of working machine: its sound, how loud at full and whether (and how) it works now. */
@@ -74,6 +79,29 @@ public final class MachineLoops {
                 BlockState state = entity.getBlockState();
                 return state.hasProperty(SeparatorBlock.LIT) && state.getValue(SeparatorBlock.LIT) ? 1 : 0;
             }
+        },
+        /** Heard while it moves things (and a little after), fading away when it rests: a base may hold many. */
+        PYLON(ModSounds.PYLON_HUM, 0.3F) {
+            @Override
+            float level(BlockEntity entity) {
+                HexPylonBlockEntity pylon = (HexPylonBlockEntity) entity;
+                long since = entity.getLevel() == null ? Long.MAX_VALUE : entity.getLevel().getGameTime() - pylon.movedAt;
+                return since < 0 || since > PYLON_LINGER ? 0 : 1 - since / (float) PYLON_LINGER * 0.5F;
+            }
+
+            @Override
+            float pitch(BlockEntity entity) {
+                return 0.95F + 0.1F * (entity.getBlockPos().hashCode() & 7) / 7F;
+            }
+        },
+        /** Heard while it keeps drawing: from one draw to the next, and a little after the last. */
+        PURIFIER(ModSounds.PURIFIER_LOOP, 0.5F) {
+            @Override
+            float level(BlockEntity entity) {
+                HextechPurifierBlockEntity purifier = (HextechPurifierBlockEntity) entity;
+                long since = entity.getLevel() == null ? Long.MAX_VALUE : entity.getLevel().getGameTime() - purifier.drewAt();
+                return !purifier.crystal().isEmpty() && since >= 0 && since <= purifier.interval() + HextechPurifierBlockEntity.STREAM_TICKS ? 1 : 0;
+            }
         };
 
         final Supplier<SoundEvent> sound;
@@ -100,6 +128,12 @@ public final class MachineLoops {
             }
             if (entity instanceof HexFoundryBlockEntity) {
                 return FOUNDRY;
+            }
+            if (entity instanceof HexPylonBlockEntity) {
+                return PYLON;
+            }
+            if (entity instanceof HextechPurifierBlockEntity) {
+                return PURIFIER;
             }
             return entity instanceof SeparatorBlockEntity ? SEPARATOR : null;
         }
