@@ -309,6 +309,11 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> VOID_CORAL = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CORAL);
     public static final DeferredItem<BlockItem> VOID_ROOTS = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROOTS);
     public static final DeferredItem<BlockItem> VOID_BULB = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_BULB);
+    public static final DeferredItem<com.pockyl.hextale.item.NotedBlockItem> HOLLOWBLOOM = ITEMS.registerItem("hollowbloom",
+            properties -> new com.pockyl.hextale.item.NotedBlockItem(ModBlocks.HOLLOWBLOOM.get(), properties));
+    /** Dropped by the creatures of the Void: the material of what will be made against it. */
+    public static final DeferredItem<com.pockyl.hextale.item.NotedItem> VOID_CHITIN = ITEMS.registerItem("void_chitin",
+            com.pockyl.hextale.item.NotedItem::new);
     public static final DeferredItem<BlockItem> POLISHED_NULLSTONE = ITEMS.registerSimpleBlockItem(ModBlocks.POLISHED_NULLSTONE);
     public static final DeferredItem<BlockItem> NULLSTONE_BRICKS = ITEMS.registerSimpleBlockItem(ModBlocks.NULLSTONE_BRICKS);
     public static final DeferredItem<BlockItem> CRYSTAL_BATTERY = ITEMS.registerSimpleBlockItem(ModBlocks.CRYSTAL_BATTERY,

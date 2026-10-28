@@ -171,6 +171,8 @@ public final class Hextale {
             output.accept(ModItems.VOID_CORAL);
             output.accept(ModItems.VOID_ROOTS);
             output.accept(ModItems.VOID_BULB);
+            output.accept(ModItems.HOLLOWBLOOM);
+            output.accept(ModItems.VOID_CHITIN);
             output.accept(ModItems.HEXCORE);
             output.accept(ModItems.WHIRL_REAPER);
             output.accept(ModItems.HEX_SAWMILL);
@@ -238,6 +240,7 @@ public final class Hextale {
             event.accept(ModItems.VOID_CORAL);
             event.accept(ModItems.VOID_ROOTS);
             event.accept(ModItems.VOID_BULB);
+            event.accept(ModItems.HOLLOWBLOOM);
             event.accept(ModItems.SPHALERITE_ORE);
             event.accept(ModItems.DEEPSLATE_SPHALERITE_ORE);
             event.accept(ModItems.RAW_ZINC_BLOCK);

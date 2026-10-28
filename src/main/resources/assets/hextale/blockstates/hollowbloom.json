@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "vigor=0": {
+      "model": "hextale:block/hollowbloom_0"
+    },
+    "vigor=1": {
+      "model": "hextale:block/hollowbloom_1"
+    },
+    "vigor=2": {
+      "model": "hextale:block/hollowbloom_2"
+    },
+    "vigor=3": {
+      "model": "hextale:block/hollowbloom_3"
+    },
+    "vigor=4": {
+      "model": "hextale:block/hollowbloom_4"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": "hextale:void_chitin",
+  "parents": ["hollowbloom"],
+  "pos": [-560, 370]
+}
