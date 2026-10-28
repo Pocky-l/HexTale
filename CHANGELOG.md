@@ -19,6 +19,9 @@ Void's creatures have voices of their own.
   from the pedestal or jar being drawn - and the sigil turns faster as the work goes on. A stalled ritual reddens it, a
   collapse cracks it apart, a finished one throws it outwards as it fades.
 - The altar draws essence from its jars as living streams, like every other machine that draws from jars.
+- A pedestal item drawn into the altar comes apart into pieces of itself: each piece tears out upwards, swings over in
+  its own arc and whirls into the altar's item, leaving a few sparks behind. The item no longer crumbles as if it broke.
+- A working circle breathes: sparks rise slowly off the lines of the sigil and motes of light gather into the work.
 - Every rune that works now makes a soft sound of its own - a short breath of energy and a low pulse - on tools,
   clothes, machines and gadgets alike. A rune that works every moment sounds only now and then.
 - Learning a rune from a scroll or from research notes has its own sound: an ink stroke and the knowledge settling in.

@@ -3,8 +3,6 @@ package com.pockyl.hextale.block;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.particles.ItemParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -443,10 +441,13 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     }
 
     private void absorb(ServerLevel level, PedestalBlockEntity pedestal) {
-        ItemStack item = pedestal.take();
-        Vec3 at = Vec3.atCenterOf(pedestal.getBlockPos()).add(0, 0.6, 0);
-        level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, item.getItem()), at.x, at.y, at.z, 10, 0.12, 0.12, 0.12, 0.06);
-        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 4, 0.1, 0.1, 0.1, 0.02);
+        pedestal.take();
+        // Its last fragments are still on their way (client); the pedestal lets go with a breath of light, the work
+        // swallows it with a flare (no crumbs: they read as an item breaking).
+        Vec3 at = Vec3.atCenterOf(pedestal.getBlockPos()).add(0, 0.75, 0);
+        level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.x, at.y, at.z, 5, 0.12, 0.08, 0.12, 0.015);
+        Vec3 core = itemPosition();
+        level.sendParticles(ModParticles.glint(0xF0D27A), core.x, core.y, core.z, 6, 0.18, 0.18, 0.18, 0.03);
         level.playSound(null, pedestal.getBlockPos(), ModSounds.RITUAL_ABSORB.get(), SoundSource.BLOCKS, 0.9F,
                 0.85F + 0.3F * (itemsTotal - inputs.size()) / Math.max(1, itemsTotal));
     }
@@ -620,12 +621,20 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
                 level.addParticle(ModParticles.runeShard(stele.rune().color()), target.x, target.y, target.z, offset.x, offset.y, offset.z);
             }
         }
+        // The pedestal item being drawn comes apart: fragments of its own texture, each on its own arc, whirl into the altar.
         BlockPos drawing = altar.drawing();
-        if (drawing != null && level.getBlockEntity(drawing) instanceof PedestalBlockEntity pedestal && !pedestal.item().isEmpty()) {
-            for (int i = 0; i < 2; i++) {
-                Vec3 from = Vec3.atCenterOf(drawing).add((random.nextDouble() - 0.5) * 0.3, 0.75, (random.nextDouble() - 0.5) * 0.3);
-                spawnFlow(level, target, from, i == 0 ? 0xF0D27A : 0x9FE6FF);
+        if (drawing != null && level.getBlockEntity(drawing) instanceof PedestalBlockEntity pedestal && !pedestal.item().isEmpty()
+                && !altar.stalled()) {
+            int fragments = random.nextInt(5) < 3 ? 1 : 0;
+            for (int i = 0; i < fragments; i++) {
+                Vec3 from = Vec3.atCenterOf(drawing).add((random.nextDouble() - 0.5) * 0.25, 0.8 + random.nextDouble() * 0.15,
+                        (random.nextDouble() - 0.5) * 0.25);
+                Vec3 offset = from.subtract(target);
+                level.addParticle(ModParticles.itemDraw(pedestal.item()), target.x, target.y, target.z, offset.x, offset.y, offset.z);
             }
+        }
+        if (!altar.stalled()) {
+            altar.embers(level, random, drawingEssence);
         }
         if (altar.stalled() && random.nextInt(4) == 0) {
             level.addParticle(ModParticles.spark(ModParticles.HEXTECH), target.x + (random.nextDouble() - 0.5) * 0.8, target.y + random.nextDouble() * 0.4,
@@ -715,9 +724,34 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         extras = hint.extra();
     }
 
-    private static void spawnFlow(Level level, Vec3 to, Vec3 from, int color) {
-        Vec3 offset = from.subtract(to);
-        level.addParticle(ModParticles.flow(color), to.x, to.y, to.z, offset.x, offset.y, offset.z);
+    /**
+     * Client: the air of a working circle, kept sparse - glints rising slowly off the ground sigil's lines (in the colour
+     * of the essence being drawn once the items are in) and now and then a mote of light gathering into the work from
+     * the sigil's edge.
+     */
+    private void embers(Level level, RandomSource random, @Nullable Essence drawing) {
+        if (circle == null) {
+            return;
+        }
+        int color = drawing != null ? drawing.color() : random.nextInt(4) == 0 ? 0xF0D27A : ModParticles.HEXTECH;
+        if (random.nextInt(3) == 0) {
+            // A point on a line from the altar to one of the circle's members.
+            List<BlockPos> members = new ArrayList<>();
+            circle.pedestals().forEach(pedestal -> members.add(pedestal.getBlockPos()));
+            circle.steles().forEach(stele -> members.add(stele.getBlockPos()));
+            circle.tanks().forEach(tank -> members.add(tank.getBlockPos()));
+            Vec3 foot = Vec3.atBottomCenterOf(worldPosition);
+            Vec3 end = members.isEmpty() ? foot.add(2, 0, 0) : Vec3.atBottomCenterOf(members.get(random.nextInt(members.size())));
+            Vec3 at = foot.lerp(new Vec3(end.x, foot.y, end.z), 0.25 + random.nextDouble() * 0.7).add(0, 0.05, 0);
+            level.addParticle(ModParticles.glint(color), at.x, at.y, at.z, 0, 0.012 + random.nextDouble() * 0.01, 0);
+        }
+        if (random.nextInt(7) == 0) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            double radius = 2.2 + random.nextDouble() * 1.8;
+            Vec3 target = itemPosition();
+            Vec3 offset = new Vec3(Math.cos(angle) * radius, -itemY() + 0.15 + random.nextDouble() * 0.4, Math.sin(angle) * radius);
+            level.addParticle(ModParticles.runeShard(color), target.x, target.y, target.z, offset.x, offset.y, offset.z);
+        }
     }
 
     @Override

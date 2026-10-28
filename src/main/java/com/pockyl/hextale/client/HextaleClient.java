@@ -85,6 +85,7 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.EssenceFluidModel::register);
         modBus.addListener((RegisterParticleProvidersEvent event) -> {
             event.registerSpriteSet(ModParticles.FLOW.get(), FlowParticle.Provider::new);
+            event.registerSpecial(ModParticles.ITEM_DRAW.get(), new com.pockyl.hextale.client.particle.ItemDrawParticle.Provider());
             event.registerSpriteSet(ModParticles.VOID_MOTE.get(), com.pockyl.hextale.client.particle.VoidMoteParticle.Provider::new);
             event.registerSpriteSet(ModParticles.RUNE_SHARD.get(), RuneShardParticle.Provider::new);
             event.registerSpriteSet(ModParticles.ESSENCE_WISP.get(), EssenceWispParticle.Provider::new);
