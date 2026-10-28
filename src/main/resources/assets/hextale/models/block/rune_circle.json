@@ -1,8 +1,325 @@
 {
-  "parent": "minecraft:block/slab",
+  "parent": "minecraft:block/block",
   "textures": {
-    "bottom": "hextale:block/magic_bricks",
-    "top": "hextale:block/chiseled_magic_bricks",
-    "side": "hextale:block/magic_bricks"
+    "particle": "hextale:block/rune_circle",
+    "rune_circle": "hextale:block/rune_circle",
+    "rune_circle_glow": "hextale:block/rune_circle_glow"
+  },
+  "elements": [
+    {
+      "name": "disc_top",
+      "from": [
+        -16,
+        0,
+        -16
+      ],
+      "to": [
+        32,
+        1,
+        32
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            12,
+            12
+          ],
+          "texture": "#rune_circle"
+        }
+      }
+    },
+    {
+      "name": "glow_grooves",
+      "from": [
+        -14.03,
+        -0.03,
+        -14.03
+      ],
+      "to": [
+        30.03,
+        1.03,
+        30.03
+      ],
+      "light_emission": 15,
+      "faces": {
+        "up": {
+          "uv": [
+            0.5,
+            0.5,
+            11.5,
+            11.5
+          ],
+          "texture": "#rune_circle_glow"
+        }
+      }
+    },
+    {
+      "name": "hex_a",
+      "from": [
+        5,
+        0,
+        3
+      ],
+      "to": [
+        11,
+        5,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3.25,
+            12.5,
+            4.75,
+            13.75
+          ],
+          "texture": "#rune_circle"
+        },
+        "south": {
+          "uv": [
+            3.25,
+            14,
+            4.75,
+            15.25
+          ],
+          "texture": "#rune_circle"
+        }
+      }
+    },
+    {
+      "name": "hex_b",
+      "from": [
+        5,
+        0,
+        3
+      ],
+      "to": [
+        11,
+        5,
+        13
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 60,
+        "z": 0,
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            12.5,
+            6.5,
+            13.75
+          ],
+          "texture": "#rune_circle"
+        },
+        "south": {
+          "uv": [
+            5,
+            14,
+            6.5,
+            15.25
+          ],
+          "texture": "#rune_circle"
+        }
+      }
+    },
+    {
+      "name": "hex_c",
+      "from": [
+        5,
+        0,
+        3
+      ],
+      "to": [
+        11,
+        5,
+        13
+      ],
+      "rotation": {
+        "x": 0,
+        "y": 120,
+        "z": 0,
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            6.75,
+            12.5,
+            8.25,
+            13.75
+          ],
+          "texture": "#rune_circle"
+        },
+        "south": {
+          "uv": [
+            6.75,
+            14,
+            8.25,
+            15.25
+          ],
+          "texture": "#rune_circle"
+        }
+      }
+    },
+    {
+      "name": "hex_top",
+      "from": [
+        2,
+        5,
+        2
+      ],
+      "to": [
+        14,
+        5,
+        14
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            12.5,
+            3,
+            15.5
+          ],
+          "texture": "#rune_circle"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.19,
+        0.19,
+        0.19
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.19,
+        0.19,
+        0.19
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.13,
+        0.13,
+        0.13
+      ]
+    },
+    "gui": {
+      "rotation": [
+        30,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        1,
+        0
+      ],
+      "scale": [
+        0.24,
+        0.24,
+        0.24
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        6,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        -90,
+        0,
+        0
+      ],
+      "scale": [
+        0.24,
+        0.24,
+        0.24
+      ]
+    }
   }
 }
