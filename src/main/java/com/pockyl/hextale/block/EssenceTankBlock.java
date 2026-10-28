@@ -48,7 +48,8 @@ import org.jspecify.annotations.Nullable;
  */
 public class EssenceTankBlock extends BaseEntityBlock implements EssenceMachine {
     /** The glass body and the shoulder, the neck and the lid above it (as the model, without the pipe fittings). */
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 11, 14), Block.box(3, 11, 3, 13, 15, 13));
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(3, 0, 3, 13, 10, 13), Block.box(4, 10, 4, 12, 12, 12),
+            Block.box(5, 12, 5, 11, 16, 11));
 
     public EssenceTankBlock(Properties properties) {
         super(properties);

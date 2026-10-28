@@ -184,15 +184,15 @@ public class EssenceTankBlockEntity extends BlockEntity implements EssenceNetwor
         }
     }
 
-    /** Seams under the lid, in sixteenths: the lid's square edge at y 13 runs from 3 to 13 on both axes. */
-    private static final double SEAM_Y = 12.9 / 16;
-    private static final double SEAM_HALF = 5.2 / 16;
+    /** The seam round the cork, in sixteenths: the cork (6 to 10 on both axes) leaves the glass lip at y 15. */
+    private static final double SEAM_Y = 15.1 / 16;
+    private static final double SEAM_HALF = 2.2 / 16;
     /** About one drop per this many ticks from a full jar (owner: a rare sight); a big jar is wider, so more often. */
     private static final int SEEP_TICKS = 300;
     private static final int SEEP_TICKS_BIG = 100;
 
     /**
-     * Client: the essence in a jar is alive - now and then, rarely, a drop of it seeps out under the lid and floats up slowly
+     * Client: the essence in a jar is alive - now and then, rarely, a drop of it seeps out round the cork and floats up slowly
      * (more often the fuller the jar); a push spills a little cloud of them. A big jar seeps along its wider seam.
      */
     public static void clientTick(Level level, BlockPos pos, BlockState state, EssenceTankBlockEntity jar) {

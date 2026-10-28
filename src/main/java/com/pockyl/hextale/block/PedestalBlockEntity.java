@@ -24,6 +24,11 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 public class PedestalBlockEntity extends BlockEntity implements Container {
     /** Block event: the altar starts drawing this pedestal's item. */
     public static final int EVENT_DRAW = 1;
+    /**
+     * Height over the block's foot where the item floats: just over the brass dish (its top is at 15 px). The altar's
+     * ghosts, the drawn item's fragments and the book's circle diorama follow it.
+     */
+    public static final double ITEM_Y = 1.2;
 
     private ItemStack item = ItemStack.EMPTY;
     /** Client side: game time the altar began to draw the item. */

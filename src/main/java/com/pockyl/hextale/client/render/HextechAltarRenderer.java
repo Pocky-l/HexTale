@@ -23,6 +23,7 @@ import org.joml.Quaternionfc;
 import org.jspecify.annotations.Nullable;
 
 import com.pockyl.hextale.block.HextechAltarBlockEntity;
+import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.infusion.Ritual;
 
@@ -43,7 +44,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
     private static final int ASH_COLOR = 0x8A7F78;
     /** Gold of the pedestals' lines in the ground sigil. */
     private static final int PEDESTAL_COLOR = 0xF0D27A;
-    /** Corner radius of the sigil's hexagon round the altar's foot, and of the small ones under the members. */
+    /** Corner radius of the sigil's hexagon round the altar's foot (see {@link State#inner}), and of the small ones under the members. */
     private static final float INNER = 1.25F;
     private static final float MEMBER_RING = 0.5F;
     private final ItemModelResolver itemModelResolver;
@@ -218,6 +219,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
             return;
         }
         float time = state.time;
+        float inner = state.inner;
         float lit = state.active ? Mth.clamp(state.ritualTime / Ritual.WARMUP_TICKS, 0, 1) : 1;
         float open = 1 - cube(1 - Math.min(1, (state.active ? state.ritualTime : 99) / 20F));
         float reach = 0;
@@ -244,7 +246,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         poseStack.popPose();
         poseStack.pushPose();
         poseStack.mulPose(Axis.ZP.rotation(state.sigilPhase * 1.6F));
-        HexFx.hexRing(poseStack, collector, INNER * Math.max(0.3F, open), core, 0.8F * alpha * flicker);
+        HexFx.hexRing(poseStack, collector, inner * Math.max(0.3F, open), core, 0.8F * alpha * flicker);
         poseStack.popPose();
         // The ignition: a hexagon running out over the ground and a bright ray sweeping round from the north.
         if (state.active && state.ritualTime < 24) {
@@ -257,8 +259,8 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
             if (rayAlpha > 0) {
                 float sx = Mth.sin(sweep);
                 float sy = -Mth.cos(sweep);
-                HexFx.glowSegment(consumer, pose, sx * INNER, sy * INNER, sx * outer, sy * outer, 0.3F, color, 0.35F * rayAlpha);
-                HexFx.glowSegment(consumer, pose, sx * INNER, sy * INNER, sx * outer, sy * outer, 0.07F, core, rayAlpha);
+                HexFx.glowSegment(consumer, pose, sx * inner, sy * inner, sx * outer, sy * outer, 0.3F, color, 0.35F * rayAlpha);
+                HexFx.glowSegment(consumer, pose, sx * inner, sy * inner, sx * outer, sy * outer, 0.07F, core, rayAlpha);
             }
             int index = 0;
             for (Member member : state.members) {
@@ -267,13 +269,13 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
                 float broken = crack > 0 ? (Mth.sin(time * 1.7F + index * 2.9F) > 1 - 2 * crack ? 1 : 0.15F) : 1;
                 float a = alpha * reveal * broken;
                 index++;
-                if (a <= 0.01F || distance < INNER + MEMBER_RING + 0.2F) {
+                if (a <= 0.01F || distance < inner + MEMBER_RING + 0.2F) {
                     continue;
                 }
                 float ux = member.dx / distance;
                 float uy = member.dz / distance;
-                float x0 = ux * INNER;
-                float y0 = uy * INNER;
+                float x0 = ux * inner;
+                float y0 = uy * inner;
                 float x1 = member.dx - ux * MEMBER_RING;
                 float y1 = member.dz - uy * MEMBER_RING;
                 int lineColor = RuneDrawing.mix(member.color, color, 0.35F);
@@ -285,7 +287,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
                     // others glow still.
                     int pulses = 4;
                     float speed = 0.06F;
-                    float length = Math.max(1, distance - INNER - MEMBER_RING);
+                    float length = Math.max(1, distance - inner - MEMBER_RING);
                     for (int k = 0; k < pulses; k++) {
                         float u = frac(time * speed + k / (float) pulses + index * 0.31F);
                         float front = 1 - u;
@@ -341,7 +343,7 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         }
         extras.clear();
         for (BlockPos pos : altar.extras()) {
-            extras.add(Vec3.atLowerCornerOf(pos.subtract(altar.getBlockPos())).add(0.5, 1.12, 0.5));
+            extras.add(Vec3.atLowerCornerOf(pos.subtract(altar.getBlockPos())).add(0.5, PedestalBlockEntity.ITEM_Y, 0.5));
         }
     }
 
@@ -421,6 +423,11 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
         float innerPhase;
         float itemTurn;
         float sigilPhase;
+        /**
+         * Corner radius of the hexagon round the foot, where the member lines start: the altar's {@link #INNER}; the
+         * Hexcore's wider cradle sets its own.
+         */
+        float inner = INNER;
         final java.util.List<Member> members = new java.util.ArrayList<>();
         final java.util.List<JarStreamFx.Stream> streams = new java.util.ArrayList<>();
         final java.util.List<GhostState> ghosts = new java.util.ArrayList<>();

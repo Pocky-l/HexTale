@@ -96,7 +96,7 @@ public class ItemFilterScreen extends AbstractContainerScreen<ItemFilterMenu> {
     @Override
     protected void renderLabels(net.minecraft.client.gui.GuiGraphics portGraphics, int mouseX, int mouseY) {
         GuiGraphicsExtractor graphics = GuiGraphicsExtractor.of(portGraphics);
-        HexPlate.line(graphics, font, title, titleLabelX, titleLabelY, imageWidth - titleLabelX * 2, HexPlate.TITLE, true);
+        HexPlate.title(graphics, font, title, titleLabelX, titleLabelY, imageWidth - titleLabelX * 2);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, HexPlate.TEXT, false);
     }
 

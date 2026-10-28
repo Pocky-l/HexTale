@@ -58,8 +58,8 @@ public final class EssenceJarItemRenderer implements SpecialModelRenderer<Essenc
 
     @Override
     public void getExtents(Consumer<Vector3fc> output) {
-        output.accept(new Vector3f(2 / 16F, 0, 2 / 16F));
-        output.accept(new Vector3f(14 / 16F, 15 / 16F, 14 / 16F));
+        output.accept(new Vector3f(3 / 16F, 0, 3 / 16F));
+        output.accept(new Vector3f(13 / 16F, 1, 13 / 16F));
     }
 
     /** The JSON side: {@code {"type": "hextale:essence_jar"}} in an item model definition. */

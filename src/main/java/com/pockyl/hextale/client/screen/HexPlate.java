@@ -2,58 +2,132 @@ package com.pockyl.hextale.client.screen;
 
 import net.minecraft.client.gui.Font;
 import com.pockyl.hextale.port.client.GuiGraphicsExtractor;
+import com.pockyl.hextale.port.client.RenderPipelines;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
+import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.client.render.PixelArt;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The look shared by the mod's screens (all but the Research Table): a dark panel in a brass frame lit at the top left,
- * slot wells shaded like holes, brass-rimmed buttons, and text that never leaves its box - one line is cut with an
- * ellipsis, a paragraph wraps and is cut after its last allowed line.
+ * The look shared by the mod's screens (all but the Research Table): a walnut panel in an aged brass frame with riveted
+ * corners, an engraved brass title plate, wells sunk into the wood, brass-rimmed buttons, and text that never leaves its
+ * box - one line is cut with an ellipsis, a paragraph wraps and is cut after its last allowed line. The materials are
+ * GUI sprites drawn at two texels per GUI pixel ({@code textures/gui/sprites/plate}).
  */
 public final class HexPlate {
-    public static final int BRASS = 0xC29445;
-    public static final int BRASS_LIGHT = 0xF8E3A0;
+    public static final int BRASS = 0xC29C50;
+    public static final int BRASS_LIGHT = 0xF2DE9C;
     public static final int BRASS_DARK = 0x4A3312;
-    public static final int PANEL = 0x16121F;
-    public static final int TITLE = 0xFF000000 | BRASS_LIGHT;
-    public static final int TEXT = 0xFFE8E0F0;
-    public static final int MUTED = 0xFF9A90B8;
+    /** The walnut's own colour, for anything that must blend into the panel. */
+    public static final int PANEL = 0x432B1A;
+    /** The floor of a well, for anything drawn inside one. */
+    public static final int WELL_FLOOR = 0x2C1C10;
+    /** Letters engraved into the brass title plate. */
+    public static final int TITLE = 0xFF3A2410;
+    public static final int TEXT = 0xFFF2E6CF;
+    public static final int MUTED = 0xFFBCA88A;
     public static final int GOLD = 0xFFE9C66D;
     /** The brass frame's width: content starts this far in. */
     public static final int BORDER = 4;
+    /** The riveted brass plates on the frame's corners. */
+    public static final int CORNER = 6;
+    public static final ResourceLocation BUTTON = sprite("button");
+    public static final ResourceLocation BUTTON_HOVER = sprite("button_hover");
+    public static final ResourceLocation BUTTON_PRESSED = sprite("button_pressed");
+    public static final ResourceLocation BUTTON_DISABLED = sprite("button_disabled");
+    public static final ResourceLocation BUTTON_READY = sprite("button_ready");
+    private static final ResourceLocation WALNUT = sprite("walnut");
+    private static final ResourceLocation FRAME = sprite("frame");
+    private static final ResourceLocation CORNER_PLATE = sprite("corner");
+    private static final ResourceLocation WELL = sprite("well");
+    private static final ResourceLocation OUTPUT_RING = sprite("output_ring");
+    private static final ResourceLocation TITLE_PLATE = sprite("title");
+    private static final int ENGRAVE_LIGHT = 0xFFE8CC84;
     private static final String ELLIPSIS = "…";
 
     private HexPlate() {
     }
 
-    /** The plate: a dark panel in a brass frame lit at the top left. */
+    private static ResourceLocation sprite(String name) {
+        return Hextale.id("plate/" + name);
+    }
+
+    private static void blit(GuiGraphicsExtractor graphics, ResourceLocation sprite, int x, int y, int w, int h) {
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, w, h);
+    }
+
+    /** The plate: walnut boards in an aged brass frame with a riveted plate on every corner. */
     public static void plate(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {
-        PixelArt.fill(graphics, x, y, x + w, y + h, PixelArt.argb(BRASS_DARK, 1));
-        PixelArt.fill(graphics, x + 1, y + 1, x + w - 1, y + h - 1, PixelArt.argb(BRASS, 1));
-        PixelArt.fill(graphics, x + 1, y + 1, x + w - 1, y + 2, PixelArt.argb(BRASS_LIGHT, 1));
-        PixelArt.fill(graphics, x + 1, y + 1, x + 2, y + h - 1, PixelArt.argb(BRASS_LIGHT, 1));
-        PixelArt.fill(graphics, x + 3, y + 3, x + w - 3, y + h - 3, PixelArt.argb(BRASS_DARK, 1));
-        PixelArt.fill(graphics, x + 4, y + 4, x + w - 4, y + h - 4, PixelArt.argb(PANEL, 1));
+        PixelArt.flush(graphics);
+        blit(graphics, WALNUT, x + 2, y + 2, w - 4, h - 4);
+        blit(graphics, FRAME, x, y, w, h);
+        blit(graphics, CORNER_PLATE, x, y, CORNER, CORNER);
+        blit(graphics, CORNER_PLATE, x + w - CORNER, y, CORNER, CORNER);
+        blit(graphics, CORNER_PLATE, x, y + h - CORNER, CORNER, CORNER);
+        blit(graphics, CORNER_PLATE, x + w - CORNER, y + h - CORNER, CORNER, CORNER);
     }
 
-    /** A faint brass line across the plate at {@code y}, between its frame sides. */
+    /** A brass strip inlaid across the plate at {@code y} (two pixels: the groove, then the brass), between its frame sides. */
     public static void divider(GuiGraphicsExtractor graphics, int x, int y, int w) {
-        PixelArt.fill(graphics, x + BORDER, y, x + w - BORDER, y + 1, PixelArt.argb(BRASS, 0.5F));
+        PixelArt.fill(graphics, x + BORDER, y, x + w - BORDER, y + 1, PixelArt.argb(0x1E1209, 0.8F));
+        PixelArt.fill(graphics, x + BORDER, y + 1, x + w - BORDER, y + 2, PixelArt.argb(0xA88442, 1));
     }
 
-    /** A well: shaded at the top left, lit at the bottom right. Slots, tanks and recesses use it. */
+    /**
+     * The engraved brass plate a title sits on, {@code width} pixels of text wide with its first letter at {@code x, y}
+     * (where the text itself is drawn by {@link #engraved}).
+     */
+    public static void titlePlate(GuiGraphicsExtractor graphics, int x, int y, int width) {
+        PixelArt.flush(graphics);
+        blit(graphics, TITLE_PLATE, x - 2, y - 2, width + 4, 12);
+    }
+
+    /** {@code text} cut to {@code width}, engraved: dark letters with the brass catching light under them. */
+    public static void engraved(GuiGraphicsExtractor graphics, Font font, FormattedCharSequence text, int x, int y) {
+        graphics.text(font, text, x, y + 1, ENGRAVE_LIGHT, false);
+        graphics.text(font, text, x, y, TITLE, false);
+    }
+
+    /** A screen's title on its brass plate, cut to {@code width}; the plate is as wide as the text. */
+    public static void title(GuiGraphicsExtractor graphics, Font font, Component text, int x, int y, int width) {
+        FormattedCharSequence line = fit(font, text, width);
+        titlePlate(graphics, x, y, font.width(line));
+        engraved(graphics, font, line, x, y);
+    }
+
+    /** {@link #title} centred on {@code cx}. */
+    public static void centeredTitle(GuiGraphicsExtractor graphics, Font font, Component text, int cx, int y, int width) {
+        FormattedCharSequence line = fit(font, text, width);
+        int x = cx - font.width(line) / 2;
+        titlePlate(graphics, x, y, font.width(line));
+        engraved(graphics, font, line, x, y);
+    }
+
+    /** Wrapped title lines centred on {@code cx}, one line every 10 pixels from {@code y}, on one engraved plate. */
+    public static void centeredTitle(GuiGraphicsExtractor graphics, Font font, List<FormattedCharSequence> lines, int cx, int y) {
+        int width = 0;
+        for (FormattedCharSequence line : lines) {
+            width = Math.max(width, font.width(line));
+        }
+        PixelArt.flush(graphics);
+        blit(graphics, TITLE_PLATE, cx - width / 2 - 2, y - 2, width + 4, lines.size() * 10 + 2);
+        for (FormattedCharSequence line : lines) {
+            engraved(graphics, font, line, cx - font.width(line) / 2, y);
+            y += 10;
+        }
+    }
+
+    /** A well sunk into the wood: its walls in shadow at the top left, its lip lit at the bottom right. */
     public static void well(GuiGraphicsExtractor graphics, int x, int y, int w, int h) {
-        PixelArt.fill(graphics, x, y, x + w, y + h, PixelArt.argb(0x0A0810, 1));
-        PixelArt.fill(graphics, x + w - 1, y + 1, x + w, y + h, PixelArt.argb(0x4A4060, 1));
-        PixelArt.fill(graphics, x + 1, y + h - 1, x + w, y + h, PixelArt.argb(0x4A4060, 1));
-        PixelArt.fill(graphics, x + 1, y + 1, x + w - 1, y + h - 1, PixelArt.argb(0x1E1A2A, 1));
+        PixelArt.flush(graphics);
+        blit(graphics, WELL, x, y, w, h);
     }
 
     /** The well of a slot whose item sits at {@code x, y} (the slot's own coordinates). */
@@ -61,13 +135,16 @@ public final class HexPlate {
         well(graphics, x - 1, y - 1, 18, 18);
     }
 
-    /** A brass ring two pixels round the slot at {@code x, y}: the slot where the product comes out. */
+    /** A riveted brass ring two pixels round the slot at {@code x, y}: the slot where the product comes out. */
     public static void outputSlot(GuiGraphicsExtractor graphics, int x, int y) {
-        PixelArt.fill(graphics, x - 3, y - 3, x + 19, y + 19, PixelArt.argb(BRASS_DARK, 1));
-        PixelArt.fill(graphics, x - 2, y - 2, x + 18, y + 18, PixelArt.argb(BRASS, 1));
-        PixelArt.fill(graphics, x - 2, y - 2, x + 18, y - 1, PixelArt.argb(BRASS_LIGHT, 1));
-        PixelArt.fill(graphics, x - 2, y - 2, x - 1, y + 18, PixelArt.argb(BRASS_LIGHT, 1));
+        outputRing(graphics, x, y);
         slot(graphics, x, y);
+    }
+
+    /** Only the brass ring of {@link #outputSlot}; wells drawn after it cover the rings of neighbouring product slots. */
+    public static void outputRing(GuiGraphicsExtractor graphics, int x, int y) {
+        PixelArt.flush(graphics);
+        blit(graphics, OUTPUT_RING, x - 3, y - 3, 22, 22);
     }
 
     /** A thin rim round a small square (a cell in a grid of choices): gold when chosen, brass when hovered. */
@@ -76,18 +153,20 @@ public final class HexPlate {
             return;
         }
         PixelArt.fill(graphics, x, y, x + size, y + size, chosen ? GOLD : PixelArt.argb(BRASS, 0.7F));
-        PixelArt.fill(graphics, x + 1, y + 1, x + size - 1, y + size - 1, PixelArt.argb(chosen ? 0x2E2440 : 0x221B30, 1));
+        PixelArt.fill(graphics, x + 1, y + 1, x + size - 1, y + size - 1, PixelArt.argb(chosen ? 0x3A2616 : WELL_FLOOR, 1));
+    }
+
+    /** The sprite of a brass-rimmed button in its state. */
+    public static ResourceLocation buttonSprite(boolean hovered, boolean active) {
+        return !active ? BUTTON_DISABLED : hovered ? BUTTON_HOVER : BUTTON;
     }
 
     /** A brass-rimmed button with its label centred and cut to fit; a disabled one is dim. */
     public static void button(GuiGraphicsExtractor graphics, Font font, int x, int y, int w, int h, Component text, boolean hovered,
                               boolean active) {
-        int rim = !active ? 0x5A4A3A : hovered ? BRASS_LIGHT : BRASS;
-        PixelArt.fill(graphics, x + 1, y, x + w - 1, y + h, PixelArt.argb(rim, 1));
-        PixelArt.fill(graphics, x, y + 1, x + w, y + h - 1, PixelArt.argb(rim, 1));
-        PixelArt.fill(graphics, x + 1, y + 1, x + w - 1, y + h - 1, PixelArt.argb(hovered && active ? 0x2E2440 : 0x221B30, 1));
         PixelArt.flush(graphics);
-        int colour = !active ? 0xFF7A7090 : hovered ? 0xFFFFF6D6 : TEXT;
+        blit(graphics, buttonSprite(hovered, active), x, y, w, h);
+        int colour = !active ? 0xFF8A7A66 : hovered ? 0xFFFFF4D8 : TEXT;
         graphics.centeredText(font, fit(font, text, w - 6), x + w / 2, y + (h - 8) / 2, colour);
     }
 

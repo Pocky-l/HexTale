@@ -111,7 +111,7 @@ public class HexFoundryScreen extends MachineScreen<HexFoundryMenu> {
     private static void flames(GuiGraphicsExtractor graphics, int x, int y, float fire) {
         long now = Util.getMillis();
         for (int col = 0; col < 14; col++) {
-            graphics.fill(x + col, y + 12, x + col + 1, y + 14, fire > 0 ? 0xFF5A2410 : 0xFF2A2420);
+            graphics.fill(x + col, y + 12, x + col + 1, y + 14, fire > 0 ? 0xFF5A2410 : 0xFF2A1C12);
             if (fire <= 0) {
                 continue;
             }

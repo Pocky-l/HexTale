@@ -6,7 +6,10 @@
       "parent": "hextale:block/hex_lapidary"
     },
     "part1": {
-      "parent": "hextale:block/hex_lapidary_disc"
+      "parent": "hextale:block/hex_lapidary_wheel"
+    },
+    "part2": {
+      "parent": "hextale:block/hex_lapidary_gear"
     }
   }
 }

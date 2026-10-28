@@ -40,6 +40,8 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
     private static final float FLASH_TICKS = 30;
     private static final int STALL_COLOR = 0xE0503C;
     private static final int BOLT_COLOR = 0x8FD8FF;
+    /** The sigil's hexagon round the cradle's foot: wide enough to clear its stepped base (1.33 blocks at the corners). */
+    private static final float SIGIL_INNER = 1.6F;
     private final ItemModelResolver itemModelResolver;
 
     public HexcoreRenderer(BlockEntityRendererProvider.Context context) {
@@ -72,6 +74,7 @@ public class HexcoreRenderer implements BlockEntityRenderer<HexcoreBlockEntity, 
         HextechAltarRenderer.extractGhosts(core, itemModelResolver, state.ghosts, state.extras, seed);
         // The woken altar keeps its circle: the same ground sigil and jar streams as the altar's.
         HextechAltarRenderer.extractSigil(core, state.circle, partialTick);
+        state.circle.inner = SIGIL_INNER;
 
         // Spin and tumble follow the ritual smoothly (the altar's ring phases, reused).
         float target = state.active ? (state.stalled ? 1.5F : 2.5F + 9 * state.progress) : 0.7F;

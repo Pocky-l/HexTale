@@ -22,7 +22,7 @@ import com.pockyl.hextale.block.PedestalBlockEntity;
 import com.pockyl.hextale.infusion.Ritual;
 
 /**
- * A pedestal's item floats and turns over its hextech crystal. When the altar draws it, the item lifts, spins up and
+ * A pedestal's item floats and turns over its brass dish. When the altar draws it, the item lifts, spins up and
  * shrinks into a flare over the pedestal for the length of one draw.
  */
 public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity, PedestalRenderer.State> {
@@ -53,7 +53,7 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
         float draw = state.sinceDraw >= 0 && state.sinceDraw < Ritual.TICKS_PER_ITEM + 2 ? state.sinceDraw / Ritual.TICKS_PER_ITEM : 0;
         float time = state.time + (state.seed & 63);
         poseStack.pushPose();
-        poseStack.translate(0.5, 1.12 + Mth.sin(time * 0.09F) * 0.035F + draw * 0.35F, 0.5);
+        poseStack.translate(0.5, PedestalBlockEntity.ITEM_Y + Mth.sin(time * 0.09F) * 0.035F + draw * 0.35F, 0.5);
         if (draw > 0) {
             HexFx.sprite(poseStack, collector, camera.orientation, HexFx.HALO, 0.5F + 0.4F * draw, 0x9FE6FF, 0.6F * draw);
         }

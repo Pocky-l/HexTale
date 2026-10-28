@@ -107,8 +107,16 @@ public class HexFurnaceBlock extends BaseEntityBlock implements WorldlyContainer
         double ax = front.getAxis() == Direction.Axis.X ? 0 : across;
         double az = front.getAxis() == Direction.Axis.Z ? 0 : across;
         level.addParticle(ModParticles.flame(random.nextInt(3) == 0 ? ModParticles.SOUL_FIRE : ModParticles.FIRE), x + ax, y, z + az, 0, 0.005, 0);
-        if (random.nextInt(3) == 0) {
-            level.addParticle(ModParticles.vapour(ModParticles.SMOKE), x + ax, y + 0.3, z + az, 0, 0.02, 0);
+        // Smoke and now and then an ember leave from the brass chimney's mouth (8 px over the block, 2 px behind the middle).
+        double cx = pos.getX() + 0.5 - front.getStepX() * 2 / 16.0;
+        double cz = pos.getZ() + 0.5 - front.getStepZ() * 2 / 16.0;
+        double cy = pos.getY() + 24.2 / 16;
+        if (random.nextInt(2) == 0) {
+            level.addParticle(ModParticles.vapour(ModParticles.SMOKE), cx + (random.nextDouble() - 0.5) * 0.12, cy, cz + (random.nextDouble() - 0.5) * 0.12,
+                    0, 0.03, 0);
+        }
+        if (random.nextInt(6) == 0) {
+            level.addParticle(ModParticles.spark(ModParticles.FIRE), cx, cy, cz, (random.nextDouble() - 0.5) * 0.02, 0.05, (random.nextDouble() - 0.5) * 0.02);
         }
     }
 

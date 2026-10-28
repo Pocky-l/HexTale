@@ -1,0 +1,859 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/polished_magic_stone",
+    "stone": "hextale:block/polished_magic_stone",
+    "brass": "hextale:block/aged_brass",
+    "face": "hextale:block/rune_stele_face",
+    "glow": "hextale:block/rune_stele_glow"
+  },
+  "elements": [
+    {
+      "name": "slab_up",
+      "from": [
+        4,
+        0,
+        6
+      ],
+      "to": [
+        12,
+        3,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            13,
+            12,
+            16
+          ],
+          "texture": "#face"
+        },
+        "east": {
+          "uv": [
+            0,
+            13,
+            4,
+            16
+          ],
+          "texture": "#face"
+        },
+        "south": {
+          "uv": [
+            4,
+            13,
+            12,
+            16
+          ],
+          "texture": "#face"
+        },
+        "west": {
+          "uv": [
+            0,
+            13,
+            4,
+            16
+          ],
+          "texture": "#face"
+        }
+      }
+    },
+    {
+      "name": "glow_up",
+      "from": [
+        5.97,
+        -0.03,
+        5.97
+      ],
+      "to": [
+        10.03,
+        3.03,
+        10.03
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            13,
+            10,
+            16
+          ],
+          "texture": "#glow"
+        },
+        "south": {
+          "uv": [
+            6,
+            13,
+            10,
+            16
+          ],
+          "texture": "#glow"
+        }
+      }
+    },
+    {
+      "name": "brass_collar",
+      "from": [
+        3,
+        3,
+        5
+      ],
+      "to": [
+        13,
+        4,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            12,
+            13,
+            13
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            5,
+            12,
+            11,
+            13
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            3,
+            12,
+            13,
+            13
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            5,
+            12,
+            11,
+            13
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            3,
+            5,
+            13,
+            11
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            3,
+            5,
+            13,
+            11
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "stone_head_bottom",
+      "from": [
+        2,
+        4,
+        6
+      ],
+      "to": [
+        14,
+        5,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            11,
+            14,
+            12
+          ],
+          "texture": "#stone"
+        },
+        "east": {
+          "uv": [
+            6,
+            11,
+            10,
+            12
+          ],
+          "texture": "#stone"
+        },
+        "south": {
+          "uv": [
+            2,
+            11,
+            14,
+            12
+          ],
+          "texture": "#stone"
+        },
+        "west": {
+          "uv": [
+            6,
+            11,
+            10,
+            12
+          ],
+          "texture": "#stone"
+        },
+        "up": {
+          "uv": [
+            2,
+            6,
+            14,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            2,
+            6,
+            14,
+            10
+          ],
+          "texture": "#stone"
+        }
+      }
+    },
+    {
+      "name": "stone_head_left",
+      "from": [
+        12,
+        5,
+        6
+      ],
+      "to": [
+        14,
+        13,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            3,
+            4,
+            11
+          ],
+          "texture": "#stone"
+        },
+        "east": {
+          "uv": [
+            6,
+            3,
+            10,
+            11
+          ],
+          "texture": "#stone"
+        },
+        "south": {
+          "uv": [
+            12,
+            3,
+            14,
+            11
+          ],
+          "texture": "#stone"
+        },
+        "west": {
+          "uv": [
+            6,
+            3,
+            10,
+            11
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "stone_head_right",
+      "from": [
+        2,
+        5,
+        6
+      ],
+      "to": [
+        4,
+        13,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            3,
+            14,
+            11
+          ],
+          "texture": "#stone"
+        },
+        "east": {
+          "uv": [
+            6,
+            3,
+            10,
+            11
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            2,
+            3,
+            4,
+            11
+          ],
+          "texture": "#stone"
+        },
+        "west": {
+          "uv": [
+            6,
+            3,
+            10,
+            11
+          ],
+          "texture": "#stone"
+        }
+      }
+    },
+    {
+      "name": "stone_head_top",
+      "from": [
+        2,
+        13,
+        6
+      ],
+      "to": [
+        14,
+        14,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            2,
+            14,
+            3
+          ],
+          "texture": "#stone"
+        },
+        "east": {
+          "uv": [
+            6,
+            2,
+            10,
+            3
+          ],
+          "texture": "#stone"
+        },
+        "south": {
+          "uv": [
+            2,
+            2,
+            14,
+            3
+          ],
+          "texture": "#stone"
+        },
+        "west": {
+          "uv": [
+            6,
+            2,
+            10,
+            3
+          ],
+          "texture": "#stone"
+        },
+        "up": {
+          "uv": [
+            2,
+            6,
+            14,
+            10
+          ],
+          "texture": "#stone"
+        },
+        "down": {
+          "uv": [
+            2,
+            6,
+            14,
+            10
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "stone_head_crown",
+      "from": [
+        3,
+        14,
+        6
+      ],
+      "to": [
+        13,
+        15,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            1,
+            13,
+            2
+          ],
+          "texture": "#stone"
+        },
+        "east": {
+          "uv": [
+            6,
+            1,
+            10,
+            2
+          ],
+          "texture": "#stone"
+        },
+        "south": {
+          "uv": [
+            3,
+            1,
+            13,
+            2
+          ],
+          "texture": "#stone"
+        },
+        "west": {
+          "uv": [
+            6,
+            1,
+            10,
+            2
+          ],
+          "texture": "#stone"
+        },
+        "up": {
+          "uv": [
+            3,
+            6,
+            13,
+            10
+          ],
+          "texture": "#stone"
+        }
+      }
+    },
+    {
+      "name": "stone_corner_bl",
+      "from": [
+        11,
+        5,
+        6
+      ],
+      "to": [
+        12,
+        6,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            10,
+            5,
+            11
+          ],
+          "texture": "#stone"
+        },
+        "south": {
+          "uv": [
+            11,
+            10,
+            12,
+            11
+          ],
+          "texture": "#stone"
+        },
+        "west": {
+          "uv": [
+            6,
+            10,
+            10,
+            11
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            11,
+            6,
+            12,
+            10
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "stone_corner_br",
+      "from": [
+        4,
+        5,
+        6
+      ],
+      "to": [
+        5,
+        6,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11,
+            10,
+            12,
+            11
+          ],
+          "texture": "#stone"
+        },
+        "east": {
+          "uv": [
+            6,
+            10,
+            10,
+            11
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            4,
+            10,
+            5,
+            11
+          ],
+          "texture": "#stone"
+        },
+        "up": {
+          "uv": [
+            4,
+            6,
+            5,
+            10
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "stone_corner_tl",
+      "from": [
+        11,
+        12,
+        6
+      ],
+      "to": [
+        12,
+        13,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            3,
+            5,
+            4
+          ],
+          "texture": "#stone"
+        },
+        "south": {
+          "uv": [
+            11,
+            3,
+            12,
+            4
+          ],
+          "texture": "#stone"
+        },
+        "west": {
+          "uv": [
+            6,
+            3,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            11,
+            6,
+            12,
+            10
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "stone_corner_tr",
+      "from": [
+        4,
+        12,
+        6
+      ],
+      "to": [
+        5,
+        13,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11,
+            3,
+            12,
+            4
+          ],
+          "texture": "#stone"
+        },
+        "east": {
+          "uv": [
+            6,
+            3,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            4,
+            3,
+            5,
+            4
+          ],
+          "texture": "#stone"
+        },
+        "down": {
+          "uv": [
+            4,
+            6,
+            5,
+            10
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "brass_cap",
+      "from": [
+        5,
+        15,
+        5
+      ],
+      "to": [
+        11,
+        16,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#brass",
+          "cullface": "up"
+        },
+        "down": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#brass"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "gui": {
+      "rotation": [
+        30,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        -3.5,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    },
+    "head": {
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "fixed": {
+      "translation": [
+        0,
+        -3.5,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    }
+  },
+  "render_type": "minecraft:cutout"
+}

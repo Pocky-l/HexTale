@@ -48,6 +48,9 @@ import org.jspecify.annotations.Nullable;
 public class LapidaryBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
     public static final int INPUT = 0;
     public static final int DISC = 1;
+    /** In the model's pixels (built facing north): the crystal held in the clamp, and where it meets the grinding wheel. */
+    public static final Vec3 CRYSTAL = new Vec3(5.5, 18.2, 2.4);
+    public static final Vec3 CONTACT = new Vec3(5.5, 18, 3.5);
     public static final int OUTPUT = 2;
     public static final int SIZE = 3;
     /** Dust a shattered crystal leaves, by grade. */
@@ -161,8 +164,8 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
         cracks = cut.cracks;
         heat = cut.heat;
         Vec3 at = Vec3.atCenterOf(worldPosition).add(0, 0.5, 0);
-        // The disc throws grit of the crystal and sparks while it bites; hotter strokes spark more and redder.
-        Vec3 disc = Vec3.atLowerCornerOf(worldPosition).add(0.5, 14.8 / 16, 0.47);
+        // The wheel throws grit of the crystal and sparks where it bites; hotter strokes spark more and redder.
+        Vec3 disc = modelPoint(CONTACT);
         int grit = Math.min(10, 2 + ticks / 4);
         server.sendParticles(new net.minecraft.core.particles.ItemParticleOption(net.minecraft.core.particles.ParticleTypes.ITEM,
                 items.get(INPUT).copyWithCount(1)), disc.x, disc.y, disc.z, grit, 0.12, 0.02, 0.12, 0.08);
@@ -173,8 +176,8 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
         }
         if (cut.facetsCut() > facetsBefore) {
             server.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.BLOCKS, 0.8F, 1.5F);
-            // A new facet catches the light: a glint off the crystal over the disc.
-            Vec3 crystal = Vec3.atLowerCornerOf(worldPosition).add(0.5, 15.5 / 16 + 0.1, 0.47);
+            // A new facet catches the light: a glint off the crystal in the clamp.
+            Vec3 crystal = modelPoint(CRYSTAL);
             server.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), crystal.x, crystal.y, crystal.z, 4, 0.08, 0.06, 0.08, 0.01);
         }
         if (cut.over()) {
@@ -330,5 +333,25 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    /** A point of the model (pixels, built facing north) in the world, turned with the bench like its blockstate turns it. */
+    private Vec3 modelPoint(Vec3 px) {
+        double x = px.x / 16 - 0.5;
+        double z = px.z / 16 - 0.5;
+        Direction facing = getBlockState().getValue(LapidaryBlock.FACING);
+        double rx = switch (facing) {
+            case EAST -> -z;
+            case SOUTH -> -x;
+            case WEST -> z;
+            default -> x;
+        };
+        double rz = switch (facing) {
+            case EAST -> x;
+            case SOUTH -> -z;
+            case WEST -> -x;
+            default -> z;
+        };
+        return Vec3.atLowerCornerOf(worldPosition).add(0.5 + rx, px.y / 16, 0.5 + rz);
     }
 }
