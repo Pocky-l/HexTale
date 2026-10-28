@@ -1,0 +1,18 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "PGP",
+    "CKC",
+    "PPP"
+  ],
+  "key": {
+    "P": "hextale:rusted_plating",
+    "G": "hextale:chem_glass",
+    "C": "#c:ingots/copper",
+    "K": "minecraft:cauldron"
+  },
+  "result": {
+    "id": "hextale:chem_boiler"
+  },
+  "charge": 3
+}

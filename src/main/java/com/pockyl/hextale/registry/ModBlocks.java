@@ -458,6 +458,12 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(3.0F, 6.0F).sound(SoundType.COPPER)
                     .requiresCorrectToolForDrops().noOcclusion()
                     .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChemStillBlock.WORKING) ? 7 : 3));
+    /** A riveted pressure tank on a Chem Burner that cracks mixtures of essence into all their essences at once. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemBoilerBlock> CHEM_BOILER = BLOCKS.registerBlock("chem_boiler",
+            com.pockyl.hextale.block.ChemBoilerBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(3.0F, 6.0F).sound(SoundType.COPPER)
+                    .requiresCorrectToolForDrops().noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChemBoilerBlock.WORKING) ? 5 : 0));
     /** An iron bowl of burning shimmer whose pink light makes plants grow. */
     public static final DeferredBlock<com.pockyl.hextale.block.PinkBrazierBlock> PINK_BRAZIER = BLOCKS.registerBlock("pink_brazier",
             com.pockyl.hextale.block.PinkBrazierBlock::new,

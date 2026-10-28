@@ -1,0 +1,112 @@
+package com.pockyl.hextale.gametest;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.world.level.chunk.LevelChunk;
+
+import com.pockyl.hextale.block.ChemBoilerBlock;
+import com.pockyl.hextale.block.ChemBoilerBlockEntity;
+import com.pockyl.hextale.block.ChemBurnerBlock;
+import com.pockyl.hextale.block.ChemBurnerBlockEntity;
+import com.pockyl.hextale.block.EssenceTankBlockEntity;
+import com.pockyl.hextale.chem.Brew;
+import com.pockyl.hextale.chem.ChemVialItem;
+import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.registry.ModAttachments;
+import com.pockyl.hextale.registry.ModBlocks;
+import com.pockyl.hextale.rune.Essence;
+import com.pockyl.hextale.runework.BoilerRune;
+import com.pockyl.hextale.runework.PickaxeRunes;
+import com.pockyl.hextale.thevoid.Thinning;
+
+import org.jspecify.annotations.Nullable;
+
+/**
+ * Stage 5, hextech against chemtech: the Chem Boiler cracks a mixture into all its essences at once and pours them into
+ * stickered jars - quickly, but part of every batch goes up as fumes and part burns down to unknown essence that feeds
+ * its burner; it leaves pure jars alone and lets its burner rest when there is nothing to crack.
+ */
+public final class DualityGameTests {
+    private DualityGameTests() {
+    }
+
+    /** A boiler on a burner with one vial of fuel, at {@code at}; returns it. */
+    private static ChemBoilerBlockEntity boiler(GameTestHelper helper, BlockPos at) {
+        helper.setBlock(at.below(), ModBlocks.CHEM_BURNER.get());
+        helper.setBlock(at, ModBlocks.CHEM_BOILER.get().defaultBlockState().setValue(ChemBoilerBlock.FACING, Direction.NORTH));
+        helper.getBlockEntity(at.below(), ChemBurnerBlockEntity.class).feed(ChemVialItem.of(Brew.FUEL, 1));
+        return helper.getBlockEntity(at, ChemBoilerBlockEntity.class);
+    }
+
+    /** A jar at {@code at} with an optional sticker and contents. */
+    private static EssenceTankBlockEntity jar(GameTestHelper helper, BlockPos at, @Nullable Essence sticker, EssenceMix contents) {
+        helper.setBlock(at, ModBlocks.ESSENCE_TANK.get());
+        EssenceTankBlockEntity jar = helper.getBlockEntity(at, EssenceTankBlockEntity.class);
+        jar.setSticker(sticker);
+        jar.tank().set(contents);
+        return jar;
+    }
+
+    @HexTest(maxTicks = 600, padding = 6)
+    public static void aBoilerCracksAMixtureIntoStickeredJars(GameTestHelper helper) {
+        BlockPos at = new BlockPos(2, 2, 2);
+        ChemBoilerBlockEntity boiler = boiler(helper, at);
+        EssenceMix mixture = EssenceMix.pure(Essence.FIRE, 48).plus(EssenceMix.pure(Essence.WATER, 48));
+        EssenceTankBlockEntity source = jar(helper, new BlockPos(0, 2, 2), null, mixture);
+        EssenceTankBlockEntity fire = jar(helper, new BlockPos(4, 2, 2), Essence.FIRE, EssenceMix.EMPTY);
+        EssenceTankBlockEntity water = jar(helper, new BlockPos(2, 2, 4), Essence.WATER, EssenceMix.EMPTY);
+        LevelChunk chunk = helper.getLevel().getChunkAt(helper.absolutePos(at));
+        float before = chunk.getData(ModAttachments.THINNING_SOURCES).getOrDefault(Thinning.Source.FUMES.name(), 0F);
+        ChemBurnerBlockEntity burner = helper.getBlockEntity(at.below(), ChemBurnerBlockEntity.class);
+        boolean[] lit = {false};
+        helper.succeedWhen(() -> {
+            if (ChemBurnerBlock.isLit(helper.getBlockState(at.below()))) {
+                lit[0] = true;
+            }
+            helper.assertTrue(source.tank().isEmpty(), "the mixture was drawn out of the plain jar");
+            helper.assertTrue(boiler.mixture().isEmpty() && boiler.held().isEmpty(), "and all of it cracked and poured");
+            int firePoured = fire.tank().contents().get(Essence.FIRE);
+            int waterPoured = water.tank().contents().get(Essence.WATER);
+            helper.assertTrue(firePoured > 20 && waterPoured > 20, "both essences reached their jars");
+            helper.assertTrue(firePoured + waterPoured < mixture.total(), "some was lost on the way");
+            helper.assertTrue(lit[0], "the burner below heated it");
+            float fumes = chunk.getData(ModAttachments.THINNING_SOURCES).getOrDefault(Thinning.Source.FUMES.name(), 0F);
+            helper.assertTrue(fumes > before, "the fumes wore the land");
+            helper.assertTrue(burner.tank().unknown() > 0 || burner.fuelTicks() > 0, "the burnt part fed the flame");
+        });
+    }
+
+    @HexTest(maxTicks = 120, padding = 6)
+    public static void aBoilerLeavesPureJarsAloneAndItsBurnerRests(GameTestHelper helper) {
+        BlockPos at = new BlockPos(2, 2, 2);
+        ChemBoilerBlockEntity boiler = boiler(helper, at);
+        EssenceTankBlockEntity pure = jar(helper, new BlockPos(0, 2, 2), null, EssenceMix.pure(Essence.LIGHT, 64));
+        helper.runAfterDelay(80, () -> {
+            helper.assertTrue(pure.tank().contents().get(Essence.LIGHT) == 64, "a pure jar is not drawn from");
+            helper.assertTrue(boiler.mixture().isEmpty(), "nothing went in");
+            helper.assertFalse(boiler.wantsHeat(), "there is nothing to crack");
+            helper.assertBlockProperty(at.below(), ChemBurnerBlock.LIT, false);
+            helper.succeed();
+        });
+    }
+
+    @HexTest(maxTicks = 600, padding = 6)
+    public static void boilerRunesMakeTheCrackingCleaner(GameTestHelper helper) {
+        ChemBoilerBlockEntity plain = boiler(helper, new BlockPos(1, 2, 1));
+        ChemBoilerBlockEntity runed = boiler(helper, new BlockPos(5, 2, 1));
+        runed.setRunes(PickaxeRunes.EMPTY.with(BoilerRune.DAM.rune(), 3).with(BoilerRune.PURIFICATION.rune(), 3));
+        helper.assertTrue(runed.fumesShare() < plain.fumesShare() && runed.unknownShare() < plain.unknownShare(),
+                "Dam and Purification keep more of each batch");
+        EssenceMix mixture = EssenceMix.pure(Essence.EARTH, 64).plus(EssenceMix.pure(Essence.METAL, 64));
+        plain.pourIn(mixture);
+        runed.pourIn(mixture);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(plain.mixture().isEmpty() && runed.mixture().isEmpty(), "both cracked everything");
+            // No stickered jar is near: the cracked essences wait in the boilers, the unknown went down into the burners.
+            int crudeKept = plain.held().get(Essence.EARTH) + plain.held().get(Essence.METAL);
+            int refinedKept = runed.held().get(Essence.EARTH) + runed.held().get(Essence.METAL);
+            helper.assertTrue(refinedKept > crudeKept, "the runed boiler kept more (" + refinedKept + " vs " + crudeKept + ")");
+        });
+    }
+}

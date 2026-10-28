@@ -1,0 +1,7 @@
+{
+  "type": "hextale:lab_experiment",
+  "topic": "chem_boiler",
+  "target": "steam",
+  "amount": 10,
+  "purity": 0.6
+}

@@ -719,6 +719,34 @@
       }
     ]
   },
+  "chem_boiler.knock": {
+    "subtitle": "subtitles.hextale.chem_boiler.knock",
+    "sounds": [
+      {
+        "name": "hextale:chem_boiler_knock1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:chem_boiler_knock2",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:chem_boiler_knock3",
+        "volume": 0.7
+      }
+    ]
+  },
+  "chem_boiler.vent": {
+    "subtitle": "subtitles.hextale.chem_boiler.vent",
+    "sounds": [
+      {
+        "name": "hextale:chem_boiler_vent1"
+      },
+      {
+        "name": "hextale:chem_boiler_vent2"
+      }
+    ]
+  },
   "pink_brazier.ignite": {
     "subtitle": "subtitles.hextale.pink_brazier.ignite",
     "sounds": [

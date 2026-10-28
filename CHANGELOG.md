@@ -5,7 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+Hextech against chemtech: the quick, cheap and dirty road against the slow, clean one.
+
 ### Added
+- Chem Boiler (worked out at the Lab Bench, made at the Hex Workbench): a riveted pressure tank that sits on a Chem
+  Burner and cracks mixtures of essence - piped in, poured from a bottle, or drawn by itself out of plain jars of
+  mixture nearby. Each time the pressure is up the safety valve knocks and a batch splits into all its essences at once,
+  each running into a jar nearby that wears its sticker. Quick and needing no choice, but crude: part of every batch
+  goes up as fumes that wear the land thin, part burns down into murk that drips into the burner and feeds its flame.
+  Hextech lamps near it flicker in the fumes. Takes runes in the Rune Circle: Steam, Dam, Purification and Purifying
+  Fire.
 - The Rune Circle, a carved stone circle in the floor made at the Hex Workbench and learned together with the altar.
   Rune steles stand round it now: lay a tool, a device or a blank scroll in the middle and the steles' runes are burned
   in, or one is copied onto the scroll, the way the altar used to do it.
