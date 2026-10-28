@@ -21,8 +21,8 @@ import com.pockyl.hextale.block.LapidaryBlock;
 import com.pockyl.hextale.block.LapidaryBlockEntity;
 
 /**
- * The lapidary at work: the lap disc (its own model) turns on its spindle while someone works at the bench, and the
- * crystal in the clamp hangs just over it, turning slowly.
+ * The lapidary at work: the lap disc and, under the bench, the treadle's flywheel gear (their own models) turn on their
+ * spindle while someone works at the bench, and the crystal in the clamp hangs just over the disc, turning slowly.
  */
 public class LapidaryRenderer implements BlockEntityRenderer<LapidaryBlockEntity, LapidaryRenderer.State> {
     /** The disc's spindle in model pixels (the disc model is built around it). */
@@ -57,14 +57,15 @@ public class LapidaryRenderer implements BlockEntityRenderer<LapidaryBlockEntity
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         poseStack.pushPose();
         TableModels.rotateToFacing(poseStack, state.facing);
+        poseStack.pushPose();
+        poseStack.translate(SPINDLE_X, 0, SPINDLE_Z);
+        poseStack.rotate(Axis.YP.rotationDegrees(state.working ? state.time * 18 : 0));
+        poseStack.translate(-SPINDLE_X, 0, -SPINDLE_Z);
+        TableModels.submit(poseStack, collector, TableModels.LAPIDARY_GEAR, state.lightCoords);
         if (state.disc) {
-            poseStack.pushPose();
-            poseStack.translate(SPINDLE_X, 0, SPINDLE_Z);
-            poseStack.rotate(Axis.YP.rotationDegrees(state.working ? state.time * 18 : 0));
-            poseStack.translate(-SPINDLE_X, 0, -SPINDLE_Z);
             TableModels.submit(poseStack, collector, TableModels.LAPIDARY_DISC, state.lightCoords);
-            poseStack.popPose();
         }
+        poseStack.popPose();
         if (!state.crystal.isEmpty()) {
             poseStack.translate(SPINDLE_X, CRYSTAL_Y, SPINDLE_Z);
             poseStack.rotate(Axis.YP.rotationDegrees(state.time * 2));

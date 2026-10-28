@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/hex_lapidary_gear",
+    "hex_lapidary_gear": "hextale:block/hex_lapidary_gear"
+  },
+  "elements": [
+    {
+      "name": "brass_flywheel",
+      "from": [
+        3,
+        6,
+        2
+      ],
+      "to": [
+        13,
+        6,
+        12
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            3,
+            2,
+            13,
+            12
+          ],
+          "texture": "#hex_lapidary_gear"
+        }
+      }
+    }
+  ]
+}

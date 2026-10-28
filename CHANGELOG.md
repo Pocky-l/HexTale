@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Rune Stele stands two blocks tall: a stone slab with a carved channel and a ring head where the chosen rune turns.
   Steles placed before grow their top when there is room.
 - The Hex Furnace has a brick crown and a brass chimney; smoke and embers rise from the chimney. Its bricks are darker.
+- The Hex Lapidary is a walnut treadle bench like the workbench: brass shoes, a brass clamp over the lap disc, a brass
+  splash guard, and a brass flywheel under the bench that turns with the disc while you grind.
 - New look for the Pedestal: a slender column of magic stone on a stepped octagonal foot, a faint rune seam glowing
   deep in the cut of its fluted shaft, an aged brass collar and a shallow brass dish with a carved rim. The glowing blue
   cubes are gone; the item now floats just over the dish.

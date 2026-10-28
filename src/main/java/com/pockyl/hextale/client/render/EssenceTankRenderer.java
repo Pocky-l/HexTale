@@ -42,13 +42,15 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
 
     private static final Identifier LABELS = Hextale.id("textures/block/essence_labels.png");
     /**
-     * A sticker is a small paper tag on twine, 20 x 32 texels drawn at five texels per pixel (4 x 6.4 px: the tag below,
-     * its twine above), so its sign is small and sharp; in the sheet one per 32 x 32 cell of a 512 x 256 texture.
+     * A sticker is a small paper tag on twine, 20 x 32 texels drawn at six texels per pixel (a 3.3 x 4 px tag under its
+     * twine), so its sign is small and sharp and the liquid shows round it; in the sheet one per 32 x 32 cell of a
+     * 512 x 256 texture.
      */
+    private static final float TEXELS_PER_PIXEL = 6;
     private static final int LABEL_W = 20;
     private static final int LABEL_H = 32;
     private static final int LABEL_CELL = 32;
-    private static final float HALF_W = LABEL_W / 2F / 80;
+    private static final float HALF_W = LABEL_W / 2F / 16 / TEXELS_PER_PIXEL;
     /** The cell's top rows hold the twine, the rest the tag with its eyelet. */
     private static final int TWINE_ROWS = 8;
     /**
@@ -191,7 +193,7 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
         float v0 = essence.ordinal() / 16 * LABEL_CELL / 256F;
         float vEyelet = (essence.ordinal() / 16 * LABEL_CELL + TWINE_ROWS) / 256F;
         float v1 = (essence.ordinal() / 16 * LABEL_CELL + LABEL_H) / 256F;
-        float tagBottom = TAG_TOP - (LABEL_H - TWINE_ROWS) / 80F;
+        float tagBottom = TAG_TOP - (LABEL_H - TWINE_ROWS) / 16F / TEXELS_PER_PIXEL;
         quad(consumer, pose, nx, nz, SIDE_OUT, tagBottom, SIDE_OUT, TAG_TOP, u0, u1, vEyelet, v1, light);
         quad(consumer, pose, nx, nz, SIDE_OUT, TAG_TOP, NECK_OUT, NECK_Y, u0, u1, v0, vEyelet, light);
     }
