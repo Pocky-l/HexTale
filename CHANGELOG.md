@@ -4,6 +4,22 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0+1.21.1] - 2026-10-28
+### Changed
+- Everything of 1.1.0 - 1.3.0 for Minecraft 26.3 is included: the Thinning, blight and Void Mites, breaches of the
+  Void and voidlings, the healing of the land, held breaches and the Breach Heart, struck geodes and the Tuning Fork,
+  the gadgets and their runes, the Rift Gates, the Binding Chalk and the diary's Void branch. Where 1.21.1 differs:
+  - the Binding Chalk takes chains instead of iron chains;
+  - with a shader pack on, a breach keeps the plain look (a starry dark with a glowing rim): 1.21.1 shader packs leave
+    no moment to draw it with its own shaders after the pack's picture;
+  - while you use the Grapple Gauntlet you walk at full speed as on 26.3, but you cannot start a sprint;
+  - the Grapple Gauntlet's low air drag while swinging and flinging is made by raising your speed each tick (26.3 has
+    an air drag attribute), so a swing may feel a touch different.
+
+### Fixed
+- Blocks with see-through textures (crystals, glass, plants, many devices) draw their clear parts clear: every block
+  model now names its render layer the way 26.3 picks it from the textures (1.0.0+1.21.1 drew them solid).
+
 ## [1.0.0+1.21.1] - 2026-10-24
 ### Changed
 - Ported to Minecraft 1.21.1 ([NeoForge](https://neoforged.net/) 21.1). Everything of 1.0.0 for Minecraft 26.3 is
