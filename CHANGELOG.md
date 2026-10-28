@@ -4,6 +4,12 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- Chemtech starts to look like the other road: rusted iron, copper and a toxic green glow instead of walnut and brass.
+  The Disintegrator is now a riveted iron vat with a copper rim, a pool of acid glowing inside, a porthole and a vent
+  stack.
+
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
 the altar draws its circle on the ground. No more borrowed chimes, beeps and hisses at the mod's magic moments, and the
