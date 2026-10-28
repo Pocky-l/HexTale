@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
+import com.pockyl.hextale.network.RuneFxPayload;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModSounds;
@@ -124,6 +125,7 @@ public class ResearchNotesItem extends Item {
             ItemStack scroll = runeFor(serverPlayer, topic);
             if (!scroll.isEmpty()) {
                 ComplexRune rune = scroll.get(ModDataComponents.RUNE.get());
+                RuneFxPayload.send(serverPlayer.level(), RuneFxPayload.learn(serverPlayer, rune, 1));
                 serverPlayer.sendSystemMessage(Component.translatable("item.hextale.research_notes.rune",
                         Component.translatable(rune.translationKey()).withColor(rune.color())));
                 if (!player.getInventory().add(scroll)) {

@@ -49,6 +49,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 
 import com.pockyl.hextale.item.RuneScrollItem;
+import com.pockyl.hextale.network.RuneFxPayload;
 import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
@@ -189,32 +190,36 @@ public final class ToolEffects {
         }
     }
 
-    /** Ticks between two rune sounds from the same block and rune: a proc firing every tick stays one soft sound. */
-    public static final int PROC_SOUND_GAP = 30;
-    private static final Map<ServerLevel, Long2LongOpenHashMap> LAST_PROC_SOUND = new WeakHashMap<>();
+    /** Ticks between two rune signs from the same block and rune: a proc firing every tick stays one soft sign. */
+    public static final int PROC_SIGN_GAP = 30;
+    private static final Map<ServerLevel, Long2LongOpenHashMap> LAST_PROC_SIGN = new WeakHashMap<>();
 
-    /** Glints and a ring of light in the rune's colour: the sign that a rune just worked (more glints = a bigger proc). */
+    /**
+     * The sign that a rune just worked: glints in the rune's colour (more glints = a bigger proc), and - at most once per
+     * {@link #PROC_SIGN_GAP} ticks per block and rune - the {@code rune.proc} sound and the rune's sign drawn by the
+     * clients ({@link RuneFxPayload}: a flat hexagon opening round the spot, the glyph flaring over it).
+     */
     public static void puff(ServerLevel level, Vec3 at, ComplexRune rune, int count, double spread) {
         level.sendParticles(ModParticles.glint(rune.color()), at.x, at.y, at.z, count, spread, spread * 0.6, spread, 0.03);
-        level.sendParticles(ModParticles.ring(rune.color()), at.x, at.y, at.z, 0, 0.4 + spread * 1.2, 0, 0, 1);
-        if (procSoundDue(level, at, rune)) {
+        if (procSignDue(level, at, rune)) {
             level.playSound(null, at.x, at.y, at.z, ModSounds.RUNE_PROC.get(), SoundSource.PLAYERS, 1.0F, 0.9F + level.getRandom().nextFloat() * 0.2F);
+            RuneFxPayload.send(level, RuneFxPayload.proc(at, rune, count, spread));
         }
     }
 
     /**
-     * Whether a proc here may play the {@code rune.proc} sound every proc shares: at most once per {@link #PROC_SOUND_GAP}
-     * ticks per block and rune (marks the sound as played when it may).
+     * Whether a proc here may show the full sign (sound + glyph): at most once per {@link #PROC_SIGN_GAP} ticks per block
+     * and rune (marks it as shown when it may).
      */
-    public static boolean procSoundDue(ServerLevel level, Vec3 at, ComplexRune rune) {
-        Long2LongOpenHashMap last = LAST_PROC_SOUND.computeIfAbsent(level, key -> new Long2LongOpenHashMap());
+    public static boolean procSignDue(ServerLevel level, Vec3 at, ComplexRune rune) {
+        Long2LongOpenHashMap last = LAST_PROC_SIGN.computeIfAbsent(level, key -> new Long2LongOpenHashMap());
         long now = level.getGameTime();
         long key = BlockPos.containing(at).asLong() * 31 + rune.hashCode();
-        if (now - last.getOrDefault(key, -PROC_SOUND_GAP) < PROC_SOUND_GAP) {
+        if (now - last.getOrDefault(key, -PROC_SIGN_GAP) < PROC_SIGN_GAP) {
             return false;
         }
         if (last.size() > 512) {
-            last.long2LongEntrySet().removeIf(entry -> now - entry.getLongValue() >= PROC_SOUND_GAP);
+            last.long2LongEntrySet().removeIf(entry -> now - entry.getLongValue() >= PROC_SIGN_GAP);
         }
         last.put(key, now);
         return true;

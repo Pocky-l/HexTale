@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
+import com.pockyl.hextale.network.RuneFxPayload;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.ComplexRune;
@@ -96,6 +97,7 @@ public class RuneScrollItem extends Item {
                     "★".repeat(stars) + "☆".repeat(3 - stars)));
             level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 0.9F);
             level.playSound(null, player.blockPosition(), ModSounds.RUNE_LEARN.get(), SoundSource.PLAYERS, 0.8F, 1.0F);
+            RuneFxPayload.send(serverPlayer.level(), RuneFxPayload.learn(serverPlayer, rune, stars));
         }
         return InteractionResult.SUCCESS;
     }

@@ -32,7 +32,7 @@ import java.util.Set;
 
 /**
  * The runes every device and tool takes: each holder knows its runes, the furnace melts old tools back into ingots, the
- * axe fells a whole tree and the shovel digs an area, the sawmill takes bee nests whole; rune sounds stay sparse.
+ * axe fells a whole tree and the shovel digs an area, the sawmill takes bee nests whole; rune signs stay sparse.
  */
 public final class RuneGiftGameTests {
     private static final BlockPos AT = new BlockPos(0, 1, 0);
@@ -68,18 +68,18 @@ public final class RuneGiftGameTests {
         helper.succeed();
     }
 
-    /** A proc firing every tick makes one rune sound, not a sound per tick; another rune or place still sounds. */
+    /** A proc firing every tick shows one rune sign, not a sign per tick; another rune or place still shows one. */
     @HexTest
-    public static void runeProcSoundsAreThrottled(GameTestHelper helper) {
+    public static void runeProcSignsAreThrottled(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         Vec3 at = helper.absoluteVec(new Vec3(0.5, 1.5, 0.5));
         ComplexRune haste = ToolRune.HASTE.rune();
-        helper.assertTrue(ToolEffects.procSoundDue(level, at, haste), "the first proc sounds");
-        helper.assertFalse(ToolEffects.procSoundDue(level, at, haste), "the same proc a tick later stays quiet");
-        helper.assertTrue(ToolEffects.procSoundDue(level, at, ToolRune.MENDING.rune()), "another rune there sounds");
-        helper.assertTrue(ToolEffects.procSoundDue(level, at.add(3, 0, 0), haste), "the same rune elsewhere sounds");
-        helper.runAfterDelay(ToolEffects.PROC_SOUND_GAP + 1, () -> {
-            helper.assertTrue(ToolEffects.procSoundDue(level, at, haste), "after the gap it sounds again");
+        helper.assertTrue(ToolEffects.procSignDue(level, at, haste), "the first proc sounds");
+        helper.assertFalse(ToolEffects.procSignDue(level, at, haste), "the same proc a tick later stays quiet");
+        helper.assertTrue(ToolEffects.procSignDue(level, at, ToolRune.MENDING.rune()), "another rune there sounds");
+        helper.assertTrue(ToolEffects.procSignDue(level, at.add(3, 0, 0), haste), "the same rune elsewhere sounds");
+        helper.runAfterDelay(ToolEffects.PROC_SIGN_GAP + 1, () -> {
+            helper.assertTrue(ToolEffects.procSignDue(level, at, haste), "after the gap it sounds again");
             helper.succeed();
         });
     }

@@ -5,10 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.5.0] - 2026-10-28
-The first part of a visual and sound update: HexTale now sounds like itself. No more borrowed chimes, beeps and hisses
-at the mod's magic moments, and the Void's creatures have voices of their own.
+The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
+the altar draws its circle on the ground. No more borrowed chimes, beeps and hisses at the mod's magic moments, and the
+Void's creatures have voices of their own.
 
 ### Added
+- When a rune works, a flat hexagon of light opens round the spot and the rune's own glyph flares over it, in the rune's
+  colour - bigger and brighter for bigger effects. A rune that works every moment shows its sign only now and then.
+- Learning a rune from a scroll or from research notes: the rune writes itself in the air before your eyes inside a
+  hexagon, holds for a moment and flies into you.
+- The altar's circle: when a ritual starts, a hexagonal sigil lights up on the ground, sweeping round from the north and
+  drawing a line to every pedestal, stele and jar of the circle. Light runs along the lines into the altar - brightest
+  from the pedestal or jar being drawn - and the sigil turns faster as the work goes on. A stalled ritual reddens it, a
+  collapse cracks it apart, a finished one throws it outwards as it fades.
+- The altar draws essence from its jars as living streams, like every other machine that draws from jars.
 - Every rune that works now makes a soft sound of its own - a short breath of energy and a low pulse - on tools,
   clothes, machines and gadgets alike. A rune that works every moment sounds only now and then.
 - Learning a rune from a scroll or from research notes has its own sound: an ink stroke and the knowledge settling in.

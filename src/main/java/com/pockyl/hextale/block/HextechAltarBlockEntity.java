@@ -31,6 +31,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.essence.EssenceMix;
+import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.infusion.Ritual;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.registry.ModBlockEntities;
@@ -102,6 +103,9 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     private float ringTime = Float.NaN;
     private float itemTurn;
     private float itemTime = Float.NaN;
+    private float sigilPhase;
+    private float sigilSpin;
+    private float sigilTime = Float.NaN;
 
     public HextechAltarBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntities.HEXTECH_ALTAR.get(), pos, state);
@@ -170,6 +174,28 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         itemTime = time;
         itemTurn = (itemTurn + speed * delta) % 360;
         return itemTurn;
+    }
+
+    /**
+     * Client side: the ground sigil's turn (radians) at {@code time}, its speed easing towards {@code targetSpin} radians
+     * per tick so it speeds up with the ritual without a jump.
+     */
+    public float animateSigil(float time, float targetSpin) {
+        float delta = Float.isNaN(sigilTime) || time < sigilTime ? 0 : Math.min(time - sigilTime, 5);
+        sigilTime = time;
+        sigilSpin = Mth.lerp(Math.min(1, 0.05F * delta), sigilSpin, targetSpin);
+        sigilPhase = (sigilPhase + sigilSpin * delta) % Mth.TWO_PI;
+        return sigilPhase;
+    }
+
+    /** Client: the circle as last scanned (pedestals, steles, jars), or null before the first ritual tick. */
+    public Ritual.@Nullable Circle shownCircle() {
+        return circle;
+    }
+
+    /** Client: the living streams of essence from the circle's jars into the centre item. */
+    public List<Stream> streams() {
+        return streams;
     }
 
     public long finishedAt() {
@@ -559,6 +585,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
     public static void clientTick(Level level, BlockPos pos, BlockState state, HextechAltarBlockEntity altar) {
         altar.clientUpdate(level);
         if (altar.kind == null) {
+            altar.updateStreams(level, null);
             altar.clientElapsed = 0;
             if (level.getGameTime() % GHOST_TICKS == 0) {
                 altar.updateGhosts(level);
@@ -576,16 +603,13 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             altar.circle = Ritual.Circle.scan(level, pos);
         }
         Ritual.Circle circle = altar.circle;
-        // An essence stream: once the items are in, from every tank holding the essence drawn now.
-        Essence drawingEssence = altar.inputs.isEmpty() ? Ritual.drawingEssence(altar.essenceLeft) : null;
-        if (drawingEssence != null) {
-            Essence essence = drawingEssence;
-            for (EssenceTankBlockEntity tank : circle.tanks()) {
-                if (tank.tank().contents().get(essence) > 0 && random.nextInt(2) == 0) {
-                    Vec3 from = Vec3.atCenterOf(tank.getBlockPos()).add((random.nextDouble() - 0.5) * 0.4, 0.3, (random.nextDouble() - 0.5) * 0.4);
-                    spawnFlow(level, target, from, essence.color());
-                }
-            }
+        // Essence streams: once the items are in, from every jar holding the essence drawn now (JarStreamFx).
+        Essence drawingEssence = altar.inputs.isEmpty() && altar.elapsed >= Ritual.WARMUP_TICKS ? Ritual.drawingEssence(altar.essenceLeft) : null;
+        altar.updateStreams(level, altar.stalled() ? null : drawingEssence);
+        long now = level.getGameTime();
+        for (Stream stream : altar.streams) {
+            JarReach.shed(level, JarReach.mouth(stream.jar()), target, stream.essence().color(), stream.head(now, 0),
+                    stream.tail(now, 0));
         }
         // Rune steles shed shards of their glyphs into the work for the whole ritual.
         for (RuneSteleBlockEntity stele : circle.steles()) {
@@ -606,6 +630,45 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
         if (altar.stalled() && random.nextInt(4) == 0) {
             level.addParticle(ModParticles.spark(ModParticles.HEXTECH), target.x + (random.nextDouble() - 0.5) * 0.8, target.y + random.nextDouble() * 0.4,
                     target.z + (random.nextDouble() - 0.5) * 0.8, 0, 0.02, 0);
+        }
+    }
+
+    /**
+     * Client: one jar's stream into the centre item: it grows out of the jar from {@code start} and runs into the item
+     * from {@code end} (-1 while it flows).
+     */
+    public record Stream(BlockPos jar, Essence essence, long start, long end) {
+        public static final float GROW_TICKS = 12;
+
+        public float head(long now, float partialTick) {
+            return (now - start + partialTick) / GROW_TICKS;
+        }
+
+        public float tail(long now, float partialTick) {
+            return end < 0 ? 0 : (now - end + partialTick) / GROW_TICKS;
+        }
+    }
+
+    private final List<Stream> streams = new ArrayList<>();
+
+    /** Client: starts a stream from every jar of the circle holding {@code drawing}, lets the others run out. */
+    private void updateStreams(Level level, @Nullable Essence drawing) {
+        long now = level.getGameTime();
+        List<EssenceTankBlockEntity> tanks = drawing == null || circle == null ? List.of() : circle.tanks();
+        for (int i = 0; i < streams.size(); i++) {
+            Stream stream = streams.get(i);
+            boolean flows = stream.essence() == drawing && tanks.stream().anyMatch(tank -> tank.getBlockPos().equals(stream.jar())
+                    && !tank.isRemoved() && tank.tank().contents().get(drawing) > 0);
+            if (stream.end() < 0 && !flows) {
+                streams.set(i, new Stream(stream.jar(), stream.essence(), stream.start(), now));
+            }
+        }
+        streams.removeIf(stream -> stream.end() >= 0 && now - stream.end() > Stream.GROW_TICKS + 2);
+        for (EssenceTankBlockEntity tank : tanks) {
+            if (!tank.isRemoved() && tank.tank().contents().get(drawing) > 0
+                    && streams.stream().noneMatch(stream -> stream.end() < 0 && stream.jar().equals(tank.getBlockPos()))) {
+                streams.add(new Stream(tank.getBlockPos(), drawing, now, -1));
+            }
         }
     }
 

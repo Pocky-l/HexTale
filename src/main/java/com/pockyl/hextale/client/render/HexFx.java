@@ -225,10 +225,46 @@ public final class HexFx {
     }
 
     /**
+     * A flat hexagon of additive light, {@code radius} blocks to its corners, in the pose's XY plane: a soft wide glow with
+     * a near-white core along the outer line, a fainter inner hexagon turned half a side, and short marks pointing out of
+     * the corners - the hextech sigil. Line widths grow with the radius only up to a 1.2 block hexagon, so a great ground
+     * sigil stays drawn in fine lines.
+     */
+    public static void hexRing(PoseStack poseStack, SubmitNodeCollector collector, float radius, int color, float alpha) {
+        if (alpha <= 0.01F || radius <= 0.01F) {
+            return;
+        }
+        int core = RuneDrawing.mix(color, 0xFFFFFF, 0.6F);
+        float w = Math.min(radius, 1.2F);
+        float mark = w * 0.2F;
+        collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
+            float inner = radius - w * 0.25F;
+            for (int i = 0; i < 6; i++) {
+                float a0 = Mth.TWO_PI * i / 6;
+                float a1 = Mth.TWO_PI * (i + 1) / 6;
+                float x0 = Mth.cos(a0) * radius;
+                float y0 = Mth.sin(a0) * radius;
+                float x1 = Mth.cos(a1) * radius;
+                float y1 = Mth.sin(a1) * radius;
+                glowSegment(consumer, pose, x0, y0, x1, y1, w * 0.16F, color, alpha * 0.35F);
+                glowSegment(consumer, pose, x0, y0, x1, y1, w * 0.045F, core, alpha);
+                float b0 = a0 + Mth.PI / 6;
+                float b1 = a1 + Mth.PI / 6;
+                glowSegment(consumer, pose, Mth.cos(b0) * inner, Mth.sin(b0) * inner, Mth.cos(b1) * inner, Mth.sin(b1) * inner,
+                        w * 0.05F, color, alpha * 0.45F);
+                float cx = Mth.cos(a0);
+                float cy = Mth.sin(a0);
+                glowSegment(consumer, pose, cx * (radius + mark * 0.3F), cy * (radius + mark * 0.3F), cx * (radius + mark),
+                        cy * (radius + mark), w * 0.06F, core, alpha * 0.8F);
+            }
+        });
+    }
+
+    /**
      * A segment of additive light: full {@code alpha} along its centre line, fading to 0 at both long edges, ends
      * reaching a little past the points so strokes join (drawn without culling).
      */
-    private static void glowSegment(VertexConsumer consumer, PoseStack.Pose pose, float x0, float y0, float x1, float y1, float width,
+    public static void glowSegment(VertexConsumer consumer, PoseStack.Pose pose, float x0, float y0, float x1, float y1, float width,
                                     int color, float alpha) {
         float dx = x1 - x0;
         float dy = y1 - y0;
