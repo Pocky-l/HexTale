@@ -24,14 +24,15 @@ import com.pockyl.hextale.registry.ModBlockEntities;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The Greedy Funnel: a nullstone bowl on brass ribs with a hextech crystal hanging over its dark mouth. Set on a chest,
- * it swallows the deaths around it - drops into the chest, experience into the crystal - before a single item or orb
- * appears ({@link GreedyFunnelBlockEntity}). A right click with an empty hand takes the experience, or tells what it
+ * The Greedy Funnel: a nullstone cone narrowing from a brass-cornered rim to a brass spout, a vortex of shadow turning in
+ * its mouth. Set on a chest, it swallows the deaths around it - drops into the chest, experience into the crystal -
+ * before a single item or orb appears ({@link GreedyFunnelBlockEntity}). A right click with an empty hand takes the experience, or tells what it
  * does when there is none.
  */
 public class GreedyFunnelBlock extends BaseEntityBlock {
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(5, 0, 5, 11, 2, 11), Block.box(4, 2, 4, 12, 3, 12),
-            Block.box(2, 3, 2, 14, 8, 14), Block.box(0, 8, 0, 16, 14, 16));
+    /** The spout and its flange, the cone, the rim with its brass corners. */
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(5, 0, 5, 11, 6, 11), Block.box(2, 6, 2, 14, 12, 14),
+            Block.box(0, 12, 0, 16, 16, 16));
 
     public GreedyFunnelBlock(Properties properties) {
         super(properties);

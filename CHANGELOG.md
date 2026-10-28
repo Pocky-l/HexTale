@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Hex Lapidary is a walnut treadle bench like the workbench with a big grinding wheel standing on top in a walnut
   frame. The crystal sits in a brass clamp in front of the wheel, the cutting disc is mounted on the wheel's side, and a
   belt runs down to the treadle's flywheel under the bench; wheel and flywheel turn while you grind.
+- The Greedy Funnel is a real funnel now: a nullstone cone narrowing from a brass-cornered rim down to a brass spout,
+  with brass seams down its corners and the shadow vortex turning in its mouth.
 - New look for the Pedestal: a slender column of magic stone on a stepped octagonal foot, a faint rune seam glowing
   deep in the cut of its fluted shaft, an aged brass collar and a shallow brass dish with a carved rim. The glowing blue
   cubes are gone; the item now floats just over the dish.
