@@ -1598,6 +1598,7 @@
   "subtitles.hextale.rune.crumble": "Stone crumbles",
   "subtitles.hextale.rune.bloom": "Rune light rises",
   "subtitles.hextale.rune.gust": "Rune wind stirs",
+  "subtitles.hextale.thinning.blight": "The land sickens",
   "block.hextale.miasma_vent.status.shut": "Shut: a redstone signal holds the stack closed",
   "death.attack.hextale.miasma": "%1$s choked in miasma",
   "death.attack.hextale.miasma.player": "%1$s choked in miasma while fighting %2$s",

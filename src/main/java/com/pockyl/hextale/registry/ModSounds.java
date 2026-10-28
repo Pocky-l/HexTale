@@ -235,6 +235,8 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_CRUMBLE = register("rune.crumble");
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_BLOOM = register("rune.bloom");
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNE_GUST = register("rune.gust");
+    /** The Thinning eating into the ground (its own voice instead of the vanilla sculk spread). */
+    public static final DeferredHolder<SoundEvent, SoundEvent> THINNING_BLIGHT = register("thinning.blight");
 
     private ModSounds() {
     }

@@ -1788,5 +1788,25 @@
         "attenuation_distance": 12
       }
     ]
+  },
+  "thinning.blight": {
+    "subtitle": "subtitles.hextale.thinning.blight",
+    "sounds": [
+      {
+        "name": "hextale:thinning_blight1",
+        "volume": 0.7,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "hextale:thinning_blight2",
+        "volume": 0.7,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "hextale:thinning_blight3",
+        "volume": 0.7,
+        "attenuation_distance": 16
+      }
+    ]
   }
 }
