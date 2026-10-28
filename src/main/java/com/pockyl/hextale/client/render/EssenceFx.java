@@ -132,8 +132,8 @@ public final class EssenceFx {
         Vector3f eye = new Vector3f();
         collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
             // The pipe hides the centre line: the light that shows is the halo round the tube, so it is wide and strong.
-            JarStreamFx.strip(consumer, pose, points, light, eye, 0.6F, color, 0.55F);
-            JarStreamFx.strip(consumer, pose, points, light, eye, 0.3F, core, 0.7F);
+            JarStreamFx.strip(consumer, pose, points, light, eye, 0.55F, color, 0.4F);
+            JarStreamFx.strip(consumer, pose, points, light, eye, 0.28F, core, 0.5F);
         });
     }
 

@@ -11,8 +11,8 @@ Void's creatures have voices of their own.
 
 ### Added
 - When a rune works, a flat hexagon of light opens round the spot and the rune's own glyph flares over it, in the rune's
-  colour - bigger and brighter for bigger effects. Runes on your pickaxe and clothes never chatter: small effects
-  (Mending, Magnet and the like) only glint, near a player one sign shows at most every two seconds, and a rune on your
+  colour - bigger and brighter for bigger effects. Runes on your pickaxe and clothes never chatter: runes that keep
+  things going (Haste, Mending, Radiance, Magnet and the like) only glint, near a player one sign shows at most every two seconds, and a rune on your
   own body draws a smaller, quieter sign. The client option "Rune signs" can hide your own signs or all of them.
 - Learning a rune from a scroll or from research notes: the rune writes itself in the air before your eyes inside a
   hexagon, holds for a moment and flies into you.

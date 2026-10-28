@@ -251,10 +251,11 @@ public class HextechAltarRenderer implements BlockEntityRenderer<HextechAltarBlo
                 int lineCore = RuneDrawing.mix(lineColor, 0xFFFFFF, 0.5F);
                 HexFx.glowSegment(consumer, pose, x0, y0, x1, y1, 0.16F, lineColor, 0.22F * a);
                 HexFx.glowSegment(consumer, pose, x0, y0, x1, y1, 0.035F, lineCore, 0.6F * a);
-                if (state.active && !state.stalled) {
-                    // Light runs inwards: two pulses on every line, a quick bright stream on the line drawn now.
-                    int pulses = member.busy ? 4 : 2;
-                    float speed = member.busy ? 0.06F : 0.02F + 0.02F * state.progress;
+                if (state.active && !state.stalled && member.busy) {
+                    // One focus (owner: not too much): light runs inwards only on the line being drawn now; the
+                    // others glow still.
+                    int pulses = 4;
+                    float speed = 0.06F;
                     float length = Math.max(1, distance - INNER - MEMBER_RING);
                     for (int k = 0; k < pulses; k++) {
                         float u = frac(time * speed + k / (float) pulses + index * 0.31F);

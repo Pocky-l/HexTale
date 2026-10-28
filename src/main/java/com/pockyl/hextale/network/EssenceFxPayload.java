@@ -28,6 +28,8 @@ public record EssenceFxPayload(int kind, List<BlockPos> path, Vec3 from, Vec3 to
     /** Longest pipe run sent: the pulse is shown on the first blocks only beyond it. */
     public static final int MAX_PATH = 64;
     private static final double RADIUS = 48;
+    /** Players this near a pipe run see its pulse (pipes are everywhere in a base; only the ones close by show). */
+    private static final double PIPE_RADIUS = 20;
 
     public static final Type<EssenceFxPayload> TYPE = new Type<>(Hextale.id("essence_fx"));
     public static final StreamCodec<RegistryFriendlyByteBuf, EssenceFxPayload> STREAM_CODEC = StreamCodec.composite(
@@ -64,8 +66,9 @@ public record EssenceFxPayload(int kind, List<BlockPos> path, Vec3 from, Vec3 to
 
     private static void send(ServerLevel level, EssenceFxPayload payload) {
         Vec3 middle = payload.from.add(payload.to).scale(0.5);
+        double reach = payload.kind == PIPE ? PIPE_RADIUS + payload.from.distanceTo(payload.to) / 2 : RADIUS;
         for (ServerPlayer player : level.players()) {
-            if (player.distanceToSqr(middle) <= RADIUS * RADIUS) {
+            if (player.distanceToSqr(middle) <= reach * reach) {
                 ModNetwork.sendToPlayer(player, payload);
             }
         }

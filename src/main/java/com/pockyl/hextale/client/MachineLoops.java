@@ -40,6 +40,9 @@ public final class MachineLoops {
     /** Blocks around the listener where machines are heard. */
     private static final int REACH = 20;
     private static final int SCAN_TICKS = 10;
+    /** Loops playing at once, at most (the nearest machines win), and pylons among them (a base may hold many). */
+    private static final int MAX_LOOPS = 4;
+    private static final int MAX_PYLONS = 2;
     /** Ticks a pylon's loop goes on after its last move. */
     private static final int PYLON_LINGER = 80;
     private static final Map<BlockPos, Loop> PLAYING = new HashMap<>();
@@ -158,6 +161,7 @@ public final class MachineLoops {
             return;
         }
         Vec3 ear = minecraft.player.getEyePosition();
+        java.util.List<BlockEntity> working = new java.util.ArrayList<>();
         int cx0 = ((int) Math.floor(ear.x) - REACH) >> 4;
         int cx1 = ((int) Math.floor(ear.x) + REACH) >> 4;
         int cz0 = ((int) Math.floor(ear.z) - REACH) >> 4;
@@ -174,11 +178,27 @@ public final class MachineLoops {
                     }
                     Kind kind = Kind.of(entity);
                     if (kind != null && kind.level(entity) > 0) {
-                        Loop loop = new Loop(kind, entity);
-                        PLAYING.put(pos.immutable(), loop);
-                        minecraft.getSoundManager().play(loop);
+                        working.add(entity);
                     }
                 }
+            }
+        }
+        // The nearest first, within the caps.
+        working.sort(java.util.Comparator.comparingDouble(entity -> Vec3.atCenterOf(entity.getBlockPos()).distanceToSqr(ear)));
+        long pylons = PLAYING.values().stream().filter(loop -> loop.kind == Kind.PYLON).count();
+        for (BlockEntity entity : working) {
+            if (PLAYING.size() >= MAX_LOOPS) {
+                break;
+            }
+            Kind kind = Kind.of(entity);
+            if (kind == Kind.PYLON && pylons >= MAX_PYLONS) {
+                continue;
+            }
+            Loop loop = new Loop(kind, entity);
+            PLAYING.put(entity.getBlockPos().immutable(), loop);
+            minecraft.getSoundManager().play(loop);
+            if (kind == Kind.PYLON) {
+                pylons++;
             }
         }
     }

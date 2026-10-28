@@ -202,6 +202,13 @@ public final class ToolEffects {
     /** Players this close to a proc count it against their own sign budget. */
     private static final double SIGN_NEAR = 8;
     private static final Map<ServerLevel, Long2LongOpenHashMap> LAST_PROC_SIGN = new WeakHashMap<>();
+    /**
+     * Codex runes whose procs keep things going rather than reward (Haste, Mending, Radiance, Breath, Fireproofing,
+     * Banishing, Magnet, Dam, Eternal Flame): they work often, so they never show the generic sign - only glints and
+     * their own quiet effect. Owner 2026-10-28: rune effects must not distract.
+     */
+    private static final Set<String> MAINTENANCE = Set.of("spark_life", "life_metal", "life_light", "air_life", "life_fire",
+            "light_shadow", "spark_metal", "earth_water", "fire_light");
 
     /**
      * The sign that a rune just worked: glints in the rune's colour (more glints = a bigger proc), and, for procs bigger
@@ -212,7 +219,7 @@ public final class ToolEffects {
      */
     public static void puff(ServerLevel level, Vec3 at, ComplexRune rune, int count, double spread) {
         level.sendParticles(ModParticles.glint(rune.color()), at.x, at.y, at.z, count, spread, spread * 0.6, spread, 0.03);
-        if (count > SMALL_PROC && procSignDue(level, at, rune)) {
+        if (count > SMALL_PROC && !MAINTENANCE.contains(rune.key()) && procSignDue(level, at, rune)) {
             Player wearer = level.getNearestPlayer(at.x, at.y - 1, at.z, 1.2, false);
             level.playSound(null, at.x, at.y, at.z, ModSounds.RUNE_PROC.get(), SoundSource.PLAYERS, wearer != null ? 0.55F : 1.0F,
                     0.9F + level.getRandom().nextFloat() * 0.2F);

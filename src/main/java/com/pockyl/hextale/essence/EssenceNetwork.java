@@ -34,8 +34,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class EssenceNetwork {
     public static final int MAX_PIPES = 256;
-    /** Ticks between two pulses shown on one run of pipes, and the colour of water in them. */
-    private static final int PULSE_TICKS = 24;
+    /**
+     * Ticks between two pulses shown on one run of pipes (owner 2026-10-28: a base's pipes work all day - a pulse every
+     * second made the whole base blink), and the colour of water in them.
+     */
+    private static final int PULSE_TICKS = 70;
     private static final int WATER_COLOR = 0x5FA8E8;
     private static final Map<Level, it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap> PULSES = new WeakHashMap<>();
     /** A remembered network is walked again after this many ticks even if no pipe changed (chunks loaded meanwhile). */

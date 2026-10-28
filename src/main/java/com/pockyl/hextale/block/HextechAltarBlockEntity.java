@@ -723,8 +723,7 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
 
     /**
      * Client: the air of a working circle, kept sparse - glints rising slowly off the ground sigil's lines (in the colour
-     * of the essence being drawn once the items are in) and now and then a mote of light gathering into the work from
-     * the sigil's edge.
+     * of the essence being drawn once the items are in).
      */
     private void embers(Level level, RandomSource random, @Nullable Essence drawing) {
         if (circle == null) {
@@ -741,13 +740,6 @@ public class HextechAltarBlockEntity extends BlockEntity implements Container {
             Vec3 end = members.isEmpty() ? foot.add(2, 0, 0) : Vec3.atBottomCenterOf(members.get(random.nextInt(members.size())));
             Vec3 at = foot.lerp(new Vec3(end.x, foot.y, end.z), 0.25 + random.nextDouble() * 0.7).add(0, 0.05, 0);
             level.addParticle(ModParticles.glint(color), at.x, at.y, at.z, 0, 0.012 + random.nextDouble() * 0.01, 0);
-        }
-        if (random.nextInt(7) == 0) {
-            double angle = random.nextDouble() * Math.PI * 2;
-            double radius = 2.2 + random.nextDouble() * 1.8;
-            Vec3 target = itemPosition();
-            Vec3 offset = new Vec3(Math.cos(angle) * radius, -itemY() + 0.15 + random.nextDouble() * 0.4, Math.sin(angle) * radius);
-            level.addParticle(ModParticles.runeShard(color), target.x, target.y, target.z, offset.x, offset.y, offset.z);
         }
     }
 
