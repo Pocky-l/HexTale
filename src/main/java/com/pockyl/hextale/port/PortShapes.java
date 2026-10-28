@@ -40,4 +40,14 @@ public final class PortShapes {
         double halfX = sizeX / 2.0;
         return Block.box(8.0 - halfX, minY, minZ, 8.0 + halfX, maxY, maxZ);
     }
+
+    /**
+     * Whether {@code entity} is in a block's inside shape (26.x calls entityInside only then; 1.21.1 for any entity in
+     * the block's space).
+     */
+    public static boolean inside(net.minecraft.world.phys.shapes.VoxelShape shape, net.minecraft.core.BlockPos pos,
+                                 net.minecraft.world.entity.Entity entity) {
+        return net.minecraft.world.phys.shapes.Shapes.joinIsNotEmpty(shape.move(pos.getX(), pos.getY(), pos.getZ()),
+                net.minecraft.world.phys.shapes.Shapes.create(entity.getBoundingBox()), net.minecraft.world.phys.shapes.BooleanOp.AND);
+    }
 }

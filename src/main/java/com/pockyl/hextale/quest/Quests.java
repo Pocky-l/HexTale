@@ -17,6 +17,8 @@ public final class Quests {
     public static final String HEX_FOUNDRY_LIT = "hex_foundry_lit";
     public static final String RUNE_SCROLL_WRITTEN = "rune_scroll_written";
     public static final String HEXCORE_AWAKENED = "hexcore_awakened";
+    /** A figure drawn in Binding Chalk closed near the player. */
+    public static final String BINDING_FIGURE = "binding_figure";
     /** A Void Mite latched onto the player. */
     public static final String VOID_MITE_LATCHED = "void_mite_latched";
     /** A breach tore open near the player (within the distance it is watched from). */

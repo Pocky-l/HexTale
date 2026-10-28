@@ -1,3 +1,556 @@
 {
-  "parent": "hextale:block/impulse_plate"
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/brass",
+    "polished_deepslate": "minecraft:block/polished_deepslate",
+    "brass": "hextale:block/brass",
+    "impulse_plate_coil": "hextale:block/impulse_plate_coil",
+    "impulse_plate_panel": "hextale:block/impulse_plate_panel",
+    "impulse_plate_glow": "hextale:block/impulse_plate_glow"
+  },
+  "elements": [
+    {
+      "name": "floor",
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        1,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ],
+          "texture": "#polished_deepslate",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ],
+          "texture": "#polished_deepslate",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ],
+          "texture": "#polished_deepslate",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ],
+          "texture": "#polished_deepslate",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#polished_deepslate"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#polished_deepslate",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "rim_n",
+      "from": [
+        0,
+        1,
+        0
+      ],
+      "to": [
+        16,
+        2,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            14,
+            16,
+            15
+          ],
+          "texture": "#brass",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            14,
+            14,
+            16,
+            15
+          ],
+          "texture": "#brass",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            0,
+            14,
+            16,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            0,
+            14,
+            2,
+            15
+          ],
+          "texture": "#brass",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "rim_s",
+      "from": [
+        0,
+        1,
+        14
+      ],
+      "to": [
+        16,
+        2,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            14,
+            16,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            0,
+            14,
+            2,
+            15
+          ],
+          "texture": "#brass",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            0,
+            14,
+            16,
+            15
+          ],
+          "texture": "#brass",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            14,
+            14,
+            16,
+            15
+          ],
+          "texture": "#brass",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            14,
+            16,
+            16
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "rim_w",
+      "from": [
+        0,
+        1,
+        2
+      ],
+      "to": [
+        2,
+        2,
+        14
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ],
+          "texture": "#brass",
+          "cullface": "west"
+        },
+        "up": {
+          "uv": [
+            0,
+            2,
+            2,
+            14
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "rim_e",
+      "from": [
+        14,
+        1,
+        2
+      ],
+      "to": [
+        16,
+        2,
+        14
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ],
+          "texture": "#brass",
+          "cullface": "east"
+        },
+        "west": {
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            14,
+            2,
+            16,
+            14
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "hinge_l",
+      "from": [
+        3,
+        2,
+        1
+      ],
+      "to": [
+        5,
+        3,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11,
+            13,
+            13,
+            14
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            13,
+            13,
+            15,
+            14
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            3,
+            13,
+            5,
+            14
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            1,
+            13,
+            3,
+            14
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            3,
+            1,
+            5,
+            3
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            3,
+            13,
+            5,
+            15
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "hinge_r",
+      "from": [
+        11,
+        2,
+        1
+      ],
+      "to": [
+        13,
+        3,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            13,
+            5,
+            14
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            13,
+            13,
+            15,
+            14
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            11,
+            13,
+            13,
+            14
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            1,
+            13,
+            3,
+            14
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            11,
+            1,
+            13,
+            3
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            11,
+            13,
+            13,
+            15
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "glow_coil",
+      "from": [
+        2.98,
+        -0.02,
+        2.98
+      ],
+      "to": [
+        13.02,
+        1.02,
+        13.02
+      ],
+      "light_emission": 12,
+      "faces": {
+        "up": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#impulse_plate_coil"
+        }
+      }
+    },
+    {
+      "name": "panel",
+      "from": [
+        2,
+        1,
+        2
+      ],
+      "to": [
+        14,
+        2,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#impulse_plate_panel"
+        },
+        "down": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "glow_panel",
+      "from": [
+        1.98,
+        0.98,
+        1.98
+      ],
+      "to": [
+        14.02,
+        2.02,
+        14.02
+      ],
+      "light_emission": 15,
+      "faces": {
+        "up": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#impulse_plate_glow"
+        }
+      }
+    }
+  ]
 }

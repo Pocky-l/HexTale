@@ -124,7 +124,8 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.NULL_LANTERN.get(), "null_lantern");
         info(registration, ModItems.IMPULSE_PLATE.get(), "impulse_plate");
         info(registration, ModItems.HEX_LIFT.get(), "hex_lift");
-        info(registration, ModItems.SHADOW_COFFER.get(), "shadow_coffer");
+        info(registration, ModItems.RIFT_GATE.get(), "rift_gate");
+        info(registration, ModItems.RIFT_LINK_CRYSTAL.get(), "rift_link_crystal");
         info(registration, ModItems.WORLD_ANCHOR.get(), "world_anchor");
         info(registration, ModItems.SILENCE_WARD.get(), "silence_ward");
         info(registration, ModItems.DISINTEGRATOR.get(), "disintegrator");
@@ -174,10 +175,9 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEX_SAWMILL.get(), "hex_sawmill");
         info(registration, ModItems.GREEDY_FUNNEL.get(), "greedy_funnel");
         info(registration, ModItems.ARC_SPIRE.get(), "arc_spire");
-        info(registration, ModItems.RUNE_SHACKLES.get(), "rune_shackles");
+        info(registration, ModItems.BINDING_CHALK.get(), "binding_chalk");
         info(registration, ModItems.XP_CONDENSER.get(), "xp_condenser");
         info(registration, ModItems.MIASMA_VENT.get(), "miasma_vent");
-        info(registration, ModItems.FIELD_WARD.get(), "field_ward");
         info(registration, ModItems.HEXTECH_ALTAR.get(), "hextech_altar");
         info(registration, ModItems.PEDESTAL.get(), "pedestal");
         info(registration, ModItems.RUNE_STELE.get(), "rune_stele");

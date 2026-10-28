@@ -37,13 +37,23 @@ public abstract class EntityRenderer<T extends Entity, S extends EntityRenderSta
         return entity.getBoundingBoxForCulling();
     }
 
-    @Override
-    public boolean shouldRender(T entity, Frustum frustum, double camX, double camY, double camZ) {
+    public boolean shouldRender(T entity, Frustum frustum, double camX, double camY, double camZ, float partialTick) {
         if (!entity.shouldRender(camX, camY, camZ)) {
             return false;
         }
-        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
+        if (!affectedByCulling(entity)) {
+            return true;
+        }
         return entity.noCulling || frustum.isVisible(getBoundingBoxForCulling(entity, partialTick).inflate(0.5));
+    }
+
+    protected boolean affectedByCulling(T entity) {
+        return true;
+    }
+
+    @Override
+    public boolean shouldRender(T entity, Frustum frustum, double camX, double camY, double camZ) {
+        return shouldRender(entity, frustum, camX, camY, camZ, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
     }
 
     @Override

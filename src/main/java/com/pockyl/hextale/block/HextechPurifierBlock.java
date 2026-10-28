@@ -120,7 +120,7 @@ public class HextechPurifierBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+    protected void onRemove(BlockState state, net.minecraft.world.level.Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
         super.onRemove(state, level, pos, newState, movedByPiston);
         com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);

@@ -56,6 +56,14 @@ public final class TableModels {
     public static final List<ModelResourceLocation> HEXCORE_TILES = java.util.Arrays.stream(com.pockyl.hextale.block.HexcoreMatrix.TILES)
             .map(tile -> model("block/hexcore/" + tile)).toList();
     public static final ModelResourceLocation HEXCORE_CRYSTAL = model("block/hexcore/crystal");
+    /** The Grapple Gauntlet's claw, pointing along -Z with the rope's eye at (8, 8, 12) px. */
+    public static final ModelResourceLocation GRAPPLE_HOOK = model("item/grapple_hook");
+    /** The Impulse Plate's launch panel, built for a north-facing plate, hinged at its front edge (8, 2, 2) px. */
+    public static final ModelResourceLocation IMPULSE_PANEL = model("block/impulse_plate_panel");
+    /** The Levitation Plate's floating ring, centred on (8, 6, 8) px. */
+    public static final ModelResourceLocation LEVITATION_RING = model("block/levitation_plate_ring");
+    /** A Dust Charge stuck on a wall: base on its -Z face at (8, 8, 0) px. */
+    public static final ModelResourceLocation DUST_CHARGE_STUCK = model("item/dust_charge_stuck");
 
     private TableModels() {
     }

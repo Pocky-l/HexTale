@@ -41,7 +41,6 @@
     "hextale:rune_shackles",
     "hextale:xp_condenser",
     "hextale:miasma_vent",
-    "hextale:field_ward",
     "hextale:whorled_magic_stone",
     "hextale:chem_burner",
     "hextale:rusted_plating",
@@ -85,6 +84,7 @@
     "hextale:impulse_plate",
     "hextale:hex_lift",
     "hextale:world_anchor",
-    "hextale:disintegrator"
+    "hextale:disintegrator",
+    "hextale:rift_gate"
   ]
 }

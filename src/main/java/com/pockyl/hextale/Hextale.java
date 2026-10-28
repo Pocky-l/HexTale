@@ -61,7 +61,6 @@ public final class Hextale {
         com.pockyl.hextale.farm.FunnelEvents.register();
         com.pockyl.hextale.farm.ShackleEvents.register();
         com.pockyl.hextale.farm.CondenserEvents.register();
-        com.pockyl.hextale.farm.WardEvents.register();
         com.pockyl.hextale.event.SkypackEvents.register();
         com.pockyl.hextale.multiblock.Multiblocks.register();
         com.pockyl.hextale.loot.RuneScrollLoot.register(modBus);
@@ -105,6 +104,7 @@ public final class Hextale {
         output.accept(ModItems.PEDESTAL);
         output.accept(ModItems.RUNE_STELE);
         output.accept(ModItems.RUNE_CHALK);
+        output.accept(ModItems.BINDING_CHALK);
         output.accept(ModItems.HEXCORE);
         output.accept(ModItems.NULLSTONE);
         output.accept(ModItems.HEXTECH_LAMP);
@@ -137,12 +137,10 @@ public final class Hextale {
         output.accept(ModItems.HEX_SAWMILL);
         output.accept(ModItems.GREEDY_FUNNEL);
         output.accept(ModItems.XP_CONDENSER);
-        output.accept(ModItems.RUNE_SHACKLES);
         output.accept(ModItems.ARC_SPIRE);
         output.accept(ModItems.HEXTECH_PURIFIER);
         output.accept(ModItems.VOID_ANCHOR);
         output.accept(ModItems.MIASMA_VENT);
-        output.accept(ModItems.FIELD_WARD);
 
         // Tools and weapons: the hextech line by tier, then the hexsteel set.
         output.accept(ModItems.TUNING_FORK);
@@ -156,7 +154,8 @@ public final class Hextale {
         output.accept(ModItems.NULL_LANTERN);
         output.accept(ModItems.IMPULSE_PLATE);
         output.accept(ModItems.HEX_LIFT);
-        output.accept(ModItems.SHADOW_COFFER);
+        output.accept(ModItems.RIFT_GATE);
+        output.accept(ModItems.RIFT_LINK_CRYSTAL);
         output.accept(ModItems.WORLD_ANCHOR);
         output.accept(ModItems.SILENCE_WARD);
         output.accept(ModItems.DISINTEGRATOR);
@@ -348,7 +347,7 @@ public final class Hextale {
             event.accept(ModItems.NULL_LANTERN);
             event.accept(ModItems.IMPULSE_PLATE);
             event.accept(ModItems.HEX_LIFT);
-            event.accept(ModItems.SHADOW_COFFER);
+            event.accept(ModItems.RIFT_GATE);
             event.accept(ModItems.WORLD_ANCHOR);
             event.accept(ModItems.SILENCE_WARD);
             event.accept(ModItems.DISINTEGRATOR);

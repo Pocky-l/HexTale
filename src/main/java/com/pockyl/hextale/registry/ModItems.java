@@ -186,7 +186,6 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> XP_CONDENSER = ITEMS.registerSimpleBlockItem(ModBlocks.XP_CONDENSER,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> MIASMA_VENT = ITEMS.registerSimpleBlockItem(ModBlocks.MIASMA_VENT);
-    public static final DeferredItem<BlockItem> FIELD_WARD = ITEMS.registerSimpleBlockItem(ModBlocks.FIELD_WARD);
     public static final DeferredItem<BlockItem> WHORLED_MAGIC_STONE = ITEMS.registerSimpleBlockItem(ModBlocks.WHORLED_MAGIC_STONE);
     /** Creative only: everything known at once - every rune with three stars, every item studied, every quest done. */
     public static final DeferredItem<KnowledgeScrollItem> SCROLL_OF_OMNISCIENCE = ITEMS.registerItem("scroll_of_omniscience",
@@ -241,7 +240,10 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> NULL_LANTERN = ITEMS.registerSimpleBlockItem(ModBlocks.NULL_LANTERN);
     public static final DeferredItem<BlockItem> IMPULSE_PLATE = ITEMS.registerSimpleBlockItem(ModBlocks.IMPULSE_PLATE);
     public static final DeferredItem<BlockItem> HEX_LIFT = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_LIFT);
-    public static final DeferredItem<BlockItem> SHADOW_COFFER = ITEMS.registerSimpleBlockItem(ModBlocks.SHADOW_COFFER);
+    public static final DeferredItem<BlockItem> RIFT_GATE = ITEMS.registerSimpleBlockItem(ModBlocks.RIFT_GATE);
+    /** A hextech crystal that remembers a Lesser Rift Gate, to tie it with another. */
+    public static final DeferredItem<com.pockyl.hextale.item.RiftLinkCrystalItem> RIFT_LINK_CRYSTAL = ITEMS.registerItem("rift_link_crystal",
+            properties -> new com.pockyl.hextale.item.RiftLinkCrystalItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<BlockItem> DISINTEGRATOR = ITEMS.registerSimpleBlockItem(ModBlocks.DISINTEGRATOR);
     public static final DeferredItem<BlockItem> SILENCE_WARD = ITEMS.registerSimpleBlockItem(ModBlocks.SILENCE_WARD);
     public static final DeferredItem<BlockItem> WORLD_ANCHOR = ITEMS.registerSimpleBlockItem(ModBlocks.WORLD_ANCHOR,
@@ -361,6 +363,9 @@ public final class ModItems {
     /** Magic stone ground with dust: draws runes on the floor. */
     public static final DeferredItem<com.pockyl.hextale.item.RuneChalkItem> RUNE_CHALK = ITEMS.registerItem("rune_chalk",
             properties -> new com.pockyl.hextale.item.RuneChalkItem(properties.durability(32)));
+    /** Stabilizing Chalk steeped in shadow: draws binding lines on the floor. */
+    public static final DeferredItem<com.pockyl.hextale.item.BindingChalkItem> BINDING_CHALK = ITEMS.registerItem("binding_chalk",
+            properties -> new com.pockyl.hextale.item.BindingChalkItem(properties.durability(96).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<BlockItem> NULLSTONE = ITEMS.registerSimpleBlockItem(ModBlocks.NULLSTONE);
     public static final DeferredItem<BlockItem> VOID_SOIL = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_SOIL);
     public static final DeferredItem<BlockItem> VOID_ROCK = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_ROCK);

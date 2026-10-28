@@ -74,9 +74,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.WorldAnchorBlock.Anchor>> WORLD_ANCHOR =
             BLOCK_ENTITIES.register("world_anchor", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.WorldAnchorBlock.Anchor::new,
                     ModBlocks.WORLD_ANCHOR.get()));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ShadowCofferBlock.Coffer>> SHADOW_COFFER =
-            BLOCK_ENTITIES.register("shadow_coffer", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.ShadowCofferBlock.Coffer::new,
-                    ModBlocks.SHADOW_COFFER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.RiftGateBlock.Gate>> RIFT_GATE =
+            BLOCK_ENTITIES.register("rift_gate", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.RiftGateBlock.Gate::new,
+                    ModBlocks.RIFT_GATE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexLiftBlock.Lift>> HEX_LIFT =
             BLOCK_ENTITIES.register("hex_lift", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.HexLiftBlock.Lift::new,
                     ModBlocks.HEX_LIFT.get()));
@@ -101,18 +101,12 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ArcSpireBlockEntity>> ARC_SPIRE =
             BLOCK_ENTITIES.register("arc_spire", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.ArcSpireBlockEntity::new,
                     ModBlocks.ARC_SPIRE.get()));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.RuneShacklesBlockEntity>> RUNE_SHACKLES =
-            BLOCK_ENTITIES.register("rune_shackles", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.RuneShacklesBlockEntity::new,
-                    ModBlocks.RUNE_SHACKLES.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.XpCondenserBlockEntity>> XP_CONDENSER =
             BLOCK_ENTITIES.register("xp_condenser", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.XpCondenserBlockEntity::new,
                     ModBlocks.XP_CONDENSER.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.MiasmaVentBlockEntity>> MIASMA_VENT =
             BLOCK_ENTITIES.register("miasma_vent", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.MiasmaVentBlockEntity::new,
                     ModBlocks.MIASMA_VENT.get()));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.FieldWardBlockEntity>> FIELD_WARD =
-            BLOCK_ENTITIES.register("field_ward", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.FieldWardBlockEntity::new,
-                    ModBlocks.FIELD_WARD.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HexPylonBlockEntity>> HEX_PYLON =
             BLOCK_ENTITIES.register("hex_pylon", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.HexPylonBlockEntity::new,
                     ModBlocks.GATHERING_PYLON.get(), ModBlocks.SENDING_PYLON.get(), ModBlocks.RELAY_PYLON.get(),

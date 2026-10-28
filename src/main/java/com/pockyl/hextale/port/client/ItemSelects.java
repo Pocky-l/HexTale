@@ -32,6 +32,7 @@ import java.util.List;
 @EventBusSubscriber(modid = Hextale.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public final class ItemSelects {
     private static final ResourceLocation PROPERTY = Hextale.id("select");
+    private static final ResourceLocation CONDITION = Hextale.id("condition");
 
     private ItemSelects() {
     }
@@ -60,6 +61,10 @@ public final class ItemSelects {
                 model = model.getAsJsonObject("model");
             }
         } catch (Exception e) {
+            return;
+        }
+        if ("minecraft:condition".equals(model.get("type").getAsString())) {
+            registerCondition(item, model);
             return;
         }
         if (!"minecraft:select".equals(model.get("type").getAsString())) {
@@ -99,6 +104,22 @@ public final class ItemSelects {
             }
             return 0;
         });
+    }
+
+    /**
+     * A model picked by a condition ({@code minecraft:condition}): the asset port script makes the model of the false
+     * case the base and the true case an override on {@code hextale:condition} = 1. Only {@code minecraft:has_component}.
+     */
+    private static void registerCondition(Item item, JsonObject model) {
+        if (!"minecraft:has_component".equals(model.get("property").getAsString())) {
+            Hextale.LOGGER.warn("Item model condition {} of {} is not ported", model.get("property"), item);
+            return;
+        }
+        DataComponentType<?> component = BuiltInRegistries.DATA_COMPONENT_TYPE.get(ResourceLocation.parse(model.get("component").getAsString()));
+        if (component == null) {
+            return;
+        }
+        ItemProperties.register(item, CONDITION, (stack, level, entity, seed) -> stack.has(component) ? 1 : 0);
     }
 
     /**

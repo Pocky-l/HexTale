@@ -14,7 +14,6 @@ import net.minecraft.world.phys.Vec3;
 import com.pockyl.hextale.block.ArcSpireBlockEntity;
 import com.pockyl.hextale.block.GreedyFunnelBlockEntity;
 import com.pockyl.hextale.block.MiasmaVentBlockEntity;
-import com.pockyl.hextale.block.RuneShacklesBlockEntity;
 import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModBlocks;
 
@@ -39,12 +38,13 @@ public final class CreativeJarGameTests {
         helper.setBlock(BASE, Blocks.CHEST);
         helper.setBlock(BASE.above(), ModBlocks.GREEDY_FUNNEL.get());
         helper.setBlock(BASE.offset(3, 0, -3), ModBlocks.ARC_SPIRE.get());
-        helper.setBlock(BASE.offset(-3, 0, 3), ModBlocks.RUNE_SHACKLES.get());
+        for (BlockPos cell : ShackleGameTests.ring(BASE.offset(-3, 0, 3))) {
+            helper.setBlock(cell, ModBlocks.CHALK_SIGIL.get());
+        }
         helper.setBlock(BASE.offset(-3, 0, -1), ModBlocks.MIASMA_VENT.get());
         MiasmaVentBlockEntity vent = helper.<MiasmaVentBlockEntity>getBlockEntity(BASE.offset(-3, 0, -1));
         GreedyFunnelBlockEntity funnel = helper.<GreedyFunnelBlockEntity>getBlockEntity(BASE.above());
         ArcSpireBlockEntity spire = helper.<ArcSpireBlockEntity>getBlockEntity(BASE.offset(3, 0, -3));
-        RuneShacklesBlockEntity plate = helper.<RuneShacklesBlockEntity>getBlockEntity(BASE.offset(-3, 0, 3));
         helper.runAfterDelay(5, () -> {
             Player player = helper.makeMockPlayer(GameType.SURVIVAL);
             Sheep sheep = helper.spawnWithNoFreeWill(EntityType.SHEEP, BASE.offset(2, 0, 2));
@@ -52,14 +52,13 @@ public final class CreativeJarGameTests {
             helper.assertTrue(!funnel.hungry() && funnel.charges() > 0, "the funnel fed on the creative jar (hungry " + funnel.hungry() + ")");
             Spider spider = helper.spawnWithNoFreeWill(EntityType.SPIDER, BASE.offset(3, 0, -1));
             spider.setHealth(ArcSpireBlockEntity.DAMAGE - 2);
-            Cow held = helper.spawn(EntityType.COW, new Vec3(-1.5, 2.0, 4.5));
+            Cow held = helper.spawn(EntityType.COW, new Vec3(-1.5, 1.0, 4.5));
             Spider choked = helper.spawnWithNoFreeWill(EntityType.SPIDER, BASE.offset(-3, 1, -1));
             choked.setHealth(MiasmaVentBlockEntity.DAMAGE - 1);
             spire.wake();
             helper.runAfterDelay(110, () -> {
                 helper.assertTrue(!spider.isAlive(), "the spire struck with spark from the creative jar (uncharged " + spire.uncharged() + ")");
-                helper.assertTrue(held.hasData(ModAttachments.SHACKLE), "the shackles hold with shadow from the creative jar (dark "
-                        + plate.dark() + ", held " + plate.held().length + ")");
+                helper.assertTrue(held.hasData(ModAttachments.SHACKLE), "a binding figure holds with shadow from the creative jar");
                 helper.assertTrue(!choked.isAlive() && !vent.dry(), "the vent breathes the creative jar's murk");
                 helper.succeed();
             });

@@ -106,15 +106,16 @@ public final class ModBlocks {
 
     /** Nullstone banded with brass round a gemstone: it holds its chunks loaded while it stands. */
     public static final DeferredBlock<com.pockyl.hextale.block.WorldAnchorBlock> WORLD_ANCHOR = BLOCKS.registerBlock("world_anchor",
-            com.pockyl.hextale.block.WorldAnchorBlock::new, () -> nullstoneProperties().lightLevel(state -> 6));
-    /** A coffer sealed with a shadow rune: coffers with the same seal share one pocket. */
-    public static final DeferredBlock<com.pockyl.hextale.block.ShadowCofferBlock> SHADOW_COFFER = BLOCKS.registerBlock("shadow_coffer",
-            com.pockyl.hextale.block.ShadowCofferBlock::new,
-            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.BASS).strength(2.5F)
-                    .sound(SoundType.WOOD).lightLevel(state -> 3));
+            com.pockyl.hextale.block.WorldAnchorBlock::new, () -> nullstoneProperties().lightLevel(state -> 6).noOcclusion());
+    /** A Lesser Rift Gate: tied to a partner gate, it sends whatever passes into its ring out of the partner. */
+    public static final DeferredBlock<com.pockyl.hextale.block.RiftGateBlock> RIFT_GATE = BLOCKS.registerBlock("rift_gate",
+            com.pockyl.hextale.block.RiftGateBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).instrument(NoteBlockInstrument.BASEDRUM).strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops().sound(SoundType.POLISHED_DEEPSLATE).noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED) ? 7 : 2));
     /** Polished magic stone with a lifting glyph: a jump carries you to the next lift above, a sneak to the one below. */
     public static final DeferredBlock<com.pockyl.hextale.block.HexLiftBlock> HEX_LIFT = BLOCKS.registerBlock("hex_lift",
-            com.pockyl.hextale.block.HexLiftBlock::new, () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF).lightLevel(state -> 4));
+            com.pockyl.hextale.block.HexLiftBlock::new, () -> magicStoneProperties().sound(SoundType.POLISHED_TUFF).lightLevel(state -> 4).noOcclusion());
     /** A plate with a brass arrow: whatever steps on it is thrown up and along the arrow. */
     public static final DeferredBlock<com.pockyl.hextale.block.ImpulsePlateBlock> IMPULSE_PLATE = BLOCKS.registerBlock("impulse_plate",
             com.pockyl.hextale.block.ImpulsePlateBlock::new,
@@ -317,9 +318,8 @@ public final class ModBlocks {
             com.pockyl.hextale.block.HextechPurifierBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(3.0F, 6.0F).sound(SoundType.DEEPSLATE_BRICKS)
                     .requiresCorrectToolForDrops().noOcclusion().lightLevel(state -> 5));
-    /** A nullstone block with a ring of runes on top: holds the creatures standing on it still in its glyph. */
-    public static final DeferredBlock<com.pockyl.hextale.block.RuneShacklesBlock> RUNE_SHACKLES = BLOCKS.registerBlock("rune_shackles",
-            com.pockyl.hextale.block.RuneShacklesBlock::new,
+    /** Legacy: the old Rune Shackles plate (no longer made, holds nothing); it breaks into Binding Chalk. */
+    public static final DeferredBlock<Block> RUNE_SHACKLES = BLOCKS.registerBlock("rune_shackles", Block::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .requiresCorrectToolForDrops());
     /** A glass column in a brass frame: drinks the experience orbs about to appear around it and holds them as a liquid. */
@@ -332,10 +332,6 @@ public final class ModBlocks {
             com.pockyl.hextale.block.MiasmaVentBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).strength(3.0F, 6.0F).sound(SoundType.COPPER)
                     .requiresCorrectToolForDrops());
-    /** A magic stone post with a hextech eye: no monster spawns by itself around it and nothing tramples the farmland. */
-    public static final DeferredBlock<com.pockyl.hextale.block.FieldWardBlock> FIELD_WARD = BLOCKS.registerBlock("field_ward",
-            com.pockyl.hextale.block.FieldWardBlock::new,
-            () -> magicStoneProperties().strength(2.5F, 6.0F).sound(SoundType.POLISHED_TUFF).noOcclusion().lightLevel(state -> 7));
     /** A nullstone bowl on brass ribs under a hextech crystal: swallows the deaths around it into the container below. */
     public static final DeferredBlock<com.pockyl.hextale.block.GreedyFunnelBlock> GREEDY_FUNNEL = BLOCKS.registerBlock("greedy_funnel",
             com.pockyl.hextale.block.GreedyFunnelBlock::new,
@@ -478,6 +474,12 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).replaceable().noCollission().instabreak().noLootTable()
                     .sound(SoundType.CALCITE).pushReaction(PushReaction.DESTROY)
                     .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChalkMarkBlock.LIT) ? 6 : 0));
+    /** A line drawn in Binding Chalk: joins its neighbours; a closed figure of them holds what stands inside. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChalkSigilBlock> CHALK_SIGIL = BLOCKS.registerBlock("chalk_sigil",
+            com.pockyl.hextale.block.ChalkSigilBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).noCollission().instabreak().noLootTable()
+                    .sound(SoundType.CALCITE).pushReaction(PushReaction.DESTROY)
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChalkSigilBlock.ACTIVE) ? 3 : 0));
     /** Nullstone drinks stray magic: it calms a Hexcore at work and glows as it fills. Polished and bricks are decor. */
     public static final DeferredBlock<com.pockyl.hextale.block.NullstoneBlock> NULLSTONE = BLOCKS.registerBlock("nullstone",
             com.pockyl.hextale.block.NullstoneBlock::new,

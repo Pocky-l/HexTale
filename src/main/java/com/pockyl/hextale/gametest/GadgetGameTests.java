@@ -56,6 +56,8 @@ public final class GadgetGameTests {
             double height = stone.getY() - floor;
             helper.assertTrue(height > 4.0, "the stone rises in the column (" + height + ")");
             helper.assertTrue(height < PlateRune.HEIGHT + 1.5, "and hangs at its top, not beyond (" + height + ")");
+            helper.assertValueEqual(helper.<com.pockyl.hextale.block.LevitationPlateBlockEntity>getBlockEntity(plate).riders(), 1,
+                    "riders the plate counts (it animates and hums by them)");
             stone.discard();
         });
     }
@@ -72,18 +74,52 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
-    @HexTest
+    @HexTest(setupTicks = 40, maxTicks = 200)
     public static void anImpulsePlateThrowsAlongItsArrow(GameTestHelper helper) {
         BlockPos at = new BlockPos(1, 1, 1);
         helper.setBlock(at, ModBlocks.IMPULSE_PLATE.get().defaultBlockState()
                 .setValue(com.pockyl.hextale.block.ImpulsePlateBlock.FACING, net.minecraft.core.Direction.EAST));
-        net.minecraft.world.entity.animal.Pig pig = helper.spawn(net.minecraft.world.entity.EntityType.PIG, at.above());
-        BlockPos plate = helper.absolutePos(at);
-        ModBlocks.IMPULSE_PLATE.get().stepOn(helper.getLevel(), plate, helper.getLevel().getBlockState(plate), pig);
-        Vec3 throwVec = pig.getDeltaMovement();
-        pig.discard();
-        helper.assertTrue(throwVec.y >= 1.0 && throwVec.x > 0.3 && Math.abs(throwVec.z) < 0.01, "thrown up and east: " + throwVec);
-        helper.succeed();
+        // A pig standing on the plate - no direct call: the plate must notice it by itself.
+        net.minecraft.world.entity.animal.Pig pig = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new Vec3(1.5, 1.07, 1.5));
+        double floor = helper.absolutePos(at).getY();
+        double startX = pig.getX();
+        helper.succeedWhen(() -> {
+            helper.assertTrue(pig.getY() > floor + 2 && pig.getX() > startX + 0.3, "thrown up and east: " + pig.position());
+            pig.discard();
+        });
+    }
+
+    /**
+     * An aimed plate is a faith plate: aimed by hand (an empty-handed click on the plate, then a click on the target,
+     * both through the real click path), it throws whatever steps on it so it lands on the target.
+     */
+    @HexTest(setupTicks = 40, maxTicks = 160, padding = 8)
+    public static void anAimedImpulsePlateLandsThingsOnTheTarget(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 1, 1);
+        BlockPos target = new BlockPos(8, 2, 3);
+        helper.setBlock(at, ModBlocks.IMPULSE_PLATE.get());
+        helper.setBlock(target, Blocks.STONE);
+        net.minecraft.server.level.ServerPlayer player = GameTests.watcher(helper, helper.absolutePos(at));
+        net.minecraft.world.InteractionHand hand = net.minecraft.world.InteractionHand.MAIN_HAND;
+        player.gameMode.useItemOn(player, helper.getLevel(), net.minecraft.world.item.ItemStack.EMPTY, hand,
+                new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(helper.absolutePos(at)), net.minecraft.core.Direction.UP,
+                        helper.absolutePos(at), false));
+        player.gameMode.useItemOn(player, helper.getLevel(), net.minecraft.world.item.ItemStack.EMPTY, hand,
+                new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(helper.absolutePos(target)), net.minecraft.core.Direction.UP,
+                        helper.absolutePos(target), false));
+        com.pockyl.hextale.block.ImpulsePlateBlock.Plate plate = helper.<com.pockyl.hextale.block.ImpulsePlateBlock.Plate>getBlockEntity(at);
+        helper.assertValueEqual(plate.target(), helper.absolutePos(target), "the plate's target");
+        net.minecraft.world.entity.decoration.ArmorStand stand = helper.spawn(net.minecraft.world.entity.EntityType.ARMOR_STAND, new Vec3(1.5, 1.1, 1.5));
+        Vec3 landing = Vec3.atCenterOf(helper.absolutePos(target)).add(0, 0.5, 0);
+        boolean[] flew = {false};
+        helper.onEachTick(() -> flew[0] |= stand.getY() > landing.y + 1);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(flew[0], "it flew (at " + stand.position() + ", target " + plate.target() + ", plate "
+                    + helper.getBlockState(at) + ")");
+            helper.assertTrue(stand.onGround() && stand.position().distanceTo(landing) < 1.0, "it landed on the target: " + stand.position()
+                    + " vs " + landing);
+            stand.discard();
+        });
     }
 
     @HexTest(padding = 2)
@@ -155,19 +191,110 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
-    @HexTest
-    public static void shadowCoffersShareOnePocket(GameTestHelper helper) {
-        com.pockyl.hextale.block.ShadowPockets pockets = com.pockyl.hextale.block.ShadowPockets.of(helper.getLevel().getServer());
-        java.util.UUID pair = java.util.UUID.randomUUID();
-        pockets.pocket(pair).setItem(3, new net.minecraft.world.item.ItemStack(Items.DIAMOND, 5));
-        helper.assertTrue(pockets.pocket(pair).getItem(3).is(Items.DIAMOND), "the same seal opens the same pocket");
-        helper.assertTrue(pockets.pocket(java.util.UUID.randomUUID()).isEmpty(), "another seal opens another pocket");
-        var ops = helper.getLevel().registryAccess().createSerializationContext(com.mojang.serialization.JavaOps.INSTANCE);
-        Object saved = com.pockyl.hextale.block.ShadowPockets.CODEC.encodeStart(ops, pockets).getOrThrow();
-        com.pockyl.hextale.block.ShadowPockets loaded = com.pockyl.hextale.block.ShadowPockets.CODEC.parse(ops, saved).getOrThrow();
-        helper.assertTrue(loaded.pocket(pair).getItem(3).getCount() == 5, "the pocket is kept with the world");
-        pockets.pocket(pair).clearContent();
-        helper.succeed();
+    /**
+     * Two Lesser Rift Gates tied by hand (a hextech crystal pressed to one, the link crystal it becomes pressed to the
+     * other, both through the real click path): a pig standing in one ring comes out of the other's front, a stone
+     * dropped into the ring lands in the chest under the other gate, and breaking a gate leaves its partner alone.
+     */
+    @HexTest(setupTicks = 20, maxTicks = 200, padding = 8)
+    public static void riftGatesSendWhatEntersThem(GameTestHelper helper) {
+        BlockPos a = new BlockPos(1, 1, 1);
+        BlockPos b = new BlockPos(7, 1, 5);
+        for (BlockPos gate : new BlockPos[] {a, b}) {
+            for (int dx = -2; dx <= 2; dx++) {
+                for (int dz = -2; dz <= 2; dz++) {
+                    helper.setBlock(gate.offset(dx, -1, dz), Blocks.STONE);
+                }
+            }
+        }
+        helper.setBlock(b.below(), Blocks.CHEST);
+        helper.setBlock(a, ModBlocks.RIFT_GATE.get());
+        helper.setBlock(b, ModBlocks.RIFT_GATE.get().defaultBlockState().setValue(com.pockyl.hextale.block.RiftGateBlock.FACING,
+                net.minecraft.core.Direction.EAST));
+        net.minecraft.server.level.ServerPlayer player = GameTests.watcher(helper, helper.absolutePos(a));
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.world.InteractionHand hand = net.minecraft.world.InteractionHand.MAIN_HAND;
+        player.setItemInHand(hand, new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.HEXTECH_CRYSTAL.get()));
+        click(helper, player, a);
+        net.minecraft.world.item.ItemStack crystal = null;
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            if (player.getInventory().getItem(i).is(com.pockyl.hextale.registry.ModItems.RIFT_LINK_CRYSTAL.get())) {
+                crystal = player.getInventory().getItem(i);
+            }
+        }
+        helper.assertTrue(crystal != null, "the crystal became a link crystal");
+        player.setItemInHand(hand, crystal.copy());
+        crystal.setCount(0);
+        click(helper, player, b);
+        helper.assertTrue(helper.getBlockState(a).getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED)
+                && helper.getBlockState(b).getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED), "both gates are linked");
+        net.minecraft.world.entity.animal.Pig pig = helper.spawn(net.minecraft.world.entity.EntityType.PIG, new Vec3(1.5, 1.2, 1.5));
+        ItemEntity stone = helper.spawnItem(Items.COBBLESTONE, new Vec3(1.5, 1.5, 1.5));
+        stone.setDeltaMovement(Vec3.ZERO);
+        Vec3 out = Vec3.atBottomCenterOf(helper.absolutePos(b));
+        helper.runAfterDelay(40, () -> {
+            helper.assertTrue(pig.isAlive() && pig.position().distanceTo(out) < 2.0, "the pig came out of the other gate: " + pig.position()
+                    + " vs " + out);
+            net.minecraft.world.level.block.entity.ChestBlockEntity chest = helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(b.below());
+            helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 1, "the stone dropped into the chest under the other gate");
+            helper.setBlock(b, Blocks.AIR);
+        });
+        helper.runAfterDelay(70, () -> {
+            helper.assertTrue(!helper.getBlockState(a).getValue(com.pockyl.hextale.block.RiftGateBlock.LINKED), "the gate left alone knows it");
+            pig.discard();
+            helper.succeed();
+        });
+    }
+
+    /**
+     * Linked gates carry liquids too: a jar of fire essence over one gate pours into it and the essence comes out into the
+     * jar under its partner; water put into a gate (as another mod's pipe would) fills the cauldron under its partner.
+     */
+    @HexTest(setupTicks = 20, maxTicks = 200, padding = 8)
+    public static void riftGatesCarryEssenceAndWater(GameTestHelper helper) {
+        BlockPos a = new BlockPos(1, 2, 1);
+        BlockPos b = new BlockPos(7, 2, 5);
+        BlockPos c = new BlockPos(1, 2, 5);
+        BlockPos d = new BlockPos(7, 2, 1);
+        helper.setBlock(a.below(), Blocks.STONE);
+        helper.setBlock(c.below(), Blocks.STONE);
+        helper.setBlock(b.below(), ModBlocks.ESSENCE_TANK.get());
+        helper.setBlock(d.below(), Blocks.CAULDRON);
+        for (BlockPos gate : new BlockPos[] {a, b, c, d}) {
+            helper.setBlock(gate, ModBlocks.RIFT_GATE.get());
+        }
+        helper.setBlock(a.above(), ModBlocks.ESSENCE_TANK.get());
+        helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(a.above()).tank()
+                .set(com.pockyl.hextale.essence.EssenceMix.pure(com.pockyl.hextale.rune.Essence.FIRE, 300));
+        net.minecraft.server.level.ServerPlayer player = GameTests.watcher(helper, helper.absolutePos(a));
+        net.minecraft.world.InteractionHand hand = net.minecraft.world.InteractionHand.MAIN_HAND;
+        for (BlockPos[] pair : new BlockPos[][] {{a, b}, {c, d}}) {
+            player.setItemInHand(hand, new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.HEXTECH_CRYSTAL.get()));
+            click(helper, player, pair[0]);
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                if (player.getInventory().getItem(i).is(com.pockyl.hextale.registry.ModItems.RIFT_LINK_CRYSTAL.get())) {
+                    player.setItemInHand(hand, player.getInventory().getItem(i).copy());
+                    player.getInventory().setItem(i, net.minecraft.world.item.ItemStack.EMPTY);
+                }
+            }
+            click(helper, player, pair[1]);
+        }
+        com.pockyl.hextale.block.RiftGateBlock.Gate gateC = helper.<com.pockyl.hextale.block.RiftGateBlock.Gate>getBlockEntity(c);
+        int put = gateC.fluidMouth().fill(new net.neoforged.neoforge.fluids.FluidStack(net.minecraft.world.level.material.Fluids.WATER, 1000),
+                net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE);
+        helper.assertTrue(put == 1000, "the gate takes water in (" + put + ")");
+        helper.succeedWhen(() -> {
+            helper.assertBlockPresent(Blocks.WATER_CAULDRON, d.below());
+            int fire = helper.<com.pockyl.hextale.block.EssenceTankBlockEntity>getBlockEntity(b.below()).tank().contents()
+                    .get(com.pockyl.hextale.rune.Essence.FIRE);
+            helper.assertTrue(fire > 0, "fire essence came out under the other gate (" + fire + ")");
+        });
+    }
+
+    private static void click(GameTestHelper helper, net.minecraft.server.level.ServerPlayer player, BlockPos pos) {
+        BlockPos at = helper.absolutePos(pos);
+        player.gameMode.useItemOn(player, helper.getLevel(), player.getMainHandItem(), net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(at), net.minecraft.core.Direction.NORTH, at, false));
     }
 
     @HexTest
@@ -251,18 +378,71 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
-    @HexTest(padding = 6)
-    public static void aGrappleDrawsItsWearerToTheHook(GameTestHelper helper) {
-        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        Vec3 spot = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(1, 1, 1)));
-        player.teleportTo(spot.x, spot.y, spot.z);
-        Vec3 hook = spot.add(5, 3, 0);
-        com.pockyl.hextale.item.GrappleGauntletItem.start(player, hook, com.pockyl.hextale.runework.PickaxeRunes.EMPTY);
-        helper.assertTrue(com.pockyl.hextale.item.GrappleGauntletItem.step(player), "far from the hook the pull goes on");
-        player.teleportTo(hook.x, hook.y - 0.9, hook.z);
-        helper.assertTrue(!com.pockyl.hextale.item.GrappleGauntletItem.step(player), "at the hook it lets go");
-        helper.assertTrue(!com.pockyl.hextale.item.GrappleGauntletItem.pulling(player), "and the pull is over");
-        helper.succeed();
+    /**
+     * A player hanging on the gauntlet's rope swings like a pendulum: thrown at a block above and ahead, the claw bites,
+     * the wearer falls, the rope catches and carries them through the bottom of the arc and up the other side - never
+     * farther from the claw than the rope is long. The player is moved by its own ticks, as a client moves itself.
+     */
+    @HexTest(padding = 8, maxTicks = 300)
+    public static void aGrappleRopeSwingsItsWearer(GameTestHelper helper) {
+        BlockPos anchor = new BlockPos(1, 12, 1);
+        helper.setBlock(anchor, Blocks.STONE);
+        net.minecraft.server.level.ServerPlayer player = selfMovingPlayer(helper);
+        Vec3 start = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(-4, 8, 1)));
+        Vec3 bite = Vec3.atCenterOf(helper.absolutePos(anchor)).add(0, -0.5, 0);
+        Vec3 look = bite.subtract(start.add(0, player.getEyeHeight() - 0.25, 0));
+        float yaw = (float) (net.minecraft.util.Mth.atan2(look.z, look.x) * net.minecraft.util.Mth.RAD_TO_DEG) - 90;
+        float pitch = (float) -(net.minecraft.util.Mth.atan2(look.y, look.horizontalDistance()) * net.minecraft.util.Mth.RAD_TO_DEG);
+        player.moveTo(start.x, start.y, start.z, yaw, pitch);
+        net.minecraft.world.item.ItemStack gauntlet = new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.GRAPPLE_GAUNTLET.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, gauntlet);
+        player.gameMode.useItem(player, helper.getLevel(), gauntlet, net.minecraft.world.InteractionHand.MAIN_HAND);
+        double[] farthest = {start.x};
+        double[] stretch = {0};
+        helper.onEachTick(() -> {
+            com.pockyl.hextale.entity.GrappleHook flying = com.pockyl.hextale.entity.GrappleHook.of(player);
+            if (player.isRemoved() || flying == null || !flying.attached()) {
+                // Test spots sometimes start ticking their entities late: the wearer waits in the air for the bite.
+                return;
+            }
+            player.doTick();
+            farthest[0] = Math.max(farthest[0], player.getX());
+            com.pockyl.hextale.entity.GrappleHook hook = com.pockyl.hextale.entity.GrappleHook.of(player);
+            if (hook != null && hook.attached() && hook.length() > 0) {
+                stretch[0] = Math.max(stretch[0], com.pockyl.hextale.item.GrappleGauntletItem.grip(player).distanceTo(hook.position()) - hook.length());
+            }
+        });
+        helper.succeedWhen(() -> {
+            com.pockyl.hextale.entity.GrappleHook hook = com.pockyl.hextale.entity.GrappleHook.of(player);
+            helper.assertTrue(hook != null && hook.attached(), "the claw holds the stone");
+            Vec3 pivot = hook.position();
+            helper.assertTrue(farthest[0] > pivot.x + 2, "the swing carried me past the claw and up the other side (x " + farthest[0]
+                    + ", claw " + pivot.x + ")");
+            helper.assertTrue(stretch[0] < 0.4, "the rope never stretched (" + stretch[0] + ")");
+            player.stopUsingItem();
+            hook.discard();
+            player.discard();
+        });
+    }
+
+    /**
+     * A player that moves itself on the server (as a client moves its own player): its ticks are run by the test,
+     * through a connection of its own that goes nowhere.
+     */
+    static net.minecraft.server.level.ServerPlayer selfMovingPlayer(GameTestHelper helper) {
+        net.minecraft.server.network.CommonListenerCookie cookie = net.minecraft.server.network.CommonListenerCookie.createInitial(
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "test-swinger"), false);
+        net.minecraft.server.level.ServerPlayer player = new net.minecraft.server.level.ServerPlayer(helper.getLevel().getServer(), helper.getLevel(),
+                cookie.gameProfile(), cookie.clientInformation()) {
+            @Override
+            public boolean isLocalPlayer() {
+                return true;
+            }
+        };
+        net.minecraft.network.Connection connection = new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND);
+        new io.netty.channel.embedded.EmbeddedChannel(connection);
+        new net.minecraft.server.network.ServerGamePacketListenerImpl(helper.getLevel().getServer(), connection, player, cookie);
+        return player;
     }
 
     @HexTest
@@ -272,6 +452,21 @@ public final class GadgetGameTests {
         helper.assertTrue(gifts == 1 && player.hasEffect(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE), "fire gives fire resistance");
         com.pockyl.hextale.essence.EssenceFlaskItem.drink(com.pockyl.hextale.essence.EssenceMix.unknown(8), player);
         helper.assertTrue(player.hasEffect(net.minecraft.world.effect.MobEffects.CONFUSION), "the unknown essence turns the stomach");
+        helper.succeed();
+    }
+
+    @HexTest(padding = 2)
+    public static void aJumpOffALiftStillRidesUp(GameTestHelper helper) {
+        BlockPos low = new BlockPos(1, 1, 1);
+        helper.setBlock(low, ModBlocks.HEX_LIFT.get());
+        helper.setBlock(low.above(6), ModBlocks.HEX_LIFT.get());
+        BlockPos from = helper.absolutePos(low);
+        net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        // Already half a block up in the jump when the client sees the key.
+        player.teleportTo(from.getX() + 0.5, from.getY() + 0.9, from.getZ() + 0.5);
+        helper.assertTrue(com.pockyl.hextale.block.HexLiftBlock.ride(player, from, true), "the jump counts");
+        helper.assertTrue(Math.abs(player.getY() - (from.getY() + 6 + com.pockyl.hextale.block.HexLiftBlock.PAD)) < 0.01,
+                "and lands on the pad of the upper lift: " + player.getY());
         helper.succeed();
     }
 }

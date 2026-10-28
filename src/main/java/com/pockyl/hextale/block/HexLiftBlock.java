@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -45,9 +46,23 @@ public class HexLiftBlock extends BaseEntityBlock {
     /** Ticks a player rests between two rides (a held key does not ride the whole shaft at once). */
     private static final int REST = 8;
     private static final Map<UUID, Long> LAST_RIDE = new ConcurrentHashMap<>();
+    /** Where one stands on the lift: the top of its brass pad. */
+    public static final double PAD = 6 / 16.0;
+    /**
+     * The low plinth and the pad in its middle. The model's four guide horns at the corners are left out on purpose
+     * (owner): they caught the player and the crosshair, the plate alone is easier to step on and aim at.
+     */
+    private static final net.minecraft.world.phys.shapes.VoxelShape SHAPE = net.minecraft.world.phys.shapes.Shapes.or(
+            Block.box(0, 0, 0, 16, 5, 16), Block.box(3, 5, 3, 13, 6, 13));
 
     public HexLiftBlock(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    protected net.minecraft.world.phys.shapes.VoxelShape getShape(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos,
+                                                                 net.minecraft.world.phys.shapes.CollisionContext context) {
+        return SHAPE;
     }
 
     @Override
@@ -85,8 +100,20 @@ public class HexLiftBlock extends BaseEntityBlock {
 
     /** A ride asked for by a player: checked here, then the player (and with Blink their company) is moved. */
     public static boolean ride(ServerPlayer player, boolean up) {
+        return ride(player, under(player), up);
+    }
+
+    /**
+     * A ride from the lift at {@code from}, named by the client: the player must stand on it or hang just above it (a
+     * jump lifts them off before the key is seen).
+     */
+    public static boolean ride(ServerPlayer player, @Nullable BlockPos from, boolean up) {
         ServerLevel level = player.serverLevel();
-        BlockPos from = under(player);
+        if (from != null && (!level.getBlockState(from).is(ModBlocks.HEX_LIFT.get())
+                || Math.abs(player.getX() - (from.getX() + 0.5)) > 1.2 || Math.abs(player.getZ() - (from.getZ() + 0.5)) > 1.2
+                || player.getY() < from.getY() + 0.2 || player.getY() > from.getY() + 3)) {
+            from = null;
+        }
         long now = level.getGameTime();
         Long last = LAST_RIDE.get(player.getUUID());
         if (from == null || last != null && now - last < REST) {
@@ -100,13 +127,13 @@ public class HexLiftBlock extends BaseEntityBlock {
         LAST_RIDE.put(player.getUUID(), now);
         double dy = to.getY() - from.getY();
         if (runes.strength(LiftRune.BLINK.rune()) > 0) {
-            List<LivingEntity> company = level.getEntitiesOfClass(LivingEntity.class, new AABB(from.above()).inflate(0.1, 0, 0.1),
+            List<LivingEntity> company = level.getEntitiesOfClass(LivingEntity.class, new AABB(from.getX(), from.getY() + 0.2, from.getZ(), from.getX() + 1, from.getY() + 2.4, from.getZ() + 1).inflate(0.1, 0, 0.1),
                     entity -> entity != player && !(entity instanceof Player));
             for (LivingEntity creature : company) {
                 creature.teleportTo(creature.getX(), creature.getY() + dy, creature.getZ());
             }
         }
-        player.teleportTo(player.getX(), to.getY() + 1.0, player.getZ());
+        player.teleportTo(player.getX(), to.getY() + PAD, player.getZ());
         player.resetFallDistance();
         int haste = runes.strength(LiftRune.HASTE.rune());
         if (haste > 0) {
@@ -115,8 +142,8 @@ public class HexLiftBlock extends BaseEntityBlock {
         }
         level.playSound(null, to, ModSounds.PYLON_ARRIVE.get(), SoundSource.BLOCKS, 0.7F, up ? 1.3F : 0.9F);
         for (BlockPos at : new BlockPos[] {from, to}) {
-            level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.getX() + 0.5, at.getY() + 1.05, at.getZ() + 0.5, 0, 0.8, 1, 0, 1);
-            level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.getX() + 0.5, at.getY() + 1.4, at.getZ() + 0.5, 10, 0.25, 0.5, 0.25, 0.02);
+            level.sendParticles(ModParticles.ring(ModParticles.HEXTECH), at.getX() + 0.5, at.getY() + PAD + 0.05, at.getZ() + 0.5, 0, 0.8, 1, 0, 1);
+            level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), at.getX() + 0.5, at.getY() + PAD + 0.4, at.getZ() + 0.5, 10, 0.25, 0.5, 0.25, 0.02);
         }
         return true;
     }

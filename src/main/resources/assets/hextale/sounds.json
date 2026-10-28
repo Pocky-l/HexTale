@@ -1112,5 +1112,192 @@
         "attenuation_distance": 32
       }
     ]
+  },
+  "grapple.fire": {
+    "subtitle": "subtitles.hextale.grapple.fire",
+    "sounds": [
+      {
+        "name": "hextale:grapple_fire1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:grapple_fire2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "grapple.attach": {
+    "subtitle": "subtitles.hextale.grapple.attach",
+    "sounds": [
+      {
+        "name": "hextale:grapple_attach1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:grapple_attach2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "grapple.reel": {
+    "subtitle": "subtitles.hextale.grapple.reel",
+    "sounds": [
+      {
+        "name": "hextale:grapple_reel1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:grapple_reel2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:grapple_reel3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "grapple.release": {
+    "subtitle": "subtitles.hextale.grapple.release",
+    "sounds": [
+      {
+        "name": "hextale:grapple_release1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:grapple_release2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "impulse.launch": {
+    "subtitle": "subtitles.hextale.impulse.launch",
+    "sounds": [
+      {
+        "name": "hextale:impulse_launch1",
+        "volume": 0.8
+      },
+      {
+        "name": "hextale:impulse_launch2",
+        "volume": 0.8
+      }
+    ]
+  },
+  "impulse.land": {
+    "subtitle": "subtitles.hextale.impulse.land",
+    "sounds": [
+      {
+        "name": "hextale:impulse_land1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:impulse_land2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "rift_gate.link": {
+    "subtitle": "subtitles.hextale.rift_gate.link",
+    "sounds": [
+      {
+        "name": "hextale:rift_link",
+        "volume": 0.9
+      }
+    ]
+  },
+  "rift_gate.send": {
+    "subtitle": "subtitles.hextale.rift_gate.send",
+    "sounds": [
+      {
+        "name": "hextale:rift_send1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:rift_send2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "rift_gate.arrive": {
+    "subtitle": "subtitles.hextale.rift_gate.arrive",
+    "sounds": [
+      {
+        "name": "hextale:rift_arrive1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:rift_arrive2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "rift_gate.break": {
+    "subtitle": "subtitles.hextale.rift_gate.break",
+    "sounds": [
+      {
+        "name": "hextale:rift_break",
+        "volume": 0.7
+      }
+    ]
+  },
+  "levitation_plate.lift": {
+    "subtitle": "subtitles.hextale.levitation_plate.lift",
+    "sounds": [
+      {
+        "name": "hextale:levitation_lift1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:levitation_lift2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "levitation_plate.hum": {
+    "subtitle": "subtitles.hextale.levitation_plate.hum",
+    "sounds": [
+      {
+        "name": "hextale:levitation_hum",
+        "volume": 0.6
+      }
+    ]
+  },
+  "levitation_plate.release": {
+    "subtitle": "subtitles.hextale.levitation_plate.release",
+    "sounds": [
+      {
+        "name": "hextale:levitation_release1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:levitation_release2",
+        "volume": 0.6
+      }
+    ]
+  },
+  "binding_chalk.scratch": {
+    "subtitle": "subtitles.hextale.binding_chalk.scratch",
+    "sounds": [
+      {
+        "name": "hextale:chalk_scratch1",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:chalk_scratch2",
+        "volume": 0.6
+      },
+      {
+        "name": "hextale:chalk_scratch3",
+        "volume": 0.6
+      }
+    ]
+  },
+  "binding_chalk.close": {
+    "subtitle": "subtitles.hextale.binding_chalk.close",
+    "sounds": [
+      {
+        "name": "hextale:chalk_close",
+        "volume": 0.8
+      }
+    ]
   }
 }

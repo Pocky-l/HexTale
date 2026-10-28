@@ -40,7 +40,9 @@ import org.jspecify.annotations.Nullable;
  * inside from reaching sculk ({@code event/SilenceEvents}). Takes runes (Shift, Hush, Insulator, Lens).
  */
 public class SilenceWardBlock extends BaseEntityBlock {
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 3, 14), Block.box(3, 3, 3, 13, 13, 13), Block.box(6, 13, 6, 10, 16, 10));
+    /** The muffled bell: nullstone base, two posts, the beam and the wool-wrapped bell. */
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(2, 0, 4, 14, 2, 12), Block.box(2, 2, 7, 4, 14, 9), Block.box(12, 2, 7, 14, 14, 9),
+            Block.box(1, 14, 6, 15, 16, 10), Block.box(4, 3, 4, 12, 12, 12));
 
     public SilenceWardBlock(Properties properties) {
         super(properties);
@@ -185,7 +187,7 @@ public class SilenceWardBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+    protected void onRemove(BlockState state, net.minecraft.world.level.Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
         super.onRemove(state, level, pos, newState, movedByPiston);
         com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);

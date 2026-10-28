@@ -163,6 +163,26 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> ARC_STRIKE = register("arc.strike");
     /** Rune Shackles take hold of a creature. */
     public static final DeferredHolder<SoundEvent, SoundEvent> SHACKLE_BIND = register("shackle.bind");
+    /** The Grapple Gauntlet: the claw thrown, biting into a block, the rope reeling, the claw springing back. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_FIRE = register("grapple.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_ATTACH = register("grapple.attach");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_REEL = register("grapple.reel");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GRAPPLE_RELEASE = register("grapple.release");
+    /** The Impulse Plate fires; what it threw at a target lands softly. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> IMPULSE_LAUNCH = register("impulse.launch");
+    public static final DeferredHolder<SoundEvent, SoundEvent> IMPULSE_LAND = register("impulse.land");
+    /** Lesser Rift Gates: two tied together, something drawn in, something coming out, a gate left alone. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_LINK = register("rift_gate.link");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_SEND = register("rift_gate.send");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_ARRIVE = register("rift_gate.arrive");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIFT_BREAK = register("rift_gate.break");
+    /** The Levitation Plate: something taken up, the column humming while it carries (a loop), something let go. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> LEVITATION_LIFT = register("levitation_plate.lift");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LEVITATION_HUM = register("levitation_plate.hum");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LEVITATION_RELEASE = register("levitation_plate.release");
+    /** Binding Chalk: a stroke on stone, and a drawn figure closing. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHALK_SCRATCH = register("binding_chalk.scratch");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHALK_CLOSE = register("binding_chalk.close");
     /** A Miasma Vent breathes out its fumes. */
     public static final DeferredHolder<SoundEvent, SoundEvent> MIASMA_HISS = register("miasma.hiss");
 

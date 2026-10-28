@@ -50,6 +50,9 @@ public class DustCharge extends ThrowableItemProjectile {
     private static final float PUSH = 0.7F;
     private static final float THINNING = 4.0F;
     private static final EntityDataAccessor<Integer> FUSE_LEFT = SynchedEntityData.defineId(DustCharge.class, EntityDataSerializers.INT);
+    /** The face of the block it stuck to (the renderer lays the cartridge on it). */
+    private static final EntityDataAccessor<net.minecraft.core.Direction> STUCK_FACE = SynchedEntityData.defineId(DustCharge.class,
+            EntityDataSerializers.DIRECTION);
 
     public DustCharge(EntityType<? extends DustCharge> type, Level level) {
         super(type, level);
@@ -64,11 +67,16 @@ public class DustCharge extends ThrowableItemProjectile {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(FUSE_LEFT, -1);
+        builder.define(STUCK_FACE, net.minecraft.core.Direction.UP);
     }
 
     @Override
     protected Item getDefaultItem() {
         return ModItems.DUST_CHARGE.get();
+    }
+
+    public net.minecraft.core.Direction stuckFace() {
+        return entityData.get(STUCK_FACE);
     }
 
     /** Whether it has stuck and is hissing. */
@@ -122,6 +130,7 @@ public class DustCharge extends ThrowableItemProjectile {
             setPos(at.x, at.y, at.z);
             setDeltaMovement(Vec3.ZERO);
             setNoGravity(true);
+            entityData.set(STUCK_FACE, hit.getDirection());
             entityData.set(FUSE_LEFT, FUSE);
             level().playSound(null, at.x, at.y, at.z, ModSounds.LAMP_FLICKER.get(), SoundSource.NEUTRAL, 0.8F, 1.2F);
         }

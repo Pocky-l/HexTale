@@ -14,9 +14,9 @@ import org.jspecify.annotations.Nullable;
  * a Lens (1-4). They throw higher and farther and soften the landing.
  */
 public enum ImpulseRune implements HolderRune {
-    /** It throws higher. */
+    /** It throws higher, and an aimed plate reaches farther targets. */
     SHIFT("air_earth"),
-    /** It throws farther along its arrow. */
+    /** It throws farther along its arrow, and an aimed throw flies quicker. */
     MOTOR("metal_spark"),
     /** Whoever it threw lands softly. */
     BREATH("air_life"),
@@ -28,6 +28,8 @@ public enum ImpulseRune implements HolderRune {
     private static final double[] UP = {1.0, 1.2, 1.4, 1.65, 1.95};
     /** Speed along the arrow, by Motor's strength. */
     private static final double[] FORWARD = {0.45, 0.8, 1.1, 1.4, 1.8};
+    /** How far (sideways) an aimed plate throws, by Shift's strength. */
+    private static final int[] RANGE = {24, 32, 40, 48, 64};
 
     private final ComplexRune rune;
 
@@ -52,6 +54,10 @@ public enum ImpulseRune implements HolderRune {
 
     public static double up(int strength) {
         return UP[Mth.clamp(strength, 0, 4)];
+    }
+
+    public static int range(int strength) {
+        return RANGE[Mth.clamp(strength, 0, 4)];
     }
 
     public static double forward(int strength) {

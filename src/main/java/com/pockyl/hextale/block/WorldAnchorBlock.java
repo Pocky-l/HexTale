@@ -46,8 +46,19 @@ public class WorldAnchorBlock extends BaseEntityBlock implements com.pockyl.hext
     /** Ticks between two Fertility pinches. */
     private static final int GROWTH_TICKS = 100;
 
+    /** A deepslate socket with the anchor's crown, shank and stock standing in it. */
+    private static final net.minecraft.world.phys.shapes.VoxelShape SHAPE = net.minecraft.world.phys.shapes.Shapes.or(
+            net.minecraft.world.level.block.Block.box(0, 0, 0, 16, 4, 16), net.minecraft.world.level.block.Block.box(3, 4, 3, 13, 12, 13),
+            net.minecraft.world.level.block.Block.box(6, 12, 6, 10, 16, 10));
+
     public WorldAnchorBlock(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    protected net.minecraft.world.phys.shapes.VoxelShape getShape(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos,
+                                                                 net.minecraft.world.phys.shapes.CollisionContext context) {
+        return SHAPE;
     }
 
     @Override
@@ -228,7 +239,7 @@ public class WorldAnchorBlock extends BaseEntityBlock implements com.pockyl.hext
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+    protected void onRemove(BlockState state, net.minecraft.world.level.Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         com.pockyl.hextale.port.Removal.before(state, level, pos, newState);
         super.onRemove(state, level, pos, newState, movedByPiston);
         com.pockyl.hextale.port.Removal.after(this, state, level, pos, newState, movedByPiston);

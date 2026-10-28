@@ -1,6 +1,873 @@
 {
-  "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "hextale:item/spawner_cage"
-  }
+    "particle": "hextale:block/brass",
+    "brass": "hextale:block/brass",
+    "spawner_cage_bars": "hextale:block/spawner_cage_bars",
+    "hextech_glow": "hextale:block/hextech_glow"
+  },
+  "elements": [
+    {
+      "name": "floor",
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        1,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            15,
+            13,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            3,
+            15,
+            13,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            3,
+            15,
+            13,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            3,
+            15,
+            13,
+            16
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#brass",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "roof",
+      "from": [
+        3,
+        10,
+        3
+      ],
+      "to": [
+        13,
+        11,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            5,
+            13,
+            6
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            3,
+            5,
+            13,
+            6
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            3,
+            5,
+            13,
+            6
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            3,
+            5,
+            13,
+            6
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "dome",
+      "from": [
+        4,
+        11,
+        4
+      ],
+      "to": [
+        12,
+        12,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            4,
+            12,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            4,
+            4,
+            12,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            4,
+            4,
+            12,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            4,
+            4,
+            12,
+            5
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "dome_top",
+      "from": [
+        6,
+        12,
+        6
+      ],
+      "to": [
+        10,
+        13,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            3,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            6,
+            3,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            6,
+            3,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            6,
+            3,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "post_nw",
+      "from": [
+        3,
+        1,
+        3
+      ],
+      "to": [
+        4,
+        10,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            6,
+            13,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            12,
+            6,
+            13,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            3,
+            6,
+            4,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            3,
+            6,
+            4,
+            15
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "post_ne",
+      "from": [
+        12,
+        1,
+        3
+      ],
+      "to": [
+        13,
+        10,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            6,
+            4,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            12,
+            6,
+            13,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            12,
+            6,
+            13,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            3,
+            6,
+            4,
+            15
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "post_sw",
+      "from": [
+        3,
+        1,
+        12
+      ],
+      "to": [
+        4,
+        10,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            6,
+            13,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            3,
+            6,
+            4,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            3,
+            6,
+            4,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            12,
+            6,
+            13,
+            15
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "post_se",
+      "from": [
+        12,
+        1,
+        12
+      ],
+      "to": [
+        13,
+        10,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            6,
+            4,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            3,
+            6,
+            4,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            12,
+            6,
+            13,
+            15
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            12,
+            6,
+            13,
+            15
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "bars_n",
+      "from": [
+        4,
+        1,
+        4
+      ],
+      "to": [
+        12,
+        10,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            6,
+            12,
+            15
+          ],
+          "texture": "#spawner_cage_bars"
+        },
+        "south": {
+          "uv": [
+            4,
+            6,
+            12,
+            15
+          ],
+          "texture": "#spawner_cage_bars"
+        }
+      }
+    },
+    {
+      "name": "bars_s",
+      "from": [
+        4,
+        1,
+        12
+      ],
+      "to": [
+        12,
+        10,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            6,
+            12,
+            15
+          ],
+          "texture": "#spawner_cage_bars"
+        },
+        "south": {
+          "uv": [
+            4,
+            6,
+            12,
+            15
+          ],
+          "texture": "#spawner_cage_bars"
+        }
+      }
+    },
+    {
+      "name": "bars_w",
+      "from": [
+        4,
+        1,
+        4
+      ],
+      "to": [
+        4,
+        10,
+        12
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            4,
+            6,
+            12,
+            15
+          ],
+          "texture": "#spawner_cage_bars"
+        },
+        "west": {
+          "uv": [
+            4,
+            6,
+            12,
+            15
+          ],
+          "texture": "#spawner_cage_bars"
+        }
+      }
+    },
+    {
+      "name": "bars_e",
+      "from": [
+        12,
+        1,
+        4
+      ],
+      "to": [
+        12,
+        10,
+        12
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            4,
+            6,
+            12,
+            15
+          ],
+          "texture": "#spawner_cage_bars"
+        },
+        "west": {
+          "uv": [
+            4,
+            6,
+            12,
+            15
+          ],
+          "texture": "#spawner_cage_bars"
+        }
+      }
+    },
+    {
+      "name": "bars_handle",
+      "from": [
+        6,
+        13,
+        8
+      ],
+      "to": [
+        10,
+        16,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            0,
+            10,
+            3
+          ],
+          "texture": "#spawner_cage_bars"
+        },
+        "south": {
+          "uv": [
+            6,
+            0,
+            10,
+            3
+          ],
+          "texture": "#spawner_cage_bars"
+        }
+      }
+    },
+    {
+      "name": "lock",
+      "from": [
+        6,
+        3,
+        3
+      ],
+      "to": [
+        10,
+        7,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            9,
+            10,
+            13
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            12,
+            9,
+            13,
+            13
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            3,
+            9,
+            4,
+            13
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            6,
+            3,
+            10,
+            4
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            6,
+            12,
+            10,
+            13
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "glow_crystal",
+      "from": [
+        7,
+        4,
+        2
+      ],
+      "to": [
+        9,
+        6,
+        3
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            10,
+            9,
+            12
+          ],
+          "texture": "#hextech_glow"
+        },
+        "east": {
+          "uv": [
+            13,
+            10,
+            14,
+            12
+          ],
+          "texture": "#hextech_glow"
+        },
+        "west": {
+          "uv": [
+            2,
+            10,
+            3,
+            12
+          ],
+          "texture": "#hextech_glow"
+        },
+        "up": {
+          "uv": [
+            7,
+            2,
+            9,
+            3
+          ],
+          "texture": "#hextech_glow"
+        },
+        "down": {
+          "uv": [
+            7,
+            13,
+            9,
+            14
+          ],
+          "texture": "#hextech_glow"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1,
+        0
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        1,
+        0
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.35,
+        0.35,
+        0.35
+      ]
+    },
+    "gui": {
+      "rotation": [
+        30,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        -0.5,
+        0
+      ],
+      "scale": [
+        0.72,
+        0.72,
+        0.72
+      ]
+    },
+    "fixed": {
+      "scale": [
+        0.75,
+        0.75,
+        0.75
+      ]
+    }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "hextale:condition": 1
+      },
+      "model": "hextale:item/spawner_cage_full"
+    }
+  ]
 }

@@ -1,0 +1,725 @@
+{
+  "textures": {
+    "particle": "hextale:block/brass",
+    "brass": "hextale:block/brass",
+    "levitation_plate_glow": "hextale:block/levitation_plate_glow"
+  },
+  "elements": [
+    {
+      "name": "ring_n",
+      "from": [
+        4,
+        6,
+        4
+      ],
+      "to": [
+        12,
+        7,
+        6
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          6,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            9,
+            12,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            10,
+            9,
+            12,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            4,
+            9,
+            12,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            4,
+            9,
+            6,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            4,
+            4,
+            12,
+            6
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            4,
+            10,
+            12,
+            12
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "ring_s",
+      "from": [
+        4,
+        6,
+        10
+      ],
+      "to": [
+        12,
+        7,
+        12
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          6,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            9,
+            12,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "east": {
+          "uv": [
+            4,
+            9,
+            6,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "south": {
+          "uv": [
+            4,
+            9,
+            12,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            10,
+            9,
+            12,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            4,
+            10,
+            12,
+            12
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            4,
+            4,
+            12,
+            6
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "ring_w",
+      "from": [
+        4,
+        6,
+        6
+      ],
+      "to": [
+        6,
+        7,
+        10
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          6,
+          8
+        ]
+      },
+      "faces": {
+        "east": {
+          "uv": [
+            6,
+            9,
+            10,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            6,
+            9,
+            10,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            4,
+            6,
+            6,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            4,
+            6,
+            6,
+            10
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "ring_e",
+      "from": [
+        10,
+        6,
+        6
+      ],
+      "to": [
+        12,
+        7,
+        10
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          6,
+          8
+        ]
+      },
+      "faces": {
+        "east": {
+          "uv": [
+            6,
+            9,
+            10,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "west": {
+          "uv": [
+            6,
+            9,
+            10,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "up": {
+          "uv": [
+            10,
+            6,
+            12,
+            10
+          ],
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            10,
+            6,
+            12,
+            10
+          ],
+          "texture": "#brass"
+        }
+      }
+    },
+    {
+      "name": "glowshard_a_3_3",
+      "from": [
+        4,
+        5,
+        5
+      ],
+      "to": [
+        7,
+        11,
+        5
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          6,
+          8
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            3,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        },
+        "south": {
+          "uv": [
+            3,
+            0,
+            0,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        }
+      }
+    },
+    {
+      "name": "glowshard_b_3_3",
+      "from": [
+        5,
+        5,
+        4
+      ],
+      "to": [
+        5,
+        11,
+        7
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          6,
+          8
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            3,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        },
+        "west": {
+          "uv": [
+            3,
+            0,
+            0,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        }
+      }
+    },
+    {
+      "name": "glowshard_a_13_3",
+      "from": [
+        10,
+        5,
+        5
+      ],
+      "to": [
+        13,
+        11,
+        5
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          6,
+          8
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            3,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        },
+        "south": {
+          "uv": [
+            3,
+            0,
+            0,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        }
+      }
+    },
+    {
+      "name": "glowshard_b_13_3",
+      "from": [
+        11,
+        5,
+        4
+      ],
+      "to": [
+        11,
+        11,
+        7
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          6,
+          8
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            3,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        },
+        "west": {
+          "uv": [
+            3,
+            0,
+            0,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        }
+      }
+    },
+    {
+      "name": "glowshard_a_3_13",
+      "from": [
+        4,
+        5,
+        11
+      ],
+      "to": [
+        7,
+        11,
+        11
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          6,
+          8
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            3,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        },
+        "south": {
+          "uv": [
+            3,
+            0,
+            0,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        }
+      }
+    },
+    {
+      "name": "glowshard_b_3_13",
+      "from": [
+        5,
+        5,
+        10
+      ],
+      "to": [
+        5,
+        11,
+        13
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          6,
+          8
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            3,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        },
+        "west": {
+          "uv": [
+            3,
+            0,
+            0,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        }
+      }
+    },
+    {
+      "name": "glowshard_a_13_13",
+      "from": [
+        10,
+        5,
+        11
+      ],
+      "to": [
+        13,
+        11,
+        11
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          6,
+          8
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            3,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        },
+        "south": {
+          "uv": [
+            3,
+            0,
+            0,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        }
+      }
+    },
+    {
+      "name": "glowshard_b_13_13",
+      "from": [
+        11,
+        5,
+        10
+      ],
+      "to": [
+        11,
+        11,
+        13
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          6,
+          8
+        ]
+      },
+      "light_emission": 15,
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            3,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        },
+        "west": {
+          "uv": [
+            3,
+            0,
+            0,
+            6
+          ],
+          "texture": "#levitation_plate_glow"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -135,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "gui": {
+      "rotation": [
+        30,
+        -135,
+        0
+      ],
+      "translation": [
+        0,
+        1,
+        0
+      ],
+      "scale": [
+        0.625,
+        0.625,
+        0.625
+      ]
+    },
+    "fixed": {
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  }
+}

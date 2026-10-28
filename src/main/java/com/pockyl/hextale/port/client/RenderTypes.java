@@ -27,4 +27,8 @@ public final class RenderTypes {
     public static RenderType eyes(ResourceLocation texture) {
         return RenderType.eyes(texture);
     }
+
+    public static RenderType entitySolid(ResourceLocation texture) {
+        return RenderType.entitySolid(texture);
+    }
 }
