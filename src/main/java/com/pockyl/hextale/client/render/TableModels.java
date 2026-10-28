@@ -40,12 +40,9 @@ public final class TableModels {
     /** The Hextech Altar's gimbal, larger rings with hextech studs, centred on their block like the table's. */
     public static final StandaloneModelKey<BlockStateModelPart> ALTAR_RING_OUTER = model("block/hextech_altar/ring_outer");
     public static final StandaloneModelKey<BlockStateModelPart> ALTAR_RING_INNER = model("block/hextech_altar/ring_inner");
-    /** The Essence Jar's body (drawn by the jar's renderer so it can rock). */
+    /** The Essence Jar's body (drawn by the jar's renderer so it can rock; four times larger for the Big Essence Jar). */
     public static final StandaloneModelKey<BlockStateModelPart> ESSENCE_JAR = model("block/essence_tank");
     public static final StandaloneModelKey<BlockStateModelPart> CREATIVE_JAR = model("block/creative_essence_tank");
-    /** The Big Essence Jar's vat round its controller, in two halves: the upper one is drawn two blocks up. */
-    public static final StandaloneModelKey<BlockStateModelPart> BIG_JAR_LOWER = model("block/big_essence_jar_lower");
-    public static final StandaloneModelKey<BlockStateModelPart> BIG_JAR_UPPER = model("block/big_essence_jar_upper");
     /**
      * The Hex Lapidary's grinding wheel, the cutting disc on its side and the treadle's flywheel under the bench, turned by
      * the lapidary's renderer about their axles (along x).

@@ -42,20 +42,26 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
 
     private static final Identifier LABELS = Hextale.id("textures/block/essence_labels.png");
     /**
-     * A sticker is a paper tag on twine, 20 x 32 texels; in the sheet one per 32 x 32 cell of a 512 x 256 texture.
+     * A sticker is a small paper tag on twine, 20 x 32 texels drawn at six texels per pixel (a 3.3 x 4 px tag under its
+     * twine), so its sign is small and sharp and the liquid shows round it; in the sheet one per 32 x 32 cell of a
+     * 512 x 256 texture.
      */
+    private static final float TEXELS_PER_PIXEL = 6;
     private static final int LABEL_W = 20;
     private static final int LABEL_H = 32;
     private static final int LABEL_CELL = 32;
+    private static final float HALF_W = LABEL_W / 2F / 16 / TEXELS_PER_PIXEL;
     /** The cell's top rows hold the twine, the rest the tag with its eyelet. */
     private static final int TWINE_ROWS = 8;
     /**
-     * The jar's tag at six texels per pixel (a 3.3 x 4 px tag under its twine), so its sign is small and sharp and the
-     * liquid shows round it. It hangs flat 0.3 px in front of the glass (whose flat sides lie 3 px inside the block),
-     * centred across, its eyelet just over the body's top; the twine runs from the eyelet up over the shoulders to the
-     * tie round the neck (2 px from the middle, 13 px up).
+     * The tag hangs flat 0.3 px in front of the glass (whose flat sides lie 3 px inside the block), centred across, its
+     * eyelet just over the body's top; the twine runs from the eyelet up over the shoulders to the tie round the neck
+     * (2 px from the middle, 13 px up).
      */
-    static final Tag JAR_TAG = new Tag(6, 0.5F - 2.7F / 16, 10.4F / 16, 0.5F - 6F / 16, 13F / 16);
+    private static final float SIDE_OUT = 0.5F - 2.7F / 16;
+    private static final float TAG_TOP = 10.4F / 16;
+    private static final float NECK_OUT = 0.5F - 6F / 16;
+    private static final float NECK_Y = 13F / 16;
 
     /** How far a pushed jar leans at first (degrees), how fast it rocks (ticks per swing) and how soon it settles. */
     private static final float WOBBLE_DEGREES = 8;
@@ -113,20 +119,16 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         poseStack.pushPose();
-        rock(poseStack, state);
-        TableModels.submit(poseStack, collector, state.creative ? TableModels.CREATIVE_JAR : TableModels.ESSENCE_JAR, state.lightCoords);
-        submitContents(poseStack, collector, state.fill, state.color, state.time, state.seed, 3, state.labels, state.lightCoords);
-        poseStack.popPose();
-    }
-
-    /** Rocks a pushed jar on its foot (round the middle of its block's floor): the top leans towards the push. */
-    static void rock(PoseStack poseStack, State state) {
         if (state.tilt != 0) {
+            // Rock on the foot: the top leans towards the push.
             Direction towards = Direction.from2DDataValue(state.tiltDirection);
             poseStack.translate(0.5, 0, 0.5);
             poseStack.rotate(Axis.of(new org.joml.Vector3f(towards.getStepZ(), 0, -towards.getStepX())).rotationDegrees(state.tilt));
             poseStack.translate(-0.5, 0, -0.5);
         }
+        TableModels.submit(poseStack, collector, state.creative ? TableModels.CREATIVE_JAR : TableModels.ESSENCE_JAR, state.lightCoords);
+        submitContents(poseStack, collector, state.fill, state.color, state.time, state.seed, 3, state.labels, state.lightCoords);
+        poseStack.popPose();
     }
 
     /**
@@ -141,11 +143,6 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
             float top = Math.min(TOP, BOTTOM + (TOP - BOTTOM) * Math.min(1, fill) + wave);
             LiquidBox.submitCutCorners(poseStack, collector, MIN, MIN, MAX, MAX, CUT, BOTTOM, top, RuneDrawing.argb(vivid(color), 0.9F), time, seed, bubbles);
         }
-        stickers(poseStack, collector, labels, light, JAR_TAG);
-    }
-
-    /** The stickers on every side that has one, hung the way {@code tag} says (the Big Essence Jar has its own). */
-    static void stickers(PoseStack poseStack, SubmitNodeCollector collector, @Nullable Essence[] labels, int light, Tag tag) {
         boolean any = false;
         for (Essence label : labels) {
             any |= label != null;
@@ -157,7 +154,7 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
             for (Direction face : Direction.values()) {
                 Essence label = labels[face.get3DDataValue()];
                 if (label != null) {
-                    sticker(consumer, pose, face, label, light, tag);
+                    sticker(consumer, pose, face, label, light);
                 }
             }
         });
@@ -187,7 +184,7 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
      * One sticker on a side, seen upright from outside: the tag flat in front of the glass, and its twine bent back from
      * the eyelet over the shoulders to the neck.
      */
-    private static void sticker(VertexConsumer consumer, PoseStack.Pose pose, Direction face, Essence essence, int light, Tag tag) {
+    private static void sticker(VertexConsumer consumer, PoseStack.Pose pose, Direction face, Essence essence, int light) {
         float nx = face.getStepX();
         float nz = face.getStepZ();
         // Stickers sit 16 to a row on a 512 x 256 sheet.
@@ -196,21 +193,20 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
         float v0 = essence.ordinal() / 16 * LABEL_CELL / 256F;
         float vEyelet = (essence.ordinal() / 16 * LABEL_CELL + TWINE_ROWS) / 256F;
         float v1 = (essence.ordinal() / 16 * LABEL_CELL + LABEL_H) / 256F;
-        float tagBottom = tag.tagTop - (LABEL_H - TWINE_ROWS) / 16F / tag.texelsPerPixel;
-        float halfW = LABEL_W / 2F / 16 / tag.texelsPerPixel;
-        quad(consumer, pose, nx, nz, halfW, tag.sideOut, tagBottom, tag.sideOut, tag.tagTop, u0, u1, vEyelet, v1, light);
-        quad(consumer, pose, nx, nz, halfW, tag.sideOut, tag.tagTop, tag.neckOut, tag.neckY, u0, u1, v0, vEyelet, light);
+        float tagBottom = TAG_TOP - (LABEL_H - TWINE_ROWS) / 16F / TEXELS_PER_PIXEL;
+        quad(consumer, pose, nx, nz, SIDE_OUT, tagBottom, SIDE_OUT, TAG_TOP, u0, u1, vEyelet, v1, light);
+        quad(consumer, pose, nx, nz, SIDE_OUT, TAG_TOP, NECK_OUT, NECK_Y, u0, u1, v0, vEyelet, light);
     }
 
     /**
-     * A quad 2 * {@code halfW} wide across the side facing ({@code nx}, {@code nz}), from {@code out0} off the jar's
+     * A quad 2 * {@link #HALF_W} wide across the side facing ({@code nx}, {@code nz}), from {@code out0} off the jar's
      * middle at height {@code y0} up to {@code out1} at {@code y1}; {@code vTop} is drawn at the top edge.
      */
-    private static void quad(VertexConsumer consumer, PoseStack.Pose pose, float nx, float nz, float halfW, float out0, float y0, float out1,
-                             float y1, float u0, float u1, float vTop, float vBottom, int light) {
+    private static void quad(VertexConsumer consumer, PoseStack.Pose pose, float nx, float nz, float out0, float y0, float out1, float y1,
+                             float u0, float u1, float vTop, float vBottom, int light) {
         // right = up x normal
-        float rx = nz * halfW;
-        float rz = -nx * halfW;
+        float rx = nz * HALF_W;
+        float rz = -nx * HALF_W;
         float[][] corners = {
                 {0.5F + nx * out0 - rx, y0, 0.5F + nz * out0 - rz, u0, vBottom},
                 {0.5F + nx * out0 + rx, y0, 0.5F + nz * out0 + rz, u1, vBottom},
@@ -221,13 +217,5 @@ public class EssenceTankRenderer implements BlockEntityRenderer<EssenceTankBlock
             consumer.addVertex(pose, c[0], c[1], c[2]).setColor(-1).setUv(c[3], c[4]).setOverlay(OverlayTexture.NO_OVERLAY)
                     .setLight(light).setNormal(pose, nx, 0, nz);
         }
-    }
-
-    /**
-     * Where a sticker hangs (block units from the jar's middle and floor): {@code texelsPerPixel} sets its size, the tag
-     * hangs flat {@code sideOut} from the middle with its eyelet at {@code tagTop}, and the twine runs from the eyelet to
-     * the tie {@code neckOut} from the middle at {@code neckY}.
-     */
-    record Tag(float texelsPerPixel, float sideOut, float tagTop, float neckOut, float neckY) {
     }
 }

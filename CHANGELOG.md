@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - The Essence Jar is a real jar now: a round glass body smaller than the block, rounded shoulders, a narrow neck tied
   with twine and a cork. Its tag hangs from the neck.
-- The Big Essence Jar has its own look: a big octagonal glass vat standing in a walnut tub with a brass band, a brass
-  hoop round its middle, frosted shoulders under a wide walnut lid and a paper tag tied under the lid.
 - The Rune Stele stands two blocks tall: a stone slab with a carved channel and a ring head where the chosen rune turns.
   Steles placed before grow their top when there is room.
 - The Hex Furnace has a brick crown and a brass chimney; smoke and embers rise from the chimney. Its bricks are darker.
@@ -64,8 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Lab Bench shows how much of the compound is in the flask as liquid in a graduated glass tube, and its purity on a
   scale with a brass mark at what the topic needs, instead of small numbers (the numbers are in the tooltips). When there
   are more topics than fit, the topic grid scrolls with the mouse wheel and no longer covers the open topic.
-- Ward Glass and Veil Glass carry their rune etched into the glass - upright in Ward Glass, turned over in Veil Glass -
-  in a brass and a pewter frame, and the coil under an Impulse Plate's lid is a glowing cog now.
+- The coil under an Impulse Plate's lid is a glowing cog now.
 
 ## [1.5.0] - 2026-10-28
 The first part of a visual and sound update: HexTale now sounds like itself, runes show themselves when they work, and
