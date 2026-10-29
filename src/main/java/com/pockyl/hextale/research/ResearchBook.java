@@ -39,4 +39,9 @@ public final class ResearchBook {
     public static List<ComplexRune> runes(int chapter) {
         return ComplexRunes.all().stream().filter(rune -> chapter(rune) == chapter).toList();
     }
+
+    /** The runes of a chapter that can be found: the ones in use. */
+    public static List<ComplexRune> findable(int chapter) {
+        return runes(chapter).stream().filter(ComplexRune::inUse).toList();
+    }
 }

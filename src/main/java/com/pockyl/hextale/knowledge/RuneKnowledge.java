@@ -155,6 +155,9 @@ public final class RuneKnowledge {
      * @return whether the rune was new
      */
     public boolean learn(ComplexRune rune, int stars) {
+        if (!rune.inUse()) {
+            return false;
+        }
         boolean fresh = !knows(rune);
         this.stars.merge(rune, Math.max(1, Math.min(3, stars)), Math::max);
         return fresh;
@@ -164,8 +167,9 @@ public final class RuneKnowledge {
         return stars.remove(rune) != null;
     }
 
+    /** Known runes in use; an old scroll's rune that went out of use is not counted. */
     public int runeCount() {
-        return stars.size();
+        return (int) stars.keySet().stream().filter(ComplexRune::inUse).count();
     }
 
     /** Learned runes in the order of discovery. */

@@ -19,11 +19,11 @@
 <p style="text-align:center"><em>Everything breaks down into essences. Coal is mostly fire, seeds are mostly life. I boil things in the alembic,<br>keep what comes out in jars and move it around with brass pipes.</em></p>
 
 <h2 style="text-align:center"><span style="color:#e2b86a">Page 15.</span> Runes</h2>
-<p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/altar.gif" width="720" alt="A ritual at the Hextech Altar"></p>
-<p style="text-align:center"><em>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>The altar burns them into tools and machines. My pickaxe smelts ore now and can see it through stone.</em></p>
+<p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/altar.gif" width="720" alt="A ritual at the Ritual Altar"></p>
+<p style="text-align:center"><em>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>A rune circle burns them into tools and machines. My pickaxe smelts ore now and can see it through stone.</em></p>
 
 <h2 style="text-align:center"><span style="color:#e2b86a">Page 19.</span> Machines</h2>
-<p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/pylons.gif" width="264" alt="Pylons gathering loot"> <img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/reaper.gif" width="264" alt="The Whirl Reaper"> <img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/sawmill.gif" width="264" alt="The Hex Sawmill"></p>
+<p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/pylons.gif" width="264" alt="Pylons gathering loot"> <img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/reaper.gif" width="264" alt="The Whirl Reaper"> <img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/sawmill.gif" width="264" alt="The Whirl Sawmill"></p>
 <p style="text-align:center"><em>Pylons carry items into chests, the reaper harvests the field around it, and the sawmill cuts trees<br>and plants new ones. They all run on essence from the jars nearby.</em></p>
 
 <h2 style="text-align:center"><span style="color:#e2b86a">Page 22.</span> The Void</h2>

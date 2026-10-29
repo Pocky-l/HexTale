@@ -1307,10 +1307,32 @@ public final class ResearchGameTests {
     @HexTest
     public static void learnAllCountsRunes(GameTestHelper helper) {
         ServerPlayer player = player(helper);
-        Research.learnAll(player, ComplexRunes.all().subList(0, 12), 1);
+        Research.learnAll(player, ComplexRunes.inUse().subList(0, 12), 1);
         RuneKnowledge knowledge = Research.of(player);
         helper.assertTrue(knowledge.runeCount() == 12, "twelve runes learned at once");
         player.discard();
+        helper.succeed();
+    }
+
+    /** A rune no holder takes is out of the game: "???" by name, never in a chest, never learned, never written. */
+    @HexTest
+    public static void unusedRunesStayHidden(GameTestHelper helper) {
+        List<ComplexRune> unused = ComplexRunes.all().stream().filter(rune -> !rune.inUse()).toList();
+        helper.assertFalse(unused.isEmpty() || ComplexRunes.inUse().isEmpty(), "some runes are in use, some are not");
+        ComplexRune hidden = unused.getFirst();
+        helper.assertTrue(hidden.translationKey().equals(ComplexRune.UNKNOWN_KEY), "an unused rune reads ???");
+        helper.assertTrue(SMELTING.translationKey().equals(SMELTING.codexKey()), "a rune in use keeps its name");
+        net.minecraft.util.RandomSource random = net.minecraft.util.RandomSource.create(11);
+        for (int i = 0; i < 600; i++) {
+            ItemStack scroll = com.pockyl.hextale.loot.RuneScrollLoot.roll(random, List.of(50, 30, 20), List.of(60, 30, 10));
+            ComplexRune rune = RuneScrollItem.rune(scroll);
+            helper.assertTrue(rune != null && rune.inUse(), "chests hold only runes in use, got " + rune);
+        }
+        RuneKnowledge knowledge = new RuneKnowledge();
+        helper.assertFalse(knowledge.learn(hidden, 3), "an unused rune is not learned");
+        helper.assertTrue(knowledge.runeCount() == 0 && knowledge.stars(hidden) == 0, "and not counted");
+        helper.assertTrue(com.pockyl.hextale.infusion.Ritual.usesFor(new ItemStack(ModItems.BLANK_SCROLL.get()), false).stream().noneMatch(use -> use.rune() == hidden),
+                "an unused rune is never written on a blank scroll");
         helper.succeed();
     }
 
@@ -1400,7 +1422,7 @@ public final class ResearchGameTests {
     @HexTest
     public static void scrollsTeachOtherResearchers(GameTestHelper helper) {
         ServerPlayer reader = survivalPlayer(helper);
-        ComplexRune lens = ComplexRunes.byKey("water_light");
+        ComplexRune lens = ComplexRunes.byKey("water_life");
         ItemStack scroll = RuneScrollItem.of(lens, 2, ModItems.RUNE_SCROLL.get());
         scroll.setCount(3);
         reader.setItemInHand(InteractionHand.MAIN_HAND, scroll);
@@ -1410,6 +1432,12 @@ public final class ResearchGameTests {
         helper.assertTrue(reader.getMainHandItem().getCount() == 2, "one scroll is used up");
         scroll.use(helper.getLevel(), reader, InteractionHand.MAIN_HAND);
         helper.assertTrue(reader.getMainHandItem().getCount() == 2, "a scroll that teaches nothing new is kept");
+        ComplexRune hidden = ComplexRunes.byKey("water_light");
+        helper.assertFalse(hidden.inUse(), "the retired Lens rune is out of use");
+        reader.setItemInHand(InteractionHand.MAIN_HAND, RuneScrollItem.of(hidden, 3, ModItems.RUNE_SCROLL.get()));
+        reader.getMainHandItem().use(helper.getLevel(), reader, InteractionHand.MAIN_HAND);
+        helper.assertTrue(Research.of(reader).stars(hidden) == 0 && !reader.getMainHandItem().isEmpty(),
+                "a scroll of a rune out of use cannot be read and is kept");
         reader.discard();
         helper.succeed();
     }

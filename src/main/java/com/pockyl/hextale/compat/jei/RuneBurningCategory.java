@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Burning a rune into a hextech pickaxe or a hex pylon at the altar: it lies alone on the altar, the rune on a stele, no pedestal
+ * Burning a rune into a hextech pickaxe or a hex pylon in the Rune Circle: it lies alone in the circle, the rune on a stele, no pedestal
  * items - only the rune's essence. Shows what the rune does, how much at one, two and three stars, what each star costs
  * and the runes it is incompatible with.
  */
@@ -83,7 +83,7 @@ public class RuneBurningCategory extends AbstractRecipeCategory<RuneBurningCateg
         builder.addInputSlot(4, 4).setStandardSlotBackground().addItemStacks(before);
         builder.addSlot(RecipeIngredientRole.CATALYST, 40, 4).addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(new ItemStack(ModItems.RUNE_STELE.get())));
         builder.addOutputSlot(98, 4).setOutputSlotBackground().addItemStacks(after);
-        builder.addSlot(RecipeIngredientRole.CATALYST, WIDTH - 20, 4).addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(new ItemStack(ModItems.HEXTECH_ALTAR.get())));
+        builder.addSlot(RecipeIngredientRole.CATALYST, WIDTH - 20, 4).addIngredientsUnsafe(com.pockyl.hextale.port.PortJei.stacks(new ItemStack(ModItems.RUNE_CIRCLE.get())));
     }
 
     @Override

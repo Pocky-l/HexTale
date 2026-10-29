@@ -91,7 +91,7 @@ public final class RuneScrollLoot extends LootModifier {
         if (chapter <= 0) {
             return ItemStack.EMPTY;
         }
-        List<ComplexRune> runes = ResearchBook.runes(chapter);
+        List<ComplexRune> runes = ResearchBook.findable(chapter);
         ComplexRune rune = runes.get(random.nextInt(runes.size()));
         return RuneScrollItem.of(rune, Math.max(0, pick(random, stars)) + 1, ModItems.RUNE_SCROLL.get());
     }

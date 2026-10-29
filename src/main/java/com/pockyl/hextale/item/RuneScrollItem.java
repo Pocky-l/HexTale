@@ -81,6 +81,10 @@ public class RuneScrollItem extends Item {
             return InteractionResult.PASS;
         }
         if (player instanceof ServerPlayer serverPlayer) {
+            if (!rune.inUse()) {
+                serverPlayer.displayClientMessage(Component.translatable("item.hextale.rune_scroll.unreadable"), true);
+                return InteractionResult.FAIL;
+            }
             Component name = Component.translatable(rune.translationKey()).withColor(rune.color());
             RuneKnowledge knowledge = Research.of(serverPlayer);
             int stars = stars(stack);

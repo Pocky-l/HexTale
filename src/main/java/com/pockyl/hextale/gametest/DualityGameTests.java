@@ -169,10 +169,11 @@ public final class DualityGameTests {
             float beforeBreach = Thinning.get(chunk);
             Thinning.add(level, work, 1, Thinning.Source.BREACH);
             helper.assertTrue(Thinning.get(chunk) - beforeBreach > 0.99F, "the Void's own feeding is not burned off");
-            helper.assertTrue(Wards.shields(level, chunk.getPos()), "and the creep stops at its chunk");
+            // Its own chunk: the working spot may lie across a chunk border, depending on where the test stands.
+            helper.assertTrue(Wards.shields(level, level.getChunkAt(helper.absolutePos(at)).getPos()), "and the creep stops at its chunk");
             Thinning.set(level, chunk, before);
             wipe(helper);
-        });
+               });
     }
 
     @HexTest(maxTicks = 100, padding = 9)

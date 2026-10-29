@@ -25,14 +25,14 @@
 <p align="center"><i>Everything breaks down into essences. Coal is mostly fire, seeds are mostly life. I boil things in the alembic,<br>keep what comes out in jars and move it around with brass pipes.</i></p>
 
 <h3 align="center">Page 15. Runes</h3>
-<p align="center"><img src="docs/showcase/altar.gif" alt="A ritual at the Hextech Altar" width="720"></p>
-<p align="center"><i>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>The altar burns them into tools and machines. My pickaxe smelts ore now and can see it through stone.</i></p>
+<p align="center"><img src="docs/showcase/altar.gif" alt="A ritual at the Ritual Altar" width="720"></p>
+<p align="center"><i>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>A rune circle burns them into tools and machines. My pickaxe smelts ore now and can see it through stone.</i></p>
 
 <h3 align="center">Page 19. Machines</h3>
 <p align="center">
   <img src="docs/showcase/pylons.gif" alt="Pylons gathering loot" width="264">
   <img src="docs/showcase/reaper.gif" alt="The Whirl Reaper" width="264">
-  <img src="docs/showcase/sawmill.gif" alt="The Hex Sawmill" width="264">
+  <img src="docs/showcase/sawmill.gif" alt="The Whirl Sawmill" width="264">
 </p>
 <p align="center"><i>Pylons carry items into chests, the reaper harvests the field around it, and the sawmill cuts trees<br>and plants new ones. They all run on essence from the jars nearby.</i></p>
 
