@@ -4,6 +4,19 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0+1.21.1] - 2026-10-29
+### Changed
+- Everything of 1.6.0 for Minecraft 26.3 is included: hextech against chemtech with the Chem Boiler, the Warding
+  Lamppost, shimmer in the veins (shown on the player and as an effect), Synthetic Crystals in the Crystal Purifier and
+  the Void Anchors, Chem Tubes and the Rusted Grate, and the chemtech devices in rusted iron and copper; the Rune Circle,
+  where runes are now burned in and copied, with the steles turned to face it; hextech grades where they belong; runes
+  no device takes out of the world; names without "Hex" and renamed runes; runes in the new arcane script, drawn smooth
+  and glowing on screens; and the shader pack fixes for soft halos, liquids and signs (with
+  [Iris](https://www.curseforge.com/minecraft/mc-mods/irisshaders) for 1.21.1 too). Where 1.21.1 differs:
+  - the runes' glowing ribbons in the world are drawn after the particles without Minecraft's newer transparency
+    sorting, like the other glowing things on 1.21.1, so where they overlap glass or water they may sort a little
+    differently.
+
 ## [1.5.0+1.21.1] - 2026-10-28
 ### Changed
 - Everything of 1.5.0 for Minecraft 26.3 is included: the visual and sound update with the mod's own sounds, rune signs
