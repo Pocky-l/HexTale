@@ -203,7 +203,7 @@ public class SteleScreen extends Screen {
             float pulse = 0.5F + 0.5F * Mth.sin(now / 200.0F);
             PixelArt.hex(graphics, cx, cy, 19, 0, PixelArt.argb(GOLD, 0.35F + 0.4F * pulse));
         }
-        PixelArt.glyph(graphics, rune, x + 4, y + 4, 12, PixelArt.argb(hover || chosen ? PixelArt.mix(color, 0xFFFFFF, 0.25F) : color, 1), 0xFF000000);
+        PixelArt.glyph(graphics, rune, x + 3, y + 3, 14, PixelArt.argb(hover || chosen ? PixelArt.mix(color, 0xFFFFFF, 0.25F) : color, 1), 0xFF000000);
     }
 
     private List<Component> describe(ComplexRune rune, boolean known) {

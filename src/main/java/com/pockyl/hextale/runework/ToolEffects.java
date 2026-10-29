@@ -524,7 +524,7 @@ public final class ToolEffects {
         if ((roll -= 4) < 0) {
             return new ItemStack(Items.DIAMOND);
         }
-        List<ComplexRune> first = ResearchBook.runes(1);
+        List<ComplexRune> first = ResearchBook.findable(1);
         return RuneScrollItem.of(first.get(random.nextInt(first.size())), 1, ModItems.RUNE_SCROLL.get());
     }
 

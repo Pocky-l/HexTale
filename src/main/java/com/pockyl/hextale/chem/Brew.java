@@ -23,11 +23,11 @@ public enum Brew implements StringRepresentable {
     /** Coolant: puts fire out, freezes lava into stone. */
     COOLANT(0x7FD9F0, true),
     /** Glow mix: green patches of cold light where it splashes. */
-    GLOW(0x9CFF6A, true),
+    GLOW(0xA6DC5C, true),
     /** Acid: eats away stone, rusts iron, burns monsters. */
-    ACID(0xC9EE24, true),
+    ACID(0xBFD83C, true),
     /** Raw shimmer: a cloudy violet fuel, and what the Chem Still refines. */
-    RAW_SHIMMER(0xA04CF0, false),
+    RAW_SHIMMER(0x9A4CD0, false),
     /** Refined shimmer: glowing magenta, drunk for strength; the longest-burning fuel there is. */
     REFINED_SHIMMER(0xF052D8, false);
 

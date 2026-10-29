@@ -49,7 +49,7 @@ public final class ResearchTopics {
     public static final ResearchTopic ESSENCE_STICKER = add("essence_sticker", 2, Essence.LIFE, Essence.WATER, ModItems.ESSENCE_STICKER);
     public static final ResearchTopic PYLON_FILTER = add("pylon_filter", 2, Essence.AIR, Essence.LIGHT, ModItems.PYLON_FILTER);
     public static final ResearchTopic CIRCLE = add("hextech_altar", 1, Essence.SPARK, Essence.EARTH,
-            ModItems.HEXTECH_ALTAR, ModItems.PEDESTAL, ModItems.RUNE_STELE);
+            ModItems.HEXTECH_ALTAR, ModItems.PEDESTAL, ModItems.RUNE_STELE, ModItems.RUNE_CIRCLE);
     public static final ResearchTopic BIG_ESSENCE_JAR = add("big_essence_jar", 1, Essence.WATER, Essence.LIGHT, ModItems.ESSENCE_TANK);
     public static final ResearchTopic LAPIDARY = add("hex_lapidary", 1, Essence.EARTH, Essence.SPARK, ModItems.HEX_LAPIDARY,
             ModItems.CUTTING_DISC);
@@ -65,6 +65,7 @@ public final class ResearchTopics {
     public static final ResearchTopic MAGIC_TREE = lab("magic_sapling", 2, Essence.LIFE, Essence.LIGHT, ModItems.MAGIC_SAPLING);
     public static final ResearchTopic AXOLOTL_TANK = lab("axolotl_tank", 1, Essence.WATER, Essence.LIFE, ModItems.AXOLOTL_TANK);
     public static final ResearchTopic CHEM_STILL = lab("chem_still", 2, Essence.FIRE, Essence.EARTH, ModItems.CHEM_STILL);
+    public static final ResearchTopic CHEM_BOILER = lab("chem_boiler", 2, Essence.FIRE, Essence.WATER, ModItems.CHEM_BOILER);
     public static final ResearchTopic PINK_BRAZIER = lab("pink_brazier", 2, Essence.FIRE, Essence.SPARK, ModItems.PINK_BRAZIER);
     public static final ResearchTopic SYNTHETIC_CRYSTAL = lab("synthetic_crystal", 2, Essence.LIGHT, Essence.EARTH, ModItems.SYNTHETIC_CRYSTAL);
     // Chemtech reactions: each brew is worked out at the Lab Bench before the Crucible brews it for the researcher.
@@ -98,6 +99,7 @@ public final class ResearchTopics {
     public static final ResearchTopic ARC_SPIRE = add("arc_spire", 2, Essence.SPARK, Essence.SHADOW, ModItems.ARC_SPIRE);
     public static final ResearchTopic VOID_ANCHOR = add("void_anchor", 2, Essence.SHADOW, Essence.EARTH, ModItems.VOID_ANCHOR);
     public static final ResearchTopic HEXTECH_PURIFIER = add("hextech_purifier", 2, Essence.LIGHT, Essence.SHADOW, ModItems.HEXTECH_PURIFIER);
+    public static final ResearchTopic HEXTECH_LAMPPOST = add("hextech_lamppost", 2, Essence.LIGHT, Essence.AIR, ModItems.HEXTECH_LAMPPOST);
     public static final ResearchTopic BINDING_CHALK = add("binding_chalk", 2, Essence.SHADOW, Essence.EARTH, ModItems.BINDING_CHALK);
     public static final ResearchTopic XP_CONDENSER = add("xp_condenser", 2, Essence.LIGHT, Essence.LIFE, ModItems.XP_CONDENSER);
     public static final ResearchTopic GATHERING_PYLON = add("gathering_pylon", 2, Essence.AIR, Essence.SPARK, ModItems.GATHERING_PYLON);

@@ -33,6 +33,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.transport.PylonKind;
 import com.pockyl.hextale.block.AlembicBlock;
+import com.pockyl.hextale.block.RuneCircleBlock;
 import com.pockyl.hextale.block.BrassPipeBlock;
 import com.pockyl.hextale.block.CreativeEssenceTankBlock;
 import com.pockyl.hextale.block.DrainValveBlock;
@@ -206,6 +207,10 @@ public final class ModBlocks {
     public static final DeferredBlock<RuneSteleBlock> RUNE_STELE = BLOCKS.registerBlock("rune_stele", RuneSteleBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> state.getValue(RuneSteleBlock.LIT) ? 9 : 2));
+    /** The Rune Circle: a carved stone disc in the floor where the steles' runes are burned in and copied. */
+    public static final DeferredBlock<RuneCircleBlock> RUNE_CIRCLE = BLOCKS.registerBlock("rune_circle", RuneCircleBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(3.5F, 9.0F).sound(SoundType.POLISHED_DEEPSLATE)
+                    .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 4));
     /** A mote of hextech light a pickaxe with the Eternal Flame rune leaves in the dark: no body, no drops, goes out at a touch. */
     public static final DeferredBlock<HexWispBlock> HEX_WISP = BLOCKS.registerBlock("hex_wisp", HexWispBlock::new,
             () -> BlockBehaviour.Properties.of().replaceable().noCollision().instabreak().noLootTable().lightLevel(state -> 13)
@@ -299,6 +304,13 @@ public final class ModBlocks {
             com.pockyl.hextale.block.HexSawmillBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(2.5F, 6.0F).sound(SoundType.WOOD).noOcclusion()
                     .lightLevel(state -> 4));
+    /** A two-block brass-and-walnut street lamp whose gem burns off the dirt of the work around it. */
+    public static final DeferredBlock<com.pockyl.hextale.block.HextechLamppostBlock> HEXTECH_LAMPPOST = BLOCKS.registerBlock("hextech_lamppost",
+            com.pockyl.hextale.block.HextechLamppostBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(3.0F, 6.0F).sound(SoundType.COPPER)
+                    .requiresCorrectToolForDrops().noOcclusion().pushReaction(PushReaction.BLOCK)
+                    .lightLevel(state -> com.pockyl.hextale.block.HextechLamppostBlock.upper(state)
+                            && state.getValue(com.pockyl.hextale.block.HextechLamppostBlock.LIT) ? 15 : 0));
     /** A two-block hexsteel spike wound with brass coils under a hextech crystal: strikes the hostile creatures around it with arcs. */
     public static final DeferredBlock<com.pockyl.hextale.block.ArcSpireBlock> ARC_SPIRE = BLOCKS.registerBlock("arc_spire",
             com.pockyl.hextale.block.ArcSpireBlock::new,
@@ -340,6 +352,7 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(3.0F, 6.0F).sound(SoundType.COPPER_GRATE)
                     .noOcclusion().requiresCorrectToolForDrops().isValidSpawn((state, level, pos, type) -> false)
                     .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false));
+
 
     // The magic tree: a sapling that soaked up magic, plant and sap in a crucible grows into it. Its bark carries glowing
     // channels, its canopy weeps and sheds glowing leaves; the wood never burns.
@@ -419,6 +432,14 @@ public final class ModBlocks {
             ModBlocks::platingProperties);
     public static final DeferredBlock<Block> RIVETED_RUSTED_PLATING = BLOCKS.registerBlock("riveted_rusted_plating", Block::new,
             ModBlocks::platingProperties);
+    /** A see-through grating of rusted iron: chemtech's sibling of the brass grate. */
+    public static final DeferredBlock<TransparentBlock> RUSTED_GRATE = BLOCKS.registerBlock("rusted_grate", TransparentBlock::new,
+            () -> platingProperties().sound(SoundType.COPPER_GRATE).noOcclusion().isValidSpawn((state, level, pos, type) -> false)
+                    .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false));
+    /** A bundle of glass tubes in iron bands with green chemistry glowing in them. */
+    public static final DeferredBlock<RotatedPillarBlock> CHEM_TUBES = BLOCKS.registerBlock("chem_tubes", RotatedPillarBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.COPPER).lightLevel(state -> 7));
 
     /** Shimmerbloom: the glowing purple flower of deep caves, standing on the floor or hanging from the ceiling. */
     public static final DeferredBlock<com.pockyl.hextale.block.ShimmerbloomBlock> SHIMMERBLOOM = BLOCKS.registerBlock("shimmerbloom",
@@ -453,6 +474,12 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(3.0F, 6.0F).sound(SoundType.COPPER)
                     .requiresCorrectToolForDrops().noOcclusion()
                     .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChemStillBlock.WORKING) ? 7 : 3));
+    /** A riveted pressure tank on a Chem Burner that cracks mixtures of essence into all their essences at once. */
+    public static final DeferredBlock<com.pockyl.hextale.block.ChemBoilerBlock> CHEM_BOILER = BLOCKS.registerBlock("chem_boiler",
+            com.pockyl.hextale.block.ChemBoilerBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(3.0F, 6.0F).sound(SoundType.COPPER)
+                    .requiresCorrectToolForDrops().noOcclusion()
+                    .lightLevel(state -> state.getValue(com.pockyl.hextale.block.ChemBoilerBlock.WORKING) ? 5 : 0));
     /** An iron bowl of burning shimmer whose pink light makes plants grow. */
     public static final DeferredBlock<com.pockyl.hextale.block.PinkBrazierBlock> PINK_BRAZIER = BLOCKS.registerBlock("pink_brazier",
             com.pockyl.hextale.block.PinkBrazierBlock::new,

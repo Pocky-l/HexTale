@@ -2,12 +2,12 @@
   "parent": "minecraft:block/block",
   "textures": {
     "particle": "hextale:block/pink_brazier_coals",
-    "steel": "hextale:block/hexsteel_block",
-    "brass": "hextale:block/brass",
-    "grate": "hextale:block/pink_brazier_grate",
-    "coals": "hextale:block/pink_brazier_coals_lit",
-    "rod": "hextale:block/pink_brazier_rod_hot",
-    "fire": "hextale:block/pink_brazier_fire"
+    "chem_iron": "hextale:block/chem/chem_iron",
+    "chem_copper": "hextale:block/chem/chem_copper",
+    "pink_brazier_grate": "hextale:block/pink_brazier_grate",
+    "pink_brazier_coals_lit": "hextale:block/pink_brazier_coals_lit",
+    "pink_brazier_rod_hot": "hextale:block/pink_brazier_rod_hot",
+    "pink_brazier_fire": "hextale:block/pink_brazier_fire"
   },
   "elements": [
     {
@@ -30,7 +30,7 @@
             14,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -39,7 +39,7 @@
             14,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -48,7 +48,7 @@
             4,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -57,7 +57,7 @@
             4,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "up": {
           "uv": [
@@ -66,7 +66,7 @@
             4,
             4
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -75,7 +75,7 @@
             4,
             14
           ],
-          "texture": "#steel",
+          "texture": "#chem_iron",
           "cullface": "down"
         }
       }
@@ -100,7 +100,7 @@
             4,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -109,7 +109,7 @@
             14,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -118,7 +118,7 @@
             14,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -127,7 +127,7 @@
             4,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "up": {
           "uv": [
@@ -136,7 +136,7 @@
             14,
             4
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -145,7 +145,7 @@
             14,
             14
           ],
-          "texture": "#steel",
+          "texture": "#chem_iron",
           "cullface": "down"
         }
       }
@@ -170,7 +170,7 @@
             14,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -179,7 +179,7 @@
             4,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -188,7 +188,7 @@
             4,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -197,7 +197,7 @@
             14,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "up": {
           "uv": [
@@ -206,7 +206,7 @@
             4,
             14
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -215,7 +215,7 @@
             4,
             4
           ],
-          "texture": "#steel",
+          "texture": "#chem_iron",
           "cullface": "down"
         }
       }
@@ -240,7 +240,7 @@
             4,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -249,7 +249,7 @@
             4,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -258,7 +258,7 @@
             14,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -267,7 +267,7 @@
             14,
             16
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "up": {
           "uv": [
@@ -276,7 +276,7 @@
             14,
             14
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -285,7 +285,7 @@
             14,
             4
           ],
-          "texture": "#steel",
+          "texture": "#chem_iron",
           "cullface": "down"
         }
       }
@@ -310,7 +310,7 @@
             13,
             13
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -319,7 +319,7 @@
             13,
             13
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -328,7 +328,7 @@
             13,
             13
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -337,7 +337,7 @@
             13,
             13
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "up": {
           "uv": [
@@ -346,7 +346,7 @@
             13,
             13
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -355,7 +355,7 @@
             13,
             13
           ],
-          "texture": "#steel"
+          "texture": "#chem_iron"
         }
       }
     },
@@ -380,7 +380,7 @@
             12,
             12
           ],
-          "texture": "#coals"
+          "texture": "#pink_brazier_coals_lit"
         },
         "east": {
           "uv": [
@@ -389,7 +389,7 @@
             12,
             12
           ],
-          "texture": "#coals"
+          "texture": "#pink_brazier_coals_lit"
         },
         "south": {
           "uv": [
@@ -398,7 +398,7 @@
             12,
             12
           ],
-          "texture": "#coals"
+          "texture": "#pink_brazier_coals_lit"
         },
         "west": {
           "uv": [
@@ -407,7 +407,7 @@
             12,
             12
           ],
-          "texture": "#coals"
+          "texture": "#pink_brazier_coals_lit"
         },
         "up": {
           "uv": [
@@ -416,7 +416,7 @@
             12,
             12
           ],
-          "texture": "#coals"
+          "texture": "#pink_brazier_coals_lit"
         }
       }
     },
@@ -440,7 +440,7 @@
             13,
             12
           ],
-          "texture": "#grate"
+          "texture": "#pink_brazier_grate"
         },
         "south": {
           "uv": [
@@ -449,7 +449,7 @@
             13,
             12
           ],
-          "texture": "#grate"
+          "texture": "#pink_brazier_grate"
         }
       }
     },
@@ -473,7 +473,7 @@
             13,
             12
           ],
-          "texture": "#grate"
+          "texture": "#pink_brazier_grate"
         },
         "south": {
           "uv": [
@@ -482,7 +482,7 @@
             13,
             12
           ],
-          "texture": "#grate"
+          "texture": "#pink_brazier_grate"
         }
       }
     },
@@ -506,7 +506,7 @@
             13,
             12
           ],
-          "texture": "#grate"
+          "texture": "#pink_brazier_grate"
         },
         "west": {
           "uv": [
@@ -515,7 +515,7 @@
             13,
             12
           ],
-          "texture": "#grate"
+          "texture": "#pink_brazier_grate"
         }
       }
     },
@@ -539,7 +539,7 @@
             13,
             12
           ],
-          "texture": "#grate"
+          "texture": "#pink_brazier_grate"
         },
         "west": {
           "uv": [
@@ -548,7 +548,7 @@
             13,
             12
           ],
-          "texture": "#grate"
+          "texture": "#pink_brazier_grate"
         }
       }
     },
@@ -572,7 +572,7 @@
             14,
             6
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "east": {
           "uv": [
@@ -581,7 +581,7 @@
             14,
             6
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "west": {
           "uv": [
@@ -590,7 +590,7 @@
             3,
             6
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "up": {
           "uv": [
@@ -599,7 +599,7 @@
             14,
             3
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "down": {
           "uv": [
@@ -608,7 +608,7 @@
             14,
             14
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         }
       }
     },
@@ -632,7 +632,7 @@
             3,
             6
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "south": {
           "uv": [
@@ -641,7 +641,7 @@
             14,
             6
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "west": {
           "uv": [
@@ -650,7 +650,7 @@
             14,
             6
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "up": {
           "uv": [
@@ -659,7 +659,7 @@
             14,
             14
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "down": {
           "uv": [
@@ -668,7 +668,7 @@
             14,
             3
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         }
       }
     },
@@ -692,7 +692,7 @@
             13,
             6
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "up": {
           "uv": [
@@ -701,7 +701,7 @@
             3,
             13
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "down": {
           "uv": [
@@ -710,7 +710,7 @@
             3,
             13
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         }
       }
     },
@@ -734,7 +734,7 @@
             13,
             6
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "up": {
           "uv": [
@@ -743,7 +743,7 @@
             14,
             13
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "down": {
           "uv": [
@@ -752,7 +752,7 @@
             14,
             13
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         }
       }
     },
@@ -777,7 +777,7 @@
             9,
             16
           ],
-          "texture": "#rod",
+          "texture": "#pink_brazier_rod_hot",
           "cullface": "north"
         },
         "east": {
@@ -787,7 +787,7 @@
             16,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "south": {
           "uv": [
@@ -796,7 +796,7 @@
             9,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "west": {
           "uv": [
@@ -805,7 +805,7 @@
             5,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "up": {
           "uv": [
@@ -814,7 +814,7 @@
             9,
             5
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "down": {
           "uv": [
@@ -823,7 +823,7 @@
             9,
             16
           ],
-          "texture": "#rod",
+          "texture": "#pink_brazier_rod_hot",
           "cullface": "down"
         }
       }
@@ -849,7 +849,7 @@
             9,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "east": {
           "uv": [
@@ -858,7 +858,7 @@
             5,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "south": {
           "uv": [
@@ -867,7 +867,7 @@
             9,
             16
           ],
-          "texture": "#rod",
+          "texture": "#pink_brazier_rod_hot",
           "cullface": "south"
         },
         "west": {
@@ -877,7 +877,7 @@
             16,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "up": {
           "uv": [
@@ -886,7 +886,7 @@
             9,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "down": {
           "uv": [
@@ -895,7 +895,7 @@
             9,
             5
           ],
-          "texture": "#rod",
+          "texture": "#pink_brazier_rod_hot",
           "cullface": "down"
         }
       }
@@ -921,7 +921,7 @@
             16,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "east": {
           "uv": [
@@ -930,7 +930,7 @@
             9,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "south": {
           "uv": [
@@ -939,7 +939,7 @@
             5,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "west": {
           "uv": [
@@ -948,7 +948,7 @@
             9,
             16
           ],
-          "texture": "#rod",
+          "texture": "#pink_brazier_rod_hot",
           "cullface": "west"
         },
         "up": {
@@ -958,7 +958,7 @@
             5,
             9
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "down": {
           "uv": [
@@ -967,7 +967,7 @@
             5,
             9
           ],
-          "texture": "#rod",
+          "texture": "#pink_brazier_rod_hot",
           "cullface": "down"
         }
       }
@@ -993,7 +993,7 @@
             5,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "east": {
           "uv": [
@@ -1002,7 +1002,7 @@
             9,
             16
           ],
-          "texture": "#rod",
+          "texture": "#pink_brazier_rod_hot",
           "cullface": "east"
         },
         "south": {
@@ -1012,7 +1012,7 @@
             16,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "west": {
           "uv": [
@@ -1021,7 +1021,7 @@
             9,
             16
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "up": {
           "uv": [
@@ -1030,7 +1030,7 @@
             16,
             9
           ],
-          "texture": "#rod"
+          "texture": "#pink_brazier_rod_hot"
         },
         "down": {
           "uv": [
@@ -1039,7 +1039,7 @@
             16,
             9
           ],
-          "texture": "#rod",
+          "texture": "#pink_brazier_rod_hot",
           "cullface": "down"
         }
       }
@@ -1074,7 +1074,7 @@
             15,
             16
           ],
-          "texture": "#fire"
+          "texture": "#pink_brazier_fire"
         },
         "south": {
           "uv": [
@@ -1083,7 +1083,7 @@
             15,
             16
           ],
-          "texture": "#fire"
+          "texture": "#pink_brazier_fire"
         }
       }
     },
@@ -1117,7 +1117,7 @@
             15,
             16
           ],
-          "texture": "#fire"
+          "texture": "#pink_brazier_fire"
         },
         "west": {
           "uv": [
@@ -1126,7 +1126,7 @@
             15,
             16
           ],
-          "texture": "#fire"
+          "texture": "#pink_brazier_fire"
         }
       }
     }

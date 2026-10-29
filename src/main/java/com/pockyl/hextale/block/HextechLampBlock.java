@@ -18,7 +18,7 @@ import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.thevoid.Thinning;
 
 /**
- * A hextech lamp: a refined gemstone floating in a brass cage, standing on a stone foot or hanging from the block above
+ * A hextech lamp: a cut hextech crystal floating in a brass cage, standing on a stone foot or hanging from the block above
  * (like a lantern). It shines at full light and now and then sheds a cold mote.
  *
  * <p>On land the Thinning has made sick (from {@link Thinning.Stage#MIASMA}) the Void eats at its light: now and then the
@@ -60,7 +60,8 @@ public class HextechLampBlock extends LanternBlock {
         }
     }
 
-    private static void choke(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    /** The gem chokes for a moment (sick land, or the fumes of chemistry close by). */
+    public static void choke(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         level.setBlock(pos, state.setValue(FLICKER, true), Block.UPDATE_ALL);
         level.scheduleTick(pos, state.getBlock(), 2 + random.nextInt(5));
         level.playSound(null, pos, ModSounds.LAMP_FLICKER.get(), SoundSource.BLOCKS, 0.5F, 0.85F + random.nextFloat() * 0.3F);

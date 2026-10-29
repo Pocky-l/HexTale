@@ -4,6 +4,92 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0+26.1.2] - 2026-10-29
+### Changed
+- Ported to Minecraft 26.1.2 ([NeoForge](https://neoforged.net/) 26.1.2). Everything of 1.6.0 for Minecraft 26.3
+  ([full changelog](https://github.com/Pocky-l/HexTale/blob/main/CHANGELOG.md)) is included: the Rune Circle, the Chem
+  Boiler, the Warding Lamppost, shimmer in the veins, chem tubes and the rusted grate, synthetic crystals in the
+  Purifier and the Void Anchors, the new look of chemtech, the new rune script drawn smooth on screens, the renamed runes
+  and devices, and the shader-pack fixes. As before on 26.1.2, poplar saplings are not Magic Tree catalysts and
+  overlapping translucent effects (the circle's runes, the lamppost's light and the glowing veins too) may sort a little
+  differently.
+
+## [1.6.0] - 2026-10-29
+Hextech against chemtech: the quick, cheap and dirty road against the slow, clean one.
+
+### Added
+- Chem Boiler (worked out at the Lab Bench, made at the Awakened Workbench): a riveted pressure tank that sits on a Chem
+  Burner and cracks mixtures of essence - piped in, poured from a bottle, or drawn by itself out of plain jars of
+  mixture nearby. Each time the pressure is up the safety valve knocks and a batch splits into all its essences at once,
+  each running into a jar nearby that wears its sticker. Quick and needing no choice, but crude: part of every batch
+  goes up as fumes that wear the land thin, part burns down into murk that drips into the burner and feeds its flame.
+  Hextech lamps near it flicker in the fumes. Takes runes in the Rune Circle: Steam, Thrift, Purification and Purifying
+  Fire.
+- Warding Lamppost (researched at the Research Table, made at the Awakened Workbench): a two-block street lamp with a
+  gemstone in its head that burns light essence from a jar nearby. In its light a third of everything that wears the land
+  thin - boiling, brewing, cracking, spilling - burns away before it reaches the ground, drawn into the gem as a thread
+  of dark; the land around never creeps into its own chunk, and the haze clears in its light. Standing lit costs
+  nothing, only burning does. Takes runes in the Rune Circle: Reach, Purification, Thrift, Healing and Insight.
+- Shimmer in the veins: every vial of refined shimmer leaves a violet vein on the drinker (five at most), and while the
+  body is fed the veins give - a heart, a little more damage and a little more size each, eyes that see in the dark from
+  three veins, tireless hands at five. The feeding wears off after a while, sooner the more veins there are; then the
+  gifts are only withheld until the next vial, nothing is taken. A bottle of light essence washes one vein out. The
+  veins show on the player, glowing and pulsing while fed. Two new diary steps.
+- Decorative blocks for chemtech: Chem Tubes (glass tubes of glowing green chemistry in iron bands, from chem glass,
+  iron and a vial of glow mix) and the Rusted Grate (cut from rusted plating).
+- The Rune Circle, a carved stone circle in the floor made at the Awakened Workbench and learned together with the altar.
+  Rune steles stand round it now: lay a tool, a device or a blank scroll in the middle and the steles' runes are burned
+  in, or one is copied onto the scroll, the way the altar used to do it.
+- Shimmer veins show beside the other effects: "Shimmer in the Veins" with their number as its level and the time the
+  feeding lasts, "Fading Veins" once it runs out.
+
+### Changed
+- Runes are written in a new script: each element is a flowing sign of a brush - a flame, waves, a crescent, a bolt - and
+  a rune joins its two elements in one stroke with a swash beneath. On screens they are drawn smooth and glowing instead
+  of on a pixel grid; on the steles, in the circle and in the air they write themselves the same way.
+- Fewer things carry "Hex" in their name: the Awakened Workbench and Awakened Furnace, the Ritual Altar, the Lapidary,
+  the Foundry, the Whirl Sawmill, the Arc Spire, the Crystal Lamp, the Warding Lamppost, the Crystal Purifier, the
+  Skypack, the Tuning Fork, and the Runed Pickaxe, Axe, Shovel and Sword (Refined and Radiant Pickaxe). Hextech itself -
+  its dust, crystals, gemstones - keeps the name. Nothing in existing worlds changes but the names.
+- Runes with plain workshop names took older ones: Reach (was Shift), Pulse (Motor), Thrift (Dam), Levity (Lift),
+  Wavewalk (Pump), Updraft (Windmill), Thirst (Sponge), Silence (Insulator), Lodestone (Magnet), Delving (Drill),
+  Cutting Wind (Blades), Kindling (Bellows), Beacon (Signal), Hoard (Cache), Gilding (Photosynthesis).
+- Runes that no device takes yet are out of the world: they no longer lie in chests, their scrolls cannot be read, and
+  their names read "???". The codex counts only the runes there are to find.
+- Looking at the Research Table in goggles no longer sends streams of motes from the jars into it; the goggles' plate
+  still lists the ink.
+- The Crystal Purifier and the Void Anchors also take a Synthetic Crystal: it holds less than a cut crystal and, spent,
+  crumbles to a pinch of dust instead of clouding over.
+- Chemtech starts to look like the other road: rusted iron, copper and a toxic green glow instead of walnut and brass.
+  The Disintegrator is now a riveted iron vat with a copper rim, a pool of acid glowing inside, a porthole and a vent
+  stack.
+- The Axolotl Tank is a riveted iron frame round stained chem glass, with a copper feeding hatch, a little tap at the
+  bottom and greener water.
+- The Chem Burner wears the same riveted iron with a copper band and a copper-rimmed firebox.
+- Rusted plating looks like rusted iron now (dark plates, rust patches, rivets) instead of brown dirt; the Miasma
+  Vent, chem glass and the Chem Still follow it, and the still's pot is rusty copper over an iron tub.
+- The Pink Brazier's cage is iron with a copper band instead of hextech steel and brass.
+- The Lab Bench stands on a riveted iron frame under its tiled top.
+- The Experience Condenser is a hextech vessel now: an eight-sided glass column in a brass frame on a walnut
+  foot, and the experience flows into a small crystal on its lid.
+- Chem vials have an iron cap, and the glow mix, acid and raw shimmer brews are a little softer in colour.
+- The Ritual Altar (the Hextech Altar until now) only makes things; burning runes in and copying them moved to the Rune Circle, so making a tool
+  and inscribing it happen in two different places.
+- Rune steles turn to face the middle of their Rune Circle, at any angle, so a ring of them set diagonally looks in.
+- Hextech grades sit where they belong: the best grade, the gemstone, goes only into the best devices (Hexcore, World
+  Anchor, Skypack, the refined and radiant pickaxes). The Crystal Purifier is made with a cut crystal (the grade it
+  holds), the Lamppost takes its crystal from its lamp and nullstone instead of a gemstone, and the pylons show the
+  crystal they are made with.
+- The Awakened Workbench and the Crystal Battery run on raw hextech only - unstable orbs and crystals grown in shimmer; cut
+  crystals and gemstones are no longer burned as charge. Rift Gates are linked with a raw orb instead of a cut crystal.
+
+### Fixed
+- With shader packs that draw soft translucent light as solid (BLISS), the glow behind the essence signs over a
+  crucible and other hextale lights no longer turns into a blob of light; with a pack on, the pack's own glow is used.
+- With such shader packs a crucible's water and the essence signs over it are no longer blown out to white: hextale's
+  liquids and signs stop counting as light sources while a pack is on.
+- The ink vials on the Research Table's desk sit in their frames whatever the number of inks.
+
 ## [1.5.0+26.1.2] - 2026-10-28
 ### Changed
 - Ported to Minecraft 26.1.2 ([NeoForge](https://neoforged.net/) 26.1.2). Everything of 1.5.0 for Minecraft 26.3

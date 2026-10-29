@@ -73,6 +73,20 @@
           "type": "minecraft:model",
           "model": "hextale:item/guide/voidling_growth"
         }
+      },
+      {
+        "when": "shimmer_veins",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/shimmer_veins"
+        }
+      },
+      {
+        "when": "veins_washed",
+        "model": {
+          "type": "minecraft:model",
+          "model": "hextale:item/guide/veins_washed"
+        }
       }
     ],
     "fallback": {

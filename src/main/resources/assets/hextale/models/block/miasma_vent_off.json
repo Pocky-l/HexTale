@@ -2,11 +2,11 @@
   "parent": "minecraft:block/block",
   "textures": {
     "particle": "hextale:block/rusted_plating",
-    "rust": "hextale:block/rusted_plating",
-    "riveted": "hextale:block/riveted_rusted_plating",
-    "copper": "minecraft:block/oxidized_copper",
-    "grate": "hextale:block/miasma_vent_top_off",
-    "mouth": "hextale:block/miasma_vent_mouth_off"
+    "rusted_plating": "hextale:block/rusted_plating",
+    "riveted_rusted_plating": "hextale:block/riveted_rusted_plating",
+    "exposed_copper": "minecraft:block/exposed_copper",
+    "miasma_vent_top_off": "hextale:block/miasma_vent_top_off",
+    "miasma_vent_mouth_off": "hextale:block/miasma_vent_mouth_off"
   },
   "elements": [
     {
@@ -29,7 +29,7 @@
             15,
             16
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "east": {
           "uv": [
@@ -38,7 +38,7 @@
             15,
             16
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "south": {
           "uv": [
@@ -47,7 +47,7 @@
             15,
             16
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "west": {
           "uv": [
@@ -56,7 +56,7 @@
             15,
             16
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "down": {
           "uv": [
@@ -65,7 +65,7 @@
             15,
             15
           ],
-          "texture": "#riveted",
+          "texture": "#riveted_rusted_plating",
           "cullface": "down"
         }
       }
@@ -90,7 +90,7 @@
             15,
             13
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "east": {
           "uv": [
@@ -99,7 +99,7 @@
             15,
             13
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "south": {
           "uv": [
@@ -108,7 +108,7 @@
             15,
             13
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "west": {
           "uv": [
@@ -117,7 +117,7 @@
             15,
             13
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "up": {
           "uv": [
@@ -126,7 +126,7 @@
             15,
             15
           ],
-          "texture": "#grate"
+          "texture": "#miasma_vent_top_off"
         }
       }
     },
@@ -150,7 +150,7 @@
             10,
             12
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "east": {
           "uv": [
@@ -159,7 +159,7 @@
             10,
             12
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "south": {
           "uv": [
@@ -168,7 +168,7 @@
             10,
             12
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "west": {
           "uv": [
@@ -177,7 +177,7 @@
             10,
             12
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "up": {
           "uv": [
@@ -186,7 +186,7 @@
             10,
             10
           ],
-          "texture": "#mouth"
+          "texture": "#miasma_vent_mouth_off"
         }
       }
     },
@@ -210,7 +210,7 @@
             11,
             12
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "east": {
           "uv": [
@@ -219,7 +219,7 @@
             11,
             12
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "south": {
           "uv": [
@@ -228,7 +228,7 @@
             11,
             12
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "west": {
           "uv": [
@@ -237,7 +237,7 @@
             11,
             12
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "up": {
           "uv": [
@@ -246,7 +246,7 @@
             11,
             11
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         }
       }
     },
@@ -270,7 +270,7 @@
             11,
             6
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "east": {
           "uv": [
@@ -279,7 +279,7 @@
             11,
             6
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "south": {
           "uv": [
@@ -288,7 +288,7 @@
             11,
             6
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "west": {
           "uv": [
@@ -297,7 +297,7 @@
             11,
             6
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "up": {
           "uv": [
@@ -306,7 +306,7 @@
             11,
             11
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         },
         "down": {
           "uv": [
@@ -315,7 +315,7 @@
             11,
             11
           ],
-          "texture": "#riveted"
+          "texture": "#riveted_rusted_plating"
         }
       }
     },
@@ -339,7 +339,7 @@
             9,
             9
           ],
-          "texture": "#mouth"
+          "texture": "#miasma_vent_mouth_off"
         },
         "east": {
           "uv": [
@@ -348,7 +348,7 @@
             9,
             9
           ],
-          "texture": "#mouth"
+          "texture": "#miasma_vent_mouth_off"
         },
         "south": {
           "uv": [
@@ -357,7 +357,7 @@
             9,
             9
           ],
-          "texture": "#mouth"
+          "texture": "#miasma_vent_mouth_off"
         },
         "west": {
           "uv": [
@@ -366,7 +366,7 @@
             9,
             9
           ],
-          "texture": "#mouth"
+          "texture": "#miasma_vent_mouth_off"
         }
       }
     },
@@ -390,7 +390,7 @@
             10,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "east": {
           "uv": [
@@ -399,7 +399,7 @@
             10,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "south": {
           "uv": [
@@ -408,7 +408,7 @@
             7,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "west": {
           "uv": [
@@ -417,7 +417,7 @@
             7,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         }
       }
     },
@@ -441,7 +441,7 @@
             7,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "east": {
           "uv": [
@@ -450,7 +450,7 @@
             10,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "south": {
           "uv": [
@@ -459,7 +459,7 @@
             10,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "west": {
           "uv": [
@@ -468,7 +468,7 @@
             7,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         }
       }
     },
@@ -492,7 +492,7 @@
             10,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "east": {
           "uv": [
@@ -501,7 +501,7 @@
             7,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "south": {
           "uv": [
@@ -510,7 +510,7 @@
             7,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "west": {
           "uv": [
@@ -519,7 +519,7 @@
             10,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         }
       }
     },
@@ -543,7 +543,7 @@
             7,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "east": {
           "uv": [
@@ -552,7 +552,7 @@
             7,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "south": {
           "uv": [
@@ -561,7 +561,7 @@
             10,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "west": {
           "uv": [
@@ -570,7 +570,7 @@
             10,
             4
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         }
       }
     },
@@ -594,7 +594,7 @@
             12,
             2
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "east": {
           "uv": [
@@ -603,7 +603,7 @@
             12,
             2
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "south": {
           "uv": [
@@ -612,7 +612,7 @@
             12,
             2
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "west": {
           "uv": [
@@ -621,7 +621,7 @@
             12,
             2
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "up": {
           "uv": [
@@ -630,7 +630,7 @@
             12,
             12
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "down": {
           "uv": [
@@ -639,7 +639,7 @@
             12,
             12
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         }
       }
     },
@@ -663,7 +663,7 @@
             10,
             1
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "east": {
           "uv": [
@@ -672,7 +672,7 @@
             10,
             1
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "south": {
           "uv": [
@@ -681,7 +681,7 @@
             10,
             1
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "west": {
           "uv": [
@@ -690,7 +690,7 @@
             10,
             1
           ],
-          "texture": "#rust"
+          "texture": "#rusted_plating"
         },
         "up": {
           "uv": [
@@ -699,7 +699,7 @@
             10,
             10
           ],
-          "texture": "#rust",
+          "texture": "#rusted_plating",
           "cullface": "up"
         }
       }
@@ -724,7 +724,7 @@
             14,
             12
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "east": {
           "uv": [
@@ -733,7 +733,7 @@
             9,
             12
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "south": {
           "uv": [
@@ -742,7 +742,7 @@
             4,
             12
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "west": {
           "uv": [
@@ -751,7 +751,7 @@
             9,
             12
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "up": {
           "uv": [
@@ -760,7 +760,7 @@
             4,
             9
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         }
       }
     },
@@ -784,7 +784,7 @@
             12,
             9
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "south": {
           "uv": [
@@ -793,7 +793,7 @@
             6,
             9
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "up": {
           "uv": [
@@ -802,7 +802,7 @@
             6,
             9
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "down": {
           "uv": [
@@ -811,7 +811,7 @@
             6,
             9
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         }
       }
     },
@@ -835,7 +835,7 @@
             4,
             12
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "east": {
           "uv": [
@@ -844,7 +844,7 @@
             7,
             12
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "south": {
           "uv": [
@@ -853,7 +853,7 @@
             14,
             12
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "west": {
           "uv": [
@@ -862,7 +862,7 @@
             11,
             12
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "up": {
           "uv": [
@@ -871,7 +871,7 @@
             14,
             11
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         }
       }
     },
@@ -895,7 +895,7 @@
             6,
             11
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "south": {
           "uv": [
@@ -904,7 +904,7 @@
             12,
             11
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "west": {
           "uv": [
@@ -913,7 +913,7 @@
             11,
             11
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "up": {
           "uv": [
@@ -922,7 +922,7 @@
             12,
             11
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         },
         "down": {
           "uv": [
@@ -931,7 +931,7 @@
             12,
             7
           ],
-          "texture": "#copper"
+          "texture": "#exposed_copper"
         }
       }
     }

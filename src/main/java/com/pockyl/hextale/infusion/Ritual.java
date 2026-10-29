@@ -50,7 +50,8 @@ public final class Ritual {
     }
 
     /**
-     * The altar whose circle this rune stele stands in (the nearest with an item on it, else the nearest), or null.
+     * The Rune Circle this rune stele stands round (the nearest with an item on it, else the nearest), or null: steles
+     * lend their runes only to centres that {@link HextechAltarBlockEntity#inscribes() inscribe}.
      */
     @Nullable
     public static HextechAltarBlockEntity altarOf(Level level, BlockPos stele) {
@@ -62,7 +63,7 @@ public final class Ritual {
                     continue;
                 }
                 for (var entity : level.getChunk(cx, cz).getBlockEntities().values()) {
-                    if (!(entity instanceof HextechAltarBlockEntity altar) || entity.isRemoved()) {
+                    if (!(entity instanceof HextechAltarBlockEntity altar) || entity.isRemoved() || !altar.inscribes()) {
                         continue;
                     }
                     BlockPos pos = entity.getBlockPos();
@@ -136,9 +137,9 @@ public final class Ritual {
             return null;
         }
         if (blankScroll(center)) {
-            // Any rune can be written on a blank scroll (the stele offers the ones its researcher knows).
+            // Any rune in use can be written on a blank scroll (the stele offers the ones its researcher knows).
             List<RuneUse> uses = new ArrayList<>();
-            for (ComplexRune rune : com.pockyl.hextale.rune.ComplexRunes.all()) {
+            for (ComplexRune rune : com.pockyl.hextale.rune.ComplexRunes.inUse()) {
                 uses.add(new RuneUse(rune, null, List.of(RuneScrollItem.of(rune, 1, ModItems.RUNE_SCROLL.get())), List.of(), true));
             }
             return uses;

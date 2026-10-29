@@ -181,6 +181,8 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.AXOLOTL_TANK.get(), "axolotl_tank");
         info(registration, ModItems.REGENERATIVE_SLIME.get(), "regenerative_slime");
         info(registration, ModItems.CHEM_STILL.get(), "chem_still");
+        info(registration, ModItems.CHEM_BOILER.get(), "chem_boiler");
+        info(registration, ModItems.HEXTECH_LAMPPOST.get(), "hextech_lamppost");
         info(registration, ModItems.LAB_BENCH.get(), "lab_bench");
         info(registration, ModItems.PINK_BRAZIER.get(), "pink_brazier");
         info(registration, ModItems.SYNTHETIC_CRYSTAL.get(), "synthetic_crystal");
@@ -201,6 +203,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEXTECH_ALTAR.get(), "hextech_altar");
         info(registration, ModItems.PEDESTAL.get(), "pedestal");
         info(registration, ModItems.RUNE_STELE.get(), "rune_stele");
+        info(registration, ModItems.RUNE_CIRCLE.get(), "rune_circle");
         info(registration, ModItems.HEXTECH_LAMP.get(), "hextech_lamp");
         info(registration, ModItems.RUNE_CHALK.get(), "rune_chalk");
         info(registration, ModItems.NULLSTONE.get(), "nullstone");
@@ -251,8 +254,8 @@ public class HextaleJeiPlugin implements IModPlugin {
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addCraftingStation(BoilingCategory.TYPE, ModItems.ALEMBIC.get());
         registration.addCraftingStation(SeparationCategory.TYPE, ModItems.SEPARATOR.get());
-        registration.addCraftingStation(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.HEXCORE.get(), ModItems.PEDESTAL.get(), ModItems.RUNE_STELE.get());
-        registration.addCraftingStation(RuneBurningCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
+        registration.addCraftingStation(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.HEXCORE.get(), ModItems.PEDESTAL.get());
+        registration.addCraftingStation(RuneBurningCategory.TYPE, ModItems.RUNE_CIRCLE.get(), ModItems.RUNE_STELE.get());
         registration.addCraftingStation(HexCraftingCategory.TYPE, ModItems.HEX_WORKBENCH.get());
         // Without a hex recipe the workbench crafts like a table and the furnace smelts like a furnace.
         registration.addCraftingStation(mezz.jei.api.constants.RecipeTypes.CRAFTING, ModItems.HEX_WORKBENCH.get());
@@ -268,7 +271,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addCraftingStation(DeviceSteps.STILL, ModItems.CHEM_STILL.get(), ModItems.CHEM_BURNER.get());
         registration.addCraftingStation(DeviceSteps.TANK, ModItems.AXOLOTL_TANK.get());
         registration.addCraftingStation(DeviceSteps.SOAKING, ModItems.DRAIN_VALVE.get());
-        registration.addCraftingStation(DeviceSteps.WRITING, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
+        registration.addCraftingStation(DeviceSteps.WRITING, ModItems.RUNE_CIRCLE.get(), ModItems.RUNE_STELE.get());
     }
 
     static ItemStack concentrate(Essence essence) {

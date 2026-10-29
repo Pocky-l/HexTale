@@ -247,7 +247,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<CrucibleBlockEntity
         float u1 = u0 + ICON_U;
         float v1 = v0 + ICON_V;
         int tint = RuneDrawing.lighten(color, 0.5F);
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(ICONS), (pose, consumer) -> {
+        collector.submitCustomGeometry(poseStack, HexFx.glow(ICONS), (pose, consumer) -> {
             HexFx.vertex(consumer, pose, -h, -h, 0.002F, u0, v1, tint, alpha);
             HexFx.vertex(consumer, pose, h, -h, 0.002F, u1, v1, tint, alpha);
             HexFx.vertex(consumer, pose, h, h, 0.002F, u1, v0, tint, alpha);

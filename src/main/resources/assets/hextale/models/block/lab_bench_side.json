@@ -4,8 +4,8 @@
     "outside"
   ],
   "textures": {
-    "particle": "minecraft:block/dark_oak_planks",
-    "planks": "minecraft:block/dark_oak_planks",
+    "particle": "hextale:block/chem/chem_iron",
+    "chem_iron": "hextale:block/chem/chem_iron",
     "worktop": "hextale:block/lab_bench/worktop",
     "props": "hextale:block/lab_bench/props"
   },
@@ -30,7 +30,7 @@
             15,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -39,7 +39,7 @@
             14,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -48,7 +48,7 @@
             3,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -57,7 +57,7 @@
             4,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -66,7 +66,7 @@
             3,
             14
           ],
-          "texture": "#planks",
+          "texture": "#chem_iron",
           "cullface": "down"
         }
       }
@@ -91,7 +91,7 @@
             15,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -100,7 +100,7 @@
             4,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -109,7 +109,7 @@
             3,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -118,7 +118,7 @@
             14,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -127,7 +127,7 @@
             3,
             4
           ],
-          "texture": "#planks",
+          "texture": "#chem_iron",
           "cullface": "down"
         }
       }
@@ -152,7 +152,7 @@
             13,
             14
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -161,7 +161,7 @@
             16,
             14
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -170,7 +170,7 @@
             12,
             14
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "up": {
           "uv": [
@@ -179,7 +179,7 @@
             16,
             12
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -188,7 +188,7 @@
             16,
             12
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         }
       }
     },
@@ -212,7 +212,7 @@
             16,
             6
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -221,7 +221,7 @@
             16,
             6
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -230,7 +230,7 @@
             15,
             6
           ],
-          "texture": "#planks",
+          "texture": "#chem_iron",
           "cullface": "west"
         },
         "up": {
@@ -249,7 +249,7 @@
             16,
             15
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         }
       }
     },

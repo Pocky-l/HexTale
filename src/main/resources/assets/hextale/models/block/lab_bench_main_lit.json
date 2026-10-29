@@ -4,8 +4,8 @@
     "outside"
   ],
   "textures": {
-    "particle": "minecraft:block/dark_oak_planks",
-    "planks": "minecraft:block/dark_oak_planks",
+    "particle": "hextale:block/chem/chem_iron",
+    "chem_iron": "hextale:block/chem/chem_iron",
     "worktop": "hextale:block/lab_bench/worktop",
     "props": "hextale:block/lab_bench/props",
     "flask": "hextale:block/lab_bench/flask",
@@ -32,7 +32,7 @@
             3,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -41,7 +41,7 @@
             14,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -50,7 +50,7 @@
             15,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -59,7 +59,7 @@
             4,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -68,7 +68,7 @@
             15,
             14
           ],
-          "texture": "#planks",
+          "texture": "#chem_iron",
           "cullface": "down"
         }
       }
@@ -93,7 +93,7 @@
             3,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -102,7 +102,7 @@
             4,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -111,7 +111,7 @@
             15,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -120,7 +120,7 @@
             14,
             16
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -129,7 +129,7 @@
             15,
             4
           ],
-          "texture": "#planks",
+          "texture": "#chem_iron",
           "cullface": "down"
         }
       }
@@ -154,7 +154,7 @@
             16,
             14
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -163,7 +163,7 @@
             12,
             14
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -172,7 +172,7 @@
             13,
             14
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "up": {
           "uv": [
@@ -181,7 +181,7 @@
             13,
             12
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -190,7 +190,7 @@
             13,
             12
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         }
       }
     },
@@ -214,7 +214,7 @@
             16,
             6
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -223,7 +223,7 @@
             15,
             6
           ],
-          "texture": "#planks",
+          "texture": "#chem_iron",
           "cullface": "east"
         },
         "south": {
@@ -233,7 +233,7 @@
             16,
             6
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         },
         "up": {
           "uv": [
@@ -251,7 +251,7 @@
             16,
             15
           ],
-          "texture": "#planks"
+          "texture": "#chem_iron"
         }
       }
     },
@@ -793,8 +793,7 @@
           ],
           "texture": "#flame"
         }
-      },
-      "light_emission": 15
+      }
     },
     {
       "name": "flame_b",
@@ -827,8 +826,7 @@
           ],
           "texture": "#flame"
         }
-      },
-      "light_emission": 15
+      }
     }
   ]
 }

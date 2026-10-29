@@ -77,6 +77,15 @@ public final class RuneWorkGameTests {
         helper.getLevel().removeBlock(abs, false);
     }
 
+    /** A Rune Circle with the given centre item and a tank of essence by it (no pedestals: runes need none). */
+    private static HextechAltarBlockEntity runeCircle(GameTestHelper helper, ItemStack center, EssenceMix essence) {
+        circle(helper, ItemStack.EMPTY, List.of(), essence);
+        helper.setBlock(ALTAR, ModBlocks.RUNE_CIRCLE.get());
+        HextechAltarBlockEntity circle = helper.getBlockEntity(ALTAR, HextechAltarBlockEntity.class);
+        circle.place(center);
+        return circle;
+    }
+
     /** An altar with the given centre item, pedestal items and a tank of essence around it. */
     private static HextechAltarBlockEntity circle(GameTestHelper helper, ItemStack center, List<ItemStack> items, EssenceMix essence) {
         // Blocks outside the 1x1x1 test structure outlive their test: clear what other rituals may have left in reach.
@@ -118,11 +127,11 @@ public final class RuneWorkGameTests {
         return player;
     }
 
-    /** A blank scroll on the altar with one rune on a stele becomes a scroll of that rune with the stele's stars. */
+    /** A blank scroll in the Rune Circle with one rune on a stele becomes a scroll of that rune with the stele's stars. */
     @HexTest(maxTicks = 300)
-    public static void theAltarWritesARuneOnABlankScroll(GameTestHelper helper) {
+    public static void theRuneCircleWritesARuneOnABlankScroll(GameTestHelper helper) {
         EssenceMix cost = Ritual.writingCost(PickaxeRune.SMELTING.rune(), 2);
-        HextechAltarBlockEntity altar = circle(helper, new ItemStack(ModItems.BLANK_SCROLL.get()), List.of(), cost);
+        HextechAltarBlockEntity altar = runeCircle(helper, new ItemStack(ModItems.BLANK_SCROLL.get()), cost);
         stele(helper, PickaxeRune.SMELTING, 2);
         altar.startOrAbort(null);
         helper.assertTrue(altar.active() && altar.kind() == Ritual.Kind.WRITE, "the writing starts");
@@ -174,12 +183,12 @@ public final class RuneWorkGameTests {
         return Ritual.Circle.scan(helper.getLevel(), helper.absolutePos(ALTAR));
     }
 
-    /** A stele offers only the runes that do something for the item on its altar; an empty altar takes any rune. */
+    /** A stele offers only the runes that do something for the item in its circle; an empty circle takes any rune. */
     @HexTest
-    public static void steleOffersOnlyRunesForTheAltarItem(GameTestHelper helper) {
-        HextechAltarBlockEntity altar = circle(helper, new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), List.of(), EssenceMix.EMPTY);
+    public static void steleOffersOnlyRunesForTheCircleItem(GameTestHelper helper) {
+        HextechAltarBlockEntity altar = runeCircle(helper, new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get()), EssenceMix.EMPTY);
         stele(helper, PickaxeRune.SMELTING, 1);
-        helper.assertTrue(Ritual.altarOf(helper.getLevel(), helper.absolutePos(STELE)) == altar, "the stele finds its altar");
+        helper.assertTrue(Ritual.altarOf(helper.getLevel(), helper.absolutePos(STELE)) == altar, "the stele finds its circle");
         java.util.Set<com.pockyl.hextale.rune.ComplexRune> forPickaxe = Ritual.runesFor(altar.center(), false);
         for (PickaxeRune rune : PickaxeRune.values()) {
             helper.assertTrue(forPickaxe.contains(rune.rune()), "a pickaxe takes " + rune);
@@ -194,8 +203,8 @@ public final class RuneWorkGameTests {
         }
         helper.assertTrue(uses.getFirst().cost(2).equals(PickaxeRune.values()[0].cost(2)), "the list shows what the altar draws for each rune");
         List<Ritual.RuneUse> scroll = Ritual.usesFor(new ItemStack(ModItems.BLANK_SCROLL.get()), false);
-        helper.assertTrue(scroll.size() == ComplexRunes.COUNT && scroll.stream().allMatch(Ritual.RuneUse::writes),
-                "any rune can be written on a blank scroll");
+        helper.assertTrue(scroll.size() == ComplexRunes.inUse().size() && scroll.stream().allMatch(Ritual.RuneUse::writes),
+                "any rune in use can be written on a blank scroll");
         helper.assertTrue(Ritual.runesFor(new ItemStack(Items.DIRT), false).isEmpty(), "dirt takes no rune");
         helper.assertTrue(Ritual.runesFor(ItemStack.EMPTY, false) == null, "an empty altar takes any rune");
         helper.succeed();
@@ -362,11 +371,11 @@ public final class RuneWorkGameTests {
         });
     }
 
-    /** A pickaxe alone on the altar takes the stele's rune with the stele's stars, paid only with the rune's essence. */
+    /** A pickaxe in the Rune Circle takes the stele's rune with the stele's stars, paid only with the rune's essence. */
     @HexTest(maxTicks = 300)
-    public static void theAltarBurnsARuneIntoAPickaxe(GameTestHelper helper) {
+    public static void theRuneCircleBurnsARuneIntoAPickaxe(GameTestHelper helper) {
         EssenceMix cost = PickaxeRune.SMELTING.cost(2);
-        HextechAltarBlockEntity altar = circle(helper, pickaxe(), List.of(), cost.plus(EssenceMix.pure(Essence.ORE, 10)));
+        HextechAltarBlockEntity altar = runeCircle(helper, pickaxe(), cost.plus(EssenceMix.pure(Essence.ORE, 10)));
         stele(helper, PickaxeRune.SMELTING, 2);
         altar.startOrAbort(null);
         helper.assertTrue(altar.active() && altar.kind() == Ritual.Kind.ENGRAVE, "the rune burning starts");
@@ -377,10 +386,23 @@ public final class RuneWorkGameTests {
         });
     }
 
+    /** The altar only makes things: a pickaxe on it with a rune on a stele stays as it is, and the stele does not serve it. */
+    @HexTest
+    public static void theAltarLeavesRunesToTheCircle(GameTestHelper helper) {
+        HextechAltarBlockEntity altar = circle(helper, pickaxe(), List.of(), PickaxeRune.SMELTING.cost(2));
+        stele(helper, PickaxeRune.SMELTING, 2);
+        altar.startOrAbort(null);
+        helper.assertFalse(altar.active(), "the altar burns no runes in");
+        helper.assertTrue(Ritual.altarOf(helper.getLevel(), helper.absolutePos(STELE)) == null, "steles serve rune circles only");
+        HextechAltarBlockEntity circle = runeCircle(helper, new ItemStack(ModItems.RUNE_CHALK.get()), EssenceMix.EMPTY);
+        helper.assertFalse(circle.performs(Ritual.Kind.INFUSE), "and the circle makes nothing");
+        helper.succeed();
+    }
+
     /** More stars raise a rune the pickaxe has; clashing runes, a fifth rune, or non-pickaxe runes are refused. */
     @HexTest
     public static void runeBurningFollowsItsRules(GameTestHelper helper) {
-        circle(helper, pickaxe(PickaxeRune.EROSION), List.of(), EssenceMix.EMPTY);
+        runeCircle(helper, pickaxe(PickaxeRune.EROSION), EssenceMix.EMPTY);
         stele(helper, PickaxeRune.DRILL, 1);
         helper.assertTrue("clash".equals(Ritual.engraving(pickaxe(PickaxeRune.EROSION), scan(helper)).refusal()), "drill and erosion clash");
         stele(helper, PickaxeRune.QUAKE, 1);

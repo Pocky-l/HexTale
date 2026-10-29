@@ -51,6 +51,7 @@ public final class Hextale {
         ModCapabilities.register(modBus);
         ModMenus.register(modBus);
         ModAttachments.register(modBus);
+        com.pockyl.hextale.registry.ModEffects.register(modBus);
         ModSounds.register(modBus);
         ModParticles.register(modBus);
         com.pockyl.hextale.registry.ModFeatures.register(modBus);
@@ -105,12 +106,14 @@ public final class Hextale {
         // Altar and runework.
         output.accept(ModItems.HEXTECH_ALTAR);
         output.accept(ModItems.PEDESTAL);
+        output.accept(ModItems.RUNE_CIRCLE);
         output.accept(ModItems.RUNE_STELE);
         output.accept(ModItems.RUNE_CHALK);
         output.accept(ModItems.BINDING_CHALK);
         output.accept(ModItems.HEXCORE);
         output.accept(ModItems.NULLSTONE);
         output.accept(ModItems.HEXTECH_LAMP);
+        output.accept(ModItems.HEXTECH_LAMPPOST);
 
         // Essence works.
         output.accept(ModItems.ALEMBIC);
@@ -124,6 +127,7 @@ public final class Hextale {
         // Chemtech.
         output.accept(ModItems.CHEM_BURNER);
         output.accept(ModItems.CHEM_STILL);
+        output.accept(ModItems.CHEM_BOILER);
         output.accept(ModItems.AXOLOTL_TANK);
         output.accept(ModItems.PINK_BRAZIER);
 
@@ -263,6 +267,8 @@ public final class Hextale {
         output.accept(ModItems.RUSTED_PLATING_STAIRS);
         output.accept(ModItems.RUSTED_PLATING_SLAB);
         output.accept(ModItems.RIVETED_RUSTED_PLATING);
+        output.accept(ModItems.RUSTED_GRATE);
+        output.accept(ModItems.CHEM_TUBES);
         output.accept(ModItems.BRASS_GRATE);
         output.accept(ModItems.CHEM_GLASS);
         output.accept(ModItems.CHEM_GLASS_PANE);
@@ -341,6 +347,7 @@ public final class Hextale {
             event.accept(ModItems.RESEARCH_TABLE);
             event.accept(ModItems.HEXTECH_ALTAR);
             event.accept(ModItems.PEDESTAL);
+            event.accept(ModItems.RUNE_CIRCLE);
             event.accept(ModItems.RUNE_STELE);
             event.accept(ModItems.HEXTECH_LAMP);
             event.accept(ModItems.LEVITATION_PLATE);

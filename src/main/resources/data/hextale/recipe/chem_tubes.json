@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "NGN",
+    "GVG",
+    "NGN"
+  ],
+  "key": {
+    "N": "#c:nuggets/iron",
+    "G": "hextale:chem_glass",
+    "V": {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "hextale:chem_vial",
+      "components": {
+        "hextale:brew": "glow"
+      }
+    }
+  },
+  "result": {
+    "id": "hextale:chem_tubes",
+    "count": 4
+  }
+}

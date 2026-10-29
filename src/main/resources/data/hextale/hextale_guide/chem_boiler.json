@@ -1,0 +1,23 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": "hextale:chem_boiler",
+  "parents": [
+    "chem_burner",
+    "lab_bench",
+    "rusted_plating"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:chem_boiler",
+    "then": {
+      "kind": "runes",
+      "result": "boiler"
+    }
+  },
+  "research": "chem_boiler",
+  "pos": [
+    -1060,
+    40
+  ]
+}

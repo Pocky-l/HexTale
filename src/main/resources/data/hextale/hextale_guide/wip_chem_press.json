@@ -3,6 +3,6 @@
   "region": "chemtech",
   "stage": "mid",
   "icon": "minecraft:sticky_piston",
-  "parents": ["wip_chem_boiler"],
+  "parents": ["chem_boiler"],
   "pos": [-1105, 65]
 }

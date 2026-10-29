@@ -2,7 +2,7 @@
   "region": "pylons",
   "stage": "mid",
   "icon": "hextale:rune_stele",
-  "parents": ["gathering_pylon", "rune_stele", "rune_scroll"],
+  "parents": ["gathering_pylon", "rune_circle", "rune_scroll"],
   "goal": {
     "type": "pylon_runes"
   },

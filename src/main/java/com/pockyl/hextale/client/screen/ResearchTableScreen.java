@@ -78,7 +78,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private static final int BOARD_Y = BoardView.SHEET_Y;
     private static final int BOARD_W = BoardView.SHEET_W;
     private static final int BOARD_H = BoardView.SHEET_H;
-    /** Ink vials: nine glass tubes in ring order. */
     /** The button that burns the parchment on purpose, in the paper's top right corner; a second click within the arm time burns. */
     private static final int BURN_X = 225;
     private static final int BURN_Y = 31;
@@ -86,7 +85,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private static final long BURN_ARM_MILLIS = 3000;
     /** Text in the header runs from beside the topic's icon to the panel's right frame. */
     private static final int HEADER_TEXT_W = 168;
-    private static final int VIAL_X = 258;
+    /** Ink vials sit in the six frames drawn on the desk texture (outer x 290 + n * 23, y 61-96), filled from the left. */
+    private static final int VIAL_X = 292;
     private static final int VIAL_Y = 64;
     private static final int VIAL_STEP = 23;
     private static final int VIAL_W = 12;
@@ -493,7 +493,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         PixelArt.flush(graphics);
         graphics.text(font, title, titleLabelX, titleLabelY, 0xFF000000 | TEXT, true);
-        Component codex = Component.translatable(KEY + "codex", ClientKnowledge.get().runeCount(), ComplexRunes.COUNT);
+        Component codex = Component.translatable(KEY + "codex", ClientKnowledge.get().runeCount(), ComplexRunes.inUse().size());
         PixelArt.flush(graphics);
         graphics.text(font, codex, imageWidth - Tab.values().length * TAB_WIDTH - 34 - font.width(codex), titleLabelY, 0xFF000000 | TEXT_MUTED, true);
     }
@@ -741,7 +741,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         for (int i = 0; i < shown.size(); i++) {
             Essence element = shown.get(i);
             int e = element.ordinal();
-            int x = leftPos + VIAL_X + (9 - shown.size()) * VIAL_STEP / 2 + i * VIAL_STEP;
+            int x = leftPos + VIAL_X + i * VIAL_STEP;
             int y = topPos + VIAL_Y;
             int full = Math.max(1, capacity[e]);
             int amount = ink[e];

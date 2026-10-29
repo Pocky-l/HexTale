@@ -106,6 +106,8 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::registerModifier);
         modBus.addListener(com.pockyl.hextale.client.render.VoidMiteLayer::addLayers);
         modBus.addListener(com.pockyl.hextale.client.render.VoidMiteLayer::registerModifier);
+        modBus.addListener(com.pockyl.hextale.client.render.ShimmerVeinsLayer::addLayers);
+        modBus.addListener(com.pockyl.hextale.client.render.ShimmerVeinsLayer::registerModifier);
         modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
                 com.pockyl.hextale.client.render.VoidMiteModel.LAYER, com.pockyl.hextale.client.render.VoidMiteModel::createBodyLayer));
         modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
@@ -140,7 +142,6 @@ public final class HextaleClient {
         modBus.addListener(ThinningTint::register);
         modBus.addListener(ThinningTint::fadeWater);
         VoidHearts.register(modBus);
-        NeoForge.EVENT_BUS.addListener(GogglesView::tick);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
                 event.register(EssencesTooltip.class, ClientEssencesTooltip::new));
         NeoForge.EVENT_BUS.addListener(HextaleClient::addElementsToTooltip);
@@ -266,6 +267,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.ESSENCE_TANK.get(), EssenceTankRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.BIG_ESSENCE_JAR.get(), com.pockyl.hextale.client.render.BigEssenceJarRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_ALTAR.get(), HextechAltarRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.RUNE_CIRCLE.get(), HextechAltarRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LAPIDARY.get(), com.pockyl.hextale.client.render.LapidaryRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.WHIRL_REAPER.get(), com.pockyl.hextale.client.render.WhirlReaperRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_SAWMILL.get(), com.pockyl.hextale.client.render.HexSawmillRenderer::new);
@@ -278,6 +280,8 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_WORKBENCH.get(), com.pockyl.hextale.client.render.HexWorkbenchRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.AXOLOTL_TANK.get(), com.pockyl.hextale.client.render.AxolotlTankRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CHEM_STILL.get(), com.pockyl.hextale.client.render.ChemStillRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.CHEM_BOILER.get(), com.pockyl.hextale.client.render.ChemBoilerRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_LAMPPOST.get(), com.pockyl.hextale.client.render.HextechLamppostRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LAB_BENCH.get(), com.pockyl.hextale.client.render.LabBenchRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CRUCIBLE.get(), com.pockyl.hextale.client.render.CrucibleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_PYLON.get(), com.pockyl.hextale.client.render.HexPylonRenderer::new);

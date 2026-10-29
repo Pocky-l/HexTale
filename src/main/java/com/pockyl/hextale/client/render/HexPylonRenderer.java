@@ -83,7 +83,7 @@ public class HexPylonRenderer implements BlockEntityRenderer<HexPylonBlockEntity
         ItemStack heart = switch (pylon.kind()) {
             case RELAY -> new ItemStack(net.minecraft.world.item.Items.AMETHYST_CLUSTER);
             case SIPHON -> ItemStack.EMPTY;
-            default -> new ItemStack(ModItems.HEXTECH_GEMSTONE.get());
+            default -> new ItemStack(ModItems.HEXTECH_CRYSTAL.get());
         };
         itemModelResolver.updateForTopItem(state.gem, heart, ItemDisplayContext.GROUND, level, null, seed);
         // A sticker colours the pylon's light; a filter shows its first items circling the heart.

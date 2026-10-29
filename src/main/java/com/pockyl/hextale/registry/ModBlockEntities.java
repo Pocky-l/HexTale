@@ -7,6 +7,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.pockyl.hextale.Hextale;
+import com.pockyl.hextale.block.RuneCircleBlockEntity;
 import com.pockyl.hextale.block.AlembicBlockEntity;
 import com.pockyl.hextale.block.DrainValveBlockEntity;
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
@@ -42,6 +43,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemStillBlockEntity>> CHEM_STILL =
             BLOCK_ENTITIES.register("chem_still", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemStillBlockEntity::new,
                     ModBlocks.CHEM_STILL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemBoilerBlockEntity>> CHEM_BOILER =
+            BLOCK_ENTITIES.register("chem_boiler", () -> new BlockEntityType<>(com.pockyl.hextale.block.ChemBoilerBlockEntity::new,
+                    ModBlocks.CHEM_BOILER.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.CrystalBatteryBlockEntity>> CRYSTAL_BATTERY =
             BLOCK_ENTITIES.register("crystal_battery", () -> new BlockEntityType<>(com.pockyl.hextale.block.CrystalBatteryBlockEntity::new,
                     ModBlocks.CRYSTAL_BATTERY.get()));
@@ -92,6 +96,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HextechPurifierBlockEntity>> HEXTECH_PURIFIER =
             BLOCK_ENTITIES.register("hextech_purifier", () -> new BlockEntityType<>(com.pockyl.hextale.block.HextechPurifierBlockEntity::new,
                     ModBlocks.HEXTECH_PURIFIER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HextechLamppostBlockEntity>> HEXTECH_LAMPPOST =
+            BLOCK_ENTITIES.register("hextech_lamppost", () -> new BlockEntityType<>(com.pockyl.hextale.block.HextechLamppostBlockEntity::new,
+                    ModBlocks.HEXTECH_LAMPPOST.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ArcSpireBlockEntity>> ARC_SPIRE =
             BLOCK_ENTITIES.register("arc_spire", () -> new BlockEntityType<>(com.pockyl.hextale.block.ArcSpireBlockEntity::new,
                     ModBlocks.ARC_SPIRE.get()));
@@ -130,6 +137,8 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("hextech_altar", () -> new BlockEntityType<>(HextechAltarBlockEntity::new, ModBlocks.HEXTECH_ALTAR.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PedestalBlockEntity>> PEDESTAL =
             BLOCK_ENTITIES.register("pedestal", () -> new BlockEntityType<>(PedestalBlockEntity::new, ModBlocks.PEDESTAL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneCircleBlockEntity>> RUNE_CIRCLE =
+            BLOCK_ENTITIES.register("rune_circle", () -> new BlockEntityType<>(RuneCircleBlockEntity::new, ModBlocks.RUNE_CIRCLE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HexcoreBlockEntity>> HEXCORE =
             BLOCK_ENTITIES.register("hexcore", () -> new BlockEntityType<>(HexcoreBlockEntity::new, ModBlocks.HEXCORE.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RuneSteleBlockEntity>> RUNE_STELE =
