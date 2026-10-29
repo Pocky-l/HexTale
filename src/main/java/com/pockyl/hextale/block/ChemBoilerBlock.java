@@ -82,12 +82,12 @@ public class ChemBoilerBlock extends BaseEntityBlock implements EssenceMachine {
 
     /** Where the safety valve lets the steam out, in world space. */
     public static Vec3 valve(BlockPos pos) {
-        return Vec3.atLowerCornerOf(pos).add(0.5, 15.5 / 16, 0.5);
+        return Vec3.atLowerCornerOf(pos).add(0.5, 17.0 / 16, 0.5);
     }
 
     /** Where drawn mixtures go in and cracked essence leaves, in world space: the top of the tank. */
     public static Vec3 inlet(BlockPos pos) {
-        return Vec3.atLowerCornerOf(pos).add(0.5, 14.0 / 16, 0.5);
+        return Vec3.atLowerCornerOf(pos).add(0.5, 15.0 / 16, 0.5);
     }
 
     /** A bottle of essence pours its mixture into the vessel. */
