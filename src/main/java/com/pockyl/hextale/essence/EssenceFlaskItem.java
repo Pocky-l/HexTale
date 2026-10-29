@@ -74,6 +74,10 @@ public class EssenceFlaskItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (!level.isClientSide()) {
             drink(contents(stack), entity);
+            if (entity instanceof net.minecraft.server.level.ServerPlayer player) {
+                // Light essence washes shimmer out of the veins.
+                com.pockyl.hextale.chem.ShimmerVeins.wash(player, contents(stack));
+            }
         }
         return super.finishUsingItem(stack, level, entity);
     }
