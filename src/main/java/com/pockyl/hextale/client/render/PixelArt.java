@@ -9,7 +9,6 @@ import org.joml.Matrix4f;
 
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.rune.ComplexRune;
-import com.pockyl.hextale.rune.RuneGlyphs;
 import com.pockyl.hextale.rune.Essence;
 
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * GuiGraphicsExtractor flushes before every scissor change.
  */
 public final class PixelArt {
-    private static final Map<String, int[][]> MASKS = new ConcurrentHashMap<>();
     private static final ResourceLocation ESSENCE_ICONS = Hextale.id("textures/gui/essence_icons.png");
     /** Essence pictograms take 9 x 9 GUI pixels; the sheet holds them at 18 x 18, one every 20 pixels. */
     public static final int ICON = 9;
@@ -72,61 +70,14 @@ public final class PixelArt {
                 ICONS_WIDTH, ICONS_HEIGHT, argb);
     }
 
-    /** A simple rune's radical in a {@code size} x {@code size} box at {@code x, y} (top left). */
-    public static void radical(GuiGraphicsExtractor graphics, Essence rune, int x, int y, int size, int argb) {
-        strokes(graphics, "r" + rune.ordinal(), rune.radical(), x, y, size, argb);
-    }
-
-    /** A complex rune's hieroglyph in a {@code size} x {@code size} box. */
+    /** A complex rune's sign in a {@code size} x {@code size} box, drawn smooth and glowing ({@link RuneIcons}). */
     public static void glyph(GuiGraphicsExtractor graphics, ComplexRune rune, int x, int y, int size, int argb) {
-        strokes(graphics, "g" + rune.index(), RuneGlyphs.glyph(rune), x, y, size, argb);
+        RuneIcons.draw(graphics, rune, x, y, size, argb);
     }
 
-    /** Same with a one-pixel drop shadow down-right, like vanilla text. */
+    /** The same; the old drop shadow is no longer drawn - the rune's own glow sets it off the page. */
     public static void glyph(GuiGraphicsExtractor graphics, ComplexRune rune, int x, int y, int size, int argb, int shadow) {
-        glyph(graphics, rune, x + 1, y + 1, size, shadow);
         glyph(graphics, rune, x, y, size, argb);
-    }
-
-    public static void radical(GuiGraphicsExtractor graphics, Essence rune, int x, int y, int size, int argb, int shadow) {
-        radical(graphics, rune, x + 1, y + 1, size, shadow);
-        radical(graphics, rune, x, y, size, argb);
-    }
-
-    private static void strokes(GuiGraphicsExtractor graphics, String key, List<float[]> strokes, int x, int y, int size, int argb) {
-        int[][] runs = MASKS.computeIfAbsent(key + "@" + size, k -> rasterise(strokes, size));
-        for (int[] run : runs) {
-            fill(graphics, x + run[1], y + run[0], x + run[2], y + run[0] + 1, argb);
-        }
-    }
-
-    /** Line thickness in pixels for a glyph of this size: one pixel up to 20, then thicker. */
-    private static float thickness(int size) {
-        return size <= 20 ? 1 : size / 20.0F;
-    }
-
-    /** Rows of {@code [y, x0, x1)} runs of the pixels whose centres lie on a stroke. */
-    private static int[][] rasterise(List<float[]> strokes, int size) {
-        float half = thickness(size) / 2;
-        // The unit box maps onto pixel centres 0.5 .. size - 0.5, the roof of perception runes may stick out a little.
-        float scale = size - 1;
-        boolean[][] on = new boolean[size][size];
-        for (float[] stroke : strokes) {
-            for (int i = 0; i + 3 < stroke.length; i += 2) {
-                float ax = 0.5F + Math.max(-0.02F, Math.min(1.02F, stroke[i])) * scale;
-                float ay = 0.5F + Math.max(-0.04F, Math.min(1.02F, stroke[i + 1])) * scale;
-                float bx = 0.5F + Math.max(-0.02F, Math.min(1.02F, stroke[i + 2])) * scale;
-                float by = 0.5F + Math.max(-0.04F, Math.min(1.02F, stroke[i + 3])) * scale;
-                for (int py = 0; py < size; py++) {
-                    for (int px = 0; px < size; px++) {
-                        if (!on[py][px] && distance(px + 0.5F, py + 0.5F, ax, ay, bx, by) <= half + 0.02F) {
-                            on[py][px] = true;
-                        }
-                    }
-                }
-            }
-        }
-        return runs(on);
     }
 
     static int[][] runs(boolean[][] on) {
@@ -144,16 +95,6 @@ public final class PixelArt {
             }
         }
         return runs.toArray(int[][]::new);
-    }
-
-    private static float distance(float px, float py, float ax, float ay, float bx, float by) {
-        float dx = bx - ax;
-        float dy = by - ay;
-        float length = dx * dx + dy * dy;
-        float t = length < 1.0E-6F ? 0 : Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / length));
-        float cx = ax + dx * t - px;
-        float cy = ay + dy * t - py;
-        return (float) Math.sqrt(cx * cx + cy * cy);
     }
 
     /** A pixel line between two points (inclusive), one pixel wide. */
