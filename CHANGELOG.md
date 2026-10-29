@@ -25,6 +25,10 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
   three veins, tireless hands at five. The feeding wears off after a while, sooner the more veins there are; then the
   gifts are only withheld until the next vial, nothing is taken. A bottle of light essence washes one vein out. The
   veins show on the player, glowing and pulsing while fed. Two new diary steps.
+
+### Changed
+- The Hextech Purifier and the Void Anchors also take a Synthetic Crystal: it holds less than a cut crystal and, spent,
+  crumbles to a pinch of dust instead of clouding over.
 - The Rune Circle, a carved stone circle in the floor made at the Hex Workbench and learned together with the altar.
   Rune steles stand round it now: lay a tool, a device or a blank scroll in the middle and the steles' runes are burned
   in, or one is copied onto the scroll, the way the altar used to do it.

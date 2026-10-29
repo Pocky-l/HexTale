@@ -111,9 +111,14 @@ public class VoidAnchorBlockEntity extends BlockEntity implements WorldlyContain
         return crystal;
     }
 
-    /** Whether it can hold a breach: a fresh hextech crystal is in it. */
+    /** Whether it can hold a breach: a fresh hextech crystal (or one grown in shimmer) is in it. */
     public boolean holds() {
-        return crystal.is(ModItems.HEXTECH_CRYSTAL.get());
+        return DeviceCrystals.fits(crystal);
+    }
+
+    /** How much holding its crystal takes before it is spent (a crystal grown in shimmer: less). */
+    public float capacity() {
+        return HOLDS * DeviceCrystals.share(crystal);
     }
 
     /** 0 fresh, 1 clouded through. */
@@ -121,7 +126,7 @@ public class VoidAnchorBlockEntity extends BlockEntity implements WorldlyContain
         if (crystal.is(ModItems.CLOUDED_CRYSTAL.get())) {
             return 1;
         }
-        return crystal.isEmpty() ? 0 : Mth.clamp(held / HOLDS, 0, 1);
+        return crystal.isEmpty() ? 0 : Mth.clamp(held / capacity(), 0, 1);
     }
 
     public boolean tied() {
@@ -182,7 +187,7 @@ public class VoidAnchorBlockEntity extends BlockEntity implements WorldlyContain
     }
 
     public boolean insert(ItemStack stack) {
-        if (!crystal.isEmpty() || !stack.is(ModItems.HEXTECH_CRYSTAL.get())) {
+        if (!crystal.isEmpty() || !DeviceCrystals.fits(stack)) {
             return false;
         }
         crystal = stack.copyWithCount(1);
@@ -235,10 +240,16 @@ public class VoidAnchorBlockEntity extends BlockEntity implements WorldlyContain
         }
         int dam = strength(AnchorRune.DAM);
         held += amount * (1 - (dam > 0 ? HolderRune.at(AnchorRune.THRIFT, dam) : 0));
-        if (held >= HOLDS) {
-            crystal = new ItemStack(ModItems.CLOUDED_CRYSTAL.get());
-            held = 0;
+        if (held >= capacity()) {
             Vec3 at = crystalAt(worldPosition);
+            // A crystal grown in shimmer does not cloud: it crumbles to dust.
+            if (DeviceCrystals.synthetic(crystal)) {
+                crystal = ItemStack.EMPTY;
+                DeviceCrystals.crumble(level, at);
+            } else {
+                crystal = new ItemStack(ModItems.CLOUDED_CRYSTAL.get());
+            }
+            held = 0;
             level.sendParticles(ModParticles.ring(HOT), at.x, at.y, at.z, 0, 1.2, 0, 0, 1);
             level.sendParticles(ModParticles.vapour(0x2C0A26), at.x, at.y, at.z, 10, 0.2, 0.2, 0.2, 0.02);
             level.playSound(null, at.x, at.y, at.z, ModSounds.ANCHOR_SNAP.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -400,7 +411,7 @@ public class VoidAnchorBlockEntity extends BlockEntity implements WorldlyContain
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return side != Direction.DOWN && crystal.isEmpty() && stack.is(ModItems.HEXTECH_CRYSTAL.get());
+        return side != Direction.DOWN && crystal.isEmpty() && DeviceCrystals.fits(stack);
     }
 
     @Override
@@ -410,7 +421,7 @@ public class VoidAnchorBlockEntity extends BlockEntity implements WorldlyContain
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return crystal.isEmpty() && stack.is(ModItems.HEXTECH_CRYSTAL.get());
+        return crystal.isEmpty() && DeviceCrystals.fits(stack);
     }
 
     @Override

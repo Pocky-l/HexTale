@@ -8,13 +8,19 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.phys.AABB;
 
 import com.pockyl.hextale.block.ChemBoilerBlock;
 import com.pockyl.hextale.block.ChemBoilerBlockEntity;
 import com.pockyl.hextale.block.ChemBurnerBlock;
 import com.pockyl.hextale.block.ChemBurnerBlockEntity;
+import com.pockyl.hextale.block.DeviceCrystals;
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
+import com.pockyl.hextale.block.HextechPurifierBlockEntity;
+import com.pockyl.hextale.block.VoidAnchorBlockEntity;
 import com.pockyl.hextale.block.HextechLamppostBlock;
 import com.pockyl.hextale.block.HextechLamppostBlockEntity;
 import com.pockyl.hextale.chem.Brew;
@@ -24,6 +30,7 @@ import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModBlocks;
+import com.pockyl.hextale.registry.ModItems;
 import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.BoilerRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
@@ -58,7 +65,7 @@ public final class DualityGameTests {
         return jar;
     }
 
-    @HexTest(maxTicks = 600, padding = 6)
+    @HexTest(maxTicks = 600, padding = 9)
     public static void aBoilerCracksAMixtureIntoStickeredJars(GameTestHelper helper) {
         BlockPos at = new BlockPos(2, 2, 2);
         ChemBoilerBlockEntity boiler = boiler(helper, at);
@@ -87,7 +94,7 @@ public final class DualityGameTests {
         });
     }
 
-    @HexTest(maxTicks = 120, padding = 6)
+    @HexTest(maxTicks = 120, padding = 9)
     public static void aBoilerLeavesPureJarsAloneAndItsBurnerRests(GameTestHelper helper) {
         BlockPos at = new BlockPos(2, 2, 2);
         ChemBoilerBlockEntity boiler = boiler(helper, at);
@@ -101,7 +108,7 @@ public final class DualityGameTests {
         });
     }
 
-    @HexTest(maxTicks = 600, padding = 6)
+    @HexTest(maxTicks = 600, padding = 9)
     public static void boilerRunesMakeTheCrackingCleaner(GameTestHelper helper) {
         ChemBoilerBlockEntity plain = boiler(helper, new BlockPos(1, 2, 1));
         ChemBoilerBlockEntity runed = boiler(helper, new BlockPos(5, 2, 1));
@@ -128,7 +135,7 @@ public final class DualityGameTests {
         return helper.getBlockEntity(at, HextechLamppostBlockEntity.class);
     }
 
-    @HexTest(maxTicks = 300, padding = 6)
+    @HexTest(maxTicks = 300, padding = 9)
     public static void aLitLamppostBurnsOffTheThinningOfTheWorkAround(GameTestHelper helper) {
         BlockPos at = new BlockPos(2, 2, 2);
         HextechLamppostBlockEntity post = lamppost(helper, at);
@@ -154,7 +161,7 @@ public final class DualityGameTests {
         });
     }
 
-    @HexTest(maxTicks = 100, padding = 6)
+    @HexTest(maxTicks = 100, padding = 9)
     public static void aDarkLamppostWardsNothing(GameTestHelper helper) {
         BlockPos at = new BlockPos(2, 2, 2);
         helper.setBlock(at, ModBlocks.HEXTECH_LAMPPOST.get().defaultBlockState());
@@ -209,6 +216,47 @@ public final class DualityGameTests {
         EssenceFlaskItem.filled(EssenceMix.pure(Essence.LIGHT, 16)).finishUsingItem(helper.getLevel(), player);
         helper.assertTrue(ShimmerVeins.of(player).count() == 0, "and the last one");
         helper.assertTrue(player.getAttributeValue(Attributes.MAX_HEALTH) == 20, "no gifts without veins");
+        helper.succeed();
+    }
+
+    @HexTest(padding = 9)
+    public static void aCrystalGrownInShimmerPowersThePurifierAndCrumbles(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at, ModBlocks.HEXTECH_PURIFIER.get());
+        HextechPurifierBlockEntity purifier = helper.getBlockEntity(at, HextechPurifierBlockEntity.class);
+        jar(helper, new BlockPos(3, 2, 1), null, EssenceMix.pure(Essence.LIGHT, 200));
+        LevelChunk chunk = level.getChunkAt(helper.absolutePos(at));
+        Thinning.setAround(level, helper.absolutePos(at), 1, 0);
+        Thinning.set(level, chunk, 1800);
+        helper.assertTrue(purifier.insert(new ItemStack(ModItems.SYNTHETIC_CRYSTAL.get())), "a crystal grown in shimmer goes in");
+        for (int i = 0; i < 1000 && !purifier.crystal().isEmpty(); i++) {
+            purifier.work(level);
+        }
+        helper.assertTrue(purifier.crystal().isEmpty(), "spent, it crumbles instead of clouding");
+        float drawn = 1800 - Thinning.get(chunk);
+        float holds = HextechPurifierBlockEntity.HOLDS * DeviceCrystals.SYNTHETIC_SHARE;
+        helper.assertTrue(Math.abs(drawn - holds) < 1, "it holds less than a cut crystal: " + drawn + " of " + holds);
+        AABB around = new AABB(helper.absolutePos(at)).inflate(2);
+        helper.assertTrue(level.getEntitiesOfClass(ItemEntity.class, around).stream().anyMatch(item -> item.getItem().is(ModItems.HEXTECH_DUST.get())),
+                "it leaves a pinch of dust");
+        helper.assertTrue(level.getEntitiesOfClass(ItemEntity.class, around).stream().noneMatch(item -> item.getItem().is(ModItems.CLOUDED_CRYSTAL.get())),
+                "never a clouded crystal");
+        Thinning.setAround(level, helper.absolutePos(at), 1, 0);
+        level.getEntitiesOfClass(ItemEntity.class, around).forEach(ItemEntity::discard);
+        helper.succeed();
+    }
+
+    @HexTest(padding = 9)
+    public static void aVoidAnchorHoldsWithACrystalGrownInShimmer(GameTestHelper helper) {
+        BlockPos at = new BlockPos(1, 2, 1);
+        helper.setBlock(at, ModBlocks.VOID_ANCHOR.get());
+        VoidAnchorBlockEntity anchor = helper.getBlockEntity(at, VoidAnchorBlockEntity.class);
+        helper.assertTrue(anchor.insert(new ItemStack(ModItems.SYNTHETIC_CRYSTAL.get())) && anchor.holds(), "it holds with it");
+        helper.assertTrue(anchor.capacity() < VoidAnchorBlockEntity.HOLDS, "but not as long");
+        anchor.strain(helper.getLevel(), anchor.capacity() + 1);
+        helper.assertTrue(anchor.crystal().isEmpty(), "worn through, it crumbles instead of clouding");
+        helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(at)).inflate(2)).forEach(ItemEntity::discard);
         helper.succeed();
     }
 }
