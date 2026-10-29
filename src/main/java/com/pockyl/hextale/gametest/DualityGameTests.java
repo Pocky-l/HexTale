@@ -48,6 +48,16 @@ public final class DualityGameTests {
     private DualityGameTests() {
     }
 
+    /**
+     * Takes away everything a test of this class set up: jars, boilers and lampposts reach 5-16 blocks, and blocks outside
+     * the 1x1x1 spot outlive a test - left there, they would draw from (or ward) the tests that come after.
+     */
+    private static void wipe(GameTestHelper helper) {
+        for (BlockPos pos : BlockPos.betweenClosed(-1, 1, -1, 9, 4, 9)) {
+            helper.setBlock(pos.immutable(), net.minecraft.world.level.block.Blocks.AIR);
+        }
+    }
+
     /** A boiler on a burner with one vial of fuel, at {@code at}; returns it. */
     private static ChemBoilerBlockEntity boiler(GameTestHelper helper, BlockPos at) {
         helper.setBlock(at.below(), ModBlocks.CHEM_BURNER.get());
@@ -91,6 +101,7 @@ public final class DualityGameTests {
             float fumes = chunk.getData(ModAttachments.THINNING_SOURCES).getOrDefault(Thinning.Source.FUMES.name(), 0F);
             helper.assertTrue(fumes > before, "the fumes wore the land");
             helper.assertTrue(burner.tank().unknown() > 0 || burner.fuelTicks() > 0, "the burnt part fed the flame");
+            wipe(helper);
         });
     }
 
@@ -104,6 +115,7 @@ public final class DualityGameTests {
             helper.assertTrue(boiler.mixture().isEmpty(), "nothing went in");
             helper.assertFalse(boiler.wantsHeat(), "there is nothing to crack");
             helper.assertBlockProperty(at.below(), ChemBurnerBlock.LIT, false);
+            wipe(helper);
             helper.succeed();
         });
     }
@@ -124,6 +136,7 @@ public final class DualityGameTests {
             int crudeKept = plain.held().get(Essence.EARTH) + plain.held().get(Essence.METAL);
             int refinedKept = runed.held().get(Essence.EARTH) + runed.held().get(Essence.METAL);
             helper.assertTrue(refinedKept > crudeKept, "the runed boiler kept more (" + refinedKept + " vs " + crudeKept + ")");
+            wipe(helper);
         });
     }
 
@@ -158,6 +171,7 @@ public final class DualityGameTests {
             helper.assertTrue(Thinning.get(chunk) - beforeBreach > 0.99F, "the Void's own feeding is not burned off");
             helper.assertTrue(Wards.shields(level, chunk.getPos()), "and the creep stops at its chunk");
             Thinning.set(level, chunk, before);
+            wipe(helper);
         });
     }
 
@@ -170,6 +184,7 @@ public final class DualityGameTests {
         helper.runAfterDelay(50, () -> {
             helper.assertFalse(post.lit(), "no light essence nearby: it stays dark");
             helper.assertTrue(Wards.lightAt(helper.getLevel(), helper.absolutePos(at.west(2))) == null, "and wards nothing");
+            wipe(helper);
             helper.succeed();
         });
     }
@@ -244,6 +259,7 @@ public final class DualityGameTests {
                 "never a clouded crystal");
         Thinning.setAround(level, helper.absolutePos(at), 1, 0);
         level.getEntitiesOfClass(ItemEntity.class, around).forEach(ItemEntity::discard);
+        wipe(helper);
         helper.succeed();
     }
 
@@ -257,6 +273,7 @@ public final class DualityGameTests {
         anchor.strain(helper.getLevel(), anchor.capacity() + 1);
         helper.assertTrue(anchor.crystal().isEmpty(), "worn through, it crumbles instead of clouding");
         helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(at)).inflate(2)).forEach(ItemEntity::discard);
+        wipe(helper);
         helper.succeed();
     }
 }
