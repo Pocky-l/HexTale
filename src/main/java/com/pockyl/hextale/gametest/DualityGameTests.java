@@ -3,6 +3,8 @@ package com.pockyl.hextale.gametest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 import com.pockyl.hextale.block.ChemBoilerBlock;
@@ -10,6 +12,8 @@ import com.pockyl.hextale.block.ChemBoilerBlockEntity;
 import com.pockyl.hextale.block.ChemBurnerBlock;
 import com.pockyl.hextale.block.ChemBurnerBlockEntity;
 import com.pockyl.hextale.block.EssenceTankBlockEntity;
+import com.pockyl.hextale.block.HextechLamppostBlock;
+import com.pockyl.hextale.block.HextechLamppostBlockEntity;
 import com.pockyl.hextale.chem.Brew;
 import com.pockyl.hextale.chem.ChemVialItem;
 import com.pockyl.hextale.essence.EssenceMix;
@@ -19,6 +23,7 @@ import com.pockyl.hextale.rune.Essence;
 import com.pockyl.hextale.runework.BoilerRune;
 import com.pockyl.hextale.runework.PickaxeRunes;
 import com.pockyl.hextale.thevoid.Thinning;
+import com.pockyl.hextale.thevoid.Wards;
 
 import org.jspecify.annotations.Nullable;
 
@@ -107,6 +112,53 @@ public final class DualityGameTests {
             int crudeKept = plain.held().get(Essence.EARTH) + plain.held().get(Essence.METAL);
             int refinedKept = runed.held().get(Essence.EARTH) + runed.held().get(Essence.METAL);
             helper.assertTrue(refinedKept > crudeKept, "the runed boiler kept more (" + refinedKept + " vs " + crudeKept + ")");
+        });
+    }
+
+    /** A lamppost (both halves) at {@code at} with a jar of light essence beside it. */
+    private static HextechLamppostBlockEntity lamppost(GameTestHelper helper, BlockPos at) {
+        helper.setBlock(at, ModBlocks.HEXTECH_LAMPPOST.get().defaultBlockState());
+        helper.setBlock(at.above(), ModBlocks.HEXTECH_LAMPPOST.get().defaultBlockState().setValue(HextechLamppostBlock.HALF, DoubleBlockHalf.UPPER));
+        jar(helper, at.east(2), null, EssenceMix.pure(Essence.LIGHT, 64));
+        return helper.getBlockEntity(at, HextechLamppostBlockEntity.class);
+    }
+
+    @HexTest(maxTicks = 200, padding = 6)
+    public static void aLitLamppostBurnsOffTheThinningOfTheWorkAround(GameTestHelper helper) {
+        BlockPos at = new BlockPos(2, 2, 2);
+        HextechLamppostBlockEntity post = lamppost(helper, at);
+        ServerLevel level = helper.getLevel();
+        helper.succeedWhen(() -> {
+            helper.assertTrue(post.lit(), "it draws light essence from the jar and lights up");
+            helper.assertBlockProperty(at.above(), HextechLamppostBlock.LIT, true);
+            BlockPos work = helper.absolutePos(at.west(2));
+            LevelChunk chunk = level.getChunkAt(work);
+            helper.assertTrue(Wards.lightAt(level, work) == post, "the spot lies in its light");
+            float before = Thinning.get(chunk);
+            float store = post.store();
+            Thinning.add(level, work, 10, Thinning.Source.BOILED);
+            float gained = Thinning.get(chunk) - before;
+            float expected = 10 * (1 - post.share());
+            helper.assertTrue(Math.abs(gained - expected) < 0.01F, "only " + expected + " reached the land, not " + gained);
+            helper.assertTrue(post.store() < store, "the burn cost light");
+            float beforeBreach = Thinning.get(chunk);
+            Thinning.add(level, work, 1, Thinning.Source.BREACH);
+            helper.assertTrue(Thinning.get(chunk) - beforeBreach > 0.99F, "the Void's own feeding is not burned off");
+            helper.assertTrue(Wards.shields(level, chunk.getPos()), "and the creep stops at its chunk");
+            Thinning.set(level, chunk, before);
+        });
+    }
+
+    @HexTest(maxTicks = 100, padding = 6)
+    public static void aDarkLamppostWardsNothing(GameTestHelper helper) {
+        BlockPos at = new BlockPos(2, 2, 2);
+        helper.setBlock(at, ModBlocks.HEXTECH_LAMPPOST.get().defaultBlockState());
+        helper.setBlock(at.above(), ModBlocks.HEXTECH_LAMPPOST.get().defaultBlockState().setValue(HextechLamppostBlock.HALF, DoubleBlockHalf.UPPER));
+        HextechLamppostBlockEntity post = helper.getBlockEntity(at, HextechLamppostBlockEntity.class);
+        helper.runAfterDelay(50, () -> {
+            helper.assertFalse(post.lit(), "no light essence nearby: it stays dark");
+            helper.assertTrue(Wards.lightAt(helper.getLevel(), helper.absolutePos(at.west(2))) == null, "and wards nothing");
+            helper.succeed();
         });
     }
 }

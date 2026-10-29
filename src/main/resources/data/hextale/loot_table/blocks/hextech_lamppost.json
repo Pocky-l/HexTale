@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "hextale:hextech_lamppost",
+            "state": {
+              "half": "lower"
+            }
+          },
+          "name": "hextale:hextech_lamppost",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "include": [
+              "hextale:lamppost_runes"
+            ],
+            "source": "block_entity"
+          }
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "hextale:blocks/hextech_lamppost"
+}

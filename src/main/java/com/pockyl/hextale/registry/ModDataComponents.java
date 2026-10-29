@@ -128,6 +128,9 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> STILL_RUNES =
             COMPONENTS.registerComponentType("still_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> LAMPPOST_RUNES =
+            COMPONENTS.registerComponentType("lamppost_runes", builder -> builder
+                    .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<PickaxeRunes>> BOILER_RUNES =
             COMPONENTS.registerComponentType("boiler_runes", builder -> builder
                     .persistent(PickaxeRunes.CODEC).networkSynchronized(PickaxeRunes.STREAM_CODEC));

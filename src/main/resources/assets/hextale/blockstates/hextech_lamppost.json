@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "half=lower,lit=false": {
+      "model": "hextale:block/hextech_lamppost_lower"
+    },
+    "half=lower,lit=true": {
+      "model": "hextale:block/hextech_lamppost_lower"
+    },
+    "half=upper,lit=false": {
+      "model": "hextale:block/hextech_lamppost_upper"
+    },
+    "half=upper,lit=true": {
+      "model": "hextale:block/hextech_lamppost_upper_lit"
+    }
+  }
+}

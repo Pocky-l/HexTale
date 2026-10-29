@@ -75,6 +75,8 @@ public enum RuneHolder {
     BATTERY(() -> ModDataComponents.BATTERY_RUNES.get(), BatteryRune.SLOTS, BatteryRune.values()),
     /** The Hextech Purifier. */
     PURIFIER(() -> ModDataComponents.PURIFIER_RUNES.get(), PurifierRune.SLOTS, PurifierRune.values()),
+    /** The Hextech Lamppost. */
+    LAMPPOST(() -> ModDataComponents.LAMPPOST_RUNES.get(), LamppostRune.SLOTS, LamppostRune.values()),
     /** The Void Anchor. */
     ANCHOR(() -> ModDataComponents.ANCHOR_RUNES.get(), AnchorRune.SLOTS, AnchorRune.values()),
     /** The hextech axe, shovel and sword keep their runes where the pickaxe does. */
@@ -178,6 +180,9 @@ public enum RuneHolder {
         }
         if (item == ModItems.HEXTECH_PURIFIER.get()) {
             return PURIFIER;
+        }
+        if (item == ModItems.HEXTECH_LAMPPOST.get()) {
+            return LAMPPOST;
         }
         if (item == ModItems.VOID_ANCHOR.get()) {
             return ANCHOR;
@@ -329,6 +334,7 @@ public enum RuneHolder {
             case DISINTEGRATOR -> List.of(new ItemStack(ModItems.DISINTEGRATOR.get()));
             case BATTERY -> List.of(new ItemStack(ModItems.CRYSTAL_BATTERY.get()));
             case PURIFIER -> List.of(new ItemStack(ModItems.HEXTECH_PURIFIER.get()));
+            case LAMPPOST -> List.of(new ItemStack(ModItems.HEXTECH_LAMPPOST.get()));
             case ANCHOR -> List.of(new ItemStack(ModItems.VOID_ANCHOR.get()));
             case AXE -> List.of(new ItemStack(ModItems.HEXTECH_AXE.get()));
             case SHOVEL -> List.of(new ItemStack(ModItems.HEXTECH_SHOVEL.get()));
