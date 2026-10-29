@@ -63,7 +63,7 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
 - The Experience Condenser is a hextech vessel now: an eight-sided glass column in a brass frame on a walnut
   foot, and the experience flows into a small crystal on its lid.
 - Chem vials have an iron cap, and the glow mix, acid and raw shimmer brews are a little softer in colour.
-- The Hextech Altar only makes things now; burning runes in and copying them moved to the Rune Circle, so making a tool
+- The Ritual Altar (the Hextech Altar until now) only makes things; burning runes in and copying them moved to the Rune Circle, so making a tool
   and inscribing it happen in two different places.
 - Rune steles turn to face the middle of their Rune Circle, at any angle, so a ring of them set diagonally looks in.
 - Hextech grades sit where they belong: the best grade, the gemstone, goes only into the best devices (Hexcore, World
