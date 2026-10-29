@@ -1106,8 +1106,6 @@
   "block.hextale.relay_pylon": "Relay Pylon",
   "block.hextale.magic_stone_pillar": "Magic Stone Pillar",
   "block.hextale.brass_grate": "Brass Grate",
-  "block.hextale.walnut_panelling": "Walnut Panelling",
-  "block.hextale.hextech_panelling": "Hextech Panelling",
   "block.hextale.hex_pylon.status.gathering": "Gathers within %s blocks every %s s, %s at a time · links %s/%s",
   "block.hextale.hex_pylon.status.sending": "Sends %s items every %s s, up to %s blocks · links %s/%s",
   "block.hextale.hex_pylon.status.relay": "Passes items on, up to %s blocks · links %s/%s",

@@ -353,12 +353,6 @@ public final class ModBlocks {
                     .noOcclusion().requiresCorrectToolForDrops().isValidSpawn((state, level, pos, type) -> false)
                     .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false));
 
-    /** Dark walnut boards framed in aged brass: hextech's panelling. */
-    public static final DeferredBlock<Block> WALNUT_PANELLING = BLOCKS.registerBlock("walnut_panelling", Block::new,
-            ModBlocks::panellingProperties);
-    /** Walnut panelling with a brass-lined hexagonal channel of blue light. */
-    public static final DeferredBlock<Block> HEXTECH_PANELLING = BLOCKS.registerBlock("hextech_panelling", Block::new,
-            () -> panellingProperties().lightLevel(state -> 5));
 
     // The magic tree: a sapling that soaked up magic, plant and sap in a crucible grows into it. Its bark carries glowing
     // channels, its canopy weeps and sheds glowing leaves; the wood never burns.
@@ -580,11 +574,6 @@ public final class ModBlocks {
 
     private static BlockBehaviour.Properties pylonProperties() {
         return magicStoneProperties().strength(2.5F, 6.0F).sound(SoundType.POLISHED_TUFF).noOcclusion().lightLevel(state -> 5);
-    }
-
-    private static BlockBehaviour.Properties panellingProperties() {
-        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
-                .sound(SoundType.WOOD).ignitedByLava();
     }
 
     private static BlockBehaviour.Properties platingProperties() {

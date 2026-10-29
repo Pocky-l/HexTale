@@ -94,8 +94,6 @@
     "hextale:disintegrator",
     "hextale:rune_circle",
     "hextale:chem_tubes",
-    "hextale:rusted_grate",
-    "hextale:walnut_panelling",
-    "hextale:hextech_panelling"
+    "hextale:rusted_grate"
   ]
 }

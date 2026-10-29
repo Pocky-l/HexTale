@@ -1106,8 +1106,6 @@
   "block.hextale.relay_pylon": "Пилон-посредник",
   "block.hextale.magic_stone_pillar": "Колонна из магического камня",
   "block.hextale.brass_grate": "Латунная решётка",
-  "block.hextale.walnut_panelling": "Ореховые панели",
-  "block.hextale.hextech_panelling": "Хекстек-панели",
   "block.hextale.hex_pylon.status.gathering": "Собирает в %s блоках раз в %s с, по %s · связи %s/%s",
   "block.hextale.hex_pylon.status.sending": "Отправляет по %s раз в %s с, до %s блоков · связи %s/%s",
   "block.hextale.hex_pylon.status.relay": "Передаёт дальше, до %s блоков · связи %s/%s",

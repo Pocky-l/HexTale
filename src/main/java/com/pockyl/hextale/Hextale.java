@@ -269,8 +269,6 @@ public final class Hextale {
         output.accept(ModItems.RUSTED_GRATE);
         output.accept(ModItems.CHEM_TUBES);
         output.accept(ModItems.BRASS_GRATE);
-        output.accept(ModItems.WALNUT_PANELLING);
-        output.accept(ModItems.HEXTECH_PANELLING);
         output.accept(ModItems.CHEM_GLASS);
         output.accept(ModItems.CHEM_GLASS_PANE);
         output.accept(ModItems.POLISHED_NULLSTONE);
