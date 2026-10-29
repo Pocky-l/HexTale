@@ -60,6 +60,8 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
   crystals and gemstones are no longer burned as charge. Rift Gates are linked with a raw orb instead of a cut crystal.
 
 ### Fixed
+- With shader packs that draw soft translucent light as solid (BLISS), the glow behind the essence signs over a
+  crucible and other hextale lights no longer turns into a blob of light; with a pack on, the pack's own glow is used.
 - The ink vials on the Research Table's desk sit in their frames whatever the number of inks.
 
 ## [1.5.0] - 2026-10-28

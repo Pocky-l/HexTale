@@ -65,6 +65,11 @@ public final class HexFx {
     /** A camera-facing sprite at the current pose origin, drawn with both windings. */
     public static void sprite(PoseStack poseStack, SubmitNodeCollector collector, Quaternionfc camera, Identifier texture, float size, int color,
                               float alpha) {
+        if (texture == HALO && com.pockyl.hextale.client.IrisCompat.shadersOn()) {
+            // Some shader packs (BLISS) draw translucent emissive quads as opaque light: a soft halo turns into a blob
+            // over the sign it sits behind. With a pack on, the pack's own bloom gives the glow instead.
+            return;
+        }
         poseStack.pushPose();
         poseStack.rotate(camera);
         float h = size / 2;
