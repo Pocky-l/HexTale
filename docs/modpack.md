@@ -201,6 +201,11 @@ chances. The modifiers check the queried loot table, so per-player chests (Lootr
 `hextale-client.toml`: `breachCinematic` (the camera flight when a breach opens near you), `showWipSteps` (ideas
 in the diary that are not in the game yet).
 
+What wears the land thin, by source, shows `/hextale void sources [radius]` (the Chem Boiler's cracking counts as
+`fumes`). A lit Hextech Lamppost burns off a share (35-65% with runes) of every gain within its reach (8-16 blocks)
+before it reaches the land - except the Void's own feeding around a breach - and its chunk never catches the creep of
+the chunks around it; plan pack balance with that in mind.
+
 ## Servers and claims
 
 Everything that breaks or places blocks asks NeoForge's block events first, so claim mods (FTB Chunks, Open Parties
@@ -228,6 +233,8 @@ Other mods' pipes, tanks and hoppers:
 | Pump | pushes water into another mod's tank on top | - |
 | Essence Jar, Big Essence Jar | essence fluid in and out (see below) | - |
 | Creative Essence Jar | every essence fluid out, endless | - |
+| Hextech Purifier, Void Anchor | - | a hextech or synthetic crystal in from the top and the sides, a clouded one out from below |
+| Chem Boiler | - (mixtures come in through brass pipes, bottles, or out of the unstickered jars around it) | - |
 | Separator, Hex Furnace, Hex Foundry, Research Table, Lab Bench, Pedestal, Disintegrator, ... | - | as before (sided slots) |
 
 Essence as a fluid: `hextale:essence` with the data component `hextale:essence_kind` (the essence id, e.g. `fire`);
@@ -247,7 +254,7 @@ Criteria triggers (each also takes the usual `player` condition):
 |---|---|---|
 | `hextale:research_completed` | `topic` (optional) | a research is finished (also on login for what the player already knows) |
 | `hextale:guide_step` | `step` (optional) | a step of the Researcher's Diary is done |
-| `hextale:guide_event` | `event` (optional) | something happened in the world: `breach_opened`, `hexcore_awakened`, `awakened/<block>`, `big_essence_jar_formed`, ... |
+| `hextale:guide_event` | `event` (optional) | something happened in the world: `breach_opened`, `hexcore_awakened`, `awakened/<block>`, `big_essence_jar_formed`, `shimmer_veins` (a vial of refined shimmer drunk), `veins_washed` (light essence washed a vein out), `shimmer_craving` (the shimmer's gifts ran out), ... |
 | `hextale:ritual_finished` | `item` (item predicate), `kind` (`infuse`, `engrave`, `write`) | a ritual finishes near the player (`infuse` at the altar, `engrave` and `write` in the Rune Circle) |
 | `hextale:runes_learned` | `count` | the codex holds at least `count` runes |
 
@@ -263,6 +270,14 @@ Commands (permission level 2), e.g. for quest rewards:
 
 - `/hextale research grant|revoke <targets> <topic|all>`
 - `/hextale guide grant|reset <targets> <step|all>` - grant also completes the steps before it.
+
+## Shimmer in the veins
+
+Every vial of refined shimmer drunk adds a vein (player attachment `hextale:shimmer_veins`: `count` 0-5 and
+`fed_until`, the game time the gifts last until; kept through death). While fed the veins add transient attribute
+modifiers `hextale:shimmer_veins_health` (+2 max health per vein), `hextale:shimmer_veins_damage` (+0.5 attack damage)
+and `hextale:shimmer_veins_size` (+0.02 scale), Night Vision in the dark from 3 veins and Haste at 5. Unfed, the
+modifiers are removed and nothing else happens. A bottle of essence with at least 8 mB of light essence removes a vein.
 
 ## Curios
 
