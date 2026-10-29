@@ -43,6 +43,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemStillBlockEntity>> CHEM_STILL =
             BLOCK_ENTITIES.register("chem_still", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.ChemStillBlockEntity::new,
                     ModBlocks.CHEM_STILL.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ChemBoilerBlockEntity>> CHEM_BOILER =
+            BLOCK_ENTITIES.register("chem_boiler", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.ChemBoilerBlockEntity::new,
+                    ModBlocks.CHEM_BOILER.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.CrystalBatteryBlockEntity>> CRYSTAL_BATTERY =
             BLOCK_ENTITIES.register("crystal_battery", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.CrystalBatteryBlockEntity::new,
                     ModBlocks.CRYSTAL_BATTERY.get()));
@@ -93,6 +96,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HextechPurifierBlockEntity>> HEXTECH_PURIFIER =
             BLOCK_ENTITIES.register("hextech_purifier", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.HextechPurifierBlockEntity::new,
                     ModBlocks.HEXTECH_PURIFIER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HextechLamppostBlockEntity>> HEXTECH_LAMPPOST =
+            BLOCK_ENTITIES.register("hextech_lamppost", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.HextechLamppostBlockEntity::new,
+                    ModBlocks.HEXTECH_LAMPPOST.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ArcSpireBlockEntity>> ARC_SPIRE =
             BLOCK_ENTITIES.register("arc_spire", () -> com.pockyl.hextale.port.PortTypes.blockEntity(com.pockyl.hextale.block.ArcSpireBlockEntity::new,
                     ModBlocks.ARC_SPIRE.get()));

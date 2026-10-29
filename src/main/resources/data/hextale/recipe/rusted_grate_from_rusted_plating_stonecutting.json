@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "hextale:rusted_plating"
+  },
+  "result": {
+    "id": "hextale:rusted_grate",
+    "count": 4
+  }
+}

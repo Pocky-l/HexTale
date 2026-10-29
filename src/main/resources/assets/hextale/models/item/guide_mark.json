@@ -60,6 +60,18 @@
         "hextale:select": 0.1
       },
       "model": "hextale:item/guide/voidling_growth"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.11
+      },
+      "model": "hextale:item/guide/shimmer_veins"
+    },
+    {
+      "predicate": {
+        "hextale:select": 0.12
+      },
+      "model": "hextale:item/guide/veins_washed"
     }
   ]
 }

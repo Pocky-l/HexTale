@@ -3,6 +3,6 @@
   "region": "chemtech",
   "stage": "late",
   "icon": "minecraft:chainmail_leggings",
-  "parents": ["wip_chem_boiler", "wip_respirator"],
+  "parents": ["chem_boiler", "wip_respirator"],
   "pos": [-1340, 70]
 }

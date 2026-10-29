@@ -12,6 +12,8 @@
     "hextale:chem_glass",
     "hextale:chem_glass_pane",
     "hextale:chem_still",
+    "hextale:chem_boiler",
+    "hextale:hextech_lamppost",
     "hextale:chiseled_magic_bricks",
     "hextale:creative_essence_tank",
     "hextale:crucible",
@@ -90,6 +92,8 @@
     "hextale:rift_gate",
     "hextale:world_anchor",
     "hextale:disintegrator",
-    "hextale:rune_circle"
+    "hextale:rune_circle",
+    "hextale:chem_tubes",
+    "hextale:rusted_grate"
   ]
 }

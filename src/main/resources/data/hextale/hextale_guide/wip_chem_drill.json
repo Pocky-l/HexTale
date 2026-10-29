@@ -3,6 +3,6 @@
   "region": "chemtech",
   "stage": "late",
   "icon": "minecraft:netherite_pickaxe",
-  "parents": ["wip_chem_boiler"],
+  "parents": ["chem_boiler"],
   "pos": [-1340, -40]
 }

@@ -99,6 +99,7 @@ public final class HextaleClient {
         com.pockyl.hextale.compat.curios.CuriosClientCompat.register(modBus);
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::addLayers);
         modBus.addListener(com.pockyl.hextale.client.render.VoidMiteLayer::addLayers);
+        modBus.addListener(com.pockyl.hextale.client.render.ShimmerVeinsLayer::addLayers);
         modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
                 com.pockyl.hextale.client.render.VoidMiteModel.LAYER, com.pockyl.hextale.client.render.VoidMiteModel::createBodyLayer));
         modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
@@ -272,6 +273,8 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_WORKBENCH.get(), com.pockyl.hextale.client.render.HexWorkbenchRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.AXOLOTL_TANK.get(), com.pockyl.hextale.client.render.AxolotlTankRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CHEM_STILL.get(), com.pockyl.hextale.client.render.ChemStillRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.CHEM_BOILER.get(), com.pockyl.hextale.client.render.ChemBoilerRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_LAMPPOST.get(), com.pockyl.hextale.client.render.HextechLamppostRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LAB_BENCH.get(), com.pockyl.hextale.client.render.LabBenchRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CRUCIBLE.get(), com.pockyl.hextale.client.render.CrucibleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_PYLON.get(), com.pockyl.hextale.client.render.HexPylonRenderer::new);

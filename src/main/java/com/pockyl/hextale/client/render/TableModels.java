@@ -69,6 +69,9 @@ public final class TableModels {
     public static final ModelResourceLocation LEVITATION_RING = model("block/levitation_plate_ring");
     /** A Dust Charge stuck on a wall: base on its -Z face at (8, 8, 0) px. */
     public static final ModelResourceLocation DUST_CHARGE_STUCK = model("item/dust_charge_stuck");
+    /** The Chem Boiler's gauge needle (built pointing up from {@code ChemBoilerRenderer.NEEDLE_PIVOT}) and safety valve. */
+    public static final ModelResourceLocation CHEM_BOILER_NEEDLE = model("block/chem_boiler_needle");
+    public static final ModelResourceLocation CHEM_BOILER_VALVE = model("block/chem_boiler_valve");
 
     private TableModels() {
     }

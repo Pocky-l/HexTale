@@ -101,6 +101,8 @@ public final class Thinning {
     public static final float DISINTEGRATED = 0.3F;
     /** A dose of shimmer refined in a Chem Still. */
     public static final float STILLED = 1;
+    /** Essence a Chem Boiler's cracking sends up as fumes, per mB. */
+    public static final float FUMES = 0.5F;
 
     // Carelessness and accidents.
     /** Essence poured away and lost on the ground, per mB (unknown essence counts double). */
@@ -151,7 +153,7 @@ public final class Thinning {
     /** What wore a chunk thin, for {@code /hextale void sources}. */
     public enum Source {
         BOILED, SEPARATED, BREWED, SPENT, DISINTEGRATED, STILLED, POURED, MIASMA, DUST_CHARGE, ORB_BURST, RITUAL_COLLAPSE,
-        LAB_BURST, PARCHMENT_BURN, BREACH;
+        LAB_BURST, PARCHMENT_BURN, BREACH, FUMES;
 
         public String key() {
             return "thinning.hextale.source." + name().toLowerCase(java.util.Locale.ROOT);
@@ -187,10 +189,14 @@ public final class Thinning {
 
     /**
      * Wears the edge thinner where {@code pos} is (scaled by the config; nothing when the Thinning is off) and counts it
-     * for its source.
+     * for its source. A lit Hextech Lamppost whose light covers the spot burns off its share first ({@link Wards}).
      */
     public static void add(ServerLevel level, BlockPos pos, float amount, Source source) {
         if (!Config.THINNING.get() || amount <= 0) {
+            return;
+        }
+        amount = Wards.burnOff(level, pos, amount, source);
+        if (amount <= 0) {
             return;
         }
         LevelChunk chunk = level.getChunkAt(pos);
@@ -329,7 +335,8 @@ public final class Thinning {
 
     /**
      * One flow: every loaded neighbour of a sick chunk creeps towards {@link #FALLOFF} of its value (the highest of its
-     * sick neighbours counts). Nothing heals: the land only catches what lies beside it.
+     * sick neighbours counts) - except a chunk where a lit Hextech Lamppost stands ({@link Wards#shields}). Nothing heals:
+     * the land only catches what lies beside it.
      */
     public static void flow(ServerLevel level) {
         LongSet active = ACTIVE.get(level.dimension());
@@ -364,7 +371,9 @@ public final class Thinning {
         }
         for (Long2FloatMap.Entry entry : rise.long2FloatEntrySet()) {
             LevelChunk chunk = chunks.get(entry.getLongKey());
-            set(level, chunk, get(chunk) + entry.getFloatValue());
+            if (!Wards.shields(level, chunk.getPos())) {
+                set(level, chunk, get(chunk) + entry.getFloatValue());
+            }
         }
         for (LongIterator it = active.iterator(); it.hasNext(); ) {
             long key = it.nextLong();

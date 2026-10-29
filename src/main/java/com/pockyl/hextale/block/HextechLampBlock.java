@@ -60,7 +60,8 @@ public class HextechLampBlock extends LanternBlock {
         }
     }
 
-    private static void choke(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    /** The gem chokes for a moment (sick land, or the fumes of chemistry close by). */
+    public static void choke(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         level.setBlock(pos, state.setValue(FLICKER, true), Block.UPDATE_ALL);
         level.scheduleTick(pos, state.getBlock(), 2 + random.nextInt(5));
         level.playSound(null, pos, ModSounds.LAMP_FLICKER.get(), SoundSource.BLOCKS, 0.5F, 0.85F + random.nextFloat() * 0.3F);

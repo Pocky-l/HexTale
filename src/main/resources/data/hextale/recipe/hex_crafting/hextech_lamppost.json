@@ -1,0 +1,29 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    " L ",
+    "BGB",
+    "WSW"
+  ],
+  "key": {
+    "L": {
+      "item": "hextale:hextech_lamp"
+    },
+    "G": {
+      "item": "hextale:hextech_gemstone"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
+    },
+    "W": {
+      "item": "minecraft:dark_oak_planks"
+    },
+    "S": {
+      "item": "hextale:magic_stone"
+    }
+  },
+  "result": {
+    "id": "hextale:hextech_lamppost"
+  },
+  "charge": 6
+}

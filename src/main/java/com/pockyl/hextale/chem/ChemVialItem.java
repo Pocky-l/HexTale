@@ -6,10 +6,12 @@ import net.minecraft.core.Position;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
@@ -147,7 +149,7 @@ public class ChemVialItem extends Item implements ProjectileItem {
         return SoundEvents.HONEY_DRINK;
     }
 
-    /** A vial of refined shimmer drunk: its rush, the wait before the next one, the empty glass bottle. */
+    /** A vial of refined shimmer drunk: its rush, the wait before the next one, one more vein, the empty glass bottle. */
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (brew(stack) != Brew.REFINED_SHIMMER) {
@@ -156,6 +158,10 @@ public class ChemVialItem extends Item implements ProjectileItem {
         if (!level.isClientSide()) {
             shimmerEffects().forEach(effect -> entity.addEffect(new MobEffectInstance(effect)));
             entity.getPersistentData().putLong(SHIMMER_UNTIL, level.getGameTime() + (long) (SHIMMER_COOLDOWN * 20));
+            // One more vein in the drinker's body (ShimmerVeins).
+            if (entity instanceof ServerPlayer player) {
+                ShimmerVeins.drink(player);
+            }
         }
         stack.shrink(1);
         if (stack.isEmpty()) {

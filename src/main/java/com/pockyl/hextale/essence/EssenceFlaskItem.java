@@ -73,6 +73,10 @@ public class EssenceFlaskItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (!level.isClientSide()) {
             drink(contents(stack), entity);
+            if (entity instanceof net.minecraft.server.level.ServerPlayer player) {
+                // Light essence washes shimmer out of the veins.
+                com.pockyl.hextale.chem.ShimmerVeins.wash(player, contents(stack));
+            }
         }
         // 1.21.1: drunk like a potion (26.x gives the item a drink component and a glass bottle to leave behind).
         if (entity instanceof net.minecraft.world.entity.player.Player player && player.hasInfiniteMaterials()) {

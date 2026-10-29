@@ -48,6 +48,8 @@
     "hextale:riveted_rusted_plating",
     "hextale:axolotl_tank",
     "hextale:chem_still",
+    "hextale:chem_boiler",
+    "hextale:hextech_lamppost",
     "hextale:pink_brazier",
     "hextale:nullstone",
     "hextale:polished_nullstone",
@@ -84,6 +86,8 @@
     "hextale:world_anchor",
     "hextale:disintegrator",
     "hextale:rift_gate",
-    "hextale:rune_circle"
+    "hextale:rune_circle",
+    "hextale:chem_tubes",
+    "hextale:rusted_grate"
   ]
 }

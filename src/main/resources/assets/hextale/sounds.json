@@ -719,6 +719,79 @@
       }
     ]
   },
+  "chem_boiler.knock": {
+    "subtitle": "subtitles.hextale.chem_boiler.knock",
+    "sounds": [
+      {
+        "name": "hextale:chem_boiler_knock1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:chem_boiler_knock2",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:chem_boiler_knock3",
+        "volume": 0.7
+      }
+    ]
+  },
+  "chem_boiler.vent": {
+    "subtitle": "subtitles.hextale.chem_boiler.vent",
+    "sounds": [
+      {
+        "name": "hextale:chem_boiler_vent1"
+      },
+      {
+        "name": "hextale:chem_boiler_vent2"
+      }
+    ]
+  },
+  "lamppost.ward": {
+    "subtitle": "subtitles.hextale.lamppost.ward",
+    "sounds": [
+      {
+        "name": "hextale:lamppost_ward1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:lamppost_ward2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "lamppost.light": {
+    "subtitle": "subtitles.hextale.lamppost.light",
+    "sounds": [
+      {
+        "name": "hextale:lamppost_light"
+      }
+    ]
+  },
+  "shimmer.rush": {
+    "subtitle": "subtitles.hextale.shimmer.rush",
+    "sounds": [
+      {
+        "name": "hextale:shimmer_rush"
+      }
+    ]
+  },
+  "shimmer.fade": {
+    "subtitle": "subtitles.hextale.shimmer.fade",
+    "sounds": [
+      {
+        "name": "hextale:shimmer_fade"
+      }
+    ]
+  },
+  "shimmer.wash": {
+    "subtitle": "subtitles.hextale.shimmer.wash",
+    "sounds": [
+      {
+        "name": "hextale:shimmer_wash"
+      }
+    ]
+  },
   "pink_brazier.ignite": {
     "subtitle": "subtitles.hextale.pink_brazier.ignite",
     "sounds": [

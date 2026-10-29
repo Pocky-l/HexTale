@@ -187,6 +187,8 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.AXOLOTL_TANK.get(), "axolotl_tank");
         info(registration, ModItems.REGENERATIVE_SLIME.get(), "regenerative_slime");
         info(registration, ModItems.CHEM_STILL.get(), "chem_still");
+        info(registration, ModItems.CHEM_BOILER.get(), "chem_boiler");
+        info(registration, ModItems.HEXTECH_LAMPPOST.get(), "hextech_lamppost");
         info(registration, ModItems.LAB_BENCH.get(), "lab_bench");
         info(registration, ModItems.PINK_BRAZIER.get(), "pink_brazier");
         info(registration, ModItems.SYNTHETIC_CRYSTAL.get(), "synthetic_crystal");

@@ -48,7 +48,8 @@ import org.jspecify.annotations.Nullable;
  * {@link #PER_DRAW} out of the sickest chunk within its reach - and clouds over as it fills; at {@link #capacity()} it has
  * become a Clouded Crystal and the purifier rests until someone takes it out. The work costs light essence, drawn out of
  * a jar within {@link JarReach#RADIUS}: one mB is {@value #PER_MB} of the Thinning. A crystal taken out half full lets
- * what it held seep back into the land.
+ * what it held seep back into the land. A crystal grown in shimmer works too, but holds less and crumbles to dust when
+ * full ({@link DeviceCrystals}).
  *
  * <p>Hoppers and pylons put fresh crystals in through the top and sides and take clouded ones out from below.
  */
@@ -117,7 +118,7 @@ public class HextechPurifierBlockEntity extends BlockEntity implements WorldlyCo
     /** Thinning the crystal holds before it clouds. */
     public float capacity() {
         int purification = strength(PurifierRune.PURIFICATION);
-        return HOLDS * (1 + (purification > 0 ? HolderRune.at(PurifierRune.ROOM, purification) : 0));
+        return HOLDS * (1 + (purification > 0 ? HolderRune.at(PurifierRune.ROOM, purification) : 0)) * DeviceCrystals.share(crystal);
     }
 
     // ---- State ----------------------------------------------------------------------------------------------------------
@@ -157,7 +158,7 @@ public class HextechPurifierBlockEntity extends BlockEntity implements WorldlyCo
 
     /** Puts a fresh crystal in (one of the stack); false when it holds one already or it is no crystal. */
     public boolean insert(ItemStack stack) {
-        if (!crystal.isEmpty() || !stack.is(ModItems.HEXTECH_CRYSTAL.get())) {
+        if (!crystal.isEmpty() || !DeviceCrystals.fits(stack)) {
             return false;
         }
         crystal = stack.copyWithCount(1);
@@ -179,7 +180,7 @@ public class HextechPurifierBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     private void release() {
-        if (held > 0 && level instanceof ServerLevel server && crystal.is(ModItems.HEXTECH_CRYSTAL.get())) {
+        if (held > 0 && level instanceof ServerLevel server && DeviceCrystals.fits(crystal)) {
             LevelChunk chunk = server.getChunkAt(worldPosition);
             Thinning.set(server, chunk, Thinning.get(chunk) + held);
         }
@@ -254,8 +255,15 @@ public class HextechPurifierBlockEntity extends BlockEntity implements WorldlyCo
         changed();
     }
 
-    /** The crystal is full of the Void: it becomes a Clouded Crystal. */
+    /** The crystal is full of the Void: it becomes a Clouded Crystal - or, grown in shimmer, crumbles to dust. */
     private void cloud(ServerLevel level) {
+        if (DeviceCrystals.synthetic(crystal)) {
+            crystal = ItemStack.EMPTY;
+            held = 0;
+            mode = Mode.EMPTY;
+            DeviceCrystals.crumble(level, crystalAt(worldPosition));
+            return;
+        }
         crystal = new ItemStack(ModItems.CLOUDED_CRYSTAL.get());
         held = 0;
         mode = Mode.CLOUDED;
@@ -319,7 +327,7 @@ public class HextechPurifierBlockEntity extends BlockEntity implements WorldlyCo
 
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        return side != Direction.DOWN && crystal.isEmpty() && stack.is(ModItems.HEXTECH_CRYSTAL.get());
+        return side != Direction.DOWN && crystal.isEmpty() && DeviceCrystals.fits(stack);
     }
 
     @Override
@@ -329,7 +337,7 @@ public class HextechPurifierBlockEntity extends BlockEntity implements WorldlyCo
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return crystal.isEmpty() && stack.is(ModItems.HEXTECH_CRYSTAL.get());
+        return crystal.isEmpty() && DeviceCrystals.fits(stack);
     }
 
     @Override

@@ -24,6 +24,13 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> AXOLOTL_TANK_SHED = register("axolotl_tank.shed");
     public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_STILL_DRIP = register("chem_still.drip");
     public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_STILL_BOIL = register("chem_still.boil");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_BOILER_KNOCK = register("chem_boiler.knock");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHEM_BOILER_VENT = register("chem_boiler.vent");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LAMPPOST_WARD = register("lamppost.ward");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LAMPPOST_LIGHT = register("lamppost.light");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHIMMER_RUSH = register("shimmer.rush");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHIMMER_FADE = register("shimmer.fade");
+    public static final DeferredHolder<SoundEvent, SoundEvent> VEINS_WASH = register("shimmer.wash");
     public static final DeferredHolder<SoundEvent, SoundEvent> PINK_BRAZIER_IGNITE = register("pink_brazier.ignite");
     public static final DeferredHolder<SoundEvent, SoundEvent> PINK_BRAZIER_BREATH = register("pink_brazier.breath");
     /** The Hextech Skypack: its jets catching, their steady roar (looped while they burn), a cough when the air is gone. */

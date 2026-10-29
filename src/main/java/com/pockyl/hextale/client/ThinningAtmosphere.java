@@ -54,7 +54,10 @@ public final class ThinningAtmosphere {
         modBus.addListener((RegisterGuiLayersEvent event) ->
                 event.registerAbove(VanillaGuiLayers.CAMERA_OVERLAYS, Hextale.id("thinning_vignette"), (portGraphics, portDelta) -> ThinningAtmosphere.vignette(com.pockyl.hextale.port.client.GuiGraphicsExtractor.of(portGraphics), portDelta)));
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> tick());
-        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> ClientThinning.clear());
+        NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> {
+            ClientThinning.clear();
+            com.pockyl.hextale.thevoid.Wards.clearClient();
+        });
         NeoForge.EVENT_BUS.addListener(ThinningAtmosphere::fogColour);
         NeoForge.EVENT_BUS.addListener(ThinningAtmosphere::fog);
     }
@@ -89,6 +92,10 @@ public final class ThinningAtmosphere {
             }
             float d = depth(value + Thinning.SAFE);
             int ground = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mth.floor(x), Mth.floor(z));
+            if (com.pockyl.hextale.thevoid.Wards.litAt(level, x, ground, z)) {
+                // The light of a lamppost keeps its ground clear of the haze.
+                continue;
+            }
             if (random.nextFloat() < 0.35F + d * 0.6F) {
                 double y = ground + 0.1 + random.nextDouble() * (0.5 + d * 1.6);
                 level.addParticle(ModParticles.haze(HAZE, d), x, y, z, (random.nextDouble() - 0.5) * 0.012, 0,
