@@ -1,14 +1,15 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "minecraft:block/polished_deepslate",
-    "stone": "minecraft:block/polished_deepslate",
-    "void": "minecraft:block/obsidian",
-    "brass": "hextale:block/brass"
+    "particle": "hextale:block/chem/chem_iron",
+    "chem_iron": "hextale:block/chem/chem_iron",
+    "chem_copper": "hextale:block/chem/chem_copper",
+    "disintegrator_acid": "hextale:block/chem/disintegrator_acid",
+    "disintegrator_port": "hextale:block/chem/disintegrator_port"
   },
   "elements": [
     {
-      "name": "stone_base",
+      "name": "iron_plinth",
       "from": [
         1,
         0,
@@ -16,45 +17,45 @@
       ],
       "to": [
         15,
-        3,
+        2,
         15
       ],
       "faces": {
         "north": {
           "uv": [
             1,
-            13,
+            14,
             15,
             16
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
             1,
-            13,
+            14,
             15,
             16
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
             1,
-            13,
+            14,
             15,
             16
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
             1,
-            13,
+            14,
             15,
             16
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "up": {
           "uv": [
@@ -63,7 +64,7 @@
             15,
             15
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -72,16 +73,16 @@
             15,
             15
           ],
-          "texture": "#stone",
+          "texture": "#chem_iron",
           "cullface": "down"
         }
       }
     },
     {
-      "name": "stone_wall_n",
+      "name": "iron_wall_n",
       "from": [
         2,
-        3,
+        2,
         2
       ],
       "to": [
@@ -95,53 +96,44 @@
             2,
             5,
             14,
-            13
+            14
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
             12,
             5,
             14,
-            13
+            14
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
             2,
             5,
             14,
-            13
+            14
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
             2,
             5,
             4,
-            13
+            14
           ],
-          "texture": "#stone"
-        },
-        "up": {
-          "uv": [
-            2,
-            2,
-            14,
-            4
-          ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         }
       }
     },
     {
-      "name": "stone_wall_s",
+      "name": "iron_wall_s",
       "from": [
         2,
-        3,
+        2,
         12
       ],
       "to": [
@@ -155,53 +147,44 @@
             2,
             5,
             14,
-            13
+            14
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
             2,
             5,
             4,
-            13
+            14
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
             2,
             5,
             14,
-            13
+            14
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
             12,
             5,
             14,
-            13
-          ],
-          "texture": "#stone"
-        },
-        "up": {
-          "uv": [
-            2,
-            12,
-            14,
             14
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         }
       }
     },
     {
-      "name": "stone_wall_w",
+      "name": "iron_wall_w",
       "from": [
         2,
-        3,
+        2,
         4
       ],
       "to": [
@@ -215,35 +198,26 @@
             4,
             5,
             12,
-            13
+            14
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
             4,
             5,
             12,
-            13
+            14
           ],
-          "texture": "#stone"
-        },
-        "up": {
-          "uv": [
-            2,
-            4,
-            4,
-            12
-          ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         }
       }
     },
     {
-      "name": "stone_wall_e",
+      "name": "iron_wall_e",
       "from": [
         12,
-        3,
+        2,
         4
       ],
       "to": [
@@ -257,773 +231,687 @@
             4,
             5,
             12,
-            13
+            14
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
             4,
             5,
             12,
-            13
+            14
           ],
-          "texture": "#stone"
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "acid_pool",
+      "from": [
+        4,
+        2,
+        4
+      ],
+      "to": [
+        12,
+        7,
+        12
+      ],
+      "light_emission": 15,
+      "faces": {
+        "up": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#disintegrator_acid"
+        }
+      }
+    },
+    {
+      "name": "copper_rim_n",
+      "from": [
+        1,
+        11,
+        1
+      ],
+      "to": [
+        15,
+        12,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            4,
+            15,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            12,
+            4,
+            15,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
+            1,
+            4,
+            15,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            1,
+            4,
+            4,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            1,
+            1,
+            15,
+            4
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            1,
+            12,
+            15,
+            15
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "copper_rim_s",
+      "from": [
+        1,
+        11,
+        12
+      ],
+      "to": [
+        15,
+        12,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            4,
+            15,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            1,
+            4,
+            4,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
+            1,
+            4,
+            15,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            12,
+            4,
+            15,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            1,
+            12,
+            15,
+            15
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            1,
+            1,
+            15,
+            4
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "copper_rim_w",
+      "from": [
+        1,
+        11,
+        4
+      ],
+      "to": [
+        4,
+        12,
+        12
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            4,
+            4,
+            12,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            4,
+            4,
+            12,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            1,
+            4,
+            4,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            1,
+            4,
+            4,
+            12
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "copper_rim_e",
+      "from": [
+        12,
+        11,
+        4
+      ],
+      "to": [
+        15,
+        12,
+        12
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            4,
+            4,
+            12,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            4,
+            4,
+            12,
+            5
+          ],
+          "texture": "#chem_copper"
         },
         "up": {
           "uv": [
             12,
             4,
-            14,
+            15,
             12
           ],
-          "texture": "#stone"
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            12,
+            4,
+            15,
+            12
+          ],
+          "texture": "#chem_copper"
         }
       }
     },
     {
-      "name": "void_floor",
+      "name": "copper_band_n",
       "from": [
-        4,
-        3,
-        4
+        1,
+        7,
+        1
       ],
       "to": [
-        12,
+        15,
+        8,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            8,
+            15,
+            9
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            14,
+            8,
+            15,
+            9
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            1,
+            8,
+            2,
+            9
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            1,
+            1,
+            15,
+            2
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            1,
+            14,
+            15,
+            15
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "copper_band_s",
+      "from": [
+        1,
+        7,
+        14
+      ],
+      "to": [
+        15,
+        8,
+        15
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            1,
+            8,
+            2,
+            9
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
+            1,
+            8,
+            15,
+            9
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            14,
+            8,
+            15,
+            9
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            1,
+            14,
+            15,
+            15
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            1,
+            1,
+            15,
+            2
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "copper_band_w",
+      "from": [
+        1,
+        7,
+        2
+      ],
+      "to": [
+        2,
+        8,
+        14
+      ],
+      "faces": {
+        "west": {
+          "uv": [
+            2,
+            8,
+            14,
+            9
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            1,
+            2,
+            2,
+            14
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            1,
+            2,
+            2,
+            14
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "copper_band_e",
+      "from": [
+        14,
+        7,
+        2
+      ],
+      "to": [
+        15,
+        8,
+        14
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            2,
+            8,
+            14,
+            9
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            14,
+            2,
+            15,
+            14
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            14,
+            2,
+            15,
+            14
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "iron_port",
+      "from": [
         5,
+        2,
+        1
+      ],
+      "to": [
+        11,
+        6,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            10,
+            11,
+            14
+          ],
+          "texture": "#disintegrator_port"
+        },
+        "east": {
+          "uv": [
+            14,
+            10,
+            15,
+            14
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            1,
+            10,
+            2,
+            14
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            5,
+            1,
+            11,
+            2
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "glow_port",
+      "from": [
+        5.97,
+        2.97,
+        0.97
+      ],
+      "to": [
+        10.03,
+        5.03,
+        2.03
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            6,
+            9,
+            8
+          ],
+          "texture": "#disintegrator_acid"
+        }
+      }
+    },
+    {
+      "name": "copper_stack",
+      "from": [
+        12,
+        12,
         12
       ],
+      "to": [
+        14,
+        15,
+        14
+      ],
       "faces": {
-        "up": {
+        "north": {
           "uv": [
+            2,
+            1,
             4,
+            4
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            2,
+            1,
             4,
+            4
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
             12,
-            12
-          ],
-          "texture": "#void"
-        }
-      }
-    },
-    {
-      "name": "brass_rim_n",
-      "from": [
-        1,
-        11,
-        1
-      ],
-      "to": [
-        15,
-        12,
-        3
-      ],
-      "faces": {
-        "north": {
-          "uv": [
             1,
-            4,
-            15,
-            5
+            14,
+            4
           ],
-          "texture": "#brass"
-        },
-        "east": {
-          "uv": [
-            13,
-            4,
-            15,
-            5
-          ],
-          "texture": "#brass"
-        },
-        "south": {
-          "uv": [
-            1,
-            4,
-            15,
-            5
-          ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "west": {
           "uv": [
+            12,
             1,
-            4,
-            3,
-            5
+            14,
+            4
           ],
-          "texture": "#brass"
-        },
-        "up": {
-          "uv": [
-            1,
-            1,
-            15,
-            3
-          ],
-          "texture": "#brass"
-        },
-        "down": {
-          "uv": [
-            1,
-            13,
-            15,
-            15
-          ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         }
       }
     },
     {
-      "name": "brass_rim_s",
+      "name": "copper_stack_cap",
       "from": [
-        1,
         11,
-        13
+        15,
+        11
       ],
       "to": [
         15,
-        12,
+        16,
         15
       ],
       "faces": {
         "north": {
           "uv": [
             1,
-            4,
-            15,
-            5
+            0,
+            5,
+            1
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "east": {
           "uv": [
             1,
-            4,
-            3,
-            5
+            0,
+            5,
+            1
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "south": {
           "uv": [
-            1,
-            4,
+            11,
+            0,
             15,
-            5
+            1
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "west": {
           "uv": [
-            13,
-            4,
+            11,
+            0,
             15,
-            5
+            1
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         },
         "up": {
           "uv": [
-            1,
-            13,
+            11,
+            11,
             15,
             15
           ],
-          "texture": "#brass"
+          "texture": "#chem_copper",
+          "cullface": "up"
         },
         "down": {
           "uv": [
-            1,
+            11,
             1,
             15,
-            3
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "brass_rim_w",
-      "from": [
-        1,
-        11,
-        3
-      ],
-      "to": [
-        3,
-        12,
-        13
-      ],
-      "faces": {
-        "east": {
-          "uv": [
-            3,
-            4,
-            13,
             5
           ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            3,
-            4,
-            13,
-            5
-          ],
-          "texture": "#brass"
-        },
-        "up": {
-          "uv": [
-            1,
-            3,
-            3,
-            13
-          ],
-          "texture": "#brass"
-        },
-        "down": {
-          "uv": [
-            1,
-            3,
-            3,
-            13
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "brass_rim_e",
-      "from": [
-        13,
-        11,
-        3
-      ],
-      "to": [
-        15,
-        12,
-        13
-      ],
-      "faces": {
-        "east": {
-          "uv": [
-            3,
-            4,
-            13,
-            5
-          ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            3,
-            4,
-            13,
-            5
-          ],
-          "texture": "#brass"
-        },
-        "up": {
-          "uv": [
-            13,
-            3,
-            15,
-            13
-          ],
-          "texture": "#brass"
-        },
-        "down": {
-          "uv": [
-            13,
-            3,
-            15,
-            13
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "brass_band_n",
-      "from": [
-        1,
-        6,
-        1
-      ],
-      "to": [
-        15,
-        7,
-        2
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            1,
-            9,
-            15,
-            10
-          ],
-          "texture": "#brass"
-        },
-        "east": {
-          "uv": [
-            14,
-            9,
-            15,
-            10
-          ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            1,
-            9,
-            2,
-            10
-          ],
-          "texture": "#brass"
-        },
-        "up": {
-          "uv": [
-            1,
-            1,
-            15,
-            2
-          ],
-          "texture": "#brass"
-        },
-        "down": {
-          "uv": [
-            1,
-            14,
-            15,
-            15
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "brass_band_s",
-      "from": [
-        1,
-        6,
-        14
-      ],
-      "to": [
-        15,
-        7,
-        15
-      ],
-      "faces": {
-        "east": {
-          "uv": [
-            1,
-            9,
-            2,
-            10
-          ],
-          "texture": "#brass"
-        },
-        "south": {
-          "uv": [
-            1,
-            9,
-            15,
-            10
-          ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            14,
-            9,
-            15,
-            10
-          ],
-          "texture": "#brass"
-        },
-        "up": {
-          "uv": [
-            1,
-            14,
-            15,
-            15
-          ],
-          "texture": "#brass"
-        },
-        "down": {
-          "uv": [
-            1,
-            1,
-            15,
-            2
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "brass_band_w",
-      "from": [
-        1,
-        6,
-        2
-      ],
-      "to": [
-        2,
-        7,
-        14
-      ],
-      "faces": {
-        "west": {
-          "uv": [
-            2,
-            9,
-            14,
-            10
-          ],
-          "texture": "#brass"
-        },
-        "up": {
-          "uv": [
-            1,
-            2,
-            2,
-            14
-          ],
-          "texture": "#brass"
-        },
-        "down": {
-          "uv": [
-            1,
-            2,
-            2,
-            14
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "brass_band_e",
-      "from": [
-        14,
-        6,
-        2
-      ],
-      "to": [
-        15,
-        7,
-        14
-      ],
-      "faces": {
-        "east": {
-          "uv": [
-            2,
-            9,
-            14,
-            10
-          ],
-          "texture": "#brass"
-        },
-        "up": {
-          "uv": [
-            14,
-            2,
-            15,
-            14
-          ],
-          "texture": "#brass"
-        },
-        "down": {
-          "uv": [
-            14,
-            2,
-            15,
-            14
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "brass_claw_n",
-      "from": [
-        7,
-        12,
-        2
-      ],
-      "to": [
-        9,
-        16,
-        3
-      ],
-      "rotation": {
-        "angle": 22.5,
-        "axis": "x",
-        "origin": [
-          8,
-          12,
-          2.5
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            7,
-            0,
-            9,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "east": {
-          "uv": [
-            13,
-            0,
-            14,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "south": {
-          "uv": [
-            7,
-            0,
-            9,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            2,
-            0,
-            3,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "up": {
-          "uv": [
-            7,
-            2,
-            9,
-            3
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "brass_claw_s",
-      "from": [
-        7,
-        12,
-        13
-      ],
-      "to": [
-        9,
-        16,
-        14
-      ],
-      "rotation": {
-        "angle": -22.5,
-        "axis": "x",
-        "origin": [
-          8,
-          12,
-          13.5
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            7,
-            0,
-            9,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "east": {
-          "uv": [
-            2,
-            0,
-            3,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "south": {
-          "uv": [
-            7,
-            0,
-            9,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            13,
-            0,
-            14,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "up": {
-          "uv": [
-            7,
-            13,
-            9,
-            14
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "brass_claw_w",
-      "from": [
-        2,
-        12,
-        7
-      ],
-      "to": [
-        3,
-        16,
-        9
-      ],
-      "rotation": {
-        "angle": -22.5,
-        "axis": "z",
-        "origin": [
-          2.5,
-          12,
-          8
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            13,
-            0,
-            14,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "east": {
-          "uv": [
-            7,
-            0,
-            9,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "south": {
-          "uv": [
-            2,
-            0,
-            3,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            7,
-            0,
-            9,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "up": {
-          "uv": [
-            2,
-            7,
-            3,
-            9
-          ],
-          "texture": "#brass"
-        }
-      }
-    },
-    {
-      "name": "brass_claw_e",
-      "from": [
-        13,
-        12,
-        7
-      ],
-      "to": [
-        14,
-        16,
-        9
-      ],
-      "rotation": {
-        "angle": 22.5,
-        "axis": "z",
-        "origin": [
-          13.5,
-          12,
-          8
-        ]
-      },
-      "faces": {
-        "north": {
-          "uv": [
-            2,
-            0,
-            3,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "east": {
-          "uv": [
-            7,
-            0,
-            9,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "south": {
-          "uv": [
-            13,
-            0,
-            14,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            7,
-            0,
-            9,
-            4
-          ],
-          "texture": "#brass"
-        },
-        "up": {
-          "uv": [
-            13,
-            7,
-            14,
-            9
-          ],
-          "texture": "#brass"
+          "texture": "#chem_copper"
         }
       }
     }
-  ]
+  ],
+  "render_type": "minecraft:cutout"
 }

@@ -40,7 +40,7 @@ public class AxolotlTankRenderer implements BlockEntityRenderer<AxolotlTankBlock
     private static final float MAX = 13.98F / 16;
     private static final float BOTTOM = 3.02F / 16;
     private static final float TOP = 12.5F / 16;
-    private static final int WATER = 0x8C2F6FC8;
+    private static final int WATER = 0x8C357F78;
     private static final float SCALE = 0.42F;
     /** Ticks of one lap round the tank. */
     private static final float LAP = 360;
