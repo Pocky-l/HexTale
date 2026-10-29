@@ -142,7 +142,6 @@ public final class HextaleClient {
         modBus.addListener(ThinningTint::register);
         modBus.addListener(ThinningTint::fadeWater);
         VoidHearts.register(modBus);
-        NeoForge.EVENT_BUS.addListener(GogglesView::tick);
         modBus.addListener((RegisterClientTooltipComponentFactoriesEvent event) ->
                 event.register(EssencesTooltip.class, ClientEssencesTooltip::new));
         NeoForge.EVENT_BUS.addListener(HextaleClient::addElementsToTooltip);

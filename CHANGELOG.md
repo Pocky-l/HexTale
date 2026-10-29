@@ -34,6 +34,8 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
   feeding lasts, "Fading Veins" once it runs out.
 
 ### Changed
+- Looking at the Research Table in goggles no longer sends streams of motes from the jars into it; the goggles' plate
+  still lists the ink.
 - The Hextech Purifier and the Void Anchors also take a Synthetic Crystal: it holds less than a cut crystal and, spent,
   crumbles to a pinch of dust instead of clouding over.
 - Chemtech starts to look like the other road: rusted iron, copper and a toxic green glow instead of walnut and brass.
@@ -62,6 +64,8 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
 ### Fixed
 - With shader packs that draw soft translucent light as solid (BLISS), the glow behind the essence signs over a
   crucible and other hextale lights no longer turns into a blob of light; with a pack on, the pack's own glow is used.
+- With such shader packs a crucible's water and the essence signs over it are no longer blown out to white: hextale's
+  liquids and signs stop counting as light sources while a pack is on.
 - The ink vials on the Research Table's desk sit in their frames whatever the number of inks.
 
 ## [1.5.0] - 2026-10-28

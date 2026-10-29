@@ -72,7 +72,7 @@ public final class LiquidBox {
         int high = argb;
         // The sides' colour runs from the surface down to the depth over the whole vessel, not over this box only.
         Box box = new Box(minX, minZ, maxX, maxZ, bottom, top, sprite);
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(TextureAtlas.LOCATION_BLOCKS), (pose, consumer) -> {
+        collector.submitCustomGeometry(poseStack, HexFx.glow(TextureAtlas.LOCATION_BLOCKS), (pose, consumer) -> {
             box.top(consumer, pose, surface);
             box.sides(consumer, pose, high, deep);
         });
@@ -101,7 +101,7 @@ public final class LiquidBox {
         float[][] outline = {{x0, minZ}, {x1, minZ}, {x1, z0}, {maxX, z0}, {maxX, z1}, {x1, z1}, {x1, maxZ}, {x0, maxZ}, {x0, z1},
                 {minX, z1}, {minX, z0}, {x0, z0}};
         Box middle = new Box(x0, z0, x1, z1, bottom, top, sprite);
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(TextureAtlas.LOCATION_BLOCKS), (pose, consumer) -> {
+        collector.submitCustomGeometry(poseStack, HexFx.glow(TextureAtlas.LOCATION_BLOCKS), (pose, consumer) -> {
             new Box(x0, minZ, x1, maxZ, bottom, top, sprite).top(consumer, pose, surface);
             new Box(minX, z0, x0, z1, bottom, top, sprite).top(consumer, pose, surface);
             new Box(x1, z0, maxX, z1, bottom, top, sprite).top(consumer, pose, surface);

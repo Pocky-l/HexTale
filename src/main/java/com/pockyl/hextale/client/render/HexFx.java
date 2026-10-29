@@ -27,6 +27,16 @@ import com.pockyl.hextale.rune.RuneGlyphs;
  */
 public final class HexFx {
     public static final Identifier HALO = Hextale.id("textures/misc/orb_halo.png");
+
+    /**
+     * The render type of hextale's own light - liquids, signs, glows: emissive in plain Minecraft. With a shader pack on
+     * it is plain translucent (still drawn full bright): packs such as BLISS treat emissive quads as light sources and
+     * blow them out to white (a crucible's water, the essence signs over it - owner's BLISS test 2026-10-29).
+     */
+    public static net.minecraft.client.renderer.rendertype.RenderType glow(Identifier texture) {
+        return com.pockyl.hextale.client.IrisCompat.shadersOn() ? RenderTypes.entityTranslucent(texture)
+                : RenderTypes.entityTranslucentEmissive(texture);
+    }
     public static final Identifier CORE = Hextale.id("textures/misc/orb_core.png");
     public static final Identifier MOTE = Hextale.id("textures/misc/mote.png");
     public static final Identifier WHITE = Hextale.id("textures/misc/white.png");
@@ -73,7 +83,7 @@ public final class HexFx {
         poseStack.pushPose();
         poseStack.rotate(camera);
         float h = size / 2;
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(texture), (pose, consumer) -> {
+        collector.submitCustomGeometry(poseStack, glow(texture), (pose, consumer) -> {
             vertex(consumer, pose, -h, -h, 0, 1, color, alpha);
             vertex(consumer, pose, h, -h, 1, 1, color, alpha);
             vertex(consumer, pose, h, h, 1, 0, color, alpha);
@@ -97,7 +107,7 @@ public final class HexFx {
         }
         Vector3f right = camera.transform(new Vector3f(1, 0, 0));
         Vector3f up = camera.transform(new Vector3f(0, 1, 0));
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(texture), (pose, consumer) -> {
+        collector.submitCustomGeometry(poseStack, glow(texture), (pose, consumer) -> {
             for (float[] q : quads) {
                 float s = q[3];
                 if (s <= 0.002F || q[6] <= 0.004F) {
@@ -127,7 +137,7 @@ public final class HexFx {
     public static void cube(PoseStack poseStack, SubmitNodeCollector collector, float size, int color, float alpha) {
         float h = size / 2;
         int argb = RuneDrawing.argb(color, alpha);
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(CORE), (pose, consumer) -> {
+        collector.submitCustomGeometry(poseStack, glow(CORE), (pose, consumer) -> {
             for (float[] f : CUBE_FACES) {
                 for (int v = 0; v < 4; v++) {
                     consumer.addVertex(pose, f[v * 3] * h, f[v * 3 + 1] * h, f[v * 3 + 2] * h).setColor(argb)
@@ -388,7 +398,7 @@ public final class HexFx {
             return;
         }
         side.normalize(width / 2);
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(HALO), (pose, consumer) -> {
+        collector.submitCustomGeometry(poseStack, glow(HALO), (pose, consumer) -> {
             quad(consumer, pose, side, along, color, alpha);
         });
     }
