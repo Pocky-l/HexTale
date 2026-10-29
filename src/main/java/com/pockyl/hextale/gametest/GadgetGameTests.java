@@ -343,7 +343,7 @@ public final class GadgetGameTests {
         net.minecraft.server.level.ServerPlayer player = GameTests.watcher(helper, helper.absolutePos(a));
         player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         net.minecraft.world.InteractionHand hand = net.minecraft.world.InteractionHand.MAIN_HAND;
-        player.setItemInHand(hand, new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.HEXTECH_CRYSTAL.get()));
+        player.setItemInHand(hand, new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.UNSTABLE_HEXTECH.get()));
         click(helper, player, a);
         net.minecraft.world.item.ItemStack crystal = null;
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
@@ -425,7 +425,7 @@ public final class GadgetGameTests {
         net.minecraft.server.level.ServerPlayer player = GameTests.watcher(helper, helper.absolutePos(a));
         net.minecraft.world.InteractionHand hand = net.minecraft.world.InteractionHand.MAIN_HAND;
         for (BlockPos[] pair : new BlockPos[][] {{a, b}, {c, d}}) {
-            player.setItemInHand(hand, new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.HEXTECH_CRYSTAL.get()));
+            player.setItemInHand(hand, new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.UNSTABLE_HEXTECH.get()));
             click(helper, player, pair[0]);
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 if (player.getInventory().getItem(i).is(com.pockyl.hextale.registry.ModItems.RIFT_LINK_CRYSTAL.get())) {

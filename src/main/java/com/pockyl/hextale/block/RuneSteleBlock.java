@@ -31,6 +31,7 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.pockyl.hextale.network.ModNetwork;
@@ -177,9 +178,17 @@ public class RuneSteleBlock extends BaseEntityBlock {
         return rotate(state, mirror.getRotation(state.getValue(FACING)));
     }
 
+    /**
+     * The same from every side: the body turns to face its circle at any angle ({@code RuneSteleRenderer}), so the shape
+     * cannot follow one facing. Foot and column below, the head with its window above.
+     */
+    private static final VoxelShape LOWER_SHAPE = Shapes.or(Block.box(2, 0, 2, 14, 2, 14), Block.box(3, 2, 3, 13, 4, 13),
+            Block.box(5, 4, 5, 11, 16, 11));
+    private static final VoxelShape UPPER_SHAPE = Shapes.or(Block.box(5, 0, 5, 11, 3, 11), Block.box(3, 3, 3, 13, 16, 13));
+
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return ModelShapes.of(state);
+        return upper(state) ? UPPER_SHAPE : LOWER_SHAPE;
     }
 
     @Override

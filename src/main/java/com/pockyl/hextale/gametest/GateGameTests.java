@@ -42,7 +42,7 @@ public final class GateGameTests {
         helper.setBlock(batteryAt, ModBlocks.CRYSTAL_BATTERY.get());
         helper.setBlock(benchAt, ModBlocks.HEX_WORKBENCH.get());
         CrystalBatteryBlockEntity battery = helper.<CrystalBatteryBlockEntity>getBlockEntity(batteryAt);
-        helper.assertTrue(battery.soak(new ItemStack(ModItems.HEXTECH_CRYSTAL.get())), "a crystal soaks in");
+        helper.assertTrue(battery.soak(new ItemStack(ModItems.UNSTABLE_HEXTECH.get())), "a raw orb soaks in");
         helper.assertTrue(battery.charge() > 0, "the battery holds charge");
         HexWorkbenchBlockEntity bench = helper.<HexWorkbenchBlockEntity>getBlockEntity(benchAt);
         helper.succeedWhen(() -> {
