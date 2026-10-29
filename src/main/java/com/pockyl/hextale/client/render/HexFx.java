@@ -219,38 +219,148 @@ public final class HexFx {
         java.util.List<float[]> strokes = RuneGlyphs.glyph(rune);
         float total = 0;
         for (float[] stroke : strokes) {
-            for (int i = 0; i + 3 < stroke.length; i += 2) {
-                total += Mth.sqrt(Mth.square(stroke[i + 2] - stroke[i]) + Mth.square(stroke[i + 3] - stroke[i + 1]));
-            }
+            total += length(stroke);
         }
         float budget = total * Math.min(1, reveal);
         int core = RuneDrawing.mix(color, 0xFFFFFF, 0.7F);
-        float drawnLength = budget;
         collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> {
-            float left = drawnLength;
+            float left = budget;
             for (float[] stroke : strokes) {
-                for (int i = 0; i + 3 < stroke.length && left > 0; i += 2) {
-                    float ax = stroke[i];
-                    float ay = stroke[i + 1];
-                    float bx = stroke[i + 2];
-                    float by = stroke[i + 3];
-                    float length = Mth.sqrt(Mth.square(bx - ax) + Mth.square(by - ay));
-                    if (length > left) {
-                        float t = left / length;
-                        bx = ax + (bx - ax) * t;
-                        by = ay + (by - ay) * t;
-                    }
-                    left -= length;
-                    float x0 = (ax - 0.5F) * size;
-                    float y0 = (0.5F - ay) * size;
-                    float x1 = (bx - 0.5F) * size;
-                    float y1 = (0.5F - by) * size;
-                    glowSegment(consumer, pose, x0, y0, x1, y1, size * 0.22F, color, alpha * 0.22F);
-                    glowSegment(consumer, pose, x0, y0, x1, y1, size * 0.09F, color, alpha * 0.55F);
-                    glowSegment(consumer, pose, x0, y0, x1, y1, size * 0.035F, core, alpha);
+                if (left <= 0) {
+                    break;
                 }
+                float length = length(stroke);
+                float share = length > 0 ? Math.min(1, left / length) : 1;
+                left -= length;
+                if (RuneGlyphs.isDot(stroke)) {
+                    float x = ((stroke[0] + stroke[stroke.length - 2]) / 2 - 0.5F) * size;
+                    float y = (0.5F - (stroke[1] + stroke[stroke.length - 1]) / 2) * size;
+                    glowDot(consumer, pose, x, y, size * 0.09F, color, alpha * 0.35F);
+                    glowDot(consumer, pose, x, y, size * 0.042F, core, alpha);
+                    continue;
+                }
+                brushStroke(consumer, pose, stroke, share, size, size * 0.14F, color, alpha * 0.3F);
+                brushStroke(consumer, pose, stroke, share, size, size * 0.065F, color, alpha * 0.7F);
+                brushStroke(consumer, pose, stroke, share, size, size * 0.028F, core, alpha);
             }
         });
+    }
+
+    private static float length(float[] stroke) {
+        float length = 0;
+        for (int i = 0; i + 3 < stroke.length; i += 2) {
+            length += Mth.sqrt(Mth.square(stroke[i + 2] - stroke[i]) + Mth.square(stroke[i + 3] - stroke[i + 1]));
+        }
+        return length;
+    }
+
+    /**
+     * One stroke of a rune as a single ribbon of glow, {@code width} at its widest, swelling in the middle and thinning to
+     * the ends like a brush. Neighbouring pieces share their edges at the joints, so the additive light never doubles
+     * there (each piece drawn on its own beaded the curves). Only the first {@code share} (0-1) of its length is drawn.
+     */
+    private static void brushStroke(VertexConsumer consumer, PoseStack.Pose pose, float[] stroke, float share, float size, float width,
+                                    int color, float alpha) {
+        int points = stroke.length / 2;
+        float total = length(stroke);
+        if (points < 2 || total <= 0) {
+            return;
+        }
+        float[] xs = new float[points];
+        float[] ys = new float[points];
+        float[] along = new float[points];
+        for (int i = 0; i < points; i++) {
+            xs[i] = (stroke[i * 2] - 0.5F) * size;
+            ys[i] = (0.5F - stroke[i * 2 + 1]) * size;
+            if (i > 0) {
+                along[i] = along[i - 1] + Mth.sqrt(Mth.square(stroke[i * 2] - stroke[i * 2 - 2]) + Mth.square(stroke[i * 2 + 1] - stroke[i * 2 - 1])) / total;
+            }
+        }
+        // Cut the stroke where its drawn share ends.
+        int last = points - 1;
+        float endX = xs[last];
+        float endY = ys[last];
+        if (share < 1) {
+            last = 1;
+            while (last < points - 1 && along[last] < share) {
+                last++;
+            }
+            float t = along[last] > along[last - 1] ? (share - along[last - 1]) / (along[last] - along[last - 1]) : 1;
+            t = Mth.clamp(t, 0, 1);
+            endX = xs[last - 1] + (xs[last] - xs[last - 1]) * t;
+            endY = ys[last - 1] + (ys[last] - ys[last - 1]) * t;
+        }
+        int centre = argbOf(color, alpha);
+        int edge = argbOf(color, 0);
+        float prevX = xs[0];
+        float prevY = ys[0];
+        float[] prevNormal = normal(xs, ys, 0, points);
+        float prevHalf = half(width, along[0]);
+        for (int i = 1; i <= last; i++) {
+            float x = i == last ? endX : xs[i];
+            float y = i == last ? endY : ys[i];
+            float position = i == last && share < 1 ? share : along[i];
+            float[] n = normal(xs, ys, i, points);
+            float h = half(width, position);
+            for (int side = -1; side <= 1; side += 2) {
+                glow(consumer, pose, prevX, prevY, centre);
+                glow(consumer, pose, prevX + prevNormal[0] * prevHalf * side, prevY + prevNormal[1] * prevHalf * side, edge);
+                glow(consumer, pose, x + n[0] * h * side, y + n[1] * h * side, edge);
+                glow(consumer, pose, x, y, centre);
+            }
+            prevX = x;
+            prevY = y;
+            prevNormal = n;
+            prevHalf = h;
+        }
+        // Soft rounded tips: the glow runs out a little past both ends.
+        tip(consumer, pose, xs[0], ys[0], xs[0] - xs[1], ys[0] - ys[1], half(width, 0), centre, edge);
+        tip(consumer, pose, prevX, prevY, prevX - xs[last - 1], prevY - ys[last - 1], prevHalf, centre, edge);
+    }
+
+    /** Half the brush's width at a point {@code position} (0-1) along the stroke: thin at the ends, full in the middle. */
+    private static float half(float width, float position) {
+        return width / 2 * (0.4F + 0.6F * Mth.sin((float) Math.PI * Mth.clamp(position, 0, 1)));
+    }
+
+    /** The unit normal at a point of a polyline: the average of the pieces meeting there. */
+    private static float[] normal(float[] xs, float[] ys, int i, int points) {
+        int a = Math.max(0, i - 1);
+        int b = Math.min(points - 1, i + 1);
+        float dx = xs[b] - xs[a];
+        float dy = ys[b] - ys[a];
+        float length = Mth.sqrt(dx * dx + dy * dy);
+        return length < 1.0E-6F ? new float[]{0, 1} : new float[]{-dy / length, dx / length};
+    }
+
+    private static void tip(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float dx, float dy, float h, int centre, int edge) {
+        float length = Mth.sqrt(dx * dx + dy * dy);
+        if (length < 1.0E-6F) {
+            return;
+        }
+        float ux = dx / length;
+        float uy = dy / length;
+        for (int side = -1; side <= 1; side += 2) {
+            glow(consumer, pose, x, y, centre);
+            glow(consumer, pose, x - uy * h * side, y + ux * h * side, edge);
+            glow(consumer, pose, x + ux * h * 0.8F, y + uy * h * 0.8F, edge);
+            glow(consumer, pose, x, y, centre);
+        }
+    }
+
+    /** A round soft dot of glow: bright in the middle, gone at {@code radius}. */
+    private static void glowDot(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float radius, int color, float alpha) {
+        int centre = argbOf(color, alpha);
+        int edge = argbOf(color, 0);
+        int sides = 10;
+        for (int k = 0; k < sides; k++) {
+            float a0 = Mth.TWO_PI * k / sides;
+            float a1 = Mth.TWO_PI * (k + 1) / sides;
+            glow(consumer, pose, x, y, centre);
+            glow(consumer, pose, x + Mth.cos(a0) * radius, y + Mth.sin(a0) * radius, edge);
+            glow(consumer, pose, x + Mth.cos(a1) * radius, y + Mth.sin(a1) * radius, edge);
+            glow(consumer, pose, x, y, centre);
+        }
     }
 
     /**
