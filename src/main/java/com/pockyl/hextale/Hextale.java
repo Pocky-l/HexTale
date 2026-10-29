@@ -51,6 +51,7 @@ public final class Hextale {
         ModCapabilities.register(modBus);
         ModMenus.register(modBus);
         ModAttachments.register(modBus);
+        com.pockyl.hextale.registry.ModEffects.register(modBus);
         ModSounds.register(modBus);
         ModParticles.register(modBus);
         com.pockyl.hextale.registry.ModFeatures.register(modBus);

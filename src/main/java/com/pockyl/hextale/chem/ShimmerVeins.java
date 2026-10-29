@@ -27,6 +27,7 @@ import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.quest.Quests;
 import com.pockyl.hextale.registry.ModAttachments;
+import com.pockyl.hextale.registry.ModEffects;
 import com.pockyl.hextale.registry.ModParticles;
 import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.Essence;
@@ -142,6 +143,7 @@ public final class ShimmerVeins {
         long now = player.level().getGameTime();
         boolean fed = veins.fed(now);
         int count = fed ? veins.count() : 0;
+        show(player, veins, now);
         boolean had = modify(player, Attributes.MAX_HEALTH, HEALTH_ID, count * HEALTH);
         modify(player, Attributes.ATTACK_DAMAGE, DAMAGE_ID, count * DAMAGE);
         modify(player, Attributes.SCALE, SIZE_ID, count * SIZE);
@@ -167,6 +169,32 @@ public final class ShimmerVeins {
         if (count >= MAX) {
             keep(player, MobEffects.HASTE, CHECK_TICKS * 3, 0);
         }
+    }
+
+    /**
+     * Shows the veins as a status effect, so the player sees them by the HUD's effect icons and in the inventory:
+     * "Shimmer in the Veins" (level = veins, time = how long the feeding lasts) while fed, "Fading Veins" (no end) when
+     * the feeding ran out, nothing without veins. The effects do nothing themselves; the attachment is the truth.
+     */
+    private static void show(Player player, Veins veins, long now) {
+        boolean fed = veins.fed(now);
+        Holder<MobEffect> wanted = veins.count() <= 0 ? null : fed ? ModEffects.SHIMMER_VEINS : ModEffects.SHIMMER_CRAVING;
+        Holder<MobEffect> other = wanted == ModEffects.SHIMMER_VEINS ? ModEffects.SHIMMER_CRAVING : ModEffects.SHIMMER_VEINS;
+        if (wanted == null) {
+            player.removeEffect(ModEffects.SHIMMER_VEINS);
+            player.removeEffect(ModEffects.SHIMMER_CRAVING);
+            return;
+        }
+        player.removeEffect(other);
+        int amplifier = veins.count() - 1;
+        int ticks = fed ? (int) Math.min(Integer.MAX_VALUE, veins.fedUntil() - now) : MobEffectInstance.INFINITE_DURATION;
+        MobEffectInstance current = player.getEffect(wanted);
+        if (current != null && current.getAmplifier() == amplifier
+                && (!fed || Math.abs(current.getDuration() - ticks) <= CHECK_TICKS * 2)) {
+            return;
+        }
+        player.removeEffect(wanted);
+        player.addEffect(new MobEffectInstance(wanted, ticks, amplifier, true, false, true));
     }
 
     /** Sets the veins' modifier of an attribute ({@code amount} 0 = none); returns whether one was there before. */

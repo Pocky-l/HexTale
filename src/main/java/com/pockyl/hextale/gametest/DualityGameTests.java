@@ -202,6 +202,8 @@ public final class DualityGameTests {
         }
         ShimmerVeins.Veins veins = ShimmerVeins.of(player);
         helper.assertTrue(veins.count() == ShimmerVeins.MAX, "no more than " + ShimmerVeins.MAX + " veins");
+        var shown = player.getEffect(com.pockyl.hextale.registry.ModEffects.SHIMMER_VEINS);
+        helper.assertTrue(shown != null && shown.getAmplifier() == ShimmerVeins.MAX - 1, "the veins show as an effect, their number as its level");
         helper.assertTrue(player.getAttributeValue(Attributes.MAX_HEALTH) == health + ShimmerVeins.MAX * ShimmerVeins.HEALTH, "five hearts more");
         helper.assertTrue(player.getAttributeValue(Attributes.SCALE) > size, "a bigger body");
         helper.assertTrue(player.hasEffect(MobEffects.HASTE), "and hands that do not tire");
@@ -214,8 +216,10 @@ public final class DualityGameTests {
         helper.assertTrue(player.getAttributeValue(Attributes.MAX_HEALTH) == health, "unfed, the body is what it was");
         helper.assertTrue(player.getAttributeValue(Attributes.SCALE) == size, "and its size too");
         helper.assertTrue(player.getHealth() <= player.getMaxHealth() && player.getHealth() >= health - 0.01F, "nothing is taken below it");
-        helper.assertTrue(player.getActiveEffects().stream().allMatch(effect -> effect.getEffect().value().isBeneficial()), "and nothing bad");
+        helper.assertTrue(player.getActiveEffects().stream().noneMatch(effect -> effect.getEffect().value().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL), "and nothing bad");
         helper.assertTrue(ShimmerVeins.of(player).count() == ShimmerVeins.MAX, "the veins stay");
+        helper.assertTrue(!player.hasEffect(com.pockyl.hextale.registry.ModEffects.SHIMMER_VEINS)
+                && player.hasEffect(com.pockyl.hextale.registry.ModEffects.SHIMMER_CRAVING), "unfed veins show as fading");
         helper.succeed();
     }
 
@@ -231,6 +235,8 @@ public final class DualityGameTests {
         EssenceFlaskItem.filled(EssenceMix.pure(Essence.LIGHT, 16)).finishUsingItem(helper.getLevel(), player);
         helper.assertTrue(ShimmerVeins.of(player).count() == 0, "and the last one");
         helper.assertTrue(player.getAttributeValue(Attributes.MAX_HEALTH) == 20, "no gifts without veins");
+        helper.assertTrue(!player.hasEffect(com.pockyl.hextale.registry.ModEffects.SHIMMER_VEINS)
+                && !player.hasEffect(com.pockyl.hextale.registry.ModEffects.SHIMMER_CRAVING), "and no icon");
         helper.succeed();
     }
 
