@@ -18,7 +18,7 @@ import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.thevoid.Thinning;
 
 /**
- * A hextech lamp: a refined gemstone floating in a brass cage, standing on a stone foot or hanging from the block above
+ * A hextech lamp: a cut hextech crystal floating in a brass cage, standing on a stone foot or hanging from the block above
  * (like a lantern). It shines at full light and now and then sheds a cold mote.
  *
  * <p>On land the Thinning has made sick (from {@link Thinning.Stage#MIASMA}) the Void eats at its light: now and then the

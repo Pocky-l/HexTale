@@ -116,12 +116,12 @@ public final class CircleDiorama {
                 jar.set(ModDataComponents.ESSENCE.get(), EssenceMix.pure(DRAWN.get(j), 2400));
                 resolver.updateForTopItem(jars[j], jar, ItemDisplayContext.NONE, minecraft.level, null, 3 + j);
             }
-            ItemStack[] items = {new ItemStack(Items.AMETHYST_SHARD), new ItemStack(ModItems.BRASS_NUGGET.get()),
-                    new ItemStack(Items.AMETHYST_SHARD), new ItemStack(ModItems.BRASS_NUGGET.get())};
+            ItemStack[] items = {new ItemStack(Items.HOPPER), new ItemStack(ModItems.BRASS_INGOT.get()),
+                    new ItemStack(Items.BOWL), new ItemStack(ModItems.BRASS_INGOT.get())};
             for (int i = 0; i < 4; i++) {
                 resolver.updateForTopItem(offerings[i], items[i], ItemDisplayContext.GROUND, minecraft.level, null, 10 + i);
             }
-            resolver.updateForTopItem(centre, new ItemStack(made ? ModItems.HEXTECH_GEMSTONE.get() : ModItems.UNSTABLE_HEXTECH.get()),
+            resolver.updateForTopItem(centre, new ItemStack(made ? ModItems.GATHERING_PYLON.get() : ModItems.HEXTECH_CRYSTAL.get()),
                     ItemDisplayContext.GROUND, minecraft.level, null, 20);
             minecraft.gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_3D);
 

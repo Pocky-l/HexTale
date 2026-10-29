@@ -167,7 +167,7 @@ public class RiftGateBlock extends BaseEntityBlock implements EssenceMachine {
             // The link crystal does its own work (RiftLinkCrystalItem#useOn).
             return InteractionResult.PASS;
         }
-        if (!stack.is(ModItems.HEXTECH_CRYSTAL.get())) {
+        if (!stack.is(ModItems.UNSTABLE_HEXTECH.get())) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (level instanceof ServerLevel server) {

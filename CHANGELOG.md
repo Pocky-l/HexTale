@@ -27,15 +27,15 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
   veins show on the player, glowing and pulsing while fed. Two new diary steps.
 - Decorative blocks for chemtech: Chem Tubes (glass tubes of glowing green chemistry in iron bands, from chem glass,
   iron and a vial of glow mix) and the Rusted Grate (cut from rusted plating).
+- The Rune Circle, a carved stone circle in the floor made at the Hex Workbench and learned together with the altar.
+  Rune steles stand round it now: lay a tool, a device or a blank scroll in the middle and the steles' runes are burned
+  in, or one is copied onto the scroll, the way the altar used to do it.
+- Shimmer veins show beside the other effects: "Shimmer in the Veins" with their number as its level and the time the
+  feeding lasts, "Fading Veins" once it runs out.
 
 ### Changed
 - The Hextech Purifier and the Void Anchors also take a Synthetic Crystal: it holds less than a cut crystal and, spent,
   crumbles to a pinch of dust instead of clouding over.
-- The Rune Circle, a carved stone circle in the floor made at the Hex Workbench and learned together with the altar.
-  Rune steles stand round it now: lay a tool, a device or a blank scroll in the middle and the steles' runes are burned
-  in, or one is copied onto the scroll, the way the altar used to do it.
-
-### Changed
 - Chemtech starts to look like the other road: rusted iron, copper and a toxic green glow instead of walnut and brass.
   The Disintegrator is now a riveted iron vat with a copper rim, a pool of acid glowing inside, a porthole and a vent
   stack.
@@ -51,6 +51,13 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
 - Chem vials have an iron cap, and the glow mix, acid and raw shimmer brews are a little softer in colour.
 - The Hextech Altar only makes things now; burning runes in and copying them moved to the Rune Circle, so making a tool
   and inscribing it happen in two different places.
+- Rune steles turn to face the middle of their Rune Circle, at any angle, so a ring of them set diagonally looks in.
+- Hextech grades sit where they belong: the best grade, the gemstone, goes only into the best devices (Hexcore, World
+  Anchor, Skypack, the refined and radiant pickaxes). The Hextech Purifier is made with a cut crystal (the grade it
+  holds), the Lamppost takes its crystal from its lamp and nullstone instead of a gemstone, and the pylons show the
+  crystal they are made with.
+- The Hex Workbench and the Crystal Battery run on raw hextech only - unstable orbs and crystals grown in shimmer; cut
+  crystals and gemstones are no longer burned as charge. Rift Gates are linked with a raw orb instead of a cut crystal.
 
 ### Fixed
 - The ink vials on the Research Table's desk sit in their frames whatever the number of inks.

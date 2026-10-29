@@ -113,8 +113,7 @@ public class HexWorkbenchScreen extends AbstractContainerScreen<HexWorkbenchMenu
             graphics.setComponentTooltipForNextFrame(font, List.of(
                     Component.translatable("gui.hextale.hex_workbench.charge", menu.charge()),
                     Component.translatable("gui.hextale.hex_workbench.charge.hint", HexWorkbenchBlockEntity.UNSTABLE_CHARGE,
-                            HexWorkbenchBlockEntity.CRYSTAL_CHARGE, HexWorkbenchBlockEntity.GEMSTONE_CHARGE,
-                            HexWorkbenchBlockEntity.MAX_CHARGE).withStyle(ChatFormatting.GRAY)),
+                            HexWorkbenchBlockEntity.SYNTHETIC_CHARGE, HexWorkbenchBlockEntity.MAX_CHARGE).withStyle(ChatFormatting.GRAY)),
                     mouseX, mouseY);
         } else if (menu.why() == HexWorkbenchMenu.Why.LOCKED && mouseX >= x + ARROW_X - 20 && mouseX < x + ARROW_X + 40
                 && mouseY >= y + ARROW_Y - 14 && mouseY < y + ARROW_Y + 10) {

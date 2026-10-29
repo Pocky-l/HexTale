@@ -2,7 +2,7 @@
   "region": "circle",
   "stage": "mid",
   "icon": "hextale:crystal_battery",
-  "parents": ["hextech_gemstone"],
+  "parents": ["hextech_crystal", "hexsteel"],
   "display": {
     "kind": "infusion",
     "result": "hextale:crystal_battery",
@@ -12,5 +12,5 @@
     }
   },
   "research": "crystal_battery",
-  "pos": [1090, 20]
+  "pos": [925, -15]
 }

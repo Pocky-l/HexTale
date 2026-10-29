@@ -7,7 +7,7 @@
   ],
   "key": {
     "L": "hextale:hextech_lamp",
-    "G": "hextale:hextech_gemstone",
+    "G": "hextale:nullstone",
     "B": "#c:ingots/brass",
     "W": "minecraft:dark_oak_planks",
     "S": "hextale:magic_stone"
