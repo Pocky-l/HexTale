@@ -42,6 +42,7 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
 - The Lab Bench stands on a riveted iron frame under its tiled top.
 - The Experience Condenser is a hextech vessel now: an eight-sided glass column in a brass frame on a walnut
   foot, and the experience flows into a small crystal on its lid.
+- Chem vials have an iron cap, and the glow mix, acid and raw shimmer brews are a little softer in colour.
 - The Hextech Altar only makes things now; burning runes in and copying them moved to the Rune Circle, so making a tool
   and inscribing it happen in two different places.
 
