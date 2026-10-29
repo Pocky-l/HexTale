@@ -38,6 +38,7 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
 - The Chem Burner wears the same riveted iron with a copper band and a copper-rimmed firebox.
 - Rusted plating looks like rusted iron now (dark plates, rust patches, rivets) instead of brown dirt; the Miasma
   Vent, chem glass and the Chem Still follow it, and the still's pot is rusty copper over an iron tub.
+- The Pink Brazier's cage is iron with a copper band instead of hextech steel and brass.
 - The Hextech Altar only makes things now; burning runes in and copying them moved to the Rune Circle, so making a tool
   and inscribing it happen in two different places.
 
