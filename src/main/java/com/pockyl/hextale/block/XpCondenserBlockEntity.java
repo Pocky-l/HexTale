@@ -101,9 +101,9 @@ public class XpCondenserBlockEntity extends BlockEntity implements ExperienceOut
         return points <= 0 ? 0 : 1 + Mth.floor(fill() * 14);
     }
 
-    /** Where the experience goes in: the stone crown on the condensing cap. */
+    /** Where the experience goes in: the crystal in the brass cup on the lid. */
     public static Vec3 intake(BlockPos pos) {
-        return Vec3.atLowerCornerOf(pos).add(0.5, 15.0 / 16, 0.5);
+        return Vec3.atLowerCornerOf(pos).add(0.5, 16.5 / 16, 0.5);
     }
 
     public boolean covers(Vec3 at) {

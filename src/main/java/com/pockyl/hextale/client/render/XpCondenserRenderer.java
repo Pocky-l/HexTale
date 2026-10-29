@@ -28,10 +28,10 @@ import java.util.List;
  */
 public class XpCondenserRenderer implements BlockEntityRenderer<XpCondenserBlockEntity, XpCondenserRenderer.State> {
     /** The inside of the glass (block units). */
-    private static final float MIN = 3 / 16F;
-    private static final float MAX = 13 / 16F;
-    private static final float BOTTOM = 2 / 16F;
-    private static final float TOP = 13 / 16F;
+    private static final float MIN = 4 / 16F;
+    private static final float MAX = 12 / 16F;
+    private static final float BOTTOM = 3 / 16F;
+    private static final float TOP = 12 / 16F;
     public XpCondenserRenderer(BlockEntityRendererProvider.Context context) {
     }
 
