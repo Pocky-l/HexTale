@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
@@ -29,7 +28,6 @@ import com.pockyl.hextale.block.HexPylonBlockEntity;
 import com.pockyl.hextale.block.InkSupply;
 import com.pockyl.hextale.transport.PylonLink;
 import com.pockyl.hextale.block.ResearchTableBlock;
-import com.pockyl.hextale.block.ResearchTableBlockEntity;
 import com.pockyl.hextale.block.SeparatorBlockEntity;
 import com.pockyl.hextale.client.render.PixelArt;
 import com.pockyl.hextale.essence.EssenceMix;
@@ -47,9 +45,9 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Researcher's Goggles at work: while worn, looking at a block of the essence works shows a small plate beside the
  * crosshair with the essences inside it (a pipe shows what the vessels on its network hold), and looking at a Research
- * Table shows its ink, essence by essence, while streams of coloured motes run from each tank of concentrate to the
- * orb. A hex pylon shows its reach, pace, links and runes (every link of the pylons around is drawn while the goggles
- * are on), a block pylons send to shows which ones. Nothing shows when the goggles are off or the player looks
+ * Table shows its ink, essence by essence (owner 2026-10-29: no mote streams from the jars into the orb). A hex pylon
+ * shows its reach, pace, links and runes (every link of the pylons around is drawn while the goggles are on), a block
+ * pylons send to shows which ones. Nothing shows when the goggles are off or the player looks
  * elsewhere. Reads only what the blocks sync anyway.
  */
 public final class GogglesView {
@@ -378,42 +376,5 @@ public final class GogglesView {
             }
         }
         return total;
-    }
-
-    // ---- Ink streams ----------------------------------------------------------------------------------------------
-
-    /** While the goggles look at a Research Table, motes of each essence run from its tanks to the orb. */
-    public static void tick(ClientTickEvent.Post event) {
-        Minecraft minecraft = Minecraft.getInstance();
-        Level level = minecraft.level;
-        if (level == null || minecraft.isPaused() || !wearing(minecraft.player)) {
-            return;
-        }
-        BlockPos pos = lookedAt(minecraft);
-        if (pos == null) {
-            return;
-        }
-        BlockState state = level.getBlockState(pos);
-        if (!(state.getBlock() instanceof ResearchTableBlock)) {
-            return;
-        }
-        BlockPos main = ResearchTableBlock.mainPos(state, pos);
-        if (!(level.getBlockEntity(main) instanceof ResearchTableBlockEntity table)) {
-            return;
-        }
-        Vec3 orb = table.orbPosition();
-        InkSupply supply = InkSupply.around(level, main, state.getValue(ResearchTableBlock.FACING));
-        long time = level.getGameTime();
-        for (Essence essence : Essence.values()) {
-            for (EssenceTankBlockEntity tank : supply.tanks(essence)) {
-                if ((time + tank.getBlockPos().hashCode()) % 4 != 0) {
-                    continue;
-                }
-                // A mote of the ink flies from the jar's lid into the orb (flow motes start at their offset).
-                Vec3 offset = com.pockyl.hextale.essence.JarReach.mouth(tank.getBlockPos()).subtract(orb);
-                level.addParticle(com.pockyl.hextale.registry.ModParticles.flow(essence.color()), orb.x, orb.y, orb.z, offset.x, offset.y,
-                        offset.z);
-            }
-        }
     }
 }
