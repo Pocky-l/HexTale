@@ -67,6 +67,11 @@ public final class TableModels {
     public static final StandaloneModelKey<BlockStateModelPart> LEVITATION_RING = model("block/levitation_plate_ring");
     /** A Dust Charge stuck on a wall: base on its -Z face at (8, 8, 0) px. */
     public static final StandaloneModelKey<BlockStateModelPart> DUST_CHARGE_STUCK = model("item/dust_charge_stuck");
+    /** A Rune Stele's body, both halves, plain and lit: drawn by its renderer turned to the circle it serves. */
+    public static final StandaloneModelKey<BlockStateModelPart> STELE_LOWER = model("block/rune_stele_lower");
+    public static final StandaloneModelKey<BlockStateModelPart> STELE_UPPER = model("block/rune_stele_upper");
+    public static final StandaloneModelKey<BlockStateModelPart> STELE_LOWER_LIT = model("block/rune_stele_lower_lit");
+    public static final StandaloneModelKey<BlockStateModelPart> STELE_UPPER_LIT = model("block/rune_stele_upper_lit");
     /** The Chem Boiler's gauge needle (built pointing up from {@code ChemBoilerRenderer.NEEDLE_PIVOT}) and safety valve. */
     public static final StandaloneModelKey<BlockStateModelPart> CHEM_BOILER_NEEDLE = model("block/chem_boiler_needle");
     public static final StandaloneModelKey<BlockStateModelPart> CHEM_BOILER_VALVE = model("block/chem_boiler_valve");

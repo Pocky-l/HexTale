@@ -1,64 +1,7 @@
 {
   "variants": {
-    "facing=north,half=lower,lit=false": {
-      "model": "hextale:block/rune_stele_lower"
-    },
-    "facing=north,half=upper,lit=false": {
-      "model": "hextale:block/rune_stele_upper"
-    },
-    "facing=north,half=lower,lit=true": {
-      "model": "hextale:block/rune_stele_lower_lit"
-    },
-    "facing=north,half=upper,lit=true": {
-      "model": "hextale:block/rune_stele_upper_lit"
-    },
-    "facing=east,half=lower,lit=false": {
-      "model": "hextale:block/rune_stele_lower",
-      "y": 90
-    },
-    "facing=east,half=upper,lit=false": {
-      "model": "hextale:block/rune_stele_upper",
-      "y": 90
-    },
-    "facing=east,half=lower,lit=true": {
-      "model": "hextale:block/rune_stele_lower_lit",
-      "y": 90
-    },
-    "facing=east,half=upper,lit=true": {
-      "model": "hextale:block/rune_stele_upper_lit",
-      "y": 90
-    },
-    "facing=south,half=lower,lit=false": {
-      "model": "hextale:block/rune_stele_lower",
-      "y": 180
-    },
-    "facing=south,half=upper,lit=false": {
-      "model": "hextale:block/rune_stele_upper",
-      "y": 180
-    },
-    "facing=south,half=lower,lit=true": {
-      "model": "hextale:block/rune_stele_lower_lit",
-      "y": 180
-    },
-    "facing=south,half=upper,lit=true": {
-      "model": "hextale:block/rune_stele_upper_lit",
-      "y": 180
-    },
-    "facing=west,half=lower,lit=false": {
-      "model": "hextale:block/rune_stele_lower",
-      "y": 270
-    },
-    "facing=west,half=upper,lit=false": {
-      "model": "hextale:block/rune_stele_upper",
-      "y": 270
-    },
-    "facing=west,half=lower,lit=true": {
-      "model": "hextale:block/rune_stele_lower_lit",
-      "y": 270
-    },
-    "facing=west,half=upper,lit=true": {
-      "model": "hextale:block/rune_stele_upper_lit",
-      "y": 270
+    "": {
+      "model": "hextale:block/rune_stele_body_hidden"
     }
   }
 }

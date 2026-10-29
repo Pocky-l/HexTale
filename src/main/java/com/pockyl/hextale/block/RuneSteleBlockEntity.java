@@ -37,6 +37,11 @@ public class RuneSteleBlockEntity extends BlockEntity {
     private long activeUntil = Long.MIN_VALUE;
     /** Client side: game time the rune was chosen, for the glyph's entrance. */
     private long chosenAt = Long.MIN_VALUE;
+    /** Client side: the way the body looks (degrees like {@link net.minecraft.core.Direction#toYRot}) and when it was worked out. */
+    private float bodyYaw = Float.NaN;
+    private long bodyYawAt = Long.MIN_VALUE;
+    /** How often the client looks again which circle the stele serves. */
+    private static final int YAW_TICKS = 40;
 
     public RuneSteleBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.RUNE_STELE.get(), pos, state);
@@ -57,6 +62,31 @@ public class RuneSteleBlockEntity extends BlockEntity {
 
     public long chosenAt() {
         return chosenAt;
+    }
+
+    /**
+     * Client: the way the stele's front looks, in degrees like {@link net.minecraft.core.Direction#toYRot}: straight at the
+     * centre of the Rune Circle it serves (any angle, so a stele set diagonally still faces it), else the way it was placed.
+     */
+    public float bodyYaw() {
+        long now = level == null ? 0 : level.getGameTime();
+        if (Float.isNaN(bodyYaw) || now - bodyYawAt >= YAW_TICKS || now < bodyYawAt) {
+            bodyYawAt = now;
+            bodyYaw = facingYaw();
+        }
+        return bodyYaw;
+    }
+
+    private float facingYaw() {
+        HextechAltarBlockEntity centre = level == null ? null : com.pockyl.hextale.infusion.Ritual.altarOf(level, worldPosition);
+        if (centre != null) {
+            int dx = centre.getBlockPos().getX() - worldPosition.getX();
+            int dz = centre.getBlockPos().getZ() - worldPosition.getZ();
+            if (dx != 0 || dz != 0) {
+                return (float) Math.toDegrees(Math.atan2(-dx, dz));
+            }
+        }
+        return getBlockState().getValue(RuneSteleBlock.FACING).toYRot();
     }
 
     public void choose(@Nullable ComplexRune rune, int stars) {

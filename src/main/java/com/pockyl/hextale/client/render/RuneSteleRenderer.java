@@ -8,17 +8,20 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
+import com.pockyl.hextale.block.RuneSteleBlock;
 import com.pockyl.hextale.block.RuneSteleBlockEntity;
 import com.pockyl.hextale.rune.ComplexRune;
 
 /**
- * The rune chosen on a stele hangs in the window of the stele's head as its glowing hieroglyph in the rune's colour,
+ * The stele's body (its block model is empty), turned to face the centre of its Rune Circle at any angle. The rune chosen on a stele hangs in the window of the stele's head as its glowing hieroglyph in the rune's colour,
  * facing the viewer, inside a slowly turning sigil ring, with a soft halo and a few motes circling it. A freshly chosen rune writes itself stroke
  * by stroke while the ring opens; while a ritual draws on the stele, everything burns brighter and pulses. Glyph and ring are additive light (no sorting, no flicker).
  */
@@ -44,10 +47,23 @@ public class RuneSteleRenderer implements BlockEntityRenderer<RuneSteleBlockEnti
         state.active = level != null && level.getGameTime() < stele.activeUntil();
         state.sinceChosen = level == null ? -1 : level.getGameTime() - stele.chosenAt() + partialTick;
         state.seed = (int) stele.getBlockPos().asLong();
+        state.yaw = stele.bodyYaw();
+        BlockState block = stele.getBlockState();
+        state.lit = block.hasProperty(RuneSteleBlock.LIT) && block.getValue(RuneSteleBlock.LIT);
+        state.upperLight = level == null ? state.lightCoords : LightCoordsUtil.getLightCoords(level, stele.getBlockPos().above());
     }
 
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        // The body, both halves, turned to the circle the stele serves.
+        poseStack.pushPose();
+        poseStack.translate(0.5, 0, 0.5);
+        poseStack.rotate(Axis.YP.rotationDegrees(-(state.yaw + 180)));
+        poseStack.translate(-0.5, 0, -0.5);
+        TableModels.submit(poseStack, collector, state.lit ? TableModels.STELE_LOWER_LIT : TableModels.STELE_LOWER, state.lightCoords);
+        poseStack.translate(0, 1, 0);
+        TableModels.submit(poseStack, collector, state.lit ? TableModels.STELE_UPPER_LIT : TableModels.STELE_UPPER, state.upperLight);
+        poseStack.popPose();
         ComplexRune rune = state.rune;
         if (rune == null) {
             return;
@@ -106,5 +122,8 @@ public class RuneSteleRenderer implements BlockEntityRenderer<RuneSteleBlockEnti
         boolean active;
         float sinceChosen;
         int seed;
+        float yaw;
+        boolean lit;
+        int upperLight;
     }
 }
