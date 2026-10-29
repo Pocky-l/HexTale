@@ -211,6 +211,9 @@ public final class GogglesView {
             }
             return new Reading(name, rows);
         }
+        if (entity instanceof com.pockyl.hextale.block.HextechLamppostBlockEntity post) {
+            rows.add(Row.heading(post.status()));
+        }
         if (entity instanceof com.pockyl.hextale.block.ChemBoilerBlockEntity boiler) {
             rows.add(Row.heading(boiler.status()));
             rows.add(Row.heading(Component.translatable(KEY + "boiler.mixture", boiler.mixture().total())));

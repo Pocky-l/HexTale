@@ -1,0 +1,23 @@
+{
+  "region": "void",
+  "stage": "mid",
+  "icon": "hextale:hextech_lamppost",
+  "parents": [
+    "hextech_purifier",
+    "hextech_lamp",
+    "hextech_gemstone"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:hextech_lamppost",
+    "then": {
+      "kind": "runes",
+      "result": "lamppost"
+    }
+  },
+  "research": "hextech_lamppost",
+  "pos": [
+    -330,
+    730
+  ]
+}

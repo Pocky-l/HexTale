@@ -96,6 +96,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HextechPurifierBlockEntity>> HEXTECH_PURIFIER =
             BLOCK_ENTITIES.register("hextech_purifier", () -> new BlockEntityType<>(com.pockyl.hextale.block.HextechPurifierBlockEntity::new,
                     ModBlocks.HEXTECH_PURIFIER.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.HextechLamppostBlockEntity>> HEXTECH_LAMPPOST =
+            BLOCK_ENTITIES.register("hextech_lamppost", () -> new BlockEntityType<>(com.pockyl.hextale.block.HextechLamppostBlockEntity::new,
+                    ModBlocks.HEXTECH_LAMPPOST.get()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.pockyl.hextale.block.ArcSpireBlockEntity>> ARC_SPIRE =
             BLOCK_ENTITIES.register("arc_spire", () -> new BlockEntityType<>(com.pockyl.hextale.block.ArcSpireBlockEntity::new,
                     ModBlocks.ARC_SPIRE.get()));

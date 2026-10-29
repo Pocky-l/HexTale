@@ -73,6 +73,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEXTECH_ALTAR = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_ALTAR,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEXTECH_LAMP = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_LAMP);
+    public static final DeferredItem<BlockItem> HEXTECH_LAMPPOST = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_LAMPPOST,
+            properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEX_FURNACE = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_FURNACE,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEX_FOUNDRY = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_FOUNDRY,

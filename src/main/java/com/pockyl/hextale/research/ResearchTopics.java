@@ -99,6 +99,7 @@ public final class ResearchTopics {
     public static final ResearchTopic ARC_SPIRE = add("arc_spire", 2, Essence.SPARK, Essence.SHADOW, ModItems.ARC_SPIRE);
     public static final ResearchTopic VOID_ANCHOR = add("void_anchor", 2, Essence.SHADOW, Essence.EARTH, ModItems.VOID_ANCHOR);
     public static final ResearchTopic HEXTECH_PURIFIER = add("hextech_purifier", 2, Essence.LIGHT, Essence.SHADOW, ModItems.HEXTECH_PURIFIER);
+    public static final ResearchTopic HEXTECH_LAMPPOST = add("hextech_lamppost", 2, Essence.LIGHT, Essence.AIR, ModItems.HEXTECH_LAMPPOST);
     public static final ResearchTopic BINDING_CHALK = add("binding_chalk", 2, Essence.SHADOW, Essence.EARTH, ModItems.BINDING_CHALK);
     public static final ResearchTopic XP_CONDENSER = add("xp_condenser", 2, Essence.LIGHT, Essence.LIFE, ModItems.XP_CONDENSER);
     public static final ResearchTopic GATHERING_PYLON = add("gathering_pylon", 2, Essence.AIR, Essence.SPARK, ModItems.GATHERING_PYLON);

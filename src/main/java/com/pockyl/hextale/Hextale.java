@@ -112,6 +112,7 @@ public final class Hextale {
         output.accept(ModItems.HEXCORE);
         output.accept(ModItems.NULLSTONE);
         output.accept(ModItems.HEXTECH_LAMP);
+        output.accept(ModItems.HEXTECH_LAMPPOST);
 
         // Essence works.
         output.accept(ModItems.ALEMBIC);

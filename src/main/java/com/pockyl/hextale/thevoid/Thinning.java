@@ -189,10 +189,14 @@ public final class Thinning {
 
     /**
      * Wears the edge thinner where {@code pos} is (scaled by the config; nothing when the Thinning is off) and counts it
-     * for its source.
+     * for its source. A lit Hextech Lamppost whose light covers the spot burns off its share first ({@link Wards}).
      */
     public static void add(ServerLevel level, BlockPos pos, float amount, Source source) {
         if (!Config.THINNING.get() || amount <= 0) {
+            return;
+        }
+        amount = Wards.burnOff(level, pos, amount, source);
+        if (amount <= 0) {
             return;
         }
         LevelChunk chunk = level.getChunkAt(pos);
@@ -331,7 +335,8 @@ public final class Thinning {
 
     /**
      * One flow: every loaded neighbour of a sick chunk creeps towards {@link #FALLOFF} of its value (the highest of its
-     * sick neighbours counts). Nothing heals: the land only catches what lies beside it.
+     * sick neighbours counts) - except a chunk where a lit Hextech Lamppost stands ({@link Wards#shields}). Nothing heals:
+     * the land only catches what lies beside it.
      */
     public static void flow(ServerLevel level) {
         LongSet active = ACTIVE.get(level.dimension());
@@ -366,7 +371,9 @@ public final class Thinning {
         }
         for (Long2FloatMap.Entry entry : rise.long2FloatEntrySet()) {
             LevelChunk chunk = chunks.get(entry.getLongKey());
-            set(level, chunk, get(chunk) + entry.getFloatValue());
+            if (!Wards.shields(level, chunk.getPos())) {
+                set(level, chunk, get(chunk) + entry.getFloatValue());
+            }
         }
         for (LongIterator it = active.iterator(); it.hasNext(); ) {
             long key = it.nextLong();

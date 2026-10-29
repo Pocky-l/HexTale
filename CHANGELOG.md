@@ -15,6 +15,11 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
   goes up as fumes that wear the land thin, part burns down into murk that drips into the burner and feeds its flame.
   Hextech lamps near it flicker in the fumes. Takes runes in the Rune Circle: Steam, Dam, Purification and Purifying
   Fire.
+- Hextech Lamppost (researched at the Research Table, made at the Hex Workbench): a two-block street lamp with a
+  gemstone in its head that burns light essence from a jar nearby. In its light a third of everything that wears the land
+  thin - boiling, brewing, cracking, spilling - burns away before it reaches the ground, drawn into the gem as a thread
+  of dark; the land around never creeps into its own chunk, and the haze clears in its light. Standing lit costs
+  nothing, only burning does. Takes runes in the Rune Circle: Shift, Purification, Dam, Healing and Insight.
 - The Rune Circle, a carved stone circle in the floor made at the Hex Workbench and learned together with the altar.
   Rune steles stand round it now: lay a tool, a device or a blank scroll in the middle and the steles' runes are burned
   in, or one is copied onto the scroll, the way the altar used to do it.

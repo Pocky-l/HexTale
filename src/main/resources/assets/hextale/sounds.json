@@ -747,6 +747,27 @@
       }
     ]
   },
+  "lamppost.ward": {
+    "subtitle": "subtitles.hextale.lamppost.ward",
+    "sounds": [
+      {
+        "name": "hextale:lamppost_ward1",
+        "volume": 0.7
+      },
+      {
+        "name": "hextale:lamppost_ward2",
+        "volume": 0.7
+      }
+    ]
+  },
+  "lamppost.light": {
+    "subtitle": "subtitles.hextale.lamppost.light",
+    "sounds": [
+      {
+        "name": "hextale:lamppost_light"
+      }
+    ]
+  },
   "pink_brazier.ignite": {
     "subtitle": "subtitles.hextale.pink_brazier.ignite",
     "sounds": [

@@ -280,6 +280,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.AXOLOTL_TANK.get(), com.pockyl.hextale.client.render.AxolotlTankRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CHEM_STILL.get(), com.pockyl.hextale.client.render.ChemStillRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CHEM_BOILER.get(), com.pockyl.hextale.client.render.ChemBoilerRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_LAMPPOST.get(), com.pockyl.hextale.client.render.HextechLamppostRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LAB_BENCH.get(), com.pockyl.hextale.client.render.LabBenchRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CRUCIBLE.get(), com.pockyl.hextale.client.render.CrucibleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_PYLON.get(), com.pockyl.hextale.client.render.HexPylonRenderer::new);
