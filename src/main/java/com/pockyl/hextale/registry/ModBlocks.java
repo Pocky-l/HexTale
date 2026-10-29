@@ -33,6 +33,7 @@ import com.pockyl.hextale.port.PortRegisters;
 import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.transport.PylonKind;
 import com.pockyl.hextale.block.AlembicBlock;
+import com.pockyl.hextale.block.RuneCircleBlock;
 import com.pockyl.hextale.block.BrassPipeBlock;
 import com.pockyl.hextale.block.CreativeEssenceTankBlock;
 import com.pockyl.hextale.block.DrainValveBlock;
@@ -206,6 +207,10 @@ public final class ModBlocks {
     public static final DeferredBlock<RuneSteleBlock> RUNE_STELE = BLOCKS.registerBlock("rune_stele", RuneSteleBlock::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(2.5F, 6.0F).sound(SoundType.POLISHED_DEEPSLATE)
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> state.getValue(RuneSteleBlock.LIT) ? 9 : 2));
+    /** The Rune Circle: a carved stone disc in the floor where the steles' runes are burned in and copied. */
+    public static final DeferredBlock<RuneCircleBlock> RUNE_CIRCLE = BLOCKS.registerBlock("rune_circle", RuneCircleBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(3.5F, 9.0F).sound(SoundType.POLISHED_DEEPSLATE)
+                    .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 4));
     /** A mote of hextech light a pickaxe with the Eternal Flame rune leaves in the dark: no body, no drops, goes out at a touch. */
     public static final DeferredBlock<HexWispBlock> HEX_WISP = BLOCKS.registerBlock("hex_wisp", HexWispBlock::new,
             () -> BlockBehaviour.Properties.of().replaceable().noCollission().instabreak().noLootTable().lightLevel(state -> 13)

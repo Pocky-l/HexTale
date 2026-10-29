@@ -259,6 +259,7 @@ public final class HextaleClient {
         event.registerBlockEntityRenderer(ModBlockEntities.ESSENCE_TANK.get(), EssenceTankRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.BIG_ESSENCE_JAR.get(), com.pockyl.hextale.client.render.BigEssenceJarRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEXTECH_ALTAR.get(), HextechAltarRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.RUNE_CIRCLE.get(), HextechAltarRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LAPIDARY.get(), com.pockyl.hextale.client.render.LapidaryRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.WHIRL_REAPER.get(), com.pockyl.hextale.client.render.WhirlReaperRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.HEX_SAWMILL.get(), com.pockyl.hextale.client.render.HexSawmillRenderer::new);

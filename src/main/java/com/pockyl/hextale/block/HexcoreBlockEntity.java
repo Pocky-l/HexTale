@@ -139,7 +139,7 @@ public class HexcoreBlockEntity extends HextechAltarBlockEntity {
     }
 
     @Override
-    protected double itemY() {
+    public double itemY() {
         return active() ? RISEN_Y : REST_Y;
     }
 

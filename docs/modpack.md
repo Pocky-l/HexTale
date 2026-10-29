@@ -140,7 +140,7 @@ wakes it into `result` after a short swirl.
 ```
 
 Not recipes: the multiblocks' shapes, what the lightning wave turns into hextech (block tag
-`hextale:carries_lightning`), the lapidary's cutting, rune burning at the altar and the essences of items (data map
+`hextale:carries_lightning`), the lapidary's cutting, rune burning in the Rune Circle and the essences of items (data map
 `hextale:essences`, `data/hextale/data_maps/item/essences.json`).
 
 ## Tags
@@ -249,7 +249,7 @@ Criteria triggers (each also takes the usual `player` condition):
 | `hextale:research_completed` | `topic` (optional) | a research is finished (also on login for what the player already knows) |
 | `hextale:guide_step` | `step` (optional) | a step of the Researcher's Diary is done |
 | `hextale:guide_event` | `event` (optional) | something happened in the world: `breach_opened`, `hexcore_awakened`, `awakened/<block>`, `big_essence_jar_formed`, ... |
-| `hextale:ritual_finished` | `item` (item predicate), `kind` (`infuse`, `engrave`, `write`) | an altar ritual finishes near the player |
+| `hextale:ritual_finished` | `item` (item predicate), `kind` (`infuse`, `engrave`, `write`) | a ritual finishes near the player (`infuse` at the altar, `engrave` and `write` in the Rune Circle) |
 | `hextale:runes_learned` | `count` | the codex holds at least `count` runes |
 
 ```json

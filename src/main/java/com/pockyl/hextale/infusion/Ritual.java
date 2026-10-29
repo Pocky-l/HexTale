@@ -50,7 +50,8 @@ public final class Ritual {
     }
 
     /**
-     * The altar whose circle this rune stele stands in (the nearest with an item on it, else the nearest), or null.
+     * The Rune Circle this rune stele stands round (the nearest with an item on it, else the nearest), or null: steles
+     * lend their runes only to centres that {@link HextechAltarBlockEntity#inscribes() inscribe}.
      */
     @Nullable
     public static HextechAltarBlockEntity altarOf(Level level, BlockPos stele) {
@@ -62,7 +63,7 @@ public final class Ritual {
                     continue;
                 }
                 for (var entity : level.getChunk(cx, cz).getBlockEntities().values()) {
-                    if (!(entity instanceof HextechAltarBlockEntity altar) || entity.isRemoved()) {
+                    if (!(entity instanceof HextechAltarBlockEntity altar) || entity.isRemoved() || !altar.inscribes()) {
                         continue;
                     }
                     BlockPos pos = entity.getBlockPos();

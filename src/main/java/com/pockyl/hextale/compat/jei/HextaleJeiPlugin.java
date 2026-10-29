@@ -207,6 +207,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         info(registration, ModItems.HEXTECH_ALTAR.get(), "hextech_altar");
         info(registration, ModItems.PEDESTAL.get(), "pedestal");
         info(registration, ModItems.RUNE_STELE.get(), "rune_stele");
+        info(registration, ModItems.RUNE_CIRCLE.get(), "rune_circle");
         info(registration, ModItems.HEXTECH_LAMP.get(), "hextech_lamp");
         info(registration, ModItems.RUNE_CHALK.get(), "rune_chalk");
         info(registration, ModItems.NULLSTONE.get(), "nullstone");
@@ -257,8 +258,8 @@ public class HextaleJeiPlugin implements IModPlugin {
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalysts(BoilingCategory.TYPE, ModItems.ALEMBIC.get());
         registration.addRecipeCatalysts(SeparationCategory.TYPE, ModItems.SEPARATOR.get());
-        registration.addRecipeCatalysts(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.HEXCORE.get(), ModItems.PEDESTAL.get(), ModItems.RUNE_STELE.get());
-        registration.addRecipeCatalysts(RuneBurningCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
+        registration.addRecipeCatalysts(InfusionCategory.TYPE, ModItems.HEXTECH_ALTAR.get(), ModItems.HEXCORE.get(), ModItems.PEDESTAL.get());
+        registration.addRecipeCatalysts(RuneBurningCategory.TYPE, ModItems.RUNE_CIRCLE.get(), ModItems.RUNE_STELE.get());
         registration.addRecipeCatalysts(HexCraftingCategory.TYPE, ModItems.HEX_WORKBENCH.get());
         // Without a hex recipe the workbench crafts like a table and the furnace smelts like a furnace.
         registration.addRecipeCatalysts(mezz.jei.api.constants.RecipeTypes.CRAFTING, ModItems.HEX_WORKBENCH.get());
@@ -274,7 +275,7 @@ public class HextaleJeiPlugin implements IModPlugin {
         registration.addRecipeCatalysts(DeviceSteps.STILL, ModItems.CHEM_STILL.get(), ModItems.CHEM_BURNER.get());
         registration.addRecipeCatalysts(DeviceSteps.TANK, ModItems.AXOLOTL_TANK.get());
         registration.addRecipeCatalysts(DeviceSteps.SOAKING, ModItems.DRAIN_VALVE.get());
-        registration.addRecipeCatalysts(DeviceSteps.WRITING, ModItems.HEXTECH_ALTAR.get(), ModItems.RUNE_STELE.get());
+        registration.addRecipeCatalysts(DeviceSteps.WRITING, ModItems.RUNE_CIRCLE.get(), ModItems.RUNE_STELE.get());
     }
 
     static ItemStack concentrate(Essence essence) {
