@@ -106,6 +106,8 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.SkypackLayer::registerModifier);
         modBus.addListener(com.pockyl.hextale.client.render.VoidMiteLayer::addLayers);
         modBus.addListener(com.pockyl.hextale.client.render.VoidMiteLayer::registerModifier);
+        modBus.addListener(com.pockyl.hextale.client.render.ShimmerVeinsLayer::addLayers);
+        modBus.addListener(com.pockyl.hextale.client.render.ShimmerVeinsLayer::registerModifier);
         modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(
                 com.pockyl.hextale.client.render.VoidMiteModel.LAYER, com.pockyl.hextale.client.render.VoidMiteModel::createBodyLayer));
         modBus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> event.registerLayerDefinition(

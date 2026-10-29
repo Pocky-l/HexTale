@@ -4,6 +4,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.chunk.LevelChunk;
 
@@ -16,6 +19,8 @@ import com.pockyl.hextale.block.HextechLamppostBlock;
 import com.pockyl.hextale.block.HextechLamppostBlockEntity;
 import com.pockyl.hextale.chem.Brew;
 import com.pockyl.hextale.chem.ChemVialItem;
+import com.pockyl.hextale.chem.ShimmerVeins;
+import com.pockyl.hextale.essence.EssenceFlaskItem;
 import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.registry.ModAttachments;
 import com.pockyl.hextale.registry.ModBlocks;
@@ -119,11 +124,11 @@ public final class DualityGameTests {
     private static HextechLamppostBlockEntity lamppost(GameTestHelper helper, BlockPos at) {
         helper.setBlock(at, ModBlocks.HEXTECH_LAMPPOST.get().defaultBlockState());
         helper.setBlock(at.above(), ModBlocks.HEXTECH_LAMPPOST.get().defaultBlockState().setValue(HextechLamppostBlock.HALF, DoubleBlockHalf.UPPER));
-        jar(helper, at.east(2), null, EssenceMix.pure(Essence.LIGHT, 64));
+        jar(helper, at.east(), null, EssenceMix.pure(Essence.LIGHT, 256));
         return helper.getBlockEntity(at, HextechLamppostBlockEntity.class);
     }
 
-    @HexTest(maxTicks = 200, padding = 6)
+    @HexTest(maxTicks = 300, padding = 6)
     public static void aLitLamppostBurnsOffTheThinningOfTheWorkAround(GameTestHelper helper) {
         BlockPos at = new BlockPos(2, 2, 2);
         HextechLamppostBlockEntity post = lamppost(helper, at);
@@ -160,5 +165,50 @@ public final class DualityGameTests {
             helper.assertTrue(Wards.lightAt(helper.getLevel(), helper.absolutePos(at.west(2))) == null, "and wards nothing");
             helper.succeed();
         });
+    }
+
+    @HexTest
+    public static void shimmerVeinsGiveWhileFedAndOnlyWithholdAfter(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        double health = player.getAttributeValue(Attributes.MAX_HEALTH);
+        double size = player.getAttributeValue(Attributes.SCALE);
+        ChemVialItem.of(Brew.REFINED_SHIMMER).finishUsingItem(helper.getLevel(), player);
+        helper.assertTrue(ShimmerVeins.of(player).count() == 1, "a vial leaves a vein");
+        helper.assertTrue(player.getAttributeValue(Attributes.MAX_HEALTH) == health + ShimmerVeins.HEALTH, "the fed vein gives a heart");
+        for (int i = 0; i < ShimmerVeins.MAX + 2; i++) {
+            ChemVialItem.of(Brew.REFINED_SHIMMER).finishUsingItem(helper.getLevel(), player);
+        }
+        ShimmerVeins.Veins veins = ShimmerVeins.of(player);
+        helper.assertTrue(veins.count() == ShimmerVeins.MAX, "no more than " + ShimmerVeins.MAX + " veins");
+        helper.assertTrue(player.getAttributeValue(Attributes.MAX_HEALTH) == health + ShimmerVeins.MAX * ShimmerVeins.HEALTH, "five hearts more");
+        helper.assertTrue(player.getAttributeValue(Attributes.SCALE) > size, "a bigger body");
+        helper.assertTrue(player.hasEffect(MobEffects.HASTE), "and hands that do not tire");
+        long now = helper.getLevel().getGameTime();
+        helper.assertTrue(veins.fedUntil() - now <= ShimmerVeins.FED_TICKS - ShimmerVeins.FED_LESS * (ShimmerVeins.MAX - 1),
+                "more veins want feeding sooner");
+        player.setHealth(player.getMaxHealth());
+        player.setData(com.pockyl.hextale.registry.ModAttachments.SHIMMER_VEINS, new ShimmerVeins.Veins(veins.count(), now - 1));
+        ShimmerVeins.apply(player);
+        helper.assertTrue(player.getAttributeValue(Attributes.MAX_HEALTH) == health, "unfed, the body is what it was");
+        helper.assertTrue(player.getAttributeValue(Attributes.SCALE) == size, "and its size too");
+        helper.assertTrue(player.getHealth() <= player.getMaxHealth() && player.getHealth() >= health - 0.01F, "nothing is taken below it");
+        helper.assertTrue(player.getActiveEffects().stream().allMatch(effect -> effect.getEffect().value().isBeneficial()), "and nothing bad");
+        helper.assertTrue(ShimmerVeins.of(player).count() == ShimmerVeins.MAX, "the veins stay");
+        helper.succeed();
+    }
+
+    @HexTest
+    public static void lightEssenceWashesAVeinOut(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ChemVialItem.of(Brew.REFINED_SHIMMER).finishUsingItem(helper.getLevel(), player);
+        ChemVialItem.of(Brew.REFINED_SHIMMER).finishUsingItem(helper.getLevel(), player);
+        EssenceFlaskItem.filled(EssenceMix.pure(Essence.FIRE, 16)).finishUsingItem(helper.getLevel(), player);
+        helper.assertTrue(ShimmerVeins.of(player).count() == 2, "fire does not wash a vein");
+        EssenceFlaskItem.filled(EssenceMix.pure(Essence.LIGHT, 16)).finishUsingItem(helper.getLevel(), player);
+        helper.assertTrue(ShimmerVeins.of(player).count() == 1, "a bottle of light washes one out");
+        EssenceFlaskItem.filled(EssenceMix.pure(Essence.LIGHT, 16)).finishUsingItem(helper.getLevel(), player);
+        helper.assertTrue(ShimmerVeins.of(player).count() == 0, "and the last one");
+        helper.assertTrue(player.getAttributeValue(Attributes.MAX_HEALTH) == 20, "no gifts without veins");
+        helper.succeed();
     }
 }

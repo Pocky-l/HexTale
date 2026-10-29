@@ -1,0 +1,28 @@
+{
+  "region": "chemtech",
+  "stage": "mid",
+  "icon": {
+    "id": "hextale:guide_mark",
+    "components": {
+      "minecraft:custom_model_data": {
+        "strings": [
+          "veins_washed"
+        ]
+      }
+    }
+  },
+  "parents": [
+    "shimmer_veins",
+    "essence_bottle",
+    "separator"
+  ],
+  "goal": {
+    "type": "event",
+    "event": "veins_washed"
+  },
+  "secret": true,
+  "pos": [
+    -1310,
+    480
+  ]
+}

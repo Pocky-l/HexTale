@@ -41,6 +41,12 @@ public final class ModAttachments {
             () -> AttachmentType.builder(() -> 0).serialize(com.mojang.serialization.Codec.INT.fieldOf("count"), count -> count > 0)
                     .sync(net.minecraft.network.codec.ByteBufCodecs.VAR_INT).build());
 
+    /** Shimmer in a player's veins (see {@link com.pockyl.hextale.chem.ShimmerVeins}); kept through death, synced. */
+    public static final Supplier<AttachmentType<com.pockyl.hextale.chem.ShimmerVeins.Veins>> SHIMMER_VEINS = ATTACHMENT_TYPES.register("shimmer_veins",
+            () -> AttachmentType.builder(() -> com.pockyl.hextale.chem.ShimmerVeins.Veins.NONE)
+                    .serialize(com.pockyl.hextale.chem.ShimmerVeins.Veins.CODEC.fieldOf("veins"), veins -> veins.count() > 0)
+                    .sync(com.pockyl.hextale.chem.ShimmerVeins.Veins.STREAM_CODEC).copyOnDeath().build());
+
     /** Placeholder for "nobody": attachments need a default value. */
     public static final java.util.UUID NOBODY = new java.util.UUID(0L, 0L);
 

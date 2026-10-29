@@ -6,10 +6,12 @@ import net.minecraft.core.Position;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
@@ -85,6 +87,17 @@ public class ChemVialItem extends Item implements ProjectileItem {
                 new MobEffectInstance(MobEffects.RESISTANCE, SHIMMER_TICKS, 0),
                 new MobEffectInstance(MobEffects.REGENERATION, SHIMMER_TICKS / 3, 1),
                 new MobEffectInstance(MobEffects.HASTE, SHIMMER_TICKS, 0));
+    }
+
+    /** A vial of refined shimmer drunk leaves one more vein ({@link ShimmerVeins}). */
+    @Override
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+        boolean shimmer = brew(stack) == Brew.REFINED_SHIMMER;
+        ItemStack left = super.finishUsingItem(stack, level, entity);
+        if (shimmer && entity instanceof ServerPlayer player) {
+            ShimmerVeins.drink(player);
+        }
+        return left;
     }
 
     /** The brew in a vial, or null for anything that is not a filled vial. */

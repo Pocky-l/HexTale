@@ -768,6 +768,30 @@
       }
     ]
   },
+  "shimmer.rush": {
+    "subtitle": "subtitles.hextale.shimmer.rush",
+    "sounds": [
+      {
+        "name": "hextale:shimmer_rush"
+      }
+    ]
+  },
+  "shimmer.fade": {
+    "subtitle": "subtitles.hextale.shimmer.fade",
+    "sounds": [
+      {
+        "name": "hextale:shimmer_fade"
+      }
+    ]
+  },
+  "shimmer.wash": {
+    "subtitle": "subtitles.hextale.shimmer.wash",
+    "sounds": [
+      {
+        "name": "hextale:shimmer_wash"
+      }
+    ]
+  },
   "pink_brazier.ignite": {
     "subtitle": "subtitles.hextale.pink_brazier.ignite",
     "sounds": [
