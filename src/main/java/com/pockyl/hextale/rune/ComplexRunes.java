@@ -150,6 +150,11 @@ public final class ComplexRunes {
         return Collections.unmodifiableList(ALL);
     }
 
+    /** The runes in use ({@link ComplexRune#inUse()}): the ones the world holds and a researcher can learn. */
+    public static List<ComplexRune> inUse() {
+        return ALL.stream().filter(ComplexRune::inUse).toList();
+    }
+
     /** The rune of an ordered pair, or null for the same element twice. */
     @Nullable
     public static ComplexRune of(Essence action, Essence target) {

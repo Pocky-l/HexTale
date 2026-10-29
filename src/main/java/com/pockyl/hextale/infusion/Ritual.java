@@ -137,9 +137,9 @@ public final class Ritual {
             return null;
         }
         if (blankScroll(center)) {
-            // Any rune can be written on a blank scroll (the stele offers the ones its researcher knows).
+            // Any rune in use can be written on a blank scroll (the stele offers the ones its researcher knows).
             List<RuneUse> uses = new ArrayList<>();
-            for (ComplexRune rune : com.pockyl.hextale.rune.ComplexRunes.all()) {
+            for (ComplexRune rune : com.pockyl.hextale.rune.ComplexRunes.inUse()) {
                 uses.add(new RuneUse(rune, null, List.of(RuneScrollItem.of(rune, 1, ModItems.RUNE_SCROLL.get())), List.of(), true));
             }
             return uses;

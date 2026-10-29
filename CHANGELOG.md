@@ -8,18 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Hextech against chemtech: the quick, cheap and dirty road against the slow, clean one.
 
 ### Added
-- Chem Boiler (worked out at the Lab Bench, made at the Hex Workbench): a riveted pressure tank that sits on a Chem
+- Chem Boiler (worked out at the Lab Bench, made at the Awakened Workbench): a riveted pressure tank that sits on a Chem
   Burner and cracks mixtures of essence - piped in, poured from a bottle, or drawn by itself out of plain jars of
   mixture nearby. Each time the pressure is up the safety valve knocks and a batch splits into all its essences at once,
   each running into a jar nearby that wears its sticker. Quick and needing no choice, but crude: part of every batch
   goes up as fumes that wear the land thin, part burns down into murk that drips into the burner and feeds its flame.
-  Hextech lamps near it flicker in the fumes. Takes runes in the Rune Circle: Steam, Dam, Purification and Purifying
+  Hextech lamps near it flicker in the fumes. Takes runes in the Rune Circle: Steam, Thrift, Purification and Purifying
   Fire.
-- Hextech Lamppost (researched at the Research Table, made at the Hex Workbench): a two-block street lamp with a
+- Warding Lamppost (researched at the Research Table, made at the Awakened Workbench): a two-block street lamp with a
   gemstone in its head that burns light essence from a jar nearby. In its light a third of everything that wears the land
   thin - boiling, brewing, cracking, spilling - burns away before it reaches the ground, drawn into the gem as a thread
   of dark; the land around never creeps into its own chunk, and the haze clears in its light. Standing lit costs
-  nothing, only burning does. Takes runes in the Rune Circle: Shift, Purification, Dam, Healing and Insight.
+  nothing, only burning does. Takes runes in the Rune Circle: Reach, Purification, Thrift, Healing and Insight.
 - Shimmer in the veins: every vial of refined shimmer leaves a violet vein on the drinker (five at most), and while the
   body is fed the veins give - a heart, a little more damage and a little more size each, eyes that see in the dark from
   three veins, tireless hands at five. The feeding wears off after a while, sooner the more veins there are; then the
@@ -27,16 +27,25 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
   veins show on the player, glowing and pulsing while fed. Two new diary steps.
 - Decorative blocks for chemtech: Chem Tubes (glass tubes of glowing green chemistry in iron bands, from chem glass,
   iron and a vial of glow mix) and the Rusted Grate (cut from rusted plating).
-- The Rune Circle, a carved stone circle in the floor made at the Hex Workbench and learned together with the altar.
+- The Rune Circle, a carved stone circle in the floor made at the Awakened Workbench and learned together with the altar.
   Rune steles stand round it now: lay a tool, a device or a blank scroll in the middle and the steles' runes are burned
   in, or one is copied onto the scroll, the way the altar used to do it.
 - Shimmer veins show beside the other effects: "Shimmer in the Veins" with their number as its level and the time the
   feeding lasts, "Fading Veins" once it runs out.
 
 ### Changed
+- Fewer things carry "Hex" in their name: the Awakened Workbench and Awakened Furnace, the Ritual Altar, the Lapidary,
+  the Foundry, the Whirl Sawmill, the Arc Spire, the Crystal Lamp, the Warding Lamppost, the Crystal Purifier, the
+  Skypack, the Tuning Fork, and the Runed Pickaxe, Axe, Shovel and Sword (Refined and Radiant Pickaxe). Hextech itself -
+  its dust, crystals, gemstones - keeps the name. Nothing in existing worlds changes but the names.
+- Runes with plain workshop names took older ones: Reach (was Shift), Pulse (Motor), Thrift (Dam), Levity (Lift),
+  Wavewalk (Pump), Updraft (Windmill), Thirst (Sponge), Silence (Insulator), Lodestone (Magnet), Delving (Drill),
+  Cutting Wind (Blades), Kindling (Bellows), Beacon (Signal), Hoard (Cache), Gilding (Photosynthesis).
+- Runes that no device takes yet are out of the world: they no longer lie in chests, their scrolls cannot be read, and
+  their names read "???". The codex counts only the runes there are to find.
 - Looking at the Research Table in goggles no longer sends streams of motes from the jars into it; the goggles' plate
   still lists the ink.
-- The Hextech Purifier and the Void Anchors also take a Synthetic Crystal: it holds less than a cut crystal and, spent,
+- The Crystal Purifier and the Void Anchors also take a Synthetic Crystal: it holds less than a cut crystal and, spent,
   crumbles to a pinch of dust instead of clouding over.
 - Chemtech starts to look like the other road: rusted iron, copper and a toxic green glow instead of walnut and brass.
   The Disintegrator is now a riveted iron vat with a copper rim, a pool of acid glowing inside, a porthole and a vent
@@ -55,10 +64,10 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
   and inscribing it happen in two different places.
 - Rune steles turn to face the middle of their Rune Circle, at any angle, so a ring of them set diagonally looks in.
 - Hextech grades sit where they belong: the best grade, the gemstone, goes only into the best devices (Hexcore, World
-  Anchor, Skypack, the refined and radiant pickaxes). The Hextech Purifier is made with a cut crystal (the grade it
+  Anchor, Skypack, the refined and radiant pickaxes). The Crystal Purifier is made with a cut crystal (the grade it
   holds), the Lamppost takes its crystal from its lamp and nullstone instead of a gemstone, and the pylons show the
   crystal they are made with.
-- The Hex Workbench and the Crystal Battery run on raw hextech only - unstable orbs and crystals grown in shimmer; cut
+- The Awakened Workbench and the Crystal Battery run on raw hextech only - unstable orbs and crystals grown in shimmer; cut
   crystals and gemstones are no longer burned as charge. Rift Gates are linked with a raw orb instead of a cut crystal.
 
 ### Fixed

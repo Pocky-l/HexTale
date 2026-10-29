@@ -493,7 +493,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         PixelArt.flush(graphics);
         graphics.text(font, title, titleLabelX, titleLabelY, 0xFF000000 | TEXT, true);
-        Component codex = Component.translatable(KEY + "codex", ClientKnowledge.get().runeCount(), ComplexRunes.COUNT);
+        Component codex = Component.translatable(KEY + "codex", ClientKnowledge.get().runeCount(), ComplexRunes.inUse().size());
         PixelArt.flush(graphics);
         graphics.text(font, codex, imageWidth - Tab.values().length * TAB_WIDTH - 34 - font.width(codex), titleLabelY, 0xFF000000 | TEXT_MUTED, true);
     }

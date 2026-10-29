@@ -203,8 +203,8 @@ public final class RuneWorkGameTests {
         }
         helper.assertTrue(uses.getFirst().cost(2).equals(PickaxeRune.values()[0].cost(2)), "the list shows what the altar draws for each rune");
         List<Ritual.RuneUse> scroll = Ritual.usesFor(new ItemStack(ModItems.BLANK_SCROLL.get()), false);
-        helper.assertTrue(scroll.size() == ComplexRunes.COUNT && scroll.stream().allMatch(Ritual.RuneUse::writes),
-                "any rune can be written on a blank scroll");
+        helper.assertTrue(scroll.size() == ComplexRunes.inUse().size() && scroll.stream().allMatch(Ritual.RuneUse::writes),
+                "any rune in use can be written on a blank scroll");
         helper.assertTrue(Ritual.runesFor(new ItemStack(Items.DIRT), false).isEmpty(), "dirt takes no rune");
         helper.assertTrue(Ritual.runesFor(ItemStack.EMPTY, false) == null, "an empty altar takes any rune");
         helper.succeed();
