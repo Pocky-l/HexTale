@@ -92,6 +92,10 @@
     "hextale:rift_gate",
     "hextale:world_anchor",
     "hextale:disintegrator",
-    "hextale:rune_circle"
+    "hextale:rune_circle",
+    "hextale:chem_tubes",
+    "hextale:rusted_grate",
+    "hextale:walnut_panelling",
+    "hextale:hextech_panelling"
   ]
 }

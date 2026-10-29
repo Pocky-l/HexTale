@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "hextale:block/chem_tubes",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "hextale:block/chem_tubes"
+    },
+    "axis=z": {
+      "model": "hextale:block/chem_tubes",
+      "x": 90
+    }
+  }
+}

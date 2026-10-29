@@ -43,7 +43,7 @@ public class HextechPurifierBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                           BlockHitResult hitResult) {
-        if (!stack.is(ModItems.HEXTECH_CRYSTAL.get()) || !(level.getBlockEntity(pos) instanceof HextechPurifierBlockEntity purifier)
+        if (!DeviceCrystals.fits(stack) || !(level.getBlockEntity(pos) instanceof HextechPurifierBlockEntity purifier)
                 || !purifier.crystal().isEmpty()) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }

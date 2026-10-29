@@ -224,6 +224,8 @@ public class ChemBoilerBlockEntity extends BlockEntity implements HeatUser, Esse
         boolean working = heated && wantsHeat();
         if (working != state.getValue(ChemBoilerBlock.WORKING)) {
             level.setBlock(worldPosition, state.setValue(ChemBoilerBlock.WORKING, working), Block.UPDATE_ALL);
+            // The tank takes up its steam, or lets the last of it go.
+            level.playSound(null, worldPosition, ModSounds.CHEM_BOILER_VENT.get(), SoundSource.BLOCKS, 0.5F, working ? 1.0F : 0.8F);
         }
         if (Math.abs(pressure - syncedPressure) >= 4 || (pressure == 0) != (syncedPressure == 0)) {
             dirty = true;

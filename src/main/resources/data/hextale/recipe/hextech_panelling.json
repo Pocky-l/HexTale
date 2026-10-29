@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " W ",
+    "WDW",
+    " W "
+  ],
+  "key": {
+    "W": "hextale:walnut_panelling",
+    "D": "hextale:hextech_dust"
+  },
+  "result": {
+    "id": "hextale:hextech_panelling",
+    "count": 4
+  }
+}

@@ -96,6 +96,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RUSTED_PLATING_STAIRS = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_PLATING_STAIRS);
     public static final DeferredItem<BlockItem> RUSTED_PLATING_SLAB = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_PLATING_SLAB);
     public static final DeferredItem<BlockItem> RIVETED_RUSTED_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.RIVETED_RUSTED_PLATING);
+    public static final DeferredItem<BlockItem> RUSTED_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.RUSTED_GRATE);
+    public static final DeferredItem<BlockItem> CHEM_TUBES = ITEMS.registerSimpleBlockItem(ModBlocks.CHEM_TUBES);
     public static final DeferredItem<BlockItem> SHIMMERBLOOM = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMERBLOOM);
     public static final DeferredItem<BlockItem> SHIMMER_MOSS = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMER_MOSS);
     public static final DeferredItem<BlockItem> SHIMMER_MOSS_CARPET = ITEMS.registerSimpleBlockItem(ModBlocks.SHIMMER_MOSS_CARPET);
@@ -172,6 +174,8 @@ public final class ModItems {
     public static final DeferredItem<com.pockyl.hextale.item.EssenceItem> ESSENCE = ITEMS.registerItem("essence",
             com.pockyl.hextale.item.EssenceItem::new);
     public static final DeferredItem<BlockItem> BRASS_GRATE = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_GRATE);
+    public static final DeferredItem<BlockItem> WALNUT_PANELLING = ITEMS.registerSimpleBlockItem(ModBlocks.WALNUT_PANELLING);
+    public static final DeferredItem<BlockItem> HEXTECH_PANELLING = ITEMS.registerSimpleBlockItem(ModBlocks.HEXTECH_PANELLING);
     public static final DeferredItem<BlockItem> WHIRL_REAPER = ITEMS.registerSimpleBlockItem(ModBlocks.WHIRL_REAPER,
             properties -> properties.rarity(Rarity.UNCOMMON));
     public static final DeferredItem<BlockItem> HEX_SAWMILL = ITEMS.registerSimpleBlockItem(ModBlocks.HEX_SAWMILL,
