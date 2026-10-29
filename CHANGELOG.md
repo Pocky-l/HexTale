@@ -25,6 +25,11 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
   in, or one is copied onto the scroll, the way the altar used to do it.
 
 ### Changed
+- Chemtech starts to look like the other road: rusted iron, copper and a toxic green glow instead of walnut and brass.
+  The Disintegrator is now a riveted iron vat with a copper rim, a pool of acid glowing inside, a porthole and a vent
+  stack.
+- The Axolotl Tank is a riveted iron frame round stained chem glass, with a copper feeding hatch, a little tap at the
+  bottom and greener water.
 - The Hextech Altar only makes things now; burning runes in and copying them moved to the Rune Circle, so making a tool
   and inscribing it happen in two different places.
 

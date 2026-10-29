@@ -32,7 +32,7 @@ import org.jspecify.annotations.Nullable;
  */
 public class ChemBoilerRenderer implements BlockEntityRenderer<ChemBoilerBlockEntity, ChemBoilerRenderer.State> {
     /** Where the needle turns, in model pixels (the gauge's centre, just in front of its face). */
-    public static final float[] NEEDLE_PIVOT = {8, 10, 1.5F};
+    public static final float[] NEEDLE_PIVOT = {8.5F, 8.5F, 0.9F};
     /** The needle's sweep either way from straight up, in degrees. */
     private static final float SWEEP = 120;
     /** How high the valve jumps on a knock, in blocks, and for how many ticks. */

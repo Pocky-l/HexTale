@@ -1,3 +1,1127 @@
 {
-  "parent": "hextale:block/chem_still"
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/chem/chem_iron",
+    "chem_iron": "hextale:block/chem/chem_iron",
+    "chem_copper": "hextale:block/chem/chem_copper",
+    "chem_boiler_parts": "hextale:block/chem/chem_boiler_parts"
+  },
+  "elements": [
+    {
+      "name": "iron_foot_nw",
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        5,
+        1,
+        5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11,
+            15,
+            13,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            11,
+            15,
+            13,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            3,
+            15,
+            5,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            3,
+            15,
+            5,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            3,
+            11,
+            5,
+            13
+          ],
+          "texture": "#chem_iron",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "iron_foot_ne",
+      "from": [
+        11,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        1,
+        5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            15,
+            5,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            11,
+            15,
+            13,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            11,
+            15,
+            13,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            3,
+            15,
+            5,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            11,
+            11,
+            13,
+            13
+          ],
+          "texture": "#chem_iron",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "iron_foot_sw",
+      "from": [
+        3,
+        0,
+        11
+      ],
+      "to": [
+        5,
+        1,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11,
+            15,
+            13,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            3,
+            15,
+            5,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            3,
+            15,
+            5,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            11,
+            15,
+            13,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            3,
+            3,
+            5,
+            5
+          ],
+          "texture": "#chem_iron",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "iron_foot_se",
+      "from": [
+        11,
+        0,
+        11
+      ],
+      "to": [
+        13,
+        1,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            15,
+            5,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            3,
+            15,
+            5,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            11,
+            15,
+            13,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            11,
+            15,
+            13,
+            16
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            11,
+            3,
+            13,
+            5
+          ],
+          "texture": "#chem_iron",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "iron_drum_a",
+      "from": [
+        2,
+        1,
+        4
+      ],
+      "to": [
+        14,
+        13,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            3,
+            14,
+            15
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            4,
+            3,
+            12,
+            15
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            2,
+            3,
+            14,
+            15
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            4,
+            3,
+            12,
+            15
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            2,
+            4,
+            14,
+            12
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            2,
+            4,
+            14,
+            12
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "iron_drum_b",
+      "from": [
+        3.98,
+        0.98,
+        1.98
+      ],
+      "to": [
+        12.02,
+        13.02,
+        14.02
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            3,
+            12,
+            15
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            2,
+            3,
+            14,
+            15
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            4,
+            3,
+            12,
+            15
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            2,
+            3,
+            14,
+            15
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            4,
+            2,
+            12,
+            14
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            4,
+            2,
+            12,
+            14
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "iron_drum_c",
+      "from": [
+        2.96,
+        0.96,
+        2.96
+      ],
+      "to": [
+        13.04,
+        13.04,
+        13.04
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            3,
+            13,
+            15
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            3,
+            3,
+            13,
+            15
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            3,
+            3,
+            13,
+            15
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            3,
+            3,
+            13,
+            15
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#chem_iron"
+        },
+        "down": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "copper_band_a",
+      "from": [
+        1,
+        4,
+        4
+      ],
+      "to": [
+        15,
+        5,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            11,
+            15,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            4,
+            11,
+            12,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
+            1,
+            11,
+            15,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            4,
+            11,
+            12,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            1,
+            4,
+            15,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            1,
+            4,
+            15,
+            12
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "copper_band_b",
+      "from": [
+        3.98,
+        3.98,
+        0.98
+      ],
+      "to": [
+        12.02,
+        5.02,
+        15.02
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            11,
+            12,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            1,
+            11,
+            15,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
+            4,
+            11,
+            12,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            1,
+            11,
+            15,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            4,
+            1,
+            12,
+            15
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            4,
+            1,
+            12,
+            15
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "copper_band_c",
+      "from": [
+        1.96,
+        3.96,
+        1.96
+      ],
+      "to": [
+        14.04,
+        5.04,
+        14.04
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            11,
+            14,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            2,
+            11,
+            14,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
+            2,
+            11,
+            14,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            2,
+            11,
+            14,
+            12
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "iron_dome_a",
+      "from": [
+        3,
+        13,
+        5
+      ],
+      "to": [
+        13,
+        14,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            2,
+            13,
+            3
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            5,
+            2,
+            11,
+            3
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            3,
+            2,
+            13,
+            3
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            5,
+            2,
+            11,
+            3
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            3,
+            5,
+            13,
+            11
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "iron_dome_b",
+      "from": [
+        4.98,
+        12.98,
+        2.98
+      ],
+      "to": [
+        11.02,
+        14.02,
+        13.02
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            2,
+            11,
+            3
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            3,
+            2,
+            13,
+            3
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            5,
+            2,
+            11,
+            3
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            3,
+            2,
+            13,
+            3
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            5,
+            3,
+            11,
+            13
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "iron_dome_top",
+      "from": [
+        5,
+        14,
+        5
+      ],
+      "to": [
+        11,
+        15,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            1,
+            11,
+            2
+          ],
+          "texture": "#chem_iron"
+        },
+        "east": {
+          "uv": [
+            5,
+            1,
+            11,
+            2
+          ],
+          "texture": "#chem_iron"
+        },
+        "south": {
+          "uv": [
+            5,
+            1,
+            11,
+            2
+          ],
+          "texture": "#chem_iron"
+        },
+        "west": {
+          "uv": [
+            5,
+            1,
+            11,
+            2
+          ],
+          "texture": "#chem_iron"
+        },
+        "up": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#chem_iron"
+        }
+      }
+    },
+    {
+      "name": "copper_dial",
+      "from": [
+        5,
+        5,
+        1
+      ],
+      "to": [
+        12,
+        12,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            7,
+            7
+          ],
+          "texture": "#chem_boiler_parts"
+        },
+        "east": {
+          "uv": [
+            14,
+            4,
+            15,
+            11
+          ],
+          "texture": "#chem_copper"
+        },
+        "west": {
+          "uv": [
+            1,
+            4,
+            2,
+            11
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            5,
+            1,
+            12,
+            2
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "glass_tube",
+      "from": [
+        14,
+        3,
+        7
+      ],
+      "to": [
+        16,
+        11,
+        9
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            0,
+            10,
+            8
+          ],
+          "texture": "#chem_boiler_parts"
+        },
+        "east": {
+          "uv": [
+            11,
+            0,
+            13,
+            8
+          ],
+          "texture": "#chem_boiler_parts",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            14,
+            0,
+            16,
+            8
+          ],
+          "texture": "#chem_boiler_parts"
+        }
+      }
+    },
+    {
+      "name": "copper_tube_cap_lo",
+      "from": [
+        14,
+        2,
+        7
+      ],
+      "to": [
+        16,
+        3,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            13,
+            2,
+            14
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            7,
+            13,
+            9,
+            14
+          ],
+          "texture": "#chem_copper",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            14,
+            13,
+            16,
+            14
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            14,
+            7,
+            16,
+            9
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            14,
+            7,
+            16,
+            9
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "copper_tube_cap_hi",
+      "from": [
+        14,
+        11,
+        7
+      ],
+      "to": [
+        16,
+        12,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            2,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "east": {
+          "uv": [
+            7,
+            4,
+            9,
+            5
+          ],
+          "texture": "#chem_copper",
+          "cullface": "east"
+        },
+        "south": {
+          "uv": [
+            14,
+            4,
+            16,
+            5
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            14,
+            7,
+            16,
+            9
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            14,
+            7,
+            16,
+            9
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    },
+    {
+      "name": "copper_outlet",
+      "from": [
+        7,
+        6,
+        14
+      ],
+      "to": [
+        9,
+        8,
+        16
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            8,
+            2,
+            10
+          ],
+          "texture": "#chem_copper"
+        },
+        "south": {
+          "uv": [
+            7,
+            8,
+            9,
+            10
+          ],
+          "texture": "#chem_copper",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            14,
+            8,
+            16,
+            10
+          ],
+          "texture": "#chem_copper"
+        },
+        "up": {
+          "uv": [
+            7,
+            14,
+            9,
+            16
+          ],
+          "texture": "#chem_copper"
+        },
+        "down": {
+          "uv": [
+            7,
+            0,
+            9,
+            2
+          ],
+          "texture": "#chem_copper"
+        }
+      }
+    }
+  ]
 }
