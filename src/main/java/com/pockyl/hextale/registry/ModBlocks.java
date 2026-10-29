@@ -353,6 +353,13 @@ public final class ModBlocks {
                     .noOcclusion().requiresCorrectToolForDrops().isValidSpawn((state, level, pos, type) -> false)
                     .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false));
 
+    /** Dark walnut boards framed in aged brass: hextech's panelling. */
+    public static final DeferredBlock<Block> WALNUT_PANELLING = BLOCKS.registerBlock("walnut_panelling", Block::new,
+            ModBlocks::panellingProperties);
+    /** Walnut panelling with a brass-lined hexagonal channel of blue light. */
+    public static final DeferredBlock<Block> HEXTECH_PANELLING = BLOCKS.registerBlock("hextech_panelling", Block::new,
+            () -> panellingProperties().lightLevel(state -> 5));
+
     // The magic tree: a sapling that soaked up magic, plant and sap in a crucible grows into it. Its bark carries glowing
     // channels, its canopy weeps and sheds glowing leaves; the wood never burns.
     public static final BlockSetType MAGIC_SET = new BlockSetType("hextale_magic", true, true, true,
@@ -431,6 +438,14 @@ public final class ModBlocks {
             ModBlocks::platingProperties);
     public static final DeferredBlock<Block> RIVETED_RUSTED_PLATING = BLOCKS.registerBlock("riveted_rusted_plating", Block::new,
             ModBlocks::platingProperties);
+    /** A see-through grating of rusted iron: chemtech's sibling of the brass grate. */
+    public static final DeferredBlock<TransparentBlock> RUSTED_GRATE = BLOCKS.registerBlock("rusted_grate", TransparentBlock::new,
+            () -> platingProperties().sound(SoundType.COPPER_GRATE).noOcclusion().isValidSpawn((state, level, pos, type) -> false)
+                    .isRedstoneConductor((state, level, pos) -> false).isSuffocating((state, level, pos) -> false));
+    /** A bundle of glass tubes in iron bands with green chemistry glowing in them. */
+    public static final DeferredBlock<RotatedPillarBlock> CHEM_TUBES = BLOCKS.registerBlock("chem_tubes", RotatedPillarBlock::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.COPPER).lightLevel(state -> 7));
 
     /** Shimmerbloom: the glowing purple flower of deep caves, standing on the floor or hanging from the ceiling. */
     public static final DeferredBlock<com.pockyl.hextale.block.ShimmerbloomBlock> SHIMMERBLOOM = BLOCKS.registerBlock("shimmerbloom",
@@ -565,6 +580,11 @@ public final class ModBlocks {
 
     private static BlockBehaviour.Properties pylonProperties() {
         return magicStoneProperties().strength(2.5F, 6.0F).sound(SoundType.POLISHED_TUFF).noOcclusion().lightLevel(state -> 5);
+    }
+
+    private static BlockBehaviour.Properties panellingProperties() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F)
+                .sound(SoundType.WOOD).ignitedByLava();
     }
 
     private static BlockBehaviour.Properties platingProperties() {

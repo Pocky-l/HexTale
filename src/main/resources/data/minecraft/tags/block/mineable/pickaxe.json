@@ -86,6 +86,8 @@
     "hextale:world_anchor",
     "hextale:disintegrator",
     "hextale:rift_gate",
-    "hextale:rune_circle"
+    "hextale:rune_circle",
+    "hextale:chem_tubes",
+    "hextale:rusted_grate"
   ]
 }

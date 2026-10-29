@@ -25,6 +25,10 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
   three veins, tireless hands at five. The feeding wears off after a while, sooner the more veins there are; then the
   gifts are only withheld until the next vial, nothing is taken. A bottle of light essence washes one vein out. The
   veins show on the player, glowing and pulsing while fed. Two new diary steps.
+- Decorative blocks for the two camps: Chem Tubes (glass tubes of glowing green chemistry in iron bands, from chem glass,
+  iron and a vial of glow mix) and the Rusted Grate (cut from rusted plating) for chemtech; Walnut Panelling (dark oak
+  and a brass nugget) and Hextech Panelling (with a softly glowing channel, from panelling and hextech dust) for
+  hextech.
 
 ### Changed
 - The Hextech Purifier and the Void Anchors also take a Synthetic Crystal: it holds less than a cut crystal and, spent,
