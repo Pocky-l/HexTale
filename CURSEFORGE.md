@@ -20,7 +20,7 @@
 
 <h2 style="text-align:center"><span style="color:#e2b86a">Page 15.</span> Runes</h2>
 <p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/altar.gif" width="720" alt="A ritual at the Hextech Altar"></p>
-<p style="text-align:center"><em>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>The altar burns them into tools and machines. My pickaxe smelts ore now and can see it through stone.</em></p>
+<p style="text-align:center"><em>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>A rune circle burns them into tools and machines. My pickaxe smelts ore now and can see it through stone.</em></p>
 
 <h2 style="text-align:center"><span style="color:#e2b86a">Page 19.</span> Machines</h2>
 <p style="text-align:center"><img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/pylons.gif" width="264" alt="Pylons gathering loot"> <img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/reaper.gif" width="264" alt="The Whirl Reaper"> <img src="https://raw.githubusercontent.com/Pocky-l/HexTale/main/docs/showcase/sawmill.gif" width="264" alt="The Hex Sawmill"></p>

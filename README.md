@@ -26,7 +26,7 @@
 
 <h3 align="center">Page 15. Runes</h3>
 <p align="center"><img src="docs/showcase/altar.gif" alt="A ritual at the Hextech Altar" width="720"></p>
-<p align="center"><i>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>The altar burns them into tools and machines. My pickaxe smelts ore now and can see it through stone.</i></p>
+<p align="center"><i>I find rune scrolls in dungeon chests, and sometimes I work one out myself while researching.<br>A rune circle burns them into tools and machines. My pickaxe smelts ore now and can see it through stone.</i></p>
 
 <h3 align="center">Page 19. Machines</h3>
 <p align="center">
