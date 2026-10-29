@@ -1,11 +1,10 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "minecraft:block/copper_block",
-    "rusted_plating": "hextale:block/rusted_plating",
+    "particle": "hextale:block/chem/chem_copper",
+    "chem_iron": "hextale:block/chem/chem_iron",
     "chem_still_glass": "hextale:block/chem_still_glass",
-    "copper_block": "minecraft:block/copper_block",
-    "cut_copper": "minecraft:block/cut_copper",
+    "chem_copper": "hextale:block/chem/chem_copper",
     "exposed_copper": "minecraft:block/exposed_copper"
   },
   "elements": [
@@ -29,7 +28,7 @@
             15,
             16
           ],
-          "texture": "#rusted_plating"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -38,7 +37,7 @@
             15,
             16
           ],
-          "texture": "#rusted_plating"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -47,7 +46,7 @@
             15,
             16
           ],
-          "texture": "#rusted_plating"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -56,7 +55,7 @@
             15,
             16
           ],
-          "texture": "#rusted_plating"
+          "texture": "#chem_iron"
         },
         "up": {
           "uv": [
@@ -65,7 +64,7 @@
             15,
             15
           ],
-          "texture": "#rusted_plating"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -74,7 +73,7 @@
             15,
             15
           ],
-          "texture": "#rusted_plating",
+          "texture": "#chem_iron",
           "cullface": "down"
         }
       }
@@ -99,7 +98,7 @@
             10,
             15
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         },
         "east": {
           "uv": [
@@ -108,7 +107,7 @@
             11,
             15
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         },
         "south": {
           "uv": [
@@ -117,7 +116,7 @@
             14,
             15
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         },
         "west": {
           "uv": [
@@ -126,7 +125,7 @@
             13,
             15
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         },
         "up": {
           "uv": [
@@ -135,7 +134,7 @@
             14,
             13
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         }
       }
     },
@@ -159,7 +158,7 @@
             9,
             7
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         },
         "east": {
           "uv": [
@@ -168,7 +167,7 @@
             10,
             7
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         },
         "south": {
           "uv": [
@@ -177,7 +176,7 @@
             13,
             7
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         },
         "west": {
           "uv": [
@@ -186,7 +185,7 @@
             12,
             7
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         },
         "up": {
           "uv": [
@@ -195,7 +194,7 @@
             13,
             12
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         }
       }
     },
@@ -219,7 +218,7 @@
             8,
             6
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         },
         "east": {
           "uv": [
@@ -228,7 +227,7 @@
             9,
             6
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         },
         "south": {
           "uv": [
@@ -237,7 +236,7 @@
             12,
             6
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         },
         "west": {
           "uv": [
@@ -246,7 +245,7 @@
             11,
             6
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         },
         "up": {
           "uv": [
@@ -255,7 +254,7 @@
             12,
             11
           ],
-          "texture": "#copper_block"
+          "texture": "#chem_copper"
         }
       }
     },
@@ -510,7 +509,7 @@
             14,
             9
           ],
-          "texture": "#cut_copper"
+          "texture": "#chem_iron"
         },
         "east": {
           "uv": [
@@ -519,7 +518,7 @@
             13,
             9
           ],
-          "texture": "#cut_copper"
+          "texture": "#chem_iron"
         },
         "south": {
           "uv": [
@@ -528,7 +527,7 @@
             6,
             9
           ],
-          "texture": "#cut_copper"
+          "texture": "#chem_iron"
         },
         "west": {
           "uv": [
@@ -537,7 +536,7 @@
             7,
             9
           ],
-          "texture": "#cut_copper"
+          "texture": "#chem_iron"
         },
         "up": {
           "uv": [
@@ -546,7 +545,7 @@
             6,
             7
           ],
-          "texture": "#cut_copper"
+          "texture": "#chem_iron"
         },
         "down": {
           "uv": [
@@ -555,7 +554,7 @@
             6,
             13
           ],
-          "texture": "#cut_copper"
+          "texture": "#chem_iron"
         }
       }
     },
