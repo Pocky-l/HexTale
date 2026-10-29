@@ -39,6 +39,7 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
   stack.
 - The Axolotl Tank is a riveted iron frame round stained chem glass, with a copper feeding hatch, a little tap at the
   bottom and greener water.
+- The Chem Burner wears the same riveted iron with a copper band and a copper-rimmed firebox.
 - The Hextech Altar only makes things now; burning runes in and copying them moved to the Rune Circle, so making a tool
   and inscribing it happen in two different places.
 
