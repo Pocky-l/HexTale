@@ -900,7 +900,7 @@
       "name": "glass_tube",
       "from": [
         14,
-        3,
+        6,
         7
       ],
       "to": [
@@ -908,14 +908,13 @@
         11,
         9
       ],
-      "light_emission": 15,
       "faces": {
         "north": {
           "uv": [
             8,
             0,
             10,
-            8
+            5
           ],
           "texture": "#chem_boiler_parts"
         },
@@ -924,7 +923,7 @@
             11,
             0,
             13,
-            8
+            5
           ],
           "texture": "#chem_boiler_parts",
           "cullface": "east"
@@ -934,7 +933,7 @@
             14,
             0,
             16,
-            8
+            5
           ],
           "texture": "#chem_boiler_parts"
         }
@@ -944,30 +943,30 @@
       "name": "copper_tube_cap_lo",
       "from": [
         14,
-        2,
+        5,
         7
       ],
       "to": [
         16,
-        3,
+        6,
         9
       ],
       "faces": {
         "north": {
           "uv": [
             0,
-            13,
+            10,
             2,
-            14
+            11
           ],
           "texture": "#chem_copper"
         },
         "east": {
           "uv": [
             7,
-            13,
+            10,
             9,
-            14
+            11
           ],
           "texture": "#chem_copper",
           "cullface": "east"
@@ -975,9 +974,9 @@
         "south": {
           "uv": [
             14,
-            13,
+            10,
             16,
-            14
+            11
           ],
           "texture": "#chem_copper"
         },

@@ -38,12 +38,23 @@ public class ChemBoilerRenderer implements BlockEntityRenderer<ChemBoilerBlockEn
     /** How high the valve jumps on a knock, in blocks, and for how many ticks. */
     private static final float VALVE_LIFT = 1.5F / 16;
     private static final float KNOCK_TICKS = 8;
+    /** The inside of the sight tube on the east side (model pixels, north-facing block) and its liquid's alpha. */
+    private static final float TUBE_MIN_X = 14.25F / 16;
+    private static final float TUBE_MAX_X = 15.75F / 16;
+    private static final float TUBE_MIN_Z = 7.25F / 16;
+    private static final float TUBE_MAX_Z = 8.75F / 16;
+    private static final float TUBE_BOTTOM = 6.05F / 16;
+    private static final float TUBE_TOP = 10.95F / 16;
+    private static final float TUBE_ALPHA = 0.85F;
 
     public static final class State extends BlockEntityRenderState {
         float needle;
         float lift;
         float time;
         boolean working;
+        /** How full the vessel is (0-1) and the mixture's colour, shown in the sight tube. */
+        float fill;
+        int color;
         Direction facing = Direction.NORTH;
         final List<JarStreamFx.Stream> streams = new ArrayList<>();
     }
@@ -68,6 +79,8 @@ public class ChemBoilerRenderer implements BlockEntityRenderer<ChemBoilerBlockEn
         state.lift = since >= KNOCK_TICKS ? 0 : VALVE_LIFT * (1 - since / KNOCK_TICKS) * (1 - since / KNOCK_TICKS);
         state.working = boiler.getBlockState().getValue(ChemBoilerBlock.WORKING);
         state.facing = boiler.getBlockState().getValue(ChemBoilerBlock.FACING);
+        state.fill = Mth.clamp(boiler.mixture().total() / (float) ChemBoilerBlockEntity.VESSEL, 0, 1);
+        state.color = boiler.mixture().color();
         state.streams.clear();
         if (level == null) {
             return;
@@ -110,6 +123,14 @@ public class ChemBoilerRenderer implements BlockEntityRenderer<ChemBoilerBlockEn
         poseStack.translate(-NEEDLE_PIVOT[0] / 16, -NEEDLE_PIVOT[1] / 16, -NEEDLE_PIVOT[2] / 16);
         TableModels.submit(poseStack, collector, TableModels.CHEM_BOILER_NEEDLE, state.lightCoords);
         poseStack.popPose();
+
+        // The mixture stands in the sight tube as high as the vessel is full, trembling while it boils.
+        if (state.fill > 0.01F) {
+            float tremble = state.working ? Mth.sin(state.time * 0.9F) * 0.003F : 0;
+            float top = TUBE_BOTTOM + (TUBE_TOP - TUBE_BOTTOM) * state.fill + tremble;
+            LiquidBox.submit(poseStack, collector, TUBE_MIN_X, TUBE_MIN_Z, TUBE_MAX_X, TUBE_MAX_Z, TUBE_BOTTOM, top,
+                    RuneDrawing.argb(state.color, TUBE_ALPHA), state.time, state.blockPos.asLong(), state.working ? 1 : 0);
+        }
 
         poseStack.pushPose();
         poseStack.translate(0, state.lift, 0);
