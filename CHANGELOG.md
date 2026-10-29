@@ -34,6 +34,9 @@ Hextech against chemtech: the quick, cheap and dirty road against the slow, clea
   feeding lasts, "Fading Veins" once it runs out.
 
 ### Changed
+- Runes are written in a new script: each element is a flowing sign of a brush - a flame, waves, a crescent, a bolt - and
+  a rune joins its two elements in one stroke with a swash beneath. On screens they are drawn smooth and glowing instead
+  of on a pixel grid; on the steles, in the circle and in the air they write themselves the same way.
 - Fewer things carry "Hex" in their name: the Awakened Workbench and Awakened Furnace, the Ritual Altar, the Lapidary,
   the Foundry, the Whirl Sawmill, the Arc Spire, the Crystal Lamp, the Warding Lamppost, the Crystal Purifier, the
   Skypack, the Tuning Fork, and the Runed Pickaxe, Axe, Shovel and Sword (Refined and Radiant Pickaxe). Hextech itself -

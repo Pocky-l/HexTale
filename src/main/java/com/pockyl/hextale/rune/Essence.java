@@ -4,12 +4,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import static com.pockyl.hextale.rune.RuneGlyphs.arc;
+import static com.pockyl.hextale.rune.RuneGlyphs.curve;
+import static com.pockyl.hextale.rune.RuneGlyphs.dot;
+import static com.pockyl.hextale.rune.RuneGlyphs.line;
+
 import org.jspecify.annotations.Nullable;
 
 /**
  * The essences: what everything is made of. The first nine are the PRIMAL essences (fire, water, earth, air, light,
- * shadow, life, metal, lightning) - the grammar of the runes: each primal is a simple rune, a small hieroglyph (its
- * radical: two to four brush strokes in a unit box, y pointing down), and every complex rune pairs two of them. The
+ * shadow, life, metal, lightning) - the grammar of the runes: each primal is a simple rune, a sign of the arcane script
+ * (its radical: two to four flowing strokes and dots in a unit box, y pointing down), and every complex rune pairs two of them. The
  * others are COMPOUNDS of two primals (fire + water = steam): few and plain, so that an item carries one to three
  * essences a researcher can tell apart. Each essence's make-up is a weight per primal ({@link #composition()}), from
  * which research picks the essences that belong to a rune's theme. Order matters: it indexes arrays, icon sheets and
@@ -17,43 +22,47 @@ import org.jspecify.annotations.Nullable;
  */
 public enum Essence {
     FIRE("fire", 0xFF8A4C, strokes(
-            line(0.5, 0.08, 0.5, 0.55),
-            line(0.12, 0.95, 0.5, 0.55, 0.88, 0.95),
-            line(0.18, 0.28, 0.3, 0.44),
-            line(0.82, 0.28, 0.7, 0.44))),
+            curve(0.3, 0.92, 0.1, 0.6, 0.6, 0.5, 0.5, 0.06),
+            curve(0.5, 0.06, 0.75, 0.4, 0.9, 0.7, 0.62, 0.9),
+            dot(0.3, 0.92))),
     WATER("water", 0x4FB3FF, strokes(
-            line(0.5, 0.04, 0.5, 0.9, 0.38, 0.8),
-            line(0.12, 0.32, 0.38, 0.42, 0.1, 0.78),
-            line(0.9, 0.22, 0.62, 0.5, 0.92, 0.9))),
+            curve(0.08, 0.3, 0.3, 0.05, 0.45, 0.6, 0.62, 0.32),
+            curve(0.62, 0.32, 0.8, 0.05, 0.95, 0.4, 0.8, 0.55),
+            curve(0.2, 0.75, 0.4, 0.55, 0.55, 0.95, 0.85, 0.7))),
     EARTH("earth", 0xC9A26B, strokes(
-            line(0.18, 0.38, 0.82, 0.38),
-            line(0.5, 0.08, 0.5, 0.86),
-            line(0.04, 0.88, 0.96, 0.88))),
+            curve(0.15, 0.25, 0.4, 0.18, 0.6, 0.32, 0.85, 0.22),
+            curve(0.5, 0.25, 0.42, 0.5, 0.58, 0.65, 0.48, 0.9),
+            curve(0.12, 0.92, 0.35, 0.82, 0.65, 0.98, 0.9, 0.88),
+            dot(0.85, 0.22))),
     AIR("air", 0xCFE9F2, strokes(
-            line(0.12, 0.16, 0.88, 0.16),
-            line(0.22, 0.44, 0.78, 0.44),
-            line(0.08, 0.7, 0.8, 0.7, 0.94, 0.96))),
+            curve(0.1, 0.35, 0.35, 0.1, 0.75, 0.15, 0.8, 0.35),
+            arc(0.66, 0.42, 0.12, -30, 200),
+            curve(0.15, 0.65, 0.4, 0.5, 0.7, 0.75, 0.92, 0.6),
+            curve(0.3, 0.88, 0.5, 0.78, 0.65, 0.92, 0.78, 0.85))),
     LIGHT("light", 0xFFE08A, strokes(
-            line(0.2, 0.08, 0.8, 0.08, 0.8, 0.92, 0.2, 0.92, 0.2, 0.08),
-            line(0.2, 0.5, 0.8, 0.5))),
+            arc(0.5, 0.48, 0.24, 200, 520),
+            curve(0.5, 0.0, 0.46, 0.12, 0.54, 0.16, 0.5, 0.24),
+            curve(0.5, 0.72, 0.46, 0.84, 0.56, 0.9, 0.42, 1.0),
+            dot(0.5, 0.48))),
     SHADOW("shadow", 0xA48AD6, strokes(
-            line(0.1, 0.28, 0.1, 0.1, 0.9, 0.1, 0.9, 0.28),
-            line(0.62, 0.3, 0.28, 0.94),
-            line(0.56, 0.6, 0.7, 0.74))),
+            curve(0.75, 0.1, 0.15, 0.1, 0.15, 0.9, 0.75, 0.9),
+            curve(0.75, 0.9, 0.45, 0.7, 0.45, 0.3, 0.75, 0.1),
+            dot(0.85, 0.5))),
     LIFE("life", 0x8FE07A, strokes(
-            line(0.08, 0.38, 0.92, 0.38),
-            line(0.5, 0.04, 0.5, 0.96),
-            line(0.5, 0.44, 0.12, 0.86),
-            line(0.5, 0.44, 0.88, 0.86))),
+            curve(0.5, 0.98, 0.45, 0.7, 0.55, 0.45, 0.5, 0.2),
+            arc(0.5, 0.16, 0.1, 90, 450),
+            curve(0.5, 0.62, 0.25, 0.6, 0.15, 0.45, 0.18, 0.35),
+            curve(0.5, 0.48, 0.75, 0.46, 0.85, 0.32, 0.82, 0.22))),
     METAL("metal", 0xB8C4CC, strokes(
-            line(0.06, 0.42, 0.5, 0.04, 0.94, 0.42),
-            line(0.24, 0.58, 0.76, 0.58),
-            line(0.5, 0.42, 0.5, 0.9),
-            line(0.12, 0.92, 0.88, 0.92))),
+            curve(0.2, 0.15, 0.45, 0.3, 0.55, 0.3, 0.8, 0.15),
+            line(0.5, 0.27, 0.5, 0.76),
+            curve(0.25, 0.55, 0.4, 0.5, 0.6, 0.6, 0.75, 0.55),
+            arc(0.5, 0.86, 0.1, -90, 230))),
     SPARK("spark", 0x7EF0FF, strokes(
-            line(0.14, 0.18, 0.74, 0.18, 0.74, 0.64, 0.14, 0.64, 0.14, 0.18),
-            line(0.14, 0.41, 0.74, 0.41),
-            line(0.44, 0.04, 0.44, 0.86, 0.92, 0.86, 0.92, 0.7))),
+            line(0.7, 0.02, 0.35, 0.45, 0.65, 0.5, 0.3, 0.98),
+            dot(0.7, 0.02),
+            curve(0.12, 0.3, 0.2, 0.2, 0.3, 0.2, 0.38, 0.28),
+            curve(0.62, 0.72, 0.7, 0.8, 0.8, 0.8, 0.88, 0.7))),
     STEAM("steam", 0xD9E2E8, "fire", "water"),
     MAGMA("magma", 0xE8572A, "fire", "earth"),
     ASH("ash", 0x6E6A66, "fire", "shadow"),
@@ -208,11 +217,4 @@ public enum Essence {
         return Arrays.asList(strokes);
     }
 
-    private static float[] line(double... xy) {
-        float[] points = new float[xy.length];
-        for (int i = 0; i < xy.length; i++) {
-            points[i] = (float) xy[i];
-        }
-        return points;
-    }
 }
