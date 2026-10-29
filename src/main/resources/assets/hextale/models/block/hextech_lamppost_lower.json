@@ -1,3 +1,321 @@
 {
-  "parent": "hextale:block/arc_spire_lower"
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "hextale:block/polished_magic_stone",
+    "polished_magic_stone": "hextale:block/polished_magic_stone",
+    "aged_brass": "hextale:block/aged_brass",
+    "stripped_dark_oak_log": "minecraft:block/stripped_dark_oak_log"
+  },
+  "elements": [
+    {
+      "name": "stone_foot",
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        2,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            14,
+            13,
+            16
+          ],
+          "texture": "#polished_magic_stone"
+        },
+        "east": {
+          "uv": [
+            3,
+            14,
+            13,
+            16
+          ],
+          "texture": "#polished_magic_stone"
+        },
+        "south": {
+          "uv": [
+            3,
+            14,
+            13,
+            16
+          ],
+          "texture": "#polished_magic_stone"
+        },
+        "west": {
+          "uv": [
+            3,
+            14,
+            13,
+            16
+          ],
+          "texture": "#polished_magic_stone"
+        },
+        "up": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#polished_magic_stone"
+        },
+        "down": {
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ],
+          "texture": "#polished_magic_stone",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "name": "stone_step",
+      "from": [
+        4,
+        2,
+        4
+      ],
+      "to": [
+        12,
+        3,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            13,
+            12,
+            14
+          ],
+          "texture": "#polished_magic_stone"
+        },
+        "east": {
+          "uv": [
+            4,
+            13,
+            12,
+            14
+          ],
+          "texture": "#polished_magic_stone"
+        },
+        "south": {
+          "uv": [
+            4,
+            13,
+            12,
+            14
+          ],
+          "texture": "#polished_magic_stone"
+        },
+        "west": {
+          "uv": [
+            4,
+            13,
+            12,
+            14
+          ],
+          "texture": "#polished_magic_stone"
+        },
+        "up": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#polished_magic_stone"
+        }
+      }
+    },
+    {
+      "name": "brass_collar_lo",
+      "from": [
+        5,
+        3,
+        5
+      ],
+      "to": [
+        11,
+        5,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            11,
+            11,
+            13
+          ],
+          "texture": "#aged_brass"
+        },
+        "east": {
+          "uv": [
+            5,
+            11,
+            11,
+            13
+          ],
+          "texture": "#aged_brass"
+        },
+        "south": {
+          "uv": [
+            5,
+            11,
+            11,
+            13
+          ],
+          "texture": "#aged_brass"
+        },
+        "west": {
+          "uv": [
+            5,
+            11,
+            11,
+            13
+          ],
+          "texture": "#aged_brass"
+        },
+        "up": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#aged_brass"
+        }
+      }
+    },
+    {
+      "name": "wood_shaft_lo",
+      "from": [
+        6,
+        5,
+        6
+      ],
+      "to": [
+        10,
+        16,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            0,
+            10,
+            11
+          ],
+          "texture": "#stripped_dark_oak_log"
+        },
+        "east": {
+          "uv": [
+            6,
+            0,
+            10,
+            11
+          ],
+          "texture": "#stripped_dark_oak_log"
+        },
+        "south": {
+          "uv": [
+            6,
+            0,
+            10,
+            11
+          ],
+          "texture": "#stripped_dark_oak_log"
+        },
+        "west": {
+          "uv": [
+            6,
+            0,
+            10,
+            11
+          ],
+          "texture": "#stripped_dark_oak_log"
+        }
+      }
+    },
+    {
+      "name": "brass_ring_mid",
+      "from": [
+        5,
+        11,
+        5
+      ],
+      "to": [
+        11,
+        12,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            4,
+            11,
+            5
+          ],
+          "texture": "#aged_brass"
+        },
+        "east": {
+          "uv": [
+            5,
+            4,
+            11,
+            5
+          ],
+          "texture": "#aged_brass"
+        },
+        "south": {
+          "uv": [
+            5,
+            4,
+            11,
+            5
+          ],
+          "texture": "#aged_brass"
+        },
+        "west": {
+          "uv": [
+            5,
+            4,
+            11,
+            5
+          ],
+          "texture": "#aged_brass"
+        },
+        "up": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#aged_brass"
+        },
+        "down": {
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ],
+          "texture": "#aged_brass"
+        }
+      }
+    }
+  ]
 }

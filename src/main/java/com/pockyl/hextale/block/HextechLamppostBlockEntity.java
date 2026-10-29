@@ -134,7 +134,7 @@ public class HextechLamppostBlockEntity extends BlockEntity {
 
     /** Where the gem hangs in the lamp head, in world space. */
     public static Vec3 gem(BlockPos lower) {
-        return Vec3.atLowerCornerOf(lower).add(0.5, 1 + 9 / 16.0, 0.5);
+        return Vec3.atLowerCornerOf(lower).add(0.5, 1 + 10 / 16.0, 0.5);
     }
 
     public boolean covers(BlockPos pos) {
