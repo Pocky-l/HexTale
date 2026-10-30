@@ -108,6 +108,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Runed Sword and the Refined Sword have real blades now: the Runed Sword a tapered steel blade with a bright
   edge and a glowing rune fuller, the Refined Sword a broad blade with a long point and its crystal core set in a
   dark spine, held by steel bands.
+- The Chem Boiler looks like a working boiler now: an olive riveted drum of plates with a bright copper band, a round
+  pressure gauge whose scale runs from green to red, and a stepped dome with a copper neck under the safety valve. It
+  no longer flickers from afar.
 - The Hextech Gemstone now looks like the top grade it is: a faceted brilliant held in a thin brass collet, with a
   calm light breathing inside. The gems in the Crystal Lamp, the Warding Lamppost, the Awakened Workbench and the
   Experience Condenser are cut to match.
