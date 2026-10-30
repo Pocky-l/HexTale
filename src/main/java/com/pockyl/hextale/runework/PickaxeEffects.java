@@ -80,7 +80,7 @@ public final class PickaxeEffects {
     /** Ore experience is multiplied by 1 + this; stone gives a point now and then. */
     private static final float[] RADIANCE_ORE = {0.5F, 1.0F, 1.5F, 2.0F};
     private static final float[] RADIANCE_STONE = {0.03F, 0.05F, 0.07F, 0.09F};
-    private static final float[] FEED = {0.02F, 0.035F, 0.05F, 0.065F};
+    private static final float[] FEED = {0.06F, 0.09F, 0.12F, 0.15F};
     /** Air given back under water per block, in ticks. */
     private static final int[] BREATH_AIR = {30, 45, 60, 80};
     private static final int[] NIGHT_SIGHT = {300, 500, 800, 1200};
@@ -96,8 +96,12 @@ public final class PickaxeEffects {
 
     /** Set while a pickaxe breaks extra blocks: their drops must not start another area or vein. */
     private static final ThreadLocal<Boolean> CHAINING = ThreadLocal.withInitial(() -> false);
-    /** Ore markers of a prospector's sight, removed when their time is up. */
-    private static final List<Expiring> EXPIRING = new ArrayList<>();
+    /** Ore markers of a prospector's sight by the block they light, removed when their time is up. */
+    private static final java.util.Map<Marked, Expiring> EXPIRING = new java.util.LinkedHashMap<>();
+    /** The tag on every glow marker: a marker found on loading a chunk is a leftover and goes at once. */
+    private static final String MARKER_TAG = "hextale_glow_marker";
+    /** The block and face each player last struck (server side), so an area dig knows the face once the block is gone. */
+    private static final java.util.Map<java.util.UUID, Struck> STRUCK = new java.util.concurrent.ConcurrentHashMap<>();
 
     private PickaxeEffects() {
     }
@@ -107,6 +111,11 @@ public final class PickaxeEffects {
         NeoForge.EVENT_BUS.addListener(PickaxeEffects::onBlockDrops);
         NeoForge.EVENT_BUS.addListener(PickaxeEffects::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(PickaxeEffects::onServerTick);
+        NeoForge.EVENT_BUS.addListener(PickaxeEffects::onStruck);
+        NeoForge.EVENT_BUS.addListener(PickaxeEffects::onMarkerJoin);
+        NeoForge.EVENT_BUS.addListener(PickaxeEffects::onServerStopping);
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event) ->
+                STRUCK.remove(event.getEntity().getUUID()));
     }
 
     public static float temperChance(int strength) {
@@ -267,6 +276,11 @@ public final class PickaxeEffects {
             if (ore && event.getDroppedExperience() > 0) {
                 event.setDroppedExperience(Math.round(event.getDroppedExperience() * (1 + RADIANCE_ORE[radiance - 1])));
                 com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, 0xC6F25C, 0.6F);
+            } else if (ore && !event.getDrops().isEmpty()
+                    && event.getDrops().stream().noneMatch(drop -> drop.getItem().is(state.getBlock().asItem()))) {
+                // Ores that give no experience of their own (iron, copper, gold) still share a point or two.
+                event.setDroppedExperience(1 + random.nextInt(2));
+                com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, 0xC6F25C, 0.6F);
             } else if (state.is(BlockTags.BASE_STONE_OVERWORLD) && random.nextFloat() < RADIANCE_STONE[radiance - 1]) {
                 event.setDroppedExperience(event.getDroppedExperience() + 1 + random.nextInt(2));
                 com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at, 0xC6F25C, 0.6F);
@@ -280,7 +294,7 @@ public final class PickaxeEffects {
                 level.sendParticles(ModParticles.bubble(ModParticles.WATER), player.getX(), player.getEyeY(), player.getZ(), 6, 0.3, 0.2, 0.3, 0.05);
             }
             if (player.getFoodData().needsFood() && random.nextFloat() < FEED[breath - 1]) {
-                player.getFoodData().eat(1, 0.5F);
+                player.getFoodData().eat(2, 0.6F);
                 ToolEffects.puff(level, player.position().add(0, 1, 0), PickaxeRune.BREATH.rune(), 8, 0.4);
                 com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.GUST, player.getEyePosition().add(0, -0.2, 0), 0, 0.7F);
             }
@@ -296,7 +310,7 @@ public final class PickaxeEffects {
             com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, player.position().add(0, 0.3, 0), ModParticles.FIRE, 1.2F);
         }
         int flame = runes.strength(PickaxeRune.ETERNAL_FLAME);
-        if (flame > 0 && !CHAINING.get() && level.getMaxLocalRawBrightness(pos) <= DARK && random.nextFloat() < WISP[flame - 1]) {
+        if (flame > 0 && !CHAINING.get() && brightnessAround(level, pos) <= DARK && random.nextFloat() < WISP[flame - 1]) {
             // The block is gone by the time the drops fall; a wisp takes its place on the next tick, if nothing else does.
             level.getServer().execute(() -> {
                 BlockState wisp = com.pockyl.hextale.registry.ModBlocks.HEX_WISP.get().defaultBlockState();
@@ -308,6 +322,21 @@ public final class PickaxeEffects {
                 }
             });
         }
+    }
+
+    /**
+     * How bright it is where a block was just broken: its own cell still holds the light of the solid block (none) until
+     * the light engine catches up, so the brightest open neighbour tells it.
+     */
+    static int brightnessAround(ServerLevel level, BlockPos pos) {
+        int light = level.getMaxLocalRawBrightness(pos);
+        for (Direction side : Direction.values()) {
+            BlockPos next = pos.relative(side);
+            if (!level.getBlockState(next).canOcclude()) {
+                light = Math.max(light, level.getMaxLocalRawBrightness(next));
+            }
+        }
+        return light;
     }
 
     private static boolean nextToLava(ServerLevel level, BlockPos pos) {
@@ -379,9 +408,8 @@ public final class PickaxeEffects {
                      java.util.function.Predicate<BlockState> which, com.pockyl.hextale.network.RuneEffectPayload.Family family, int color) {
         List<BlockPos> taken = new ArrayList<>();
         ServerLevel level = event.getLevel();
-        HitResult hit = player.pick(6, 0, false);
-        Direction face = hit instanceof BlockHitResult block ? block.getDirection() : Direction.UP;
         BlockPos origin = event.getPos();
+        Direction face = struckFace(player, origin);
         float hardness = event.getState().getDestroySpeed(level, origin);
         chain(() -> {
             for (int d = 0; d < depth; d++) {
@@ -408,6 +436,34 @@ public final class PickaxeEffects {
             // Drill: arcs from the struck block into every block it took (a shovel's ground crumbles instead).
             com.pockyl.hextale.network.RuneEffectPayload.show(level, family, Vec3.atCenterOf(origin), taken, color, 1);
         }
+    }
+
+    /**
+     * The face {@code player} struck {@code pos} from: the one recorded when they started breaking it; else what they
+     * look at now (the block may be gone already, so a pick can pass through it); else the side facing their look.
+     */
+    static Direction struckFace(Player player, BlockPos pos) {
+        Struck struck = STRUCK.get(player.getUUID());
+        if (struck != null && struck.pos.equals(pos)) {
+            return struck.face;
+        }
+        HitResult hit = player.pick(6, 0, false);
+        if (hit instanceof BlockHitResult block && hit.getType() == HitResult.Type.BLOCK && block.getBlockPos().equals(pos)) {
+            return block.getDirection();
+        }
+        return Direction.orderedByNearest(player)[0].getOpposite();
+    }
+
+    private record Struck(BlockPos pos, Direction face) {
+    }
+
+    /** A player starts breaking a block (server side): remember the face they struck. */
+    private static void onStruck(net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event) {
+        if (event.getLevel().isClientSide() || event.getFace() == null
+                || event.getAction() != net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock.Action.START) {
+            return;
+        }
+        STRUCK.put(event.getEntity().getUUID(), new Struck(event.getPos().immutable(), event.getFace()));
     }
 
     /** The ore vein the broken block belonged to: the same ore touching it, nearest first. */
@@ -540,8 +596,20 @@ public final class PickaxeEffects {
         return true;
     }
 
-    /** A block glows through everything for a while (a glowing block marker over it); false when no marker could be made. */
+    /**
+     * A block glows through everything for a while (a glowing block marker over it); false when no marker could be made.
+     * A block that already glows keeps its marker, which then lasts at least {@code ticks} more.
+     */
     public static boolean glow(ServerLevel level, BlockPos at, BlockState state, int ticks) {
+        Marked key = new Marked(level, at.immutable());
+        long until = level.getGameTime() + ticks;
+        Expiring old = EXPIRING.get(key);
+        if (old != null && !old.entity.isRemoved()) {
+            if (old.at < until) {
+                EXPIRING.put(key, new Expiring(level, old.entity, until));
+            }
+            return true;
+        }
         Entity marker = EntityTypes.BLOCK_DISPLAY.create(level, EntitySpawnReason.TRIGGERED);
         if (marker == null) {
             return false;
@@ -553,8 +621,9 @@ public final class PickaxeEffects {
         marker.load(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), tag));
         // A hair smaller than the block, so the outline hugs it.
         marker.snapTo(at.getX() + 0.01, at.getY() + 0.01, at.getZ() + 0.01, 0, 0);
+        marker.addTag(MARKER_TAG);
+        EXPIRING.put(key, new Expiring(level, marker, until));
         level.addFreshEntity(marker);
-        EXPIRING.add(new Expiring(level, marker, level.getGameTime() + ticks));
         return true;
     }
 
@@ -671,8 +740,34 @@ public final class PickaxeEffects {
     private record Expiring(ServerLevel level, Entity entity, long at) {
     }
 
+    private record Marked(ServerLevel level, BlockPos pos) {
+    }
+
+    /** Whether {@code entity} is one of the glow markers (a block display tagged by {@link #glow}). */
+    public static boolean isGlowMarker(Entity entity) {
+        return entity.entityTags().contains(MARKER_TAG);
+    }
+
+    /** A glow marker saved with its chunk (unloaded, or the server stopped in its time) is a leftover: it never comes back. */
+    private static void onMarkerJoin(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent event) {
+        if (event.loadedFromDisk() && !event.getLevel().isClientSide() && isGlowMarker(event.getEntity())) {
+            event.setCanceled(true);
+        }
+    }
+
+    /** The markers still glowing go before the worlds are saved, and the list forgets the old worlds. */
+    private static void onServerStopping(net.neoforged.neoforge.event.server.ServerStoppingEvent event) {
+        for (Expiring expiring : EXPIRING.values()) {
+            if (!expiring.entity.isRemoved()) {
+                expiring.entity.discard();
+            }
+        }
+        EXPIRING.clear();
+        STRUCK.clear();
+    }
+
     private static void onServerTick(ServerTickEvent.Post event) {
-        for (Iterator<Expiring> it = EXPIRING.iterator(); it.hasNext(); ) {
+        for (Iterator<Expiring> it = EXPIRING.values().iterator(); it.hasNext(); ) {
             Expiring expiring = it.next();
             if (expiring.level.getGameTime() >= expiring.at || expiring.entity.isRemoved()) {
                 if (!expiring.entity.isRemoved()) {

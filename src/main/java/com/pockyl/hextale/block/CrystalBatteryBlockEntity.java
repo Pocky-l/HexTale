@@ -111,7 +111,7 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
         boolean bonus = false;
         while (soaked < count && value > 0 && charge + value <= capacity()) {
             boolean lucky = dam > 0 && level != null && level.getRandom().nextFloat() < HolderRune.at(BatteryRune.BONUS, dam);
-            charge = Math.min(capacity(), charge + value + (lucky ? value / 2 : 0));
+            charge = Math.min(capacity(), charge + value + (lucky ? (value + 1) / 2 : 0));
             bonus |= lucky;
             soaked++;
         }

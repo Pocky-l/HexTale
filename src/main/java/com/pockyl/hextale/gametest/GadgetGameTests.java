@@ -270,6 +270,35 @@ public final class GadgetGameTests {
         helper.succeed();
     }
 
+    /**
+     * A Slumber flask lets a hostile creature out asleep: no AI (so not even an archer aims), and it always wakes again
+     * by itself when the time is up.
+     */
+    @HexTest(padding = 2, maxTicks = 300)
+    public static void aSlumberFlaskLetsOutASleeperThatWakes(GameTestHelper helper) {
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        net.minecraft.world.entity.monster.spider.Spider spider = helper.spawn(net.minecraft.world.entity.EntityTypes.SPIDER, new BlockPos(1, 2, 1));
+        net.minecraft.world.item.ItemStack flask = new net.minecraft.world.item.ItemStack(com.pockyl.hextale.registry.ModItems.SOUL_FLASK.get());
+        flask.set(com.pockyl.hextale.registry.ModDataComponents.SOUL.get(), com.pockyl.hextale.item.SoulFlaskItem.capture(level, spider));
+        spider.discard();
+        com.pockyl.hextale.runework.RuneHolder.SOUL.set(flask,
+                com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.SoulRune.SLUMBER.rune(), 1));
+        net.minecraft.world.entity.player.Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, flask);
+        BlockPos ground = helper.absolutePos(new BlockPos(2, 0, 2));
+        var hit = new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(ground), net.minecraft.core.Direction.UP, ground, false);
+        flask.useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND, hit));
+        List<net.minecraft.world.entity.monster.spider.Spider> out = level.getEntitiesOfClass(net.minecraft.world.entity.monster.spider.Spider.class,
+                new AABB(ground.above()).inflate(2));
+        helper.assertTrue(out.size() == 1, "the spider comes out of the flask, found " + out.size());
+        net.minecraft.world.entity.monster.spider.Spider sleeper = out.getFirst();
+        helper.assertTrue(sleeper.isNoAi() && com.pockyl.hextale.runework.Slumber.asleep(sleeper), "it steps out asleep, without its AI");
+        helper.succeedWhen(() -> {
+            helper.assertTrue(!sleeper.isNoAi() && !com.pockyl.hextale.runework.Slumber.asleep(sleeper), "and wakes with its AI back");
+            sleeper.discard();
+        });
+    }
+
     /** Someone else's dog stays out of a flask; its owner may fold it. */
     @HexTest(padding = 2)
     public static void aSoulFlaskLeavesOthersPets(GameTestHelper helper) {

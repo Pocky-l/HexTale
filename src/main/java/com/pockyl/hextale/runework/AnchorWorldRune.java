@@ -52,9 +52,9 @@ public enum AnchorWorldRune implements HolderRune {
         return HolderRune.find(values(), rune);
     }
 
-    /** Chunks held every way around its own, by Shift's strength (0 = only its own). */
+    /** Chunks held every way around its own, by Shift's strength (0 = only its own): one more ring per star. */
     public static int radius(int strength) {
-        return strength <= 0 ? 0 : strength <= 2 ? 1 : 2;
+        return Mth.clamp(strength, 0, 3);
     }
 
     @Override

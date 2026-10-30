@@ -47,6 +47,10 @@ public final class ModAttachments {
                     .serialize(com.pockyl.hextale.chem.ShimmerVeins.Veins.CODEC.fieldOf("veins"), veins -> veins.count() > 0)
                     .sync(com.pockyl.hextale.chem.ShimmerVeins.Veins.STREAM_CODEC).copyOnDeath().build());
 
+    /** The tick a creature put to sleep by a Slumber rune wakes (see {@link com.pockyl.hextale.runework.Slumber}); saved while set. */
+    public static final Supplier<AttachmentType<Long>> SLUMBER = ATTACHMENT_TYPES.register("slumber",
+            () -> AttachmentType.builder(() -> 0L).serialize(com.mojang.serialization.Codec.LONG.fieldOf("until"), until -> until > 0).build());
+
     /** Placeholder for "nobody": attachments need a default value. */
     public static final java.util.UUID NOBODY = new java.util.UUID(0L, 0L);
 

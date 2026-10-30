@@ -62,7 +62,7 @@ public enum ClothesRune implements HolderRune {
     /** Fire Resistance given when fire touches the robe, ticks. */
     public static final int[] FIRE_SHIELD = {100, 160, 220, 280};
     /** Movement speed bonus (share of the base). */
-    public static final float[] SPEED = {0.05F, 0.08F, 0.11F, 0.14F};
+    public static final float[] SPEED = {0.10F, 0.15F, 0.20F, 0.25F};
     /** Jump strength added (the base is 0.42). */
     public static final float[] JUMP = {0.05F, 0.08F, 0.11F, 0.14F};
     /** Knockback resistance added. */
