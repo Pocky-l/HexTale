@@ -314,7 +314,9 @@ public final class ClothesEffects {
         CLOAKED.put(player.getUUID(), level.getGameTime() + ticks);
         Vec3 spot = player.position();
         for (net.minecraft.world.entity.Mob mob : level.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, player.getBoundingBox().inflate(MIRAGE_REACH),
-                mob -> mob.getTarget() == player || mob.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET)
+                mob -> mob.getTarget() == player || mob.getBrain().checkMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET,
+                        net.minecraft.world.entity.ai.memory.MemoryStatus.REGISTERED)
+                        && mob.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET)
                         .filter(target -> target == player).isPresent())) {
             mob.setTarget(null);
             mob.getBrain().eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET);

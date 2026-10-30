@@ -76,6 +76,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Chem Boiler Steam draws mixture from jars as fast as it cracks it; Thrift and Purification count fully at every star.
 - Crystal Purifier and World Anchor Reach grow with every star.
 - Greedy Funnel Engraving drops heads more often (3/5/8%) and shows when it does.
+- Sword Engraving takes heads far more often (5/10/15% instead of 1-3%).
+- Hood Mirage works around zombies, skeletons and other creatures that hunt by plain goals: it used to break off at
+  them and leave the wearer seen.
 - Disintegrator Thrift adds essence also to things worth a single point; Crystal Battery Thrift rounds its bonus up;
   Axolotl Tank Healing keeps working while the slime output is full; Crystal Purifier Thrift gives free draws also
   without light at hand.

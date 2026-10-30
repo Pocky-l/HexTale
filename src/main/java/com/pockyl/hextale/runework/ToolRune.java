@@ -84,7 +84,7 @@ public enum ToolRune implements HolderRune {
     public static final float[] RAGE = {0.2F, 0.3F, 0.4F, 0.5F};
     public static final int[] RAGE_TICKS = {120, 160, 200, 240};
     public static final float[] FIRST_STRIKE = {0.3F, 0.5F, 0.75F, 1.0F};
-    public static final float[] HEAD = {0.01F, 0.02F, 0.03F, 0.04F};
+    public static final float[] HEAD = {0.05F, 0.10F, 0.15F, 0.20F};
     /** Shockwave: blocks it runs, damage, half width (0 = one block wide), ticks the weapon rests after it. */
     public static final int[] WAVE_LENGTH = {6, 8, 10, 12};
     public static final float[] WAVE_DAMAGE = {4F, 5.5F, 7F, 8F};
