@@ -4,6 +4,13 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Fixed
+- The Researcher's Diary no longer drags the frame rate down while it is open: its star map ran at about half the
+  frame rate of the game behind it and now costs about as much as an inventory screen. The links between the steps are
+  traced once instead of every frame, the hazes behind the steps are drawn as one picture each, and nothing outside the
+  view is drawn.
+
 ## [1.6.1] - 2026-10-30
 ### Fixed
 - A player who knew very much - the Scroll of Omniscience in a big modpack, or simply thousands of studied items - was

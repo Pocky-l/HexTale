@@ -112,6 +112,9 @@ neoForge {
             gameDirectory = project.file('run-guishots')
             programArguments.addAll '--width', '1920', '--height', '1080'
             systemProperty 'hextale.guishots', project.file('tools/guishots').absolutePath
+            if (project.hasProperty('guishots.jfr')) {
+                jvmArguments.add "-XX:StartFlightRecording=filename=${project.property('guishots.jfr')},settings=profile"
+            }
         }
 
         data {
