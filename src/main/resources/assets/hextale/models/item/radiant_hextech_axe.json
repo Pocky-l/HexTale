@@ -1,0 +1,1081 @@
+{
+  "gui_light": "front",
+  "textures": {
+    "particle": "hextale:item/radiant_hextech_axe",
+    "sheet": "hextale:item/radiant_hextech_axe"
+  },
+  "elements": [
+    {
+      "name": "gem_pommel",
+      "from": [
+        6.5,
+        -8.5,
+        6.5
+      ],
+      "to": [
+        9.5,
+        -5.5,
+        9.5
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            3.5,
+            2.75,
+            4.5,
+            3.75
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "east": {
+          "uv": [
+            11.25,
+            3.75,
+            12.25,
+            4.75
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "south": {
+          "uv": [
+            4.75,
+            2.75,
+            5.75,
+            3.75
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "west": {
+          "uv": [
+            10,
+            3.75,
+            11,
+            4.75
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "down": {
+          "uv": [
+            12.5,
+            3.75,
+            13.5,
+            4.75
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        }
+      }
+    },
+    {
+      "name": "gold_pommel_cup",
+      "from": [
+        6,
+        -6,
+        6
+      ],
+      "to": [
+        10,
+        -5,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6.25,
+            1,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            12.5,
+            6.25,
+            13.5,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            1.25,
+            6.25,
+            2.25,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            11.25,
+            6.25,
+            12.25,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            15,
+            3.75,
+            16,
+            4.75
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            13.75,
+            3.75,
+            14.75,
+            4.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "cream_grip",
+      "from": [
+        7,
+        -5,
+        7
+      ],
+      "to": [
+        9,
+        3,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8.25,
+            0,
+            8.75,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            10.5,
+            0,
+            11,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            9,
+            0,
+            9.5,
+            2
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            9.75,
+            0,
+            10.25,
+            2
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "gold_band_low",
+      "from": [
+        6,
+        3,
+        6
+      ],
+      "to": [
+        10,
+        4,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13.75,
+            6.25,
+            14.75,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            3.75,
+            6.5,
+            4.75,
+            6.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            15,
+            6.25,
+            16,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            2.5,
+            6.5,
+            3.5,
+            6.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            4.75,
+            4,
+            5.75,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            3.5,
+            4,
+            4.5,
+            5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "plum_shaft",
+      "from": [
+        7,
+        4,
+        7
+      ],
+      "to": [
+        9,
+        14,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3.5,
+            0,
+            4,
+            2.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            5.75,
+            0,
+            6.25,
+            2.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            4.25,
+            0,
+            4.75,
+            2.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            5,
+            0,
+            5.5,
+            2.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "gold_band_mid",
+      "from": [
+        6.7,
+        7.7,
+        6.7
+      ],
+      "to": [
+        9.3,
+        9.3,
+        9.3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            6.5,
+            5.5,
+            6.75
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            7.25,
+            6.5,
+            7.75,
+            6.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            5.75,
+            6.5,
+            6.25,
+            6.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            6.5,
+            6.5,
+            7,
+            6.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            14.5,
+            5,
+            15,
+            5.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            2.5,
+            5,
+            3,
+            5.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "cream_knot",
+      "from": [
+        6.6,
+        11.6,
+        6.6
+      ],
+      "to": [
+        9.4,
+        14.4,
+        9.4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            15.25,
+            5,
+            15.75,
+            5.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            4.75,
+            5.25,
+            5.25,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            3.25,
+            5.25,
+            3.75,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            4,
+            5.25,
+            4.5,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            7.25,
+            5.25,
+            7.75,
+            5.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "cream_tail_r",
+      "from": [
+        8.97,
+        6.97,
+        7.97
+      ],
+      "to": [
+        11.03,
+        13.03,
+        8.03
+      ],
+      "rotation": {
+        "angle": 12,
+        "axis": "z",
+        "origin": [
+          9,
+          13,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            15.25,
+            2,
+            14.75,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            14.75,
+            2,
+            15.25,
+            3.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "cream_tail_l",
+      "from": [
+        4.97,
+        7.97,
+        7.97
+      ],
+      "to": [
+        7.03,
+        13.03,
+        8.03
+      ],
+      "rotation": {
+        "angle": -12,
+        "axis": "z",
+        "origin": [
+          7,
+          13,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            16,
+            2,
+            15.5,
+            3.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            15.5,
+            2,
+            16,
+            3.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "gold_socket",
+      "from": [
+        6,
+        14,
+        6
+      ],
+      "to": [
+        10,
+        21,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11.25,
+            0,
+            12.25,
+            1.75
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            15,
+            0,
+            16,
+            1.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            12.5,
+            0,
+            13.5,
+            1.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            13.75,
+            0,
+            14.75,
+            1.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "gold_flange_low",
+      "from": [
+        5,
+        14,
+        5
+      ],
+      "to": [
+        11,
+        15,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5.5,
+            5.5,
+            7,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            2.5,
+            6,
+            4,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            12,
+            5.75,
+            13.5,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            13.75,
+            5.75,
+            15.25,
+            6
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            13,
+            2,
+            14.5,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            11.25,
+            2,
+            12.75,
+            3.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "gold_flange_top",
+      "from": [
+        5,
+        20,
+        5
+      ],
+      "to": [
+        11,
+        21,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4.25,
+            6,
+            5.75,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            9.5,
+            6,
+            11,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            6,
+            6,
+            7.5,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            7.75,
+            6,
+            9.25,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            6.5,
+            2.5,
+            8,
+            4
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            8.25,
+            2.25,
+            9.75,
+            3.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "gem_heart",
+      "from": [
+        6.5,
+        15.5,
+        5.5
+      ],
+      "to": [
+        9.5,
+        18.5,
+        10.5
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            8.25,
+            4,
+            9.25,
+            5
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "south": {
+          "uv": [
+            6,
+            4.25,
+            7,
+            5.25
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        }
+      }
+    },
+    {
+      "name": "gold_crest",
+      "from": [
+        6,
+        21,
+        8
+      ],
+      "to": [
+        10,
+        26,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11,
+            2.25,
+            10,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            10,
+            2.25,
+            11,
+            3.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "gold_neck",
+      "from": [
+        2.96,
+        15.96,
+        6.96
+      ],
+      "to": [
+        7.04,
+        19.04,
+        9.04
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9.5,
+            5,
+            10.5,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            10.75,
+            5,
+            11.75,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            7.25,
+            4.25,
+            7.75,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            13.25,
+            5,
+            14.25,
+            5.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            12,
+            5,
+            13,
+            5.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "gold_blade",
+      "from": [
+        -8,
+        8,
+        8
+      ],
+      "to": [
+        5,
+        27,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3.25,
+            0,
+            0,
+            4.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            3.25,
+            4.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "gem_blade",
+      "from": [
+        -3.5,
+        15.5,
+        7.5
+      ],
+      "to": [
+        -0.5,
+        18.5,
+        8.5
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            5,
+            1,
+            6
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        },
+        "south": {
+          "uv": [
+            1.25,
+            5,
+            2.25,
+            6
+          ],
+          "texture": "#sheet",
+          "tintindex": 0
+        }
+      }
+    },
+    {
+      "name": "gold_hook",
+      "from": [
+        10,
+        15,
+        8
+      ],
+      "to": [
+        16,
+        24,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            0,
+            6.5,
+            2.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            6.5,
+            0,
+            8,
+            2.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        -27,
+        -90,
+        -35
+      ],
+      "translation": [
+        0,
+        4,
+        1.25
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        -27,
+        -90,
+        -35
+      ],
+      "translation": [
+        0,
+        4,
+        1.25
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -90,
+        -20
+      ],
+      "translation": [
+        1.63,
+        2.85,
+        0.63
+      ],
+      "scale": [
+        0.45,
+        0.45,
+        0.45
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -90,
+        -20
+      ],
+      "translation": [
+        1.63,
+        2.85,
+        0.63
+      ],
+      "scale": [
+        0.45,
+        0.45,
+        0.45
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        -45
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.45,
+        0.45,
+        0.45
+      ]
+    },
+    "gui": {
+      "rotation": [
+        0,
+        0,
+        -45
+      ],
+      "translation": [
+        -0.6,
+        -1.6,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "head": {
+      "rotation": [
+        0,
+        -180,
+        -45
+      ],
+      "translation": [
+        0,
+        13,
+        7
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        -180,
+        -45
+      ],
+      "translation": [
+        0.5,
+        -0.5,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    }
+  }
+}
