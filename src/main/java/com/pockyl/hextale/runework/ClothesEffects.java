@@ -173,11 +173,16 @@ public final class ClothesEffects {
         return mended;
     }
 
-    /** Bone meal on one crop or sapling near the path. */
-    private static void grow(ServerLevel level, BlockPos around, RandomSource random) {
-        for (int i = 0; i < 8; i++) {
-            BlockPos pos = around.offset(random.nextInt(POLLEN_RADIUS * 2 + 1) - POLLEN_RADIUS, random.nextInt(3) - 1,
-                    random.nextInt(POLLEN_RADIUS * 2 + 1) - POLLEN_RADIUS);
+    /** Bone meal on the nearest crop or sapling by the path that can still grow. */
+    static void grow(ServerLevel level, BlockPos around, RandomSource random) {
+        java.util.List<BlockPos> near = new java.util.ArrayList<>();
+        for (BlockPos pos : BlockPos.betweenClosed(around.offset(-POLLEN_RADIUS, -1, -POLLEN_RADIUS), around.offset(POLLEN_RADIUS, 1, POLLEN_RADIUS))) {
+            near.add(pos.immutable());
+        }
+        // Nearest first; among equally near ones a random pick, so a field ripens all over and not row by row.
+        java.util.Collections.shuffle(near, new java.util.Random(random.nextLong()));
+        near.sort(java.util.Comparator.comparingDouble(pos -> pos.distSqr(around)));
+        for (BlockPos pos : near) {
             BlockState state = level.getBlockState(pos);
             if ((state.is(BlockTags.CROPS) || state.is(BlockTags.SAPLINGS)) && state.getBlock() instanceof BonemealableBlock plant
                     && plant.isValidBonemealTarget(level, pos, state, BonemealSource.INTERACTION)) {

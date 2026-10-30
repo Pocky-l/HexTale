@@ -36,7 +36,7 @@ public enum FunnelRune implements HolderRune {
     public static final float[] EXPERIENCE = {1.25F, 1.5F, 1.75F, 2.0F};
     /** Chance of each stackable drop to come one more. */
     public static final float[] MORE = {0.1F, 0.2F, 0.3F, 0.4F};
-    public static final float[] HEAD = {0.01F, 0.02F, 0.03F, 0.04F};
+    public static final float[] HEAD = {0.03F, 0.05F, 0.08F, 0.11F};
     public static final float[] THRIFT = {0.2F, 0.35F, 0.5F, 0.6F};
     /** Chance a death soaks its essence into a jar. */
     public static final float[] SOAK = {0.25F, 0.4F, 0.55F, 0.7F};

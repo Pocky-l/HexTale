@@ -65,6 +65,7 @@ public final class Hextale {
         com.pockyl.hextale.runework.WeaponRunes.register();
         com.pockyl.hextale.farm.FunnelEvents.register();
         com.pockyl.hextale.farm.ShackleEvents.register();
+        com.pockyl.hextale.runework.Slumber.register();
         com.pockyl.hextale.farm.CondenserEvents.register();
         com.pockyl.hextale.event.SkypackEvents.register();
         com.pockyl.hextale.multiblock.Multiblocks.register();

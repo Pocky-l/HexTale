@@ -214,7 +214,8 @@ public class SoulFlaskItem extends Item {
             creature.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, ticks, 4));
             creature.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, ticks, 1));
             if (creature instanceof Mob mob) {
-                mob.setTarget(null);
+                // No AI while it sleeps, so not even an archer looks for a target; always given back (Slumber).
+                com.pockyl.hextale.runework.Slumber.lull(mob, ticks);
             }
         }
     }

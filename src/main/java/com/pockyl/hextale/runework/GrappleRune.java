@@ -73,7 +73,7 @@ public enum GrappleRune implements HolderRune {
             case SHIFT -> Integer.toString(reach(i));
             case MOTOR -> HolderRune.factor(reel(i) * 20);
             case BREATH -> "";
-            case GRAVITY -> HolderRune.factor(HolderRune.at(PULL, i) / PULL[0]);
+            case GRAVITY -> Integer.toString(Math.round(HolderRune.at(PULL, i) * 20));
             case BLADES -> HolderRune.factor(HolderRune.at(CUT, i) / 2);
         };
     }

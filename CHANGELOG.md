@@ -31,6 +31,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   frame rate of the game behind it and now costs about as much as an inventory screen. The links between the steps are
   traced once instead of every frame, the hazes behind the steps are drawn as one picture each, and nothing outside the
   view is drawn.
+- Grapple Gauntlet: the Pulse (reel speed) and Reach runes work again - the wearer's own game never learnt them.
+- Ore glow of the pickaxe's and the Tuning Fork's Insight no longer stays forever after the chunk unloads or the world
+  is closed, and a held Tuning Fork keeps one glow per block instead of piling up new ones.
+- Pickaxe Drill and shovel Erosion dig the face that was struck, also through a one-block wall.
+- Pickaxe Eternal Flame no longer leaves wisps in daylight: the light around the broken block counts.
+- Pickaxe Breath feeds clearly more often and more; Radiance gives a point or two of experience on ores that give none
+  (iron, copper, gold).
+- Trousers Haste is a felt speed-up now (+10/15/20%).
+- Boots Pollen grows the nearest crop or sapling on the path instead of a random spot that was often empty.
+- Slumber on the Levitation Plate and the Soul Flask puts creatures really to sleep: even skeletons stop shooting. They
+  always wake again, also after the chunk was unloaded or the world closed.
+- Rune texts: Impulse Plate Breath, Skypack Fireproofing, Grapple Gravity (now shows the yank speed), units on Null
+  Lantern Banishing, Recall Charm Reach and Mending, Tuning Fork Insight, Levitation Plate Breath and Slumber, Soul
+  Flask Slumber.
+- Warding Lamppost Healing at high stars really heals (Regeneration was restarted before its first heal).
+- Sawmill Growth makes the replanted sapling shoot up into a tree, as its text says.
+- Chem Boiler Steam draws mixture from jars as fast as it cracks it; Thrift and Purification count fully at every star.
+- Crystal Purifier and World Anchor Reach grow with every star.
+- Greedy Funnel Engraving drops heads more often (3/5/8%) and shows when it does.
+- Disintegrator Thrift adds essence also to things worth a single point; Crystal Battery Thrift rounds its bonus up;
+  Axolotl Tank Healing keeps working while the slime output is full; Crystal Purifier Thrift gives free draws also
+  without light at hand.
 
 ## [1.6.1] - 2026-10-30
 ### Fixed

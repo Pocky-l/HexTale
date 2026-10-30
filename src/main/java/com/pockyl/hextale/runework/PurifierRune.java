@@ -31,7 +31,7 @@ public enum PurifierRune implements HolderRune {
     /** Chance a draw costs no light (Dam), by strength. */
     public static final float[] FREE = {0.2F, 0.35F, 0.5F, 0.65F};
     /** Chunks every way it draws on, by strength. */
-    private static final int[] RADIUS = {1, 2, 2, 3, 4};
+    private static final int[] RADIUS = {1, 2, 3, 4, 5};
     /** Ticks between two draws, by strength. */
     private static final int[] INTERVAL = {20, 15, 11, 8, 5};
     /** Share the crystal holds more. */

@@ -93,12 +93,22 @@ public class HextechSkypackItem extends Item {
         return RuneHolder.SKYPACK.runes(stack).strength(rune.rune());
     }
 
-    /** Called by vanilla every second of a glide: Fireproofing keeps fire away. Gliding itself costs nothing. */
+    /**
+     * Called by vanilla every second of a glide: Fireproofing keeps fire away, topped up to its full time every second,
+     * so it lasts its whole time after landing. Gliding itself costs nothing.
+     */
     @Override
     public void onGlideDamage(ItemStack stack, LivingEntity wearer, EquipmentSlot slot) {
         int fire = strength(stack, SkypackRune.FIREPROOFING);
-        if (fire > 0 && wearer.level() instanceof ServerLevel) {
-            ToolEffects.keep(wearer, MobEffects.FIRE_RESISTANCE, HolderRune.at(SkypackRune.FIRE_TICKS, fire), 0);
+        if (fire > 0 && wearer.level() instanceof ServerLevel level) {
+            int ticks = HolderRune.at(SkypackRune.FIRE_TICKS, fire);
+            net.minecraft.world.effect.MobEffectInstance now = wearer.getEffect(MobEffects.FIRE_RESISTANCE);
+            if (now == null || now.getDuration() < ticks - 20) {
+                wearer.addEffect(new net.minecraft.world.effect.MobEffectInstance(MobEffects.FIRE_RESISTANCE, ticks, 0, true, false, true));
+                if (now == null) {
+                    ToolEffects.puff(level, wearer.position().add(0, 1, 0), SkypackRune.FIREPROOFING.rune(), 8, 0.4);
+                }
+            }
         }
     }
 

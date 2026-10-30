@@ -73,7 +73,7 @@ public enum RecallRune implements HolderRune {
         return switch (this) {
             case SHIFT -> HolderRune.seconds(seconds(i) * 20);
             case HASTE -> HolderRune.seconds(rest(i));
-            case MENDING -> Float.toString(HolderRune.at(MEND, i) / 2);
+            case MENDING -> HolderRune.factor(HolderRune.at(MEND, i) / 2);
             case FIREPROOFING -> HolderRune.seconds(HolderRune.at(FIRE_TICKS, i));
             case DAM -> HolderRune.percent(HolderRune.at(FREE, i));
         };

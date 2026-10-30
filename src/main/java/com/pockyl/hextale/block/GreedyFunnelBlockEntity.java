@@ -320,6 +320,12 @@ public class GreedyFunnelBlockEntity extends BlockEntity {
         Item head = engraving > 0 ? ToolEffects.headOf(dead.getType()) : null;
         if (head != null && random.nextFloat() < HolderRune.at(FunnelRune.HEAD, engraving)) {
             stacks.add(new ItemStack(head));
+            // A head among the spoils: the rune flares over the funnel's mouth.
+            Vec3 at = mouth(worldPosition);
+            ToolEffects.puff(level, at, FunnelRune.ENGRAVING.rune(), 12, 0.35);
+            com.pockyl.hextale.network.RuneEffectPayload.show(level, com.pockyl.hextale.network.RuneEffectPayload.Family.RISE, at,
+                    FunnelRune.ENGRAVING.rune().color(), 0.8F);
+            ToolEffects.sound(level, at, ModSounds.PYLON_ARRIVE.get(), 0.4F, 0.8F);
         }
     }
 
