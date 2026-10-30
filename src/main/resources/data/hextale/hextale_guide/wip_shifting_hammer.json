@@ -3,6 +3,6 @@
   "region": "forge",
   "stage": "late",
   "icon": "minecraft:mace",
-  "parents": ["wip_radiant_alloy"],
+  "parents": ["radiant_alloy"],
   "pos": [1296, 146]
 }

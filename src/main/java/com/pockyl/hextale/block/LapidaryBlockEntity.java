@@ -57,6 +57,8 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
     /** Dust a shattered crystal leaves, by grade. */
     public static final int FIRST_DUST = 2;
     public static final int FINISH_DUST = 5;
+    /** Gemstone dust a finished gemstone leaves on the bench. */
+    public static final int GEMSTONE_CUTTINGS = 2;
     private static final int[] TOP = {INPUT};
     private static final int[] SIDES = {DISC};
     private static final int[] BOTTOM = {OUTPUT};
@@ -203,6 +205,10 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
                 : new ItemStack(ModItems.HEXTECH_DUST.get(), cut.grade == Cleavage.Grade.FIRST ? FIRST_DUST : FINISH_DUST);
         items.get(INPUT).shrink(1);
         items.set(OUTPUT, made);
+        if (success && cut.grade == Cleavage.Grade.FINISH) {
+            // The finish leaves bright cuttings on the bench: the gold of the Radiant Alloy wants them.
+            net.minecraft.world.level.block.Block.popResource(level, worldPosition.above(), new ItemStack(ModItems.GEMSTONE_DUST.get(), GEMSTONE_CUTTINGS));
+        }
         ItemStack disc = items.get(DISC);
         disc.hurtAndBreak(1 + cut.cracks, level, null, item -> { });
         outcome = success ? 1 : -1;

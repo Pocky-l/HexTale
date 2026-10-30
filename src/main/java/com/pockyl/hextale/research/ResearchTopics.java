@@ -114,6 +114,8 @@ public final class ResearchTopics {
             ModItems.CHARGED_HEXSTEEL_INGOT);
     /** Level 2 gem: the disc that engraves diamonds (the engraved diamond itself comes off the Lapidary). */
     public static final ResearchTopic ENGRAVING_DISC = add("engraving_disc", 2, Essence.EARTH, Essence.LIGHT, ModItems.ENGRAVING_DISC);
+    /** Level 3 metal. */
+    public static final ResearchTopic RADIANT_ALLOY = add("radiant_alloy", 3, Essence.LIGHT, Essence.METAL, ModItems.RADIANT_ALLOY_INGOT);
     // One research refines every tool of a tier (the topic ids are the pickaxe's, released before the other tools).
     public static final ResearchTopic REFINED_PICKAXE = add("refined_hextech_pickaxe", 3, Essence.METAL, Essence.SPARK,
             ModItems.pickaxe(HextechPickaxe.REFINED), ModItems.REFINED_AXE, ModItems.REFINED_SHOVEL, ModItems.REFINED_SWORD);

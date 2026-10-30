@@ -127,6 +127,11 @@ public final class ModItems {
     /** A charged hexsteel disc with a diamond point: engraves diamonds on the Lapidary (level 2). */
     public static final DeferredItem<Item> ENGRAVING_DISC = ITEMS.registerItem("engraving_disc",
             properties -> new Item(properties.durability(128).rarity(Rarity.UNCOMMON)));
+    /** Cuttings of a gemstone's finish on the Lapidary: what lets gold take the Radiant Alloy's light. */
+    public static final DeferredItem<Item> GEMSTONE_DUST = ITEMS.registerSimpleItem("gemstone_dust");
+    /** Level 3 metal: white gold melted with charged hexsteel and gemstone dust at the Foundry's full heat. */
+    public static final DeferredItem<Item> RADIANT_ALLOY_INGOT = ITEMS.registerItem("radiant_alloy_ingot",
+            properties -> new Item(properties.rarity(Rarity.RARE)));
     /** Level 2 gem: a diamond cut to a brilliant with a groove that holds hextech. */
     public static final DeferredItem<Item> ENGRAVED_DIAMOND = ITEMS.registerItem("engraved_diamond",
             properties -> new Item(properties.rarity(Rarity.UNCOMMON)));

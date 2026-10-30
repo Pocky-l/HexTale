@@ -211,6 +211,8 @@ public final class Hextale {
         output.accept(ModItems.BRASS_INGOT);
         output.accept(ModItems.HEXSTEEL_INGOT);
         output.accept(ModItems.CHARGED_HEXSTEEL_INGOT);
+        output.accept(ModItems.RADIANT_ALLOY_INGOT);
+        output.accept(ModItems.GEMSTONE_DUST);
         output.accept(ModItems.FIRECLAY_BALL);
         output.accept(ModItems.FIRE_BRICK);
         output.accept(ModItems.ARCANE_CLOTH);
@@ -406,6 +408,7 @@ public final class Hextale {
             event.accept(ModItems.FIRE_BRICK);
             event.accept(ModItems.HEXSTEEL_INGOT);
             event.accept(ModItems.CHARGED_HEXSTEEL_INGOT);
+            event.accept(ModItems.RADIANT_ALLOY_INGOT);
             event.accept(ModItems.UNSTABLE_HEXTECH);
             event.accept(ModItems.HEXTECH_DUST);
             event.accept(ModItems.HEXTECH_CRYSTAL);

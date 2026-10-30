@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Radiant Alloy: the Hex Foundry at full heat melts two gold, a Charged Hexsteel and Gemstone Dust (the bright
+  cuttings every gemstone finish now leaves on the Lapidary) into two ingots of white gold; Refined Shimmer does
+  instead of the dust, quicker, but it thins the land. Ore melts beside an alloy as before.
+- Radiant tools are made on the Hexcore only, from two Radiant Alloy, a gemstone and a vial of Acid that etches the
+  light into the metal.
 - Charged Hexsteel: a hexsteel ingot laid into a Crucible that holds lightning and metal comes out charged - the
   metal of the refined tools. Coolant splashed on hexsteel lying on a lit Chem Burner charges it at once, but the
   fumes thin the land.

@@ -4,7 +4,7 @@
   "icon": "hextale:radiant_hextech_pickaxe",
   "parents": [
     "hexcore",
-    "refined_pickaxe"
+    "radiant_alloy"
   ],
   "goal": {
     "tier": 3,
