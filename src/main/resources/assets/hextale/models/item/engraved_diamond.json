@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "hextale:item/engraved_diamond",
+    "layer1": {
+      "sprite": "hextale:item/engraved_diamond_glow",
+      "neoforge_data": {
+        "light_emission": 15
+      }
+    }
+  }
+}
