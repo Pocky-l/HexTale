@@ -1,6 +1,41 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "hextale:item/radiant_tendril_dagger"
+    "type": "hextale:animated",
+    "model": {
+      "type": "minecraft:composite",
+      "models": [
+        {
+          "type": "minecraft:model",
+          "model": "hextale:item/radiant_tendril_dagger"
+        },
+        {
+          "type": "minecraft:special",
+          "base": "hextale:item/radiant_tendril_dagger",
+          "model": {
+            "type": "hextale:tool_aura",
+            "kind": "lightning",
+            "from": [
+              8,
+              -6.5,
+              8
+            ],
+            "to": [
+              8,
+              21,
+              8
+            ],
+            "profile": [
+              2,
+              1.5,
+              7,
+              4,
+              3.5,
+              2.5,
+              1.5
+            ]
+          }
+        }
+      ]
+    }
   }
 }
