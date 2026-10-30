@@ -121,6 +121,7 @@ public final class HextaleClient {
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkClient::bake);
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkClient::registerExtensions);
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkHeartLayer::addLayers);
+        modBus.addListener((net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers event) -> com.pockyl.hextale.client.render.BulwarkAuraLayer.addLayers(event));
         modBus.addListener(com.pockyl.hextale.client.render.BulwarkHeartLayer::registerModifier);
         modBus.addListener((net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent event) -> event.register(
                 com.pockyl.hextale.client.render.BulwarkItemRenderer.ID, com.pockyl.hextale.client.render.BulwarkItemRenderer.Unbaked.MAP_CODEC));
