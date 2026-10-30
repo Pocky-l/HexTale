@@ -84,8 +84,9 @@ public final class CraftingGameTests {
     public static void theClothesTakeOneRuneEach(GameTestHelper helper) {
         var pieces = java.util.List.of(ModItems.RESEARCHER_HOOD, ModItems.RESEARCHER_ROBE, ModItems.RESEARCHER_TROUSERS, ModItems.RESEARCHER_BOOTS);
         for (var piece : pieces) {
-            var holder = com.pockyl.hextale.runework.RuneHolder.of(new ItemStack(piece.get()));
-            helper.assertTrue(holder != null && holder.slots() == 1 && holder.holderRunes().size() >= 4, piece.getId() + " takes one of its runes");
+            ItemStack worn = new ItemStack(piece.get());
+            var holder = com.pockyl.hextale.runework.RuneHolder.of(worn);
+            helper.assertTrue(holder != null && holder.slots(worn) == 1 && holder.holderRunes().size() >= 4, piece.getId() + " takes one of its runes");
         }
         ItemStack trousers = new ItemStack(ModItems.RESEARCHER_TROUSERS.get());
         com.pockyl.hextale.runework.RuneHolder.TROUSERS.set(trousers, com.pockyl.hextale.runework.PickaxeRunes.EMPTY

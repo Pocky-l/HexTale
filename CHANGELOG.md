@@ -38,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     animals it fells drop their meat cooked.
 
 ### Changed
+- Runes now grow with the tool: a first Runed Pickaxe, Axe, Shovel or Sword holds one rune, a Refined Pickaxe two and
+  a Radiant Pickaxe three. Runes already burned into your tools stay and keep working; only new runes past the
+  limit are refused.
 - Chain Lightning on the sword is felt now: it fires more often (20/30/40%), its spark always bites the struck creature
   for extra damage with a visible arc, and then leaps on - to hostile creatures, or from an animal to others of its
   kind. It never touches players, pets or villagers. Before, it did nothing at all unless another hostile creature

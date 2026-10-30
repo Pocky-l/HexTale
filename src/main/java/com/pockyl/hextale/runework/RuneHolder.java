@@ -232,8 +232,22 @@ public enum RuneHolder {
         }
     }
 
+    /** The most runes an item of this holder can hold (a tool or worn piece only at its best tier, attuned). */
     public int slots() {
-        return slots;
+        return laddered() ? RuneTier.MAX : slots;
+    }
+
+    /** The rune places of this very item: tools and worn pieces get more with their tier ({@link RuneTier}). */
+    public int slots(ItemStack item) {
+        return laddered() ? RuneTier.slots(item) : slots;
+    }
+
+    /** Whether the holder's items climb the rune ladder: tools, weapons and clothes. */
+    public boolean laddered() {
+        return switch (this) {
+            case PICKAXE, AXE, SHOVEL, SWORD, HOOD, ROBE, TROUSERS, BOOTS -> true;
+            default -> false;
+        };
     }
 
     /** Every rune it takes, in the order the book and JEI show them. */

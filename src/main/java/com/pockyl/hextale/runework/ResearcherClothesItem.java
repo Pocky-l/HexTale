@@ -28,7 +28,7 @@ public class ResearcherClothesItem extends Item {
                     .append(Component.literal(" " + "★".repeat(entry.stars())).withStyle(ChatFormatting.GOLD))
                     .append(Component.literal("★".repeat(3 - entry.stars())).withStyle(ChatFormatting.DARK_GRAY)));
         }
-        tooltip.accept(Component.translatable("item.hextale.hextech_pickaxe.slots", runes.count(), holder.slots())
+        tooltip.accept(Component.translatable("item.hextale.hextech_pickaxe.slots", runes.count(), holder.slots(stack))
                 .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

@@ -51,7 +51,11 @@ public final class RuneWorkGameTests {
     }
 
     private static ItemStack pickaxe(PickaxeRune... runes) {
-        ItemStack tool = new ItemStack(ModItems.pickaxe(HextechPickaxe.HEXTECH).get());
+        return pickaxe(HextechPickaxe.HEXTECH, runes);
+    }
+
+    private static ItemStack pickaxe(HextechPickaxe tier, PickaxeRune... runes) {
+        ItemStack tool = new ItemStack(ModItems.pickaxe(tier).get());
         PickaxeRunes on = PickaxeRunes.EMPTY;
         for (PickaxeRune rune : runes) {
             on = on.with(rune, 1);
@@ -434,6 +438,28 @@ public final class RuneWorkGameTests {
         helper.assertTrue(Ritual.altarOf(helper.getLevel(), helper.absolutePos(STELE)) == null, "steles serve rune circles only");
         HextechAltarBlockEntity circle = runeCircle(helper, new ItemStack(ModItems.RUNE_CHALK.get()), EssenceMix.EMPTY);
         helper.assertFalse(circle.performs(Ritual.Kind.INFUSE), "and the circle makes nothing");
+        helper.succeed();
+    }
+
+    /**
+     * Rune places grow with the tier (owner 2026-10-30): a first pickaxe holds one rune, a refined one two, a radiant one
+     * three and an attuned radiant one four; a sword starts at one too. Runes burned above the limit before stay.
+     */
+    @HexTest
+    public static void runeSlotsGrowWithTheTier(GameTestHelper helper) {
+        runeCircle(helper, pickaxe(), EssenceMix.EMPTY);
+        stele(helper, PickaxeRune.MAGNET, 1);
+        helper.assertTrue(Ritual.engraving(pickaxe(), scan(helper)).possible(), "a first pickaxe takes its first rune");
+        helper.assertTrue("full".equals(Ritual.engraving(pickaxe(PickaxeRune.SMELTING), scan(helper)).refusal()), "but no second");
+        helper.assertTrue(Ritual.engraving(pickaxe(HextechPickaxe.REFINED, PickaxeRune.SMELTING), scan(helper)).possible(),
+                "a refined pickaxe takes a second");
+        ItemStack radiant = pickaxe(HextechPickaxe.RADIANT, PickaxeRune.SMELTING, PickaxeRune.TEMPERING, PickaxeRune.FORGE);
+        helper.assertTrue("full".equals(Ritual.engraving(radiant, scan(helper)).refusal()), "a radiant pickaxe holds three");
+        radiant.set(com.pockyl.hextale.registry.ModDataComponents.ATTUNED.get(), net.minecraft.util.Unit.INSTANCE);
+        helper.assertTrue(Ritual.engraving(radiant, scan(helper)).possible(), "attuned, it takes a fourth");
+        ItemStack sword = new ItemStack(ModItems.HEXTECH_SWORD.get());
+        helper.assertTrue(RuneHolder.SWORD.slots(sword) == 1 && RuneHolder.SWORD.slots() == 4, "a first sword holds one, the best four");
+        helper.assertTrue(RuneHolder.REAPER.slots(new ItemStack(ModItems.WHIRL_REAPER.get())) == com.pockyl.hextale.runework.ReaperRune.SLOTS, "devices keep their places");
         helper.succeed();
     }
 

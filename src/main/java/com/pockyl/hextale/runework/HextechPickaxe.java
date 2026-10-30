@@ -4,8 +4,8 @@ import java.util.Locale;
 
 /**
  * The three hextech pickaxes: the plain one (iron strength), the refined one (diamond) and the radiant one
- * (netherite), each made at the Hextech Altar from the one before (runes carried over). Any of them takes up to
- * {@link PickaxeRunes#SLOTS} {@link PickaxeRune}s; the tier sets only what the pickaxe is as a tool.
+ * (netherite), each made at the Hextech Altar from the one before (runes carried over). The tier sets what the
+ * pickaxe is as a tool and how many {@link PickaxeRune}s it holds ({@link RuneTier}: 1, 2, 3).
  */
 public enum HextechPickaxe {
     HEXTECH("hextech_pickaxe"),

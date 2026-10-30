@@ -211,6 +211,11 @@ public final class ModDataComponents {
                     .persistent(com.pockyl.hextale.thevoid.BreachHeart.CODEC)
                     .networkSynchronized(com.pockyl.hextale.thevoid.BreachHeart.STREAM_CODEC));
 
+    /** A radiant piece attuned at the Hexcore with the Void: one more rune place ({@code runework/RuneTier}). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.minecraft.util.Unit>> ATTUNED =
+            COMPONENTS.registerComponentType("attuned", builder -> builder
+                    .persistent(net.minecraft.util.Unit.CODEC).networkSynchronized(net.minecraft.util.Unit.STREAM_CODEC));
+
     /** The essence in a flask or a tank item. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<EssenceMix>> ESSENCE =
             COMPONENTS.registerComponentType("essence", builder -> builder

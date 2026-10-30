@@ -54,17 +54,17 @@ public class HextechToolItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
                                 TooltipFlag flag) {
-        listRunes(PickaxeRunes.of(stack), tooltip);
+        listRunes(stack, PickaxeRunes.of(stack), tooltip);
     }
 
     /** The runes like enchantments: name in the rune's colour and stars, then how many places are taken. */
-    static void listRunes(PickaxeRunes runes, Consumer<Component> tooltip) {
+    static void listRunes(ItemStack stack, PickaxeRunes runes, Consumer<Component> tooltip) {
         for (PickaxeRunes.Entry entry : runes.entries()) {
             tooltip.accept(Component.translatable(entry.rune().translationKey()).withColor(entry.rune().color())
                     .append(Component.literal(" " + "★".repeat(entry.stars())).withStyle(ChatFormatting.GOLD))
                     .append(Component.literal("★".repeat(3 - entry.stars())).withStyle(ChatFormatting.DARK_GRAY)));
         }
-        tooltip.accept(Component.translatable("item.hextale.hextech_pickaxe.slots", runes.count(), PickaxeRunes.SLOTS)
+        tooltip.accept(Component.translatable("item.hextale.hextech_pickaxe.slots", runes.count(), RuneTier.slots(stack))
                 .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

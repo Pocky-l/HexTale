@@ -218,8 +218,8 @@ public final class Ritual {
                         Component.translatable(other.translationKey()));
             }
         }
-        if (!carried.contains(rune) && carried.size() >= holder.slots()) {
-            return Component.translatable("gui.hextale.stele.refuse.full", holder.slots());
+        if (!carried.contains(rune) && carried.size() >= holder.slots(center)) {
+            return Component.translatable("gui.hextale.stele.refuse.full", holder.slots(center));
         }
         return null;
     }
@@ -378,7 +378,7 @@ public final class Ritual {
                     return Engraving.refuse("clash" + suffix, rune, other);
                 }
             }
-            if (have == 0 && runes.count() >= holder.slots()) {
+            if (have == 0 && runes.count() >= holder.slots(item)) {
                 return Engraving.refuse("full" + suffix, rune);
             }
             runes = runes.with(rune, chosen.stars());
