@@ -16,7 +16,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -37,9 +36,10 @@ import com.pockyl.hextale.client.IrisCompat;
  * <li>{@code lightning} (radiant, level 3): short arcs snap here and there all along the tool, a few sparks wind round
  * it at different heights; every {@link #PULSE} ticks a discharge runs the whole length, pommel to tip. Kept restrained
  * so the tool does not shout.</li>
- * <li>{@code void} (riftforged, level 4): a slow vortex of violet light winds round the tool bottom to top, the
- * strands turning; stars rise along it and fade, dark motes sink; every {@link #INHALE} ticks the Void breathes in -
- * the vortex draws tighter and brightens.</li>
+ * <li>{@code void} (riftforged, level 4): the abyss seeping out of the tool, never the same twice - small clouds of
+ * the Void well up at random places along it, spread, sink towards the pommel and thin out; violet tendrils creep out
+ * and twist away; now and then a short tear into the abyss flares for a few frames; a few faint stars glimmer in the
+ * dark. Kept close to the tool.</li>
  * </ul>
  * {@code {"type": "hextale:tool_aura", "kind": "void", "from": [8, -8, 8], "to": [8, 28, 8], "profile": [3, 3, 4, 14, 17,
  * 10, 5]}} in a {@code minecraft:special} model laid over the tool's model, the whole wrapped in {@code hextale:animated}.
@@ -95,7 +95,7 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
         if (kind == Kind.LIGHTNING) {
             lightning(poseStack, collector, time);
         } else {
-            vortex(poseStack, collector, time);
+            abyss(poseStack, collector, time);
         }
     }
 
@@ -189,51 +189,89 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
 
     // ---- Void ------------------------------------------------------------------------------------------------------------
 
-    /** Ticks between the Void's breaths. */
-    public static final float INHALE = 80;
     private static final int SMOKE = 0x0B0414;
+    private static final int ABYSS = 0x5A22C8;
     private static final int RIM = 0x8F55FF;
     private static final int PALE = 0xD9C2FF;
     private static final int STAR = 0xE8DCFF;
 
-    private void vortex(PoseStack poseStack, SubmitNodeCollector collector, float time) {
-        float breath = (time % INHALE) / INHALE;
-        float inhale = (float) Math.exp(-Math.pow((breath - 0.25F) / 0.1F, 2));
-        float shell = 1 - 0.25F * inhale;
-        // Strands of violet light winding round the tool from pommel to tip, turning slowly.
-        int strands = 3;
-        int points = 40;
-        float turns = 2.2F;
-        for (int strand = 0; strand < strands; strand++) {
-            Vec3[] curve = new Vec3[points];
+    private void abyss(PoseStack poseStack, SubmitNodeCollector collector, float time) {
+        // Darkness: small clouds of the Void well up at random places along the tool, spread a little, sink and thin out.
+        // Every cloud is born somewhere new each time it comes back, so nothing repeats.
+        for (int c = 0; c < 26; c++) {
+            float period = 40 + (c * 37 % 41);
+            float clock = time + c * 13.7F;
+            int cycle = (int) Math.floor(clock / period);
+            float life = (clock - cycle * period) / period;
+            RandomSource random = RandomSource.create(cycle * 7919L + c * 104729L);
+            float t = random.nextFloat();
+            float angle = random.nextFloat() * Mth.TWO_PI;
+            float drift = 0.35F + 0.45F * life;
+            Vec3 at = at(t, angle, drift).add(axisDown(0.12F * life));
+            float size = (1.4F + 2.2F * life) * (0.7F + 0.6F * random.nextFloat()) * PX;
+            float alpha = Mth.sin(life * Mth.PI) * (0.45F + 0.3F * random.nextFloat());
+            darkSpot(poseStack, collector, at, size, alpha);
+        }
+        // Tendrils of the Void creeping out of the tool, twisting, gone again.
+        for (int w = 0; w < 6; w++) {
+            float period = 30 + (w * 29 % 23);
+            float clock = time + w * 9.1F;
+            int cycle = (int) Math.floor(clock / period);
+            float life = (clock - cycle * period) / period;
+            RandomSource random = RandomSource.create(cycle * 6007L + w * 7877L + 5);
+            float t = 0.08F + 0.84F * random.nextFloat();
+            float angle = random.nextFloat() * Mth.TWO_PI;
+            float bend = (random.nextFloat() - 0.5F) * 3;
+            float reach = (0.5F + 0.6F * random.nextFloat()) * Math.min(1, life * 2.2F);
+            int points = 8;
+            Vec3[] tendril = new Vec3[points];
             float[] glow = new float[points];
-            float offset = strand * Mth.TWO_PI / strands + time * 0.03F;
             for (int i = 0; i < points; i++) {
-                float t = i / (float) (points - 1);
-                curve[i] = at(t, offset + t * turns * Mth.TWO_PI, shell * (0.95F + 0.08F * Mth.sin(t * 11 + time * 0.07F + strand)));
-                // Brighter bands travel up the strand; the ends fade in and out.
-                float band = 0.5F + 0.5F * Mth.sin(t * 9 - time * 0.12F + strand * 2.1F);
-                glow[i] = Mth.sin(t * Mth.PI) * (0.35F + 0.65F * band);
+                float u = i / (float) (points - 1);
+                float wiggle = Mth.sin(u * 7 + time * 0.3F + w) * 0.25F;
+                tendril[i] = at(t + (u * 0.08F * bend), angle + u * bend + wiggle, 0.2F + u * reach);
+                glow[i] = (1 - u) * Mth.sin(life * Mth.PI);
             }
-            strip(poseStack, collector, curve, glow, (1.6F + 0.6F * inhale) * PX, RIM, 0.45F + 0.2F * inhale);
-            strip(poseStack, collector, curve, glow, 0.4F * PX, PALE, 0.45F);
+            strip(poseStack, collector, tendril, glow, 0.9F * PX, ABYSS, 0.6F);
+            strip(poseStack, collector, tendril, glow, 0.25F * PX, RIM, 0.55F);
         }
-        // Stars rising along the vortex and fading; dark motes sinking through it.
-        for (int s = 0; s < 22; s++) {
-            RandomSource random = RandomSource.create(s * 977L + 41);
-            float period = 70 + random.nextFloat() * 50;
-            float life = ((time + random.nextFloat() * period) % period) / period;
-            boolean dark = s % 3 == 0;
-            float t = dark ? 1 - life : life;
-            float angle = random.nextFloat() * Mth.TWO_PI + t * turns * Mth.TWO_PI + time * 0.03F;
-            Vec3 at = at(t, angle, shell * (0.6F + 0.5F * random.nextFloat()));
-            float alpha = Mth.sin(life * Mth.PI);
-            if (dark) {
-                darkSpot(poseStack, collector, at, (0.6F + random.nextFloat() * 0.6F) * PX, 0.7F * alpha);
-            } else {
-                star(poseStack, collector, at, (0.8F + random.nextFloat() * 0.8F) * PX, STAR, alpha * 0.85F, s % 4, angle);
+        // Tears into the abyss: now and then a short jagged fissure flares at a random place for a few frames.
+        int frame = (int) Math.floor(time * 24 / 20F);
+        for (int k = 0; k < 2; k++) {
+            int span = 5;
+            int cycle = (frame + k * 3) / span;
+            RandomSource random = RandomSource.create(cycle * 31337L + k * 977L);
+            if (random.nextFloat() < 0.6F) {
+                continue;
             }
+            float age = ((frame + k * 3) % span) / (float) span;
+            float t = random.nextFloat();
+            Vec3 a = at(t, random.nextFloat() * Mth.TWO_PI, 0.5F + 0.4F * random.nextFloat());
+            Vec3 b = a.add(new Vec3(random.nextGaussian(), random.nextGaussian(), random.nextGaussian() * 0.4).normalize()
+                    .scale((2 + 2.5 * random.nextFloat()) * PX));
+            Vec3[] tear = jagged(a, b, random, 3, 0.35);
+            float[] light = new float[tear.length];
+            Arrays.fill(light, 1 - age);
+            strip(poseStack, collector, tear, light, 1.2F * PX, RIM, 0.55F);
+            strip(poseStack, collector, tear, light, 0.3F * PX, PALE, 0.9F);
+            darkSpot(poseStack, collector, a.lerp(b, 0.5), 2.2F * PX, 0.6F * (1 - age));
         }
+        // A few faint stars in the dark, each lit for a while somewhere new.
+        for (int s = 0; s < 7; s++) {
+            float period = 50 + s * 11;
+            float clock = time + s * 17.3F;
+            int cycle = (int) Math.floor(clock / period);
+            float life = (clock - cycle * period) / period;
+            RandomSource random = RandomSource.create(cycle * 4211L + s * 613L);
+            Vec3 at = at(random.nextFloat(), random.nextFloat() * Mth.TWO_PI, 0.4F + 0.5F * random.nextFloat());
+            star(poseStack, collector, at, (0.6F + 0.7F * random.nextFloat()) * PX, STAR, 0.7F * Mth.sin(life * Mth.PI), s % 4,
+                    random.nextFloat() * 6.28F);
+        }
+    }
+
+    /** Down along the tool by {@code amount} of its length (things sink into the abyss towards the pommel). */
+    private Vec3 axisDown(float amount) {
+        return axis.scale(-amount);
     }
 
     // ---- Drawing --------------------------------------------------------------------------------------------------------
@@ -282,53 +320,51 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
         });
     }
 
-    /** A soft additive sprite at a point, as three crossed quads (a small cloud of light from any side). */
-    private static void puff(PoseStack poseStack, SubmitNodeCollector collector, Identifier texture, Vec3 at, float size, int color, float alpha,
+    /** A soft additive sprite at a point, lying in the tool's face (one plane: crossed planes show as crosses). */
+    private void puff(PoseStack poseStack, SubmitNodeCollector collector, Identifier texture, Vec3 at, float size, int color, float alpha,
                              float roll) {
         if (alpha <= 0.01F || texture == HexFx.HALO && IrisCompat.shadersOn()) {
             return;
         }
         collector.submitCustomGeometry(poseStack, HexGlow.textured(texture),
-                (pose, consumer) -> crossed(consumer, pose, at, size, color, alpha, roll, 0, 1));
+                (pose, consumer) -> flat(consumer, pose, at, size, color, alpha, roll, 0, 1));
     }
 
-    /** One frame of the four-star glint sheet, as crossed quads. */
-    private static void star(PoseStack poseStack, SubmitNodeCollector collector, Vec3 at, float size, int color, float alpha, int frame,
+    /** One frame of the four-star glint sheet, lying in the tool's face. */
+    private void star(PoseStack poseStack, SubmitNodeCollector collector, Vec3 at, float size, int color, float alpha, int frame,
                              float roll) {
         if (alpha <= 0.01F) {
             return;
         }
         collector.submitCustomGeometry(poseStack, HexGlow.textured(HexFx.GLINT),
-                (pose, consumer) -> crossed(consumer, pose, at, size, color, alpha, roll, frame / 4F, (frame + 1) / 4F));
+                (pose, consumer) -> flat(consumer, pose, at, size, color, alpha, roll, frame / 4F, (frame + 1) / 4F));
     }
 
-    /** A small soft dark mote (translucent: additive light cannot darken what lies behind it). */
-    private static void darkSpot(PoseStack poseStack, SubmitNodeCollector collector, Vec3 at, float size, float alpha) {
+    /** A small soft dark mote in the tool's face (translucent: additive light cannot darken what lies behind it). */
+    private void darkSpot(PoseStack poseStack, SubmitNodeCollector collector, Vec3 at, float size, float alpha) {
         if (alpha <= 0.01F) {
             return;
         }
         collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(HexFx.MOTE),
-                (pose, consumer) -> crossed(consumer, pose, at, size, SMOKE, alpha, 0, 0, 1));
+                (pose, consumer) -> flat(consumer, pose, at, size, SMOKE, alpha, 0, 0, 1));
     }
 
-    private static void crossed(VertexConsumer consumer, PoseStack.Pose pose, Vec3 at, float size, int color, float alpha, float roll,
-                                float u0, float u1) {
+    /**
+     * A square sprite in the plane of the tool's face (across it and along it), turned by {@code roll}, both windings: the
+     * tool is seen mostly face-on, so its sprites are too.
+     */
+    private void flat(VertexConsumer consumer, PoseStack.Pose pose, Vec3 at, float size, int color, float alpha, float roll, float u0,
+                      float u1) {
         float h = size / 2;
-        Quaternionf turn = new Quaternionf().rotateZ(roll);
-        Vector3f[][] planes = {
-                {new Vector3f(1, 0, 0), new Vector3f(0, 1, 0)},
-                {new Vector3f(0, 0, 1), new Vector3f(0, 1, 0)},
-                {new Vector3f(1, 0, 0), new Vector3f(0, 0, 1)}};
+        Vec3 along = axis.normalize();
+        Vec3 u = side.scale(Mth.cos(roll)).add(along.scale(Mth.sin(roll))).scale(h);
+        Vec3 v = along.scale(Mth.cos(roll)).subtract(side.scale(Mth.sin(roll))).scale(h);
         float[][] corners = {{-1, -1, 0, 1}, {1, -1, 1, 1}, {1, 1, 1, 0}, {-1, 1, 0, 0}};
-        for (Vector3f[] plane : planes) {
-            Vector3f u = turn.transform(new Vector3f(plane[0])).mul(h);
-            Vector3f v = turn.transform(new Vector3f(plane[1])).mul(h);
-            for (int pass = 0; pass < 2; pass++) {
-                for (int k = 0; k < 4; k++) {
-                    float[] c = corners[pass == 0 ? k : 3 - k];
-                    HexFx.vertex(consumer, pose, (float) (at.x + u.x * c[0] + v.x * c[1]), (float) (at.y + u.y * c[0] + v.y * c[1]),
-                            (float) (at.z + u.z * c[0] + v.z * c[1]), Mth.lerp(c[2], u0, u1), c[3], color, alpha);
-                }
+        for (int pass = 0; pass < 2; pass++) {
+            for (int k = 0; k < 4; k++) {
+                float[] c = corners[pass == 0 ? k : 3 - k];
+                HexFx.vertex(consumer, pose, (float) (at.x + u.x * c[0] + v.x * c[1]), (float) (at.y + u.y * c[0] + v.y * c[1]),
+                        (float) (at.z + u.z * c[0] + v.z * c[1]), Mth.lerp(c[2], u0, u1), c[3], color, alpha);
             }
         }
     }

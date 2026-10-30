@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Radiant tools are wrapped in quiet lightning from pommel to tip - short arcs snapping here and there, a few sparks
-  winding round, and now and then a discharge running the whole length. Riftforged tools turn a slow violet vortex of
-  the Void round their whole length, stars rising along it and dark motes sinking; every few seconds it breathes in.
+  winding round, and now and then a discharge running the whole length. The abyss seeps out of riftforged tools:
+  small clouds of the Void well up along them, sink and thin out, violet tendrils creep out and twist away, and now
+  and then a short tear into the abyss flares.
 - Two blade runes for the sword, the Tendril Dagger and the Strike Gauntlet: Backstab (a blow from behind lands
   25/40/60% harder) and Bleeding (a cut may keep bleeding for 3/4/5 seconds). Their codex runes were Eclipse and
   Blight and had no use until now.
