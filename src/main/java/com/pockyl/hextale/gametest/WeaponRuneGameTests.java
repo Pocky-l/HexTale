@@ -156,11 +156,12 @@ public final class WeaponRuneGameTests {
     }
 
     /** Whirlwind: the third blow in a row sweeps the creatures round the player. */
-    @HexTest(maxTicks = 40, padding = 6)
+    @HexTest(maxTicks = 40, padding = 8)
     public static void theThirdBlowSweepsAround(GameTestHelper helper) {
         floor(helper, -4, 4, 3);
         Mob struck = still(helper, EntityTypes.ZOMBIE, AT);
-        Mob behind = still(helper, EntityTypes.ZOMBIE, AT.offset(0, 0, -3));
+        // A cow: no other test's lightning ever leaps to it.
+        Mob behind = still(helper, EntityTypes.COW, AT.offset(0, 0, -3));
         ServerPlayer player = fighter(helper, sword(ToolRune.WHIRLWIND, 1), AT);
         helper.runAfterDelay(2, () -> {
             for (int i = 0; i < 2; i++) {
