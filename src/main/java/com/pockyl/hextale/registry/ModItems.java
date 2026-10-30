@@ -287,7 +287,8 @@ public final class ModItems {
     private static final ToolMaterial[] PICKAXE_MATERIALS = {
             new ToolMaterial(BlockTags.INCORRECT_FOR_IRON_TOOL, 750, 7.0F, 2.0F, 14, ModTags.HEXTECH_TOOL_MATERIALS),
             new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1800, 9.0F, 3.0F, 12, ModTags.HEXTECH_TOOL_MATERIALS),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2800, 10.5F, 4.0F, 16, ModTags.HEXTECH_TOOL_MATERIALS)};
+            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2800, 10.5F, 4.0F, 16, ModTags.HEXTECH_TOOL_MATERIALS),
+            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 4000, 12.0F, 5.0F, 18, ModTags.HEXTECH_TOOL_MATERIALS)};
     /** The three hextech pickaxes; runes are burned into them at the altar. */
     public static final Map<HextechPickaxe, DeferredItem<HextechPickaxeItem>> PICKAXES = new EnumMap<>(HextechPickaxe.class);
 
@@ -295,8 +296,8 @@ public final class ModItems {
         for (HextechPickaxe kind : HextechPickaxe.values()) {
             PICKAXES.put(kind, ITEMS.registerItem(kind.id(), properties -> {
                 Item.Properties p = properties.pickaxe(PICKAXE_MATERIALS[kind.tier() - 1], 1.0F, -2.8F)
-                        .rarity(kind == HextechPickaxe.RADIANT ? Rarity.EPIC : kind == HextechPickaxe.REFINED ? Rarity.RARE : Rarity.UNCOMMON);
-                return new HextechPickaxeItem(kind, kind == HextechPickaxe.RADIANT ? p.fireResistant() : p);
+                        .rarity(kind.tier() >= 3 ? Rarity.EPIC : kind == HextechPickaxe.REFINED ? Rarity.RARE : Rarity.UNCOMMON);
+                return new HextechPickaxeItem(kind, kind.tier() >= 3 ? p.fireResistant() : p);
             }));
         }
     }
@@ -325,6 +326,13 @@ public final class ModItems {
             properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[1], 3.0F, -2.4F).rarity(Rarity.RARE)));
     public static final DeferredItem<HextechToolItem> RADIANT_SWORD = ITEMS.registerItem("radiant_hextech_sword",
             properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[2], 3.0F, -2.4F).rarity(Rarity.EPIC).fireResistant()));
+    // Level 4, forged with the Void on the Hexcore.
+    public static final DeferredItem<HextechToolItem> RIFTFORGED_AXE = ITEMS.registerItem("riftforged_axe",
+            properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[3], 5.0F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<HextechToolItem> RIFTFORGED_SHOVEL = ITEMS.registerItem("riftforged_shovel",
+            properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[3], 1.5F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<HextechToolItem> RIFTFORGED_SWORD = ITEMS.registerItem("riftforged_sword",
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[3], 3.0F, -2.4F).rarity(Rarity.EPIC).fireResistant()));
 
     /** Hexsteel tools: as strong as diamond ones, repaired with hexsteel. */
     private static final ToolMaterial HEXSTEEL_TOOLS = new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1561, 8.0F, 3.0F, 10,

@@ -187,13 +187,16 @@ public enum RuneHolder {
         if (item == ModItems.VOID_ANCHOR.get()) {
             return ANCHOR;
         }
-        if (item == ModItems.HEXTECH_AXE.get() || item == ModItems.REFINED_AXE.get() || item == ModItems.RADIANT_AXE.get()) {
+        if (item == ModItems.HEXTECH_AXE.get() || item == ModItems.REFINED_AXE.get() || item == ModItems.RADIANT_AXE.get()
+                || item == ModItems.RIFTFORGED_AXE.get()) {
             return AXE;
         }
-        if (item == ModItems.HEXTECH_SHOVEL.get() || item == ModItems.REFINED_SHOVEL.get() || item == ModItems.RADIANT_SHOVEL.get()) {
+        if (item == ModItems.HEXTECH_SHOVEL.get() || item == ModItems.REFINED_SHOVEL.get() || item == ModItems.RADIANT_SHOVEL.get()
+                || item == ModItems.RIFTFORGED_SHOVEL.get()) {
             return SHOVEL;
         }
-        if (item == ModItems.HEXTECH_SWORD.get() || item == ModItems.REFINED_SWORD.get() || item == ModItems.RADIANT_SWORD.get()) {
+        if (item == ModItems.HEXTECH_SWORD.get() || item == ModItems.REFINED_SWORD.get() || item == ModItems.RADIANT_SWORD.get()
+                || item == ModItems.RIFTFORGED_SWORD.get()) {
             return SWORD;
         }
         if (item == ModItems.RESEARCHER_HOOD.get()) {
@@ -232,7 +235,7 @@ public enum RuneHolder {
         }
     }
 
-    /** The most runes an item of this holder can hold (a tool or worn piece only at its best tier, attuned). */
+    /** The most runes an item of this holder can hold (a tool or worn piece only at its best, riftforged level). */
     public int slots() {
         return laddered() ? RuneTier.MAX : slots;
     }

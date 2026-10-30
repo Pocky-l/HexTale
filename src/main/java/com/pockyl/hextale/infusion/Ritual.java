@@ -416,7 +416,7 @@ public final class Ritual {
     /** The recipes, those that need the most runes first (a circle set up for a rich recipe never makes a poorer one). */
     /**
      * Whether the recipe can work on this centre in this circle: its centre item, a Hexcore for the late rituals, and
-     * a result that differs from what lies there (an attuned piece is not attuned twice).
+     * a result that differs from what lies there (a recipe that only adds components is not repeated).
      */
     private static boolean fits(InfusionRecipe recipe, ItemStack center, Circle circle) {
         return recipe.center().test(center) && (!recipe.hexcore() || circle.hexcore())

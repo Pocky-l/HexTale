@@ -14,12 +14,7 @@
     "shadow": 32,
     "magic": 32
   },
-  "result": {
-    "id": "hextale:radiant_hextech_sword",
-    "components": {
-      "hextale:attuned": {}
-    }
-  },
+  "result": "hextale:riftforged_sword",
   "keep_components": true,
   "hexcore": true
 }

@@ -1,6 +1,6 @@
 {
   "type": "hextale:infusion",
-  "center": "hextale:radiant_hextech_shovel",
+  "center": "hextale:radiant_hextech_pickaxe",
   "pedestals": [
     "hextale:void_shard",
     "hextale:void_shard",
@@ -14,12 +14,7 @@
     "shadow": 32,
     "magic": 32
   },
-  "result": {
-    "id": "hextale:radiant_hextech_shovel",
-    "components": {
-      "hextale:attuned": {}
-    }
-  },
+  "result": "hextale:riftforged_pickaxe",
   "keep_components": true,
   "hexcore": true
 }

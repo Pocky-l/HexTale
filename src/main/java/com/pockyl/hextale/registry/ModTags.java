@@ -22,8 +22,10 @@ public final class ModTags {
     public static final TagKey<Item> REPAIRS_HEXSTEEL = TagKey.create(Registries.ITEM, Hextale.id("repairs_hexsteel"));
     /** Tools and worn pieces of the refined tier: two rune places ({@code runework/RuneTier}). */
     public static final TagKey<Item> REFINED_TIER = TagKey.create(Registries.ITEM, Hextale.id("rune_tier/refined"));
-    /** Tools and worn pieces of the radiant tier: three rune places, four when attuned. */
+    /** Tools and worn pieces of the radiant tier: three rune places. */
     public static final TagKey<Item> RADIANT_TIER = TagKey.create(Registries.ITEM, Hextale.id("rune_tier/radiant"));
+    /** Tools and worn pieces forged with the Void: four rune places. */
+    public static final TagKey<Item> RIFTFORGED_TIER = TagKey.create(Registries.ITEM, Hextale.id("rune_tier/riftforged"));
     public static final TagKey<Item> REPAIRS_ARCANE_CLOTH = TagKey.create(Registries.ITEM, Hextale.id("repairs_arcane_cloth"));
     /** Stone that drinks spilled essence and becomes magic stone (block tag; the item tag of the same name feeds the
      *  crafting recipe). */

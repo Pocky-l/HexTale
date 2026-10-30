@@ -175,6 +175,9 @@ public final class Hextale {
         output.accept(ModItems.RADIANT_AXE);
         output.accept(ModItems.RADIANT_SHOVEL);
         output.accept(ModItems.RADIANT_SWORD);
+        output.accept(ModItems.RIFTFORGED_AXE);
+        output.accept(ModItems.RIFTFORGED_SHOVEL);
+        output.accept(ModItems.RIFTFORGED_SWORD);
         output.accept(ModItems.HEXSTEEL_PICKAXE);
         output.accept(ModItems.HEXSTEEL_AXE);
         output.accept(ModItems.HEXSTEEL_SHOVEL);
@@ -412,6 +415,8 @@ public final class Hextale {
             event.accept(ModItems.REFINED_SHOVEL);
             event.accept(ModItems.RADIANT_AXE);
             event.accept(ModItems.RADIANT_SHOVEL);
+            event.accept(ModItems.RIFTFORGED_AXE);
+            event.accept(ModItems.RIFTFORGED_SHOVEL);
             event.accept(ModItems.HEXSTEEL_SHOVEL);
             event.accept(ModItems.HEXSTEEL_PICKAXE);
             event.accept(ModItems.HEXSTEEL_AXE);
@@ -427,6 +432,7 @@ public final class Hextale {
             event.accept(ModItems.HEXTECH_SWORD);
             event.accept(ModItems.REFINED_SWORD);
             event.accept(ModItems.RADIANT_SWORD);
+            event.accept(ModItems.RIFTFORGED_SWORD);
             event.accept(ModItems.HEXSTEEL_SWORD);
             event.accept(ModItems.HEXSTEEL_AXE);
             event.accept(ModItems.HEXSTEEL_HELMET);

@@ -443,7 +443,7 @@ public final class RuneWorkGameTests {
 
     /**
      * Rune places grow with the tier (owner 2026-10-30): a first pickaxe holds one rune, a refined one two, a radiant one
-     * three and an attuned radiant one four; a sword starts at one too. Runes burned above the limit before stay.
+     * three and a riftforged one four; a sword starts at one too. Runes burned above the limit before stay.
      */
     @HexTest
     public static void runeSlotsGrowWithTheTier(GameTestHelper helper) {
@@ -455,17 +455,17 @@ public final class RuneWorkGameTests {
                 "a refined pickaxe takes a second");
         ItemStack radiant = pickaxe(HextechPickaxe.RADIANT, PickaxeRune.SMELTING, PickaxeRune.TEMPERING, PickaxeRune.FORGE);
         helper.assertTrue("full".equals(Ritual.engraving(radiant, scan(helper)).refusal()), "a radiant pickaxe holds three");
-        radiant.set(com.pockyl.hextale.registry.ModDataComponents.ATTUNED.get(), net.minecraft.util.Unit.INSTANCE);
-        helper.assertTrue(Ritual.engraving(radiant, scan(helper)).possible(), "attuned, it takes a fourth");
+        ItemStack riftforged = pickaxe(HextechPickaxe.RIFTFORGED, PickaxeRune.SMELTING, PickaxeRune.TEMPERING, PickaxeRune.FORGE);
+        helper.assertTrue(Ritual.engraving(riftforged, scan(helper)).possible(), "a riftforged one takes a fourth");
         ItemStack sword = new ItemStack(ModItems.HEXTECH_SWORD.get());
         helper.assertTrue(RuneHolder.SWORD.slots(sword) == 1 && RuneHolder.SWORD.slots() == 4, "a first sword holds one, the best four");
         helper.assertTrue(RuneHolder.REAPER.slots(new ItemStack(ModItems.WHIRL_REAPER.get())) == com.pockyl.hextale.runework.ReaperRune.SLOTS, "devices keep their places");
         helper.succeed();
     }
 
-    /** Only a Hexcore attunes a radiant tool with the Void (a fourth rune place), and never the same tool twice. */
+    /** Only a Hexcore forges a radiant tool with the Void into a riftforged one (four rune places, runes kept). */
     @HexTest
-    public static void onlyAHexcoreAttunesARadiantTool(GameTestHelper helper) {
+    public static void onlyAHexcoreForgesWithTheVoid(GameTestHelper helper) {
         ItemStack radiant = pickaxe(HextechPickaxe.RADIANT, PickaxeRune.SMELTING);
         List<ItemStack> items = List.of(new ItemStack(ModItems.VOID_SHARD.get()), new ItemStack(ModItems.VOID_SHARD.get()),
                 new ItemStack(ModItems.VOID_CHITIN.get()), new ItemStack(ModItems.VOID_CHITIN.get()),
@@ -478,12 +478,12 @@ public final class RuneWorkGameTests {
             helper.getBlockEntity(extra, PedestalBlockEntity.class).place(items.get(i));
         }
         Ritual.Circle altar = scan(helper);
-        helper.assertTrue(Ritual.plan(radiant, altar, false) == null, "a plain altar cannot attune");
+        helper.assertTrue(Ritual.plan(radiant, altar, false) == null, "a plain altar cannot forge with the Void");
         Ritual.Circle hexcore = new Ritual.Circle(altar.pedestals(), altar.steles(), altar.tanks(), true);
         Ritual.Plan plan = Ritual.plan(radiant, hexcore, false);
-        helper.assertTrue(plan != null && com.pockyl.hextale.runework.RuneTier.slots(plan.result()) == 4
-                && PickaxeRunes.of(plan.result()).stars(PickaxeRune.SMELTING) == 1, "the Hexcore attunes it, runes kept");
-        helper.assertTrue(Ritual.plan(plan.result(), hexcore, false) == null, "an attuned pickaxe is not attuned again");
+        helper.assertTrue(plan != null && plan.result().is(ModItems.pickaxe(HextechPickaxe.RIFTFORGED).get())
+                && com.pockyl.hextale.runework.RuneTier.slots(plan.result()) == 4
+                && PickaxeRunes.of(plan.result()).stars(PickaxeRune.SMELTING) == 1, "the Hexcore forges it, runes kept");
         helper.succeed();
     }
 
