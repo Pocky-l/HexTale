@@ -99,4 +99,36 @@ public final class ArsenalGameTests {
         helper.assertTrue(pairedLost >= plainLost + 1.5F, "the off-hand dagger adds its blow, " + plainLost + " vs " + pairedLost);
         helper.succeed();
     }
+
+    /** A full Strike Gauntlet punch at stone breaks a 3 x 3 face two deep; into the air it throws a zombie back. */
+    @HexTest(padding = 4)
+    @SuppressWarnings("removal")
+    public static void theStrikeGauntletBreaksRockAndThrows(GameTestHelper helper) {
+        for (int x = 0; x <= 2; x++) {
+            for (int y = 1; y <= 3; y++) {
+                for (int z = 4; z <= 6; z++) {
+                    helper.setBlock(new BlockPos(x, y, z), net.minecraft.world.level.block.Blocks.STONE);
+                }
+            }
+        }
+        net.minecraft.server.level.ServerPlayer smith = helper.makeMockServerPlayerInLevel();
+        Vec3 at = helper.absoluteVec(new Vec3(1.5, 1.4, 1.5));
+        smith.snapTo(at.x, at.y, at.z, 0, 0);
+        ItemStack fist = new ItemStack(ModItems.STRIKE_GAUNTLET.get());
+        smith.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, fist);
+        int held = com.pockyl.hextale.runework.StrikeGauntletItem.STAGES * com.pockyl.hextale.runework.StrikeGauntletItem.STAGE_TICKS;
+        fist.releaseUsing(helper.getLevel(), smith, fist.getUseDuration(smith) - held);
+        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.AIR, new BlockPos(1, 2, 4));
+        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.AIR, new BlockPos(0, 2, 5));
+        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.AIR, new BlockPos(2, 2, 4));
+        helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.STONE, new BlockPos(1, 2, 6));
+        Mob target = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 1, 3));
+        smith.getCooldowns().removeCooldown(smith.getCooldowns().getCooldownGroup(fist));
+        smith.snapTo(at.x, at.y, at.z, 180, 0);
+        net.minecraft.world.phys.Vec3 behind = helper.absoluteVec(new Vec3(1.5, 1, 0.5));
+        target.snapTo(behind.x, behind.y, behind.z, 0, 0);
+        fist.releaseUsing(helper.getLevel(), smith, fist.getUseDuration(smith) - held);
+        helper.assertTrue(target.getHealth() < target.getMaxHealth(), "the shockwave hurt the zombie");
+        helper.succeed();
+    }
 }

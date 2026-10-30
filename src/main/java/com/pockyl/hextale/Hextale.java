@@ -184,6 +184,7 @@ public final class Hextale {
         output.accept(ModItems.REFINED_TENDRIL_DAGGER);
         output.accept(ModItems.RADIANT_TENDRIL_DAGGER);
         output.accept(ModItems.RIFTFORGED_TENDRIL_DAGGER);
+        output.accept(ModItems.STRIKE_GAUNTLET);
         output.accept(ModItems.BULWARK_HELMET);
         output.accept(ModItems.BULWARK_CHESTPLATE);
         output.accept(ModItems.BULWARK_LEGGINGS);
@@ -469,6 +470,7 @@ public final class Hextale {
             event.accept(ModItems.REFINED_TENDRIL_DAGGER);
             event.accept(ModItems.RADIANT_TENDRIL_DAGGER);
             event.accept(ModItems.RIFTFORGED_TENDRIL_DAGGER);
+            event.accept(ModItems.STRIKE_GAUNTLET);
             event.accept(ModItems.HEXSTEEL_SWORD);
             event.accept(ModItems.HEXSTEEL_AXE);
             event.accept(ModItems.HEXSTEEL_HELMET);

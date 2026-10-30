@@ -359,6 +359,9 @@ public final class ModItems {
             properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[2], 1.5F, -1.6F).rarity(Rarity.EPIC).fireResistant()));
     public static final DeferredItem<com.pockyl.hextale.runework.TendrilDaggerItem> RIFTFORGED_TENDRIL_DAGGER = ITEMS.registerItem("riftforged_tendril_dagger",
             properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[3], 1.5F, -1.6F).rarity(Rarity.EPIC).fireResistant()));
+    /** The Strike Gauntlet: a charged punch that breaks rock or throws creatures back (late, radiant level). */
+    public static final DeferredItem<com.pockyl.hextale.runework.StrikeGauntletItem> STRIKE_GAUNTLET = ITEMS.registerItem("strike_gauntlet",
+            properties -> new com.pockyl.hextale.runework.StrikeGauntletItem(properties.durability(1800).rarity(Rarity.EPIC).fireResistant()));
     // Level 4, forged with the Void on the Hexcore.
     public static final DeferredItem<HextechToolItem> RIFTFORGED_AXE = ITEMS.registerItem("riftforged_axe",
             properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[3], 5.0F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
