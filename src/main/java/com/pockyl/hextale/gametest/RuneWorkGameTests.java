@@ -463,6 +463,30 @@ public final class RuneWorkGameTests {
         helper.succeed();
     }
 
+    /** Only a Hexcore attunes a radiant tool with the Void (a fourth rune place), and never the same tool twice. */
+    @HexTest
+    public static void onlyAHexcoreAttunesARadiantTool(GameTestHelper helper) {
+        ItemStack radiant = pickaxe(HextechPickaxe.RADIANT, PickaxeRune.SMELTING);
+        List<ItemStack> items = List.of(new ItemStack(ModItems.VOID_SHARD.get()), new ItemStack(ModItems.VOID_SHARD.get()),
+                new ItemStack(ModItems.VOID_CHITIN.get()), new ItemStack(ModItems.VOID_CHITIN.get()),
+                new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(ModItems.HEXTECH_GEMSTONE.get()));
+        circle(helper, radiant, items, EssenceMix.EMPTY);
+        // The test circle has four pedestals: two more for the six Void pieces.
+        for (int i = 4; i < items.size(); i++) {
+            BlockPos extra = i == 4 ? new BlockPos(5, 2, 5) : new BlockPos(5, 2, 1);
+            helper.setBlock(extra, ModBlocks.PEDESTAL.get());
+            helper.getBlockEntity(extra, PedestalBlockEntity.class).place(items.get(i));
+        }
+        Ritual.Circle altar = scan(helper);
+        helper.assertTrue(Ritual.plan(radiant, altar, false) == null, "a plain altar cannot attune");
+        Ritual.Circle hexcore = new Ritual.Circle(altar.pedestals(), altar.steles(), altar.tanks(), true);
+        Ritual.Plan plan = Ritual.plan(radiant, hexcore, false);
+        helper.assertTrue(plan != null && com.pockyl.hextale.runework.RuneTier.slots(plan.result()) == 4
+                && PickaxeRunes.of(plan.result()).stars(PickaxeRune.SMELTING) == 1, "the Hexcore attunes it, runes kept");
+        helper.assertTrue(Ritual.plan(plan.result(), hexcore, false) == null, "an attuned pickaxe is not attuned again");
+        helper.succeed();
+    }
+
     /** More stars raise a rune the pickaxe has; clashing runes, a fifth rune, or non-pickaxe runes are refused. */
     @HexTest
     public static void runeBurningFollowsItsRules(GameTestHelper helper) {

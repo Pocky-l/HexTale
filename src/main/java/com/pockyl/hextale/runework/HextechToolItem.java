@@ -58,6 +58,9 @@ public class HextechToolItem extends Item {
     }
 
     /** The runes like enchantments: name in the rune's colour and stars, then how many places are taken. */
+    /** The Void's violet, for the line of an attuned piece. */
+    static final int ATTUNED_COLOR = 0x9050E0;
+
     static void listRunes(ItemStack stack, PickaxeRunes runes, Consumer<Component> tooltip) {
         for (PickaxeRunes.Entry entry : runes.entries()) {
             tooltip.accept(Component.translatable(entry.rune().translationKey()).withColor(entry.rune().color())
@@ -66,5 +69,8 @@ public class HextechToolItem extends Item {
         }
         tooltip.accept(Component.translatable("item.hextale.hextech_pickaxe.slots", runes.count(), RuneTier.slots(stack))
                 .withStyle(ChatFormatting.DARK_GRAY));
+        if (RuneTier.attuned(stack)) {
+            tooltip.accept(Component.translatable("item.hextale.attuned").withColor(ATTUNED_COLOR));
+        }
     }
 }

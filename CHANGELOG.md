@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Refined and Radiant Axe, Shovel and Sword: refined at the altar like the pickaxe (the same research opens all four
   of a tier), with every rune carried over. Refined tools hold two runes, radiant ones three.
+- Attunement: a radiant tool laid on a Hexcore with Void Shards, Void Chitin and gemstones is attuned to the Void
+  and holds a fourth rune. Only the Hexcore can do it.
 - Runes can be burned in weaker than you know them: click a star in the stele's list to pick the strength (the number
   and the price follow). A 3-star Drill no longer forces a 5×5 hole - pick one star for 3×3. A rune already on the item
   is set to exactly the picked strength, weaker too; without a pick a rune is only ever raised, as before.

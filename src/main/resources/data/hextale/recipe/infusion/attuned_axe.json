@@ -1,0 +1,25 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:radiant_hextech_axe",
+  "pedestals": [
+    "hextale:void_shard",
+    "hextale:void_shard",
+    "hextale:void_chitin",
+    "hextale:void_chitin",
+    "hextale:hextech_gemstone",
+    "hextale:hextech_gemstone"
+  ],
+  "essences": {
+    "rift": 64,
+    "shadow": 32,
+    "magic": 32
+  },
+  "result": {
+    "id": "hextale:radiant_hextech_axe",
+    "components": {
+      "hextale:attuned": {}
+    }
+  },
+  "keep_components": true,
+  "hexcore": true
+}

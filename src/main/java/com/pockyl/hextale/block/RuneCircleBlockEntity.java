@@ -35,7 +35,7 @@ public class RuneCircleBlockEntity extends HextechAltarBlockEntity {
     @Override
     protected Ritual.Circle scan(Level level) {
         Ritual.Circle circle = Ritual.Circle.scan(level, getBlockPos());
-        return new Ritual.Circle(List.of(), circle.steles(), circle.tanks());
+        return new Ritual.Circle(List.of(), circle.steles(), circle.tanks(), false);
     }
 
     @Override

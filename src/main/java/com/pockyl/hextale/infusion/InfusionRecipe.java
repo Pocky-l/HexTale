@@ -24,9 +24,10 @@ import java.util.List;
  * what the altar draws ({@link #totalEssences()}).
  *
  * @param keepComponents the result keeps the centre item's components (enchantments, damage, name)
+ * @param hexcore        only a Hexcore performs it (the late-game rituals, such as attuning a radiant piece)
  */
 public record InfusionRecipe(Ingredient center, List<Ingredient> pedestals, EssenceMix essences, List<ComplexRune> runes,
-                             ItemStackTemplate result, boolean keepComponents) {
+                             ItemStackTemplate result, boolean keepComponents, boolean hexcore) {
     /** mB of a rune's essence by its chapter (I, II, III). */
     private static final int[] RUNE_MB = {16, 24, 32};
 
@@ -36,7 +37,8 @@ public record InfusionRecipe(Ingredient center, List<Ingredient> pedestals, Esse
             EssenceMix.CODEC.optionalFieldOf("essences", EssenceMix.EMPTY).forGetter(InfusionRecipe::essences),
             ComplexRunes.CODEC.listOf().optionalFieldOf("runes", List.of()).forGetter(InfusionRecipe::runes),
             ItemStackTemplate.CODEC.fieldOf("result").forGetter(InfusionRecipe::result),
-            Codec.BOOL.optionalFieldOf("keep_components", false).forGetter(InfusionRecipe::keepComponents)
+            Codec.BOOL.optionalFieldOf("keep_components", false).forGetter(InfusionRecipe::keepComponents),
+            Codec.BOOL.optionalFieldOf("hexcore", false).forGetter(InfusionRecipe::hexcore)
     ).apply(instance, InfusionRecipe::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, InfusionRecipe> STREAM_CODEC = StreamCodec.composite(
@@ -46,6 +48,7 @@ public record InfusionRecipe(Ingredient center, List<Ingredient> pedestals, Esse
             ComplexRunes.STREAM_CODEC.apply(ByteBufCodecs.list()).cast(), InfusionRecipe::runes,
             ItemStackTemplate.STREAM_CODEC, InfusionRecipe::result,
             ByteBufCodecs.BOOL, InfusionRecipe::keepComponents,
+            ByteBufCodecs.BOOL, InfusionRecipe::hexcore,
             InfusionRecipe::new);
 
     /** What a rune costs at the altar: the compound of its two primals (or both primals), by its chapter. */
