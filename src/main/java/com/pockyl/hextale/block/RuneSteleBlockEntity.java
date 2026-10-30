@@ -33,6 +33,8 @@ public class RuneSteleBlockEntity extends BlockEntity {
     @Nullable
     private ComplexRune rune;
     private int stars = 1;
+    /** Whether the researcher picked the stars by hand: then a ritual sets the rune to exactly them, even weaker. */
+    private boolean exact;
     /** Client side: game time until which a ritual draws on the stele. */
     private long activeUntil = Long.MIN_VALUE;
     /** Client side: game time the rune was chosen, for the glyph's entrance. */
@@ -54,6 +56,10 @@ public class RuneSteleBlockEntity extends BlockEntity {
 
     public int stars() {
         return stars;
+    }
+
+    public boolean exact() {
+        return exact;
     }
 
     public long activeUntil() {
@@ -90,8 +96,14 @@ public class RuneSteleBlockEntity extends BlockEntity {
     }
 
     public void choose(@Nullable ComplexRune rune, int stars) {
+        choose(rune, stars, false);
+    }
+
+    /** Sets the rune; {@code exact} = the stars were picked by hand (see {@link #exact()}). */
+    public void choose(@Nullable ComplexRune rune, int stars, boolean exact) {
         this.rune = rune;
         this.stars = Math.max(1, Math.min(3, stars));
+        this.exact = exact && rune != null;
         if (level != null && !level.isClientSide()) {
             level.setBlock(worldPosition, getBlockState().setValue(RuneSteleBlock.LIT, rune != null), Block.UPDATE_ALL);
             BlockState head = level.getBlockState(worldPosition.above());
@@ -134,6 +146,7 @@ public class RuneSteleBlockEntity extends BlockEntity {
         ComplexRune before = rune;
         rune = input.read("rune", ComplexRunes.CODEC).orElse(null);
         stars = input.getIntOr("stars", 1);
+        exact = input.getBooleanOr("exact", false);
         if (rune != before && level != null && level.isClientSide()) {
             chosenAt = level.getGameTime();
         }
@@ -145,6 +158,9 @@ public class RuneSteleBlockEntity extends BlockEntity {
         if (rune != null) {
             output.store("rune", ComplexRunes.CODEC, rune);
             output.putInt("stars", stars);
+            if (exact) {
+                output.putBoolean("exact", true);
+            }
         }
     }
 

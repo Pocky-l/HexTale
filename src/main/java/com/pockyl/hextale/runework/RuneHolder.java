@@ -274,8 +274,14 @@ public enum RuneHolder {
         return Objects.requireNonNull(find(rune), () -> rune.key() + " on " + this);
     }
 
-    /** Whether the two runes cannot share one holder (only pickaxe runes clash). */
+    /** Whether the two runes cannot share one holder (pickaxe groups; one power on a weapon). */
     public boolean clashes(ComplexRune a, ComplexRune b) {
+        ToolRune.Tool tool = ToolEffects.tool(this);
+        if (tool != null) {
+            ToolRune x = ToolRune.of(tool, a);
+            ToolRune y = ToolRune.of(tool, b);
+            return x != null && y != null && x.clashes(y);
+        }
         if (this != PICKAXE) {
             return false;
         }

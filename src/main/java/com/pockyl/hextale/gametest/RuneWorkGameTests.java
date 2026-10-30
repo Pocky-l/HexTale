@@ -416,6 +416,15 @@ public final class RuneWorkGameTests {
         helper.assertTrue(raise.cost().total() == PickaxeRune.SMELTING.cost(3).total(), "paid for the stars it gets");
         stele(helper, PickaxeRune.SMELTING, 1);
         helper.assertTrue("nothing_new".equals(Ritual.engraving(full, scan(helper)).refusal()), "fewer stars change nothing");
+        // Stars picked by hand on the stele set the rune to exactly them: a strong rune can be made weaker on purpose.
+        ItemStack strong = full.copy();
+        PickaxeRunes.set(strong, raise.after());
+        helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(PickaxeRune.SMELTING.rune(), 1, true);
+        Ritual.Engraving lower = Ritual.engraving(strong, scan(helper));
+        helper.assertTrue(lower.possible() && lower.after().stars(PickaxeRune.SMELTING) == 1, "picked stars make a rune weaker");
+        helper.assertTrue(lower.after().count() == 4, "a weaker rune keeps its place");
+        helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(PickaxeRune.SMELTING.rune(), 3, true);
+        helper.assertTrue("nothing_new".equals(Ritual.engraving(strong, scan(helper)).refusal()), "the same stars picked change nothing");
         helper.getBlockEntity(STELE, RuneSteleBlockEntity.class).choose(ComplexRunes.byKey("fire_water"), 1);
         helper.assertTrue("not_pickaxe".equals(Ritual.engraving(pickaxe(), scan(helper)).refusal()), "steam does not take to a pickaxe");
         helper.succeed();

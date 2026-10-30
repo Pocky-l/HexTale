@@ -18,13 +18,17 @@ import com.pockyl.hextale.registry.ModSounds;
 import com.pockyl.hextale.rune.ComplexRune;
 import com.pockyl.hextale.rune.ComplexRunes;
 
-/** Client to server: choose a rune on a rune stele ({@code rune} = index in the codex, -1 clears it). */
-public record SteleRunePayload(BlockPos pos, int rune) implements CustomPacketPayload {
+/**
+ * Client to server: choose a rune on a rune stele ({@code rune} = index in the codex, -1 clears it) with {@code stars}
+ * picked by hand, or 0 for the researcher's best.
+ */
+public record SteleRunePayload(BlockPos pos, int rune, int stars) implements CustomPacketPayload {
     public static final Type<SteleRunePayload> TYPE = new Type<>(Hextale.id("stele_rune"));
 
     public static final StreamCodec<ByteBuf, SteleRunePayload> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, SteleRunePayload::pos,
             ByteBufCodecs.VAR_INT, SteleRunePayload::rune,
+            ByteBufCodecs.VAR_INT, SteleRunePayload::stars,
             SteleRunePayload::new);
 
     @Override
@@ -61,7 +65,9 @@ public record SteleRunePayload(BlockPos pos, int rune) implements CustomPacketPa
                 return;
             }
         }
-        stele.choose(rune, knowledge.stars(rune));
+        // Picked stars may be fewer than the researcher knows, never more.
+        int known = knowledge.stars(rune);
+        stele.choose(rune, payload.stars > 0 ? Math.min(payload.stars, known) : known, payload.stars > 0);
         player.level().playSound(null, payload.pos, ModSounds.STELE_SET.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
     }
 }

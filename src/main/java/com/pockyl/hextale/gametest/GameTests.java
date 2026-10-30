@@ -35,7 +35,7 @@ public final class GameTests {
             RuneGiftGameTests.class, ChemGameTests.class, ShimmerGameTests.class, DualityGameTests.class, LabGameTests.class,
             SkypackGameTests.class, VoidGameTests.class, GateGameTests.class, FunnelGameTests.class, SpireGameTests.class, ShackleGameTests.class, CondenserGameTests.class, FoundryGameTests.class, VentGameTests.class, CreativeJarGameTests.class, ThinningGameTests.class, HollowbloomGameTests.class, HealingGameTests.class, VoidRoadGameTests.class, StruckGeodeGameTests.class, ForkGameTests.class, GadgetGameTests.class,
             RecipeGameTests.class, ProtectionGameTests.class, AutomationGameTests.class, QuestHookGameTests.class,
-            EssenceFluidGameTests.class);
+            EssenceFluidGameTests.class, WeaponRuneGameTests.class);
     private static final DeferredRegister<Consumer<GameTestHelper>> FUNCTIONS = DeferredRegister.create(Registries.TEST_FUNCTION, Hextale.MOD_ID);
 
     private record Test(String name, Method method, HexTest settings) {
@@ -69,6 +69,9 @@ public final class GameTests {
 
     private static List<Test> collect() {
         List<Test> tests = new ArrayList<>();
+        // -Ptests=ClassName,other_test_name (gradle) runs only those classes / tests.
+        String only = System.getProperty("hextale.tests", "");
+        List<String> wanted = only.isBlank() ? List.of() : List.of(only.split(","));
         for (Class<?> holder : HOLDERS) {
             for (Method method : holder.getDeclaredMethods()) {
                 HexTest settings = method.getAnnotation(HexTest.class);
@@ -79,7 +82,10 @@ public final class GameTests {
                         || method.getParameterTypes()[0] != GameTestHelper.class) {
                     throw new IllegalStateException("A game test must be static and take a GameTestHelper: " + method);
                 }
-                tests.add(new Test(snakeCase(method.getName()), method, settings));
+                String name = snakeCase(method.getName());
+                if (wanted.isEmpty() || wanted.contains(holder.getSimpleName()) || wanted.contains(name)) {
+                    tests.add(new Test(name, method, settings));
+                }
             }
         }
         return tests;

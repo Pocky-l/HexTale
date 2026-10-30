@@ -270,13 +270,14 @@ public final class Ritual {
 
         /** The runes chosen on the steles, in stele order, each once (with the best stars it is chosen with). */
         public List<Chosen> chosenRunes() {
-            Map<ComplexRune, Integer> stars = new java.util.LinkedHashMap<>();
+            Map<ComplexRune, Chosen> chosen = new java.util.LinkedHashMap<>();
             for (RuneSteleBlockEntity stele : steles) {
                 if (stele.rune() != null) {
-                    stars.merge(stele.rune(), stele.stars(), Math::max);
+                    chosen.merge(stele.rune(), new Chosen(stele.rune(), stele.stars(), stele.exact()),
+                            (a, b) -> b.stars() > a.stars() ? b : a);
                 }
             }
-            return stars.entrySet().stream().map(e -> new Chosen(e.getKey(), e.getValue())).toList();
+            return List.copyOf(chosen.values());
         }
 
         /** The stars a rune is chosen with on the steles, 0 when no stele shows it. */
@@ -315,8 +316,14 @@ public final class Ritual {
         return angle < 0 ? angle + Math.PI * 2 : angle;
     }
 
-    /** A rune chosen on a stele and the researcher's stars on it. */
-    public record Chosen(ComplexRune rune, int stars) {
+    /**
+     * A rune chosen on a stele and the stars it goes in with: the researcher's best unless they were picked by hand
+     * ({@code exact}), which may also make a rune already burned in weaker.
+     */
+    public record Chosen(ComplexRune rune, int stars, boolean exact) {
+        public Chosen(ComplexRune rune, int stars) {
+            this(rune, stars, false);
+        }
     }
 
     /**
@@ -344,7 +351,9 @@ public final class Ritual {
     /**
      * Burns every rune chosen on the steles into the pickaxe or the pylon ({@link RuneHolder}) like an enchantment: a
      * new rune takes a free place (up to the holder's slots), a rune it already carries with fewer stars is raised to the
-     * stele's stars. Only runes the holder takes go in, and never two that clash. Runes need no items, only their essence.
+     * stele's stars - or set to exactly them, weaker too, when the researcher picked the stars by hand (a 5 x 5 Drill
+     * may be wanted as a 3 x 3 one). Only runes the holder takes go in, and never two that clash. Runes need no items,
+     * only their essence.
      */
     public static Engraving engraving(ItemStack item, Circle circle) {
         RuneHolder holder = RuneHolder.of(item);
@@ -361,7 +370,7 @@ public final class Ritual {
                 return Engraving.refuse(holder.notTakenRefusal(), rune);
             }
             int have = runes.stars(rune);
-            if (chosen.stars() <= have) {
+            if (chosen.exact() ? chosen.stars() == have : chosen.stars() <= have) {
                 continue;
             }
             for (ComplexRune other : runes.complexRunes()) {

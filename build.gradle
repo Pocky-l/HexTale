@@ -102,6 +102,9 @@ neoForge {
             type = 'gameTestServer'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
             systemProperty 'hextale.releasedIds', project.file('docs/released-ids.txt').absolutePath
+            if (project.hasProperty('tests')) {
+                systemProperty 'hextale.tests', project.property('tests').toString()
+            }
         }
 
         // Opens the mod's screens by a script and saves screenshots (scripts in tools/guishots/, pictures in

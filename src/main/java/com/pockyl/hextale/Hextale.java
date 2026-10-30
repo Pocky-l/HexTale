@@ -62,6 +62,7 @@ public final class Hextale {
                 event.register(com.pockyl.hextale.block.WorldAnchorBlock.TICKETS));
         PickaxeEffects.register();
         com.pockyl.hextale.runework.ToolEffects.register();
+        com.pockyl.hextale.runework.WeaponRunes.register();
         com.pockyl.hextale.farm.FunnelEvents.register();
         com.pockyl.hextale.farm.ShackleEvents.register();
         com.pockyl.hextale.farm.CondenserEvents.register();

@@ -5,6 +5,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Runes can be burned in weaker than you know them: click a star in the stele's list to pick the strength (the number
+  and the price follow). A 3-star Drill no longer forces a 5×5 hole - pick one star for 3×3. A rune already on the item
+  is set to exactly the picked strength, weaker too; without a pick a rune is only ever raised, as before.
+- Five new weapon runes from runes of the codex that no tool took before (their scrolls now turn up in chests):
+  - **Shockwave** (sword, axe): a charged swing at the ground sends a wave rolling ahead through it. The ground heaves
+    block by block and spits crumbs of itself, a glowing crack runs along it, and the creatures in its way are hurt and
+    tossed into the air. The weapon rests a moment afterwards.
+  - **Blink** (sword): right click at a creature to step through the shadow to its back and strike it harder.
+  - **Detonator** (sword): a creature the sword kills bursts and hurts the ones around it.
+  - **Whirlpool** (sword): a blow may open a whirlpool that drags the creatures around into it.
+  - **Whirlwind** (sword): every third blow in a row sweeps all around you in a circle of light.
+  A weapon takes one rune worked by hand (Shockwave or Blink). Two runes of the codex got names that suit them:
+  Grounding is now Shockwave, Updraft is now Whirlwind.
+
+### Changed
+- Chain Lightning on the sword is felt now: it fires more often (20/30/40%), its spark always bites the struck creature
+  for extra damage with a visible arc, and then leaps on - to hostile creatures, or from an animal to others of its
+  kind. It never touches players, pets or villagers. Before, it did nothing at all unless another hostile creature
+  stood near.
+
 ### Fixed
 - The Researcher's Diary no longer drags the frame rate down while it is open: its star map ran at about half the
   frame rate of the game behind it and now costs about as much as an inventory screen. The links between the steps are

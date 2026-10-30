@@ -138,6 +138,8 @@ public final class HextaleClient {
         MachineLoops.register();
         WardRipple.register();
         com.pockyl.hextale.client.render.RuneEffects.register();
+        com.pockyl.hextale.client.render.WeaponFx.register();
+        WeaponInput.register();
         ThinningAtmosphere.register(modBus);
         modBus.addListener(ThinningTint::register);
         modBus.addListener(ThinningTint::fadeWater);

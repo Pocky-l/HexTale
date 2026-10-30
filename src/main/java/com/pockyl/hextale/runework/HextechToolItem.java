@@ -21,6 +21,24 @@ public class HextechToolItem extends Item {
         super(properties);
     }
 
+    /** Right click with the Blink rune: a step through the shadow to the back of the creature in sight, and a blow. */
+    @Override
+    public net.minecraft.world.InteractionResult use(net.minecraft.world.level.Level level, net.minecraft.world.entity.player.Player player,
+                                                     net.minecraft.world.InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (hand != net.minecraft.world.InteractionHand.MAIN_HAND || WeaponRunes.strength(stack, ToolRune.BLINK) <= 0) {
+            return super.use(level, player, hand);
+        }
+        if (player.getCooldowns().isOnCooldown(stack)) {
+            return net.minecraft.world.InteractionResult.FAIL;
+        }
+        if (level instanceof net.minecraft.server.level.ServerLevel server) {
+            return WeaponRunes.blink(server, player, stack) ? net.minecraft.world.InteractionResult.SUCCESS_SERVER
+                    : net.minecraft.world.InteractionResult.FAIL;
+        }
+        return net.minecraft.world.InteractionResult.SUCCESS;
+    }
+
     /** Mending: points of wear are often shrugged off and mended. */
     @Override
     public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<ItemStack> onBroken) {
