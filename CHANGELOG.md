@@ -113,6 +113,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radiant gear looks like white gold now instead of bone and lilac: the Radiant tools, the Radiant Tendril Dagger, the
   Radiant Bulwark, the Radiant Alloy Ingot and its block and trim are pale gold with gold trim and walnut grips, with
   violet left only as a thin seam, so they no longer look like the Riftforged level.
+- Calmer blocks that sit better in a build: brass (Block of Brass, alembic, sorting matrix and other brass parts) is
+  smooth aged metal instead of a striped cartoon gold, Dormant Hextech is a softer blue with frosted glints, Chem
+  Tubes are dark green glass held by iron bands instead of neon stripes, the Block of Hexsteel is a plain brushed
+  plate, the steel of the World Anchor, Rift Gates and Grapple is blued, and Magic Leaves grow in white clumps with
+  only a few golden glints.
 - Riftforged Bulwark reads as armour now, not a violet lump: black riftmetal plates with lit rims and blackened brass
   rivets, violet carapace on the shoulders, chest, back and knees, and a sealed Void crystal heart - black core,
   violet rim, a pale nullstone band - held by the claws on the chest.
