@@ -110,6 +110,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The purple crystals no longer look like amethyst and each other: Void Crystals (item, cluster and the sealed one) are
   black inside with a sharp violet edge, Synthetic Crystals are shimmer pink, a Clouded Crystal is a cut hextech crystal
   gone smoky grey, and the Void Carapace is a ridged armour plate instead of a darker lump of chitin.
+- Radiant gear looks like white gold now instead of bone and lilac: the Radiant tools, the Radiant Tendril Dagger, the
+  Radiant Bulwark, the Radiant Alloy Ingot and its block and trim are pale gold with gold trim and walnut grips, with
+  violet left only as a thin seam, so they no longer look like the Riftforged level.
 
 ### Fixed
 - The Researcher's Diary no longer drags the frame rate down while it is open: its star map ran at about half the
