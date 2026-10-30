@@ -101,6 +101,7 @@ public final class HextaleClient {
             event.registerSpriteSet(ModParticles.HEX_FLAME.get(), HexFlameParticle.Provider::new);
             event.registerSpriteSet(ModParticles.MAGIC_LEAF.get(), MagicLeafParticle.Provider::new);
             event.registerSpriteSet(ModParticles.SHIMMER_MOTE.get(), ShimmerMoteParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.HEART_SHARD.get(), com.pockyl.hextale.client.particle.HeartShardParticle.Provider::new);
         });
         modBus.addListener(GogglesView::registerLayer);
         com.pockyl.hextale.compat.curios.CuriosClientCompat.register(modBus);

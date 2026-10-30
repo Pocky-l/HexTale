@@ -36,6 +36,8 @@ public final class BulwarkHeart {
     public static final int PER_CRYSTAL = 25;
     /** Share of a blow the heart soaks, by level (1-4). */
     public static final float[] SOAK = {0.3F, 0.4F, 0.5F, 0.6F};
+    /** Crystal shards thrown out when the heart cracks. */
+    private static final int SHARDS = 10;
     /** Reach and push of the flash when the heart cracks. */
     public static final double FLASH_REACH = 4;
     private static final double FLASH_PUSH = 1.2;
@@ -121,6 +123,13 @@ public final class BulwarkHeart {
     private static void crack(ServerLevel level, LivingEntity wearer, Vec3 at) {
         level.sendParticles(ModParticles.ring(HEART_BLUE), at.x, at.y, at.z, 1, 0, 0, 0, 0);
         level.sendParticles(ModParticles.glint(0xFFFFFF), at.x, at.y, at.z, 20, 0.4, 0.4, 0.4, 0.15);
+        // Shards burst out of the chest, mostly forwards and up (count 0: the offsets are each shard's velocity).
+        Vec3 facing = Vec3.directionFromRotation(0, wearer.getYRot());
+        for (int i = 0; i < SHARDS; i++) {
+            double side = (level.getRandom().nextDouble() - 0.5) * 0.5;
+            Vec3 fly = facing.scale(0.12 + level.getRandom().nextDouble() * 0.12).add(-facing.z * side, 0.12 + level.getRandom().nextDouble() * 0.18, facing.x * side);
+            level.sendParticles(ModParticles.HEART_SHARD.get(), at.x + facing.x * 0.3, at.y, at.z + facing.z * 0.3, 0, fly.x, fly.y, fly.z, 1);
+        }
         level.playSound(null, at.x, at.y, at.z, ModSounds.RITUAL_ABSORB.get(), SoundSource.PLAYERS, 0.6F, 0.6F);
         for (LivingEntity near : level.getEntitiesOfClass(LivingEntity.class, wearer.getBoundingBox().inflate(FLASH_REACH),
                 near -> near != wearer && ToolEffects.mayStrike(near, wearer instanceof net.minecraft.world.entity.player.Player player ? player : null))) {
