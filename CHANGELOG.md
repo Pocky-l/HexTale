@@ -90,6 +90,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Experience Condenser are cut to match.
 - The Engraved Diamond shows its engraving: a glowing golden sign is cut into the middle of its table face, easy to
   tell from a plain diamond in the inventory.
+- The purple crystals no longer look like amethyst and each other: Void Crystals (item, cluster and the sealed one) are
+  black inside with a sharp violet edge, Synthetic Crystals are shimmer pink, a Clouded Crystal is a cut hextech crystal
+  gone smoky grey, and the Void Carapace is a ridged armour plate instead of a darker lump of chitin.
 
 ### Fixed
 - The Researcher's Diary no longer drags the frame rate down while it is open: its star map ran at about half the
