@@ -113,6 +113,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radiant gear looks like white gold now instead of bone and lilac: the Radiant tools, the Radiant Tendril Dagger, the
   Radiant Bulwark, the Radiant Alloy Ingot and its block and trim are pale gold with gold trim and walnut grips, with
   violet left only as a thin seam, so they no longer look like the Riftforged level.
+- Riftforged Bulwark reads as armour now, not a violet lump: black riftmetal plates with lit rims and blackened brass
+  rivets, violet carapace on the shoulders, chest, back and knees, and a sealed Void crystal heart - black core,
+  violet rim, a pale nullstone band - held by the claws on the chest.
+- The Runed Sword and the Refined Sword have real blades now: the Runed Sword a tapered steel blade with a bright
+  edge and a glowing rune fuller, the Refined Sword a broad blade with a long point and its crystal core set in a
+  dark spine, held by steel bands.
 
 ### Fixed
 - The Researcher's Diary no longer drags the frame rate down while it is open: its star map ran at about half the

@@ -31,7 +31,9 @@ public final class BulwarkChestplateLayer {
                 .texOffs(57, 28).addBox(-5.0F, -1.0F, -3.0F, 10.0F, 1.0F, 6.0F, new CubeDeformation(0.4F))
                 .texOffs(100, 8).addBox(-3.5F, 1.0F, -3.8F, 1.0F, 6.0F, 1.0F, new CubeDeformation(0.0F))
                 .texOffs(100, 8).mirror().addBox(2.5F, 1.0F, -3.8F, 1.0F, 6.0F, 1.0F, new CubeDeformation(0.0F)).mirror(false)
-                .texOffs(76, 0).addBox(-3.0F, 0.0F, -3.5F, 6.0F, 8.0F, 0.0F, new CubeDeformation(0.0F)),
+                .texOffs(76, 0).addBox(-3.0F, 0.0F, -3.5F, 6.0F, 8.0F, 0.0F, new CubeDeformation(0.0F))
+                .texOffs(14, 44).addBox(-1.5F, 1.5F, -4.8F, 3.0F, 5.0F, 1.0F, new CubeDeformation(0.0F))
+                .texOffs(0, 44).addBox(-2.0F, 3.5F, -5.0F, 4.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)),
                 PartPose.offset(0.0F, 0.0F, 0.0F));
         body.addOrReplaceChild("t3_gorget", CubeListBuilder.create()
                 .texOffs(110, 8).addBox(-4.0F, -4.0F, -0.5F, 8.0F, 4.0F, 1.0F, new CubeDeformation(0.0F)),
