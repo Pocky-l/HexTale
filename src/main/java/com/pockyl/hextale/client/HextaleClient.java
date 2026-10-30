@@ -70,6 +70,8 @@ public final class HextaleClient {
                 com.pockyl.hextale.client.render.EssenceJarItemRenderer.ID, com.pockyl.hextale.client.render.EssenceJarItemRenderer.Unbaked.MAP_CODEC));
         modBus.addListener((net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent event) -> event.register(
                 com.pockyl.hextale.client.render.HexcoreItemRenderer.ID, com.pockyl.hextale.client.render.HexcoreItemRenderer.Unbaked.MAP_CODEC));
+        modBus.addListener((net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent event) -> event.register(
+                com.pockyl.hextale.client.render.ToolAuraRenderer.ID, com.pockyl.hextale.client.render.ToolAuraRenderer.Unbaked.MAP_CODEC));
         modBus.addListener((net.neoforged.neoforge.client.event.RegisterItemModelsEvent event) -> event.register(
                 com.pockyl.hextale.client.render.AnimatedItemModel.ID, com.pockyl.hextale.client.render.AnimatedItemModel.Unbaked.MAP_CODEC));
         modBus.addListener(ClientPayloads::register);

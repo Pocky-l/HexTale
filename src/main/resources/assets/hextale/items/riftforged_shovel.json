@@ -1,0 +1,37 @@
+{
+  "model": {
+    "type": "hextale:animated",
+    "model": {
+      "type": "minecraft:composite",
+      "models": [
+        {
+          "type": "minecraft:model",
+          "model": "hextale:item/radiant_hextech_shovel",
+          "tints": [
+            {
+              "type": "hextale:pickaxe_runes"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:special",
+          "base": "hextale:item/radiant_hextech_shovel",
+          "model": {
+            "type": "hextale:tool_aura",
+            "kind": "void",
+            "center": [
+              8,
+              25,
+              8
+            ],
+            "radius": [
+              8,
+              8,
+              6
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

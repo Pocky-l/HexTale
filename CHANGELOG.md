@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Radiant tools carry a quiet field of lightning round their heads - a faint blue glow, now and then an arc, and a
+  small discharge every few seconds. Riftforged tools turn a slow violet spiral of the Void round theirs, with stars
+  drifting in to its dark heart; every few seconds it breathes in.
 - Two blade runes for the sword, the Tendril Dagger and the Strike Gauntlet: Backstab (a blow from behind lands
   25/40/60% harder) and Bleeding (a cut may keep bleeding for 3/4/5 seconds). Their codex runes were Eclipse and
   Blight and had no use until now.

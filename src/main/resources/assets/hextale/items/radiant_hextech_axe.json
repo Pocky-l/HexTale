@@ -1,11 +1,37 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "hextale:item/radiant_hextech_axe",
-    "tints": [
-      {
-        "type": "hextale:pickaxe_runes"
-      }
-    ]
+    "type": "hextale:animated",
+    "model": {
+      "type": "minecraft:composite",
+      "models": [
+        {
+          "type": "minecraft:model",
+          "model": "hextale:item/radiant_hextech_axe",
+          "tints": [
+            {
+              "type": "hextale:pickaxe_runes"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:special",
+          "base": "hextale:item/radiant_hextech_axe",
+          "model": {
+            "type": "hextale:tool_aura",
+            "kind": "lightning",
+            "center": [
+              2,
+              18,
+              8
+            ],
+            "radius": [
+              11,
+              10,
+              7
+            ]
+          }
+        }
+      ]
+    }
   }
 }
