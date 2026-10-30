@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "hextale:item/riftmetal_ingot",
+    "layer1": {
+      "sprite": "hextale:item/riftmetal_ingot_glow",
+      "neoforge_data": {
+        "light_emission": 15
+      }
+    }
+  }
+}
