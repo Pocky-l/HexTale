@@ -89,6 +89,51 @@ public final class ModGameTests {
     }
 
     @HexTest
+    public static void recipeTagsAreNeverEmpty(GameTestHelper helper) {
+        // A recipe asking for a tag no item carries can never be made (c:bars/iron on 1.21.1, GitHub issue #3).
+        Set<String> tags = new java.util.TreeSet<>();
+        var resources = helper.getLevel().getServer().getResourceManager();
+        for (String folder : List.of("recipe", "hextale_alloying", "hextale_brew", "hextale_crafting", "hextale_crucible",
+                "hextale_experiment", "hextale_infusion")) {
+            resources.listResources(folder, id -> id.getNamespace().equals(Hextale.MOD_ID) && id.getPath().endsWith(".json"))
+                    .forEach((id, resource) -> {
+                        try (var reader = resource.openAsReader()) {
+                            collectTags(com.google.gson.JsonParser.parseReader(reader), tags);
+                        } catch (java.io.IOException e) {
+                            throw new IllegalStateException(id.toString(), e);
+                        }
+                    });
+        }
+        helper.assertFalse(tags.isEmpty(), "recipes ask for tags");
+        for (String tag : tags) {
+            var key = net.minecraft.tags.TagKey.create(Registries.ITEM, net.minecraft.resources.Identifier.parse(tag));
+            helper.assertTrue(net.minecraft.core.registries.BuiltInRegistries.ITEM.stream()
+                    .anyMatch(item -> item.getDefaultInstance().is(key)), "some item carries the recipe tag #" + tag);
+        }
+        helper.succeed();
+    }
+
+    /** Item tags an ingredient names: "#ns:path" strings (26.x) or {"tag": "ns:path"} objects (1.21.1). */
+    private static void collectTags(com.google.gson.JsonElement json, Set<String> out) {
+        if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString() && json.getAsString().matches("#[a-z0-9_.-]+:[a-z0-9_./-]+")) {
+            out.add(json.getAsString().substring(1));
+        } else if (json.isJsonArray()) {
+            json.getAsJsonArray().forEach(element -> collectTags(element, out));
+        } else if (json.isJsonObject()) {
+            json.getAsJsonObject().entrySet().forEach(entry -> {
+                if (entry.getKey().equals("pattern")) {
+                    return;
+                }
+                if (entry.getKey().equals("tag") && entry.getValue().isJsonPrimitive()) {
+                    out.add(entry.getValue().getAsString());
+                } else {
+                    collectTags(entry.getValue(), out);
+                }
+            });
+        }
+    }
+
+    @HexTest
     public static void dataFilesLoad(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();
         for (String recipe : RECIPES) {

@@ -423,6 +423,17 @@ public final class PylonGameTests {
         helper.succeed();
     }
 
+    /** A filter laid into a filter's slot keeps only its picture: filters never nest into an item too big to send. */
+    @HexTest
+    public static void filtersNeverNest(GameTestHelper helper) {
+        ItemStack inner = filter(only(Items.COBBLESTONE, 1));
+        com.pockyl.hextale.transport.ItemFilter outer = com.pockyl.hextale.transport.ItemFilter.EMPTY.with(0, inner);
+        helper.assertTrue(outer.entries().getFirst().item().is(com.pockyl.hextale.registry.ModItems.PYLON_FILTER.get())
+                && !outer.entries().getFirst().item().has(ModDataComponents.ITEM_FILTER.get()), "the slot keeps a bare filter");
+        helper.assertTrue(outer.match(inner) != null, "a set filter still matches its kind");
+        helper.succeed();
+    }
+
     private static ItemStack filter(com.pockyl.hextale.transport.ItemFilter settings) {
         ItemStack stack = new ItemStack(com.pockyl.hextale.registry.ModItems.PYLON_FILTER.get());
         stack.set(ModDataComponents.ITEM_FILTER.get(), settings);

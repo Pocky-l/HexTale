@@ -3,6 +3,7 @@ package com.pockyl.hextale.transport;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
@@ -94,9 +95,21 @@ public record ItemFilter(List<Entry> entries, boolean whitelist, boolean exact, 
             }
         }
         if (!item.isEmpty()) {
-            out.add(new Entry(slot, item.copyWithCount(1), old == null ? Math.max(1, item.getCount()) : old.count()));
+            out.add(new Entry(slot, ghost(item), old == null ? Math.max(1, item.getCount()) : old.count()));
         }
         return new ItemFilter(out, whitelist, exact, rule);
+    }
+
+    /**
+     * The picture a slot keeps of an item: without what the item holds inside, so filters of filters (or of filled
+     * shulker boxes) never nest into an item too big to send.
+     */
+    private static ItemStack ghost(ItemStack item) {
+        ItemStack ghost = item.copyWithCount(1);
+        ghost.remove(DataComponents.CONTAINER);
+        ghost.remove(DataComponents.BUNDLE_CONTENTS);
+        ghost.remove(com.pockyl.hextale.registry.ModDataComponents.ITEM_FILTER.get());
+        return ghost;
     }
 
     /** The filter with slot {@code slot}'s number changed by {@code delta} (kept within 1-{@value #MAX_COUNT}). */
