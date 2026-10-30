@@ -1,0 +1,30 @@
+{
+  "region": "forge",
+  "stage": "late",
+  "icon": "hextale:radiant_bulwark_chestplate",
+  "parents": [
+    "radiant_pickaxe",
+    "refined_bulwark"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:radiant_bulwark_helmet",
+    "then": {
+      "kind": "infusion",
+      "result": "hextale:radiant_bulwark_chestplate",
+      "then": {
+        "kind": "infusion",
+        "result": "hextale:radiant_bulwark_leggings",
+        "then": {
+          "kind": "infusion",
+          "result": "hextale:radiant_bulwark_boots"
+        }
+      }
+    }
+  },
+  "research": "radiant_bulwark",
+  "pos": [
+    1590,
+    250
+  ]
+}

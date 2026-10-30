@@ -3,6 +3,10 @@
     "hextale:refined_hextech_pickaxe",
     "hextale:refined_hextech_axe",
     "hextale:refined_hextech_shovel",
-    "hextale:refined_hextech_sword"
+    "hextale:refined_hextech_sword",
+    "hextale:refined_bulwark_helmet",
+    "hextale:refined_bulwark_chestplate",
+    "hextale:refined_bulwark_leggings",
+    "hextale:refined_bulwark_boots"
   ]
 }

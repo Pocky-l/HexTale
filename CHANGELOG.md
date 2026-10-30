@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Bulwark armour in four levels (Bulwark, Refined, Radiant, Riftforged), each set opened by one research and made
+  from its level's materials like the tools. Every piece takes the runes of the clothes piece of its slot - one at
+  the first level, up to four. The cuirass carries a crystal heart: raw hextech clicked onto it charges it, and while
+  charged it soaks 30-60% of every blow armour can stop. Run dry, it cracks open with a flash that throws the
+  creatures round you back, and soaks nothing until it is charged full again.
 - Radiant Alloy: the Hex Foundry at full heat melts two gold, a Charged Hexsteel and Gemstone Dust (the bright
   cuttings every gemstone finish now leaves on the Lapidary) into two ingots of white gold; Refined Shimmer does
   instead of the dust, quicker, but it thins the land. Ore melts beside an alloy as before.

@@ -1,0 +1,31 @@
+{
+  "region": "forge",
+  "stage": "late",
+  "icon": "hextale:riftforged_bulwark_chestplate",
+  "parents": [
+    "riftforged_tools",
+    "radiant_bulwark",
+    "void_carapace"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:riftforged_bulwark_helmet",
+    "then": {
+      "kind": "infusion",
+      "result": "hextale:riftforged_bulwark_chestplate",
+      "then": {
+        "kind": "infusion",
+        "result": "hextale:riftforged_bulwark_leggings",
+        "then": {
+          "kind": "infusion",
+          "result": "hextale:riftforged_bulwark_boots"
+        }
+      }
+    }
+  },
+  "research": "riftforged_bulwark",
+  "pos": [
+    1300,
+    960
+  ]
+}

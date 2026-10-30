@@ -3,6 +3,10 @@
     "hextale:radiant_hextech_pickaxe",
     "hextale:radiant_hextech_axe",
     "hextale:radiant_hextech_shovel",
-    "hextale:radiant_hextech_sword"
+    "hextale:radiant_hextech_sword",
+    "hextale:radiant_bulwark_helmet",
+    "hextale:radiant_bulwark_chestplate",
+    "hextale:radiant_bulwark_leggings",
+    "hextale:radiant_bulwark_boots"
   ]
 }

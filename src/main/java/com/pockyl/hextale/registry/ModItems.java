@@ -386,6 +386,67 @@ public final class ModItems {
     public static final DeferredItem<Item> HEXSTEEL_BOOTS = ITEMS.registerItem("hexsteel_boots",
             properties -> new Item(properties.humanoidArmor(HEXSTEEL_ARMOR, ArmorType.BOOTS)));
 
+
+    // Bulwark armour in four levels (brass over blued steel, a crystal heart in the chestplate). The look is a placeholder
+    // (the hexsteel equipment asset) until its worn models are wired in.
+    private static final ArmorMaterial[] BULWARK_ARMOR = {
+            new ArmorMaterial(20, Map.of(ArmorType.BOOTS, 2, ArmorType.LEGGINGS, 5, ArmorType.CHESTPLATE, 6, ArmorType.HELMET, 2, ArmorType.BODY, 5),
+                    14, SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET),
+            new ArmorMaterial(33, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
+                    12, SoundEvents.ARMOR_EQUIP_DIAMOND, 2.0F, 0.0F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET),
+            new ArmorMaterial(37, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
+                    16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.1F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET),
+            new ArmorMaterial(42, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 7, ArmorType.CHESTPLATE, 9, ArmorType.HELMET, 3, ArmorType.BODY, 13),
+                    18, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.15F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET)};
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> BULWARK_HELMET = ITEMS.registerItem("bulwark_helmet",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.HELMET,
+                    properties.humanoidArmor(BULWARK_ARMOR[0], ArmorType.HELMET)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> BULWARK_CHESTPLATE = ITEMS.registerItem("bulwark_chestplate",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.CHESTPLATE,
+                    properties.humanoidArmor(BULWARK_ARMOR[0], ArmorType.CHESTPLATE)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> BULWARK_LEGGINGS = ITEMS.registerItem("bulwark_leggings",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.LEGGINGS,
+                    properties.humanoidArmor(BULWARK_ARMOR[0], ArmorType.LEGGINGS)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> BULWARK_BOOTS = ITEMS.registerItem("bulwark_boots",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.BOOTS,
+                    properties.humanoidArmor(BULWARK_ARMOR[0], ArmorType.BOOTS)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> REFINED_BULWARK_HELMET = ITEMS.registerItem("refined_bulwark_helmet",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.HELMET,
+                    properties.humanoidArmor(BULWARK_ARMOR[1], ArmorType.HELMET)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> REFINED_BULWARK_CHESTPLATE = ITEMS.registerItem("refined_bulwark_chestplate",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.CHESTPLATE,
+                    properties.humanoidArmor(BULWARK_ARMOR[1], ArmorType.CHESTPLATE)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> REFINED_BULWARK_LEGGINGS = ITEMS.registerItem("refined_bulwark_leggings",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.LEGGINGS,
+                    properties.humanoidArmor(BULWARK_ARMOR[1], ArmorType.LEGGINGS)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> REFINED_BULWARK_BOOTS = ITEMS.registerItem("refined_bulwark_boots",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.BOOTS,
+                    properties.humanoidArmor(BULWARK_ARMOR[1], ArmorType.BOOTS)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RADIANT_BULWARK_HELMET = ITEMS.registerItem("radiant_bulwark_helmet",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.HELMET,
+                    properties.humanoidArmor(BULWARK_ARMOR[2], ArmorType.HELMET).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RADIANT_BULWARK_CHESTPLATE = ITEMS.registerItem("radiant_bulwark_chestplate",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.CHESTPLATE,
+                    properties.humanoidArmor(BULWARK_ARMOR[2], ArmorType.CHESTPLATE).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RADIANT_BULWARK_LEGGINGS = ITEMS.registerItem("radiant_bulwark_leggings",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.LEGGINGS,
+                    properties.humanoidArmor(BULWARK_ARMOR[2], ArmorType.LEGGINGS).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RADIANT_BULWARK_BOOTS = ITEMS.registerItem("radiant_bulwark_boots",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.BOOTS,
+                    properties.humanoidArmor(BULWARK_ARMOR[2], ArmorType.BOOTS).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RIFTFORGED_BULWARK_HELMET = ITEMS.registerItem("riftforged_bulwark_helmet",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.HELMET,
+                    properties.humanoidArmor(BULWARK_ARMOR[3], ArmorType.HELMET).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RIFTFORGED_BULWARK_CHESTPLATE = ITEMS.registerItem("riftforged_bulwark_chestplate",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.CHESTPLATE,
+                    properties.humanoidArmor(BULWARK_ARMOR[3], ArmorType.CHESTPLATE).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RIFTFORGED_BULWARK_LEGGINGS = ITEMS.registerItem("riftforged_bulwark_leggings",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.LEGGINGS,
+                    properties.humanoidArmor(BULWARK_ARMOR[3], ArmorType.LEGGINGS).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RIFTFORGED_BULWARK_BOOTS = ITEMS.registerItem("riftforged_bulwark_boots",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.BOOTS,
+                    properties.humanoidArmor(BULWARK_ARMOR[3], ArmorType.BOOTS).fireResistant()));
+
     /** Wool soaked in the crucible: heavy and warm, and the essence never washes out of it. */
     public static final DeferredItem<Item> ARCANE_CLOTH = ITEMS.registerSimpleItem("arcane_cloth");
     /** Researcher's clothes of arcane cloth: 3D pieces (client: ResearcherRobeClient), the robe keeps sparks and blasts off. */

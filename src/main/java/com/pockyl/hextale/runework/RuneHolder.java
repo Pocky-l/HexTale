@@ -211,6 +211,15 @@ public enum RuneHolder {
         if (item == ModItems.RESEARCHER_BOOTS.get()) {
             return BOOTS;
         }
+        if (item instanceof BulwarkArmorItem bulwark) {
+            // Bulwark takes the runes of the clothes piece worn in the same slot.
+            return switch (bulwark.type()) {
+                case HELMET -> HOOD;
+                case CHESTPLATE -> ROBE;
+                case LEGGINGS -> TROUSERS;
+                default -> BOOTS;
+            };
+        }
         return ModItems.isPylon(stack) ? PYLON : null;
     }
 

@@ -1,0 +1,23 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:refined_bulwark_leggings",
+  "pedestals": [
+    "hextale:radiant_alloy_ingot",
+    "hextale:radiant_alloy_ingot",
+    "hextale:hextech_gemstone",
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "hextale:chem_vial",
+      "components": {
+        "hextale:brew": "acid"
+      }
+    }
+  ],
+  "essences": {
+    "magic": 72,
+    "crystal": 24
+  },
+  "result": "hextale:radiant_bulwark_leggings",
+  "keep_components": true,
+  "hexcore": true
+}

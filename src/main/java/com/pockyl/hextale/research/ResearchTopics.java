@@ -120,6 +120,16 @@ public final class ResearchTopics {
     public static final ResearchTopic RIFTMETAL = add("riftmetal", 3, Essence.SHADOW, Essence.METAL, ModItems.RIFTMETAL_INGOT);
     public static final ResearchTopic SEALED_VOID_CRYSTAL = add("sealed_void_crystal", 3, Essence.SHADOW, Essence.EARTH,
             ModItems.SEALED_VOID_CRYSTAL);
+    // One armour research opens the whole set of its level (owner, 2026-10-30).
+    public static final ResearchTopic BULWARK = add("bulwark", 2, Essence.METAL, Essence.EARTH,
+            ModItems.BULWARK_HELMET, ModItems.BULWARK_CHESTPLATE, ModItems.BULWARK_LEGGINGS, ModItems.BULWARK_BOOTS);
+    public static final ResearchTopic REFINED_BULWARK = add("refined_bulwark", 3, Essence.METAL, Essence.SPARK,
+            ModItems.REFINED_BULWARK_HELMET, ModItems.REFINED_BULWARK_CHESTPLATE, ModItems.REFINED_BULWARK_LEGGINGS, ModItems.REFINED_BULWARK_BOOTS);
+    public static final ResearchTopic RADIANT_BULWARK = add("radiant_bulwark", 3, Essence.LIGHT, Essence.EARTH,
+            ModItems.RADIANT_BULWARK_HELMET, ModItems.RADIANT_BULWARK_CHESTPLATE, ModItems.RADIANT_BULWARK_LEGGINGS, ModItems.RADIANT_BULWARK_BOOTS);
+    public static final ResearchTopic RIFTFORGED_BULWARK = add("riftforged_bulwark", 3, Essence.SHADOW, Essence.EARTH,
+            ModItems.RIFTFORGED_BULWARK_HELMET, ModItems.RIFTFORGED_BULWARK_CHESTPLATE, ModItems.RIFTFORGED_BULWARK_LEGGINGS,
+            ModItems.RIFTFORGED_BULWARK_BOOTS);
     // One research refines every tool of a tier (the topic ids are the pickaxe's, released before the other tools).
     public static final ResearchTopic REFINED_PICKAXE = add("refined_hextech_pickaxe", 3, Essence.METAL, Essence.SPARK,
             ModItems.pickaxe(HextechPickaxe.REFINED), ModItems.REFINED_AXE, ModItems.REFINED_SHOVEL, ModItems.REFINED_SWORD);

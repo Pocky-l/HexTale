@@ -3,6 +3,10 @@
     "hextale:riftforged_pickaxe",
     "hextale:riftforged_axe",
     "hextale:riftforged_shovel",
-    "hextale:riftforged_sword"
+    "hextale:riftforged_sword",
+    "hextale:riftforged_bulwark_helmet",
+    "hextale:riftforged_bulwark_chestplate",
+    "hextale:riftforged_bulwark_leggings",
+    "hextale:riftforged_bulwark_boots"
   ]
 }

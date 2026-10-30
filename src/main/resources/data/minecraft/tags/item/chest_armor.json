@@ -1,6 +1,10 @@
 {
   "values": [
     "hextale:hexsteel_chestplate",
-    "hextale:researcher_robe"
+    "hextale:researcher_robe",
+    "hextale:bulwark_chestplate",
+    "hextale:refined_bulwark_chestplate",
+    "hextale:radiant_bulwark_chestplate",
+    "hextale:riftforged_bulwark_chestplate"
   ]
 }
