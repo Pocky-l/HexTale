@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Radiant tools are wrapped in quiet lightning from pommel to tip - short arcs snapping here and there, a few sparks
+  winding round, and now and then a discharge running the whole length. The abyss seeps out of riftforged tools:
+  small clouds of the Void well up along them, sink and thin out, violet tendrils creep out and twist away, and now
+  and then a short tear into the abyss flares.
+- Radiant and riftforged Bulwark armour carries the same lightning and abyss, thinner, along the head, body, arms
+  and legs it covers - on the wearer, on armour stands and on the icons.
+- Two blade runes for the sword, the Tendril Dagger and the Strike Gauntlet: Backstab (a blow from behind lands
+  25/40/60% harder) and Bleeding (a cut may keep bleeding for 3/4/5 seconds). Their codex runes were Eclipse and
+  Blight and had no use until now.
 - Strike Gauntlet, made on the Hexcore: hold Use to charge it in three beats, release to punch. At a block within
   reach it breaks it - a 3 x 3 face from the second beat, two deep at the third; into the air it sends a shockwave
   that hurts and throws back the creatures in front. Held too long, it vents its steam and starts over, never hurting
@@ -16,7 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bulwark armour in four levels (Bulwark, Refined, Radiant, Riftforged), each set opened by one research and made
   from its level's materials like the tools. Every piece takes the runes of the clothes piece of its slot - one at
   the first level, up to four. The cuirass carries a crystal heart: raw hextech clicked onto it charges it, and while
-  charged it soaks 30-60% of every blow armour can stop. Run dry, it cracks open with a flash that throws the
+  charged it soaks 30-60% of every blow armour can stop (a Crystal Battery nearby keeps it fed too). Every level has its own look - brass over blued steel, gunmetal with lit crystal slits, white gold with violet
+  wings, riftmetal with chitin horns - and the heart glows as bright as it is charged. Run dry, it cracks open with a flash that throws the
   creatures round you back, and soaks nothing until it is charged full again.
 - Radiant Alloy: the Hex Foundry at full heat melts two gold, a Charged Hexsteel and Gemstone Dust (the bright
   cuttings every gemstone finish now leaves on the Lapidary) into two ingots of white gold; Refined Shimmer does
@@ -26,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Charged Hexsteel: a hexsteel ingot laid into a Crucible that holds lightning and metal comes out charged - the
   metal of the refined tools. Coolant splashed on hexsteel lying on a lit Chem Burner charges it at once, but the
   fumes thin the land.
-- Engraving Disc and Engraved Diamond: the Lapidary cuts a diamond to a brilliant and engraves it (a cracked
+- Engraved Diamond: the Lapidary with a master cutting disc cuts a diamond to a brilliant and engraves it (a cracked
   diamond comes back whole). Refined tools are now made of two Charged Hexsteel and an Engraved Diamond instead of
   gemstones and diamonds.
 - Refined and Radiant Axe, Shovel and Sword: refined at the altar like the pickaxe (the same research opens all four

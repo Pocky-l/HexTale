@@ -62,7 +62,8 @@ public final class ArsenalGameTests {
     }
 
     /** A thrown dagger bites the creature it meets and turns back to its thrower at once. */
-    @HexTest(maxTicks = 80)
+    // Entities in a fresh spot may not tick for a while: give the flight time to start.
+    @HexTest(maxTicks = 200, setupTicks = 40)
     @SuppressWarnings("removal")
     public static void aThrownDaggerBitesAndComesBack(GameTestHelper helper) {
         net.minecraft.server.level.ServerPlayer thrower = helper.makeMockServerPlayerInLevel();
@@ -129,6 +130,47 @@ public final class ArsenalGameTests {
         target.snapTo(behind.x, behind.y, behind.z, 0, 0);
         fist.releaseUsing(helper.getLevel(), smith, fist.getUseDuration(smith) - held);
         helper.assertTrue(target.getHealth() < target.getMaxHealth(), "the shockwave hurt the zombie");
+        helper.succeed();
+    }
+
+    /** A Crystal Battery feeds the heart of a Bulwark cuirass worn within its reach. */
+    @HexTest(maxTicks = 60)
+    @SuppressWarnings("removal")
+    public static void aBatteryFeedsTheBulwarkHeart(GameTestHelper helper) {
+        helper.setBlock(new BlockPos(1, 1, 1), com.pockyl.hextale.registry.ModBlocks.CRYSTAL_BATTERY.get());
+        var battery = helper.getBlockEntity(new BlockPos(1, 1, 1), com.pockyl.hextale.block.CrystalBatteryBlockEntity.class);
+        battery.soak(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), 8);
+        net.minecraft.server.level.ServerPlayer wearer = helper.makeMockServerPlayerInLevel();
+        Vec3 at = helper.absoluteVec(new Vec3(3.5, 1, 1.5));
+        wearer.snapTo(at.x, at.y, at.z, 0, 0);
+        wearer.setItemSlot(EquipmentSlot.CHEST, new ItemStack(ModItems.BULWARK_CHESTPLATE.get()));
+        helper.succeedWhen(() -> helper.assertTrue(BulwarkHeart.of(wearer.getItemBySlot(EquipmentSlot.CHEST)).charge() > 0,
+                "the battery fed the heart"));
+    }
+
+    /** Backstab: the same blow lands harder on a creature that turns its back. */
+    @HexTest
+    @SuppressWarnings("removal")
+    public static void backstabStrikesHarderFromBehind(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer striker = helper.makeMockServerPlayerInLevel();
+        Vec3 at = helper.absoluteVec(new Vec3(3.5, 1, 3.5));
+        striker.snapTo(at.x, at.y, at.z, 0, 0);
+        ItemStack blade = new ItemStack(ModItems.TENDRIL_DAGGER.get());
+        RuneHolder.SWORD.set(blade, com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.ToolRune.BACKSTAB.rune(), 3));
+        striker.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, blade);
+        // Both face south (+Z): the first stands south of the striker (its back to them), the second north (face to face).
+        Mob away = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(3, 1, 5));
+        Mob facing = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(3, 1, 1));
+        for (Mob mob : java.util.List.of(away, facing)) {
+            mob.setYRot(0);
+            mob.setYHeadRot(0);
+            mob.setYBodyRot(0);
+        }
+        away.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(striker), 4);
+        facing.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(striker), 4);
+        float back = away.getMaxHealth() - away.getHealth();
+        float front = facing.getMaxHealth() - facing.getHealth();
+        helper.assertTrue(back > front + 1.5F, "the blow from behind lands harder, " + back + " vs " + front);
         helper.succeed();
     }
 }

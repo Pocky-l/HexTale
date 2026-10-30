@@ -233,6 +233,21 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
                 }
             }
         }
+        // A Bulwark heart within reach is fed like a workbench.
+        for (net.minecraft.world.entity.player.Player wearer : server.getEntitiesOfClass(net.minecraft.world.entity.player.Player.class,
+                new net.minecraft.world.phys.AABB(pos).inflate(reach, 2, reach))) {
+            if (battery.charge <= 0) {
+                break;
+            }
+            int given = com.pockyl.hextale.runework.BulwarkHeart.feed(wearer, Math.min(FEED, battery.charge));
+            if (given > 0) {
+                battery.charge -= given;
+                if (level.getGameTime() / FEED_TICKS % 2 == 0) {
+                    EssenceFxPayload.pour(server, Vec3.atCenterOf(pos).add(0, 0.5, 0), wearer.position().add(0, wearer.getBbHeight() * 0.65, 0),
+                            HEXTECH, FEED_TICKS * 2 - 4);
+                }
+            }
+        }
         battery.changed();
     }
 

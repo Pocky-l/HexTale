@@ -1,11 +1,46 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "hextale:item/radiant_hextech_sword",
-    "tints": [
-      {
-        "type": "hextale:pickaxe_runes"
-      }
-    ]
+    "type": "hextale:animated",
+    "model": {
+      "type": "minecraft:composite",
+      "models": [
+        {
+          "type": "minecraft:model",
+          "model": "hextale:item/radiant_hextech_sword",
+          "tints": [
+            {
+              "type": "hextale:pickaxe_runes"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:special",
+          "base": "hextale:item/radiant_hextech_sword",
+          "model": {
+            "type": "hextale:tool_aura",
+            "kind": "lightning",
+            "from": [
+              8,
+              -10,
+              8
+            ],
+            "to": [
+              8,
+              31,
+              8
+            ],
+            "profile": [
+              2.5,
+              3,
+              8,
+              5,
+              4.5,
+              3.5,
+              2.5
+            ]
+          }
+        }
+      ]
+    }
   }
 }

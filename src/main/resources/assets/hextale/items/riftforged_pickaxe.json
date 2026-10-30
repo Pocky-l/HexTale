@@ -1,0 +1,46 @@
+{
+  "model": {
+    "type": "hextale:animated",
+    "model": {
+      "type": "minecraft:composite",
+      "models": [
+        {
+          "type": "minecraft:model",
+          "model": "hextale:item/radiant_hextech_pickaxe",
+          "tints": [
+            {
+              "type": "hextale:pickaxe_runes"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:special",
+          "base": "hextale:item/radiant_hextech_pickaxe",
+          "model": {
+            "type": "hextale:tool_aura",
+            "kind": "void",
+            "from": [
+              8,
+              -8,
+              8
+            ],
+            "to": [
+              8,
+              28,
+              8
+            ],
+            "profile": [
+              1.75,
+              1.75,
+              2.1,
+              8.4,
+              11.9,
+              7.0,
+              2.8
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

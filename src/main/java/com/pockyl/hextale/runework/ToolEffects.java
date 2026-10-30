@@ -572,6 +572,13 @@ public final class ToolEffects {
         return player.getMainHandItem();
     }
 
+    /** Whether the striker stands behind the target (in the half-space at its back, a little to the sides). */
+    static boolean behind(LivingEntity striker, LivingEntity target) {
+        Vec3 facing = Vec3.directionFromRotation(0, target.getYHeadRot());
+        Vec3 toStriker = striker.position().subtract(target.position()).multiply(1, 0, 1);
+        return toStriker.lengthSqr() > 1.0E-4 && facing.dot(toStriker.normalize()) < -0.3;
+    }
+
     private static void onIncomingDamage(LivingIncomingDamageEvent event) {
         if (ARCING.get() || !(event.getEntity().level() instanceof ServerLevel level)) {
             return;
@@ -590,6 +597,18 @@ public final class ToolEffects {
                         List.of(BlockPos.containing(target.position().add(0, target.getBbHeight() * 0.6, 0))), 0xFFF6C8, 1);
             }
             level.sendParticles(ModParticles.glint(ModParticles.HEX_LIGHT), target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 6, 0.2, 0.2, 0.2, 0.08);
+        }
+        int backstab = strength(weapon, ToolRune.Tool.SWORD, ToolRune.BACKSTAB);
+        if (backstab > 0 && event.getSource().getEntity() instanceof LivingEntity striker && behind(striker, target)) {
+            event.setAmount(event.getAmount() * (1 + HolderRune.at(ToolRune.BACK_BONUS, backstab)));
+            puff(level, target.position().add(0, target.getBbHeight() * 0.6, 0), ToolRune.BACKSTAB.rune(), 8, 0.3);
+        }
+        int bleeding = strength(weapon, ToolRune.Tool.SWORD, ToolRune.BLEEDING);
+        if (bleeding > 0 && event.getSource().getEntity() instanceof Player striker && mayStrike(target, striker)
+                && level.getRandom().nextFloat() < HolderRune.at(ToolRune.BLEED_CHANCE, bleeding)) {
+            target.addEffect(new MobEffectInstance(MobEffects.WITHER, HolderRune.at(ToolRune.BLEED_TICKS, bleeding), 0), striker);
+            puff(level, target.position().add(0, target.getBbHeight() * 0.5, 0), ToolRune.BLEEDING.rune(), 8, 0.3);
+            level.sendParticles(ModParticles.drop(0x8A1C1C), target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), 8, 0.2, 0.2, 0.2, 0.05);
         }
         int chain = strength(weapon, ToolRune.Tool.SWORD, ToolRune.CHAIN_LIGHTNING);
         if (chain > 0 && event.getSource().getEntity() instanceof Player striker

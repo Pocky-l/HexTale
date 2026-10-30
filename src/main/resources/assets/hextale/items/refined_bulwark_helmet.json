@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "hextale:item/bulwark_helmet",
+    "model": {
+      "type": "hextale:bulwark",
+      "piece": "helmet"
+    }
+  }
+}

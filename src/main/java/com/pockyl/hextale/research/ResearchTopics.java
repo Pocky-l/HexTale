@@ -113,8 +113,6 @@ public final class ResearchTopics {
     /** Level 2 metal (Thaumcraft order: the metal is researched before the tools made of it). */
     public static final ResearchTopic CHARGED_HEXSTEEL = add("charged_hexsteel", 2, Essence.SPARK, Essence.METAL,
             ModItems.CHARGED_HEXSTEEL_INGOT);
-    /** Level 2 gem: the disc that engraves diamonds (the engraved diamond itself comes off the Lapidary). */
-    public static final ResearchTopic ENGRAVING_DISC = add("engraving_disc", 2, Essence.EARTH, Essence.LIGHT, ModItems.ENGRAVING_DISC);
     /** Level 3 metal. */
     public static final ResearchTopic RADIANT_ALLOY = add("radiant_alloy", 3, Essence.LIGHT, Essence.METAL, ModItems.RADIANT_ALLOY_INGOT);
     /** Level 4: the metal a held breach gives back, and the Void Crystal set in nullstone. */

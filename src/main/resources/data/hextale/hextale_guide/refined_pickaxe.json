@@ -4,6 +4,7 @@
   "icon": "hextale:refined_hextech_pickaxe",
   "parents": [
     "engraved_diamond",
+    "charged_hexsteel",
     "hextech_pickaxe",
     "hextech_axe",
     "hextech_shovel",
