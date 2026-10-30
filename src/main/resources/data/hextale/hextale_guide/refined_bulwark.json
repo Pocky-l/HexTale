@@ -1,0 +1,30 @@
+{
+  "region": "forge",
+  "stage": "mid",
+  "icon": "hextale:refined_bulwark_chestplate",
+  "parents": [
+    "refined_pickaxe",
+    "bulwark"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:refined_bulwark_helmet",
+    "then": {
+      "kind": "infusion",
+      "result": "hextale:refined_bulwark_chestplate",
+      "then": {
+        "kind": "infusion",
+        "result": "hextale:refined_bulwark_leggings",
+        "then": {
+          "kind": "infusion",
+          "result": "hextale:refined_bulwark_boots"
+        }
+      }
+    }
+  },
+  "research": "refined_bulwark",
+  "pos": [
+    980,
+    260
+  ]
+}

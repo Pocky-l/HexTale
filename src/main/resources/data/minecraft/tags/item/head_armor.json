@@ -1,6 +1,10 @@
 {
   "values": [
     "hextale:hexsteel_helmet",
-    "hextale:researcher_hood"
+    "hextale:researcher_hood",
+    "hextale:bulwark_helmet",
+    "hextale:refined_bulwark_helmet",
+    "hextale:radiant_bulwark_helmet",
+    "hextale:riftforged_bulwark_helmet"
   ]
 }

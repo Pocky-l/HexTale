@@ -1,0 +1,15 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "B B",
+    "I I"
+  ],
+  "key": {
+    "B": "#c:ingots/brass",
+    "I": "#c:ingots/iron"
+  },
+  "result": {
+    "id": "hextale:bulwark_boots"
+  },
+  "charge": 3
+}

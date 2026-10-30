@@ -1,0 +1,23 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:refined_hextech_sword",
+  "pedestals": [
+    "hextale:radiant_alloy_ingot",
+    "hextale:radiant_alloy_ingot",
+    "hextale:hextech_gemstone",
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "hextale:chem_vial",
+      "components": {
+        "hextale:brew": "acid"
+      }
+    }
+  ],
+  "essences": {
+    "magic": 72,
+    "crystal": 24
+  },
+  "result": "hextale:radiant_hextech_sword",
+  "keep_components": true,
+  "hexcore": true
+}

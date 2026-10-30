@@ -1,0 +1,16 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:radiant_tendril_dagger",
+  "pedestals": [
+    "hextale:riftmetal_ingot",
+    "hextale:sealed_void_crystal"
+  ],
+  "essences": {
+    "rift": 32,
+    "shadow": 16,
+    "magic": 16
+  },
+  "result": "hextale:riftforged_tendril_dagger",
+  "keep_components": true,
+  "hexcore": true
+}

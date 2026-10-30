@@ -1,0 +1,21 @@
+{
+  "region": "forge",
+  "stage": "mid",
+  "icon": "hextale:charged_hexsteel_ingot",
+  "parents": [
+    "hexsteel"
+  ],
+  "display": {
+    "kind": "scheme",
+    "ingredients": [
+      "hextale:hexsteel_ingot",
+      "hextale:crucible"
+    ],
+    "result": "hextale:charged_hexsteel_ingot"
+  },
+  "research": "charged_hexsteel",
+  "pos": [
+    765,
+    110
+  ]
+}

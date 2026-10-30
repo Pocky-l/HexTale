@@ -124,6 +124,28 @@ public final class ModItems {
     /** A hexsteel disc edged with diamond: finishes crystals into stabilised gemstones, and cuts raw ones twice as fast. */
     public static final DeferredItem<Item> MASTER_CUTTING_DISC = ITEMS.registerItem("master_cutting_disc",
             properties -> new Item(properties.durability(256).rarity(Rarity.UNCOMMON)));
+    /** A charged hexsteel disc with a diamond point: engraves diamonds on the Lapidary (level 2). */
+    public static final DeferredItem<Item> ENGRAVING_DISC = ITEMS.registerItem("engraving_disc",
+            properties -> new Item(properties.durability(128).rarity(Rarity.UNCOMMON)));
+    /** Cuttings of a gemstone's finish on the Lapidary: what lets gold take the Radiant Alloy's light. */
+    public static final DeferredItem<Item> GEMSTONE_DUST = ITEMS.registerSimpleItem("gemstone_dust");
+    /** Level 3 metal: white gold melted with charged hexsteel and gemstone dust at the Foundry's full heat. */
+    public static final DeferredItem<Item> RADIANT_ALLOY_INGOT = ITEMS.registerItem("radiant_alloy_ingot",
+            properties -> new Item(properties.rarity(Rarity.RARE)));
+    public static final DeferredItem<BlockItem> VOID_CRYSTAL_CLUSTER = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CRYSTAL_CLUSTER);
+    /** Level 4 gem, raw: broken off a cluster round a held breach. Too hungry to use as it is. */
+    public static final DeferredItem<Item> VOID_CRYSTAL = ITEMS.registerItem("void_crystal", properties -> new Item(properties.rarity(Rarity.RARE)));
+    /** A Void Crystal held in a nullstone setting: the stone drinks what it pulls, so it can go into a craft. */
+    public static final DeferredItem<Item> SEALED_VOID_CRYSTAL = ITEMS.registerItem("sealed_void_crystal",
+            properties -> new Item(properties.rarity(Rarity.EPIC)));
+    /** Level 4 metal: Radiant Alloy a held breach took in and gave back. */
+    public static final DeferredItem<Item> RIFTMETAL_INGOT = ITEMS.registerItem("riftmetal_ingot",
+            properties -> new Item(properties.rarity(Rarity.EPIC).fireResistant()));
+    /** Void Chitin softened in the crucible and pressed into a plate: the riftforged armour's shell. */
+    public static final DeferredItem<Item> VOID_CARAPACE = ITEMS.registerItem("void_carapace", properties -> new Item(properties.rarity(Rarity.RARE)));
+    /** Level 2 gem: a diamond cut to a brilliant with a groove that holds hextech. */
+    public static final DeferredItem<Item> ENGRAVED_DIAMOND = ITEMS.registerItem("engraved_diamond",
+            properties -> new Item(properties.rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<BlockItem> SPHALERITE_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.SPHALERITE_ORE);
     public static final DeferredItem<BlockItem> DEEPSLATE_SPHALERITE_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.DEEPSLATE_SPHALERITE_ORE);
     public static final DeferredItem<BlockItem> RAW_ZINC_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RAW_ZINC_BLOCK);
@@ -134,6 +156,8 @@ public final class ModItems {
     public static final DeferredItem<Item> ZINC_NUGGET = ITEMS.registerSimpleItem("zinc_nugget");
     /** Iron melted with coal and hextech dust in the Hex Furnace: the metal of the better hextech tools. */
     public static final DeferredItem<Item> HEXSTEEL_INGOT = ITEMS.registerSimpleItem("hexsteel_ingot");
+    /** Level 2 metal: hexsteel that drank lightning and metal in the crucible (or was quenched in coolant on a burner). */
+    public static final DeferredItem<Item> CHARGED_HEXSTEEL_INGOT = ITEMS.registerSimpleItem("charged_hexsteel_ingot");
     public static final DeferredItem<BlockItem> BRASS_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_BLOCK);
     public static final DeferredItem<BlockItem> GATHERING_PYLON = ITEMS.registerSimpleBlockItem(ModBlocks.GATHERING_PYLON,
             properties -> properties.rarity(Rarity.UNCOMMON));
@@ -287,7 +311,8 @@ public final class ModItems {
     private static final ToolMaterial[] PICKAXE_MATERIALS = {
             new ToolMaterial(BlockTags.INCORRECT_FOR_IRON_TOOL, 750, 7.0F, 2.0F, 14, ModTags.HEXTECH_TOOL_MATERIALS),
             new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1800, 9.0F, 3.0F, 12, ModTags.HEXTECH_TOOL_MATERIALS),
-            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2800, 10.5F, 4.0F, 16, ModTags.HEXTECH_TOOL_MATERIALS)};
+            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 2800, 10.5F, 4.0F, 16, ModTags.HEXTECH_TOOL_MATERIALS),
+            new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 4000, 12.0F, 5.0F, 18, ModTags.HEXTECH_TOOL_MATERIALS)};
     /** The three hextech pickaxes; runes are burned into them at the altar. */
     public static final Map<HextechPickaxe, DeferredItem<HextechPickaxeItem>> PICKAXES = new EnumMap<>(HextechPickaxe.class);
 
@@ -295,8 +320,8 @@ public final class ModItems {
         for (HextechPickaxe kind : HextechPickaxe.values()) {
             PICKAXES.put(kind, ITEMS.registerItem(kind.id(), properties -> {
                 Item.Properties p = properties.pickaxe(PICKAXE_MATERIALS[kind.tier() - 1], 1.0F, -2.8F)
-                        .rarity(kind == HextechPickaxe.RADIANT ? Rarity.EPIC : kind == HextechPickaxe.REFINED ? Rarity.RARE : Rarity.UNCOMMON);
-                return new HextechPickaxeItem(kind, kind == HextechPickaxe.RADIANT ? p.fireResistant() : p);
+                        .rarity(kind.tier() >= 3 ? Rarity.EPIC : kind == HextechPickaxe.REFINED ? Rarity.RARE : Rarity.UNCOMMON);
+                return new HextechPickaxeItem(kind, kind.tier() >= 3 ? p.fireResistant() : p);
             }));
         }
     }
@@ -312,6 +337,38 @@ public final class ModItems {
             properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[0], 1.5F, -3.0F).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<HextechToolItem> HEXTECH_SWORD = ITEMS.registerItem("hextech_sword",
             properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[0], 3.0F, -2.4F).rarity(Rarity.UNCOMMON)));
+    // The refined (diamond) and radiant (netherite) axe, shovel and sword: refined at the altar like the pickaxe, runes kept.
+    public static final DeferredItem<HextechToolItem> REFINED_AXE = ITEMS.registerItem("refined_hextech_axe",
+            properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[1], 5.0F, -3.0F).rarity(Rarity.RARE)));
+    public static final DeferredItem<HextechToolItem> RADIANT_AXE = ITEMS.registerItem("radiant_hextech_axe",
+            properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[2], 5.0F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<HextechToolItem> REFINED_SHOVEL = ITEMS.registerItem("refined_hextech_shovel",
+            properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[1], 1.5F, -3.0F).rarity(Rarity.RARE)));
+    public static final DeferredItem<HextechToolItem> RADIANT_SHOVEL = ITEMS.registerItem("radiant_hextech_shovel",
+            properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[2], 1.5F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<HextechToolItem> REFINED_SWORD = ITEMS.registerItem("refined_hextech_sword",
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[1], 3.0F, -2.4F).rarity(Rarity.RARE)));
+    public static final DeferredItem<HextechToolItem> RADIANT_SWORD = ITEMS.registerItem("radiant_hextech_sword",
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[2], 3.0F, -2.4F).rarity(Rarity.EPIC).fireResistant()));
+    // The Tendril Dagger in the four levels: quick, fits the off hand, thrown it comes back along a tendril of light.
+    public static final DeferredItem<com.pockyl.hextale.runework.TendrilDaggerItem> TENDRIL_DAGGER = ITEMS.registerItem("tendril_dagger",
+            properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[0], 1.5F, -1.6F).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<com.pockyl.hextale.runework.TendrilDaggerItem> REFINED_TENDRIL_DAGGER = ITEMS.registerItem("refined_tendril_dagger",
+            properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[1], 1.5F, -1.6F).rarity(Rarity.RARE)));
+    public static final DeferredItem<com.pockyl.hextale.runework.TendrilDaggerItem> RADIANT_TENDRIL_DAGGER = ITEMS.registerItem("radiant_tendril_dagger",
+            properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[2], 1.5F, -1.6F).rarity(Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.TendrilDaggerItem> RIFTFORGED_TENDRIL_DAGGER = ITEMS.registerItem("riftforged_tendril_dagger",
+            properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[3], 1.5F, -1.6F).rarity(Rarity.EPIC).fireResistant()));
+    /** The Strike Gauntlet: a charged punch that breaks rock or throws creatures back (late, radiant level). */
+    public static final DeferredItem<com.pockyl.hextale.runework.StrikeGauntletItem> STRIKE_GAUNTLET = ITEMS.registerItem("strike_gauntlet",
+            properties -> new com.pockyl.hextale.runework.StrikeGauntletItem(properties.durability(1800).rarity(Rarity.EPIC).fireResistant()));
+    // Level 4, forged with the Void on the Hexcore.
+    public static final DeferredItem<HextechToolItem> RIFTFORGED_AXE = ITEMS.registerItem("riftforged_axe",
+            properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[3], 5.0F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<HextechToolItem> RIFTFORGED_SHOVEL = ITEMS.registerItem("riftforged_shovel",
+            properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[3], 1.5F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<HextechToolItem> RIFTFORGED_SWORD = ITEMS.registerItem("riftforged_sword",
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[3], 3.0F, -2.4F).rarity(Rarity.EPIC).fireResistant()));
 
     /** Hexsteel tools: as strong as diamond ones, repaired with hexsteel. */
     private static final ToolMaterial HEXSTEEL_TOOLS = new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1561, 8.0F, 3.0F, 10,
@@ -340,6 +397,67 @@ public final class ModItems {
             properties -> new Item(properties.humanoidArmor(HEXSTEEL_ARMOR, ArmorType.LEGGINGS)));
     public static final DeferredItem<Item> HEXSTEEL_BOOTS = ITEMS.registerItem("hexsteel_boots",
             properties -> new Item(properties.humanoidArmor(HEXSTEEL_ARMOR, ArmorType.BOOTS)));
+
+
+    // Bulwark armour in four levels (brass over blued steel, a crystal heart in the chestplate). The look is a placeholder
+    // (the hexsteel equipment asset) until its worn models are wired in.
+    private static final ArmorMaterial[] BULWARK_ARMOR = {
+            new ArmorMaterial(20, Map.of(ArmorType.BOOTS, 2, ArmorType.LEGGINGS, 5, ArmorType.CHESTPLATE, 6, ArmorType.HELMET, 2, ArmorType.BODY, 5),
+                    14, SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET),
+            new ArmorMaterial(33, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
+                    12, SoundEvents.ARMOR_EQUIP_DIAMOND, 2.0F, 0.0F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET),
+            new ArmorMaterial(37, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 6, ArmorType.CHESTPLATE, 8, ArmorType.HELMET, 3, ArmorType.BODY, 11),
+                    16, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.1F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET),
+            new ArmorMaterial(42, Map.of(ArmorType.BOOTS, 3, ArmorType.LEGGINGS, 7, ArmorType.CHESTPLATE, 9, ArmorType.HELMET, 3, ArmorType.BODY, 13),
+                    18, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.15F, ModTags.REPAIRS_HEXSTEEL, HEXSTEEL_ASSET)};
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> BULWARK_HELMET = ITEMS.registerItem("bulwark_helmet",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.HELMET,
+                    properties.humanoidArmor(BULWARK_ARMOR[0], ArmorType.HELMET)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> BULWARK_CHESTPLATE = ITEMS.registerItem("bulwark_chestplate",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.CHESTPLATE,
+                    properties.humanoidArmor(BULWARK_ARMOR[0], ArmorType.CHESTPLATE)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> BULWARK_LEGGINGS = ITEMS.registerItem("bulwark_leggings",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.LEGGINGS,
+                    properties.humanoidArmor(BULWARK_ARMOR[0], ArmorType.LEGGINGS)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> BULWARK_BOOTS = ITEMS.registerItem("bulwark_boots",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.BOOTS,
+                    properties.humanoidArmor(BULWARK_ARMOR[0], ArmorType.BOOTS)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> REFINED_BULWARK_HELMET = ITEMS.registerItem("refined_bulwark_helmet",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.HELMET,
+                    properties.humanoidArmor(BULWARK_ARMOR[1], ArmorType.HELMET)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> REFINED_BULWARK_CHESTPLATE = ITEMS.registerItem("refined_bulwark_chestplate",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.CHESTPLATE,
+                    properties.humanoidArmor(BULWARK_ARMOR[1], ArmorType.CHESTPLATE)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> REFINED_BULWARK_LEGGINGS = ITEMS.registerItem("refined_bulwark_leggings",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.LEGGINGS,
+                    properties.humanoidArmor(BULWARK_ARMOR[1], ArmorType.LEGGINGS)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> REFINED_BULWARK_BOOTS = ITEMS.registerItem("refined_bulwark_boots",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.BOOTS,
+                    properties.humanoidArmor(BULWARK_ARMOR[1], ArmorType.BOOTS)));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RADIANT_BULWARK_HELMET = ITEMS.registerItem("radiant_bulwark_helmet",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.HELMET,
+                    properties.humanoidArmor(BULWARK_ARMOR[2], ArmorType.HELMET).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RADIANT_BULWARK_CHESTPLATE = ITEMS.registerItem("radiant_bulwark_chestplate",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.CHESTPLATE,
+                    properties.humanoidArmor(BULWARK_ARMOR[2], ArmorType.CHESTPLATE).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RADIANT_BULWARK_LEGGINGS = ITEMS.registerItem("radiant_bulwark_leggings",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.LEGGINGS,
+                    properties.humanoidArmor(BULWARK_ARMOR[2], ArmorType.LEGGINGS).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RADIANT_BULWARK_BOOTS = ITEMS.registerItem("radiant_bulwark_boots",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.BOOTS,
+                    properties.humanoidArmor(BULWARK_ARMOR[2], ArmorType.BOOTS).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RIFTFORGED_BULWARK_HELMET = ITEMS.registerItem("riftforged_bulwark_helmet",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.HELMET,
+                    properties.humanoidArmor(BULWARK_ARMOR[3], ArmorType.HELMET).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RIFTFORGED_BULWARK_CHESTPLATE = ITEMS.registerItem("riftforged_bulwark_chestplate",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.CHESTPLATE,
+                    properties.humanoidArmor(BULWARK_ARMOR[3], ArmorType.CHESTPLATE).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RIFTFORGED_BULWARK_LEGGINGS = ITEMS.registerItem("riftforged_bulwark_leggings",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.LEGGINGS,
+                    properties.humanoidArmor(BULWARK_ARMOR[3], ArmorType.LEGGINGS).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.BulwarkArmorItem> RIFTFORGED_BULWARK_BOOTS = ITEMS.registerItem("riftforged_bulwark_boots",
+            properties -> new com.pockyl.hextale.runework.BulwarkArmorItem(ArmorType.BOOTS,
+                    properties.humanoidArmor(BULWARK_ARMOR[3], ArmorType.BOOTS).fireResistant()));
 
     /** Wool soaked in the crucible: heavy and warm, and the essence never washes out of it. */
     public static final DeferredItem<Item> ARCANE_CLOTH = ITEMS.registerSimpleItem("arcane_cloth");

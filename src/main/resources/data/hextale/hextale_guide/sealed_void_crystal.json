@@ -1,0 +1,17 @@
+{
+  "region": "void",
+  "stage": "late",
+  "icon": "hextale:sealed_void_crystal",
+  "parents": [
+    "void_crystal"
+  ],
+  "display": {
+    "kind": "hex_crafting",
+    "result": "hextale:sealed_void_crystal"
+  },
+  "research": "sealed_void_crystal",
+  "pos": [
+    780,
+    930
+  ]
+}

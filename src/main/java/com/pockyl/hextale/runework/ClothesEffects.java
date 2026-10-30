@@ -354,7 +354,8 @@ public final class ClothesEffects {
     @SubscribeEvent
     public static void onAttributes(ItemAttributeModifierEvent event) {
         ItemStack stack = event.getItemStack();
-        if (stack.is(ModItems.RESEARCHER_TROUSERS.get())) {
+        RuneHolder holder = RuneHolder.of(stack);
+        if (holder == RuneHolder.TROUSERS) {
             PickaxeRunes runes = RuneHolder.TROUSERS.runes(stack);
             add(event, runes, ClothesRune.TROUSERS_HASTE, Attributes.MOVEMENT_SPEED, ClothesRune.SPEED,
                     AttributeModifier.Operation.ADD_MULTIPLIED_BASE, EquipmentSlotGroup.LEGS);
@@ -364,7 +365,7 @@ public final class ClothesEffects {
                     AttributeModifier.Operation.ADD_VALUE, EquipmentSlotGroup.LEGS);
             add(event, runes, ClothesRune.TROUSERS_SHIFT, Attributes.STEP_HEIGHT, ClothesRune.STEP,
                     AttributeModifier.Operation.ADD_VALUE, EquipmentSlotGroup.LEGS);
-        } else if (stack.is(ModItems.RESEARCHER_BOOTS.get())) {
+        } else if (holder == RuneHolder.BOOTS) {
             add(event, RuneHolder.BOOTS.runes(stack), ClothesRune.BOOTS_WAVEWALK, Attributes.WATER_MOVEMENT_EFFICIENCY, ClothesRune.SWIM,
                     AttributeModifier.Operation.ADD_VALUE, EquipmentSlotGroup.FEET);
         }

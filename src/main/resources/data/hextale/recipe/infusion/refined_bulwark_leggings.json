@@ -1,0 +1,16 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:bulwark_leggings",
+  "pedestals": [
+    "hextale:charged_hexsteel_ingot",
+    "hextale:charged_hexsteel_ingot",
+    "hextale:engraved_diamond"
+  ],
+  "essences": {
+    "metal": 32,
+    "ore": 24,
+    "crystal": 16
+  },
+  "result": "hextale:refined_bulwark_leggings",
+  "keep_components": true
+}

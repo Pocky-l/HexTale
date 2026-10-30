@@ -31,6 +31,12 @@ public final class ModEntities {
                     .noLootTable().noSave().sized(0.25F, 0.25F).clientTrackingRange(8).updateInterval(1)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
+    /** A thrown Tendril Dagger: bites, then comes back along its tendril of light. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.ThrownDagger>> THROWN_DAGGER = ENTITIES.register("thrown_dagger",
+            id -> EntityType.Builder.<com.pockyl.hextale.entity.ThrownDagger>of(com.pockyl.hextale.entity.ThrownDagger::new, MobCategory.MISC)
+                    .noLootTable().sized(0.4F, 0.4F).eyeHeight(0.13F).clientTrackingRange(4).updateInterval(20)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
     /** A Chem Vial thrown like a splash potion: it shatters and splashes its brew. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.pockyl.hextale.entity.ThrownChemVial>> THROWN_CHEM_VIAL =
             ENTITIES.register("thrown_chem_vial", id -> EntityType.Builder.<com.pockyl.hextale.entity.ThrownChemVial>of(

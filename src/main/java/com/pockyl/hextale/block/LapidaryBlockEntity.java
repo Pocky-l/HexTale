@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -56,6 +57,8 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
     /** Dust a shattered crystal leaves, by grade. */
     public static final int FIRST_DUST = 2;
     public static final int FINISH_DUST = 5;
+    /** Gemstone dust a finished gemstone leaves on the bench. */
+    public static final int GEMSTONE_CUTTINGS = 2;
     private static final int[] TOP = {INPUT};
     private static final int[] SIDES = {DISC};
     private static final int[] BOTTOM = {OUTPUT};
@@ -81,6 +84,9 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
         boolean master = disc.is(ModItems.MASTER_CUTTING_DISC.get());
         if (crystal.is(ModItems.UNSTABLE_HEXTECH.get()) && (master || disc.is(ModItems.CUTTING_DISC.get()))) {
             return Cleavage.Grade.FIRST;
+        }
+        if (crystal.is(Items.DIAMOND) && disc.is(ModItems.ENGRAVING_DISC.get())) {
+            return Cleavage.Grade.ENGRAVE;
         }
         return crystal.is(ModItems.HEXTECH_CRYSTAL.get()) && master ? Cleavage.Grade.FINISH : null;
     }
@@ -189,11 +195,20 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
     /** The cut is over: the next grade of crystal, or dust when it shattered; the disc wears. */
     private void finish(ServerLevel level, Cleavage.Cut cut) {
         boolean success = cut.finished() && !cut.shattered();
-        ItemStack made = success
-                ? new ItemStack(cut.grade == Cleavage.Grade.FIRST ? ModItems.HEXTECH_CRYSTAL.get() : ModItems.HEXTECH_GEMSTONE.get())
+        ItemStack made = success ? new ItemStack(switch (cut.grade) {
+            case FIRST -> ModItems.HEXTECH_CRYSTAL.get();
+            case FINISH -> ModItems.HEXTECH_GEMSTONE.get();
+            case ENGRAVE -> ModItems.ENGRAVED_DIAMOND.get();
+        }) : cut.grade == Cleavage.Grade.ENGRAVE
+                // A diamond only takes the groove badly: it comes back whole, the disc pays.
+                ? new ItemStack(Items.DIAMOND)
                 : new ItemStack(ModItems.HEXTECH_DUST.get(), cut.grade == Cleavage.Grade.FIRST ? FIRST_DUST : FINISH_DUST);
         items.get(INPUT).shrink(1);
         items.set(OUTPUT, made);
+        if (success && cut.grade == Cleavage.Grade.FINISH) {
+            // The finish leaves bright cuttings on the bench: the gold of the Radiant Alloy wants them.
+            net.minecraft.world.level.block.Block.popResource(level, worldPosition.above(), new ItemStack(ModItems.GEMSTONE_DUST.get(), GEMSTONE_CUTTINGS));
+        }
         ItemStack disc = items.get(DISC);
         disc.hurtAndBreak(1 + cut.cracks, level, null, item -> { });
         outcome = success ? 1 : -1;
@@ -255,8 +270,9 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
 
     public static boolean accepts(int slot, ItemStack stack) {
         return switch (slot) {
-            case INPUT -> stack.is(ModItems.UNSTABLE_HEXTECH.get()) || stack.is(ModItems.HEXTECH_CRYSTAL.get());
-            case DISC -> stack.is(ModItems.CUTTING_DISC.get()) || stack.is(ModItems.MASTER_CUTTING_DISC.get());
+            case INPUT -> stack.is(ModItems.UNSTABLE_HEXTECH.get()) || stack.is(ModItems.HEXTECH_CRYSTAL.get()) || stack.is(Items.DIAMOND);
+            case DISC -> stack.is(ModItems.CUTTING_DISC.get()) || stack.is(ModItems.MASTER_CUTTING_DISC.get())
+                    || stack.is(ModItems.ENGRAVING_DISC.get());
             default -> false;
         };
     }

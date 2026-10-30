@@ -6,6 +6,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Strike Gauntlet, made on the Hexcore: hold Use to charge it in three beats, release to punch. At a block within
+  reach it breaks it - a 3 x 3 face from the second beat, two deep at the third; into the air it sends a shockwave
+  that hurts and throws back the creatures in front. Held too long, it vents its steam and starts over, never hurting
+  its wearer. It takes the sword's runes, three of them.
+- Tendril Dagger in four levels, researched and refined with the tools of its level: a quick blade that takes the
+  sword's runes. In the off hand beside another weapon it strikes along with every blow. Held and released after a
+  short swing it is thrown, bites the first creature it meets and always comes back along a tendril of light.
+- Bulwark armour in four levels (Bulwark, Refined, Radiant, Riftforged), each set opened by one research and made
+  from its level's materials like the tools. Every piece takes the runes of the clothes piece of its slot - one at
+  the first level, up to four. The cuirass carries a crystal heart: raw hextech clicked onto it charges it, and while
+  charged it soaks 30-60% of every blow armour can stop. Run dry, it cracks open with a flash that throws the
+  creatures round you back, and soaks nothing until it is charged full again.
+- Radiant Alloy: the Hex Foundry at full heat melts two gold, a Charged Hexsteel and Gemstone Dust (the bright
+  cuttings every gemstone finish now leaves on the Lapidary) into two ingots of white gold; Refined Shimmer does
+  instead of the dust, quicker, but it thins the land. Ore melts beside an alloy as before.
+- Radiant tools are made on the Hexcore only, from two Radiant Alloy, a gemstone and a vial of Acid that etches the
+  light into the metal.
+- Charged Hexsteel: a hexsteel ingot laid into a Crucible that holds lightning and metal comes out charged - the
+  metal of the refined tools. Coolant splashed on hexsteel lying on a lit Chem Burner charges it at once, but the
+  fumes thin the land.
+- Engraving Disc and Engraved Diamond: the Lapidary cuts a diamond to a brilliant and engraves it (a cracked
+  diamond comes back whole). Refined tools are now made of two Charged Hexsteel and an Engraved Diamond instead of
+  gemstones and diamonds.
+- Refined and Radiant Axe, Shovel and Sword: refined at the altar like the pickaxe (the same research opens all four
+  of a tier), with every rune carried over. Refined tools hold two runes, radiant ones three.
+- Riftforged Pickaxe, Axe, Shovel and Sword: a radiant tool forged on the Hexcore with two Riftmetal, a Sealed Void
+  Crystal and a Void Shard holds a fourth rune and keeps every rune it had.
+- Riftmetal: Radiant Alloy thrown into a held breach is kept a while and given back black, with violet sparks inside.
+- Void Crystals grow on Void Rock round a held breach; set in nullstone at the workbench they become Sealed Void
+  Crystals. Void Chitin softened in a crucible that holds decay becomes Void Carapace.
 - Runes can be burned in weaker than you know them: click a star in the stele's list to pick the strength (the number
   and the price follow). A 3-star Drill no longer forces a 5×5 hole - pick one star for 3×3. A rune already on the item
   is set to exactly the picked strength, weaker too; without a pick a rune is only ever raised, as before.
@@ -38,6 +68,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     animals it fells drop their meat cooked.
 
 ### Changed
+- Runes now grow with the tool: a first Runed Pickaxe, Axe, Shovel or Sword holds one rune, a Refined Pickaxe two and
+  a Radiant Pickaxe three, a Riftforged one four. Runes already burned into your tools stay and keep working; only new runes past the
+  limit are refused.
 - Chain Lightning on the sword is felt now: it fires more often (20/30/40%), its spark always bites the struck creature
   for extra damage with a visible arc, and then leaps on - to hostile creatures, or from an animal to others of its
   kind. It never touches players, pets or villagers. Before, it did nothing at all unless another hostile creature

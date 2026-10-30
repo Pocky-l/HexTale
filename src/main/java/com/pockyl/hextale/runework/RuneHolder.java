@@ -187,13 +187,16 @@ public enum RuneHolder {
         if (item == ModItems.VOID_ANCHOR.get()) {
             return ANCHOR;
         }
-        if (item == ModItems.HEXTECH_AXE.get()) {
+        if (item == ModItems.HEXTECH_AXE.get() || item == ModItems.REFINED_AXE.get() || item == ModItems.RADIANT_AXE.get()
+                || item == ModItems.RIFTFORGED_AXE.get()) {
             return AXE;
         }
-        if (item == ModItems.HEXTECH_SHOVEL.get()) {
+        if (item == ModItems.HEXTECH_SHOVEL.get() || item == ModItems.REFINED_SHOVEL.get() || item == ModItems.RADIANT_SHOVEL.get()
+                || item == ModItems.RIFTFORGED_SHOVEL.get()) {
             return SHOVEL;
         }
-        if (item == ModItems.HEXTECH_SWORD.get()) {
+        if (item == ModItems.HEXTECH_SWORD.get() || item == ModItems.REFINED_SWORD.get() || item == ModItems.RADIANT_SWORD.get()
+                || item == ModItems.RIFTFORGED_SWORD.get()) {
             return SWORD;
         }
         if (item == ModItems.RESEARCHER_HOOD.get()) {
@@ -207,6 +210,19 @@ public enum RuneHolder {
         }
         if (item == ModItems.RESEARCHER_BOOTS.get()) {
             return BOOTS;
+        }
+        if (item instanceof TendrilDaggerItem || item instanceof StrikeGauntletItem) {
+            // A dagger is a short sword: it takes the sword's runes.
+            return SWORD;
+        }
+        if (item instanceof BulwarkArmorItem bulwark) {
+            // Bulwark takes the runes of the clothes piece worn in the same slot.
+            return switch (bulwark.type()) {
+                case HELMET -> HOOD;
+                case CHESTPLATE -> ROBE;
+                case LEGGINGS -> TROUSERS;
+                default -> BOOTS;
+            };
         }
         return ModItems.isPylon(stack) ? PYLON : null;
     }
@@ -232,8 +248,22 @@ public enum RuneHolder {
         }
     }
 
+    /** The most runes an item of this holder can hold (a tool or worn piece only at its best, riftforged level). */
     public int slots() {
-        return slots;
+        return laddered() ? RuneTier.MAX : slots;
+    }
+
+    /** The rune places of this very item: tools and worn pieces get more with their tier ({@link RuneTier}). */
+    public int slots(ItemStack item) {
+        return laddered() ? RuneTier.slots(item) : slots;
+    }
+
+    /** Whether the holder's items climb the rune ladder: tools, weapons and clothes. */
+    public boolean laddered() {
+        return switch (this) {
+            case PICKAXE, AXE, SHOVEL, SWORD, HOOD, ROBE, TROUSERS, BOOTS -> true;
+            default -> false;
+        };
     }
 
     /** Every rune it takes, in the order the book and JEI show them. */

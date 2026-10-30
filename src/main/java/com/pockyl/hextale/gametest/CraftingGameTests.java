@@ -84,8 +84,9 @@ public final class CraftingGameTests {
     public static void theClothesTakeOneRuneEach(GameTestHelper helper) {
         var pieces = java.util.List.of(ModItems.RESEARCHER_HOOD, ModItems.RESEARCHER_ROBE, ModItems.RESEARCHER_TROUSERS, ModItems.RESEARCHER_BOOTS);
         for (var piece : pieces) {
-            var holder = com.pockyl.hextale.runework.RuneHolder.of(new ItemStack(piece.get()));
-            helper.assertTrue(holder != null && holder.slots() == 1 && holder.holderRunes().size() >= 4, piece.getId() + " takes one of its runes");
+            ItemStack worn = new ItemStack(piece.get());
+            var holder = com.pockyl.hextale.runework.RuneHolder.of(worn);
+            helper.assertTrue(holder != null && holder.slots(worn) == 1 && holder.holderRunes().size() >= 4, piece.getId() + " takes one of its runes");
         }
         ItemStack trousers = new ItemStack(ModItems.RESEARCHER_TROUSERS.get());
         com.pockyl.hextale.runework.RuneHolder.TROUSERS.set(trousers, com.pockyl.hextale.runework.PickaxeRunes.EMPTY
@@ -219,6 +220,28 @@ public final class CraftingGameTests {
             helper.assertTrue(lapidary.getItem(LapidaryBlockEntity.OUTPUT).is(ModItems.HEXTECH_CRYSTAL.get()), "the orb is cut into a crystal");
         helper.assertTrue(lapidary.getItem(LapidaryBlockEntity.INPUT).isEmpty(), "the orb is gone from the clamp");
             helper.assertTrue(lapidary.getItem(LapidaryBlockEntity.DISC).getDamageValue() >= 1, "the disc wore");
+            helper.succeed();
+        });
+    }
+
+    /** An Engraving Disc engraves a diamond on the Lapidary into the level 2 gem; other discs leave diamonds alone. */
+    @HexTest(maxTicks = 500)
+    public static void theLapidaryEngravesADiamond(GameTestHelper helper) {
+        helper.assertTrue(LapidaryBlockEntity.grade(new ItemStack(net.minecraft.world.item.Items.DIAMOND),
+                new ItemStack(ModItems.MASTER_CUTTING_DISC.get())) == null, "a cutting disc does not engrave");
+        helper.setBlock(AT, ModBlocks.HEX_LAPIDARY.get());
+        LapidaryBlockEntity lapidary = helper.getBlockEntity(AT, LapidaryBlockEntity.class);
+        lapidary.setItem(LapidaryBlockEntity.DISC, new ItemStack(ModItems.ENGRAVING_DISC.get()));
+        lapidary.setItem(LapidaryBlockEntity.INPUT, new ItemStack(net.minecraft.world.item.Items.DIAMOND));
+        ServerPlayer worker = helper.makeMockServerPlayerInLevel();
+        Cleavage.Cut cut = lapidary.cut();
+        helper.assertTrue(cut != null && cut.grade == Cleavage.Grade.ENGRAVE, "a diamond on the engraving disc is an engraving");
+        for (int i = 0; i < cut.planes.length; i++) {
+            float plane = cut.planes[i];
+            helper.runAfterDelay(1 + i * 70L, () -> lapidary.stroke(worker, plane, Cleavage.Grade.ENGRAVE.grindTicks));
+        }
+        helper.runAfterDelay(1 + cut.planes.length * 70L, () -> {
+            helper.assertTrue(lapidary.getItem(LapidaryBlockEntity.OUTPUT).is(ModItems.ENGRAVED_DIAMOND.get()), "the diamond is engraved");
             helper.succeed();
         });
     }

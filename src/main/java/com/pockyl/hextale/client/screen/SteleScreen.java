@@ -186,7 +186,7 @@ public class SteleScreen extends Screen {
                 all.add(current());
             }
             subtitle = Component.translatable("gui.hextale.stele.for_slots", altarItem.getHoverName(),
-                    Ritual.carried(altarItem, all).size(), holder.slots());
+                    Ritual.carried(altarItem, all).size(), holder.slots(altarItem));
         }
         HexPlate.centered(graphics, font, subtitle, left + w / 2, top + 20, textWidth, HexPlate.MUTED);
 

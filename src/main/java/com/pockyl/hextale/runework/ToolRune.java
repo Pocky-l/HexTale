@@ -10,8 +10,8 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The runes the hextech axe, shovel and sword take, like the pickaxe's: up to {@link PickaxeRunes#SLOTS} burned in at
- * the Hextech Altar, kept in the same {@code hextale:pickaxe_runes} component. Each rune belongs to the tools it names
+ * The runes the hextech axe, shovel and sword take, like the pickaxe's: as many as the tool's tier holds
+ * ({@link RuneTier}), burned in at the Rune Circle, kept in the same {@code hextale:pickaxe_runes} component. Each rune belongs to the tools it names
  * (Mending and Haste to more than one). Strength = stars (1-3). The effects live in {@link ToolEffects}.
  */
 public enum ToolRune implements HolderRune {
