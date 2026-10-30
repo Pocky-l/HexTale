@@ -4,6 +4,19 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - Unreleased
+### Fixed
+- A player who knew very much - the Scroll of Omniscience in a big modpack, or simply thousands of studied items - was
+  disconnected on joining and could never get back into the world ([#4](https://github.com/Pocky-l/HexTale/issues/4)).
+  Such worlds load again with this version.
+- The Boiling page in [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) no longer vanishes when another mod's item
+  breaks JEI's item comparison (seen with [PackagedAuto](https://www.curseforge.com/minecraft/mc-mods/packagedauto)).
+- A Soul Flask refuses a creature that carries too much (a chested mount full of shulker boxes, or of flasks): the
+  holder of such a flask was disconnected at every join.
+- A Pylon Filter keeps only the picture of what is laid into its slots: filters of filters (or of filled shulker boxes)
+  could grow into an item too big to send.
+- The Crucible no longer loses results when it makes more than a stack at once and the world saves in that moment.
+
 ## [1.6.0] - 2026-10-29
 Hextech against chemtech: the quick, cheap and dirty road against the slow, clean one.
 

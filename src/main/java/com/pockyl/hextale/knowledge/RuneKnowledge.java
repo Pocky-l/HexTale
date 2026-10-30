@@ -4,9 +4,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 import com.pockyl.hextale.quest.Quest;
 import com.pockyl.hextale.research.ResearchTopic;
@@ -49,7 +52,14 @@ public final class RuneKnowledge {
     ).apply(instance, RuneKnowledge::new));
     public static final Codec<RuneKnowledge> CODEC = MAP_CODEC.codec();
 
-    private static final StreamCodec<ByteBuf, List<String>> STRINGS = ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list(4096));
+    /** No size cap: a cap the knowledge outgrows would disconnect the player at every login. */
+    private static final StreamCodec<ByteBuf, List<String>> STRINGS = ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list());
+    /**
+     * Studied items travel as item registry ids: a big pack has tens of thousands of items with essences, and the Scroll
+     * of Omniscience studies them all. Ids of items the registry no longer has stay on the server.
+     */
+    private static final StreamCodec<ByteBuf, List<String>> STUDIED =
+            ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()).map(RuneKnowledge::itemKeys, RuneKnowledge::itemIds);
     private static final StreamCodec<ByteBuf, Map<String, Integer>> INTS =
             ByteBufCodecs.map(LinkedHashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_INT);
     private static final StreamCodec<ByteBuf, Map<String, List<Long>>> BITS =
@@ -58,7 +68,7 @@ public final class RuneKnowledge {
             INTS, RuneKnowledge::starsByKey,
             STRINGS, k -> List.copyOf(k.researched),
             BITS, k -> bitsByKey(k.seen),
-            STRINGS, k -> List.copyOf(k.studied),
+            STUDIED, k -> List.copyOf(k.studied),
             STRINGS, k -> List.copyOf(k.quests),
             INTS, k -> new LinkedHashMap<>(k.attempts),
             STRINGS, k -> List.copyOf(k.observed),
@@ -120,6 +130,28 @@ public final class RuneKnowledge {
         Map<String, Integer> out = new LinkedHashMap<>();
         stars.forEach((rune, value) -> out.put(rune.key(), value));
         return out;
+    }
+
+    private static List<Integer> itemIds(List<String> keys) {
+        List<Integer> ids = new ArrayList<>(keys.size());
+        for (String key : keys) {
+            Identifier id = Identifier.tryParse(key);
+            if (id != null) {
+                BuiltInRegistries.ITEM.getOptional(id).ifPresent(item -> ids.add(BuiltInRegistries.ITEM.getId(item)));
+            }
+        }
+        return ids;
+    }
+
+    private static List<String> itemKeys(List<Integer> ids) {
+        List<String> keys = new ArrayList<>(ids.size());
+        for (int id : ids) {
+            Item item = BuiltInRegistries.ITEM.byId(id);
+            if (item != Items.AIR) {
+                keys.add(BuiltInRegistries.ITEM.getKey(item).toString());
+            }
+        }
+        return keys;
     }
 
     private static void readBits(Map<String, List<Long>> in, Map<String, BitSet> out) {

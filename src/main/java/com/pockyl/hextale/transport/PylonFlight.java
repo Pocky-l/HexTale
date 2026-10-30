@@ -30,7 +30,7 @@ public record PylonFlight(ItemStack icon, List<Vec3> path, boolean gathered, int
             ByteBufCodecs.FLOAT, v -> (float) v.x, ByteBufCodecs.FLOAT, v -> (float) v.y, ByteBufCodecs.FLOAT, v -> (float) v.z, Vec3::new);
     public static final StreamCodec<RegistryFriendlyByteBuf, PylonFlight> STREAM_CODEC = StreamCodec.composite(
             ItemStack.OPTIONAL_STREAM_CODEC, PylonFlight::icon,
-            VEC.apply(ByteBufCodecs.list(12)), PylonFlight::path,
+            VEC.apply(ByteBufCodecs.list(com.pockyl.hextale.block.HexPylonBlockEntity.MAX_HOPS + 4)), PylonFlight::path,
             ByteBufCodecs.BOOL, PylonFlight::gathered,
             ByteBufCodecs.INT, PylonFlight::color,
             PylonFlight::new);

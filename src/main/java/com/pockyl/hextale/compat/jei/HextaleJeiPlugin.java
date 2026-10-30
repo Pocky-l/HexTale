@@ -111,10 +111,12 @@ public class HextaleJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
+        // The stacks JEI already shows, one per item: a bare default stack of another mod's item may break that mod's
+        // subtype interpreter, and JEI then drops the whole recipe (PackagedAuto's package, GitHub issue #4).
         List<ItemStack> boilable = new ArrayList<>();
-        for (var item : BuiltInRegistries.ITEM) {
-            ItemStack stack = item.getDefaultInstance();
-            if (ResearchItems.of(stack) != null && !EssenceFlaskItem.isFlask(stack)) {
+        java.util.Set<net.minecraft.world.item.Item> seen = new java.util.HashSet<>();
+        for (ItemStack stack : registration.getIngredientManager().getAllIngredients(mezz.jei.api.constants.VanillaTypes.ITEM_STACK)) {
+            if (ResearchItems.of(stack) != null && !EssenceFlaskItem.isFlask(stack) && seen.add(stack.getItem())) {
                 boilable.add(stack);
             }
         }
