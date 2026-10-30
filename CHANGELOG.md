@@ -4,6 +4,23 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1+1.21.1] - Unreleased
+### Fixed
+- Recipes that asked for iron bars (Lapidary, Foundry, Chem Still, Miasma Vent, Pink Brazier, Spawner Cage) showed an
+  empty "c:bars/iron" tag and could not be made: Minecraft 1.21.1 has no such tag, they take Iron Bars now
+  ([#3](https://github.com/Pocky-l/HexTale/issues/3)).
+- The last growth stages of the Hollowbloom showed the missing-model cube: their glowing cross is drawn by the mod now.
+- A player who knew very much - the Scroll of Omniscience in a big modpack, or simply thousands of studied items - was
+  disconnected on joining and could never get back into the world ([#4](https://github.com/Pocky-l/HexTale/issues/4)).
+  Such worlds load again with this version.
+- The Boiling page in [JEI](https://www.curseforge.com/minecraft/mc-mods/jei) no longer vanishes when another mod's item
+  breaks JEI's item comparison (seen with [PackagedAuto](https://www.curseforge.com/minecraft/mc-mods/packagedauto)).
+- A Soul Flask refuses a creature that carries too much (a chested mount full of shulker boxes, or of flasks): the
+  holder of such a flask was disconnected at every join.
+- A Pylon Filter keeps only the picture of what is laid into its slots: filters of filters (or of filled shulker boxes)
+  could grow into an item too big to send.
+- The Crucible no longer loses results when it makes more than a stack at once and the world saves in that moment.
+
 ## [1.6.0+1.21.1] - 2026-10-29
 ### Changed
 - Everything of 1.6.0 for Minecraft 26.3 is included: hextech against chemtech with the Chem Boiler, the Warding

@@ -10,7 +10,7 @@
       "tag": "c:ingots/copper"
     },
     "B": {
-      "tag": "c:bars/copper"
+      "item": "minecraft:iron_bars"
     },
     "G": {
       "item": "hextale:chem_glass"

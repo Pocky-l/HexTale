@@ -1,7 +1,7 @@
 {
   "type": "hextale:infusion",
   "center": {
-    "tag": "c:bars/iron"
+    "item": "minecraft:iron_bars"
   },
   "pedestals": [
     {

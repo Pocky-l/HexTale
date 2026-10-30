@@ -81,6 +81,7 @@
   "quest.hextale.spawner_cage.desc": "Could a cage fold the very thing that makes monsters? It would have to be strong - and maybe it can only do it once.",
   "item.hextale.soul_flask": "Soul Flask",
   "item.hextale.soul_flask.full": "Soul Flask (%s)",
+  "item.hextale.soul_flask.too_heavy": "It holds too much to fit in the flask",
   "item.hextale.soul_flask.hint": "It folds a living thing into the glass - whole, saddle and name and all - and lets it out where I want.",
   "item.hextale.soul_flask.controls": "(Right click a creature - take it in; right click a block - let it out)",
   "jei.hextale.info.soul_flask": "A bottle the altar taught to hold a soul. A creature I touch with it folds inside, whole; touching a block lets it out there. No players, nothing as great as a dragon. My farm can move house now.",

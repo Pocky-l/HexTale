@@ -411,16 +411,19 @@ public class CrucibleBlockEntity extends BlockEntity implements HeatUser, WaterI
         wear(recipe.essences().times(count), count);
         essence = essence.minus(recipe.essences().times(count));
         ItemStack result = recipe.result().create();
-        result.setCount(result.getCount() * count);
-        boolean merged = false;
+        // Whole stacks only: a stack above its maximum is not saved (two thrown stacks used to vanish from the save).
+        int left = result.getCount() * count;
         for (ItemStack held : rising) {
-            if (!merged && ItemStack.isSameItemSameComponents(held, result)) {
-                held.grow(result.getCount());
-                merged = true;
+            if (left > 0 && ItemStack.isSameItemSameComponents(held, result) && held.getCount() < held.getMaxStackSize()) {
+                int moved = Math.min(left, held.getMaxStackSize() - held.getCount());
+                held.grow(moved);
+                left -= moved;
             }
         }
-        if (!merged) {
-            rising.add(result);
+        while (left > 0) {
+            int part = Math.min(left, result.getMaxStackSize());
+            rising.add(result.copyWithCount(part));
+            left -= part;
         }
         long now = level == null ? 0 : level.getGameTime();
         risesAt = now + SOAK_TICKS;

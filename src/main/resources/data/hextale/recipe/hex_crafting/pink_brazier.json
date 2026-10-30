@@ -17,7 +17,7 @@
       "type": "neoforge:components"
     },
     "I": {
-      "tag": "c:bars/iron"
+      "item": "minecraft:iron_bars"
     }
   },
   "result": {

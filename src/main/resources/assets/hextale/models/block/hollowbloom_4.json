@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:block/cross_emissive",
+  "parent": "hextale:block/port/cross_emissive",
   "textures": {
     "cross": "hextale:block/hollowbloom_4",
     "cross_emissive": "hextale:block/hollowbloom_4_glow"

@@ -7,7 +7,7 @@
   ],
   "key": {
     "I": {
-      "tag": "c:bars/iron"
+      "item": "minecraft:iron_bars"
     },
     "E": {
       "item": "minecraft:fermented_spider_eye"

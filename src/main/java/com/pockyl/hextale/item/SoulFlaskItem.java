@@ -49,6 +49,12 @@ import org.jspecify.annotations.Nullable;
  */
 @EventBusSubscriber(modid = com.pockyl.hextale.Hextale.MOD_ID)
 public class SoulFlaskItem extends Item {
+    /**
+     * The most a folded creature may weigh as a tag. A chested mount full of shulker boxes (or of flasks of mounts) would
+     * outgrow what a client can read, and whoever holds the flask would be disconnected at every join.
+     */
+    public static final int MAX_SOUL_BYTES = 256 * 1024;
+
     public SoulFlaskItem(Properties properties) {
         super(properties);
     }
@@ -96,8 +102,13 @@ public class SoulFlaskItem extends Item {
             return InteractionResult.PASS;
         }
         if (target.level() instanceof ServerLevel level) {
+            CompoundTag soul = capture(level, target);
+            if (soul.sizeInBytes() > MAX_SOUL_BYTES) {
+                player.displayClientMessage(Component.translatable("item.hextale.soul_flask.too_heavy"), true);
+                return InteractionResult.FAIL;
+            }
             ItemStack full = stack.copyWithCount(1);
-            full.set(ModDataComponents.SOUL.get(), capture(level, target));
+            full.set(ModDataComponents.SOUL.get(), soul);
             Vec3 at = target.position();
             runes(level, at.add(0, target.getBbHeight() / 2, 0), target.getBbWidth(), target.getBbHeight());
             com.pockyl.hextale.network.EssenceFxPayload.pour(level, at.add(0, target.getBbHeight() / 2, 0),

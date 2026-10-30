@@ -53,6 +53,7 @@ import com.pockyl.hextale.item.RuneScrollItem;
 import com.pockyl.hextale.knowledge.Research;
 import com.pockyl.hextale.menu.ResearchTableMenu;
 import com.pockyl.hextale.knowledge.RuneKnowledge;
+import com.pockyl.hextale.network.KnowledgeSyncPayload;
 import com.pockyl.hextale.registry.ModBlocks;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModItems;
@@ -1290,6 +1291,31 @@ public final class ResearchGameTests {
         helper.assertTrue(decoded.stars(ComplexRunes.byKey("life_metal")) == 1 && decoded.seen(TOPIC).get(5), "knowledge saves and loads");
         before.discard();
         after.discard();
+        helper.succeed();
+    }
+
+    /** Knowing everything, in a pack of any size, still reaches the client: no list in the sync payload has a cap. */
+    @HexTest
+    public static void omniscienceStillSyncs(GameTestHelper helper) {
+        ServerPlayer player = player(helper);
+        Research.learnEverything(player);
+        RuneKnowledge knowledge = Research.of(player);
+        for (Item item : BuiltInRegistries.ITEM) {
+            if (item != Items.AIR) {
+                knowledge.study(BuiltInRegistries.ITEM.getKey(item));
+            }
+        }
+        knowledge.study(ResourceLocation.fromNamespaceAndPath("removed_mod", "gone"));
+        for (int i = 0; i < 5000; i++) {
+            knowledge.notice("step_" + i);
+        }
+        io.netty.buffer.ByteBuf buffer = io.netty.buffer.Unpooled.buffer();
+        KnowledgeSyncPayload.STREAM_CODEC.encode(buffer, new KnowledgeSyncPayload(knowledge.copy()));
+        RuneKnowledge decoded = KnowledgeSyncPayload.STREAM_CODEC.decode(buffer).knowledge();
+        helper.assertTrue(decoded.studied().size() == knowledge.studied().size() - 1
+                && decoded.hasStudied(ResourceLocation.withDefaultNamespace("coal")), "every registered studied item is synced");
+        helper.assertTrue(decoded.noticed("step_4999") && decoded.runeCount() == knowledge.runeCount(), "long lists are synced whole");
+        player.discard();
         helper.succeed();
     }
 

@@ -10,7 +10,7 @@
       "item": "minecraft:smooth_stone_slab"
     },
     "C": {
-      "tag": "c:bars/iron"
+      "item": "minecraft:iron_bars"
     },
     "I": {
       "tag": "c:ingots/iron"
