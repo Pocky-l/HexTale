@@ -85,6 +85,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for extra damage with a visible arc, and then leaps on - to hostile creatures, or from an animal to others of its
   kind. It never touches players, pets or villagers. Before, it did nothing at all unless another hostile creature
   stood near.
+- The Hextech Gemstone now looks like the top grade it is: a faceted brilliant held in a thin brass collet, with a
+  calm light breathing inside. The gems in the Crystal Lamp, the Warding Lamppost, the Awakened Workbench and the
+  Experience Condenser are cut to match.
 
 ### Fixed
 - The Researcher's Diary no longer drags the frame rate down while it is open: its star map ran at about half the
