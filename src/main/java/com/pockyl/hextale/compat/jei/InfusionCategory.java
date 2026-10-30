@@ -66,7 +66,9 @@ public class InfusionCategory extends AbstractRecipeCategory<InfusionCategory.Re
         builder.addInputSlot(CX - 8, CY - 8).setStandardSlotBackground().add(center);
         ItemStack shown = center.items().findFirst().map(ItemStack::new).orElse(ItemStack.EMPTY);
         ResearchNote.add(builder.addOutputSlot(130, CY - 8).setOutputSlotBackground().add(recipe.resultFor(shown)), recipe.result().item().value());
-        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 130, 4).add(new ItemStack(ModItems.HEXTECH_ALTAR.get()));
+        // A late ritual only the Hexcore performs shows the Hexcore as its station.
+        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 130, 4)
+                .add(new ItemStack(recipe.hexcore() ? ModItems.HEXCORE.get() : ModItems.HEXTECH_ALTAR.get()));
     }
 
     @Override
@@ -81,6 +83,10 @@ public class InfusionCategory extends AbstractRecipeCategory<InfusionCategory.Re
             PixelArt.fill(graphics, x, y, x + 1, y + 1, PixelArt.argb(0x5CC8F2, 0.5F));
         }
         int ax = 96;
+        if (recipe.hexcore()) {
+            Component only = Component.translatable("jei.hextale.infusion.hexcore");
+            graphics.text(font, only, WIDTH - 2 - font.width(only), 22, 0xFFC070F0, true);
+        }
         PixelArt.fill(graphics, ax, CY - 1, ax + 18, CY + 1, PixelArt.argb(0xF0C24A, 1));
         for (int i = 0; i < 5; i++) {
             PixelArt.fill(graphics, ax + 18 + i, CY - 4 + i, ax + 19 + i, CY + 4 - i, PixelArt.argb(0xF0C24A, 1));

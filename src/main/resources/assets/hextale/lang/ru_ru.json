@@ -830,6 +830,8 @@
   "subtitles.hextale.ritual.collapse": "Ритуал рушится",
   "subtitles.hextale.stele.set": "Руна встаёт на место",
   "jei.hextale.infusion": "Ритуальный алтарь",
+  "jei.hextale.infusion.hexcore": "Только Hexcore",
+  "book.hextale.quest.infusion.hexcore": "Только на Hexcore",
   "jei.hextale.infusion.time": "%s с",
   "jei.hextale.info.hextech_altar": "Сердце ритуального круга. Предмет сверху, остальное на постаментах вокруг, банки с эссенцией рядом. Когда ритуал начинается, постаменты по одному отдают предметы, потом банки - эссенции. Меловые руны вокруг будто торопят работу. (Shift + ПКМ пустой рукой или сигнал редстоуна)",
   "jei.hextale.info.pedestal": "Подставка для одной вещи, нужной ритуалу, рядом с алтарём. Сколько угодно. Воронки тоже могут её наполнять.",
