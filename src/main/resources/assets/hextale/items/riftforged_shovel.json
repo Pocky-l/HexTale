@@ -6,7 +6,7 @@
       "models": [
         {
           "type": "minecraft:model",
-          "model": "hextale:item/radiant_hextech_shovel",
+          "model": "hextale:item/riftforged_shovel",
           "tints": [
             {
               "type": "hextale:pickaxe_runes"
@@ -15,28 +15,28 @@
         },
         {
           "type": "minecraft:special",
-          "base": "hextale:item/radiant_hextech_shovel",
+          "base": "hextale:item/riftforged_shovel",
           "model": {
             "type": "hextale:tool_aura",
             "kind": "void",
             "from": [
               8,
-              -8,
+              -10,
               8
             ],
             "to": [
               8,
-              31,
+              32,
               8
             ],
             "profile": [
               1.75,
+              1.4,
+              1.4,
               1.75,
-              2.1,
-              2.1,
-              4.2,
+              5.6,
               4.9,
-              2.8
+              1.4
             ]
           }
         }

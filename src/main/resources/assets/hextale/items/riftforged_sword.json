@@ -6,7 +6,7 @@
       "models": [
         {
           "type": "minecraft:model",
-          "model": "hextale:item/radiant_hextech_sword",
+          "model": "hextale:item/riftforged_sword",
           "tints": [
             {
               "type": "hextale:pickaxe_runes"
@@ -15,28 +15,28 @@
         },
         {
           "type": "minecraft:special",
-          "base": "hextale:item/radiant_hextech_sword",
+          "base": "hextale:item/riftforged_sword",
           "model": {
             "type": "hextale:tool_aura",
             "kind": "void",
             "from": [
               8,
-              -10,
+              -12,
               8
             ],
             "to": [
               8,
-              31,
+              32,
               8
             ],
             "profile": [
-              1.75,
               2.1,
+              1.4,
               5.6,
-              3.5,
-              3.15,
+              4.9,
+              2.8,
               2.45,
-              1.75
+              1.05
             ]
           }
         }
