@@ -262,6 +262,12 @@ public final class Hextale {
         output.accept(ModItems.ZINC_BLOCK);
         output.accept(ModItems.BRASS_BLOCK);
         output.accept(ModItems.HEXSTEEL_BLOCK);
+        output.accept(ModItems.CHARGED_HEXSTEEL_BLOCK);
+        output.accept(ModItems.HEXSTEEL_PLATING);
+        output.accept(ModItems.RADIANT_ALLOY_BLOCK);
+        output.accept(ModItems.RADIANT_TRIM);
+        output.accept(ModItems.RIFTMETAL_BLOCK);
+        output.accept(ModItems.VOID_CARAPACE_TILES);
 
         // Building blocks, one family after another.
         output.accept(ModItems.MAGIC_STONE);
