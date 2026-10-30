@@ -131,4 +131,19 @@ public final class ArsenalGameTests {
         helper.assertTrue(target.getHealth() < target.getMaxHealth(), "the shockwave hurt the zombie");
         helper.succeed();
     }
+
+    /** A Crystal Battery feeds the heart of a Bulwark cuirass worn within its reach. */
+    @HexTest(maxTicks = 60)
+    @SuppressWarnings("removal")
+    public static void aBatteryFeedsTheBulwarkHeart(GameTestHelper helper) {
+        helper.setBlock(new BlockPos(1, 1, 1), com.pockyl.hextale.registry.ModBlocks.CRYSTAL_BATTERY.get());
+        var battery = helper.getBlockEntity(new BlockPos(1, 1, 1), com.pockyl.hextale.block.CrystalBatteryBlockEntity.class);
+        battery.soak(new ItemStack(ModItems.UNSTABLE_HEXTECH.get()), 8);
+        net.minecraft.server.level.ServerPlayer wearer = helper.makeMockServerPlayerInLevel();
+        Vec3 at = helper.absoluteVec(new Vec3(3.5, 1, 1.5));
+        wearer.snapTo(at.x, at.y, at.z, 0, 0);
+        wearer.setItemSlot(EquipmentSlot.CHEST, new ItemStack(ModItems.BULWARK_CHESTPLATE.get()));
+        helper.succeedWhen(() -> helper.assertTrue(BulwarkHeart.of(wearer.getItemBySlot(EquipmentSlot.CHEST)).charge() > 0,
+                "the battery fed the heart"));
+    }
 }

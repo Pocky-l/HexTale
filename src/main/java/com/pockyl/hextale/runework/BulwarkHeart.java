@@ -25,7 +25,7 @@ import com.pockyl.hextale.registry.ModSounds;
 
 /**
  * The crystal heart of a Bulwark chestplate. Charged with raw hextech (an unstable orb or a synthetic crystal clicked onto
- * the chestplate), it soaks a share of every blow armour can stop - the higher the level, the larger the share - paying
+ * the chestplate, or a Crystal Battery within reach of its wearer), it soaks a share of every blow armour can stop - the higher the level, the larger the share - paying
  * one charge per point soaked. When it runs dry it cracks open with a flash that throws the creatures round its wearer
  * back (a last gift, no penalty); a cracked heart soaks nothing until it is charged full again.
  */
@@ -69,6 +69,20 @@ public final class BulwarkHeart {
 
     public static boolean feeds(ItemStack stack) {
         return stack.is(ModItems.UNSTABLE_HEXTECH.get()) || stack.is(ModItems.SYNTHETIC_CRYSTAL.get());
+    }
+
+    /** Feeds the heart the wearer has on from a Crystal Battery: up to {@code offered}; returns what it took. */
+    public static int feed(LivingEntity wearer, int offered) {
+        ItemStack chest = wearer.getItemBySlot(EquipmentSlot.CHEST);
+        if (!BulwarkArmorItem.isHeart(chest)) {
+            return 0;
+        }
+        Charge charge = of(chest);
+        int taken = Math.min(offered, MAX - charge.charge());
+        if (taken > 0) {
+            set(chest, charge.plus(taken));
+        }
+        return taken;
     }
 
     public static Charge of(ItemStack stack) {
