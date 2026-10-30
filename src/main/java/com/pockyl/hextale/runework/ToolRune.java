@@ -62,7 +62,12 @@ public enum ToolRune implements HolderRune {
     /** A blow may open a whirlpool at the struck creature that drags the others in. */
     WHIRLPOOL("water_shadow", Tool.SWORD),
     /** Every third blow in a row sweeps all round in a circle of light. */
-    WHIRLWIND("air_spark", Tool.SWORD);
+    WHIRLWIND("air_spark", Tool.SWORD),
+    // Blades (the Tendril Dagger and the Strike Gauntlet take the sword's runes too)
+    /** A blow from behind strikes harder. */
+    BACKSTAB("shadow_light", Tool.SWORD),
+    /** A blow may open a wound that keeps bleeding. */
+    BLEEDING("shadow_metal", Tool.SWORD);
 
     /** Chance of Haste per block (shared with the pickaxe's). */
     public static final float[] HASTE_CHANCE = {0.04F, 0.07F, 0.10F, 0.13F};
@@ -84,6 +89,11 @@ public enum ToolRune implements HolderRune {
     public static final float[] RAGE = {0.2F, 0.3F, 0.4F, 0.5F};
     public static final int[] RAGE_TICKS = {120, 160, 200, 240};
     public static final float[] FIRST_STRIKE = {0.3F, 0.5F, 0.75F, 1.0F};
+    /** Backstab: extra damage of a blow from behind. */
+    public static final float[] BACK_BONUS = {0.25F, 0.4F, 0.6F, 0.8F};
+    /** Bleeding: chance a blow opens a wound, and how long it bleeds (ticks). */
+    public static final float[] BLEED_CHANCE = {0.2F, 0.3F, 0.4F, 0.5F};
+    public static final int[] BLEED_TICKS = {60, 80, 100, 120};
     public static final float[] HEAD = {0.05F, 0.10F, 0.15F, 0.20F};
     /** Shockwave: blocks it runs, damage, half width (0 = one block wide), ticks the weapon rests after it. */
     public static final int[] WAVE_LENGTH = {6, 8, 10, 12};
@@ -184,6 +194,8 @@ public enum ToolRune implements HolderRune {
             case DETONATOR -> HolderRune.factor(HolderRune.at(BLAST_RADIUS, i));
             case WHIRLPOOL -> HolderRune.percent(HolderRune.at(VORTEX_CHANCE, i));
             case WHIRLWIND -> HolderRune.factor(HolderRune.at(SWEEP_RADIUS, i));
+            case BACKSTAB -> "+" + HolderRune.percent(HolderRune.at(BACK_BONUS, i));
+            case BLEEDING -> HolderRune.percent(HolderRune.at(BLEED_CHANCE, i));
         };
     }
 

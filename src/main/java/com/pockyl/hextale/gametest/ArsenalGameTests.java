@@ -146,4 +146,30 @@ public final class ArsenalGameTests {
         helper.succeedWhen(() -> helper.assertTrue(BulwarkHeart.of(wearer.getItemBySlot(EquipmentSlot.CHEST)).charge() > 0,
                 "the battery fed the heart"));
     }
+
+    /** Backstab: the same blow lands harder on a creature that turns its back. */
+    @HexTest
+    @SuppressWarnings("removal")
+    public static void backstabStrikesHarderFromBehind(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer striker = helper.makeMockServerPlayerInLevel();
+        Vec3 at = helper.absoluteVec(new Vec3(3.5, 1, 3.5));
+        striker.snapTo(at.x, at.y, at.z, 0, 0);
+        ItemStack blade = new ItemStack(ModItems.TENDRIL_DAGGER.get());
+        RuneHolder.SWORD.set(blade, com.pockyl.hextale.runework.PickaxeRunes.EMPTY.with(com.pockyl.hextale.runework.ToolRune.BACKSTAB.rune(), 3));
+        striker.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, blade);
+        // Both face south (+Z): the first stands south of the striker (its back to them), the second north (face to face).
+        Mob away = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(3, 1, 5));
+        Mob facing = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(3, 1, 1));
+        for (Mob mob : java.util.List.of(away, facing)) {
+            mob.setYRot(0);
+            mob.setYHeadRot(0);
+            mob.setYBodyRot(0);
+        }
+        away.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(striker), 4);
+        facing.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(striker), 4);
+        float back = away.getMaxHealth() - away.getHealth();
+        float front = facing.getMaxHealth() - facing.getHealth();
+        helper.assertTrue(back > front + 1.5F, "the blow from behind lands harder, " + back + " vs " + front);
+        helper.succeed();
+    }
 }

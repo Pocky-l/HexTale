@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Two blade runes for the sword, the Tendril Dagger and the Strike Gauntlet: Backstab (a blow from behind lands
+  25/40/60% harder) and Bleeding (a cut may keep bleeding for 3/4/5 seconds). Their codex runes were Eclipse and
+  Blight and had no use until now.
 - Strike Gauntlet, made on the Hexcore: hold Use to charge it in three beats, release to punch. At a block within
   reach it breaks it - a 3 x 3 face from the second beat, two deep at the third; into the air it sends a shockwave
   that hurts and throws back the creatures in front. Held too long, it vents its steam and starts over, never hurting
