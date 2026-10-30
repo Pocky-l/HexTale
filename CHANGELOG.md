@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   winding round, and now and then a discharge running the whole length. The abyss seeps out of riftforged tools:
   small clouds of the Void well up along them, sink and thin out, violet tendrils creep out and twist away, and now
   and then a short tear into the abyss flares.
+- Radiant and riftforged Bulwark armour carries the same lightning and abyss, thinner, along the head, body, arms
+  and legs it covers - on the wearer, on armour stands and on the icons.
 - Two blade runes for the sword, the Tendril Dagger and the Strike Gauntlet: Backstab (a blow from behind lands
   25/40/60% harder) and Bleeding (a cut may keep bleeding for 3/4/5 seconds). Their codex runes were Eclipse and
   Blight and had no use until now.
