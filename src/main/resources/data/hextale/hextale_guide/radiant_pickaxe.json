@@ -2,16 +2,34 @@
   "region": "forge",
   "stage": "late",
   "icon": "hextale:radiant_hextech_pickaxe",
-  "parents": ["hexcore", "refined_pickaxe"],
+  "parents": [
+    "hexcore",
+    "refined_pickaxe"
+  ],
   "goal": {
     "tier": 3,
     "type": "pickaxe"
   },
   "display": {
     "kind": "infusion",
-    "result": "hextale:radiant_hextech_pickaxe"
+    "result": "hextale:radiant_hextech_pickaxe",
+    "then": {
+      "kind": "infusion",
+      "result": "hextale:radiant_hextech_axe",
+      "then": {
+        "kind": "infusion",
+        "result": "hextale:radiant_hextech_shovel",
+        "then": {
+          "kind": "infusion",
+          "result": "hextale:radiant_hextech_sword"
+        }
+      }
+    }
   },
   "research": "radiant_hextech_pickaxe",
   "aura": "hextech",
-  "pos": [1470, 150]
+  "pos": [
+    1470,
+    150
+  ]
 }

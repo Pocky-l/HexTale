@@ -1,6 +1,8 @@
 {
   "values": [
     "hextale:hextech_shovel",
+    "hextale:refined_hextech_shovel",
+    "hextale:radiant_hextech_shovel",
     "hextale:hexsteel_shovel"
   ]
 }

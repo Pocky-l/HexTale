@@ -312,6 +312,19 @@ public final class ModItems {
             properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[0], 1.5F, -3.0F).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<HextechToolItem> HEXTECH_SWORD = ITEMS.registerItem("hextech_sword",
             properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[0], 3.0F, -2.4F).rarity(Rarity.UNCOMMON)));
+    // The refined (diamond) and radiant (netherite) axe, shovel and sword: refined at the altar like the pickaxe, runes kept.
+    public static final DeferredItem<HextechToolItem> REFINED_AXE = ITEMS.registerItem("refined_hextech_axe",
+            properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[1], 5.0F, -3.0F).rarity(Rarity.RARE)));
+    public static final DeferredItem<HextechToolItem> RADIANT_AXE = ITEMS.registerItem("radiant_hextech_axe",
+            properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[2], 5.0F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<HextechToolItem> REFINED_SHOVEL = ITEMS.registerItem("refined_hextech_shovel",
+            properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[1], 1.5F, -3.0F).rarity(Rarity.RARE)));
+    public static final DeferredItem<HextechToolItem> RADIANT_SHOVEL = ITEMS.registerItem("radiant_hextech_shovel",
+            properties -> new HextechToolItem(properties.shovel(PICKAXE_MATERIALS[2], 1.5F, -3.0F).rarity(Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<HextechToolItem> REFINED_SWORD = ITEMS.registerItem("refined_hextech_sword",
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[1], 3.0F, -2.4F).rarity(Rarity.RARE)));
+    public static final DeferredItem<HextechToolItem> RADIANT_SWORD = ITEMS.registerItem("radiant_hextech_sword",
+            properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[2], 3.0F, -2.4F).rarity(Rarity.EPIC).fireResistant()));
 
     /** Hexsteel tools: as strong as diamond ones, repaired with hexsteel. */
     private static final ToolMaterial HEXSTEEL_TOOLS = new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1561, 8.0F, 3.0F, 10,

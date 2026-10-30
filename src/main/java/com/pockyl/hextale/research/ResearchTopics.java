@@ -109,10 +109,11 @@ public final class ResearchTopics {
     public static final ResearchTopic SORTING_MATRIX = add("sorting_matrix", 3, Essence.LIGHT, Essence.METAL, ModItems.SORTING_MATRIX);
     public static final ResearchTopic HEXCORE = add("hexcore", 3, Essence.SPARK, Essence.LIGHT, ModItems.HEXCORE);
     public static final ResearchTopic HEXTECH_SKYPACK = add("hextech_skypack", 3, Essence.AIR, Essence.SPARK, ModItems.HEXTECH_SKYPACK);
+    // One research refines every tool of a tier (the topic ids are the pickaxe's, released before the other tools).
     public static final ResearchTopic REFINED_PICKAXE = add("refined_hextech_pickaxe", 3, Essence.METAL, Essence.SPARK,
-            ModItems.pickaxe(HextechPickaxe.REFINED));
+            ModItems.pickaxe(HextechPickaxe.REFINED), ModItems.REFINED_AXE, ModItems.REFINED_SHOVEL, ModItems.REFINED_SWORD);
     public static final ResearchTopic RADIANT_PICKAXE = add("radiant_hextech_pickaxe", 3, Essence.LIGHT, Essence.METAL,
-            ModItems.pickaxe(HextechPickaxe.RADIANT));
+            ModItems.pickaxe(HextechPickaxe.RADIANT), ModItems.RADIANT_AXE, ModItems.RADIANT_SHOVEL, ModItems.RADIANT_SWORD);
 
     private ResearchTopics() {
     }

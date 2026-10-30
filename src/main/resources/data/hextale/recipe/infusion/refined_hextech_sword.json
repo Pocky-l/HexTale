@@ -1,0 +1,20 @@
+{
+  "type": "hextale:infusion",
+  "center": "hextale:hextech_sword",
+  "pedestals": [
+    "hextale:hextech_gemstone",
+    "hextale:hextech_gemstone",
+    "#c:gems/diamond",
+    "#c:gems/diamond",
+    "#c:ingots/hexsteel",
+    "#c:ingots/hexsteel"
+  ],
+  "essences": {
+    "metal": 32,
+    "ore": 24,
+    "crystal": 16,
+    "magic": 16
+  },
+  "result": "hextale:refined_hextech_sword",
+  "keep_components": true
+}
