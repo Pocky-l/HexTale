@@ -62,7 +62,8 @@ public final class ArsenalGameTests {
     }
 
     /** A thrown dagger bites the creature it meets and turns back to its thrower at once. */
-    @HexTest(maxTicks = 80)
+    // Entities in a fresh spot may not tick for a while: give the flight time to start.
+    @HexTest(maxTicks = 200, setupTicks = 40)
     @SuppressWarnings("removal")
     public static void aThrownDaggerBitesAndComesBack(GameTestHelper helper) {
         net.minecraft.server.level.ServerPlayer thrower = helper.makeMockServerPlayerInLevel();
