@@ -48,6 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   frame rate of the game behind it and now costs about as much as an inventory screen. The links between the steps are
   traced once instead of every frame, the hazes behind the steps are drawn as one picture each, and nothing outside the
   view is drawn.
+- Opening a rune stele no longer freezes the game for a moment: the runes on screens are now painted in the
+  background, several times faster, and once per size instead of once per colour, so hovering them costs nothing.
 - Relay and Siphon pylons no longer take runes that do nothing on them: a relay takes Reach only, a siphon the runes
   that move essence (Reach, Pulse, Levity). Runes already burned into them stay but still do nothing.
 - Grapple Gauntlet: the Pulse (reel speed) and Reach runes work again - the wearer's own game never learnt them.
