@@ -1,0 +1,10 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "hextale:hexsteel_ingot",
+  "essences": {
+    "circuit": 8
+  },
+  "result": {
+    "id": "hextale:charged_hexsteel_ingot"
+  }
+}

@@ -124,6 +124,12 @@ public final class ModItems {
     /** A hexsteel disc edged with diamond: finishes crystals into stabilised gemstones, and cuts raw ones twice as fast. */
     public static final DeferredItem<Item> MASTER_CUTTING_DISC = ITEMS.registerItem("master_cutting_disc",
             properties -> new Item(properties.durability(256).rarity(Rarity.UNCOMMON)));
+    /** A charged hexsteel disc with a diamond point: engraves diamonds on the Lapidary (level 2). */
+    public static final DeferredItem<Item> ENGRAVING_DISC = ITEMS.registerItem("engraving_disc",
+            properties -> new Item(properties.durability(128).rarity(Rarity.UNCOMMON)));
+    /** Level 2 gem: a diamond cut to a brilliant with a groove that holds hextech. */
+    public static final DeferredItem<Item> ENGRAVED_DIAMOND = ITEMS.registerItem("engraved_diamond",
+            properties -> new Item(properties.rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<BlockItem> SPHALERITE_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.SPHALERITE_ORE);
     public static final DeferredItem<BlockItem> DEEPSLATE_SPHALERITE_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.DEEPSLATE_SPHALERITE_ORE);
     public static final DeferredItem<BlockItem> RAW_ZINC_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RAW_ZINC_BLOCK);
@@ -134,6 +140,8 @@ public final class ModItems {
     public static final DeferredItem<Item> ZINC_NUGGET = ITEMS.registerSimpleItem("zinc_nugget");
     /** Iron melted with coal and hextech dust in the Hex Furnace: the metal of the better hextech tools. */
     public static final DeferredItem<Item> HEXSTEEL_INGOT = ITEMS.registerSimpleItem("hexsteel_ingot");
+    /** Level 2 metal: hexsteel that drank lightning and metal in the crucible (or was quenched in coolant on a burner). */
+    public static final DeferredItem<Item> CHARGED_HEXSTEEL_INGOT = ITEMS.registerSimpleItem("charged_hexsteel_ingot");
     public static final DeferredItem<BlockItem> BRASS_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.BRASS_BLOCK);
     public static final DeferredItem<BlockItem> GATHERING_PYLON = ITEMS.registerSimpleBlockItem(ModBlocks.GATHERING_PYLON,
             properties -> properties.rarity(Rarity.UNCOMMON));

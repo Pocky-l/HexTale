@@ -109,6 +109,11 @@ public final class ResearchTopics {
     public static final ResearchTopic SORTING_MATRIX = add("sorting_matrix", 3, Essence.LIGHT, Essence.METAL, ModItems.SORTING_MATRIX);
     public static final ResearchTopic HEXCORE = add("hexcore", 3, Essence.SPARK, Essence.LIGHT, ModItems.HEXCORE);
     public static final ResearchTopic HEXTECH_SKYPACK = add("hextech_skypack", 3, Essence.AIR, Essence.SPARK, ModItems.HEXTECH_SKYPACK);
+    /** Level 2 metal (Thaumcraft order: the metal is researched before the tools made of it). */
+    public static final ResearchTopic CHARGED_HEXSTEEL = add("charged_hexsteel", 2, Essence.SPARK, Essence.METAL,
+            ModItems.CHARGED_HEXSTEEL_INGOT);
+    /** Level 2 gem: the disc that engraves diamonds (the engraved diamond itself comes off the Lapidary). */
+    public static final ResearchTopic ENGRAVING_DISC = add("engraving_disc", 2, Essence.EARTH, Essence.LIGHT, ModItems.ENGRAVING_DISC);
     // One research refines every tool of a tier (the topic ids are the pickaxe's, released before the other tools).
     public static final ResearchTopic REFINED_PICKAXE = add("refined_hextech_pickaxe", 3, Essence.METAL, Essence.SPARK,
             ModItems.pickaxe(HextechPickaxe.REFINED), ModItems.REFINED_AXE, ModItems.REFINED_SHOVEL, ModItems.REFINED_SWORD);

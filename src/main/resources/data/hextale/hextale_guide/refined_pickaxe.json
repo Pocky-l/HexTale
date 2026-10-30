@@ -3,7 +3,7 @@
   "stage": "mid",
   "icon": "hextale:refined_hextech_pickaxe",
   "parents": [
-    "hextech_gemstone",
+    "engraved_diamond",
     "hextech_pickaxe",
     "hextech_axe",
     "hextech_shovel",

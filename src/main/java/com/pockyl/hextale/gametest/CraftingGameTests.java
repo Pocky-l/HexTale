@@ -223,4 +223,26 @@ public final class CraftingGameTests {
             helper.succeed();
         });
     }
+
+    /** An Engraving Disc engraves a diamond on the Lapidary into the level 2 gem; other discs leave diamonds alone. */
+    @HexTest(maxTicks = 500)
+    public static void theLapidaryEngravesADiamond(GameTestHelper helper) {
+        helper.assertTrue(LapidaryBlockEntity.grade(new ItemStack(net.minecraft.world.item.Items.DIAMOND),
+                new ItemStack(ModItems.MASTER_CUTTING_DISC.get())) == null, "a cutting disc does not engrave");
+        helper.setBlock(AT, ModBlocks.HEX_LAPIDARY.get());
+        LapidaryBlockEntity lapidary = helper.getBlockEntity(AT, LapidaryBlockEntity.class);
+        lapidary.setItem(LapidaryBlockEntity.DISC, new ItemStack(ModItems.ENGRAVING_DISC.get()));
+        lapidary.setItem(LapidaryBlockEntity.INPUT, new ItemStack(net.minecraft.world.item.Items.DIAMOND));
+        ServerPlayer worker = helper.makeMockServerPlayerInLevel();
+        Cleavage.Cut cut = lapidary.cut();
+        helper.assertTrue(cut != null && cut.grade == Cleavage.Grade.ENGRAVE, "a diamond on the engraving disc is an engraving");
+        for (int i = 0; i < cut.planes.length; i++) {
+            float plane = cut.planes[i];
+            helper.runAfterDelay(1 + i * 70L, () -> lapidary.stroke(worker, plane, Cleavage.Grade.ENGRAVE.grindTicks));
+        }
+        helper.runAfterDelay(1 + cut.planes.length * 70L, () -> {
+            helper.assertTrue(lapidary.getItem(LapidaryBlockEntity.OUTPUT).is(ModItems.ENGRAVED_DIAMOND.get()), "the diamond is engraved");
+            helper.succeed();
+        });
+    }
 }

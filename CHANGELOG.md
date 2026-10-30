@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Charged Hexsteel: a hexsteel ingot laid into a Crucible that holds lightning and metal comes out charged - the
+  metal of the refined tools. Coolant splashed on hexsteel lying on a lit Chem Burner charges it at once, but the
+  fumes thin the land.
+- Engraving Disc and Engraved Diamond: the Lapidary cuts a diamond to a brilliant and engraves it (a cracked
+  diamond comes back whole). Refined tools are now made of two Charged Hexsteel and an Engraved Diamond instead of
+  gemstones and diamonds.
 - Refined and Radiant Axe, Shovel and Sword: refined at the altar like the pickaxe (the same research opens all four
   of a tier), with every rune carried over. Refined tools hold two runes, radiant ones three.
 - Riftforged Pickaxe, Axe, Shovel and Sword: a radiant tool forged with the Void on a Hexcore (only the Hexcore can do

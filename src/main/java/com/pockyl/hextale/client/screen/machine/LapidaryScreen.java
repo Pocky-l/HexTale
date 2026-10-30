@@ -57,6 +57,8 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
     /** The hextech gem ramps (outline, deep, dark, mid, light, glint): the raw stone deeper, the finish brighter. */
     private static final int[] ROUGH_RAMP = {0x1B1F4A, 0x26407E, 0x2F63B0, 0x3A8FD8, 0x5EC4F0, 0x9FE8F7};
     private static final int[] FINISH_RAMP = {0x1B1F4A, 0x2F63B0, 0x3A8FD8, 0x5EC4F0, 0x9FE8F7, 0xE6FDF8};
+    /** A diamond: pale cyan-white, cooler and lighter than hextech. */
+    private static final int[] DIAMOND_RAMP = {0x2A4A55, 0x3F7D8A, 0x5FB3BD, 0x8FDCDC, 0xC4F2EE, 0xF4FFFD};
 
     /** Turning: the crystal's angle (degrees) and spin; the keys push the spin, friction settles it. */
     private float angle;
@@ -299,7 +301,7 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
             for (int dx = -half; dx <= half; dx++) {
                 float a = (float) Math.atan2(dy * rx / (float) ry, dx);
                 float r = Mth.sqrt(dx * dx + (dy * rx / (float) ry) * (dy * rx / (float) ry)) / rx;
-                int base = present ? (cut != null && cut.grade == Cleavage.Grade.FINISH ? 0x9AA6B8 : 0x7A7F88) : 0x2A1C12;
+                int base = present ? (cut != null && cut.grade != Cleavage.Grade.FIRST ? 0x9AA6B8 : 0x7A7F88) : 0x2A1C12;
                 boolean groove = present && ((int) Math.floor((a + turn) * 6 / Mth.PI) & 1) == 0 && r > 0.25F;
                 int colour = groove ? PixelArt.mix(base, 0x000000, 0.25F) : base;
                 if (r > 0.92F) {
@@ -331,7 +333,11 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
         for (float[] p : outline) {
             turned.add(new float[]{p[0] * cos - p[1] * sin, p[0] * sin + p[1] * cos});
         }
-        int[] ramp = cut.grade == Cleavage.Grade.FINISH ? FINISH_RAMP : ROUGH_RAMP;
+        int[] ramp = switch (cut.grade) {
+            case FIRST -> ROUGH_RAMP;
+            case FINISH -> FINISH_RAMP;
+            case ENGRAVE -> DIAMOND_RAMP;
+        };
         float sector = Mth.TWO_PI / SECTORS;
         float phase = (seed & 1023) / 1023.0F * sector;
         boolean glint = Util.getMillis() % 3500 < 260;
@@ -397,7 +403,7 @@ public class LapidaryScreen extends AbstractContainerScreen<LapidaryMenu> {
             float r = RADIUS * (0.86F + 0.14F * random.nextFloat());
             poly.add(new float[]{Mth.cos(a) * r, Mth.sin(a) * r * 1.08F});
         }
-        float finalDepth = cut.grade == Cleavage.Grade.FINISH ? 0.9F : 0.84F;
+        float finalDepth = cut.grade == Cleavage.Grade.FIRST ? 0.84F : 0.9F;
         for (int i = 0; i < cut.planes.length; i++) {
             float progress = cut.ground[i] / (float) cut.grade.grindTicks;
             if (progress <= 0) {
