@@ -90,6 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   too.
 - The Separator heats over magma or lava too - slowly, with no blaze powder at all.
 - The Bulwark heart takes at most 4/6/8/10 points of a single blow by level, so a crushing blow is still felt.
+- The Whirlwind sweep is a softer crescent in the rune's colour, without the flat white sweep of a vanilla sword over it.
 - A few finds of the Void - Void Chitin, Void Crystals and the Void's plants - now have to be studied under the loupe
   before the diary knows what to make of them.
 - New ideas in the margins of the diary: where the level materials, the clouded crystal, the Void's flowers,
