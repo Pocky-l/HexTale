@@ -85,6 +85,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for extra damage with a visible arc, and then leaps on - to hostile creatures, or from an animal to others of its
   kind. It never touches players, pets or villagers. Before, it did nothing at all unless another hostile creature
   stood near.
+- Riftforged Bulwark reads as armour now, not a violet lump: black riftmetal plates with lit rims and blackened brass
+  rivets, violet carapace on the shoulders, chest, back and knees, and a sealed Void crystal heart - black core,
+  violet rim, a pale nullstone band - held by the claws on the chest.
 
 ### Fixed
 - The Researcher's Diary no longer drags the frame rate down while it is open: its star map ran at about half the
