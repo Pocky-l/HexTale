@@ -144,6 +144,11 @@ Not recipes: the multiblocks' shapes, what the lightning wave turns into hextech
 `hextale:carries_lightning`), the lapidary's cutting, rune burning in the Rune Circle and the essences of items (data map
 `hextale:essences`, `data/hextale/data_maps/item/essences.json`).
 
+Gear levels and the Nether: Radiant tools and Radiant Bulwark armour reach netherite strength without netherite (their
+Radiant Alloy is gold, Charged Hexsteel and gemstone dust from the Foundry). A pack that gates its progression on the
+Nether can add a netherite scrap to the alloy recipes `hextale:alloying/radiant_alloy_ingot` and
+`hextale:alloying/radiant_alloy_ingot_from_shimmer` (KubeJS: remove them by id and add a copy with one more input).
+
 ## Tags
 
 Items:
