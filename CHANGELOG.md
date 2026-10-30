@@ -19,6 +19,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Whirlwind** (sword): every third blow in a row sweeps all around you in a circle of light.
   A weapon takes one rune worked by hand (Shockwave or Blink). Two runes of the codex got names that suit them:
   Grounding is now Shockwave, Updraft is now Whirlwind.
+- Six new runes for the researcher's clothes, the Skypack, the Crystal Battery and the Arc Spire (four of them from runes
+  of the codex nothing took before, so their scrolls now turn up in chests):
+  - **Wavewalk** (boots): walk on water as on ground and 15/25/35% faster there; sneak to sink. Caught just under the
+    surface, you are lifted back onto it. Every stride spreads rings of light over the water with a splash of
+    droplets. It replaces Pump - the boots still swim as easily under the water as Pump made them.
+  - **Static** (robe): a creature that strikes you in close combat gets a spark back 25/40/55% of the time - 3/4/5
+    damage and a moment numbed (Slowness IV), drawn as a twitching bolt from the robe. The rune of the codex Conductor
+    is now called Static.
+  - **Mirage** (hood): when a blow leaves you under 40% health you fade for 3/4/5 s. The creatures hunting you lose you
+    and go to look where you stood, where a shimmering figure of light stays behind; until you strike, none of them can
+    take you for a target. The hood then rests 60/45/30 s.
+  - **Flamethrower** (Skypack): while the jets thrust, a tongue of fire licks 3/4/5 blocks behind and below you. The
+    creatures in it catch fire for 3/4/5 s and are burned a little; blocks never catch fire.
+  - **Sunlight Cell** (Crystal Battery): under the open sky by day, in dry weather, the battery charges itself by
+    6/10/15 a minute, drinking a soft shaft of sunlight.
+  - **Beam** (Arc Spire): its strikes come as a hot beam of light that sets the creature on fire for 3/5/7 s, so the
+    animals it fells drop their meat cooked.
 
 ### Changed
 - Chain Lightning on the sword is felt now: it fires more often (20/30/40%), its spark always bites the struck creature

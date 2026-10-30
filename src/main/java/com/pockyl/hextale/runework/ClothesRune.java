@@ -21,6 +21,8 @@ public enum ClothesRune implements HolderRune {
     HOOD_BREATH(Piece.HOOD, "air_life"),
     /** Hood: poison, hunger and weakness sometimes wash off. */
     HOOD_PURIFICATION(Piece.HOOD, "light_water"),
+    /** Hood: a blow that leaves me weak lets me fade, and a figure of light stays behind for the foes. */
+    HOOD_MIRAGE(Piece.HOOD, "air_light"),
     /** Robe: the worn clothes mend themselves now and then. */
     ROBE_MENDING(Piece.ROBE, "life_metal"),
     /** Robe: a blow may start a short regeneration. */
@@ -29,6 +31,8 @@ public enum ClothesRune implements HolderRune {
     ROBE_FIREPROOFING(Piece.ROBE, "life_fire"),
     /** Robe: a blow may glance back at whoever struck. */
     ROBE_MIRROR(Piece.ROBE, "metal_light"),
+    /** Robe: whoever strikes me in close combat may get a spark back that numbs them. */
+    ROBE_STATIC(Piece.ROBE, "water_spark"),
     /** Trousers: quicker steps. */
     TROUSERS_HASTE(Piece.TROUSERS, "spark_life"),
     /** Trousers: higher jumps. */
@@ -41,8 +45,8 @@ public enum ClothesRune implements HolderRune {
     TROUSERS_MAGNET(Piece.TROUSERS, "spark_metal"),
     /** Boots: softer landings. */
     BOOTS_LIFT(Piece.BOOTS, "air_metal"),
-    /** Boots: easier walking in water. */
-    BOOTS_PUMP(Piece.BOOTS, "air_water"),
+    /** Boots: I walk on water as on ground (sneaking, I sink), and in it the water holds me less. */
+    BOOTS_WAVEWALK(Piece.BOOTS, "air_water"),
     /** Boots: crops and saplings by my path sometimes shoot up. */
     BOOTS_POLLEN(Piece.BOOTS, "life_air"),
     /** Boots: hot floors burn the feet less. */
@@ -69,8 +73,19 @@ public enum ClothesRune implements HolderRune {
     public static final float[] STEADY = {0.2F, 0.35F, 0.5F, 0.65F};
     /** Share of fall damage taken away. */
     public static final float[] CUSHION = {0.25F, 0.4F, 0.55F, 0.7F};
-    /** Water movement efficiency added. */
+    /** Water movement efficiency added (Wavewalk, under the water). */
     public static final float[] SWIM = {0.25F, 0.5F, 0.75F, 1.0F};
+    /** Movement speed bonus while walking on water (share of the base). */
+    public static final float[] WAVE_SPEED = {0.15F, 0.25F, 0.35F, 0.45F};
+    /** Chance a close blow sparks back, the spark's damage and the ticks it numbs the attacker (Slowness IV). */
+    public static final float[] STATIC_CHANCE = {0.25F, 0.4F, 0.55F, 0.7F};
+    public static final float[] STATIC_DAMAGE = {3, 4, 5, 6};
+    public static final int[] STATIC_STUN = {30, 40, 50, 60};
+    /** Mirage: ticks unseen, and the ticks before it can happen again. */
+    public static final int[] MIRAGE_TICKS = {60, 80, 100, 120};
+    public static final int[] MIRAGE_COOLDOWN = {1200, 900, 600, 450};
+    /** Mirage wakes when a blow leaves less than this share of health. */
+    public static final float MIRAGE_HEALTH = 0.4F;
     /** Chance, every {@link ClothesEffects#POLLEN_TICKS} of walking, that a plant nearby gets bone meal. */
     public static final float[] POLLEN = {0.12F, 0.18F, 0.24F, 0.3F};
     /** Chance, each second, that one bad effect washes off. */
@@ -140,7 +155,9 @@ public enum ClothesRune implements HolderRune {
             case TROUSERS_WINDMILL -> HolderRune.percent(HolderRune.at(JUMP, strength) / 0.42F);
             case TROUSERS_GRAVITY -> HolderRune.percent(HolderRune.at(STEADY, strength));
             case BOOTS_LIFT -> HolderRune.percent(HolderRune.at(CUSHION, strength));
-            case BOOTS_PUMP -> HolderRune.percent(HolderRune.at(SWIM, strength));
+            case BOOTS_WAVEWALK -> HolderRune.percent(HolderRune.at(WAVE_SPEED, strength));
+            case ROBE_STATIC -> HolderRune.percent(HolderRune.at(STATIC_CHANCE, strength));
+            case HOOD_MIRAGE -> HolderRune.seconds(HolderRune.at(MIRAGE_TICKS, strength));
             case BOOTS_POLLEN -> HolderRune.percent(HolderRune.at(POLLEN, strength));
             case HOOD_PURIFICATION -> HolderRune.percent(HolderRune.at(PURIFY, strength));
             case ROBE_MIRROR -> HolderRune.percent(HolderRune.at(MIRROR_CHANCE, strength));

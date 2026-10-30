@@ -34,6 +34,12 @@ import java.util.List;
  * glowing crack runs ahead along the ground. A Blink leaves a streak of shadow and a fading silhouette where the player
  * stood. A Detonator's burst is a flash, a ring of light racing out and sparks. A Whirlpool turns two arms of light on
  * the ground, tightening, with water swirling in. A Whirlwind is a crescent of light sweeping round the player.
+ *
+ * <p>The gear runes' moments are drawn the same way. A Wavewalk step spreads two rings of light over the water with a
+ * splash of droplets; a Static spark is a jagged bolt that twitches from the robe to the attacker; a Mirage leaves a
+ * shimmering figure of light where the wearer stood, crumbling into motes; a Flamethrower's jets lick out a tongue of
+ * fire, white at the nozzle and red at the tip, shedding embers; a Sunlight Cell drinks a soft shaft of sunlight with
+ * motes drifting down it; an Arc Spire's Beam is a hot white-gold line with a flare and flames where it lands.
  */
 public final class WeaponFx {
     private static final int MAX_SHOWN = 32;
@@ -45,6 +51,17 @@ public final class WeaponFx {
     private static final float BLINK_TICKS = 10;
     private static final float BURST_TICKS = 9;
     private static final float SWEEP_TICKS = 6;
+    private static final float RIPPLE_TICKS = 26;
+    private static final float ZAP_TICKS = 7;
+    private static final float MIRAGE_TICKS = 40;
+    private static final float SCORCH_TICKS = 7;
+    private static final float SUNBEAM_TICKS = 36;
+    private static final float BEAM_TICKS = 9;
+    /** The colours of fire, from the red edge to the white heart. */
+    private static final int FIRE_EDGE = 0xFF5A1E;
+    private static final int FIRE_BODY = 0xFFA640;
+    private static final int FIRE_HEART = 0xFFF0C8;
+    private static final int SUNLIGHT = 0xFFE7A0;
     private static final int SHADOW = 0x2A1640;
     private static final int WATER = 0x3E6EA8;
     /** Shapes on the ground lie flat across this. */
@@ -61,6 +78,12 @@ public final class WeaponFx {
                 case BURST -> BURST_TICKS + 4;
                 case VORTEX -> (float) payload.to().x + 6;
                 case SWEEP -> SWEEP_TICKS + 2;
+                case RIPPLE -> RIPPLE_TICKS;
+                case ZAP -> ZAP_TICKS;
+                case MIRAGE -> MIRAGE_TICKS;
+                case SCORCH -> SCORCH_TICKS;
+                case SUNBEAM -> SUNBEAM_TICKS;
+                case BEAM -> BEAM_TICKS + 2;
             };
         }
     }
@@ -115,6 +138,12 @@ public final class WeaponFx {
                 case BURST -> burstParticles(current, payload, age, random);
                 case VORTEX -> vortexParticles(current, payload, age, random, shown.seed());
                 case SWEEP -> sweepParticles(current, payload, age, random);
+                case RIPPLE -> rippleParticles(current, payload, age, random);
+                case ZAP -> zapParticles(current, payload, age, random);
+                case MIRAGE -> mirageParticles(current, payload, age, random);
+                case SCORCH -> scorchParticles(current, payload, age, random);
+                case SUNBEAM -> sunbeamParticles(current, payload, age, random);
+                case BEAM -> beamParticles(current, payload, age, random);
             }
         }
     }
@@ -236,6 +265,119 @@ public final class WeaponFx {
         }
     }
 
+    private static void rippleParticles(ClientLevel level, WeaponFxPayload payload, int age, RandomSource random) {
+        if (age != 0) {
+            return;
+        }
+        Vec3 c = payload.from();
+        // Droplets kicked up by the step, and a few glints caught on the first ring.
+        for (int k = 0; k < 4; k++) {
+            level.addParticle(ParticleTypes.SPLASH, c.x + (random.nextDouble() - 0.5) * 0.5, c.y + 0.05, c.z + (random.nextDouble() - 0.5) * 0.5,
+                    (random.nextDouble() - 0.5) * 0.1, 0.12, (random.nextDouble() - 0.5) * 0.1);
+        }
+        for (int k = 0; k < 3; k++) {
+            float angle = random.nextFloat() * Mth.TWO_PI;
+            level.addParticle(ModParticles.glint(payload.color()), c.x + Mth.cos(angle) * 0.4, c.y + 0.06, c.z + Mth.sin(angle) * 0.4,
+                    Mth.cos(angle) * 0.03, 0.01, Mth.sin(angle) * 0.03);
+        }
+    }
+
+    private static void zapParticles(ClientLevel level, WeaponFxPayload payload, int age, RandomSource random) {
+        if (age != 0) {
+            return;
+        }
+        Vec3 from = payload.from();
+        Vec3 to = payload.to();
+        for (int i = 1; i < 6; i++) {
+            Vec3 p = from.lerp(to, i / 6.0);
+            level.addParticle(ParticleTypes.ELECTRIC_SPARK, p.x, p.y, p.z, (random.nextDouble() - 0.5) * 0.1, 0.02, (random.nextDouble() - 0.5) * 0.1);
+        }
+        for (int k = 0; k < 9; k++) {
+            level.addParticle(ModParticles.spark(payload.color()), to.x, to.y, to.z,
+                    (random.nextDouble() - 0.5) * 0.3, random.nextDouble() * 0.2, (random.nextDouble() - 0.5) * 0.3);
+        }
+        for (int k = 0; k < 4; k++) {
+            level.addParticle(ModParticles.glint(payload.color()), from.x, from.y, from.z,
+                    (random.nextDouble() - 0.5) * 0.12, 0.03, (random.nextDouble() - 0.5) * 0.12);
+        }
+    }
+
+    private static void mirageParticles(ClientLevel level, WeaponFxPayload payload, int age, RandomSource random) {
+        Vec3 c = payload.from();
+        float height = payload.size();
+        int light = RuneDrawing.mix(payload.color(), 0xFFFFFF, 0.4F);
+        if (age == 0) {
+            // The wearer slips out of sight in a breath of light.
+            for (int k = 0; k < 14; k++) {
+                level.addParticle(ModParticles.glint(light), c.x + (random.nextDouble() - 0.5) * 0.7, c.y + height * random.nextDouble(),
+                        c.z + (random.nextDouble() - 0.5) * 0.7, (random.nextDouble() - 0.5) * 0.08, 0.02, (random.nextDouble() - 0.5) * 0.08);
+            }
+            for (int k = 0; k < 5; k++) {
+                level.addParticle(ModParticles.vapour(light), c.x, c.y + height * 0.5, c.z,
+                        (random.nextDouble() - 0.5) * 0.1, 0.01, (random.nextDouble() - 0.5) * 0.1);
+            }
+        } else if (age == MIRAGE_TICKS - 10) {
+            // The figure crumbles into motes that rise away.
+            for (int k = 0; k < 16; k++) {
+                level.addParticle(ModParticles.glint(light), c.x + (random.nextDouble() - 0.5) * 0.5, c.y + height * random.nextDouble(),
+                        c.z + (random.nextDouble() - 0.5) * 0.5, 0, 0.04 + random.nextDouble() * 0.04, 0);
+            }
+        } else if (age % 3 == 0 && age < MIRAGE_TICKS - 10) {
+            level.addParticle(ModParticles.glint(light), c.x + (random.nextDouble() - 0.5) * 0.45, c.y + height * random.nextDouble(),
+                    c.z + (random.nextDouble() - 0.5) * 0.45, 0, 0.02, 0);
+        }
+    }
+
+    private static void scorchParticles(ClientLevel level, WeaponFxPayload payload, int age, RandomSource random) {
+        Vec3 from = payload.from();
+        Vec3 way = payload.to().subtract(from);
+        if (age == 0) {
+            for (int k = 0; k < 8; k++) {
+                double t = random.nextDouble() * 0.8;
+                Vec3 p = from.add(way.scale(t));
+                double spread = payload.size() * t * 0.5;
+                level.addParticle(ModParticles.flame(ModParticles.FIRE), p.x + (random.nextDouble() - 0.5) * spread, p.y + (random.nextDouble() - 0.5) * spread,
+                        p.z + (random.nextDouble() - 0.5) * spread, way.x * 0.06, way.y * 0.06, way.z * 0.06);
+            }
+            for (int k = 0; k < 3; k++) {
+                // Embers shed by the tongue, falling behind.
+                Vec3 p = from.add(way.scale(0.3 + random.nextDouble() * 0.6));
+                level.addParticle(ModParticles.spark(FIRE_EDGE), p.x, p.y, p.z, (random.nextDouble() - 0.5) * 0.06, -0.04, (random.nextDouble() - 0.5) * 0.06);
+            }
+        } else if (age == 3) {
+            Vec3 tip = payload.to();
+            level.addParticle(ModParticles.vapour(ModParticles.SMOKE), tip.x, tip.y, tip.z, 0, 0.03, 0);
+        }
+    }
+
+    private static void sunbeamParticles(ClientLevel level, WeaponFxPayload payload, int age, RandomSource random) {
+        if (age % 3 != 0 || age > SUNBEAM_TICKS - 8) {
+            return;
+        }
+        // Motes of sunlight drifting down the shaft into the battery.
+        Vec3 c = payload.from();
+        double top = payload.size() * (0.6 + 0.4 * random.nextDouble());
+        level.addParticle(ModParticles.glint(SUNLIGHT), c.x + (random.nextDouble() - 0.5) * 0.4, c.y + top, c.z + (random.nextDouble() - 0.5) * 0.4,
+                0, -0.07, 0);
+    }
+
+    private static void beamParticles(ClientLevel level, WeaponFxPayload payload, int age, RandomSource random) {
+        if (age != 0) {
+            return;
+        }
+        Vec3 from = payload.from();
+        Vec3 to = payload.to();
+        for (int i = 1; i < 10; i++) {
+            Vec3 p = from.lerp(to, i / 10.0);
+            level.addParticle(ModParticles.spark(FIRE_BODY), p.x, p.y, p.z, 0, 0.01, 0);
+        }
+        for (int k = 0; k < 7; k++) {
+            level.addParticle(ModParticles.flame(ModParticles.FIRE), to.x + (random.nextDouble() - 0.5) * 0.4, to.y + (random.nextDouble() - 0.5) * 0.5,
+                    to.z + (random.nextDouble() - 0.5) * 0.4, (random.nextDouble() - 0.5) * 0.05, 0.04, (random.nextDouble() - 0.5) * 0.05);
+        }
+        level.addParticle(ModParticles.vapour(ModParticles.SMOKE), to.x, to.y + 0.3, to.z, 0, 0.03, 0);
+    }
+
     // ---- Shapes: moving blocks and light ----------------------------------------------------------------------------
 
     private static void submit(SubmitCustomGeometryEvent event) {
@@ -262,6 +404,14 @@ public final class WeaponFx {
                 case VORTEX -> collector.submitCustomGeometry(poseStack, HexGlow.TYPE,
                         (pose, consumer) -> vortex(consumer, pose, payload, age, camera, eye, shown.seed()));
                 case SWEEP -> collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> sweep(consumer, pose, payload, age, camera, eye));
+                case RIPPLE -> collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> ripple(consumer, pose, payload, age, camera, eye));
+                case ZAP -> collector.submitCustomGeometry(poseStack, HexGlow.TYPE,
+                        (pose, consumer) -> zap(consumer, pose, payload, age, camera, eye, shown.seed()));
+                case MIRAGE -> collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> mirage(consumer, pose, payload, age, camera, eye));
+                case SCORCH -> collector.submitCustomGeometry(poseStack, HexGlow.TYPE,
+                        (pose, consumer) -> scorch(consumer, pose, payload, age, camera, eye, shown.seed()));
+                case SUNBEAM -> collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> sunbeam(consumer, pose, payload, age, camera, eye));
+                case BEAM -> collector.submitCustomGeometry(poseStack, HexGlow.TYPE, (pose, consumer) -> beam(consumer, pose, payload, age, camera, eye));
             }
         }
     }
@@ -420,6 +570,168 @@ public final class WeaponFx {
         }
         JarStreamFx.flatStrip(consumer, pose, points, light, UP, 0.6F, payload.color(), 0.45F * fade);
         JarStreamFx.flatStrip(consumer, pose, points, light, UP, 0.1F, RuneDrawing.mix(payload.color(), 0xFFFFFF, 0.6F), 0.95F * fade);
+    }
+
+    /** Two rings of light spreading over the water from a step, the second a little behind the first. */
+    private static void ripple(VertexConsumer consumer, PoseStack.Pose pose, WeaponFxPayload payload, float age, Vec3 camera, Vector3f eye) {
+        Vec3 c = payload.from().subtract(camera).add(0, 0.03, 0);
+        int core = RuneDrawing.mix(payload.color(), 0xFFFFFF, 0.55F);
+        float span = RIPPLE_TICKS - 6;
+        for (int k = 0; k < 2; k++) {
+            float a = age - k * 5;
+            if (a < 0 || a >= span) {
+                continue;
+            }
+            float t = a / span;
+            float share = k == 0 ? 1 : 0.7F;
+            float radius = 0.2F + payload.size() * (1 - (1 - t) * (1 - t)) * share;
+            float fade = (1 - t) * (1 - t) * share;
+            ring(consumer, pose, c, radius, 0, 40, 0.24F * (1 - t) + 0.05F, payload.color(), 0.4F * fade, eye);
+            ring(consumer, pose, c, radius, 0, 40, 0.05F, core, 0.85F * fade, eye);
+        }
+    }
+
+    /** A jagged bolt from the robe to the attacker, twitching into a new shape every other tick, with one branch. */
+    private static void zap(VertexConsumer consumer, PoseStack.Pose pose, WeaponFxPayload payload, float age, Vec3 camera, Vector3f eye, int seed) {
+        float fade = 1 - age / ZAP_TICKS;
+        if (fade <= 0) {
+            return;
+        }
+        Vec3 from = payload.from().subtract(camera);
+        Vec3 to = payload.to().subtract(camera);
+        Vec3 way = to.subtract(from);
+        Vec3 a = way.cross(new Vec3(0, 1, 0));
+        a = a.lengthSqr() < 1.0E-6 ? new Vec3(1, 0, 0) : a.normalize();
+        Vec3 b = way.cross(a).normalize();
+        RandomSource shape = RandomSource.create(seed * 31L + (int) (age / 2));
+        int n = 9;
+        Vec3[] points = new Vec3[n];
+        float[] light = new float[n];
+        double jag = Math.min(0.35, way.length() * 0.12);
+        for (int i = 0; i < n; i++) {
+            float s = i / (float) (n - 1);
+            double bend = Mth.sin(Mth.PI * s) * jag;
+            points[i] = from.add(way.scale(s)).add(a.scale((shape.nextDouble() - 0.5) * 2 * bend)).add(b.scale((shape.nextDouble() - 0.5) * 2 * bend));
+            light[i] = 1;
+        }
+        float flicker = ((int) age) % 2 == 0 ? 1 : 0.65F;
+        int core = RuneDrawing.mix(payload.color(), 0xFFFFFF, 0.7F);
+        JarStreamFx.strip(consumer, pose, points, light, eye, 0.38F, payload.color(), 0.45F * fade * flicker);
+        JarStreamFx.strip(consumer, pose, points, light, eye, 0.06F, core, 0.95F * fade);
+        // A branch splitting off halfway and dying out.
+        Vec3 fork = points[n / 2];
+        Vec3 off = a.scale(shape.nextDouble() - 0.5).add(b.scale(shape.nextDouble() - 0.5)).add(way.normalize().scale(0.3)).normalize().scale(0.6);
+        Vec3[] branch = {fork, fork.add(off.scale(0.5)).add(a.scale((shape.nextDouble() - 0.5) * 0.15)), fork.add(off)};
+        float[] dying = {1, 0.6F, 0};
+        JarStreamFx.strip(consumer, pose, branch, dying, eye, 0.2F, payload.color(), 0.35F * fade * flicker);
+        JarStreamFx.strip(consumer, pose, branch, dying, eye, 0.04F, core, 0.8F * fade);
+    }
+
+    /**
+     * A figure of light where the wearer stood: legs, body, arms and head as soft strips facing the camera, wavering and
+     * breathing, on a faint ring of light; it fades in at once and out over its last ticks.
+     */
+    private static void mirage(VertexConsumer consumer, PoseStack.Pose pose, WeaponFxPayload payload, float age, Vec3 camera, Vector3f eye) {
+        float fade = Math.min(1, age / 3) * Math.min(1, (MIRAGE_TICKS - age) / 12);
+        if (fade <= 0) {
+            return;
+        }
+        float h = payload.size();
+        Vec3 c = payload.from().subtract(camera);
+        Vec3 right = new Vec3(c.z, 0, -c.x);
+        right = right.lengthSqr() < 1.0E-6 ? new Vec3(1, 0, 0) : right.normalize();
+        float shimmer = 0.75F + 0.25F * Mth.sin(age * 0.9F);
+        Vec3 sway = right.scale(0.04 * Mth.sin(age * 0.55F));
+        int body = RuneDrawing.mix(payload.color(), 0xFFFFFF, 0.35F);
+        int core = RuneDrawing.mix(payload.color(), 0xFFFFFF, 0.75F);
+        float alpha = 0.32F * fade * shimmer;
+        float[] even = {0.85F, 1};
+        for (int side = -1; side <= 1; side += 2) {
+            // A leg and an arm on each side.
+            limb(consumer, pose, eye, c.add(right.scale(side * 0.12)).add(0, 0.03, 0),
+                    c.add(right.scale(side * 0.09)).add(0, h * 0.46, 0).add(sway.scale(0.5)), 0.17F, body, alpha);
+            limb(consumer, pose, eye, c.add(right.scale(side * 0.3)).add(0, h * 0.42, 0).add(sway),
+                    c.add(right.scale(side * 0.27)).add(0, h * 0.75, 0).add(sway), 0.12F, body, alpha);
+        }
+        Vec3[] torso = {c.add(0, h * 0.45, 0).add(sway.scale(0.6)), c.add(0, h * 0.78, 0).add(sway)};
+        JarStreamFx.strip(consumer, pose, torso, even, eye, 0.44F, body, alpha);
+        Vec3[] head = {c.add(0, h * 0.8, 0).add(sway), c.add(0, h * 0.99, 0).add(sway.scale(1.3))};
+        JarStreamFx.strip(consumer, pose, head, even, eye, 0.34F, body, alpha * 1.1F);
+        // A thin bright spine and a wide haze round the whole figure.
+        Vec3[] spine = {c.add(0, h * 0.1, 0), c.add(0, h * 0.95, 0).add(sway)};
+        JarStreamFx.strip(consumer, pose, spine, new float[]{0.3F, 1}, eye, 0.05F, core, 0.55F * fade * shimmer);
+        JarStreamFx.strip(consumer, pose, new Vec3[]{c, c.add(0, h, 0).add(sway)}, new float[]{0.6F, 0.4F}, eye, 1.0F, payload.color(), 0.1F * fade);
+        ring(consumer, pose, c.add(0, 0.03, 0), 0.45F + 0.05F * Mth.sin(age * 0.4F), age * 0.05F, 28, 0.1F, payload.color(), 0.4F * fade, eye);
+    }
+
+    private static void limb(VertexConsumer consumer, PoseStack.Pose pose, Vector3f eye, Vec3 from, Vec3 to, float width, int color, float alpha) {
+        JarStreamFx.strip(consumer, pose, new Vec3[]{from, to}, new float[]{0.8F, 1}, eye, width, color, alpha);
+    }
+
+    /** A tongue of fire licking out of the jets: a red edge, an orange body and a white heart, all tapering to the tip. */
+    private static void scorch(VertexConsumer consumer, PoseStack.Pose pose, WeaponFxPayload payload, float age, Vec3 camera, Vector3f eye, int seed) {
+        float fade = 1 - age / SCORCH_TICKS;
+        if (fade <= 0) {
+            return;
+        }
+        Vec3 from = payload.from().subtract(camera);
+        Vec3 way = payload.to().subtract(payload.from());
+        Vec3 side = way.cross(new Vec3(0, 1, 0));
+        side = side.lengthSqr() < 1.0E-6 ? new Vec3(1, 0, 0) : side.normalize();
+        RandomSource lick = RandomSource.create(seed * 17L + (int) age);
+        int n = 7;
+        Vec3[] points = new Vec3[n];
+        float[] light = new float[n];
+        float[] heart = new float[n];
+        for (int i = 0; i < n; i++) {
+            float s = i / (float) (n - 1);
+            // The tongue flutters more towards its tip.
+            Vec3 flutter = side.scale((lick.nextDouble() - 0.5) * 0.3 * s).add(0, (lick.nextDouble() - 0.3) * 0.25 * s, 0);
+            points[i] = from.add(way.scale(s * (0.85 + 0.15 * fade))).add(flutter);
+            light[i] = 1 - s * 0.9F;
+            heart[i] = Math.max(0, 1 - s * 2.2F);
+        }
+        float width = payload.size();
+        JarStreamFx.strip(consumer, pose, points, light, eye, width, FIRE_EDGE, 0.3F * fade);
+        JarStreamFx.strip(consumer, pose, points, light, eye, width * 0.5F, FIRE_BODY, 0.5F * fade);
+        JarStreamFx.strip(consumer, pose, points, heart, eye, 0.12F, FIRE_HEART, 0.85F * fade);
+    }
+
+    /** A soft shaft of sunlight falling into the battery, swelling and fading, with a ring of light where it lands. */
+    private static void sunbeam(VertexConsumer consumer, PoseStack.Pose pose, WeaponFxPayload payload, float age, Vec3 camera, Vector3f eye) {
+        float glow = Mth.sin(Mth.PI * Math.min(1, age / SUNBEAM_TICKS));
+        if (glow <= 0) {
+            return;
+        }
+        Vec3 c = payload.from().subtract(camera);
+        Vec3[] shaft = {c.add(0, payload.size(), 0), c.add(0, payload.size() * 0.5, 0), c};
+        float[] light = {0, 0.6F, 1};
+        JarStreamFx.strip(consumer, pose, shaft, light, eye, 0.55F, SUNLIGHT, 0.22F * glow);
+        JarStreamFx.strip(consumer, pose, shaft, light, eye, 0.1F, RuneDrawing.mix(SUNLIGHT, 0xFFFFFF, 0.6F), 0.5F * glow);
+        ring(consumer, pose, c.add(0, 0.02, 0), 0.32F + 0.04F * Mth.sin(age * 0.3F), 0, 28, 0.08F, payload.color(), 0.5F * glow, eye);
+    }
+
+    /** A hot beam from the spire's crystal to the creature: a white-gold core in an orange glow, flaring where it lands. */
+    private static void beam(VertexConsumer consumer, PoseStack.Pose pose, WeaponFxPayload payload, float age, Vec3 camera, Vector3f eye) {
+        float t = age / BEAM_TICKS;
+        if (t >= 1) {
+            return;
+        }
+        float fade = (1 - t) * (1 - t * 0.5F);
+        Vec3 from = payload.from().subtract(camera);
+        Vec3 to = payload.to().subtract(camera);
+        Vec3[] line = {from, from.lerp(to, 0.5), to};
+        float[] light = {0.8F, 1, 1};
+        JarStreamFx.strip(consumer, pose, line, light, eye, 0.55F * (1 - 0.5F * t), FIRE_EDGE, 0.35F * fade);
+        JarStreamFx.strip(consumer, pose, line, light, eye, 0.2F, FIRE_BODY, 0.65F * fade);
+        JarStreamFx.strip(consumer, pose, line, light, eye, 0.05F, FIRE_HEART, fade);
+        if (t < 0.5F) {
+            float flare = 1 - t / 0.5F;
+            Vec3[] spot = {to.add(0, -0.35 * flare, 0), to.add(0, 0.35 * flare, 0)};
+            JarStreamFx.strip(consumer, pose, spot, new float[]{1, 1}, eye, 0.8F * flare, FIRE_BODY, 0.45F * flare);
+            Vec3[] mouth = {from.add(0, -0.2 * flare, 0), from.add(0, 0.2 * flare, 0)};
+            JarStreamFx.strip(consumer, pose, mouth, new float[]{1, 1}, eye, 0.45F * flare, FIRE_HEART, 0.5F * flare);
+        }
     }
 
     /** A flat ring of light round {@code c}. */
