@@ -148,6 +148,12 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> RAW_ZINC_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RAW_ZINC_BLOCK);
     public static final DeferredItem<BlockItem> ZINC_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.ZINC_BLOCK);
     public static final DeferredItem<BlockItem> HEXSTEEL_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.HEXSTEEL_BLOCK);
+    public static final DeferredItem<BlockItem> CHARGED_HEXSTEEL_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.CHARGED_HEXSTEEL_BLOCK);
+    public static final DeferredItem<BlockItem> HEXSTEEL_PLATING = ITEMS.registerSimpleBlockItem(ModBlocks.HEXSTEEL_PLATING);
+    public static final DeferredItem<BlockItem> RADIANT_ALLOY_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RADIANT_ALLOY_BLOCK);
+    public static final DeferredItem<BlockItem> RADIANT_TRIM = ITEMS.registerSimpleBlockItem(ModBlocks.RADIANT_TRIM);
+    public static final DeferredItem<BlockItem> RIFTMETAL_BLOCK = ITEMS.registerSimpleBlockItem(ModBlocks.RIFTMETAL_BLOCK, properties -> properties.fireResistant());
+    public static final DeferredItem<BlockItem> VOID_CARAPACE_TILES = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CARAPACE_TILES);
     public static final DeferredItem<Item> RAW_ZINC = ITEMS.registerSimpleItem("raw_zinc");
     public static final DeferredItem<Item> ZINC_INGOT = ITEMS.registerSimpleItem("zinc_ingot");
     public static final DeferredItem<Item> ZINC_NUGGET = ITEMS.registerSimpleItem("zinc_nugget");

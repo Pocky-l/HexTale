@@ -89,6 +89,12 @@
     "hextale:rune_circle",
     "hextale:chem_tubes",
     "hextale:rusted_grate",
-    "hextale:void_crystal_cluster"
+    "hextale:void_crystal_cluster",
+    "hextale:charged_hexsteel_block",
+    "hextale:hexsteel_plating",
+    "hextale:radiant_alloy_block",
+    "hextale:radiant_trim",
+    "hextale:riftmetal_block",
+    "hextale:void_carapace_tiles"
   ]
 }
