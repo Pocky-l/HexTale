@@ -1,0 +1,43 @@
+{
+  "model": {
+    "type": "hextale:animated",
+    "model": {
+      "type": "minecraft:composite",
+      "models": [
+        {
+          "type": "minecraft:special",
+          "base": "hextale:item/bulwark_helmet",
+          "model": {
+            "type": "hextale:bulwark",
+            "piece": "helmet"
+          }
+        },
+        {
+          "type": "minecraft:special",
+          "base": "hextale:item/bulwark_helmet",
+          "model": {
+            "type": "hextale:tool_aura",
+            "kind": "void",
+            "from": [
+              8,
+              2,
+              8
+            ],
+            "to": [
+              8,
+              14,
+              8
+            ],
+            "profile": [
+              4,
+              5.5,
+              5.5,
+              4
+            ],
+            "depth": 0.8
+          }
+        }
+      ]
+    }
+  }
+}

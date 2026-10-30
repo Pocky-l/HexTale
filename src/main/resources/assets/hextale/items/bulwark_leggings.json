@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "hextale:item/bulwark_leggings",
+    "model": {
+      "type": "hextale:bulwark",
+      "piece": "leggings"
+    }
+  }
+}

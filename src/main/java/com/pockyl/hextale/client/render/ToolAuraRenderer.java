@@ -73,9 +73,15 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
     private final Vec3 through;
     private final float[] profile;
     private final float depth;
+    /** Offsets every random choice, so fields side by side (the pieces of an armour) never move as one. */
+    private final long seed;
+    /** How much of everything the field shows (1 on a tool; less on each piece of an armour, so the whole stays quiet). */
+    private final float density;
 
-    private ToolAuraRenderer(Kind kind, Vector3fc from, Vector3fc to, List<Float> profile, float depth) {
+    private ToolAuraRenderer(Kind kind, Vector3fc from, Vector3fc to, List<Float> profile, float depth, long seed, float density) {
         this.kind = kind;
+        this.seed = seed;
+        this.density = density;
         this.from = new Vec3(from.x() * PX, from.y() * PX, from.z() * PX);
         this.axis = new Vec3(to.x() * PX, to.y() * PX, to.z() * PX).subtract(this.from);
         Vec3 across = axis.cross(new Vec3(0, 0, 1));
@@ -88,10 +94,27 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
         this.depth = depth;
     }
 
+    /**
+     * A field to draw elsewhere (round a worn armour piece): the same aura along {@code from} - {@code to} (pixels of the
+     * pose it is drawn in), widths by {@code profile}, its randomness offset by {@code seed}.
+     */
+    public static ToolAuraRenderer field(Kind kind, Vector3fc from, Vector3fc to, List<Float> profile, float depth, long seed, float density) {
+        return new ToolAuraRenderer(kind, from, to, profile, depth, seed, density);
+    }
+
+    /** How many of a thing the field shows at its density (at least one). */
+    private int count(int full) {
+        return Math.max(1, Math.round(full * density));
+    }
+
     @Override
     public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, int overlay, boolean hasFoil, int outlineColor) {
         Minecraft minecraft = Minecraft.getInstance();
-        float time = HexFx.time(minecraft.level, minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+        draw(poseStack, collector, HexFx.time(minecraft.level, minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false)));
+    }
+
+    /** Draws the field at the current pose. */
+    public void draw(PoseStack poseStack, SubmitNodeCollector collector, float time) {
         if (kind == Kind.LIGHTNING) {
             lightning(poseStack, collector, time);
         } else {
@@ -126,8 +149,8 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
         float phase = (time % PULSE) / PULSE;
         int frame = (int) Math.floor(time * 24 / 20F);
         // Short arcs here and there along the whole tool, each living a couple of frames; often none.
-        for (int arc = 0; arc < 3; arc++) {
-            RandomSource random = RandomSource.create((frame / 2) * 7919L + arc * 104729L);
+        for (int arc = 0; arc < count(3); arc++) {
+            RandomSource random = RandomSource.create(seed + (frame / 2) * 7919L + arc * 104729L);
             if (random.nextFloat() < 0.55F) {
                 continue;
             }
@@ -139,7 +162,7 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
         // The discharge: one arc running the whole length, pommel to tip, drawn as it runs and fading behind.
         if (phase < 0.25F) {
             float run = phase / 0.18F;
-            RandomSource random = RandomSource.create((long) Math.floor(time / PULSE) * 31L);
+            RandomSource random = RandomSource.create(seed + (long) Math.floor(time / PULSE) * 31L);
             int steps = 18;
             Vec3[] path = new Vec3[steps + 1];
             float spin = random.nextFloat() * Mth.TWO_PI;
@@ -164,8 +187,8 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
             strip(poseStack, collector, bolt, light, 0.38F * PX, CORE_WHITE, 0.95F);
         }
         // A few sparks winding round the tool at different heights.
-        for (int s = 0; s < 4; s++) {
-            RandomSource random = RandomSource.create(s * 977L + 3);
+        for (int s = 0; s < count(4); s++) {
+            RandomSource random = RandomSource.create(seed + s * 977L + 3);
             float t = 0.15F + 0.7F * random.nextFloat() + 0.08F * Mth.sin(time * 0.05F + s);
             float speed = (0.15F + random.nextFloat() * 0.1F) * (random.nextBoolean() ? 1 : -1);
             Vec3[] tail = new Vec3[6];
@@ -198,12 +221,12 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
     private void abyss(PoseStack poseStack, SubmitNodeCollector collector, float time) {
         // Darkness: small clouds of the Void well up at random places along the tool, spread a little, sink and thin out.
         // Every cloud is born somewhere new each time it comes back, so nothing repeats.
-        for (int c = 0; c < 26; c++) {
+        for (int c = 0; c < count(26); c++) {
             float period = 40 + (c * 37 % 41);
             float clock = time + c * 13.7F;
             int cycle = (int) Math.floor(clock / period);
             float life = (clock - cycle * period) / period;
-            RandomSource random = RandomSource.create(cycle * 7919L + c * 104729L);
+            RandomSource random = RandomSource.create(seed + cycle * 7919L + c * 104729L);
             float t = random.nextFloat();
             float angle = random.nextFloat() * Mth.TWO_PI;
             float drift = 0.35F + 0.45F * life;
@@ -213,12 +236,12 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
             darkSpot(poseStack, collector, at, size, alpha);
         }
         // Tendrils of the Void creeping out of the tool, twisting, gone again.
-        for (int w = 0; w < 6; w++) {
+        for (int w = 0; w < count(6); w++) {
             float period = 30 + (w * 29 % 23);
             float clock = time + w * 9.1F;
             int cycle = (int) Math.floor(clock / period);
             float life = (clock - cycle * period) / period;
-            RandomSource random = RandomSource.create(cycle * 6007L + w * 7877L + 5);
+            RandomSource random = RandomSource.create(seed + cycle * 6007L + w * 7877L + 5);
             float t = 0.08F + 0.84F * random.nextFloat();
             float angle = random.nextFloat() * Mth.TWO_PI;
             float bend = (random.nextFloat() - 0.5F) * 3;
@@ -237,10 +260,10 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
         }
         // Tears into the abyss: now and then a short jagged fissure flares at a random place for a few frames.
         int frame = (int) Math.floor(time * 24 / 20F);
-        for (int k = 0; k < 2; k++) {
+        for (int k = 0; k < count(2); k++) {
             int span = 5;
             int cycle = (frame + k * 3) / span;
-            RandomSource random = RandomSource.create(cycle * 31337L + k * 977L);
+            RandomSource random = RandomSource.create(seed + cycle * 31337L + k * 977L);
             if (random.nextFloat() < 0.6F) {
                 continue;
             }
@@ -257,12 +280,12 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
             darkSpot(poseStack, collector, a.lerp(b, 0.5), 2.2F * PX, 0.6F * (1 - age));
         }
         // A few faint stars in the dark, each lit for a while somewhere new.
-        for (int s = 0; s < 7; s++) {
+        for (int s = 0; s < count(7); s++) {
             float period = 50 + s * 11;
             float clock = time + s * 17.3F;
             int cycle = (int) Math.floor(clock / period);
             float life = (clock - cycle * period) / period;
-            RandomSource random = RandomSource.create(cycle * 4211L + s * 613L);
+            RandomSource random = RandomSource.create(seed + cycle * 4211L + s * 613L);
             Vec3 at = at(random.nextFloat(), random.nextFloat() * Mth.TWO_PI, 0.4F + 0.5F * random.nextFloat());
             star(poseStack, collector, at, (0.6F + 0.7F * random.nextFloat()) * PX, STAR, 0.7F * Mth.sin(life * Mth.PI), s % 4,
                     random.nextFloat() * 6.28F);
@@ -395,7 +418,7 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
 
         @Override
         public ToolAuraRenderer bake(SpecialModelRenderer.BakingContext context) {
-            return new ToolAuraRenderer(kind, from, to, profile, depth);
+            return new ToolAuraRenderer(kind, from, to, profile, depth, 0, 1);
         }
 
         @Override

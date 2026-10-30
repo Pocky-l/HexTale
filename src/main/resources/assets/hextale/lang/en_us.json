@@ -830,6 +830,8 @@
   "subtitles.hextale.ritual.collapse": "Ritual collapses",
   "subtitles.hextale.stele.set": "Rune settles",
   "jei.hextale.infusion": "Ritual Altar",
+  "jei.hextale.infusion.hexcore": "Hexcore only",
+  "book.hextale.quest.infusion.hexcore": "Only on the Hexcore",
   "jei.hextale.infusion.time": "%s s",
   "jei.hextale.info.hextech_altar": "The heart of the ritual circle. The item on top, the rest on pedestals around it, jars of essence close by. When it starts, the pedestals give up their items one by one, then the jars their essences. Chalk runes drawn around it seem to hurry the work. (Shift + right click with an empty hand, or a redstone pulse)",
   "jei.hextale.info.pedestal": "A stand for one thing a ritual needs, close to the altar. As many as I like. Hoppers can fill it too.",
