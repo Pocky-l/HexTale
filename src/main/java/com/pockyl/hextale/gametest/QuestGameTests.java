@@ -515,6 +515,19 @@ public final class QuestGameTests {
     }
 
     /** A step of the guide the server loaded, by id. */
+    /** A strange find opens its step once it is studied under the loupe - holding it is not enough. */
+    @HexTest
+    @SuppressWarnings("removal")
+    public static void aStrangeFindWantsTheLoupe(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        Quest chitin = step("void_chitin");
+        player.getInventory().add(new ItemStack(ModItems.VOID_CHITIN.get()));
+        helper.assertFalse(chitin.isMet(player, Guide.server()), "holding the chitin is not enough");
+        Research.of(player).study(BuiltInRegistries.ITEM.getKey(ModItems.VOID_CHITIN.get()));
+        helper.assertTrue(chitin.isMet(player, Guide.server()), "studying it is");
+        helper.succeed();
+    }
+
     private static Quest step(String id) {
         Quest quest = Guide.server().byId(id);
         if (quest == null) {

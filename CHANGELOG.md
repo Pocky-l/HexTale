@@ -87,6 +87,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   before and a violet plume rises from the burner, and Radiant Alloy from Refined Shimmer thins it three times as much
   too.
 - The Separator heats over magma or lava too - slowly, with no blaze powder at all.
+- The Bulwark heart takes at most 4/6/8/10 points of a single blow by level, so a crushing blow is still felt.
+- A few finds of the Void - Void Chitin, Void Crystals and the Void's plants - now have to be studied under the loupe
+  before the diary knows what to make of them.
 - New ideas in the margins of the diary: where the level materials, the clouded crystal, the Void's flowers,
   the shimmer moss and the magic wood could lead. A few old ideas that came true got new directions.
 - Runes now grow with the tool: a first Runed Pickaxe, Axe, Shovel or Sword holds one rune, a Refined Pickaxe two and
