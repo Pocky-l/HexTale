@@ -1,0 +1,13 @@
+{
+  "kind": "wip",
+  "region": "void",
+  "stage": "late",
+  "icon": "minecraft:spyglass",
+  "parents": [
+    "sealed_void_crystal"
+  ],
+  "pos": [
+    835,
+    930
+  ]
+}

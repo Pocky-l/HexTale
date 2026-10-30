@@ -82,7 +82,7 @@ public final class ArsenalGameTests {
         });
     }
 
-    /** A dagger in the off hand strikes along with the main hand's blow. */
+    /** A dagger in the off hand sometimes finds a gap and strikes along with the main hand's blow - never on every blow. */
     @HexTest
     @SuppressWarnings("removal")
     public static void anOffHandDaggerStrikesAlong(GameTestHelper helper) {
@@ -93,11 +93,20 @@ public final class ArsenalGameTests {
         net.minecraft.server.level.ServerPlayer two = helper.makeMockServerPlayerInLevel();
         two.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
         two.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, new ItemStack(ModItems.TENDRIL_DAGGER.get()));
+        ItemStack dagger = new ItemStack(ModItems.TENDRIL_DAGGER.get());
+        helper.assertTrue(com.pockyl.hextale.runework.TendrilDaggerItem.offHandExtra(dagger, 0) > 0
+                && com.pockyl.hextale.runework.TendrilDaggerItem.offHandExtra(dagger, 0.99F) == 0, "a lucky roll bites, an unlucky one not");
         plain.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(one), 6);
-        paired.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(two), 6);
         float plainLost = plain.getMaxHealth() - plain.getHealth();
-        float pairedLost = paired.getMaxHealth() - paired.getHealth();
-        helper.assertTrue(pairedLost >= plainLost + 1.5F, "the off-hand dagger adds its blow, " + plainLost + " vs " + pairedLost);
+        // Thirty blows: the dagger finds a gap in some of them (missing all thirty at 30% is a 1 in 40000 chance).
+        boolean bit = false;
+        for (int blow = 0; blow < 30 && !bit; blow++) {
+            paired.setHealth(paired.getMaxHealth());
+            paired.damageCooldownTime = 0;
+            paired.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(two), 6);
+            bit = paired.getMaxHealth() - paired.getHealth() >= plainLost + 1.5F;
+        }
+        helper.assertTrue(bit, "the off-hand dagger adds its blow now and then");
         helper.succeed();
     }
 

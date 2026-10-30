@@ -1,0 +1,13 @@
+{
+  "kind": "wip",
+  "region": "forge",
+  "stage": "late",
+  "icon": "hextale:crystal_battery",
+  "parents": [
+    "radiant_alloy"
+  ],
+  "pos": [
+    1189,
+    134
+  ]
+}

@@ -1,9 +1,8 @@
 {
   "region": "workshop",
-  "stage": "mid",
   "icon": "hextale:bulwark_chestplate",
   "parents": [
-    "hexsteel"
+    "hextech_sword"
   ],
   "display": {
     "kind": "hex_crafting",
@@ -23,7 +22,7 @@
   },
   "research": "bulwark",
   "pos": [
-    690,
-    250
+    200,
+    -390
   ]
 }

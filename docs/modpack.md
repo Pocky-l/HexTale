@@ -159,7 +159,8 @@ Items:
 | `hextale:fuel_catalysts` | catalysts of the combustible mix (coals) |
 | `hextale:magic_tree_catalysts` | saplings the crucible turns into a magic tree sprout |
 | `hextale:soaks_essence` | blocks a crucible or drain valve soaks into magic stone |
-| `hextale:repairs_hexsteel`, `hextale:repairs_arcane_cloth` | repair materials |
+| `hextale:hextech_tool_materials`, `hextale:repairs_charged_hexsteel`, `hextale:repairs_radiant_alloy`, `hextale:repairs_riftmetal` | repair materials of the four tool and Bulwark levels (brass, charged hexsteel, radiant alloy, riftmetal) |
+| `hextale:repairs_hexsteel`, `hextale:repairs_arcane_cloth` | repair materials of hexsteel gear and the Researcher's clothes |
 | `hextale:rune_tier/refined`, `hextale:rune_tier/radiant`, `hextale:rune_tier/riftforged` | how many runes a tool or worn piece holds: 2, 3, 4 (anything else that takes runes: 1) |
 
 Blocks: `hextale:carries_lightning` (what a lightning wave runs through and wakes), `hextale:resonant` (what the

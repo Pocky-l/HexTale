@@ -1,0 +1,12 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:moss_block",
+  "parents": [
+    "shimmerbloom"
+  ],
+  "pos": [
+    -416,
+    93
+  ]
+}

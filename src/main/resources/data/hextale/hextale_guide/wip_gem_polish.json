@@ -1,0 +1,13 @@
+{
+  "kind": "wip",
+  "region": "forge",
+  "stage": "mid",
+  "icon": "hextale:gemstone_dust",
+  "parents": [
+    "hextech_gemstone"
+  ],
+  "pos": [
+    1025,
+    30
+  ]
+}
