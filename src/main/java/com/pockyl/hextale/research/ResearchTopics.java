@@ -77,7 +77,8 @@ public final class ResearchTopics {
     public static final ResearchTopic RAW_SHIMMER = brew("raw_shimmer", 3, Brew.RAW_SHIMMER, Essence.LIGHT, Essence.LIFE);
     /** The four basic hextech tools are worked out together, right after the first researches at the table. */
     public static final ResearchTopic HEXTECH_TOOLS = register(new ResearchTopic("hextech_tools",
-            List.<Supplier<? extends ItemLike>>of(ModItems.pickaxe(HextechPickaxe.HEXTECH), ModItems.HEXTECH_AXE, ModItems.HEXTECH_SHOVEL, ModItems.HEXTECH_SWORD),
+            List.<Supplier<? extends ItemLike>>of(ModItems.pickaxe(HextechPickaxe.HEXTECH), ModItems.HEXTECH_AXE, ModItems.HEXTECH_SHOVEL, ModItems.HEXTECH_SWORD,
+                    ModItems.TENDRIL_DAGGER),
             Essence.METAL, Essence.EARTH, 1, ResearchTopic.Bench.TABLE, null, "research.hextale.topic.hextech_tools"));
     // Gadgets: the first ones (tier 1) right after the first researches, the strong ones deeper.
     public static final ResearchTopic LEVITATION_PLATE = add("levitation_plate", 1, Essence.AIR, Essence.EARTH, ModItems.LEVITATION_PLATE);
@@ -132,11 +133,14 @@ public final class ResearchTopics {
             ModItems.RIFTFORGED_BULWARK_BOOTS);
     // One research refines every tool of a tier (the topic ids are the pickaxe's, released before the other tools).
     public static final ResearchTopic REFINED_PICKAXE = add("refined_hextech_pickaxe", 3, Essence.METAL, Essence.SPARK,
-            ModItems.pickaxe(HextechPickaxe.REFINED), ModItems.REFINED_AXE, ModItems.REFINED_SHOVEL, ModItems.REFINED_SWORD);
+            ModItems.pickaxe(HextechPickaxe.REFINED), ModItems.REFINED_AXE, ModItems.REFINED_SHOVEL, ModItems.REFINED_SWORD,
+            ModItems.REFINED_TENDRIL_DAGGER);
     public static final ResearchTopic RADIANT_PICKAXE = add("radiant_hextech_pickaxe", 3, Essence.LIGHT, Essence.METAL,
-            ModItems.pickaxe(HextechPickaxe.RADIANT), ModItems.RADIANT_AXE, ModItems.RADIANT_SHOVEL, ModItems.RADIANT_SWORD);
+            ModItems.pickaxe(HextechPickaxe.RADIANT), ModItems.RADIANT_AXE, ModItems.RADIANT_SHOVEL, ModItems.RADIANT_SWORD,
+            ModItems.RADIANT_TENDRIL_DAGGER);
     public static final ResearchTopic RIFTFORGED_TOOLS = add("riftforged_tools", 3, Essence.SHADOW, Essence.SPARK,
-            ModItems.pickaxe(HextechPickaxe.RIFTFORGED), ModItems.RIFTFORGED_AXE, ModItems.RIFTFORGED_SHOVEL, ModItems.RIFTFORGED_SWORD);
+            ModItems.pickaxe(HextechPickaxe.RIFTFORGED), ModItems.RIFTFORGED_AXE, ModItems.RIFTFORGED_SHOVEL, ModItems.RIFTFORGED_SWORD,
+            ModItems.RIFTFORGED_TENDRIL_DAGGER);
 
     private ResearchTopics() {
     }

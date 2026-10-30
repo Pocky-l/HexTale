@@ -60,4 +60,43 @@ public final class ArsenalGameTests {
                     "and the flash throws the zombie back"));
         });
     }
+
+    /** A thrown dagger bites the creature it meets and turns back to its thrower at once. */
+    @HexTest(maxTicks = 80)
+    @SuppressWarnings("removal")
+    public static void aThrownDaggerBitesAndComesBack(GameTestHelper helper) {
+        net.minecraft.server.level.ServerPlayer thrower = helper.makeMockServerPlayerInLevel();
+        Vec3 from = helper.absoluteVec(new Vec3(1.5, 2, 1.5));
+        thrower.snapTo(from.x, from.y, from.z, 0, 0);
+        Mob target = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 2, 5));
+        com.pockyl.hextale.entity.ThrownDagger dagger = new com.pockyl.hextale.entity.ThrownDagger(helper.getLevel(), thrower,
+                new ItemStack(ModItems.TENDRIL_DAGGER.get()));
+        dagger.setPos(from.x, from.y + 1.2, from.z + 1);
+        dagger.setDeltaMovement(new Vec3(0, 0, 1.2));
+        dagger.setNoGravity(true);
+        helper.getLevel().addFreshEntity(dagger);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(target.getHealth() < target.getMaxHealth(), "the dagger bit the zombie");
+            helper.assertTrue(dagger.returning() || dagger.isRemoved(), "and turns back to its thrower");
+        });
+    }
+
+    /** A dagger in the off hand strikes along with the main hand's blow. */
+    @HexTest
+    @SuppressWarnings("removal")
+    public static void anOffHandDaggerStrikesAlong(GameTestHelper helper) {
+        Mob plain = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(1, 2, 1));
+        Mob paired = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, new BlockPos(5, 2, 1));
+        net.minecraft.server.level.ServerPlayer one = helper.makeMockServerPlayerInLevel();
+        one.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
+        net.minecraft.server.level.ServerPlayer two = helper.makeMockServerPlayerInLevel();
+        two.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
+        two.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, new ItemStack(ModItems.TENDRIL_DAGGER.get()));
+        plain.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(one), 6);
+        paired.hurtServer(helper.getLevel(), helper.getLevel().damageSources().playerAttack(two), 6);
+        float plainLost = plain.getMaxHealth() - plain.getHealth();
+        float pairedLost = paired.getMaxHealth() - paired.getHealth();
+        helper.assertTrue(pairedLost >= plainLost + 1.5F, "the off-hand dagger adds its blow, " + plainLost + " vs " + pairedLost);
+        helper.succeed();
+    }
 }

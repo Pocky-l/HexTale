@@ -18,7 +18,11 @@
         "result": "hextale:riftforged_shovel",
         "then": {
           "kind": "infusion",
-          "result": "hextale:riftforged_sword"
+          "result": "hextale:riftforged_sword",
+          "then": {
+            "kind": "infusion",
+            "result": "hextale:riftforged_tendril_dagger"
+          }
         }
       }
     }

@@ -24,7 +24,11 @@
         "result": "hextale:refined_hextech_shovel",
         "then": {
           "kind": "infusion",
-          "result": "hextale:refined_hextech_sword"
+          "result": "hextale:refined_hextech_sword",
+          "then": {
+            "kind": "infusion",
+            "result": "hextale:refined_tendril_dagger"
+          }
         }
       }
     }

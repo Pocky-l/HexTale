@@ -350,6 +350,15 @@ public final class ModItems {
             properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[1], 3.0F, -2.4F).rarity(Rarity.RARE)));
     public static final DeferredItem<HextechToolItem> RADIANT_SWORD = ITEMS.registerItem("radiant_hextech_sword",
             properties -> new HextechToolItem(properties.sword(PICKAXE_MATERIALS[2], 3.0F, -2.4F).rarity(Rarity.EPIC).fireResistant()));
+    // The Tendril Dagger in the four levels: quick, fits the off hand, thrown it comes back along a tendril of light.
+    public static final DeferredItem<com.pockyl.hextale.runework.TendrilDaggerItem> TENDRIL_DAGGER = ITEMS.registerItem("tendril_dagger",
+            properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[0], 1.5F, -1.6F).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<com.pockyl.hextale.runework.TendrilDaggerItem> REFINED_TENDRIL_DAGGER = ITEMS.registerItem("refined_tendril_dagger",
+            properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[1], 1.5F, -1.6F).rarity(Rarity.RARE)));
+    public static final DeferredItem<com.pockyl.hextale.runework.TendrilDaggerItem> RADIANT_TENDRIL_DAGGER = ITEMS.registerItem("radiant_tendril_dagger",
+            properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[2], 1.5F, -1.6F).rarity(Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<com.pockyl.hextale.runework.TendrilDaggerItem> RIFTFORGED_TENDRIL_DAGGER = ITEMS.registerItem("riftforged_tendril_dagger",
+            properties -> new com.pockyl.hextale.runework.TendrilDaggerItem(properties.sword(PICKAXE_MATERIALS[3], 1.5F, -1.6F).rarity(Rarity.EPIC).fireResistant()));
     // Level 4, forged with the Void on the Hexcore.
     public static final DeferredItem<HextechToolItem> RIFTFORGED_AXE = ITEMS.registerItem("riftforged_axe",
             properties -> new HextechToolItem(properties.axe(PICKAXE_MATERIALS[3], 5.0F, -3.0F).rarity(Rarity.EPIC).fireResistant()));

@@ -1,0 +1,17 @@
+{
+  "type": "hextale:hex_crafting",
+  "pattern": [
+    "I",
+    "B",
+    "O"
+  ],
+  "key": {
+    "I": "#c:ingots/iron",
+    "B": "#c:ingots/brass",
+    "O": "hextale:unstable_hextech"
+  },
+  "result": {
+    "id": "hextale:tendril_dagger"
+  },
+  "charge": 2
+}

@@ -21,7 +21,11 @@
         "result": "hextale:radiant_hextech_shovel",
         "then": {
           "kind": "infusion",
-          "result": "hextale:radiant_hextech_sword"
+          "result": "hextale:radiant_hextech_sword",
+          "then": {
+            "kind": "infusion",
+            "result": "hextale:radiant_tendril_dagger"
+          }
         }
       }
     }

@@ -4,6 +4,10 @@
     "hextale:refined_hextech_sword",
     "hextale:radiant_hextech_sword",
     "hextale:riftforged_sword",
-    "hextale:hexsteel_sword"
+    "hextale:hexsteel_sword",
+    "hextale:tendril_dagger",
+    "hextale:refined_tendril_dagger",
+    "hextale:radiant_tendril_dagger",
+    "hextale:riftforged_tendril_dagger"
   ]
 }

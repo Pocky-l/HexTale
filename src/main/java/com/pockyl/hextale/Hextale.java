@@ -180,6 +180,10 @@ public final class Hextale {
         output.accept(ModItems.RIFTFORGED_AXE);
         output.accept(ModItems.RIFTFORGED_SHOVEL);
         output.accept(ModItems.RIFTFORGED_SWORD);
+        output.accept(ModItems.TENDRIL_DAGGER);
+        output.accept(ModItems.REFINED_TENDRIL_DAGGER);
+        output.accept(ModItems.RADIANT_TENDRIL_DAGGER);
+        output.accept(ModItems.RIFTFORGED_TENDRIL_DAGGER);
         output.accept(ModItems.BULWARK_HELMET);
         output.accept(ModItems.BULWARK_CHESTPLATE);
         output.accept(ModItems.BULWARK_LEGGINGS);
@@ -461,6 +465,10 @@ public final class Hextale {
             event.accept(ModItems.REFINED_SWORD);
             event.accept(ModItems.RADIANT_SWORD);
             event.accept(ModItems.RIFTFORGED_SWORD);
+            event.accept(ModItems.TENDRIL_DAGGER);
+            event.accept(ModItems.REFINED_TENDRIL_DAGGER);
+            event.accept(ModItems.RADIANT_TENDRIL_DAGGER);
+            event.accept(ModItems.RIFTFORGED_TENDRIL_DAGGER);
             event.accept(ModItems.HEXSTEEL_SWORD);
             event.accept(ModItems.HEXSTEEL_AXE);
             event.accept(ModItems.HEXSTEEL_HELMET);

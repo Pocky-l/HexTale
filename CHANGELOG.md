@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Tendril Dagger in four levels, researched and refined with the tools of its level: a quick blade that takes the
+  sword's runes. In the off hand beside another weapon it strikes along with every blow. Held and released after a
+  short swing it is thrown, bites the first creature it meets and always comes back along a tendril of light.
 - Bulwark armour in four levels (Bulwark, Refined, Radiant, Riftforged), each set opened by one research and made
   from its level's materials like the tools. Every piece takes the runes of the clothes piece of its slot - one at
   the first level, up to four. The cuirass carries a crystal heart: raw hextech clicked onto it charges it, and while

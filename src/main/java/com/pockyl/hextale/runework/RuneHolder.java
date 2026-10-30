@@ -211,6 +211,10 @@ public enum RuneHolder {
         if (item == ModItems.RESEARCHER_BOOTS.get()) {
             return BOOTS;
         }
+        if (item instanceof TendrilDaggerItem) {
+            // A dagger is a short sword: it takes the sword's runes.
+            return SWORD;
+        }
         if (item instanceof BulwarkArmorItem bulwark) {
             // Bulwark takes the runes of the clothes piece worn in the same slot.
             return switch (bulwark.type()) {
