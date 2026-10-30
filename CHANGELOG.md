@@ -4,7 +4,7 @@ All notable changes to this mod are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.1+1.21.1] - Unreleased
+## [1.6.1+1.21.1] - 2026-10-30
 ### Fixed
 - Recipes that asked for iron bars (Lapidary, Foundry, Chem Still, Miasma Vent, Pink Brazier, Spawner Cage) showed an
   empty "c:bars/iron" tag and could not be made: Minecraft 1.21.1 has no such tag, they take Iron Bars now
