@@ -1,0 +1,1165 @@
+{
+  "textures": {
+    "particle": "hextale:item/strike_gauntlet_charge_1",
+    "sheet": "hextale:item/strike_gauntlet_charge_1"
+  },
+  "elements": [
+    {
+      "name": "dark_palm",
+      "from": [
+        3.55,
+        2.55,
+        3.05
+      ],
+      "to": [
+        12.45,
+        8.45,
+        8.95
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            10.5,
+            0,
+            12,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            12,
+            0,
+            13.5,
+            1.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            10.5,
+            1.5,
+            12.75,
+            3
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "steel_finger_0",
+      "from": [
+        3.52,
+        2.52,
+        0.52
+      ],
+      "to": [
+        6.48,
+        7.48,
+        3.48
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13.75,
+            0,
+            14.5,
+            1.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            14.5,
+            0,
+            15.25,
+            1.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            15.25,
+            0,
+            16,
+            1.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            13.75,
+            1.25,
+            14.5,
+            2
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "steel_finger_1",
+      "from": [
+        6.52,
+        2.52,
+        0.02
+      ],
+      "to": [
+        9.48,
+        7.48,
+        2.98
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11.5,
+            3.25,
+            12.25,
+            4.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            11.5,
+            4.5,
+            12.25,
+            5.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "steel_finger_2",
+      "from": [
+        9.52,
+        2.52,
+        0.52
+      ],
+      "to": [
+        12.48,
+        7.48,
+        3.48
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13.75,
+            2.25,
+            14.5,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            14.5,
+            2.25,
+            15.25,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            15.25,
+            2.25,
+            16,
+            3.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            13.75,
+            3.5,
+            14.5,
+            4.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_knuckle_0",
+      "from": [
+        3.5,
+        7,
+        0
+      ],
+      "to": [
+        6.5,
+        9,
+        3
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            12.5,
+            4.5,
+            13.25,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            14,
+            4.5,
+            14.75,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            13.25,
+            4.5,
+            14,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            14.75,
+            4.5,
+            15.5,
+            5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            12.5,
+            5,
+            13.25,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            13.25,
+            5,
+            14,
+            5.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_knuckle_1",
+      "from": [
+        6.5,
+        7,
+        -0.5
+      ],
+      "to": [
+        9.5,
+        9,
+        2.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4.75,
+            5.75,
+            5.5,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            6.25,
+            5.75,
+            7,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            5.5,
+            5.75,
+            6.25,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            7,
+            5.75,
+            7.75,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            4.75,
+            6.25,
+            5.5,
+            7
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            5.5,
+            6.25,
+            6.25,
+            7
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_knuckle_2",
+      "from": [
+        9.5,
+        7,
+        0
+      ],
+      "to": [
+        12.5,
+        9,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            5.75,
+            8.75,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            9.5,
+            5.75,
+            10.25,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            8.75,
+            5.75,
+            9.5,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            10.25,
+            5.75,
+            11,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            8,
+            6.25,
+            8.75,
+            7
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            8.75,
+            6.25,
+            9.5,
+            7
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_back",
+      "from": [
+        3.5,
+        8.5,
+        3
+      ],
+      "to": [
+        12.5,
+        9.5,
+        9
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            3.5,
+            1.5,
+            3.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            1.5,
+            3.5,
+            3,
+            3.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            3.75,
+            2.25,
+            5.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_hub",
+      "from": [
+        5.5,
+        9,
+        4
+      ],
+      "to": [
+        10.5,
+        10,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            5.5,
+            1.25,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            2.5,
+            5.5,
+            3.5,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            1.25,
+            5.5,
+            2.5,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            3.5,
+            5.5,
+            4.5,
+            5.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            5.75,
+            1.25,
+            6.75
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "crystal_heart",
+      "from": [
+        6.5,
+        9.5,
+        5
+      ],
+      "to": [
+        9.5,
+        10.5,
+        7
+      ],
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            3.25,
+            7.25,
+            4,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            4.75,
+            7.25,
+            5.25,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            4,
+            7.25,
+            4.75,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            5.25,
+            7.25,
+            5.75,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            3.25,
+            7.5,
+            4,
+            8
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "steel_piston_0",
+      "from": [
+        4.5,
+        9,
+        2
+      ],
+      "to": [
+        5.5,
+        10,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            7.25,
+            6.25,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            6.25,
+            7.25,
+            6.75,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            6.75,
+            7.25,
+            7.25,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            6,
+            7.5,
+            6.25,
+            8
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "steel_piston_1",
+      "from": [
+        7.5,
+        9,
+        1
+      ],
+      "to": [
+        8.5,
+        10,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13.75,
+            6,
+            14,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            14,
+            6,
+            14.75,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            14.75,
+            6,
+            15.5,
+            6.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            13.75,
+            6.25,
+            14,
+            7
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "steel_piston_2",
+      "from": [
+        10.5,
+        9,
+        2
+      ],
+      "to": [
+        11.5,
+        10,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7.5,
+            7.25,
+            7.75,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            7.75,
+            7.25,
+            8.25,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            8.25,
+            7.25,
+            8.75,
+            7.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            7.5,
+            7.5,
+            7.75,
+            8
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "steel_thumb",
+      "from": [
+        12,
+        3,
+        3
+      ],
+      "to": [
+        14,
+        6,
+        7
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3.25,
+            3.5,
+            3.75,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            4.25,
+            3.5,
+            5.25,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            3.75,
+            3.5,
+            4.25,
+            4.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            3.25,
+            4.25,
+            3.75,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            3.75,
+            4.25,
+            4.25,
+            5.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "steel_thumb_tip",
+      "from": [
+        11,
+        3,
+        -0.5
+      ],
+      "to": [
+        14,
+        5,
+        2.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            11.25,
+            6,
+            12,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            12,
+            6,
+            12.75,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            12.75,
+            6,
+            13.5,
+            6.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            11.25,
+            6.5,
+            12,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            12,
+            6.5,
+            12.75,
+            7.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "dark_cuff",
+      "from": [
+        4.5,
+        3,
+        9
+      ],
+      "to": [
+        11.5,
+        10,
+        14
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            6.75,
+            0,
+            8,
+            1.75
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            8,
+            0,
+            9.25,
+            1.75
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            6.75,
+            1.75,
+            8.5,
+            3
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            8.5,
+            1.75,
+            10.25,
+            3
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "brass_ring_front",
+      "from": [
+        4,
+        2.5,
+        9
+      ],
+      "to": [
+        12,
+        10.5,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6.75,
+            3.25,
+            8.75,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            10.75,
+            3.25,
+            11,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            8.75,
+            3.25,
+            10.75,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            11,
+            3.25,
+            11.25,
+            5.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            6.75,
+            5.25,
+            8.75,
+            5.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            8.75,
+            5.25,
+            10.75,
+            5.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "dark_flare",
+      "from": [
+        3,
+        1.5,
+        13
+      ],
+      "to": [
+        13,
+        11.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            2.5,
+            2.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            5,
+            0,
+            5.75,
+            2.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            2.5,
+            0,
+            5,
+            2.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            5.75,
+            0,
+            6.5,
+            2.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            2.5,
+            2.5,
+            3.25
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            2.5,
+            2.5,
+            5,
+            3.25
+          ],
+          "texture": "#sheet"
+        }
+      }
+    },
+    {
+      "name": "dark_vent",
+      "from": [
+        5,
+        10,
+        10
+      ],
+      "to": [
+        11,
+        11,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            7,
+            1.5,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            1.5,
+            7,
+            2.25,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            2.25,
+            7,
+            3,
+            7.25
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            0,
+            7.25,
+            1.5,
+            8
+          ],
+          "texture": "#sheet"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "translation": [
+        0,
+        1,
+        -2
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "thirdperson_lefthand": {
+      "translation": [
+        0,
+        1,
+        -2
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        15,
+        90,
+        0
+      ],
+      "translation": [
+        0,
+        3.5,
+        -2
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        15,
+        90,
+        0
+      ],
+      "translation": [
+        0,
+        3.5,
+        -2
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "gui": {
+      "rotation": [
+        30,
+        -140,
+        0
+      ],
+      "scale": [
+        0.75,
+        0.75,
+        0.75
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ]
+    }
+  }
+}
