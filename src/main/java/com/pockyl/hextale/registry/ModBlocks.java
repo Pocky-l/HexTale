@@ -213,7 +213,7 @@ public final class ModBlocks {
                     .noOcclusion().requiresCorrectToolForDrops().lightLevel(state -> 4));
     /** A mote of hextech light a pickaxe with the Eternal Flame rune leaves in the dark: no body, no drops, goes out at a touch. */
     public static final DeferredBlock<HexWispBlock> HEX_WISP = BLOCKS.registerBlock("hex_wisp", HexWispBlock::new,
-            () -> BlockBehaviour.Properties.of().replaceable().noCollision().instabreak().noLootTable().lightLevel(state -> 13)
+            () -> BlockBehaviour.Properties.of().replaceable().noCollision().instabreak().noLootTable().randomTicks().lightLevel(state -> 13)
                     .sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.POPPED));
     /** A refined gemstone in a brass cage: stands or hangs like a lantern, full light. */
     public static final DeferredBlock<HextechLampBlock> HEXTECH_LAMP = BLOCKS.registerBlock("hextech_lamp", HextechLampBlock::new,

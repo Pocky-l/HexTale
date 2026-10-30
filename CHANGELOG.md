@@ -50,6 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   view is drawn.
 - Opening a rune stele no longer freezes the game for a moment: the runes on screens are now painted in the
   background, several times faster, and once per size instead of once per colour, so hovering them costs nothing.
+- The wisps an Eternal Flame pickaxe leaves in the dark are no longer put out by the next swing: a tool passes through
+  them, only an empty hand puts one out. They are also brighter to look at: a flickering white core in a blue glow,
+  sparks circling it and motes rising off it, clinging under the ceiling.
+- Items can be put on a Rune Circle from a few steps away again: the click used to be thrown away by the server unless
+  you stood close (the same for every device that spreads past its block, such as the altar and the furnace).
 - Relay and Siphon pylons no longer take runes that do nothing on them: a relay takes Reach only, a siphon the runes
   that move essence (Reach, Pulse, Levity). Runes already burned into them stay but still do nothing.
 - Grapple Gauntlet: the Pulse (reel speed) and Reach runes work again - the wearer's own game never learnt them.
