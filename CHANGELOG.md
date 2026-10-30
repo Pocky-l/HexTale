@@ -88,6 +88,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Hextech Gemstone now looks like the top grade it is: a faceted brilliant held in a thin brass collet, with a
   calm light breathing inside. The gems in the Crystal Lamp, the Warding Lamppost, the Awakened Workbench and the
   Experience Condenser are cut to match.
+- The Engraved Diamond shows its engraving: a glowing golden sign is cut into the middle of its table face, easy to
+  tell from a plain diamond in the inventory.
 
 ### Fixed
 - The Researcher's Diary no longer drags the frame rate down while it is open: its star map ran at about half the
