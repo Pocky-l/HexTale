@@ -16,7 +16,10 @@ import java.util.List;
 /**
  * Server to client: a weapon rune's moment, drawn by {@code client.render.WeaponFx} - the heaving ground of a Shockwave
  * ({@code blocks} with the {@code steps} they rise on, from {@code from} along to {@code to}), a Blink's shadow path, a
- * Detonator's burst, a Whirlpool, a Whirlwind's circle.
+ * Detonator's burst, a Whirlpool, a Whirlwind's circle - and the moments of the gear runes drawn the same way: a
+ * Wavewalk step's ripple, a Static spark from {@code from} to {@code to}, a Mirage's figure of light ({@code size} = its
+ * height), a Flamethrower's tongue of fire from the jets ({@code size} = its width at the end), the light a Sunlight Cell
+ * drinks, an Arc Spire's Beam.
  */
 public record WeaponFxPayload(int kind, Vec3 from, Vec3 to, List<BlockPos> blocks, List<Integer> steps, int color, float size)
         implements CustomPacketPayload {
@@ -28,7 +31,13 @@ public record WeaponFxPayload(int kind, Vec3 from, Vec3 to, List<BlockPos> block
         BLINK,
         BURST,
         VORTEX,
-        SWEEP
+        SWEEP,
+        RIPPLE,
+        ZAP,
+        MIRAGE,
+        SCORCH,
+        SUNBEAM,
+        BEAM
     }
 
     public static final Type<WeaponFxPayload> TYPE = new Type<>(Hextale.id("weapon_fx"));

@@ -30,6 +30,7 @@ import com.pockyl.hextale.essence.EssenceMix;
 import com.pockyl.hextale.essence.JarReach;
 import com.pockyl.hextale.network.ArcPayload;
 import com.pockyl.hextale.network.ModNetwork;
+import com.pockyl.hextale.network.WeaponFxPayload;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModParticles;
@@ -70,6 +71,8 @@ public class ArcSpireBlockEntity extends BlockEntity {
     public static final int STREAM_TICKS = 50;
     /** Ticks an arc is drawn for. */
     public static final int ARC_TICKS = 8;
+    /** Ticks between two hisses of the Beam (every strike shows its beam; the sound is thinned out). */
+    private static final int BEAM_SOUND_TICKS = 60;
 
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
     private int charges;
@@ -79,6 +82,7 @@ public class ArcSpireBlockEntity extends BlockEntity {
     private int idle;
     private @Nullable BlockPos drewFrom;
     private long drewAt = -1000;
+    private long beamHeardAt = -1000;
     /** Client: arcs being drawn now. */
     public final List<Shown> shown = new ArrayList<>();
     /** Client: when the last arc left (the coils glow after it). */
@@ -235,6 +239,7 @@ public class ArcSpireBlockEntity extends BlockEntity {
         FakePlayer striker = FakePlayerFactory.getMinecraft(level);
         striker.setPos(from.x, from.y - 1, from.z);
         int flash = strength(SpireRune.FLASH);
+        int beam = strength(SpireRune.BEAM);
         List<Vec3> points = new ArrayList<>();
         for (Mob mob : targets) {
             float damage = DAMAGE;
@@ -243,8 +248,19 @@ public class ArcSpireBlockEntity extends BlockEntity {
             }
             Vec3 at = mob.position().add(0, mob.getBbHeight() * 0.6, 0);
             points.add(at);
+            if (beam > 0) {
+                // Set alight before the blow, so a creature it fells dies burning (and drops its meat cooked).
+                mob.igniteForTicks(Math.max(mob.getRemainingFireTicks(), HolderRune.at(SpireRune.FIRE_TICKS, beam)));
+                WeaponFxPayload.send(level, WeaponFxPayload.Kind.BEAM, from, at, SpireRune.BEAM.rune().color(), 1);
+            }
             mob.hurtServer(level, level.damageSources().playerAttack(striker), damage);
             level.sendParticles(ModParticles.spark(ModParticles.HEXTECH), at.x, at.y, at.z, 10, 0.2, 0.3, 0.2, 0.1);
+        }
+        if (beam > 0 && !targets.isEmpty() && level.getGameTime() - beamHeardAt >= BEAM_SOUND_TICKS) {
+            beamHeardAt = level.getGameTime();
+            Vec3 first = points.getFirst();
+            level.playSound(null, first.x, first.y, first.z, ModSounds.RUNE_KINDLE.get(), SoundSource.BLOCKS, 0.25F,
+                    1.2F + level.getRandom().nextFloat() * 0.2F);
         }
         level.playSound(null, from.x, from.y, from.z, ModSounds.ARC_STRIKE.get(), SoundSource.BLOCKS, 0.6F,
                 0.9F + level.getRandom().nextFloat() * 0.2F);

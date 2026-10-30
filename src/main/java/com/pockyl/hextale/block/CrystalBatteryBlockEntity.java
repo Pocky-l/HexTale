@@ -17,6 +17,7 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pockyl.hextale.network.EssenceFxPayload;
 import com.pockyl.hextale.network.RuneFxPayload;
+import com.pockyl.hextale.network.WeaponFxPayload;
 import com.pockyl.hextale.registry.ModBlockEntities;
 import com.pockyl.hextale.registry.ModDataComponents;
 import com.pockyl.hextale.registry.ModParticles;
@@ -33,7 +34,8 @@ import org.jspecify.annotations.Nullable;
  * The Crystal Battery's store: up to {@link #CAPACITY} charge (more with Cache), soaked from crystals given to it and
  * handed on every {@link #FEED_TICKS} ticks to the Hex Workbenches within {@link #REACH} blocks (further with Chain
  * Lightning), at most {@link #FEED} to each. A stream of motes shows where the charge goes. Charge and runes stay with
- * the block when it is picked up.
+ * the block when it is picked up. With a Sunlight Cell it drinks a point of charge now and then while it stands under the
+ * open sky by day in dry weather ({@link #sunlit}), drawn as a shaft of light with motes drifting down into it.
  */
 public class CrystalBatteryBlockEntity extends BlockEntity {
     public static final int CAPACITY = 600;
@@ -41,8 +43,13 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
     public static final int FEED_TICKS = 20;
     public static final int FEED = 6;
     private static final int HEXTECH = 0x7FD8FF;
+    /** How high over its top the shaft of sunlight starts. */
+    private static final float SUN_SHAFT = 2.5F;
+    /** Every this many points drunk from the sun there is a soft sound (the light alone shows the rest). */
+    private static final int SUN_SOUND_EVERY = 6;
 
     private int charge;
+    private int sunDrunk;
     private PickaxeRunes runes = PickaxeRunes.EMPTY;
     /** Hoppers, pylons and other mods' pipes feed it crystals; they soak in as they arrive. */
     private final ItemIntake intake = new ItemIntake(new ItemIntake.Mouth() {
@@ -173,7 +180,37 @@ public class CrystalBatteryBlockEntity extends BlockEntity {
         }
     }
 
+    /** Whether the sun reaches the block: nothing over it up to the sky, day, no rain. */
+    public static boolean sunlit(Level level, BlockPos pos) {
+        return level.isBrightOutside() && !level.isRaining()
+                && level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()) <= pos.getY() + 1
+                && level.canSeeSky(pos.above());
+    }
+
+    /** Sunlight Cell: a point of charge every {@link BatteryRune#SUN_TICKS} while sunlit. */
+    private void bask(ServerLevel level) {
+        int sun = strength(BatteryRune.SUNLIGHT_CELL);
+        if (sun <= 0) {
+            return;
+        }
+        int every = HolderRune.at(BatteryRune.SUN_TICKS, sun);
+        if (level.getGameTime() % every != Math.floorMod(worldPosition.asLong(), every) || charge >= capacity() || !sunlit(level, worldPosition)) {
+            return;
+        }
+        charge++;
+        sunDrunk++;
+        changed();
+        Vec3 top = Vec3.atCenterOf(worldPosition).add(0, 0.5, 0);
+        WeaponFxPayload.send(level, WeaponFxPayload.Kind.SUNBEAM, top, top, BatteryRune.SUNLIGHT_CELL.rune().color(), SUN_SHAFT);
+        if (sunDrunk % SUN_SOUND_EVERY == 1) {
+            level.playSound(null, worldPosition, ModSounds.RUNE_BLOOM.get(), SoundSource.BLOCKS, 0.15F, 1.3F + level.getRandom().nextFloat() * 0.2F);
+        }
+    }
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, CrystalBatteryBlockEntity battery) {
+        if (level instanceof ServerLevel server) {
+            battery.bask(server);
+        }
         if (battery.charge <= 0 || level.getGameTime() % FEED_TICKS != Math.floorMod(pos.asLong(), FEED_TICKS)
                 || !(level instanceof ServerLevel server)) {
             return;

@@ -19,7 +19,9 @@ public enum BatteryRune implements HolderRune {
     /** It feeds the workbenches further away. */
     CHAIN_LIGHTNING("spark_air"),
     /** A crystal soaked in may give half as much again. */
-    DAM("earth_water");
+    DAM("earth_water"),
+    /** Under the open sky by day it slowly charges itself from the sunlight. */
+    SUNLIGHT_CELL("light_spark");
 
     public static final int SLOTS = 3;
     /** Share of capacity added, by strength. */
@@ -27,6 +29,8 @@ public enum BatteryRune implements HolderRune {
     /** Blocks of reach added, by strength. */
     public static final int[] REACH = {2, 4, 6, 8};
     public static final float[] BONUS = {0.15F, 0.25F, 0.35F, 0.45F};
+    /** Sunlight Cell: ticks of open daylight per point of charge. */
+    public static final int[] SUN_TICKS = {200, 120, 80, 60};
 
     private final ComplexRune rune;
 
@@ -56,6 +60,7 @@ public enum BatteryRune implements HolderRune {
             case CACHE -> HolderRune.percent(HolderRune.at(ROOM, i));
             case CHAIN_LIGHTNING -> Integer.toString(HolderRune.at(REACH, i));
             case DAM -> HolderRune.percent(HolderRune.at(BONUS, i));
+            case SUNLIGHT_CELL -> Integer.toString(1200 / HolderRune.at(SUN_TICKS, i));
         };
     }
 }

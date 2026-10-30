@@ -25,7 +25,9 @@ public enum SpireRune implements HolderRune {
     /** An arc hits an unhurt creature harder. */
     FLASH("spark_light"),
     /** An arc may cost no charge. */
-    DAM("earth_water");
+    DAM("earth_water"),
+    /** The arc comes as a hot beam of light: what it strikes catches fire. */
+    BEAM("light_fire");
 
     public static final int SLOTS = 2;
     private static final int[] RADIUS = {4, 5, 6, 7, 8};
@@ -36,6 +38,8 @@ public enum SpireRune implements HolderRune {
     /** Extra damage on a creature at full health. */
     public static final float[] BRIGHT = {0.3F, 0.5F, 0.75F, 1.0F};
     public static final float[] THRIFT = {0.2F, 0.35F, 0.5F, 0.6F};
+    /** Beam: ticks a struck creature burns. */
+    public static final int[] FIRE_TICKS = {60, 100, 140, 180};
 
     private final ComplexRune rune;
 
@@ -75,6 +79,7 @@ public enum SpireRune implements HolderRune {
             case CHAIN_LIGHTNING -> "+" + HolderRune.at(FORKS, i);
             case FLASH -> "+" + HolderRune.percent(HolderRune.at(BRIGHT, i));
             case DAM -> HolderRune.percent(HolderRune.at(THRIFT, i));
+            case BEAM -> HolderRune.seconds(HolderRune.at(FIRE_TICKS, i));
         };
     }
 }
