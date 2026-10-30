@@ -19,8 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   gemstones and diamonds.
 - Refined and Radiant Axe, Shovel and Sword: refined at the altar like the pickaxe (the same research opens all four
   of a tier), with every rune carried over. Refined tools hold two runes, radiant ones three.
-- Riftforged Pickaxe, Axe, Shovel and Sword: a radiant tool forged with the Void on a Hexcore (only the Hexcore can do
-  it) holds a fourth rune and keeps every rune it had.
+- Riftforged Pickaxe, Axe, Shovel and Sword: a radiant tool forged on the Hexcore with two Riftmetal, a Sealed Void
+  Crystal and a Void Shard holds a fourth rune and keeps every rune it had.
+- Riftmetal: Radiant Alloy thrown into a held breach is kept a while and given back black, with violet sparks inside.
+- Void Crystals grow on Void Rock round a held breach; set in nullstone at the workbench they become Sealed Void
+  Crystals. Void Chitin softened in a crucible that holds decay becomes Void Carapace.
 - Runes can be burned in weaker than you know them: click a star in the stele's list to pick the strength (the number
   and the price follow). A 3-star Drill no longer forces a 5×5 hole - pick one star for 3×3. A rune already on the item
   is set to exactly the picked strength, weaker too; without a pick a rune is only ever raised, as before.

@@ -1,0 +1,32 @@
+{
+  "region": "forge",
+  "stage": "late",
+  "icon": "hextale:riftforged_pickaxe",
+  "parents": [
+    "riftmetal",
+    "sealed_void_crystal",
+    "radiant_pickaxe"
+  ],
+  "display": {
+    "kind": "infusion",
+    "result": "hextale:riftforged_pickaxe",
+    "then": {
+      "kind": "infusion",
+      "result": "hextale:riftforged_axe",
+      "then": {
+        "kind": "infusion",
+        "result": "hextale:riftforged_shovel",
+        "then": {
+          "kind": "infusion",
+          "result": "hextale:riftforged_sword"
+        }
+      }
+    }
+  },
+  "research": "riftforged_tools",
+  "aura": "hextech",
+  "pos": [
+    1160,
+    820
+  ]
+}

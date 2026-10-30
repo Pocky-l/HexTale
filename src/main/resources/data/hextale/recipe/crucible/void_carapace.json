@@ -1,0 +1,10 @@
+{
+  "type": "hextale:crucible",
+  "catalyst": "hextale:void_chitin",
+  "essences": {
+    "decay": 8
+  },
+  "result": {
+    "id": "hextale:void_carapace"
+  }
+}

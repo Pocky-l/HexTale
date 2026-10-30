@@ -2,12 +2,10 @@
   "type": "hextale:infusion",
   "center": "hextale:radiant_hextech_pickaxe",
   "pedestals": [
-    "hextale:void_shard",
-    "hextale:void_shard",
-    "hextale:void_chitin",
-    "hextale:void_chitin",
-    "hextale:hextech_gemstone",
-    "hextale:hextech_gemstone"
+    "hextale:riftmetal_ingot",
+    "hextale:riftmetal_ingot",
+    "hextale:sealed_void_crystal",
+    "hextale:void_shard"
   ],
   "essences": {
     "rift": 64,

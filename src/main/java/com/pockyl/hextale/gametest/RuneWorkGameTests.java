@@ -467,16 +467,9 @@ public final class RuneWorkGameTests {
     @HexTest
     public static void onlyAHexcoreForgesWithTheVoid(GameTestHelper helper) {
         ItemStack radiant = pickaxe(HextechPickaxe.RADIANT, PickaxeRune.SMELTING);
-        List<ItemStack> items = List.of(new ItemStack(ModItems.VOID_SHARD.get()), new ItemStack(ModItems.VOID_SHARD.get()),
-                new ItemStack(ModItems.VOID_CHITIN.get()), new ItemStack(ModItems.VOID_CHITIN.get()),
-                new ItemStack(ModItems.HEXTECH_GEMSTONE.get()), new ItemStack(ModItems.HEXTECH_GEMSTONE.get()));
+        List<ItemStack> items = List.of(new ItemStack(ModItems.RIFTMETAL_INGOT.get()), new ItemStack(ModItems.RIFTMETAL_INGOT.get()),
+                new ItemStack(ModItems.SEALED_VOID_CRYSTAL.get()), new ItemStack(ModItems.VOID_SHARD.get()));
         circle(helper, radiant, items, EssenceMix.EMPTY);
-        // The test circle has four pedestals: two more for the six Void pieces.
-        for (int i = 4; i < items.size(); i++) {
-            BlockPos extra = i == 4 ? new BlockPos(5, 2, 5) : new BlockPos(5, 2, 1);
-            helper.setBlock(extra, ModBlocks.PEDESTAL.get());
-            helper.getBlockEntity(extra, PedestalBlockEntity.class).place(items.get(i));
-        }
         Ritual.Circle altar = scan(helper);
         helper.assertTrue(Ritual.plan(radiant, altar, false) == null, "a plain altar cannot forge with the Void");
         Ritual.Circle hexcore = new Ritual.Circle(altar.pedestals(), altar.steles(), altar.tanks(), true);

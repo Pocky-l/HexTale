@@ -213,6 +213,11 @@ public final class Hextale {
         output.accept(ModItems.CHARGED_HEXSTEEL_INGOT);
         output.accept(ModItems.RADIANT_ALLOY_INGOT);
         output.accept(ModItems.GEMSTONE_DUST);
+        output.accept(ModItems.RIFTMETAL_INGOT);
+        output.accept(ModItems.VOID_CRYSTAL_CLUSTER);
+        output.accept(ModItems.VOID_CRYSTAL);
+        output.accept(ModItems.SEALED_VOID_CRYSTAL);
+        output.accept(ModItems.VOID_CARAPACE);
         output.accept(ModItems.FIRECLAY_BALL);
         output.accept(ModItems.FIRE_BRICK);
         output.accept(ModItems.ARCANE_CLOTH);

@@ -116,11 +116,17 @@ public final class ResearchTopics {
     public static final ResearchTopic ENGRAVING_DISC = add("engraving_disc", 2, Essence.EARTH, Essence.LIGHT, ModItems.ENGRAVING_DISC);
     /** Level 3 metal. */
     public static final ResearchTopic RADIANT_ALLOY = add("radiant_alloy", 3, Essence.LIGHT, Essence.METAL, ModItems.RADIANT_ALLOY_INGOT);
+    /** Level 4: the metal a held breach gives back, and the Void Crystal set in nullstone. */
+    public static final ResearchTopic RIFTMETAL = add("riftmetal", 3, Essence.SHADOW, Essence.METAL, ModItems.RIFTMETAL_INGOT);
+    public static final ResearchTopic SEALED_VOID_CRYSTAL = add("sealed_void_crystal", 3, Essence.SHADOW, Essence.EARTH,
+            ModItems.SEALED_VOID_CRYSTAL);
     // One research refines every tool of a tier (the topic ids are the pickaxe's, released before the other tools).
     public static final ResearchTopic REFINED_PICKAXE = add("refined_hextech_pickaxe", 3, Essence.METAL, Essence.SPARK,
             ModItems.pickaxe(HextechPickaxe.REFINED), ModItems.REFINED_AXE, ModItems.REFINED_SHOVEL, ModItems.REFINED_SWORD);
     public static final ResearchTopic RADIANT_PICKAXE = add("radiant_hextech_pickaxe", 3, Essence.LIGHT, Essence.METAL,
             ModItems.pickaxe(HextechPickaxe.RADIANT), ModItems.RADIANT_AXE, ModItems.RADIANT_SHOVEL, ModItems.RADIANT_SWORD);
+    public static final ResearchTopic RIFTFORGED_TOOLS = add("riftforged_tools", 3, Essence.SHADOW, Essence.SPARK,
+            ModItems.pickaxe(HextechPickaxe.RIFTFORGED), ModItems.RIFTFORGED_AXE, ModItems.RIFTFORGED_SHOVEL, ModItems.RIFTFORGED_SWORD);
 
     private ResearchTopics() {
     }

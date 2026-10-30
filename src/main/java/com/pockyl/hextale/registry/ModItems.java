@@ -132,6 +132,17 @@ public final class ModItems {
     /** Level 3 metal: white gold melted with charged hexsteel and gemstone dust at the Foundry's full heat. */
     public static final DeferredItem<Item> RADIANT_ALLOY_INGOT = ITEMS.registerItem("radiant_alloy_ingot",
             properties -> new Item(properties.rarity(Rarity.RARE)));
+    public static final DeferredItem<BlockItem> VOID_CRYSTAL_CLUSTER = ITEMS.registerSimpleBlockItem(ModBlocks.VOID_CRYSTAL_CLUSTER);
+    /** Level 4 gem, raw: broken off a cluster round a held breach. Too hungry to use as it is. */
+    public static final DeferredItem<Item> VOID_CRYSTAL = ITEMS.registerItem("void_crystal", properties -> new Item(properties.rarity(Rarity.RARE)));
+    /** A Void Crystal held in a nullstone setting: the stone drinks what it pulls, so it can go into a craft. */
+    public static final DeferredItem<Item> SEALED_VOID_CRYSTAL = ITEMS.registerItem("sealed_void_crystal",
+            properties -> new Item(properties.rarity(Rarity.EPIC)));
+    /** Level 4 metal: Radiant Alloy a held breach took in and gave back. */
+    public static final DeferredItem<Item> RIFTMETAL_INGOT = ITEMS.registerItem("riftmetal_ingot",
+            properties -> new Item(properties.rarity(Rarity.EPIC).fireResistant()));
+    /** Void Chitin softened in the crucible and pressed into a plate: the riftforged armour's shell. */
+    public static final DeferredItem<Item> VOID_CARAPACE = ITEMS.registerItem("void_carapace", properties -> new Item(properties.rarity(Rarity.RARE)));
     /** Level 2 gem: a diamond cut to a brilliant with a groove that holds hextech. */
     public static final DeferredItem<Item> ENGRAVED_DIAMOND = ITEMS.registerItem("engraved_diamond",
             properties -> new Item(properties.rarity(Rarity.UNCOMMON)));

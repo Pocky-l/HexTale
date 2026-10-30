@@ -157,6 +157,11 @@ public final class ModBlocks {
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).instrument(NoteBlockInstrument.BASEDRUM)
                     .requiresCorrectToolForDrops().strength(1.0F, 3.0F).sound(SoundType.POINTED_DRIPSTONE).noOcclusion()
                     .dynamicShape().offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.POPPED));
+    /** Void Crystals: grow on Void Rock round a held breach (level 4 gem; sealed in nullstone before any craft). */
+    public static final DeferredBlock<net.minecraft.world.level.block.AmethystClusterBlock> VOID_CRYSTAL_CLUSTER = BLOCKS.registerBlock(
+            "void_crystal_cluster", properties -> new net.minecraft.world.level.block.AmethystClusterBlock(7.0F, 3.0F, properties),
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).forceSolidOn().noOcclusion().strength(1.5F)
+                    .requiresCorrectToolForDrops().lightLevel(state -> 5).sound(SoundType.AMETHYST_CLUSTER).pushReaction(PushReaction.POPPED));
     // Hextech crystals: amethyst the strike woke all the way, in the four amethyst sizes (sizes and sounds as vanilla).
     public static final DeferredBlock<com.pockyl.hextale.block.HextechClusterBlock> HEXTECH_CLUSTER = BLOCKS.registerBlock("hextech_cluster",
             properties -> new com.pockyl.hextale.block.HextechClusterBlock(7.0F, 3.0F, properties),
