@@ -270,6 +270,17 @@ public enum RuneHolder {
         return find(rune) != null;
     }
 
+    /** Whether this very item takes the rune: a relay or siphon pylon refuses the runes that would do nothing on it. */
+    public boolean takes(ItemStack item, ComplexRune rune) {
+        HolderRune found = find(rune);
+        return found != null && (!(found instanceof PylonRune pylon) || PylonRune.worksOn(item, pylon));
+    }
+
+    /** Every rune this very item takes, in book order. */
+    public List<ComplexRune> takes(ItemStack item) {
+        return takes().stream().filter(rune -> takes(item, rune)).toList();
+    }
+
     private HolderRune get(ComplexRune rune) {
         return Objects.requireNonNull(find(rune), () -> rune.key() + " on " + this);
     }

@@ -155,7 +155,7 @@ public final class Ritual {
         List<RuneUse> uses = new ArrayList<>();
         RuneHolder holder = RuneHolder.of(center);
         if (holder != null) {
-            for (ComplexRune rune : holder.takes()) {
+            for (ComplexRune rune : holder.takes(center)) {
                 List<InfusionRecipe> recipes = asking.remove(rune);
                 uses.add(use(rune, holder, recipes == null ? List.of() : recipes, center));
             }
@@ -176,7 +176,7 @@ public final class Ritual {
         }
         carried.addAll(holder.runes(center).complexRunes());
         for (ComplexRune rune : onOtherSteles) {
-            if (holder.takes(rune)) {
+            if (holder.takes(center, rune)) {
                 carried.add(rune);
             }
         }
@@ -208,7 +208,7 @@ public final class Ritual {
             return Component.translatable("gui.hextale.stele.refuse.one_scroll");
         }
         RuneHolder holder = RuneHolder.of(center);
-        if (holder == null || !holder.takes(rune)) {
+        if (holder == null || !holder.takes(center, rune)) {
             return null;
         }
         Set<ComplexRune> carried = carried(center, onOtherSteles);
@@ -366,7 +366,7 @@ public final class Ritual {
         boolean changed = false;
         for (Chosen chosen : circle.chosenRunes()) {
             ComplexRune rune = chosen.rune();
-            if (!holder.takes(rune)) {
+            if (!holder.takes(item, rune)) {
                 return Engraving.refuse(holder.notTakenRefusal(), rune);
             }
             int have = runes.stars(rune);

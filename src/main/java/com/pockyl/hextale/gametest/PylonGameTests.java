@@ -694,4 +694,20 @@ public final class PylonGameTests {
                     "the sticks went through the matrix to the chest behind the filtered relay");
         });
     }
+
+    /** A relay pylon only takes Reach and a siphon only the runes that move essence: the rest would do nothing there. */
+    @HexTest
+    public static void relaysAndSiphonsTakeOnlyRunesThatWorkThere(GameTestHelper helper) {
+        var holder = com.pockyl.hextale.runework.RuneHolder.PYLON;
+        ItemStack relay = new ItemStack(com.pockyl.hextale.registry.ModItems.RELAY_PYLON.get());
+        ItemStack siphon = new ItemStack(com.pockyl.hextale.registry.ModItems.SIPHON_PYLON.get());
+        ItemStack sending = new ItemStack(com.pockyl.hextale.registry.ModItems.SENDING_PYLON.get());
+        helper.assertTrue(holder.takes(relay, PylonRune.SHIFT.rune()) && !holder.takes(relay, PylonRune.SMELTING.rune())
+                && !holder.takes(relay, PylonRune.MOTOR.rune()), "a relay takes Reach only");
+        helper.assertTrue(holder.takes(siphon, PylonRune.MOTOR.rune()) && !holder.takes(siphon, PylonRune.RADIANCE.rune()),
+                "a siphon takes the runes that move essence");
+        helper.assertTrue(holder.takes(sending, PylonRune.SMELTING.rune()), "a sending pylon takes them all");
+        helper.assertTrue(com.pockyl.hextale.infusion.Ritual.runesFor(relay, false).size() == 1, "the stele offers a relay one rune");
+        helper.succeed();
+    }
 }
