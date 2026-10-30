@@ -19,15 +19,24 @@
           "model": {
             "type": "hextale:tool_aura",
             "kind": "void",
-            "center": [
+            "from": [
               8,
-              25,
+              -8,
               8
             ],
-            "radius": [
+            "to": [
               8,
-              8,
-              6
+              31,
+              8
+            ],
+            "profile": [
+              2.5,
+              2.5,
+              3,
+              3,
+              6,
+              7,
+              4
             ]
           }
         }

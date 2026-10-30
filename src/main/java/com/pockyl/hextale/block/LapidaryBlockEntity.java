@@ -85,7 +85,8 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
         if (crystal.is(ModItems.UNSTABLE_HEXTECH.get()) && (master || disc.is(ModItems.CUTTING_DISC.get()))) {
             return Cleavage.Grade.FIRST;
         }
-        if (crystal.is(Items.DIAMOND) && disc.is(ModItems.ENGRAVING_DISC.get())) {
+        if (crystal.is(Items.DIAMOND) && master) {
+            // Only the diamond-edged master disc bites a diamond: the plain cutting disc slides off it.
             return Cleavage.Grade.ENGRAVE;
         }
         return crystal.is(ModItems.HEXTECH_CRYSTAL.get()) && master ? Cleavage.Grade.FINISH : null;
@@ -271,8 +272,7 @@ public class LapidaryBlockEntity extends BaseContainerBlockEntity implements Wor
     public static boolean accepts(int slot, ItemStack stack) {
         return switch (slot) {
             case INPUT -> stack.is(ModItems.UNSTABLE_HEXTECH.get()) || stack.is(ModItems.HEXTECH_CRYSTAL.get()) || stack.is(Items.DIAMOND);
-            case DISC -> stack.is(ModItems.CUTTING_DISC.get()) || stack.is(ModItems.MASTER_CUTTING_DISC.get())
-                    || stack.is(ModItems.ENGRAVING_DISC.get());
+            case DISC -> stack.is(ModItems.CUTTING_DISC.get()) || stack.is(ModItems.MASTER_CUTTING_DISC.get());
             default -> false;
         };
     }

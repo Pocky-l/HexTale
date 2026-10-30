@@ -3,19 +3,19 @@
   "stage": "mid",
   "icon": "hextale:engraved_diamond",
   "parents": [
-    "engraving_disc"
+    "master_cutting_disc"
   ],
   "display": {
     "kind": "scheme",
     "ingredients": [
       "minecraft:diamond",
-      "hextale:engraving_disc",
+      "hextale:master_cutting_disc",
       "hextale:hex_lapidary"
     ],
     "result": "hextale:engraved_diamond"
   },
   "pos": [
-    850,
-    165
+    880,
+    90
   ]
 }

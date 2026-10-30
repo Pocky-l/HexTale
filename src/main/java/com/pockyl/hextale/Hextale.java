@@ -101,7 +101,6 @@ public final class Hextale {
         output.accept(ModItems.HEX_LAPIDARY);
         output.accept(ModItems.CUTTING_DISC);
         output.accept(ModItems.MASTER_CUTTING_DISC);
-        output.accept(ModItems.ENGRAVING_DISC);
         output.accept(ModItems.ENGRAVED_DIAMOND);
         output.accept(ModItems.HEX_FURNACE);
         output.accept(ModItems.HEX_FOUNDRY);

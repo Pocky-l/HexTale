@@ -29,19 +29,20 @@ import com.pockyl.hextale.Hextale;
 import com.pockyl.hextale.client.IrisCompat;
 
 /**
- * An aura AROUND the tools of the high levels (not tied to their model): a field of light filling an ellipsoid round the
- * tool's head, given in model pixels by the item model definition. Drawn wherever the item is (first and third person,
- * the ground, the inventory), everything from one clock:
+ * An aura round the WHOLE of a high-level tool, from its pommel to its tip, with no middle it starts from: a field along
+ * the tool's axis ({@code from} - {@code to}, model pixels), as wide at each height as {@code profile} says (radii
+ * spread evenly from bottom to top) and {@code depth} times as thick across the tool's face. Drawn wherever the item is
+ * (first and third person, the ground, the inventory), everything from one clock:
  * <ul>
- * <li>{@code lightning} (radiant, level 3): a faint blue glow breathing in the middle of the field and now and then a
- * quiet arc; every {@link #PULSE} ticks a discharge - the glow flares and a few arcs crackle across the field and out of
- * its heart; a few sparks circle on tilted orbits. Kept restrained so the tool does not shout.</li>
- * <li>{@code void} (riftforged, level 4): a slow spiral of violet light in a tilted disc round the head, its arms winding
- * in to a small dark heart, with stars and dark motes drifting in along them to go out; every {@link #INHALE} ticks the
- * Void breathes in: the spiral winds tighter and brightens.</li>
+ * <li>{@code lightning} (radiant, level 3): short arcs snap here and there all along the tool, a few sparks wind round
+ * it at different heights; every {@link #PULSE} ticks a discharge runs the whole length, pommel to tip. Kept restrained
+ * so the tool does not shout.</li>
+ * <li>{@code void} (riftforged, level 4): a slow vortex of violet light winds round the tool bottom to top, the
+ * strands turning; stars rise along it and fade, dark motes sink; every {@link #INHALE} ticks the Void breathes in -
+ * the vortex draws tighter and brightens.</li>
  * </ul>
- * {@code {"type": "hextale:tool_aura", "kind": "lightning", "center": [8, 17, 8], "radius": [16, 9, 6]}} in a
- * {@code minecraft:special} model laid over the tool's model, the whole wrapped in {@code hextale:animated}.
+ * {@code {"type": "hextale:tool_aura", "kind": "void", "from": [8, -8, 8], "to": [8, 28, 8], "profile": [3, 3, 4, 14, 17,
+ * 10, 5]}} in a {@code minecraft:special} model laid over the tool's model, the whole wrapped in {@code hextale:animated}.
  */
 public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
     public static final Identifier ID = Hextale.id("tool_aura");
@@ -65,13 +66,26 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
     }
 
     private final Kind kind;
-    private final Vector3f center;
-    private final Vector3f radius;
+    private final Vec3 from;
+    private final Vec3 axis;
+    /** Across the tool (in its face) and through it, unit vectors. */
+    private final Vec3 side;
+    private final Vec3 through;
+    private final float[] profile;
+    private final float depth;
 
-    private ToolAuraRenderer(Kind kind, Vector3fc center, Vector3fc radius) {
+    private ToolAuraRenderer(Kind kind, Vector3fc from, Vector3fc to, List<Float> profile, float depth) {
         this.kind = kind;
-        this.center = new Vector3f(center).mul(PX);
-        this.radius = new Vector3f(radius).mul(PX);
+        this.from = new Vec3(from.x() * PX, from.y() * PX, from.z() * PX);
+        this.axis = new Vec3(to.x() * PX, to.y() * PX, to.z() * PX).subtract(this.from);
+        Vec3 across = axis.cross(new Vec3(0, 0, 1));
+        this.side = across.lengthSqr() < 1.0E-10 ? new Vec3(1, 0, 0) : across.normalize();
+        this.through = side.cross(axis).normalize();
+        this.profile = new float[Math.max(1, profile.size())];
+        for (int i = 0; i < this.profile.length; i++) {
+            this.profile[i] = (profile.isEmpty() ? 4 : profile.get(i)) * PX;
+        }
+        this.depth = depth;
     }
 
     @Override
@@ -81,102 +95,96 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
         if (kind == Kind.LIGHTNING) {
             lightning(poseStack, collector, time);
         } else {
-            voidSpiral(poseStack, collector, time);
+            vortex(poseStack, collector, time);
         }
     }
 
-    /** A point of the field: (x, y, z) each in -1..1 of the radii, around the middle. */
-    private Vec3 at(double x, double y, double z) {
-        return new Vec3(center.x + x * radius.x, center.y + y * radius.y, center.z + z * radius.z);
-    }
-
-    /** A random point on the shell of the field (the ellipsoid scaled by {@code shell}). */
-    private Vec3 onShell(RandomSource random, double shell) {
-        Vec3 dir = new Vec3(random.nextGaussian(), random.nextGaussian(), random.nextGaussian());
-        if (dir.lengthSqr() < 1.0E-6) {
-            dir = new Vec3(1, 0, 0);
+    /** The field's radius at height {@code t} (0 = pommel, 1 = tip). */
+    private float width(float t) {
+        if (profile.length == 1) {
+            return profile[0];
         }
-        dir = dir.normalize().scale(shell);
-        return at(dir.x, dir.y, dir.z);
+        float at = Mth.clamp(t, 0, 1) * (profile.length - 1);
+        int i = Math.min(profile.length - 2, (int) at);
+        return Mth.lerp(at - i, profile[i], profile[i + 1]);
     }
 
-    private float size() {
-        return Math.max(radius.x, Math.max(radius.y, radius.z));
+    /** A point of the field: height {@code t}, angle round the axis, {@code shell} of the radius there. */
+    private Vec3 at(float t, float angle, float shell) {
+        float r = width(t) * shell;
+        return from.add(axis.scale(t)).add(side.scale(Mth.cos(angle) * r)).add(through.scale(Mth.sin(angle) * r * depth));
     }
 
     // ---- Lightning ---------------------------------------------------------------------------------------------------
 
-    /** Ticks between discharges. */
+    /** Ticks between discharges along the whole tool. */
     public static final float PULSE = 60;
     private static final int CORE_WHITE = 0xEAFBFF;
     private static final int SHEATH = 0x4FC4FF;
-    private static final int GLOW = 0x2E8CFF;
 
     private void lightning(PoseStack poseStack, SubmitNodeCollector collector, float time) {
         float phase = (time % PULSE) / PULSE;
-        // The discharge: a sharp flare at the start of the beat, gone within a fifth of it.
-        float flare = phase < 0.2F ? (float) Math.exp(-phase * 14) : 0;
-        float breath = 0.5F + 0.5F * Mth.sin(time * 0.25F);
-        float size = size();
-        puff(poseStack, collector, HexFx.HALO, at(0, 0, 0), size * (1.1F + 0.3F * flare), GLOW, 0.08F + 0.05F * breath + 0.2F * flare, 0);
-        puff(poseStack, collector, HexFx.HALO, at(0, 0, 0), size * 0.5F, SHEATH, 0.14F + 0.08F * breath + 0.25F * flare, 0.7F);
-        // Arcs: one now and then, a few in the discharge; each lives a couple of frames.
         int frame = (int) Math.floor(time * 24 / 20F);
-        int arcs = 1 + Math.round(4 * flare);
-        for (int arc = 0; arc < arcs; arc++) {
+        // Short arcs here and there along the whole tool, each living a couple of frames; often none.
+        for (int arc = 0; arc < 3; arc++) {
             RandomSource random = RandomSource.create((frame / 2) * 7919L + arc * 104729L);
-            if (flare < 0.05F && random.nextFloat() < 0.35F) {
-                continue; // between discharges the field is often quiet
+            if (random.nextFloat() < 0.55F) {
+                continue;
             }
-            Vec3 from;
-            Vec3 to;
-            if (arc % 3 == 0) {
-                from = at(0, 0, 0);
-                to = onShell(random, 0.9 + random.nextDouble() * 0.25);
-            } else {
-                from = onShell(random, 0.85 + random.nextDouble() * 0.3);
-                to = onShell(random, 0.85 + random.nextDouble() * 0.3);
-                if (from.distanceTo(to) > size * 1.2) {
-                    to = from.lerp(to, 0.5);
-                }
-            }
-            Vec3[] bolt = jagged(from, to, random, 4, 0.3);
-            float flicker = 0.65F + 0.35F * random.nextFloat();
-            float[] light = new float[bolt.length];
-            Arrays.fill(light, flicker);
-            strip(poseStack, collector, bolt, light, (1.3F + 0.6F * flare) * PX, SHEATH, 0.45F);
-            strip(poseStack, collector, bolt, light, 0.35F * PX, CORE_WHITE, 0.9F);
-            if (random.nextFloat() < 0.4F) {
-                Vec3 root = bolt[bolt.length / 2 + random.nextInt(bolt.length / 3)];
-                Vec3 out = new Vec3(random.nextGaussian(), random.nextGaussian(), random.nextGaussian()).normalize()
-                        .scale(size * (0.2 + random.nextDouble() * 0.2));
-                Vec3[] fork = jagged(root, root.add(out), random, 3, 0.35);
-                float[] fade = new float[fork.length];
-                for (int i = 0; i < fork.length; i++) {
-                    fade[i] = flicker * (1 - i / (float) fork.length);
-                }
-                strip(poseStack, collector, fork, fade, 0.9F * PX, SHEATH, 0.4F);
-                strip(poseStack, collector, fork, fade, 0.25F * PX, CORE_WHITE, 0.8F);
-            }
-            puff(poseStack, collector, HexFx.MOTE, to, (0.8F + 0.6F * random.nextFloat()) * PX, CORE_WHITE, 0.6F * flicker, 0);
+            float t = random.nextFloat();
+            Vec3 a = at(t, random.nextFloat() * Mth.TWO_PI, 0.8F + 0.4F * random.nextFloat());
+            Vec3 b = at(Mth.clamp(t + (random.nextFloat() - 0.5F) * 0.25F, 0, 1), random.nextFloat() * Mth.TWO_PI, 0.8F + 0.4F * random.nextFloat());
+            bolt(poseStack, collector, jagged(a, b, random, 4, 0.3), 0.65F + 0.35F * random.nextFloat(), 1);
         }
-        // A few sparks on tilted orbits, with short tails.
+        // The discharge: one arc running the whole length, pommel to tip, drawn as it runs and fading behind.
+        if (phase < 0.25F) {
+            float run = phase / 0.18F;
+            RandomSource random = RandomSource.create((long) Math.floor(time / PULSE) * 31L);
+            int steps = 18;
+            Vec3[] path = new Vec3[steps + 1];
+            float spin = random.nextFloat() * Mth.TWO_PI;
+            for (int i = 0; i <= steps; i++) {
+                float t = i / (float) steps;
+                path[i] = at(t, spin + t * 5 + (random.nextFloat() - 0.5F) * 1.2F, 0.9F + 0.3F * random.nextFloat());
+            }
+            List<Vec3> points = new ArrayList<>();
+            for (int i = 0; i < steps; i++) {
+                Vec3[] piece = jagged(path[i], path[i + 1], random, 2, 0.35);
+                points.addAll(Arrays.asList(piece).subList(0, piece.length - 1));
+            }
+            points.add(path[steps]);
+            Vec3[] bolt = points.toArray(Vec3[]::new);
+            float[] light = new float[bolt.length];
+            for (int i = 0; i < bolt.length; i++) {
+                float u = i / (float) (bolt.length - 1);
+                // Lit up to the running head, fading behind it, the whole fading out at the end of the run.
+                light[i] = u <= run ? Mth.clamp(1 - (run - u) * 1.2F, 0.15F, 1) * Mth.clamp(1.6F - run, 0, 1) : 0;
+            }
+            strip(poseStack, collector, bolt, light, 1.4F * PX, SHEATH, 0.5F);
+            strip(poseStack, collector, bolt, light, 0.38F * PX, CORE_WHITE, 0.95F);
+        }
+        // A few sparks winding round the tool at different heights.
         for (int s = 0; s < 4; s++) {
             RandomSource random = RandomSource.create(s * 977L + 3);
-            Quaternionf tilt = new Quaternionf().rotateXYZ(random.nextFloat() * 6.28F, random.nextFloat() * 6.28F, random.nextFloat() * 6.28F);
-            float speed = (0.12F + random.nextFloat() * 0.1F) * (random.nextBoolean() ? 1 : -1);
-            float shell = 0.75F + random.nextFloat() * 0.3F;
+            float t = 0.15F + 0.7F * random.nextFloat() + 0.08F * Mth.sin(time * 0.05F + s);
+            float speed = (0.15F + random.nextFloat() * 0.1F) * (random.nextBoolean() ? 1 : -1);
             Vec3[] tail = new Vec3[6];
             float[] fade = new float[6];
             for (int i = 0; i < 6; i++) {
-                float angle = (time - i * 0.6F) * speed + s;
-                Vector3f p = tilt.transform(new Vector3f(Mth.cos(angle), Mth.sin(angle), 0));
-                tail[5 - i] = at(p.x * shell, p.y * shell, p.z * shell);
+                tail[5 - i] = at(t, (time - i * 0.6F) * speed + s * 1.7F, 1.05F);
                 fade[5 - i] = 1 - i / 6F;
             }
-            strip(poseStack, collector, tail, fade, 0.5F * PX, SHEATH, 0.55F);
-            puff(poseStack, collector, HexFx.MOTE, tail[5], 0.8F * PX, CORE_WHITE, 0.7F, 0);
+            strip(poseStack, collector, tail, fade, 0.45F * PX, SHEATH, 0.5F);
+            puff(poseStack, collector, HexFx.MOTE, tail[5], 0.7F * PX, CORE_WHITE, 0.65F, 0);
         }
+    }
+
+    private void bolt(PoseStack poseStack, SubmitNodeCollector collector, Vec3[] bolt, float flicker, float scale) {
+        float[] light = new float[bolt.length];
+        Arrays.fill(light, flicker);
+        strip(poseStack, collector, bolt, light, 1.2F * scale * PX, SHEATH, 0.45F);
+        strip(poseStack, collector, bolt, light, 0.33F * scale * PX, CORE_WHITE, 0.9F);
+        puff(poseStack, collector, HexFx.MOTE, bolt[bolt.length - 1], 0.7F * PX, CORE_WHITE, 0.55F * flicker, 0);
     }
 
     // ---- Void ------------------------------------------------------------------------------------------------------------
@@ -184,53 +192,46 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
     /** Ticks between the Void's breaths. */
     public static final float INHALE = 80;
     private static final int SMOKE = 0x0B0414;
-    private static final int DEEP = 0x4A1A9C;
     private static final int RIM = 0x8F55FF;
     private static final int PALE = 0xD9C2FF;
     private static final int STAR = 0xE8DCFF;
 
-    private void voidSpiral(PoseStack poseStack, SubmitNodeCollector collector, float time) {
+    private void vortex(PoseStack poseStack, SubmitNodeCollector collector, float time) {
         float breath = (time % INHALE) / INHALE;
         float inhale = (float) Math.exp(-Math.pow((breath - 0.25F) / 0.1F, 2));
-        float size = size();
-        // A deep violet haze round the head.
-        puff(poseStack, collector, HexFx.HALO, at(0, 0, 0), size * 1.4F, DEEP, 0.16F + 0.12F * inhale, 0);
-        // A slow spiral of violet light in a tilted disc: arms that wind in towards the heart, tighter on the breath.
-        Quaternionf disc = new Quaternionf().rotateXYZ(0.45F, 0, 0.3F).rotateY(time * 0.02F);
-        int arms = 4;
-        int points = 22;
-        float wind = 2.6F + 0.8F * inhale;
-        for (int arm = 0; arm < arms; arm++) {
+        float shell = 1 - 0.25F * inhale;
+        // Strands of violet light winding round the tool from pommel to tip, turning slowly.
+        int strands = 3;
+        int points = 40;
+        float turns = 2.2F;
+        for (int strand = 0; strand < strands; strand++) {
             Vec3[] curve = new Vec3[points];
             float[] glow = new float[points];
+            float offset = strand * Mth.TWO_PI / strands + time * 0.03F;
             for (int i = 0; i < points; i++) {
-                float u = i / (float) (points - 1);
-                float r = 1.05F - 0.85F * u;
-                float angle = arm * Mth.TWO_PI / arms + u * wind;
-                Vector3f p = disc.transform(new Vector3f(Mth.cos(angle) * r, 0.06F * Mth.sin(u * 9 + time * 0.1F + arm), Mth.sin(angle) * r));
-                curve[i] = at(p.x, p.y, p.z);
-                glow[i] = Mth.sin(u * Mth.PI) * (0.55F + 0.45F * Mth.sin(time * 0.08F + arm * 1.7F + u * 4));
+                float t = i / (float) (points - 1);
+                curve[i] = at(t, offset + t * turns * Mth.TWO_PI, shell * (0.95F + 0.08F * Mth.sin(t * 11 + time * 0.07F + strand)));
+                // Brighter bands travel up the strand; the ends fade in and out.
+                float band = 0.5F + 0.5F * Mth.sin(t * 9 - time * 0.12F + strand * 2.1F);
+                glow[i] = Mth.sin(t * Mth.PI) * (0.35F + 0.65F * band);
             }
-            strip(poseStack, collector, curve, glow, (2.2F + 0.8F * inhale) * PX, RIM, 0.5F);
-            strip(poseStack, collector, curve, glow, 0.5F * PX, PALE, 0.55F);
+            strip(poseStack, collector, curve, glow, (1.6F + 0.6F * inhale) * PX, RIM, 0.45F + 0.2F * inhale);
+            strip(poseStack, collector, curve, glow, 0.4F * PX, PALE, 0.45F);
         }
-        // The heart: a small dark knot with a violet edge.
-        dark(poseStack, collector, HexFx.MOTE, at(0, 0, 0), size * 0.35F, 0.65F, 0);
-        puff(poseStack, collector, HexFx.HALO, at(0, 0, 0), size * 0.45F, RIM, 0.25F + 0.25F * inhale, 0);
-        // Stars spiralling in along the disc, going out at the heart; dark motes drifting in among them.
-        for (int s = 0; s < 18; s++) {
+        // Stars rising along the vortex and fading; dark motes sinking through it.
+        for (int s = 0; s < 22; s++) {
             RandomSource random = RandomSource.create(s * 977L + 41);
-            float period = 60 + random.nextFloat() * 50;
+            float period = 70 + random.nextFloat() * 50;
             float life = ((time + random.nextFloat() * period) % period) / period;
-            float angle = random.nextFloat() * 6.28F + life * 3.5F;
-            float r = 1.2F - life;
-            Vector3f p = disc.transform(new Vector3f(Mth.cos(angle) * r, (random.nextFloat() - 0.5F) * 0.3F, Mth.sin(angle) * r));
-            Vec3 at = at(p.x, p.y, p.z);
+            boolean dark = s % 3 == 0;
+            float t = dark ? 1 - life : life;
+            float angle = random.nextFloat() * Mth.TWO_PI + t * turns * Mth.TWO_PI + time * 0.03F;
+            Vec3 at = at(t, angle, shell * (0.6F + 0.5F * random.nextFloat()));
             float alpha = Mth.sin(life * Mth.PI);
-            if (s % 3 == 0) {
-                dark(poseStack, collector, HexFx.MOTE, at, (0.6F + random.nextFloat() * 0.6F) * PX, 0.7F * alpha, 0);
+            if (dark) {
+                darkSpot(poseStack, collector, at, (0.6F + random.nextFloat() * 0.6F) * PX, 0.7F * alpha);
             } else {
-                star(poseStack, collector, at, (0.9F + random.nextFloat() * 0.9F) * PX, STAR, alpha * 0.9F, s % 4, angle);
+                star(poseStack, collector, at, (0.8F + random.nextFloat() * 0.8F) * PX, STAR, alpha * 0.85F, s % 4, angle);
             }
         }
     }
@@ -260,9 +261,12 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
     /** An additive line of light, crossed in two planes so it keeps its width whichever way the tool turns. */
     private static void strip(PoseStack poseStack, SubmitNodeCollector collector, Vec3[] points, float[] light, float width, int color,
                               float alpha) {
+        if (points.length < 2) {
+            return;
+        }
         Vec3 dir = points[points.length - 1].subtract(points[0]);
         Vector3f along = new Vector3f((float) dir.x, (float) dir.y, (float) dir.z);
-        Vector3f a = new Vector3f(along).cross(0, 1, 0);
+        Vector3f a = new Vector3f(along).cross(0, 0, 1);
         if (a.lengthSquared() < 1.0E-10F) {
             a.set(1, 0, 0);
         }
@@ -298,14 +302,13 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
                 (pose, consumer) -> crossed(consumer, pose, at, size, color, alpha, roll, frame / 4F, (frame + 1) / 4F));
     }
 
-    /** A soft dark spot (translucent: additive light cannot darken what lies behind it). */
-    private static void dark(PoseStack poseStack, SubmitNodeCollector collector, Identifier texture, Vec3 at, float size, float alpha,
-                             float roll) {
+    /** A small soft dark mote (translucent: additive light cannot darken what lies behind it). */
+    private static void darkSpot(PoseStack poseStack, SubmitNodeCollector collector, Vec3 at, float size, float alpha) {
         if (alpha <= 0.01F) {
             return;
         }
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(texture),
-                (pose, consumer) -> crossed(consumer, pose, at, size, SMOKE, alpha, roll, 0, 1));
+        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(HexFx.MOTE),
+                (pose, consumer) -> crossed(consumer, pose, at, size, SMOKE, alpha, 0, 0, 1));
     }
 
     private static void crossed(VertexConsumer consumer, PoseStack.Pose pose, Vec3 at, float size, int color, float alpha, float roll,
@@ -332,21 +335,31 @@ public final class ToolAuraRenderer implements NoDataSpecialModelRenderer {
 
     @Override
     public void getExtents(Consumer<Vector3fc> output) {
-        output.accept(new Vector3f(center).sub(new Vector3f(radius).mul(1.6F)));
-        output.accept(new Vector3f(center).add(new Vector3f(radius).mul(1.6F)));
+        float widest = 0;
+        for (float r : profile) {
+            widest = Math.max(widest, r);
+        }
+        for (float t = 0; t <= 1.001F; t += 0.25F) {
+            for (int k = 0; k < 4; k++) {
+                Vec3 p = from.add(axis.scale(t)).add(side.scale((k % 2 == 0 ? 1 : -1) * widest * 1.3)).add(through.scale((k < 2 ? 1 : -1) * widest * depth));
+                output.accept(new Vector3f((float) p.x, (float) p.y, (float) p.z));
+            }
+        }
     }
 
     /** The JSON side. */
-    public record Unbaked(Kind kind, Vector3fc center, Vector3fc radius) implements NoDataSpecialModelRenderer.Unbaked {
+    public record Unbaked(Kind kind, Vector3fc from, Vector3fc to, List<Float> profile, float depth) implements NoDataSpecialModelRenderer.Unbaked {
         public static final MapCodec<Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Kind.CODEC.fieldOf("kind").forGetter(Unbaked::kind),
-                ExtraCodecs.VECTOR3F.fieldOf("center").forGetter(Unbaked::center),
-                ExtraCodecs.VECTOR3F.fieldOf("radius").forGetter(Unbaked::radius)
+                ExtraCodecs.VECTOR3F.fieldOf("from").forGetter(Unbaked::from),
+                ExtraCodecs.VECTOR3F.fieldOf("to").forGetter(Unbaked::to),
+                Codec.FLOAT.listOf().fieldOf("profile").forGetter(Unbaked::profile),
+                Codec.FLOAT.optionalFieldOf("depth", 0.5F).forGetter(Unbaked::depth)
         ).apply(instance, Unbaked::new));
 
         @Override
         public ToolAuraRenderer bake(SpecialModelRenderer.BakingContext context) {
-            return new ToolAuraRenderer(kind, center, radius);
+            return new ToolAuraRenderer(kind, from, to, profile, depth);
         }
 
         @Override

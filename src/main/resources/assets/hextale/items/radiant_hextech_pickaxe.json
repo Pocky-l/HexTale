@@ -19,15 +19,24 @@
           "model": {
             "type": "hextale:tool_aura",
             "kind": "lightning",
-            "center": [
+            "from": [
               8,
-              16,
+              -8,
               8
             ],
-            "radius": [
-              16,
-              9,
-              7
+            "to": [
+              8,
+              28,
+              8
+            ],
+            "profile": [
+              2.5,
+              2.5,
+              3,
+              12,
+              17,
+              10,
+              4
             ]
           }
         }

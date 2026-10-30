@@ -124,9 +124,6 @@ public final class ModItems {
     /** A hexsteel disc edged with diamond: finishes crystals into stabilised gemstones, and cuts raw ones twice as fast. */
     public static final DeferredItem<Item> MASTER_CUTTING_DISC = ITEMS.registerItem("master_cutting_disc",
             properties -> new Item(properties.durability(256).rarity(Rarity.UNCOMMON)));
-    /** A charged hexsteel disc with a diamond point: engraves diamonds on the Lapidary (level 2). */
-    public static final DeferredItem<Item> ENGRAVING_DISC = ITEMS.registerItem("engraving_disc",
-            properties -> new Item(properties.durability(128).rarity(Rarity.UNCOMMON)));
     /** Cuttings of a gemstone's finish on the Lapidary: what lets gold take the Radiant Alloy's light. */
     public static final DeferredItem<Item> GEMSTONE_DUST = ITEMS.registerSimpleItem("gemstone_dust");
     /** Level 3 metal: white gold melted with charged hexsteel and gemstone dust at the Foundry's full heat. */

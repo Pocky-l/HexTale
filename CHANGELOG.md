@@ -6,9 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Radiant tools carry a quiet field of lightning round their heads - a faint blue glow, now and then an arc, and a
-  small discharge every few seconds. Riftforged tools turn a slow violet spiral of the Void round theirs, with stars
-  drifting in to its dark heart; every few seconds it breathes in.
+- Radiant tools are wrapped in quiet lightning from pommel to tip - short arcs snapping here and there, a few sparks
+  winding round, and now and then a discharge running the whole length. Riftforged tools turn a slow violet vortex of
+  the Void round their whole length, stars rising along it and dark motes sinking; every few seconds it breathes in.
 - Two blade runes for the sword, the Tendril Dagger and the Strike Gauntlet: Backstab (a blow from behind lands
   25/40/60% harder) and Bleeding (a cut may keep bleeding for 3/4/5 seconds). Their codex runes were Eclipse and
   Blight and had no use until now.
@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Charged Hexsteel: a hexsteel ingot laid into a Crucible that holds lightning and metal comes out charged - the
   metal of the refined tools. Coolant splashed on hexsteel lying on a lit Chem Burner charges it at once, but the
   fumes thin the land.
-- Engraving Disc and Engraved Diamond: the Lapidary cuts a diamond to a brilliant and engraves it (a cracked
+- Engraved Diamond: the Lapidary with a master cutting disc cuts a diamond to a brilliant and engraves it (a cracked
   diamond comes back whole). Refined tools are now made of two Charged Hexsteel and an Engraved Diamond instead of
   gemstones and diamonds.
 - Refined and Radiant Axe, Shovel and Sword: refined at the altar like the pickaxe (the same research opens all four
