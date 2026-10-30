@@ -1,0 +1,13 @@
+{
+  "kind": "wip",
+  "region": "forge",
+  "stage": "late",
+  "icon": "minecraft:ender_eye",
+  "parents": [
+    "riftmetal"
+  ],
+  "pos": [
+    1065,
+    560
+  ]
+}

@@ -5,6 +5,10 @@
   "parents": [
     "subdued_breach"
   ],
+  "goal": {
+    "type": "studied",
+    "item": "hextale:void_crystal"
+  },
   "display": {
     "kind": "scheme",
     "ingredients": [

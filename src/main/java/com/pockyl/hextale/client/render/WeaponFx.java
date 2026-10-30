@@ -257,7 +257,7 @@ public final class WeaponFx {
         }
         Vec3 c = payload.from();
         float radius = payload.size();
-        level.addParticle(ParticleTypes.SWEEP_ATTACK, c.x, c.y, c.z, 0, 0, 0);
+        // No vanilla sweep sprite: its flat white crescent hid the crescent of light drawn in the rune's colour.
         for (int i = 0; i < 18; i++) {
             float angle = i * Mth.TWO_PI / 18;
             level.addParticle(ModParticles.glint(payload.color()), c.x + Mth.cos(angle) * radius * 0.9, c.y, c.z + Mth.sin(angle) * radius * 0.9,
@@ -568,8 +568,8 @@ public final class WeaponFx {
             points[i] = c.add(Mth.cos(angle) * radius, 0.15 * Mth.sin(s * Mth.PI), Mth.sin(angle) * radius);
             light[i] = s;
         }
-        JarStreamFx.flatStrip(consumer, pose, points, light, UP, 0.6F, payload.color(), 0.45F * fade);
-        JarStreamFx.flatStrip(consumer, pose, points, light, UP, 0.1F, RuneDrawing.mix(payload.color(), 0xFFFFFF, 0.6F), 0.95F * fade);
+        JarStreamFx.flatStrip(consumer, pose, points, light, UP, 0.6F, payload.color(), 0.35F * fade);
+        JarStreamFx.flatStrip(consumer, pose, points, light, UP, 0.08F, RuneDrawing.mix(payload.color(), 0xFFFFFF, 0.35F), 0.7F * fade);
     }
 
     /** Two rings of light spreading over the water from a step, the second a little behind the first. */

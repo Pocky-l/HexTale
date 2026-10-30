@@ -278,6 +278,26 @@ public final class ModBlocks {
     /** Nine hexsteel ingots: dark blue steel with a faint hextech shimmer. */
     public static final DeferredBlock<Block> HEXSTEEL_BLOCK = BLOCKS.registerBlock("hexsteel_block", Block::new,
             () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).mapColor(MapColor.COLOR_BLUE));
+    // Decor of the Arsenal's level metals (one set per metal).
+    /** Nine charged hexsteel ingots: blued steel with a lit cyan seam. */
+    public static final DeferredBlock<Block> CHARGED_HEXSTEEL_BLOCK = BLOCKS.registerBlock("charged_hexsteel_block", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).mapColor(MapColor.COLOR_CYAN));
+    /** Charged hexsteel cut into riveted plates with lit joints. */
+    public static final DeferredBlock<Block> HEXSTEEL_PLATING = BLOCKS.registerBlock("hexsteel_plating", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).mapColor(MapColor.COLOR_CYAN));
+    /** Nine radiant alloy ingots: white gold with a faint violet seam. */
+    public static final DeferredBlock<Block> RADIANT_ALLOY_BLOCK = BLOCKS.registerBlock("radiant_alloy_block", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).mapColor(MapColor.QUARTZ).strength(6.0F, 8.0F));
+    /** Radiant alloy worked into filigree with a violet inlay. */
+    public static final DeferredBlock<Block> RADIANT_TRIM = BLOCKS.registerBlock("radiant_trim", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_BLOCK).mapColor(MapColor.QUARTZ).strength(6.0F, 8.0F));
+    /** Nine riftmetal ingots: black metal with violet specks drifting through it. */
+    public static final DeferredBlock<Block> RIFTMETAL_BLOCK = BLOCKS.registerBlock("riftmetal_block", Block::new,
+            () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.NETHERITE_BLOCK).mapColor(MapColor.COLOR_PURPLE));
+    /** Void carapace pressed into tiles with a starry sheen. */
+    public static final DeferredBlock<Block> VOID_CARAPACE_TILES = BLOCKS.registerBlock("void_carapace_tiles", Block::new,
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(4.0F, 9.0F).sound(SoundType.DEEPSLATE_TILES)
+                    .requiresCorrectToolForDrops());
     /** Nine brass ingots: a building block with the soft sheen of the machines. */
     public static final DeferredBlock<Block> BRASS_BLOCK = BLOCKS.registerBlock("brass_block", Block::new,
             () -> BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(4.0F, 6.0F).sound(SoundType.COPPER)

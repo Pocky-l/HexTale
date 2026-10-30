@@ -2,6 +2,15 @@
   "region": "void",
   "stage": "mid",
   "icon": "hextale:void_chitin",
-  "parents": ["void_breach"],
-  "pos": [340, 820]
+  "parents": [
+    "void_breach"
+  ],
+  "goal": {
+    "type": "studied",
+    "item": "hextale:void_chitin"
+  },
+  "pos": [
+    340,
+    820
+  ]
 }

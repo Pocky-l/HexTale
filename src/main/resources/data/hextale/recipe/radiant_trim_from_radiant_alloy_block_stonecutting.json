@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "#c:storage_blocks/radiant_alloy",
+  "result": {
+    "id": "hextale:radiant_trim",
+    "count": 4
+  }
+}

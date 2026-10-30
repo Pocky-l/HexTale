@@ -64,6 +64,8 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     /** Ticks per separating step, millibuckets of the mixture worked off per step, and of unknown essence each step
      * that drew something out adds to the rest. */
     public static final int STEP_TICKS = 10;
+    /** Over magma or lava (no burner, no powder) the flask heats slowly: a step advances only every this many ticks. */
+    public static final int SLOW_HEAT = 3;
     /** The choice that draws out the dark unknown essence (after the essences' ordinals). */
     public static final int UNKNOWN_CHOICE = Essence.COUNT;
     private static final int STEP_DROPS = 4;
@@ -315,7 +317,7 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
         EssenceMix portion = portion();
         int drawn = drawnOut(portion);
         if (drawn > 0) {
-            if (!burnerBelow() && charge + (isFuel(items.get(FUEL)) ? FUEL_BINDS : 0) < drawn) {
+            if (!burnerBelow() && !magmaBelow() && charge + (isFuel(items.get(FUEL)) ? FUEL_BINDS : 0) < drawn) {
                 return "no_fuel";
             }
             boolean other = !extract.isEmpty() && (unknown ? extract.contents().unknown() != extract.amount()
@@ -330,6 +332,15 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
     /** A burning Chem Burner under it heats the flask: no blaze powder is burned while it does. */
     private boolean burnerBelow() {
         return level != null && ChemBurnerBlock.isLit(level.getBlockState(worldPosition.below()));
+    }
+
+    /** Magma or lava under it heats the flask too, slowly ({@link #SLOW_HEAT}), and burns no powder: no Nether trip needed. */
+    private boolean magmaBelow() {
+        if (level == null) {
+            return false;
+        }
+        net.minecraft.world.level.block.state.BlockState below = level.getBlockState(worldPosition.below());
+        return below.is(net.minecraft.world.level.block.Blocks.MAGMA_BLOCK) || below.getFluidState().is(net.minecraft.tags.FluidTags.LAVA);
     }
 
     /** A Chem Burner under it burns while an essence is drawn out of the mix. */
@@ -360,13 +371,18 @@ public class SeparatorBlockEntity extends BaseContainerBlockEntity implements Wo
             step = 0;
             return had;
         }
+        // Over magma the flask only creeps along, unless the powder in the slot is burning anyway.
+        boolean slow = !burnerBelow() && magmaBelow() && charge < drawnOut(portion()) && !isFuel(items.get(FUEL));
+        if (slow && level.getGameTime() % SLOW_HEAT != 0) {
+            return false;
+        }
         if (++step < STEP_TICKS) {
             return false;
         }
         step = 0;
         EssenceMix portion = portion();
         int drawn = drawnOut(portion);
-        boolean burner = burnerBelow();
+        boolean burner = burnerBelow() || slow;
         if (!burner && drawn > charge) {
             items.get(FUEL).shrink(1);
             charge += FUEL_BINDS;

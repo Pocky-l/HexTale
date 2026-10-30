@@ -5,10 +5,7 @@
   "parents": [
     "engraved_diamond",
     "charged_hexsteel",
-    "hextech_pickaxe",
-    "hextech_axe",
-    "hextech_shovel",
-    "hextech_sword"
+    "hextech_pickaxe"
   ],
   "goal": {
     "tier": 2,
