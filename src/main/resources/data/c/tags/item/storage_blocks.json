@@ -3,6 +3,9 @@
     "#c:storage_blocks/zinc",
     "#c:storage_blocks/raw_zinc",
     "#c:storage_blocks/brass",
-    "#c:storage_blocks/hexsteel"
+    "#c:storage_blocks/hexsteel",
+    "#c:storage_blocks/charged_hexsteel",
+    "#c:storage_blocks/radiant_alloy",
+    "#c:storage_blocks/riftmetal"
   ]
 }

@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   winding round, and now and then a discharge running the whole length. The abyss seeps out of riftforged tools:
   small clouds of the Void well up along them, sink and thin out, violet tendrils creep out and twist away, and now
   and then a short tear into the abyss flares.
+- Building blocks of the new metals: blocks of charged hexsteel, radiant alloy and riftmetal (nine ingots, beacon
+  bases), hexsteel plating and radiant trim cut from them on a stonecutter, and void carapace tiles.
 - Radiant and riftforged Bulwark armour carries the same lightning and abyss, thinner, along the head, body, arms
   and legs it covers - on the wearer, on armour stands and on the icons.
 - Two blade runes for the sword, the Tendril Dagger and the Strike Gauntlet: Backstab (a blow from behind lands
@@ -20,7 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   that hurts and throws back the creatures in front. Held too long, it vents its steam and starts over, never hurting
   its wearer. It takes the sword's runes, three of them.
 - Tendril Dagger in four levels, researched and refined with the tools of its level: a quick blade that takes the
-  sword's runes. In the off hand beside another weapon it strikes along with every blow. Held and released after a
+  sword's runes. In the off hand beside another weapon it now and then finds a gap and strikes along with the blow
+  (30-45% by level). Held and released after a
   short swing it is thrown, bites the first creature it meets and always comes back along a tendril of light.
 - Bulwark armour in four levels (Bulwark, Refined, Radiant, Riftforged), each set opened by one research and made
   from its level's materials like the tools. Every piece takes the runes of the clothes piece of its slot - one at
@@ -42,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refined and Radiant Axe, Shovel and Sword: refined at the altar like the pickaxe (the same research opens all four
   of a tier), with every rune carried over. Refined tools hold two runes, radiant ones three.
 - Riftforged Pickaxe, Axe, Shovel and Sword: a radiant tool forged on the Hexcore with two Riftmetal, a Sealed Void
-  Crystal and a Void Shard holds a fourth rune and keeps every rune it had.
+  Crystal and a raw Void Crystal holds a fourth rune and keeps every rune it had.
 - Riftmetal: Radiant Alloy thrown into a held breach is kept a while and given back black, with violet sparks inside.
 - Void Crystals grow on Void Rock round a held breach; set in nullstone at the workbench they become Sealed Void
   Crystals. Void Chitin softened in a crucible that holds decay becomes Void Carapace.
@@ -78,6 +81,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     animals it fells drop their meat cooked.
 
 ### Changed
+- Every level of tools and Bulwark armour mends with its own metal at an anvil: brass, Charged Hexsteel, Radiant
+  Alloy, Riftmetal.
+- The refined research shows up once the level's materials and the Runed Pickaxe are known - no need to make the
+  axe, shovel and sword first. The first Bulwark set comes beside the runed tools instead of after hexsteel.
+- The chemtech shortcuts of the Arsenal cost what they save: quenched hexsteel thins the land three times as much as
+  before and a violet plume rises from the burner, and Radiant Alloy from Refined Shimmer thins it three times as much
+  too.
+- The Separator heats over magma or lava too - slowly, with no blaze powder at all.
+- The Bulwark heart takes at most 4/6/8/10 points of a single blow by level, so a crushing blow is still felt.
+- The Whirlwind sweep is a softer crescent in the rune's colour, without the flat white sweep of a vanilla sword over it.
+- A few finds of the Void - Void Chitin, Void Crystals and the Void's plants - now have to be studied under the loupe
+  before the diary knows what to make of them.
+- New ideas in the margins of the diary: where the level materials, the clouded crystal, the Void's flowers,
+  the shimmer moss and the magic wood could lead. A few old ideas that came true got new directions.
 - Runes now grow with the tool: a first Runed Pickaxe, Axe, Shovel or Sword holds one rune, a Refined Pickaxe two and
   a Radiant Pickaxe three, a Riftforged one four. Runes already burned into your tools stay and keep working; only new runes past the
   limit are refused.

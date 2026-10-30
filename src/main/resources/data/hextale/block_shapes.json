@@ -760,6 +760,20 @@
   "hextale:void_coral": {"mode": "first", "cases": [
     {"when": {}, "boxes": []}
   ]},
+  "hextale:void_crystal_cluster": {"mode": "first", "cases": [
+    {"when": {"facing": "down", "waterlogged": "false"}, "boxes": []},
+    {"when": {"facing": "down", "waterlogged": "true"}, "boxes": []},
+    {"when": {"facing": "east", "waterlogged": "false"}, "boxes": []},
+    {"when": {"facing": "east", "waterlogged": "true"}, "boxes": []},
+    {"when": {"facing": "north", "waterlogged": "false"}, "boxes": []},
+    {"when": {"facing": "north", "waterlogged": "true"}, "boxes": []},
+    {"when": {"facing": "south", "waterlogged": "false"}, "boxes": []},
+    {"when": {"facing": "south", "waterlogged": "true"}, "boxes": []},
+    {"when": {"facing": "up", "waterlogged": "false"}, "boxes": []},
+    {"when": {"facing": "up", "waterlogged": "true"}, "boxes": []},
+    {"when": {"facing": "west", "waterlogged": "false"}, "boxes": []},
+    {"when": {"facing": "west", "waterlogged": "true"}, "boxes": []}
+  ]},
   "hextale:void_rock_brick_slab": {"mode": "first", "cases": [
     {"when": {"type": "bottom"}, "boxes": [[0, 0, 0, 16, 8, 16]]},
     {"when": {"type": "double"}, "boxes": [[0, 0, 0, 16, 16, 16]]},

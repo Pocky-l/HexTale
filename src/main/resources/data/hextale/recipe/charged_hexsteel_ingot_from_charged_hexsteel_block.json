@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#c:storage_blocks/charged_hexsteel"
+  ],
+  "result": {
+    "id": "hextale:charged_hexsteel_ingot",
+    "count": 9
+  }
+}

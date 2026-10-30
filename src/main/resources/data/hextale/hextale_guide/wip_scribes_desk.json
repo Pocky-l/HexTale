@@ -1,0 +1,12 @@
+{
+  "kind": "wip",
+  "region": "chemtech",
+  "icon": "minecraft:lectern",
+  "parents": [
+    "magic_wood"
+  ],
+  "pos": [
+    -375,
+    190
+  ]
+}

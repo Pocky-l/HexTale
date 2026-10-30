@@ -175,6 +175,10 @@ public final class BrewEffects {
                 com.pockyl.hextale.thevoid.Thinning.Source.FUMES);
         level.sendParticles(ModParticles.vapour(ModParticles.SOOT), item.getX(), item.getY() + 0.2, item.getZ(), 10, 0.15, 0.2, 0.15, 0.03);
         level.sendParticles(ModParticles.glint(0x7EF0FF), item.getX(), item.getY() + 0.15, item.getZ(), 8, 0.12, 0.1, 0.12, 0.02);
+        // The price shows at the act: a violet plume rises from the burner, more of it for a bigger stack.
+        level.sendParticles(ModParticles.vapour(ModParticles.INK), item.getX(), item.getY() + 0.6, item.getZ(),
+                Math.min(40, 8 + stack.getCount() / 2), 0.25, 0.6, 0.25, 0.02);
+        level.playSound(null, under, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.3F, 0.6F);
         return true;
     }
 

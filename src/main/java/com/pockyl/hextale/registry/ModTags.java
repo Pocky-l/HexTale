@@ -20,6 +20,10 @@ public final class ModTags {
     public static final TagKey<Item> HEXTECH_TOOL_MATERIALS = TagKey.create(Registries.ITEM, Hextale.id("hextech_tool_materials"));
     /** What repairs hexsteel tools and armour. */
     public static final TagKey<Item> REPAIRS_HEXSTEEL = TagKey.create(Registries.ITEM, Hextale.id("repairs_hexsteel"));
+    /** What repairs the level 2, 3 and 4 tools and Bulwark pieces: each level mends with its own metal. */
+    public static final TagKey<Item> REPAIRS_CHARGED_HEXSTEEL = TagKey.create(Registries.ITEM, Hextale.id("repairs_charged_hexsteel"));
+    public static final TagKey<Item> REPAIRS_RADIANT_ALLOY = TagKey.create(Registries.ITEM, Hextale.id("repairs_radiant_alloy"));
+    public static final TagKey<Item> REPAIRS_RIFTMETAL = TagKey.create(Registries.ITEM, Hextale.id("repairs_riftmetal"));
     /** Tools and worn pieces of the refined tier: two rune places ({@code runework/RuneTier}). */
     public static final TagKey<Item> REFINED_TIER = TagKey.create(Registries.ITEM, Hextale.id("rune_tier/refined"));
     /** Tools and worn pieces of the radiant tier: three rune places. */
