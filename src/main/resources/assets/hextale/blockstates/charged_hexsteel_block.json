@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "hextale:block/charged_hexsteel_block"
+    }
+  }
+}
